@@ -400,6 +400,49 @@
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
+      },
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "LEGACY_SEED_COMPATIBILITY_SKETCH",
+        "worldModel": "ACTION_SURVIVAL_ROGUELITE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
+        "actors": [
+          "플레이어: Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
+        ],
+        "interactionChains": [
+          "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
+        ],
+        "stateMachine": [
+          "START_OR_WORLD_ENTRY",
+          "REAL_PLAYER_INPUT",
+          "CORE_GAMEPLAY_ACTION",
+          "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "RISK_FAILURE_OR_RESOURCE_PRESSURE",
+          "GOAL_OR_RETRY"
+        ],
+        "firstPlayableCycle": [
+          "월드/세션 진입",
+          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+          "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+          "보상 또는 의미 있는 선택 적용",
+          "위험·실패·자원 압박 경험",
+          "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        ],
+        "expansionPlan": [
+          "새 적·위협 또는 행동 패턴",
+          "새 공간·경로 또는 목표",
+          "새 상호작용 또는 전략 결과"
+        ],
+        "longGoalScenario": [
+          "초기 핵심 루프 완료",
+          "성장·보상으로 새 선택 개방",
+          "새 위협·공간·목표를 거쳐 중간 목표 달성"
+        ],
+        "validationRisks": [
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
+          "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+        ]
       }
     },
     {
@@ -781,6 +824,49 @@
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
+      },
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "LEGACY_SEED_COMPATIBILITY_SKETCH",
+        "worldModel": "SINGLE_DEFENSE_STRATEGY의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
+        "actors": [
+          "플레이어: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
+        ],
+        "interactionChains": [
+          "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
+        ],
+        "stateMachine": [
+          "START_OR_WORLD_ENTRY",
+          "REAL_PLAYER_INPUT",
+          "CORE_GAMEPLAY_ACTION",
+          "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "RISK_FAILURE_OR_RESOURCE_PRESSURE",
+          "GOAL_OR_RETRY"
+        ],
+        "firstPlayableCycle": [
+          "월드/세션 진입",
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+          "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+          "보상 또는 의미 있는 선택 적용",
+          "위험·실패·자원 압박 경험",
+          "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+        ],
+        "expansionPlan": [
+          "새 적·위협 또는 행동 패턴",
+          "새 공간·경로 또는 목표",
+          "새 상호작용 또는 전략 결과"
+        ],
+        "longGoalScenario": [
+          "초기 핵심 루프 완료",
+          "성장·보상으로 새 선택 개방",
+          "새 위협·공간·목표를 거쳐 중간 목표 달성"
+        ],
+        "validationRisks": [
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
+          "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+        ]
       }
     },
     {
@@ -1197,6 +1283,49 @@
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
+      },
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "LEGACY_SEED_COMPATIBILITY_SKETCH",
+        "worldModel": "PUZZLE의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
+        "actors": [
+          "플레이어: Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
+        ],
+        "interactionChains": [
+          "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
+        ],
+        "stateMachine": [
+          "START_OR_WORLD_ENTRY",
+          "REAL_PLAYER_INPUT",
+          "CORE_GAMEPLAY_ACTION",
+          "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "RISK_FAILURE_OR_RESOURCE_PRESSURE",
+          "GOAL_OR_RETRY"
+        ],
+        "firstPlayableCycle": [
+          "월드/세션 진입",
+          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+          "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+          "보상 또는 의미 있는 선택 적용",
+          "위험·실패·자원 압박 경험",
+          "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        ],
+        "expansionPlan": [
+          "새 적·위협 또는 행동 패턴",
+          "새 공간·경로 또는 목표",
+          "새 상호작용 또는 전략 결과"
+        ],
+        "longGoalScenario": [
+          "초기 핵심 루프 완료",
+          "성장·보상으로 새 선택 개방",
+          "새 위협·공간·목표를 거쳐 중간 목표 달성"
+        ],
+        "validationRisks": [
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
+          "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+        ]
       }
     },
     {
@@ -1605,6 +1734,49 @@
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
+      },
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "LEGACY_SEED_COMPATIBILITY_SKETCH",
+        "worldModel": "CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
+        "actors": [
+          "플레이어: Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
+        ],
+        "interactionChains": [
+          "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
+        ],
+        "stateMachine": [
+          "START_OR_WORLD_ENTRY",
+          "REAL_PLAYER_INPUT",
+          "CORE_GAMEPLAY_ACTION",
+          "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "RISK_FAILURE_OR_RESOURCE_PRESSURE",
+          "GOAL_OR_RETRY"
+        ],
+        "firstPlayableCycle": [
+          "월드/세션 진입",
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+          "보상 또는 의미 있는 선택 적용",
+          "위험·실패·자원 압박 경험",
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "expansionPlan": [
+          "새 적·위협 또는 행동 패턴",
+          "새 공간·경로 또는 목표",
+          "새 상호작용 또는 전략 결과"
+        ],
+        "longGoalScenario": [
+          "초기 핵심 루프 완료",
+          "성장·보상으로 새 선택 개방",
+          "새 위협·공간·목표를 거쳐 중간 목표 달성"
+        ],
+        "validationRisks": [
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
+          "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+        ]
       }
     },
     {
@@ -2002,6 +2174,49 @@
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
+      },
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "LEGACY_SEED_COMPATIBILITY_SKETCH",
+        "worldModel": "IDLE_GROWTH_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
+        "actors": [
+          "플레이어: Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+          "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
+        ],
+        "interactionChains": [
+          "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
+        ],
+        "stateMachine": [
+          "START_OR_WORLD_ENTRY",
+          "REAL_PLAYER_INPUT",
+          "CORE_GAMEPLAY_ACTION",
+          "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "RISK_FAILURE_OR_RESOURCE_PRESSURE",
+          "GOAL_OR_RETRY"
+        ],
+        "firstPlayableCycle": [
+          "월드/세션 진입",
+          "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
+          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
+          "보상 또는 의미 있는 선택 적용",
+          "위험·실패·자원 압박 경험",
+          "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+        ],
+        "expansionPlan": [
+          "새 적·위협 또는 행동 패턴",
+          "새 공간·경로 또는 목표",
+          "새 상호작용 또는 전략 결과"
+        ],
+        "longGoalScenario": [
+          "초기 핵심 루프 완료",
+          "성장·보상으로 새 선택 개방",
+          "새 위협·공간·목표를 거쳐 중간 목표 달성"
+        ],
+        "validationRisks": [
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
+          "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+        ]
       }
     },
     {
@@ -2399,6 +2614,49 @@
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
         "previousGameName": null,
         "profileFile": "game-seed-platform-profiles.json"
+      },
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "LEGACY_SEED_COMPATIBILITY_SKETCH",
+        "worldModel": "STORY_COMPLETE_RPG의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
+        "actors": [
+          "플레이어: Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+          "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
+        ],
+        "interactionChains": [
+          "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
+        ],
+        "stateMachine": [
+          "START_OR_WORLD_ENTRY",
+          "REAL_PLAYER_INPUT",
+          "CORE_GAMEPLAY_ACTION",
+          "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "RISK_FAILURE_OR_RESOURCE_PRESSURE",
+          "GOAL_OR_RETRY"
+        ],
+        "firstPlayableCycle": [
+          "월드/세션 진입",
+          "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+          "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+          "보상 또는 의미 있는 선택 적용",
+          "위험·실패·자원 압박 경험",
+          "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+        ],
+        "expansionPlan": [
+          "새 적·위협 또는 행동 패턴",
+          "새 공간·경로 또는 목표",
+          "새 상호작용 또는 전략 결과"
+        ],
+        "longGoalScenario": [
+          "초기 핵심 루프 완료",
+          "성장·보상으로 새 선택 개방",
+          "새 위협·공간·목표를 거쳐 중간 목표 달성"
+        ],
+        "validationRisks": [
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
+          "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+        ]
       }
     }
   ],
@@ -4202,7 +4460,7 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-09-14T22:44:10.604Z",
+    "lastReplenishedAt": "2026-09-14T23:37:11.793Z",
     "bootstrapCategories": [
       "ACTION_SURVIVAL_ROGUELITE",
       "SINGLE_DEFENSE_STRATEGY",
