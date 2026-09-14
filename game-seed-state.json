@@ -126,12 +126,36 @@
         "validatedRealEvidence": true,
         "reviewContextSource": "FROZEN_DESIGN_BASELINE+CANONICAL_DEVELOPMENT_QUEUE",
         "recordedAt": "2026-09-14T07:19:37.444Z"
+      },
+      {
+        "gameId": "seed-casual-realm-weaver",
+        "seedId": "SEED-CASUAL-001",
+        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
+        "runtimeTarget": "web",
+        "verdict": "REBUILD",
+        "totalScore": 60,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [
+          "CATEGORY_PROFILE_MATCH"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [
+          "CATEGORY_PROFILE_MATCH"
+        ],
+        "improvementTargets": [],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "FROZEN_DESIGN_BASELINE+CANONICAL_DEVELOPMENT_QUEUE",
+        "recordedAt": "2026-09-14T07:29:27.520Z"
       }
     ],
     "causeCounts": {
       "REAL_PLAYABLE_GAME_REQUIRED": 1,
       "COMPLETE_PLAYABLE_CYCLE_REQUIRED": 1,
-      "FAIL_OR_LOSS_CONDITION_REQUIRED": 1
+      "FAIL_OR_LOSS_CONDITION_REQUIRED": 1,
+      "CATEGORY_PROFILE_MATCH": 1
     },
     "preferSeedMaterialFamilies": [],
     "avoidSeedMaterialFamilies": [],
@@ -145,6 +169,6 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-14T07:19:37.445Z"
+    "updatedAt": "2026-09-14T07:29:27.521Z"
   }
 }
