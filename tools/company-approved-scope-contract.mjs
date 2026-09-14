@@ -1,3 +1,4 @@
+// 파일명: tools/company-approved-scope-contract.mjs
 import crypto from 'node:crypto';
 
 const clean=value=>String(value??'').trim().replace(/\s+/g,' ');
@@ -54,8 +55,47 @@ function scopeControlTag(text,id){
 function attribute(attrs,name){return clean(String(attrs||'').match(new RegExp(`\\b${name}=["']([^"']+)["']`,'i'))?.[1]);}
 function interactiveScopeControl(control){
   if(!control)return false;
-  if(['button','input','select','textarea'].includes(control.tag))return true;
-  return /\brole=["']button["']/i.test(control.attrs)||/\btabindex=["']?0["']?/i.test(control.attrs);
+  if(['button','input','select','textarea','canvas'].includes(control.tag))return true;
+  return /\brole=["']button["']/i.test(control.attrs)||/\btabindex=["']?0["']?/i.test(control.attrs)||/\bdata-gameplay-action\s*=/i.test(control.attrs);
+}
+export function approvedScopeRequirement(item={}){
+  const path=clean(item.path),text=`${path} ${clean(item.label)}`.toLowerCase();
+  if(!/^corefun$/i.test(path)&&/(place\s+(?:a\s+)?(?:tower|defender)|tower\s+placement|position\s+(?:a\s+)?tower|배치|설치\s*위치|타워\s*위치)/i.test(text))return'TOWER_PLACEMENT';
+  if(/adapt|tactical\s+change|strategic\s+choice|different\s+choice|선택에\s*따른|전략\s*선택|전술\s*변경|대응\s*선택/i.test(text))return'STRATEGIC_CHOICE';
+  if(!/^corefun$/i.test(path)&&/(interact|interaction|talk|speak|npc|object|pickup|pick\s*up|open|activate|use\s+(?:the\s+)?(?:object|item)|상호작용|대화|엔피시|npc|사물|오브젝트|줍|열기|작동|사용)/i.test(text))return'ENTITY_INTERACTION';
+  if(!/^corefun$/i.test(path)&&/(map|world|area|zone|route|path|explor|move|reposition|collision|맵|월드|세계|구역|지역|경로|탐험|이동|위치|충돌)/i.test(text))return'SPATIAL_WORLD';
+  return'STATE_CHANGE';
+}
+function realPlacementInputExists(text){
+  const source=String(text??'');
+  const explicitPosition=/(?:data-(?:placement-position|build-slot|tower-slot|grid-x|grid-y)|dataset\.(?:placementPosition|buildSlot|towerSlot|gridX|gridY))/i.test(source);
+  const coordinateInput=/(?:offsetX|offsetY|clientX|clientY|getBoundingClientRect\s*\()/i.test(source)&&/(?:pointerdown|pointerup|touchstart|touchend|addEventListener\s*\(\s*["']click|\.onclick\s*=)/i.test(source);
+  const raycastInput=/(?:raycast|raycaster|screenToWorld|unproject|worldPosition|groundHit)/i.test(source)&&/(?:pointer|touch|click)/i.test(source);
+  return explicitPosition||coordinateInput||raycastInput;
+}
+function realEntityInteractionExists(text){
+  const source=String(text??'');
+  const explicitTarget=/(?:data-(?:interactable|interaction-target|npc|object-id)|dataset\.(?:interactable|interactionTarget|npc|objectId))/i.test(source);
+  const explicitlyInteractableWorldEntity=/<[a-z0-9-]+\b(?=[^>]*\bdata-world-entity\b)(?=[^>]*\bdata-interactable\b)[^>]*>/i.test(source);
+  const action=/(?:interact|talk|pickup|open|activate|use|상호작용|대화|줍|열기|작동)/i.test(source)&&/(?:addEventListener|onclick|pointerdown|keydown|touchstart)/i.test(source);
+  return (explicitTarget||explicitlyInteractableWorldEntity)&&action;
+}
+function realSpatialStateExists(text){
+  const source=String(text??'');
+  const domSpace=/(?:data-(?:area|zone|region|biome|route|path-node|player-x|player-y|player-z|world-x|world-y|world-z)|dataset\.(?:area|zone|region|biome|route|pathNode|playerX|playerY|playerZ|worldX|worldY|worldZ))/i.test(source);
+  const coordinateSpace=/(?:position\.(?:x|y|z)|player(?:X|Y|Z)|world(?:X|Y|Z)|velocity|collision|collider|raycast|raycaster|pathfinding|navmesh|getBoundingClientRect)/i.test(source);
+  return domSpace||coordinateSpace;
+}
+function threeDContractBlockers(text){
+  const source=String(text??'');
+  const detected=/(?:data-spatial-dimension=["']3d["']|WebGLRenderingContext|WebGL2RenderingContext|THREE\.|BABYLON\.|PerspectiveCamera|OrthographicCamera|requestPointerLock)/i.test(source);
+  if(!detected)return [];
+  const blockers=[];
+  if(!/(?:position\.x|position\.y|position\.z|data-player-x|data-player-y|data-player-z|playerX|playerY|playerZ|worldX|worldY|worldZ)/i.test(source))blockers.push('REAL_3D_XYZ_STATE_REQUIRED');
+  if(!/(?:camera|PerspectiveCamera|OrthographicCamera|cameraYaw|cameraPitch|data-camera)/i.test(source))blockers.push('REAL_3D_CAMERA_STATE_REQUIRED');
+  if(!/(?:collision|collider|intersect|raycast|raycaster|groundHit|physics|rigidbody)/i.test(source))blockers.push('REAL_3D_COLLISION_OR_RAYCAST_REQUIRED');
+  if(!/(?:route|path|navmesh|pathfind|waypoint|data-route|data-path-node|raycast|raycaster)/i.test(source))blockers.push('REAL_3D_ROUTE_OR_SPATIAL_SELECTION_REQUIRED');
+  return blockers;
 }
 
 export function staticApprovedScopeCoverage(html,inventory=[]){
@@ -76,22 +116,54 @@ export function staticApprovedScopeCoverage(html,inventory=[]){
       if(mechanicId===item.id||/^scope(?:-|$)/i.test(mechanicId))blockers.push(`APPROVED_SCOPE_GENERIC_MECHANIC_ID:${item.id}`);
     }
     if(/\bid=["']scope-control-\d+["']/i.test(control.attrs))blockers.push(`TEST_HARNESS_SCOPE_CONTROL_ID_FORBIDDEN:${item.id}`);
+    const requirement=approvedScopeRequirement(item);
+    if(requirement==='TOWER_PLACEMENT'&&!realPlacementInputExists(text))blockers.push(`APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED:${item.id}`);
+    if(requirement==='ENTITY_INTERACTION'&&!realEntityInteractionExists(text))blockers.push(`APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED:${item.id}`);
+    if(requirement==='SPATIAL_WORLD'&&!realSpatialStateExists(text))blockers.push(`APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED:${item.id}`);
   }
+  blockers.push(...threeDContractBlockers(text));
   const uniqueMechanics=[...new Set(mechanicIds)];
   const minimumMechanics=Math.min(4,Math.max(1,inventory.length));
   if(inventory.length&&uniqueMechanics.length<minimumMechanics)blockers.push(`APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:${uniqueMechanics.length}:${minimumMechanics}`);
   return {pass:blockers.length===0,requiredCount:inventory.length,mechanicCount:uniqueMechanics.length,mechanicIds:uniqueMechanics,blockers};
 }
 
-export function runtimeApprovedScopeCoverage({declaredCount=0,visibleScopeIds=[],interactedScopeIds=[],mechanicBindings=[]}={}){
+export function runtimeApprovedScopeCoverage({declaredCount=0,visibleScopeIds=[],interactedScopeIds=[],mechanicBindings=[],inventory=[],interactionResults=[],spatialEvidence={}}={}){
   const visible=[...new Set((visibleScopeIds||[]).map(clean).filter(Boolean))];
   const interacted=[...new Set((interactedScopeIds||[]).map(clean).filter(Boolean))];
   const mechanics=[...new Set((mechanicBindings||[]).map(clean).filter(Boolean))];
+  const results=Array.isArray(interactionResults)?interactionResults:[];
   const blockers=[];
   if(Number(declaredCount)<=0)blockers.push('APPROVED_SCOPE_DECLARATION_REQUIRED');
   if(visible.length!==Number(declaredCount))blockers.push(`APPROVED_SCOPE_VISIBLE_COUNT_MISMATCH:${visible.length}:${declaredCount}`);
   const missingInteraction=visible.filter(id=>!interacted.includes(id));
   if(missingInteraction.length)blockers.push(`APPROVED_SCOPE_NOT_INTERACTED:${missingInteraction.join(',')}`);
+  for(const scopeId of visible){
+    const rows=results.filter(row=>clean(row?.scopeId)===scopeId&&row?.clicked===true);
+    if(!rows.some(row=>row?.stateChanged===true))blockers.push(`APPROVED_SCOPE_NO_GAMEPLAY_RESULT:${scopeId}`);
+    const item=(inventory||[]).find(row=>clean(row?.id)===scopeId);
+    const requirement=approvedScopeRequirement(item||{});
+    if(requirement==='TOWER_PLACEMENT'){
+      const placementPass=rows.some(row=>row?.positionSelected===true&&(row?.placementResult===true||Number(row?.towerEntityDelta||0)>0));
+      if(!placementPass)blockers.push(`APPROVED_SCOPE_TOWER_PLACEMENT_RESULT_REQUIRED:${scopeId}`);
+    }
+    if(requirement==='STRATEGIC_CHOICE'&&!rows.some(row=>row?.strategicOutcomeObserved===true))blockers.push(`APPROVED_SCOPE_STRATEGIC_OUTCOME_REQUIRED:${scopeId}`);
+    if(requirement==='ENTITY_INTERACTION'){
+      const interactionPass=rows.some(row=>row?.targetSelected===true&&row?.interactionResult===true&&row?.targetStateChanged===true);
+      if(!interactionPass)blockers.push(`APPROVED_SCOPE_ENTITY_INTERACTION_RESULT_REQUIRED:${scopeId}`);
+    }
+    if(requirement==='SPATIAL_WORLD'){
+      const spatialPass=rows.some(row=>row?.spatialInputObserved===true&&row?.spatialStateChanged===true&&row?.spatialOutcomeObserved===true);
+      if(!spatialPass)blockers.push(`APPROVED_SCOPE_SPATIAL_WORLD_RESULT_REQUIRED:${scopeId}`);
+    }
+  }
+  if(spatialEvidence?.detected3D===true){
+    if(spatialEvidence.xyzMoved!==true)blockers.push('REAL_3D_XYZ_MOVEMENT_REQUIRED');
+    if(spatialEvidence.cameraObserved!==true)blockers.push('REAL_3D_CAMERA_RUNTIME_REQUIRED');
+    if(spatialEvidence.collisionObserved!==true)blockers.push('REAL_3D_COLLISION_RUNTIME_REQUIRED');
+    if(spatialEvidence.raycastOrRouteObserved!==true)blockers.push('REAL_3D_RAYCAST_OR_ROUTE_RUNTIME_REQUIRED');
+    if(spatialEvidence.spatialOutcomeObserved!==true)blockers.push('REAL_3D_SPATIAL_OUTCOME_REQUIRED');
+  }
   const minimumMechanics=Math.min(4,Math.max(1,Number(declaredCount)||0));
   if(Number(declaredCount)>0&&mechanics.length<minimumMechanics)blockers.push(`APPROVED_SCOPE_RUNTIME_MECHANIC_DIVERSITY_TOO_LOW:${mechanics.length}:${minimumMechanics}`);
   return {pass:blockers.length===0,declaredCount:Number(declaredCount)||0,visibleScopeIds:visible,interactedScopeIds:interacted,mechanicBindings:mechanics,blockers};

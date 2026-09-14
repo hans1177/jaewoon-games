@@ -7,6 +7,7 @@ export const GAME_SEED_REQUIRED_FIELDS = Object.freeze([
   'CORE_FUN_TO_LEARN',
   'CORE_LOOP',
   'DISTINCT_IDENTITY',
+  'GAMEPLAY_SKETCH',
   'MARKET_EVIDENCE_SUMMARY',
   'TARGET_AUDIENCE',
   'TARGET_SESSION_DIRECTION',
@@ -33,6 +34,7 @@ export const GAME_SEED_POLICY = Object.freeze({
   initialPlayMode: 'PROJECT_DEFINED',
   multiplayerModes: Object.freeze(['SINGLE','COOP','COMPETITIVE','HYBRID']),
   targetSessionMinutes: 30,
+  gameplaySketchRequired: true,
   numericMarketClaimRequiresSource: true,
   numericMarketClaimRequiresObservedAt: true,
   marketEvidenceHardPassFailGate: false
@@ -47,6 +49,23 @@ const hasMeaningfulValue = value => {
   if (value && typeof value === 'object' && !Array.isArray(value)) return Object.keys(value).length > 0;
   return false;
 };
+const uniq=values=>[...new Set((Array.isArray(values)?values:[]).map(value=>String(value??'').trim()).filter(Boolean))];
+function legacyGameplaySketch(seed){
+  const loop=uniq(seed.CORE_LOOP);
+  while(loop.length<3)loop.push(['핵심 행동을 수행한다','결과로 성장·보상·선택을 얻는다','위험과 목표를 거쳐 다음 사이클로 이어진다'][loop.length]);
+  return {
+    version:1,
+    source:'LEGACY_SEED_COMPATIBILITY_SKETCH',
+    worldModel:`${String(seed.GAME_CATEGORY||'GAME')}의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간`,
+    actors:[`플레이어: ${loop[0]}`,'상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응'],
+    interactionChains:['대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화'],
+    stateMachine:['START_OR_WORLD_ENTRY','REAL_PLAYER_INPUT','CORE_GAMEPLAY_ACTION','OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE','PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE','RISK_FAILURE_OR_RESOURCE_PRESSURE','GOAL_OR_RETRY'],
+    firstPlayableCycle:['월드/세션 진입',loop[0],loop[1],'보상 또는 의미 있는 선택 적용','위험·실패·자원 압박 경험',loop[2]],
+    expansionPlan:['새 적·위협 또는 행동 패턴','새 공간·경로 또는 목표','새 상호작용 또는 전략 결과'],
+    longGoalScenario:['초기 핵심 루프 완료','성장·보상으로 새 선택 개방','새 위협·공간·목표를 거쳐 중간 목표 달성'],
+    validationRisks:['버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다','반복·재시작·대기로 콘텐츠 분량을 채우지 않는다'],
+  };
+}
 
 function normalizeCompatibility(seed){
   if(!seed||typeof seed!=='object'||Array.isArray(seed))return seed;
@@ -59,7 +78,15 @@ function normalizeCompatibility(seed){
     const mode=String(seed.INITIAL_PLAY_MODE||'').toUpperCase();
     seed.MULTIPLAYER_DESIGN_MODE=mode.includes('MULTI')?'HYBRID':'SINGLE';
   }
+  if(!seed.GAMEPLAY_SKETCH||typeof seed.GAMEPLAY_SKETCH!=='object'||Array.isArray(seed.GAMEPLAY_SKETCH))seed.GAMEPLAY_SKETCH=legacyGameplaySketch(seed);
   return seed;
+}
+
+function validateGameplaySketch(sketch,errors){
+  if(!sketch||typeof sketch!=='object'||Array.isArray(sketch)){errors.push('GAMEPLAY_SKETCH must be an object');return;}
+  if(!isNonEmptyString(sketch.worldModel))errors.push('GAMEPLAY_SKETCH.worldModel is required');
+  const requirements=[['actors',2],['interactionChains',1],['stateMachine',5],['firstPlayableCycle',6],['expansionPlan',3],['longGoalScenario',3],['validationRisks',2]];
+  for(const [field,min] of requirements)if(!Array.isArray(sketch[field])||uniq(sketch[field]).length<min)errors.push(`GAMEPLAY_SKETCH.${field} requires at least ${min} meaningful items`);
 }
 
 function validateMarketNumericClaims(summary, errors) {
@@ -97,6 +124,7 @@ export function validateGameSeed(input) {
   }
   if (seed.INITIAL_PLAY_MODE !== undefined && !isNonEmptyString(seed.INITIAL_PLAY_MODE)) errors.push('INITIAL_PLAY_MODE must be project-defined and non-empty');
 
+  validateGameplaySketch(seed.GAMEPLAY_SKETCH,errors);
   validateMarketNumericClaims(seed.MARKET_EVIDENCE_SUMMARY, errors);
   if (seed.DIRECT_COPY === true || seed.COPY_SOURCE_CODE === true || seed.COPY_ASSETS === true) errors.push('direct copying of source code or protected expression/assets is forbidden');
 
@@ -120,11 +148,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const file = process.argv[2];
   if (!file) {console.error('Usage: node tools/company-game-seed-contract.mjs <game-seed.json>');process.exit(2);}
   try {
-    readAndAssertGameSeed(file);
+    const seed=readAndAssertGameSeed(file);
     console.log('GAME_SEED_CONTRACT=PASS');
     console.log(`POLICY_DOCUMENT=${GAME_SEED_POLICY.policyDocument}`);
     console.log(`GAME_SEED_STAGE=${GAME_SEED_POLICY.stage}`);
     console.log(`SEED_MATERIAL_POOL_TARGET=${GAME_SEED_POLICY.seedMaterialPoolTarget}`);
+    console.log(`GAMEPLAY_SKETCH_SOURCE=${seed.GAMEPLAY_SKETCH?.source||'UNKNOWN'}`);
     console.log(`TARGET_SESSION_MINUTES=${GAME_SEED_POLICY.targetSessionMinutes}`);
   } catch (error) {console.error(String(error?.message || error));process.exit(1);}
 }

@@ -53,6 +53,22 @@ const IDLE_TARGET_COUNT=Math.max(0,Math.min(3,Number(process.env.GAME_SEED_IDLE_
 const FORCE_TARGET_COUNT=Math.max(0,Math.min(3,Number(process.env.GAME_SEED_FORCE_TARGET_COUNT||0)));
 
 const TEXT={type:'string',maxLength:1200};
+const SKETCH_ITEM={type:'string',minLength:1,maxLength:360};
+const GAMEPLAY_SKETCH_SCHEMA={
+  type:'object',
+  required:['worldModel','actors','interactionChains','stateMachine','firstPlayableCycle','expansionPlan','longGoalScenario','validationRisks'],
+  properties:{
+    worldModel:{type:'string',minLength:1,maxLength:900},
+    actors:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    interactionChains:{type:'array',minItems:1,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    stateMachine:{type:'array',minItems:5,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
+    firstPlayableCycle:{type:'array',minItems:6,maxItems:10,uniqueItems:true,items:SKETCH_ITEM},
+    expansionPlan:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    longGoalScenario:{type:'array',minItems:3,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+    validationRisks:{type:'array',minItems:2,maxItems:8,uniqueItems:true,items:SKETCH_ITEM},
+  },
+  additionalProperties:false,
+};
 const PROPOSAL_PROPERTIES={
   requestId:{type:'string',maxLength:120},
   category:{type:'string',maxLength:80},
@@ -68,6 +84,7 @@ const PROPOSAL_PROPERTIES={
   crossPlatformExpansionValue:{type:'string',minLength:1,maxLength:500},
   steamExpansionPossible:{type:'string',enum:['POSSIBLE','NOT_RECOMMENDED']},
   transformationMode:{type:'string',enum:['HOMAGE','REINTERPRETATION','ORIGINAL_COMPOSITION']},
+  gameplaySketch:GAMEPLAY_SKETCH_SCHEMA,
 };
 const REQUIRED_PROPOSAL=Object.keys(PROPOSAL_PROPERTIES);
 const batchSchema=count=>({type:'object',required:['proposals'],properties:{proposals:{type:'array',minItems:count,maxItems:count,items:{type:'object',required:REQUIRED_PROPOSAL,properties:PROPOSAL_PROPERTIES,additionalProperties:false}}},additionalProperties:false});
@@ -221,6 +238,27 @@ function makeTarget(requestId,{category=null,platform=defaultTargetPlatform,gene
     minimumCoreLoop:uniq(profile.minimumCoreLoop),
   };
 }
+function sketchArray(values,fallback,min,max){
+  const out=uniq(values).slice(0,max);
+  for(const value of fallback)if(out.length<min&&!out.includes(value))out.push(value);
+  return out.slice(0,max);
+}
+function normalizeGameplaySketch(target,p,coreLoop,gameName){
+  const raw=p?.gameplaySketch&&typeof p.gameplaySketch==='object'&&!Array.isArray(p.gameplaySketch)?p.gameplaySketch:{};
+  const worldModel=clean(raw.worldModel)||`${gameName}의 실제 플레이 공간은 ${target.category} 핵심 행동, 이동·경로·위치 선택과 목표 진행이 서로 영향을 주는 월드 상태로 구성한다.`;
+  const actors=sketchArray(raw.actors,[`플레이어: ${coreLoop[0]||'핵심 행동 수행'}`,`위협/상대 또는 월드 엔티티: 플레이어 행동에 상태와 결과로 반응`],2,8);
+  const interactionChains=sketchArray(raw.interactionChains,[`플레이어가 대상/공간을 선택한다 -> 실제 입력을 수행한다 -> 대상 또는 월드 상태가 바뀐다 -> 보상·위험·목표 결과가 바뀐다`],1,8);
+  const stateMachine=sketchArray(raw.stateMachine,[
+    'START_OR_WORLD_ENTRY','REAL_PLAYER_INPUT','CORE_GAMEPLAY_ACTION','OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE','PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE','RISK_FAILURE_OR_RESOURCE_PRESSURE','GOAL_OR_RETRY'
+  ],5,10);
+  const firstPlayableCycle=sketchArray(raw.firstPlayableCycle,[
+    `월드에 진입하고 현재 목표를 확인한다`,coreLoop[0]||'핵심 행동을 실제 입력으로 수행한다',coreLoop[1]||'행동 결과로 상태와 자원을 변화시킨다','보상 또는 의미 있는 선택을 적용한다','위험·실패·자원 압박을 실제로 겪는다',coreLoop[2]||'목표를 끝내거나 재도전 가능한 사이클을 닫는다'
+  ],6,10);
+  const expansionPlan=sketchArray(raw.expansionPlan,['새 적·위협 또는 행동 패턴을 추가한다','새 공간·경로 또는 목표를 추가한다','새 상호작용 또는 전략 선택이 기존과 다른 결과를 만들게 한다'],3,8);
+  const longGoalScenario=sketchArray(raw.longGoalScenario,[`초기 핵심 루프를 완료한다`,`성장·보상으로 새로운 선택을 연다`,`새 지역·위협·목표를 거쳐 중간 목표를 달성한다`],3,8);
+  const validationRisks=sketchArray(raw.validationRisks,['버튼/라벨/파일 크기만으로 구현 완료를 가장하지 않는다','반복·재시작·대기로 콘텐츠 분량을 채우지 않는다'],2,8);
+  return{version:1,source:clean(raw.source)||'GAME_SEED_MODEL_OR_NORMALIZED_SKETCH',worldModel,actors,interactionChains,stateMachine,firstPlayableCycle,expansionPlan,longGoalScenario,validationRisks};
+}
 function normalizeProposal(target,p={}){
   const existingNames=new Set((state.seeds||[]).map(s=>norm(s.gameName)).filter(Boolean));
   let gameName=clean(p.gameName)||fallbackTitle(target);
@@ -243,6 +281,7 @@ function normalizeProposal(target,p={}){
     crossPlatformExpansionValue:clean(p.crossPlatformExpansionValue)||'UNKNOWN_UNTIL_PLATFORM_EXPANSION_REVIEW',
     steamExpansionPossible:['POSSIBLE','NOT_RECOMMENDED'].includes(p.steamExpansionPossible)?p.steamExpansionPossible:'POSSIBLE',
     transformationMode:['HOMAGE','REINTERPRETATION','ORIGINAL_COMPOSITION'].includes(p.transformationMode)?p.transformationMode:'ORIGINAL_COMPOSITION',
+    gameplaySketch:normalizeGameplaySketch(target,p,coreLoop,gameName),
   };
 }
 function validateProposal(target,p){
@@ -256,6 +295,8 @@ function validateProposal(target,p){
   if(!allowedTargetPlatforms.includes(normalizeSeedPlatform(p.initialTargetPlatform)))errors.push('platform');
   if(target.lockedPlatform&&normalizeSeedPlatform(p.initialTargetPlatform)!==target.platform)errors.push('lockedPlatform');
   if(!['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(p.multiplayerDesignMode))errors.push('multiplayerDesignMode');
+  const sketch=p.gameplaySketch||{};
+  if(!clean(sketch.worldModel)||!Array.isArray(sketch.actors)||sketch.actors.length<2||!Array.isArray(sketch.interactionChains)||sketch.interactionChains.length<1||!Array.isArray(sketch.stateMachine)||sketch.stateMachine.length<5||!Array.isArray(sketch.firstPlayableCycle)||sketch.firstPlayableCycle.length<6||!Array.isArray(sketch.expansionPlan)||sketch.expansionPlan.length<3||!Array.isArray(sketch.longGoalScenario)||sketch.longGoalScenario.length<3||!Array.isArray(sketch.validationRisks)||sketch.validationRisks.length<2)errors.push('gameplaySketch');
   if(errors.length)throw new Error(`GAME_SEED_INVALID ${target.platform}/${target.category}: ${errors.join(',')}`);
   assertDistinctConcept(p);
 }
@@ -274,7 +315,7 @@ async function callModelBatch(targets){
     multiplayerMustBeDecidedNow:true,
     allowedMultiplayerModes:['SINGLE','COOP','COMPETITIVE','HYBRID'],
   }));
-  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
+  const prompt=`GAME_SEED를 작성하라. 각 요청의 seedMaterials는 100개 재료 풀에서 목표 플랫폼, 카테고리 적합성, 재료 상호보완성, 검증된 학습 성과, 기존 Top30과의 차별성을 기준으로 2~4개가 동적으로 선정되었다. 주어진 재료를 모두 실제로 조합한다. 재료는 기존 게임일 필요가 없으며 직업·산업·자연·과학·스포츠·놀이·사회관계·생존상황·공간운영·완전 신규 아이디어를 동등하게 사용할 수 있다. existing game reference는 선택사항이다. 동일 참고 게임이나 동일 장르 재사용은 허용하지만 최종 coreLoop와 distinctIdentity가 기존 프로젝트와 사실상 같으면 안 된다. 직접적인 이름·스토리·캐릭터·맵·아트·소스코드 복제를 금지한다. initialTargetPlatform은 Roblox/Unity/Fortnite UEFN 중 프로젝트에 가장 맞게 정하고, multiplayerDesignMode를 설계 전에 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 확정한다. gameplaySketch는 코드 작성 전에 게임 전체를 머릿속에서 실행해 보는 스케치다. worldModel에는 실제 플레이 공간·경로·위치가 게임 결과에 어떻게 연결되는지 적고, actors에는 플레이어/NPC/적/사물 역할을, interactionChains에는 접근·선택→입력→대상 상태 변화→게임 결과 변화를 적는다. stateMachine과 firstPlayableCycle은 시작부터 실제 입력·핵심 행동·상태변화·성장/선택·위험/실패·목표/재도전까지 이어져야 한다. expansionPlan은 새 적·구역·목표·상호작용·전략 결과로 실제 콘텐츠를 늘리고 반복/재시작/대기로 시간을 채우지 않는다. longGoalScenario는 여러 단계 목표를 실제 플레이 순서로 적고 validationRisks에는 소프트락·저장·경제·난이도·성능·모바일·겉구현 위험 중 핵심을 적는다. 첫 세션은 정확히 30분의 의미 있는 진행을 전제로 하며 단순 반복·대기·체력 증가로 시간을 채우면 안 된다. REQUESTS=${JSON.stringify(requests)}. JSON 스키마만 출력하라.`;
   try{
     const r=await fetch('http://127.0.0.1:11434/api/chat',{
       method:'POST',
@@ -282,10 +323,10 @@ async function callModelBatch(targets){
       body:JSON.stringify({
         model,stream:false,keep_alive:'0s',format:batchSchema(targets.length),
         messages:[
-          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다.'},
+          {role:'system',content:'너는 재운컴퍼니 GAME_SEED 조합 AI다. 재료를 게임으로 오해하지 말고 여러 출처의 추상 재료를 독립 게임 설계 후보로 조합한다. 코드 생성 전에 실제 월드와 플레이 흐름을 GAMEPLAY_SKETCH로 먼저 구성한다.'},
           {role:'user',content:prompt},
         ],
-        options:{temperature:0.25,num_ctx:16384,num_predict:6000},
+        options:{temperature:0.25,num_ctx:16384,num_predict:7000},
       }),
       signal:controller.signal,
     });
@@ -301,7 +342,7 @@ function buildSeed(target,p,{serial,gameId,timestamp}){
   const materialInputs=target.materials.map(m=>({type:'SEED_MATERIAL',id:m.materialId,sourceFamily:m.sourceFamily,value:m.concept}));
   const gameInputs=p.referenceGames.map(value=>({type:'GAME_REFERENCE',value}));
   const seed={
-    version:2,
+    version:3,
     seedId:`SEED-${platform}-${target.category}-${String(serial).padStart(3,'0')}`,
     gameId,
     gameName:p.gameName,
@@ -319,6 +360,7 @@ function buildSeed(target,p,{serial,gameId,timestamp}){
     CORE_FUN_TO_LEARN:p.coreFunToLearn,
     CORE_LOOP:p.coreLoop,
     DISTINCT_IDENTITY:p.distinctIdentity,
+    GAMEPLAY_SKETCH:p.gameplaySketch,
     MARKET_EVIDENCE_SUMMARY:target.marketEvidence,
     TARGET_AUDIENCE:p.targetAudience,
     TARGET_SESSION_MINUTES:30,
@@ -399,6 +441,7 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
         category:s.GAME_CATEGORY,
         initialTargetPlatform:s.INITIAL_TARGET_PLATFORM,
         multiplayerDesignMode:s.MULTIPLAYER_DESIGN_MODE,
+        gameplaySketchVersion:Number(s.GAMEPLAY_SKETCH?.version||0),
         seedMaterialIds:s.SEED_MATERIAL_IDS,
         seedMaterialCount:s.SEED_MATERIAL_COUNT,
         seedMaterialSelectionMode:s.SEED_MATERIAL_SELECTION_MODE,
@@ -426,6 +469,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(`SEED_MATERIAL_POOL_AVAILABLE=${result.seedMaterialAvailable??0}`);
     console.log('SEED_MATERIAL_COMPOSITION_MODE=DYNAMIC_CONTEXTUAL_2_TO_4');
     console.log('HISTORICAL_SIX_CATEGORY_ROLE=BASELINE_AND_FALLBACK_ONLY');
+    console.log('GAMEPLAY_SKETCH_REQUIRED_FOR_NEW_SEEDS=YES');
     console.log('TARGET_SESSION_MINUTES=30');
     console.log('GAME_SEED_MATERIALS_ARE_GAMES=NO');
     console.log('GAME_SEED_PAID_API=NO');

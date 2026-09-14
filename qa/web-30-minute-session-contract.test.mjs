@@ -104,7 +104,7 @@ test('initial strict review can pass without final 30-minute content depth',()=>
   assert.ok(strict.totalScore>=80,strict.totalScore);
 });
 
-test('final content depth requires real elapsed 30-minute gameplay and rejects stage-proxy proof',()=>{
+test('final content depth requires real meaningful 30-minute gameplay and new content dimensions',()=>{
   const evidence=initialEvidence();
   evidence.contentDepthValidation={
     mode:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY',
@@ -114,17 +114,21 @@ test('final content depth requires real elapsed 30-minute gameplay and rejects s
     targetMinutes:30,
     validatedMinutes:30,
     actualGameplayMinutes:30,
-    elapsedRealMilliseconds:30*60*1000,
+    elapsedRealMilliseconds:35*60*1000,
+    meaningfulGameplayMilliseconds:30*60*1000,
+    excludedRepeatedActionMilliseconds:4*60*1000,
+    excludedRetryMilliseconds:60*1000,
     realContent:true,
     fakeProgress:false,
     testHarness:false,
     directStageClick:false,
-    metrics:metrics(),
+    metrics:metrics({newContentDimensionCount:3}),
     varietyEvents:['new-zone','new-enemy','upgrade-choice'],
   };
   assert.equal(finalContentDepthPass(evidence),true);
 
-  assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,elapsedRealMilliseconds:2*60*1000}}),false);
+  assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,meaningfulGameplayMilliseconds:2*60*1000}}),false);
+  assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,metrics:metrics({newContentDimensionCount:1})}}),false);
   assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,fakeProgress:true}}),false);
   assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,testHarness:true}}),false);
   assert.equal(finalContentDepthPass({...evidence,contentDepthValidation:{...evidence.contentDepthValidation,directStageClick:true}}),false);
