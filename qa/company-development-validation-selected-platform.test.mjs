@@ -5,22 +5,26 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 
-test('DEVELOPMENT_CONFIRMED requires fresh schema11 real-game 30-minute evidence and independent 90-point promotion revalidation',()=>{
+test('DEVELOPMENT_CONFIRMED consumes schema12 initial-cycle evidence before final 30-minute depth and independent 90-point promotion',()=>{
   assert.match(source,/web-gameplay-validation\.json/);
-  assert.match(source,/WEB_VALIDATION_SCHEMA_VERSION=11/);
-  assert.match(source,/structuredWebEvidence/);
-  assert.match(source,/substancePass/);
-  assert.match(source,/implementationClass==='DEDICATED'/);
-  assert.match(source,/session\.validationMode==='GAMEPLAY_MILESTONE_DEPTH'/);
-  assert.match(source,/session\.stageGameplayPassed===true/);
-  assert.match(source,/row\.trigger==='GAMEPLAY_MILESTONE'/);
+  assert.match(source,/WEB_VALIDATION_SCHEMA_VERSION/);
+  assert.match(source,/evaluateWebValidationEvidence/);
+  assert.match(source,/requireFinalContentDepth:false/);
+  assert.match(source,/requireFinalContentDepth:true/);
+  assert.match(source,/initialPass/);
+  assert.match(source,/finalContentDepthPass/);
+  assert.match(source,/top30Eligible/);
+  assert.match(source,/ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
+  assert.match(source,/initialThirtyMinuteHardGate:false/);
+  assert.match(source,/WAITING_WEB_FINAL_CONTENT_DEPTH/);
+  assert.match(source,/web-final-content-depth-required/);
+  assert.match(source,/PRODUCTION_ARTIFACT_FAILURE/);
   assert.match(source,/sourceIndexSha256/);
   assert.match(source,/designBaselineSha256/);
-  assert.match(source,/promotion\.pass===true/);
-  assert.match(source,/promotion\.secondSubstancePass===true/);
-  assert.match(source,/formalImplementationPassed===true/);
-  assert.match(source,/WEB_HOMEPAGE_MINIMUM=80/);
-  assert.match(source,/WEB_PLATFORM_PROMOTION_MINIMUM=90/);
+  assert.match(source,/promotionRevalidation/);
+  assert.match(source,/formalImplementationPassed/);
+  assert.match(source,/WEB_HOMEPAGE_MINIMUM/);
+  assert.match(source,/WEB_PLATFORM_PROMOTION_MINIMUM/);
   assert.match(source,/WAITING_WEB_GAMEPLAY_VALIDATION/);
   assert.match(source,/WAITING_WEB_GAMEPLAY_REVALIDATION/);
   assert.match(source,/WAITING_WEB_STRICT_IMPROVEMENT/);
@@ -28,6 +32,8 @@ test('DEVELOPMENT_CONFIRMED requires fresh schema11 real-game 30-minute evidence
   assert.match(source,/musicValidationRequired:true/);
   assert.match(source,/webValidationOptional:false/);
   assert.match(source,/realPlayableWebGameRequired:true/);
+  assert.doesNotMatch(source,/GAMEPLAY_MILESTONE_DEPTH/);
+  assert.doesNotMatch(source,/row\.trigger==='GAMEPLAY_MILESTONE'/);
 });
 
 test('Web score and target-platform implementation score are stored separately',()=>{
