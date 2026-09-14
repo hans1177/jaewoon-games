@@ -24,18 +24,27 @@ if(!seed){
 if(!game&&!seed)throw new Error(`Unknown game or active GAME_SEED: ${gameId}`);
 const productionClass=game?productionClassOf({},game,{numericLabels:directive.production?.numericLabels||{}}):PRODUCTION_CLASSES.DESIGN_ONLY;
 
-function run(script){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[script],{stdio:'inherit',env:{...process.env,ARTBOOK_GAME_ID:gameId,GAME_ID:gameId,...(date?{ARTBOOK_DATE:date,DESIGN_DATE:date}:{})}});child.on('error',reject);child.on('close',code=>code===0?resolve():reject(new Error(`${script} exited ${code}`)));});}
-async function runWithRetry(script,{attempts=2,label='PIPELINE_STAGE'}={}){
+function run(script,{captureFailureOutput=false}={}){return new Promise((resolve,reject)=>{const failureOutput=[];const child=spawn(process.execPath,[script],{stdio:captureFailureOutput?['inherit','pipe','pipe']:'inherit',env:{...process.env,ARTBOOK_GAME_ID:gameId,GAME_ID:gameId,...(date?{ARTBOOK_DATE:date,DESIGN_DATE:date}:{})}});if(captureFailureOutput){const forward=(stream,target)=>stream?.on('data',chunk=>{target.write(chunk);failureOutput.push(String(chunk));if(failureOutput.length>200)failureOutput.splice(0,failureOutput.length-200);});forward(child.stdout,process.stdout);forward(child.stderr,process.stderr);}const attachOutput=error=>{if(captureFailureOutput)error.stageOutput=failureOutput.join('').slice(-24000);return error;};child.on('error',error=>reject(attachOutput(error)));child.on('close',code=>code===0?resolve():reject(attachOutput(new Error(`${script} exited ${code}`))));});}
+function designSchemaRetryable(error){
+  const output=String(error?.stageOutput||'');
+  if(/(?:aborted due to timeout|timeout|timed out)/i.test(output))return false;
+  return /(?:schema required missing|schema object mismatch|schema enum mismatch|schema additional property|schema array mismatch|schema minItems mismatch|schema maxItems mismatch|schema string mismatch|schema maxLength mismatch|model response is not a JSON object|empty model response|unexpected token|unexpected end of json input)/i.test(output);
+}
+async function runWithRetry(script,{attempts=2,label='PIPELINE_STAGE',retryWhen=()=>true}={}){
   let lastError=null;
   for(let attempt=1;attempt<=attempts;attempt++){
     try{
-      await run(script);
+      await run(script,{captureFailureOutput:true});
       if(attempt>1)console.log(`${label}_RECOVERED=YES|attempt=${attempt}/${attempts}`);
       return;
     }catch(error){
       lastError=error;
       console.log(`${label}_ATTEMPT_FAILED=${attempt}/${attempts}|reason=${String(error?.message||error).replace(/\s+/g,' ').trim()}`);
       if(attempt<attempts){
+        if(!retryWhen(error)){
+          console.log(`${label}_RETRY=NO|reason=NON_SCHEMA_FAILURE`);
+          throw error;
+        }
         console.log(`${label}_RETRY=YES|next_attempt=${attempt+1}/${attempts}`);
         await new Promise(resolve=>setTimeout(resolve,1000));
       }
@@ -69,7 +78,7 @@ if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
 }else{
   const existingStatus=readCycleStatus();
   if(canReuseCompletedDesign(existingStatus))console.log('DESIGN_CYCLE_REUSED=YES');
-  else{await runWithRetry('tools/company-design-cycle.mjs',{attempts:2,label:'DESIGN_MODEL_SCHEMA'});console.log('DESIGN_CYCLE_REUSED=NO');}
+  else{await runWithRetry('tools/company-design-cycle.mjs',{attempts:2,label:'DESIGN_MODEL_SCHEMA',retryWhen:designSchemaRetryable});console.log('DESIGN_CYCLE_REUSED=NO');}
   await run('tools/company-baseline-gate.mjs');
   const status=readCycleStatus();
   if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true)console.log('DESIGN_ONLY_ARTBOOK_SKIPPED=WAIT_FOR_PROMOTION');
