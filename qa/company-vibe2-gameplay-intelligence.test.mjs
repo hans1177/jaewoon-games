@@ -12,6 +12,7 @@ import {
   clipPreservedSourceForModel,
 } from '../tools/company-vibe2-gameplay-intelligence.mjs';
 import {buildApprovedScopeGenerationPrompt} from '../tools/company-development-web-bootstrap.mjs';
+import {evaluateDeterministicReplayEvidence} from '../tools/company-web-deterministic-replay.mjs';
 
 const inventory=[
   {id:'scope-map',path:'world.map',label:'explore map regions and routes'},
@@ -147,6 +148,28 @@ test('runtime failures are converted into existing targeted repair classificatio
   assert.equal(repair.failures.find(x=>x.failure==='DIFFICULTY_RUNTIME_FAILED')?.type,'DIFFICULTY_CURVE');
   assert.equal(repair.failures.find(x=>x.failure==='MOBILE_RUNTIME_FAILED')?.type,'MOBILE_RUNTIME');
   assert.equal(repair.failures.find(x=>x.failure==='STRATEGY_OUTCOME_DIVERGENCE_FAILED')?.type,'STRATEGY_OUTCOME');
+});
+
+test('deterministic replay requires same seed, full input trace and matching critical-state deltas',()=>{
+  const pass=evaluateDeterministicReplayEvidence({usesRandomness:true,referenceSeed:'seed-42',replaySeed:'seed-42',expectedOutcomeSignatures:['a','b','c'],observedOutcomeSignatures:['a','b','c'],traceLength:3,executedCount:3});
+  assert.equal(pass.pass,true);
+  assert.equal(pass.status,'PASS');
+  assert.equal(pass.sameSeed,true);
+  assert.equal(pass.sameInputTrace,true);
+  assert.equal(pass.criticalStateMatch,true);
+
+  const noSeed=evaluateDeterministicReplayEvidence({usesRandomness:true,referenceSeed:'',replaySeed:'',expectedOutcomeSignatures:['a','b','c'],observedOutcomeSignatures:['a','b','c'],traceLength:3,executedCount:3});
+  assert.equal(noSeed.pass,false);
+  assert.equal(noSeed.status,'REPLAY_SEED_NOT_EXPOSED');
+
+  const shortReplay=evaluateDeterministicReplayEvidence({usesRandomness:false,expectedOutcomeSignatures:['a','b','c'],observedOutcomeSignatures:['a','b'],traceLength:3,executedCount:2});
+  assert.equal(shortReplay.pass,false);
+  assert.equal(shortReplay.status,'INPUT_TRACE_REPLAY_FAILED');
+
+  const diverged=evaluateDeterministicReplayEvidence({usesRandomness:true,referenceSeed:'seed-7',replaySeed:'seed-7',expectedOutcomeSignatures:['gold:+5','wave:+1','hp:-2'],observedOutcomeSignatures:['gold:+5','wave:+1','hp:-8'],traceLength:3,executedCount:3});
+  assert.equal(diverged.pass,false);
+  assert.equal(diverged.status,'CRITICAL_STATE_DIVERGED');
+  assert.equal(diverged.criticalStateMatch,false);
 });
 
 test('long preserved source keeps both ends instead of silently losing tail systems',()=>{
