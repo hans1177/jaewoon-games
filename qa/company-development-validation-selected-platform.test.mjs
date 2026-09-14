@@ -20,9 +20,12 @@ test('DEVELOPMENT_CONFIRMED consumes canonical schema13 Web evidence and indepen
   assert.match(contract,/WEB_HOMEPAGE_MINIMUM=80/);
   assert.match(contract,/WEB_PLATFORM_PROMOTION_MINIMUM=90/);
   assert.match(contract,/REAL_ELAPSED_GAMEPLAY/);
-  assert.match(contract,/elapsedRealMilliseconds/);
+  assert.match(contract,/meaningfulGameplayMilliseconds/);
   assert.match(source,/WAITING_WEB_GAMEPLAY_VALIDATION/);
-  assert.match(source,/WAITING_WEB_FINAL_CONTENT_DEPTH/);
+  assert.match(source,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/);
+  assert.match(source,/insufficientContentReturnsToDevelopment:true/);
+  assert.match(source,/finalDepthConsumesPostDevelopmentSource:true/);
+  assert.doesNotMatch(source,/WAITING_WEB_FINAL_CONTENT_DEPTH/);
   assert.match(source,/WAITING_WEB_GAMEPLAY_REVALIDATION/);
   assert.match(source,/WAITING_WEB_STRICT_IMPROVEMENT/);
   assert.match(source,/webValidationRequired:true/);
