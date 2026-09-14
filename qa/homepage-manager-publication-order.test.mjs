@@ -97,6 +97,9 @@ test('Top30 test artbooks remain valid before catalog promotion',()=>{
 });
 
 test('post-Web artbook and Top30 both require exact schema13 evidence binding',()=>{
+  assert.ok(artbookTool.includes("readJson('development-queue.json',{items:[]})"));
+  assert.ok(artbookTool.includes("promotedQueueItem?.productionClass||promotedSeed?.productionClass"));
+  assert.ok(!artbookTool.includes("clean(promotedSeed?.productionClass)!=='DEVELOPMENT_CONFIRMED'"));
   assert.ok(artbookTool.includes("POST_WEB_SCHEMA13_DESIGN_BOUND"));
   assert.ok(artbookTool.includes("Number(webEvidence?.validationSchemaVersion||webEvidence?.version)===13"));
   assert.ok(artbookTool.includes("webEvidence?.contentDepthValidation?.validationMode==='REAL_ELAPSED_GAMEPLAY'"));
