@@ -131,6 +131,9 @@ const keywordOnlyScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_ST
 assert.equal(keywordOnlyScore.scores.CATEGORY_PLACEMENT_AND_ROUTE,0,'placement words must not replace a real placement result');
 assert.equal(keywordOnlyScore.scores.CATEGORY_TOWER_VARIETY,0,'tower words must not replace distinct runtime tower types/effects');
 assert.equal(keywordOnlyScore.scores.CATEGORY_STRATEGIC_CHOICE,0,'strategy words must not replace choices with different combat outcomes');
+const sameOutcomeRuntime={...runtimeFeatureEvidence,strategyChoices:['left','right'],strategyCombatOutcomes:[{choiceMechanic:'left',outcomeSignature:'same-result'},{choiceMechanic:'right',outcomeSignature:'same-result'}]};
+const sameOutcomeScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:towerSource,evidence:evidence({runtime:sameOutcomeRuntime})});
+assert.equal(sameOutcomeScore.scores.CATEGORY_STRATEGIC_CHOICE,0,'two named choices with the same combat result are not strategic diversity');
 
 const placementInventory=[{id:'scope-place',path:'coreLoop[0]',label:'Read the next enemy wave and place towers on positions that cover the threatened route.'}];
 const shallowPlacement='<main data-approved-scope-count="1"><button data-scope-id="scope-place" data-mechanic-id="tower-place">타워 설치</button></main>';
@@ -180,6 +183,7 @@ const bootstrap=read('tools/company-development-web-bootstrap.mjs');
 assert.match(bootstrap,/ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
 assert.match(bootstrap,/VIBE2_PRESERVED_SOURCE_REPAIR/,'missing behavior in a preserved source must route into Vibe repair');
 assert.match(bootstrap,/기존 저장 키·저장 구조·규칙·진행을 보존/,'Vibe repair must preserve existing source/save semantics');
+assert.match(bootstrap,/VIBE_DEVELOPMENT_CONTEXT/,'Vibe must inspect gameplay sketch, source structure and patch plan before coding');
 assert.doesNotMatch(bootstrap,/const\s+SESSION_MINUTES\s*=\s*30/,'initial bootstrap must not restore a 30-minute requirement');
 assert.doesNotMatch(bootstrap,/data-session-minutes=\\?"30\\?"/,'initial generation prompt must not require session-minute metadata');
 
@@ -214,6 +218,8 @@ assert.match(shared,/C\.mode==='bug-defense'\?30:15/,'existing defense wave bala
 const celestial=read('web-games/seed-single-defense-strat-celestial-bastion/index.html');
 assert.match(celestial,/mode:'celestial-defense'/,'historical real game mode must be preserved');
 assert.match(celestial,/15개 전투 웨이브/,'historical real-game content must remain preserved');
-assert.match(celestial,/\/web-games\/_shared\/vibe2-final\.js/,'historical game must keep its existing shared real engine before Vibe repairs missing behavior');
+assert.match(celestial,/window\.GAME_CONFIG\.validationScopes=/,'canonical preserved source must bind current approved scope evidence');
+assert.match(celestial,/const key='jg-final:'\+C\.id/,'inlined immutable source must preserve the historical save-key meaning');
+assert.doesNotMatch(celestial,/<script\b[^>]*src=["']\/web-games\/_shared\/vibe2-final\.js/i,'runtime source must be immutable and inlined before Vibe repairs missing behavior');
 
 console.log('COMPANY_WEB_REAL_GAME_REGRESSION=PASS');
