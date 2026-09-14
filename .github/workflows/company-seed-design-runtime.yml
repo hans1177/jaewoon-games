@@ -232,10 +232,17 @@ jobs:
           test "$pushed" = 1
           echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
           echo 'PUBLIC_MAIN_WRITE=NO'
-      - name: Continue canonical seed supply evaluation
-        if: always() && steps.target.outputs.should_run == 'true'
+
+  continue-seed-supply:
+    needs: [resolve-seed-targets, design-cycle]
+    if: always() && needs.resolve-seed-targets.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Continue canonical seed supply evaluation once after design batch
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh workflow run company-game-seed-bootstrap.yml --ref main || true
+          gh workflow run company-game-seed-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo 'GAME_SEED_CONTINUATION_DISPATCHED=YES'
+          echo 'GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX'
