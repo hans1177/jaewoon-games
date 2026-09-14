@@ -44,12 +44,15 @@ test('selected-platform router repairs legacy Web target paths to the platform s
   assert.doesNotMatch(router,/fetch-depth:\s*0/);
 });
 
-test('Web runtime pins the source revision and does not prepare an unused local model',()=>{
+test('Web runtime pins source revision and prepares local Vibe only for development cycles',()=>{
   const exactRefs=router.match(/ref:\s*\$\{\{\s*github\.sha\s*\}\}/g)||[];
   assert.ok(exactRefs.length>=4,`expected exact revision checkouts, got ${exactRefs.length}`);
-  assert.doesNotMatch(router,/Prepare free local Web generation model/);
-  assert.doesNotMatch(router,/AUTONOMOUS_LOCAL_MODEL/);
-  assert.match(router,/WEB_MODEL_SETUP=SKIPPED_UNUSED/);
+  assert.match(router,/Prepare local Vibe2 model for development cycles/);
+  assert.match(router,/if: matrix\.runtimeStage == 'initial-cycle'/);
+  assert.match(router,/model: qwen3:1\.7b/);
+  assert.match(router,/--force-repair=true/,'a returned final-depth failure must force Vibe to patch the preserved source');
+  assert.match(router,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/);
+  assert.doesNotMatch(router,/WEB_MODEL_SETUP=SKIPPED_UNUSED/);
 });
 
 test('source-bind revalidation resumes the selected platform executor without skipping ahead',()=>{
