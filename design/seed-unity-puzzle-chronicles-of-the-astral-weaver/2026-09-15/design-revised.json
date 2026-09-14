@@ -20,7 +20,7 @@
     "coreLoop": [
       "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
       "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
-      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+      "Clear the level goal to earn rewards or unlock the next board pattern or obstacle combination."
     ],
     "signatureSystems": [
       {
@@ -34,14 +34,21 @@
     "mobileUx": "Unity",
     "marketTargetDirection": "Puzzle enthusiasts and casual gamers",
     "steamExpansionDecision": "High",
-    "multiplayerExpansionDecision": "Not Recommended",
+    "multiplayerExpansionDecision": "NOT_RECOMMENDED",
     "technicalAssumptions": [
-      "Unity",
-      "Single-player"
+      "Unity platform",
+      "Single-player mode",
+      "SINGLE"
     ],
     "validationQuestions": [
-      "What is the main gameplay loop of this game?"
+      "What is the main gameplay mechanic of this game?",
+      "How does the game ensure player engagement and progression?",
+      "What is the target audience of this game?"
     ],
-    "openQuestions": []
+    "openQuestions": [
+      "What is the core fun of this game?",
+      "How does the game ensure player engagement and progression?",
+      "What is the target audience of this game?"
+    ]
   }
 }

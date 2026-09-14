@@ -21,45 +21,63 @@
   "distinctLeadModelCount": 5,
   "representatives": {
     "planning": {
-      "keep": [],
-      "fix": [],
-      "add": [],
-      "risks": [],
-      "evidence": [],
-      "questions": []
+      "keep": [
+        "gameId: seed-unity-puzzle-chronicles-of-the-astral-weaver"
+      ],
+      "fix": [
+        "status: ACTIVE"
+      ],
+      "add": [
+        "generation: HISTORICAL_INITIAL_BOOTSTRAP"
+      ],
+      "risks": [
+        "GAME_CATEGORY: PUZZLE"
+      ],
+      "evidence": [
+        "SEED_MATERIAL_IDS: MAT-003, MAT-015, MAT-009"
+      ],
+      "questions": [
+        "SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
+      ]
     },
     "graphics": {
       "keep": [
-        "gemma3:1b"
+        "Visual Direction"
       ],
-      "fix": [],
-      "add": [],
-      "risks": [],
+      "fix": [
+        "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기"
+      ],
+      "add": [
+        "Mobile Ux"
+      ],
+      "risks": [
+        "Player engagement and progression"
+      ],
       "evidence": [
-        "gemma3:1b"
+        "Player Fantasy"
       ],
       "questions": [
-        "What is the main gameplay loop of this game?"
+        "What is the main gameplay mechanic of this game?"
       ]
     },
     "development": {
       "keep": [
-        "game-seed"
+        "gameId"
       ],
       "fix": [
-        "game-seed"
+        "gameId"
       ],
       "add": [
-        "game-seed"
+        "gameId"
       ],
       "risks": [
-        "game-seed"
+        "gameId"
       ],
       "evidence": [
-        "game-seed"
+        "gameId"
       ],
       "questions": [
-        "game-seed"
+        "gameId"
       ]
     },
     "qa": {
@@ -84,22 +102,23 @@
     },
     "balance": {
       "keep": [
-        "Unity"
+        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or DEL",
+        "Clear the level goal to earn rewards or unlock the next board pattern or obstacle combination."
       ],
       "fix": [
-        "Unity"
+        "Clear the level goal to earn rewards or unlock the next board pattern or obstacle combination."
       ],
       "add": [
-        "Unity"
+        "Candy Crush Saga"
       ],
       "risks": [
-        "Unity"
+        "Royal Match"
       ],
       "evidence": [
-        "Unity"
+        "royal match"
       ],
       "questions": [
-        "What is the main gameplay loop of this game?"
+        "What is the main gameplay mechanic of this game?"
       ]
     }
   },
@@ -110,7 +129,7 @@
     {
       "topic": "Planning",
       "status": "CONSENSUS",
-      "reason": "CONSENSUS",
+      "reason": "The evidence for the SEED_MATERIAL_SELECTION_MODE is not clear, so we revise it to be more specific.",
       "departments": [
         "planning"
       ]
@@ -118,7 +137,7 @@
     {
       "topic": "Graphics",
       "status": "CONSENSUS",
-      "reason": "CONSENSUS",
+      "reason": "Visual Direction - The core gameplay loop requires a clear and engaging progression path. Focusing on the initial phase will ensure a strong foundation for player experience.",
       "departments": [
         "graphics"
       ]
@@ -126,7 +145,7 @@
     {
       "topic": "Development",
       "status": "CONSENSUS",
-      "reason": "CONSENSUS",
+      "reason": "own",
       "departments": [
         "development"
       ]
@@ -134,7 +153,7 @@
     {
       "topic": "QA",
       "status": "CONSENSUS",
-      "reason": "CONSENSUS",
+      "reason": "QA 부서의 의견을 존중하고, 다른 부서의 의견을 반영하여 전체적인 프로세스를 개선하는 방향으로 수정합니다.",
       "departments": [
         "qa"
       ]
@@ -142,7 +161,7 @@
     {
       "topic": "Balance",
       "status": "CONSENSUS",
-      "reason": "CONSENSUS",
+      "reason": "OWN, OTHERS, graphics",
       "departments": [
         "balance"
       ]

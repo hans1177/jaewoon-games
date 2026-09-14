@@ -17,23 +17,20 @@
         "Royal Match",
         "Candy Crush Saga"
       ],
-      "reason": "The game design aligns with global market trends and has strong market evidence. The core functionality and progression are well-defined, and there are no identified design blockers that remain after revision."
+      "reason": "The evidence for the SEED_MATERIAL_SELECTION_MODE is not clear, so we revise it to be more specific."
     },
     "graphics": {
       "recommendedState": "DISCARD",
       "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY"
       ],
       "evidence": [
-        "GAME_SEED",
-        "GAME_SEED_MATERIAL_IDS",
-        "GAME_SEED_SEED_MATERIAL_SELECTION_SIGNALS",
-        "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT"
+        "VALID_FATAL_CRITERIA"
       ],
-      "reason": "The game exhibits several critical flaws that jeopardize its core functionality and long-term viability. The design is fundamentally flawed, prioritizing a single, overly-complex puzzle loop over player engagement and a compelling experience. The core loop is poorly designed, leading to repetitive gameplay and a lack of meaningful progression. The target platform limitations severely restrict the game's potential, and the design seems to prioritize a specific aesthetic over broader appeal.  The identified flaws are significant enough to warrant a DISCARD decision."
+      "reason": "The SEED_MATERIAL_SELECTION_MODE is not clear. The current design does not fully satisfy the core gameplay loop requirements. The proposed changes are not sufficiently distinct from the existing game and do not offer a compelling reason to deviate from the current design.  The core loop is currently not well-defined, and the proposed changes could lead to a disjointed experience.  The design is not sufficiently unique and does not address the core gameplay loop requirements.  The proposed changes do not address the fundamental gameplay loop requirements. The proposed changes do not sufficiently differentiate the game from existing titles. The proposed changes do not adequately address the '3"
     },
     "development": {
       "recommendedState": "REDESIGN",
@@ -63,7 +60,7 @@
         "Block Blast!",
         "Global puzzle/session signal"
       ],
-      "reason": "The current design does not meet the required production scope and material selection signals, leading to a fatal design blocker. The redesign is necessary to ensure the game's core functionality and identity."
+      "reason": "The current design does not meet the criteria for active status due to the presence of fatal design blockers. The proposed redesign addresses these issues and ensures that the game remains within the capabilities and scope of the seed material selection mode."
     },
     "balance": {
       "recommendedState": "ACTIVE",
@@ -73,12 +70,7 @@
         "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
-      "evidence": [
-        "Candy Crush Saga",
-        "Royal Match",
-        "Candy Crush Saga",
-        "Global puzzle/session signal"
-      ],
+      "evidence": [],
       "reason": "CONSENSUS"
     }
   },
