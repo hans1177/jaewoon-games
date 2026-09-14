@@ -178,7 +178,7 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.match(seedDesignWorkflow,/max-parallel: 6/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=6/);
   assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
-  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '75000'/);
+  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '150000'/);
   assert.match(design,/AbortSignal\.timeout\(modelCallTimeoutMs\)/);
 });
 
