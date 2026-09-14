@@ -1,8 +1,8 @@
 {
-  "version": 5,
+  "version": 6,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "COMPANY_FLOW.md",
-  "recordedAt": "2026-09-12",
+  "recordedAt": "2026-09-14",
   "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
   "primaryPlatform": "ROBLOX",
   "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
@@ -36,8 +36,10 @@
     "representativeSetSizePerPlatform": 6,
     "globalPortfolioCap": false,
     "forcedReleaseCount": false,
-    "implementationWipTarget": 2,
-    "implementationWipMax": 3,
+    "implementationWipTarget": 6,
+    "implementationWipMax": 6,
+    "implementationWipScope": "GLOBAL_SELECTED_PLATFORM_DEVELOPMENT",
+    "webValidationParallelismUnchanged": true,
     "unityHistoricalSixPreserved": true,
     "robloxCategories": [
       "ROLEPLAY_LIFE_AVATAR",
@@ -78,6 +80,9 @@
   "developmentSpeedExecution": {
     "scope": "EXECUTION_SPEED_ONLY",
     "qualityOrEvidenceGateWeakeningForbidden": true,
+    "globalSelectedPlatformDevelopmentWipMax": 6,
+    "webValidationParallelismControlledSeparately": true,
+    "runtimeRunnerCapacityMaySerializeRuntimeQa": true,
     "canonicalSequence": [
       "CHANGE_DETECTION",
       "CHEAP_PRECHECK",
