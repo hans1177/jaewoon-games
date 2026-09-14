@@ -56,6 +56,12 @@ function bindInitialCycleContract(text,approvedScopeCount){
   }
   return out;
 }
+function stripPreservedLegacyStageScriptReferences(text){
+  return String(text??'').replace(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi,(all,attrs,body)=>{
+    const cleaned=String(body).replaceAll('data-session-stage','data-legacy-progress-stage').replaceAll('PROGRESSION_MILESTONES','LEGACY_PROGRESS_MILESTONES');
+    return `<script${attrs}>${cleaned}</script>`;
+  });
+}
 function commonContractBlockers(text,{scopeInventory=[],allowPersistentStorage=false,canvasRequired=false}={}){
   const blockers=[],bytes=Buffer.byteLength(text,'utf8'),scriptBytes=scripts(text).reduce((n,m)=>n+Buffer.byteLength(String(m[2]||''),'utf8'),0),ids=mechanics(text);
   if(scopeInventory.length){
@@ -185,7 +191,7 @@ function bindScopeIds(html,inventory){
   return out;
 }
 function preparePreservedStandaloneHtml(html,inventory){
-  return bindInitialCycleContract(bindScopeIds(html,inventory),inventory.length);
+  return stripPreservedLegacyStageScriptReferences(bindInitialCycleContract(bindScopeIds(html,inventory),inventory.length));
 }
 function preservedResult({gameId,gameName,html,inventory,notes=[]}){
   const review=validatePreservedSourceHtml(html,{scopeInventory:inventory});
