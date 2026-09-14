@@ -15,6 +15,39 @@
   "rebuttals": {
     "planning": {
       "accept": [
+        "The game's identity and core fun are well-defined.",
+        "The game's progression direction is adaptive, layering, and branching.",
+        "The game's visual design is dynamic, atmospheric, and detailed."
+      ],
+      "challenge": [
+        "The game's market target is targeted, specific, and detailed.",
+        "The game's primary goal is unclear.",
+        "The game's market target is targeted, specific, and detailed."
+      ],
+      "revision": [
+        "The game's market target is targeted, specific, and detailed.",
+        "The game's primary goal is unclear.",
+        "The game's market target is targeted, specific, and detailed."
+      ],
+      "reason": "The game's market target is targeted, specific, and detailed."
+    },
+    "graphics": {
+      "accept": [
+        "fix",
+        "add",
+        "risks"
+      ],
+      "challenge": [
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "game_seed_unity_action_survival_ro-echoes-of-the-lost-empire"
+      ],
+      "reason": "The Vampire Survivors, Survivor.io, and Global action/session signal test results indicate sufficient and stable game materials, and they are crucial to the game's success. The game's core fun is well-defined. The game's progression direction is adaptive, layering, and branching. The game's visual design is dynamic, atmospheric, and detailed. The game's market target is targeted, specific, and detailed. The game's primary goal is well-defined. The game's visual design is dynamic, atmospheric, and detailed. The game's primary goal is well-defied"
+    },
+    "development": {
+      "accept": [
         "keep",
         "fix",
         "add"
@@ -25,63 +58,35 @@
         "questions"
       ],
       "revision": [
-        "graphics",
-        "development",
-        "qa"
+        "keep",
+        "fix",
+        "add"
       ],
-      "reason": "The JSON structure is already in a standard format. I will not make any changes to it."
-    },
-    "graphics": {
-      "accept": [
-        "gemma3:1b",
-        "llama3.2:1b"
-      ],
-      "challenge": [
-        "game-seed-market-evidence.json"
-      ],
-      "revision": [
-        "game-seed-platform-profiles.json"
-      ],
-      "reason": "VALIDATE_LEARNING_OUTERNAL_DATA"
-    },
-    "development": {
-      "accept": [
-        "own",
-        "others"
-      ],
-      "challenge": [
-        "own",
-        "others"
-      ],
-      "revision": [
-        "own",
-        "others"
-      ],
-      "reason": "own"
+      "reason": "game seed"
     },
     "qa": {
       "accept": [
-        "qa"
+        "게임의 재료는 어떤 방식으로 얻어졌는지, 어떤 재료가 가장 중요하며, 어떤 재료가 부족한지에 대한 질문"
       ],
       "challenge": [
-        "qa"
+        "게임의 재료는 어떤 방식으로 얻어졌는지, 어떤 재료가 가장 중요하며, 어떤 재료가 부족한지에 대한 질문"
       ],
       "revision": [
-        "qa"
+        "게임의 재료는 어떤 방식으로 얻어졌는지, 어떤 재료가 가장 중요하며, 어떤 재료가 부족한지에 대한 질문"
       ],
-      "reason": "qa"
+      "reason": "게임의 재료는 어떤 방식으로 얻어졌는지, 어떤 재료가 가장 중요하며, 어떤 재료가 부족한지에 대한 질문은 게임의 재료가 게임의 성공에 중요한 역할을 하는 것을 확인하는 데 도움이 될 수 있습니다. 이러한 질문은 게임의 재료의 양, 질, 부족한 재료에 대한 이해를 높이고, 게임의 성공에 필요한 재료를 더 잘 이해하는 데 도움이 될 수 있습니다."
     },
     "balance": {
       "accept": [
-        "keep1"
+        "OWN"
       ],
       "challenge": [
-        "risk1"
+        "OTHERS"
       ],
       "revision": [
-        "evidence1"
+        "graphics"
       ],
-      "reason": "question1"
+      "reason": "게임의 재료는 어떤 방식으로 얻어졌는지, 어떤 재료가 가장 중요하며, 어떤 재료가 부족한지에 대한 질문"
     }
   }
 }

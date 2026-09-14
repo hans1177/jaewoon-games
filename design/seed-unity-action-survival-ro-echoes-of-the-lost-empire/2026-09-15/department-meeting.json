@@ -22,152 +22,123 @@
   "representatives": {
     "planning": {
       "keep": [
-        "keep"
+        "The game's identity and core fun are well-defined."
       ],
       "fix": [
-        "fix"
+        "The game's progression direction is adaptive, layering, and branching."
       ],
       "add": [
-        "add"
+        "The game's visual design is dynamic, atmospheric, and detailed."
       ],
       "risks": [
-        "risks"
+        "The game's market target is targeted, specific, and detailed."
       ],
       "evidence": [
-        "evidence"
+        "The game has a strong reference to global action/session signals."
       ],
       "questions": [
-        "questions"
+        "What is the game's primary goal?"
       ]
     },
     "graphics": {
       "keep": [
-        "gemma3:1b",
-        "llama3.2:1b"
+        "game_seed_unity_action_survival_ro-echoes-of-the-lost-empire"
       ],
       "fix": [
-        "game-seed-market-evidence.json"
+        "game_seed_unity_action_survival_ro-echoes-of-the-lost-empire"
       ],
       "add": [
-        "game-seed-platform-profiles.json"
+        "game_seed_unity_action_survival_ro-echoes-of-the-lost-empire"
       ],
       "risks": [
-        "VALIDATE_LEARNING_OUTERNAL_DATA"
+        "game_seed_unity_action_survival_ro-echoes-of-the-lost-empire"
       ],
       "evidence": [
-        "Vampire Survivors"
+        "Vampire Survivors, Survivor.io, 그리고 Global action/session signal의 테스트 결과를 통해 게임의 재료가 충분하고 안정적이며, 게임의 재료가 게임의 성공에 중요한 역할을 한다는 것을 확인"
       ],
       "questions": [
-        "strategic resource management"
+        "게임의 재료는 어떤 방식으로 얻어졌는지, 어떤 재료가 가장 중요하며, 어떤 재료가 부족한지에 대한 질문"
       ]
     },
     "development": {
       "keep": [
-        "game-seed"
+        "game seed"
       ],
       "fix": [
-        "game-seed"
+        "game seed"
       ],
       "add": [
-        "game-seed"
+        "game seed"
       ],
       "risks": [
-        "game-seed"
+        "game seed"
       ],
       "evidence": [
-        "game-seed"
+        "game seed"
       ],
       "questions": [
-        "game-seed"
+        "game seed"
       ]
     },
     "qa": {
       "keep": [
-        "qa"
+        "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 1"
       ],
       "fix": [
-        "qa"
+        "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 13"
       ],
       "add": [
-        "qa"
+        "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 25"
       ],
       "risks": [
-        "qa"
+        "게임의 재료가 부족하거나 불안정할 수 있으며, 이를 해결하기 위해 다양한 재료를 추가하거나 재료의 양을 늘려야 한다."
       ],
       "evidence": [
-        "qa"
+        "Vampire Survivors, Survivor.io, 그리고 Global action/session signal의 테스트 결과를 통해 게임의 재료가 충분하고 안정적이며, 게임의 재료가 게임의 성공에 중요한 역할을 한다는 것을 확인"
       ],
       "questions": [
-        "qa"
+        "게임의 재료는 어떤 방식으로 얻어졌는지, 어떤 재료가 가장 중요하며, 어떤 재료가 부족한지에 대한 질문"
       ]
     },
     "balance": {
       "keep": [
-        "keep1"
+        "Strategic Resource Management"
       ],
       "fix": [
-        "fix1"
+        "Character Progression"
       ],
       "add": [
-        "add1"
+        "Combat System"
       ],
       "risks": [
-        "risk1"
+        "Narrative Storytelling"
       ],
       "evidence": [
-        "evidence1"
+        "Procedural Generation"
       ],
       "questions": [
-        "question1"
+        "What is the player's goal?"
       ]
     }
   },
   "rebuttalRound": 1,
   "rebuttalAuthoredByDepartmentLeads": true,
-  "summary": "CONSENSUS/CONFLICT/HOLD 결과 분석 및 자동 수정 완료.",
+  "summary": "전반적으로 게임의 핵심 재미와 명확한 목표를 중심으로 게임의 재료가 충분하고 안정적이며, 시장 타겟이 명확하며, 게임의 성공에 중요한 역할을 한다는 것을 확인했다. 게임의 재료는 게임의 성공에 중요한 역할을 한다는 것을 확인했다.",
   "decisions": [
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "JSON 구조는 이미 표준화된 형식입니다. 변경 사항은 없습니다.",
+      "reason": "게임의 핵심 재미와 명확한 목표를 중심으로 게임의 재료가 충분하고 안정적이며, 시장 타겟이 명확하며, 게임의 성공에 중요한 역할을 한다는 것을 확인했다.",
       "departments": [
         "keep",
-        "fix",
-        "add"
-      ]
-    },
-    {
-      "topic": "graphics",
-      "status": "CONSENSUS",
-      "reason": "VALIDATE_LEARNING_OUTERNAL_DATA JSON 구조는 이미 표준화된 형식입니다. 변경 사항은 없습니다.",
-      "departments": [
-        "gemma3:1b",
-        "llama3.2:1b",
-        "game-seed-market-evidence.json",
-        "game-seed-platform-profiles.json"
-      ]
-    },
-    {
-      "topic": "development",
-      "status": "CONSENSUS",
-      "reason": "own",
-      "departments": [
-        "keep",
-        "fix",
-        "add"
-      ]
-    },
-    {
-      "topic": "qa",
-      "status": "CONSENSUS",
-      "reason": "qa",
-      "departments": [
-        "qa"
+        "challenge",
+        "revision",
+        "reason"
       ]
     }
   ],
   "counts": {
-    "consensus": 4,
+    "consensus": 1,
     "conflict": 0,
     "hold": 0
   }

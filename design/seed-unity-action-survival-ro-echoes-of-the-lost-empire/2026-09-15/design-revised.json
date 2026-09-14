@@ -9,14 +9,14 @@
   "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "gemma3:1b",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 4,
+  "appliedConsensusCount": 1,
   "unresolvedConflictCount": 0,
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
-    "identity": "Echoes of the Lost Empire",
-    "playerFantasy": "Unique Lore & Worldbuilding",
-    "coreFun": "Action Survival Roguelite",
+    "identity": "SEED-UNITY-ACTION_SURVIVAL_RO-Echoes_of_the_Lost_Empire",
+    "playerFantasy": "Survival, Action, Roguelite, Tactical, Narrative",
+    "coreFun": "Action Survival Rogue",
     "coreLoop": [
       "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
       "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
@@ -25,43 +25,55 @@
     "signatureSystems": [
       {
         "name": "Strategic Resource Management",
-        "purpose": "Guide player progression and build optimization.",
-        "playerChoice": "Player-driven choices that impact resource acquisition and allocation.  Resource management is a core gameplay element.  Resource management is a core gameplay element.  Resource management is a core gameplay element.  Resource management is a core gameplay element.  Resource management is a core gameplay element.  Resource management is a core gameplay element.  Resource management is a core gameplay element.  Resource management is a."
+        "purpose": "Resource gathering and management for upgrades and survival.",
+        "playerChoice": "Gather resources and allocate them to upgrades, perks, weapons, or skills."
       },
       {
         "name": "Character Progression",
-        "purpose": "Define character abilities and evolution.",
-        "playerChoice": "Player-driven choices that influence character abilities and evolution.  Character progression is a core gameplay element.  Character progression is a core gameplay element.Character progression is a core gameplay element.Character progression is a core gameplay element.Character progression is a core gameplay element.Character progression is a core gameplay element.Character progression is a core gameplay element.Character progression"
+        "purpose": "Develop the player character's abilities and stats.",
+        "playerChoice": "Improve character attributes, unlock new skills, and enhance combat capabilities."
       },
       {
-        "name": "Combat",
-        "purpose": "Define the core gameplay experience.",
-        "playerChoice": "Player-driven choices that impact combat.  Combat is a core gameplay element.  Combat is a core gameplay element.  Combat is a core gameplay element.  Combat is a core gameplay element.  Combat is a core gameplay element.  Combat is a core gameplay element.  Combat is a core gameplay element.  Combat is a core gameplay element.  Combat is a core gameplay element.  Combat is a core gameplay element.  Combat"
+        "name": "Combat System",
+        "purpose": "Engaging in dynamic and challenging combat encounters.",
+        "playerChoice": "Engage in combat, strategically utilize abilities, and adapt to enemy patterns."
       },
       {
-        "name": "Persistence",
-        "purpose": "Define the game world and its state.",
-        "playerChoice": "Player-driven choices that maintain the game world.  Persistence is a core gameplay element.  Persistence is a core gameplay element.  Persistence is a core gameplay element.  Persistence is a core gameplay element.  Persistence is a core gameplay element.  Persistence is a core gameplay element.  Persistence is a core gameplay element.  Persistence is a core gameplay element.  Persistence"
+        "name": "Narrative Storytelling",
+        "purpose": "Craft a compelling and immersive story experience.",
+        "playerChoice": "Explore the world, uncover lore, and make choices that affect the narrative."
       },
       {
-        "name": "Progression",
-        "purpose": "Define the game's direction and reward system.",
-        "playerChoice": "Player-driven choices that influence the progression path.  Progression is a core gameplay element.  Progression is a core gameplay element.  Progression is a core gameplay element.  Progression is a core gameplay element.  Progression is a core gameplay element.  Progression is a core gameplay element.  Progression is a core gameplay element.  Progression"
-      },
-      {
-        "name": "UIArt",
-        "purpose": "Define the visual presentation of the game.",
-        "playerChoice": "Player-driven choices that affect the UI.  UIArt is a core gameplay element.  UIArt is a core gameplay element.  UIArt is a core gameplay element.  UIArt is a core gameplay element.  UIArt is a core gameplay element.  UIArt is a core gameplay element.  UIArt is a core gameplay element.  UIArt.],"
+        "name": "Procedural Generation",
+        "purpose": "Generate diverse and challenging encounters and levels.",
+        "playerChoice": "Adapt to the current environment and encounter, and choose the best path to survival."
       }
     ],
-    "progressionDirection": "Strategic Resource Management",
-    "visualDirection": "Dynamic Contextual 2 to 4",
-    "mobileUx": "DESIGN_BASELINE",
-    "marketTargetDirection": "DESIGN_BASELINE",
-    "steamExpansionDecision": "NOT_RECOMMENDED",
-    "multiplayerExpansionDecision": "HIGH",
-    "technicalAssumptions": [],
-    "validationQuestions": [],
-    "openQuestions": []
+    "progressionDirection": "Adaptive, Layered, Branching",
+    "visualDirection": "Dynamic, Atmospheric, Detailed",
+    "mobileUx": "Mobile, Touch-Friendly, Responsive",
+    "marketTargetDirection": "Targeted, Specific, Detailed",
+    "steamExpansionDecision": "High-Quality, Detailed, Detailed",
+    "multiplayerExpansionDecision": "Single, Focused",
+    "technicalAssumptions": [
+      "Player will have a limited number of lives.",
+      "Enemy AI will be relatively simple but challenging.",
+      "The game will feature a dynamic level design.",
+      "The game will have a focus on player choice and consequence."
+    ],
+    "validationQuestions": [
+      "What is the player's goal?",
+      "What are the core game mechanics?",
+      "What is the overall tone of the game?",
+      "What is the target audience?",
+      "What is the core loop?"
+    ],
+    "openQuestions": [
+      "What is the game's primary goal?",
+      "What is the game's unique selling point?",
+      "What is the game's overall style and aesthetic?",
+      "What makes the game stand out from other games?",
+      "What is the game's core loop?"
+    ]
   }
 }
