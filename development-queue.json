@@ -7,14 +7,14 @@
       "gameName": "Echoes of the Lost Star",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "status": "ACTIVE",
-      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "currentStep": "WEB_GAMEPLAY_AND_MUSIC_VALIDATION",
       "sourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
       "designBaselineSource": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-11/design-revised.json",
       "artbookSource": "artbook-submissions/seed-action-survival-rogu-echoes-of-the-lost-star/current.json",
       "enqueuedAt": "2026-09-11T08:20:07.333Z",
-      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
+      "canonicalState": "WAITING_WEB_GAMEPLAY_REVALIDATION",
       "candidateBranch": "autonomous/candidate-seed-action-survival-rogu-echoes-of-the-lost-star-34585400183",
-      "updatedAt": "2026-09-14T05:45:15.393Z",
+      "updatedAt": "2026-09-14T05:40:18.389Z",
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
@@ -57,7 +57,7 @@
       "webValidationSourceRevision": "77ac29bd1e3b4f6f999dcb1bc0977c1468806603",
       "homepageTestEligible": false,
       "homepageTestCandidate": false,
-      "webValidationLastAttemptAt": "2026-09-14T03:28:18.800Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:40:18.389Z",
       "formalImplementationPassed": false,
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false
@@ -75,13 +75,13 @@
       "enqueuedAt": "2026-09-11T08:20:07.333Z",
       "canonicalState": "WAITING_WEB_GAMEPLAY_REVALIDATION",
       "candidateBranch": "autonomous/candidate-seed-single-defense-strat-celestial-bastion-34608940401",
-      "updatedAt": "2026-09-14T03:28:22.465Z",
+      "updatedAt": "2026-09-14T05:40:34.906Z",
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "targetSourcePath": "unity-games/seed-single-defense-strat-celestial-bastion",
       "routingBlockers": [
-        "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-gameplay-validation.mjs --game-id=seed-single-defense-strat-celestial-bastion --source=web-games/.autonomous-candidates/development-web-seed-single"
+        "web-gameplay-music:WEB_RUNTIME_OR_80_POINT_GATE_NOT_PASS"
       ],
       "routeRevision": "cecec7545f1eeb8d06bdc020beeac9394fbfdffec2ab4cdbbf2a087c6fd25bdf",
       "webSourcePath": "web-games/seed-single-defense-strat-celestial-bastion",
@@ -93,7 +93,7 @@
       "webValidationSourceRevision": "7716c3e02810b7506ec96675457ef87caea47b37",
       "homepageTestEligible": false,
       "homepageTestCandidate": false,
-      "webValidationLastAttemptAt": "2026-09-14T03:28:22.465Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:40:34.906Z",
       "formalImplementationPassed": false,
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false,
@@ -128,13 +128,13 @@
       "enqueuedAt": "2026-09-11T08:20:07.333Z",
       "canonicalState": "WAITING_WEB_GAMEPLAY_REVALIDATION",
       "candidateBranch": "autonomous/candidate-seed-puzzle-chromatic-cascade-34588687850",
-      "updatedAt": "2026-09-14T03:29:08.591Z",
+      "updatedAt": "2026-09-14T05:41:18.210Z",
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "targetSourcePath": "unity-games/seed-puzzle-chromatic-cascade",
       "routingBlockers": [
-        "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-gameplay-validation.mjs --game-id=seed-puzzle-chromatic-cascade --source=web-games/.autonomous-candidates/development-web-seed-puzzle-chromatic-cas"
+        "web-gameplay-music:WEB_RUNTIME_OR_80_POINT_GATE_NOT_PASS"
       ],
       "routeRevision": "9107eea1b0fc94305515654315e908ad35a13690f56579c9bdf3ba2daccde01c",
       "webSourcePath": "web-games/seed-puzzle-chromatic-cascade",
@@ -146,7 +146,7 @@
       "webValidationSourceRevision": "efb5db4431a8c440c81ffc3743f88607d768f3d2",
       "homepageTestEligible": false,
       "homepageTestCandidate": false,
-      "webValidationLastAttemptAt": "2026-09-14T03:29:08.591Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:41:18.210Z",
       "formalImplementationPassed": false,
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false,
@@ -181,13 +181,13 @@
       "enqueuedAt": "2026-09-11T08:20:07.333Z",
       "canonicalState": "WAITING_WEB_GAMEPLAY_REVALIDATION",
       "candidateBranch": "autonomous/candidate-seed-casual-realm-weaver-34588687850",
-      "updatedAt": "2026-09-14T03:29:47.438Z",
+      "updatedAt": "2026-09-14T05:41:53.422Z",
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "targetSourcePath": "unity-games/seed-casual-realm-weaver",
       "routingBlockers": [
-        "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-gameplay-validation.mjs --game-id=seed-casual-realm-weaver --source=web-games/.autonomous-candidates/development-web-seed-casual-realm-weaver-34802"
+        "web-gameplay-music:WEB_RUNTIME_OR_80_POINT_GATE_NOT_PASS"
       ],
       "routeRevision": "24f3330625a72ea36cd65356c21c3494a578f88201fb7f370176b6b823c39177",
       "webSourcePath": "web-games/seed-casual-realm-weaver",
@@ -199,7 +199,7 @@
       "webValidationSourceRevision": "7716c3e02810b7506ec96675457ef87caea47b37",
       "homepageTestEligible": false,
       "homepageTestCandidate": false,
-      "webValidationLastAttemptAt": "2026-09-14T03:29:47.438Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:41:53.422Z",
       "formalImplementationPassed": false,
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false,
@@ -234,13 +234,13 @@
       "enqueuedAt": "2026-09-11T08:20:07.333Z",
       "canonicalState": "WAITING_WEB_GAMEPLAY_REVALIDATION",
       "candidateBranch": "autonomous/candidate-seed-idle-growth-rpg-crystal-bloom-34588687850",
-      "updatedAt": "2026-09-14T03:30:27.309Z",
+      "updatedAt": "2026-09-14T05:42:31.272Z",
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "targetSourcePath": "unity-games/seed-idle-growth-rpg-crystal-bloom",
       "routingBlockers": [
-        "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-gameplay-validation.mjs --game-id=seed-idle-growth-rpg-crystal-bloom --source=web-games/.autonomous-candidates/development-web-seed-idle-growth-rpg"
+        "web-gameplay-music:WEB_RUNTIME_OR_80_POINT_GATE_NOT_PASS"
       ],
       "routeRevision": "91b5eed923301b8824ead0dde7a8f34bb95d21254fcc1782c467c8e5782c63ce",
       "webSourcePath": "web-games/seed-idle-growth-rpg-crystal-bloom",
@@ -252,7 +252,7 @@
       "webValidationSourceRevision": "7716c3e02810b7506ec96675457ef87caea47b37",
       "homepageTestEligible": false,
       "homepageTestCandidate": false,
-      "webValidationLastAttemptAt": "2026-09-14T03:30:27.309Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:42:31.272Z",
       "formalImplementationPassed": false,
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false,
@@ -287,7 +287,7 @@
       "enqueuedAt": "2026-09-11T08:20:07.333Z",
       "canonicalState": "WAITING_WEB_GAMEPLAY_REVALIDATION",
       "candidateBranch": "autonomous/candidate-seed-story-complete-rpg-chronicles-of-eldoria-34588687850",
-      "updatedAt": "2026-09-14T03:31:12.455Z",
+      "updatedAt": "2026-09-14T05:43:08.413Z",
       "selectedPlatform": "UNITY",
       "targetPlatform": "UNITY",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
@@ -305,7 +305,7 @@
       "webValidationSourceRevision": "77ac29bd1e3b4f6f999dcb1bc0977c1468806603",
       "homepageTestEligible": false,
       "homepageTestCandidate": false,
-      "webValidationLastAttemptAt": "2026-09-14T03:31:12.455Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:43:08.413Z",
       "formalImplementationPassed": false,
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false
@@ -334,8 +334,8 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-gameplay-validation.mjs --game-id=seed-roblox-simulator-tycoon-i-adopt-me --source=web-games/.autonomous-candidates/development-web-seed-roblox-sim"
       ],
-      "webValidationLastAttemptAt": "2026-09-14T03:31:48.999Z",
-      "updatedAt": "2026-09-14T03:31:48.999Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:43:40.377Z",
+      "updatedAt": "2026-09-14T05:43:40.377Z",
       "webValidationEvidencePath": "design/seed-roblox-simulator-tycoon-i-adopt-me/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "4145eff6a3b7d92ee1e84137e0736cc479b1a9cc",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -556,8 +556,8 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-gameplay-validation.mjs --game-id=seed-roblox-battleground-fight-welcome-to-bloxburg --source=web-games/.autonomous-candidates/development-web-seed"
       ],
-      "webValidationLastAttemptAt": "2026-09-14T03:34:08.253Z",
-      "updatedAt": "2026-09-14T03:34:08.253Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:47:44.618Z",
+      "updatedAt": "2026-09-14T05:47:44.618Z",
       "webValidationEvidencePath": "design/seed-roblox-battleground-fight-welcome-to-bloxburg/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -776,8 +776,8 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-survival-horror-es-doors --game-name=Last Lantern --baseline=design/seed-roblox-survival-horror-es-doors/2026-0"
       ],
-      "webValidationLastAttemptAt": "2026-09-14T03:38:54.313Z",
-      "updatedAt": "2026-09-14T03:38:54.313Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:51:09.358Z",
+      "updatedAt": "2026-09-14T05:51:09.358Z",
       "webValidationEvidencePath": "design/seed-roblox-survival-horror-es-doors/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -998,8 +998,8 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-obby-party-minigam-tower-of-hell --game-name=Skyline Sprint --baseline=design/seed-roblox-obby-party-minigam-to"
       ],
-      "webValidationLastAttemptAt": "2026-09-14T03:42:39.318Z",
-      "updatedAt": "2026-09-14T03:42:39.318Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:56:24.485Z",
+      "updatedAt": "2026-09-14T05:56:24.485Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -1220,8 +1220,8 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-story-rpg-adventur-blox-fruits --game-name=Shardbound Odyssey --baseline=design/seed-roblox-story-rpg-adventur-"
       ],
-      "webValidationLastAttemptAt": "2026-09-14T03:46:22.878Z",
-      "updatedAt": "2026-09-14T03:46:22.878Z",
+      "webValidationLastAttemptAt": "2026-09-14T05:59:03.034Z",
+      "updatedAt": "2026-09-14T05:59:03.034Z",
       "webValidationEvidencePath": "design/seed-roblox-story-rpg-adventur-blox-fruits/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -1444,7 +1444,7 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-roleplay-life-avat-brookhaven-rp --game-name=Harbor Days --baseline=design/seed-roblox-roleplay-life-avat-brook"
       ],
-      "updatedAt": "2026-09-14T03:49:53.149Z",
+      "updatedAt": "2026-09-14T06:03:49.853Z",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
       "routeRevision": "e7ce5305dff6ef0fffdb16fb70d413bb76de4cbd162fb82c58e42490836647cc",
       "robloxSourceCandidateBranch": null,
@@ -1571,7 +1571,7 @@
       "robloxRuntimeHarnessVersion": "8",
       "homepageTestEligible": false,
       "homepageTestCandidate": false,
-      "webValidationLastAttemptAt": "2026-09-14T03:49:53.149Z",
+      "webValidationLastAttemptAt": "2026-09-14T06:03:49.853Z",
       "strictImplementationReviewPath": "design/seed-roblox-roleplay-life-avat-brookhaven-rp/2026-09-13/strict-implementation-review.json",
       "strictImplementationScore": 100,
       "strictImplementationVerdict": "PASS",
@@ -1666,12 +1666,12 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=bug-defense --game-name=곤충 디펜스 --baseline=design/bug-defense/2026-09-13/design-revised.json --source-path=web-games/bug-def"
       ],
-      "updatedAt": "2026-09-14T03:53:42.496Z",
+      "updatedAt": "2026-09-14T06:06:19.115Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "routeRevision": "4c7d5893e0ad15a24b154430e73e62a3cb6e2245215b83fd91165616b86439ea",
       "homepageTestEligible": false,
       "homepageTestCandidate": false,
-      "webValidationLastAttemptAt": "2026-09-14T03:53:42.496Z",
+      "webValidationLastAttemptAt": "2026-09-14T06:06:19.115Z",
       "strictImplementationReviewPath": "design/bug-defense/2026-09-13/strict-implementation-review.json",
       "strictImplementationScore": 100,
       "strictImplementationVerdict": "PASS",
@@ -1719,12 +1719,12 @@
       "routingBlockers": [
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=survival --game-name=나의 생존기 --baseline=design/survival/2026-09-13/design-revised.json --source-path=web-games/survival --ca"
       ],
-      "updatedAt": "2026-09-14T03:55:49.537Z",
+      "updatedAt": "2026-09-14T06:11:12.244Z",
       "platformAdapter": "tools/company-development-unity-platform.mjs",
       "routeRevision": "c22be990056ccde9069fb09f732ddd91c416b29abd1a23022897630738762ded",
       "homepageTestEligible": false,
       "homepageTestCandidate": false,
-      "webValidationLastAttemptAt": "2026-09-14T03:55:49.537Z",
+      "webValidationLastAttemptAt": "2026-09-14T06:11:12.244Z",
       "strictImplementationReviewPath": "design/survival/2026-09-13/strict-implementation-review.json",
       "strictImplementationScore": 100,
       "strictImplementationVerdict": "PASS",
@@ -1747,7 +1747,7 @@
       "webPromotionEvidenceFresh": true
     }
   ],
-  "updatedAt": "2026-09-14T05:45:26.011Z",
+  "updatedAt": "2026-09-14T06:18:18.838Z",
   "routerContractVersion": 4,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
