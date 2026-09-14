@@ -3,15 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
 import {resolveSelectedPlatform,adapterForPlatform,canonicalTargetWaitingState,canonicalTargetRevalidationState} from './company-selected-platform-router.mjs';
+import {WEB_VALIDATION_SCHEMA_VERSION,WEB_HOMEPAGE_MINIMUM,WEB_PLATFORM_PROMOTION_MINIMUM,evaluateWebValidationEvidence} from './company-web-validation-evidence-contract.mjs';
 
 const ROLES=['planning','graphics','development','qa','balance'];
-const WEB_VALIDATION_SCHEMA_VERSION=11;
-const WEB_HOMEPAGE_MINIMUM=80;
-const WEB_PLATFORM_PROMOTION_MINIMUM=90;
 const PLATFORM_DEVELOPMENT_PASS_MINIMUM=90;
-const WEB_REAL_GAME_MINIMUM_BYTES=12000;
-const WEB_REAL_GAME_MINIMUM_EXECUTABLE_BYTES=6000;
-const WEB_REAL_GAME_MINIMUM_MECHANICS=5;
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
@@ -130,28 +125,17 @@ function latestDesignBaseline(){
   return null;
 }
 function structuredWebEvidence(data={}){
-  const session=data?.sessionContract||{};
-  const expected=[[0,5],[5,15],[15,25],[25,30]];
-  const windows=Array.isArray(session.windows)?session.windows:[];
-  const stages=Array.isArray(session.stageResults)?session.stageResults:[];
-  const hard=Array.isArray(data?.strictReview?.hardFailures)?data.strictReview.hardFailures:[];
-  const score=Number(data?.webStrictScore??data?.strictReview?.totalScore);
-  const schema=Number(data?.validationSchemaVersion||data?.version||0);
-  const substance=data?.substanceGate||{};
-  const footprint=data?.sourceFootprint||{};
-  const totalBytes=Number(substance.totalBytes??footprint.totalBytes??0);
-  const executableBytes=Number(substance.executableBytes??footprint.scriptBytes??0);
-  const mechanicCount=Number(substance.mechanicCount??footprint.mechanicCount??0);
-  const directSessionControls=Number(substance.directSessionControls??(footprint.stageButtons?1:0));
-  const proxyMarkers=Number(substance.proxyMarkers??footprint.proxyMarkers??0);
-  const implementationClass=clean(substance.implementationClass||footprint.implementationClass).toUpperCase();
-  const substancePass=(substance.pass===true||footprint.pass===true)&&implementationClass==='DEDICATED'&&totalBytes>=WEB_REAL_GAME_MINIMUM_BYTES&&executableBytes>=WEB_REAL_GAME_MINIMUM_EXECUTABLE_BYTES&&mechanicCount>=WEB_REAL_GAME_MINIMUM_MECHANICS&&directSessionControls===0&&proxyMarkers===0;
-  const sessionPass=Number(data?.sessionDepthMinutes)>=30&&session.pass===true&&session.validationMode==='GAMEPLAY_MILESTONE_DEPTH'&&session.directStageClick===false&&session.stageGameplayPassed===true&&Number(session.stageCount)===4&&Number(session.completedStages)===4&&windows.length===4&&windows.every((row,index)=>Array.isArray(row)&&Number(row[0])===expected[index][0]&&Number(row[1])===expected[index][1])&&stages.length===4&&stages.every((row,index)=>Number(row.stage)===index+1&&row.trigger==='GAMEPLAY_MILESTONE'&&row.clicked===true&&row.completed===true&&row.gameStateChanged===true&&row.directStageClick===false);
+  const homepage=evaluateWebValidationEvidence(data,{minimumScore:WEB_HOMEPAGE_MINIMUM,requireFinalContentDepth:true});
+  const promotion=evaluateWebValidationEvidence(data,{minimumScore:WEB_PLATFORM_PROMOTION_MINIMUM,requireFinalContentDepth:true,requirePromotionRevalidation:true});
+  const schema=homepage.schema;
+  const score=homepage.score;
+  const hard=homepage.hardFailures;
+  const substancePass=homepage.realGameSubstancePass===true;
+  const sessionPass=homepage.finalContentDepthPass===true;
   const fresh=schema>=WEB_VALIDATION_SCHEMA_VERSION&&substancePass&&sessionPass&&Boolean(clean(data?.sourceIndexSha256))&&Boolean(clean(data?.designBaselineSha256));
-  const homepageEligible=fresh&&data?.pass===true&&data?.musicRuntime?.pass===true&&Number.isFinite(score)&&score>=WEB_HOMEPAGE_MINIMUM&&hard.length===0;
-  const promotion=data?.promotionRevalidation||{};
-  const platformEligible=homepageEligible&&score>=WEB_PLATFORM_PROMOTION_MINIMUM&&data?.formalImplementationPassed===true&&promotion.pass===true&&promotion.independentRun===true&&promotion.sourceHashMatch===true&&promotion.baselineHashMatch===true&&promotion.secondSessionPass===true&&promotion.secondSubstancePass===true&&promotion.secondTerminalReached===true;
-  return {schema,score,hard,sessionPass,substancePass,fresh,homepageEligible,platformEligible};
+  const homepageEligible=homepage.pass===true;
+  const platformEligible=promotion.pass===true;
+  return {schema,score,hard,sessionPass,substancePass,fresh,homepageEligible,platformEligible,homepageBlockers:homepage.blockers,promotionBlockers:promotion.blockers};
 }
 function platformDevelopmentReview(targetMeeting,targetData={}){
   const decisions=Array.isArray(targetMeeting?.meeting?.decisions)?targetMeeting.meeting.decisions:[];
@@ -259,12 +243,13 @@ if(web.state!=='PASS'||!webContract.homepageEligible||!webContract.platformEligi
   else if(web.state==='FAIL')blockers.push('web-gameplay-validation-failed');
   if(web.data?.musicRuntime?.pass!==true)blockers.push('music-runtime-validation-required');
   if(!webContract.substancePass)blockers.push('real-playable-web-game-substance-required');
+  if(!webContract.sessionPass)blockers.push('web-final-real-30min-content-depth-required');
   if(!webContract.fresh)blockers.push(`web-evidence-stale-or-schema-below-${WEB_VALIDATION_SCHEMA_VERSION}`);
   if(Number.isFinite(webContract.score)&&webContract.score<WEB_HOMEPAGE_MINIMUM)blockers.push(`web-strict-score-below-${WEB_HOMEPAGE_MINIMUM}`);
   else if(Number.isFinite(webContract.score)&&webContract.score<WEB_PLATFORM_PROMOTION_MINIMUM)blockers.push(`web-strict-score-below-platform-${WEB_PLATFORM_PROMOTION_MINIMUM}`);
   if(webContract.score>=WEB_PLATFORM_PROMOTION_MINIMUM&&web.data?.promotionRevalidation?.pass!==true)blockers.push('web-90-independent-promotion-revalidation-required');
   const waitState=web.state==='MISSING'?'WAITING_WEB_GAMEPLAY_VALIDATION':webContract.homepageEligible&&!webContract.platformEligible?'WAITING_WEB_STRICT_IMPROVEMENT':'WAITING_WEB_GAMEPLAY_REVALIDATION';
-  writeState(waitState,{sourceDesign:sourceBaseline,web,blockers,nextAction:webContract.homepageEligible?'Web Top30 후보는 유지하되 90점 이상과 독립 재검증 PASS가 될 때까지 개선·재검증한다.':'실제 플레이 가능한 Web 게임 본체를 기준으로 gameplay milestone 30분 깊이, 실체성, 음악, 소스/설계 해시를 다시 검증한다.'});
+  writeState(waitState,{sourceDesign:sourceBaseline,web,blockers,nextAction:webContract.homepageEligible?'Web Top30 후보는 유지하되 90점 이상과 독립 재검증 PASS가 될 때까지 개선·재검증한다.':'실제 플레이 가능한 Web 게임 본체를 기준으로 최종 실제 30분 콘텐츠 깊이, 실체성, 음악, 소스/설계 해시를 다시 검증한다.'});
   process.exit(0);
 }
 const webMeeting=await runMeeting('WEB',sourceBaseline.content,web.data);
