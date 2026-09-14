@@ -150,3 +150,24 @@ test('legacy frozen implementation context requires an exact canonical game and 
   assert.match(source,/cycleSeedId!==seedId/);
   assert.match(source,/FROZEN_DESIGN_BASELINE\+CANONICAL_DEVELOPMENT_QUEUE/);
 });
+
+test('canonical DEVELOPMENT_CONFIRMED runtime separates schema13 initial cycle from final real elapsed depth',()=>{
+  const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  const initialAt=source.indexOf('--validation-stage=initial-cycle');
+  const finalAt=source.indexOf('--validation-stage=final-content-depth');
+  assert.ok(initialAt>0);
+  assert.ok(finalAt>initialAt);
+  const initialGate=source.slice(initialAt,finalAt);
+  assert.doesNotMatch(initialGate,/homepageTestEligible!==true/);
+  assert.match(initialGate,/WEB_INITIAL_STAGE_MUST_NOT_CLAIM_FINAL_30MIN_PASS/);
+  assert.match(source,/contentDepthValidation\?\.validationMode!==\'REAL_ELAPSED_GAMEPLAY\'/);
+  assert.match(source,/elapsedRealMilliseconds\)<1800000/);
+  assert.match(source,/WEB_VALIDATION_SCHEMA_MINIMUM=13/);
+  assert.doesNotMatch(source,/WEB_VALIDATION_SCHEMA_MINIMUM=10/);
+  assert.match(source,/webValidationEvidenceSchemaMinimum=13/);
+  assert.match(source,/Number\(item\.webValidationSchemaVersion\)!==13/);
+  assert.match(source,/timeout-minutes: 85/);
+  assert.match(source,/cancel-in-progress: false/);
+  assert.match(source,/max-parallel: 1/);
+  assert.match(source,/WEB_PILOT_TARGET/);
+});
