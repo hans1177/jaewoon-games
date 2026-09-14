@@ -77,6 +77,7 @@ export function webGameplayMetrics(evidence={}){
   const terminal=upper(evidence?.terminalOutcome?.result);
   const proxyMarkers=number(evidence?.substanceGate?.proxyMarkers,footprint.proxyMarkers);
   const directControls=number(evidence?.substanceGate?.directSessionControls,footprint.stageButtons===true?1:0);
+  const runtimeTowerTypeCount=countUnique(runtime.towerTypes),runtimeTowerEffectCount=countUnique(runtime.towerEffectProfiles),runtimeStrategyChoiceCount=countUnique(runtime.strategyChoices),runtimeStrategyOutcomeCount=countUnique((runtime.strategyCombatOutcomes||[]).map(row=>row?.outcomeSignature));
   return Object.freeze({
     uniqueMechanicCount:number(metrics.uniqueMechanicCount,footprint.mechanicCount),
     uniqueFunctionalUiCount:number(metrics.uniqueFunctionalUiCount,metrics.functionalUiCount,mechanicBindings),
@@ -93,12 +94,12 @@ export function webGameplayMetrics(evidence={}){
     newAreaCount:number(metrics.newAreaCount,runtime.newAreaCount,countUnique(runtime.newAreas)),
     objectiveCount:number(metrics.objectiveCount,runtime.objectiveCount,countUnique(runtime.objectives)),
     newObjectiveCount:number(metrics.newObjectiveCount,runtime.newObjectiveCount,countUnique(runtime.newObjectives)),
-    towerTypeCount:number(metrics.towerTypeCount,runtime.towerTypeCount,countUnique(runtime.towerTypes)),
-    towerEffectProfileCount:number(metrics.towerEffectProfileCount,runtime.towerEffectProfileCount,countUnique(runtime.towerEffectProfiles)),
-    placementResultCount:number(metrics.placementResultCount,runtime.placementResultCount),
-    strategyChoiceCount:number(metrics.strategyChoiceCount,countUnique(runtime.strategyChoices)),
-    strategyCombatOutcomeCount:number(metrics.strategyCombatOutcomeCount,runtime.strategyCombatOutcomeCount,countUnique((runtime.strategyCombatOutcomes||[]).map(row=>row?.outcomeSignature))),
-    newContentDimensionCount:number(metrics.newContentDimensionCount,runtime.newContentDimensionCount),
+    towerTypeCount:runtimeTowerTypeCount>0?runtimeTowerTypeCount:number(metrics.towerTypeCount,runtime.towerTypeCount),
+    towerEffectProfileCount:runtimeTowerEffectCount>0?runtimeTowerEffectCount:number(metrics.towerEffectProfileCount,runtime.towerEffectProfileCount),
+    placementResultCount:number(runtime.placementResultCount,metrics.placementResultCount),
+    strategyChoiceCount:runtimeStrategyChoiceCount>0?runtimeStrategyChoiceCount:number(metrics.strategyChoiceCount),
+    strategyCombatOutcomeCount:runtimeStrategyOutcomeCount>0?runtimeStrategyOutcomeCount:number(metrics.strategyCombatOutcomeCount,runtime.strategyCombatOutcomeCount),
+    newContentDimensionCount:number(runtime.newContentDimensionCount,metrics.newContentDimensionCount),
     repeatedActionExcludedCount:number(metrics.repeatedActionExcludedCount),
     meaningfulGameplayMilliseconds:number(depth.meaningfulGameplayMilliseconds),
     winPathCount:number(metrics.winPathCount,footprint.winPathCount,terminal==='VICTORY'?1:0),
