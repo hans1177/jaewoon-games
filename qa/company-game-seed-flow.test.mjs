@@ -43,7 +43,7 @@ test('central mirror preserves historical bootstrap while latest owner productio
   assert.match(flow,/materialIsGame: false/);
   assert.match(flow,/legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true/);
   assert.match(flow,/fixedSixCategoryProductionQuotaForbidden: true/);
-  assert.match(flow,/concurrentGameWipMax: 3/);
+  assert.match(flow,/concurrentGameWipMax: 6/);
   assert.match(flow,/initialImplementationMinimumUnit: ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
   assert.match(flow,/thirtyMinuteRequirementStage: FINAL_CONTENT_DEPTH_VALIDATION_ONLY/);
   assert.match(flow,/finalContentDepthMinutesRequired: 30/);
@@ -54,6 +54,8 @@ test('central mirror preserves historical bootstrap while latest owner productio
   assert.match(flow,/preWebArtbookForbidden: true/);
   assert.match(flow,/createOnlyAfterWebStrictReview: true/);
   assert.match(flow,/blockingBudgetMinutes: 10/);
+  assert.equal(directive.productionThroughput.concurrentGameWipMax,6);
+  assert.equal(directive.productionThroughput.webValidationParallelismControlledSeparately,true);
   assert.equal(directive.strictReview.designPassMinimum,80);
   assert.equal(directive.strictReview.implementationPassMinimum,90);
   assert.equal(directive.productionThroughput.modelExecutionBudget.designWorkflowTimeoutMinutes,45);
