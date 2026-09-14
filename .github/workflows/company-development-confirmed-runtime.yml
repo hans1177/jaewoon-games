@@ -118,8 +118,10 @@ jobs:
             if(state==='DEVELOPMENT_BLOCKED')return false;
             return !freshWeb80(item);
           });
+          const requestedItem=requestedGameId?(q.items||[]).find(item=>item.gameId===requestedGameId):null;
           const selected=requestedGameId?stale.filter(item=>item.gameId===requestedGameId):stale;
-          if(requestedGameId&&selected.length!==1)throw new Error(`WEB_PILOT_TARGET_NOT_ELIGIBLE:${requestedGameId}`);
+          if(requestedGameId&&!requestedItem)throw new Error(`WEB_PILOT_TARGET_NOT_FOUND:${requestedGameId}`);
+          if(requestedGameId&&selected.length===0&&!freshWeb80(requestedItem))throw new Error(`WEB_PILOT_TARGET_NOT_ELIGIBLE:${requestedGameId}`);
           const rows=selected.map(item=>{
             const canonicalState=String(item.canonicalState||'').toUpperCase();
             const runtimeStage=canonicalState==='WAITING_WEB_FINAL_CONTENT_DEPTH'?'final-content-depth':'initial-cycle';
@@ -567,6 +569,8 @@ jobs:
 
       - name: Fetch current company runtime and resolve post-Web artbook targets
         id: artbook-targets
+        env:
+          PUSH_HEAD_MESSAGE: ${{ github.event.head_commit.message || '' }}
         shell: bash
         run: |
           set -euo pipefail
@@ -578,8 +582,11 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const exists=file=>{try{execFileSync('git',['cat-file','-e',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{stdio:'ignore'});return true;}catch{return false;}};
           const showJson=file=>{try{return JSON.parse(execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{encoding:'utf8'}));}catch{return null;}};
+          const pilotMatch=String(process.env.PUSH_HEAD_MESSAGE||'').match(/\[web-pilot:([a-zA-Z0-9._-]+)\]/);
+          const requestedGameId=String(pilotMatch?.[1]||'').trim();
           const targets=[];
           for(const item of q.items||[]){
+            if(requestedGameId&&item.gameId!==requestedGameId)continue;
             const score=Number(item.webStrictScore??item.strictImplementationScore);
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||!item.webValidationPassedAt||item.musicValidationPassed!==true||item.homepageTestEligible!==true||Number(item.webValidationSchemaVersion)!==13||!Number.isFinite(score)||score<80||hard.length)continue;
@@ -588,11 +595,14 @@ jobs:
             const artbookSource=item.artbookSource||`artbook-submissions/${item.gameId}/current.json`;
             const artbook=exists(artbookSource)?showJson(artbookSource):null;
             const fresh=artbook?.postWebStrictReview===true&&Number(artbook.webStrictScore)===score&&String(artbook.webValidationEvidencePath||'')===String(item.webValidationEvidencePath||'');
-            if(!fresh)targets.push({gameId:item.gameId,gameName:item.gameName||item.gameId,designDate:item.designDate||'',designBaselineSource:item.designBaselineSource,webValidationEvidencePath:item.webValidationEvidencePath,score,artbookSource});
+            const baselinePath=String(item.designBaselineSource||'').replaceAll('\\','/');
+            const baselineDate=baselinePath.match(/\/(\d{4}-\d{2}-\d{2})\/design-revised\.json$/)?.[1]||'';
+            if(!fresh)targets.push({gameId:item.gameId,gameName:item.gameName||item.gameId,designDate:item.designDate||baselineDate,designBaselineSource:item.designBaselineSource,webValidationEvidencePath:item.webValidationEvidencePath,score,artbookSource});
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`target_count=${targets.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets=${JSON.stringify(targets)}\n`);
           console.log(`POST_WEB_ARTBOOK_TARGET_COUNT=${targets.length}`);
+          console.log(`POST_WEB_ARTBOOK_PILOT_TARGET=${requestedGameId||'NONE'}`);
           NODE
 
       - name: Prepare small local artbook model
