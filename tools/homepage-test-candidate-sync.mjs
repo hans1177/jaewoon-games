@@ -7,7 +7,7 @@ const runtimeRef=String(process.env.COMPANY_RUNTIME_REF||'origin/company-runtime
 const manifestFile=String(process.env.HOMEPAGE_TEST_CANDIDATE_OUTPUT||'test-game-candidates.json').trim();
 const limit=30;
 const minimumScore=80;
-const minimumValidationSchema=11;
+const minimumValidationSchema=12;
 const minimumRealGameBytes=12000;
 const minimumExecutableBytes=6000;
 const minimumMechanics=5;
@@ -31,10 +31,20 @@ const realGameSubstancePass=evidence=>{
   const implementationClass=clean(gate.implementationClass||source.implementationClass).toUpperCase();
   return (gate.pass===true||source.pass===true)&&implementationClass==='DEDICATED'&&totalBytes>=minimumRealGameBytes&&executableBytes>=minimumExecutableBytes&&mechanicCount>=minimumMechanics&&directSessionControls===0&&proxyMarkers===0;
 };
-const homepagePass=evidence=>evidence?.homepageTestEligible===true&&Number(evidence?.validationSchemaVersion||evidence?.version||0)>=minimumValidationSchema&&realGameSubstancePass(evidence)&&Number.isFinite(scoreOf(evidence))&&scoreOf(evidence)>=minimumScore&&Array.isArray(evidence?.strictReview?.hardFailures)&&evidence.strictReview.hardFailures.length===0;
+const completePlayableCyclePass=evidence=>{
+  const cycle=evidence?.playableCycle||{};
+  return cycle.pass===true&&clean(cycle.minimumImplementationUnit)==='ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE'&&cycle.terminalReached===true;
+};
+const finalContentDepth30Pass=evidence=>{
+  const depth=evidence?.contentDepth30||{};
+  const mode=clean(depth.validationMode);
+  const allowedMode=mode==='REAL_GAMEPLAY_CONTENT_DEPTH'||mode==='LEGACY_GAMEPLAY_MILESTONE_DEPTH';
+  return Number(evidence?.validationSchemaVersion||evidence?.version||0)>=minimumValidationSchema&&depth.pass===true&&allowedMode&&Number(depth.validatedMinutes)>=30&&depth.directTimeStageControl!==true;
+};
+const homepagePass=evidence=>evidence?.homepageTestEligible===true&&Number(evidence?.validationSchemaVersion||evidence?.version||0)>=minimumValidationSchema&&realGameSubstancePass(evidence)&&completePlayableCyclePass(evidence)&&finalContentDepth30Pass(evidence)&&Number.isFinite(scoreOf(evidence))&&scoreOf(evidence)>=minimumScore&&Array.isArray(evidence?.strictReview?.hardFailures)&&evidence.strictReview.hardFailures.length===0;
 const realPlayableGamePass=html=>{
   const text=String(html??'');
-  return new RegExp(`data-web-artifact-type=["']${requiredArtifactType}["']`,'i').test(text)&&/<canvas\b/i.test(text)&&/(victory|승리|목표 달성)/i.test(text)&&/(defeat|game over|패배|게임 오버)/i.test(text)&&!/FULL APPROVED WEB COMPANION/i.test(text)&&!/<h2[^>]*>\s*30분 플레이 구조\s*<\/h2>/i.test(text)&&!/<h2[^>]*>\s*승인 분량 전체 구현\s*<\/h2>/i.test(text);
+  return new RegExp(`data-web-artifact-type=["']${requiredArtifactType}["']`,'i').test(text)&&/<canvas\b/i.test(text)&&/(victory|승리|목표 달성)/i.test(text)&&/(defeat|game over|패배|게임 오버)/i.test(text)&&!/FULL APPROVED WEB COMPANION/i.test(text)&&!/scope-control-/i.test(text)&&!/<button\b[^>]*data-session-stage=/i.test(text)&&!/<h2[^>]*>\s*30분 플레이 구조\s*<\/h2>/i.test(text)&&!/<h2[^>]*>\s*승인 분량 전체 구현\s*<\/h2>/i.test(text);
 };
 const semanticJson=value=>{
   const copy=JSON.parse(JSON.stringify(value??{}));
@@ -50,13 +60,6 @@ const writeJsonIfSemanticChanged=(file,previous,next)=>{
   fs.writeFileSync(file,JSON.stringify(output,null,2)+'\n');
   return true;
 };
-const structured30MinutePass=evidence=>{
-  const session=evidence?.sessionContract||{};
-  const windows=Array.isArray(session.windows)?session.windows:[];
-  const expected=[[0,5],[5,15],[15,25],[25,30]];
-  const stages=Array.isArray(session.stageResults)?session.stageResults:[];
-  return Number(evidence?.validationSchemaVersion||evidence?.version||0)>=minimumValidationSchema&&Number(evidence?.sessionDepthMinutes)>=30&&session.pass===true&&session.validationMode==='GAMEPLAY_MILESTONE_DEPTH'&&session.stageGameplayPassed===true&&session.directStageClick===false&&Number(session.stageCount)===4&&Number(session.completedStages)===4&&windows.length===4&&windows.every((row,index)=>Array.isArray(row)&&Number(row[0])===expected[index][0]&&Number(row[1])===expected[index][1])&&stages.length===4&&stages.every((row,index)=>Number(row.stage)===index+1&&row.trigger==='GAMEPLAY_MILESTONE'&&row.clicked===true&&row.completed===true&&row.gameStateChanged===true&&row.directStageClick===false);
-};
 
 const previousManifest=readJson(manifestFile,{candidates:[]});
 const previousRank=new Map((previousManifest.candidates||[]).map((row,index)=>[clean(row.gameId||row.id),index]));
@@ -64,7 +67,7 @@ const queue=showJson('development-queue.json',{items:[]});
 const runtimeCatalog=showJson('game-catalog.json',{games:[]});
 const catalogById=new Map((runtimeCatalog.games||[]).map(game=>[clean(game.id),game]));
 const candidates=[];
-let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0;
+let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0,cycleRejectedCount=0,depthRejectedCount=0;
 for(const item of queue.items||[]){
   const gameId=clean(item.gameId);if(!gameId)continue;
   if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
@@ -76,14 +79,17 @@ for(const item of queue.items||[]){
   if(!evidencePath||!baselineSource||!existsRuntime(evidencePath)||!existsRuntime(`${webSourcePath}/index.html`)||!existsRuntime(baselineSource)||!existsRuntime(artbookSource))continue;
   const evidence=showJson(evidencePath,null);
   if(!realGameSubstancePass(evidence)){substanceRejectedCount++;continue;}
+  if(!completePlayableCyclePass(evidence)){cycleRejectedCount++;continue;}
+  if(!finalContentDepth30Pass(evidence)){depthRejectedCount++;continue;}
   if(!homepagePass(evidence))continue;
   const webHtml=showText(`${webSourcePath}/index.html`);
   if(!realPlayableGamePass(webHtml)){nonPlayableRejectedCount++;continue;}
   const currentWebHash=sha256Text(webHtml);
   const currentBaselineHash=sha256Text(showText(baselineSource));
-  const freshnessPass=structured30MinutePass(evidence)&&clean(evidence?.sourceIndexSha256)===currentWebHash&&clean(evidence?.designBaselineSha256)===currentBaselineHash;
+  const freshnessPass=clean(evidence?.sourceIndexSha256)===currentWebHash&&clean(evidence?.designBaselineSha256)===currentBaselineHash;
   if(!freshnessPass){staleEvidenceCount++;continue;}
   const game=catalogById.get(gameId)||{};
+  const metrics=evidence?.realGameMetrics||{};
   candidates.push({
     id:gameId,
     gameId,
@@ -99,6 +105,18 @@ for(const item of queue.items||[]){
     webArtifactType:requiredArtifactType,
     realPlayableWebGame:true,
     realGameSubstancePassed:true,
+    completePlayableCyclePassed:true,
+    finalContentDepth30Passed:true,
+    realGameQualitySignals:{
+      uniqueFunctionalUiCount:Number(metrics.uniqueFunctionalUiCount||0),
+      meaningfulStateTransitionCount:Number(metrics.meaningfulStateTransitionCount||0),
+      uniqueMechanicInteractionCount:Number(metrics.uniqueMechanicInteractionCount||0),
+      uniqueStateSignatureCount:Number(metrics.uniqueStateSignatureCount||0),
+      systemConnectionCount:Number(metrics.multiFieldTransitionCount||0),
+      duplicateActionRatio:Number(metrics.duplicateActionRatio||0),
+      testUiRatio:Number(metrics.testUiRatio||0),
+      gameplayScreenRatio:Number(metrics.gameplayScreenRatio||0),
+    },
     testUrl:`/${webSourcePath.replace(/^\/+|\/+$/g,'')}/`,
     webPath:`/${webSourcePath.replace(/^\/+|\/+$/g,'')}/`,
     artbookUrl:`/artbook-viewer.html?game=${encodeURIComponent(gameId)}`,
@@ -151,9 +169,9 @@ for(const candidate of selected){
 const registryChanged=writeJsonIfSemanticChanged('game-artbooks.json',previousRegistry,registry);
 
 const manifest={
-  version:7,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
+  version:8,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
   homepageTestShelf:{
-    limit,minimumScore,minimumValidationSchema,minimumRealGameBytes,minimumExecutableBytes,minimumMechanics,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresRealPlayableGame:true,requiresRealGameSubstance:true,requiredWebArtifactType:requiredArtifactType,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresStructured30MinuteEvidence:true,requiredSessionValidationMode:'GAMEPLAY_MILESTONE_DEPTH',hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
+    limit,minimumScore,minimumValidationSchema,minimumRealGameBytes,minimumExecutableBytes,minimumMechanics,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresRealPlayableGame:true,requiresRealGameSubstance:true,requiresCompletePlayableCycle:true,requiresFinalContentDepth30:true,requiredWebArtifactType:requiredArtifactType,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiredContentDepthValidationMode:'REAL_GAMEPLAY_CONTENT_DEPTH_OR_LEGACY_REVALIDATED_GAMEPLAY_DEPTH',directTimeStageControlsForbidden:true,testHarnessForbidden:true,emptySlotsStayEmpty:true,hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
     cutlineScore,replacementPolicy:'STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT',tieBreak:['EXISTING_TOP30_RANK','PROMOTION_REVALIDATION_PASS','LATEST_VALIDATION','GAME_ID'],
   },
   candidates:selected,
@@ -165,6 +183,8 @@ console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`
 console.log(`HOMEPAGE_TEST_STALE_EVIDENCE_REJECTED=${staleEvidenceCount}`);
 console.log(`HOMEPAGE_TEST_NON_PLAYABLE_REJECTED=${nonPlayableRejectedCount}`);
 console.log(`HOMEPAGE_TEST_SUBSTANCE_REJECTED=${substanceRejectedCount}`);
+console.log(`HOMEPAGE_TEST_PLAYABLE_CYCLE_REJECTED=${cycleRejectedCount}`);
+console.log(`HOMEPAGE_TEST_FINAL_CONTENT_DEPTH_REJECTED=${depthRejectedCount}`);
 console.log('HOMEPAGE_TEST_CANDIDATE_LIMIT=30');
 console.log('HOMEPAGE_TEST_MINIMUM_SCORE=80');
 console.log(`HOMEPAGE_TEST_MINIMUM_VALIDATION_SCHEMA=${minimumValidationSchema}`);
@@ -175,5 +195,6 @@ console.log(`HOMEPAGE_TEST_REQUIRED_ARTIFACT_TYPE=${requiredArtifactType}`);
 console.log(`HOMEPAGE_TEST_CUTLINE_SCORE=${cutlineScore??'OPEN'}`);
 console.log('HOMEPAGE_TEST_REPLACEMENT=STRICTLY_HIGHER_SCORE;TIE_PRESERVES_INCUMBENT');
 console.log('HOMEPAGE_TEST_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');
-console.log('HOMEPAGE_TEST_REQUIRES=REAL_PLAYABLE_WEB_GAME+REAL_GAME_SUBSTANCE+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+GAMEPLAY_MILESTONE_30MIN');
+console.log('HOMEPAGE_TEST_REQUIRES=REAL_PLAYABLE_WEB_GAME+COMPLETE_PLAYABLE_CYCLE+FINAL_CONTENT_DEPTH_30+REAL_GAME_SUBSTANCE+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES');
+console.log('HOMEPAGE_TEST_EMPTY_SLOTS=KEEP_EMPTY');
 console.log(`HOMEPAGE_TEST_SYNC_CHANGED=${semanticChanged?'YES':'NO'}`);
