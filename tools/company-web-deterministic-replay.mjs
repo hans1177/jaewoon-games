@@ -58,7 +58,7 @@ export function evaluateDeterministicReplayEvidence({usesRandomness=false,refere
   return {required:true,pass,status,independentRun:true,sameSeed,sameInputTrace,criticalStateMatch,usesRandomness,referenceSeed:clean(referenceSeed)||null,replaySeed:clean(replaySeed)||null,traceLength:Number(traceLength)||0,executedCount:Number(executedCount)||0,comparedStateCount:Math.min(expected.length,observed.length)};
 }
 
-async function clickReplayAction(page,row,index){
+async function clickReplayAction(page,row){
   const selectors=[];
   if(clean(row?.scopeId))selectors.push(`[data-scope-id="${esc(row.scopeId)}"]`);
   if(clean(row?.mechanicId))selectors.push(`[data-mechanic-id="${esc(row.mechanicId)}"]`);
@@ -71,15 +71,18 @@ async function clickReplayAction(page,row,index){
   if(!target)return null;
   const before=await criticalSnapshot(page);
   try{await target.click({timeout:2500});await page.waitForTimeout(90);}catch{return null;}
-  if(row?.positionSelected===true||row?.placementResult===true){
-    const placements=page.locator('[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]');
+  if(row?.placementFollowupRequired===true){
+    const placements=page.locator('[data-placement-position],[data-build-slot],[data-tower-slot],[data-grid-x][data-grid-y]'),count=await placements.count();
     let placement=null;
-    for(let i=0;i<await placements.count();i++){const candidate=placements.nth(i);if(await candidate.isVisible().catch(()=>false)){placement=candidate;break;}}
+    if(count){
+      const start=Math.abs(Number(row?.placementIndex)||0)%count;
+      for(let i=0;i<count;i++){const candidate=placements.nth((start+i)%count);if(await candidate.isVisible().catch(()=>false)){placement=candidate;break;}}
+    }
     if(placement){
       try{await placement.click({timeout:1800});await page.waitForTimeout(90);}catch{}
     }else{
       const active=await page.locator('[data-placement-mode="active"],[data-build-mode="active"],body[data-placement-mode="active"]').count();
-      if(active){const surface=page.locator('canvas,[data-gameplay-surface]').first();try{const box=await surface.boundingBox();if(box){await surface.click({position:{x:Math.max(1,box.width*(.25+(.1*(index%4)))),y:Math.max(1,box.height*.55)},timeout:1800});await page.waitForTimeout(90);}}catch{}}
+      if(active){const surface=page.locator('canvas,[data-gameplay-surface]').first();try{const box=await surface.boundingBox();if(box){const index=Math.abs(Number(row?.placementIndex)||0);await surface.click({position:{x:Math.max(1,box.width*(.25+(.1*(index%4)))),y:Math.max(1,box.height*.55)},timeout:1800});await page.waitForTimeout(90);}}catch{}}
     }
   }
   const after=await criticalSnapshot(page);
@@ -103,8 +106,8 @@ export async function runDeterministicReplay({browser,url,referencePage,actionEv
     const replaySeed=(await criticalSnapshot(replayPage)).seed;
     const observed=[];
     let executed=0;
-    for(let i=0;i<trace.length;i++){
-      const result=await clickReplayAction(replayPage,trace[i],i);if(!result)break;executed++;observed.push(result.outcomeSignature);
+    for(const row of trace){
+      const result=await clickReplayAction(replayPage,row);if(!result)break;executed++;observed.push(result.outcomeSignature);
     }
     return evaluateDeterministicReplayEvidence({usesRandomness,referenceSeed,replaySeed,expectedOutcomeSignatures:trace.map(row=>row.outcomeSignature),observedOutcomeSignatures:observed,traceLength:trace.length,executedCount:executed});
   }catch(error){
