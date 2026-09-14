@@ -13,16 +13,27 @@
     {
       "version": 2,
       "seedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001",
-      "gameId": "seed-unity-action-survival-ro-ancient-echoes",
-      "gameName": "Ancient Echoes",
+      "gameId": "seed-unity-action-survival-ro-echoes-of-the-ancients",
+      "gameName": "Echoes of the Ancients",
       "status": "ACTIVE",
       "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
       "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
       "SEED_MATERIAL_IDS": [
         "MAT-001",
-        "MAT-002",
-        "MAT-003"
+        "MAT-013",
+        "MAT-025"
       ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 1,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
       "REFERENCE_INPUTS": [
         {
           "type": "SEED_MATERIAL",
@@ -32,15 +43,15 @@
         },
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-002",
-          "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
-          "value": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 2"
+          "id": "MAT-013",
+          "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+          "value": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 13"
         },
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-003",
-          "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
-          "value": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 3"
+          "id": "MAT-025",
+          "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+          "value": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 25"
         },
         {
           "type": "GAME_REFERENCE",
@@ -61,16 +72,15 @@
         "Survivor.io"
       ],
       "CORE_FUN_TO_LEARN": [
-        "Resource Management",
-        "Strategic Combat",
-        "Exploration"
+        "Strategic Resource Management",
+        "Character Progression"
       ],
       "CORE_LOOP": [
         "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
         "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
         "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
       ],
-      "DISTINCT_IDENTITY": "Unique Lore and Character Design",
+      "DISTINCT_IDENTITY": "Unique Lore and Worldbuilding",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -374,7 +384,7 @@
           }
         ]
       },
-      "TARGET_AUDIENCE": "Fans of survival games with strategic depth and a compelling narrative.",
+      "TARGET_AUDIENCE": "Hardcore Gamers",
       "TARGET_SESSION_MINUTES": 30,
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "UNITY",
@@ -388,8 +398,8 @@
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
       "portfolioSeedRequestId": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "semanticNormalization": {
         "repaired": true,
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
@@ -400,64 +410,64 @@
     {
       "version": 2,
       "seedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001",
-      "gameId": "seed-unity-single-defense-str-renaissance-siege",
-      "gameName": "Renaissance Siege",
+      "gameId": "seed-unity-single-defense-str-the-serpent-s-gambit",
+      "gameName": "The Serpent's Gambit",
       "status": "ACTIVE",
       "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
       "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
       "SEED_MATERIAL_IDS": [
-        "MAT-004",
-        "MAT-005",
-        "MAT-006"
+        "MAT-002",
+        "MAT-008",
+        "MAT-014"
       ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 1,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
       "REFERENCE_INPUTS": [
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-004",
+          "id": "MAT-002",
+          "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+          "value": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 2"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-008",
+          "sourceFamily": "SPACE_BUILDING_OPERATION",
+          "value": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 8"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-014",
           "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
-          "value": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 4"
-        },
-        {
-          "type": "SEED_MATERIAL",
-          "id": "MAT-005",
-          "sourceFamily": "SPORT_BOARD_PLAY_RULE",
-          "value": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 5"
-        },
-        {
-          "type": "SEED_MATERIAL",
-          "id": "MAT-006",
-          "sourceFamily": "SOCIAL_COOP_COMPETITION",
-          "value": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 6"
+          "value": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 14"
         },
         {
           "type": "GAME_REFERENCE",
           "value": "Kingdom Rush"
-        },
-        {
-          "type": "GAME_REFERENCE",
-          "value": "Bloons TD 6"
-        },
-        {
-          "type": "GAME_REFERENCE",
-          "value": "Plants vs. Zombies 2"
         }
       ],
       "REFERENCE_GAMES": [
-        "Kingdom Rush",
-        "Bloons TD 6",
-        "Plants vs. Zombies 2"
+        "Kingdom Rush"
       ],
       "CORE_FUN_TO_LEARN": [
-        "Strategic Base Building",
-        "Resource Management",
-        "Tactical Combat"
+        "Puzzle Solving",
+        "Strategic Planning"
       ],
       "CORE_LOOP": [
         "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
         "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
         "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
       ],
-      "DISTINCT_IDENTITY": "Historical Setting and Tactical Combat",
+      "DISTINCT_IDENTITY": "Unique Puzzle Mechanics",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -761,11 +771,11 @@
           }
         ]
       },
-      "TARGET_AUDIENCE": "Players who enjoy strategic base-building and tactical combat with a historical theme.",
+      "TARGET_AUDIENCE": "Puzzle Enthusiasts",
       "TARGET_SESSION_MINUTES": 30,
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "UNITY",
-      "INITIAL_PLAY_MODE": "SINGLE",
+      "INITIAL_PLAY_MODE": "COOP",
       "MULTIPLAYER_DESIGN_MODE": "COOP",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
       "MULTIPLAYER_QA_REQUIRED": true,
@@ -775,8 +785,8 @@
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
       "portfolioSeedRequestId": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "semanticNormalization": {
         "repaired": true,
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
@@ -787,28 +797,39 @@
     {
       "version": 2,
       "seedId": "SEED-UNITY-PUZZLE-001",
-      "gameId": "seed-unity-puzzle-roman-ruins",
-      "gameName": "Roman Ruins",
+      "gameId": "seed-unity-puzzle-chronos-cipher",
+      "gameName": "Chronos' Cipher",
       "status": "ACTIVE",
       "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
       "GAME_CATEGORY": "PUZZLE",
       "SEED_MATERIAL_IDS": [
-        "MAT-007",
-        "MAT-008",
+        "MAT-003",
+        "MAT-015",
         "MAT-009"
       ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 1,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
       "REFERENCE_INPUTS": [
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-007",
-          "sourceFamily": "SURVIVAL_ESCAPE_RISK",
-          "value": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 7"
+          "id": "MAT-003",
+          "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+          "value": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 3"
         },
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-008",
-          "sourceFamily": "SPACE_BUILDING_OPERATION",
-          "value": "SPACE_BUILDING_OPERATION에서 얻은 독립 게임 재료 8"
+          "id": "MAT-015",
+          "sourceFamily": "SPORT_BOARD_PLAY_RULE",
+          "value": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 15"
         },
         {
           "type": "SEED_MATERIAL",
@@ -819,27 +840,21 @@
         {
           "type": "GAME_REFERENCE",
           "value": "Royal Match"
-        },
-        {
-          "type": "GAME_REFERENCE",
-          "value": "Block Blast!"
         }
       ],
       "REFERENCE_GAMES": [
-        "Royal Match",
-        "Block Blast!"
+        "Royal Match"
       ],
       "CORE_FUN_TO_LEARN": [
-        "Puzzle Solving",
-        "Spatial Reasoning",
-        "Pattern Recognition"
+        "Pattern Recognition",
+        "Logical Deduction"
       ],
       "CORE_LOOP": [
         "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
         "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
         "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
       ],
-      "DISTINCT_IDENTITY": "Ancient Roman Civilization and Architecture",
+      "DISTINCT_IDENTITY": "Time-Based Puzzle Mechanics",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -1167,22 +1182,22 @@
           }
         ]
       },
-      "TARGET_AUDIENCE": "Players who enjoy puzzle games with a historical theme.",
+      "TARGET_AUDIENCE": "Puzzle Puzzle Enthusiasts",
       "TARGET_SESSION_MINUTES": 30,
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "UNITY",
       "INITIAL_PLAY_MODE": "SINGLE",
-      "MULTIPLAYER_DESIGN_MODE": "COOP",
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
       "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
-      "MULTIPLAYER_QA_REQUIRED": true,
+      "MULTIPLAYER_QA_REQUIRED": false,
       "CROSS_PLATFORM_EXPANSION_VALUE": "High",
       "STEAM_EXPANSION_POSSIBLE": "NOT_RECOMMENDED",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
       "portfolioSeedRequestId": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "semanticNormalization": {
         "repaired": true,
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
@@ -1193,34 +1208,45 @@
     {
       "version": 2,
       "seedId": "SEED-UNITY-CASUAL-001",
-      "gameId": "seed-unity-casual-victorian-inventor",
-      "gameName": "Victorian Inventor",
+      "gameId": "seed-unity-casual-echoes-of-the-forest",
+      "gameName": "Echoes of the Forest",
       "status": "ACTIVE",
       "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
       "GAME_CATEGORY": "CASUAL",
       "SEED_MATERIAL_IDS": [
-        "MAT-010",
-        "MAT-011",
-        "MAT-012"
+        "MAT-004",
+        "MAT-100",
+        "MAT-016"
       ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 1,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
       "REFERENCE_INPUTS": [
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-010",
+          "id": "MAT-004",
+          "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
+          "value": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 4"
+        },
+        {
+          "type": "SEED_MATERIAL",
+          "id": "MAT-100",
           "sourceFamily": "FREE_ORIGINAL_IDEA",
-          "value": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 10"
+          "value": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 100"
         },
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-011",
-          "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
-          "value": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 11"
-        },
-        {
-          "type": "SEED_MATERIAL",
-          "id": "MAT-012",
-          "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
-          "value": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 12"
+          "id": "MAT-016",
+          "sourceFamily": "SOCIAL_COOP_COMPETITION",
+          "value": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 16"
         },
         {
           "type": "GAME_REFERENCE",
@@ -1229,28 +1255,23 @@
         {
           "type": "GAME_REFERENCE",
           "value": "Crossy Road"
-        },
-        {
-          "type": "GAME_REFERENCE",
-          "value": "Angry Birds 2"
         }
       ],
       "REFERENCE_GAMES": [
         "Subway Surfers",
-        "Crossy Road",
-        "Angry Birds 2"
+        "Crossy Road"
       ],
       "CORE_FUN_TO_LEARN": [
-        "Creative Problem Solving",
-        "Resource Management",
-        "Experimentation"
+        "Simple Gameplay",
+        "Resource Gathering",
+        "Progression"
       ],
       "CORE_LOOP": [
         "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
         "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ],
-      "DISTINCT_IDENTITY": "Steampunk and Victorian Aesthetics",
+      "DISTINCT_IDENTITY": "Nature-Based Progression",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -1570,7 +1591,7 @@
           }
         ]
       },
-      "TARGET_AUDIENCE": "Players who enjoy casual puzzle games with a creative and engaging experience.",
+      "TARGET_AUDIENCE": "Casual Gamers",
       "TARGET_SESSION_MINUTES": 30,
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "UNITY",
@@ -1584,8 +1605,8 @@
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
       "portfolioSeedRequestId": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "semanticNormalization": {
         "repaired": true,
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
@@ -1596,64 +1617,70 @@
     {
       "version": 2,
       "seedId": "SEED-UNITY-IDLE_GROWTH_RPG-001",
-      "gameId": "seed-unity-idle-growth-rpg-medieval-guild",
-      "gameName": "Medieval Guild",
+      "gameId": "seed-unity-idle-growth-rpg-veridia-s-bloom",
+      "gameName": "Veridia's Bloom",
       "status": "ACTIVE",
       "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
       "GAME_CATEGORY": "IDLE_GROWTH_RPG",
       "SEED_MATERIAL_IDS": [
-        "MAT-013",
-        "MAT-014",
-        "MAT-015"
+        "MAT-005",
+        "MAT-023",
+        "MAT-011"
       ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 1,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
       "REFERENCE_INPUTS": [
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-013",
-          "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
-          "value": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 13"
-        },
-        {
-          "type": "SEED_MATERIAL",
-          "id": "MAT-014",
-          "sourceFamily": "NATURE_ECOLOGY_SCIENCE",
-          "value": "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 14"
-        },
-        {
-          "type": "SEED_MATERIAL",
-          "id": "MAT-015",
+          "id": "MAT-005",
           "sourceFamily": "SPORT_BOARD_PLAY_RULE",
-          "value": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 15"
+          "value": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 5"
         },
         {
-          "type": "GAME_REFERENCE",
-          "value": "AFK Arena"
+          "type": "SEED_MATERIAL",
+          "id": "MAT-023",
+          "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
+          "value": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 23"
         },
         {
-          "type": "GAME_REFERENCE",
-          "value": "Legend of Slime"
+          "type": "SEED_MATERIAL",
+          "id": "MAT-011",
+          "sourceFamily": "SUCCESSFUL_GAME_STRUCTURE",
+          "value": "SUCCESSFUL_GAME_STRUCTURE에서 얻은 독립 게임 재료 11"
         },
         {
           "type": "GAME_REFERENCE",
           "value": "Idle Heroes"
+        },
+        {
+          "type": "GAME_REFERENCE",
+          "value": "Tap Titans 2"
         }
       ],
       "REFERENCE_GAMES": [
-        "AFK Arena",
-        "Legend of Slime",
-        "Idle Heroes"
+        "Idle Heroes",
+        "Tap Titans 2"
       ],
       "CORE_FUN_TO_LEARN": [
         "Resource Management",
-        "Base Building",
-        "Production"
+        "Growth Progression",
+        "Automation"
       ],
       "CORE_LOOP": [
         "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
         "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
         "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
       ],
-      "DISTINCT_IDENTITY": "Medieval Fantasy and Guild Management",
+      "DISTINCT_IDENTITY": "Dynamic Growth",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -1957,7 +1984,7 @@
           }
         ]
       },
-      "TARGET_AUDIENCE": "Players who enjoy idle games with a focus on resource management and base building.",
+      "TARGET_AUDIENCE": "Casual Gamers",
       "TARGET_SESSION_MINUTES": 30,
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "UNITY",
@@ -1971,8 +1998,8 @@
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
       "portfolioSeedRequestId": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "semanticNormalization": {
         "repaired": true,
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
@@ -1983,28 +2010,39 @@
     {
       "version": 2,
       "seedId": "SEED-UNITY-STORY_COMPLETE_RPG-001",
-      "gameId": "seed-unity-story-complete-rpg-the-lost-kingdom",
-      "gameName": "The Lost Kingdom",
+      "gameId": "seed-unity-story-complete-rpg-the-lost-chronicles-of-aethel",
+      "gameName": "The Lost Chronicles of Aethel",
       "status": "ACTIVE",
       "generation": "HISTORICAL_INITIAL_BOOTSTRAP",
       "GAME_CATEGORY": "STORY_COMPLETE_RPG",
       "SEED_MATERIAL_IDS": [
-        "MAT-016",
-        "MAT-017",
+        "MAT-006",
+        "MAT-012",
         "MAT-018"
       ],
+      "SEED_MATERIAL_COUNT": 3,
+      "SEED_MATERIAL_SELECTION_MODE": "DYNAMIC_CONTEXTUAL_2_TO_4",
+      "SEED_MATERIAL_SELECTION_SIGNALS": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT": 1,
+      "SEED_CATEGORY_SELECTION_ROLE": "HISTORICAL_BASELINE",
       "REFERENCE_INPUTS": [
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-016",
+          "id": "MAT-006",
           "sourceFamily": "SOCIAL_COOP_COMPETITION",
-          "value": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 16"
+          "value": "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 6"
         },
         {
           "type": "SEED_MATERIAL",
-          "id": "MAT-017",
-          "sourceFamily": "SURVIVAL_ESCAPE_RISK",
-          "value": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 17"
+          "id": "MAT-012",
+          "sourceFamily": "STORY_OR_NARRATIVE_STRUCTURE",
+          "value": "STORY_OR_NARRATIVE_STRUCTURE에서 얻은 독립 게임 재료 12"
         },
         {
           "type": "SEED_MATERIAL",
@@ -2031,8 +2069,8 @@
         "DRAGON QUEST VIII"
       ],
       "CORE_FUN_TO_LEARN": [
-        "Story Driven Gameplay",
-        "Character Progression",
+        "Story Driven",
+        "Character Development",
         "Quest Completion"
       ],
       "CORE_LOOP": [
@@ -2040,7 +2078,7 @@
         "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
         "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
       ],
-      "DISTINCT_IDENTITY": "Epic Fantasy and Time Travel",
+      "DISTINCT_IDENTITY": "Epic Story",
       "MARKET_EVIDENCE_SUMMARY": {
         "role": "TARGET_DESIGN_REFERENCE",
         "targetMarketScope": "GLOBAL",
@@ -2344,7 +2382,7 @@
           }
         ]
       },
-      "TARGET_AUDIENCE": "Players who enjoy story driven games with a rich world and complex characters.",
+      "TARGET_AUDIENCE": "RPG Enthusiasts",
       "TARGET_SESSION_MINUTES": 30,
       "TARGET_SESSION_DIRECTION": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
       "INITIAL_TARGET_PLATFORM": "UNITY",
@@ -2358,8 +2396,8 @@
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
       "COMMERCIAL_RULE": "INITIAL_GAME_MUST_BE_SELLABLE_OR_MONETIZABLE_FOR_ITS_SELECTED_PLATFORM",
       "portfolioSeedRequestId": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "semanticNormalization": {
         "repaired": true,
         "reason": "PLATFORM_PROFILE_SEMANTIC_ORIGINALITY_REPAIR",
@@ -2379,9 +2417,9 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
       "consumedBySeedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001"
     },
     {
@@ -2394,10 +2432,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001"
     },
     {
       "materialId": "MAT-003",
@@ -2409,10 +2447,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-PUZZLE-001"
     },
     {
       "materialId": "MAT-004",
@@ -2424,10 +2462,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-CASUAL-001"
     },
     {
       "materialId": "MAT-005",
@@ -2439,10 +2477,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001"
     },
     {
       "materialId": "MAT-006",
@@ -2454,14 +2492,14 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001"
     },
     {
       "materialId": "MAT-007",
-      "status": "CONSUMED",
+      "status": "AVAILABLE",
       "sourceFamily": "SURVIVAL_ESCAPE_RISK",
       "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 7",
@@ -2469,10 +2507,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-PUZZLE-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
     },
     {
       "materialId": "MAT-008",
@@ -2484,10 +2522,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-PUZZLE-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001"
     },
     {
       "materialId": "MAT-009",
@@ -2499,14 +2537,14 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
       "consumedBySeedId": "SEED-UNITY-PUZZLE-001"
     },
     {
       "materialId": "MAT-010",
-      "status": "CONSUMED",
+      "status": "AVAILABLE",
       "sourceFamily": "FREE_ORIGINAL_IDEA",
       "categoryHint": "CASUAL",
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 10",
@@ -2514,10 +2552,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-CASUAL-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
     },
     {
       "materialId": "MAT-011",
@@ -2529,10 +2567,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-CASUAL-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001"
     },
     {
       "materialId": "MAT-012",
@@ -2544,10 +2582,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-CASUAL-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001"
     },
     {
       "materialId": "MAT-013",
@@ -2559,10 +2597,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001"
     },
     {
       "materialId": "MAT-014",
@@ -2574,10 +2612,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-SINGLE_DEFENSE_STRATEGY-001"
     },
     {
       "materialId": "MAT-015",
@@ -2589,10 +2627,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-PUZZLE-001"
     },
     {
       "materialId": "MAT-016",
@@ -2604,14 +2642,14 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-CASUAL-001"
     },
     {
       "materialId": "MAT-017",
-      "status": "CONSUMED",
+      "status": "AVAILABLE",
       "sourceFamily": "SURVIVAL_ESCAPE_RISK",
       "categoryHint": "IDLE_GROWTH_RPG",
       "concept": "SURVIVAL_ESCAPE_RISK에서 얻은 독립 게임 재료 17",
@@ -2619,10 +2657,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
-      "consumedBySeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001"
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
+      "consumedAt": null,
+      "consumedBySeedId": null
     },
     {
       "materialId": "MAT-018",
@@ -2634,9 +2672,9 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
-      "consumedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
       "consumedBySeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001"
     },
     {
@@ -2649,8 +2687,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2664,8 +2702,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2679,8 +2717,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2694,14 +2732,14 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
     {
       "materialId": "MAT-023",
-      "status": "AVAILABLE",
+      "status": "CONSUMED",
       "sourceFamily": "REAL_JOB_INDUSTRY_LIFE",
       "categoryHint": "IDLE_GROWTH_RPG",
       "concept": "REAL_JOB_INDUSTRY_LIFE에서 얻은 독립 게임 재료 23",
@@ -2709,10 +2747,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
-      "consumedAt": null,
-      "consumedBySeedId": null
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-IDLE_GROWTH_RPG-001"
     },
     {
       "materialId": "MAT-024",
@@ -2724,14 +2762,14 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
     {
       "materialId": "MAT-025",
-      "status": "AVAILABLE",
+      "status": "CONSUMED",
       "sourceFamily": "SPORT_BOARD_PLAY_RULE",
       "categoryHint": "ACTION_SURVIVAL_ROGUELITE",
       "concept": "SPORT_BOARD_PLAY_RULE에서 얻은 독립 게임 재료 25",
@@ -2739,10 +2777,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
-      "consumedAt": null,
-      "consumedBySeedId": null
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-ACTION_SURVIVAL_ROGUELITE-001"
     },
     {
       "materialId": "MAT-026",
@@ -2754,8 +2792,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2769,8 +2807,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2784,8 +2822,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2799,8 +2837,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2814,8 +2852,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2829,8 +2867,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2844,8 +2882,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2859,8 +2897,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2874,8 +2912,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2889,8 +2927,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2904,8 +2942,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2919,8 +2957,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2934,8 +2972,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2949,8 +2987,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2964,8 +3002,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2979,8 +3017,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -2994,8 +3032,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3009,8 +3047,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3024,8 +3062,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3039,8 +3077,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3054,8 +3092,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3069,8 +3107,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3084,8 +3122,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3099,8 +3137,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3114,8 +3152,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3129,8 +3167,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3144,8 +3182,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3159,8 +3197,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3174,8 +3212,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3189,8 +3227,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3204,8 +3242,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3219,8 +3257,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3234,8 +3272,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3249,8 +3287,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3264,8 +3302,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3279,8 +3317,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3294,8 +3332,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3309,8 +3347,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3324,8 +3362,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3339,8 +3377,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3354,8 +3392,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3369,8 +3407,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3384,8 +3422,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3399,8 +3437,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3414,8 +3452,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3429,8 +3467,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3444,8 +3482,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3459,8 +3497,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3474,8 +3512,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3489,8 +3527,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3504,8 +3542,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3519,8 +3557,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3534,8 +3572,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3549,8 +3587,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3564,8 +3602,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3579,8 +3617,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3594,8 +3632,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3609,8 +3647,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3624,8 +3662,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3639,8 +3677,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3654,8 +3692,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3669,8 +3707,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3684,8 +3722,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3699,8 +3737,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3714,8 +3752,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3729,8 +3767,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3744,8 +3782,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3759,8 +3797,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3774,8 +3812,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3789,8 +3827,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3804,8 +3842,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3819,8 +3857,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3834,8 +3872,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3849,14 +3887,14 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.772Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
     {
       "materialId": "MAT-100",
-      "status": "AVAILABLE",
+      "status": "CONSUMED",
       "sourceFamily": "FREE_ORIGINAL_IDEA",
       "categoryHint": "CASUAL",
       "concept": "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 100",
@@ -3864,10 +3902,10 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.504Z",
-      "updatedAt": "2026-09-13T15:12:01.504Z",
-      "consumedAt": null,
-      "consumedBySeedId": null
+      "createdAt": "2026-09-14T01:05:05.772Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
+      "consumedAt": "2026-09-14T01:05:05.774Z",
+      "consumedBySeedId": "SEED-UNITY-CASUAL-001"
     },
     {
       "materialId": "MAT-101",
@@ -3879,8 +3917,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3894,8 +3932,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3909,8 +3947,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3924,8 +3962,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3939,8 +3977,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3954,8 +3992,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3969,8 +4007,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3984,8 +4022,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -3999,8 +4037,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -4014,8 +4052,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -4029,8 +4067,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -4044,8 +4082,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -4059,8 +4097,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -4074,8 +4112,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -4089,8 +4127,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -4104,8 +4142,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -4119,8 +4157,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     },
@@ -4134,8 +4172,8 @@
       "setting": "원본 표현을 복제하지 않고 새 세계관으로 재해석",
       "learningPreference": null,
       "learningAvoid": null,
-      "createdAt": "2026-09-13T15:12:01.506Z",
-      "updatedAt": "2026-09-13T15:12:01.506Z",
+      "createdAt": "2026-09-14T01:05:05.774Z",
+      "updatedAt": "2026-09-14T01:05:05.774Z",
       "consumedAt": null,
       "consumedBySeedId": null
     }
@@ -4168,11 +4206,44 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-09-14T00:27:08.807Z"
+    "lastReplenishedAt": "2026-09-14T01:06:32.044Z",
+    "bootstrapCategories": [
+      "ACTION_SURVIVAL_ROGUELITE",
+      "SINGLE_DEFENSE_STRATEGY",
+      "PUZZLE",
+      "CASUAL",
+      "IDLE_GROWTH_RPG",
+      "STORY_COMPLETE_RPG"
+    ],
+    "bootstrapCategoryRole": "HISTORICAL_BASELINE_AND_FALLBACK_ONLY",
+    "lastComposition": {
+      "count": 3,
+      "platform": "UNITY",
+      "category": "STORY_COMPLETE_RPG",
+      "top30ReferenceCount": 0,
+      "signals": [
+        "TARGET_PLATFORM_FIT",
+        "CATEGORY_OR_GENRE_FIT",
+        "MATERIAL_COMPLEMENTARITY",
+        "VALIDATED_LEARNING_OUTCOME",
+        "TOP30_DIFFERENTIATION"
+      ],
+      "selectedMaterialIds": [
+        "MAT-006",
+        "MAT-012",
+        "MAT-018"
+      ],
+      "selectedFamilies": [
+        "SOCIAL_COOP_COMPETITION",
+        "STORY_OR_NARRATIVE_STRUCTURE",
+        "SPACE_BUILDING_OPERATION"
+      ],
+      "updatedAt": "2026-09-14T01:05:05.788Z"
+    }
   },
   "platformSets": {},
   "portfolioSeedRequests": [],
-  "bootstrapCompletedAt": "2026-09-13T15:12:01.506Z",
+  "bootstrapCompletedAt": "2026-09-14T01:05:05.774Z",
   "initialBatchCount": 6,
   "initialBatchCategories": [
     "ACTION_SURVIVAL_ROGUELITE",
@@ -4182,115 +4253,6 @@
     "IDLE_GROWTH_RPG",
     "STORY_COMPLETE_RPG"
   ],
-  "lastRunAt": "2026-09-13T15:12:01.506Z",
-  "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
-  "seedMaterialLearning": {
-    "events": [
-      {
-        "gameId": "bug-defense",
-        "seedId": "OWNER-RESET-BUG-DEFENSE-20260913",
-        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
-        "verdict": "PASS",
-        "totalScore": 100,
-        "hardFailures": [],
-        "materialFamilies": [],
-        "validatedRealEvidence": true,
-        "reviewContextSource": "FROZEN_DESIGN_BASELINE",
-        "recordedAt": "2026-09-13T16:06:56.350Z"
-      },
-      {
-        "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
-        "seedId": "SEED-ROBLOX-STORY_RPG_ADVENTURE_RPG-001",
-        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
-        "runtimeTarget": "web",
-        "verdict": "PASS",
-        "totalScore": 100,
-        "previousScore": null,
-        "scoreDelta": null,
-        "hardFailures": [],
-        "resolvedHardFailures": [],
-        "addedHardFailures": [],
-        "improvementTargets": [],
-        "learningSignal": "POSITIVE_SUCCESS",
-        "materialFamilies": [],
-        "validatedRealEvidence": true,
-        "reviewContextSource": "FROZEN_DESIGN_BASELINE",
-        "recordedAt": "2026-09-13T18:26:56.346Z"
-      },
-      {
-        "gameId": "seed-roblox-survival-horror-es-doors",
-        "seedId": "SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001",
-        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
-        "runtimeTarget": "web",
-        "verdict": "PASS",
-        "totalScore": 100,
-        "previousScore": null,
-        "scoreDelta": null,
-        "hardFailures": [],
-        "resolvedHardFailures": [],
-        "addedHardFailures": [],
-        "improvementTargets": [],
-        "learningSignal": "POSITIVE_SUCCESS",
-        "materialFamilies": [],
-        "validatedRealEvidence": true,
-        "reviewContextSource": "FROZEN_DESIGN_BASELINE",
-        "recordedAt": "2026-09-13T21:00:40.612Z"
-      },
-      {
-        "gameId": "seed-roblox-simulator-tycoon-i-adopt-me",
-        "seedId": "SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001",
-        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
-        "runtimeTarget": "web",
-        "verdict": "PASS",
-        "totalScore": 100,
-        "previousScore": null,
-        "scoreDelta": null,
-        "hardFailures": [],
-        "resolvedHardFailures": [],
-        "addedHardFailures": [],
-        "improvementTargets": [],
-        "learningSignal": "POSITIVE_SUCCESS",
-        "materialFamilies": [],
-        "validatedRealEvidence": true,
-        "reviewContextSource": "FROZEN_DESIGN_BASELINE",
-        "recordedAt": "2026-09-13T21:28:45.692Z"
-      },
-      {
-        "gameId": "seed-idle-growth-rpg-crystal-bloom",
-        "seedId": "SEED-IDLE_GROWTH_RPG-001",
-        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
-        "runtimeTarget": "web",
-        "verdict": "PASS",
-        "totalScore": 100,
-        "previousScore": null,
-        "scoreDelta": null,
-        "hardFailures": [],
-        "resolvedHardFailures": [],
-        "addedHardFailures": [],
-        "improvementTargets": [],
-        "learningSignal": "POSITIVE_SUCCESS",
-        "materialFamilies": [],
-        "validatedRealEvidence": true,
-        "reviewContextSource": "FROZEN_DESIGN_BASELINE+CANONICAL_DEVELOPMENT_QUEUE",
-        "recordedAt": "2026-09-14T00:31:04.146Z"
-      }
-    ],
-    "causeCounts": {},
-    "preferSeedMaterialFamilies": [],
-    "avoidSeedMaterialFamilies": [],
-    "rules": {
-      "designOpinionDoesNotBecomeTrainingSuccess": true,
-      "validatedRuntimeRequiredForPreferenceSignals": true,
-      "failuresAndFixesRetained": true,
-      "scoreDeltaAndFixOutcomeRetained": true,
-      "partial80To89IsImprovementSignalNotPositiveSuccess": true,
-      "positiveSuccessRequires90PlusAndHardGateClear": true,
-      "copyOriginalExpressionForbidden": true,
-      "signalsGuideSelectionButDoNotForceCopy": true
-    },
-    "updatedAt": "2026-09-14T00:31:04.146Z"
-  }
-}
-8:52.568Z"
-  }
+  "lastRunAt": "2026-09-14T01:05:05.774Z",
+  "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP"
 }
