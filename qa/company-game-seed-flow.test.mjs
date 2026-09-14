@@ -171,11 +171,14 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   }
   assert.match(seedWorkflow,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
+  assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_RUNS=/);
+  assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION=SKIP_ACTIVE_BATCH/);
+  assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
   assert.match(seedDesignWorkflow,/game-seed-state\.json/);
-  assert.match(seedDesignWorkflow,/max-parallel: 3/);
-  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=3/);
+  assert.match(seedDesignWorkflow,/max-parallel: 6/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=6/);
   assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
-  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '75000'/);
+  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '150000'/);
   assert.match(design,/AbortSignal\.timeout\(modelCallTimeoutMs\)/);
 });
 
