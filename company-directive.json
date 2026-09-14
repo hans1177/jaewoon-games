@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 37,
-  "updatedAt": "2026-09-13",
+  "revision": 38,
+  "updatedAt": "2026-09-14",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
   "instruction": "Use COMPANY_FLOW.md as the machine-oriented production policy source of truth. This file mirrors executable values and invariant flags only and cannot create policy.",
@@ -559,7 +559,7 @@
     }
   },
   "platformStrategy": {
-    "ownerDirectiveRecordedAt": "2026-09-12",
+    "ownerDirectiveRecordedAt": "2026-09-14",
     "primaryPlatform": "ROBLOX",
     "priority": [
       "ROBLOX",
@@ -698,6 +698,11 @@
     "officialCardRequiresPromotion": true
   },
   "productionThroughput": {
+    "concurrentGameWipTarget": 6,
+    "concurrentGameWipMax": 6,
+    "concurrentGameWipScope": "GLOBAL_SELECTED_PLATFORM_DEVELOPMENT",
+    "webValidationParallelismControlledSeparately": true,
+    "runtimeCapacityMayReduceActiveWorkers": true,
     "optimizationBudget": {
       "blockingBudgetMinutes": 10,
       "maxAttemptsPerOptimizationPass": 2,

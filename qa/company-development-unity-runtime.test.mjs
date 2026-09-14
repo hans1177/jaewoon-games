@@ -85,9 +85,14 @@ test('optional Web evidence must be a real PASS when supplied',()=>{
   assert.match(run.stderr,/OPTIONAL_WEB_EVIDENCE_MUST_PASS_WHEN_PROVIDED/);
 });
 
-test('Unity executor implements bounded WIP canary and exact-stage resume sequence',()=>{
+test('Unity executor implements six-game WIP canary and exact-stage resume sequence',()=>{
+  assert.match(workflowSource,/DEVELOPMENT_GAME_WIP_MAX/);
+  assert.match(workflowSource,/selectTargetPlatformDevelopmentWindow/);
   assert.match(workflowSource,/selectRepresentativeCanary/);
-  assert.match(workflowSource,/Math\.min\(3,selected\.length\|\|1\)/);
+  assert.match(workflowSource,/Math\.min\(DEVELOPMENT_GAME_WIP_MAX,selected\.length\|\|1\)/);
+  assert.match(workflowSource,/DEVELOPMENT_GAME_WIP_MAX=6/);
+  assert.match(workflowSource,/DEVELOPMENT_GAME_WIP_SCOPE=GLOBAL_SELECTED_PLATFORM_DEVELOPMENT/);
+  assert.match(workflowSource,/WEB_VALIDATION_PARALLELISM_CHANGED=NO/);
   assert.match(workflowSource,/REPRESENTATIVE_CANARY=/);
   assert.match(workflowSource,/COMMON_FAILURE_DETECTED=/);
   assert.match(workflowSource,/CHANGE_DETECTION=/);

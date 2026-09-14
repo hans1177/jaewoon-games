@@ -58,7 +58,7 @@ jobs:
         id: main
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
-      - name: Resolve Unity work with representative canary and common-failure dedupe
+      - name: Resolve Unity work with global six-game window and representative canary
         id: queue
         shell: bash
         run: |
@@ -67,9 +67,12 @@ jobs:
           git show origin/company-runtime:development-queue.json > /tmp/development-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import {resolveSelectedPlatform,selectRepresentativeCanary} from './tools/company-selected-platform-router.mjs';
+          import {DEVELOPMENT_GAME_WIP_MAX,resolveSelectedPlatform,selectRepresentativeCanary,selectTargetPlatformDevelopmentWindow} from './tools/company-selected-platform-router.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
+          const globalWindow=selectTargetPlatformDevelopmentWindow(q.items||[]);
+          const windowIds=new Set(globalWindow.map(item=>item.gameId));
           const rows=(q.items||[]).filter(item=>{
+            if(!windowIds.has(item.gameId))return false;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')return false;
             if(resolveSelectedPlatform(item)!=='UNITY')return false;
@@ -97,12 +100,14 @@ jobs:
           const migrationCanary=Number(q.executionContractVersion||0)<1;
           const canaryRequired=rows.length>0&&(migrationCanary||repeated);
           const canary=canaryRequired?selectRepresentativeCanary(rows):null;
-          const selected=canary?[canary]:rows.slice(0,3);
-          const parallel=Math.max(1,Math.min(3,selected.length||1));
+          const selected=canary?[canary]:rows.slice(0,DEVELOPMENT_GAME_WIP_MAX);
+          const parallel=Math.max(1,Math.min(DEVELOPMENT_GAME_WIP_MAX,selected.length||1));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${selected.length?'true':'false'}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify(selected)}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`parallel=${parallel}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`canary=${canary?'true':'false'}\n`);
+          console.log(`DEVELOPMENT_GAME_WIP_MAX=${DEVELOPMENT_GAME_WIP_MAX}`);
+          console.log(`DEVELOPMENT_GAME_WIP_WINDOW_IDS=${globalWindow.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`UNITY_TARGET_N=${rows.length}`);
           console.log(`UNITY_SELECTED_N=${selected.length}`);
           console.log(`REPRESENTATIVE_CANARY=${canary?.gameId||'NONE'}`);
@@ -648,10 +653,12 @@ jobs:
           let anyPassed=false,anyFailed=false;
           for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);if(update.contractCanaryPassed)queue.executionContractVersion=1;if(update.executionEvidence?.failureStage)anyFailed=true;else anyPassed=true;}
           queue.executionContract='CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT';
+          queue.developmentGameWipMax=6;
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           fs.writeFileSync('/tmp/persist-result.json',JSON.stringify({count:updates.length,anyPassed,anyFailed}));
           console.log(`DEVELOPMENT_UNITY_PERSIST_COUNT=${updates.length}`);
+          console.log('DEVELOPMENT_GAME_WIP_MAX=6');
           NODE
           git config user.name 'jaewoon-development-unity-runtime'
           git config user.email 'actions@users.noreply.github.com'
@@ -678,6 +685,9 @@ jobs:
       - name: Unity runtime summary
         if: always()
         run: |
+          echo 'DEVELOPMENT_GAME_WIP_MAX=6'
+          echo 'DEVELOPMENT_GAME_WIP_SCOPE=GLOBAL_SELECTED_PLATFORM_DEVELOPMENT'
+          echo 'WEB_VALIDATION_PARALLELISM_CHANGED=NO'
           echo 'CHANGE_DETECTION=ENABLED'
           echo 'CHEAP_PRECHECK=ENABLED'
           echo 'REPRESENTATIVE_CANARY=ENABLED'

@@ -55,6 +55,15 @@ ownerCurrentProductionContract:
     categorySelectionMayRoundRobin: true
     selectedPlatformMustDriveImplementationAndScoring: true
     webIsNotNativeDevelopmentSubstitute: true
+  developmentConcurrency:
+    scope: DEVELOPMENT_CONFIRMED_SELECTED_PLATFORM_GAME_IMPLEMENTATION
+    concurrentGameWipTarget: 6
+    concurrentGameWipMax: 6
+    globalAcrossConfiguredSelectedPlatformExecutors: true
+    webValidationParallelismUnchanged: true
+    qualityAndEvidenceGatesUnchanged: true
+    representativeCanaryMayTemporarilyReduceActiveWorkers: true
+    runtimeRunnerCapacityMaySerializeRuntimeQaWithoutReducingDevelopmentWipPolicy: true
   multiplayer:
     decisionStage: GAME_DESIGN
     allowedModes:
@@ -287,7 +296,10 @@ ownerCurrentProductionContract:
   productionThroughput:
     totalWebTestCandidateCountCap: null
     totalGameProductionCountCap: null
-    concurrentGameWipMax: 3
+    concurrentGameWipMax: 6
+    concurrentGameWipScope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
+    webValidationParallelismControlledSeparately: true
+    runtimeCapacityMayReduceActiveWorkers: true
     idleAutonomousProduction:
       enabled: true
       requiresNoHigherPriorityWorkForHours: 24
@@ -447,8 +459,10 @@ portfolioGovernance:
     forcedSixOfSixReleaseForbidden: true
     expansionBeyondRepresentativeSetAllowedWithFiveDepartmentScoreAndEvidence: true
     implementationWip:
-      target: 2
-      max: 3
+      target: 6
+      max: 6
+      scope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
+      webValidationParallelismUnchanged: true
     UNITY:
       preserveExistingHistoricalSix: true
       robloxSetMustNotConsumeOrRewriteUnitySet: true

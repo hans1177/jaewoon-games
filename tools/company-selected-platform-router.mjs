@@ -4,6 +4,7 @@ const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 
 export const SELECTED_PLATFORMS=Object.freeze(['ROBLOX','UNITY','FORTNITE_UEFN']);
+export const DEVELOPMENT_GAME_WIP_MAX=6;
 export const SPEED_EXECUTION_STAGES=Object.freeze([
   'CHANGE_DETECTION',
   'CHEAP_PRECHECK',
@@ -90,6 +91,46 @@ export function adapterForPlatform(value){
   const platform=normalizeSelectedPlatform(value);
   if(!platform)return null;
   return PLATFORM_EXECUTION_ADAPTERS[platform]||null;
+}
+
+export function targetPlatformDevelopmentEligible(item={}){
+  if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')return false;
+  const status=upper(item.status);
+  if(status!=='ACTIVE'&&status!=='PENDING')return false;
+  const state=upper(item.canonicalState);
+  if(state==='DEVELOPMENT_BLOCKED'||state==='DEVELOPMENT_BASELINE_READY')return false;
+  const step=upper(item.currentStep);
+  if(!['TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_TECHNICAL_VALIDATION','UNITY_ANDROID_TECHNICAL_VALIDATION'].includes(step))return false;
+  const platform=resolveSelectedPlatform(item);
+  const adapter=adapterForPlatform(platform);
+  if(!adapter?.existingExecutionPath)return false;
+  const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
+  const score=Number(item.webStrictScore??item.strictImplementationScore);
+  return Boolean(
+    item.webValidationPassedAt&&
+    item.musicValidationPassed===true&&
+    item.formalImplementationPassed===true&&
+    upper(item.formalImplementationVerdict)==='PASS'&&
+    Number.isFinite(score)&&score>=90&&
+    hard.length===0&&
+    Number(item.webValidationSchemaVersion)===13&&
+    item.webPromotionRevalidationPassed===true
+  );
+}
+
+export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX){
+  const limit=Math.max(0,Math.min(DEVELOPMENT_GAME_WIP_MAX,Number(max)||0));
+  return Object.freeze(items
+    .filter(targetPlatformDevelopmentEligible)
+    .map(item=>({...item,selectedPlatform:resolveSelectedPlatform(item)}))
+    .sort((a,b)=>{
+      const at=Date.parse(a.enqueuedAt||'')||0;
+      const bt=Date.parse(b.enqueuedAt||'')||0;
+      if(at!==bt)return at-bt;
+      return clean(a.gameId).localeCompare(clean(b.gameId));
+    })
+    .slice(0,limit)
+    .map(item=>Object.freeze(item)));
 }
 
 export function canonicalTargetWaitingState(){
