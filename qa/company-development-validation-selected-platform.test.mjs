@@ -10,9 +10,10 @@ test('DEVELOPMENT_CONFIRMED consumes canonical schema13 Web evidence and indepen
   assert.match(source,/web-gameplay-validation\.json/);
   assert.match(source,/company-web-validation-evidence-contract\.mjs/);
   assert.match(source,/evaluateWebValidationEvidence/);
+  assert.match(source,/minimumScore:WEB_HOMEPAGE_MINIMUM,requireFinalContentDepth:false/);
   assert.match(source,/minimumScore:WEB_HOMEPAGE_MINIMUM,requireFinalContentDepth:true/);
   assert.match(source,/minimumScore:WEB_PLATFORM_PROMOTION_MINIMUM,requireFinalContentDepth:true,requirePromotionRevalidation:true/);
-  assert.match(source,/homepage\.finalContentDepthPass===true/);
+  assert.match(source,/finalContentDepthPass:top30\.finalContentDepthPass/);
   assert.doesNotMatch(source,/\[\[0,5\],\[5,15\],\[15,25\],\[25,30\]\]/);
   assert.doesNotMatch(source,/GAMEPLAY_MILESTONE_DEPTH/);
   assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=13/);
@@ -21,6 +22,7 @@ test('DEVELOPMENT_CONFIRMED consumes canonical schema13 Web evidence and indepen
   assert.match(contract,/REAL_ELAPSED_GAMEPLAY/);
   assert.match(contract,/elapsedRealMilliseconds/);
   assert.match(source,/WAITING_WEB_GAMEPLAY_VALIDATION/);
+  assert.match(source,/WAITING_WEB_FINAL_CONTENT_DEPTH/);
   assert.match(source,/WAITING_WEB_GAMEPLAY_REVALIDATION/);
   assert.match(source,/WAITING_WEB_STRICT_IMPROVEMENT/);
   assert.match(source,/webValidationRequired:true/);

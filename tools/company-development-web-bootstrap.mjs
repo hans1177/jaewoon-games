@@ -185,6 +185,23 @@ function bindScopeIds(html,inventory){
   out=out.replace(/data-approved-scope-count=["']\d+["']/i,`data-approved-scope-count="${inventory.length}"`);
   return out;
 }
+function preparePreservedStandaloneHtml(html,inventory){
+  return bindInitialCycleContract(bindScopeIds(html,inventory),inventory.length);
+}
+function preservedResult({gameId,gameName,html,inventory,notes=[]}){
+  const review=validatePreservedSourceHtml(html,{scopeInventory:inventory});
+  if(!review.pass)return null;
+  return{
+    html,review,
+    validationQuestion:`${gameName||gameId} 기존 실제 Web 게임 보존 재검증`,
+    implementationNotes:[...notes,'approved scopes rebound to current frozen DESIGN_BASELINE','obsolete initial time-stage validation UI removed without changing gameplay rules','one complete playable gameplay cycle required before final content-depth validation'],
+    generationMode:'SOURCE_PRESERVED_REAL_GAME',
+    approvedScopeInventory:inventory,
+    initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,
+    finalContentDepth:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING'},
+    artifactType:REAL_ARTIFACT_TYPE
+  };
+}
 function buildPreservedSharedGame({gameId,gameName,sourcePath,inventory}){
   const indexFile=path.join(sourcePath,'index.html');
   if(!fs.existsSync(indexFile)||!fs.existsSync(SHARED_REAL_ENGINE))return null;
@@ -196,18 +213,16 @@ function buildPreservedSharedGame({gameId,gameName,sourcePath,inventory}){
   engine=bindInitialCycleContract(engine,inventory.length);
   if(!/data-web-artifact-type=["']REAL_PLAYABLE_GAME/i.test(engine))engine=engine.replace('<main ',`<main data-web-artifact-type="${REAL_ARTIFACT_TYPE}" data-approved-scope-count="${inventory.length}" data-gameplay-system-count="7" data-run-result="running" `);
   const validation=`<script>window.GAME_CONFIG=window.GAME_CONFIG||{};window.GAME_CONFIG.validationScopes=${JSON.stringify(inventory.map(x=>({id:x.id,path:x.path,label:x.label})))};</script>`;
-  const html=original.replace(sharedScript,`${validation}<script>${engine}</script>`),review=validatePreservedSourceHtml(html,{scopeInventory:inventory});
-  if(!review.pass)throw new Error(`PRESERVED_REAL_GAME_CONTRACT_FAILED:${review.blockers.join('|')}`);
-  return{
-    html,review,
-    validationQuestion:`${gameName||gameId} 기존 실제 Web 게임 보존 재검증`,
-    implementationNotes:['existing real game source preserved before compiler fallback','shared runtime inlined for immutable source binding','save key and gameplay state retained','approved scopes bound to real gameplay controls','one complete playable gameplay cycle required before content-depth expansion'],
-    generationMode:'SOURCE_PRESERVED_REAL_GAME',
-    approvedScopeInventory:inventory,
-    initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,
-    finalContentDepth:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING'},
-    artifactType:REAL_ARTIFACT_TYPE
-  };
+  const html=original.replace(sharedScript,`${validation}<script>${engine}</script>`);
+  return preservedResult({gameId,gameName,html,inventory,notes:['existing shared real game source preserved before Vibe2 regeneration','shared runtime inlined for immutable source binding','save key and gameplay state retained']});
+}
+function buildPreservedStandaloneGame({gameId,gameName,sourcePath,inventory}){
+  const indexFile=path.join(sourcePath,'index.html');
+  if(!fs.existsSync(indexFile))return null;
+  const original=fs.readFileSync(indexFile,'utf8');
+  if(/<script\b[^>]*src=["']\/web-games\/_shared\/vibe2-final\.js["']/i.test(original))return null;
+  const html=preparePreservedStandaloneHtml(original,inventory);
+  return preservedResult({gameId,gameName,html,inventory,notes:['existing standalone real game source preserved before Vibe2 regeneration','gameplay state machine, controls, win/fail rules and visual surface retained']});
 }
 function buildCanonicalGame({template,gameName,baseline,inventory,fallbackName,fallbackCore,validationQuestion,implementationNotes}){
   if(!fs.existsSync(template))throw new Error(`CANONICAL_REAL_GAME_TEMPLATE_MISSING:${template}`);
@@ -271,7 +286,7 @@ async function buildVibePlayable({gameId,gameName,baseline,inventory,model}){
   for(let attempt=1;attempt<=MODEL_ATTEMPTS;attempt++){
     try{
       const candidate=await callModel({model,prompt,repair:failures.at(-1)||''});
-      const html=String(candidate?.html||'');
+      const html=bindInitialCycleContract(String(candidate?.html||''),inventory.length);
       const review=validateBootstrapHtml(html,{scopeInventory:inventory});
       if(review.pass){
         return{
@@ -300,7 +315,7 @@ async function buildVibePlayable({gameId,gameName,baseline,inventory,model}){
 export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,model}){
   void candidateId;void sourceCommit;
   const inventory=deriveApprovedScopeInventory(baseline);
-  const preserved=buildPreservedSharedGame({gameId,gameName,sourcePath,inventory});
+  const preserved=buildPreservedSharedGame({gameId,gameName,sourcePath,inventory})||buildPreservedStandaloneGame({gameId,gameName,sourcePath,inventory});
   let result,review,generation;
   if(preserved){
     result=preserved;
@@ -339,6 +354,7 @@ async function main(){
   console.log('REAL_PLAYABLE_WEB_GAME=YES');
   console.log('INITIAL_PLAYABLE_MINIMUM='+INITIAL_PLAYABLE_MINIMUM);
   console.log('INITIAL_30_MINUTE_HARD_REQUIREMENT=NO');
+  console.log('INITIAL_30MIN_HARD_GATE=NO');
   console.log('FINAL_CONTENT_DEPTH_MINUTES='+FINAL_CONTENT_DEPTH_MINUTES);
   console.log('SOURCE_PRESERVED='+(generation.sourcePreserved?'YES':'NO'));
   console.log('VIBE2_PRIMARY_DEVELOPER=YES');
