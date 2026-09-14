@@ -4653,6 +4653,40 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-14T21:54:31.843Z"
+      },
+      {
+        "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+        "seedId": "SEED-UNITY-STORY_COMPLETE_RPG-001",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "improvementTargets": [
+          {
+            "dimension": "ideaDistinctness",
+            "current": 6,
+            "maxScore": 15,
+            "gap": 9
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [
+          "SOCIAL_COOP_COMPETITION",
+          "STORY_OR_NARRATIVE_STRUCTURE",
+          "SPACE_BUILDING_OPERATION"
+        ],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-14T22:21:11.394Z"
       }
     ],
     "causeCounts": {
@@ -4660,7 +4694,7 @@
       "COMPLETE_PLAYABLE_CYCLE_REQUIRED": 1,
       "FAIL_OR_LOSS_CONDITION_REQUIRED": 1,
       "CATEGORY_PROFILE_MATCH": 1,
-      "CORE_FUN_WEAK": 9
+      "CORE_FUN_WEAK": 10
     },
     "preferSeedMaterialFamilies": [],
     "avoidSeedMaterialFamilies": [],
@@ -4674,7 +4708,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-14T21:54:31.844Z"
+    "updatedAt": "2026-09-14T22:21:11.394Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
