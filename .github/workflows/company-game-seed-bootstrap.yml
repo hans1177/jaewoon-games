@@ -208,7 +208,7 @@ jobs:
             active="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?branch=main&per_page=100" --jq '[.workflow_runs[] | select(.path==".github/workflows/company-seed-design-runtime.yml") | select(.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="requested" or .status=="waiting")] | length')"
             echo "ACTIVE_DESIGN_ONLY_RUNS=$active"
             if [ "$active" -eq 0 ]; then
-              gh workflow run company-seed-design-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+              gh workflow run company-seed-design-runtime.yml --ref main
               echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'
               echo 'GAME_SEED_DESIGN_CONTINUATION_SCOPE=ONE_AFTER_NO_ACTIVE_BATCH'
               exit 0
