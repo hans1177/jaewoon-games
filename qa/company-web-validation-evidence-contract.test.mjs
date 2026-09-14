@@ -57,6 +57,7 @@ const baseEvidence=()=>{
     towerTypes:['bolt','slow','burst'],newTowerTypes:['slow','burst'],towerTypeCount:3,
     towerEffectProfiles:['damage:8|range:3','damage:4|range:4|slow:.3','damage:14|range:2'],towerEffectProfileCount:3,
     strategyChoices:['bolt','slow','burst'],strategyCombatOutcomes:[{choiceMechanic:'bolt',outcomeSignature:'damage:20'},{choiceMechanic:'slow',outcomeSignature:'damage:11,slow:1'},{choiceMechanic:'burst',outcomeSignature:'damage:28'}],strategyCombatOutcomeCount:3,
+    independentStrategyEvidence:{required:true,pass:true,status:'PASS',independentContexts:2,choiceCount:2,outcomeCount:2},
     placementResultCount:2,newContentDimensionCount:3,
   };
   return {
@@ -138,7 +139,7 @@ test('tower-defense keywords do not earn placement, tower variety, or strategy p
   const source='tower place lane route path wave turret upgrade gold coin cost range slow damage choice strategy';
   const evidence=baseEvidence();
   evidence.implementationMetrics=metrics({placementResultCount:0,towerTypeCount:1,towerEffectProfileCount:1,strategyChoiceCount:1,strategyCombatOutcomeCount:1});
-  evidence.runtimeFeatureEvidence={towerTypes:['bolt'],towerTypeCount:1,towerEffectProfiles:['damage:8|range:3'],towerEffectProfileCount:1,placementResultCount:0,strategyChoices:['bolt'],strategyCombatOutcomes:[{choiceMechanic:'bolt',outcomeSignature:'damage:20'}],strategyCombatOutcomeCount:1,newContentDimensionCount:0};
+  evidence.runtimeFeatureEvidence={towerTypes:['bolt'],towerTypeCount:1,towerEffectProfiles:['damage:8|range:3'],towerEffectProfileCount:1,placementResultCount:0,strategyChoices:['bolt'],strategyCombatOutcomes:[{choiceMechanic:'bolt',outcomeSignature:'damage:20'}],strategyCombatOutcomeCount:1,newContentDimensionCount:0,independentStrategyEvidence:{required:true,pass:false,status:'INSUFFICIENT_DISTINCT_STRATEGY_CHOICES'}};
   const shallow=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:source,evidence});
   assert.equal(shallow.scores.CATEGORY_PLACEMENT_AND_ROUTE,0);
   assert.equal(shallow.scores.CATEGORY_TOWER_VARIETY,0);
