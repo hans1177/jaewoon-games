@@ -12,6 +12,10 @@ function read(path) {
 test('Roblox post-runtime QA stays exact-artifact and real-Studio only', () => {
   const workflow = read(workflowPath);
   assert.match(workflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(workflow, /ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'/);
+  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3/);
+  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES/);
+  assert.match(workflow, /max-parallel: 3/);
   assert.match(workflow, /EXPECTED_ARTIFACT/);
   assert.match(workflow, /Get-FileHash -Algorithm SHA256/);
   assert.match(workflow, /company-development-roblox-mobile-independent-qa\.luau/);

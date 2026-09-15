@@ -14,6 +14,7 @@ concurrency:
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
   ROBLOX_RUNTIME_HARNESS_VERSION: '8'
+  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'
 
 jobs:
   preflight-plan:
@@ -55,7 +56,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const rows=[];
           for(const item of q.items||[]){
-            if(rows.length>=2)break;
+            if(rows.length>=6)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
@@ -70,7 +71,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_PREFLIGHT_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_EXECUTION_WIP_MAX=2');
+          console.log('ROBLOX_EXECUTION_WIP_MAX=6');
           console.log('ROBLOX_PER_GAME_PROMOTION=YES');
           console.log('ROBLOX_PROMOTION_COUNT_GATE=NONE');
           NODE
@@ -81,7 +82,7 @@ jobs:
     if: needs.preflight-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.preflight-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
@@ -259,9 +260,10 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const maxRetryableFailures=3;
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
+          const runnerWip=Math.max(1,Number(process.env.ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX||1));
           const rows=[];
           for(const item of q.items||[]){
-            if(rows.length>=2)break;
+            if(rows.length>=runnerWip)break;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
@@ -282,6 +284,8 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_RUNTIME_TARGET_COUNT=${rows.length}`);console.log(`ROBLOX_RUNTIME_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`ROBLOX_RUNTIME_HARNESS_VERSION=${harnessVersion}`);
+          console.log(`ROBLOX_RUNTIME_LOCAL_WIP_MAX=${runnerWip}`);
+          console.log('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES');
           console.log('ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES');
           console.log('ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated');
           NODE
@@ -292,7 +296,7 @@ jobs:
     if: always() && needs.runtime-plan.result == 'success' && needs.runtime-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 3
       matrix: ${{ fromJSON(needs.runtime-plan.outputs.matrix) }}
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 35
@@ -615,8 +619,9 @@ jobs:
         run: |
           echo 'ROBLOX_PER_GAME_PROMOTION=YES'
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
-          echo 'ROBLOX_EXECUTION_WIP_MAX=2'
-          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=1'
+          echo 'ROBLOX_EXECUTION_WIP_MAX=6'
+          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'
+          echo 'ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'
           echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
           echo 'ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated'
           echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'
