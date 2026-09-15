@@ -12,6 +12,11 @@
   },
   "actions": [
     {
+      "id": "wait-for-external-game-init",
+      "type": "wait",
+      "ms": 1800
+    },
+    {
       "id": "initial-board-ready",
       "type": "expect",
       "name": "initial puzzle board ready",
