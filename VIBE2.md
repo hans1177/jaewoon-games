@@ -39,4 +39,38 @@ Package 역할은 `exploration → implementation → test → performance → r
 
 낮은 효율이 연속 package에서 반복되면 다음 planning cycle의 최소 package 작업량을 단계적으로 높인다. 안전 규칙, QA, 보호된 게임 규칙이나 저장 의미를 낮춰서 처리량을 올리지는 않는다.
 
+## 기존 병렬 아키텍처 유지
+
+기존 Vibe2 병렬 설계의 좋은 부분은 현재 machine contract에 통합해 유지한다.
+
+- DAG 의존성 기반 실행
+- source root / responsible file 충돌 방지
+- shard별 기본 슬롯 + work stealing
+- 최대 20개 bounded worker
+- Unity release 집중 슬롯 1개
+- QA 압력 기반 `20 → 16 → 12 → 8 → 4` adaptive backpressure
+- 고위험 opt-in 작업에만 speculative variant 허용
+- worker별 incremental QA + content-hash cache
+- fan-in에서 전체 core regression 1회
+- worker 완료 시 event-driven refill, 정시 runner는 안전망
+- 유료 AI API·유료 runner·자동결제 금지
+
+공유 상태 쓰기는 직렬화하지만 독립 candidate worker는 병렬로 유지한다. released worker capacity와 source/file lock은 분리해서 다루며, QA 대기 상태가 빈 worker 슬롯을 불필요하게 점유하지 않게 한다. 긴 기능 package는 보호 슬롯을 사용하되 충돌한 긴 작업 하나 때문에 다음 eligible 긴 작업까지 막지 않는다.
+
+## 기존 Visual Autonomy 설계 유지
+
+기존 Visual Autonomy 계획의 핵심도 `vibe2-runtime.json` 계약에 통합해 유지한다. 목표는 모든 게임을 같은 스타일로 만드는 것이 아니라 **게임별 정체성에 맞는 시각·모션 개선 후보를 만들고 검증하는 것**이다.
+
+유지 원칙:
+
+- 게임 구조·장르·핵심 루프·대표 장면·모바일 제약을 먼저 이해한다.
+- Visual DNA, Motion, Scene/Presentation, Readability, Camera, Boss, Biome, UI, Audio-Visual Sync, Screenshot Critic, Asset Reuse, Performance-Aware Beauty를 게임별로 판단한다.
+- 후보는 안전/일반/공격적 수준으로 구분하되, 자동 변경은 원복 가능해야 한다.
+- 그래픽 개선을 이유로 전투 규칙, 세이브, 진행, 경제, 보상 의미를 임의 변경하지 않는다.
+- 성능·모바일 가독성·입력·UI·회귀를 함께 검증한다.
+- 성공과 실패는 검증된 증거가 있을 때만 경험으로 재사용하며, 학습이 권한을 확대하지 않는다.
+- 사용자 지시와 잠긴 아트북/컨셉이 자동 학습보다 우선한다.
+
+상세 실행 가능 범위와 보호 범위의 최종 기준은 항상 `vibe2-runtime.json`이다.
+
 중앙 machine 계약은 `vibe2-runtime.json`이다. 구현 구조가 바뀌는 작업은 별도 지시 없이 해당 계약과 이 문서를 함께 동기화한다. 핵심 권한/보호 규칙 변경은 owner 지시 없이 자동 확정하지 않는다.
