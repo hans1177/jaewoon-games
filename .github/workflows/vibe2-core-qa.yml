@@ -5,9 +5,7 @@ on:
     branches:
       - vibe2-unreal-core
     paths:
-      - 'VIBE2_CORE.md'
-      - 'VIBE2_MOTION_CORE.md'
-      - 'VIBE2_CONTINUOUS_OPERATIONS.md'
+      - 'VIBE2.md'
       - 'vibe2-runtime.json'
       - 'assets/vibe-engine-adapter.js'
       - 'assets/vibe-workbench.js'
@@ -24,6 +22,7 @@ on:
       - 'tools/vibe2-adaptive-backpressure.mjs'
       - 'tools/vibe2-candidate-reconcile.mjs'
       - 'tools/vibe2-experience-control.mjs'
+      - 'tools/vibe2-handoff.mjs'
       - 'qa/vibe2-auto-planner.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
@@ -34,12 +33,15 @@ on:
       - 'qa/vibe2-controller-contract.test.mjs'
       - 'qa/vibe2-candidate-reconcile.test.mjs'
       - 'qa/vibe2-experience-control.test.mjs'
+      - 'qa/vibe2-handoff.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-core-qa.yml'
   pull_request:
     branches:
       - vibe2-unreal-core
     paths:
+      - 'VIBE2.md'
+      - 'vibe2-runtime.json'
       - 'assets/vibe-continuous-queue.js'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
@@ -49,6 +51,7 @@ on:
       - 'tools/vibe2-parallelism-telemetry.mjs'
       - 'tools/vibe2-adaptive-backpressure.mjs'
       - 'tools/vibe2-candidate-reconcile.mjs'
+      - 'tools/vibe2-handoff.mjs'
       - 'qa/vibe2-*.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-core-qa.yml'
@@ -90,6 +93,7 @@ jobs:
           node --check tools/vibe2-adaptive-backpressure.mjs
           node --check tools/vibe2-candidate-reconcile.mjs
           node --check tools/vibe2-experience-control.mjs
+          node --check tools/vibe2-handoff.mjs
           node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
@@ -100,6 +104,7 @@ jobs:
           node --check qa/vibe2-controller-contract.test.mjs
           node --check qa/vibe2-candidate-reconcile.test.mjs
           node --check qa/vibe2-experience-control.test.mjs
+          node --check qa/vibe2-handoff.test.mjs
 
       - name: Vibe2 core tests
         run: |
@@ -114,3 +119,10 @@ jobs:
           node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
+          node --test qa/vibe2-handoff.test.mjs
+
+      - name: Generate machine handoff
+        run: |
+          set -euo pipefail
+          node tools/vibe2-handoff.mjs --output=/tmp/vibe2-handoff.json >/tmp/vibe2-handoff.log
+          node -e "const fs=require('fs');const x=JSON.parse(fs.readFileSync('/tmp/vibe2-handoff.json','utf8'));if(x.kind!=='vibe2-machine-handoff')process.exit(1)"
