@@ -39,6 +39,10 @@ function eastUnlocked() {
   return Boolean(currentGame?.state?.expanded);
 }
 
+function lv3VillageUnlocked() {
+  return Boolean(currentGame?.state?.villageExpansionV14?.townHallLv3);
+}
+
 function blockedOnMainIsland(x, y) {
   if (y > 1025 || y < 160) return false;
   const pond = Math.pow((x - 390) / 150, 2) + Math.pow((y - 370) / 112, 2) < 1;
@@ -47,7 +51,8 @@ function blockedOnMainIsland(x, y) {
 }
 
 function inMainVillage(x, y) {
-  if (x < 120 || x > 1360 || y < 160 || y > 1155) return false;
+  const minX = lv3VillageUnlocked() && y >= 985 ? -1120 : 120;
+  if (x < minX || x > 1360 || y < 160 || y > 1155) return false;
   return !blockedOnMainIsland(x, y);
 }
 
@@ -76,7 +81,8 @@ function canStandAt(x, y) {
 }
 
 function baseCandidate(x, y) {
-  let px = Math.max(120, Math.min(1360, x));
+  const minX = lv3VillageUnlocked() && y >= 985 ? -1120 : 120;
+  let px = Math.max(minX, Math.min(1360, x));
   let py = Math.max(160, Math.min(1155, y));
   if (blockedOnMainIsland(px, py)) {
     if (px > 635 && px < 900 && py > 170 && py < 415) py = 430;
