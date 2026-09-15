@@ -23,6 +23,15 @@ jobs:
   external-web-smoke:
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - target_id: external-tictactoe-flow-a
+            task_id: game-study-external-tictactoe-flow-a
+          - target_id: external-tictactoe-flow-b
+            task_id: game-study-external-tictactoe-flow-b
     steps:
       - uses: actions/checkout@v4
 
@@ -37,7 +46,7 @@ jobs:
           node <<'NODE'
           const fs = require('fs');
           const cfg = JSON.parse(fs.readFileSync('.vibe2/game-study-targets.json','utf8'));
-          if (!Array.isArray(cfg.targets) || cfg.targets.length < 1) throw new Error('external study target required');
+          if (!Array.isArray(cfg.targets) || cfg.targets.length < 2) throw new Error('two parallel external study targets required');
           for (const target of cfg.targets) {
             if (target.origin !== 'external-public') throw new Error(`non-external target registered: ${target.id}`);
             if (target.sourceAccess !== 'observation-only') throw new Error(`external source access must be observation-only: ${target.id}`);
@@ -63,24 +72,32 @@ jobs:
 
       - name: Run real external Web observation
         shell: bash
+        env:
+          TARGET_ID: ${{ matrix.target_id }}
+          TASK_ID: ${{ matrix.task_id }}
         run: |
           set -euo pipefail
           node tools/vibe2-game-study-worker.mjs \
-            --task-id=game-study-external-2048-flow-a \
-            --target-id=external-2048-flow-a \
+            --task-id="$TASK_ID" \
+            --target-id="$TARGET_ID" \
             --targets=.vibe2/game-study-targets.json \
             --chrome="$VIBE2_STUDY_CHROME" \
-            --output=/tmp/vibe2-external-study.json
-          node <<'NODE'
+            --output="/tmp/vibe2-external-study-${TARGET_ID}.json"
+          TARGET_ID="$TARGET_ID" node <<'NODE'
           const fs = require('fs');
-          const result = JSON.parse(fs.readFileSync('/tmp/vibe2-external-study.json','utf8'));
+          const targetId = process.env.TARGET_ID;
+          const result = JSON.parse(fs.readFileSync(`/tmp/vibe2-external-study-${targetId}.json`,'utf8'));
           if (result.outcome !== 'PASS') throw new Error(`external study failed: ${result.reason || result.blocker}`);
           if (result.study?.verified !== true) throw new Error('external study must be verified');
           if (result.study?.sourceAccess !== 'observation-only') throw new Error('external study source access changed');
           if (result.study?.sourceAnalysis?.scanned === true) throw new Error('external source must not be scanned');
           if (result.study?.executionLocation !== 'server') throw new Error('external study must execute on server');
+          if ((result.runtimeDiagnostics?.inputActionCount || 0) < 1) throw new Error('real external input required');
+          if ((result.runtimeDiagnostics?.checkpointCount || 0) < 1 || result.runtimeDiagnostics?.checkpointPassCount !== result.runtimeDiagnostics?.checkpointCount) throw new Error('all external checkpoints must pass');
           if (result.authorityExpanded === true || result.study?.authorityExpanded === true) throw new Error('authority expansion prohibited');
           console.log(`VIBE2_EXTERNAL_STUDY=${result.outcome}`);
+          console.log(`VIBE2_EXTERNAL_INPUTS=${result.runtimeDiagnostics?.inputActionCount || 0}`);
+          console.log(`VIBE2_EXTERNAL_CHECKPOINTS=${result.runtimeDiagnostics?.checkpointPassCount || 0}/${result.runtimeDiagnostics?.checkpointCount || 0}`);
           console.log(`VIBE2_EXTERNAL_PATTERNS=${result.study?.distilledPatterns?.length || 0}`);
           NODE
 
@@ -88,7 +105,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vibe2-external-game-study-smoke-${{ github.run_id }}
-          path: /tmp/vibe2-external-study.json
+          name: vibe2-external-game-study-smoke-${{ matrix.target_id }}-${{ github.run_id }}
+          path: /tmp/vibe2-external-study-${{ matrix.target_id }}.json
           if-no-files-found: warn
           retention-days: 3
