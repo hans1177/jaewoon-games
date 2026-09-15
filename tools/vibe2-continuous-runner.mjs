@@ -9,6 +9,7 @@ import { planVibeCoreTask } from '../assets/vibe-core-runtime.js';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
+import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
@@ -134,6 +135,17 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const mayRun = plan.executionGate?.mayExecute === true || analysisOnlyRead;
   if (!mayRun) return freeze({ ...base, reason:`EXECUTION_GATE_BLOCKED:${gateReasons.join(',') || 'unknown'}`, selectedTask:task, gate:plan.executionGate });
 
+  const designIntelligence = buildVibeDesignIntelligence({ task, plan, experience });
+  if (requiresWrite && designIntelligence.implementationGate.allowed !== true) {
+    return freeze({
+      ...base,
+      reason:`DESIGN_INTELLIGENCE_BLOCKED:${designIntelligence.implementationGate.blockers.join(',') || 'unknown'}`,
+      selectedTask:task,
+      gate:plan.executionGate,
+      designIntelligence
+    });
+  }
+
   const adapter = plan.engineAdapter;
   const route = classifyVibeExecutionRoute({ target:plan.target, task, adapter });
   const maxWorkMinutes = Math.max(1, Math.min(60, Math.floor(Number(runtime?.continuous?.maxWorkMinutes) || 20)));
@@ -141,8 +153,15 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const releaseState = clean(task.releaseState) || 'other';
   const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState) && ['roblox','web','unity'].includes(plan.target) && task.requiresOwnerDecision !== true && task.protectedChange !== true;
   const learningGuidance = buildLearningGuidance(plan.learning);
-  const executionGoal = learningGuidance ? `${task.goal}\n\n${learningGuidance}` : task.goal;
+  const executionGoal = [task.goal, designIntelligence.guidance, learningGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
+  const qa = freezeList([
+    ...(plan.qa || []),
+    'design-intelligence-contract',
+    'auto-player-evidence-after-implementation',
+    'telemetry-evidence-after-implementation',
+    'design-review-before-experience-promotion'
+  ]);
 
   return freeze({
     ...base, run:true, reason:'WORK_READY', selectedTask:task, taskId:task.id, gameId:task.gameId,
@@ -154,7 +173,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       candidateFiles:freezeList(adapter.source.candidateFiles), textWritablePatterns:freezeList(adapter.source.textWritablePatterns || []),
       editorRequiredPatterns:freezeList(adapter.source.editorRequiredPatterns || []), ignoredPaths:freezeList(adapter.source.ignoredPaths), responsibleFiles
     }),
-    qa:freezeList(plan.qa || []), incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles),
+    qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles),
+    designIntelligence,
     learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance), motion:plan.motion, executionGate:plan.executionGate,
     deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
@@ -189,6 +209,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_MACHINE_HANDOFF=${order.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${order.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_MACHINE_PERSISTENT_MAX=${order.machineHandoff?.currentPersistentMax||0}`);
+  if (order.designIntelligence) {
+    console.log(`VIBE2_DESIGN_INTELLIGENCE=ENABLED`);
+    console.log(`VIBE2_DESIGN_IMPLEMENTATION_GATE=${order.designIntelligence.implementationGate.allowed?'PASS':'BLOCKED'}`);
+  }
   if (order.run) {
     console.log(`VIBE2_TASK_ID=${order.taskId}`);
     console.log(`VIBE2_TARGET=${order.target}`);
@@ -198,7 +222,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_EXECUTION_ROUTE=${order.executionRoute}`);
     console.log(`VIBE2_SOURCE_ROOT=${order.source.root}`);
     console.log(`VIBE2_INCREMENTAL_QA=YES`);
-    console.log(`VIBE2_SPECULATIVE_VARIANTS=${order.workerPolicy.speculativeVariants}`);
+    console.log(`VIBE2_SPECULATIVE_VARIANTS=${order.incrementalQa.speculativeVariants}`);
     console.log(`VIBE2_EXPERIENCE_CONTEXT_APPLIED=${order.learningAppliedToWorkerGoal?'YES':'NO'}`);
   }
 }
