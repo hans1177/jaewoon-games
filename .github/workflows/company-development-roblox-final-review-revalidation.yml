@@ -13,6 +13,8 @@ on:
   workflow_run:
     workflows: ["Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA"]
     types: [completed]
+  repository_dispatch:
+    types: [roblox_multiplayer_qa_persisted]
   workflow_dispatch:
 
 permissions:
@@ -97,7 +99,7 @@ jobs:
           echo 'ROBLOX_RELEASE_CLAIM=NO'
 
       - name: Dispatch exact pending multiplayer QA target
-        if: github.event_name != 'workflow_run' && steps.evaluate.outputs.multiplayer_pending_count != '0'
+        if: github.event_name != 'workflow_run' && github.event_name != 'repository_dispatch' && steps.evaluate.outputs.multiplayer_pending_count != '0'
         env:
           GH_TOKEN: ${{ github.token }}
           PENDING_IDS_JSON: ${{ steps.evaluate.outputs.multiplayer_pending_ids_json }}
