@@ -38,7 +38,7 @@ jobs:
         run: |
           git config user.name hans1177
           git config user.email anyanguy2@naver.com
-          git add COMPANY_FLOW.md company-directive.json HOMEPAGE_OPERATIONS.md assets/homepage-enhancements.js assets/homepage-enhancements-core.js qa/homepage-manager-publication-order.test.mjs .github/workflows/homepage-manager.yml
+          git add COMPANY_FLOW.md company-directive.json HOMEPAGE_OPERATIONS.md assets/homepage-enhancements.js assets/homepage-enhancements-core.js qa/homepage-manager-publication-order.test.mjs
           git diff --cached --quiet && { echo 'NO_CANONICAL_DIFF'; exit 1; }
           git commit -m 'fix(homepage): separate development visibility from Top30 promotion [temp-patch-commit]'
           git push origin HEAD:fix/homepage-development-visibility
