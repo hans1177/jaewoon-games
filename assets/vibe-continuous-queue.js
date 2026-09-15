@@ -16,7 +16,7 @@ export const DEFAULT_MAX_CONCURRENT_TASKS = 20;
 
 const PRIORITY_SCORE = freeze({ 'owner-immediate': 100, critical: 80, high: 60, normal: 40, low: 20 });
 const RELEASE_STATE_SCORE = freeze({ 'release-confirmed': 400, 'development-confirmed': 300, reviewing: 200, other: 100 });
-const BASE_SHARD_SLOTS = freeze({ unity: 3, web: 7, verification: 5, support: 5 });
+const BASE_SHARD_SLOTS = freeze({ roblox: 8, unity: 3, web: 7, verification: 5, support: 5 });
 
 function normalizeReleaseState(value) {
   const state = clean(value).toLowerCase();
@@ -29,6 +29,7 @@ function inferShard(input = {}) {
   const department = clean(input.department).toLowerCase();
   const target = clean(input.target).toLowerCase();
   if (['inspect', 'research', 'qa'].includes(type) || department === 'qa') return 'verification';
+  if (target === 'roblox') return 'roblox';
   if (target === 'unity') return 'unity';
   if (target === 'web') return 'web';
   return 'support';
@@ -39,6 +40,7 @@ function inferSourceRoot(input = {}) {
   const gameId = clean(input.gameId);
   const target = clean(input.target).toLowerCase();
   if (!gameId || !target) return null;
+  if (target === 'roblox') return `roblox-games/${gameId}`;
   if (target === 'web') return `web-games/${gameId}`;
   if (target === 'unity') return `unity-games/${gameId}`;
   if (target === 'unreal') return `unreal-games/${gameId}`;
@@ -81,6 +83,7 @@ function normalizeCompanyContext(input = {}) {
 function normalizeTask(input = {}, index = 0) {
   const status = VIBE_QUEUE_STATUSES.includes(clean(input.status)) ? clean(input.status) : 'queued';
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
+  const normalizedWorkUnits = clampInt(input.workUnits || input.taskWorkUnits || 0, 0, 8);
   const task = {
     id: clean(input.id) || `task-${index + 1}`,
     gameId: clean(input.gameId) || null,
@@ -106,7 +109,10 @@ function normalizeTask(input = {}, index = 0) {
     sourceRoot: inferSourceRoot(input),
     speculativeEligible: input.speculativeEligible === true,
     estimatedRisk: ['low','medium','high'].includes(clean(input.estimatedRisk).toLowerCase()) ? clean(input.estimatedRisk).toLowerCase() : 'low',
-    taskWorkUnits: clampInt(input.taskWorkUnits || input.workUnits || 0, 0, 8),
+    fullRebuild: input.fullRebuild === true,
+    rebuildMode: clean(input.rebuildMode) || null,
+    workUnits: normalizedWorkUnits,
+    taskWorkUnits: normalizedWorkUnits,
     packageId: clean(input.packageId) || null,
     packageGoal: clean(input.packageGoal) || null,
     packageRole: clean(input.packageRole) || null,
@@ -118,7 +124,7 @@ function normalizeTask(input = {}, index = 0) {
     packageContext: normalizePackageContext(input.packageContext),
     completionCriteria: freezeList(input.completionCriteria || [])
   };
-  task.shard = inferShard(task);
+  task.shard = inferShard({ ...input, ...task });
   return freeze(task);
 }
 
