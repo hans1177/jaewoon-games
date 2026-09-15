@@ -1,0 +1,32 @@
+{
+  "id": "external-roblox-copy-enabled-example",
+  "enabled": false,
+  "origin": "external-public-copy-enabled",
+  "engine": "roblox",
+  "gameId": "replace-with-copy-enabled-place",
+  "scenarioFile": ".vibe2/game-study-scenarios/replace-with-roblox-scenario.json",
+  "sourceAccess": "owned-or-authorized-server-workspace",
+  "sourceRoot": ".vibe2/authorized-roblox-source/replace-with-place-id",
+  "runnerReady": true,
+  "command": "node",
+  "commandArgs": [
+    "tools/vibe2-roblox-authorized-download-runner.mjs",
+    "--place-id=REPLACE_NUMERIC_PLACE_ID",
+    "--copy-permission=creator-enabled-place-copying",
+    "--permission-evidence=REPLACE_WITH_CREATOR_COPY_PERMISSION_EVIDENCE",
+    "--source-root=.vibe2/authorized-roblox-source/replace-with-place-id"
+  ],
+  "priority": "low",
+  "tags": [
+    "external-reference",
+    "roblox",
+    "creator-copy-enabled",
+    "authorized-download-learning"
+  ],
+  "serverEnvironmentRequired": {
+    "VIBE2_ROBLOX_AUTHORIZED_DOWNLOAD_COMMAND": "command that downloads the explicitly copy-enabled place to VIBE2_ROBLOX_DOWNLOAD_OUTPUT and emits nonce-bound authorization evidence",
+    "VIBE2_ROBLOX_AUTHORIZED_DOWNLOAD_ARGS": "optional JSON array",
+    "VIBE2_ROBLOX_STUDIO_RUNTIME_COMMAND": "real Roblox Studio AUTO PLAYER runtime command",
+    "VIBE2_ROBLOX_STUDIO_RUNTIME_ARGS": "optional JSON array"
+  }
+}
