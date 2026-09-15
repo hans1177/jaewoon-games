@@ -12,7 +12,33 @@
     "mayExpandAuthority": false,
     "robloxPublicExperienceDownload": false,
     "robloxStudioRunnerMustBeExplicitlyReady": true,
+    "externalRobloxActiveAutomation": false,
     "clientLocalLearning": false
   },
-  "targets": []
+  "targets": [
+    {
+      "id": "external-2048-flow-a",
+      "enabled": true,
+      "origin": "external-public",
+      "engine": "web",
+      "gameId": "external-2048",
+      "url": "https://gabrielecirulli.github.io/2048/",
+      "scenarioFile": ".vibe2/game-study-scenarios/external-2048-flow-a.json",
+      "sourceAccess": "observation-only",
+      "priority": "low",
+      "tags": ["external-reference", "puzzle", "movement", "merge-progression", "mit-licensed-reference"]
+    },
+    {
+      "id": "external-2048-flow-b",
+      "enabled": true,
+      "origin": "external-public",
+      "engine": "web",
+      "gameId": "external-2048",
+      "url": "https://gabrielecirulli.github.io/2048/",
+      "scenarioFile": ".vibe2/game-study-scenarios/external-2048-flow-b.json",
+      "sourceAccess": "observation-only",
+      "priority": "low",
+      "tags": ["external-reference", "puzzle", "restart-loop", "score-feedback", "mit-licensed-reference"]
+    }
+  ]
 }
