@@ -13,13 +13,15 @@ import { runQueueCommand } from '../tools/vibe2-queue-control.mjs';
 
 test('machine handoff summarizes queue and adaptive state deterministically', () => {
   const runtime = {
-    version: 7,
+    version: 8,
     documentation: { machineSourceOfTruth: 'vibe2-runtime.json' },
     branches: { control: 'vibe2-unreal-core' },
     workManagement: {
       largeWorkExecution: 'phased-until-complete',
       splitRule: 'split-by-implementation-phase-not-artificial-file-count',
-      handoffReadOrder: ['vibe2-runtime.json', '.vibe2/queue.json']
+      handoffReadOrder: ['vibe2-runtime.json', '.vibe2/queue.json'],
+      preWorkStateRefresh: { automatic: true, mode: 'read-latest-machine-state-and-regenerate-handoff', sources: ['vibe2-runtime.json', '.vibe2/queue.json'], requiredBeforeConsumers: ['planner', 'reserve', 'worker', 'fan-in'] },
+      policyGovernance: { mode: 'owner-approval-required', automaticCandidatePatch: true, automaticApply: false, implementationContractSyncRequired: true, postWorkMachineStateSync: true, ciDriftGate: true, protectedPolicyAreas: ['parallelism-and-backpressure', 'branch-and-main-promotion', 'protected-semantics-and-save-contracts', 'authority-and-autonomy', 'documentation-governance'] }
     },
     continuous: { maxConcurrentGameTasks: 20 },
     adaptiveBackpressure: { steps: [20, 16, 12, 8, 4] }
@@ -50,6 +52,10 @@ test('machine handoff summarizes queue and adaptive state deterministically', ()
   assert.equal(first.sourceOfTruth, 'vibe2-runtime.json');
   assert.equal(first.controlBranch, 'vibe2-unreal-core');
   assert.equal(first.workPolicy.largeWorkExecution, 'phased-until-complete');
+  assert.equal(first.governance.preWorkStateRefresh.automatic, true);
+  assert.equal(first.governance.policy.mode, 'owner-approval-required');
+  assert.equal(first.governance.policy.automaticApply, false);
+  assert.equal(first.governance.policy.ciDriftGate, true);
   assert.equal(first.workState.taskCount, 4);
   assert.equal(first.workState.queuedCount, 2);
   assert.equal(first.workState.runningCount, 1);
@@ -75,11 +81,18 @@ test('repository uses exactly one Vibe2 human document and legacy Vibe2 docs are
 test('repository handoff is generated entirely from machine state', () => {
   const snapshot = generateVibe2Handoff();
   assert.equal(snapshot.kind, 'vibe2-machine-handoff');
-  assert.equal(snapshot.generatedFrom.runtimeVersion, 7);
+  assert.equal(snapshot.generatedFrom.runtimeVersion, 8);
   assert.equal(snapshot.generatedFrom.queueVersion, 5);
   assert.equal(snapshot.generatedFrom.parallelismVersion, 2);
   assert.equal(snapshot.generatedFrom.experienceVersion, 1);
   assert.equal(snapshot.workPolicy.humanMaintainedHandoff, false);
+  assert.equal(snapshot.governance.preWorkStateRefresh.automatic, true);
+  assert.equal(snapshot.governance.policy.mode, 'owner-approval-required');
+  assert.equal(snapshot.governance.policy.automaticCandidatePatch, true);
+  assert.equal(snapshot.governance.policy.automaticApply, false);
+  assert.equal(snapshot.governance.policy.implementationContractSyncRequired, true);
+  assert.equal(snapshot.governance.policy.postWorkMachineStateSync, true);
+  assert.equal(snapshot.governance.policy.ciDriftGate, true);
   assert.equal(snapshot.parallelism.configuredMax, 20);
   assert.deepEqual(snapshot.parallelism.steps, [20, 16, 12, 8, 4]);
   assert.ok(snapshot.workState.taskCount > 0);
@@ -93,6 +106,19 @@ test('repository machine state is internally consistent and no extra Vibe2 human
   assert.deepEqual(snapshot.consistency.errors, []);
   const actual = fs.readdirSync('.').filter((file) => /^VIBE2.*\.md$/i.test(file)).sort();
   assert.deepEqual(actual, ['VIBE2.md']);
+});
+
+test('consistency gate rejects disabled pre-work refresh or automatic protected-policy apply', () => {
+  const runtime = JSON.parse(fs.readFileSync('vibe2-runtime.json', 'utf8'));
+  runtime.workManagement.preWorkStateRefresh.automatic = false;
+  runtime.workManagement.policyGovernance.automaticApply = true;
+  const queue = { version: 5, maxConcurrentTasks: 20, tasks: [] };
+  const parallelism = { version: 2, currentMax: 20 };
+  const experience = { version: 1, records: [] };
+  const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, repoRoot: null });
+  assert.equal(consistency.ok, false);
+  assert.equal(consistency.errors.includes('PREWORK_STATE_REFRESH_NOT_AUTOMATIC'), true);
+  assert.equal(consistency.errors.includes('AUTOMATIC_POLICY_APPLY_ENABLED'), true);
 });
 
 test('consistency gate rejects an unlisted Vibe2 markdown file and divergent adaptive state', () => {

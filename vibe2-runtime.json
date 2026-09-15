@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [
@@ -21,7 +21,7 @@
       "VIBE2_VISUAL_AUTONOMY_PLAN.md"
     ],
     "machineStateVersions": {
-      "runtime": 7,
+      "runtime": 8,
       "queue": 5,
       "parallelism": 2,
       "experience": 1,
@@ -55,7 +55,38 @@
       "reserve",
       "worker",
       "fan-in"
-    ]
+    ],
+    "preWorkStateRefresh": {
+      "automatic": true,
+      "mode": "read-latest-machine-state-and-regenerate-handoff",
+      "sources": [
+        "vibe2-runtime.json",
+        ".vibe2/queue.json",
+        ".vibe2/parallelism-control.json",
+        ".vibe2/experience.json"
+      ],
+      "requiredBeforeConsumers": [
+        "planner",
+        "reserve",
+        "worker",
+        "fan-in"
+      ]
+    },
+    "policyGovernance": {
+      "mode": "owner-approval-required",
+      "automaticCandidatePatch": true,
+      "automaticApply": false,
+      "implementationContractSyncRequired": true,
+      "postWorkMachineStateSync": true,
+      "ciDriftGate": true,
+      "protectedPolicyAreas": [
+        "parallelism-and-backpressure",
+        "branch-and-main-promotion",
+        "protected-semantics-and-save-contracts",
+        "authority-and-autonomy",
+        "documentation-governance"
+      ]
+    }
   },
   "continuous": {
     "enabled": true,

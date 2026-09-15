@@ -73,6 +73,8 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   const adaptive = runtime.adaptiveBackpressure || {};
   const sources = runtime.sources || {};
   const continuous = runtime.continuous || {};
+  const refresh = work.preWorkStateRefresh || {};
+  const governance = work.policyGovernance || {};
   const add = (condition, code) => { if (condition) errors.push(code); };
 
   add(Number(expected.runtime || 0) > 0 && Number(runtime.version || 0) !== Number(expected.runtime), 'RUNTIME_VERSION_MISMATCH');
@@ -90,6 +92,23 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   add(work.machineContextRequired !== true, 'MACHINE_CONTEXT_NOT_REQUIRED');
   const consumers = Array.isArray(work.handoffConsumers) ? work.handoffConsumers : [];
   for (const consumer of ['planner', 'reserve', 'worker', 'fan-in']) add(!consumers.includes(consumer), `HANDOFF_CONSUMER_MISSING:${consumer}`);
+
+  add(refresh.automatic !== true, 'PREWORK_STATE_REFRESH_NOT_AUTOMATIC');
+  add(refresh.mode !== 'read-latest-machine-state-and-regenerate-handoff', 'PREWORK_STATE_REFRESH_MODE_INVALID');
+  add(!sameJson(Array.isArray(refresh.sources) ? refresh.sources : [], Array.isArray(work.handoffReadOrder) ? work.handoffReadOrder : []), 'PREWORK_STATE_REFRESH_SOURCES_DIVERGED');
+  const refreshConsumers = Array.isArray(refresh.requiredBeforeConsumers) ? refresh.requiredBeforeConsumers : [];
+  for (const consumer of ['planner', 'reserve', 'worker', 'fan-in']) add(!refreshConsumers.includes(consumer), `PREWORK_REFRESH_CONSUMER_MISSING:${consumer}`);
+
+  add(governance.mode !== 'owner-approval-required', 'POLICY_GOVERNANCE_MODE_INVALID');
+  add(governance.automaticCandidatePatch !== true, 'POLICY_CANDIDATE_PATCH_DISABLED');
+  add(governance.automaticApply !== false, 'AUTOMATIC_POLICY_APPLY_ENABLED');
+  add(governance.implementationContractSyncRequired !== true, 'IMPLEMENTATION_CONTRACT_SYNC_NOT_REQUIRED');
+  add(governance.postWorkMachineStateSync !== true, 'POSTWORK_MACHINE_STATE_SYNC_DISABLED');
+  add(governance.ciDriftGate !== true, 'POLICY_DRIFT_GATE_DISABLED');
+  const protectedAreas = Array.isArray(governance.protectedPolicyAreas) ? governance.protectedPolicyAreas : [];
+  for (const area of ['parallelism-and-backpressure', 'branch-and-main-promotion', 'protected-semantics-and-save-contracts', 'authority-and-autonomy', 'documentation-governance']) {
+    add(!protectedAreas.includes(area), `PROTECTED_POLICY_AREA_MISSING:${area}`);
+  }
 
   add(clean(state.queue) !== clean(sources.queue), 'QUEUE_SOURCE_DIVERGED');
   add(clean(state.parallelism) !== clean(sources.parallelism || adaptive.stateFile), 'PARALLELISM_SOURCE_DIVERGED');
@@ -161,6 +180,23 @@ export function buildVibe2Handoff({
       splitRule: work.splitRule || 'split-by-implementation-phase-not-artificial-file-count',
       ownerDirectivePreemptsAutonomy: work.ownerDirectivePreemptsAutonomy !== false,
       humanMaintainedHandoff: work.humanMaintainedHandoff === true
+    },
+    governance: {
+      preWorkStateRefresh: {
+        automatic: work.preWorkStateRefresh?.automatic === true,
+        mode: clean(work.preWorkStateRefresh?.mode) || null,
+        sources: Array.isArray(work.preWorkStateRefresh?.sources) ? [...work.preWorkStateRefresh.sources] : [],
+        requiredBeforeConsumers: Array.isArray(work.preWorkStateRefresh?.requiredBeforeConsumers) ? [...work.preWorkStateRefresh.requiredBeforeConsumers] : []
+      },
+      policy: {
+        mode: clean(work.policyGovernance?.mode) || null,
+        automaticCandidatePatch: work.policyGovernance?.automaticCandidatePatch === true,
+        automaticApply: work.policyGovernance?.automaticApply === true,
+        implementationContractSyncRequired: work.policyGovernance?.implementationContractSyncRequired === true,
+        postWorkMachineStateSync: work.policyGovernance?.postWorkMachineStateSync === true,
+        ciDriftGate: work.policyGovernance?.ciDriftGate === true,
+        protectedPolicyAreas: Array.isArray(work.policyGovernance?.protectedPolicyAreas) ? [...work.policyGovernance.protectedPolicyAreas] : []
+      }
     },
     workState: {
       taskCount: tasks.length,

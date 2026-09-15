@@ -26,7 +26,7 @@ test('non-write QA routes to analysis only',()=>{
 });
 
 test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
-  assert.equal(runtime.version,7);
+  assert.equal(runtime.version,8);
   assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,20);
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
@@ -44,6 +44,15 @@ test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
   assert.equal(runtime.assetDecision.learningMayOverrideFixedRules,false);
   assert.equal(runtime.workManagement.machineContextRequired,true);
   assert.deepEqual(runtime.workManagement.handoffConsumers,['planner','reserve','worker','fan-in']);
+  assert.equal(runtime.workManagement.preWorkStateRefresh.automatic,true);
+  assert.equal(runtime.workManagement.preWorkStateRefresh.mode,'read-latest-machine-state-and-regenerate-handoff');
+  assert.deepEqual(runtime.workManagement.preWorkStateRefresh.requiredBeforeConsumers,['planner','reserve','worker','fan-in']);
+  assert.equal(runtime.workManagement.policyGovernance.mode,'owner-approval-required');
+  assert.equal(runtime.workManagement.policyGovernance.automaticCandidatePatch,true);
+  assert.equal(runtime.workManagement.policyGovernance.automaticApply,false);
+  assert.equal(runtime.workManagement.policyGovernance.implementationContractSyncRequired,true);
+  assert.equal(runtime.workManagement.policyGovernance.postWorkMachineStateSync,true);
+  assert.equal(runtime.workManagement.policyGovernance.ciDriftGate,true);
   assert.equal(runtime.continuous.entryWorkflow,'.github/workflows/vibe2-24h-runner.yml');
 });
 
