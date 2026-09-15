@@ -16,6 +16,7 @@ const ARTIFACT_SHA256=/^sha256:[0-9a-f]{64}$/i;
 const ROBLOX_SOURCE_EXTENSIONS=Object.freeze(['.luau','.lua','.rbxl','.rbxlx']);
 const PUBLISH_EXTENSIONS=Object.freeze(['.rbxl','.rbxlx']);
 const PUBLISH_LIMITED_INSTANCE_TYPES=Object.freeze(['EditableImage','EditableMesh','PartOperation','SurfaceAppearance','BaseWrap']);
+const ROBLOX_PUBLISH_BUSY_RETRY_DELAYS_MS=Object.freeze([30_000,60_000,120_000]);
 
 export const ROBLOX_PLATFORM_POLICY=Object.freeze({
   version:1,
@@ -257,6 +258,13 @@ function redactSecret(value,secret=''){
   return token?text.split(token).join('[REDACTED]'):text;
 }
 
+function isTransientRobloxPublishBusy(status,payload){
+  const detail=JSON.stringify(payload??'');
+  return Number(status)===409&&/server is busy|unable to process your upload request/i.test(detail);
+}
+
+function sleep(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+
 export function createRobloxPlacePublishPlan({placeFile='',universeId='',placeId='',sourceRevision='',evidence={}}={}){
   const file=clean(placeFile).replaceAll('\\','/'),universe=clean(universeId),place=clean(placeId),contentType=contentTypeForPlaceFile(file),blocked=[];
   const sourcePath=validateRobloxSourcePath(file);
@@ -292,24 +300,36 @@ export function createRobloxPlacePublishPlan({placeFile='',universeId='',placeId
   });
 }
 
-export async function publishRobloxPlace({plan,apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,fetchImpl=globalThis.fetch,readFile=fs.readFileSync}={}){
+export async function publishRobloxPlace({plan,apiKey=process.env.ROBLOX_OPEN_CLOUD_API_KEY,fetchImpl=globalThis.fetch,readFile=fs.readFileSync,sleepImpl=sleep,retryDelaysMs=ROBLOX_PUBLISH_BUSY_RETRY_DELAYS_MS}={}){
   if(plan?.authority!=='roblox-place-publish-plan')throw new Error('validated Roblox publish plan required');
   if(plan.executionReady!==true)throw new Error(`Roblox publish blocked: ${(plan.blockedReasons||[]).join(',')}`);
   const secret=clean(apiKey);
   if(!secret)throw new Error('ROBLOX_OPEN_CLOUD_API_KEY required for live publish');
   if(typeof fetchImpl!=='function')throw new Error('fetch implementation unavailable');
+  if(typeof sleepImpl!=='function')throw new Error('sleep implementation unavailable');
+  const delays=Array.isArray(retryDelaysMs)?retryDelaysMs.map(Number):[];
+  if(delays.some(delay=>!Number.isFinite(delay)||delay<0))throw new Error('Roblox publish retry delays invalid');
   const body=readFile(plan.placeFile);
-  const response=await fetchImpl(plan.endpoint,{method:'POST',headers:{'x-api-key':secret,'Content-Type':plan.contentType},body});
-  const text=await response.text();
-  let payload=null;
-  try{payload=text?JSON.parse(text):null;}catch{payload={raw:text.slice(0,1000)};}
-  if(!response.ok){
-    const safePayload=redactSecret(JSON.stringify(payload),secret);
-    throw new Error(`Roblox publish failed HTTP ${response.status}: ${safePayload}`);
+  for(let attempt=0;attempt<=delays.length;attempt+=1){
+    const response=await fetchImpl(plan.endpoint,{method:'POST',headers:{'x-api-key':secret,'Content-Type':plan.contentType},body});
+    const text=await response.text();
+    let payload=null;
+    try{payload=text?JSON.parse(text):null;}catch{payload={raw:text.slice(0,1000)};}
+    if(!response.ok){
+      const safePayload=redactSecret(JSON.stringify(payload),secret);
+      if(isTransientRobloxPublishBusy(response.status,payload)&&attempt<delays.length){
+        const waitMs=delays[attempt];
+        console.warn(`ROBLOX_PUBLISH_TRANSIENT_BUSY_RETRY=${attempt+1}/${delays.length};WAIT_MS=${waitMs}`);
+        await sleepImpl(waitMs);
+        continue;
+      }
+      throw new Error(`Roblox publish failed HTTP ${response.status}: ${safePayload}`);
+    }
+    const versionNumber=Number(payload?.versionNumber);
+    if(!Number.isInteger(versionNumber)||versionNumber<=0)throw new Error('Roblox publish response missing versionNumber');
+    return Object.freeze({version:1,state:'PUBLISHED',platform:'ROBLOX',versionNumber,sourceRevision:plan.sourceRevision,placeFile:plan.placeFile,endpoint:plan.endpoint,credentialPersisted:false,authority:'roblox-place-publish-result'});
   }
-  const versionNumber=Number(payload?.versionNumber);
-  if(!Number.isInteger(versionNumber)||versionNumber<=0)throw new Error('Roblox publish response missing versionNumber');
-  return Object.freeze({version:1,state:'PUBLISHED',platform:'ROBLOX',versionNumber,sourceRevision:plan.sourceRevision,placeFile:plan.placeFile,endpoint:plan.endpoint,credentialPersisted:false,authority:'roblox-place-publish-result'});
+  throw new Error('Roblox publish retry loop exhausted');
 }
 
 function parseArgs(argv){const args={};for(let i=0;i<argv.length;i+=1){const arg=argv[i];if(!arg.startsWith('--'))continue;const [key,inline]=arg.slice(2).split('=',2);if(key==='execute'||key==='assemble-evidence'||key==='assemble-development-release-evidence'){args[key]=true;continue;}args[key]=inline??argv[++i];}return args;}
