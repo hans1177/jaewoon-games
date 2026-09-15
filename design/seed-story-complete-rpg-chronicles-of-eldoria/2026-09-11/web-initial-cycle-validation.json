@@ -1,0 +1,1093 @@
+{
+  "version": 13,
+  "validationSchemaVersion": 13,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "target": "web",
+  "validationStage": "initial-cycle",
+  "status": "PASS",
+  "pass": true,
+  "validated": true,
+  "realEvidenceExists": true,
+  "gameplayInteractionPerformed": true,
+  "interactionCount": 11,
+  "stateChanged": true,
+  "stateChangeCount": 11,
+  "musicRuntime": {
+    "required": true,
+    "startsAfterUserGesture": true,
+    "muteControl": true,
+    "volumeControl": true,
+    "beforeState": "locked",
+    "afterState": "running",
+    "pass": true
+  },
+  "approvedScopeFullyImplemented": true,
+  "scopeCoverage": {
+    "pass": true,
+    "declaredCount": 9,
+    "visibleScopeIds": [
+      "scope-corefun-bb785fdfa3",
+      "scope-coreloop-0-d073a85c62",
+      "scope-coreloop-1-ec41693282",
+      "scope-coreloop-2-91236c7bcb",
+      "scope-coreloop-3-8f87bfd024",
+      "scope-coreloop-4-96053f4771",
+      "scope-coreloop-5-ee5b0be379",
+      "scope-coreloop-6-2fa2659850",
+      "scope-mobileux-ddf41268ec"
+    ],
+    "interactedScopeIds": [
+      "scope-corefun-bb785fdfa3",
+      "scope-coreloop-0-d073a85c62",
+      "scope-coreloop-1-ec41693282",
+      "scope-coreloop-2-91236c7bcb",
+      "scope-coreloop-3-8f87bfd024",
+      "scope-coreloop-4-96053f4771",
+      "scope-coreloop-5-ee5b0be379",
+      "scope-coreloop-6-2fa2659850",
+      "scope-mobileux-ddf41268ec"
+    ],
+    "mechanicBindings": [
+      "action-primary",
+      "action-secondary",
+      "action-accelerated",
+      "action-support",
+      "action-tertiary"
+    ],
+    "blockers": []
+  },
+  "scopeInteractionResults": [
+    {
+      "scopeId": "scope-corefun-bb785fdfa3",
+      "mechanicId": "action-primary",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":true,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": true,
+      "targetStateChanged": true,
+      "interactionResult": true,
+      "spatialInputObserved": true,
+      "spatialStateChanged": true,
+      "spatialOutcomeObserved": true,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-coreloop-0-d073a85c62",
+      "mechanicId": "action-secondary",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":true,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": false,
+      "targetStateChanged": true,
+      "interactionResult": false,
+      "spatialInputObserved": false,
+      "spatialStateChanged": true,
+      "spatialOutcomeObserved": true,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-coreloop-1-ec41693282",
+      "mechanicId": "action-accelerated",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":true,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": false,
+      "targetStateChanged": true,
+      "interactionResult": false,
+      "spatialInputObserved": false,
+      "spatialStateChanged": true,
+      "spatialOutcomeObserved": true,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-coreloop-2-91236c7bcb",
+      "mechanicId": "action-primary",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":true,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": false,
+      "targetStateChanged": true,
+      "interactionResult": false,
+      "spatialInputObserved": true,
+      "spatialStateChanged": true,
+      "spatialOutcomeObserved": true,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-coreloop-3-8f87bfd024",
+      "mechanicId": "action-support",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":false,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": false,
+      "targetStateChanged": false,
+      "interactionResult": false,
+      "spatialInputObserved": false,
+      "spatialStateChanged": false,
+      "spatialOutcomeObserved": false,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-coreloop-4-96053f4771",
+      "mechanicId": "action-accelerated",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":true,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": false,
+      "targetStateChanged": true,
+      "interactionResult": false,
+      "spatialInputObserved": false,
+      "spatialStateChanged": true,
+      "spatialOutcomeObserved": true,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-coreloop-5-ee5b0be379",
+      "mechanicId": "action-primary",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":true,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": false,
+      "targetStateChanged": true,
+      "interactionResult": false,
+      "spatialInputObserved": true,
+      "spatialStateChanged": true,
+      "spatialOutcomeObserved": true,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-coreloop-6-2fa2659850",
+      "mechanicId": "action-secondary",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":true,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": false,
+      "targetStateChanged": true,
+      "interactionResult": false,
+      "spatialInputObserved": false,
+      "spatialStateChanged": true,
+      "spatialOutcomeObserved": true,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-mobileux-ddf41268ec",
+      "mechanicId": "action-tertiary",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":false,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": false,
+      "targetStateChanged": false,
+      "interactionResult": false,
+      "spatialInputObserved": false,
+      "spatialStateChanged": false,
+      "spatialOutcomeObserved": false,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-corefun-bb785fdfa3",
+      "mechanicId": "action-primary",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":true,\"routeChanged\":false,\"runResult\":\"running\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"running\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": true,
+      "targetStateChanged": true,
+      "interactionResult": true,
+      "spatialInputObserved": true,
+      "spatialStateChanged": true,
+      "spatialOutcomeObserved": true,
+      "xyzMoved": false
+    },
+    {
+      "scopeId": "scope-coreloop-0-d073a85c62",
+      "mechanicId": "action-secondary",
+      "clicked": true,
+      "stateChanged": true,
+      "positionSelected": false,
+      "placementResult": false,
+      "towerEntityDelta": 0,
+      "outcomeSignature": "{\"values\":{},\"enemyDelta\":0,\"towerDelta\":0,\"positionChanged\":false,\"interactionChanged\":true,\"routeChanged\":false,\"runResult\":\"victory\"}",
+      "combatOutcomeSignature": "{\"hp\":0,\"wave\":0,\"score\":0,\"enemy\":0,\"result\":\"victory\"}",
+      "strategicOutcomeObserved": false,
+      "targetSelected": false,
+      "targetStateChanged": true,
+      "interactionResult": false,
+      "spatialInputObserved": false,
+      "spatialStateChanged": true,
+      "spatialOutcomeObserved": true,
+      "xyzMoved": false
+    }
+  ],
+  "runtimeFeatureEvidence": {
+    "enemyTypes": [],
+    "newEnemyTypes": [],
+    "enemyTypeCount": 0,
+    "newEnemyTypeCount": 0,
+    "areas": [
+      "chapter-1-route-0",
+      "chapter-1-route-1",
+      "chapter-2-route-0",
+      "chapter-3-route-0",
+      "chapter-3-route-1",
+      "chapter-4-route-0",
+      "chapter-4-route-1",
+      "chapter-5-route-0",
+      "chapter-5-route-1"
+    ],
+    "newAreas": [
+      "chapter-1-route-1",
+      "chapter-2-route-0",
+      "chapter-3-route-0",
+      "chapter-3-route-1",
+      "chapter-4-route-0",
+      "chapter-4-route-1",
+      "chapter-5-route-0",
+      "chapter-5-route-1"
+    ],
+    "areaCount": 9,
+    "newAreaCount": 8,
+    "objectives": [
+      "chapter-1-quest-main",
+      "chapter-1-clue-0",
+      "chapter-1-clue-1",
+      "chapter-2-quest-main",
+      "chapter-2-clue-0",
+      "chapter-3-quest-main",
+      "chapter-3-clue-0",
+      "chapter-3-clue-1",
+      "chapter-4-quest-main",
+      "chapter-4-clue-0",
+      "chapter-4-clue-1",
+      "chapter-5-quest-main",
+      "chapter-5-clue-0",
+      "chapter-5-clue-1"
+    ],
+    "newObjectives": [
+      "chapter-1-clue-1",
+      "chapter-2-quest-main",
+      "chapter-2-clue-0",
+      "chapter-3-quest-main",
+      "chapter-3-clue-0",
+      "chapter-3-clue-1",
+      "chapter-4-quest-main",
+      "chapter-4-clue-0",
+      "chapter-4-clue-1",
+      "chapter-5-quest-main",
+      "chapter-5-clue-0",
+      "chapter-5-clue-1"
+    ],
+    "objectiveCount": 14,
+    "newObjectiveCount": 12,
+    "towerTypes": [],
+    "newTowerTypes": [],
+    "towerTypeCount": 0,
+    "towerEffectProfiles": [],
+    "newTowerEffects": [],
+    "towerEffectProfileCount": 0,
+    "strategyChoices": [],
+    "strategyCombatOutcomes": [],
+    "strategyOutcomeSignatures": [],
+    "strategyCombatOutcomeCount": 0,
+    "sequentialStrategicDiversityPass": false,
+    "strategicDiversityPass": false,
+    "independentStrategyEvidence": {
+      "required": false,
+      "pass": true,
+      "status": "NOT_APPLICABLE",
+      "independentContexts": 0,
+      "choiceCount": 0,
+      "outcomeCount": 0,
+      "branches": []
+    },
+    "placementResultCount": 0,
+    "interactionTargets": [
+      "story-guide-1",
+      "story-guide-2",
+      "story-guide-3",
+      "story-guide-4",
+      "story-guide-5"
+    ],
+    "newInteractionTargets": [
+      "story-guide-2",
+      "story-guide-3",
+      "story-guide-4",
+      "story-guide-5"
+    ],
+    "interactionTargetCount": 5,
+    "entityInteractionResultCount": 2,
+    "spatialOutcomeCount": 9,
+    "spatialEvidence": {
+      "detected3D": false,
+      "xyzMoved": false,
+      "cameraObserved": true,
+      "collisionObserved": false,
+      "raycastOrRouteObserved": false,
+      "spatialOutcomeObserved": true
+    },
+    "newContentDimensionCount": 5
+  },
+  "runtimeValidationEvidence": {
+    "source": "CANONICAL_WEB_PLAYWRIGHT_VALIDATOR",
+    "longGoal": {
+      "required": true,
+      "pass": true,
+      "terminalReached": true,
+      "stateTransitionCount": 11
+    },
+    "replayRegression": {
+      "required": true,
+      "pass": false,
+      "status": "REPLAY_SEED_NOT_EXPOSED",
+      "independentRun": true,
+      "sameSeed": false,
+      "sameInputTrace": false,
+      "criticalStateMatch": false,
+      "usesRandomness": true,
+      "referenceSeed": null,
+      "replaySeed": null,
+      "traceLength": 11,
+      "executedCount": 0,
+      "comparedStateCount": 0
+    },
+    "softlock": {
+      "required": true,
+      "pass": true,
+      "terminalReached": true,
+      "retryObserved": true,
+      "interactionCount": 11
+    },
+    "saveRestore": {
+      "required": true,
+      "pass": false,
+      "status": "CRITICAL_GAMEPLAY_STATE_NOT_EXPOSED",
+      "storageStableAcrossReload": true,
+      "criticalStateObserved": false,
+      "criticalStateMatch": false,
+      "comparableKeys": [],
+      "mismatches": [],
+      "reloadStateChanged": true
+    },
+    "economy": {
+      "required": true,
+      "pass": false,
+      "status": "INCOMPLETE",
+      "changedKeys": []
+    },
+    "difficulty": {
+      "required": true,
+      "pass": true,
+      "status": "PASS",
+      "changedKeys": [],
+      "terminalReached": true
+    },
+    "performance": {
+      "required": true,
+      "pass": true,
+      "runtimeErrorCount": 0,
+      "averageActionMilliseconds": 121.36363636363636
+    },
+    "mobile": {
+      "required": true,
+      "pass": true,
+      "touch": true,
+      "viewportWidth": 390,
+      "scrollWidth": 390,
+      "horizontalOverflow": false
+    },
+    "strategyOutcomes": {
+      "required": false,
+      "pass": true,
+      "status": "NOT_APPLICABLE",
+      "choiceCount": 0,
+      "outcomeCount": 0,
+      "independentChoiceCount": 0,
+      "independentOutcomeCount": 0
+    },
+    "contentDepth": {
+      "required": false,
+      "pass": true,
+      "status": "PENDING_FINAL_CONTENT_DEPTH",
+      "meaningfulGameplayMilliseconds": 0
+    }
+  },
+  "runtimeSmokePassed": true,
+  "mobileViewport": {
+    "width": 390,
+    "height": 844,
+    "touch": true
+  },
+  "sourceFootprint": {
+    "pass": true,
+    "implementationClass": "DEDICATED_REAL_GAME",
+    "totalBytes": 25400,
+    "scriptBytes": 25096,
+    "mechanicIds": [
+      "action-primary",
+      "action-secondary",
+      "action-accelerated",
+      "action-support",
+      "action-tertiary"
+    ],
+    "mechanicCount": 5,
+    "systemCount": 7,
+    "cycleContract": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+    "proxyMarkers": 0,
+    "fakeTimeMarkers": 0,
+    "directStageButtons": false,
+    "stageButtons": false,
+    "winPathCount": 1,
+    "failPathCount": 1,
+    "retryPathCount": 1,
+    "growthRewardChoice": true,
+    "riskPressure": true,
+    "detected3D": false,
+    "interactionContract": true,
+    "saveContract": true,
+    "economyContract": true,
+    "difficultyContract": true,
+    "usesRandomness": true,
+    "replaySeedContract": false,
+    "stateVariableCount": 20,
+    "systemDependencyCount": 6,
+    "blockers": []
+  },
+  "substanceGate": {
+    "pass": true,
+    "implementationClass": "DEDICATED_REAL_GAME",
+    "totalBytes": 25400,
+    "executableBytes": 25096,
+    "mechanicCount": 5,
+    "directSessionControls": 0,
+    "proxyMarkers": 0,
+    "initialImplementationUnit": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"
+  },
+  "initialImplementationUnit": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+  "initialPlayableCycle": {
+    "unit": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+    "pass": true,
+    "startWorldEntry": true,
+    "realPlayerInput": true,
+    "coreGameplayAction": true,
+    "actualStateChange": true,
+    "growthRewardOrMeaningfulChoice": true,
+    "riskFailureOrResourcePressure": true,
+    "goalOrCycleEnd": true,
+    "retryPath": true,
+    "interactionCount": 11,
+    "stateTransitionCount": 11,
+    "uniqueInteractedMechanics": 5
+  },
+  "initialPlayableCyclePassed": true,
+  "implementationMetrics": {
+    "uniqueMechanicCount": 5,
+    "uniqueFunctionalUiCount": 5,
+    "gameplayActionCount": 11,
+    "stateVariableCount": 20,
+    "meaningfulStateTransitionCount": 11,
+    "uniqueGameplayStateCount": 12,
+    "uniqueInteractedMechanicCount": 5,
+    "systemDependencyCount": 6,
+    "enemyOrWorldEntityCount": 0,
+    "enemyTypeCount": 0,
+    "newEnemyTypeCount": 0,
+    "areaCount": 9,
+    "newAreaCount": 8,
+    "objectiveCount": 14,
+    "newObjectiveCount": 12,
+    "towerTypeCount": 0,
+    "towerEffectProfileCount": 0,
+    "strategyChoiceCount": 0,
+    "strategyCombatOutcomeCount": 0,
+    "placementResultCount": 0,
+    "entityInteractionResultCount": 2,
+    "interactionTargetCount": 5,
+    "spatialOutcomeCount": 9,
+    "detected3D": false,
+    "newContentDimensionCount": 5,
+    "repeatedActionExcludedCount": 0,
+    "winPathCount": 1,
+    "failPathCount": 1,
+    "retryPathCount": 1,
+    "gameplayScreenRatio": 0.4986421876898773,
+    "duplicateActionRatio": 0.4444444444444444,
+    "testUiRatio": 0,
+    "contentVariationCount": 24
+  },
+  "contentDepthValidation": {
+    "mode": "FINAL_CONTENT_DEPTH_VALIDATION_ONLY",
+    "validationMode": "REAL_ELAPSED_GAMEPLAY",
+    "status": "PENDING_AFTER_CONTENT_EXPANSION",
+    "pass": false,
+    "targetMinutes": 30,
+    "validatedMinutes": 0,
+    "actualGameplayMinutes": 0,
+    "elapsedRealMilliseconds": 0,
+    "meaningfulGameplayMilliseconds": 0,
+    "excludedRepeatedActionMilliseconds": 0,
+    "excludedRetryMilliseconds": 0,
+    "realContent": false,
+    "fakeProgress": false,
+    "testHarness": false,
+    "directStageClick": false,
+    "metrics": null,
+    "varietyEvents": [],
+    "runtimeFeatureEvidence": null
+  },
+  "sessionDepthMinutes": 0,
+  "terminalOutcome": {
+    "required": true,
+    "reached": true,
+    "result": "victory"
+  },
+  "multiplayer": null,
+  "before": {
+    "bodyText": "← 재운게임즈 정식 WEB PLAY 엘도리아 연대기 회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG. 100 HP 1/5 CHAPTER 0 GOLD 1 POWER 🌲 회색 숲 탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라. 주요 퀘스트 · 실종된 정찰대의 흔적을 찾아라 현재 목표 · 수호자와 대화해 첫 단서를 찾기 리아 · 주변을 함께 살펴보자. 중요한 흔적이 있을 거야. 탐색 전투 전진 전투 탐색 장비 강화 (15G) 전진 전투 탐색 전투 휴식 (5G) 게임 시작 · 진행은 자동 저장됩니다. 음악 켜짐 볼륨 저장 새 게임",
+    "stateNodes": [
+      {
+        "tag": "SECTION",
+        "text": "100HP1/5CHAPTER0GOLD1POWER",
+        "attrs": [
+          [
+            "data-state",
+            "running"
+          ],
+          [
+            "data-score",
+            "0"
+          ],
+          [
+            "data-resource",
+            "20"
+          ]
+        ]
+      },
+      {
+        "tag": "DIV",
+        "text": "리아 · 주변을 함께 살펴보자. 중요한 흔적이 있을 거야.",
+        "attrs": [
+          [
+            "data-npc",
+            "리아"
+          ],
+          [
+            "data-interaction-target",
+            "story-guide-1"
+          ],
+          [
+            "data-dialogue-state",
+            "0"
+          ],
+          [
+            "data-state",
+            "waiting"
+          ]
+        ]
+      }
+    ],
+    "values": {},
+    "canvasState": [],
+    "visibleButtons": 12,
+    "gameplayControlCount": 9,
+    "functionalLabels": [
+      "탐색",
+      "전투",
+      "전진 전투",
+      "장비 강화 (15g)",
+      "휴식 (5g)"
+    ],
+    "mechanics": [
+      "action-primary",
+      "action-secondary",
+      "action-accelerated",
+      "action-support",
+      "action-tertiary"
+    ],
+    "uniqueFunctionalUiCount": 5,
+    "uniqueMechanicCount": 5,
+    "entityCount": 0,
+    "enemyEntityCount": 0,
+    "towerEntityCount": 0,
+    "enemyTypes": [],
+    "towerTypes": [],
+    "towerEffectProfiles": [],
+    "towerPositions": [],
+    "areaIds": [
+      "chapter-1-route-0"
+    ],
+    "objectiveIds": [
+      "chapter-1-quest-main",
+      "chapter-1-clue-0"
+    ],
+    "positionMarkerCount": 0,
+    "placementModeActive": false,
+    "interactionTargetCount": 2,
+    "interactionTargets": [
+      "story-guide-1"
+    ],
+    "interactionTargetStates": [
+      "story-guide-1|data-state:waiting|data-dialogue-state:0",
+      "story-guide-1|data-dialogue-state:0"
+    ],
+    "characterEntityCount": 1,
+    "detected3D": false,
+    "spatialDimension": "",
+    "playerPosition": {
+      "x": null,
+      "y": null,
+      "z": null
+    },
+    "camera": {
+      "yaw": null,
+      "pitch": null,
+      "active": ""
+    },
+    "collisionCount": null,
+    "collisionEnabled": false,
+    "raycastHit": "",
+    "raycastEnabled": false,
+    "routeId": "",
+    "testUiCount": 0,
+    "testUiRatio": 0,
+    "duplicateActionRatio": 0.4444444444444444,
+    "gameplayScreenRatio": 0.4986421876898773,
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 9,
+    "visibleScopeIds": [
+      "scope-corefun-bb785fdfa3",
+      "scope-coreloop-0-d073a85c62",
+      "scope-coreloop-1-ec41693282",
+      "scope-coreloop-2-91236c7bcb",
+      "scope-coreloop-3-8f87bfd024",
+      "scope-coreloop-4-96053f4771",
+      "scope-coreloop-5-ee5b0be379",
+      "scope-coreloop-6-2fa2659850",
+      "scope-mobileux-ddf41268ec"
+    ],
+    "mechanicBindings": [
+      "action-primary",
+      "action-secondary",
+      "action-accelerated",
+      "action-primary",
+      "action-support",
+      "action-accelerated",
+      "action-primary",
+      "action-secondary",
+      "action-tertiary"
+    ],
+    "cycleContract": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+    "runResult": "running",
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "after": {
+    "bodyText": "← 재운게임즈 정식 WEB PLAY 엘도리아 연대기 회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG. 72 HP 5/5 CHAPTER 79 GOLD 2 POWER 🐉 엘도리아의 심장 탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라. 주요 퀘스트 · 엘도리아의 심장을 지켜라 현재 목표 · 수호자와 대화해 첫 단서를 찾기 아르딘 · 주변을 함께 살펴보자. 중요한 흔적이 있을 거야. 탐색 전투 전진 전투 탐색 장비 강화 (15G) 전진 전투 탐색 전투 휴식 (5G) 엘도리아 최종장을 완료했다! 왕국에 평화가 돌아왔다. 음악 켜짐 볼륨 저장 새 게임",
+    "stateNodes": [
+      {
+        "tag": "SECTION",
+        "text": "72HP5/5CHAPTER79GOLD2POWER",
+        "attrs": [
+          [
+            "data-state",
+            "victory"
+          ],
+          [
+            "data-score",
+            "120"
+          ],
+          [
+            "data-resource",
+            "79"
+          ]
+        ]
+      },
+      {
+        "tag": "DIV",
+        "text": "아르딘 · 주변을 함께 살펴보자. 중요한 흔적이 있을 거야.",
+        "attrs": [
+          [
+            "data-npc",
+            "아르딘"
+          ],
+          [
+            "data-interaction-target",
+            "story-guide-5"
+          ],
+          [
+            "data-dialogue-state",
+            "0"
+          ],
+          [
+            "data-state",
+            "waiting"
+          ]
+        ]
+      }
+    ],
+    "values": {},
+    "canvasState": [],
+    "visibleButtons": 12,
+    "gameplayControlCount": 9,
+    "functionalLabels": [
+      "탐색",
+      "전투",
+      "전진 전투",
+      "장비 강화 (15g)",
+      "휴식 (5g)"
+    ],
+    "mechanics": [
+      "action-primary",
+      "action-secondary",
+      "action-accelerated",
+      "action-support",
+      "action-tertiary"
+    ],
+    "uniqueFunctionalUiCount": 5,
+    "uniqueMechanicCount": 5,
+    "entityCount": 0,
+    "enemyEntityCount": 0,
+    "towerEntityCount": 0,
+    "enemyTypes": [],
+    "towerTypes": [],
+    "towerEffectProfiles": [],
+    "towerPositions": [],
+    "areaIds": [
+      "chapter-5-route-0"
+    ],
+    "objectiveIds": [
+      "chapter-5-quest-main",
+      "chapter-5-clue-0"
+    ],
+    "positionMarkerCount": 0,
+    "placementModeActive": false,
+    "interactionTargetCount": 2,
+    "interactionTargets": [
+      "story-guide-5"
+    ],
+    "interactionTargetStates": [
+      "story-guide-5|data-state:waiting|data-dialogue-state:0",
+      "story-guide-5|data-dialogue-state:0"
+    ],
+    "characterEntityCount": 1,
+    "detected3D": false,
+    "spatialDimension": "",
+    "playerPosition": {
+      "x": null,
+      "y": null,
+      "z": null
+    },
+    "camera": {
+      "yaw": null,
+      "pitch": null,
+      "active": ""
+    },
+    "collisionCount": null,
+    "collisionEnabled": false,
+    "raycastHit": "",
+    "raycastEnabled": false,
+    "routeId": "",
+    "testUiCount": 0,
+    "testUiRatio": 0,
+    "duplicateActionRatio": 0.4444444444444444,
+    "gameplayScreenRatio": 0.47554703639567386,
+    "audioState": "running",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 9,
+    "visibleScopeIds": [
+      "scope-corefun-bb785fdfa3",
+      "scope-coreloop-0-d073a85c62",
+      "scope-coreloop-1-ec41693282",
+      "scope-coreloop-2-91236c7bcb",
+      "scope-coreloop-3-8f87bfd024",
+      "scope-coreloop-4-96053f4771",
+      "scope-coreloop-5-ee5b0be379",
+      "scope-coreloop-6-2fa2659850",
+      "scope-mobileux-ddf41268ec"
+    ],
+    "mechanicBindings": [
+      "action-primary",
+      "action-secondary",
+      "action-accelerated",
+      "action-primary",
+      "action-support",
+      "action-accelerated",
+      "action-primary",
+      "action-secondary",
+      "action-tertiary"
+    ],
+    "cycleContract": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+    "runResult": "victory",
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadAfter": {
+    "bodyText": "← 재운게임즈 정식 WEB PLAY 엘도리아 연대기 회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG. 72 HP 5/5 CHAPTER 79 GOLD 2 POWER 🐉 엘도리아의 심장 탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라. 주요 퀘스트 · 엘도리아의 심장을 지켜라 현재 목표 · 수호자와 대화해 첫 단서를 찾기 아르딘 · 주변을 함께 살펴보자. 중요한 흔적이 있을 거야. 탐색 전투 전진 전투 탐색 장비 강화 (15G) 전진 전투 탐색 전투 휴식 (5G) 게임 시작 · 진행은 자동 저장됩니다. 음악 켜짐 볼륨 저장 새 게임",
+    "stateNodes": [
+      {
+        "tag": "SECTION",
+        "text": "72HP5/5CHAPTER79GOLD2POWER",
+        "attrs": [
+          [
+            "data-state",
+            "running"
+          ],
+          [
+            "data-score",
+            "120"
+          ],
+          [
+            "data-resource",
+            "79"
+          ]
+        ]
+      },
+      {
+        "tag": "DIV",
+        "text": "아르딘 · 주변을 함께 살펴보자. 중요한 흔적이 있을 거야.",
+        "attrs": [
+          [
+            "data-npc",
+            "아르딘"
+          ],
+          [
+            "data-interaction-target",
+            "story-guide-5"
+          ],
+          [
+            "data-dialogue-state",
+            "0"
+          ],
+          [
+            "data-state",
+            "waiting"
+          ]
+        ]
+      }
+    ],
+    "values": {},
+    "canvasState": [],
+    "visibleButtons": 12,
+    "gameplayControlCount": 9,
+    "functionalLabels": [
+      "탐색",
+      "전투",
+      "전진 전투",
+      "장비 강화 (15g)",
+      "휴식 (5g)"
+    ],
+    "mechanics": [
+      "action-primary",
+      "action-secondary",
+      "action-accelerated",
+      "action-support",
+      "action-tertiary"
+    ],
+    "uniqueFunctionalUiCount": 5,
+    "uniqueMechanicCount": 5,
+    "entityCount": 0,
+    "enemyEntityCount": 0,
+    "towerEntityCount": 0,
+    "enemyTypes": [],
+    "towerTypes": [],
+    "towerEffectProfiles": [],
+    "towerPositions": [],
+    "areaIds": [
+      "chapter-5-route-0"
+    ],
+    "objectiveIds": [
+      "chapter-5-quest-main",
+      "chapter-5-clue-0"
+    ],
+    "positionMarkerCount": 0,
+    "placementModeActive": false,
+    "interactionTargetCount": 2,
+    "interactionTargets": [
+      "story-guide-5"
+    ],
+    "interactionTargetStates": [
+      "story-guide-5|data-state:waiting|data-dialogue-state:0",
+      "story-guide-5|data-dialogue-state:0"
+    ],
+    "characterEntityCount": 1,
+    "detected3D": false,
+    "spatialDimension": "",
+    "playerPosition": {
+      "x": null,
+      "y": null,
+      "z": null
+    },
+    "camera": {
+      "yaw": null,
+      "pitch": null,
+      "active": ""
+    },
+    "collisionCount": null,
+    "collisionEnabled": false,
+    "raycastHit": "",
+    "raycastEnabled": false,
+    "routeId": "",
+    "testUiCount": 0,
+    "testUiRatio": 0,
+    "duplicateActionRatio": 0.4444444444444444,
+    "gameplayScreenRatio": 0.47554703639567386,
+    "audioState": "locked",
+    "muteControls": 1,
+    "volumeControls": 1,
+    "approvedScopeCount": 9,
+    "visibleScopeIds": [
+      "scope-corefun-bb785fdfa3",
+      "scope-coreloop-0-d073a85c62",
+      "scope-coreloop-1-ec41693282",
+      "scope-coreloop-2-91236c7bcb",
+      "scope-coreloop-3-8f87bfd024",
+      "scope-coreloop-4-96053f4771",
+      "scope-coreloop-5-ee5b0be379",
+      "scope-coreloop-6-2fa2659850",
+      "scope-mobileux-ddf41268ec"
+    ],
+    "mechanicBindings": [
+      "action-primary",
+      "action-secondary",
+      "action-accelerated",
+      "action-primary",
+      "action-support",
+      "action-accelerated",
+      "action-primary",
+      "action-secondary",
+      "action-tertiary"
+    ],
+    "cycleContract": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+    "runResult": "running",
+    "scrollWidth": 390,
+    "viewportWidth": 390
+  },
+  "reloadVisible": true,
+  "blockers": [],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "badResponses": [],
+  "evidence": [
+    "validationStage=initial-cycle",
+    "interactionCount=11",
+    "stateTransitions=11",
+    "mechanics=5",
+    "approvedScope=true",
+    "entityInteractions=2",
+    "detected3D=false",
+    "xyzMoved=false",
+    "spatialOutcomes=9",
+    "initialPlayableCycle=true",
+    "finalContentDepth=false",
+    "elapsedRealMilliseconds=0",
+    "meaningfulGameplayMilliseconds=0",
+    "excludedRepeatedActionMilliseconds=0",
+    "excludedRetryMilliseconds=0",
+    "newContentDimensions=5",
+    "runtimeEvidence.longGoal=true",
+    "runtimeEvidence.saveRestore=CRITICAL_GAMEPLAY_STATE_NOT_EXPOSED",
+    "runtimeEvidence.performance=true",
+    "runtimeEvidence.mobile=true",
+    "runtimeEvidence.replay=REPLAY_SEED_NOT_EXPOSED",
+    "runtimeEvidence.strategy=NOT_APPLICABLE"
+  ],
+  "checkedAt": "2026-09-15T03:17:05.320Z",
+  "sourcePath": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+  "sourceIndexSha256": "e55e2491b01bd573e3e30561010e657217cdd47838ecde1c15f54403ca5ec91a",
+  "sourceRevision": "a119f8695993ebd2201344f832b63ff80fa34b9f",
+  "designBaselineSha256": "e845e49be228002e6684eb9f7b4dd5056eaf784161fa36195ab4c5d6eaf69821",
+  "url": "http://127.0.0.1:4181/web-games/.autonomous-candidates/development-web-seed-story-complete-rpg-chronicles-of-eldoria-34924334453-1/",
+  "screenshot": "/tmp/web-work/seed-story-complete-rpg-chronicles-of-eldoria/web-gameplay.png",
+  "strictReviewPath": "/tmp/web-work/seed-story-complete-rpg-chronicles-of-eldoria/strict-implementation-review.json",
+  "strictReview": {
+    "verdict": "PASS",
+    "totalScore": 98,
+    "hardFailures": [],
+    "improvementTargets": [
+      {
+        "dimension": "FUNCTIONAL_UI_UX",
+        "current": 5,
+        "maxScore": 7,
+        "gap": 2
+      }
+    ],
+    "reviewedAt": "2026-09-15T03:17:05.446Z",
+    "formalPassThreshold": 90,
+    "homepageTestThreshold": 80
+  },
+  "webStrictScore": 98,
+  "improvementTargets": [
+    {
+      "dimension": "FUNCTIONAL_UI_UX",
+      "current": 5,
+      "maxScore": 7,
+      "gap": 2
+    }
+  ],
+  "homepageTestEligible": false,
+  "homepageTestVerdict": "REVISE",
+  "formalReviewPassed": false,
+  "formalImplementationPassed": false,
+  "formalImplementationVerdict": "REVISE",
+  "promotionRevalidation": {
+    "required": false,
+    "independentRun": false,
+    "pass": false,
+    "minimumScore": 90,
+    "reason": "FINAL_CONTENT_DEPTH_NOT_RUN"
+  },
+  "candidateSourcePath": "web-games/.autonomous-candidates/development-web-seed-story-complete-rpg-chronicles-of-eldoria-34924334453-1",
+  "policyDocument": "COMPANY_FLOW.md",
+  "requiredBeforeFinalContentDepth": true
+}
