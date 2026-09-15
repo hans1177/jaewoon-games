@@ -7,6 +7,7 @@ on:
     paths:
       - '.vibe2/platform-focus.json'
       - '.vibe2/owner-directives-roblox.json'
+      - 'assets/vibe-continuous-queue.js'
       - 'tools/vibe2-platform-focus-policy.mjs'
       - 'tools/vibe2-roblox-owner-queue.mjs'
       - 'qa/vibe2-platform-focus-policy.test.mjs'
@@ -16,6 +17,7 @@ on:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   apply:
@@ -39,6 +41,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          node --check assets/vibe-continuous-queue.js
           node --check tools/vibe2-platform-focus-policy.mjs
           node --check tools/vibe2-roblox-owner-queue.mjs
           node --test qa/vibe2-platform-focus-policy.test.mjs
@@ -87,3 +90,11 @@ jobs:
             /tmp/vibe2-platform-focus.log
           if-no-files-found: ignore
           retention-days: 7
+
+  continuous:
+    needs: apply
+    if: ${{ always() && needs.apply.result == 'success' }}
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    permissions:
+      contents: write
+      actions: write
