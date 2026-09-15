@@ -22,19 +22,55 @@ def patch_source():
     SCRIPT.write_text(text, encoding='utf-8')
 
 
+def replace_once_file(path, old, new, label):
+    file = Path(path)
+    text = file.read_text(encoding='utf-8')
+    count = text.count(old)
+    if count != 1:
+        raise SystemExit(f'{label}: expected one match, got {count}')
+    file.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+
+def migrate_queue_schema_v5():
+    replace_once_file(
+        'vibe2-runtime.json',
+        '"queue": 4,',
+        '"queue": 5,',
+        'runtime queue schema version',
+    )
+    replace_once_file(
+        '.vibe2/queue.json',
+        '"version": 4,',
+        '"version": 5,',
+        'persisted queue schema version',
+    )
+
+    handoff = Path('qa/vibe2-handoff.test.mjs')
+    text = handoff.read_text(encoding='utf-8')
+    text = text.replace('version:4', 'version:5')
+    text = text.replace('version: 4,', 'version: 5,')
+    text = text.replace('snapshot.generatedFrom.queueVersion, 4', 'snapshot.generatedFrom.queueVersion, 5')
+    handoff.write_text(text, encoding='utf-8')
+
+    planner = Path('qa/vibe2-auto-planner.test.mjs')
+    text = planner.read_text(encoding='utf-8').replace('version:4', 'version:5').replace('version: 4,', 'version: 5,')
+    planner.write_text(text, encoding='utf-8')
+
+
 def fix_generated_yaml():
     text = WORKFLOW.read_text(encoding='utf-8')
     start_token = '- name: Upload generated machine handoff\n'
     end_token = '      - name: Aggregate Vibe2 parallelism telemetry\n'
     start = text.find(start_token)
-    if start < 0:
-        return
-    end = text.find(end_token, start)
-    if end < 0:
-        raise SystemExit('generated workflow upload block end missing')
-    block = text[start:end]
-    indented = ''.join(('      ' + line if line.strip() else line) for line in block.splitlines(True))
-    WORKFLOW.write_text(text[:start] + indented + text[end:], encoding='utf-8')
+    if start >= 0:
+        end = text.find(end_token, start)
+        if end < 0:
+            raise SystemExit('generated workflow upload block end missing')
+        block = text[start:end]
+        indented = ''.join(('      ' + line if line.strip() else line) for line in block.splitlines(True))
+        text = text[:start] + indented + text[end:]
+        WORKFLOW.write_text(text, encoding='utf-8')
+    migrate_queue_schema_v5()
 
 
 if __name__ == '__main__':
