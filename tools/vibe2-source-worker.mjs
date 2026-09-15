@@ -84,14 +84,23 @@ function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allo
   const envelope=typeof raw==='string'&&allowFullRewrite&&target==='web'?parseFullFileEnvelope(raw):null;
   const parsed=envelope||(typeof raw==='string'?extractJson(raw):raw);
   if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');
+  const promotedReplaceFiles=[];
   const edits=[
-    ...(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>normalizeEdit(item,{target,responsibleFiles,sourceRootRelative})),
+    ...(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>{
+      const edit=normalizeEdit(item,{target,responsibleFiles,sourceRootRelative});
+      const fullContent=String(item?.replace??item?.content??'');
+      if(target==='roblox'&&allowFullRewrite&&!edit.find&&fullContent){
+        promotedReplaceFiles.push({path:edit.path,content:fullContent});
+        return null;
+      }
+      return edit;
+    }).filter(Boolean),
     ...(Array.isArray(parsed.symbolEdits)?parsed.symbolEdits:[]).map(item=>normalizeEdit(item,{target,responsibleFiles,sourceRootRelative,symbol:item?.symbol}))
   ];
   for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}
   const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length)throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});
   if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);
-  const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시적으로 승인된 FULL_REBUILD 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<minimumReplacementBytes(target,relative)||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}`);return{path:relative,content};});
+  const replaceFiles=[...(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]),...promotedReplaceFiles].map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시적으로 승인된 FULL_REBUILD 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<minimumReplacementBytes(target,relative)||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}`);return{path:relative,content};});
   const touched=[...edits.map(x=>x.path),...newFiles.map(x=>x.path),...replaceFiles.map(x=>x.path)];
   if(!touched.length||new Set(touched).size>MAX_CHANGED_FILES)throw new Error(`변경 파일 수는 1~${MAX_CHANGED_FILES}개여야 함`);
   if(new Set(touched).size!==touched.length)throw new Error('같은 파일에 edit/new/replace 중복 작업 금지');
