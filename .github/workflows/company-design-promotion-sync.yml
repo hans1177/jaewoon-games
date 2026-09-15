@@ -12,6 +12,7 @@ on:
       - '.github/workflows/company-design-promotion-sync.yml'
       - 'tools/design-only-promotion-sync.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
+      - 'qa/design-promotion-workflow-contract.test.mjs'
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
 
@@ -58,7 +59,7 @@ jobs:
       - name: Validate promotion contract
         run: |
           node --check tools/design-only-promotion-sync.mjs
-          node --test qa/design-only-promotion-sync.test.mjs
+          node --test qa/design-only-promotion-sync.test.mjs qa/design-promotion-workflow-contract.test.mjs
 
       - name: Promote 80-point strict-ready design baselines directly to Web gate
         run: node tools/design-only-promotion-sync.mjs
