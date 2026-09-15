@@ -1,0 +1,110 @@
+name: Vibe2 Adaptive Wiring Patcher
+
+on:
+  pull_request:
+    branches:
+      - vibe2-unreal-core
+    paths:
+      - '.github/workflows/vibe2-adaptive-patcher.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Patch continuous core wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const file='.github/workflows/vibe2-continuous-core.yml';
+          let s=fs.readFileSync(file,'utf8');
+          const once=(from,to,label)=>{
+            const first=s.indexOf(from);
+            if(first<0) throw new Error(`patch target missing: ${label}`);
+            if(s.indexOf(from,first+from.length)>=0) throw new Error(`patch target duplicated: ${label}`);
+            s=s.slice(0,first)+to+s.slice(first+from.length);
+          };
+          const all=(from,to,label,expected)=>{
+            const count=s.split(from).length-1;
+            if(count!==expected) throw new Error(`patch target count ${label}: ${count} != ${expected}`);
+            s=s.split(from).join(to);
+          };
+
+          once(
+            '      effective_max: ${{ steps.batch.outputs.effective_max }}\n',
+            '      effective_max: ${{ steps.batch.outputs.effective_max }}\n      requested_max: ${{ steps.batch.outputs.requested_max }}\n',
+            'reserve requested_max output'
+          );
+          once(
+            '          node --check tools/vibe2-queue-control.mjs\n          node --check tools/vibe2-incremental-qa.mjs\n',
+            '          node --check tools/vibe2-queue-control.mjs\n          node --check tools/vibe2-adaptive-queue-control.mjs\n          node --check tools/vibe2-parallelism-control.mjs\n          node --check tools/vibe2-incremental-qa.mjs\n',
+            'adaptive syntax preflight'
+          );
+          all(
+            '          node --test qa/vibe2-parallelism-telemetry.test.mjs\n',
+            '          node --test qa/vibe2-parallelism-telemetry.test.mjs\n          node --test qa/vibe2-parallelism-control.test.mjs\n',
+            'adaptive contract test wiring',
+            2
+          );
+          once(
+            '          node tools/vibe2-queue-control.mjs reserve-batch \\\n',
+            '          node tools/vibe2-adaptive-queue-control.mjs reserve-batch \\\n',
+            'adaptive reserve wrapper'
+          );
+          once(
+            "          fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)}\\n`);\n",
+            "          fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)}\\n`);\n          fs.appendFileSync(out,`requested_max=${Number(batch.scheduler?.requestedMaxConcurrentTasks||20)}\\n`);\n",
+            'requested max step output'
+          );
+          once(
+            '          node tools/vibe2-queue-control.mjs fan-in --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log\n',
+            '          node tools/vibe2-adaptive-queue-control.mjs fan-in --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log\n',
+            'adaptive fan-in wrapper'
+          );
+          once(
+            "          if git diff --quiet -- .vibe2/queue.json; then\n            echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'\n          else\n            git add .vibe2/queue.json\n",
+            "          if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json; then\n            echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'\n          else\n            git add .vibe2/queue.json .vibe2/parallelism-control.json\n",
+            'persist adaptive control with fan-in'
+          );
+          once(
+            '          REQUESTED_MAX: 20\n',
+            '          REQUESTED_MAX: ${{ needs.reserve.outputs.requested_max }}\n',
+            'telemetry requested max'
+          );
+
+          fs.writeFileSync(file,s,'utf8');
+          NODE
+
+          git diff --check
+          grep -F 'vibe2-adaptive-queue-control.mjs reserve-batch' .github/workflows/vibe2-continuous-core.yml
+          grep -F 'vibe2-adaptive-queue-control.mjs fan-in' .github/workflows/vibe2-continuous-core.yml
+          grep -F 'git add .vibe2/queue.json .vibe2/parallelism-control.json' .github/workflows/vibe2-continuous-core.yml
+
+      - name: Commit adaptive workflow wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- .github/workflows/vibe2-continuous-core.yml; then
+            echo 'VIBE2_ADAPTIVE_WORKFLOW_PATCH=NO_CHANGE'
+            exit 0
+          fi
+          git config user.name 'jaewoon-vibe2-wiring'
+          git config user.email 'vibe2-wiring@users.noreply.github.com'
+          git add .github/workflows/vibe2-continuous-core.yml
+          git commit -m 'feat: wire adaptive backpressure into continuous core'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+          echo 'VIBE2_ADAPTIVE_WORKFLOW_PATCH=PASS'
