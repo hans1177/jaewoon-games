@@ -53,6 +53,7 @@ jobs:
             if (target.root || target.sourceRoot) throw new Error(`external target may not attach local source: ${target.id}`);
             if (target.engine === 'web' && !String(target.url || '').startsWith('https://')) throw new Error(`external Web target requires HTTPS: ${target.id}`);
             if (target.engine === 'roblox') throw new Error(`external Roblox active automation is prohibited: ${target.id}`);
+            if (!target.scenarioFile || !fs.existsSync(target.scenarioFile)) throw new Error(`external scenario missing: ${target.id}`);
           }
           if (cfg.policy?.externalRobloxActiveAutomation !== false) throw new Error('external Roblox active automation must remain disabled');
           console.log(`VIBE2_EXTERNAL_TARGETS=${cfg.targets.length}`);
