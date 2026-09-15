@@ -1,0 +1,168 @@
+{
+  "version": 5,
+  "taskId": "OWNER-FULL-REBUILD-REALM-WEAVER-20260916",
+  "gameId": "seed-casual-realm-weaver",
+  "target": "web",
+  "sourceRoot": "web-games/seed-casual-realm-weaver",
+  "releaseState": "development-confirmed",
+  "priority": "critical",
+  "baseMainSha": "64c0e078b652cfb6634f367fa65854e7bb94d6fb",
+  "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 세계의 직조자의 세계 창조 정체성을 유지하면서 숲·물길·마을 배치가 실제 맵과 상호작용하고 서로 영향을 주는 게임으로 전면 재구현한다. 배치 비용 또는 제한, 지형·주민·자원 피드백, 목표·진행·실패 또는 장기 성장, 되돌리기·재시작, 모바일 직접 조작과 명확한 시각 피드백을 갖춘다. 단순 버튼으로 수치만 증가하는 형태로 끝내지 않는다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.",
+  "generatedAt": "2026-09-15T21:29:03.040Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/OWNER-FULL-REBUILD-REALM-WEAVER-20260916-primary-35025128042-1",
+  "model": "qwen3:1.7b",
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "Complete playable HTML for \"세계의 직조자\" game with real gameplay, progression, and mobile input",
+  "expectedEffect": "Game with real gameplay, progression, and mobile input, including direct player input, real game-state progression, failure/success, restart, responsive layout, and no external network dependency",
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": true,
+    "taskId": "OWNER-FULL-REBUILD-REALM-WEAVER-20260916",
+    "packageId": null,
+    "target": "web",
+    "sourceRoot": "web-games/seed-casual-realm-weaver",
+    "baseMainSha": "64c0e078b652cfb6634f367fa65854e7bb94d6fb",
+    "responsibleFiles": [
+      "index.html"
+    ],
+    "impactFiles": [
+      "index.html"
+    ],
+    "contextFiles": [
+      "index.html"
+    ],
+    "relatedFiles": [],
+    "testTargets": [],
+    "protectedScopeSignals": [],
+    "diagnosticEvidence": [],
+    "fileDigests": [
+      {
+        "path": "index.html",
+        "hash": "29b92c57a8bdea39",
+        "bytes": 548
+      }
+    ],
+    "reuseKey": "687694fb37f5256a2ae86c7d",
+    "generatedAt": "2026-09-15T21:25:02.642Z",
+    "reusedFrom": ".vibe2/exploration.json"
+  },
+  "codeIntelligence": {
+    "version": 1,
+    "smartContext": {
+      "strategy": "dependency-symbol-test-ranked",
+      "files": [
+        "index.html"
+      ],
+      "reasons": {
+        "index.html": [
+          "responsible-file"
+        ]
+      },
+      "references": [],
+      "seedSymbols": [],
+      "readOnlyOutsideResponsible": true
+    },
+    "changeImpact": {
+      "categories": [
+        "persistence",
+        "combat",
+        "economy",
+        "progression",
+        "ui-input"
+      ],
+      "impactedFiles": [
+        "index.html"
+      ],
+      "evidence": [],
+      "risk": "medium",
+      "invented": false
+    },
+    "symbolPatching": {
+      "enabled": true,
+      "verifiedEdits": []
+    },
+    "repairLoop": {
+      "enabled": true,
+      "maxAttempts": 3,
+      "attemptsUsed": 1,
+      "repaired": false,
+      "history": []
+    },
+    "failureRouter": {
+      "enabled": true,
+      "routes": []
+    }
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "required": true,
+    "version": 1,
+    "pipeline": [
+      "DESIGNER",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "evidenceRequirements": {
+      "autoPlayer": "verified-runtime-play-evidence-required",
+      "telemetry": "verified-observed-metrics-required",
+      "designReview": "verified-pass-required-before-experience-memory",
+      "qa": "verified-qa-evidence-required"
+    },
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "fullFileRewriteAllowed": true,
+  "sourceRootBootstrapped": false,
+  "sourceRootBootstrapOwnerAuthorized": false,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}
