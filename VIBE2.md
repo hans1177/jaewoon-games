@@ -79,12 +79,17 @@ production GAME STUDY는 `예약 → worker artifact → production guard → fa
 
 Web 공개 게임은 기본적으로 `observation-only`다. 소스 분석은 소유했거나 명시적으로 허가된 서버 workspace에서만 수행한다.
 
-Roblox 외부 게임은 두 경로로 나눈다.
+Roblox 외부 게임은 세 경로로 나눈다.
 
-- 공개 플레이만 가능: 관찰 학습만 한다.
+- 공개 플레이만 가능: 관찰 학습만 하며 generic external Roblox active automation은 켜지 않는다.
 - 제작자가 Place Copying/Download를 명시적으로 허용: 서버에서 임시 `.rbxlx` 사본을 받아 구조·스크립트 패턴을 분석할 수 있다.
+- 제작자가 Place Copying을 명시적으로 허용하고 실제 Studio runtime 검증이 가능한 경우: `tools/vibe2-roblox-studio-cli-runner.mjs`가 Roblox 공식 Studio CLI `RunScript` 경로로 place를 열고 StudioTestService + VirtualInput 실제 입력을 수행할 수 있다. 이 경로도 `creator-enabled-place-copying` 증거가 필수다.
 
 Roblox 허가 다운로드는 `creator-enabled-place-copying` 증거와 nonce-bound 다운로드 증거가 일치해야 한다. copy-locked Place 우회 다운로드는 허용하지 않는다. 다운로드한 raw Place는 임시 workspace에서만 사용하고 분석 후 삭제한다. Experience Memory와 GAME STUDY Knowledge에는 raw source나 게임 고유 수치를 복사하지 않고 일반화 패턴만 남긴다.
+
+공식 Studio CLI 경로에서도 raw Luau source를 artifact/Knowledge에 기록하지 않는다. 허가된 Studio 세션 안에서 정적 패턴을 검사한 뒤 `DataStoreService`, Remote, input, RunService, CollectionService, PathfindingService, MarketplaceService, Humanoid 같은 **일반화된 패턴 이름/토큰만** sanitized workspace에 남긴다. runtime evidence는 기존 nonce, `vibe2-roblox-studio-runtime` authority, `studioTestService=true`, `virtualInput=true`, 실제 입력 1회 이상, 필수 checkpoint 전부 PASS, runtime error 0 조건을 그대로 적용한다.
+
+첫 실제 후보는 Roblox Creator Hub가 uncopylocked 예제로 제공하는 Potion Shop Demo place `14215142052`다. 대상은 real self-hosted Windows Studio smoke가 성공하기 전에는 `enabled=false`를 유지하며, smoke 성공 후에만 production GAME STUDY 대상으로 승격한다.
 
 ### 25 Learning Axes
 

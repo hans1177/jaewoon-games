@@ -21,12 +21,14 @@
     "external-reference",
     "roblox",
     "creator-copy-enabled",
-    "authorized-download-learning"
+    "authorized-download-learning",
+    "official-studio-cli-runtime"
   ],
   "serverEnvironmentRequired": {
     "VIBE2_ROBLOX_AUTHORIZED_DOWNLOAD_COMMAND": "command that downloads the explicitly copy-enabled place to VIBE2_ROBLOX_DOWNLOAD_OUTPUT and emits nonce-bound authorization evidence",
     "VIBE2_ROBLOX_AUTHORIZED_DOWNLOAD_ARGS": "optional JSON array",
-    "VIBE2_ROBLOX_STUDIO_RUNTIME_COMMAND": "real Roblox Studio AUTO PLAYER runtime command",
-    "VIBE2_ROBLOX_STUDIO_RUNTIME_ARGS": "optional JSON array"
+    "VIBE2_ROBLOX_STUDIO_RUNTIME_COMMAND": "node",
+    "VIBE2_ROBLOX_STUDIO_RUNTIME_ARGS": "[\"tools/vibe2-roblox-studio-cli-runner.mjs\"]",
+    "VIBE2_ROBLOX_STUDIO_PATH": "optional absolute RobloxStudioBeta.exe override; otherwise the latest %LOCALAPPDATA%/Roblox/Versions installation is discovered"
   }
 }

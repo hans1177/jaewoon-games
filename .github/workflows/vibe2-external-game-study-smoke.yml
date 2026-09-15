@@ -63,27 +63,27 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Validate external-only target policy
+      - name: Validate external Web target policy
         shell: bash
         run: |
           set -euo pipefail
           node <<'NODE'
           const fs = require('fs');
           const cfg = JSON.parse(fs.readFileSync('.vibe2/game-study-targets.json','utf8'));
-          if (!Array.isArray(cfg.targets) || cfg.targets.length < 3) throw new Error('three parallel external study targets required');
-          if (new Set(cfg.targets.map(target => target.gameId)).size < 2) throw new Error('at least two distinct external games required for cross-game study');
-          for (const target of cfg.targets) {
-            if (target.origin !== 'external-public') throw new Error(`non-external target registered: ${target.id}`);
-            if (target.sourceAccess !== 'observation-only') throw new Error(`external source access must be observation-only: ${target.id}`);
-            if (target.root || target.sourceRoot) throw new Error(`external target may not attach local source: ${target.id}`);
-            if (target.engine === 'web' && !String(target.url || '').startsWith('https://')) throw new Error(`external Web target requires HTTPS: ${target.id}`);
-            if (target.engine === 'roblox') throw new Error(`external Roblox active automation is prohibited: ${target.id}`);
-            if (!target.scenarioFile || !fs.existsSync(target.scenarioFile)) throw new Error(`external scenario missing: ${target.id}`);
+          const webTargets = (cfg.targets || []).filter(target => target.enabled !== false && target.engine === 'web');
+          if (webTargets.length < 3) throw new Error('three enabled external Web study targets required');
+          if (new Set(webTargets.map(target => target.gameId)).size < 2) throw new Error('at least two distinct external Web games required for cross-game study');
+          for (const target of webTargets) {
+            if (target.origin !== 'external-public') throw new Error(`non-public Web target registered: ${target.id}`);
+            if (target.sourceAccess !== 'observation-only') throw new Error(`external Web source access must be observation-only: ${target.id}`);
+            if (target.root || target.sourceRoot) throw new Error(`external Web target may not attach local source: ${target.id}`);
+            if (!String(target.url || '').startsWith('https://')) throw new Error(`external Web target requires HTTPS: ${target.id}`);
+            if (!target.scenarioFile || !fs.existsSync(target.scenarioFile)) throw new Error(`external Web scenario missing: ${target.id}`);
           }
-          if (cfg.policy?.externalRobloxActiveAutomation !== false) throw new Error('external Roblox active automation must remain disabled');
-          console.log(`VIBE2_EXTERNAL_TARGETS=${cfg.targets.length}`);
-          console.log(`VIBE2_EXTERNAL_GAMES=${new Set(cfg.targets.map(target => target.gameId)).size}`);
-          console.log('VIBE2_EXTERNAL_SOURCE_ACCESS=OBSERVATION_ONLY');
+          if (cfg.policy?.externalRobloxActiveAutomation !== false) throw new Error('generic external Roblox active automation must remain disabled');
+          console.log(`VIBE2_EXTERNAL_WEB_TARGETS=${webTargets.length}`);
+          console.log(`VIBE2_EXTERNAL_WEB_GAMES=${new Set(webTargets.map(target => target.gameId)).size}`);
+          console.log('VIBE2_EXTERNAL_WEB_SOURCE_ACCESS=OBSERVATION_ONLY');
           NODE
 
       - name: Require Chrome runtime
