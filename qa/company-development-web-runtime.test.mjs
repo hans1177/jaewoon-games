@@ -253,6 +253,6 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(source,/Number\(item\.webValidationSchemaVersion\)!==13/);
   assert.match(source,/timeout-minutes: 85/);
   assert.match(source,/cancel-in-progress: false/);
-  assert.match(source,/max-parallel: 6/);
+  assert.match(source,/max-parallel: 20/);
   assert.match(source,/WEB_PILOT_TARGET/);
 });
