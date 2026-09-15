@@ -22,6 +22,39 @@ function resolveTarget(targetsFile, targetId) {
   return target;
 }
 
+function autoPlayerDiagnostics(autoPlayer = {}) {
+  const playLog = autoPlayer?.playLog || {};
+  const telemetry = autoPlayer?.telemetry?.metrics || {};
+  return Object.freeze({
+    verified: autoPlayer?.verified === true,
+    runId: clean(autoPlayer?.runId) || null,
+    page: clean(playLog?.page) || null,
+    inputActionCount: Number(telemetry?.inputActionCount || 0),
+    checkpointPassCount: Number(telemetry?.checkpointPassCount || 0),
+    checkpointCount: Number(telemetry?.checkpointCount || 0),
+    runtimeErrorCount: Number(telemetry?.runtimeErrorCount || 0),
+    actions: Object.freeze((playLog?.actions || []).slice(0, 24).map((row) => Object.freeze({
+      id: clean(row?.id),
+      type: clean(row?.type),
+      dispatched: row?.dispatched === true,
+      ok: row?.ok === true,
+      error: clean(row?.error) || null
+    }))),
+    checkpoints: Object.freeze((playLog?.checkpoints || []).slice(0, 24).map((row) => Object.freeze({
+      id: clean(row?.id),
+      name: clean(row?.name) || null,
+      required: row?.required !== false,
+      pass: row?.pass === true
+    }))),
+    errors: Object.freeze((playLog?.errors || []).slice(0, 12).map((row) => typeof row === 'string' ? row : Object.freeze({
+      type: clean(row?.type) || 'runtime-error',
+      actionId: clean(row?.actionId) || null,
+      message: clean(row?.message) || 'runtime error'
+    }))),
+    authority: 'vibe2-game-study-worker-diagnostics'
+  });
+}
+
 function blockedResult(taskId, target, blocker) {
   return Object.freeze({
     version: 1,
@@ -34,6 +67,7 @@ function blockedResult(taskId, target, blocker) {
     reason: clean(blocker),
     evidence: Object.freeze([`game-study-target:${target.id}`, `game-study-engine:${target.engine}`]),
     study: null,
+    runtimeDiagnostics: null,
     authorityExpanded: false
   });
 }
@@ -95,6 +129,7 @@ export async function runGameStudyWorker({ taskId = '', targetId = '', targetsFi
         execution?.autoPlayer?.runId ? `auto-player-run:${execution.autoPlayer.runId}` : ''
       ].filter(Boolean)),
       study,
+      runtimeDiagnostics: autoPlayerDiagnostics(execution?.autoPlayer),
       authorityExpanded: false
     });
     if (outputFile) writeJson(outputFile, result);
@@ -112,6 +147,7 @@ export async function runGameStudyWorker({ taskId = '', targetId = '', targetsFi
       reason: message,
       evidence: Object.freeze([`game-study-target:${target.id}`]),
       study: null,
+      runtimeDiagnostics: null,
       authorityExpanded: false
     });
     if (outputFile) writeJson(outputFile, result);
@@ -132,5 +168,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_GAME_STUDY_ENGINE=${result.engine}`);
   console.log(`VIBE2_GAME_STUDY_TARGET=${result.targetId}`);
   console.log(`VIBE2_GAME_STUDY_VERIFIED=${result.study?.verified === true ? 'YES' : 'NO'}`);
+  if (result.runtimeDiagnostics?.errors?.length) console.log(`VIBE2_GAME_STUDY_ERRORS=${JSON.stringify(result.runtimeDiagnostics.errors)}`);
   if (result.outcome === 'FAIL') process.exitCode = 1;
 }
