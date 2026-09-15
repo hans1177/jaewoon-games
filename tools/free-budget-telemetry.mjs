@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 
 const STANDARD_PUBLIC_RUNNERS = new Set([
@@ -49,6 +50,43 @@ export function repositoryVisibilityFromGitHubEvent(repository,eventPath=process
   if(repo.private===false||repo.visibility==='public')return 'public';
   if(repo.private===true||repo.visibility==='private')return 'private';
   return 'unknown';
+}
+
+export function cachedOllamaRuntimeComplete(home=process.env.HOME||''){
+  if(!home)return false;
+  const root=path.join(home,'.cache','vibe2-ollama');
+  return fs.existsSync(path.join(root,'bin','ollama'))&&fs.existsSync(path.join(root,'lib','ollama','llama-server'));
+}
+
+export function ensureCachedOllamaRuntime({home=process.env.HOME||'',exec=execFileSync}={}){
+  if(!home)throw new Error('HOME 없음: Ollama runtime 복구 불가');
+  if(cachedOllamaRuntimeComplete(home))return 'CACHE_COMPLETE';
+  const cacheRoot=path.join(home,'.cache','vibe2-ollama');
+  const script=`set -euo pipefail
+installed=0
+for attempt in 1 2 3; do
+  if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+  sleep $((attempt * 3))
+done
+test "$installed" = 1
+mkdir -p "${cacheRoot}/bin" "${cacheRoot}/lib/ollama"
+system_ollama=""
+for candidate in /usr/local/bin/ollama /usr/bin/ollama; do
+  if [ -x "$candidate" ]; then system_ollama="$candidate"; break; fi
+done
+test -n "$system_ollama"
+cp "$system_ollama" "${cacheRoot}/bin/ollama"
+chmod +x "${cacheRoot}/bin/ollama"
+server_path="$(find /usr/local/lib/ollama /usr/lib/ollama -type f -name llama-server -perm -111 -print -quit 2>/dev/null || true)"
+test -n "$server_path"
+server_dir="$(dirname "$server_path")"
+rm -rf "${cacheRoot}/lib/ollama"
+mkdir -p "${cacheRoot}/lib/ollama"
+cp -a "$server_dir/." "${cacheRoot}/lib/ollama/"
+test -x "${cacheRoot}/lib/ollama/llama-server"`;
+  exec('bash',['-lc',script],{stdio:'inherit',env:process.env});
+  if(!cachedOllamaRuntimeComplete(home))throw new Error('Ollama runtime 복구 후 llama-server 확인 실패');
+  return 'REPAIRED_FROM_OFFICIAL_INSTALL';
 }
 
 export function buildOperationalFreeBudgetTelemetry({
@@ -153,6 +191,7 @@ async function main(){
   const portfolio=readJson('autonomous-portfolio.json',{});
   const repository=arg('repository',process.env.GITHUB_REPOSITORY||'hans1177/jaewoon-games');
   const verifyRepo=String(arg('verify-public-repo','false'))==='true';
+  const modelCalls=finite(arg('model-calls','0'),0);
   let visibility=verifyRepo?await fetchRepositoryVisibility(repository,{token:process.env.GITHUB_TOKEN||''}):arg('visibility',process.env.JAEWOON_REPO_VISIBILITY||'unknown');
   let visibilitySource=verifyRepo?'GITHUB_REPO_API':arg('visibility-source','UNVERIFIED');
   if(verifyRepo&&visibility==='unknown'){
@@ -169,7 +208,7 @@ async function main(){
     runner:arg('runner',process.env.JAEWOON_RUNNER_LABEL||'unknown'),
     cashKRW:finite(arg('cash-krw','0'),0),
     paidApi:String(arg('paid-api',String(portfolio.paidApi!==false)))==='true',
-    modelCalls:finite(arg('model-calls','0'),0),
+    modelCalls,
     maxModelCalls:finite(portfolio.maxModelCallsPerRun,0),
     runnerMinutes:finite(arg('runner-minutes',String(portfolio.maxRunnerMinutesPerRun??0)),0),
     maxRunnerMinutes:finite(portfolio.maxRunnerMinutesPerRun,0),
@@ -178,7 +217,11 @@ async function main(){
   fs.mkdirSync(path.dirname(output),{recursive:true});
   fs.writeFileSync(output,JSON.stringify(telemetry,null,2)+'\n');
   console.log(JSON.stringify(telemetry,null,2));
-  if(!telemetry.allowed)process.exitCode=2;
+  if(!telemetry.allowed){process.exitCode=2;return;}
+  if(process.env.GITHUB_ACTIONS==='true'&&modelCalls>0&&process.platform==='linux'){
+    const runtime=ensureCachedOllamaRuntime();
+    console.log(`VIBE2_OLLAMA_RUNTIME_READY=${runtime}`);
+  }
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]).href){
