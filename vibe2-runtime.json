@@ -1,6 +1,46 @@
 {
-  "version": 5,
+  "version": 6,
   "mode": "continuous-core",
+  "documentation": {
+    "humanDocuments": [
+      "VIBE2.md"
+    ],
+    "humanDocumentLimit": 1,
+    "machineSourceOfTruth": "vibe2-runtime.json",
+    "runtimeState": {
+      "queue": ".vibe2/queue.json",
+      "parallelism": ".vibe2/parallelism-control.json",
+      "experience": ".vibe2/experience.json"
+    },
+    "generatedHandoffTool": "tools/vibe2-handoff.mjs",
+    "manualHandoffDocumentsAllowed": false,
+    "legacyHumanDocumentsRemoved": [
+      "VIBE2_CORE.md",
+      "VIBE2_CONTINUOUS_OPERATIONS.md",
+      "VIBE2_MOTION_CORE.md",
+      "VIBE2_VISUAL_AUTONOMY_PLAN.md"
+    ]
+  },
+  "branches": {
+    "control": "vibe2-unreal-core",
+    "candidateBase": "main",
+    "candidatePrefix": "vibe2/candidate/",
+    "directControlWriteByWorkers": false,
+    "directMainWriteByWorkers": false
+  },
+  "workManagement": {
+    "largeWorkExecution": "phased-until-complete",
+    "splitRule": "split-by-implementation-phase-not-artificial-file-count",
+    "ownerDirectivePreemptsAutonomy": true,
+    "handoffMode": "generated-from-machine-state",
+    "handoffReadOrder": [
+      "vibe2-runtime.json",
+      ".vibe2/queue.json",
+      ".vibe2/parallelism-control.json",
+      ".vibe2/experience.json"
+    ],
+    "humanMaintainedHandoff": false
+  },
   "continuous": {
     "enabled": true,
     "strategy": "hierarchical-dag-sharded-work-stealing",
@@ -15,9 +55,27 @@
     "ownerDirectivePreemptsAutonomy": true,
     "maxConcurrentGameTasks": 20,
     "unityReleaseFocusSlots": 1,
-    "priorityOrder": ["owner-directive", "release-confirmed", "development-confirmed", "reviewing", "other"],
-    "sameTierEngineOrder": ["existing-roblox", "existing-unity", "existing-web", "new-unity", "other-engine"],
-    "shards": ["roblox", "unity", "web", "verification", "support"],
+    "priorityOrder": [
+      "owner-directive",
+      "release-confirmed",
+      "development-confirmed",
+      "reviewing",
+      "other"
+    ],
+    "sameTierEngineOrder": [
+      "existing-roblox",
+      "existing-unity",
+      "existing-web",
+      "new-unity",
+      "other-engine"
+    ],
+    "shards": [
+      "roblox",
+      "unity",
+      "web",
+      "verification",
+      "support"
+    ],
     "workStealing": true,
     "dynamicBackpressure": true,
     "speculativeParallelism": {
@@ -26,6 +84,33 @@
       "highRiskOptInOnly": true,
       "unityBuildCandidatesExcluded": true
     }
+  },
+  "adaptiveBackpressure": {
+    "enabled": true,
+    "mode": "persistent-next-run-cap-plus-immediate-current-batch-protection",
+    "stateFile": ".vibe2/parallelism-control.json",
+    "steps": [
+      20,
+      16,
+      12,
+      8,
+      4
+    ],
+    "maxStepChangesPerRun": 1,
+    "saturationFloorRatio": 0.75,
+    "strongPressureLevels": [
+      "HIGH",
+      "SEVERE"
+    ],
+    "strongPressureDownAfterRuns": 1,
+    "mediumPressureDownAfterRuns": 2,
+    "healthySaturatedUpAfterRuns": 2,
+    "lowWorkloadChangesPersistentCap": false,
+    "lowWorkloadBuildsRecoveryStreak": false,
+    "immediateDynamicCapMayAlsoDownshiftPersistentCap": false,
+    "duplicateRunMayChangePersistentCap": false,
+    "missingStateFallbackMax": 20,
+    "corruptStateFallbackMax": 20
   },
   "sources": {
     "queue": ".vibe2/queue.json",
@@ -84,12 +169,265 @@
       "bottleneck"
     ],
     "loadProbeTargetWorkers": 20,
-    "backpressureSteps": [20, 16, 12, 8, 4]
+    "backpressureSteps": [
+      20,
+      16,
+      12,
+      8,
+      4
+    ]
+  },
+  "contracts": {
+    "core": {
+      "purpose": [
+        "natural-language-to-engine-independent-work-plan",
+        "engine-adapter-routing",
+        "preserve-protected-game-and-save-semantics",
+        "short-verified-work-loop",
+        "reuse-verified-success-and-failure-experience",
+        "motion-as-core-quality-axis"
+      ],
+      "authority": {
+        "ownerDirectiveHighestPriority": true,
+        "learningMayExpandAuthority": false,
+        "homepagePublicationSeparated": true,
+        "coreDecisionRequiresOwner": true
+      },
+      "protectedSemantics": [
+        "health",
+        "attack",
+        "waves",
+        "rewards",
+        "drop-rate",
+        "save-keys",
+        "save-schema",
+        "progression-meaning",
+        "approved-core-gameplay",
+        "locked-artbook-concept"
+      ],
+      "engineTargets": {
+        "unity": {
+          "sourceRoots": [
+            "unity-games/<slug>/Assets/**",
+            "unity-games/<slug>/Packages/**",
+            "unity-games/<slug>/ProjectSettings/**"
+          ],
+          "verification": [
+            "csharp-compile",
+            "scene-prefab-references",
+            "animation-links",
+            "android-build",
+            "runtime-evidence"
+          ]
+        },
+        "unreal": {
+          "sourceRoots": [
+            "unreal-games/<slug>/*.uproject",
+            "unreal-games/<slug>/Content/**",
+            "unreal-games/<slug>/Config/**",
+            "unreal-games/<slug>/Source/**"
+          ],
+          "excluded": [
+            "Binaries/**",
+            "DerivedDataCache/**",
+            "Intermediate/**",
+            "Saved/**"
+          ],
+          "verification": [
+            "cpp-compile",
+            "blueprint-references",
+            "map-load",
+            "animation-stack",
+            "packaging",
+            "target-build",
+            "mobile-performance"
+          ]
+        },
+        "godot": {
+          "sourceRoots": [
+            "godot-games/<slug>/**"
+          ]
+        },
+        "web": {
+          "automaticNewGame": false,
+          "existingMaintenanceAllowed": true
+        }
+      }
+    },
+    "motion": {
+      "purpose": "verify-natural-motion-and-gameplay-event-synchronization-not-file-existence",
+      "requiredStates": [
+        "idle",
+        "move",
+        "attack",
+        "hit",
+        "death"
+      ],
+      "optionalStates": [
+        "run",
+        "attack-combo",
+        "skill",
+        "cast",
+        "block",
+        "dodge",
+        "stun",
+        "knockback",
+        "jump",
+        "fall",
+        "land",
+        "interact"
+      ],
+      "combatPhases": [
+        "windup",
+        "active-hit-frame",
+        "recovery"
+      ],
+      "qualityAxes": [
+        "coverage",
+        "transition",
+        "combatSync",
+        "footStability",
+        "rootMotion",
+        "retarget",
+        "readability",
+        "performance",
+        "repetition"
+      ],
+      "hardFailGates": [
+        "required-motion-missing",
+        "attack-hit-timing-mismatch",
+        "death-returns-to-locomotion",
+        "severe-foot-sliding",
+        "retarget-breakage",
+        "transition-teleport-or-rotation-pop",
+        "animation-reference-error",
+        "mobile-performance-regression"
+      ],
+      "learningMayCopyGameplayNumbers": false
+    },
+    "visualAutonomy": {
+      "status": "PROPOSED",
+      "implementationState": "DOCUMENTED_NOT_IMPLEMENTED",
+      "purpose": "game-specific-identity-aware-visual-and-motion-improvement-with-safe-candidates-verification-learning",
+      "principles": [
+        "understand-game-before-change",
+        "no-one-style-fits-all",
+        "game-identity-over-genre-template",
+        "include-readability-performance-mobile-ui-audio-timing-regression",
+        "candidate-verify-adopt-or-reject",
+        "learn-success-and-failure",
+        "learning-does-not-expand-authority",
+        "owner-preference-is-highest-learning-signal",
+        "do-not-change-gameplay-save-progression-economy-for-visual-reasons",
+        "all-automatic-changes-must-be-reversible"
+      ],
+      "components": [
+        "game-identity-profile",
+        "visual-dna-generator",
+        "graphics-evolution-engine",
+        "motion-engine",
+        "scene-presentation-engine",
+        "graphic-issue-detector",
+        "style-drift-detector",
+        "visual-reference-memory",
+        "camera-director",
+        "readability-heatmap",
+        "boss-presentation-engine",
+        "progression-visualizer",
+        "biome-identity-engine",
+        "adaptive-ui-engine",
+        "animation-personality-engine",
+        "audio-visual-sync-engine",
+        "screenshot-critic",
+        "asset-reuse-intelligence",
+        "performance-aware-beauty",
+        "visual-ab-tournament",
+        "failure-memory",
+        "human-preference-learning",
+        "visual-aging-detector",
+        "polish-budget-manager",
+        "visual-director-memory",
+        "learning-engine",
+        "genre-pattern-learning",
+        "autopilot-loop"
+      ],
+      "candidateLevels": [
+        "SAFE",
+        "NORMAL",
+        "AGGRESSIVE"
+      ],
+      "automaticSafeScope": [
+        "color",
+        "contrast",
+        "ui-alignment-spacing-size",
+        "composition",
+        "non-destructive-effects",
+        "animation-timing",
+        "background-enhancement",
+        "readability",
+        "small-camera-adjustment",
+        "graphics-quality",
+        "asset-enhance-or-combine-candidate"
+      ],
+      "requiresHigherGate": [
+        "core-combat-rule-change",
+        "save-schema-change",
+        "progression-change",
+        "economy-or-reward-change",
+        "game-identity-change",
+        "large-content-deletion",
+        "public-release-promotion",
+        "unclear-license-asset",
+        "large-performance-regression",
+        "irreversible-change"
+      ],
+      "maturityLevels": {
+        "L1": "observe",
+        "L2": "recommend",
+        "L3": "safe-candidate-auto-edit",
+        "L4": "verified-autonomous-improvement",
+        "L5": "long-term-autonomous-learning"
+      },
+      "implementationPriority": [
+        "game-identity-analyzer",
+        "visual-dna-generator",
+        "graphic-issue-detector",
+        "visual-director-memory-learning",
+        "graphics-evolution-engine",
+        "motion-animation-personality",
+        "scene-camera-boss-biome",
+        "readability-screenshot-critic",
+        "performance-mobile-qa",
+        "ab-tournament-polish-budget",
+        "autopilot-scheduler"
+      ],
+      "ownerDecisionsRequiredBeforeImplementation": [
+        "allowed-autonomy-level-L1-to-L5",
+        "safe-candidate-auto-apply-or-preapproval",
+        "preference-scope-game-only-or-global",
+        "learning-memory-persistence-location",
+        "daily-and-per-game-experiment-budget"
+      ]
+    }
   },
   "assetDecision": {
     "mode": "fixed-safety-plus-verified-preference-learning",
-    "fixedRules": ["license", "commercial-use", "animation-evidence", "no-static-actor", "source-record", "mobile-performance", "size-budget"],
-    "learnedSignals": ["style-fit", "motion-quality", "mobile-performance", "qa-pass-rate", "cross-game-reuse-success"],
+    "fixedRules": [
+      "license",
+      "commercial-use",
+      "animation-evidence",
+      "no-static-actor",
+      "source-record",
+      "mobile-performance",
+      "size-budget"
+    ],
+    "learnedSignals": [
+      "style-fit",
+      "motion-quality",
+      "mobile-performance",
+      "qa-pass-rate",
+      "cross-game-reuse-success"
+    ],
     "verifiedEvidenceRequired": true,
     "learningMayOverrideFixedRules": false
   },
@@ -127,7 +465,13 @@
   "safety": {
     "existingWebMaintenanceAllowed": true,
     "newWebGameAutomatic": false,
-    "allowedWritableTargets": ["web", "unity", "unreal", "godot", "roblox"],
+    "allowedWritableTargets": [
+      "web",
+      "unity",
+      "unreal",
+      "godot",
+      "roblox"
+    ],
     "paidAIAllowed": false,
     "paidRunnerAllowed": false,
     "coreDecisionRequiresOwner": true,
