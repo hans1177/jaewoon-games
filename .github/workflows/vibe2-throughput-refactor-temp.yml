@@ -1,0 +1,65 @@
+name: Vibe2 Throughput Refactor Temp
+
+on:
+  push:
+    branches:
+      - 'feat/vibe2-throughput-overlap'
+    paths:
+      - '.github/workflows/vibe2-throughput-refactor-temp.yml'
+      - 'tools/vibe2-throughput-refactor-temp.py'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/vibe2-throughput-overlap
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Apply throughput refactor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tools/vibe2-throughput-refactor-temp.py
+
+      - name: Validate throughput contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-handoff.mjs
+          node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-continuous-runner.mjs
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-throughput.json >/tmp/vibe2-handoff-throughput.log
+          node --test --test-concurrency=4 \
+            qa/vibe2-auto-planner.test.mjs \
+            qa/vibe2-core-engine-motion.test.mjs \
+            qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-queue-control.test.mjs \
+            qa/vibe2-incremental-qa.test.mjs \
+            qa/vibe2-parallelism-telemetry.test.mjs \
+            qa/vibe2-controller-contract.test.mjs \
+            qa/vibe2-candidate-reconcile.test.mjs \
+            qa/vibe2-experience-control.test.mjs \
+            qa/vibe2-handoff.test.mjs
+          git diff --check
+
+      - name: Commit verified non-workflow state and snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout -- .github/workflows/vibe2-continuous-core.yml
+          git config user.name 'jaewoon-vibe2-throughput'
+          git config user.email 'vibe2-throughput@users.noreply.github.com'
+          git add vibe2-runtime.json qa/vibe2-controller-contract.test.mjs qa/vibe2-handoff.test.mjs .vibe2/workflow-snapshots/vibe2-continuous-core.yml
+          git diff --cached --check
+          git commit -m 'vibe2: optimize continuous refill and regression throughput'
+          git push origin HEAD:feat/vibe2-throughput-overlap
