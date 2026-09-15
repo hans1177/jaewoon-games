@@ -6,10 +6,14 @@ on:
     paths:
       - '.github/workflows/company-development-roblox-final-review-revalidation.yml'
       - '.github/workflows/company-development-roblox-multiplayer-qa.yml'
+      - '.github/workflows/company-development-roblox-release-promotion.yml'
       - 'tools/company-development-roblox-final-review.mjs'
       - 'tools/company-development-roblox-multiplayer-qa.luau'
+      - 'tools/vibe3-roblox-platform.mjs'
       - 'qa/company-development-roblox-final-review-revalidation.test.mjs'
       - 'qa/company-development-roblox-multiplayer-qa.test.mjs'
+      - 'qa/company-development-roblox-release-promotion.test.mjs'
+      - 'qa/vibe3-roblox-platform.test.mjs'
   workflow_run:
     workflows: ["Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA"]
     types: [completed]
@@ -37,6 +41,8 @@ jobs:
     outputs:
       multiplayer_pending_count: ${{ steps.evaluate.outputs.multiplayer_pending_count }}
       multiplayer_pending_ids_json: ${{ steps.evaluate.outputs.multiplayer_pending_ids_json }}
+      release_pending_count: ${{ steps.evaluate.outputs.release_pending_count }}
+      release_pending_ids_json: ${{ steps.evaluate.outputs.release_pending_ids_json }}
     concurrency:
       group: company-runtime-writer
       cancel-in-progress: false
@@ -96,7 +102,7 @@ jobs:
           echo 'ROBLOX_RUNTIME_RERUN=NO'
           echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
           echo 'ROBLOX_REGRESSION_RERUN=NO'
-          echo 'ROBLOX_RELEASE_CLAIM=NO'
+          echo 'ROBLOX_RELEASE_STATE_FORCING=NO'
 
       - name: Dispatch exact pending multiplayer QA target
         if: github.event_name != 'workflow_run' && github.event_name != 'repository_dispatch' && steps.evaluate.outputs.multiplayer_pending_count != '0'
@@ -113,11 +119,29 @@ jobs:
             echo "ROBLOX_MULTIPLAYER_QA_DISPATCHED_GAME_ID=$id"
           done
           echo 'ROBLOX_STUDIO_PRIOR_QA_REUSED=YES'
-          echo 'ROBLOX_RELEASE_CLAIM=NO'
+          echo 'ROBLOX_RELEASE_STATE_FORCING=NO'
+
+      - name: Dispatch exact final-reviewed Roblox release promotion target
+        if: steps.evaluate.outputs.release_pending_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_IDS_JSON: ${{ steps.evaluate.outputs.release_pending_ids_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t ids < <(node -e "for (const id of JSON.parse(process.env.RELEASE_IDS_JSON || '[]')) console.log(id)")
+          for id in "${ids[@]}"; do
+            test -n "$id"
+            gh workflow run company-development-roblox-release-promotion.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
+            echo "ROBLOX_RELEASE_PROMOTION_DISPATCHED_GAME_ID=$id"
+          done
+          echo 'ROBLOX_RELEASE_REUSES_EXISTING_FINAL_REVIEW_EVIDENCE=YES'
+          echo 'ROBLOX_RELEASE_STATE_FORCING=NO'
 
       - name: Final-review revalidation summary
         run: |
           echo 'ROBLOX_FINAL_REVIEW_ONLY=YES'
           echo 'ROBLOX_EXISTING_RUNTIME_MOBILE_REGRESSION_EVIDENCE_PRESERVED=YES'
           echo 'ROBLOX_MULTIPLAYER_QA_USES_EXISTING_CANONICAL_WORKFLOW=YES'
-          echo 'ROBLOX_RELEASE_CLAIM=NO'
+          echo 'ROBLOX_RELEASE_PROMOTION_USES_EXISTING_CANONICAL_PUBLISHER=YES'
+          echo 'ROBLOX_RELEASE_STATE_FORCING=NO'
