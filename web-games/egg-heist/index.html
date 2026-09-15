@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .game-loop {
+      margin-top: 20px;
+    }
+    .game-loop h2 {
+      margin-top: 0;
+      color: #555;
+    }
+    .game-loop p {
+      margin-top: 10px;
+      color: #666;
+    }
+    .game-loop button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .game-loop button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div class="game-loop">
+      <h2>잠입</h2>
+      <p>잠입을 하세요.</p>
+      <button onclick="startStealth()">잠입 시작</button>
+    </div>
+    <div class="game-loop">
+      <h2>알 획득</h2>
+      <p>알을 획득하세요.</p>
+      <button onclick="getAl()">알 획득</button>
+    </div>
+    <div class="game-loop">
+      <h2>위험 증가</h2>
+      <p>위험을 증가시켜주세요.</p>
+      <button onclick="increaseRisk()">위험 증가</button>
+    </div>
+    <div class="game-loop">
+      <h2>추격</h2>
+      <p>추격을 시작하세요.</p>
+      <button onclick="startChase()">추격 시작</button>
+    </div>
+    <div class="game-loop">
+      <h2>탈출</h2>
+      <p>탈출하세요.</p>
+      <button onclick="escape()">탈출</button>
+    </div>
+  </main>
+  <script>
+    function startStealth() {
+      alert("잠입을 시작했습니다.");
+    }
+
+    function getAl() {
+      alert("알을 획득했습니다.");
+    }
+
+    function increaseRisk() {
+      alert("위험을 증가시켰습니다.");
+    }
+
+    function startChase() {
+      alert("추격을 시작했습니다.");
+    }
+
+    function escape() {
+      alert("탈출했습니다.");
+    }
+  </script>
+</body>
+</html>
