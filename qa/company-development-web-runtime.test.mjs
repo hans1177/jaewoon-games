@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope} from '../tools/company-development-web-bootstrap.mjs';
+import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
@@ -15,6 +15,22 @@ test('base bootstrap contract still rejects network and persistent storage',()=>
   assert.equal(result.pass,false);
   assert.ok(result.blockers.includes('PERSISTENT_STORAGE_FORBIDDEN_ON_BOOTSTRAP'));
   assert.ok(result.blockers.includes('NETWORK_API_FORBIDDEN'));
+});
+
+test('preserved source repair applies bounded exact edits without whole-document replacement',()=>{
+  const original='<main><button id="a">A</button><p>keep</p></main>';
+  const patched=applyPreservedSourceEdits(original,[{search:'<button id="a">A</button>',replacement:'<button id="a">B</button>'}]);
+  assert.equal(patched,'<main><button id="a">B</button><p>keep</p></main>');
+  assert.throws(()=>applyPreservedSourceEdits('<b>x</b><b>x</b>',[{search:'<b>x</b>',replacement:'<b>y</b>'}]),/VIBE2_PATCH_TARGET_AMBIGUOUS/);
+});
+
+test('Vibe2 model call timeout mirrors the central 75 second budget and stops duplicate timeout retries',()=>{
+  const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
+  assert.match(source,/const MODEL_TIMEOUT_MS=75000;/);
+  assert.match(source,/if\(failure==='VIBE2_MODEL_TIMEOUT'\)break;/);
+  assert.match(source,/patchMode\?PATCH_OUTPUT_SCHEMA:OUTPUT_SCHEMA/);
+  assert.match(source,/num_predict:patchMode\?2400:8500/);
+  assert.match(source,/기존 HTML 전체를 재생성하지 않고 현재 소스에 적용할 최소 exact edits만 생성한다/);
 });
 
 test('approved scope inventory captures core gameplay',()=>{
