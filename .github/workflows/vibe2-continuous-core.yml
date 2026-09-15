@@ -12,7 +12,7 @@ env:
   VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '1536'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '4'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'
   OLLAMA_HOST: 127.0.0.1:11434
 
 jobs:
@@ -47,6 +47,8 @@ jobs:
           node --check tools/vibe2-queue-control.mjs
           node --check tools/vibe2-incremental-qa.mjs
           node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/vibe2-parallelism-20-contract.test.mjs
           node --test qa/vibe2-incremental-qa.test.mjs
 
       - name: Reserve conflict-free DAG batch
@@ -102,7 +104,7 @@ jobs:
     timeout-minutes: 22
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 20
       matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}
     steps:
       - name: Checkout Vibe2 control line

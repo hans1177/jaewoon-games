@@ -12,11 +12,11 @@ const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '')
 export const VIBE_QUEUE_STATUSES = freezeList(['queued', 'running', 'blocked', 'done', 'failed', 'cancelled']);
 export const VIBE_QUEUE_PRIORITIES = freezeList(['owner-immediate', 'critical', 'high', 'normal', 'low']);
 export const VIBE_RELEASE_STATES = freezeList(['release-confirmed', 'development-confirmed', 'reviewing', 'other']);
-export const DEFAULT_MAX_CONCURRENT_TASKS = 4;
+export const DEFAULT_MAX_CONCURRENT_TASKS = 20;
 
 const PRIORITY_SCORE = freeze({ 'owner-immediate': 100, critical: 80, high: 60, normal: 40, low: 20 });
 const RELEASE_STATE_SCORE = freeze({ 'release-confirmed': 400, 'development-confirmed': 300, reviewing: 200, other: 100 });
-const BASE_SHARD_SLOTS = freeze({ unity: 1, web: 1, verification: 1, support: 1 });
+const BASE_SHARD_SLOTS = freeze({ unity: 3, web: 7, verification: 5, support: 5 });
 
 function normalizeReleaseState(value) {
   const state = clean(value).toLowerCase();
@@ -100,7 +100,7 @@ function normalizeTask(input = {}, index = 0) {
 
 export function createVibeContinuousQueue(seed = {}) {
   const source = Array.isArray(seed) ? seed : Array.isArray(seed?.tasks) ? seed.tasks : [];
-  const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : clampInt(seed?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 8);
+  const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : clampInt(seed?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 20);
   const tasks = source.map(normalizeTask);
   return freeze({
     version: 4,
@@ -151,8 +151,13 @@ function fileLocks(task) {
 }
 function lockConflict(a, b) {
   const aRoot = posix(a.sourceRoot), bRoot = posix(b.sourceRoot);
-  if (aRoot && bRoot && aRoot === bRoot) return 'source-root-conflict';
   const aFiles = fileLocks(a), bFiles = fileLocks(b);
+  if (aRoot && bRoot && aRoot === bRoot) {
+    // Same game/source root may parallelize only when both tasks declare concrete, disjoint responsibility files.
+    if (!aFiles.size || !bFiles.size) return 'source-root-conflict';
+    for (const file of aFiles) if (bFiles.has(file)) return 'responsible-file-conflict';
+    return null;
+  }
   for (const file of aFiles) if (bFiles.has(file)) return 'responsible-file-conflict';
   return null;
 }
@@ -168,14 +173,19 @@ function conflictsWith(task, active) {
   return null;
 }
 function dynamicConcurrency(queue, requested = queue.maxConcurrentTasks) {
-  const hardMax = clampInt(requested || queue.maxConcurrentTasks, 1, 8);
+  const hardMax = clampInt(requested || queue.maxConcurrentTasks, 1, 20);
   const running = queue.tasks.filter((task) => task.status === 'running');
   const awaitingQa = running.filter((task) => /awaiting.*qa|qa.*awaiting/i.test(clean(task.blocker))).length;
   const recentFailures = queue.tasks.filter((task) => task.lastOutcome === 'FAIL' && task.retries > 0).length;
   let limit = hardMax;
-  if (awaitingQa >= 3) limit = Math.min(limit, 2);
-  else if (awaitingQa >= 2) limit = Math.min(limit, 3);
-  if (recentFailures >= 3) limit = Math.min(limit, 2);
+  const applyPressure = (count) => {
+    if (count >= 8) limit = Math.min(limit, 4);
+    else if (count >= 6) limit = Math.min(limit, 8);
+    else if (count >= 4) limit = Math.min(limit, 12);
+    else if (count >= 2) limit = Math.min(limit, 16);
+  };
+  applyPressure(awaitingQa);
+  applyPressure(recentFailures);
   return Math.max(1, limit);
 }
 
