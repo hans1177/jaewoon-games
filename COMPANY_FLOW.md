@@ -365,6 +365,7 @@ ownerCurrentProductionContract:
         - STATUS
         - CURRENT_STEP
         - SELECTED_PLATFORM
+        - SCORE
       developmentCardMustNotClaimValidationOrRelease: true
       developmentWebTestButtonEnabled: true
       developmentWebTestButtonLabel: 웹 테스트
@@ -372,6 +373,9 @@ ownerCurrentProductionContract:
       developmentPlatformTestButtonLabelMode: PLATFORM_NAME
       developmentWebAndPlatformTestButtonsMustBeSeparate: true
       missingPlatformTestTargetDisablesOnlyPlatformButton: true
+      developmentScoreDisplayEnabled: true
+      developmentRanking: SCORE_DESC
+      unratedDevelopmentGamesLast: true
     ownerMayTestBeforeFinalPromotion: true
     prePromotionDisplay: DEVELOPMENT_PROGRESS_SHELF_PLUS_SEPARATE_TOP30_TEST_SHELF
     prePromotionOfficialGameCardForbidden: true
