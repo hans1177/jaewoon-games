@@ -7,6 +7,12 @@
     window.__cozyNativeShowModalV9 = window.HTMLDialogElement.prototype.showModal;
   }
 
+  // The in-game reset button should also clear the separate fishing limiter state.
+  document.addEventListener('click', event => {
+    if (!event.target?.closest?.('[data-reset-game]')) return;
+    try { localStorage.removeItem(FISHING_KEY); } catch {}
+  }, true);
+
   const params = new URLSearchParams(location.search);
   if (params.get('reset') !== '1') return;
 
