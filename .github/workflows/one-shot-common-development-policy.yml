@@ -32,13 +32,33 @@ jobs:
           import fs from 'node:fs';
           const file='qa/company-web-real-game-regression.test.mjs';
           let text=fs.readFileSync(file,'utf8');
-          const from="assert.equal(WEB_VALIDATION_SCHEMA_VERSION,13,'Web evidence schema must carry staged-play semantics');";
-          const to="assert.equal(WEB_VALIDATION_SCHEMA_VERSION,14,'Web evidence schema must carry common-development-quality semantics');";
-          if(!text.includes(to)){
-            if(!text.includes(from))throw new Error('SCHEMA14_REGRESSION_ASSERTION_ANCHOR_MISSING');
-            text=text.replace(from,to);
-            fs.writeFileSync(file,text);
+          let changed=false;
+
+          const schemaFrom="assert.equal(WEB_VALIDATION_SCHEMA_VERSION,13,'Web evidence schema must carry staged-play semantics');";
+          const schemaTo="assert.equal(WEB_VALIDATION_SCHEMA_VERSION,14,'Web evidence schema must carry common-development-quality semantics');";
+          if(!text.includes(schemaTo)){
+            if(!text.includes(schemaFrom))throw new Error('SCHEMA14_REGRESSION_ASSERTION_ANCHOR_MISSING');
+            text=text.replace(schemaFrom,schemaTo);
+            changed=true;
           }
+
+          const scopeFrom="    musicRuntime:{pass:true},runtimeSmokePassed:true,";
+          const scopeTo="    musicRuntime:{pass:true},runtimeSmokePassed:true,\n    approvedScopeFullyImplemented:true,\n    scopeCoverage:{pass:true,mechanicBindings:['tower-place','wave','upgrade','economy','strategy']},";
+          if(!text.includes(scopeTo)){
+            if(!text.includes(scopeFrom))throw new Error('SCHEMA14_SCOPE_FIXTURE_ANCHOR_MISSING');
+            text=text.replace(scopeFrom,scopeTo);
+            changed=true;
+          }
+
+          const replayFrom="    strictReview:{totalScore:92,hardFailures:[]},webStrictScore:92,";
+          const replayTo="    strictReview:{totalScore:92,hardFailures:[]},webStrictScore:92,\n    promotionRevalidation:{pass:true,independentRun:true,sourceHashMatch:true,baselineHashMatch:true,secondSubstancePass:true,secondContentDepthPass:true,secondTerminalReached:true},";
+          if(!text.includes(replayTo)){
+            if(!text.includes(replayFrom))throw new Error('SCHEMA14_REPLAY_FIXTURE_ANCHOR_MISSING');
+            text=text.replace(replayFrom,replayTo);
+            changed=true;
+          }
+
+          if(changed)fs.writeFileSync(file,text);
           NODE
       - name: Verify modified contract syntax
         run: |
