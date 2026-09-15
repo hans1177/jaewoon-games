@@ -27,6 +27,13 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Verify Roblox platform focus policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-platform-focus-policy.mjs
+          node --test qa/vibe2-platform-focus-policy.test.mjs
+
       - name: Read current machine state and latest main planning inputs
         shell: bash
         run: |
@@ -42,6 +49,9 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-planner'
           git config user.email 'vibe2-planner@users.noreply.github.com'
+          node tools/vibe2-platform-focus-policy.mjs \
+            --queue=.vibe2/queue.json \
+            --config=.vibe2/platform-focus.json | tee /tmp/vibe2-platform-focus-before.log
           node tools/vibe2-auto-planner.mjs \
             --runtime=vibe2-runtime.json \
             --status=/tmp/vibe2-main-company-status.json \
@@ -50,6 +60,9 @@ jobs:
             --control=.vibe2/parallelism-control.json \
             --experience=.vibe2/experience.json \
             --max=20 | tee /tmp/vibe2-plan.log
+          node tools/vibe2-platform-focus-policy.mjs \
+            --queue=.vibe2/queue.json \
+            --config=.vibe2/platform-focus.json | tee /tmp/vibe2-platform-focus-after.log
           node tools/vibe2-game-study-planner-context.mjs \
             --queue=.vibe2/queue.json \
             --knowledge=.vibe2/game-study-knowledge.json | tee /tmp/vibe2-study-planner-context.log
@@ -79,6 +92,8 @@ jobs:
             /tmp/vibe2-handoff-before-plan.json
             /tmp/vibe2-handoff-after-plan.json
             /tmp/vibe2-plan.log
+            /tmp/vibe2-platform-focus-before.log
+            /tmp/vibe2-platform-focus-after.log
             /tmp/vibe2-study-planner-context.log
           if-no-files-found: error
           retention-days: 7
