@@ -1,0 +1,66 @@
+name: Roblox Vector Clash Release Gate Diagnose
+
+on:
+  push:
+    branches: [fix/roblox-vector-clash-release-target]
+    paths:
+      - '.github/workflows/roblox-vector-clash-release-gate-diagnose.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+      - name: Diagnose exact release gate
+        env:
+          GAME_ID: seed-roblox-battleground-fight-welcome-to-bloxburg
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          if(!item) throw new Error('queue item missing');
+          const revision=String(item.robloxSourceCommit||'').trim();
+          const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
+          const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');
+          const artifactRunId=Number(item.robloxRuntimeEvidence?.artifactRunId||0);
+          const multiplayerApplicable=item.robloxMultiplayerApplicable===true;
+          const checks={
+            productionClass:String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED',
+            platform:String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='ROBLOX',
+            finalReview:item.robloxFinalReviewPassed===true,
+            failureStage:item.robloxFailureStage==='RELEASE_PROMOTION',
+            failureSignature:item.robloxFailureSignature==='ROBLOX_RELEASE_PROMOTION_PENDING',
+            releaseClaim:item.robloxReleaseClaim!==true,
+            buildPackage:item.robloxBuildOrPackagePassed===true,
+            buildSourceRevision:item.robloxBuildSourceRevision===revision,
+            buildPreflight:item.robloxBuildPreflightPassed===true,
+            runtime:item.robloxRuntimePassed===true,
+            serverClient:item.robloxServerClientBoundaryPassed===true,
+            mobile:item.robloxMobileControlUiPassed===true,
+            independent:item.robloxIndependentQaPassed===true,
+            regression:item.robloxRegressionPassed===true,
+            exactRevision:item.robloxExactRevisionPassed===true,
+            multiplayer:!multiplayerApplicable||item.robloxMultiplayerQaPassed===true,
+            revisionFormat:/^[0-9a-f]{40}$/i.test(revision),
+            artifactFormat:/^sha256:[0-9a-f]{64}$/i.test(artifact),
+            sourceRoot:sourceRoot===`roblox-games/${item.gameId}`,
+            artifactRunId:Number.isInteger(artifactRunId)&&artifactRunId>0,
+          };
+          for(const [k,v] of Object.entries(checks)) console.log(`GATE_${k}=${v?'PASS':'FAIL'}`);
+          console.log(`SOURCE_REVISION=${revision}`);
+          console.log(`BUILD_SOURCE_REVISION=${String(item.robloxBuildSourceRevision||'')}`);
+          console.log(`SOURCE_ROOT=${sourceRoot}`);
+          console.log(`ARTIFACT_RUN_ID=${artifactRunId}`);
+          const failed=Object.entries(checks).filter(([,v])=>!v).map(([k])=>k);
+          console.log(`FAILED_CHECKS=${failed.join(',')}`);
+          if(failed.length) process.exit(2);
+          console.log('ROBLOX_RELEASE_GATE_DIAGNOSE=PASS');
+          NODE
