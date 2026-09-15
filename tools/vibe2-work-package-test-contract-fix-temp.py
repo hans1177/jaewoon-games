@@ -10,17 +10,16 @@ diag_pattern = re.compile(
 )
 diag_replacement = r'''test('completed diagnostic package is never recreated after completion',()=>{
   const root=tempRepo();
-  fs.mkdirSync(path.join(root,'Games','alpha'),{recursive:true});
-  fs.writeFileSync(path.join(root,'Games','alpha','index.html'),'<html><body><button>play</button><footer>credits</footer></body></html>','utf8');
-  const status={developmentConfirmedGames:[{gameId:'alpha',engine:'web',sourcePath:'Games/alpha',autonomousImplementationAllowed:true,releaseState:'development-confirmed'}]};
-  const catalog={projects:[{id:'alpha',path:'Games/alpha',engine:'web',releaseState:'development-confirmed'}]};
-  const first=planVibe2AutonomousTask({status,catalog,queue:createVibeContinuousQueue({}),repoRoot:root});
+  const webRoot=path.join(root,'web-games/diag-web');
+  fs.mkdirSync(webRoot,{recursive:true});
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head></head><body><button>Play</button></body></html>\n','utf8');
+  const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
+  const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
   assert.equal(Number(first.task.workUnits)>=3,true);
   assert.equal(first.task.evidence.includes('work-package-auto-expanded'),true);
-  const done={...first.task,status:'completed',result:'PASS'};
-  const completed=createVibeContinuousQueue({tasks:[done]});
-  const second=planVibe2AutonomousTask({status,catalog,queue:completed,repoRoot:root});
+  const done={...first.task,status:'done',result:'PASS'};
+  const second=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){
     assert.notEqual(second.task.id,first.task.id);
     const firstKeys=new Set(first.task.evidence.filter(x=>x.startsWith('diagnostic-key:')));
@@ -40,16 +39,13 @@ unity_pattern = re.compile(
 )
 unity_replacement = r'''test('completed Unity package is never recreated after completion',()=>{
   const root=tempRepo();
-  fs.mkdirSync(path.join(root,'Games','u1'),{recursive:true});
-  fs.writeFileSync(path.join(root,'Games','u1','Game.cs'),'class Game {}','utf8');
-  const status={releaseConfirmedGames:[unityReleaseProject({gameId:'u1',source:'Games/u1',pass:true})]};
-  const catalog={projects:[{id:'u1',path:'Games/u1',engine:'unity',releaseState:'release-confirmed'}]};
-  const first=planVibe2AutonomousTask({status,catalog,queue:createVibeContinuousQueue({}),repoRoot:root});
+  const unityOnlyCatalog={games:[{id:'demo',homepageCategory:'release-confirmed'}]};
+  const first=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
   assert.equal(Number(first.task.workUnits)>=3,true);
   assert.equal(first.task.evidence.includes('work-package-auto-expanded'),true);
-  const completed=createVibeContinuousQueue({tasks:[{...first.task,status:'completed',result:'PASS'}]});
-  const second=planVibe2AutonomousTask({status,catalog,queue:completed,repoRoot:root});
+  const done={...first.task,status:'done',result:'PASS'};
+  const second=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){
     assert.notEqual(second.task.id,first.task.id);
   }else{
