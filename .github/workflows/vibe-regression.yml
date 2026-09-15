@@ -41,6 +41,11 @@ jobs:
             assets/vibe-company-experiment.js
             assets/vibe-v2-playability.js
             assets/vibe-v2-runtime.js
+            tools/company-vibe2-game-flow-architect.mjs
+            tools/company-vibe2-coding-architecture.mjs
+            tools/company-vibe2-gameplay-intelligence.mjs
+            qa/company-vibe2-gameplay-intelligence.test.mjs
+            qa/company-vibe2-coding-architecture.test.mjs
             qa/vibe-regression.mjs
             qa/vibe-agent-causality.mjs
             qa/vibe-presentation-causality.mjs
@@ -70,6 +75,12 @@ jobs:
 
       - name: Test PWA ChatGPT-style chat flow
         run: node --test qa/pwa-chat-flow.test.mjs
+
+      - name: Test Vibe2 gameplay intelligence contracts
+        run: node --test qa/company-vibe2-gameplay-intelligence.test.mjs
+
+      - name: Test Vibe2 coding architecture and development modes
+        run: node --test qa/company-vibe2-coding-architecture.test.mjs
 
       - name: Run integrated regression suite
         run: node qa/vibe-regression.mjs
