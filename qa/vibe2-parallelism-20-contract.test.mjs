@@ -8,10 +8,12 @@ const read=p=>fs.readFileSync(p,'utf8');
 test('core parallelism contract is uniformly 20',()=>{
   const workflow=read('.github/workflows/vibe2-continuous-core.yml');
   const planner=read('tools/vibe2-auto-planner.mjs');
+  const queueControl=read('tools/vibe2-queue-control.mjs');
   assert.equal(DEFAULT_MAX_CONCURRENT_TASKS,20);
   assert.match(workflow,/VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'/);
   assert.match(workflow,/max-parallel: 20/);
   assert.match(planner,/Math\.min\(20,/);
+  assert.match(queueControl,/function maxConcurrent\(value\) \{ return Math\.max\(1, Math\.min\(20,/);
   const q=createVibeContinuousQueue({maxConcurrentTasks:999,tasks:[]});
   assert.equal(q.maxConcurrentTasks,20);
 });
