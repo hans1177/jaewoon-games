@@ -84,20 +84,36 @@ function ownerDirectiveTask(directive){
     ]
   };
 }
+function isImportedOwnerFullRebuildTask(task){
+  return task?.ownerDirective===true&&Array.isArray(task?.evidence)&&task.evidence.includes('owner-directive:full-web-game-rebuild');
+}
 function importOwnerDirectives(queue,directivesFile){
+  const inboxExists=Boolean(directivesFile&&fs.existsSync(directivesFile));
   const inbox=readJson(directivesFile,{directives:[]});
-  const existing=new Set((queue.tasks||[]).map(task=>clean(task.id)).filter(Boolean));
-  const imported=[];
+  const activeDirectives=[];
   for(const directive of inbox?.directives||[]){
     const state=clean(directive?.status||'pending').toLowerCase();
     if(['cancelled','disabled'].includes(state))continue;
     const task=ownerDirectiveTask(directive);
-    if(!task||existing.has(task.id))continue;
+    if(task)activeDirectives.push({directive,task});
+  }
+  const activeIds=new Set(activeDirectives.map(row=>row.task.id));
+  let pruned=[];
+  if(inboxExists){
+    pruned=(queue.tasks||[]).filter(task=>isImportedOwnerFullRebuildTask(task)&&!activeIds.has(clean(task.id)));
+    if(pruned.length){
+      queue=createVibeContinuousQueue({...queue,tasks:(queue.tasks||[]).filter(task=>!pruned.some(row=>row.id===task.id))});
+    }
+  }
+  const existing=new Set((queue.tasks||[]).map(task=>clean(task.id)).filter(Boolean));
+  const imported=[];
+  for(const {task} of activeDirectives){
+    if(existing.has(task.id))continue;
     queue=createVibeContinuousQueue({...queue,tasks:[...(queue.tasks||[]),task]});
     existing.add(task.id);
     imported.push(task);
   }
-  return {queue,imported};
+  return {queue,imported,pruned};
 }
 
 export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDirectivesFile=''}){
@@ -148,7 +164,7 @@ export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDir
     break;
   }
   writeJson(queueFile,queue);
-  return {planned:planned.length>0,count:planned.length,tasks:planned,ownerImported:ownerResult.imported};
+  return {planned:planned.length>0,count:planned.length,tasks:planned,ownerImported:ownerResult.imported,ownerPruned:ownerResult.pruned};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
@@ -157,6 +173,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const queueFile=path.resolve(arg('queue')||'.vibe2/queue.json');
   const ownerDirectivesFile=path.resolve(arg('owner-directives')||path.join(path.dirname(queueFile),'owner-directives.json'));
   const result=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDirectivesFile});
+  console.log(`VIBE2_OWNER_DIRECTIVES_PRUNED=${result.ownerPruned.map(x=>x.id).join(',')||'NONE'}`);
   console.log(`VIBE2_OWNER_DIRECTIVES_IMPORTED=${result.ownerImported.map(x=>x.id).join(',')||'NONE'}`);
   console.log(`VIBE2_RELEASE_BASELINE_GAP_PLAN=${result.planned?'YES':'NO'}`);
   console.log(`VIBE2_RELEASE_BASELINE_GAP_TASKS=${result.tasks.map(x=>x.id).join(',')||'NONE'}`);
