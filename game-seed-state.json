@@ -1343,7 +1343,7 @@
         "hardFailures": [
           "CORE_FUN_WEAK"
         ],
-        "evidencePath": "design/seed-unity-puzzle-chronicles-of-the-astral-weaver/2026-09-15/strict-design-review.json",
+        "evidencePath": "design/seed-unity-puzzle-chronicles-of-the-astral-weaver/2026-09-16/strict-design-review.json",
         "passThreshold": 80
       },
       "lifecycleState": "DESIGN_REVISION_REQUIRED"
@@ -1797,7 +1797,17 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "strictDesignReview": {
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "evidencePath": "design/seed-unity-casual-the-lost-gardens-of-eldoria/2026-09-16/strict-design-review.json",
+        "passThreshold": 80
+      },
+      "lifecycleState": "DESIGN_REVISION_REQUIRED"
     },
     {
       "version": 2,
@@ -3033,7 +3043,7 @@
       ],
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "lifecycleState": "DESIGN_REVISION_REQUIRED",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -3090,6 +3100,15 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "strictDesignReview": {
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "evidencePath": "design/bug-defense/2026-09-13/strict-design-review.json",
+        "passThreshold": 80
       }
     },
     {
@@ -3855,7 +3874,7 @@
       ],
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "lifecycleState": "DESIGN_REVISION_REQUIRED",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -3914,6 +3933,15 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "strictDesignReview": {
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "evidencePath": "design/survival/2026-09-13/strict-design-review.json",
+        "passThreshold": 80
       }
     },
     {
@@ -9677,5 +9705,5 @@
   ],
   "lastRunAt": "2026-09-14T14:23:36.674Z",
   "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
-  "updatedAt": "2026-09-15T10:50:59.797Z"
+  "updatedAt": "2026-09-15T19:52:28.906Z"
 }
