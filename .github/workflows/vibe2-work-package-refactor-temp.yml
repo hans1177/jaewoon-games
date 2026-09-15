@@ -8,6 +8,7 @@ on:
       - '.github/workflows/vibe2-work-package-refactor-temp.yml'
       - 'tools/vibe2-work-package-refactor-temp.py'
       - 'tools/vibe2-work-package-refactor-fix-temp.py'
+      - 'tools/vibe2-work-package-test-contract-fix-temp.py'
 
 permissions:
   contents: write
@@ -30,6 +31,7 @@ jobs:
         run: |
           python tools/vibe2-work-package-refactor-temp.py
           python tools/vibe2-work-package-refactor-fix-temp.py
+          python tools/vibe2-work-package-test-contract-fix-temp.py
 
       - name: Syntax and machine-state consistency
         run: |
