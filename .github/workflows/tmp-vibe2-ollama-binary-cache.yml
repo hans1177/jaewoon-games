@@ -1,0 +1,76 @@
+name: TMP Vibe2 Ollama Binary Cache
+
+on:
+  push:
+    branches: [perf/vibe2-ollama-binary-cache]
+    paths:
+      - '.github/workflows/tmp-vibe2-ollama-binary-cache.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: perf/vibe2-ollama-binary-cache
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Cache Ollama binary and model together
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const workflow='.github/workflows/vibe2-continuous-core.yml';
+          let text=fs.readFileSync(workflow,'utf8');
+
+          const prewarmCacheOld=`      - name: Restore or persist shared Ollama model cache\n        id: ollama_cache\n        uses: actions/cache@v4\n        with:\n          path: ~/.ollama/models\n          key: vibe2-ollama-v1-Linux-qwen3-1.7b\n`;
+          const prewarmCacheNew=`      - name: Restore or persist shared Ollama runtime cache\n        id: ollama_cache\n        uses: actions/cache@v4\n        with:\n          path: |\n            ~/.ollama/models\n            ~/.cache/vibe2-ollama/bin/ollama\n          key: vibe2-ollama-v2-Linux-qwen3-1.7b\n`;
+          if(!text.includes(prewarmCacheOld)) throw new Error('PREWARM_CACHE_MARKER_NOT_FOUND');
+          text=text.replace(prewarmCacheOld,prewarmCacheNew);
+
+          const prewarmInstallOld=`          test \"$installed\" = 1\n          nohup ollama serve > /tmp/ollama-prewarm.log 2>&1 &\n`;
+          const prewarmInstallNew=`          test \"$installed\" = 1\n          mkdir -p \"$HOME/.cache/vibe2-ollama/bin\"\n          cp \"$(command -v ollama)\" \"$HOME/.cache/vibe2-ollama/bin/ollama\"\n          chmod +x \"$HOME/.cache/vibe2-ollama/bin/ollama\"\n          nohup ollama serve > /tmp/ollama-prewarm.log 2>&1 &\n`;
+          if(!text.includes(prewarmInstallOld)) throw new Error('PREWARM_INSTALL_MARKER_NOT_FOUND');
+          text=text.replace(prewarmInstallOld,prewarmInstallNew);
+
+          const workerCacheOld=`      - name: Restore shared Ollama model cache\n        id: worker_ollama_cache\n        uses: actions/cache/restore@v4\n        with:\n          path: ~/.ollama/models\n          key: vibe2-ollama-v1-Linux-qwen3-1.7b\n\n      - name: Build reserved task work order\n`;
+          const workerCacheNew=`      - name: Restore shared Ollama runtime cache\n        id: worker_ollama_cache\n        uses: actions/cache/restore@v4\n        with:\n          path: |\n            ~/.ollama/models\n            ~/.cache/vibe2-ollama/bin/ollama\n          key: vibe2-ollama-v2-Linux-qwen3-1.7b\n\n      - name: Prepare cached Ollama runtime\n        id: worker_ollama_runtime\n        shell: bash\n        run: |\n          set -euo pipefail\n          cached=\"$HOME/.cache/vibe2-ollama/bin/ollama\"\n          if [ -x \"$cached\" ]; then\n            echo \"$HOME/.cache/vibe2-ollama/bin\" >> \"$GITHUB_PATH\"\n            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=CACHE'\n          else\n            installed=0\n            for attempt in 1 2 3; do\n              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi\n              sleep $((attempt * 4))\n            done\n            test \"$installed\" = 1\n            mkdir -p \"$HOME/.cache/vibe2-ollama/bin\"\n            cp \"$(command -v ollama)\" \"$cached\"\n            chmod +x \"$cached\"\n            echo \"$HOME/.cache/vibe2-ollama/bin\" >> \"$GITHUB_PATH\"\n            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL'\n          fi\n\n      - name: Build reserved task work order\n`;
+          if(!text.includes(workerCacheOld)) throw new Error('WORKER_CACHE_MARKER_NOT_FOUND');
+          text=text.replace(workerCacheOld,workerCacheNew);
+
+          const candidateInstallOld=`          installed=0\n          for attempt in 1 2 3; do\n            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi\n            sleep $((attempt * 4))\n          done\n          test \"$installed\" = 1\n          nohup ollama serve > \"/tmp/ollama-\${SAFE_TASK}-\${VARIANT}.log\" 2>&1 &\n`;
+          const candidateInstallNew=`          command -v ollama >/dev/null\n          nohup ollama serve > \"/tmp/ollama-\${SAFE_TASK}-\${VARIANT}.log\" 2>&1 &\n`;
+          if(!text.includes(candidateInstallOld)) throw new Error('CANDIDATE_INSTALL_MARKER_NOT_FOUND');
+          text=text.replace(candidateInstallOld,candidateInstallNew);
+          fs.writeFileSync(workflow,text,'utf8');
+
+          const testFile='qa/vibe2-parallelism-20-contract.test.mjs';
+          let test=fs.readFileSync(testFile,'utf8');
+          const assertMarker=`  assert.match(workflow,/VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL/);\n`;
+          const assertReplacement=`  assert.match(workflow,/VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL/);\n  assert.match(workflow,/vibe2-ollama-v2-Linux-qwen3-1\\.7b/);\n  assert.match(workflow,/~\\/.cache\\/vibe2-ollama\\/bin\\/ollama/);\n  assert.match(workflow,/VIBE2_OLLAMA_RUNTIME_SOURCE=CACHE/);\n  assert.match(workflow,/VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL/);\n`;
+          if(!test.includes(assertMarker)) throw new Error('CONTRACT_ASSERT_MARKER_NOT_FOUND');
+          test=test.replace(assertMarker,assertReplacement);
+          fs.writeFileSync(testFile,test,'utf8');
+          NODE
+
+          node --test qa/vibe2-parallelism-20-contract.test.mjs
+          node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-auto-planner.test.mjs
+      - name: Commit verified optimization
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-migration'
+          git config user.email 'vibe2-migration@users.noreply.github.com'
+          git add .github/workflows/vibe2-continuous-core.yml qa/vibe2-parallelism-20-contract.test.mjs
+          git diff --cached --quiet && exit 0
+          git commit -m 'perf: reuse cached Ollama runtime across Vibe2 workers'
+          git push origin HEAD:perf/vibe2-ollama-binary-cache
