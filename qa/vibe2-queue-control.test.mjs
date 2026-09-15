@@ -170,3 +170,46 @@ test('twenty independent tasks can fill all 20 slots', () => {
   assert.equal(reserved.tasks.length,20);
   assert.equal(reserved.selection.effectiveMaxConcurrentTasks,20);
 });
+
+test('awaiting QA backpressure does not consume worker slots twice', () => {
+  const awaiting=Array.from({length:8},(_,i)=>({
+    id:`await-${i}`,gameId:`await-${i}`,target:'web',sourceRoot:`web-games/await-${i}`,goal:'await',
+    status:'running',blocker:'candidate-awaiting-qa-and-deployment'
+  }));
+  const queued=Array.from({length:10},(_,i)=>({
+    id:`next-${i}`,gameId:`next-${i}`,target:'web',sourceRoot:`web-games/next-${i}`,goal:'next',status:'queued'
+  }));
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[...awaiting,...queued]});
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:20});
+  assert.equal(batch.effectiveMaxConcurrentTasks,4);
+  assert.equal(batch.running.length,8);
+  assert.equal(batch.capacityRunning.length,0);
+  assert.equal(batch.awaitingQa.length,8);
+  assert.equal(batch.freeSlots,4);
+  assert.equal(batch.selected.length,4);
+});
+
+test('per-run request cannot exceed persisted queue cap', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:6,tasks:[]});
+  for(let i=0;i<10;i++) queue=add(queue,`cap-${i}`,`cap-${i}`,'web',{responsibleFiles:[`cap-${i}.js`]});
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:20});
+  assert.equal(batch.persistentMaxConcurrentTasks,6);
+  assert.equal(batch.requestedMaxConcurrentTasks,20);
+  assert.equal(batch.effectiveMaxConcurrentTasks,6);
+  assert.equal(batch.selected.length,6);
+});
+
+test('terminal historical failures do not permanently throttle new work', () => {
+  const failed=Array.from({length:8},(_,i)=>({
+    id:`failed-${i}`,gameId:`failed-${i}`,target:'web',sourceRoot:`web-games/failed-${i}`,goal:'failed',
+    status:'failed',lastOutcome:'FAIL',retries:3,maxRetries:2,blocker:'retry-limit-exceeded'
+  }));
+  const queued=Array.from({length:20},(_,i)=>({
+    id:`fresh-${i}`,gameId:`fresh-${i}`,target:'web',sourceRoot:`web-games/fresh-${i}`,goal:'fresh',status:'queued'
+  }));
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[...failed,...queued]});
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:20});
+  assert.equal(batch.backpressure.retryPressureCount,0);
+  assert.equal(batch.effectiveMaxConcurrentTasks,20);
+  assert.equal(batch.selected.length,20);
+});
