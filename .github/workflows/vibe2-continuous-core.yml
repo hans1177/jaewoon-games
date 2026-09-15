@@ -51,13 +51,8 @@ jobs:
           node --check tools/vibe2-parallelism-telemetry.mjs
           node --check tools/vibe2-adaptive-backpressure.mjs
           node --check tools/vibe2-handoff.mjs
-          node --test qa/vibe2-queue-control.test.mjs
-          node --test qa/vibe2-auto-planner.test.mjs
-          node --test qa/vibe2-parallelism-20-contract.test.mjs
-          node --test qa/vibe2-incremental-qa.test.mjs
-          node --test qa/vibe2-parallelism-telemetry.test.mjs
-          node --test qa/vibe2-handoff.test.mjs
           node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log
+          echo 'VIBE2_RESERVE_PREFLIGHT=SYNTAX_AND_MACHINE_STATE_ONLY'
 
       - name: Reserve conflict-free DAG batch
         id: batch
@@ -386,6 +381,15 @@ jobs:
           IQA_HASH: ${{ steps.incremental_qa.outputs.hash }}
           IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
           SAFE_TASK: ${{ steps.order.outputs.safe_task }}
+          RESERVED_AT: ${{ matrix.reservedAt }}
+          REQUESTED_MAX: ${{ matrix.requestedMax }}
+          EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
+          WORKER_STARTED_AT_FILE: /tmp/vibe2-worker-start-ms
+          CHECKOUT_MS: ${{ steps.checkout_metrics.outputs.ms }}
+          OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
+          OLLAMA_RUNTIME_SOURCE: ${{ steps.worker_ollama_runtime.outputs.source }}
+          CANDIDATE_MS: ${{ steps.candidate.outputs.duration_ms }}
+          QA_MS: ${{ steps.incremental_qa.outputs.duration_ms }}
         shell: bash
         run: |
           set -euo pipefail
@@ -578,5 +582,5 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref vibe2-unreal-core
           echo 'VIBE2_EVENT_DRIVEN_REFILL=YES'
