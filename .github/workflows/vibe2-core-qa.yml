@@ -3,7 +3,9 @@ name: Vibe2 Core QA
 on:
   push:
     branches:
+      - main
       - vibe2-unreal-core
+      - 'vibe2-main-integration-*'
     paths:
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
@@ -47,6 +49,7 @@ on:
       - '.github/workflows/vibe2-core-qa.yml'
   pull_request:
     branches:
+      - main
       - vibe2-unreal-core
     paths:
       - 'VIBE2.md'
