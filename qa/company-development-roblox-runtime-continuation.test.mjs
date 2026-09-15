@@ -15,7 +15,8 @@ test('continuation is a single explicit post-package edge, not a second source/p
   assert.ok(!workflow.includes('push:'));
   assert.ok(!workflow.includes('company-development-roblox-bootstrap.mjs'));
   assert.ok(!workflow.includes('company-development-roblox-package.mjs'));
-  assert.ok(workflow.includes('ROBLOX_EXECUTION_WIP_MAX=2'));
+  assert.ok(workflow.includes('ROBLOX_EXECUTION_WIP_MAX=6'));
+  assert.ok(workflow.includes('max-parallel: 6'));
   assert.ok(workflow.includes('ROBLOX_PER_GAME_PROMOTION=YES'));
   assert.ok(workflow.includes('ROBLOX_PROMOTION_COUNT_GATE=NONE'));
 });
@@ -44,12 +45,14 @@ test('five-lead preflight requires an exact immutable build before runtime',()=>
   assert.ok(workflow.includes("robloxFailureStage:'TARGET_PLATFORM_RUNTIME'"));
 });
 
-test('runtime uses authenticated self-hosted Windows and the original package identity for an actual Roblox Studio multiplayer session',()=>{
+test('runtime uses authenticated self-hosted Windows runner pool and the original package identity for actual Roblox Studio multiplayer sessions',()=>{
   assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '8'"));
+  assert.ok(workflow.includes("ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'"));
   assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
   assert.ok(!workflow.includes('runs-on: windows-latest'));
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=1'));
-  assert.ok(workflow.includes('max-parallel: 1'));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));
+  assert.ok(workflow.includes('max-parallel: 3'));
   assert.ok(workflow.includes("const retryableAuthMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required'"));
   assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
   assert.ok(workflow.includes('No retained package matches'));
