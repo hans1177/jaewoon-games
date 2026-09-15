@@ -63,8 +63,9 @@ function stateAccess(body,stateNames){
     const escaped=state.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
     const writeRe=new RegExp(`\\b${escaped}\\s*(?:\\+\\+|--|[+\\-*/%]?=)`);
     const propWriteRe=new RegExp(`\\b${escaped}\\s*\\.[A-Za-z_$][\\w$]*\\s*(?:\\+\\+|--|[+\\-*/%]?=)`);
+    const mutatingMethodRe=new RegExp(`\\b${escaped}\\s*\\.(?:push|pop|shift|unshift|splice|sort|reverse|set|add|delete|clear)\\s*\\(`);
     const readRe=new RegExp(`\\b${escaped}\\b`);
-    if(writeRe.test(source)||propWriteRe.test(source))writes.push(state);
+    if(writeRe.test(source)||propWriteRe.test(source)||mutatingMethodRe.test(source))writes.push(state);
     if(readRe.test(source))reads.push(state);
   }
   return{writes:uniq(writes),reads:uniq(reads)};
