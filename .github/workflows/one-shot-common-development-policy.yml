@@ -70,7 +70,20 @@ jobs:
       - name: Test common development quality contract
         run: node --test qa/company-common-development-quality-contract.test.mjs
       - name: Test web validation evidence contract
-        run: node --test qa/company-web-validation-evidence-contract.test.mjs
+        id: web_validation_test
+        continue-on-error: true
+        run: node --test qa/company-web-validation-evidence-contract.test.mjs > web-validation-test.log 2>&1
+      - name: Upload web validation test log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-validation-test-log
+          path: web-validation-test.log
+          if-no-files-found: error
+          retention-days: 1
+      - name: Fail on web validation test error
+        if: steps.web_validation_test.outcome != 'success'
+        run: exit 1
       - name: Test selected platform validation contract
         run: node --test qa/company-development-validation-selected-platform.test.mjs
       - name: Test central policy contract
