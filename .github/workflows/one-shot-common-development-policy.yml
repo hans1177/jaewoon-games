@@ -28,26 +28,6 @@ jobs:
         run: |
           node --check tools/apply-common-development-quality-policy.mjs
           node tools/apply-common-development-quality-policy.mjs
-      - name: Harden avatar runtime evidence contract
-        run: |
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          const file='tools/company-common-development-quality-contract.mjs';
-          let text=fs.readFileSync(file,'utf8');
-          const collisionOld="const collisionPass=!req.avatarMovement||movement.collisionObserved===true||spatial.collisionObserved===true;";
-          const collisionNew="const collisionPass=!req.avatarMovement||movement.collisionObserved===true;";
-          const cameraOld="const cameraPass=!(req.avatarMovement&&req.world)||movement.cameraObserved===true||spatial.cameraObserved===true;";
-          const cameraNew="const cameraPass=!(req.avatarMovement&&req.world)||movement.cameraObserved===true;";
-          if(!text.includes(collisionNew)){
-            if(!text.includes(collisionOld))throw new Error('COMMON_COLLISION_GATE_ANCHOR_MISSING');
-            text=text.replace(collisionOld,collisionNew);
-          }
-          if(!text.includes(cameraNew)){
-            if(!text.includes(cameraOld))throw new Error('COMMON_CAMERA_GATE_ANCHOR_MISSING');
-            text=text.replace(cameraOld,cameraNew);
-          }
-          fs.writeFileSync(file,text);
-          NODE
       - name: Verify modified contracts
         run: |
           node --check tools/company-common-development-quality-contract.mjs
