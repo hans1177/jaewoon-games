@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .shield {
+      width: 200px;
+      height: 200px;
+      background-color: #444;
+      border: 5px solid #00ffcc;
+      border-radius: 10px;
+      margin: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .shield h2 {
+      margin: 0;
+    }
+    .shield p {
+      font-size: 14px;
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 1px solid #00ffcc;
+      border-radius: 5px;
+      background-color: #444;
+      color: #00ffcc;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="shield">
+      <h1>Shield</h1>
+      <p>Protect your base from attacks!</p>
+      <button onclick="attack()">Attack</button>
+    </div>
+    <div class="controls">
+      <button onclick="restartGame()">Restart</button>
+      <button onclick="showHUD()">HUD</button>
+    </div>
+  </main>
+  <script>
+    let game = {
+      shield: {
+        health: 100,
+        damage: 10
+      },
+      attacks: 0,
+      isRunning: false
+    };
+
+    function attack() {
+      game.shield.health -= game.shield.damage;
+      game.attacks++;
+      if (game.shield.health <= 0) {
+        game.isRunning = false;
+        alert("Shield destroyed!");
+      }
+    }
+
+    function restartGame() {
+      game.shield.health = 100;
+      game.attacks = 0;
+      game.isRunning = true;
+    }
+
+    function showHUD() {
+      alert("HUD shown!");
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      if (game.isRunning) {
+        attack();
+      }
+    });
+  </script>
+</body>
+</html>
