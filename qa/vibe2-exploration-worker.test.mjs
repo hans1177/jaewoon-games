@@ -83,6 +83,33 @@ test('long functional package owner gets the protected slot before short work',(
   assert.equal(selected.longWorkOwnerTaskId,'long-owner');
 });
 
+test('protected slot skips a conflicting long owner and selects the next eligible long owner',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {id:'active-qa',gameId:'conflict',target:'web',goal:'qa wait',sourceRoot:'web-games/conflict',responsibleFiles:['a.js'],status:'running',blocker:'candidate-awaiting-qa-and-deployment'},
+    {id:'long-conflict',gameId:'conflict',target:'web',goal:'blocked long',sourceRoot:'web-games/conflict',responsibleFiles:['a.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'long-conflict-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
+    {id:'long-eligible',gameId:'eligible',target:'web',goal:'eligible long',sourceRoot:'web-games/eligible',responsibleFiles:['b.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'long-eligible-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
+    {id:'short-critical',gameId:'short',target:'web',goal:'short',sourceRoot:'web-games/short',responsibleFiles:['c.js'],status:'queued',priority:'critical',releaseState:'development-confirmed',packageId:'short-wp',packageRole:'implementation-owner',packageWorkUnits:1}
+  ]});
+  const selected=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(selected.selected[0].id,'long-eligible');
+  assert.equal(selected.longWorkProtectedSlotUsed,true);
+  assert.equal(selected.longWorkOwnerTaskId,'long-eligible');
+  assert.equal(selected.deferredConflicts.filter(row=>row.task.id==='long-conflict').length,1);
+});
+
+test('released QA waiting long owner does not keep the protected worker slot occupied',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {id:'long-awaiting-qa',gameId:'old',target:'web',goal:'old long',sourceRoot:'web-games/old',responsibleFiles:['a.js'],status:'running',blocker:'candidate-awaiting-qa-and-deployment',packageId:'old-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
+    {id:'long-next',gameId:'next',target:'web',goal:'next long',sourceRoot:'web-games/next',responsibleFiles:['b.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'next-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
+    {id:'short-critical',gameId:'short',target:'web',goal:'short',sourceRoot:'web-games/short',responsibleFiles:['c.js'],status:'queued',priority:'critical',releaseState:'development-confirmed',packageId:'short-wp',packageRole:'implementation-owner',packageWorkUnits:1}
+  ]});
+  const selected=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(selected.capacityRunning.length,0);
+  assert.equal(selected.selected[0].id,'long-next');
+  assert.equal(selected.longWorkProtectedSlotUsed,true);
+  assert.equal(selected.longWorkOwnerTaskId,'long-next');
+});
+
 test('work package declares separate read only verification roles and keeps implementation write ownership',()=>{
   const pkg=buildWorkPackage({
     project:{gameId:'demo',name:'Demo',projectPath:'web-games/demo'},
