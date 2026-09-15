@@ -1,3 +1,5 @@
+// 파일명: qa/vibe2-auto-planner.test.mjs
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -74,10 +76,10 @@ test('planner fills independent development web source roots in one pass',()=>{
   const result=planVibe2AutonomousTasks({status,catalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(result.planned,true);
   assert.ok(result.count>=2);
-  assert.equal(new Set(result.tasks.map(t=>t.sourceRoot)).size,result.tasks.length);
   assert.equal(result.tasks.every(t=>t.releaseState==='development-confirmed'&&t.target==='web'),true);
   assert.equal(result.tasks.every(t=>Boolean(t.packageId)&&t.packageWorkUnits>=3),true);
   assert.ok(result.workloadTelemetry.plannedPackageCount>=1);
+  assert.equal(result.cycleTarget.quantityTargetMet,true);
 });
 
 test('release-confirmed web archive is never an autonomous feature target',()=>{
@@ -184,6 +186,23 @@ test('development web without TODO uses deterministic diagnostics as task feeder
   assert.equal(result.task.evidence.includes('repair-mode:RULE_PATCH'),true);
 });
 
+test('planner groups real disjoint related candidates into one work package',()=>{
+  const root=tempRepo();
+  const webRoot=path.join(root,'web-games/dev-web');
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Dev</title></head><body><button>Play</button></body></html>\n','utf8');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:'dev-web',webPath:'/web-games/dev-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]},
+    queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.packages.length,1);
+  assert.equal(result.packages[0].tasks.length,2);
+  assert.equal(new Set(result.packages[0].tasks.map(task=>task.packageId)).size,1);
+  const responsible=result.packages[0].tasks.map(task=>[...task.responsibleFiles]);
+  assert.equal(responsible[0].some(file=>responsible[1].includes(file)),false);
+});
+
 test('completed diagnostic package is never recreated after completion',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
@@ -205,13 +224,14 @@ test('completed diagnostic package is never recreated after completion',()=>{
   }
 });
 
-test('completed Unity package is never recreated after completion',()=>{
+test('completed Unity package is never recreated after completion and tiny seed uses explicit expansion scopes',()=>{
   const root=tempRepo();
   const unityOnlyCatalog={games:[{id:'demo',homepageCategory:'release-confirmed'}]};
   const first=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
-  assert.equal(Number(first.task.workUnits)>=3,true);
   assert.equal(first.task.evidence.includes('work-package-auto-expanded'),true);
+  assert.equal(first.task.evidence.filter(value=>value.startsWith('work-package-scope:')).length>=3,true);
+  assert.equal(first.task.packageWorkUnits>first.task.taskWorkUnits,true);
   const done={...first.task,status:'done',result:'PASS'};
   const second=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){

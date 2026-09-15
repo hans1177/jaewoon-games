@@ -47,9 +47,11 @@ jobs:
         run: |
           set -euo pipefail
           node --check assets/vibe-continuous-queue.js
+          node --check tools/vibe2-auto-planner.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-work-package.mjs
           node --check tools/vibe2-incremental-qa.mjs
           node --check tools/vibe2-parallelism-telemetry.mjs
           node --check tools/vibe2-adaptive-backpressure.mjs
@@ -220,6 +222,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          prep_started="$(date +%s%3N)"
           cached="$HOME/.cache/vibe2-ollama/bin/ollama"
           if [ -x "$cached" ]; then
             echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
@@ -239,6 +242,8 @@ jobs:
             echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL'
             echo 'source=FALLBACK_INSTALL' >> "$GITHUB_OUTPUT"
           fi
+          prep_finished="$(date +%s%3N)"
+          echo "duration_ms=$((prep_finished-prep_started))" >> "$GITHUB_OUTPUT"
 
       - name: Build reserved task work order
         id: order
@@ -291,15 +296,6 @@ jobs:
         env:
           TASK_ID: ${{ steps.order.outputs.task_id }}
           SAFE_TASK: ${{ steps.order.outputs.safe_task }}
-          RESERVED_AT: ${{ matrix.reservedAt }}
-          REQUESTED_MAX: ${{ matrix.requestedMax }}
-          EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
-          WORKER_STARTED_AT_FILE: /tmp/vibe2-worker-start-ms
-          CHECKOUT_MS: ${{ steps.checkout_metrics.outputs.ms }}
-          OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
-          OLLAMA_RUNTIME_SOURCE: ${{ steps.worker_ollama_runtime.outputs.source }}
-          CANDIDATE_MS: ${{ steps.candidate.outputs.duration_ms }}
-          QA_MS: ${{ steps.incremental_qa.outputs.duration_ms }}
           SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
           VARIANT: ${{ matrix.variant }}
         shell: bash
@@ -343,6 +339,13 @@ jobs:
               *) echo "candidate escaped approved boundary: $file" >&2; exit 1 ;;
             esac
           done
+
+          changed_file_count="$(git diff --cached --name-only -- "$SOURCE_ROOT" | sed '/^$/d' | wc -l | tr -d ' ')"
+          read -r added_line_count deleted_line_count < <(git diff --cached --numstat -- "$SOURCE_ROOT" | awk '{if($1~/^[0-9]+$/)a+=$1;if($2~/^[0-9]+$/)d+=$2}END{print a+0,d+0}')
+          echo "changed_file_count=${changed_file_count:-0}" >> "$GITHUB_OUTPUT"
+          echo "added_line_count=${added_line_count:-0}" >> "$GITHUB_OUTPUT"
+          echo "deleted_line_count=${deleted_line_count:-0}" >> "$GITHUB_OUTPUT"
+
           git config user.name 'jaewoon-vibe2-worker'
           git config user.email 'vibe2-worker@users.noreply.github.com'
           git commit -m "vibe2: candidate ${TASK_ID} ${VARIANT}"
@@ -355,6 +358,8 @@ jobs:
           echo "VIBE2_CANDIDATE_BRANCH=$candidate_branch"
           echo "VIBE2_CANDIDATE_SHA=$candidate_sha"
           echo "VIBE2_BASE_MAIN_SHA=$base_sha"
+          echo "VIBE2_CHANGED_FILE_COUNT=${changed_file_count:-0}"
+          echo "VIBE2_CHANGED_LINE_COUNT=$(( ${added_line_count:-0} + ${deleted_line_count:-0} ))"
           candidate_finished="$(date +%s%3N)"
           echo "duration_ms=$((candidate_finished-candidate_started))" >> "$GITHUB_OUTPUT"
 
@@ -408,6 +413,9 @@ jobs:
           CANDIDATE_BRANCH: ${{ steps.candidate.outputs.candidate_branch }}
           CANDIDATE_SHA: ${{ steps.candidate.outputs.candidate_sha }}
           BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
+          CHANGED_FILE_COUNT: ${{ steps.candidate.outputs.changed_file_count }}
+          ADDED_LINE_COUNT: ${{ steps.candidate.outputs.added_line_count }}
+          DELETED_LINE_COUNT: ${{ steps.candidate.outputs.deleted_line_count }}
           IQA_OUTCOME: ${{ steps.incremental_qa.outcome }}
           IQA_HASH: ${{ steps.incremental_qa.outputs.hash }}
           IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
@@ -417,6 +425,7 @@ jobs:
           EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
           WORKER_STARTED_AT_FILE: /tmp/vibe2-worker-start-ms
           CHECKOUT_MS: ${{ steps.checkout_metrics.outputs.ms }}
+          MODEL_PREP_MS: ${{ steps.worker_ollama_runtime.outputs.duration_ms }}
           OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
           OLLAMA_RUNTIME_SOURCE: ${{ steps.worker_ollama_runtime.outputs.source }}
           CANDIDATE_MS: ${{ steps.candidate.outputs.duration_ms }}
@@ -448,8 +457,14 @@ jobs:
           const workerStartedAt=Number(fs.readFileSync(process.env.WORKER_STARTED_AT_FILE,'utf8'))||Date.now();
           const workerFinishedAt=Date.now();
           const cacheRaw=clean(process.env.OLLAMA_CACHE_HIT).toLowerCase();
-          const metrics={requestedMax:Number(process.env.REQUESTED_MAX||20),effectiveMax:Number(process.env.EFFECTIVE_MAX||20),reservedAt:clean(process.env.RESERVED_AT),workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null};
-          const result={version:2,taskId:clean(process.env.TASK_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,evidence,durationMs:metrics.workerTotalMs,metrics};
+          const metrics={
+            requestedMax:Number(process.env.REQUESTED_MAX||20),effectiveMax:Number(process.env.EFFECTIVE_MAX||20),reservedAt:clean(process.env.RESERVED_AT),
+            workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
+            candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
+            changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
+            ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null
+          };
+          const result={version:3,taskId:clean(process.env.TASK_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,evidence,durationMs:metrics.workerTotalMs,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
@@ -528,7 +543,8 @@ jobs:
           const dir='/tmp/vibe2-results';
           const files=fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort();
           const results=files.map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')));
-          fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:1,results},null,2)+'\n');
+          const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:2,results,tasks:queue.tasks||[]},null,2)+'\n');
           console.log(`VIBE2_FAN_IN_RESULT_COUNT=${results.length}`);
           NODE
 
@@ -550,8 +566,10 @@ jobs:
             qa/vibe2-core-engine-motion.test.mjs \
             qa/vibe2-source-worker.test.mjs \
             qa/vibe2-queue-control.test.mjs \
+            qa/vibe2-work-package.test.mjs \
             qa/vibe2-incremental-qa.test.mjs \
             qa/vibe2-parallelism-telemetry.test.mjs \
+            qa/vibe2-adaptive-backpressure.test.mjs \
             qa/vibe2-controller-contract.test.mjs \
             qa/vibe2-candidate-reconcile.test.mjs \
             qa/vibe2-experience-control.test.mjs \

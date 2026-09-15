@@ -1,5 +1,5 @@
 // 파일명: tools/vibe2-parallelism-telemetry.mjs
-// 역할: Vibe2 20병렬 실행의 실제 동시성, 대기/checkout/QA 시간, cache hit, 실패율과 병목을 집계한다.
+// 역할: Vibe2 병렬 실행의 동시성·대기시간과 실제 기능 완료량·변경량·재작업·QA 중복·package cycle time을 집계한다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -41,6 +41,66 @@ function actionRunIds(rows){
   }
   return [...ids].sort();
 }
+function evidenceValues(row,prefix){return(Array.isArray(row?.evidence)?row.evidence:[]).map(clean).filter(value=>value.startsWith(prefix)).map(value=>value.slice(prefix.length)).filter(Boolean);}
+function computeWorkload(rows,tasks=[]){
+  const taskById=new Map((Array.isArray(tasks)?tasks:[]).map(task=>[clean(task?.id),task]));
+  const uniqueTaskIds=[...new Set(rows.map(row=>clean(row?.taskId)).filter(Boolean))];
+  const changedFileCount=rows.reduce((n,row)=>n+Math.max(0,num(row?.metrics?.changedFileCount)),0);
+  const addedLineCount=rows.reduce((n,row)=>n+Math.max(0,num(row?.metrics?.addedLineCount)),0);
+  const deletedLineCount=rows.reduce((n,row)=>n+Math.max(0,num(row?.metrics?.deletedLineCount)),0);
+  const actualChangeMetricsKnown=rows.some(row=>Number.isFinite(Number(row?.metrics?.changedFileCount)));
+  const reworkedTaskCount=uniqueTaskIds.filter(id=>Number(taskById.get(id)?.retries||0)>0).length;
+  const reworkRatePct=uniqueTaskIds.length?round(reworkedTaskCount/uniqueTaskIds.length*100):0;
+  const qaHashes=rows.flatMap(row=>evidenceValues(row,'incremental-qa-hash:'));
+  const uniqueQaHashes=[...new Set(qaHashes)];
+  const qaDuplicateRatePct=qaHashes.length?round(Math.max(0,qaHashes.length-uniqueQaHashes.length)/qaHashes.length*100):0;
+  const prepMs=rows.reduce((n,row)=>n+Math.max(0,num(row?.metrics?.checkoutMs))+Math.max(0,num(row?.metrics?.modelPrepMs)),0);
+  const workerMs=rows.reduce((n,row)=>n+Math.max(0,num(row?.metrics?.workerTotalMs)),0);
+  const preparationRatioPct=workerMs?round(prepMs/workerMs*100):0;
+
+  const resultByTask=new Map();
+  for(const row of rows){
+    const id=clean(row?.taskId);if(!id)continue;
+    const outcome=clean(row?.outcome).toUpperCase();
+    if(!resultByTask.has(id)||outcome==='PASS')resultByTask.set(id,outcome);
+  }
+  const packageIds=[...new Set(uniqueTaskIds.map(id=>clean(taskById.get(id)?.packageId)).filter(Boolean))];
+  let completedFeatureCount=0;
+  for(const packageId of packageIds){
+    const members=(Array.isArray(tasks)?tasks:[]).filter(task=>clean(task?.packageId)===packageId);
+    if(!members.length)continue;
+    const complete=members.every(task=>clean(task.status)==='done'||resultByTask.get(clean(task.id))==='PASS');
+    if(complete)completedFeatureCount+=1;
+  }
+
+  const cycles=new Map();
+  for(const row of rows){
+    const id=clean(row?.taskId);if(!id)continue;
+    const task=taskById.get(id);
+    const key=clean(task?.packageId)||`task:${id}`;
+    const start=parseTime(row?.metrics?.workerStartedAt),end=parseTime(row?.metrics?.workerFinishedAt);
+    if(!start||!end||end<start)continue;
+    const current=cycles.get(key)||{start,end};
+    current.start=Math.min(current.start,start);current.end=Math.max(current.end,end);cycles.set(key,current);
+  }
+  const cycleTimes=[...cycles.values()].map(row=>Math.max(0,row.end-row.start));
+  return{
+    completedFeatureCount,
+    changedFileCount,
+    addedLineCount,
+    deletedLineCount,
+    changedLineCount:addedLineCount+deletedLineCount,
+    actualChangeMetricsKnown,
+    reworkedTaskCount,
+    reworkRatePct,
+    qaRunCount:qaHashes.length,
+    qaUniqueRunCount:uniqueQaHashes.length,
+    qaDuplicateRatePct,
+    preparationMs:prepMs,
+    preparationRatioPct,
+    packageCycleTime:{avgMs:round(avg(cycleTimes)),p95Ms:round(p95(cycleTimes)),maxMs:round(cycleTimes.length?Math.max(...cycleTimes):0),packageCount:cycleTimes.length}
+  };
+}
 
 export function computeParallelismTelemetry(input={}){
   const rows=Array.isArray(input.results)?input.results:[];
@@ -62,15 +122,17 @@ export function computeParallelismTelemetry(input={}){
   const candidate=durationStats(rows,'candidateMs');
   const qa=durationStats(rows,'qaMs');
   const workerTotal=durationStats(rows,'workerTotalMs');
+  const workload=computeWorkload(rows,input.tasks||[]);
   let bottleneck='NONE';
   if(workerCount&&peak<targetPeak)bottleneck='RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION';
   else if(cacheKnown.length&&cacheHits/cacheKnown.length<.8)bottleneck='OLLAMA_CACHE_MISS_RATE';
   else if(qa.p95Ms>0&&qa.p95Ms>candidate.p95Ms*1.25)bottleneck='INCREMENTAL_QA';
   else if(checkout.p95Ms>30000)bottleneck='CHECKOUT_NETWORK';
+  else if(workload.preparationRatioPct>45)bottleneck='PREPARATION_OVERHEAD';
   const failureRate=workerCount?(outcomes.FAIL+outcomes.BLOCKED)/workerCount:0;
   const pressureLevel=failureRate>=.4?'SEVERE':failureRate>=.2?'HIGH':failureRate>=.1?'MEDIUM':'LOW';
   return{
-    version:2,
+    version:3,
     runId,
     runIds,
     requestedMax,
@@ -91,6 +153,7 @@ export function computeParallelismTelemetry(input={}){
     outcomes,
     failureRatePct:round(failureRate*100),
     pressureLevel,
+    workload,
     bottleneck,
     pass:workerCount===0?true:(peak>=targetPeak&&failureRate<.2)
   };
@@ -99,7 +162,8 @@ export function computeParallelismTelemetry(input={}){
 export function runTelemetryCommand(args={}){
   const input=clean(args.input);if(!input)throw new Error('--input required');
   const payload=readJson(input);const results=Array.isArray(payload)?payload:Array.isArray(payload.results)?payload.results:[];
-  const telemetry=computeParallelismTelemetry({results,requestedMax:args.requested,effectiveMax:args.effective,taskCount:args['task-count']});
+  const tasks=Array.isArray(payload?.tasks)?payload.tasks:[];
+  const telemetry=computeParallelismTelemetry({results,tasks,requestedMax:args.requested,effectiveMax:args.effective,taskCount:args['task-count']});
   if(clean(args.output))writeJson(clean(args.output),telemetry);
   return telemetry;
 }
@@ -111,6 +175,13 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PARALLEL_UTILIZATION=${t.observedPeakUtilizationPct}`);
   console.log(`VIBE2_PARALLEL_CACHE_HIT_RATE=${t.ollamaCache.hitRatePct}`);
   console.log(`VIBE2_PARALLEL_FAILURE_RATE=${t.failureRatePct}`);
+  console.log(`VIBE2_WORKLOAD_FEATURES_COMPLETED=${t.workload.completedFeatureCount}`);
+  console.log(`VIBE2_WORKLOAD_CHANGED_FILES=${t.workload.changedFileCount}`);
+  console.log(`VIBE2_WORKLOAD_CHANGED_LINES=${t.workload.changedLineCount}`);
+  console.log(`VIBE2_WORKLOAD_REWORK_RATE=${t.workload.reworkRatePct}`);
+  console.log(`VIBE2_WORKLOAD_QA_DUPLICATE_RATE=${t.workload.qaDuplicateRatePct}`);
+  console.log(`VIBE2_WORKLOAD_PACKAGE_CYCLE_AVG_MS=${t.workload.packageCycleTime.avgMs}`);
+  console.log(`VIBE2_WORKLOAD_PREPARATION_RATIO=${t.workload.preparationRatioPct}`);
   console.log(`VIBE2_PARALLEL_BOTTLENECK=${t.bottleneck}`);
   console.log(`VIBE2_PARALLEL_TELEMETRY_PASS=${t.pass?'YES':'NO'}`);
 }

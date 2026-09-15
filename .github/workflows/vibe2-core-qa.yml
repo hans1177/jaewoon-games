@@ -18,6 +18,7 @@ on:
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
+      - 'tools/vibe2-work-package.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
       - 'tools/vibe2-parallelism-telemetry.mjs'
       - 'tools/vibe2-adaptive-backpressure.mjs'
@@ -29,6 +30,7 @@ on:
       - 'qa/vibe2-design-intelligence.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
+      - 'qa/vibe2-work-package.test.mjs'
       - 'qa/vibe2-incremental-qa.test.mjs'
       - 'qa/vibe2-parallelism-telemetry.test.mjs'
       - 'qa/vibe2-adaptive-backpressure.test.mjs'
@@ -51,6 +53,7 @@ on:
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
+      - 'tools/vibe2-work-package.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
       - 'tools/vibe2-parallelism-telemetry.mjs'
       - 'tools/vibe2-adaptive-backpressure.mjs'
@@ -95,6 +98,7 @@ jobs:
           node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-work-package.mjs
           node --check tools/vibe2-incremental-qa.mjs
           node --check tools/vibe2-parallelism-telemetry.mjs
           node --check tools/vibe2-adaptive-backpressure.mjs
@@ -106,6 +110,7 @@ jobs:
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
+          node --check qa/vibe2-work-package.test.mjs
           node --check qa/vibe2-incremental-qa.test.mjs
           node --check qa/vibe2-parallelism-telemetry.test.mjs
           node --check qa/vibe2-adaptive-backpressure.test.mjs
@@ -122,6 +127,7 @@ jobs:
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-work-package.test.mjs
           node --test qa/vibe2-incremental-qa.test.mjs
           node --test qa/vibe2-parallelism-telemetry.test.mjs
           node --test qa/vibe2-adaptive-backpressure.test.mjs

@@ -37,7 +37,6 @@ function sourceFile(root,relative){return path.join(root,...posix(relative).spli
 function readText(file){try{return fs.readFileSync(file,'utf8');}catch{return'';}}
 function hasTask(queue,id){return queue.tasks.some(item=>item.id===id);}
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
-function activeSourceRoots(queue){return new Set(activeTasks(queue).map(item=>posix(item.sourceRoot)).filter(Boolean));}
 function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoot),bRoot=posix(b.sourceRoot);if(!aRoot||!bRoot||aRoot!==bRoot)return false;const aFiles=new Set((a.responsibleFiles||[]).map(posix).filter(Boolean)),bFiles=new Set((b.responsibleFiles||[]).map(posix).filter(Boolean));if(!aFiles.size||!bFiles.size)return true;for(const file of aFiles)if(bFiles.has(file))return true;return false;}
 function plannerConflict(queue,task){return activeTasks(queue).some(item=>sameRootResponsibilityConflict(item,task));}
 function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];return{id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal,responsibleFiles,dependencies:[],priority,releaseState:project.releaseState,status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',evidence:[`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence]};}
@@ -99,21 +98,41 @@ function expandTaskToMinimumWorkload(taskInput,project,policy){
   const min=Math.max(2,Number(policy?.minWorkUnitsPerPackage||3));
   const current=estimateTaskWorkUnits(taskInput);
   if(taskInput.ownerDirective===true||current>=min)return taskInput;
-  const isWeb=project?.engine==='web';
-  const expansion=isWeb
-    ? '같은 책임 파일 범위 안에서 이 기능의 오류 처리와 회귀 안전성을 보강하고, 직접 관련된 접근성·가독성·모바일 입력·기본 성능 문제도 함께 점검해 발견 시 같이 수정한다. 관련 incremental QA까지 통과시킨다.'
-    : '같은 책임 파일 범위 안에서 이 기능의 불변조건·오류 처리·회귀 안전성을 함께 보강하고 관련 incremental QA까지 통과시킨다.';
-  const evidence=[...(taskInput.evidence||[]),'work-package-auto-expanded','work-package-expansion:qa-hardening'];
-  if(isWeb)evidence.push('work-package-expansion:ux-readability','work-package-expansion:performance-sanity');
+  const scopes=project?.engine==='web'
+    ? ['bug-hardening','ux-mobile-readability','qa-regression','performance-sanity']
+    : ['bug-hardening','qa-regression','contract-safety'];
+  const scopeText=project?.engine==='web'
+    ? '1. 직접 관련 오류 처리/예외 경로 보강\n2. 모바일 입력·가독성·접근성 회귀 점검 및 발견 문제 수정\n3. 변경 영향 incremental QA 통과\n4. 같은 책임 범위의 기본 성능 퇴행 점검 및 발견 문제 수정'
+    : '1. 직접 관련 오류 처리·불변조건 보강\n2. 변경 영향 incremental QA 통과\n3. 기존 계약·세이브·게임 규칙 회귀 점검 및 발견 문제 수정';
+  const evidence=[...(taskInput.evidence||[]),'work-package-auto-expanded',...scopes.map(scope=>`work-package-scope:${scope}`)];
   return{
     ...taskInput,
-    workUnits:min,
-    goal:`${taskInput.goal}\n\n[WORK PACKAGE AUTO-EXPANSION]\n${expansion}`,
+    goal:`${taskInput.goal}\n\n[WORK PACKAGE AUTO-EXPANSION]\n${scopeText}`,
     evidence:[...new Set(evidence)]
   };
 }
-
-function findSafeTask(project,repoRoot,queue){if(project.engine==='roblox')return scanExplicitMarkerTask(project,repoRoot,queue);if(project.engine==='unity')return findUnityTask(project,repoRoot,queue)||scanExplicitMarkerTask(project,repoRoot,queue);if(project.engine==='web')return findWebFullGameTask(project,repoRoot,queue)||findWebDiagnosticTask(project,repoRoot,queue)||scanExplicitMarkerTask(project,repoRoot,queue);return null;}
+function uniqueTaskCandidates(rows=[]){const seen=new Set();return rows.filter(task=>{if(!task||seen.has(task.id))return false;seen.add(task.id);return true;});}
+function findSafeTasks(project,repoRoot,queue){
+  if(project.engine==='roblox')return uniqueTaskCandidates([scanExplicitMarkerTask(project,repoRoot,queue)]);
+  if(project.engine==='unity')return uniqueTaskCandidates([findUnityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+  if(project.engine==='web'){
+    const owner=findWebFullGameTask(project,repoRoot,queue);
+    if(owner)return[owner];
+    return uniqueTaskCandidates([findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+  }
+  return[];
+}
+function selectPackageCandidates(candidates,queue,remaining,policy){
+  const selected=[];
+  const limit=Math.max(1,Math.min(Number(policy?.maxTasksPerPackage||5),remaining));
+  for(const candidate of candidates){
+    if(!candidate||plannerConflict(queue,candidate))continue;
+    if(selected.some(other=>sameRootResponsibilityConflict(other,candidate)))continue;
+    selected.push(candidate);
+    if(selected.length>=limit)break;
+  }
+  return selected;
+}
 function releaseUnityFocusBusy(queue){return activeTasks(queue).some(item=>item.target==='unity'&&item.releaseState==='release-confirmed');}
 
 export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={}}={}){
@@ -131,29 +150,38 @@ export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput=
   for(const project of projects){
     if(planned.length>=capacity||packages.length>=policy.maxPackagesPerCycle)break;
     if(project.engine==='unity'&&project.releaseState==='release-confirmed'&&unityReleaseFocusTaken)continue;
-    let next=findSafeTask(project,repoRoot,queue);
-    if(!next)continue;
-    if(plannerConflict(queue,next))continue;
-    next=expandTaskToMinimumWorkload(next,project,policy);
+    const remaining=Math.max(1,capacity-planned.length);
+    let packageTasks=selectPackageCandidates(findSafeTasks(project,repoRoot,queue),queue,remaining,policy);
+    if(!packageTasks.length)continue;
     sequence+=1;
-    const pkg=buildWorkPackage({tasks:[next],project,sequence,policy});
+    let pkg=buildWorkPackage({tasks:packageTasks,project,sequence,policy});
     if(!pkg.accepted){
-      deferredSmallPackages.push({gameId:project.gameId,taskIds:[next.id],workUnits:pkg.packageWorkUnits,reason:pkg.rejectionReason});
+      packageTasks=[expandTaskToMinimumWorkload(packageTasks[0],project,policy),...packageTasks.slice(1)];
+      pkg=buildWorkPackage({tasks:packageTasks,project,sequence,policy});
+    }
+    if(!pkg.accepted){
+      deferredSmallPackages.push({gameId:project.gameId,taskIds:packageTasks.map(task=>task.id),workUnits:pkg.packageWorkUnits,reason:pkg.rejectionReason});
       continue;
     }
-    const acceptedTask=pkg.tasks[0];
-    queue=createVibeContinuousQueue({tasks:[...queue.tasks,acceptedTask],maxConcurrentTasks:queue.maxConcurrentTasks});
-    planned.push(acceptedTask);
-    packages.push({...pkg,tasks:[acceptedTask]});
+    const acceptedTasks=pkg.tasks;
+    queue=createVibeContinuousQueue({tasks:[...queue.tasks,...acceptedTasks],maxConcurrentTasks:queue.maxConcurrentTasks});
+    planned.push(...acceptedTasks);
+    packages.push({...pkg,tasks:acceptedTasks});
     if(project.engine==='unity'&&project.releaseState==='release-confirmed')unityReleaseFocusTaken=true;
   }
   const workloadTelemetry=computeWorkloadTelemetry(queue,packages);
+  const quantityTargetMet=workloadTelemetry.plannedFeaturePackageCount>=policy.targetFeaturePackagesPerCycle||workloadTelemetry.plannedRelatedImprovementCount>=policy.minRelatedImprovementsPerPackage;
   const cycleTarget={
     targetWorkUnits:policy.targetWorkUnitsPerCycle,
-    targetPackages:policy.targetPackagesPerCycle,
+    targetFeaturePackages:policy.targetFeaturePackagesPerCycle,
+    minRelatedImprovements:policy.minRelatedImprovementsPerPackage,
     plannedWorkUnits:workloadTelemetry.plannedWorkUnits,
     plannedPackages:packages.length,
-    met:workloadTelemetry.plannedWorkUnits>=policy.targetWorkUnitsPerCycle||packages.length>=policy.targetPackagesPerCycle
+    plannedFeaturePackages:workloadTelemetry.plannedFeaturePackageCount,
+    plannedRelatedImprovements:workloadTelemetry.plannedRelatedImprovementCount,
+    workUnitsTargetMet:workloadTelemetry.plannedWorkUnits>=policy.targetWorkUnitsPerCycle,
+    quantityTargetMet,
+    met:quantityTargetMet
   };
   if(!planned.length)return{planned:false,count:0,reason:deferredSmallPackages.length?'MINIMUM_WORKLOAD_GATE':active.length?'NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK':'NO_SAFE_AUTONOMOUS_TASK',queue,tasks:[],packages:[],projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
   return{planned:true,count:planned.length,reason:'WORK_PACKAGES_PLANNED',queue,tasks:planned,packages,task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),projectPriorityPolicy:'OWNER_WEBGAME_FIRST_THEN_CONFIRMED_WEB_THEN_ROBLOX_THEN_RELEASE_UNITY',deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
@@ -182,5 +210,23 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
   console.log(`VIBE2_PLANNER_EFFECTIVE_MAX=${result.effectivePlannerMax||0}`);
-  console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);console.log(`VIBE2_AUTO_PLAN_REASON=${result.reason}`);console.log(`VIBE2_AUTO_PLAN_COUNT=${result.count||0}`);console.log(`VIBE2_AUTO_PLAN_PROJECT=${result.projectId||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_RELEASE_STATE=${result.projectReleaseState||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_ENGINE=${result.projectEngine||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_PRIORITY=${result.projectPriorityPolicy||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_TASKS=${(result.tasks||[]).map(t=>t.id).join(',')||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_BLOCKED_TIER1=${(result.blockedTier1GameIds||[]).join(',')||'NONE'}`);console.log(`VIBE2_WORK_PACKAGE_COUNT=${result.packages?.length||0}`);console.log(`VIBE2_WORK_PACKAGE_UNITS=${result.workloadTelemetry?.plannedWorkUnits||0}`);console.log(`VIBE2_WORK_PACKAGE_CYCLE_TARGET=${result.cycleTarget?.met?'MET':'NOT_MET'}`);console.log(`VIBE2_WORK_PACKAGE_MICRO_RATE=${result.workloadTelemetry?.historicalMicroTaskRatePct||0}`);console.log(`VIBE2_WORK_PACKAGE_REWORK_RATE=${result.workloadTelemetry?.historicalReworkRatePct||0}`);
+  console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);
+  console.log(`VIBE2_AUTO_PLAN_REASON=${result.reason}`);
+  console.log(`VIBE2_AUTO_PLAN_COUNT=${result.count||0}`);
+  console.log(`VIBE2_AUTO_PLAN_PROJECT=${result.projectId||'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN_RELEASE_STATE=${result.projectReleaseState||'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN_ENGINE=${result.projectEngine||'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN_PRIORITY=${result.projectPriorityPolicy||'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id||'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN_TASKS=${(result.tasks||[]).map(t=>t.id).join(',')||'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN_BLOCKED_TIER1=${(result.blockedTier1GameIds||[]).join(',')||'NONE'}`);
+  console.log(`VIBE2_WORK_PACKAGE_COUNT=${result.packages?.length||0}`);
+  console.log(`VIBE2_WORK_PACKAGE_UNITS=${result.workloadTelemetry?.plannedWorkUnits||0}`);
+  console.log(`VIBE2_WORK_PACKAGE_FEATURES=${result.workloadTelemetry?.plannedFeaturePackageCount||0}`);
+  console.log(`VIBE2_WORK_PACKAGE_IMPROVEMENTS=${result.workloadTelemetry?.plannedRelatedImprovementCount||0}`);
+  console.log(`VIBE2_WORK_PACKAGE_CYCLE_TARGET=${result.cycleTarget?.met?'MET':'NOT_MET'}`);
+  console.log(`VIBE2_WORK_PACKAGE_MICRO_RATE=${result.workloadTelemetry?.historicalMicroTaskRatePct||0}`);
+  console.log(`VIBE2_WORK_PACKAGE_REWORK_RATE=${result.workloadTelemetry?.historicalReworkRatePct||0}`);
+  console.log(`VIBE2_WORK_PACKAGE_QA_DUPLICATE_RATE=${result.workloadTelemetry?.historicalQaDuplicateRatePct||0}`);
+  console.log(`VIBE2_WORK_PACKAGE_LOW_EFFICIENCY_STREAK=${result.workloadTelemetry?.lowEfficiencyStreak||0}`);
 }

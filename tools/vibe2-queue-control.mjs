@@ -181,6 +181,21 @@ export function settleVibeTask(queueInput, { taskId = '', outcome = 'PASS', evid
   return finishVibeQueueTask(queueInput, { taskId, outcome, evidence, blocker, retryable });
 }
 
+function workloadEvidence(row = {}) {
+  const metrics=row?.metrics||{};
+  const changedFiles=Number(metrics.changedFileCount);
+  const addedLines=Number(metrics.addedLineCount);
+  const deletedLines=Number(metrics.deletedLineCount);
+  const prepMs=Math.max(0,Number(metrics.checkoutMs||0))+Math.max(0,Number(metrics.modelPrepMs||0));
+  const cycleMs=Math.max(0,Number(metrics.workerTotalMs||row.durationMs||0));
+  const evidence=[];
+  if(Number.isFinite(changedFiles))evidence.push(`workload:changed-files:${Math.max(0,changedFiles)}`);
+  if(Number.isFinite(addedLines)||Number.isFinite(deletedLines))evidence.push(`workload:changed-lines:${Math.max(0,Number.isFinite(addedLines)?addedLines:0)+Math.max(0,Number.isFinite(deletedLines)?deletedLines:0)}`);
+  if(prepMs>0)evidence.push(`workload:prep-ms:${prepMs}`);
+  if(cycleMs>0)evidence.push(`workload:cycle-ms:${cycleMs}`);
+  return evidence;
+}
+
 export function applyVibeFanInResults(queueInput, results = []) {
   let queue = createVibeContinuousQueue(queueInput);
   const grouped = new Map();
@@ -194,9 +209,15 @@ export function applyVibeFanInResults(queueInput, results = []) {
   for (const [taskId, variants] of grouped.entries()) {
     const passes = variants.filter((row) => clean(row.outcome).toUpperCase() === 'PASS');
     const winner = passes.sort((a,b) => Number(a.durationMs || 0) - Number(b.durationMs || 0))[0] || variants[0];
-    const allEvidence = [...new Set(variants.flatMap((row) => Array.isArray(row.evidence) ? row.evidence : []).map(clean).filter(Boolean))];
+    const allEvidence = [...new Set(variants.flatMap((row) => [
+      ...(Array.isArray(row.evidence) ? row.evidence : []),
+      ...workloadEvidence(row)
+    ]).map(clean).filter(Boolean))];
     if (passes.length) {
-      const winnerEvidence = Array.isArray(winner.evidence) ? winner.evidence.map(clean).filter(Boolean) : [];
+      const winnerEvidence = [
+        ...(Array.isArray(winner.evidence) ? winner.evidence.map(clean).filter(Boolean) : []),
+        ...workloadEvidence(winner)
+      ];
       const variantSummary = variants.map((row) => `speculative-result:${clean(row.variant) || 'primary'}:${clean(row.outcome).toUpperCase() || 'UNKNOWN'}`);
       queue = markVibeTaskAwaiting(queue, {
         taskId,
@@ -294,6 +315,7 @@ export function runQueueCommand(args = {}) {
     const taskCount=new Set(rows.map((row)=>clean(row?.taskId)).filter(Boolean)).size;
     const telemetry=computeParallelismTelemetry({
       results:rows,
+      tasks:queue.tasks,
       requestedMax:firstMetrics.requestedMax || currentControl.currentMax,
       effectiveMax:firstMetrics.effectiveMax || currentControl.currentMax,
       taskCount
@@ -338,6 +360,13 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_ADAPTIVE_MAX=${result.adaptiveControl.currentMax}`);
     console.log(`VIBE2_ADAPTIVE_DECISION=${result.adaptiveControl.lastDecision}`);
     console.log(`VIBE2_ADAPTIVE_REASON=${result.adaptiveControl.lastReason}`);
+  }
+  if (result.telemetry?.workload) {
+    console.log(`VIBE2_WORKLOAD_FEATURES_COMPLETED=${result.telemetry.workload.completedFeatureCount}`);
+    console.log(`VIBE2_WORKLOAD_CHANGED_FILES=${result.telemetry.workload.changedFileCount}`);
+    console.log(`VIBE2_WORKLOAD_CHANGED_LINES=${result.telemetry.workload.changedLineCount}`);
+    console.log(`VIBE2_WORKLOAD_REWORK_RATE=${result.telemetry.workload.reworkRatePct}`);
+    console.log(`VIBE2_WORKLOAD_QA_DUPLICATE_RATE=${result.telemetry.workload.qaDuplicateRatePct}`);
   }
   if (result.task?.id) console.log(`VIBE2_RESERVED_TASK=${result.task.id}`);
   if (result.tasks?.length) console.log(`VIBE2_RESERVED_TASKS=${result.tasks.map((task) => task.id).join(',')}`);

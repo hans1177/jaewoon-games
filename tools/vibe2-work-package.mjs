@@ -12,15 +12,39 @@ export const DEFAULT_WORK_PACKAGE_POLICY=Object.freeze({
   minWorkUnitsPerPackage:3,
   minTasksPerPackage:2,
   substantialSingleTaskWorkUnits:3,
+  minRelatedImprovementsPerPackage:3,
   targetWorkUnitsPerCycle:12,
   targetPackagesPerCycle:4,
+  targetFeaturePackagesPerCycle:1,
   maxPackagesPerCycle:10,
   maxTasksPerPackage:5,
   adaptiveMinMax:6,
+  maxAdaptiveBoost:3,
   lowEfficiencyMicroTaskRatePct:35,
   lowEfficiencyReworkRatePct:20,
+  lowEfficiencyPreparationRatioPct:45,
+  lowEfficiencyQaDuplicateRatePct:25,
+  lowEfficiencyStreakThreshold:2,
   longWorkUnits:5
 });
+
+function evidenceValues(task={},prefix=''){
+  return (Array.isArray(task.evidence)?task.evidence:[])
+    .map(clean)
+    .filter(value=>value.startsWith(prefix))
+    .map(value=>value.slice(prefix.length))
+    .filter(Boolean);
+}
+function evidenceNumber(task={},prefix=''){
+  const values=evidenceValues(task,prefix).map(Number).filter(Number.isFinite);
+  return values.length?values.reduce((a,b)=>a+b,0):0;
+}
+function evidenceMetricKnown(task={},prefix=''){
+  return (Array.isArray(task.evidence)?task.evidence:[]).some(value=>clean(value).startsWith(prefix));
+}
+export function relatedImprovementScopes(tasks=[]){
+  return unique((tasks||[]).flatMap(task=>evidenceValues(task,'work-package-scope:')));
+}
 
 export function estimateTaskWorkUnits(task={}){
   const explicit=Number(task.taskWorkUnits||task.workUnits||0);
@@ -35,27 +59,107 @@ export function estimateTaskWorkUnits(task={}){
   return clampInt(units,1,8);
 }
 
-export function computeWorkPackageEfficiency(queue={}){
+function packageHistory(queue={}){
+  const tasks=Array.isArray(queue?.tasks)?queue.tasks:[];
+  const packages=new Map();
+  tasks.forEach((task,index)=>{
+    const id=clean(task.packageId);
+    if(!id)return;
+    if(!packages.has(id))packages.set(id,{id,firstIndex:index,tasks:[]});
+    packages.get(id).tasks.push(task);
+  });
+  return [...packages.values()].sort((a,b)=>a.firstIndex-b.firstIndex);
+}
+function summarizePackage(row,policy=DEFAULT_WORK_PACKAGE_POLICY){
+  const tasks=row.tasks||[];
+  const taskUnits=tasks.map(estimateTaskWorkUnits);
+  const scopes=relatedImprovementScopes(tasks);
+  const retries=tasks.reduce((n,t)=>n+Math.max(0,Number(t.retries||0)),0);
+  const qaHashes=unique(tasks.flatMap(t=>evidenceValues(t,'incremental-qa-hash:')));
+  const qaRuns=tasks.reduce((n,t)=>n+evidenceValues(t,'incremental-qa-hash:').length,0);
+  const changedFiles=tasks.reduce((n,t)=>n+evidenceNumber(t,'workload:changed-files:'),0);
+  const changedLines=tasks.reduce((n,t)=>n+evidenceNumber(t,'workload:changed-lines:'),0);
+  const prepMs=tasks.reduce((n,t)=>n+evidenceNumber(t,'workload:prep-ms:'),0);
+  const cycleMs=Math.max(0,...tasks.map(t=>evidenceNumber(t,'workload:cycle-ms:')));
+  const changeMetricsKnown=tasks.some(t=>evidenceMetricKnown(t,'workload:changed-files:'));
+  const timingKnown=tasks.some(t=>evidenceMetricKnown(t,'workload:cycle-ms:'));
+  const qaDuplicateRatePct=qaRuns?round(Math.max(0,qaRuns-qaHashes.length)/qaRuns*100):0;
+  const preparationRatioPct=cycleMs?round(prepMs/cycleMs*100):0;
+  const plannedUnits=Math.max(
+    0,
+    ...tasks.map(t=>Number(t.packageWorkUnits||0)),
+    taskUnits.reduce((a,b)=>a+b,0)+scopes.length
+  );
+  const done=tasks.length>0&&tasks.every(t=>clean(t.status)==='done');
+  const failed=tasks.some(t=>clean(t.status)==='failed');
+  const lowEfficiency=done&&(
+    retries>0 ||
+    (changeMetricsKnown&&changedFiles<=0) ||
+    (timingKnown&&preparationRatioPct>Number(policy.lowEfficiencyPreparationRatioPct||45)) ||
+    qaDuplicateRatePct>Number(policy.lowEfficiencyQaDuplicateRatePct||25)
+  );
+  return{
+    id:row.id,
+    taskCount:tasks.length,
+    done,
+    failed,
+    retries,
+    taskUnits,
+    plannedUnits,
+    relatedImprovementCount:scopes.length,
+    changedFiles,
+    changedLines,
+    changeMetricsKnown,
+    prepMs,
+    cycleMs,
+    timingKnown,
+    qaRuns,
+    qaUniqueRuns:qaHashes.length,
+    qaDuplicateRatePct,
+    preparationRatioPct,
+    lowEfficiency
+  };
+}
+
+export function computeWorkPackageEfficiency(queue={},policyInput={}){
+  const policy={...DEFAULT_WORK_PACKAGE_POLICY,...(policyInput||{})};
   const tasks=Array.isArray(queue?.tasks)?queue.tasks:[];
   const packaged=tasks.filter(t=>clean(t.packageId));
-  const packages=new Map();
-  for(const task of packaged){
-    const id=clean(task.packageId);
-    if(!packages.has(id))packages.set(id,[]);
-    packages.get(id).push(task);
-  }
-  const packageRows=[...packages.values()];
-  const completedPackageCount=packageRows.filter(rows=>rows.length&&rows.every(t=>clean(t.status)==='done')).length;
-  const failedPackageCount=packageRows.filter(rows=>rows.some(t=>clean(t.status)==='failed')).length;
+  const packageRows=packageHistory(queue).map(row=>summarizePackage(row,policy));
+  const completedPackageCount=packageRows.filter(row=>row.done).length;
+  const failedPackageCount=packageRows.filter(row=>row.failed).length;
   const taskUnits=packaged.map(estimateTaskWorkUnits);
-  const packageUnits=packageRows.map(rows=>Math.max(...rows.map(t=>Number(t.packageWorkUnits||0)),rows.reduce((n,t)=>n+estimateTaskWorkUnits(t),0)));
   const microTaskCount=taskUnits.filter(v=>v<=1).length;
   const reworkedTaskCount=packaged.filter(t=>Number(t.retries||0)>0).length;
   const microTaskRatePct=packaged.length?round(microTaskCount/packaged.length*100):0;
   const reworkRatePct=packaged.length?round(reworkedTaskCount/packaged.length*100):0;
   const avgTaskWorkUnits=taskUnits.length?round(taskUnits.reduce((a,b)=>a+b,0)/taskUnits.length):0;
-  const avgPackageWorkUnits=packageUnits.length?round(packageUnits.reduce((a,b)=>a+b,0)/packageUnits.length):0;
-  const lowEfficiencyDetected=packaged.length>=4&&(microTaskRatePct>DEFAULT_WORK_PACKAGE_POLICY.lowEfficiencyMicroTaskRatePct||reworkRatePct>DEFAULT_WORK_PACKAGE_POLICY.lowEfficiencyReworkRatePct||avgTaskWorkUnits<1.75);
+  const avgPackageWorkUnits=packageRows.length?round(packageRows.reduce((n,row)=>n+row.plannedUnits,0)/packageRows.length):0;
+  const changedFileCount=packageRows.reduce((n,row)=>n+row.changedFiles,0);
+  const changedLineCount=packageRows.reduce((n,row)=>n+row.changedLines,0);
+  const qaRunCount=packageRows.reduce((n,row)=>n+row.qaRuns,0);
+  const qaUniqueRunCount=packageRows.reduce((n,row)=>n+row.qaUniqueRuns,0);
+  const qaDuplicateRatePct=qaRunCount?round(Math.max(0,qaRunCount-qaUniqueRunCount)/qaRunCount*100):0;
+  const totalPrepMs=packageRows.reduce((n,row)=>n+row.prepMs,0);
+  const totalCycleMs=packageRows.reduce((n,row)=>n+row.cycleMs,0);
+  const preparationRatioPct=totalCycleMs?round(totalPrepMs/totalCycleMs*100):0;
+  const completedCycleTimes=packageRows.filter(row=>row.done&&row.cycleMs>0).map(row=>row.cycleMs);
+  const averagePackageCycleTimeMs=completedCycleTimes.length?round(completedCycleTimes.reduce((a,b)=>a+b,0)/completedCycleTimes.length):0;
+  let lowEfficiencyStreak=0;
+  for(let i=packageRows.length-1;i>=0;i--){
+    const row=packageRows[i];
+    if(!row.done)continue;
+    if(!row.lowEfficiency)break;
+    lowEfficiencyStreak+=1;
+  }
+  const lowEfficiencyDetected=packaged.length>=4&&(
+    microTaskRatePct>Number(policy.lowEfficiencyMicroTaskRatePct||35) ||
+    reworkRatePct>Number(policy.lowEfficiencyReworkRatePct||20) ||
+    avgTaskWorkUnits<1.75 ||
+    preparationRatioPct>Number(policy.lowEfficiencyPreparationRatioPct||45) ||
+    qaDuplicateRatePct>Number(policy.lowEfficiencyQaDuplicateRatePct||25) ||
+    lowEfficiencyStreak>=Number(policy.lowEfficiencyStreakThreshold||2)
+  );
   return{
     packageCount:packageRows.length,
     completedPackageCount,
@@ -67,23 +171,39 @@ export function computeWorkPackageEfficiency(queue={}){
     reworkRatePct,
     avgTaskWorkUnits,
     avgPackageWorkUnits,
+    changedFileCount,
+    changedLineCount,
+    qaRunCount,
+    qaUniqueRunCount,
+    qaDuplicateRatePct,
+    preparationRatioPct,
+    averagePackageCycleTimeMs,
+    lowEfficiencyStreak,
     lowEfficiencyDetected
   };
 }
 
 export function resolveWorkPackagePolicy(runtimePolicy={},queue={}){
-  const efficiency=computeWorkPackageEfficiency(queue);
   const base={...DEFAULT_WORK_PACKAGE_POLICY,...(runtimePolicy||{})};
+  const efficiency=computeWorkPackageEfficiency(queue,base);
   const baseMin=clampInt(base.minWorkUnitsPerPackage||3,2,6);
   const maxMin=clampInt(base.efficiencyAdaptation?.maxMinWorkUnitsPerPackage||base.adaptiveMinMax||6,baseMin,8);
-  const adaptiveBoost=base.efficiencyAdaptation?.enabled===false?0:(efficiency.lowEfficiencyDetected?1:0);
+  const streakThreshold=clampInt(base.lowEfficiencyStreakThreshold||2,1,5);
+  const maxBoost=clampInt(base.maxAdaptiveBoost||3,1,4);
+  let adaptiveBoost=0;
+  if(base.efficiencyAdaptation?.enabled!==false){
+    if(efficiency.lowEfficiencyStreak>=streakThreshold)adaptiveBoost=Math.min(maxBoost,efficiency.lowEfficiencyStreak-streakThreshold+1);
+    else if(efficiency.lowEfficiencyDetected)adaptiveBoost=1;
+  }
   return{
     ...base,
     minWorkUnitsPerPackage:Math.min(maxMin,baseMin+adaptiveBoost),
     minTasksPerPackage:clampInt(base.minTasksPerPackage||2,1,5),
     substantialSingleTaskWorkUnits:clampInt(base.substantialSingleTaskWorkUnits||3,2,8),
+    minRelatedImprovementsPerPackage:clampInt(base.minRelatedImprovementsPerPackage||3,2,6),
     targetWorkUnitsPerCycle:clampInt(base.targetWorkUnitsPerCycle||12,3,100),
     targetPackagesPerCycle:clampInt(base.targetPackagesPerCycle||4,1,10),
+    targetFeaturePackagesPerCycle:clampInt(base.targetFeaturePackagesPerCycle||1,1,10),
     maxPackagesPerCycle:clampInt(base.maxPackagesPerCycle||10,1,10),
     maxTasksPerPackage:clampInt(base.maxTasksPerPackage||5,1,8),
     longWorkUnits:clampInt(base.longWorkUnits||5,3,12),
@@ -102,10 +222,16 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
   const list=(tasks||[]).filter(Boolean);
   const resolved={...DEFAULT_WORK_PACKAGE_POLICY,...policy};
   const taskUnits=list.map(estimateTaskWorkUnits);
-  const packageWorkUnits=taskUnits.reduce((a,b)=>a+b,0);
+  const scopes=relatedImprovementScopes(list);
+  const baseTaskWorkUnits=taskUnits.reduce((a,b)=>a+b,0);
+  const packageWorkUnits=baseTaskWorkUnits+scopes.length;
   const substantial=taskUnits.some(v=>v>=Number(resolved.substantialSingleTaskWorkUnits||3));
   const owner=list.some(t=>t.ownerDirective===true);
-  const accepted=list.length>0&&packageWorkUnits>=Number(resolved.minWorkUnitsPerPackage||3)&&(list.length>=Number(resolved.minTasksPerPackage||2)||substantial||owner);
+  const relatedImprovementGoalMet=scopes.length>=Number(resolved.minRelatedImprovementsPerPackage||3);
+  const multiTaskGoalMet=list.length>=Number(resolved.minTasksPerPackage||2);
+  const minimumWorkloadMet=packageWorkUnits>=Number(resolved.minWorkUnitsPerPackage||3);
+  const quantityGoal=owner||substantial?'FEATURE_COMPLETION':relatedImprovementGoalMet?'RELATED_IMPROVEMENTS':multiTaskGoalMet?'MULTI_TASK_FEATURE':null;
+  const accepted=list.length>0&&minimumWorkloadMet&&Boolean(quantityGoal);
   const gameId=clean(project.gameId||list[0]?.gameId)||'global';
   const sourceRoot=posix(project.projectPath||list[0]?.sourceRoot);
   const fingerprint=list.map(t=>clean(t.id)).join('|');
@@ -118,6 +244,7 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
     'full-core-regression-once-at-fan-in',
     'machine-contract-and-central-doc-synced-when-architecture-changes'
   ]);
+  if(scopes.length)completionCriteria.push(`related-improvement-scopes-verified:${scopes.length}`);
   const packageGoal=`${clean(project.name)||gameId}: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.`;
   const packageContext={
     explorationMode:clean(resolved.explorationMode)||'planner-precomputed-shared-context',
@@ -140,9 +267,33 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
     packageLongWorkProtected:packageWorkUnits>=Number(resolved.longWorkUnits||5),
     packageContext,
     completionCriteria,
-    evidence:unique([...(task.evidence||[]),`work-package:${packageId}`,`task-work-units:${taskUnits[index]}`,`package-work-units:${packageWorkUnits}`])
+    evidence:unique([
+      ...(task.evidence||[]),
+      `work-package:${packageId}`,
+      `task-work-units:${taskUnits[index]}`,
+      `package-work-units:${packageWorkUnits}`,
+      `package-related-improvements:${scopes.length}`,
+      quantityGoal&&`package-quantity-goal:${quantityGoal}`
+    ].filter(Boolean))
   }));
-  return{accepted,packageId,packageGoal,packageWorkUnits,taskCount:list.length,substantial,owner,completionCriteria,packageContext,tasks:decorated,rejectionReason:accepted?null:'MINIMUM_WORKLOAD_GATE'};
+  return{
+    accepted,
+    packageId,
+    packageGoal,
+    packageWorkUnits,
+    baseTaskWorkUnits,
+    relatedImprovementCount:scopes.length,
+    relatedImprovementScopes:scopes,
+    taskCount:list.length,
+    substantial,
+    owner,
+    quantityGoal,
+    minimumWorkloadMet,
+    completionCriteria,
+    packageContext,
+    tasks:decorated,
+    rejectionReason:accepted?null:minimumWorkloadMet?'CYCLE_QUANTITY_GOAL':'MINIMUM_WORKLOAD_GATE'
+  };
 }
 
 export function computeWorkloadTelemetry(queue={},plannedPackages=[]){
@@ -150,19 +301,29 @@ export function computeWorkloadTelemetry(queue={},plannedPackages=[]){
   const packages=(plannedPackages||[]).filter(Boolean);
   const plannedWorkUnits=packages.reduce((n,p)=>n+Number(p.packageWorkUnits||0),0);
   const plannedTaskCount=packages.reduce((n,p)=>n+Number(p.taskCount||p.tasks?.length||0),0);
+  const plannedRelatedImprovementCount=packages.reduce((n,p)=>n+Number(p.relatedImprovementCount||0),0);
+  const plannedFeaturePackageCount=packages.filter(p=>['FEATURE_COMPLETION','MULTI_TASK_FEATURE'].includes(clean(p.quantityGoal))).length;
   return{
-    version:1,
+    version:2,
     plannedPackageCount:packages.length,
     plannedTaskCount,
     plannedWorkUnits,
+    plannedFeaturePackageCount,
+    plannedRelatedImprovementCount,
     averagePlannedWorkUnitsPerPackage:packages.length?round(plannedWorkUnits/packages.length):0,
     completedFeaturePackageCount:efficiency.completedPackageCount,
     failedFeaturePackageCount:efficiency.failedPackageCount,
+    actualChangedFileCount:efficiency.changedFileCount,
+    actualChangedLineCount:efficiency.changedLineCount,
     historicalPackageCount:efficiency.packageCount,
     historicalMicroTaskRatePct:efficiency.microTaskRatePct,
     historicalReworkRatePct:efficiency.reworkRatePct,
+    historicalQaDuplicateRatePct:efficiency.qaDuplicateRatePct,
+    historicalPreparationRatioPct:efficiency.preparationRatioPct,
+    averagePackageCycleTimeMs:efficiency.averagePackageCycleTimeMs,
     historicalAvgTaskWorkUnits:efficiency.avgTaskWorkUnits,
     historicalAvgPackageWorkUnits:efficiency.avgPackageWorkUnits,
+    lowEfficiencyStreak:efficiency.lowEfficiencyStreak,
     lowEfficiencyDetected:efficiency.lowEfficiencyDetected,
     qaMode:'incremental-per-task-plus-single-full-fan-in-regression',
     duplicateFullRegressionExpected:false
