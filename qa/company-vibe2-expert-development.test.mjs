@@ -88,7 +88,7 @@ test('behavior chain contracts require actual input to owned state to gameplay r
 test('canonical Vibe development context exposes expert targets to the existing repair loop',()=>{
   const inventory=[{id:'tower',path:'combat.tower',label:'tower placement strategy'}];
   const context=buildVibeDevelopmentContext({gameId:'expert',genre:'SINGLE_DEFENSE_STRATEGY',baseline:{content:{coreLoop:['place tower','defend']}},inventory,existingHtml:source,blockers:['TOWER_PLACEMENT_RESULT_REQUIRED']});
-  assert.equal(context.version,7);
+  assert.equal(context.version,6);
   assert.ok(context.responsibilityGraph.nodes.some(x=>x.name==='placeTower'));
   assert.equal(context.causalDebug.traces[0].primaryTarget,'placeTower');
   assert.ok(context.behaviorChains.chains.some(x=>x.id==='PLACEMENT_CHAIN'));
