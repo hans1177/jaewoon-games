@@ -1,0 +1,50 @@
+name: Temporary Web Scope Patch
+
+on:
+  push:
+    branches:
+      - fix/web-preserve-large-scope
+    paths:
+      - .github/workflows/temp-web-scope-patch.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/web-preserve-large-scope
+      - name: Repair large approved-scope preservation handoff
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('tools/company-development-web-bootstrap.mjs')
+          text = path.read_text()
+          old = "  if(inventory.length<1||inventory.length>5)throw new Error(`SOURCE_PRESERVE_SCOPE_COUNT_UNSUPPORTED:${inventory.length}`);"
+          new = "  if(inventory.length<1)throw new Error(`SOURCE_PRESERVE_SCOPE_COUNT_UNSUPPORTED:${inventory.length}`);"
+          if text.count(old) != 1:
+              raise SystemExit(f'expected exactly one patch target, found {text.count(old)}')
+          path.write_text(text.replace(old, new))
+          PY
+          node --check tools/company-development-web-bootstrap.mjs
+          ! grep -Fq 'inventory.length<1||inventory.length>5' tools/company-development-web-bootstrap.mjs
+          git diff --check
+          git diff -- tools/company-development-web-bootstrap.mjs
+      - name: Commit canonical repair
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- tools/company-development-web-bootstrap.mjs; then
+            echo 'expected Web bootstrap repair was not produced' >&2
+            exit 1
+          fi
+          git config user.name 'jaewoon-runtime-bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add tools/company-development-web-bootstrap.mjs
+          git commit -m 'fix(web): preserve shared games with large approved scope'
+          git push origin HEAD:fix/web-preserve-large-scope
