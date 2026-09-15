@@ -40,3 +40,4 @@ jobs:
           git diff --cached --quiet && { echo 'no canonical diff' >&2; exit 1; }
           git commit -m 'fix(web): bind all approved scopes in shared engine'
           git push origin HEAD:fix/shared-engine-approved-scopes
+# rerun: stable story target
