@@ -79,7 +79,14 @@ function isHealthy(telemetry = {}) {
 export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString() } = {}) {
   const control = createParallelismControl(controlInput);
   const runId = clean(telemetry.runId);
-  if (runId && control.lastRunId === runId) return control;
+  if (runId && control.lastRunId === runId) {
+    return createParallelismControl({
+      ...control,
+      lastDecision: 'HOLD',
+      lastReason: 'DUPLICATE_RUN',
+      lastUpdatedAt: now
+    });
+  }
 
   const current = control.currentMax;
   const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
