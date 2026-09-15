@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "mode": "ROBLOX_PRIMARY_UNITY_LOW_INTENSITY",
+  "enabled": true,
+  "primary": "roblox",
+  "weights": {
+    "roblox": 80,
+    "unity": 20
+  },
+  "unity": {
+    "keepRunning": true,
+    "maintenanceOnlyWhileRobloxAvailable": true,
+    "criticalBypassesBudget": true,
+    "allowWhenRobloxUnavailable": true,
+    "softSlotCap": 4
+  },
+  "web": {
+    "preserveExistingFlow": true
+  },
+  "policy": {
+    "doNotCancelRunningUnity": true,
+    "doNotBlockOwnerDirectives": true,
+    "doNotLowerQa": true,
+    "doNotChangeHomepageOrCatalog": true
+  }
+}
