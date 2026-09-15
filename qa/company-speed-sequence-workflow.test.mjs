@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
 const router=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const stages=[
   'Change detection and exact-source reuse',
   'Cheap precheck and checkpoint resume plan',
@@ -94,4 +95,20 @@ test('Web gate persistence survives merged artifact directory layouts',()=>{
   assert.match(router,/WEB_WORKER_RESULT_FILES=/);
   assert.match(router,/find \/tmp\/web-batch -type d -name persist -print0/);
   assert.doesNotMatch(router,/const resultDir='\/tmp\/web-batch\/results'/);
+});
+
+test('Web development validation is parallel-first with six isolated workers and one aggregation write',()=>{
+  assert.match(router,/max-parallel:\s*6/);
+  assert.match(router,/WEB_PARALLEL_TARGET=6/);
+  assert.match(router,/WEB_PARALLEL_MAX=6/);
+  assert.match(router,/queue\.webValidationParallelism=6/);
+  assert.match(router,/WEB_PARALLEL_ACTIVE_MAX=6/);
+  assert.match(router,/Upload isolated Web worker result/);
+  assert.match(router,/Download parallel Web worker results/);
+  assert.match(router,/Persist parallel Web evidence and queue state/);
+  assert.match(router,/WEB_VALIDATION_TIERS=MICRO_FAST_INITIAL_FULL_FINAL/);
+  assert.match(policy,/parallelExecutionDefault: true/);
+  assert.match(policy,/webValidationParallelismTarget: 6/);
+  assert.match(policy,/webValidationParallelismMax: 6/);
+  assert.match(policy,/sharedRuntimeStatePersistedBySingleAggregationStep: true/);
 });
