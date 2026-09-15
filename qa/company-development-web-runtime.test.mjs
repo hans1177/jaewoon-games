@@ -39,17 +39,18 @@ test('shared preserved engine binds more than five approved scopes without model
   fs.mkdirSync(source,{recursive:true});
   fs.writeFileSync(path.join(source,'index.html'),'<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><script>window.GAME_CONFIG={id:"shared-story-test",name:"Shared Story",mode:"eldoria",hp:100,desc:"story",story:"story"}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>');
   const baseline={content:{coreFun:'Explore an area, meet characters, accept story quests, and discover information.',coreLoop:[
-    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location.',
-    'Progress through the complete story arc to a final boss and a real ending.',
-    'Explore an area, meet characters, accept or advance story quests, and discover information.',
-    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location.',
-    'Progress through the complete story arc to a final boss and a real ending.',
-    'Explore an area, meet characters, accept or advance story quests, and discover information.',
-    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location.'
-  ],mobileUx:'touch-first story controls'}};
+    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.',
+    'Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.',
+    'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.',
+    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.',
+    'Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.',
+    'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.',
+    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.'
+  ],mobileUx:'Story Driven'}};
   const output=await buildFirstPlayable({gameId:'shared-story-test',gameName:'Shared Story',baseline,sourcePath:source,candidatePath:candidate,candidateId:'shared-story-test',sourceCommit:'test',model:'none'});
   assert.equal(output.generation.modelInvoked,false);
   assert.equal(output.review.pass,true);
+  assert.equal(output.review.mechanicCount,5);
   assert.equal(output.approvedScopeInventory.length,9);
   const html=fs.readFileSync(path.join(candidate,'index.html'),'utf8');
   assert.equal((html.match(/data-scope-id=/g)||[]).length,9);
