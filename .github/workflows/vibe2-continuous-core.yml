@@ -356,6 +356,8 @@ jobs:
           NODE
 
       - name: Download reusable exploration handoff
+        id: exploration_handoff
+        continue-on-error: true
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
         uses: actions/download-artifact@v4
         with:
@@ -396,7 +398,14 @@ jobs:
           git worktree add -b "$candidate_branch" "$candidate_dir" origin/main
           mkdir -p "$candidate_dir/.vibe2"
           cp /tmp/vibe2-work-order.json "$candidate_dir/.vibe2/work-order.json"
-          cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
+          exploration_file=''
+          if [ -s /tmp/vibe2-exploration/vibe2-exploration.json ]; then
+            cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
+            exploration_file='.vibe2/exploration.json'
+            echo 'VIBE2_EXPLORATION_HANDOFF=REUSED'
+          else
+            echo 'VIBE2_EXPLORATION_HANDOFF=INLINE_FALLBACK'
+          fi
 
           command -v ollama >/dev/null
           nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
@@ -415,8 +424,22 @@ jobs:
           cd "$candidate_dir"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
-          export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
-          node "$GITHUB_WORKSPACE/tools/vibe2-source-worker.mjs" --apply-source=true
+          if [ -n "$exploration_file" ]; then export VIBE2_EXPLORATION_FILE="$exploration_file"; else unset VIBE2_EXPLORATION_FILE || true; fi
+          source_ok=0
+          for model_attempt in 1 2; do
+            set +e
+            node "$GITHUB_WORKSPACE/tools/vibe2-source-worker.mjs" --apply-source=true 2>&1 | tee "/tmp/vibe2-source-${SAFE_TASK}-${VARIANT}.log"
+            source_rc=${PIPESTATUS[0]}
+            set -e
+            if [ "$source_rc" -eq 0 ]; then source_ok=1; break; fi
+            if [ "$model_attempt" -lt 2 ] && grep -Eq 'Ollama HTTP (429|5[0-9][0-9])|ECONNRESET|ECONNREFUSED|socket hang up' "/tmp/vibe2-source-${SAFE_TASK}-${VARIANT}.log"; then
+              echo "VIBE2_MODEL_TRANSPORT_RETRY=$model_attempt/1"
+              sleep 3
+              continue
+            fi
+            exit "$source_rc"
+          done
+          test "$source_ok" = 1
           git diff --check
 
           git add "$SOURCE_ROOT" .vibe2/candidates
@@ -621,12 +644,23 @@ jobs:
           TASK_ID: ${{ matrix.taskId }}
         shell: bash
         run: |
-          set -euo pipefail
+          set -u
           encoded="$(node -e "process.stdout.write(Buffer.from(process.env.TASK_ID||'').toString('base64url'))")"
-          test -n "$encoded"
+          if [ -z "$encoded" ]; then echo 'VIBE2_EARLY_SLOT_REFILL_SIGNAL=SKIPPED_NONFATAL:EMPTY_TASK'; exit 0; fi
           callback="vibe2/refill/task/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/${encoded}"
-          git push origin "HEAD:refs/heads/${callback}"
-          echo "VIBE2_EARLY_SLOT_REFILL_SIGNAL=$callback"
+          signaled=0
+          if git fetch origin main:refs/remotes/origin/main --depth=1 --quiet; then
+            for attempt in 1 2 3; do
+              if git push origin "refs/remotes/origin/main:refs/heads/${callback}"; then signaled=1; break; fi
+              sleep $((attempt * 2))
+            done
+          fi
+          if [ "$signaled" = 1 ]; then
+            echo "VIBE2_EARLY_SLOT_REFILL_SIGNAL=$callback"
+          else
+            echo "VIBE2_EARLY_SLOT_REFILL_SIGNAL=SKIPPED_NONFATAL:$callback"
+          fi
+          exit 0
 
   fan_in:
     needs: [reserve, worker]
@@ -787,8 +821,18 @@ jobs:
         if: steps.persist.outputs.refill == '1'
         shell: bash
         run: |
-          set -euo pipefail
-          git fetch origin vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --depth=1 --quiet
+          set -u
           callback="vibe2/refill/fanin/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-          git push origin "refs/remotes/origin/vibe2-unreal-core:refs/heads/${callback}"
-          echo "VIBE2_EVENT_DRIVEN_REFILL=FANIN_PUSH_CALLBACK:$callback"
+          signaled=0
+          if git fetch origin main:refs/remotes/origin/main --depth=1 --quiet; then
+            for attempt in 1 2 3; do
+              if git push origin "refs/remotes/origin/main:refs/heads/${callback}"; then signaled=1; break; fi
+              sleep $((attempt * 2))
+            done
+          fi
+          if [ "$signaled" = 1 ]; then
+            echo "VIBE2_EVENT_DRIVEN_REFILL=FANIN_PUSH_CALLBACK:$callback"
+          else
+            echo "VIBE2_EVENT_DRIVEN_REFILL=SKIPPED_NONFATAL:$callback"
+          fi
+          exit 0
