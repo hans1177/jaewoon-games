@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "engine": "roblox",
+  "timeoutMs": 60000,
+  "actions": [
+    {
+      "id": "settle",
+      "type": "wait",
+      "ms": 900
+    },
+    {
+      "id": "real-input",
+      "type": "key",
+      "key": "Tab",
+      "holdMs": 80
+    },
+    {
+      "id": "loaded",
+      "type": "expect",
+      "name": "Studio play mode is loaded",
+      "expression": "game-loaded"
+    },
+    {
+      "id": "player",
+      "type": "expect",
+      "name": "Studio play mode player exists",
+      "expression": "player-present"
+    }
+  ]
+}

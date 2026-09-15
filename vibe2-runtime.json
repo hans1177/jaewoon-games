@@ -153,6 +153,8 @@
     "experienceState": ".vibe2/experience.json",
     "worker": "tools/vibe2-game-study-worker.mjs",
     "intelligence": "tools/vibe2-game-study-intelligence.mjs",
+    "robloxStudioCliRunner": "tools/vibe2-roblox-studio-cli-runner.mjs",
+    "robloxStudioLiveSmoke": ".github/workflows/vibe2-roblox-studio-live-smoke.yml",
     "featureCount": 25,
     "features": [
       "mechanic-mining",
@@ -215,11 +217,17 @@
       "webPublicObservation": "observation-only",
       "sourceAnalysisRequires": "owned-or-authorized-server-workspace",
       "robloxPublicObservation": "observation-only",
+      "robloxGenericExternalAutomation": false,
+      "robloxExplicitCopyEnabledAutomation": true,
       "robloxCopyEnabledDownload": "creator-enabled-place-copying",
+      "robloxCopyEnabledStudioRuntime": "official-studio-cli-copy-enabled-session",
+      "robloxCopyEnabledStudioPermission": "creator-enabled-place-copying",
       "robloxCopyLockedDownload": false,
       "authorizedDownloadFormat": "rbxlx",
       "authorizedDownloadRawPlacePersisted": false,
-      "authorizedDownloadRawSourcePersisted": false
+      "authorizedDownloadRawSourcePersisted": false,
+      "authorizedStudioRawPlacePersisted": false,
+      "authorizedStudioRawSourcePersisted": false
     }
   },
   "sources": {

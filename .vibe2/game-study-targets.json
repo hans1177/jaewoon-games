@@ -12,12 +12,15 @@
     "mayExpandAuthority": false,
     "robloxPublicExperienceDownload": false,
     "robloxAuthorizedCopyDownloadLearning": true,
+    "robloxAuthorizedCopyStudioLearning": true,
     "robloxAuthorizedCopyPermission": "creator-enabled-place-copying",
     "robloxAuthorizedDownloadAuthority": "vibe2-roblox-authorized-download",
+    "robloxAuthorizedStudioAuthority": "vibe2-roblox-studio-runtime",
     "robloxAuthorizedDownloadFormat": "rbxlx",
     "robloxUnauthorizedCopyDownload": false,
     "robloxStudioRunnerMustBeExplicitlyReady": true,
     "externalRobloxActiveAutomation": false,
+    "externalCopyEnabledRobloxAutomation": true,
     "clientLocalLearning": false
   },
   "targets": [
@@ -56,6 +59,35 @@
       "sourceAccess": "observation-only",
       "priority": "low",
       "tags": ["external-reference", "memory-game", "board-size-selection", "card-interaction", "move-feedback"]
+    },
+    {
+      "id": "external-roblox-potion-shop-flow-a",
+      "enabled": false,
+      "origin": "external-public-copy-enabled",
+      "engine": "roblox",
+      "gameId": "external-roblox-potion-shop-demo",
+      "scenarioFile": ".vibe2/game-study-scenarios/external-roblox-potion-shop-flow-a.json",
+      "sourceAccess": "owned-or-authorized-server-workspace",
+      "sourceRoot": ".vibe2/authorized-roblox-source/potion-shop-demo",
+      "runnerReady": true,
+      "command": "node",
+      "commandArgs": [
+        "tools/vibe2-roblox-studio-cli-runner.mjs",
+        "--place-id=14215142052",
+        "--copy-permission=creator-enabled-place-copying",
+        "--permission-evidence=https://create.roblox.com/docs/cloud/guides/instance#potion-shop-demo",
+        "--source-root=.vibe2/authorized-roblox-source/potion-shop-demo"
+      ],
+      "timeoutMs": 240000,
+      "priority": "normal",
+      "tags": [
+        "external-reference",
+        "roblox",
+        "creator-copy-enabled",
+        "official-roblox-demo",
+        "studio-cli-runtime",
+        "authorized-source-distillation"
+      ]
     }
   ]
 }

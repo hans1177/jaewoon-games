@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "engine": "roblox",
+  "timeoutMs": 120000,
+  "actions": [
+    {
+      "id": "settle-play-mode",
+      "type": "wait",
+      "ms": 1800
+    },
+    {
+      "id": "real-tab-input",
+      "type": "key",
+      "key": "Tab",
+      "holdMs": 90
+    },
+    {
+      "id": "loaded-place",
+      "type": "expect",
+      "name": "Roblox place loaded in Studio play mode",
+      "expression": "game-loaded"
+    },
+    {
+      "id": "player-present",
+      "type": "expect",
+      "name": "Studio play mode player exists",
+      "expression": "player-present"
+    },
+    {
+      "id": "potion-ui-present",
+      "type": "expect",
+      "name": "Potion Shop player UI loaded",
+      "expression": "player-gui-nonempty"
+    }
+  ],
+  "metadata": {
+    "source": "Roblox Creator Hub Potion Shop Demo",
+    "placeId": "14215142052",
+    "copyPermission": "creator-enabled-place-copying",
+    "permissionEvidence": "https://create.roblox.com/docs/cloud/guides/instance#potion-shop-demo"
+  }
+}
