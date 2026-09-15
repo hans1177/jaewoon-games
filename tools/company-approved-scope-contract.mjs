@@ -1,5 +1,6 @@
 // 파일명: tools/company-approved-scope-contract.mjs
 import crypto from 'node:crypto';
+import {reviewSeniorSourceQuality} from './company-vibe2-expert-development.mjs';
 
 const clean=value=>String(value??'').trim().replace(/\s+/g,' ');
 const slug=value=>clean(value).toLowerCase().replace(/[^a-z0-9가-힣]+/g,'-').replace(/^-+|-+$/g,'').slice(0,42)||'scope';
@@ -122,10 +123,12 @@ export function staticApprovedScopeCoverage(html,inventory=[]){
     if(requirement==='SPATIAL_WORLD'&&!realSpatialStateExists(text))blockers.push(`APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED:${item.id}`);
   }
   blockers.push(...threeDContractBlockers(text));
+  const seniorReview=reviewSeniorSourceQuality(text);
+  blockers.push(...seniorReview.hardBlockers);
   const uniqueMechanics=[...new Set(mechanicIds)];
   const minimumMechanics=Math.min(4,Math.max(1,inventory.length));
   if(inventory.length&&uniqueMechanics.length<minimumMechanics)blockers.push(`APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:${uniqueMechanics.length}:${minimumMechanics}`);
-  return {pass:blockers.length===0,requiredCount:inventory.length,mechanicCount:uniqueMechanics.length,mechanicIds:uniqueMechanics,blockers};
+  return {pass:blockers.length===0,requiredCount:inventory.length,mechanicCount:uniqueMechanics.length,mechanicIds:uniqueMechanics,seniorReview,blockers};
 }
 
 export function runtimeApprovedScopeCoverage({declaredCount=0,visibleScopeIds=[],interactedScopeIds=[],mechanicBindings=[],inventory=[],interactionResults=[],spatialEvidence={}}={}){
