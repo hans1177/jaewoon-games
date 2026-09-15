@@ -30,14 +30,13 @@ env:
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
 
-concurrency:
-  group: vibe2-control-state-vibe2-unreal-core
-  cancel-in-progress: false
-
 jobs:
   plan:
     runs-on: ubuntu-latest
     timeout-minutes: 8
+    concurrency:
+      group: vibe2-control-state-vibe2-unreal-core
+      cancel-in-progress: false
     steps:
       - name: Checkout Vibe2 control branch
         uses: actions/checkout@v4
