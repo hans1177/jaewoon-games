@@ -58,9 +58,10 @@ function nextHigherTier(currentMax) {
 export function assessParallelismPressure({ currentMax = 20, telemetry = {} } = {}) {
   const persistentMax = normalizeParallelismTier(currentMax);
   const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
+  const taskCount = Math.max(0, Math.floor(num(telemetry.taskCount || workerCount)));
   const effectiveMax = Math.max(1, Math.min(persistentMax, Math.floor(num(telemetry.effectiveMax) || persistentMax)));
   const saturationThreshold = Math.max(1, Math.ceil(effectiveMax * 0.75));
-  const saturated = workerCount >= saturationThreshold;
+  const saturated = taskCount >= saturationThreshold;
   const failureRatePct = round(telemetry.failureRatePct);
   const peak = Math.max(0, Math.floor(num(telemetry.actualPeakConcurrency)));
   const peakTarget = Math.max(1, Math.min(workerCount || effectiveMax, effectiveMax));
@@ -86,6 +87,7 @@ export function assessParallelismPressure({ currentMax = 20, telemetry = {} } = 
     persistentMax,
     effectiveMax,
     workerCount,
+    taskCount,
     saturationThreshold,
     saturated,
     pressure,
@@ -136,6 +138,7 @@ export function decideAdaptiveParallelism({ control = {}, telemetry = {}, now = 
     healthy: assessment.healthy,
     reasons: assessment.reasons,
     workerCount: assessment.workerCount,
+    taskCount: assessment.taskCount,
     effectiveMax: assessment.effectiveMax,
     failureRatePct: assessment.failureRatePct,
     peakUtilizationPct: assessment.peakUtilizationPct
