@@ -37,7 +37,7 @@ jobs:
         run: |
           git config user.name 'jaewoon-vibe2-migration'
           git config user.email 'vibe2-migration@users.noreply.github.com'
-          git add qa/tmp-parallel20-queue.log
+          git add -f qa/tmp-parallel20-queue.log
           git commit -m 'debug: capture parallel20 queue failure'
           git push origin HEAD:feat/adaptive-parallel-20-final-core
       - name: Stop on queue failure
