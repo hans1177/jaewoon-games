@@ -87,6 +87,25 @@ function ownerDirectiveTask(directive){
 function isImportedOwnerFullRebuildTask(task){
   return task?.ownerDirective===true&&Array.isArray(task?.evidence)&&task.evidence.includes('owner-directive:full-web-game-rebuild');
 }
+function ownerDirectiveSpec(task){
+  return JSON.stringify({
+    gameId:clean(task?.gameId),
+    target:clean(task?.target),
+    department:clean(task?.department),
+    type:clean(task?.type),
+    goal:clean(task?.goal),
+    responsibleFiles:(task?.responsibleFiles||[]).map(posix),
+    priority:clean(task?.priority),
+    releaseState:clean(task?.releaseState),
+    sourceRoot:posix(task?.sourceRoot),
+    estimatedRisk:clean(task?.estimatedRisk),
+    speculativeEligible:task?.speculativeEligible===true,
+    fullRebuild:task?.fullRebuild===true,
+    rebuildMode:clean(task?.rebuildMode),
+    workUnits:Number(task?.workUnits||0),
+    evidence:(task?.evidence||[]).map(clean).filter(Boolean)
+  });
+}
 function importOwnerDirectives(queue,directivesFile){
   const inboxExists=Boolean(directivesFile&&fs.existsSync(directivesFile));
   const inbox=readJson(directivesFile,{directives:[]});
@@ -105,15 +124,24 @@ function importOwnerDirectives(queue,directivesFile){
       queue=createVibeContinuousQueue({...queue,tasks:(queue.tasks||[]).filter(task=>!pruned.some(row=>row.id===task.id))});
     }
   }
-  const existing=new Set((queue.tasks||[]).map(task=>clean(task.id)).filter(Boolean));
   const imported=[];
+  const refreshed=[];
+  let tasks=[...(queue.tasks||[])];
   for(const {task} of activeDirectives){
-    if(existing.has(task.id))continue;
-    queue=createVibeContinuousQueue({...queue,tasks:[...(queue.tasks||[]),task]});
-    existing.add(task.id);
-    imported.push(task);
+    const index=tasks.findIndex(row=>clean(row.id)===task.id);
+    if(index<0){
+      tasks.push(task);
+      imported.push(task);
+      continue;
+    }
+    const existing=tasks[index];
+    if(!isImportedOwnerFullRebuildTask(existing))continue;
+    if(ownerDirectiveSpec(existing)===ownerDirectiveSpec(task))continue;
+    tasks[index]=task;
+    refreshed.push(task);
   }
-  return {queue,imported,pruned};
+  if(imported.length||refreshed.length)queue=createVibeContinuousQueue({...queue,tasks});
+  return {queue,imported,refreshed,pruned};
 }
 
 export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDirectivesFile=''}){
@@ -164,7 +192,7 @@ export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDir
     break;
   }
   writeJson(queueFile,queue);
-  return {planned:planned.length>0,count:planned.length,tasks:planned,ownerImported:ownerResult.imported,ownerPruned:ownerResult.pruned};
+  return {planned:planned.length>0,count:planned.length,tasks:planned,ownerImported:ownerResult.imported,ownerRefreshed:ownerResult.refreshed,ownerPruned:ownerResult.pruned};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
@@ -175,6 +203,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDirectivesFile});
   console.log(`VIBE2_OWNER_DIRECTIVES_PRUNED=${result.ownerPruned.map(x=>x.id).join(',')||'NONE'}`);
   console.log(`VIBE2_OWNER_DIRECTIVES_IMPORTED=${result.ownerImported.map(x=>x.id).join(',')||'NONE'}`);
+  console.log(`VIBE2_OWNER_DIRECTIVES_REFRESHED=${result.ownerRefreshed.map(x=>x.id).join(',')||'NONE'}`);
   console.log(`VIBE2_RELEASE_BASELINE_GAP_PLAN=${result.planned?'YES':'NO'}`);
   console.log(`VIBE2_RELEASE_BASELINE_GAP_TASKS=${result.tasks.map(x=>x.id).join(',')||'NONE'}`);
 }
