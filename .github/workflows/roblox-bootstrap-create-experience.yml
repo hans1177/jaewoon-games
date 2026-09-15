@@ -1,0 +1,196 @@
+name: Roblox Bootstrap Create Experience
+
+on:
+  push:
+    branches: [fix/roblox-auto-bootstrap]
+    paths:
+      - '.github/workflows/roblox-bootstrap-create-experience.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  create:
+    name: create Vector Clash and recover target IDs
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 15
+    steps:
+      - name: Create experience fail-closed and recover IDs
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
+          Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class MouseNative { [DllImport("user32.dll")] public static extern bool SetCursorPos(int X,int Y); [DllImport("user32.dll")] public static extern void mouse_event(uint f,uint dx,uint dy,uint data,UIntPtr extra); }'
+
+          function Click-Point([int]$x,[int]$y) {
+            [MouseNative]::SetCursorPos($x,$y) | Out-Null
+            Start-Sleep -Milliseconds 150
+            [MouseNative]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero)
+            [MouseNative]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero)
+          }
+
+          function Capture-Rect($rect,[string]$path) {
+            $x=[int][Math]::Floor($rect.Left); $y=[int][Math]::Floor($rect.Top)
+            $w=[int][Math]::Ceiling($rect.Width); $h=[int][Math]::Ceiling($rect.Height)
+            $bmp=New-Object System.Drawing.Bitmap($w,$h)
+            $g=[System.Drawing.Graphics]::FromImage($bmp)
+            try { $g.CopyFromScreen($x,$y,0,0,$bmp.Size) } finally { $g.Dispose() }
+            $bmp.Save($path,[System.Drawing.Imaging.ImageFormat]::Png)
+            $bmp.Dispose()
+          }
+
+          function Pixel-At([int]$x,[int]$y) {
+            $bmp=New-Object System.Drawing.Bitmap(1,1)
+            $g=[System.Drawing.Graphics]::FromImage($bmp)
+            try { $g.CopyFromScreen($x,$y,0,0,(New-Object System.Drawing.Size(1,1))) } finally { $g.Dispose() }
+            $c=$bmp.GetPixel(0,0)
+            $bmp.Dispose()
+            return $c
+          }
+
+          $out = Join-Path $env:RUNNER_TEMP 'roblox-bootstrap-create'
+          Remove-Item -Recurse -Force $out -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+
+          $p = Get-Process RobloxStudioBeta -ErrorAction Stop | Select-Object -First 1
+          $root = [System.Windows.Automation.AutomationElement]::RootElement
+          $pidCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty,$p.Id)
+          $shell = New-Object -ComObject WScript.Shell
+          if (-not $shell.AppActivate($p.Id)) { throw 'Studio is not interactive' }
+          Start-Sleep -Milliseconds 700
+
+          $windows = $root.FindAll([System.Windows.Automation.TreeScope]::Children,$pidCond)
+          $publish = $null
+          foreach ($window in $windows) {
+            $idCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs')
+            $publish = $window.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCond)
+            if ($publish) { break }
+          }
+
+          $createdThisRun = $false
+          if ($publish) {
+            $r = $publish.Current.BoundingRectangle
+            if ([Math]::Abs($r.Width-1200) -gt 80 -or [Math]::Abs($r.Height-900) -gt 80) { throw "Unexpected calibrated publish geometry: $($r.Width)x$($r.Height)" }
+
+            $nameX=[int]($r.Left+($r.Width*0.705))
+            $nameY=[int]($r.Top+($r.Height*0.107))
+            Click-Point $nameX $nameY
+            Start-Sleep -Milliseconds 300
+            $shell.SendKeys('^a')
+            Start-Sleep -Milliseconds 100
+            [System.Windows.Forms.Clipboard]::SetText('Vector Clash')
+            $shell.SendKeys('^v')
+            Start-Sleep -Milliseconds 700
+
+            $createX=[int]($r.Left+($r.Width*0.899))
+            $createY=[int]($r.Top+($r.Height*0.956))
+            $color=Pixel-At $createX $createY
+            Write-Host "ROBLOX_BOOTSTRAP_CREATE_PIXEL=$($color.R),$($color.G),$($color.B)"
+            if (-not ($color.B -gt 180 -and $color.R -lt 120 -and $color.G -lt 190)) { throw 'Create button color validation failed; refusing click' }
+
+            Capture-Rect $r (Join-Path $out 'before-create.png')
+            Click-Point $createX $createY
+            $createdThisRun = $true
+            Write-Host 'ROBLOX_BOOTSTRAP_CREATE_CLICK=PASS'
+
+            $gone=$false
+            for ($i=0; $i -lt 120; $i++) {
+              Start-Sleep -Seconds 1
+              $windowsNow=$root.FindAll([System.Windows.Automation.TreeScope]::Children,$pidCond)
+              $still=$null
+              foreach ($window in $windowsNow) {
+                $idCondNow = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs')
+                $still=$window.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCondNow)
+                if ($still) { break }
+              }
+              if (-not $still) { $gone=$true; break }
+            }
+            if (-not $gone) { throw 'Publish Experience dialog did not close after Create' }
+            Write-Host 'ROBLOX_EXPERIENCE_CREATED=YES'
+          } else {
+            Write-Host 'ROBLOX_BOOTSTRAP_CREATE_SKIPPED_DIALOG_ABSENT=YES'
+          }
+
+          Start-Sleep -Seconds 4
+          $windows=$root.FindAll([System.Windows.Automation.TreeScope]::Children,$pidCond)
+          $main=$null
+          foreach ($w in $windows) { if ([string]$w.Current.AutomationId -eq 'RBXMainWindow') { $main=$w; break } }
+          if (-not $main) { throw 'RBXMainWindow not detected after creation' }
+          Capture-Rect $main.Current.BoundingRectangle (Join-Path $out 'after-create.png')
+
+          $bar=$null
+          for ($i=0; $i -lt 30; $i++) {
+            $barCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'commandBarScriptEditor')
+            $bar=$main.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$barCond)
+            if ($bar -and $bar.Current.IsEnabled) { break }
+            Start-Sleep -Seconds 1
+          }
+          if (-not $bar) { throw 'commandBarScriptEditor not detected after creation' }
+
+          if (-not $shell.AppActivate($p.Id)) { throw 'Studio is not interactive after creation' }
+          $bar.SetFocus()
+          Start-Sleep -Milliseconds 300
+          $cmd='print("ROBLOX_BOOTSTRAP_UNIVERSE_ID=" .. tostring(game.GameId)); print("ROBLOX_BOOTSTRAP_PLACE_ID=" .. tostring(game.PlaceId))'
+          [System.Windows.Forms.Clipboard]::SetText($cmd)
+          $shell.SendKeys('^a')
+          Start-Sleep -Milliseconds 100
+          $shell.SendKeys('^v')
+          Start-Sleep -Milliseconds 100
+          $commandAt=Get-Date
+          $shell.SendKeys('{ENTER}')
+
+          $logRoot=Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+          if (-not (Test-Path $logRoot)) { throw "Roblox log directory missing: $logRoot" }
+          $universe=$null; $place=$null; $sourceLog=$null
+          for ($try=0; $try -lt 25; $try++) {
+            Start-Sleep -Seconds 1
+            foreach ($log in Get-ChildItem $logRoot -File -Filter '*.log' | Where-Object { $_.LastWriteTime -ge $commandAt.AddMinutes(-1) } | Sort-Object LastWriteTime -Descending) {
+              $u=Select-String -Path $log.FullName -Pattern 'ROBLOX_BOOTSTRAP_UNIVERSE_ID=' -SimpleMatch -ErrorAction SilentlyContinue | Select-Object -Last 1
+              $pl=Select-String -Path $log.FullName -Pattern 'ROBLOX_BOOTSTRAP_PLACE_ID=' -SimpleMatch -ErrorAction SilentlyContinue | Select-Object -Last 1
+              if ($u -and $pl) {
+                if ($u.Line -match 'ROBLOX_BOOTSTRAP_UNIVERSE_ID=(\d+)') { $universe=$Matches[1] }
+                if ($pl.Line -match 'ROBLOX_BOOTSTRAP_PLACE_ID=(\d+)') { $place=$Matches[1] }
+                if ($universe -and $place) { $sourceLog=$log.FullName; break }
+              }
+            }
+            if ($universe -and $place) { break }
+          }
+          if (-not $universe -or -not $place -or [int64]$universe -le 0 -or [int64]$place -le 0) { throw 'Positive Universe ID / Place ID not recovered from Studio command output' }
+
+          $target=[ordered]@{
+            gameName='Vector Clash'
+            universeId=[int64]$universe
+            placeId=[int64]$place
+            createdThisRun=$createdThisRun
+            recoveredAt=(Get-Date).ToString('o')
+            authority='roblox-studio-authenticated-bootstrap'
+            publishDialogWidth=1200
+            publishDialogHeight=900
+            nameXRatio=0.705
+            nameYRatio=0.107
+            createXRatio=0.899
+            createYRatio=0.956
+          }
+          $targetPath=Join-Path $out 'roblox-release-target.json'
+          $target | ConvertTo-Json | Set-Content -Encoding UTF8 $targetPath
+          $persistDir='C:\actions-runner\_diag\roblox-bootstrap-calibration'
+          New-Item -ItemType Directory -Force -Path $persistDir | Out-Null
+          Copy-Item $targetPath (Join-Path $persistDir 'roblox-release-target.json') -Force
+
+          Write-Host "ROBLOX_UNIVERSE_ID=$universe"
+          Write-Host "ROBLOX_PLACE_ID=$place"
+          Write-Host "ROBLOX_BOOTSTRAP_ID_LOG=$sourceLog"
+          Write-Host 'ROBLOX_BOOTSTRAP_ID_RECOVERY=PASS'
+          Write-Host 'ROBLOX_BOOTSTRAP_CREATE_EXPERIENCE=PASS'
+
+      - name: Upload creation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-bootstrap-create-evidence
+          path: ${{ runner.temp }}/roblox-bootstrap-create
+          retention-days: 1
+          if-no-files-found: warn
