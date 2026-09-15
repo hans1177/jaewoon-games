@@ -51,7 +51,7 @@ jobs:
           "place_file=$matched" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           Write-Host 'ROBLOX_BOOTSTRAP_PROBE_IMMUTABLE_ARTIFACT=PASS'
 
-      - name: Capture Studio Publish Experience dialog without creating
+      - name: Capture full Studio window after opening Publish Experience
         env:
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: powershell
@@ -89,21 +89,18 @@ jobs:
             if (-not $shell.AppActivate($p.Id)) { throw 'Authenticated Studio process is not attached to an interactive desktop' }
             Start-Sleep -Seconds 2
             $shell.SendKeys('%p')
-            Start-Sleep -Seconds 10
+            Start-Sleep -Seconds 12
 
             $windows = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $pidCondition)
-            $publish = $null
+            if ($windows.Count -lt 1) { throw 'Studio top-level window not detected' }
+            $main = $null
             foreach ($window in $windows) {
-              $all = $window.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
-              foreach ($e in $all) {
-                if ([string]$e.Current.AutomationId -eq 'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs') { $publish = $e; break }
-              }
-              if ($publish) { break }
+              if ([string]$window.Current.AutomationId -eq 'RBXMainWindow') { $main = $window; break }
             }
-            if (-not $publish) { throw 'Publish Experience window not detected' }
-            $rect = $publish.Current.BoundingRectangle
-            Write-Host ("ROBLOX_BOOTSTRAP_PUBLISH_RECT left={0} top={1} width={2} height={3}" -f $rect.Left,$rect.Top,$rect.Width,$rect.Height)
-            if ($rect.Width -lt 300 -or $rect.Height -lt 200) { throw 'Publish dialog bounds invalid' }
+            if (-not $main) { $main = $windows.Item(0) }
+            $rect = $main.Current.BoundingRectangle
+            Write-Host ("ROBLOX_BOOTSTRAP_STUDIO_RECT left={0} top={1} width={2} height={3}" -f $rect.Left,$rect.Top,$rect.Width,$rect.Height)
+            if ($rect.Width -lt 600 -or $rect.Height -lt 400) { throw 'Studio window bounds invalid' }
             $x=[int][Math]::Floor($rect.Left); $y=[int][Math]::Floor($rect.Top)
             $w=[int][Math]::Ceiling($rect.Width); $h=[int][Math]::Ceiling($rect.Height)
             $bmp = New-Object System.Drawing.Bitmap($w,$h)
@@ -112,7 +109,7 @@ jobs:
             $shot = Join-Path $env:RUNNER_TEMP 'roblox-publish-dialog.png'
             $bmp.Save($shot,[System.Drawing.Imaging.ImageFormat]::Png)
             $bmp.Dispose()
-            if (-not (Test-Path $shot)) { throw 'Publish dialog screenshot missing' }
+            if (-not (Test-Path $shot)) { throw 'Studio screenshot missing' }
             Write-Host "ROBLOX_BOOTSTRAP_SCREENSHOT=$shot"
             Write-Host 'ROBLOX_EXPERIENCE_CREATED=NO'
             $shell.SendKeys('{ESC}')
