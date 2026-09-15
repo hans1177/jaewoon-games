@@ -8928,7 +8928,7 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-09-15T03:10:07.624Z",
+    "lastReplenishedAt": "2026-09-15T03:02:43.383Z",
     "bootstrapCategories": [
       "ACTION_SURVIVAL_ROGUELITE",
       "SINGLE_DEFENSE_STRATEGY",
@@ -9436,6 +9436,48 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "FROZEN_DESIGN_BASELINE+CANONICAL_DEVELOPMENT_QUEUE",
         "recordedAt": "2026-09-14T22:52:54.540Z"
+      },
+      {
+        "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+        "seedId": "SEED-STORY_COMPLETE_RPG-001",
+        "reviewStage": "IMPLEMENTATION_STRICT_REVIEW",
+        "runtimeTarget": "web",
+        "verdict": "REVISE",
+        "totalScore": 77,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [
+          "REQUIRED_AXIS_MINIMUM"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [
+          "REQUIRED_AXIS_MINIMUM"
+        ],
+        "improvementTargets": [
+          {
+            "dimension": "CATEGORY_BRANCH_OR_OBJECTIVE",
+            "current": 0,
+            "maxScore": 8,
+            "gap": 8
+          },
+          {
+            "dimension": "CATEGORY_QUEST",
+            "current": 0,
+            "maxScore": 7,
+            "gap": 7
+          },
+          {
+            "dimension": "CATEGORY_NPC_AND_DIALOGUE",
+            "current": 0,
+            "maxScore": 6,
+            "gap": 6
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "FROZEN_DESIGN_BASELINE+CANONICAL_DEVELOPMENT_QUEUE",
+        "recordedAt": "2026-09-15T03:08:43.477Z"
       }
     ],
     "causeCounts": {
@@ -9443,7 +9485,8 @@
       "COMPLETE_PLAYABLE_CYCLE_REQUIRED": 1,
       "FAIL_OR_LOSS_CONDITION_REQUIRED": 1,
       "CATEGORY_PROFILE_MATCH": 2,
-      "CORE_FUN_WEAK": 10
+      "CORE_FUN_WEAK": 10,
+      "REQUIRED_AXIS_MINIMUM": 1
     },
     "preferSeedMaterialFamilies": [],
     "avoidSeedMaterialFamilies": [],
@@ -9457,7 +9500,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-14T22:52:54.541Z"
+    "updatedAt": "2026-09-15T03:08:43.478Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
