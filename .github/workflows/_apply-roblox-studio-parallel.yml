@@ -95,12 +95,12 @@ jobs:
           test=test.replace("ROBLOX_EXECUTION_WIP_MAX=2","ROBLOX_EXECUTION_WIP_MAX=6")
           test=test.replace("ROBLOX_RUNTIME_LOCAL_WIP_MAX=1","ROBLOX_RUNTIME_LOCAL_WIP_MAX=3")
           test=replace_once(test,
-              "assert.ok(workflow.includes('max-parallel: 2'));",
-              "assert.ok(workflow.includes('max-parallel: 6'));",
+              "  assert.ok(workflow.includes('ROBLOX_EXECUTION_WIP_MAX=6'));\n",
+              "  assert.ok(workflow.includes('ROBLOX_EXECUTION_WIP_MAX=6'));\n  assert.ok(workflow.includes('max-parallel: 6'));\n",
               'preflight test parallelism')
           test=replace_once(test,
-              "assert.ok(workflow.includes('max-parallel: 1'));",
-              "assert.ok(workflow.includes('max-parallel: 3'));\n  assert.ok(workflow.includes(\"ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'\"));\n  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));",
+              "  assert.ok(workflow.includes('max-parallel: 1'));",
+              "  assert.ok(workflow.includes('max-parallel: 3'));\n  assert.ok(workflow.includes(\"ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'\"));\n  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));",
               'runtime test parallelism')
           test_path.write_text(test)
 
