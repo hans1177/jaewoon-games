@@ -19,6 +19,12 @@ test('final-review revalidation reuses prior Studio QA and only dispatches canon
   assert.doesNotMatch(workflow, /company-development-roblox-mobile-independent-qa\.luau/);
 });
 
+test('multiplayer QA implementation changes automatically re-enter final-review revalidation', () => {
+  assert.match(workflow, /'\.github\/workflows\/company-development-roblox-multiplayer-qa\.yml'/);
+  assert.match(workflow, /'tools\/company-development-roblox-multiplayer-qa\.luau'/);
+  assert.match(workflow, /'qa\/company-development-roblox-multiplayer-qa\.test\.mjs'/);
+});
+
 test('canonical evaluator preserves fail-closed multiplayer and release gates', () => {
   assert.match(evaluator, /new Set\(\['SINGLE', 'COOP', 'COMPETITIVE', 'HYBRID'\]\)/);
   assert.match(evaluator, /item\.robloxMultiplayerQaPassed === true/);
