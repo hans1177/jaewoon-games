@@ -1,0 +1,30 @@
+name: Company Design Seed Provenance QA
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provenance-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check provenance implementation syntax
+        run: |
+          node --check tools/company-design-seed-provenance.mjs
+          node --check tools/design-only-promotion-sync.mjs
+          node --check qa/company-design-seed-provenance-qa.mjs
+      - name: Verify owner rebuild design provenance
+        run: node qa/company-design-seed-provenance-qa.mjs
+      - name: Verify workflow provenance bindings are present
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq "designArtifactsMatchSeed" .github/workflows/company-seed-design-runtime.yml
+          grep -Fq "seed_revision" .github/workflows/company-seed-design-runtime.yml
+          grep -Fq "DESIGN_SEED_PROVENANCE_BIND=PASS" .github/workflows/company-seed-design-runtime.yml
+          grep -Fq "CURRENT_SEED_DESIGN_BASELINE_NOT_READY" tools/design-only-promotion-sync.mjs
+          echo 'PASS current-seed design provenance contract'
