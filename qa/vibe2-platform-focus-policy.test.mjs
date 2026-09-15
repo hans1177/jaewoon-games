@@ -49,13 +49,14 @@ test('Unity low-intensity budget is 20 percent while Roblox has work',()=>{
 });
 
 test('critical Unity maintenance bypasses soft budget',()=>{
-  const result=applyPlatformFocusPolicy({maxConcurrentTasks:4,tasks:[
+  const result=applyPlatformFocusPolicy({maxConcurrentTasks:1,tasks:[
     task('rbx','roblox'),
     task('unity-running','unity','running',{goal:'maintenance'}),
     task('unity-critical','unity','queued',{goal:'빌드 실패 복구',priority:'critical'}),
     task('unity-normal','unity','queued',{goal:'버그 수정'})
   ]},config);
   const byId=new Map(result.queue.tasks.map(row=>[row.id,row]));
+  assert.equal(result.unitySoftCap,1);
   assert.equal(byId.get('unity-critical').status,'queued');
   assert.equal(byId.get('unity-normal').status,'blocked');
 });
