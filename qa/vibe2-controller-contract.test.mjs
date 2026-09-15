@@ -147,6 +147,7 @@ test('worker completion uses push callbacks to refill slots before batch fan-in'
 
 test('fan-in keeps a push-callback fallback and does not depend on default-branch workflow dispatch',()=>{
   assert(workflow.includes('Event-driven fan-in refill fallback'));
+  assert.match(workflow,/- name: Event-driven fan-in refill fallback[\s\S]*?continue-on-error: true/);
   assert(workflow.includes('vibe2/refill/fanin/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'));
   assert(!workflow.includes('gh workflow run vibe2-continuous-core.yml'));
   assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
