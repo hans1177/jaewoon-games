@@ -10,7 +10,7 @@ test('final-review revalidation reuses prior Studio QA and only dispatches canon
   assert.match(workflow, /workflows: \["Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA"\]/);
   assert.match(workflow, /ref: company-runtime/);
   assert.match(workflow, /node \.\.\/main\/tools\/company-development-roblox-final-review\.mjs/);
-  assert.match(workflow, /gh workflow run company-development-roblox-multiplayer-qa\.yml --ref main -f game_id="\$id"/);
+  assert.match(workflow, /gh workflow run company-development-roblox-multiplayer-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
   assert.match(workflow, /ROBLOX_RUNTIME_RERUN=NO/);
   assert.match(workflow, /ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO/);
   assert.match(workflow, /ROBLOX_REGRESSION_RERUN=NO/);
