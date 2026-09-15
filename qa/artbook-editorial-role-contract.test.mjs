@@ -39,7 +39,9 @@ test('GAME_SEED mirrors the current selected-platform policy while preserving le
   assert.match(flow,/projectMaySelectAnyAllowedPlatform: true/);
   assert.match(flow,/poolTarget: 100/);
   assert.match(flow,/combinePerGameSeed:[\s\S]*?min: 2[\s\S]*?max: 4/);
-  assert.match(flow,/meaningfulMinutesRequired: 30/);
+  assert.match(flow,/meaningfulMinutesRequiredAtInitialGeneration: null/);
+  assert.match(flow,/finalContentDepthMinutesRequired: 30/);
+  assert.match(flow,/thirtyMinuteInitialGenerationHardGateForbidden: true/);
   assert.match(flow,/decisionStage: GAME_DESIGN/);
 });
 
