@@ -91,6 +91,20 @@ Roblox 허가 다운로드는 `creator-enabled-place-copying` 증거와 nonce-bo
 
 첫 실제 후보는 Roblox Creator Hub가 uncopylocked 예제로 제공하는 Potion Shop Demo place `14215142052`다. 대상은 real self-hosted Windows Studio smoke가 성공하기 전에는 `enabled=false`를 유지하며, smoke 성공 후에만 production GAME STUDY 대상으로 승격한다.
 
+### Roblox Windows Runner Bootstrap
+
+실제 Studio 검증 runner는 Windows self-hosted runner이며 필수 custom label은 `vibe2-roblox`다. 자동 준비 도구는 `tools/vibe2-roblox-runner-bootstrap.ps1`이다.
+
+- Roblox Studio는 runner와 같은 Windows 사용자에 설치·로그인돼 있어야 한다. bootstrap은 Studio를 임의 계정으로 설치하거나 인증정보를 저장하지 않는다.
+- 기본 `RunnerMode=Interactive`는 `C:\actions-runner`에 GitHub Actions runner를 등록하고 로그인 사용자 세션의 예약 작업 `Vibe2RobloxRunner`로 `run.cmd`를 유지한다. Studio UI/VirtualInput 검증을 같은 사용자 세션에서 실행하기 위한 기본값이다. 필요할 때만 `RunnerMode=Service`를 명시한다.
+- bootstrap은 GitHub 공식 repository runner registration-token API를 사용한다. 토큰을 source/파일/로그에 기록하지 않는다.
+- `VIBE2_GITHUB_ADMIN_TOKEN`은 Windows 머신 환경에서만 제공한다. 자동 등록에는 repository `Administration:write`, readiness 변수 갱신에는 `Variables:write`, `-DispatchLiveSmoke`까지 사용하면 `Actions:write` 권한이 필요하다.
+- `-SyncReadiness`는 Roblox Studio 발견 + GitHub runner online + `vibe2-roblox` label 확인을 모두 통과한 뒤에만 repository variable `VIBE2_ROBLOX_STUDIO_RUNNER_READY=true`를 쓴다. 실패/제거 시 readiness를 먼저 false로 내릴 수 있다.
+- `-DispatchLiveSmoke`는 readiness가 올라간 뒤 `.github/workflows/vibe2-roblox-studio-live-smoke.yml`을 `vibe2-unreal-core` ref로 실행한다.
+- readiness만 true인 것은 학습 PASS가 아니다. real Studio smoke에서 실제 VirtualInput, checkpoint, 허가된 Potion Shop source distillation까지 PASS한 뒤에만 Potion Shop production target을 `enabled=true`로 승격한다.
+
+권장 1회 등록 명령은 **관리자 PowerShell**에서 토큰을 환경변수로 주입한 뒤 `pwsh -File tools/vibe2-roblox-runner-bootstrap.ps1 -Mode Install -SyncReadiness -DispatchLiveSmoke`다. 토큰 값 자체는 저장소나 명령 기록에 남기지 않는다.
+
 ### 25 Learning Axes
 
 `tools/vibe2-game-study-intelligence.mjs`가 아래 25축을 공통 계약으로 제공한다.
