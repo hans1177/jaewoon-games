@@ -1,12 +1,37 @@
 // 파일명: tools/vibe2-adaptive-backpressure.mjs
 // 역할: 최근 병렬 실행 텔레메트리를 다음 run의 영속 동시성 cap(20→16→12→8→4)에 연결한다.
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
 export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 12, 16, 20]);
 export const DEFAULT_ADAPTIVE_MAX = 20;
 
 const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
 const clean = (value) => String(value ?? '').trim();
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+function readJson(file, fallback = {}) {
+  if (!file || !fs.existsSync(file)) return fallback;
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+function writeJson(file, value) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+}
+function parseArgs(argv = process.argv.slice(2)) {
+  const [command = 'resolve', ...rest] = argv;
+  const args = { command };
+  for (const raw of rest) {
+    if (!raw.startsWith('--')) continue;
+    const body = raw.slice(2);
+    const at = body.indexOf('=');
+    if (at < 0) args[body] = true;
+    else args[body.slice(0, at)] = body.slice(at + 1);
+  }
+  return args;
+}
 
 function normalizeStep(value = DEFAULT_ADAPTIVE_MAX) {
   const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_MAX), 4, 20);
@@ -141,4 +166,46 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
       bottleneck: clean(telemetry.bottleneck) || 'NONE'
     }
   });
+}
+
+export function resolveAdaptiveRequestedMax({ controlFile = '.vibe2/parallelism-control.json', requestedMax = DEFAULT_ADAPTIVE_MAX } = {}) {
+  const control = createParallelismControl(readJson(controlFile, {}));
+  return Object.freeze({ control, requestedMax: adaptiveRequestedMax(control, requestedMax) });
+}
+
+export function persistAdaptiveDecision({ controlFile = '.vibe2/parallelism-control.json', telemetryFile = '', runId = '', now = new Date().toISOString() } = {}) {
+  if (!telemetryFile) throw new Error('telemetryFile required');
+  const control = createParallelismControl(readJson(controlFile, {}));
+  const telemetry = readJson(telemetryFile, {});
+  const next = decideAdaptiveBackpressure(control, { ...telemetry, runId: clean(runId) || clean(telemetry.runId) }, { now });
+  writeJson(controlFile, next);
+  return next;
+}
+
+export function runAdaptiveBackpressureCommand(args = {}) {
+  const command = clean(args.command).toLowerCase();
+  const controlFile = clean(args.control) || '.vibe2/parallelism-control.json';
+  if (command === 'resolve') {
+    return { command, ...resolveAdaptiveRequestedMax({ controlFile, requestedMax: args.requested }) };
+  }
+  if (command === 'update') {
+    const telemetryFile = clean(args.telemetry);
+    if (!telemetryFile) throw new Error('--telemetry required');
+    const control = persistAdaptiveDecision({ controlFile, telemetryFile, runId: clean(args['run-id']) });
+    return { command, control };
+  }
+  throw new Error(`unknown adaptive command: ${command}`);
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  const result = runAdaptiveBackpressureCommand(parseArgs());
+  if (result.command === 'resolve') {
+    console.log(`VIBE2_ADAPTIVE_CURRENT_MAX=${result.control.currentMax}`);
+    console.log(`VIBE2_ADAPTIVE_REQUESTED_MAX=${result.requestedMax}`);
+  } else {
+    console.log(`VIBE2_ADAPTIVE_CURRENT_MAX=${result.control.currentMax}`);
+    console.log(`VIBE2_ADAPTIVE_DECISION=${result.control.lastDecision}`);
+    console.log(`VIBE2_ADAPTIVE_REASON=${result.control.lastReason}`);
+    console.log(`VIBE2_ADAPTIVE_RUN_ID=${result.control.lastRunId || 'NONE'}`);
+  }
 }
