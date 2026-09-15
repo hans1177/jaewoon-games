@@ -14,6 +14,7 @@ on:
       - 'tools/company-selected-platform-router.mjs'
       - 'tools/company-development-web-bootstrap.mjs'
       - 'tools/company-vibe2-gameplay-intelligence.mjs'
+      - 'tools/company-vibe2-coding-architecture.mjs'
       - 'tools/company-development-web-gameplay-validation.mjs'
       - 'tools/company-web-validation-evidence-contract.mjs'
       - 'tools/company-design-artbook.mjs'
@@ -28,6 +29,7 @@ on:
       - 'qa/company-selected-platform-router.test.mjs'
       - 'qa/company-development-web-runtime.test.mjs'
       - 'qa/company-vibe2-gameplay-intelligence.test.mjs'
+      - 'qa/company-vibe2-coding-architecture.test.mjs'
       - 'qa/company-web-validation-evidence-contract.test.mjs'
       - 'qa/company-development-validation-selected-platform.test.mjs'
       - 'qa/company-development-roblox-runtime.test.mjs'
@@ -75,11 +77,12 @@ jobs:
         run: |
           node --check tools/company-development-web-bootstrap.mjs
           node --check tools/company-vibe2-gameplay-intelligence.mjs
+          node --check tools/company-vibe2-coding-architecture.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
           node --check tools/company-web-validation-evidence-contract.mjs
           node --check tools/company-design-artbook.mjs
           node --check tools/design-only-promotion-sync.mjs
-          node --test qa/company-development-web-runtime.test.mjs qa/company-vibe2-gameplay-intelligence.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/design-only-promotion-sync.test.mjs
+          node --test qa/company-development-web-runtime.test.mjs qa/company-vibe2-gameplay-intelligence.test.mjs qa/company-vibe2-coding-architecture.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/design-only-promotion-sync.test.mjs
 
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
@@ -166,8 +169,9 @@ jobs:
           console.log('WEB_VALIDATION_SCHEMA_MINIMUM=13');
           console.log('WEB_STALE_SOURCE_OR_BASELINE_REQUEUED=YES');
           console.log('WEB_FORMAL_IMPLEMENTATION_THRESHOLD=90');
-          console.log('WEB_PARALLEL_TARGET=1');
-          console.log('WEB_PARALLEL_MAX=1');
+          console.log('WEB_VALIDATION_TIERS=MICRO_FAST_INITIAL_FULL_FINAL');
+          console.log('WEB_PARALLEL_TARGET=6');
+          console.log('WEB_PARALLEL_MAX=6');
           NODE
 
   web-worker:
@@ -176,7 +180,7 @@ jobs:
     if: needs.web-plan.outputs.target_count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 6
       matrix: ${{ fromJSON(needs.web-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 85
@@ -565,12 +569,12 @@ jobs:
           queue.webValidationContractVersion=4;
           queue.webValidationEvidenceSchemaMinimum=13;
           queue.webPromotionRevalidationRequired=true;
-          queue.webValidationParallelism=1;
+          queue.webValidationParallelism=6;
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`WEB_GAMEPLAY_MUSIC_PASS_COUNT=${passCount}`);
           console.log(`WEB_GAMEPLAY_MUSIC_FAIL_COUNT=${failCount}`);
-          console.log('WEB_PARALLEL_ACTIVE_MAX=1');
+          console.log('WEB_PARALLEL_ACTIVE_MAX=6');
           NODE
           git add development-queue.json web-games/ design/ game-seed-state.json 2>/dev/null || git add development-queue.json web-games/ design/
           git diff --cached --check
@@ -585,7 +589,7 @@ jobs:
         if: needs.web-plan.outputs.target_count == '0'
         run: |
           echo 'WEB_REQUIRED_QUEUE=EMPTY'
-          echo 'WEB_PARALLEL_ACTIVE_MAX=1'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=6'
 
   post-web-artbook:
     name: post-Web artbook and homepage eligibility
@@ -875,7 +879,8 @@ jobs:
           echo 'HOMEPAGE_TEST_GATE=80'
           echo 'FORMAL_IMPLEMENTATION_GATE=90'
           echo 'POST_WEB_ARTBOOK=YES'
-          echo 'WEB_PARALLEL_ACTIVE_MAX=1'
+          echo 'WEB_VALIDATION_TIERS=MICRO_FAST_INITIAL_FULL_FINAL'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=6'
           echo 'PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'
           echo 'CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY'
           echo 'QUALITY_GATE_WEAKENING=NO'
