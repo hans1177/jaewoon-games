@@ -103,7 +103,7 @@ export function createVibeContinuousQueue(seed = {}) {
   const configuredMax = Array.isArray(seed) ? DEFAULT_MAX_CONCURRENT_TASKS : clampInt(seed?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 20);
   const tasks = source.map(normalizeTask);
   return freeze({
-    version: 4,
+    version: 5,
     mode: 'hierarchical-dag-sharded-work-stealing-queue',
     maxConcurrentTasks: configuredMax,
     ownerDirectivePreemptsAutonomy: true,
@@ -172,11 +172,25 @@ function conflictsWith(task, active) {
   }
   return null;
 }
-function dynamicConcurrency(queue, requested = queue.maxConcurrentTasks) {
-  const hardMax = clampInt(requested || queue.maxConcurrentTasks, 1, 20);
+function isAwaitingQaTask(task) {
+  return task?.status === 'running' && /awaiting.*qa|qa.*awaiting/i.test(clean(task?.blocker));
+}
+function dynamicConcurrency(queue, requested = null) {
+  const persistentMax = clampInt(queue?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 20);
+  const requestedMax = requested === null || requested === undefined || clean(requested) === ''
+    ? persistentMax
+    : clampInt(requested, 1, 20);
+  const hardMax = Math.min(persistentMax, requestedMax);
   const running = queue.tasks.filter((task) => task.status === 'running');
-  const awaitingQa = running.filter((task) => /awaiting.*qa|qa.*awaiting/i.test(clean(task.blocker))).length;
-  const recentFailures = queue.tasks.filter((task) => task.lastOutcome === 'FAIL' && task.retries > 0).length;
+  const awaitingQa = running.filter(isAwaitingQaTask).length;
+  // Only retryable queued failures create immediate execution pressure. Terminal historical
+  // failures remain evidence but must not permanently throttle future unrelated batches.
+  const retryPressure = queue.tasks.filter((task) =>
+    task.status === 'queued' &&
+    task.lastOutcome === 'FAIL' &&
+    task.retries > 0 &&
+    task.retries <= task.maxRetries
+  ).length;
   let limit = hardMax;
   const applyPressure = (count) => {
     if (count >= 8) limit = Math.min(limit, 4);
@@ -185,15 +199,25 @@ function dynamicConcurrency(queue, requested = queue.maxConcurrentTasks) {
     else if (count >= 2) limit = Math.min(limit, 16);
   };
   applyPressure(awaitingQa);
-  applyPressure(recentFailures);
-  return Math.max(1, limit);
+  applyPressure(retryPressure);
+  return freeze({
+    persistentMaxConcurrentTasks: persistentMax,
+    requestedMaxConcurrentTasks: requestedMax,
+    effectiveMaxConcurrentTasks: Math.max(1, limit),
+    awaitingQaCount: awaitingQa,
+    retryPressureCount: retryPressure
+  });
 }
 
 export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const running = queue.tasks.filter((task) => task.status === 'running');
-  const effectiveMax = dynamicConcurrency(queue, maxConcurrentTasks || queue.maxConcurrentTasks);
-  const freeSlots = Math.max(0, effectiveMax - running.length);
+  const capacityRunning = running.filter((task) => !isAwaitingQaTask(task));
+  const concurrency = dynamicConcurrency(queue, maxConcurrentTasks);
+  const effectiveMax = concurrency.effectiveMaxConcurrentTasks;
+  // Awaiting-QA tasks keep source/file locks, but their worker process already finished.
+  // Do not subtract them from execution capacity a second time after backpressure is applied.
+  const freeSlots = Math.max(0, effectiveMax - capacityRunning.length);
   const completed = completedIds(queue);
   const blocked = [];
   const candidates = [];
@@ -209,7 +233,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
   const deferredConflicts = [];
   const active = [...running];
   const shardUse = Object.create(null);
-  for (const task of running) shardUse[task.shard] = (shardUse[task.shard] || 0) + 1;
+  for (const task of capacityRunning) shardUse[task.shard] = (shardUse[task.shard] || 0) + 1;
 
   // 1차 fan-out: 각 shard의 기본 슬롯을 우선 채운다.
   for (const row of candidates) {
@@ -233,11 +257,19 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
   return freeze({
     selected: freeze(selected),
     running: freeze(running),
+    capacityRunning: freeze(capacityRunning),
+    awaitingQa: freeze(running.filter(isAwaitingQaTask)),
     hasEligibleWork: selected.length > 0,
     blocked: freeze(blocked),
     deferredConflicts: freeze(deferredConflicts),
     continueRequired: selected.length > 0,
+    persistentMaxConcurrentTasks: concurrency.persistentMaxConcurrentTasks,
+    requestedMaxConcurrentTasks: concurrency.requestedMaxConcurrentTasks,
     effectiveMaxConcurrentTasks: effectiveMax,
+    backpressure: freeze({
+      awaitingQaCount: concurrency.awaitingQaCount,
+      retryPressureCount: concurrency.retryPressureCount
+    }),
     freeSlots,
     workStealingUsed: selected.some((task) => (shardUse[task.shard] || 0) > (BASE_SHARD_SLOTS[task.shard] || 1)),
     shardUse: freeze({ ...shardUse }),
@@ -256,7 +288,9 @@ export function selectNextVibeQueueTask(queueInput) {
     blocked: batch.blocked,
     continueRequired: Boolean(batch.selected[0]),
     stopReason: batch.stopReason,
-    runningCount: running.length
+    runningCount: running.length,
+    capacityRunningCount: batch.capacityRunning.length,
+    awaitingQaCount: batch.awaitingQa.length
   });
 }
 
@@ -265,7 +299,7 @@ export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = nu
   const id = clean(taskId);
   const existing = queue.tasks.find((task) => task.id === id);
   if (existing?.status === 'running') return freeze({ started: true, task: existing, queue, resumed: true });
-  const batch = selectVibeQueueBatch(queue, { maxConcurrentTasks: maxConcurrentTasks || queue.maxConcurrentTasks });
+  const batch = selectVibeQueueBatch(queue, { maxConcurrentTasks });
   if (!batch.selected.some((task) => task.id === id)) return freeze({ started: false, reason: 'task-not-currently-eligible-or-conflicts', queue, selection: batch });
   const tasks = queue.tasks.map((task) => task.id === id ? freeze({ ...task, status: 'running', blocker: null }) : task);
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
@@ -274,7 +308,7 @@ export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = nu
 
 export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
-  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks: maxConcurrentTasks || queue.maxConcurrentTasks });
+  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks });
   if (!selection.selected.length) return freeze({ started: false, tasks: freeze([]), queue, selection });
   const ids = new Set(selection.selected.map((task) => task.id));
   const tasks = queue.tasks.map((task) => ids.has(task.id) ? freeze({ ...task, status: 'running', blocker: null }) : task);
@@ -308,18 +342,23 @@ export function summarizeVibeContinuousQueue(queueInput) {
   const counts = Object.fromEntries(VIBE_QUEUE_STATUSES.map((status) => [status, queue.tasks.filter((task) => task.status === status).length]));
   const next = selectVibeQueueBatch(queue);
   return freeze({
-    version: 4,
+    version: 5,
     counts: freeze(counts),
     nextTaskId: next.selected[0]?.id || null,
     nextTaskIds: freezeList(next.selected.map((task) => task.id)),
     runningTaskId: next.running[0]?.id || null,
     runningTaskIds: freezeList(next.running.map((task) => task.id)),
+    capacityRunningTaskIds: freezeList(next.capacityRunning.map((task) => task.id)),
+    awaitingQaTaskIds: freezeList(next.awaitingQa.map((task) => task.id)),
     nextReleaseState: next.selected[0]?.releaseState || null,
     continueRequired: next.continueRequired,
     stopReason: next.stopReason,
     ownerDirectiveWaiting: queue.tasks.some((task) => task.ownerDirective && ['queued', 'running', 'blocked'].includes(task.status)),
     maxConcurrentTasks: queue.maxConcurrentTasks,
+    persistentMaxConcurrentTasks: next.persistentMaxConcurrentTasks,
+    requestedMaxConcurrentTasks: next.requestedMaxConcurrentTasks,
     effectiveMaxConcurrentTasks: next.effectiveMaxConcurrentTasks,
+    backpressure: next.backpressure,
     freeSlots: next.freeSlots,
     shardUse: next.shardUse,
     workStealingUsed: next.workStealingUsed
