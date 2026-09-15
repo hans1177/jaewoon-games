@@ -93,6 +93,33 @@ test('owner-authorized Roblox FULL_REBUILD promotes findless edits replacement t
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916/files',server),'utf8'),/SkylineSprintCourse/);
 });
 
+test('single-file owner Roblox FULL_REBUILD accepts raw full-file envelope',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/seed-roblox-obby-party-minigam-tower-of-hell';
+  const server='server/Game.server.luau';
+  const serverReplacement=fullServerReplacement();
+  write(path.join(cwd,root,server),'return { status = "prototype" }\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(ownerWorkOrder(root,[`${root}/${server}`]),null,2));
+  const responseFile=path.join(cwd,'model.txt');
+  write(responseFile,[
+    'VIBE2_FULL_FILE',
+    `PATH:${server}`,
+    'SUMMARY:raw Roblox whole-file rebuild',
+    'EXPECTED_EFFECT:physical course source replaces prototype shell',
+    'TEST:Luau syntax',
+    'TEST:checkpoint progression',
+    '---VIBE2_FILE_CONTENT---',
+    serverReplacement,
+    '---VIBE2_FILE_END---'
+  ].join('\n'));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.fullFileRewriteAllowed,true);
+  assert.deepEqual(result.changedFiles,[server]);
+  const rebuilt=fs.readFileSync(path.join(cwd,'.vibe2/candidates/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916/files',server),'utf8');
+  assert.match(rebuilt,/SkylineSprintCourse/);
+  assert.ok(Buffer.byteLength(rebuilt,'utf8')>=600);
+});
+
 test('ordinary Roblox maintenance cannot use replaceFiles',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/demo';
