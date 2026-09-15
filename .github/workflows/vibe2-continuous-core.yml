@@ -49,6 +49,7 @@ jobs:
           node --check tools/vibe2-queue-control.mjs
           node --check tools/vibe2-incremental-qa.mjs
           node --check tools/vibe2-parallelism-telemetry.mjs
+          node --check tools/vibe2-adaptive-backpressure.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe2-parallelism-20-contract.test.mjs
@@ -501,10 +502,10 @@ jobs:
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
 
-          if git diff --quiet -- .vibe2/queue.json; then
+          if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json; then
             echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'
           else
-            git add .vibe2/queue.json
+            git add .vibe2/queue.json .vibe2/parallelism-control.json
             git commit -m "vibe2: fan in parallel worker results [skip ci]"
             pushed=0
             for attempt in 1 2 3; do

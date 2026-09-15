@@ -15,6 +15,8 @@ import {
   summarizeVibeContinuousQueue,
   DEFAULT_MAX_CONCURRENT_TASKS
 } from '../assets/vibe-continuous-queue.js';
+import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
+import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
@@ -33,6 +35,8 @@ function parseArgs(argv = process.argv.slice(2)) {
   return args;
 }
 function queueFileFrom(args) { return clean(args.queue) || '.vibe2/queue.json'; }
+function controlFileFrom(args) { return clean(args.control) || '.vibe2/parallelism-control.json'; }
+function readParallelismControl(args) { return createParallelismControl(readJson(controlFileFrom(args), {})); }
 function priority(value, ownerDirective) { if (ownerDirective) return 'owner-immediate'; return ['critical','high','normal','low'].includes(clean(value)) ? clean(value) : 'normal'; }
 function bool(value) { return value === true || ['1','true','yes','y'].includes(clean(value).toLowerCase()); }
 function list(value) { return clean(value).split(',').map(clean).filter(Boolean); }
@@ -213,20 +217,28 @@ export function runQueueCommand(args = {}) {
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), summary: summarizeVibeContinuousQueue(queue) };
   } else if (command === 'reserve') {
-    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: optionalMaxConcurrent(args.max) });
+    const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
+    const adaptiveControl=readParallelismControl(args);
+    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
+    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
-    result = { command, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
-    const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: optionalMaxConcurrent(args.max) });
+    const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
+    const adaptiveControl=readParallelismControl(args);
+    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
+    const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
-      const requestedMaxConcurrentTasks=reserved.selection?.requestedMaxConcurrentTasks ?? optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
+      const requestedMaxConcurrentTasks=reserved.selection?.requestedMaxConcurrentTasks ?? adaptiveMaxConcurrentTasks;
       const persistentMaxConcurrentTasks=reserved.selection?.persistentMaxConcurrentTasks ?? queue.maxConcurrentTasks;
       writeJson(clean(args.output), {
         version:3, createdAt, matrix:reserved.matrix,
         scheduler:{
           persistentMaxConcurrentTasks,
+          configuredMaxConcurrentTasks,
+          adaptiveMaxConcurrentTasks,
           requestedMaxConcurrentTasks,
           effectiveMaxConcurrentTasks:reserved.selection?.effectiveMaxConcurrentTasks ?? Math.min(persistentMaxConcurrentTasks, requestedMaxConcurrentTasks),
           freeSlotsBeforeReservation:reserved.selection?.freeSlots ?? 0,
@@ -242,7 +254,7 @@ export function runQueueCommand(args = {}) {
         }
       });
     }
-    result = { command, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'await') {
     queue = markVibeTaskAwaiting(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     writeJson(file, queue);
@@ -252,10 +264,21 @@ export function runQueueCommand(args = {}) {
     if (!input) throw new Error('--input result json required');
     const payload = readJson(input, []);
     const rows = Array.isArray(payload) ? payload : Array.isArray(payload.results) ? payload.results : [];
+    const currentControl=readParallelismControl(args);
+    const firstMetrics=rows.find((row)=>row?.metrics)?.metrics || {};
+    const taskCount=new Set(rows.map((row)=>clean(row?.taskId)).filter(Boolean)).size;
+    const telemetry=computeParallelismTelemetry({
+      results:rows,
+      requestedMax:firstMetrics.requestedMax || currentControl.currentMax,
+      effectiveMax:firstMetrics.effectiveMax || currentControl.currentMax,
+      taskCount
+    });
+    const nextControl=decideAdaptiveBackpressure(currentControl, telemetry);
     const merged = applyVibeFanInResults(queue, rows);
     queue = merged.queue;
     writeJson(file, queue);
-    result = { command, updated: merged.applied.length > 0, ...merged };
+    writeJson(controlFileFrom(args), nextControl);
+    result = { command, updated: merged.applied.length > 0, telemetry, adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged };
   } else if (['pass','fail','block','cancel'].includes(command)) {
     const outcome = command === 'pass' ? 'PASS' : command === 'fail' ? 'FAIL' : command === 'block' ? 'BLOCKED' : 'CANCELLED';
     const settled = settleVibeTask(queue, {
@@ -284,6 +307,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_QUEUE_AWAITING_QA=${(result.summary?.awaitingQaTaskIds || []).length}`);
   console.log(`VIBE2_QUEUE_FREE_SLOTS=${result.summary?.freeSlots ?? 0}`);
   console.log(`VIBE2_QUEUE_CONTINUE=${result.summary?.continueRequired ? 'YES' : 'NO'}`);
+  if (result.adaptiveControl) {
+    console.log(`VIBE2_ADAPTIVE_MAX=${result.adaptiveControl.currentMax}`);
+    console.log(`VIBE2_ADAPTIVE_DECISION=${result.adaptiveControl.lastDecision}`);
+    console.log(`VIBE2_ADAPTIVE_REASON=${result.adaptiveControl.lastReason}`);
+  }
   if (result.task?.id) console.log(`VIBE2_RESERVED_TASK=${result.task.id}`);
   if (result.tasks?.length) console.log(`VIBE2_RESERVED_TASKS=${result.tasks.map((task) => task.id).join(',')}`);
   if (result.matrix) console.log(`VIBE2_RESERVED_MATRIX=${JSON.stringify(result.matrix)}`);
