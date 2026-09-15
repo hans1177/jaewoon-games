@@ -1,0 +1,104 @@
+name: Candidate Design Promotion Readiness Repair
+
+on:
+  push:
+    branches:
+      - fix/design-promotion-readiness-repair-20260915
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-test:
+    if: ${{ !contains(github.event.head_commit.message, '[candidate-sync]') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/design-promotion-readiness-repair-20260915
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Patch existing design cycle only
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const file='tools/company-design-cycle.mjs';
+          let text=fs.readFileSync(file,'utf8');
+          function once(from,to,label){
+            const count=text.split(from).length-1;
+            if(count!==1)throw new Error(`${label}: expected 1 occurrence, found ${count}`);
+            text=text.replace(from,to);
+          }
+
+          once(
+            "import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';",
+            "import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';\nimport {DESIGN_COMPLETION_MAX_ATTEMPTS,collectDesignCompletionGaps,strictFeedbackForDesignRepair,buildDesignCompletionPrompt} from './company-design-completion-repair.mjs';",
+            'completion helper import',
+          );
+
+          once(
+            "const evidence={game,gameSeed:seed,factPack,centralPolicy:'COMPANY_FLOW.md'};",
+            `const evidence={game,gameSeed:seed,factPack,centralPolicy:'COMPANY_FLOW.md'};\nfunction latestStrictReviewFeedback(){\n  const gameRoot=path.join('design',gameId);\n  if(!fs.existsSync(gameRoot))return null;\n  try{\n    const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(entry=>entry.isDirectory()).map(entry=>entry.name).sort().reverse();\n    for(const reviewDate of dates){\n      const review=readJson(path.join(gameRoot,reviewDate,'strict-design-review.json'),null);\n      if(!review)continue;\n      if(clean(review?.evidence?.seedId)!==clean(seed.seedId))continue;\n      const feedback=strictFeedbackForDesignRepair(review);\n      if(feedback)return feedback;\n    }\n  }catch{}\n  return null;\n}\nconst priorStrictFeedback=latestStrictReviewFeedback();\nif(priorStrictFeedback)console.log(\`PRIOR_STRICT_REVIEW_FEEDBACK=YES|verdict=\${priorStrictFeedback.verdict}|score=\${priorStrictFeedback.totalScore}\`);`,
+            'prior strict feedback',
+          );
+
+          const callModelEnd="  throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);\n}\n\nconst designDraft=";
+          const callDesignModel=`  throw new Error(\`MODEL_CALL_FAILED \${model}: \${clean(lastError?.message)}\`);\n}\n\nasync function callDesignModel(model,system,user,{predict=1300,temperature=0.25,strictFeedback=null}={}){\n  let candidate=null;\n  let lastError=null;\n  try{\n    candidate=await callModel(model,system,user,DESIGN,{predict,temperature});\n    const gaps=collectDesignCompletionGaps(candidate,DESIGN);\n    if(!gaps.length&&!strictFeedback)return candidate;\n    lastError=new Error(gaps.length?\`DESIGN_COMPLETENESS_GAPS: \${gaps.join(',')}\`:'PRIOR_STRICT_REVIEW_REPAIR_REQUIRED');\n  }catch(error){lastError=error;}\n  let gaps=collectDesignCompletionGaps(candidate,DESIGN);\n  const errorPath=clean(lastError?.message).match(/root(?:\\.[A-Za-z0-9_]+(?:\\[\\d+\\])?)+/)?.[0];\n  if(errorPath&&!gaps.some(gap=>gap.startsWith(errorPath)))gaps=[...gaps,\`\${errorPath}:schema-error\`];\n  console.log(\`DESIGN_COMPLETION_REQUIRED=\${gaps.length?gaps.join(','):'STRICT_REVIEW_FEEDBACK'}\`);\n  for(let completionAttempt=1;completionAttempt<=DESIGN_COMPLETION_MAX_ATTEMPTS;completionAttempt++){\n    console.log(\`DESIGN_COMPLETION_ATTEMPT=\${completionAttempt}/\${DESIGN_COMPLETION_MAX_ATTEMPTS}\`);\n    try{\n      const repairPrompt=buildDesignCompletionPrompt({originalPrompt:user,schema:DESIGN,error:lastError?.message,gaps,priorStrictFeedback:strictFeedback});\n      candidate=await callModel(model,system,repairPrompt,DESIGN,{predict:Math.max(1500,predict),temperature:0});\n      gaps=collectDesignCompletionGaps(candidate,DESIGN);\n      if(gaps.length)throw new Error(\`DESIGN_COMPLETENESS_GAPS: \${gaps.join(',')}\`);\n      console.log(\`DESIGN_COMPLETION_PASS=YES|attempt=\${completionAttempt}/\${DESIGN_COMPLETION_MAX_ATTEMPTS}\`);\n      return candidate;\n    }catch(error){\n      lastError=error;\n      gaps=collectDesignCompletionGaps(candidate,DESIGN);\n      console.log(\`DESIGN_COMPLETION_ATTEMPT_FAILED=\${completionAttempt}/\${DESIGN_COMPLETION_MAX_ATTEMPTS}|reason=\${clean(error?.message)}\`);\n    }\n  }\n  throw new Error(\`DESIGN_COMPLETION_FAILED \${model}: \${clean(lastError?.message)}\`);\n}\n\nconst designDraft=`;
+          once(callModelEnd,callDesignModel,'callDesignModel insertion');
+
+          once(
+            "const designDraft=await runPhase('designer_draft',()=>callModel(",
+            "const designDraft=await runPhase('designer_draft',()=>callDesignModel(",
+            'draft completion call',
+          );
+          once(
+            ",DESIGN,{predict:1300,temperature:0.35}));\nwriteJson(path.join(base,'design-draft.json')",
+            ",{predict:1300,temperature:0.35}));\nwriteJson(path.join(base,'design-draft.json')",
+            'draft DESIGN arg removal',
+          );
+          once(
+            "const revisedDesign=await runPhase('designer_revision',()=>callModel(",
+            "const revisedDesign=await runPhase('designer_revision',()=>callDesignModel(",
+            'revision completion call',
+          );
+          once(
+            ",DESIGN,{predict:1300,temperature:0.2}));\nwriteJson(path.join(base,'design-revised.json')",
+            ",{predict:1300,temperature:0.2,strictFeedback:priorStrictFeedback}));\nwriteJson(path.join(base,'design-revised.json')",
+            'revision DESIGN arg removal and strict feedback bind',
+          );
+
+          fs.writeFileSync(file,text);
+          NODE
+      - name: Verify bounded repair without gate weakening
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/company-design-completion-repair.mjs
+          node --check tools/company-design-cycle.mjs
+          node --test \
+            qa/company-design-completion-repair.test.mjs \
+            qa/company-design-cycle-deepseek-fallback.test.mjs \
+            qa/company-design-multiplayer-mode-contract.test.mjs \
+            qa/design-pipeline-no-artbook-regression.test.mjs
+          ! grep -q 'company-design-artbook.mjs' tools/company-design-cycle.mjs
+          grep -q 'DESIGN_COMPLETION_MAX_ATTEMPTS' tools/company-design-cycle.mjs
+          grep -q 'strictFeedback:priorStrictFeedback' tools/company-design-cycle.mjs
+      - name: Commit candidate patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-design-repair'
+          git config user.email 'design-repair@users.noreply.github.com'
+          git add tools/company-design-cycle.mjs
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'DESIGN_READINESS_PATCH_CHANGE=NO'
+            exit 0
+          fi
+          git commit -m 'feat(design): auto-complete promotion readiness gaps [candidate-sync]'
+          git push origin HEAD:fix/design-promotion-readiness-repair-20260915
