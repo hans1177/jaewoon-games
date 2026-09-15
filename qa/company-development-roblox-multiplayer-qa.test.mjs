@@ -30,6 +30,17 @@ test('Roblox multiplayer QA is exact-artifact, authenticated-Studio, and two-cli
   assert.doesNotMatch(workflow, /windows-latest/);
 });
 
+test('Windows PowerShell 5.1 caches the process handle before reading Studio exit code', () => {
+  const workflow = read(workflowPath);
+  assert.match(
+    workflow,
+    /\$p = Start-Process[\s\S]*?\$processHandle = \$p\.Handle[\s\S]*?\$p\.WaitForExit\(240000\)[\s\S]*?\$p\.WaitForExit\(\)[\s\S]*?\$exitCode = \$p\.ExitCode/,
+  );
+  assert.match(workflow, /\$null -eq \$exitCode/);
+  assert.match(workflow, /\$exitCode -ne 0/);
+  assert.doesNotMatch(workflow, /\$p\.ExitCode -ne 0/);
+});
+
 test('multiplayer probe requires two distinct clients and server-authoritative peer visibility', () => {
   const probe = read(probePath);
   assert.match(probe, /ExecuteMultiplayerTestAsync\(2/);

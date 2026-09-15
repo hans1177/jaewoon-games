@@ -191,17 +191,21 @@ jobs:
           Remove-Item -Force $out,$stdout,$stderr -ErrorAction SilentlyContinue
           $argLine = "--task RunScript --localPlaceFile `"$env:PLACE_FILE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
           $p = Start-Process -FilePath $env:STUDIO_EXE -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          $processHandle = $p.Handle
           if (-not $p.WaitForExit(240000)) {
             Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
             throw 'Roblox two-client multiplayer QA timeout'
           }
+          $p.WaitForExit()
+          $exitCode = $p.ExitCode
           $combined = ''
           if (Test-Path $out) { $combined += (Get-Content $out -Raw) }
           if (Test-Path $stdout) { $combined += "`n" + (Get-Content $stdout -Raw) }
           if (Test-Path $stderr) { $combined += "`n" + (Get-Content $stderr -Raw) }
           $combined | Set-Content -Encoding utf8 (Join-Path $env:RUNNER_TEMP 'roblox-multiplayer-qa-combined.log')
           Write-Host $combined
-          if ($p.ExitCode -ne 0) { throw "Roblox Studio multiplayer QA exited $($p.ExitCode)" }
+          if ($null -eq $exitCode) { throw 'Roblox Studio multiplayer QA exit code unavailable' }
+          if ($exitCode -ne 0) { throw "Roblox Studio multiplayer QA exited $exitCode" }
           if ($combined -notmatch 'ROBLOX_MULTIPLAYER_QA_CLIENTS=2') { throw 'Two-client sentinel missing' }
           if ($combined -notmatch 'ROBLOX_MULTIPLAYER_DISTINCT_PLAYERS=YES') { throw 'Distinct-player sentinel missing' }
           if ($combined -notmatch 'ROBLOX_MULTIPLAYER_SERVER_AUTHORITATIVE_ROUNDTRIP=YES') { throw 'Server-authoritative roundtrip sentinel missing' }
