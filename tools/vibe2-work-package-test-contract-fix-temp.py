@@ -57,5 +57,11 @@ text, unity_count = unity_pattern.subn(unity_replacement, text, count=1)
 if unity_count != 1:
     raise SystemExit(f'UNITY_TEST_REWRITE_COUNT={unity_count}')
 
+# Earlier temporary refactor steps may normalize fs helpers to named calls.
+# Force the final transformed test to use the existing default `fs` import.
+text = re.sub(r'(?<![A-Za-z0-9_.])writeFileSync\(', 'fs.writeFileSync(', text)
+text = re.sub(r'(?<![A-Za-z0-9_.])mkdirSync\(', 'fs.mkdirSync(', text)
+
 path.write_text(text, encoding='utf-8')
 print('VIBE2_WORK_PACKAGE_TEST_CONTRACT_FIX=YES')
+print('VIBE2_WORK_PACKAGE_FS_CALLS_NORMALIZED=YES')
