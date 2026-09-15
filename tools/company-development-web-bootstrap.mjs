@@ -235,8 +235,9 @@ function sharedScopeActionIndex(item={},index=0){
   const text=`${clean(item?.path)} ${clean(item?.label)}`.toLowerCase();
   if(/mobileux|mobile|touch/.test(text))return 2;
   if(/explor|area|quest|discover|character/.test(text))return 0;
+  if(/fight\s+enemies|combat|attack/.test(text))return index%2===0?3:1;
   if(/progress through|real ending|complete story|major encounter/.test(text))return 4;
-  if(/fight|combat|attack|enemy|boss/.test(text))return index%2===0?3:1;
+  if(/enemy|boss/.test(text))return index%2===0?3:1;
   if(/equip|skill|upgrade|growth|level/.test(text))return 3;
   return index%5;
 }
