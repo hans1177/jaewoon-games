@@ -25,7 +25,10 @@ export const DEFAULT_WORK_PACKAGE_POLICY=Object.freeze({
   lowEfficiencyPreparationRatioPct:45,
   lowEfficiencyQaDuplicateRatePct:25,
   lowEfficiencyStreakThreshold:2,
-  longWorkUnits:5
+  longWorkUnits:5,
+  longWorkProtectedSlots:1,
+  explorationRequired:true,
+  roleSeparation:true
 });
 
 function evidenceValues(task={},prefix=''){
@@ -207,6 +210,7 @@ export function resolveWorkPackagePolicy(runtimePolicy={},queue={}){
     maxPackagesPerCycle:clampInt(base.maxPackagesPerCycle||10,1,10),
     maxTasksPerPackage:clampInt(base.maxTasksPerPackage||5,1,8),
     longWorkUnits:clampInt(base.longWorkUnits||5,3,12),
+    longWorkProtectedSlots:clampInt(base.longWorkProtectedSlots||1,1,3),
     adaptiveBoost,
     efficiency
   };
@@ -239,20 +243,32 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
   const responsibleFiles=unique(list.flatMap(t=>t.responsibleFiles||[]));
   const diagnosticEvidence=unique(list.flatMap(t=>t.evidence||[]).filter(x=>/^diagnostic:|^repair-mode:|^maintenance-file:/.test(clean(x))));
   const completionCriteria=unique(resolved.completionCriteria||[
+    'exploration-handoff-produced-and-reused',
     'functional-scope-implemented',
     'all-package-task-incremental-qa-pass',
+    'performance-sanity-pass',
     'full-core-regression-once-at-fan-in',
+    'fan-in-package-review-pass',
     'machine-contract-and-central-doc-synced-when-architecture-changes'
   ]);
   if(scopes.length)completionCriteria.push(`related-improvement-scopes-verified:${scopes.length}`);
   const packageGoal=`${clean(project.name)||gameId}: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.`;
   const packageContext={
-    explorationMode:clean(resolved.explorationMode)||'planner-precomputed-shared-context',
+    explorationMode:clean(resolved.explorationMode)||'dedicated-exploration-worker-handoff',
+    explorationRequired:resolved.explorationRequired!==false,
     sharedPreparation:resolved.sharedPreparation!==false,
     sourceRoot,
     responsibleFiles,
     diagnosticEvidence,
-    roles:{owner:'work-package-owner',implementation:'parallel-implementation-workers',qa:'incremental-per-task-plus-fan-in-regression',review:'fan-in-package-review'}
+    roles:{
+      owner:'work-package-owner',
+      exploration:'read-only-exploration-worker',
+      implementation:'parallel-implementation-workers',
+      test:'incremental-qa-worker',
+      performance:'performance-sanity-worker',
+      regression:'single-fan-in-regression-worker',
+      review:'fan-in-package-review-worker'
+    }
   };
   const decorated=list.map((task,index)=>({
     ...task,
@@ -273,6 +289,7 @@ export function buildWorkPackage({tasks=[],project={},sequence=1,policy={}}={}){
       `task-work-units:${taskUnits[index]}`,
       `package-work-units:${packageWorkUnits}`,
       `package-related-improvements:${scopes.length}`,
+      'package-role-separation:exploration|implementation|test|performance|regression|review',
       quantityGoal&&`package-quantity-goal:${quantityGoal}`
     ].filter(Boolean))
   }));
@@ -304,7 +321,7 @@ export function computeWorkloadTelemetry(queue={},plannedPackages=[]){
   const plannedRelatedImprovementCount=packages.reduce((n,p)=>n+Number(p.relatedImprovementCount||0),0);
   const plannedFeaturePackageCount=packages.filter(p=>['FEATURE_COMPLETION','MULTI_TASK_FEATURE'].includes(clean(p.quantityGoal))).length;
   return{
-    version:2,
+    version:3,
     plannedPackageCount:packages.length,
     plannedTaskCount,
     plannedWorkUnits,
@@ -325,6 +342,9 @@ export function computeWorkloadTelemetry(queue={},plannedPackages=[]){
     historicalAvgPackageWorkUnits:efficiency.avgPackageWorkUnits,
     lowEfficiencyStreak:efficiency.lowEfficiencyStreak,
     lowEfficiencyDetected:efficiency.lowEfficiencyDetected,
+    roleSeparated:true,
+    explorationReusable:true,
+    longWorkProtectedSlots:1,
     qaMode:'incremental-per-task-plus-single-full-fan-in-regression',
     duplicateFullRegressionExpected:false
   };

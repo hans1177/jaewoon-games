@@ -49,7 +49,8 @@ function normalizePackageContext(input = {}) {
   const source=input&&typeof input==='object'?input:{};
   if(!clean(source.explorationMode)&&!clean(source.sourceRoot)&&!(source.responsibleFiles||[]).length)return null;
   return freeze({
-    explorationMode:clean(source.explorationMode)||'planner-precomputed-shared-context',
+    explorationMode:clean(source.explorationMode)||'dedicated-exploration-worker-handoff',
+    explorationRequired:source.explorationRequired!==false,
     sharedPreparation:source.sharedPreparation!==false,
     sourceRoot:posix(source.sourceRoot)||null,
     responsibleFiles:freezeList(source.responsibleFiles||[]),
@@ -139,6 +140,8 @@ export function createVibeContinuousQueue(seed = {}) {
       sourceRootExclusive: true,
       responsibleFileExclusive: true,
       unityReleaseFocusSlots: 1,
+      longWorkProtectedSlots: 1,
+      roleSeparation: true,
       baseShardSlots: BASE_SHARD_SLOTS,
       dynamicBackpressure: true,
       speculativeParallelism: 'high-risk-opt-in-only',
@@ -181,7 +184,6 @@ function lockConflict(a, b) {
   const aRoot = posix(a.sourceRoot), bRoot = posix(b.sourceRoot);
   const aFiles = fileLocks(a), bFiles = fileLocks(b);
   if (aRoot && bRoot && aRoot === bRoot) {
-    // Same game/source root may parallelize only when both tasks declare concrete, disjoint responsibility files.
     if (!aFiles.size || !bFiles.size) return 'source-root-conflict';
     for (const file of aFiles) if (bFiles.has(file)) return 'responsible-file-conflict';
     return null;
@@ -209,6 +211,9 @@ function isReleasedWorkerSlotTask(task) {
 function releasesWorkerCapacity(task) {
   return isAwaitingQaTask(task) || isReleasedWorkerSlotTask(task);
 }
+function isProtectedLongOwner(task) {
+  return task?.packageLongWorkProtected === true && clean(task?.packageRole) === 'implementation-owner';
+}
 function dynamicConcurrency(queue, requested = null) {
   const persistentMax = clampInt(queue?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 20);
   const requestedMax = requested === null || requested === undefined || clean(requested) === ''
@@ -217,8 +222,6 @@ function dynamicConcurrency(queue, requested = null) {
   const hardMax = Math.min(persistentMax, requestedMax);
   const running = queue.tasks.filter((task) => task.status === 'running');
   const awaitingQa = running.filter(isAwaitingQaTask).length;
-  // Only retryable queued failures create immediate execution pressure. Terminal historical
-  // failures remain evidence but must not permanently throttle future unrelated batches.
   const retryPressure = queue.tasks.filter((task) =>
     task.status === 'queued' &&
     task.lastOutcome === 'FAIL' &&
@@ -249,8 +252,6 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
   const capacityRunning = running.filter((task) => !releasesWorkerCapacity(task));
   const concurrency = dynamicConcurrency(queue, maxConcurrentTasks);
   const effectiveMax = concurrency.effectiveMaxConcurrentTasks;
-  // Awaiting-QA tasks keep source/file locks, but their worker process already finished.
-  // Do not subtract them from execution capacity a second time after backpressure is applied.
   const freeSlots = Math.max(0, effectiveMax - capacityRunning.length);
   const completed = completedIds(queue);
   const blocked = [];
@@ -269,16 +270,31 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
   const shardUse = Object.create(null);
   for (const task of capacityRunning) shardUse[task.shard] = (shardUse[task.shard] || 0) + 1;
 
-  // 1차 fan-out: 각 shard의 기본 슬롯을 우선 채운다.
+  let longWorkProtectedSlotUsed = false;
+  let longWorkOwnerTaskId = null;
+  if (freeSlots > 0 && !running.some(isProtectedLongOwner)) {
+    const protectedRow = candidates.find((row) => isProtectedLongOwner(row.task));
+    if (protectedRow) {
+      const conflict = conflictsWith(protectedRow.task, active);
+      if (!conflict) {
+        selected.push(protectedRow.task);
+        active.push(protectedRow.task);
+        shardUse[protectedRow.task.shard] = (shardUse[protectedRow.task.shard] || 0) + 1;
+        longWorkProtectedSlotUsed = true;
+        longWorkOwnerTaskId = protectedRow.task.id;
+      } else deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict }));
+    }
+  }
+
   for (const row of candidates) {
     if (selected.length >= freeSlots) break;
+    if (selected.some((task) => task.id === row.task.id)) continue;
     const baseSlots = BASE_SHARD_SLOTS[row.task.shard] || 1;
     if ((shardUse[row.task.shard] || 0) >= baseSlots) continue;
     const conflict = conflictsWith(row.task, active);
     if (conflict) { deferredConflicts.push(freeze({ task: row.task, reason: conflict })); continue; }
     selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1;
   }
-  // 2차 work stealing: 비어 있는 슬롯은 shard 구분 없이 가장 높은 우선순위의 독립 작업이 가져간다.
   for (const row of candidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
@@ -306,6 +322,8 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
       retryPressureCount: concurrency.retryPressureCount
     }),
     freeSlots,
+    longWorkProtectedSlotUsed,
+    longWorkOwnerTaskId,
     workStealingUsed: selected.some((task) => (shardUse[task.shard] || 0) > (BASE_SHARD_SLOTS[task.shard] || 1)),
     shardUse: freeze({ ...shardUse }),
     stopReason: selected.length ? null : freeSlots === 0 ? 'PARALLEL_CAPACITY_FULL' : queuedEligible ? 'ONLY_CONFLICTING_WORK_AVAILABLE' : blocked.length ? 'NO_ELIGIBLE_UNBLOCKED_TASK' : 'QUEUE_EMPTY_OR_COMPLETE'
@@ -396,6 +414,8 @@ export function summarizeVibeContinuousQueue(queueInput) {
     effectiveMaxConcurrentTasks: next.effectiveMaxConcurrentTasks,
     backpressure: next.backpressure,
     freeSlots: next.freeSlots,
+    longWorkProtectedSlotUsed: next.longWorkProtectedSlotUsed,
+    longWorkOwnerTaskId: next.longWorkOwnerTaskId,
     shardUse: next.shardUse,
     workStealingUsed: next.workStealingUsed
   });

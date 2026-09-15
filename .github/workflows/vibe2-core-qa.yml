@@ -16,7 +16,10 @@ on:
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
+      - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-performance-sanity.mjs'
+      - 'tools/vibe2-fan-in-review.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'tools/vibe2-work-package.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
@@ -28,6 +31,7 @@ on:
       - 'qa/vibe2-auto-planner.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
+      - 'qa/vibe2-exploration-worker.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
       - 'qa/vibe2-work-package.test.mjs'
@@ -51,7 +55,10 @@ on:
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
+      - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-performance-sanity.mjs'
+      - 'tools/vibe2-fan-in-review.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'tools/vibe2-work-package.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
@@ -96,7 +103,10 @@ jobs:
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-design-intelligence.mjs
+          node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-performance-sanity.mjs
+          node --check tools/vibe2-fan-in-review.mjs
           node --check tools/vibe2-queue-control.mjs
           node --check tools/vibe2-work-package.mjs
           node --check tools/vibe2-incremental-qa.mjs
@@ -108,6 +118,7 @@ jobs:
           node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
+          node --check qa/vibe2-exploration-worker.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
           node --check qa/vibe2-work-package.test.mjs
@@ -125,6 +136,7 @@ jobs:
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-design-intelligence.test.mjs
+          node --test qa/vibe2-exploration-worker.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-work-package.test.mjs

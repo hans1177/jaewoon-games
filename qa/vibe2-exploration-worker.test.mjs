@@ -1,0 +1,157 @@
+// 파일명: qa/vibe2-exploration-worker.test.mjs
+// 역할: 읽기 전용 탐색 worker, 성능 sanity worker, 긴 package 보호 슬롯, 역할 분리와 fan-in review 계약을 검증한다.
+
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { exploreVibe2WorkOrder } from '../tools/vibe2-exploration-worker.mjs';
+import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
+import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
+import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
+import { buildWorkPackage } from '../tools/vibe2-work-package.mjs';
+
+const tempRoot=()=>fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-explore-'));
+const write=(file,content)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,content,'utf8');};
+const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
+const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+
+function workOrder(){return{
+  run:true,taskId:'demo-task',gameId:'demo',target:'unity',goal:'Player 이동 코드 영향 범위를 확인하고 안전하게 수정',
+  source:{root:'unity-games/demo',responsibleFiles:['unity-games/demo/Assets/Player.cs'],ignoredPaths:[]},
+  workPackage:{id:'demo-wp',sharedContext:{diagnosticEvidence:['diagnostic:PLAYER_MOVE']}}
+};}
+
+test('exploration worker collects reusable impact context without changing source',()=>{
+  const cwd=tempRoot();
+  const player=path.join(cwd,'unity-games/demo/Assets/Player.cs');
+  const helper=path.join(cwd,'unity-games/demo/Assets/PlayerHelper.cs');
+  write(player,'class Player { int Speed() { return 1; } }\n');
+  write(helper,'// Player.cs dependency\nclass PlayerHelper {}\n');
+  const before=fs.readFileSync(player,'utf8');
+  const result=exploreVibe2WorkOrder({cwd,order:workOrder()});
+  assert.equal(result.role,'exploration');
+  assert.equal(result.sourceWrite,false);
+  assert.equal(result.reused,false);
+  assert.ok(result.reuseKey.length>=16);
+  assert.ok(result.impactFiles.includes('Assets/Player.cs'));
+  assert.ok(result.contextFiles.includes('Assets/PlayerHelper.cs'));
+  assert.deepEqual(result.diagnosticEvidence,['diagnostic:PLAYER_MOVE']);
+  assert.equal(fs.readFileSync(player,'utf8'),before);
+});
+
+test('precomputed exploration artifact is reused instead of rescanning',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player {}\n');
+  const first=exploreVibe2WorkOrder({cwd,order:workOrder()});
+  const handoff=path.join(cwd,'.vibe2/exploration.json');
+  write(handoff,JSON.stringify(first,null,2));
+  const old=process.env.VIBE2_EXPLORATION_FILE;
+  process.env.VIBE2_EXPLORATION_FILE='.vibe2/exploration.json';
+  try{
+    const reused=exploreVibe2WorkOrder({cwd,order:workOrder()});
+    assert.equal(reused.reused,true);
+    assert.equal(reused.reuseKey,first.reuseKey);
+    assert.equal(reused.reusedFrom,'.vibe2/exploration.json');
+  }finally{
+    if(old===undefined)delete process.env.VIBE2_EXPLORATION_FILE;else process.env.VIBE2_EXPLORATION_FILE=old;
+  }
+});
+
+test('performance sanity is read only and requires exploration evidence',()=>{
+  const cwd=tempRoot();
+  write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player {}\n');
+  const manifest={sourceRoot:'unity-games/demo',changedFiles:['Assets/Player.cs'],exploration:{reuseKey:'reuse-1',sourceWrite:false}};
+  const pass=verifyPerformanceSanity({root:cwd,manifest});
+  assert.equal(pass.pass,true);
+  assert.equal(pass.role,'performance');
+  assert.equal(pass.sourceWrite,false);
+  const fail=verifyPerformanceSanity({root:cwd,manifest:{...manifest,exploration:null}});
+  assert.equal(fail.pass,false);
+  assert.ok(fail.checks.some(row=>row.name==='exploration-handoff-present'&&!row.pass));
+});
+
+test('long functional package owner gets the protected slot before short work',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {id:'short-critical',gameId:'short',target:'web',goal:'short',sourceRoot:'web-games/short',responsibleFiles:['a.js'],status:'queued',priority:'critical',releaseState:'development-confirmed',packageId:'short-wp',packageRole:'implementation-owner',packageWorkUnits:1},
+    {id:'long-owner',gameId:'long',target:'web',goal:'long',sourceRoot:'web-games/long',responsibleFiles:['b.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'long-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true}
+  ]});
+  const selected=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(selected.selected[0].id,'long-owner');
+  assert.equal(selected.longWorkProtectedSlotUsed,true);
+  assert.equal(selected.longWorkOwnerTaskId,'long-owner');
+});
+
+test('work package declares separate read only verification roles and keeps implementation write ownership',()=>{
+  const pkg=buildWorkPackage({
+    project:{gameId:'demo',name:'Demo',projectPath:'web-games/demo'},
+    tasks:[{id:'feature',gameId:'demo',target:'web',sourceRoot:'web-games/demo',goal:'feature',responsibleFiles:['web-games/demo/index.js'],taskWorkUnits:5,evidence:[]}]
+  });
+  assert.equal(pkg.accepted,true);
+  assert.equal(pkg.tasks[0].packageRole,'implementation-owner');
+  assert.equal(pkg.packageContext.roles.exploration,'read-only-exploration-worker');
+  assert.equal(pkg.packageContext.roles.performance,'performance-sanity-worker');
+  assert.equal(pkg.packageContext.roles.regression,'single-fan-in-regression-worker');
+  assert.equal(pkg.packageContext.roles.review,'fan-in-package-review-worker');
+  assert.ok(pkg.completionCriteria.includes('exploration-handoff-produced-and-reused'));
+  assert.ok(pkg.completionCriteria.includes('performance-sanity-pass'));
+  assert.ok(pkg.completionCriteria.includes('fan-in-package-review-pass'));
+});
+
+test('fan in review passes only after exploration implementation test and performance roles passed',()=>{
+  const complete={
+    version:5,maxConcurrentTasks:20,tasks:[{
+      id:'ready',gameId:'demo',target:'web',goal:'ready',status:'running',blocker:'candidate-awaiting-qa-and-deployment',sourceRoot:'web-games/demo',responsibleFiles:['index.js'],
+      evidence:['role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS']
+    }]
+  };
+  const pass=finalizeVibe2FanInReview({queue:complete,taskIds:['ready']});
+  assert.equal(pass.pass,true);
+  assert.ok(pass.queue.tasks[0].evidence.includes('role-result:regression:PASS'));
+  assert.ok(pass.queue.tasks[0].evidence.includes('role-result:review:PASS'));
+
+  const missing=structuredClone(complete);
+  missing.tasks[0].id='missing';
+  missing.tasks[0].evidence=missing.tasks[0].evidence.filter(x=>x!=='role-result:performance:PASS');
+  const blocked=finalizeVibe2FanInReview({queue:missing,taskIds:['missing']});
+  assert.equal(blocked.pass,false);
+  assert.ok(blocked.queue.tasks[0].evidence.includes('role-result:review:BLOCKED'));
+  assert.ok(blocked.queue.tasks[0].evidence.includes('package-review-missing:performance'));
+});
+
+test('fan in review skips retrying failures instead of blocking queue persistence',()=>{
+  const queue={version:5,maxConcurrentTasks:20,tasks:[{id:'retry',gameId:'demo',target:'web',goal:'retry',status:'queued',lastOutcome:'FAIL',retries:1,sourceRoot:'web-games/demo',evidence:['failure-cause:incremental-qa-failed']}]};
+  const result=finalizeVibe2FanInReview({queue,taskIds:['retry']});
+  assert.equal(result.pass,true);
+  assert.equal(result.reviewed.length,0);
+  assert.equal(result.skipped.length,1);
+  assert.equal(result.queue.tasks[0].status,'queued');
+});
+
+test('central runtime keeps exploration reuse long slot and six separated roles enabled',()=>{
+  assert.equal(runtime.workManagement.reusableWorkerContext,true);
+  assert.equal(runtime.continuous.longWorkProtectedSlots,1);
+  assert.equal(runtime.coordination.sameFileParallelWrite,false);
+  assert.equal(runtime.coordination.sharedPreparationSinglePass,true);
+  assert.equal(runtime.workers.exploration.configured,true);
+  assert.equal(runtime.workers.exploration.sourceWrite,false);
+  assert.equal(runtime.workers.performance.sourceWrite,false);
+  assert.equal(runtime.workers.review.sourceWrite,false);
+  assert.equal(runtime.workPackages.explorationMode,'dedicated-exploration-worker-handoff');
+  assert.equal(runtime.workPackages.reusableMachineHandoff,true);
+  for(const role of ['read-only-exploration-worker','source-write-implementation-worker','incremental-qa-worker','performance-sanity-worker','single-fan-in-regression-worker','fan-in-package-review-worker'])assert.ok(runtime.workPackages.parallelRoles.includes(role),role);
+});
+
+test('continuous workflow executes exploration before implementation and review after regression',()=>{
+  assert.match(workflow,/\n  exploration:\n/);
+  assert(workflow.includes('Upload reusable exploration handoff'));
+  assert(workflow.includes('needs: [reserve, model_cache, exploration]'));
+  assert(workflow.includes('VIBE2_EXPLORATION_FILE=.vibe2/exploration.json'));
+  assert(workflow.includes('Run impact-first incremental QA role'));
+  assert(workflow.includes('Run read-only performance sanity role'));
+  assert(workflow.includes('VIBE2_REGRESSION_ROLE=PASS'));
+  assert(workflow.includes('tools/vibe2-fan-in-review.mjs'));
+  assert(workflow.includes('VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'));
+  assert(!workflow.includes('git push origin HEAD:main'));
+});

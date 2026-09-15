@@ -35,6 +35,9 @@ test('Unity text source produces isolated candidate without touching source', as
   const result = await runVibe2SourceWorker({ cwd, responseFile });
   assert.equal(result.mode, 'candidate-snapshot-only');
   assert.deepEqual(result.changedFiles, ['Assets/Player.cs']);
+  assert.equal(result.exploration.sourceWrite,false);
+  assert.ok(result.exploration.reuseKey.length>=16);
+  assert.equal(result.roleResults.exploration,'PASS');
   assert.match(fs.readFileSync(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'utf8'), /1 \+ 1/);
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/task-1/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
@@ -55,12 +58,14 @@ test('candidate manifest persists design intelligence requirements and starts ev
   write(responseFile, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 1;', replace: 'return 2;' }], newFiles: [] }));
   const result = await runVibe2SourceWorker({ cwd, responseFile });
   const persisted = JSON.parse(fs.readFileSync(path.join(cwd, '.vibe2/candidates/design-contract/manifest.json'), 'utf8'));
-  assert.equal(result.version, 4);
+  assert.equal(result.version, 5);
   assert.equal(result.designIntelligence.required, true);
   assert.equal(result.designIntelligence.implementationGate.allowed, true);
   assert.equal(result.designIntelligence.authorityExpanded, false);
   assert.equal(result.designIntelligence.evidenceRequirements.autoPlayer, 'verified-runtime-play-evidence-required');
   assert.deepEqual(result.designIntelligence.pipeline, workOrder.designIntelligence.pipeline);
+  assert.equal(persisted.exploration.sourceWrite,false);
+  assert.equal(persisted.roleResults.implementation,'PASS');
   for (const key of ['autoPlayer', 'telemetry', 'designReview', 'qa']) {
     assert.equal(result.designEvidence[key].verified, false);
     assert.equal(result.designEvidence[key].status, 'WAITING_EVIDENCE');
