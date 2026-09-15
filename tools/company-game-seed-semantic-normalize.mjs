@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import {assertGameSeed,GAME_SEED_POLICY} from './company-game-seed-contract.mjs';
 import {normalizeSeedState,ensureSeedMaterialPool} from './game-seed-state.mjs';
 import {categorySeedProfile,loadPlatformProfiles,normalizeSeedPlatform} from './game-seed-platform-profile.mjs';
+import {materializeOwnerDesignResetSeeds} from './owner-design-reset.mjs';
 
 const stateFile=process.env.GAME_SEED_STATE_FILE||'game-seed-state.json';
 const evidenceFile=process.env.GAME_SEED_MARKET_EVIDENCE_FILE||'game-seed-market-evidence.json';
@@ -13,6 +14,7 @@ const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'
 
 if(!fs.existsSync(stateFile))throw new Error('GAME_SEED_NORMALIZE_STATE_MISSING');
 const state=normalizeSeedState(readJson(stateFile,{seeds:[]}));
+const ownerResetMaterialization=materializeOwnerDesignResetSeeds(state);
 ensureSeedMaterialPool(state);
 const evidence=readJson(evidenceFile,{targetMarketScope:'GLOBAL',categories:{},globalSources:[]});
 const platformProfiles=loadPlatformProfiles(platformProfileFile);
@@ -115,6 +117,9 @@ for(const seed of candidates)normalizeSeed(seed);
 fs.writeFileSync(stateFile,`${JSON.stringify(state,null,2)}\n`);
 console.log('GAME_SEED_SEMANTIC_NORMALIZE=PASS');
 console.log(`GAME_SEED_SEMANTIC_NORMALIZED_COUNT=${candidates.length}`);
+console.log(`OWNER_DESIGN_RESET_ACTIVE_COUNT=${ownerResetMaterialization.activeCount}`);
+console.log(`OWNER_DESIGN_RESET_MATERIALIZED_COUNT=${ownerResetMaterialization.changed.length}`);
+console.log(`OWNER_DESIGN_RESET_MATERIALIZED_GAMES=${ownerResetMaterialization.changed.join(',')||'NONE'}`);
 console.log(`SEED_MATERIAL_POOL_TARGET=${state.seedMaterialPolicy?.targetCount||100}`);
 console.log(`SEED_MATERIAL_POOL_AVAILABLE=${state.seedMaterials.filter(x=>x.status==='AVAILABLE').length}`);
 console.log('TARGET_SESSION_MINUTES=30');
