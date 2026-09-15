@@ -51,7 +51,7 @@ function blockedOnMainIsland(x, y) {
 }
 
 function inMainVillage(x, y) {
-  const minX = lv3VillageUnlocked() && y >= 985 ? -1120 : 120;
+  const minX = lv3VillageUnlocked() ? -1120 : 120;
   if (x < minX || x > 1360 || y < 160 || y > 1155) return false;
   return !blockedOnMainIsland(x, y);
 }
@@ -81,7 +81,7 @@ function canStandAt(x, y) {
 }
 
 function baseCandidate(x, y) {
-  const minX = lv3VillageUnlocked() && y >= 985 ? -1120 : 120;
+  const minX = lv3VillageUnlocked() ? -1120 : 120;
   let px = Math.max(minX, Math.min(1360, x));
   let py = Math.max(160, Math.min(1155, y));
   if (blockedOnMainIsland(px, py)) {
