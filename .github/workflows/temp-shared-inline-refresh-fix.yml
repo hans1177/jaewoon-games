@@ -1,0 +1,38 @@
+name: Temp Shared Inline Refresh Fix
+on:
+  push:
+    branches:
+      - fix/eldoria-final-evidence-contracts
+    paths:
+      - tools/temp-shared-inline-refresh-fix.py
+      - .github/workflows/temp-shared-inline-refresh-fix.yml
+permissions:
+  contents: write
+jobs:
+  patch-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/eldoria-final-evidence-contracts
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply deterministic inline refresh patch
+        run: python3 tools/temp-shared-inline-refresh-fix.py
+      - name: Validate bootstrap syntax
+        run: node --check tools/company-development-web-bootstrap.mjs
+      - name: Run Web runtime regressions
+        run: node --test qa/company-development-web-runtime.test.mjs qa/company-web-validation-evidence-contract.test.mjs
+      - name: Check patch whitespace
+        run: git diff --check
+      - name: Commit validated canonical changes
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-web-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add tools/company-development-web-bootstrap.mjs qa/company-development-web-runtime.test.mjs
+          git diff --cached --quiet && { echo 'NO_CANONICAL_CHANGES'; exit 1; }
+          git commit -m 'fix(web): refresh preserved inlined shared runtime'
+          git push origin HEAD:fix/eldoria-final-evidence-contracts
