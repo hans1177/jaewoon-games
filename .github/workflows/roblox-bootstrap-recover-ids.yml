@@ -1,0 +1,121 @@
+name: Roblox Bootstrap Recover IDs
+
+on:
+  push:
+    branches: [fix/roblox-auto-bootstrap]
+    paths:
+      - '.github/workflows/roblox-bootstrap-recover-ids.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    name: recover created Vector Clash target IDs
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 10
+    steps:
+      - name: Execute ID command with Studio Run button
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class MouseNative { [DllImport("user32.dll")] public static extern bool SetCursorPos(int X,int Y); [DllImport("user32.dll")] public static extern void mouse_event(uint f,uint dx,uint dy,uint data,UIntPtr extra); }'
+
+          function Click-Element($e) {
+            $inv=$null
+            try {
+              if ($e.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$inv)) { $inv.Invoke(); return }
+            } catch {}
+            $r=$e.Current.BoundingRectangle
+            if ($r.Width -le 0 -or $r.Height -le 0) { throw 'Target element has invalid bounds' }
+            [MouseNative]::SetCursorPos([int]($r.Left+$r.Width/2),[int]($r.Top+$r.Height/2)) | Out-Null
+            Start-Sleep -Milliseconds 150
+            [MouseNative]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero)
+            [MouseNative]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero)
+          }
+
+          $p=Get-Process RobloxStudioBeta -ErrorAction Stop | Select-Object -First 1
+          $root=[System.Windows.Automation.AutomationElement]::RootElement
+          $pidCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty,$p.Id)
+          $windows=$root.FindAll([System.Windows.Automation.TreeScope]::Children,$pidCond)
+          $main=$null
+          foreach ($w in $windows) { if ([string]$w.Current.AutomationId -eq 'RBXMainWindow') { $main=$w; break } }
+          if (-not $main) { throw 'RBXMainWindow not detected' }
+
+          $publishCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs')
+          $publish=$main.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$publishCond)
+          if ($publish) { throw 'Publish Experience dialog is still open; refusing any create-related action' }
+          Write-Host 'ROBLOX_BOOTSTRAP_NO_CREATE_DIALOG=PASS'
+
+          $barCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'commandBarScriptEditor')
+          $bar=$main.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$barCond)
+          if (-not $bar -or -not $bar.Current.IsEnabled) { throw 'commandBarScriptEditor not available' }
+
+          $all=$main.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
+          $runButton=$null
+          foreach ($e in $all) {
+            if ([string]$e.Current.ControlType.ProgrammaticName -eq 'ControlType.Button' -and [string]$e.Current.Name -eq '실행' -and $e.Current.IsEnabled -and -not $e.Current.IsOffscreen) {
+              $r=$e.Current.BoundingRectangle
+              $br=$bar.Current.BoundingRectangle
+              if ($r.Top -ge ($br.Top-20) -and $r.Top -le ($br.Bottom+20)) { $runButton=$e; break }
+            }
+          }
+          if (-not $runButton) {
+            foreach ($e in $all) {
+              if ([string]$e.Current.ControlType.ProgrammaticName -eq 'ControlType.Button' -and [string]$e.Current.Name -eq '실행' -and $e.Current.IsEnabled -and -not $e.Current.IsOffscreen) { $runButton=$e; break }
+            }
+          }
+          if (-not $runButton) { throw 'Studio command Run button not detected' }
+          $rr=$runButton.Current.BoundingRectangle
+          Write-Host ("ROBLOX_BOOTSTRAP_RUN_BUTTON=PASS left={0} top={1} width={2} height={3}" -f $rr.Left,$rr.Top,$rr.Width,$rr.Height)
+
+          $shell=New-Object -ComObject WScript.Shell
+          if (-not $shell.AppActivate($p.Id)) { throw 'Studio is not interactive' }
+          $bar.SetFocus()
+          Start-Sleep -Milliseconds 300
+          $cmd='print("ROBLOX_BOOTSTRAP_UNIVERSE_ID=" .. tostring(game.GameId)); print("ROBLOX_BOOTSTRAP_PLACE_ID=" .. tostring(game.PlaceId))'
+          [System.Windows.Forms.Clipboard]::SetText($cmd)
+          $shell.SendKeys('^a')
+          Start-Sleep -Milliseconds 100
+          $shell.SendKeys('^v')
+          Start-Sleep -Milliseconds 300
+          $commandAt=Get-Date
+          Click-Element $runButton
+          Write-Host 'ROBLOX_BOOTSTRAP_COMMAND_EXECUTE=PASS'
+
+          $logRoot=Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+          if (-not (Test-Path $logRoot)) { throw "Roblox log directory missing: $logRoot" }
+          $universe=$null; $place=$null; $sourceLog=$null
+          for ($try=0; $try -lt 30; $try++) {
+            Start-Sleep -Seconds 1
+            foreach ($log in Get-ChildItem $logRoot -File -Filter '*.log' | Where-Object { $_.LastWriteTime -ge $commandAt.AddMinutes(-1) } | Sort-Object LastWriteTime -Descending) {
+              $u=Select-String -Path $log.FullName -Pattern 'ROBLOX_BOOTSTRAP_UNIVERSE_ID=' -SimpleMatch -ErrorAction SilentlyContinue | Select-Object -Last 1
+              $pl=Select-String -Path $log.FullName -Pattern 'ROBLOX_BOOTSTRAP_PLACE_ID=' -SimpleMatch -ErrorAction SilentlyContinue | Select-Object -Last 1
+              if ($u -and $pl) {
+                if ($u.Line -match 'ROBLOX_BOOTSTRAP_UNIVERSE_ID=(\d+)') { $universe=$Matches[1] }
+                if ($pl.Line -match 'ROBLOX_BOOTSTRAP_PLACE_ID=(\d+)') { $place=$Matches[1] }
+                if ($universe -and $place) { $sourceLog=$log.FullName; break }
+              }
+            }
+            if ($universe -and $place) { break }
+          }
+          if (-not $universe -or -not $place -or [int64]$universe -le 0 -or [int64]$place -le 0) { throw 'Positive Universe ID / Place ID not recovered after explicit Run button execution' }
+
+          $persistDir='C:\actions-runner\_diag\roblox-bootstrap-calibration'
+          New-Item -ItemType Directory -Force -Path $persistDir | Out-Null
+          $target=[ordered]@{
+            gameName='Vector Clash'
+            universeId=[int64]$universe
+            placeId=[int64]$place
+            recoveredAt=(Get-Date).ToString('o')
+            authority='roblox-studio-authenticated-bootstrap'
+            createVerifiedRunId=34934311681
+          }
+          $target | ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $persistDir 'roblox-release-target.json')
+          Write-Host "ROBLOX_UNIVERSE_ID=$universe"
+          Write-Host "ROBLOX_PLACE_ID=$place"
+          Write-Host "ROBLOX_BOOTSTRAP_ID_LOG=$sourceLog"
+          Write-Host 'ROBLOX_BOOTSTRAP_ID_RECOVERY=PASS'
