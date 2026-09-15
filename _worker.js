@@ -130,9 +130,9 @@ function projectIsServerActive(project){
   if(String(project.profileStatus||'').toUpperCase().startsWith('HOLD'))return false;
   return true;
 }
-function seedIsServerActive(seed){
+function seedIsServerActive(seed,heldGameIds=new Set()){
   const status=String(seed?.status||'').toUpperCase();
-  return Boolean(seed?.gameId)&&!['DISCARDED','REMOVED'].includes(status);
+  return Boolean(seed?.gameId)&&!heldGameIds.has(seed.gameId)&&!['DISCARDED','REMOVED'].includes(status);
 }
 function mergeRuntimeCatalog(baseCatalog,portfolio,seedState){
   const baseGames=Array.isArray(baseCatalog?.games)?baseCatalog.games:[];
@@ -141,11 +141,12 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState){
   const baseById=new Map(baseGames.map(game=>[game.id,game]));
   const projectBySlug=new Map(projects.map(project=>[project.slug,project]).filter(([slug])=>slug));
   const seedById=new Map(seeds.map(seed=>[seed.gameId,seed]).filter(([id])=>id));
+  const heldGameIds=new Set(projects.filter(project=>project?.slug&&!projectIsServerActive(project)).map(project=>project.slug));
   const orderedIds=[];
   const seen=new Set();
   const add=id=>{if(id&&!seen.has(id)){seen.add(id);orderedIds.push(id);}};
   for(const project of projects)if(projectIsServerActive(project))add(project.slug);
-  for(const seed of seeds)if(seedIsServerActive(seed))add(seed.gameId);
+  for(const seed of seeds)if(seedIsServerActive(seed,heldGameIds))add(seed.gameId);
   const games=orderedIds.map(id=>{
     const base=baseById.get(id)||{};
     const project=projectBySlug.get(id)||null;
@@ -184,7 +185,7 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState){
     version:Math.max(1,Number(baseCatalog?.version)||0)+1,
     runtimeAuthority:'company-runtime',
     runtimeSyncSeconds:RUNTIME_SYNC_SECONDS,
-    runtimeCounts:{games:games.length,portfolioActive:projects.filter(projectIsServerActive).length,activeSeeds:seeds.filter(seedIsServerActive).length},
+    runtimeCounts:{games:games.length,portfolioActive:projects.filter(projectIsServerActive).length,activeSeeds:seeds.filter(seed=>seedIsServerActive(seed,heldGameIds)).length},
     games
   };
 }
