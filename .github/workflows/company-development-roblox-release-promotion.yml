@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: write
-  actions: read
+  actions: write
 
 concurrency:
   group: company-development-roblox-release-promotion-${{ inputs.game_id }}
@@ -23,7 +23,7 @@ jobs:
   release:
     name: publish exact final-reviewed Roblox artifact
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 300
     steps:
       - name: Checkout current canonical implementation
         uses: actions/checkout@v4
@@ -235,6 +235,8 @@ jobs:
         if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.target.outputs.game_id }}
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
           ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
@@ -243,19 +245,58 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/vibe3-roblox-platform.mjs \
-            --place-file "$PLACE_FILE" \
-            --evidence /tmp/roblox-development-release-evidence.json \
-            --source-revision "$SOURCE_REVISION" \
-            --execute | tee /tmp/roblox-final-release-publish.log
-          grep -q '^ROBLOX_V3_STATE=PUBLISHED$' /tmp/roblox-final-release-publish.log
-          version="$(sed -n 's/^ROBLOX_PUBLISHED_VERSION_NUMBER=//p' /tmp/roblox-final-release-publish.log | tail -n1)"
-          [[ "$version" =~ ^[1-9][0-9]*$ ]]
-          printf 'version_number=%s\n' "$version" >> "$GITHUB_OUTPUT"
-          echo 'ROBLOX_RELEASE_OPEN_CLOUD_PUBLISH=PASS'
+          retry_seconds=300
+          retry_window_seconds=16200
+          deadline=$((SECONDS+retry_window_seconds))
+          attempt=0
+          while true; do
+            attempt=$((attempt+1))
+            : > /tmp/roblox-final-release-publish.log
+            set +e
+            node --input-type=module <<'NODE' 2>&1 | tee /tmp/roblox-final-release-publish.log
+          import fs from 'node:fs';
+          import {createRobloxPlacePublishPlan,publishRobloxPlace} from './tools/vibe3-roblox-platform.mjs';
+          const evidence=JSON.parse(fs.readFileSync('/tmp/roblox-development-release-evidence.json','utf8'));
+          const plan=createRobloxPlacePublishPlan({
+            placeFile:process.env.PLACE_FILE,
+            universeId:process.env.ROBLOX_UNIVERSE_ID,
+            placeId:process.env.ROBLOX_PLACE_ID,
+            sourceRevision:process.env.SOURCE_REVISION,
+            evidence,
+          });
+          if(plan.executionReady!==true)throw new Error(`Roblox publish blocked: ${(plan.blockedReasons||[]).join(',')}`);
+          const result=await publishRobloxPlace({plan,retryDelaysMs:[]});
+          console.log(`ROBLOX_V3_STATE=${result.state}`);
+          console.log(`ROBLOX_PUBLISHED_VERSION_NUMBER=${result.versionNumber}`);
+          NODE
+            publish_status=${PIPESTATUS[0]}
+            set -e
+            if [ "$publish_status" -eq 0 ]; then
+              grep -q '^ROBLOX_V3_STATE=PUBLISHED$' /tmp/roblox-final-release-publish.log
+              version="$(sed -n 's/^ROBLOX_PUBLISHED_VERSION_NUMBER=//p' /tmp/roblox-final-release-publish.log | tail -n1)"
+              [[ "$version" =~ ^[1-9][0-9]*$ ]]
+              printf 'version_number=%s\n' "$version" >> "$GITHUB_OUTPUT"
+              printf 'deferred=false\n' >> "$GITHUB_OUTPUT"
+              echo 'ROBLOX_RELEASE_OPEN_CLOUD_PUBLISH=PASS'
+              exit 0
+            fi
+            if ! grep -Eqi 'Roblox publish failed HTTP 409:.*(server is busy|unable to process your upload request)' /tmp/roblox-final-release-publish.log; then
+              exit "$publish_status"
+            fi
+            if [ "$SECONDS" -ge "$deadline" ]; then
+              printf 'deferred=true\n' >> "$GITHUB_OUTPUT"
+              echo 'ROBLOX_RELEASE_OPEN_CLOUD_PUBLISH=BUSY_CONTINUATION_QUEUED'
+              gh workflow run '.github/workflows/company-development-roblox-release-promotion.yml' \
+                --repo "$GITHUB_REPOSITORY" \
+                -f "game_id=$GAME_ID"
+              exit 75
+            fi
+            echo "ROBLOX_PUBLISH_SERVER_BUSY_ATTEMPT=$attempt;RETRY_IN_SECONDS=$retry_seconds"
+            sleep "$retry_seconds"
+          done
 
       - name: Persist proven release promotion state only
-        if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success'
+        if: steps.target.outputs.skip != 'true' && steps.publish.outcome == 'success' && steps.publish.outputs.deferred != 'true'
         working-directory: runtime
         env:
           GAME_ID: ${{ steps.target.outputs.game_id }}
@@ -363,11 +404,21 @@ jobs:
           SKIP: ${{ steps.target.outputs.skip }}
           SKIP_REASON: ${{ steps.target.outputs.skip_reason }}
           PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          RETRY_DEFERRED: ${{ steps.publish.outputs.deferred }}
         shell: bash
         run: |
           set -euo pipefail
           if [ "$SKIP" = 'true' ]; then
             echo "ROBLOX_RELEASE_PROMOTION=SKIPPED:$SKIP_REASON"
+            exit 0
+          fi
+          if [ "$RETRY_DEFERRED" = 'true' ]; then
+            echo 'ROBLOX_RELEASE_PROMOTION=RETRY_QUEUED:ROBLOX_409_SERVER_BUSY'
+            echo 'ROBLOX_RELEASE_RETRY_INTERVAL_SECONDS=300'
+            echo 'ROBLOX_RUNTIME_RERUN=NO'
+            echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
+            echo 'ROBLOX_REGRESSION_RERUN=NO'
+            echo 'ROBLOX_MULTIPLAYER_QA_RERUN=NO'
             exit 0
           fi
           [ "$PUBLISH_OUTCOME" = 'success' ]
