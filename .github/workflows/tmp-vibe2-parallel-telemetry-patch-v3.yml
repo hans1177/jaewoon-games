@@ -49,3 +49,12 @@ jobs:
           name: vibe2-verified-telemetry-commit
           path: /tmp/verified-sha.txt
           retention-days: 1
+      - name: Export verified telemetry files
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-verified-telemetry-files
+          path: |
+            tools/vibe2-queue-control.mjs
+            .github/workflows/vibe2-continuous-core.yml
+          if-no-files-found: error
+          retention-days: 1
