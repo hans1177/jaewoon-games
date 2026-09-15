@@ -24,13 +24,16 @@ jobs:
           node-version: '22'
       - name: Apply core 20-slot migration
         run: node tools/apply-adaptive-parallel-20-core.mjs
-      - name: Verify syntax and contracts
+      - name: Verify syntax
         run: |
           node --check assets/vibe-continuous-queue.js
           node --check tools/vibe2-auto-planner.mjs
-          node --test qa/vibe2-queue-control.test.mjs
-          node --test qa/vibe2-auto-planner.test.mjs
-          node --test qa/vibe2-parallelism-20-contract.test.mjs
+      - name: Verify queue contract
+        run: node --test qa/vibe2-queue-control.test.mjs
+      - name: Verify planner contract
+        run: node --test qa/vibe2-auto-planner.test.mjs
+      - name: Verify 20-slot contract
+        run: node --test qa/vibe2-parallelism-20-contract.test.mjs
       - name: Commit verified core changes
         run: |
           set -euo pipefail
