@@ -1,0 +1,47 @@
+name: Temp Current Development Score Fix
+
+on:
+  push:
+    branches:
+      - fix/homepage-current-development-score
+
+permissions:
+  contents: write
+
+jobs:
+  patch-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/homepage-current-development-score
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply exact fixes
+        run: python3 tools/temp-fix-current-development-score.py
+      - name: Syntax checks
+        run: |
+          node --check assets/homepage-enhancements-core.js
+          node --check assets/homepage-enhancements.js
+          node --check tools/homepage-manager.mjs
+          node --check tools/company-strict-production-review.mjs
+      - name: Targeted homepage regression
+        run: node --test qa/homepage-manager-publication-order.test.mjs
+      - name: Strict review cycle-key regression
+        run: node --test qa/company-strict-production-cycle-key.test.mjs
+      - name: Homepage Manager self-QA
+        run: node tools/homepage-manager.mjs
+      - name: Verify changed files
+        run: |
+          git diff --check
+          git status --short
+      - name: Commit verified canonical fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add COMPANY_FLOW.md company-directive.json HOMEPAGE_OPERATIONS.md assets/homepage-enhancements-core.js assets/homepage-enhancements.js tools/homepage-manager.mjs qa/homepage-manager-publication-order.test.mjs tools/company-strict-production-review.mjs qa/company-strict-production-cycle-key.test.mjs
+          git diff --cached --quiet && { echo "NO_PATCH"; exit 1; }
+          git commit -m "fix(homepage): show only current validated development scores"
+          git push origin HEAD:fix/homepage-current-development-score
