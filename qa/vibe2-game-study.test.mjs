@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-game-study.test.mjs
-// 역할: GAME STUDY의 실제 Web 관찰, Roblox 런타임 계약, 허가 소스 정책, 증류, 기존 Experience Memory 승격, 공유 병렬 상한을 검증한다.
+// 역할: GAME STUDY의 실제 Web 관찰, Roblox 런타임 계약, 서버 소스 정책, 증류, 기존 Experience Memory 승격, 공유 병렬 상한을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -55,6 +55,10 @@ test('observation-only study distills verified play without scanning source', ()
     sourceAccess: OBSERVATION_ONLY_ACCESS
   });
   assert.equal(study.verified, true);
+  assert.equal(study.executionLocation, 'server');
+  assert.equal(study.learningState, '.vibe2/experience.json');
+  assert.equal(study.policy.serverSideLearning, true);
+  assert.equal(study.policy.clientLocalLearning, false);
   assert.equal(study.sourceAnalysis.scanned, false);
   assert.equal(study.sourceAnalysis.fileCount, 0);
   assert.equal(study.policy.rawSourceCopiedIntoMemory, false);
@@ -64,7 +68,7 @@ test('observation-only study distills verified play without scanning source', ()
   assert(study.distilledPatterns.some((row) => row.includes('restart')));
 });
 
-test('authorized local Web source scan extracts only generalized code patterns', () => {
+test('authorized server workspace Web source scan extracts only generalized code patterns', () => {
   const root = temp();
   fs.writeFileSync(path.join(root, 'game.js'), `
     addEventListener('keydown', () => {});
@@ -73,6 +77,7 @@ test('authorized local Web source scan extracts only generalized code patterns',
     fetch('/score');
   `, 'utf8');
   const analysis = analyzeAuthorizedGameSource({ engine: 'web', root, sourceAccess: AUTHORIZED_SOURCE_ACCESS });
+  assert.equal(AUTHORIZED_SOURCE_ACCESS, 'owned-or-authorized-server-workspace');
   assert.equal(analysis.authorized, true);
   assert.equal(analysis.scanned, true);
   const names = analysis.patterns.map((row) => row.name);
@@ -102,14 +107,16 @@ test('Roblox study requires Studio runtime authority and capabilities', () => {
     }
   });
   assert.equal(valid.verified, true);
+  assert.equal(valid.executionLocation, 'server');
 });
 
-test('verified GAME STUDY promotes into existing Experience Memory and can reinforce', () => {
+test('verified GAME STUDY promotes into server Experience Memory and can reinforce', () => {
   const study = createVerifiedGameStudy({ gameId: 'reference-web', engine: 'web', autoPlayerResult: verifiedWebResult() });
   const first = promoteGameStudyToExperience({ records: [] }, study);
   assert.equal(first.promoted, true);
   assert.equal(first.memory.records.length, 1);
   assert.equal(first.memory.records[0].taskType, 'game-study');
+  assert(first.memory.records[0].qa.includes('server-side-study-verified'));
   assert(first.memory.records[0].reusablePatterns.every((row) => row.startsWith('GAME_STUDY:')));
   const second = promoteGameStudyToExperience(first.memory, study);
   assert.equal(second.promoted, true);
@@ -121,6 +128,7 @@ test('verified GAME STUDY promotes into existing Experience Memory and can reinf
 test('GAME STUDY reservation shares queue capacity and current backpressure cap', () => {
   const targets = {
     version: 1,
+    mode: 'server-hourly-24h-parallel-study',
     maxConcurrentTasks: 20,
     targets: Array.from({ length: 12 }, (_, i) => ({
       id: `web-${i}`,
@@ -137,6 +145,7 @@ test('GAME STUDY reservation shares queue capacity and current backpressure cap'
     tasks: Array.from({ length: 3 }, (_, i) => ({ id: `normal-${i}`, gameId: `n-${i}`, target: 'unity', department: 'development', type: 'implementation', goal: 'normal work', status: 'running', sourceRoot: `unity-games/n-${i}` }))
   };
   const reserved = reserveGameStudyBatch(queue, targets, { currentMax: 12 }, { maxConcurrentTasks: 20 });
+  assert.equal(reserved.executionLocation, 'server');
   assert(reserved.selectedCount > 0);
   assert(reserved.selectedCount <= 9);
   assert(reserved.requestedMax <= 12);
@@ -145,7 +154,7 @@ test('GAME STUDY reservation shares queue capacity and current backpressure cap'
   assert(reserved.matrix.every((row) => row.engine === 'web'));
 });
 
-test('GAME STUDY fan-in is the only step that updates memory and settles study task', () => {
+test('GAME STUDY fan-in is the only step that updates server memory and settles study task', () => {
   const study = createVerifiedGameStudy({ gameId: 'reference-web', engine: 'web', autoPlayerResult: verifiedWebResult() });
   const queue = {
     maxConcurrentTasks: 20,
@@ -157,10 +166,11 @@ test('GAME STUDY fan-in is the only step that updates memory and settles study t
   assert.equal(result.memory.records.length, 1);
   assert.equal(result.queue.tasks[0].status, 'done');
   assert.equal(result.applied[0].promoted, true);
+  assert.equal(result.executionLocation, 'server');
   assert.equal(result.authorityExpanded, false);
 });
 
-test('Web GAME STUDY uses real Chrome AUTO PLAYER and distills observed systems', { timeout: 30000 }, async (t) => {
+test('Web GAME STUDY uses real Chrome AUTO PLAYER on server and distills observed systems', { timeout: 30000 }, async (t) => {
   const chrome = findChromeBinary();
   if (!chrome) { t.skip('Chrome/Chromium unavailable on this machine'); return; }
   const scenario = { version: 1, engine: 'web', page: 'index.html', requirePlayability: true, actions: [
@@ -177,6 +187,7 @@ test('Web GAME STUDY uses real Chrome AUTO PLAYER and distills observed systems'
   const result = await runWebGameStudy({ gameId: 'fixture-web', root: webFixture, scenario, sourceAccess: OBSERVATION_ONLY_ACCESS, chromePath: chrome });
   assert.equal(result.autoPlayer.verified, true);
   assert.equal(result.study.verified, true);
+  assert.equal(result.study.executionLocation, 'server');
   assert(result.study.distilledPatterns.some((row) => row.includes('movement')));
   assert(result.study.distilledPatterns.some((row) => row.includes('combat')));
   assert(result.study.distilledPatterns.some((row) => row.includes('economy')));
@@ -189,6 +200,7 @@ test('Roblox GAME STUDY adapter accepts only nonce-bound fake protocol evidence 
   const result = await runRobloxGameStudy({ gameId: 'fixture-roblox', scenarioFile, command: process.execPath, commandArgs: [fakeEngine], cwd, sourceAccess: OBSERVATION_ONLY_ACCESS });
   assert.equal(result.autoPlayer.verified, true);
   assert.equal(result.study.verified, true);
+  assert.equal(result.study.executionLocation, 'server');
   assert.equal(result.study.sourceAnalysis.scanned, false);
   assert.equal(result.autoPlayer.runtime.authority, 'vibe2-roblox-studio-runtime');
 });
