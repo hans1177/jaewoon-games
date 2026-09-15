@@ -6,8 +6,11 @@ on:
       - vibe2-unreal-core
     paths:
       - '.vibe2/platform-focus.json'
+      - '.vibe2/owner-directives-roblox.json'
       - 'tools/vibe2-platform-focus-policy.mjs'
+      - 'tools/vibe2-roblox-owner-queue.mjs'
       - 'qa/vibe2-platform-focus-policy.test.mjs'
+      - 'qa/vibe2-roblox-owner-queue.test.mjs'
       - '.github/workflows/vibe2-platform-focus-apply.yml'
   workflow_dispatch:
 
@@ -32,14 +35,16 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify platform focus contract
+      - name: Verify Roblox focus and owner queue contracts
         shell: bash
         run: |
           set -euo pipefail
           node --check tools/vibe2-platform-focus-policy.mjs
+          node --check tools/vibe2-roblox-owner-queue.mjs
           node --test qa/vibe2-platform-focus-policy.test.mjs
+          node --test qa/vibe2-roblox-owner-queue.test.mjs
 
-      - name: Apply focus to current control queue
+      - name: Apply Roblox owner work and focus to current control queue
         shell: bash
         run: |
           set -euo pipefail
@@ -47,6 +52,9 @@ jobs:
           git config user.email 'vibe2-platform-focus@users.noreply.github.com'
           git fetch origin vibe2-unreal-core --quiet
           git reset --hard origin/vibe2-unreal-core
+          node tools/vibe2-roblox-owner-queue.mjs \
+            --queue=.vibe2/queue.json \
+            --directives=.vibe2/owner-directives-roblox.json | tee /tmp/vibe2-roblox-owner-queue.log
           node tools/vibe2-platform-focus-policy.mjs \
             --queue=.vibe2/queue.json \
             --config=.vibe2/platform-focus.json | tee /tmp/vibe2-platform-focus.log
@@ -55,7 +63,7 @@ jobs:
             exit 0
           fi
           git add .vibe2/queue.json
-          git commit -m 'vibe2: apply Roblox primary focus to queue [skip ci]'
+          git commit -m 'vibe2: apply Roblox primary work to queue [skip ci]'
           pushed=0
           for attempt in 1 2 3; do
             if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
@@ -74,6 +82,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vibe2-platform-focus-${{ github.run_id }}
-          path: /tmp/vibe2-platform-focus.log
+          path: |
+            /tmp/vibe2-roblox-owner-queue.log
+            /tmp/vibe2-platform-focus.log
           if-no-files-found: ignore
           retention-days: 7
