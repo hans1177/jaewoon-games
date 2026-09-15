@@ -61,10 +61,51 @@ function requestAllowsBaselineWork(request){
   }
   return false;
 }
+function ownerDirectiveTask(directive){
+  const id=clean(directive?.id);
+  const gameId=clean(directive?.gameId);
+  const sourceRoot=posix(directive?.sourceRoot);
+  if(!id||!gameId||!sourceRoot||!sourceRoot.startsWith('web-games/'))return null;
+  const responsibleFiles=[...new Set((directive?.responsibleFiles||[]).map(posix).filter(Boolean))];
+  if(!responsibleFiles.length||responsibleFiles.some(file=>!file.startsWith(`${sourceRoot}/`)))return null;
+  const workUnits=Math.max(5,Math.trunc(Number(directive?.workUnits)||5));
+  const extraEvidence=(directive?.evidence||[]).map(clean).filter(Boolean);
+  return {
+    id,gameId,target:'web',department:'development',type:'implementation',goal:clean(directive?.goal),
+    responsibleFiles,dependencies:[],priority:clean(directive?.priority)||'critical',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,
+    ownerDirective:true,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,
+    sourceRoot,estimatedRisk:'high',speculativeEligible:false,
+    fullRebuild:true,rebuildMode:'FULL_REBUILD',workUnits,taskWorkUnits:workUnits,
+    evidence:[
+      'central-policy:COMPANY_FLOW.md',
+      'owner-directive:full-web-game-rebuild',
+      `source-root:${sourceRoot}`,
+      ...extraEvidence
+    ]
+  };
+}
+function importOwnerDirectives(queue,directivesFile){
+  const inbox=readJson(directivesFile,{directives:[]});
+  const existing=new Set((queue.tasks||[]).map(task=>clean(task.id)).filter(Boolean));
+  const imported=[];
+  for(const directive of inbox?.directives||[]){
+    const state=clean(directive?.status||'pending').toLowerCase();
+    if(['cancelled','disabled'].includes(state))continue;
+    const task=ownerDirectiveTask(directive);
+    if(!task||existing.has(task.id))continue;
+    queue=createVibeContinuousQueue({...queue,tasks:[...(queue.tasks||[]),task]});
+    existing.add(task.id);
+    imported.push(task);
+  }
+  return {queue,imported};
+}
 
-export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot}){
+export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDirectivesFile=''}){
   const catalog=readJson(catalogFile,{games:[]});
   let queue=createVibeContinuousQueue(readJson(queueFile,{tasks:[]}));
+  const directivesPath=path.resolve(ownerDirectivesFile||path.join(path.dirname(queueFile),'owner-directives.json'));
+  const ownerResult=importOwnerDirectives(queue,directivesPath);
+  queue=ownerResult.queue;
   const planned=[];
   for(const game of catalog.games||[]){
     if(clean(game.productionClass)!=='RELEASE_CONFIRMED')continue;
@@ -107,14 +148,16 @@ export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot}){
     break;
   }
   writeJson(queueFile,queue);
-  return {planned:planned.length>0,count:planned.length,tasks:planned};
+  return {planned:planned.length>0,count:planned.length,tasks:planned,ownerImported:ownerResult.imported};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const repoRoot=path.resolve(arg('root')||process.cwd());
   const catalogFile=path.resolve(arg('catalog')||path.join(repoRoot,'game-catalog.json'));
   const queueFile=path.resolve(arg('queue')||'.vibe2/queue.json');
-  const result=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot});
+  const ownerDirectivesFile=path.resolve(arg('owner-directives')||path.join(path.dirname(queueFile),'owner-directives.json'));
+  const result=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDirectivesFile});
+  console.log(`VIBE2_OWNER_DIRECTIVES_IMPORTED=${result.ownerImported.map(x=>x.id).join(',')||'NONE'}`);
   console.log(`VIBE2_RELEASE_BASELINE_GAP_PLAN=${result.planned?'YES':'NO'}`);
   console.log(`VIBE2_RELEASE_BASELINE_GAP_TASKS=${result.tasks.map(x=>x.id).join(',')||'NONE'}`);
 }
