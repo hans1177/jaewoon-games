@@ -57,13 +57,19 @@ ownerCurrentProductionContract:
     webIsNotNativeDevelopmentSubstitute: true
   developmentConcurrency:
     scope: DEVELOPMENT_CONFIRMED_SELECTED_PLATFORM_GAME_IMPLEMENTATION
-    concurrentGameWipTarget: 6
-    concurrentGameWipMax: 6
+    concurrentGameWipTarget: 20
+    concurrentGameWipMax: 20
     globalAcrossConfiguredSelectedPlatformExecutors: true
     parallelExecutionDefault: true
-    webValidationParallelismTarget: 6
-    webValidationParallelismMax: 6
+    webValidationParallelismTarget: 20
+    webValidationParallelismMax: 20
+    adaptiveBackpressureSteps: [20, 16, 12, 8, 4]
     independentGamesMustRunInParallelWhenCapacityExists: true
+    sameSourceRootParallelAllowedWhenResponsibleFilesExplicitAndDisjoint: true
+    sameResponsibleFileParallelForbidden: true
+    sharedSaveSchemaWritesExclusive: true
+    centralPolicyWritesExclusive: true
+    parallelismContractGateRequired: true
     sharedRuntimeStatePersistedBySingleAggregationStep: true
     validationTiers:
       - MICRO_TARGETED_CHECK
