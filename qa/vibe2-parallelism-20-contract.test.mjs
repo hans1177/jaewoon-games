@@ -9,6 +9,7 @@ test('core parallelism contract is uniformly 20',()=>{
   const workflow=read('.github/workflows/vibe2-continuous-core.yml');
   const planner=read('tools/vibe2-auto-planner.mjs');
   const queueControl=read('tools/vibe2-queue-control.mjs');
+  const telemetry=read('tools/vibe2-parallelism-telemetry.mjs');
   assert.equal(DEFAULT_MAX_CONCURRENT_TASKS,20);
   assert.match(workflow,/VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'/);
   assert.match(workflow,/max-parallel: 20/);
@@ -24,6 +25,12 @@ test('core parallelism contract is uniformly 20',()=>{
   assert.match(workflow,/worker:[\s\S]*?ref: vibe2-unreal-core\n\s+fetch-depth: 1/);
   assert.match(workflow,/git fetch --depth=1 origin main:refs\/remotes\/origin\/main --quiet/);
   assert.match(workflow,/fan_in:[\s\S]*?ref: vibe2-unreal-core\n\s+fetch-depth: 0/);
+  assert.match(workflow,/Mark worker start/);
+  assert.match(workflow,/Aggregate Vibe2 parallelism telemetry/);
+  assert.match(workflow,/vibe2-parallelism-telemetry\.mjs/);
+  assert.match(queueControl,/version:2/);
+  assert.match(queueControl,/effectiveMaxConcurrentTasks/);
+  assert.match(telemetry,/actualPeakConcurrency/);
   assert.match(planner,/Math\.min\(20,/);
   assert.match(queueControl,/function maxConcurrent\(value\) \{ return Math\.max\(1, Math\.min\(20,/);
   const q=createVibeContinuousQueue({maxConcurrentTasks:999,tasks:[]});
