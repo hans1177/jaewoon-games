@@ -17,7 +17,7 @@ test('homepage Top30 remains 80+ score-desc with stable cutline replacement',()=
 
 test('homepage Top30 rejects legacy harness evidence and requires current real-game substance and final depth',()=>{
   assert.match(source,/const minimumValidationSchema=WEB_VALIDATION_SCHEMA_VERSION/);
-  assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=13/);
+  assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=14/);
   assert.match(source,/evaluateWebValidationEvidence/);
   assert.match(source,/requireFinalContentDepth:true/);
   assert.match(source,/requiresRealGameSubstance:true/);
