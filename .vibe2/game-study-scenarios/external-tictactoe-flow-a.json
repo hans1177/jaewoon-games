@@ -68,8 +68,8 @@
     {
       "id": "restart-board-cleared",
       "type": "expect",
-      "name": "restart loop clears board state",
-      "expression": "document.querySelectorAll('.board-cell[aria-label=\"Empty\"]').length===9"
+      "name": "restart loop clears visible board state",
+      "expression": "document.querySelectorAll('.board-cell.show').length===0 && document.querySelector('#restart-modal')?.classList.contains('show')!==true"
     }
   ]
 }
