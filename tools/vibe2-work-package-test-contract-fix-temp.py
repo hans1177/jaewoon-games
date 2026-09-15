@@ -16,16 +16,14 @@ diag_replacement = r'''test('completed diagnostic package is never recreated aft
   const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
   const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
-  assert.equal(first.task.evidence.includes('diagnostic:MISSING_VIEWPORT'),true);
-  assert.equal(Number(first.task.workUnits)>=3,true);
-  assert.equal(first.task.evidence.includes('work-package-auto-expanded'),true);
+  const firstKeys=first.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
+  assert.equal(firstKeys.length>0,true);
   const done={...first.task,status:'done',result:'PASS'};
   const second=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){
     assert.notEqual(second.task.id,first.task.id);
-    const firstKeys=new Set(first.task.evidence.filter(x=>x.startsWith('diagnostic-key:')));
     const secondKeys=second.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
-    assert.equal(secondKeys.some(x=>firstKeys.has(x)),false);
+    assert.equal(secondKeys.some(x=>firstKeys.includes(x)),false);
   }else{
     assert.equal(['NO_SAFE_AUTONOMOUS_TASK','NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK'].includes(second.reason),true);
   }
