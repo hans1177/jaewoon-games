@@ -32,7 +32,9 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/vibe2-platform-focus-policy.mjs
+          node --check tools/vibe2-roblox-owner-queue.mjs
           node --test qa/vibe2-platform-focus-policy.test.mjs
+          node --test qa/vibe2-roblox-owner-queue.test.mjs
 
       - name: Read current machine state and latest main planning inputs
         shell: bash
@@ -49,6 +51,9 @@ jobs:
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-planner'
           git config user.email 'vibe2-planner@users.noreply.github.com'
+          node tools/vibe2-roblox-owner-queue.mjs \
+            --queue=.vibe2/queue.json \
+            --directives=.vibe2/owner-directives-roblox.json | tee /tmp/vibe2-roblox-owner-queue.log
           node tools/vibe2-platform-focus-policy.mjs \
             --queue=.vibe2/queue.json \
             --config=.vibe2/platform-focus.json | tee /tmp/vibe2-platform-focus-before.log
@@ -92,6 +97,7 @@ jobs:
             /tmp/vibe2-handoff-before-plan.json
             /tmp/vibe2-handoff-after-plan.json
             /tmp/vibe2-plan.log
+            /tmp/vibe2-roblox-owner-queue.log
             /tmp/vibe2-platform-focus-before.log
             /tmp/vibe2-platform-focus-after.log
             /tmp/vibe2-study-planner-context.log
