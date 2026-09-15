@@ -81,6 +81,8 @@ test('release workflow publishes only the retained exact artifact after final re
   assert.match(workflow,/ROBLOX_V3_STATE=PUBLISHED/);
   assert.match(workflow,/item\.robloxReleaseClaim=true/);
   assert.match(workflow,/steps\.publish\.outcome == 'success'/);
+  assert.match(workflow,/ROBLOX_UNIVERSE_ID: \$\{\{ vars\.ROBLOX_UNIVERSE_ID \|\| secrets\.ROBLOX_UNIVERSE_ID \}\}/);
+  assert.match(workflow,/ROBLOX_PLACE_ID: \$\{\{ vars\.ROBLOX_PLACE_ID \|\| secrets\.ROBLOX_PLACE_ID \}\}/);
   assert.match(workflow,/ROBLOX_RUNTIME_RERUN=NO/);
   assert.match(workflow,/ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO/);
   assert.match(workflow,/ROBLOX_REGRESSION_RERUN=NO/);
