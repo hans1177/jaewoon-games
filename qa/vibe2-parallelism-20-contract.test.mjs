@@ -12,6 +12,11 @@ test('core parallelism contract is uniformly 20',()=>{
   assert.equal(DEFAULT_MAX_CONCURRENT_TASKS,20);
   assert.match(workflow,/VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'/);
   assert.match(workflow,/max-parallel: 20/);
+  assert.match(workflow,/model_cache:/);
+  assert.match(workflow,/uses: actions\/cache@v4/);
+  assert.match(workflow,/uses: actions\/cache\/restore@v4/);
+  assert.match(workflow,/VIBE2_LOCAL_MODEL_SOURCE=CACHE/);
+  assert.match(workflow,/VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL/);
   assert.match(planner,/Math\.min\(20,/);
   assert.match(queueControl,/function maxConcurrent\(value\) \{ return Math\.max\(1, Math\.min\(20,/);
   const q=createVibeContinuousQueue({maxConcurrentTasks:999,tasks:[]});
