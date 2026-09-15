@@ -208,12 +208,13 @@ jobs:
           echo 'WEB_PAID_AI=NO'
           echo 'WEB_PAID_RUNNER=NO'
 
-      - name: Prepare local Vibe2 model for development cycles
+      - name: Confirm lazy optional AI runtime policy
         if: matrix.runtimeStage == 'initial-cycle' && matrix.existingWebValidated != true
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: qwen3:1.7b
-          pull-model: 'true'
+        run: |
+          grep -q "DETERMINISTIC_FIRST=YES" tools/company-development-web-bootstrap.mjs
+          grep -q "AI_OPTIONAL=YES" tools/company-development-web-bootstrap.mjs
+          echo 'WEB_AI_MODE=LAZY_OPTIONAL'
+          echo 'WEB_MODEL_PREP=DEFERRED_UNTIL_REQUIRED'
 
       - name: Install isolated browser runtime
         run: |

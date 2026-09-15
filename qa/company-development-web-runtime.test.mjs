@@ -153,12 +153,17 @@ test('unfinished deterministic genres fail closed instead of receiving the old g
   assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-survival-horror-es-doors',gameName:'Last Lantern',baseline}),/GENRE_REAL_IMPLEMENTATION_NOT_READY:SURVIVAL_HORROR_ESCAPE/);
 });
 
-test('canonical Web bootstrap keeps Vibe2 as primary developer and supports preserved-source content rework',()=>{
+test('canonical Web bootstrap is deterministic-first and invokes Vibe2 only after deterministic paths fail',()=>{
   const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
+  assert.match(source,/DETERMINISTIC_GENRE_IMPLEMENTATION/);
   assert.match(source,/VIBE2_PRIMARY_MODEL_IMPLEMENTATION/);
   assert.match(source,/VIBE2_PRESERVED_SOURCE_REPAIR/);
-  assert.match(source,/VIBE2_PRIMARY_DEVELOPER=YES/);
-  assert.match(source,/await ensureLocalVibeRuntime\(model\)/);
+  assert.match(source,/DETERMINISTIC_FIRST=YES/);
+  assert.match(source,/AI_OPTIONAL=YES/);
+  const start=source.indexOf('export async function buildFirstPlayable');
+  const deterministic=source.indexOf('const fallback=buildContractSafePlayable({gameId,gameName,baseline});',start);
+  const model=source.indexOf('await ensureLocalVibeRuntime(model);',start);
+  assert.ok(deterministic>start&&model>deterministic,'deterministic compiler must run before local model setup');
   assert.match(source,/await buildVibePlayable\(/);
   assert.match(source,/VIBE_DEVELOPMENT_CONTEXT/);
   assert.match(source,/repairReason/);
@@ -236,7 +241,8 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(source,/--force-repair=true/);
   assert.match(source,/--repair-reason=FINAL_CONTENT_DEPTH_REWORK_REQUIRED/);
   assert.match(source,/web-content-development-rework:web-worker-result-missing/);
-  assert.match(source,/Prepare local Vibe2 model for development cycles/);
+  assert.match(source,/Confirm lazy optional AI runtime policy/);
+  assert.match(source,/WEB_MODEL_PREP=DEFERRED_UNTIL_REQUIRED/);
 
   // F: direct time-stage/test-harness controls stay forbidden.
   assert.match(validator,/DIRECT_TIME_STAGE_CONTROL_FORBIDDEN/);

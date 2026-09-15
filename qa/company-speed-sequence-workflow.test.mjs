@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
 const router=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+const designRuntime=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
 const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const stages=[
   'Change detection and exact-source reuse',
@@ -45,15 +46,16 @@ test('selected-platform router repairs legacy Web target paths to the platform s
   assert.doesNotMatch(router,/fetch-depth:\s*0/);
 });
 
-test('Web runtime pins source revision and prepares local Vibe only for development cycles',()=>{
+test('Web runtime pins source revision and defers local AI setup until deterministic paths are exhausted',()=>{
   const exactRefs=router.match(/ref:\s*\$\{\{\s*github\.sha\s*\}\}/g)||[];
   assert.ok(exactRefs.length>=4,`expected exact revision checkouts, got ${exactRefs.length}`);
-  assert.match(router,/Prepare local Vibe2 model for development cycles/);
-  assert.match(router,/if: matrix\.runtimeStage == 'initial-cycle'/);
-  assert.match(router,/model: qwen3:1\.7b/);
-  assert.match(router,/--force-repair=true/,'a returned final-depth failure must force Vibe to patch the preserved source');
+  assert.doesNotMatch(router,/Prepare local Vibe2 model for development cycles/);
+  assert.doesNotMatch(router,/uses:\s*\.\/\.github\/actions\/prepare-ollama[\s\S]{0,180}model: qwen3:1\.7b/);
+  assert.match(router,/Confirm lazy optional AI runtime policy/);
+  assert.match(router,/WEB_AI_MODE=LAZY_OPTIONAL/);
+  assert.match(router,/WEB_MODEL_PREP=DEFERRED_UNTIL_REQUIRED/);
+  assert.match(router,/--force-repair=true/,'a returned final-depth failure must force a real preserved-source repair');
   assert.match(router,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/);
-  assert.doesNotMatch(router,/WEB_MODEL_SETUP=SKIPPED_UNUSED/);
 });
 
 test('source-bind revalidation resumes the selected platform executor without skipping ahead',()=>{
@@ -111,6 +113,20 @@ test('Web development validation is parallel-first with twenty isolated workers 
   assert.match(policy,/webValidationParallelismTarget: 20/);
   assert.match(policy,/webValidationParallelismMax: 20/);
   assert.match(policy,/sharedRuntimeStatePersistedBySingleAggregationStep: true/);
+});
+
+test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate six-game limit',()=>{
+  assert.match(policy,/concurrentGameWipTarget: 20/);
+  assert.match(policy,/concurrentGameWipMax: 20/);
+  assert.match(policy,/adaptiveBackpressureSteps: \[20, 16, 12, 8, 4\]/);
+  assert.ok(designRuntime.includes("const maxMatch=policy.match(/concurrentGameWipMax:\\s*(\\d+)/);"));
+  assert.match(designRuntime,/slice\(0,designWipMax\)/);
+  assert.match(designRuntime,/parallel_max=\$\{designWipMax\}/);
+  assert.match(designRuntime,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
+  assert.match(designRuntime,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
+  assert.doesNotMatch(designRuntime,/slice\(0,6\)/);
+  assert.doesNotMatch(designRuntime,/max-parallel:\s*6/);
+  assert.doesNotMatch(designRuntime,/GAME_DESIGN_WIP_MAX=6/);
 });
 
 test('DEVELOPMENT runtime does not serialize whole runs and serializes only shared-state writers',()=>{
