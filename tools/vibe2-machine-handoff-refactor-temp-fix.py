@@ -19,18 +19,6 @@ def patch_source():
         raise SystemExit('continuous preflight source patch target missing')
     text = text.replace(old_preflight, new_preflight, 1)
 
-    old_task = "const task={id:'task-1',gameId:'demo',target:'web',department:'development',type:'implementation',goal:'Edit demo.js',responsibleFiles:['web-games/demo/demo.js'],dependencies:[],priority:'high',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,sourceRoot:'web-games/demo',estimatedRisk:'low'};"
-    new_task = "const task={id:'task-1',gameId:'demo',target:'web',department:'qa',type:'qa',goal:'Inspect demo web source',responsibleFiles:[],dependencies:[],priority:'high',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,sourceRoot:'web-games/demo',estimatedRisk:'low'};"
-    if old_task not in text:
-        raise SystemExit('E2E task fixture target missing')
-    text = text.replace(old_task, new_task, 1)
-
-    old_asserts = """  assert.equal(order.machineHandoff.used,true);\n  assert.equal(order.machineHandoff.currentPersistentMax,20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'),true);"""
-    new_asserts = """  assert.equal(order.run,true);\n  assert.equal(order.executionRoute,'analysis-only');\n  assert.equal(order.machineHandoff.used,true);\n  assert.equal(order.machineHandoff.currentPersistentMax,20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'),true);"""
-    if old_asserts not in text:
-        raise SystemExit('E2E handoff assertion target missing')
-    text = text.replace(old_asserts, new_asserts, 1)
-
     SCRIPT.write_text(text, encoding='utf-8')
 
 
@@ -47,16 +35,32 @@ def migrate_queue_schema_v5():
     replace_once_file('vibe2-runtime.json', '"queue": 4,', '"queue": 5,', 'runtime queue schema version')
     replace_once_file('.vibe2/queue.json', '"version": 4,', '"version": 5,', 'persisted queue schema version')
 
-    handoff = Path('qa/vibe2-handoff.test.mjs')
-    text = handoff.read_text(encoding='utf-8')
-    text = text.replace('version:4', 'version:5')
-    text = text.replace('version: 4,', 'version: 5,')
-    text = text.replace('snapshot.generatedFrom.queueVersion, 4', 'snapshot.generatedFrom.queueVersion, 5')
-    handoff.write_text(text, encoding='utf-8')
+    for file_name in ['qa/vibe2-handoff.test.mjs', 'qa/vibe2-auto-planner.test.mjs']:
+        file = Path(file_name)
+        text = file.read_text(encoding='utf-8')
+        text = text.replace('version:4', 'version:5')
+        text = text.replace('version: 4,', 'version: 5,')
+        text = text.replace('snapshot.generatedFrom.queueVersion, 4', 'snapshot.generatedFrom.queueVersion, 5')
+        file.write_text(text, encoding='utf-8')
 
-    planner = Path('qa/vibe2-auto-planner.test.mjs')
-    text = planner.read_text(encoding='utf-8').replace('version:4', 'version:5').replace('version: 4,', 'version: 5,')
-    planner.write_text(text, encoding='utf-8')
+
+def patch_e2e_fixture():
+    path = Path('qa/vibe2-handoff.test.mjs')
+    text = path.read_text(encoding='utf-8')
+
+    old_return = "    return { id:`e2e-${n}`, gameId, target:'web', department:'development', type:'implementation', goal:'existing web text maintenance', responsibleFiles:[`${sourceRoot}/index.html`], dependencies:[], priority:'normal', releaseState:'development-confirmed', status:'queued', retries:0, maxRetries:2, ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false, sourceRoot, estimatedRisk:'low', speculativeEligible:false, evidence:[] };"
+    new_return = "    const analysisOnly = index === 0;\n    return { id:`e2e-${n}`, gameId, target:'web', department:analysisOnly?'qa':'development', type:analysisOnly?'qa':'implementation', goal:analysisOnly?'inspect existing web source':'existing web text maintenance', responsibleFiles:analysisOnly?[]:[`${sourceRoot}/index.html`], dependencies:[], priority:'normal', releaseState:'development-confirmed', status:'queued', retries:0, maxRetries:2, ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false, sourceRoot, estimatedRisk:'low', speculativeEligible:false, evidence:[] };"
+    if old_return not in text:
+        raise SystemExit('E2E generated task fixture target missing')
+    text = text.replace(old_return, new_return, 1)
+
+    old_asserts = """  assert.equal(order.machineHandoff.used, true);\n  assert.equal(order.machineHandoff.consistency.ok, true);\n  assert.equal(order.machineHandoff.currentPersistentMax, 20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'), true);"""
+    new_asserts = """  assert.equal(order.run, true);\n  assert.equal(order.executionRoute, 'analysis-only');\n  assert.equal(order.machineHandoff.used, true);\n  assert.equal(order.machineHandoff.consistency.ok, true);\n  assert.equal(order.machineHandoff.currentPersistentMax, 20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'), true);"""
+    if old_asserts not in text:
+        raise SystemExit('E2E handoff assertion target missing')
+    text = text.replace(old_asserts, new_asserts, 1)
+
+    path.write_text(text, encoding='utf-8')
 
 
 def fix_generated_yaml():
@@ -72,7 +76,9 @@ def fix_generated_yaml():
         indented = ''.join(('      ' + line if line.strip() else line) for line in block.splitlines(True))
         text = text[:start] + indented + text[end:]
         WORKFLOW.write_text(text, encoding='utf-8')
+
     migrate_queue_schema_v5()
+    patch_e2e_fixture()
 
 
 if __name__ == '__main__':
