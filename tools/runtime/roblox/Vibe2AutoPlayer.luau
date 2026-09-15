@@ -5,6 +5,7 @@
 local UserInputService = game:GetService("UserInputService")
 local StudioTestService = game:GetService("StudioTestService")
 local HttpService = game:GetService("HttpService")
+local EncodingService = game:GetService("EncodingService")
 
 local Vibe2AutoPlayer = {}
 
@@ -126,8 +127,8 @@ end
 
 function Vibe2AutoPlayer.EncodeStdout(result)
     local json = HttpService:JSONEncode(result)
-    local base64 = HttpService:Base64Encode(json)
-    return "VIBE2_AUTO_PLAYER_RUNTIME_JSON=" .. base64
+    local encoded = EncodingService:Base64Encode(buffer.fromstring(json))
+    return "VIBE2_AUTO_PLAYER_RUNTIME_JSON=" .. buffer.tostring(encoded)
 end
 
 return Vibe2AutoPlayer
