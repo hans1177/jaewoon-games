@@ -23,12 +23,13 @@ function stepUp(current) {
 
 export function createParallelismControl(input = {}) {
   return Object.freeze({
-    version: 1,
+    version: 2,
     currentMax: normalizeStep(input.currentMax),
     healthyStreak: Math.max(0, Math.floor(num(input.healthyStreak))),
     pressureStreak: Math.max(0, Math.floor(num(input.pressureStreak))),
     lastDecision: clean(input.lastDecision) || 'INIT',
     lastReason: clean(input.lastReason) || 'DEFAULT_20',
+    lastRunId: clean(input.lastRunId) || null,
     lastUpdatedAt: clean(input.lastUpdatedAt) || null,
     lastTelemetry: input.lastTelemetry && typeof input.lastTelemetry === 'object' ? input.lastTelemetry : null
   });
@@ -66,6 +67,16 @@ function isHealthy(telemetry = {}) {
 
 export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString() } = {}) {
   const control = createParallelismControl(controlInput);
+  const runId = clean(telemetry.runId);
+  if (runId && control.lastRunId === runId) {
+    return createParallelismControl({
+      ...control,
+      lastDecision: 'HOLD',
+      lastReason: 'DUPLICATE_RUN',
+      lastUpdatedAt: now
+    });
+  }
+
   const current = control.currentMax;
   const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
   const effectiveMax = Math.max(1, Math.floor(num(telemetry.effectiveMax) || current));
@@ -118,8 +129,10 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     pressureStreak,
     lastDecision: decision,
     lastReason: reason,
+    lastRunId: runId || control.lastRunId,
     lastUpdatedAt: now,
     lastTelemetry: {
+      runId: runId || null,
       workerCount,
       effectiveMax,
       actualPeakConcurrency: num(telemetry.actualPeakConcurrency),
