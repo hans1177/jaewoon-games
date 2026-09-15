@@ -96,11 +96,11 @@ jobs:
           workflow = Path('.github/workflows/company-development-confirmed-runtime.yml')
           w = workflow.read_text()
           eager = """      - name: Prepare local Vibe2 model for development cycles
-                if: matrix.runtimeStage == 'initial-cycle' && matrix.existingWebValidated != true
-                uses: ./.github/actions/prepare-ollama
-                with:
-                  model: qwen3:1.7b
-                  pull-model: 'true'
+        if: matrix.runtimeStage == 'initial-cycle' && matrix.existingWebValidated != true
+        uses: ./.github/actions/prepare-ollama
+        with:
+          model: qwen3:1.7b
+          pull-model: 'true'
 
           """
           if w.count(eager) != 1:
