@@ -670,7 +670,7 @@
         "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=seed-roblox-battleground-fight-welcome-to-bloxburg --game-name=Vector Clash --baseline=design/seed-roblox-battleground-figh"
       ],
       "webValidationLastAttemptAt": "2026-09-15T15:00:04.083Z",
-      "updatedAt": "2026-09-15T15:00:04.083Z",
+      "updatedAt": "2026-09-15T16:38:08.714Z",
       "webValidationEvidencePath": "design/seed-roblox-battleground-fight-welcome-to-bloxburg/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -686,12 +686,12 @@
       "robloxIndependentQaPassed": true,
       "robloxRegressionPassed": true,
       "robloxFinalReviewPassed": true,
-      "robloxFailureStage": "RELEASE_PROMOTION",
-      "robloxFailureSignature": "ROBLOX_RELEASE_PROMOTION_PENDING",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
       "robloxBuildSourceRevision": "1ce32ac40c5d3fcecee11979c5ba531b12e99c49",
       "robloxBuildArtifactIdentity": "sha256:97d89f3dcd07ef9433f96f7c7f5178ec0a9979105051d79a9447da4e7fe71691",
       "robloxBuildPassedAt": "2026-09-13T04:34:54.614Z",
-      "robloxLastSuccessfulStage": "FINAL_REVIEW",
+      "robloxLastSuccessfulStage": "RELEASE_PROMOTION",
       "robloxBuildPreflightPassedAt": "2026-09-13T07:21:53.468Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
@@ -849,9 +849,9 @@
         "independentQaPassed": true,
         "regressionPassed": true,
         "exactRevision": true,
-        "lastSuccessfulStage": "FINAL_REVIEW",
-        "failureStage": "RELEASE_PROMOTION",
-        "failureSignature": "ROBLOX_RELEASE_PROMOTION_PENDING"
+        "lastSuccessfulStage": "RELEASE_PROMOTION",
+        "failureStage": null,
+        "failureSignature": null
       },
       "webStrictScore": 100,
       "webValidationSchemaVersion": 10,
@@ -863,7 +863,7 @@
       "robloxMultiplayerMode": "COMPETITIVE",
       "robloxMultiplayerApplicable": true,
       "robloxFinalReviewCheckedAt": "2026-09-15T08:21:10.934Z",
-      "robloxReleaseClaim": false,
+      "robloxReleaseClaim": true,
       "webInitialCyclePassed": false,
       "webInitialCyclePassedAt": "",
       "webInitialCycleEvidencePath": "",
@@ -896,7 +896,36 @@
         "authority": "roblox-real-studio-multiplayer-qa"
       },
       "robloxMultiplayerQaPassed": true,
-      "robloxMultiplayerQaPassedAt": "2026-09-15T04:17:49.873Z"
+      "robloxMultiplayerQaPassedAt": "2026-09-15T04:17:49.873Z",
+      "robloxPublicationTarget": {
+        "version": 1,
+        "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+        "universeId": "10766519079",
+        "placeId": "120787429678729",
+        "verified": true,
+        "verifiedAt": "2026-09-15T16:38:08.714Z",
+        "lastVerifiedAt": "2026-09-15T16:38:08.714Z",
+        "source": "known-good-runtime-evidence",
+        "authority": "roblox-canonical-publication-target"
+      },
+      "robloxReleaseEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+        "platform": "ROBLOX",
+        "sourceRevision": "1ce32ac40c5d3fcecee11979c5ba531b12e99c49",
+        "artifactIdentity": "sha256:97d89f3dcd07ef9433f96f7c7f5178ec0a9979105051d79a9447da4e7fe71691",
+        "artifactRunId": 34738148167,
+        "universeId": "10766519079",
+        "placeId": "120787429678729",
+        "finalReviewPassed": true,
+        "published": true,
+        "versionNumber": 4,
+        "workflowRunId": 34971431574,
+        "publishedAt": "2026-09-15T16:38:08.714Z",
+        "authority": "roblox-open-cloud-final-review-release-promotion"
+      },
+      "robloxReleasePublishedAt": "2026-09-15T16:38:08.714Z",
+      "robloxReleaseVersionNumber": 4
     },
     {
       "gameId": "seed-roblox-survival-horror-es-doors",
@@ -1959,7 +1988,7 @@
       "webInitialCycleMusicValidationPassed": false
     }
   ],
-  "updatedAt": "2026-09-15T15:03:53.492Z",
+  "updatedAt": "2026-09-15T16:38:08.714Z",
   "routerContractVersion": 4,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
