@@ -86,7 +86,7 @@ addition=r'''test('inlined shared-engine snapshots refresh to the current canoni
   const html=fs.readFileSync(path.join(refreshedCandidate,'index.html'),'utf8');
   assert.match(html,/window\.__GAME_REPLAY_SEED__=replaySeed/);
   assert.equal((html.match(/data-scope-id=/g)||[]).length,9);
-  assert.match(html,/existing inlined shared runtime deterministically refreshed before validation|data-replay-seed/);
+  assert.match(html,/document\.body\.dataset\.replaySeed=replaySeed/);
 });
 
 '''+anchor
