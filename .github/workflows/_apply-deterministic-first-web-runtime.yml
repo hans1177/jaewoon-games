@@ -6,6 +6,7 @@ on:
       - fix/deterministic-first-web-runtime-20260915
     paths:
       - '.github/workflows/_apply-deterministic-first-web-runtime.yml'
+      - '.github/scripts/apply-deterministic-first-web-runtime.py'
 
 permissions:
   contents: write
@@ -22,7 +23,10 @@ jobs:
         with:
           node-version: '22'
       - name: Apply deterministic-first patch
-        run: python3 .github/scripts/apply-deterministic-first-web-runtime.py
+        run: |
+          set -euo pipefail
+          sed -i "s/q2,n=re.subn(pattern,repl,q,count=1)/q2,n=re.subn(pattern,lambda _m: repl,q,count=1)/g" .github/scripts/apply-deterministic-first-web-runtime.py
+          python3 .github/scripts/apply-deterministic-first-web-runtime.py
       - name: Verify targeted contracts
         run: |
           set -euo pipefail
