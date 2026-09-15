@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {buildGameFlowArchitecture,evaluateGameFlowArchitecture} from './company-vibe2-game-flow-architect.mjs';
+import {buildCodingArchitecture,evaluateCodingArchitecture} from './company-vibe2-coding-architecture.mjs';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const uniq=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
@@ -86,12 +87,23 @@ export function analyzeExistingGameSource(source=''){
   };
 }
 
-export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},inventory=[],blockers=[]}={}){
+export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},codingArchitecture=null,inventory=[],blockers=[]}={}){
   const tasks=[],add=(id,reason,dependsOn=[])=>{if(!tasks.some(t=>t.id===id))tasks.push({id,reason,dependsOn});};
   const preserveDependency=sourceAnalysis.present?['PRESERVE_EXISTING_BEHAVIOR']:[];
   if(!sourceAnalysis.present)add('IMPLEMENT_CORE_SOURCE','No preserved source is available; implement the locked gameplay sketch without inventing a different game.');
   else add('PRESERVE_EXISTING_BEHAVIOR','Patch the existing game in place; do not replace unrelated working systems.');
   if(sourceAnalysis.storageKeys?.length)add('PRESERVE_SAVE_CONTRACT',`Keep existing save keys and meanings: ${sourceAnalysis.storageKeys.join(', ')}`,['PRESERVE_EXISTING_BEHAVIOR']);
+  if(codingArchitecture){
+    add('ESTABLISH_CODING_ARCHITECTURE','Apply logical module boundaries, state ownership, data schema, API contracts and event contracts before broad feature implementation.',preserveDependency);
+    if(codingArchitecture.developmentMode==='GREENFIELD')add('IMPLEMENT_GREENFIELD_ARCHITECTURE_FIRST','No existing source is required: lock architecture and contracts before feature code.',['ESTABLISH_CODING_ARCHITECTURE']);
+    if(codingArchitecture.developmentMode==='PRESERVE_PATCH')add('PRESERVE_PATCH_CURRENT_CODEBASE','Analyze current code, preserve working behavior/save semantics and patch only responsible systems.',['ESTABLISH_CODING_ARCHITECTURE','PRESERVE_EXISTING_BEHAVIOR']);
+    if(codingArchitecture.developmentMode==='RECOMPOSE')add('RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE','Abstract allowed mechanics/flow from references and implement a coherent new architecture; do not copy unauthorized external source/assets/text.',['ESTABLISH_CODING_ARCHITECTURE']);
+    add('IMPLEMENT_FEATURE_UNITS_WITH_MICRO_TESTS','Implement one coherent feature unit at a time; syntax/type/import check, targeted micro runtime test and invariant check must happen before the next unit.',['ESTABLISH_CODING_ARCHITECTURE']);
+    add('ENFORCE_STATE_OWNERSHIP_APIS_AND_INVARIANTS','Do not mutate foreign system state directly; enforce declared APIs, idempotent events and runtime correctness invariants.',['ESTABLISH_CODING_ARCHITECTURE']);
+    add('PREDICT_CHANGE_IMPACT_BEFORE_PATCH','Predict affected dependent systems and required targeted checks before modifying code.',['ESTABLISH_CODING_ARCHITECTURE']);
+    add('GENERATE_REGRESSION_CASE_PER_FEATURE_OR_BUG','Each new feature and fixed defect must add or update a focused regression case so the same failure cannot silently return.',['IMPLEMENT_FEATURE_UNITS_WITH_MICRO_TESTS']);
+    add('APPLY_RECOVERY_PERFORMANCE_AND_CHANGE_BUDGET','Handle invalid/missing state safely, avoid duplicate partial effects, prevent unbounded runtime patterns and keep changes minimally coherent.',['IMPLEMENT_FEATURE_UNITS_WITH_MICRO_TESTS']);
+  }
   if(gameplaySketch?.flowArchitecture){
     add('IMPLEMENT_GAME_FLOW_ARCHITECTURE','Implement the selected 2-4 macro Flow DNA as real gameplay structure; do not repeat one renamed loop across the entire game.',preserveDependency);
     add('IMPLEMENT_FLOW_PHASE_TRANSITIONS','Early, mid and late play must change dominant flow, decision structure or pressure type.',['IMPLEMENT_GAME_FLOW_ARCHITECTURE']);
@@ -109,7 +121,9 @@ export function buildVibePatchPlan({gameplaySketch={},sourceAnalysis={},inventor
   if(gameplaySketch?.progressionModel?.required)add('CONNECT_PROGRESSION','Rewards, objectives and unlocks must connect back into the core loop.');
   if(gameplaySketch?.expansionPlan?.requiredForFinalDepth)add('EXPAND_MEANINGFUL_CONTENT','Final depth must add new enemy/area/objective/interaction/strategy/flow dimensions; repetition and retry time do not count.');
   for(const blocker of uniq(blockers).slice(0,24))add(`FIX_${clean(blocker).replace(/[^A-Za-z0-9]+/g,'_').slice(0,64)}`,`Resolve validator/rework failure: ${clean(blocker)}`);
-  return{version:3,mode:'PATCH_EXISTING_RESPONSIBLE_SYSTEMS',forbidden:['FULL_GAME_REWRITE_WHEN_SOURCE_EXISTS','SAVE_KEY_OR_MEANING_BREAK','TEMPLATE_SWAP_TO_HIDE_MISSING_FEATURES','STATIC_LABEL_AS_IMPLEMENTATION','VALIDATION_PROXY_AS_GAMEPLAY','SAME_MACRO_LOOP_RENAMED_ACROSS_ALL_PHASES','COSMETIC_ONLY_FLOW_VARIATION'],preserve:{storageKeys:sourceAnalysis.storageKeys||[],workingFunctions:(sourceAnalysis.functions||[]).slice(0,30),mechanicIds:sourceAnalysis.mechanicIds||[]},approvedScopeIds:inventory.map(x=>clean(x?.id)).filter(Boolean),tasks,verificationOrder:['FLOW_ARCHITECTURE_CONTRACT','STATIC_CONTRACT','MOBILE_RUNTIME','REAL_INPUT_AND_STATE_CHANGE','APPROVED_SCOPE_BEHAVIOR','WIN_AND_FAIL','LONG_GOAL_PLAY','REPLAY_REGRESSION','SAVE_RESTORE','SOFTLOCK','ECONOMY','DIFFICULTY','PERFORMANCE','FINAL_CONTENT_DEPTH_WHEN_APPLICABLE']};
+  const developmentMode=codingArchitecture?.developmentMode||null;
+  const mode=developmentMode==='GREENFIELD'?'GREENFIELD_ARCHITECT_THEN_IMPLEMENT':developmentMode==='RECOMPOSE'?'RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE':'PATCH_EXISTING_RESPONSIBLE_SYSTEMS';
+  return{version:4,mode,developmentMode,forbidden:['FULL_GAME_REWRITE_WHEN_SOURCE_EXISTS','SAVE_KEY_OR_MEANING_BREAK','TEMPLATE_SWAP_TO_HIDE_MISSING_FEATURES','STATIC_LABEL_AS_IMPLEMENTATION','VALIDATION_PROXY_AS_GAMEPLAY','SAME_MACRO_LOOP_RENAMED_ACROSS_ALL_PHASES','COSMETIC_ONLY_FLOW_VARIATION','WRITE_COMPLEX_GAME_IN_ONE_UNVERIFIED_PASS','DIRECT_CROSS_SYSTEM_STATE_MUTATION','UNAUTHORIZED_EXTERNAL_SOURCE_ASSET_OR_TEXT_COPY'],preserve:{storageKeys:sourceAnalysis.storageKeys||[],workingFunctions:(sourceAnalysis.functions||[]).slice(0,30),mechanicIds:sourceAnalysis.mechanicIds||[]},approvedScopeIds:inventory.map(x=>clean(x?.id)).filter(Boolean),tasks,verificationOrder:['CODING_ARCHITECTURE_CONTRACT','FLOW_ARCHITECTURE_CONTRACT','SYNTAX_TYPE_IMPORT_CHECK','SYSTEM_MICRO_RUNTIME_TESTS','INVARIANT_CHECKS','STATIC_CONTRACT','MOBILE_RUNTIME','REAL_INPUT_AND_STATE_CHANGE','APPROVED_SCOPE_BEHAVIOR','WIN_AND_FAIL','LONG_GOAL_PLAY','REPLAY_REGRESSION','SAVE_RESTORE','SOFTLOCK','ECONOMY','DIFFICULTY','PERFORMANCE','FULL_CANONICAL_VALIDATION','FINAL_CONTENT_DEPTH_WHEN_APPLICABLE']};
 }
 
 export function buildDependencyAnalysis({sourceAnalysis={},patchPlan={}}={}){
@@ -122,6 +136,7 @@ function classifyFailure(value){
   if(/SAVE|STORAGE|RESTORE|LOAD/.test(upper))return'SAVE_REGRESSION';
   if(/REPLAY|DETERMIN|SAME_SEED|SAME_INPUT/.test(upper))return'REPLAY_REGRESSION';
   if(/MOBILE|VIEWPORT|TOUCH|POINTER/.test(upper))return'MOBILE_RUNTIME';
+  if(/CODING|ARCHITECT|STATE_OWNER|INVARIANT|MICRO_TEST|REGRESSION_CASE|IMPACT|DUPLICATE_CAUSAL|CROSS_SYSTEM/.test(upper))return'CODING_ARCHITECTURE';
   if(/FLOW|PHASE|BRANCH|WORLD_REACT|REGION_RULE|PLAYSTYLE|ENDING/.test(upper))return'GAME_FLOW_ARCHITECTURE';
   if(/CONTENT|30MIN|DEPTH|REPET|LONG_GOAL/.test(upper))return'CONTENT_DEPTH';
   if(/INTERACTION|NPC|OBJECT/.test(upper))return'ENTITY_INTERACTION';
@@ -184,14 +199,14 @@ export function loadCanonicalRuntimeEvidence({evidencePath=process.env.WEB_FINAL
 export function buildFailureDrivenRepairLoop({blockers=[],patchPlan={},runtimeValidationPlan=null,runtimeEvidence=null}={}){
   const runtimeBlockers=runtimeValidationPlan&&runtimeEvidence?runtimeValidationBlockers({plan:runtimeValidationPlan,evidence:runtimeEvidence}):[];
   const failures=uniq([...blockers,...runtimeBlockers]).slice(0,32),classifications=failures.map(value=>({failure:value,type:classifyFailure(value)}));
-  const repairTaskIds=(patchPlan.tasks||[]).filter(task=>task.id.startsWith('FIX_')||task.id.startsWith('IMPLEMENT_FLOW_')||['IMPLEMENT_GAME_FLOW_ARCHITECTURE','IMPLEMENT_PARALLEL_GOALS_AND_BRANCH_CONSEQUENCES','IMPLEMENT_WORLD_REACTIVITY_AND_NPC_INITIATIVE','IMPLEMENT_DISTINCT_FAILURE_AND_VICTORY_STRUCTURES','IMPLEMENT_PLAYSTYLE_AND_REGION_RULE_VARIATION','IMPLEMENT_SESSION_RHYTHM_INFORMATION_AND_REVISIT','IMPLEMENT_PLAYABLE_SPACE','IMPLEMENT_ENTITY_INTERACTIONS','IMPLEMENT_POSITIONAL_PLACEMENT','IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','IMPLEMENT_REPLAY_SEED_CONTRACT','CONNECT_PROGRESSION','EXPAND_MEANINGFUL_CONTENT'].includes(task.id)).map(task=>task.id);
-  return{version:5,mode:'FAILURE_DRIVEN_TARGETED_REPAIR',failures:classifications,runtimeEvidenceBound:Boolean(runtimeEvidence&&typeof runtimeEvidence==='object'),runtimeFailureCount:runtimeBlockers.length,repairTaskIds:uniq(repairTaskIds),retryContract:['READ_FAILURE_EVIDENCE','IDENTIFY_RESPONSIBLE_EXISTING_SYSTEM','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RERUN_FAILED_VALIDATION','VERIFY_FLOW_ARCHITECTURE_WHEN_RELEVANT','RUN_LONG_GOAL_PLAY_WHEN_RELEVANT','RUN_REPLAY_REGRESSION','VERIFY_SAVE_RESTORE','VERIFY_SOFTLOCK_ECONOMY_DIFFICULTY_PERFORMANCE_MOBILE','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],stopCondition:'ALL_CURRENT_FAILURES_CLEARED_WITH_REGRESSION_GREEN'};
+  const repairTaskIds=(patchPlan.tasks||[]).filter(task=>task.id.startsWith('FIX_')||task.id.startsWith('IMPLEMENT_FLOW_')||task.id.startsWith('IMPLEMENT_FEATURE_')||['ESTABLISH_CODING_ARCHITECTURE','IMPLEMENT_GREENFIELD_ARCHITECTURE_FIRST','PRESERVE_PATCH_CURRENT_CODEBASE','RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE','ENFORCE_STATE_OWNERSHIP_APIS_AND_INVARIANTS','PREDICT_CHANGE_IMPACT_BEFORE_PATCH','GENERATE_REGRESSION_CASE_PER_FEATURE_OR_BUG','APPLY_RECOVERY_PERFORMANCE_AND_CHANGE_BUDGET','IMPLEMENT_GAME_FLOW_ARCHITECTURE','IMPLEMENT_PARALLEL_GOALS_AND_BRANCH_CONSEQUENCES','IMPLEMENT_WORLD_REACTIVITY_AND_NPC_INITIATIVE','IMPLEMENT_DISTINCT_FAILURE_AND_VICTORY_STRUCTURES','IMPLEMENT_PLAYSTYLE_AND_REGION_RULE_VARIATION','IMPLEMENT_SESSION_RHYTHM_INFORMATION_AND_REVISIT','IMPLEMENT_PLAYABLE_SPACE','IMPLEMENT_ENTITY_INTERACTIONS','IMPLEMENT_POSITIONAL_PLACEMENT','IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','IMPLEMENT_REPLAY_SEED_CONTRACT','CONNECT_PROGRESSION','EXPAND_MEANINGFUL_CONTENT'].includes(task.id)).map(task=>task.id);
+  return{version:6,mode:'FAILURE_DRIVEN_TARGETED_REPAIR',failures:classifications,runtimeEvidenceBound:Boolean(runtimeEvidence&&typeof runtimeEvidence==='object'),runtimeFailureCount:runtimeBlockers.length,repairTaskIds:uniq(repairTaskIds),retryContract:['READ_FAILURE_EVIDENCE','IDENTIFY_RESPONSIBLE_EXISTING_SYSTEM','PREDICT_AFFECTED_SYSTEMS','PATCH_MINIMUM_COHERENT_RESPONSIBLE_BLOCK','RUN_RELEVANT_MICRO_RUNTIME_TEST','CHECK_STATE_OWNERSHIP_AND_INVARIANTS','ADD_OR_UPDATE_REGRESSION_CASE','RERUN_FAILED_VALIDATION','VERIFY_FLOW_ARCHITECTURE_WHEN_RELEVANT','RUN_LONG_GOAL_PLAY_WHEN_RELEVANT','RUN_REPLAY_REGRESSION','VERIFY_SAVE_RESTORE','VERIFY_SOFTLOCK_ECONOMY_DIFFICULTY_PERFORMANCE_MOBILE','PRESERVE_SAVE_AND_WORKING_BEHAVIOR'],stopCondition:'ALL_CURRENT_FAILURES_CLEARED_WITH_REGRESSION_GREEN'};
 }
 
-export function buildVibeDevelopmentContext({gameId='',genre='',baseline={},inventory=[],existingHtml='',blockers=[],runtimeEvidence=undefined}={}){
+export function buildVibeDevelopmentContext({gameId='',genre='',baseline={},inventory=[],existingHtml='',blockers=[],runtimeEvidence=undefined,developmentMode=''}={}){
   const boundRuntimeEvidence=runtimeEvidence===undefined?loadCanonicalRuntimeEvidence():runtimeEvidence;
-  const gameplaySketch=deriveGameplaySketch({gameId,genre,baseline,inventory}),flowArchitectureValidation=evaluateGameFlowArchitecture(gameplaySketch.flowArchitecture||{}),sourceAnalysis=analyzeExistingGameSource(existingHtml),patchPlan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,inventory,blockers}),dependencyAnalysis=buildDependencyAnalysis({sourceAnalysis,patchPlan}),runtimeValidationPlan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis}),repairLoop=buildFailureDrivenRepairLoop({blockers,patchPlan,runtimeValidationPlan,runtimeEvidence:boundRuntimeEvidence});
-  return{version:6,gameplaySketch,flowArchitectureValidation,sourceAnalysis,dependencyAnalysis,patchPlan,repairLoop,runtimeValidationPlan,runtimeEvidence:boundRuntimeEvidence};
+  const gameplaySketch=deriveGameplaySketch({gameId,genre,baseline,inventory}),flowArchitectureValidation=evaluateGameFlowArchitecture(gameplaySketch.flowArchitecture||{}),sourceAnalysis=analyzeExistingGameSource(existingHtml),codingArchitecture=buildCodingArchitecture({gameId,genre,baseline,gameplaySketch,sourceAnalysis,explicitDevelopmentMode:developmentMode}),codingArchitectureValidation=evaluateCodingArchitecture(codingArchitecture),patchPlan=buildVibePatchPlan({gameplaySketch,sourceAnalysis,codingArchitecture,inventory,blockers}),dependencyAnalysis=buildDependencyAnalysis({sourceAnalysis,patchPlan}),runtimeValidationPlan=buildRuntimeValidationPlan({gameplaySketch,sourceAnalysis}),repairLoop=buildFailureDrivenRepairLoop({blockers,patchPlan,runtimeValidationPlan,runtimeEvidence:boundRuntimeEvidence});
+  return{version:7,gameplaySketch,flowArchitectureValidation,codingArchitecture,codingArchitectureValidation,sourceAnalysis,dependencyAnalysis,patchPlan,repairLoop,runtimeValidationPlan,runtimeEvidence:boundRuntimeEvidence};
 }
 
 export function clipPreservedSourceForModel(source='',max=24000){
