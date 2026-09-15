@@ -41,11 +41,21 @@ proto.drawSea = function optimizedSea(ctx, game) {
   }
 };
 
-let lastPaintAt = 0;
+const TARGET_FPS = 32;
+const FRAME_MS = 1000 / TARGET_FPS;
+let lastPaintAt = -Infinity;
+
+// 플레이어·몬스터·노비·병력을 포함한 전체 화면 움직임을 정확히 32FPS로 표시한다.
+// 시뮬레이션 시간은 그대로 유지하고 그리기 횟수만 제한하므로 이동속도/공격속도는 변하지 않는다.
 proto.draw = function optimizedDraw(game) {
   const now = performance.now();
-  if (now - lastPaintAt < 32) return;
-  lastPaintAt = now;
+  if (now - lastPaintAt < FRAME_MS) return;
+  if (Number.isFinite(lastPaintAt)) {
+    const elapsed = now - lastPaintAt;
+    lastPaintAt = now - (elapsed % FRAME_MS);
+  } else {
+    lastPaintAt = now;
+  }
 
   // 예전 저장에 기사 4명 이상이 남아 있어도 새 최대치 3명을 강제한다.
   let knightCount = 0;
