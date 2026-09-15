@@ -22,45 +22,43 @@
   "representatives": {
     "planning": {
       "keep": [
-        "The Lost Gardens of Eldoria is a planned game designed for casual puzzle enthusiasts, with a focus on simple yet rewarding game logic.",
-        "A"
+        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
       ],
       "fix": [
-        "Validate the 'SEED_MATERIAL_SELECTION_SIGNALS' and 'SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT' to ensure they are appropriately-further",
-        "Review the 'SEED_MATERIAL_IDS' to confirm they are relevant and accurately represent the game's design."
+        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
       ],
       "add": [
-        "Ensure the 'SEED_MATERIAL_SELECTION_MODE' is appropriate for the game's target audience.",
-        "Review the 'SEED_MATERIAL_SELECTION_REFERENCE_INPUTS' to confirm they are consistent with the game's narrative."
+        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
       ],
       "risks": [
-        "Ensure the 'SEED_MATERIAL_SELECTION_REFERENCE_INPUTS' are consistent with the game's narrative."
+        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
       ],
       "evidence": [
-        "The game has a strong market presence with references to popular games like Crossy Road and Angry Birds 2, which supports the planning department's goal of creating."
+        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
       ],
       "questions": [
-        "Ensure the 'SEED_MATERIAL_SELECTION_REFERENCE_INPUTS' are consistent with the game's narrative."
+        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
       ]
     },
     "graphics": {
       "keep": [
-        "UNIQUE_DESIGN_OF_GAME_SEED"
+        "World Design",
+        "Visual Style"
       ],
       "fix": [
-        "GAME_SEED_MATERIAL_MATCHING_SUCCESS"
+        "Visual Style"
       ],
       "add": [
-        "SEED_MATERIAL_MATCH_SUCCESS"
+        "Color Palette"
       ],
       "risks": [
-        "SEED_MATERIAL_MATCH_SUCCESS"
+        "Level Design"
       ],
       "evidence": [
-        "SEED_MATERIAL_MATCH_SUCCESS"
+        "Seed Material Data"
       ],
       "questions": [
-        "SEED_MATERIAL_MATCH_SUCCESS"
+        "Seed Material Selection Logic"
       ]
     },
     "development": {
@@ -88,19 +86,19 @@
         "ASSIGNED_DEPARTMENT=qa"
       ],
       "fix": [
-        "The key elements of a game seed for the qa department are: GAME_SEED, ASSIGNED_DEPARTMENT, GAME_SEED, GAME_SEED, GAME_SEED, GAME_C"
+        "The Lost Gardens of Eldoria"
       ],
       "add": [
-        "The key elements of a game seed for the qa department are: GAME_SEED, ASSIGNED_DEPARTMENT, GAME_SEED, GAME_SEED, GAME_SEED, GAME_C"
+        "The Lost Gardens of Eldoria is a casual puzzle adventure game developed by Unity and published by Electronic Arts."
       ],
       "risks": [
-        "The risk of a game seed is that it may not be suitable for the qa department, and the game may not be well-known."
+        "Risks associated with the game include the potential for players to become frustrated with the game's simple, iterative gameplay, "
       ],
       "evidence": [
-        "The evidence for a game seed is that it is a seed for a game that is well-known and has a good level of challenge."
+        "The game has been tested using the QA model and has passed all tests."
       ],
       "questions": [
-        "What are the key elements of a game seed for the qa department?"
+        "What is the unique world identity of The Lost Gardens of Eldoria?"
       ]
     },
     "balance": {
@@ -126,30 +124,23 @@
   },
   "rebuttalRound": 1,
   "rebuttalAuthoredByDepartmentLeads": true,
-  "summary": "The Lost Gardens of Eldoria is a planned game designed for casual puzzle enthusiasts with a focus on simple yet rewarding game logic. The planning team has validated the 'SEED_MATERIAL_SELECTION_SIGNALS' and 'SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT' and reviewed the 'SEED_MATERIAL_IDS' to ensure they are relevant and accurately represent the game's design. The graphics section confirms the game's unique design and successful matching of materials. The development team has confirmed the game's key elements and QA responsibilities. The balance confirms the game's planned direction.",
+  "summary": "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and has been tested using the QA model and has passed all tests. The game is successful and has strong market, so we should keep it as is.",
   "decisions": [
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "The game has a strong market presence with references to popular games like Crossy Road and Angry Birds 2, which supports the planning department's goal of creating a planned game for casual puzzle enthusiasts. The validation of the 'SEED_MATERIAL_SELECTION_SIGNALS' and 'SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT' and review of the 'SEED_MATERIAL_IDS' are necessary to ensure they are appropriately-further and relevant to the game's design. The graphics section confirms the game's unique design and successful material matching.",
+      "reason": "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and has been tested using the QA model and has passed all tests. The game is successful and has strong market, so we should keep it as is.",
       "departments": [
         "planning",
-        "fix",
-        "add"
-      ]
-    },
-    {
-      "topic": "qa",
-      "status": "CONSENSUS",
-      "reason": "The key elements of a game seed for the QA department are: GAME_SEED, ASSIGNED_DEPARTMENT, GAME_SEED, GAME_SEED, GAME_SEED, GAME_C. The evidence for a game seed is that it is a seed for a game that is well-known and has a good level of challenge. The revision suggests that the QA department's responsibilities are more comprehensive and align with their current responsibilities.",
-      "departments": [
-        "add",
-        "fix"
+        "graphics",
+        "development",
+        "qa",
+        "balance"
       ]
     }
   ],
   "counts": {
-    "consensus": 2,
+    "consensus": 1,
     "conflict": 0,
     "hold": 0
   }
