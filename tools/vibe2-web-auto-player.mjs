@@ -35,7 +35,7 @@ async function serve(root){
   return{server,url:`http://127.0.0.1:${server.address().port}`};
 }
 function getJson(url){return new Promise((resolve,reject)=>http.get(url,res=>{let s='';res.setEncoding('utf8');res.on('data',c=>s+=c);res.on('end',()=>{try{if((res.statusCode||0)>=300)throw new Error(`HTTP ${res.statusCode}`);resolve(JSON.parse(s));}catch(e){reject(e);}});}).on('error',reject));}
-async function waitFile(file,ms=10000){const t=Date.now();while(Date.now()-t<ms){if(fs.existsSync(file)&&fs.statSync(file).size>0)return;await sleep(50);}throw new Error('Chrome DevToolsActivePort timeout');}
+async function waitFile(file,ms=20000){const t=Date.now();while(Date.now()-t<ms){if(fs.existsSync(file)&&fs.statSync(file).size>0)return;await sleep(50);}throw new Error('Chrome DevToolsActivePort timeout');}
 
 class CDP{
   constructor(url){this.url=url;this.ws=null;this.seq=0;this.pending=new Map();this.events=new Map();}
