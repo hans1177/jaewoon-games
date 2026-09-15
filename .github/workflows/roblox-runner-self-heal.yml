@@ -1,0 +1,66 @@
+name: Roblox Authenticated Runner Self-Heal
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/setup-roblox-runner-autostart.ps1'
+      - 'qa/setup-roblox-runner-autostart.test.mjs'
+      - '.github/workflows/roblox-runner-self-heal.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: roblox-authenticated-runner-self-heal
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    name: verify Roblox runner self-heal contract
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify self-heal contract
+        run: node --test qa/setup-roblox-runner-autostart.test.mjs
+
+  apply:
+    name: apply Roblox runner self-heal locally
+    needs: contract
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+      - name: Verify exact local runner identity
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $runnerRoot = 'C:\actions-runner'
+          $metadata = Get-Content (Join-Path $runnerRoot '.runner') -Raw | ConvertFrom-Json
+          if ([string]$metadata.agentName -ne 'roblox-studio-local') {
+            throw "Refusing self-heal on unexpected runner: $($metadata.agentName)"
+          }
+          Write-Host 'ROBLOX_RUNNER_SELF_HEAL_IDENTITY=PASS'
+      - name: Install persistent interactive self-heal
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          & .\tools\setup-roblox-runner-autostart.ps1 `
+            -RunnerPath 'C:\actions-runner' `
+            -ExpectedRunnerName 'roblox-studio-local' `
+            -HealthCheckMinutes 5
+          Write-Host 'ROBLOX_RUNNER_SELF_HEAL_APPLIED=YES'
+          Write-Host 'ROBLOX_RUNNER_MANUAL_LOCAL_ACTION_REQUIRED=NO'
