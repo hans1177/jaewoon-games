@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-controller-contract.test.mjs
-// 역할: Vibe2 24시간 컨트롤러의 엔진 분기, 계층형 병렬, source lock, fan-out/fan-in, incremental QA 안전 계약을 검증한다.
+// 역할: Vibe2 24시간 컨트롤러의 엔진 분기, 계층형 병렬, source lock, fan-out/fan-in, incremental QA와 설계지능 안전 계약을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
+import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
@@ -23,6 +24,25 @@ test('Unreal C++ routes to text worker but Blueprint/uasset route to editor',()=
 test('non-write QA routes to analysis only',()=>{
   const adapter=createVibeEngineAdapter({target:'unity',gameSlug:'demo'});
   assert.equal(classifyVibeExecutionRoute({target:'unity',task:{type:'qa',goal:'빌드 오류 조사',responsibleFiles:[]},adapter}).route,'analysis-only');
+});
+
+test('fan-in controller contract directly verifies design intelligence stages and evidence gating',()=>{
+  assert.deepEqual([...DESIGN_INTELLIGENCE_STAGES],[
+    'DESIGNER','CONSTRAINT_ENGINE','CRITIC','CAUSALITY_GRAPH','PLAYER_MODEL','COMBAT_ECONOMY_SIMULATOR',
+    'IMPLEMENTATION','AUTO_PLAYER','TELEMETRY','DESIGN_REVIEW','EXPERIENCE_MEMORY'
+  ]);
+  const design=buildVibeDesignIntelligence({
+    task:{goal:'기존 코드 내부 개선',type:'implementation',responsibleFiles:['unity-games/demo/Assets/Player.cs']},
+    plan:{target:'unity'},
+    experience:{records:[]}
+  });
+  assert.equal(design.required,true);
+  assert.equal(design.implementationGate.allowed,true);
+  assert.equal(design.stages.find(stage=>stage.name==='AUTO_PLAYER')?.status,'WAITING_EVIDENCE');
+  assert.equal(design.stages.find(stage=>stage.name==='TELEMETRY')?.status,'WAITING_EVIDENCE');
+  assert.equal(design.stages.find(stage=>stage.name==='DESIGN_REVIEW')?.status,'WAITING_EVIDENCE');
+  assert.equal(design.stages.find(stage=>stage.name==='EXPERIENCE_MEMORY')?.status,'WAITING_VERIFIED_REVIEW');
+  assert.equal(design.authorityExpanded,false);
 });
 
 test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
@@ -74,6 +94,7 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert(workflow.includes('Run the complete Vibe2 core regression once at fan-in'));
   assert(workflow.includes('node --test --test-concurrency=4'));
   assert(workflow.includes('qa/vibe2-controller-contract.test.mjs'));
+  assert(workflow.includes('qa/vibe2-source-worker.test.mjs'));
   assert.equal(runtime.qaOptimization.perWorkerQa,'impact-first-incremental');
   assert.equal(runtime.qaOptimization.fanInQa,'single-node-test-process');
   assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
