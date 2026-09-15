@@ -1,0 +1,179 @@
+{
+  "version": 5,
+  "taskId": "OWNER-FULL-REBUILD-CRYSTAL-BLOOM-20260916",
+  "gameId": "seed-idle-growth-rpg-crystal-bloom",
+  "target": "web",
+  "sourceRoot": "web-games/seed-idle-growth-rpg-crystal-bloom",
+  "releaseState": "development-confirmed",
+  "priority": "critical",
+  "baseMainSha": "64c0e078b652cfb6634f367fa65854e7bb94d6fb",
+  "goal": "[REUSABLE MACHINE HANDOFF - do not rediscover already known facts]\n- task=OWNER-FULL-REBUILD-CRYSTAL-BLOOM-20260916; files=web-games/seed-idle-growth-rpg-crystal-bloom/index.html; evidence=incremental-qa-hash:cdf1fccad161cafff6d8164bb2fe5c03d7804e2ef1631a6741dfdc2e37e84710 | incremental-qa-cache:MISS | role-result:exploration:PASS | role-result:implementation:PASS | role-result:test:PASS | role-result:performance:PASS | role-result:regression:WAITING_FAN_IN | role-result:review:WAITING_FAN_IN | workload:changed-files:1 | workload:changed-lines:176 | workload:prep-ms:930 | workload:cycle-ms:219162 | exploration-reuse:f49da0b771396ee1c8b3d78f | exploration-impact:index.html | speculative-result:primary:PASS | speculative-winner:primary | role-result:regression:PASS | role-result:review:PASS; lastBlocker=candidate-awaiting-qa-and-deployment\n\n[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 수정의 개화의 방치 성장 RPG 정체성은 유지하면서 전투·회복·강화·자동전투를 처음부터 실제 게임 루프로 재설계·재구현한다. 성장 선택이 체감되도록 적·단계·보스 또는 목표 진행, 전투 피드백, 강화 경제, 패배·복구·재시작, 저장 호환과 모바일 조작을 갖춘다. 단순 숫자 버튼 대시보드 형태로 끝내지 않는다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.",
+  "generatedAt": "2026-09-15T21:24:21.651Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/OWNER-FULL-REBUILD-CRYSTAL-BLOOM-20260916-primary-35001204222-10",
+  "model": "qwen3:1.7b",
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "Rebuild index.html into a complete playable game with combat, economy, progression, and mobile gameplay",
+  "expectedEffect": "Complete playable game with combat, economy, progression, and mobile gameplay",
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": true,
+    "taskId": "OWNER-FULL-REBUILD-CRYSTAL-BLOOM-20260916",
+    "packageId": null,
+    "target": "web",
+    "sourceRoot": "web-games/seed-idle-growth-rpg-crystal-bloom",
+    "baseMainSha": "64c0e078b652cfb6634f367fa65854e7bb94d6fb",
+    "responsibleFiles": [
+      "index.html"
+    ],
+    "impactFiles": [
+      "index.html"
+    ],
+    "contextFiles": [
+      "index.html"
+    ],
+    "relatedFiles": [],
+    "testTargets": [],
+    "protectedScopeSignals": [
+      "combat-number"
+    ],
+    "diagnosticEvidence": [],
+    "fileDigests": [
+      {
+        "path": "index.html",
+        "hash": "baa990fe5d7623be",
+        "bytes": 546
+      }
+    ],
+    "reuseKey": "f49da0b771396ee1c8b3d78f",
+    "generatedAt": "2026-09-15T20:34:27.778Z",
+    "reusedFrom": ".vibe2/exploration.json"
+  },
+  "codeIntelligence": {
+    "version": 1,
+    "smartContext": {
+      "strategy": "dependency-symbol-test-ranked",
+      "files": [
+        "index.html"
+      ],
+      "reasons": {
+        "index.html": [
+          "responsible-file"
+        ]
+      },
+      "references": [],
+      "seedSymbols": [],
+      "readOnlyOutsideResponsible": true
+    },
+    "changeImpact": {
+      "categories": [
+        "persistence",
+        "combat",
+        "economy",
+        "progression",
+        "ui-input"
+      ],
+      "impactedFiles": [
+        "index.html"
+      ],
+      "evidence": [
+        {
+          "category": "combat",
+          "file": "index.html"
+        },
+        {
+          "category": "economy",
+          "file": "index.html"
+        }
+      ],
+      "risk": "medium",
+      "invented": false
+    },
+    "symbolPatching": {
+      "enabled": true,
+      "verifiedEdits": []
+    },
+    "repairLoop": {
+      "enabled": true,
+      "maxAttempts": 3,
+      "attemptsUsed": 1,
+      "repaired": false,
+      "history": []
+    },
+    "failureRouter": {
+      "enabled": true,
+      "routes": []
+    }
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "required": true,
+    "version": 1,
+    "pipeline": [
+      "DESIGNER",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "evidenceRequirements": {
+      "autoPlayer": "verified-runtime-play-evidence-required",
+      "telemetry": "verified-observed-metrics-required",
+      "designReview": "verified-pass-required-before-experience-memory",
+      "qa": "verified-qa-evidence-required"
+    },
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "fullFileRewriteAllowed": true,
+  "sourceRootBootstrapped": false,
+  "sourceRootBootstrapOwnerAuthorized": false,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}

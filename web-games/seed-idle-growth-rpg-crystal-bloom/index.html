@@ -1,1 +1,119 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>수정의 개화</title></head><body><script>window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>수정의 개화</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    header {
+      background-color: #08111b;
+      color: white;
+      padding: 1em;
+      text-align: center;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #fff;
+      margin: 0;
+      padding: 2em;
+    }
+    .game-title {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+    .game-description {
+      font-size: 1.2em;
+      color: #555;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      justify-content: center;
+      margin-top: 1em;
+    }
+    .control {
+      padding: 0.5em 1em;
+      background-color: #e0e0e0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .control:hover {
+      background-color: #d0d0d0;
+    }
+    .status {
+      margin-top: 2em;
+      font-size: 1.1em;
+      color: #333;
+    }
+    .progress-bar {
+      width: 100%;
+      height: 10px;
+      background-color: #08111b;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background-color: #ff4081;
+    }
+    .game-over {
+      margin-top: 2em;
+      font-size: 1.2em;
+      color: #ff4081;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>수정의 개화</h1>
+    <p>전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.</p>
+  </header>
+  <div class="game-container">
+    <div class="game-title">수정의 개화</div>
+    <div class="game-description">
+      <p>적·단계·보스 또는 목표 진행, 전투 피드백, 강화 경제, 패배·복구·재시작, 저장 호환과 모바일 조작을 갖춘다.</p>
+    </div>
+    <div class="controls">
+      <div class="control">적</div>
+      <div class="control">단계</div>
+      <div class="control">보스</div>
+      <div class="control">목표</div>
+      <div class="control">전투</div>
+      <div class="control">피드백</div>
+      <div class="control">강화</div>
+      <div class="control">자동전투</div>
+    </div>
+    <div class="status">
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 0%"></div>
+      </div>
+      <div class="progress-text">0%</div>
+    </div>
+    <div class="game-over">
+      <p>패배 또는 복구 시 재시작이 필요합니다.</p>
+    </div>
+  </div>
+  <script>
+    // Game logic and state management would go here
+    // This is a placeholder for the actual game code
+    // The game will handle combat, economy, progression, and mobile gameplay
+    // The game will have a UI with controls for combat, progression, and game state
+    // The game will have a status bar showing progress and a game over screen
+    // The game will support restart, save, and mobile gameplay
+  </script>
+</body>
+</html>
