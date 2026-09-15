@@ -40,6 +40,15 @@ test('Web runtime spatial detector does not treat absent coordinates as 3D and r
   assert.match(source,/detected3D=spatialDimension==='3d'\|\|\[playerPosition\.x,playerPosition\.y,playerPosition\.z\]\.every\(Number\.isFinite\)/);
 });
 
+test('Eldoria story runtime exposes changing quest objectives and NPC dialogue interaction evidence',()=>{
+  const source=fs.readFileSync('web-games/_shared/vibe2-final.js','utf8');
+  assert.match(source,/data-objective=\"chapter-\$\{chapter\}-quest-main/);
+  assert.match(source,/data-interaction-target=\"story-guide-\$\{chapter\}/);
+  assert.match(source,/talk\.dataset\.interactionTarget=`story-guide-\$\{chapter\}`/);
+  assert.match(source,/talk\.dataset\.dialogueState=String\(clue\)/);
+  assert.match(source,/S\.progress=0;if\(S\.chapter>5\)/);
+});
+
 test('shared preserved engine binds more than five approved scopes without model regeneration',async()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-shared-scopes-'));
   const source=path.join(root,'source'),candidate=path.join(root,'candidate');
