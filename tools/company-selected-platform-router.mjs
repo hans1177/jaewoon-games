@@ -4,7 +4,7 @@ const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 
 export const SELECTED_PLATFORMS=Object.freeze(['ROBLOX','UNITY','FORTNITE_UEFN']);
-export const DEVELOPMENT_GAME_WIP_MAX=6;
+export const DEVELOPMENT_GAME_WIP_MAX=20;
 export const SPEED_EXECUTION_STAGES=Object.freeze([
   'CHANGE_DETECTION',
   'CHEAP_PRECHECK',
