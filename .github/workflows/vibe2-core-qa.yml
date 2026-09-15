@@ -19,6 +19,8 @@ on:
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
+      - 'tools/vibe2-adaptive-queue-control.mjs'
+      - 'tools/vibe2-parallelism-control.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
       - 'tools/vibe2-parallelism-telemetry.mjs'
       - 'tools/vibe2-candidate-reconcile.mjs'
@@ -29,9 +31,11 @@ on:
       - 'qa/vibe2-queue-control.test.mjs'
       - 'qa/vibe2-incremental-qa.test.mjs'
       - 'qa/vibe2-parallelism-telemetry.test.mjs'
+      - 'qa/vibe2-parallelism-control.test.mjs'
       - 'qa/vibe2-controller-contract.test.mjs'
       - 'qa/vibe2-candidate-reconcile.test.mjs'
       - 'qa/vibe2-experience-control.test.mjs'
+      - '.vibe2/parallelism-control.json'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-core-qa.yml'
   pull_request:
@@ -43,9 +47,12 @@ on:
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
+      - 'tools/vibe2-adaptive-queue-control.mjs'
+      - 'tools/vibe2-parallelism-control.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
       - 'tools/vibe2-parallelism-telemetry.mjs'
       - 'tools/vibe2-candidate-reconcile.mjs'
+      - '.vibe2/parallelism-control.json'
       - 'qa/vibe2-*.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-core-qa.yml'
@@ -82,6 +89,8 @@ jobs:
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-adaptive-queue-control.mjs
+          node --check tools/vibe2-parallelism-control.mjs
           node --check tools/vibe2-incremental-qa.mjs
           node --check tools/vibe2-parallelism-telemetry.mjs
           node --check tools/vibe2-candidate-reconcile.mjs
@@ -92,6 +101,7 @@ jobs:
           node --check qa/vibe2-queue-control.test.mjs
           node --check qa/vibe2-incremental-qa.test.mjs
           node --check qa/vibe2-parallelism-telemetry.test.mjs
+          node --check qa/vibe2-parallelism-control.test.mjs
           node --check qa/vibe2-controller-contract.test.mjs
           node --check qa/vibe2-candidate-reconcile.test.mjs
           node --check qa/vibe2-experience-control.test.mjs
@@ -105,6 +115,7 @@ jobs:
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-incremental-qa.test.mjs
           node --test qa/vibe2-parallelism-telemetry.test.mjs
+          node --test qa/vibe2-parallelism-control.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
