@@ -112,6 +112,12 @@ jobs:
           for attempt in 1 2 3; do
             echo "DESIGN_PROMOTION_RUNTIME_PERSIST_ATTEMPT=${attempt}/3"
             git fetch origin main "$COMPANY_RUNTIME_BRANCH"
+
+            # The earlier evidence overlay and promotion calculation intentionally dirty the main worktree.
+            # Discard only this ephemeral checkout state before switching to the canonical runtime branch;
+            # promotion is recalculated from the newest runtime state below.
+            git reset --hard HEAD
+            git clean -fd
             git checkout -B design-promotion-persist "origin/$COMPANY_RUNTIME_BRANCH"
             git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
             git clean -fd
