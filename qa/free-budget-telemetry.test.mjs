@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {buildOperationalFreeBudgetTelemetry,fetchRepositoryVisibility} from '../tools/free-budget-telemetry.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {buildOperationalFreeBudgetTelemetry,fetchRepositoryVisibility,repositoryVisibilityFromGitHubEvent} from '../tools/free-budget-telemetry.mjs';
 
 const base={repository:'hans1177/jaewoon-games',visibility:'public',visibilitySource:'GITHUB_REPO_API',runner:'ubuntu-latest',cashKRW:0,paidApi:false,modelCalls:1,maxModelCalls:1,runnerMinutes:20,maxRunnerMinutes:20,timestamp:'2026-09-09T00:00:00Z'};
 
@@ -12,10 +15,21 @@ test('public standard runner is verified unmetered free',()=>{
   assert.equal(t.providers[1].providerId,'OLLAMA_LOCAL');
 });
 
-test('claimed public without GitHub API proof fails closed',()=>{
+test('claimed public without authoritative GitHub proof fails closed',()=>{
   const t=buildOperationalFreeBudgetTelemetry({...base,visibilitySource:'UNVERIFIED'});
   assert.equal(t.allowed,false);
   assert.ok(t.failures.includes('PUBLIC_VISIBILITY_NOT_VERIFIED'));
+});
+
+test('GitHub event repository metadata is accepted as authoritative visibility proof',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'free-budget-event-'));
+  const file=path.join(dir,'event.json');
+  fs.writeFileSync(file,JSON.stringify({repository:{full_name:'hans1177/jaewoon-games',private:false,visibility:'public'}}));
+  assert.equal(repositoryVisibilityFromGitHubEvent('hans1177/jaewoon-games',file),'public');
+  assert.equal(repositoryVisibilityFromGitHubEvent('other/repo',file),'unknown');
+  const t=buildOperationalFreeBudgetTelemetry({...base,visibilitySource:'GITHUB_EVENT_PAYLOAD'});
+  assert.equal(t.allowed,true);
+  assert.equal(t.providers[0].source,'GITHUB_PUBLIC_STANDARD_POLICY+GITHUB_EVENT_PAYLOAD');
 });
 
 test('private or unknown visibility fails closed',()=>{
@@ -65,7 +79,7 @@ test('repository visibility fetch authenticates, retries transient failures and 
 
 test('repository visibility fetch still fails closed after all retries',async()=>{
   let calls=0;
-  const failedFetch=async()=>{calls+=1;return {ok:false,status:500,json:async()=>({})};};
+  const failedFetch=async()=>{calls+=1;return {ok:false,status:500,json:async()=>({})};
   assert.equal(await fetchRepositoryVisibility('hans1177/jaewoon-games',{fetchImpl:failedFetch,attempts:3,retryDelayMs:0}),'unknown');
   assert.equal(calls,3);
 });
