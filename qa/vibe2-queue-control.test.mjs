@@ -41,16 +41,25 @@ test('independent source roots fan out in one reservation batch', () => {
   const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
   assert.equal(reserved.tasks.length,3);
   assert.deepEqual(new Set(reserved.tasks.map(t=>t.id)),new Set(['u1','w1','w2']));
-  assert.equal(reserved.selection.workStealingUsed,true);
+  assert.equal(reserved.selection.workStealingUsed,false);
 });
 
-test('same source root remains exclusive even when files differ', () => {
-  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
-  queue=add(queue,'a','same','web',{responsibleFiles:['web-games/same/a.js']});
-  queue=add(queue,'b','same','web',{responsibleFiles:['web-games/same/b.js']});
-  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+test('same source root may fan out when responsibility files are concrete and disjoint', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
+  queue=add(queue,'a','same','web',{responsibleFiles:['a.js']});
+  queue=add(queue,'b','same','web',{responsibleFiles:['b.js']});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
+  assert.equal(reserved.tasks.length,2);
+});
+
+test('same source root remains exclusive when responsibility files overlap or are unspecified', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
+  queue=add(queue,'a','same','web',{responsibleFiles:['shared.js']});
+  queue=add(queue,'b','same','web',{responsibleFiles:['shared.js']});
+  queue=add(queue,'c','same','web');
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
   assert.equal(reserved.tasks.length,1);
-  assert.ok(reserved.selection.deferredConflicts.some(row=>row.task.id==='b'&&row.reason==='source-root-conflict'));
+  assert.ok(reserved.selection.deferredConflicts.some(row=>row.reason==='responsible-file-conflict'||row.reason==='source-root-conflict'));
 });
 
 test('DAG dependency starts only after predecessor PASS', () => {
@@ -78,14 +87,14 @@ test('awaiting QA holds its source root but does not block independent work', ()
   assert.equal(next.stopReason,'ONLY_CONFLICTING_WORK_AVAILABLE');
 });
 
-test('dynamic backpressure reduces concurrency when QA backlog grows', () => {
-  const tasks=['a','b','c'].map(id=>({id,gameId:id,target:'web',sourceRoot:`web-games/${id}`,goal:id,status:'running',blocker:'candidate-awaiting-qa-and-deployment'}));
-  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks});
-  queue=add(queue,'new','new','web');
-  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:4});
-  assert.equal(batch.effectiveMaxConcurrentTasks,2);
-  assert.equal(batch.freeSlots,0);
-  assert.equal(batch.stopReason,'PARALLEL_CAPACITY_FULL');
+test('adaptive backpressure steps 20 down through 16 12 8 4 as pressure rises', () => {
+  const expected=new Map([[0,20],[2,16],[4,12],[6,8],[8,4]]);
+  for(const [count,limit] of expected){
+    const tasks=Array.from({length:count},(_,i)=>({id:`run-${i}`,gameId:`g-${i}`,target:'web',sourceRoot:`web-games/g-${i}`,goal:'run',status:'running',blocker:'candidate-awaiting-qa-and-deployment'}));
+    const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks});
+    const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:20});
+    assert.equal(batch.effectiveMaxConcurrentTasks,limit);
+  }
 });
 
 test('high-risk opt-in task creates two speculative worker variants', () => {
@@ -152,4 +161,12 @@ test('protected or paid autonomous work remains ineligible', () => {
   const next=selectVibeQueueBatch(queue);
   assert.equal(next.hasEligibleWork,false);
   assert.equal(next.blocked.length,2);
+});
+
+test('twenty independent tasks can fill all 20 slots', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
+  for(let i=0;i<20;i++) queue=add(queue,`t-${i}`,`g-${i}`,'web',{responsibleFiles:[`f-${i}.js`]});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:20});
+  assert.equal(reserved.tasks.length,20);
+  assert.equal(reserved.selection.effectiveMaxConcurrentTasks,20);
 });

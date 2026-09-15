@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import { createVibeContinuousQueue, selectVibeQueueBatch, DEFAULT_MAX_CONCURRENT_TASKS } from '../assets/vibe-continuous-queue.js';
+
+const read=p=>fs.readFileSync(p,'utf8');
+
+test('core parallelism contract is uniformly 20',()=>{
+  const workflow=read('.github/workflows/vibe2-continuous-core.yml');
+  const planner=read('tools/vibe2-auto-planner.mjs');
+  assert.equal(DEFAULT_MAX_CONCURRENT_TASKS,20);
+  assert.match(workflow,/VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'/);
+  assert.match(workflow,/max-parallel: 20/);
+  assert.match(planner,/Math\.min\(20,/);
+  const q=createVibeContinuousQueue({maxConcurrentTasks:999,tasks:[]});
+  assert.equal(q.maxConcurrentTasks,20);
+});
+
+test('20 slot queue uses adaptive backpressure instead of fixed throttling',()=>{
+  const base=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[]});
+  assert.equal(selectVibeQueueBatch(base,{maxConcurrentTasks:20}).effectiveMaxConcurrentTasks,20);
+  const pressured=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:Array.from({length:8},(_,i)=>({id:`q${i}`,gameId:`q${i}`,target:'web',sourceRoot:`web-games/q${i}`,goal:'q',status:'running',blocker:'candidate-awaiting-qa-and-deployment'}))});
+  assert.equal(selectVibeQueueBatch(pressured,{maxConcurrentTasks:20}).effectiveMaxConcurrentTasks,4);
+});
