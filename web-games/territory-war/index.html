@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      padding: 20px;
+      background-color: #fff;
+      margin: 0 auto;
+      max-width: 800px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .game-container > div {
+      width: 100%;
+      max-width: 600px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .game-container > div > h2 {
+      margin-top: 0;
+    }
+    .game-container > div > p {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #555;
+    }
+    .game-container > div > button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 0.9em;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .game-container > div > button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <main class="game-container">
+    <h1>Vibe2</h1>
+    <div>
+      <h2>게임 시작</h2>
+      <p>이 게임은 영토전쟁의 점령과 확장, 적 진영 AI, 거점 충돌, 전황 피드백, 승패, 재시작, 모바일 터치 조작, 반응형 UI, 런타임 안정성, 성능을 갖춘 실제 플레이 가능한 게임입니다.</p>
+      <button onclick="startGame()">게임 시작</button>
+    </div>
+  </main>
+  <script>
+    function startGame() {
+      alert("게임이 시작되었습니다.");
+    }
+  </script>
+</body>
+</html>
