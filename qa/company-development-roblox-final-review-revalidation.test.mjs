@@ -8,9 +8,11 @@ const evaluator = fs.readFileSync('tools/company-development-roblox-final-review
 test('final-review revalidation reuses prior Studio QA and only dispatches canonical multiplayer QA', () => {
   assert.match(workflow, /name: Company DEVELOPMENT_CONFIRMED Roblox Final Review Revalidation/);
   assert.match(workflow, /workflows: \["Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA"\]/);
+  assert.match(workflow, /repository_dispatch:[\s\S]*types: \[roblox_multiplayer_qa_persisted\]/);
   assert.match(workflow, /ref: company-runtime/);
   assert.match(workflow, /node \.\.\/main\/tools\/company-development-roblox-final-review\.mjs/);
   assert.match(workflow, /gh workflow run company-development-roblox-multiplayer-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
+  assert.match(workflow, /github\.event_name != 'repository_dispatch'/);
   assert.match(workflow, /ROBLOX_RUNTIME_RERUN=NO/);
   assert.match(workflow, /ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO/);
   assert.match(workflow, /ROBLOX_REGRESSION_RERUN=NO/);
