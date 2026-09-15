@@ -40,6 +40,16 @@ test('Web runtime spatial detector does not treat absent coordinates as 3D and r
   assert.match(source,/detected3D=spatialDimension==='3d'\|\|\[playerPosition\.x,playerPosition\.y,playerPosition\.z\]\.every\(Number\.isFinite\)/);
 });
 
+test('shared runtime exposes deterministic replay seed and persisted numeric gameplay state',()=>{
+  const source=fs.readFileSync('web-games/_shared/vibe2-final.js','utf8');
+  assert.match(source,/replayParams\.get\('replaySeed'\)/);
+  assert.match(source,/window\.__GAME_REPLAY_SEED__=replaySeed/);
+  assert.match(source,/document\.body\.dataset\.replaySeed=replaySeed/);
+  assert.match(source,/GOLD:'gold'/);
+  assert.match(source,/POWER:'power'/);
+  assert.match(source,/d\.querySelector\('b'\)\.id=id/);
+});
+
 test('Eldoria story runtime exposes changing quest objectives and NPC dialogue interaction evidence',()=>{
   const source=fs.readFileSync('web-games/_shared/vibe2-final.js','utf8');
   assert.match(source,/data-objective=\"chapter-\$\{chapter\}-quest-main/);
