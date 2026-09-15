@@ -1,0 +1,179 @@
+{
+  "version": 5,
+  "taskId": "OWNER-FULL-REBUILD-ELDORIA-20260916",
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "target": "web",
+  "sourceRoot": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+  "releaseState": "development-confirmed",
+  "priority": "critical",
+  "baseMainSha": "64c0e078b652cfb6634f367fa65854e7bb94d6fb",
+  "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 엘도리아 연대기의 5장 완결 RPG 정체성과 이야기 흐름은 보존하면서 탐색·전투·휴식·강화·스토리 연출을 실제 플레이 가능한 RPG로 전면 재구현한다. 각 장의 장소·전투·선택 또는 목표가 구분되도록 하고 전투 피드백, 진행 저장, 패배·재시도, 결말 도달, 모바일 조작과 가독성을 갖춘다. 텍스트 선택 화면만 이어지는 형태로 끝내지 않는다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.",
+  "generatedAt": "2026-09-15T21:30:19.520Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/OWNER-FULL-REBUILD-ELDORIA-20260916-primary-35025128042-1",
+  "model": "qwen3:1.7b",
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "완결형 RPG '엘도리아 연대기' 재구현",
+  "expectedEffect": "플레이 가능한 RPG로 전면 재구현, 탐색·전투·휴식·강화·스토리 연출 지원",
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": true,
+    "taskId": "OWNER-FULL-REBUILD-ELDORIA-20260916",
+    "packageId": null,
+    "target": "web",
+    "sourceRoot": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+    "baseMainSha": "64c0e078b652cfb6634f367fa65854e7bb94d6fb",
+    "responsibleFiles": [
+      "index.html"
+    ],
+    "impactFiles": [
+      "index.html"
+    ],
+    "contextFiles": [
+      "index.html"
+    ],
+    "relatedFiles": [],
+    "testTargets": [],
+    "protectedScopeSignals": [
+      "combat-number"
+    ],
+    "diagnosticEvidence": [],
+    "fileDigests": [
+      {
+        "path": "index.html",
+        "hash": "31c6b074af581645",
+        "bytes": 694
+      }
+    ],
+    "reuseKey": "2575628457c6dd248c086c3f",
+    "generatedAt": "2026-09-15T21:24:57.730Z",
+    "reusedFrom": ".vibe2/exploration.json"
+  },
+  "codeIntelligence": {
+    "version": 1,
+    "smartContext": {
+      "strategy": "dependency-symbol-test-ranked",
+      "files": [
+        "index.html"
+      ],
+      "reasons": {
+        "index.html": [
+          "responsible-file"
+        ]
+      },
+      "references": [],
+      "seedSymbols": [],
+      "readOnlyOutsideResponsible": true
+    },
+    "changeImpact": {
+      "categories": [
+        "persistence",
+        "combat",
+        "economy",
+        "progression",
+        "ui-input"
+      ],
+      "impactedFiles": [
+        "index.html"
+      ],
+      "evidence": [
+        {
+          "category": "combat",
+          "file": "index.html"
+        },
+        {
+          "category": "economy",
+          "file": "index.html"
+        }
+      ],
+      "risk": "medium",
+      "invented": false
+    },
+    "symbolPatching": {
+      "enabled": true,
+      "verifiedEdits": []
+    },
+    "repairLoop": {
+      "enabled": true,
+      "maxAttempts": 3,
+      "attemptsUsed": 1,
+      "repaired": false,
+      "history": []
+    },
+    "failureRouter": {
+      "enabled": true,
+      "routes": []
+    }
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "required": true,
+    "version": 1,
+    "pipeline": [
+      "DESIGNER",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "evidenceRequirements": {
+      "autoPlayer": "verified-runtime-play-evidence-required",
+      "telemetry": "verified-observed-metrics-required",
+      "designReview": "verified-pass-required-before-experience-memory",
+      "qa": "verified-qa-evidence-required"
+    },
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "fullFileRewriteAllowed": true,
+  "sourceRootBootstrapped": false,
+  "sourceRootBootstrapOwnerAuthorized": false,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}

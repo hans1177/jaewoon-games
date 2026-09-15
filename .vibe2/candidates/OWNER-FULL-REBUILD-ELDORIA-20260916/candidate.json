@@ -1,0 +1,17 @@
+{
+  "summary": "완결형 RPG '엘도리아 연대기' 재구현",
+  "expectedEffect": "플레이 가능한 RPG로 전면 재구현, 탐색·전투·휴식·강화·스토리 연출 지원",
+  "edits": [],
+  "newFiles": [],
+  "replaceFiles": [
+    {
+      "path": "index.html",
+      "content": "<!doctype html>\n<html lang=\"ko\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n  <meta name=\"theme-color\" content=\"#08111b\">\n  <title>엘도리아 연대기</title>\n  <link rel=\"stylesheet\" href=\"/web-games/_shared/styles.css\">\n</head>\n<body>\n  <script>\n    window.GAME_CONFIG = {\n      id: 'seed-story-complete-rpg-chronicles-of-eldoria',\n      name: '엘도리아 연대기',\n      mode: 'eldoria',\n      hp: 100,\n      desc: '회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',\n      story: '탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'\n    };\n\n    // 게임 로드 시 실행\n    window.addEventListener('load', () => {\n      vibe2.init({\n        config: window.GAME_CONFIG,\n        assets: {\n          // 필요한 자산 로드\n        },\n        events: {\n          // 이벤트 처리\n        }\n      });\n    });\n  </script>\n  <script src=\"/web-games/_shared/vibe2-final.js\"></script>\n  <script src=\"/web-games/_shared/scripts.js\"></script>\n  <div id=\"game-container\">\n    <div id=\"story-container\">\n      <h1>엘도리아 연대기</h1>\n      <p>회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.</p>\n      <div id=\"story-progress\">\n        <div class=\"story-step\" data-step=\"1\">1. 첫 장 탐험</div>\n        <div class=\"story-step\" data-step=\"2\">2. 두 번째 장 전투</div>\n        <div class=\"story-step\" data-step=\"3\">3. 세 번째 장 휴식</div>\n        <div class=\"story-step\" data-step=\"4\">4. 네 번째 장 강화</div>\n        <div class=\"story-step\" data-step=\"5\">5. 다섯 번째 장 결말</div>\n      </div>\n      <div id=\"game-area\">\n        <div class=\"game-area\">\n          <div class=\"game-step active\" data-step=\"1\">첫 장 탐험</div>\n          <div class=\"game-step\" data-step=\"2\">두 번째 장 전투</div>\n          <div class=\"game-step\" data-step=\"3\">세 번째 장 휴식</div>\n          <div class=\"game-step\" data-step=\"4\">네 번째 장 강화</div>\n          <div class=\"game-step\" data-step=\"5\">다섯 번째 장 결말</div>\n        </div>\n        <div class=\"game-buttons\">\n          <button id=\"next-button\">다음</button>\n          <button id=\"restart-button\">재시도</button>\n        </div>\n      </div>\n    </div>\n  </div>\n</body>\n</html>"
+    }
+  ],
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ]
+}
