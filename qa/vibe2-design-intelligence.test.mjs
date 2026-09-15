@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DESIGN_INTELLIGENCE_STAGES, buildVibeDesignIntelligence, validateDesignAwareExperience } from '../tools/vibe2-design-intelligence.mjs';
+import { validateVibeExperiencePromotion } from '../tools/vibe2-experience-control.mjs';
 
 test('pipeline keeps the requested eleven-stage order',()=>{
   assert.deepEqual(DESIGN_INTELLIGENCE_STAGES,[
@@ -86,4 +87,21 @@ test('design-aware experience promotion requires auto-player telemetry and desig
     authorityExpanded:false
   });
   assert.equal(valid.valid,true);
+});
+
+test('existing experience promotion gate enforces design evidence only for design-aware reviews',()=>{
+  const base={
+    gameId:'demo',engine:'unity',taskType:'post-modification',problem:'balance drift',goal:'repair',change:'commit abc',
+    outcome:'PASS',reviewVerified:true,reviewDecision:'PASS',engineQaVerified:true,authorityExpanded:false,
+    evidence:['commit:abc','qa:run-1']
+  };
+  const blocked=validateVibeExperiencePromotion({...base,designIntelligenceRequired:true});
+  assert.equal(blocked.valid,false);
+  assert(blocked.issues.includes('design-auto-player-evidence-required'));
+  const allowed=validateVibeExperiencePromotion({
+    ...base,designIntelligenceRequired:true,autoPlayerVerified:true,telemetryVerified:true,designReviewVerified:true,designReviewDecision:'PASS'
+  });
+  assert.equal(allowed.valid,true);
+  const legacy=validateVibeExperiencePromotion(base);
+  assert.equal(legacy.valid,true);
 });
