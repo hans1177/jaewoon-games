@@ -33,6 +33,30 @@ test('Vibe2 model call timeout mirrors the central 75 second budget and stops du
   assert.match(source,/기존 HTML 전체를 재생성하지 않고 현재 소스에 적용할 최소 exact edits만 생성한다/);
 });
 
+test('shared preserved engine binds more than five approved scopes without model regeneration',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-shared-scopes-'));
+  const source=path.join(root,'source'),candidate=path.join(root,'candidate');
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'index.html'),'<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><script>window.GAME_CONFIG={id:"shared-story-test",name:"Shared Story",mode:"eldoria",hp:100,desc:"story",story:"story"}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>');
+  const baseline={content:{coreFun:'Explore an area, meet characters, accept story quests, and discover information.',coreLoop:[
+    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location.',
+    'Progress through the complete story arc to a final boss and a real ending.',
+    'Explore an area, meet characters, accept or advance story quests, and discover information.',
+    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location.',
+    'Progress through the complete story arc to a final boss and a real ending.',
+    'Explore an area, meet characters, accept or advance story quests, and discover information.',
+    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location.'
+  ],mobileUx:'touch-first story controls'}};
+  const output=await buildFirstPlayable({gameId:'shared-story-test',gameName:'Shared Story',baseline,sourcePath:source,candidatePath:candidate,candidateId:'shared-story-test',sourceCommit:'test',model:'none'});
+  assert.equal(output.generation.modelInvoked,false);
+  assert.equal(output.review.pass,true);
+  assert.equal(output.approvedScopeInventory.length,9);
+  const html=fs.readFileSync(path.join(candidate,'index.html'),'utf8');
+  assert.equal((html.match(/data-scope-id=/g)||[]).length,9);
+  assert.match(html,/dataset\.area=/);
+  assert.doesNotMatch(html,/validationScopes\)\?C\.validationScopes\.slice\(0,5\)/);
+});
+
 test('approved scope inventory captures core gameplay',()=>{
   const baseline={content:{coreFun:'collect resources and upgrade production',coreLoop:['mine ore','smelt and sell','automate and unlock zones'],mobileUx:'touch controls'}};
   const inventory=deriveApprovedScopeInventory(baseline);
