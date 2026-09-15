@@ -3,7 +3,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
+import { createVibeExperienceMemory, addVibeExperience, searchVibeExperience } from '../assets/vibe-experience-memory.js';
 import { buildVibeContinuousWorkOrder } from '../tools/vibe2-continuous-runner.mjs';
 import {
   validateVibeExperiencePromotion,
@@ -92,6 +92,8 @@ test('reviewed successful result becomes reusable experience without authority e
   assert.equal(result.memory.records.length, 1);
   assert.equal(result.memory.records[0].verified, true);
   assert.equal(result.memory.records[0].reusable, true);
+  assert.equal(result.memory.records[0].confirmations, 1);
+  assert.equal(result.memory.records[0].confidence, 0.5);
   assert.equal(result.authority, 'unchanged');
   assert.equal(result.mayChangeProtectedGameplayValues, false);
 });
@@ -159,13 +161,48 @@ test('unverified failure cause is blocked even when director requests revise', (
   assert(result.validation.issues.includes('failure-cause-required-for-failure-learning'));
 });
 
-test('same verified experience is not stored twice', () => {
-  const first = promoteVibeReviewedExperience(createVibeExperienceMemory(), successfulReview());
-  const second = promoteVibeReviewedExperience(first.memory, successfulReview());
+test('same verified experience reinforces one memory instead of storing duplicates', () => {
+  const first = promoteVibeReviewedExperience(createVibeExperienceMemory(), successfulReview({ createdAt: '2026-09-15T10:00:00Z' }));
+  const second = promoteVibeReviewedExperience(first.memory, successfulReview({ createdAt: '2026-09-15T11:00:00Z' }));
   assert.equal(first.promoted, true);
-  assert.equal(second.promoted, false);
-  assert.equal(second.reason, 'duplicate-experience');
+  assert.equal(second.promoted, true);
   assert.equal(second.memory.records.length, 1);
+  assert.equal(second.memory.records[0].confirmations, 2);
+  assert(second.memory.records[0].confidence > first.memory.records[0].confidence);
+  assert.equal(second.memory.records[0].lastVerifiedAt, '2026-09-15T11:00:00Z');
+});
+
+test('repeated verified experience ranks above an equally relevant single observation', () => {
+  let memory = createVibeExperienceMemory();
+  const repeated = {
+    gameId: 'game-a', engine: 'unity', taskType: 'modify', departments: ['development'],
+    problem: 'enemy attack timing bug', goal: 'fix enemy attack timing', change: 'align hit frame',
+    outcome: 'PASS', evidence: ['qa:a'], reusablePatterns: ['align attack hit frame'], verified: true
+  };
+  memory = addVibeExperience(memory, repeated).memory;
+  memory = addVibeExperience(memory, { ...repeated, evidence: ['qa:b'] }).memory;
+  memory = addVibeExperience(memory, {
+    gameId: 'game-b', engine: 'unity', taskType: 'modify', departments: ['development'],
+    problem: 'enemy attack timing bug', goal: 'fix enemy attack timing', change: 'align animation frame',
+    outcome: 'PASS', evidence: ['qa:c'], reusablePatterns: ['align attack animation frame'], verified: true
+  }).memory;
+  const search = searchVibeExperience(memory, {
+    engine: 'unity', taskType: 'modify', departments: ['development'], text: 'enemy attack timing fix'
+  }, { limit: 2 });
+  assert.equal(search.matches.length, 2);
+  assert.equal(search.matches[0].record.gameId, 'game-a');
+  assert.equal(search.matches[0].record.confirmations, 2);
+  assert(search.matches[0].reasons.some((reason) => reason === 'repeated-verification:2'));
+});
+
+test('same-game verified experience receives an explicit retrieval boost when game id is known', () => {
+  const memory = createVibeExperienceMemory([
+    { gameId: 'game-a', engine: 'unity', taskType: 'modify', problem: 'loot bug', goal: 'fix loot', change: 'fix drop path', outcome: 'PASS', evidence: ['qa:a'], verified: true },
+    { gameId: 'game-b', engine: 'unity', taskType: 'modify', problem: 'loot bug', goal: 'fix loot', change: 'fix drop path other', outcome: 'PASS', evidence: ['qa:b'], verified: true }
+  ]);
+  const search = searchVibeExperience(memory, { gameId: 'game-b', engine: 'unity', taskType: 'modify', text: 'loot bug fix loot' }, { limit: 2 });
+  assert.equal(search.matches[0].record.gameId, 'game-b');
+  assert(search.matches[0].reasons.includes('same-game'));
 });
 
 test('experience storage failure does not change the already verified review decision', () => {
