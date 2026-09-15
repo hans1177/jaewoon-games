@@ -1,0 +1,79 @@
+name: Temporary DEVELOPMENT runtime heredoc repair
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-development-runtime-heredoc.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.head_ref == 'fix/development-runtime-binding-heredoc-20260915'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 1
+      - name: Repair existing runtime binding heredoc in place
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          path=Path('.github/workflows/company-development-confirmed-runtime.yml')
+          lines=path.read_text(encoding='utf-8').splitlines(keepends=True)
+          marker='elif PLANNED_RUNTIME_SHA="$PLANNED_RUNTIME_SHA" CURRENT_RUNTIME_SHA="$current" EXPECTED_TARGETS_JSON="$EXPECTED_TARGETS_JSON" node --input-type=module <<\'NODE\''
+          starts=[i for i,line in enumerate(lines) if marker in line]
+          if len(starts)!=1:
+              raise SystemExit(f'expected one runtime binding heredoc marker, found {len(starts)}')
+          start=starts[0]
+          end=None
+          for i in range(start+1,len(lines)):
+              if lines[i].strip()=='NODE':
+                  end=i
+                  break
+          if end is None:
+              raise SystemExit('runtime binding heredoc terminator not found')
+          for i in range(start+1,end+1):
+              if not lines[i].startswith('            '):
+                  raise SystemExit(f'unexpected heredoc indentation at line {i+1}')
+              lines[i]=lines[i][2:]
+          path.write_text(''.join(lines),encoding='utf-8')
+          PY
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('.github/workflows/company-development-confirmed-runtime.yml').read_text(encoding='utf-8')
+          start=text.index('      - name: Check planned company-runtime binding')
+          end=text.index('      - name: Download parallel Web worker results',start)
+          block=text[start:end]
+          run=block.index('        run: |\n')+len('        run: |\n')
+          script=[]
+          for line in block[run:].splitlines():
+              if line:
+                  if not line.startswith('          '):
+                      raise SystemExit(f'unexpected YAML script indentation: {line!r}')
+                  script.append(line[10:])
+              else:
+                  script.append('')
+          Path('/tmp/runtime-binding.sh').write_text('\n'.join(script)+'\n',encoding='utf-8')
+          PY
+          bash -n /tmp/runtime-binding.sh
+          grep -q '^          NODE$' .github/workflows/company-development-confirmed-runtime.yml
+          git diff --check
+      - name: Commit only the canonical workflow repair
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-runtime-repair'
+          git config user.email 'actions@users.noreply.github.com'
+          git rm .github/workflows/fix-development-runtime-heredoc.yml
+          git add .github/workflows/company-development-confirmed-runtime.yml
+          git diff --cached --check
+          git commit -m 'fix(runtime): repair company-runtime binding heredoc'
+          git push origin HEAD:"$TARGET_BRANCH"
