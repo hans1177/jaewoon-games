@@ -786,6 +786,7 @@ jobs:
 
       - name: Event-driven fan-in refill fallback
         if: steps.persist.outputs.refill == '1'
+        continue-on-error: true
         shell: bash
         run: |
           set -euo pipefail
