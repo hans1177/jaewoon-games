@@ -18,6 +18,15 @@ on:
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-code-intelligence.mjs'
+      - 'tools/vibe2-auto-player-contract.mjs'
+      - 'tools/vibe2-auto-player.mjs'
+      - 'tools/vibe2-web-auto-player.mjs'
+      - 'tools/vibe2-engine-auto-player.mjs'
+      - 'tools/vibe2-roblox-auto-player.mjs'
+      - 'tools/vibe2-unity-auto-player.mjs'
+      - 'tools/runtime/roblox/Vibe2AutoPlayer.luau'
+      - 'tools/runtime/unity/Vibe2AutoPlayerRuntime.cs'
       - 'tools/vibe2-performance-sanity.mjs'
       - 'tools/vibe2-fan-in-review.mjs'
       - 'tools/vibe2-queue-control.mjs'
@@ -29,6 +38,9 @@ on:
       - 'tools/vibe2-experience-control.mjs'
       - 'tools/vibe2-handoff.mjs'
       - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/vibe2-auto-player.test.mjs'
+      - 'qa/fixtures/vibe2-auto-player-web/**'
+      - 'qa/fixtures/vibe2-fake-engine-runtime.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
       - 'qa/vibe2-exploration-worker.test.mjs'
@@ -52,22 +64,11 @@ on:
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
       - 'assets/vibe-continuous-queue.js'
-      - 'tools/vibe2-auto-planner.mjs'
-      - 'tools/vibe2-continuous-runner.mjs'
-      - 'tools/vibe2-design-intelligence.mjs'
-      - 'tools/vibe2-exploration-worker.mjs'
-      - 'tools/vibe2-source-worker.mjs'
-      - 'tools/vibe2-performance-sanity.mjs'
-      - 'tools/vibe2-fan-in-review.mjs'
-      - 'tools/vibe2-queue-control.mjs'
-      - 'tools/vibe2-work-package.mjs'
-      - 'tools/vibe2-incremental-qa.mjs'
-      - 'tools/vibe2-parallelism-telemetry.mjs'
-      - 'tools/vibe2-adaptive-backpressure.mjs'
-      - 'tools/vibe2-candidate-reconcile.mjs'
-      - 'tools/vibe2-experience-control.mjs'
-      - 'tools/vibe2-handoff.mjs'
+      - 'tools/vibe2-*.mjs'
+      - 'tools/runtime/**'
       - 'qa/vibe2-*.test.mjs'
+      - 'qa/fixtures/vibe2-auto-player-web/**'
+      - 'qa/fixtures/vibe2-fake-engine-runtime.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/vibe2-core-qa.yml'
@@ -83,7 +84,7 @@ concurrency:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
 
@@ -105,6 +106,13 @@ jobs:
           node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-code-intelligence.mjs
+          node --check tools/vibe2-auto-player-contract.mjs
+          node --check tools/vibe2-auto-player.mjs
+          node --check tools/vibe2-web-auto-player.mjs
+          node --check tools/vibe2-engine-auto-player.mjs
+          node --check tools/vibe2-roblox-auto-player.mjs
+          node --check tools/vibe2-unity-auto-player.mjs
           node --check tools/vibe2-performance-sanity.mjs
           node --check tools/vibe2-fan-in-review.mjs
           node --check tools/vibe2-queue-control.mjs
@@ -115,7 +123,9 @@ jobs:
           node --check tools/vibe2-candidate-reconcile.mjs
           node --check tools/vibe2-experience-control.mjs
           node --check tools/vibe2-handoff.mjs
+          node --check qa/fixtures/vibe2-fake-engine-runtime.mjs
           node --check qa/vibe2-auto-planner.test.mjs
+          node --check qa/vibe2-auto-player.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
@@ -129,6 +139,22 @@ jobs:
           node --check qa/vibe2-candidate-reconcile.test.mjs
           node --check qa/vibe2-experience-control.test.mjs
           node --check qa/vibe2-handoff.test.mjs
+
+      - name: Require Chrome runtime for real Web AUTO PLAYER QA
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v google-chrome >/dev/null 2>&1; then chrome="$(command -v google-chrome)";
+          elif command -v google-chrome-stable >/dev/null 2>&1; then chrome="$(command -v google-chrome-stable)";
+          elif command -v chromium >/dev/null 2>&1; then chrome="$(command -v chromium)";
+          elif command -v chromium-browser >/dev/null 2>&1; then chrome="$(command -v chromium-browser)";
+          else echo 'Chrome/Chromium required for real Web AUTO PLAYER QA' >&2; exit 1; fi
+          echo "VIBE2_WEB_AUTO_PLAYER_CHROME=$chrome"
+
+      - name: AUTO PLAYER runtime tests
+        run: |
+          set -euo pipefail
+          node --test --test-force-exit qa/vibe2-auto-player.test.mjs
 
       - name: Vibe2 core tests
         run: |
