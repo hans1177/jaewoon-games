@@ -29,3 +29,12 @@ test('promotion persistence retries only against the newest runtime state and ne
   assert.doesNotMatch(promotion,/cp \/tmp\/design-promotion-runtime\/game-seed-state\.json/);
   assert.match(promotion,/git add -- game-seed-state\.json autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
 });
+
+test('promotion persistence clears ephemeral overlay before switching to the runtime branch',()=>{
+  const resetIndex=promotion.indexOf('git reset --hard HEAD');
+  const cleanIndex=promotion.indexOf('git clean -fd',resetIndex);
+  const checkoutIndex=promotion.indexOf('git checkout -B design-promotion-persist "origin/$COMPANY_RUNTIME_BRANCH"');
+  assert.ok(resetIndex>=0,'ephemeral overlay hard reset must exist');
+  assert.ok(cleanIndex>resetIndex,'untracked overlay cleanup must follow the hard reset');
+  assert.ok(checkoutIndex>cleanIndex,'runtime branch checkout must happen only after the dirty worktree is cleared');
+});
