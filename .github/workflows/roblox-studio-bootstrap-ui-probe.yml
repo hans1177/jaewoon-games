@@ -51,7 +51,7 @@ jobs:
           "place_file=$matched" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           Write-Host 'ROBLOX_BOOTSTRAP_PROBE_IMMUTABLE_ARTIFACT=PASS'
 
-      - name: Probe Studio publish webview value without creating an experience
+      - name: Capture Studio Publish Experience dialog without creating
         env:
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: powershell
@@ -60,6 +60,7 @@ jobs:
           Add-Type -AssemblyName UIAutomationClient
           Add-Type -AssemblyName UIAutomationTypes
           Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
 
           $studio = $null
           $roots = @("$env:LOCALAPPDATA\Roblox\Versions","$env:PROGRAMFILES\Roblox\Versions","${env:ProgramFiles(x86)}\Roblox\Versions") | Where-Object { $_ -and (Test-Path $_) }
@@ -90,41 +91,41 @@ jobs:
             $shell.SendKeys('%p')
             Start-Sleep -Seconds 10
 
-            $windowsAfter = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $pidCondition)
-            $publishWindowFound = $false
-            foreach ($window in $windowsAfter) {
+            $windows = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $pidCondition)
+            $publish = $null
+            foreach ($window in $windows) {
               $all = $window.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
               foreach ($e in $all) {
-                if ([string]$e.Current.AutomationId -eq 'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs') {
-                  $publishWindowFound = $true
-                  Write-Host ("ROBLOX_BOOTSTRAP_PROBE_PUBLISH_WINDOW name='{0}' automationId='{1}'" -f $e.Current.Name,$e.Current.AutomationId)
-                  break
-                }
+                if ([string]$e.Current.AutomationId -eq 'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs') { $publish = $e; break }
               }
+              if ($publish) { break }
             }
-            if (-not $publishWindowFound) { throw 'Publish Experience window not detected' }
-
-            for ($i=0; $i -le 18; $i++) {
-              Start-Sleep -Milliseconds 300
-              $f = [System.Windows.Automation.AutomationElement]::FocusedElement
-              if ($f) {
-                Write-Host ("ROBLOX_BOOTSTRAP_FOCUS step={0} type='{1}' name='{2}' automationId='{3}' class='{4}' enabled='{5}'" -f $i,$f.Current.ControlType.ProgrammaticName,$f.Current.Name,$f.Current.AutomationId,$f.Current.ClassName,$f.Current.IsEnabled)
-                try {
-                  $vp = $null
-                  if ($f.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$vp)) {
-                    $value = [string]$vp.Current.Value
-                    if ($value.Length -gt 240) { $value = $value.Substring(0,240) + '...' }
-                    $value = $value -replace "`r|`n",' '
-                    Write-Host "ROBLOX_BOOTSTRAP_FOCUS_VALUE step=$i value='$value' readOnly=$($vp.Current.IsReadOnly)"
-                  }
-                } catch { Write-Host "ROBLOX_BOOTSTRAP_FOCUS_VALUE step=$i ERROR=$($_.Exception.Message)" }
-              }
-              if ($i -lt 18) { $shell.SendKeys('{TAB}') }
-            }
-            $shell.SendKeys('{ESC}')
-            Write-Host 'ROBLOX_BOOTSTRAP_PROBE=PASS'
+            if (-not $publish) { throw 'Publish Experience window not detected' }
+            $rect = $publish.Current.BoundingRectangle
+            Write-Host ("ROBLOX_BOOTSTRAP_PUBLISH_RECT left={0} top={1} width={2} height={3}" -f $rect.Left,$rect.Top,$rect.Width,$rect.Height)
+            if ($rect.Width -lt 300 -or $rect.Height -lt 200) { throw 'Publish dialog bounds invalid' }
+            $x=[int][Math]::Floor($rect.Left); $y=[int][Math]::Floor($rect.Top)
+            $w=[int][Math]::Ceiling($rect.Width); $h=[int][Math]::Ceiling($rect.Height)
+            $bmp = New-Object System.Drawing.Bitmap($w,$h)
+            $g = [System.Drawing.Graphics]::FromImage($bmp)
+            try { $g.CopyFromScreen($x,$y,0,0,$bmp.Size) } finally { $g.Dispose() }
+            $shot = Join-Path $env:RUNNER_TEMP 'roblox-publish-dialog.png'
+            $bmp.Save($shot,[System.Drawing.Imaging.ImageFormat]::Png)
+            $bmp.Dispose()
+            if (-not (Test-Path $shot)) { throw 'Publish dialog screenshot missing' }
+            Write-Host "ROBLOX_BOOTSTRAP_SCREENSHOT=$shot"
             Write-Host 'ROBLOX_EXPERIENCE_CREATED=NO'
+            $shell.SendKeys('{ESC}')
           }
           finally {
             Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
           }
+
+      - name: Upload publish dialog screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-studio-publish-dialog-probe
+          path: ${{ runner.temp }}/roblox-publish-dialog.png
+          retention-days: 1
+          if-no-files-found: error
