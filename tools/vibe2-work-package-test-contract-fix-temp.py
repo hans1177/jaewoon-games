@@ -10,7 +10,7 @@ diag_pattern = re.compile(
 )
 diag_replacement = r'''test('completed diagnostic package is never recreated after completion',()=>{
   const root=tempRepo();
-  writeFileSync(join(root,'Games','alpha','index.html'),'<html><body><button>play</button><footer>credits</footer></body></html>','utf8');
+  fs.writeFileSync(path.join(root,'Games','alpha','index.html'),'<html><body><button>play</button><footer>credits</footer></body></html>','utf8');
   const status={developmentConfirmedGames:[{gameId:'alpha',engine:'web',sourcePath:'Games/alpha',autonomousImplementationAllowed:true,releaseState:'development-confirmed'}]};
   const catalog={projects:[{id:'alpha',path:'Games/alpha',engine:'web',releaseState:'development-confirmed'}]};
   const first=planVibe2AutonomousTask({status,catalog,queue:createVibeContinuousQueue({}),repoRoot:root});
@@ -39,7 +39,7 @@ unity_pattern = re.compile(
 )
 unity_replacement = r'''test('completed Unity package is never recreated after completion',()=>{
   const root=tempRepo();
-  writeFileSync(join(root,'Games','u1','Game.cs'),'class Game {}','utf8');
+  fs.writeFileSync(path.join(root,'Games','u1','Game.cs'),'class Game {}','utf8');
   const status={releaseConfirmedGames:[unityReleaseProject({gameId:'u1',source:'Games/u1',pass:true})]};
   const catalog={projects:[{id:'u1',path:'Games/u1',engine:'unity',releaseState:'release-confirmed'}]};
   const first=planVibe2AutonomousTask({status,catalog,queue:createVibeContinuousQueue({}),repoRoot:root});
