@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-16",
+  "directives": [
+    {
+      "id": "OWNER-ROBLOX-OBBY-WORLD-CORE-20260916",
+      "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+      "title": "Skyline Sprint",
+      "sourceRoot": "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell",
+      "responsibleFiles": [
+        "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/server/Game.server.luau"
+      ],
+      "dependencies": [],
+      "priority": "critical",
+      "workUnits": 6,
+      "status": "pending",
+      "goal": "[OWNER_ROBLOX_PRIMARY] FULL_REBUILD_PHASE_1_WORLD_CORE. 현재 공용 버튼/숫자 증가 셸을 실제 Roblox 오비 게임의 물리 플레이 코어로 교체하는 첫 단계다. 기존 GameConfig 인터페이스와 RemoteEvent 이름은 이번 단계에서 깨지지 않게 유지하면서 server/Game.server.luau를 직접 수정한다. Workspace에 실제로 달리고 점프할 수 있는 원본 장애물 코스를 런타임에 구성하고, 시작 지점과 최소 12개의 순차 스테이지, 체크포인트, 낙하/위험 구역, 체크포인트 기반 재생성, 완주 판정, 라운드 시간과 스테이지 진행 상태를 구현한다. Position/Progress/Score 같은 기존 attribute는 실제 물리 진행 결과에서만 갱신하고 버튼 클릭만으로 진행되지 않게 한다. 여러 플레이어의 진행 상태를 분리하고 서버 권위로 체크포인트 순서를 검증한다. Roblox 기본 캐릭터 이동/점프를 실제 조작으로 사용하며 모바일에서도 Roblox 기본 터치 이동이 작동해야 한다. 외부 게임의 맵·에셋·코드·고유 연출을 복제하지 말고 독자적인 단순 기하 오비를 만든다. 유료 서비스, 새 과금, 외부 네트워크 의존성은 추가하지 않는다. 이 단계 완료 후 실제 Roblox Studio 런타임 QA에서 캐릭터 이동, 점프, 위험 구역 사망, 체크포인트 복귀, 순차 진행, 완주가 확인되어야 한다.",
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "roblox-priority:1",
+        "audit:shared-button-dashboard-shell",
+        "rebuild-phase:world-core",
+        "qa-required:roblox-studio-runtime"
+      ]
+    }
+  ]
+}
