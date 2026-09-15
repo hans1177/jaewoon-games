@@ -35,6 +35,8 @@ on:
       - 'tools/vibe2-roblox-game-study.mjs'
       - 'tools/vibe2-game-study-queue.mjs'
       - 'tools/vibe2-game-study-worker.mjs'
+      - 'tools/vibe2-game-study-planner-context.mjs'
+      - 'tools/vibe2-game-study-production-fanin.mjs'
       - 'tools/runtime/roblox/Vibe2AutoPlayer.luau'
       - 'tools/runtime/unity/Vibe2AutoPlayerRuntime.cs'
       - 'tools/runtime/uefn/Vibe2UefnAutoPlayer.ps1'
@@ -53,6 +55,8 @@ on:
       - 'qa/vibe2-auto-player.test.mjs'
       - 'qa/vibe2-game-study.test.mjs'
       - 'qa/vibe2-game-study-intelligence.test.mjs'
+      - 'qa/vibe2-game-study-planner-context.test.mjs'
+      - 'qa/vibe2-game-study-production-fanin.test.mjs'
       - 'qa/fixtures/vibe2-auto-player-web/**'
       - 'qa/fixtures/vibe2-fake-engine-runtime.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
@@ -71,6 +75,7 @@ on:
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/vibe2-game-study-continuous.yml'
+      - '.github/workflows/vibe2-external-game-study-smoke.yml'
       - '.github/workflows/vibe2-core-qa.yml'
   pull_request:
     branches:
@@ -89,6 +94,7 @@ on:
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/vibe2-game-study-continuous.yml'
+      - '.github/workflows/vibe2-external-game-study-smoke.yml'
       - '.github/workflows/vibe2-core-qa.yml'
   workflow_dispatch:
 
@@ -139,6 +145,8 @@ jobs:
           node --check tools/vibe2-roblox-game-study.mjs
           node --check tools/vibe2-game-study-queue.mjs
           node --check tools/vibe2-game-study-worker.mjs
+          node --check tools/vibe2-game-study-planner-context.mjs
+          node --check tools/vibe2-game-study-production-fanin.mjs
           node --check tools/vibe2-performance-sanity.mjs
           node --check tools/vibe2-fan-in-review.mjs
           node --check tools/vibe2-queue-control.mjs
@@ -154,6 +162,8 @@ jobs:
           node --check qa/vibe2-auto-player.test.mjs
           node --check qa/vibe2-game-study.test.mjs
           node --check qa/vibe2-game-study-intelligence.test.mjs
+          node --check qa/vibe2-game-study-planner-context.test.mjs
+          node --check qa/vibe2-game-study-production-fanin.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
@@ -203,6 +213,8 @@ jobs:
           node --test qa/vibe2-experience-control.test.mjs
           node --test qa/vibe2-game-study.test.mjs
           node --test qa/vibe2-game-study-intelligence.test.mjs
+          node --test qa/vibe2-game-study-planner-context.test.mjs
+          node --test qa/vibe2-game-study-production-fanin.test.mjs
           node --test qa/vibe2-handoff.test.mjs
 
       - name: Generate machine handoff

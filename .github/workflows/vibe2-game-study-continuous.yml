@@ -46,6 +46,7 @@ jobs:
           node --check tools/vibe2-game-study-intelligence.mjs
           node --check tools/vibe2-game-study-queue.mjs
           node --check tools/vibe2-game-study-worker.mjs
+          node --check tools/vibe2-game-study-production-fanin.mjs
           node tools/vibe2-game-study-queue.mjs reserve \
             --queue=.vibe2/queue.json \
             --targets=.vibe2/game-study-targets.json \
@@ -204,11 +205,25 @@ jobs:
           node-version: '22'
 
       - name: Download parallel study results
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           pattern: vibe2-game-study-result-*
           path: /tmp/vibe2-game-study-results
           merge-multiple: true
+
+      - name: Guard production study artifacts
+        env:
+          VIBE2_GAME_STUDY_WEB_MATRIX: ${{ needs.reserve.outputs.web_matrix }}
+          VIBE2_GAME_STUDY_ROBLOX_MATRIX: ${{ needs.reserve.outputs.roblox_matrix }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/vibe2-game-study-results
+          node --check tools/vibe2-game-study-production-fanin.mjs
+          node tools/vibe2-game-study-production-fanin.mjs \
+            --results=/tmp/vibe2-game-study-results \
+            --output=/tmp/vibe2-game-study-guard.json | tee /tmp/vibe2-game-study-guard.log
 
       - name: Promote verified studies and settle shared queue
         shell: bash
@@ -239,6 +254,8 @@ jobs:
         with:
           name: vibe2-game-study-fanin-${{ github.run_id }}
           path: |
+            /tmp/vibe2-game-study-guard.json
+            /tmp/vibe2-game-study-guard.log
             /tmp/vibe2-game-study-fanin.json
             /tmp/vibe2-game-study-fanin.log
           if-no-files-found: warn

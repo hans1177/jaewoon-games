@@ -61,6 +61,20 @@ GAME STUDY는 기존 게임을 그대로 복제하는 기능이 아니라 **검�
 - 수치·인과·품질을 관찰하지 못했으면 추측하지 않고 `INSUFFICIENT_EVIDENCE`로 남긴다.
 - `authorityExpanded=false`이며 학습이 보호된 gameplay/save/economy/progression 권한을 확대하지 않는다.
 
+### Production Fan-in Reliability
+
+production GAME STUDY는 `예약 → worker artifact → production guard → fan-in → Knowledge/Experience → 다음 planner` 순서를 지킨다.
+
+- `tools/vibe2-game-study-production-fanin.mjs`가 예약 matrix와 실제 artifact를 대조한다.
+- 예약 결과가 없거나 JSON이 손상됐거나 task/target/engine이 맞지 않으면 PASS를 추정하지 않는다.
+- `PASS` artifact는 반드시 `study.verified=true`여야 하며 `authorityExpanded=true` 결과는 사용할 수 없다.
+- 예약하지 않은 stale artifact는 fan-in 입력에서 제외한다.
+- 같은 task의 artifact가 둘 이상이면 어느 하나를 임의 선택하지 않고 전부 모호한 결과로 제외한다.
+- 누락·손상·중복 결과는 명시적인 `FAIL` evidence로 바뀌어 기존 `maxRetries` 정책을 타므로 task가 `running`에 영구 고정되지 않는다.
+- artifact 다운로드 단계 자체가 실패해도 guard가 빈 결과 디렉터리를 기준으로 누락 task를 정리할 수 있다.
+- 24시간 runner에서 planning이 성공했다면 일반 continuous job이 실패하더라도 GAME STUDY는 독립적으로 실행된다.
+- External Game Study Smoke는 실제 Chrome artifact를 임시 production queue에 fan-in하고, 새 cross-game Knowledge가 실제 queued 구현 작업의 advisory planner context로 다시 들어가는 것까지 end-to-end 검증한다.
+
 ### Source / Download Policy
 
 Web 공개 게임은 기본적으로 `observation-only`다. 소스 분석은 소유했거나 명시적으로 허가된 서버 workspace에서만 수행한다.
