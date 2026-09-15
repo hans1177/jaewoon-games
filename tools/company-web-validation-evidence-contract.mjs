@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 
-export const WEB_VALIDATION_SCHEMA_VERSION=13;
+export const WEB_VALIDATION_SCHEMA_VERSION=14;
 export const WEB_HOMEPAGE_MINIMUM=80;
 export const WEB_PLATFORM_PROMOTION_MINIMUM=90;
 export const WEB_SESSION_WINDOWS=Object.freeze([[0,5],[5,15],[15,25],[25,30]].map(Object.freeze));
