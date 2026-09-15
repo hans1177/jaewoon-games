@@ -7,7 +7,7 @@
 이 구조의 목표는 다음과 같다.
 
 - 서로 충돌하지 않는 게임/작업은 동시에 처리한다.
-- 같은 source root 또는 같은 책임 파일은 동시에 수정하지 않는다.
+- 같은 source root도 책임 파일이 명시되고 서로 겹치지 않을 때만 병렬 허용하며, 같은 책임 파일은 동시에 수정하지 않는다.
 - 1분류 Unity 집중개발은 항상 1개만 유지한다.
 - QA 대기와 실패가 누적되면 동시성을 자동으로 낮춘다.
 - 수정 범위가 작을 때는 영향 테스트를 먼저 수행하고, 통합 지점에서 전체 회귀를 한 번 수행한다.
@@ -19,7 +19,7 @@
 
 - `main`의 `.github/workflows/vibe2-24h-runner.yml`
 - 제어 코어는 `vibe2-unreal-core` 브랜치의 `.github/workflows/vibe2-continuous-core.yml`
-- 운영 최대 동시 게임 작업 수: `4`
+- 운영 최대 동시 게임 작업 수: `20`
 - 1분류 Unity 집중 슬롯: `1`
 - activation commit: `6e2ed92bea5620984f77faf7cfad61f815a3a042`
 - 문서 작성 시 확인한 `main`: `ed4253bb4fdb0be86743bb2e4d496b5a776c7b4e`
@@ -90,7 +90,7 @@ DAG Queue
 4. 고위험 opt-in 작업만 primary/speculative 후보로 추가 fan-out할 수 있다.
 5. worker 결과는 fan-in에서 다시 하나의 큐 상태로 합친다.
 
-운영 최대 동시성은 현재 `4`이며 하드 상한은 큐 코드에서 `8`로 제한한다.
+운영 최대 동시성은 `20`이며 runner·runtime·queue·planner·worker matrix의 하드 상한도 모두 `20`으로 통일한다.
 
 ## 3. Sharded Queue
 
@@ -98,10 +98,10 @@ DAG Queue
 
 | Shard | 기본 역할 | 기본 슬롯 |
 |---|---|---:|
-| `unity` | Unity 작업 | 1 |
-| `web` | Web 테스트베드/웹 작업 | 1 |
-| `verification` | QA, inspect, research | 1 |
-| `support` | 기타 지원 작업 | 1 |
+| `unity` | Unity 작업 | 3 |
+| `web` | Web 테스트베드/웹 작업 | 7 |
+| `verification` | QA, inspect, research | 5 |
+| `support` | 기타 지원 작업 | 5 |
 
 1차 fan-out에서는 각 shard의 기본 슬롯을 우선 채운다.
 
@@ -121,17 +121,20 @@ DAG Queue
 
 동시에 실행할 수 없는 경우:
 
-- 같은 `sourceRoot`
+- 같은 `sourceRoot`이면서 책임 파일이 없거나 겹치는 경우
 - 같은 `responsibleFiles`
+- 같은 세이브 스키마 또는 중앙 정책 파일을 동시에 쓰려는 경우
 - 1분류 Unity feature 작업이 이미 집중 슬롯을 점유한 경우
 
 핵심 규칙:
 
 ```text
-같은 source root  = 병렬 금지
-같은 책임 파일    = 병렬 금지
-다른 source root  = 조건 충족 시 병렬 허용
-1분류 Unity feature = 항상 집중 슬롯 1개
+같은 source root + 명시된 disjoint 책임 파일 = 병렬 허용
+같은 source root + 책임 파일 미지정/중복      = 병렬 금지
+같은 책임 파일                               = 병렬 금지
+세이브 스키마/중앙 정책 동시 쓰기             = 병렬 금지
+다른 source root                             = 조건 충족 시 병렬 허용
+1분류 Unity feature                          = 항상 집중 슬롯 1개
 ```
 
 worker는 현재 `main`에서 격리 candidate branch/worktree를 만든 뒤 승인된 source boundary 밖으로 변경이 나가지 않았는지 다시 검사한다.
@@ -145,7 +148,7 @@ owner 3분류 정책은 병렬화 이후에도 그대로 유지한다.
 - 나머지: `design-only`
 - 1분류 2개 중 실제 Unity 집중개발은 **항상 1개만**
 
-즉 전체 동시성은 4지만 1분류 Unity 본개발을 4개 동시에 돌리는 구조가 아니다.
+즉 전체 최대 동시성은 20이지만 1분류 Unity 본개발은 집중 슬롯 1개만 유지한다.
 
 나머지 슬롯은 충돌 없는 Web 사전검증, QA, 지원/분석 등에서 사용한다.
 
@@ -200,15 +203,18 @@ workflow cache namespace는 게임/타깃 문맥을 기준으로 분리해 서�
 
 ## 10. Dynamic Backpressure
 
-무조건 4개 worker를 유지하지 않는다.
+무조건 20개 worker를 유지하지 않는다.
 
 큐 상태가 나빠지면 effective concurrency를 자동으로 낮춘다.
 
 현재 규칙:
 
-- QA 대기 작업이 2개 이상이면 최대 3
-- QA 대기 작업이 3개 이상이면 최대 2
-- 최근 재시도 실패가 3개 이상이면 최대 2
+- QA 대기 또는 최근 재시도 실패가 2개 이상이면 최대 16
+- 4개 이상이면 최대 12
+- 6개 이상이면 최대 8
+- 8개 이상이면 최대 4
+
+즉 정상 최대치는 20이며 압력이 커질수록 `20 → 16 → 12 → 8 → 4`로 자동 축소한다.
 
 즉 downstream QA가 밀리는데 upstream 개발만 계속 늘려 병목을 악화시키는 구조를 피한다.
 
@@ -281,6 +287,9 @@ reserve
 8. incremental QA + content-hash cache 유지 여부
 9. fan-in 전체 회귀 유지 여부
 10. paid resource 금지 유지 여부
+11. `COMPANY_FLOW.md`의 병렬 목표/최대값이 20인지
+12. runtime·queue·planner·runner 숫자가 모두 20으로 일치하는지
+13. `PARALLELISM_CONTRACT_GATE`가 불일치를 BLOCKER로 잡는지
 
 ## 16. 주요 파일
 
@@ -301,8 +310,10 @@ reserve
 
 - 사용자 직접 지시 최우선
 - 1분류 Unity 집중 슬롯 1개
-- 동일 source root 동시 수정 금지
+- 동일 source root는 책임 파일이 명시되고 서로 겹치지 않을 때만 병렬 허용
 - 동일 책임 파일 동시 수정 금지
+- 세이브 스키마·중앙 정책 파일 동시 쓰기 금지
+- 병렬 설정 불일치는 `PARALLELISM_CONTRACT_GATE` BLOCKER
 - 3분류 source-code 자동 개발 금지
 - 검증 전 자동 배포 금지
 - 유료 AI/runner/자동결제 금지

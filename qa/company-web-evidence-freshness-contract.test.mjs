@@ -7,8 +7,8 @@ const contract=fs.readFileSync('tools/company-web-validation-evidence-contract.m
 const cycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 const homepage=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 
-test('current Web validation evidence is schema13, real-game-substance and source-bound',()=>{
-  assert.match(validator,/VALIDATION_SCHEMA_VERSION=13/);
+test('current Web validation evidence is schema14, real-game-substance and source-bound',()=>{
+  assert.match(validator,/VALIDATION_SCHEMA_VERSION=14/);
   assert.match(validator,/sourceIndexSha256/);
   assert.match(validator,/designBaselineSha256/);
   assert.match(validator,/validationSchemaVersion:VALIDATION_SCHEMA_VERSION/);
@@ -16,7 +16,7 @@ test('current Web validation evidence is schema13, real-game-substance and sourc
   assert.match(validator,/REAL_ELAPSED_GAMEPLAY/);
   assert.match(validator,/elapsedRealMilliseconds/);
   assert.doesNotMatch(validator,/GAMEPLAY_MILESTONE_DEPTH/);
-  assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=13/);
+  assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=14/);
 });
 
 test('native routing consumes the canonical evidence contract instead of a local 4-stage session parser',()=>{
@@ -35,7 +35,7 @@ test('native routing consumes the canonical evidence contract instead of a local
   assert.match(contract,/secondContentDepthPass|secondFinalContentDepthPass/);
 });
 
-test('homepage Top30 uses the same schema13 contract and rejects stale Web evidence',()=>{
+test('homepage Top30 uses the same schema14 contract and rejects stale Web evidence',()=>{
   assert.match(homepage,/const minimumValidationSchema=WEB_VALIDATION_SCHEMA_VERSION/);
   assert.match(homepage,/evaluateWebValidationEvidence/);
   assert.match(homepage,/requireFinalContentDepth:true/);
