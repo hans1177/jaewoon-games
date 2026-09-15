@@ -27,8 +27,9 @@ const productionClass=game?productionClassOf({},game,{numericLabels:directive.pr
 function run(script,{captureFailureOutput=false}={}){return new Promise((resolve,reject)=>{const failureOutput=[];const child=spawn(process.execPath,[script],{stdio:captureFailureOutput?['inherit','pipe','pipe']:'inherit',env:{...process.env,ARTBOOK_GAME_ID:gameId,GAME_ID:gameId,...(date?{ARTBOOK_DATE:date,DESIGN_DATE:date}:{})}});if(captureFailureOutput){const forward=(stream,target)=>stream?.on('data',chunk=>{target.write(chunk);failureOutput.push(String(chunk));if(failureOutput.length>200)failureOutput.splice(0,failureOutput.length-200);});forward(child.stdout,process.stdout);forward(child.stderr,process.stderr);}const attachOutput=error=>{if(captureFailureOutput)error.stageOutput=failureOutput.join('').slice(-24000);return error;};child.on('error',error=>reject(attachOutput(error)));child.on('close',code=>code===0?resolve():reject(attachOutput(new Error(`${script} exited ${code}`))));});}
 function designSchemaRetryable(error){
   const output=String(error?.stageOutput||'');
-  if(/(?:aborted due to timeout|timeout|timed out)/i.test(output))return false;
-  return /(?:schema required missing|schema object mismatch|schema enum mismatch|schema additional property|schema array mismatch|schema minItems mismatch|schema maxItems mismatch|schema string mismatch|schema maxLength mismatch|model response is not a JSON object|empty model response|unexpected token|unexpected end of json input)/i.test(output);
+  const schemaOrJsonFailure=/(?:schema required missing|schema object mismatch|schema enum mismatch|schema additional property|schema array mismatch|schema minItems mismatch|schema maxItems mismatch|schema string mismatch|schema maxLength mismatch|model response is not a JSON object|empty model response|unexpected token|unexpected end of json input)/i.test(output);
+  const transientModelFailure=/(?:aborted due to timeout|timeout|timed out)/i.test(output);
+  return schemaOrJsonFailure||transientModelFailure;
 }
 async function runWithRetry(script,{attempts=2,label='PIPELINE_STAGE',retryWhen=()=>true}={}){
   let lastError=null;
@@ -42,7 +43,7 @@ async function runWithRetry(script,{attempts=2,label='PIPELINE_STAGE',retryWhen=
       console.log(`${label}_ATTEMPT_FAILED=${attempt}/${attempts}|reason=${String(error?.message||error).replace(/\s+/g,' ').trim()}`);
       if(attempt<attempts){
         if(!retryWhen(error)){
-          console.log(`${label}_RETRY=NO|reason=NON_SCHEMA_FAILURE`);
+          console.log(`${label}_RETRY=NO|reason=NON_RETRYABLE_FAILURE`);
           throw error;
         }
         console.log(`${label}_RETRY=YES|next_attempt=${attempt+1}/${attempts}`);
