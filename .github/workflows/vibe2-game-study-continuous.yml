@@ -1,0 +1,242 @@
+name: Vibe2 Game Study Continuous
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reserve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    concurrency:
+      group: vibe2-control-state-vibe2-unreal-core
+      cancel-in-progress: false
+    outputs:
+      web_matrix: ${{ steps.batch.outputs.web_matrix }}
+      web_count: ${{ steps.batch.outputs.web_count }}
+      roblox_matrix: ${{ steps.batch.outputs.roblox_matrix }}
+      roblox_count: ${{ steps.batch.outputs.roblox_count }}
+      selected_count: ${{ steps.batch.outputs.selected_count }}
+      effective_max: ${{ steps.batch.outputs.effective_max }}
+    steps:
+      - name: Checkout latest Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Reserve GAME STUDY from shared queue capacity
+        id: batch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-study-scheduler'
+          git config user.email 'vibe2-study@users.noreply.github.com'
+          git fetch origin vibe2-unreal-core --quiet
+          git reset --hard origin/vibe2-unreal-core
+          node --check tools/vibe2-game-study.mjs
+          node --check tools/vibe2-game-study-queue.mjs
+          node --check tools/vibe2-game-study-worker.mjs
+          node tools/vibe2-game-study-queue.mjs reserve \
+            --queue=.vibe2/queue.json \
+            --targets=.vibe2/game-study-targets.json \
+            --control=.vibe2/parallelism-control.json \
+            --max=20 \
+            --output=/tmp/vibe2-game-study-batch.json | tee /tmp/vibe2-game-study-reserve.log
+          node <<'NODE'
+          const fs=require('fs');
+          const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-game-study-batch.json','utf8'));
+          const out=process.env.GITHUB_OUTPUT;
+          fs.appendFileSync(out,`web_matrix=${JSON.stringify({include:batch.webMatrix||[]})}\n`);
+          fs.appendFileSync(out,`web_count=${(batch.webMatrix||[]).length}\n`);
+          fs.appendFileSync(out,`roblox_matrix=${JSON.stringify({include:batch.robloxMatrix||[]})}\n`);
+          fs.appendFileSync(out,`roblox_count=${(batch.robloxMatrix||[]).length}\n`);
+          fs.appendFileSync(out,`selected_count=${Number(batch.selectedCount||0)}\n`);
+          fs.appendFileSync(out,`effective_max=${Number(batch.effectiveMax||0)}\n`);
+          NODE
+          if git diff --quiet -- .vibe2/queue.json; then
+            echo 'VIBE2_GAME_STUDY_RESERVATION_WRITE=NO'
+          else
+            git add .vibe2/queue.json
+            git commit -m "vibe2: reserve parallel game study batch [skip ci]"
+            git push origin HEAD:vibe2-unreal-core
+            echo 'VIBE2_GAME_STUDY_RESERVATION_WRITE=YES'
+          fi
+
+      - name: Upload study reservation diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-game-study-reserve-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-game-study-batch.json
+            /tmp/vibe2-game-study-reserve.log
+          if-no-files-found: warn
+          retention-days: 3
+
+  web:
+    needs: reserve
+    if: needs.reserve.outputs.web_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJSON(needs.reserve.outputs.web_matrix) }}
+    steps:
+      - name: Checkout Vibe2 study code
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Require Chrome runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v google-chrome >/dev/null 2>&1; then chrome="$(command -v google-chrome)";
+          elif command -v google-chrome-stable >/dev/null 2>&1; then chrome="$(command -v google-chrome-stable)";
+          elif command -v chromium >/dev/null 2>&1; then chrome="$(command -v chromium)";
+          elif command -v chromium-browser >/dev/null 2>&1; then chrome="$(command -v chromium-browser)";
+          else echo 'Chrome/Chromium required for Web GAME STUDY' >&2; exit 1; fi
+          echo "VIBE2_STUDY_CHROME=$chrome" >> "$GITHUB_ENV"
+
+      - name: Run isolated Web GAME STUDY
+        id: study
+        continue-on-error: true
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          TARGET_ID: ${{ matrix.targetId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/vibe2-game-study-result
+          node tools/vibe2-game-study-worker.mjs \
+            --task-id="$TASK_ID" \
+            --target-id="$TARGET_ID" \
+            --targets=.vibe2/game-study-targets.json \
+            --chrome="$VIBE2_STUDY_CHROME" \
+            --output="/tmp/vibe2-game-study-result/${{ matrix.safeTask }}.json" | tee /tmp/vibe2-game-study-worker.log
+
+      - name: Upload immutable Web study result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-game-study-result-web-${{ matrix.safeTask }}
+          path: /tmp/vibe2-game-study-result/${{ matrix.safeTask }}.json
+          if-no-files-found: error
+          retention-days: 1
+
+  roblox:
+    needs: reserve
+    if: needs.reserve.outputs.roblox_count != '0'
+    runs-on: [self-hosted, Windows, vibe2-roblox]
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJSON(needs.reserve.outputs.roblox_matrix) }}
+    steps:
+      - name: Checkout Vibe2 study code
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run isolated Roblox Studio GAME STUDY
+        id: study
+        continue-on-error: true
+        shell: pwsh
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          TARGET_ID: ${{ matrix.targetId }}
+        run: |
+          New-Item -ItemType Directory -Force -Path "$env:RUNNER_TEMP/vibe2-game-study-result" | Out-Null
+          node tools/vibe2-game-study-worker.mjs `
+            --task-id="$env:TASK_ID" `
+            --target-id="$env:TARGET_ID" `
+            --targets=.vibe2/game-study-targets.json `
+            --output="$env:RUNNER_TEMP/vibe2-game-study-result/${{ matrix.safeTask }}.json"
+
+      - name: Upload immutable Roblox study result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-game-study-result-roblox-${{ matrix.safeTask }}
+          path: ${{ runner.temp }}/vibe2-game-study-result/${{ matrix.safeTask }}.json
+          if-no-files-found: error
+          retention-days: 1
+
+  fan_in:
+    needs: [reserve, web, roblox]
+    if: always() && needs.reserve.outputs.selected_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    concurrency:
+      group: vibe2-control-state-vibe2-unreal-core
+      cancel-in-progress: false
+    steps:
+      - name: Checkout latest Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download parallel study results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vibe2-game-study-result-*
+          path: /tmp/vibe2-game-study-results
+          merge-multiple: true
+
+      - name: Promote verified studies and settle shared queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-study-fan-in'
+          git config user.email 'vibe2-study@users.noreply.github.com'
+          git fetch origin vibe2-unreal-core --quiet
+          git reset --hard origin/vibe2-unreal-core
+          node tools/vibe2-game-study-queue.mjs fan-in \
+            --queue=.vibe2/queue.json \
+            --experience=.vibe2/experience.json \
+            --results=/tmp/vibe2-game-study-results \
+            --output=/tmp/vibe2-game-study-fanin.json | tee /tmp/vibe2-game-study-fanin.log
+          if git diff --quiet -- .vibe2/queue.json .vibe2/experience.json; then
+            echo 'VIBE2_GAME_STUDY_FANIN_WRITE=NO'
+          else
+            git add .vibe2/queue.json .vibe2/experience.json
+            git commit -m "vibe2: learn verified parallel game studies [skip ci]"
+            git push origin HEAD:vibe2-unreal-core
+            echo 'VIBE2_GAME_STUDY_FANIN_WRITE=YES'
+          fi
+
+      - name: Upload GAME STUDY fan-in
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-game-study-fanin-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-game-study-fanin.json
+            /tmp/vibe2-game-study-fanin.log
+          if-no-files-found: warn
+          retention-days: 7
