@@ -1,0 +1,174 @@
+name: Vibe2 Adaptive Recovery Probe
+
+on:
+  pull_request:
+    branches: [vibe2-unreal-core]
+    paths:
+      - '.github/workflows/vibe2-adaptive-recovery-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  setup_a:
+    runs-on: ubuntu-latest
+    outputs:
+      reserved_at: ${{ steps.time.outputs.reserved_at }}
+    steps:
+      - id: time
+        shell: bash
+        run: echo "reserved_at=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
+
+  workers_a:
+    needs: setup_a
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        id: [1,2,3,4]
+    steps:
+      - name: Mark start
+        shell: bash
+        run: echo "$(date +%s%3N)" > /tmp/start
+      - uses: actions/checkout@v4
+      - name: Probe
+        env:
+          ID: ${{ matrix.id }}
+          RESERVED_AT: ${{ needs.setup_a.outputs.reserved_at }}
+          RUN_ID: recovery4a-${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          start="$(cat /tmp/start)"
+          after_checkout="$(date +%s%3N)"
+          checkout_ms=$((after_checkout-start))
+          sleep 20
+          finish="$(date +%s%3N)"
+          mkdir -p /tmp/probe
+          START="$start" FINISH="$finish" CHECKOUT_MS="$checkout_ms" node <<'NODE'
+          const fs=require('fs');
+          const row={taskId:`recovery4a-${process.env.ID}`,runId:process.env.RUN_ID,outcome:'PASS',metrics:{runId:process.env.RUN_ID,reservedAt:Number(process.env.RESERVED_AT),workerStartedAt:Number(process.env.START),workerFinishedAt:Number(process.env.FINISH),checkoutMs:Number(process.env.CHECKOUT_MS),candidateMs:0,qaMs:0,workerTotalMs:Number(process.env.FINISH)-Number(process.env.START)}};
+          fs.writeFileSync(`/tmp/probe/result-${process.env.ID}.json`,JSON.stringify(row));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovery4a-${{ matrix.id }}
+          path: /tmp/probe/*.json
+          retention-days: 1
+
+  fanin_a:
+    needs: workers_a
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: recovery4a-*
+          path: /tmp/a
+          merge-multiple: true
+      - shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { computeParallelismTelemetry } from './tools/vibe2-parallelism-telemetry.mjs';
+          const rows=fs.readdirSync('/tmp/a').filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(`/tmp/a/${x}`,'utf8')));
+          const t=computeParallelismTelemetry({results:rows,requestedMax:4,effectiveMax:4,taskCount:4});
+          fs.writeFileSync('/tmp/a.json',JSON.stringify(t,null,2));
+          console.log(`RECOVERY4A_PEAK=${t.actualPeakConcurrency}`);
+          console.log(`RECOVERY4A_QUEUE_P95_MS=${t.queueWait.p95Ms}`);
+          console.log(`RECOVERY4A_CHECKOUT_P95_MS=${t.checkout.p95Ms}`);
+          console.log(`RECOVERY4A_BOTTLENECK=${t.bottleneck}`);
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovery4-a-telemetry
+          path: /tmp/a.json
+          retention-days: 1
+
+  setup_b:
+    needs: fanin_a
+    runs-on: ubuntu-latest
+    outputs:
+      reserved_at: ${{ steps.time.outputs.reserved_at }}
+    steps:
+      - id: time
+        shell: bash
+        run: echo "reserved_at=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
+
+  workers_b:
+    needs: setup_b
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        id: [1,2,3,4]
+    steps:
+      - name: Mark start
+        shell: bash
+        run: echo "$(date +%s%3N)" > /tmp/start
+      - uses: actions/checkout@v4
+      - name: Probe
+        env:
+          ID: ${{ matrix.id }}
+          RESERVED_AT: ${{ needs.setup_b.outputs.reserved_at }}
+          RUN_ID: recovery4b-${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          start="$(cat /tmp/start)"
+          after_checkout="$(date +%s%3N)"
+          checkout_ms=$((after_checkout-start))
+          sleep 20
+          finish="$(date +%s%3N)"
+          mkdir -p /tmp/probe
+          START="$start" FINISH="$finish" CHECKOUT_MS="$checkout_ms" node <<'NODE'
+          const fs=require('fs');
+          const row={taskId:`recovery4b-${process.env.ID}`,runId:process.env.RUN_ID,outcome:'PASS',metrics:{runId:process.env.RUN_ID,reservedAt:Number(process.env.RESERVED_AT),workerStartedAt:Number(process.env.START),workerFinishedAt:Number(process.env.FINISH),checkoutMs:Number(process.env.CHECKOUT_MS),candidateMs:0,qaMs:0,workerTotalMs:Number(process.env.FINISH)-Number(process.env.START)}};
+          fs.writeFileSync(`/tmp/probe/result-${process.env.ID}.json`,JSON.stringify(row));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovery4b-${{ matrix.id }}
+          path: /tmp/probe/*.json
+          retention-days: 1
+
+  fanin_b:
+    needs: workers_b
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: recovery4b-*
+          path: /tmp/b
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: recovery4-a-telemetry
+          path: /tmp/a
+      - shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { computeParallelismTelemetry } from './tools/vibe2-parallelism-telemetry.mjs';
+          import { createParallelismControl, decideAdaptiveBackpressure } from './tools/vibe2-adaptive-backpressure.mjs';
+          const a=JSON.parse(fs.readFileSync('/tmp/a/a.json','utf8'));
+          const rows=fs.readdirSync('/tmp/b').filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(`/tmp/b/${x}`,'utf8')));
+          const b=computeParallelismTelemetry({results:rows,requestedMax:4,effectiveMax:4,taskCount:4});
+          const seed=createParallelismControl({currentMax:4});
+          const first=decideAdaptiveBackpressure(seed,a);
+          const second=decideAdaptiveBackpressure(first,b);
+          console.log(`RECOVERY4B_PEAK=${b.actualPeakConcurrency}`);
+          console.log(`RECOVERY4B_QUEUE_P95_MS=${b.queueWait.p95Ms}`);
+          console.log(`RECOVERY4B_CHECKOUT_P95_MS=${b.checkout.p95Ms}`);
+          console.log(`RECOVERY4B_BOTTLENECK=${b.bottleneck}`);
+          console.log(`RECOVERY4_FIRST=4->${first.currentMax}:${first.lastReason}`);
+          console.log(`RECOVERY4_SECOND=${first.currentMax}->${second.currentMax}:${second.lastReason}`);
+          const pass=first.currentMax===4 && first.healthyStreak===1 && first.lastReason==='HEALTHY_STREAK_1' && second.currentMax===8 && second.lastDecision==='UP' && second.lastReason==='HEALTHY_STREAK_2';
+          console.log(`RECOVERY4_TWO_HEALTHY_RUNS=${pass?'PASS':'FAIL'}`);
+          if(!pass) process.exit(1);
+          NODE
