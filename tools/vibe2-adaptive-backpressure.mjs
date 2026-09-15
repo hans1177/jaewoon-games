@@ -36,7 +36,8 @@ export function createParallelismControl(input = {}) {
 
 export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX) {
   const control = createParallelismControl(controlInput);
-  return Math.max(1, Math.min(normalizeStep(requestedMax), control.currentMax));
+  const requested = clamp(Math.floor(num(requestedMax) || DEFAULT_ADAPTIVE_MAX), 1, 20);
+  return Math.max(1, Math.min(requested, control.currentMax));
 }
 
 function pressureReasons(telemetry = {}) {
