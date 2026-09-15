@@ -1,0 +1,62 @@
+name: Roblox Bootstrap Command Bar Exec Probe
+
+on:
+  push:
+    branches: [fix/roblox-auto-bootstrap]
+    paths:
+      - '.github/workflows/roblox-bootstrap-commandbar-exec-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: verify Studio command bar log recovery
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 10
+    steps:
+      - name: Execute harmless ID probe and recover Studio log
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+          Add-Type -AssemblyName System.Windows.Forms
+
+          $p = Get-Process RobloxStudioBeta -ErrorAction Stop | Select-Object -First 1
+          $root = [System.Windows.Automation.AutomationElement]::RootElement
+          $pidCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty,$p.Id)
+          $windows = $root.FindAll([System.Windows.Automation.TreeScope]::Children,$pidCond)
+          $main = $null
+          foreach ($w in $windows) { if ([string]$w.Current.AutomationId -eq 'RBXMainWindow') { $main=$w; break } }
+          if (-not $main) { throw 'RBXMainWindow not detected' }
+
+          $idCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'commandBarScriptEditor')
+          $bar = $main.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCond)
+          if (-not $bar) { throw 'commandBarScriptEditor not detected' }
+
+          $shell = New-Object -ComObject WScript.Shell
+          if (-not $shell.AppActivate($p.Id)) { throw 'Studio is not interactive' }
+          Start-Sleep -Milliseconds 500
+          $bar.SetFocus()
+          Start-Sleep -Milliseconds 250
+          $shell.SendKeys('^a')
+          $cmd = 'print("ROBLOX_BOOTSTRAP_COMMAND_PROBE=" .. tostring(game.GameId) .. ":" .. tostring(game.PlaceId))'
+          $shell.SendKeys($cmd)
+          $shell.SendKeys('{ENTER}')
+          Start-Sleep -Seconds 3
+
+          $logRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+          if (-not (Test-Path $logRoot)) { throw "Roblox log directory missing: $logRoot" }
+          $cutoff = (Get-Date).AddMinutes(-10)
+          $matches = @()
+          foreach ($log in Get-ChildItem $logRoot -File -Filter '*.log' | Where-Object { $_.LastWriteTime -ge $cutoff } | Sort-Object LastWriteTime -Descending) {
+            $hit = Select-String -Path $log.FullName -Pattern 'ROBLOX_BOOTSTRAP_COMMAND_PROBE=' -SimpleMatch -ErrorAction SilentlyContinue | Select-Object -Last 1
+            if ($hit) { $matches += [pscustomobject]@{ File=$log.FullName; Line=$hit.Line } }
+          }
+          if ($matches.Count -lt 1) { throw 'Command probe sentinel not recovered from Studio logs' }
+          $last = $matches[0]
+          Write-Host "ROBLOX_BOOTSTRAP_COMMAND_LOG=$($last.File)"
+          Write-Host $last.Line
+          Write-Host 'ROBLOX_BOOTSTRAP_COMMAND_RECOVERY=PASS'
+          Write-Host 'ROBLOX_EXPERIENCE_CREATED=NO'
