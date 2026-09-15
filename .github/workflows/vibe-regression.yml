@@ -48,6 +48,7 @@ jobs:
             qa/company-vibe2-gameplay-intelligence.test.mjs
             qa/company-vibe2-coding-architecture.test.mjs
             qa/company-vibe2-expert-development.test.mjs
+            qa/company-design-multiplayer-mode-contract.test.mjs
             qa/vibe-regression.mjs
             qa/vibe-agent-causality.mjs
             qa/vibe-presentation-causality.mjs
@@ -86,6 +87,9 @@ jobs:
 
       - name: Test Vibe2 expert responsibility, causal debugging and senior review
         run: node --test qa/company-vibe2-expert-development.test.mjs
+
+      - name: Test game-design multiplayer mode contract
+        run: node --test qa/company-design-multiplayer-mode-contract.test.mjs
 
       - name: Run integrated regression suite
         run: node qa/vibe-regression.mjs
