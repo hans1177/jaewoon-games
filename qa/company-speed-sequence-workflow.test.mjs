@@ -112,3 +112,15 @@ test('Web development validation is parallel-first with six isolated workers and
   assert.match(policy,/webValidationParallelismMax: 6/);
   assert.match(policy,/sharedRuntimeStatePersistedBySingleAggregationStep: true/);
 });
+
+test('DEVELOPMENT runtime does not serialize whole runs and serializes only shared-state writers',()=>{
+  const jobsAt=router.indexOf('\njobs:');
+  assert.ok(jobsAt>0,'jobs block missing');
+  assert.doesNotMatch(router.slice(0,jobsAt),/\nconcurrency:/,'workflow-level concurrency would block independent workers across revisions');
+  const writerLocks=router.match(/group:\s*company-development-runtime-state-writer/g)||[];
+  assert.equal(writerLocks.length,3,'web-gate, post-web-artbook and route must share one writer lock');
+  assert.match(router,/runtime_sha:\s*\$\{\{ steps\.targets\.outputs\.runtime_sha \}\}/);
+  assert.match(router,/WEB_RUNTIME_BINDING_STALE_SKIP=YES/);
+  assert.match(router,/needs\.web-plan\.outputs\.runtime_sha/);
+  assert.match(router,/cancel-in-progress:\s*false/);
+});
