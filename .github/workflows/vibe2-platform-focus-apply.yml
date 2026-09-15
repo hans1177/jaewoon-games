@@ -10,8 +10,11 @@ on:
       - 'assets/vibe-continuous-queue.js'
       - 'tools/vibe2-platform-focus-policy.mjs'
       - 'tools/vibe2-roblox-owner-queue.mjs'
+      - 'tools/vibe2-source-worker.mjs'
       - 'qa/vibe2-platform-focus-policy.test.mjs'
       - 'qa/vibe2-roblox-owner-queue.test.mjs'
+      - 'qa/vibe2-source-worker.test.mjs'
+      - 'qa/vibe2-source-worker-roblox-full-rebuild.test.mjs'
       - '.github/workflows/vibe2-platform-focus-apply.yml'
   workflow_dispatch:
 
@@ -44,8 +47,11 @@ jobs:
           node --check assets/vibe-continuous-queue.js
           node --check tools/vibe2-platform-focus-policy.mjs
           node --check tools/vibe2-roblox-owner-queue.mjs
+          node --check tools/vibe2-source-worker.mjs
           node --test qa/vibe2-platform-focus-policy.test.mjs
           node --test qa/vibe2-roblox-owner-queue.test.mjs
+          node --test qa/vibe2-source-worker.test.mjs
+          node --test qa/vibe2-source-worker-roblox-full-rebuild.test.mjs
 
       - name: Apply Roblox owner work and focus to current control queue
         shell: bash
