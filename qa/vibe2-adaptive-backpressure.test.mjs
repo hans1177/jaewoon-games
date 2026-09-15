@@ -174,7 +174,9 @@ test('duplicate fan-in run id cannot apply pressure twice', () => {
     once,
     pressuredTelemetry({ runId: 'same-run', workerCount: 16, effectiveMax: 16 })
   );
-  assert.deepEqual(twice, once);
+  assert.equal(twice.currentMax, 16);
+  assert.equal(twice.lastDecision, 'HOLD');
+  assert.equal(twice.lastReason, 'DUPLICATE_RUN');
 });
 
 test('adaptive requested max never exceeds persistent control or explicit request', () => {
