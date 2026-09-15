@@ -44,16 +44,16 @@ async function clickMechanic(page,row,index=0){
 export async function runIndependentStrategyBranches({browser,url,actionEvidence=[],declaredChoices=[],required=false,followupLimit=8}={}){
   if(required!==true)return evaluateIndependentStrategyEvidence({required:false});
   const candidates=strategyCandidateRows(actionEvidence,declaredChoices);if(candidates.length<2)return evaluateIndependentStrategyEvidence({required:true,branches:[]});
-  const candidateMechanics=new Set(candidates.map(row=>clean(row.mechanicId))),commonTrace=distinctRows(actionEvidence).filter(row=>!candidateMechanics.has(clean(row.mechanicId))).slice(0,Math.max(2,Number(followupLimit)||8)),branches=[];
-  for(const candidate of candidates.slice(0,2)){
+  const candidateMechanics=new Set(candidates.map(row=>clean(row.mechanicId))),commonTrace=distinctRows(actionEvidence).filter(row=>!candidateMechanics.has(clean(row.mechanicId))).slice(0,Math.max(2,Number(followupLimit)||8));
+  const branches=await Promise.all(candidates.slice(0,2).map(async(candidate,index)=>{
     const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true}),page=await context.newPage();
     try{
       const branchUrl=new URL(url);branchUrl.searchParams.set('strategyBranch',clean(candidate.mechanicId));await page.goto(branchUrl.toString(),{waitUntil:'domcontentloaded',timeout:30000});await page.waitForTimeout(300);
-      const executed=await clickMechanic(page,candidate,0);let followupExecuted=0;
+      const executed=await clickMechanic(page,candidate,index);let followupExecuted=0;
       if(executed){for(const row of commonTrace){if(await clickMechanic(page,row,followupExecuted))followupExecuted++;}}
-      const outcome=await branchSnapshot(page);branches.push({choiceMechanic:clean(candidate.mechanicId),executed,followupExecuted,combatOutcomeSignature:combatSignature(outcome)});
-    }catch{branches.push({choiceMechanic:clean(candidate.mechanicId),executed:false,followupExecuted:0,combatOutcomeSignature:''});}
+      const outcome=await branchSnapshot(page);return{choiceMechanic:clean(candidate.mechanicId),executed,followupExecuted,combatOutcomeSignature:combatSignature(outcome)};
+    }catch{return{choiceMechanic:clean(candidate.mechanicId),executed:false,followupExecuted:0,combatOutcomeSignature:''};}
     finally{await context.close();}
-  }
+  }));
   return evaluateIndependentStrategyEvidence({required:true,branches});
 }
