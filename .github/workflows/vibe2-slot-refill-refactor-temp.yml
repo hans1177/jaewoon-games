@@ -1,0 +1,78 @@
+name: Vibe2 Slot Refill Refactor Temp
+
+on:
+  push:
+    branches:
+      - 'feat/vibe2-continuous-slot-refill'
+    paths:
+      - '.github/workflows/vibe2-slot-refill-refactor-temp.yml'
+      - 'tools/vibe2-slot-refill-refactor-temp.py'
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/vibe2-continuous-slot-refill
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Apply continuous slot refill refactor
+        run: python tools/vibe2-slot-refill-refactor-temp.py
+
+      - name: Syntax and machine-state consistency
+        run: |
+          set -euo pipefail
+          node --check assets/vibe-continuous-queue.js
+          node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-continuous-runner.mjs
+          node --check qa/vibe2-queue-control.test.mjs
+          node --check qa/vibe2-controller-contract.test.mjs
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-slot-refill-handoff.json >/tmp/vibe2-slot-refill-handoff.log
+          git diff --check
+
+      - name: Queue slot-release tests
+        run: node --test qa/vibe2-queue-control.test.mjs
+
+      - name: Controller callback contract tests
+        run: node --test qa/vibe2-controller-contract.test.mjs
+
+      - name: Full Vibe2 regression contract
+        run: |
+          node --test --test-concurrency=4 \
+            qa/vibe2-auto-planner.test.mjs \
+            qa/vibe2-core-engine-motion.test.mjs \
+            qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-queue-control.test.mjs \
+            qa/vibe2-incremental-qa.test.mjs \
+            qa/vibe2-parallelism-telemetry.test.mjs \
+            qa/vibe2-adaptive-backpressure.test.mjs \
+            qa/vibe2-controller-contract.test.mjs \
+            qa/vibe2-candidate-reconcile.test.mjs \
+            qa/vibe2-experience-control.test.mjs \
+            qa/vibe2-handoff.test.mjs
+
+      - name: Commit verified non-workflow changes and workflow snapshot
+        run: |
+          set -euo pipefail
+          git checkout -- .github/workflows/vibe2-continuous-core.yml
+          git config user.name 'jaewoon-vibe2-slot-refill'
+          git config user.email 'vibe2-slot-refill@users.noreply.github.com'
+          git add \
+            assets/vibe-continuous-queue.js \
+            tools/vibe2-queue-control.mjs \
+            vibe2-runtime.json \
+            qa/vibe2-queue-control.test.mjs \
+            qa/vibe2-controller-contract.test.mjs \
+            .vibe2/workflow-snapshots/vibe2-continuous-core.yml
+          git diff --cached --check
+          git commit -m 'vibe2: release completed worker slots before fan-in'
+          git push origin HEAD:feat/vibe2-continuous-slot-refill
