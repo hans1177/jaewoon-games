@@ -5,9 +5,9 @@
 ## 운영 구조
 
 ```text
-중앙정책 + 실제 상태/빌드/런타임 근거
-→ Web 강심사/하드게이트 통과 후보를 canonical Top30으로 순위화
-→ 홈페이지의 게임 구현 영역이 canonical Top30을 그대로 실시간 미러
+중앙정책 + 실제 개발 상태/빌드/런타임 근거
+→ DEVELOPMENT_CONFIRMED 게임은 개발 진행 목록에 즉시 자동 표시
+→ Web 강심사/하드게이트 통과 후보만 별도 canonical Top30으로 순위화
 → Homepage Manager self-QA
 → 기존 Director 1개가 사후 감독
 → 자동화 브랜치/PR을 통해 main에 반영
@@ -16,24 +16,31 @@
 
 별도 홈페이지 관리자나 별도 홈페이지 감독 파이프라인을 만들지 않는다. `company-runtime`은 서버측 실행 상태 저장소이며 그대로 공개 원본으로 취급하지 않는다.
 
-## 홈페이지 게임 구현 = Top30
+## 개발게임 자동 표시와 Top30 분리
 
-홈페이지의 **주 게임 구현 영역은 canonical Web Top30 그 자체**다.
+홈페이지에는 **개발 진행 목록**과 **Top30 승격 목록**을 분리한다.
+
+### 개발 진행 목록
+
+- 입력 원본: `company-runtime:development-queue.json`
+- `productionClass=DEVELOPMENT_CONFIRMED`이면 검증 점수와 무관하게 자동 표시한다.
+- `homepageTestEligible`, Web strict 점수, 30분 최종검증, 아트북은 개발 진행 목록의 등록 조건이 아니다.
+- 표시 정보는 게임명과 `status`, `currentStep`, `selectedPlatform` 중심으로 제한한다.
+- 검증 실패/대기 상태여도 개발게임 카드는 유지하며 현재 진행 상태를 표시한다.
+- 개발 진행 카드는 출시 승인, Top30 통과, 플레이 가능을 의미하지 않는다.
+- `company-runtime` 전체를 main에 복사하지 않고 브라우저가 개발 큐를 읽어 필요한 표시 필드만 사용한다.
+
+### canonical Web Top30
 
 - 입력 원본: `test-game-candidates.json`
 - 최대 표시: 30개
 - 최소 Web strict 점수: 80
 - 하드게이트: 전부 통과 필수
+- 최종 30분 콘텐츠 깊이 검증과 아트북 등 기존 승격 조건을 그대로 유지한다.
 - 정렬: `STRICT_IMPLEMENTATION_SCORE_DESC`
-- 현재 후보가 30개 미만이면 통과한 후보 수만 표시한다.
-- 30개가 찬 뒤 더 높은 점수 후보가 들어오면 canonical Top30 순위가 바뀌고 홈페이지도 같은 순서를 미러한다.
-- 홈페이지의 주 게임 영역에 Top30 밖의 카탈로그 게임을 독립 목록으로 섞지 않는다.
-- Top30 80~89는 Web 경쟁 후보로 계속 표시한다.
-- Top30 90+는 플랫폼 개발·테스트 진입 대상이라는 상태를 표시할 수 있다.
-- Top30 후보는 정식 `homepageOfficialCard` 승격과 별개이며, 승격 전에는 테스트/후보 상태임을 명확히 표시한다.
-- 기존 compact test shelf는 주 구현이 아니다. 중복 Top30 선반을 따로 만들지 않는다.
-- 히어로/대표 게임도 canonical Top30의 현재 1위 후보를 우선 사용한다.
-- 홈페이지는 5초 주기/포커스 복귀 시 Top30과 상태 메타데이터를 다시 읽어 실시간 미러한다.
+- Top30 검증 기준은 개발 진행 목록 노출 여부에 영향을 주지 않는다.
+- Top30 후보는 정식 `homepageOfficialCard` 승격과 별개이며 승격 전에는 테스트/후보 상태를 명확히 표시한다.
+- 히어로/대표 게임은 canonical Top30의 현재 1위 후보를 우선 사용할 수 있다.
 
 ## APK 설치 배치
 
@@ -66,8 +73,8 @@ owner 최신 지시에 따라 **재운컴퍼니 APK 설치 컨트롤은 홈페�
 홈페이지 상태 동기화 책임은 **단일 Homepage Manager AI**에 있다.
 
 1. `Company Status Sync`가 성공한 뒤에만 `company-runtime`의 공개 대상 상태를 읽는다.
-2. 홈페이지 주 게임 구현은 `test-game-candidates.json` canonical Top30을 읽는다.
-3. `game-catalog.json`과 `company-status.json`은 Top30 카드의 이름/이미지/플랫폼/빌드 등 보조 메타데이터에 사용하며, 독립 게임 목록을 만들지 않는다.
+2. 개발 진행 목록은 `company-runtime:development-queue.json`에서 `DEVELOPMENT_CONFIRMED` 상태를 읽고 검증 게이트와 무관하게 표시한다.
+3. Top30은 `test-game-candidates.json` canonical manifest를 읽으며 기존 승격 게이트를 유지한다. `game-catalog.json`과 `company-status.json`은 이름/이미지/플랫폼 등 보조 메타데이터에 사용한다.
 4. 동기화 후보에 대해 Homepage Manager self-QA를 먼저 수행한다.
 5. 기존 Director가 동일 후보를 사후 검증한다.
 6. 통과한 차이만 `automation/homepage-runtime-sync-*` 브랜치와 PR로 전달한다.
@@ -106,7 +113,8 @@ owner 최신 지시에 따라 **재운컴퍼니 APK 설치 컨트롤은 홈페�
 ## 홈페이지 정보 소스
 
 - `COMPANY_FLOW.md` — 정책 원본
-- `test-game-candidates.json` — 홈페이지 주 게임 구현 원본인 canonical Top30
+- `company-runtime:development-queue.json` — 개발 진행 목록 원본; 상태/단계/플랫폼만 공개 표시
+- `test-game-candidates.json` — 검증된 canonical Top30 원본
 - `company-directive.json` — 실행값 미러
 - `company-runtime:company-status.json` — 검증된 서버측 최신 상태 후보
 - `company-runtime:game-catalog.json` — Top30 카드 보조 메타데이터
@@ -119,7 +127,7 @@ owner 최신 지시에 따라 **재운컴퍼니 APK 설치 컨트롤은 홈페�
 ## 금지
 
 - 회사 정책 자체 변경
-- Top30 밖 게임을 홈페이지 주 게임 영역에 별도 카탈로그로 섞기
+- 개발 진행 카드를 Top30 통과 또는 출시 승인 카드처럼 표시하기
 - canonical Top30 순위를 홈페이지에서 임의 재정렬
 - 승격 전 Top30 후보를 공식 카드로 표시
 - APK 설치 컨트롤을 홈페이지 대문 상단에 다시 배치
@@ -139,7 +147,7 @@ Homepage Manager 작업 후 최소 다음을 검사한다.
 
 1. HTML/JS 구문
 2. 360px 모바일 배치와 가로 넘침
-3. 홈페이지 주 게임 카드의 source가 전부 canonical Top30인지 확인
+3. 개발 진행 카드는 `DEVELOPMENT_QUEUE`, Top30 카드는 `CANONICAL_TOP30` source인지 확인
 4. Top30 카드 수가 30 이하인지 확인
 5. strict 점수 80 미만 또는 hard failure 후보가 표시되지 않는지 확인
 6. Top30 순서가 manifest 순서/strict 점수순과 일치하는지 확인
@@ -164,7 +172,7 @@ Homepage Manager 작업 후 최소 다음을 검사한다.
 - 작업 증거 존재
 - 결과 파일 존재
 - self-QA PASS
-- 홈페이지 주 게임 구현이 canonical Top30과 일치
+- 개발 진행 목록이 DEVELOPMENT_CONFIRMED 큐와 일치하고 Top30 승격 목록은 canonical Top30과 일치
 - APK 설치 컨트롤이 대문 상단에 남아 있지 않음
 - 중앙정책/실제 상태와 표시 일치
 - 서버→홈페이지 동기화 후보가 검증된 파일만 포함
@@ -176,4 +184,4 @@ Director는 검증/차단/재작업 반환을 담당하며 Homepage Manager 결�
 
 ## 완료 정의
 
-`running`, `BRANCH_READY`, 후보 브랜치 생성은 완료 증거가 아니다. canonical Top30 → 홈페이지 주 게임 구현 실시간 미러 + APK 설치 컨트롤 비대문 배치 + self-QA + Director 사후 감독 + 필요 시 자동화 PR 생성/병합 결과가 있어야 완료로 본다. 의미 상태가 같은 timestamp-only 변경은 동기화 차이로 보지 않는다. PR 권한 또는 생성 실패로 main 반영이 끝나지 않았으면 명시적으로 BLOCK/FAIL 상태로 남긴다.
+`running`, `BRANCH_READY`, 후보 브랜치 생성은 완료 증거가 아니다. DEVELOPMENT_CONFIRMED → 개발 진행 목록 즉시 미러 + canonical Top30 별도 승격 미러 + APK 설치 컨트롤 비대문 배치 + self-QA + Director 사후 감독 + 필요 시 자동화 PR 생성/병합 결과가 있어야 완료로 본다. 의미 상태가 같은 timestamp-only 변경은 동기화 차이로 보지 않는다. PR 권한 또는 생성 실패로 main 반영이 끝나지 않았으면 명시적으로 BLOCK/FAIL 상태로 남긴다.

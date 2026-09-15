@@ -1,4 +1,4 @@
-import './homepage-enhancements-core.js?v=20260914-top30-primary';
+import './homepage-enhancements-core.js?v=20260915-development-progress';
 
 function bindNativeApkInstall(){
   const bind=()=>{
@@ -31,7 +31,8 @@ function enforceOfficialCardVisibility(){
     const rank=Number(card.dataset?.top30Rank||0);
     const score=Number(card.dataset?.top30Score||0);
     const canonical=card.classList.contains('top30GameCard')&&card.dataset?.homepageGameSource==='CANONICAL_TOP30'&&rank>=1&&rank<=TEST_SHELF_LIMIT&&score>=TEST_SHELF_MIN_SCORE;
-    card.style.display=canonical?'':'none';
+    const development=card.classList.contains('developmentGameCard')&&card.dataset?.homepageGameSource==='DEVELOPMENT_QUEUE';
+    card.style.display=(canonical||development)?'':'none';
   });
 }
 function bindDirectGameLaunch(){

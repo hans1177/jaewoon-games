@@ -352,8 +352,22 @@ ownerCurrentProductionContract:
     artbookFailureMustNotUndoDesignOrWebPass: true
     artbookFailureBlocksHomepageRegistrationOnly: true
   homepageTesting:
+    developmentProgressDisplay:
+      source: COMPANY_RUNTIME_DEVELOPMENT_QUEUE
+      autoRegisterDevelopmentConfirmed: true
+      visibilityRequiresDevelopmentProgressOnly: true
+      homepageTestEligibleRequired: false
+      webStrictScoreRequired: false
+      finalThirtyMinuteContentDepthPassRequired: false
+      artbookRequired: false
+      promotionAndTop30RemainSeparate: true
+      displayFields:
+        - STATUS
+        - CURRENT_STEP
+        - SELECTED_PLATFORM
+      developmentCardMustNotClaimValidationOrRelease: true
     ownerMayTestBeforeFinalPromotion: true
-    prePromotionDisplay: COMPACT_TEST_GAME_SHELF_ONLY
+    prePromotionDisplay: DEVELOPMENT_PROGRESS_SHELF_PLUS_SEPARATE_TOP30_TEST_SHELF
     prePromotionOfficialGameCardForbidden: true
     testCandidateMustBeClearlyMarkedNotPass: true
     webStrictScoreMinimum: 80
