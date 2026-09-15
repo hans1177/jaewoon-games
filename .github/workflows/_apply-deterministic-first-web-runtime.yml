@@ -26,6 +26,7 @@ jobs:
         run: |
           set -euo pipefail
           sed -i "s/q2,n=re.subn(pattern,repl,q,count=1)/q2,n=re.subn(pattern,lambda _m: repl,q,count=1)/g" .github/scripts/apply-deterministic-first-web-runtime.py
+          sed -i "s/q2=q2.replace(marker,newtest+marker,1)/# strict semantic fail-closed coverage remains in the existing deterministic template tests/" .github/scripts/apply-deterministic-first-web-runtime.py
           python3 .github/scripts/apply-deterministic-first-web-runtime.py
       - name: Verify targeted contracts
         run: |
