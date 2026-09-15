@@ -63,6 +63,8 @@ function evidence({finalDepth=true,metrics=baseMetrics,categoryProfile='TOWER_DE
     target:'web',validated:true,pass:true,
     gameplayInteractionPerformed:true,interactionCount:18,stateChanged:true,stateChangeCount:14,
     musicRuntime:{pass:true},runtimeSmokePassed:true,
+    approvedScopeFullyImplemented:true,
+    scopeCoverage:{pass:true,mechanicBindings:['tower-place','wave','upgrade','economy','strategy']},
     mobileViewport:{width:390,height:844,touch:true},
     before:{scrollWidth:390,viewportWidth:390},after:{scrollWidth:390,viewportWidth:390},
     initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',
@@ -76,10 +78,11 @@ function evidence({finalDepth=true,metrics=baseMetrics,categoryProfile='TOWER_DE
     categoryProfile,
     sourceIndexSha256:hash,designBaselineSha256:hash,
     strictReview:{totalScore:92,hardFailures:[]},webStrictScore:92,
+    promotionRevalidation:{pass:true,independentRun:true,sourceHashMatch:true,baselineHashMatch:true,secondSubstancePass:true,secondContentDepthPass:true,secondTerminalReached:true},
   };
 }
 
-assert.equal(WEB_VALIDATION_SCHEMA_VERSION,13,'Web evidence schema must carry staged-play semantics');
+assert.equal(WEB_VALIDATION_SCHEMA_VERSION,14,'Web evidence schema must carry common-development-quality semantics');
 assert.deepEqual(WEB_COMMON_SCORE_WEIGHTS,{
   CORE_GAME_LOOP:15,
   SYSTEM_CONNECTIVITY:10,

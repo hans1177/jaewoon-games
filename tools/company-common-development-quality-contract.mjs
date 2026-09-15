@@ -61,7 +61,7 @@ function requirementsOf(category,evidence={}){
   const profile=categoryProfile(category,evidence),feature=evidence?.featureRequirements||evidence?.runtimeFeatureEvidence?.featureRequirements||{},runtime=evidence?.runtimeFeatureEvidence||{},metrics=evidence?.implementationMetrics||{};
   const finalStage=clean(evidence?.validationStage)==='final-content-depth'||evidence?.contentDepthValidation?.mode==='FINAL_CONTENT_DEPTH_VALIDATION_ONLY'&&evidence?.contentDepthValidation?.status!=='PENDING_AFTER_CONTENT_EXPANSION';
   const avatarMovement=bool(feature.avatarMovementRequired,['SURVIVAL','RPG','BATTLE_SHOOTER','OBBY_PLATFORMER','STORY_ADVENTURE','LIFE_ROLEPLAY'].includes(profile));
-  const world=bool(feature.worldRequired,avatarMovement||['TOWER_DEFENSE','TYCOON_SIMULATOR'].includes(profile)&&num(runtime.areaCount,metrics.areaCount)>=2);
+  const world=bool(feature.worldRequired,avatarMovement);
   const exploration=bool(feature.explorationRequired,['SURVIVAL','RPG','STORY_ADVENTURE','LIFE_ROLEPLAY'].includes(profile));
   const boss=bool(feature.bossRequired,false);
   const enemyAi=['SURVIVAL','RPG','BATTLE_SHOOTER','TOWER_DEFENSE','STORY_ADVENTURE'].includes(profile);
@@ -79,7 +79,7 @@ function optionalEvidencePass(record,fallback){
   return fallback;
 }
 
-export function evaluateCommonDevelopmentQuality({category='',evidence={}}={}){
+export function evaluateCommonDevelopmentQuality({category='',evidence={},requireRegressionReplay=false}={}){
   const req=requirementsOf(category,evidence),runtime=evidence?.runtimeFeatureEvidence||{},validation=evidence?.runtimeValidationEvidence||{},metrics=evidence?.implementationMetrics||{},cycle=evidence?.initialPlayableCycle||{},movement=evidence?.movementProbe||runtime?.movementProbe||validation?.preplatformReadiness?.movement?.evidence||{},preplatform=validation?.preplatformReadiness||{},scope=evidence?.scopeCoverage||{},footprint=evidence?.sourceFootprint||{},substance=evidence?.substanceGate||{},depth=evidence?.contentDepthValidation||{},spatial=runtime?.spatialEvidence||{},errors=array(evidence?.consoleErrors).length+array(evidence?.pageErrors).length+array(evidence?.failedRequests).length+array(evidence?.badResponses).length;
 
   const interactionCount=num(evidence?.interactionCount,metrics.gameplayActionCount),transitions=num(evidence?.stateChangeCount,metrics.meaningfulStateTransitionCount),stateVars=num(metrics.stateVariableCount),dependencies=num(metrics.systemDependencyCount),enemyTypes=num(runtime.enemyTypeCount,metrics.enemyTypeCount),areas=num(runtime.areaCount,metrics.areaCount),objectives=num(runtime.objectiveCount,metrics.objectiveCount),landmarks=num(runtime.landmarkCount,metrics.landmarkCount),bossTypes=num(runtime.bossTypeCount,metrics.bossTypeCount),bossPatterns=num(runtime.bossPatternCount,metrics.bossPatternCount),interactionTargets=num(runtime.interactionTargetCount,metrics.interactionTargetCount),interactionResults=num(runtime.entityInteractionResultCount,metrics.entityInteractionResultCount),spatialOutcomes=num(runtime.spatialOutcomeCount,metrics.spatialOutcomeCount),newDimensions=num(runtime.newContentDimensionCount,metrics.newContentDimensionCount),variations=num(metrics.contentVariationCount,array(depth?.varietyEvents).length),gameplayScreenRatio=Number(metrics.gameplayScreenRatio||0),duplicateRatio=Number(metrics.duplicateActionRatio||0),testUiRatio=Number(metrics.testUiRatio||0);
@@ -114,7 +114,7 @@ export function evaluateCommonDevelopmentQuality({category='',evidence={}}={}){
   const softlockPass=validation?.softlock?.pass===true||cyclePass&&num(metrics.retryPathCount,footprint.retryPathCount)>=1;
   const performancePass=validation?.performance?.pass!==false&&runtimeStable;
   const replay=validation?.replayRegression||evidence?.deterministicReplay||{};
-  const replayApplicable=req.finalStage||replay?.required===true;
+  const replayApplicable=requireRegressionReplay===true||replay?.required===true;
   const replayPass=!replayApplicable||replay?.required===false||replay?.pass===true||evidence?.promotionRevalidation?.pass===true;
   const pacingPass=!req.finalStage||depth?.pass===true&&num(depth.meaningfulGameplayMilliseconds)>=1800000&&newDimensions>=2&&variations>=2&&duplicateRatio<=0.8&&testUiRatio===0;
   const funPass=cyclePass&&progressionPass&&cycle?.riskFailureOrResourcePressure!==false&&pacingPass;

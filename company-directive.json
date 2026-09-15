@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 39,
+  "revision": 40,
   "updatedAt": "2026-09-15",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -97,10 +97,10 @@
       "unratedGamesLast": true,
       "scoreSource": "CURRENT_WEB_INITIAL_CYCLE_STRICT_SCORE",
       "scoreRequiresInitialCyclePass": true,
-      "scoreRequiresSchema13": true,
       "scoreRequiresMusicPass": true,
       "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": true,
-      "reworkOrRevalidationScoresNotShownAsCurrent": true
+      "reworkOrRevalidationScoresNotShownAsCurrent": true,
+      "scoreRequiresSchema14": true
     }
   },
   "production": {
@@ -125,7 +125,10 @@
       "featureParity": "FULL_APPROVED_GAMEPLAY_SCOPE_EQUIVALENT_OR_DOCUMENTED_PLATFORM_ADAPTATION",
       "silentFeatureOmissionForbidden": true,
       "webBuildIsNotNativePlatformSubstitute": true,
-      "nativePlatformReleaseStillRequiresNativeEvidence": true
+      "nativePlatformReleaseStillRequiresNativeEvidence": true,
+      "preplatformRole": "SCALED_COMPLETE_PREPLATFORM_GAME",
+      "coreQualityParityWithTargetPlatform": true,
+      "contentQuantityMayBeReduced": true
     },
     "approvedScopeCompletion": {
       "mode": "FULL_APPROVED_DESIGN_SCOPE_REQUIRED",
@@ -474,6 +477,7 @@
         "HOMEPAGE_TEST_CANDIDATE_IF_ARTBOOK_READY",
         "WEB_EVIDENCE_DEPARTMENT_MEETING",
         "GAME_DESIGNER_WEB_REVISION",
+        "COMMON_DEVELOPMENT_QUALITY_GATE",
         "TARGET_PLATFORM_90_POINT_GATE",
         "TARGET_PLATFORM_SOURCE_BIND",
         "TARGET_PLATFORM_GAMEPLAY_VALIDATION",
@@ -520,10 +524,12 @@
         "REAL_TARGET_PLATFORM_TECHNICAL_PASS",
         "REQUIRED_FIXES_APPLIED",
         "REQUIRED_REVALIDATION_PASS",
-        "NO_FATAL_UNRESOLVED_VALIDATION_BLOCKER"
+        "NO_FATAL_UNRESOLVED_VALIDATION_BLOCKER",
+        "COMMON_DEVELOPMENT_QUALITY_PASS"
       ],
       "preWebArtbookForbidden": true,
-      "postWebArtbookRequiredForHomepage": true
+      "postWebArtbookRequiredForHomepage": true,
+      "commonDevelopmentQualityPassRequiredBeforeTargetPlatformDispatch": true
     },
     "RELEASE_CONFIRMED": {
       "baseline": "RELEASE_BASELINE",
@@ -585,8 +591,10 @@
         "CURRENT_TARGET_PLATFORM_RUNTIME_PASS",
         "CURRENT_BUILD_INDEPENDENT_QA_REGRESSION_PASS",
         "FINAL_REVIEW_SAME_BUILD_RUNTIME_QA_NO_UNRESOLVED_BLOCKER",
-        "CORE_DESIGN_LOCK_NOT_VIOLATED"
-      ]
+        "CORE_DESIGN_LOCK_NOT_VIOLATED",
+        "CURRENT_COMMON_DEVELOPMENT_QUALITY_PASS"
+      ],
+      "commonDevelopmentQualityRequired": true
     }
   },
   "platformStrategy": {
@@ -745,6 +753,48 @@
       "designWorkflowTimeoutMinutes": 45,
       "singleModelCallTimeoutSeconds": 75,
       "designSchemaAttemptsMax": 2
+    }
+  },
+  "commonDevelopmentQuality": {
+    "version": 1,
+    "policyDocument": "COMPANY_FLOW.md",
+    "executableMirror": "tools/company-common-development-quality-contract.mjs",
+    "webRole": "SCALED_COMPLETE_PREPLATFORM_GAME",
+    "coreQualityParityWithTargetPlatform": true,
+    "webContentQuantityMayBeReduced": true,
+    "webCoreMechanicsMayNotBeDeferredToTargetPlatform": true,
+    "targetPlatformRole": "EXPAND_VALIDATED_WEB_CORE",
+    "targetPlatformDispatchRequiresPass": true,
+    "gates": [
+      "REAL_CORE_LOOP",
+      "GAME_STATE_INTEGRITY",
+      "DESIGN_FIDELITY",
+      "ANTI_FAKE_RUNTIME",
+      "MOBILE_INPUT_AND_LAYOUT",
+      "WORLD_PLAYABILITY",
+      "PLAYER_MOVEMENT",
+      "COLLISION_AND_WORLD_BOUNDS",
+      "CAMERA_OR_WORLD_FOLLOW",
+      "MAP_DENSITY_AND_DISCOVERY",
+      "PROXIMITY_INTERACTION",
+      "ENEMY_AI_AND_THREAT",
+      "COMBAT_RANGE_AND_DAMAGE_FAIRNESS",
+      "SPAWN_AND_RESPAWN_SAFETY",
+      "CHARACTER_COMBAT_FEEDBACK",
+      "BOSS_ENCOUNTER_QUALITY",
+      "PROGRESSION_AND_REWARD",
+      "ECONOMY_AND_EQUIPMENT_INTEGRITY",
+      "SAVE_RESTORE_AND_MIGRATION",
+      "SOFTLOCK_RECOVERABILITY",
+      "PERFORMANCE_AND_RUNTIME_STABILITY",
+      "REGRESSION_REPLAY",
+      "FUN_AND_PACING",
+      "PORTABILITY_READINESS"
+    ],
+    "futureExtension": {
+      "centralPolicyFirst": true,
+      "executableMirrorAndTestsSameChange": true,
+      "schemaBumpWhenEvidenceMeaningChanges": true
     }
   }
 }

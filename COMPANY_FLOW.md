@@ -169,6 +169,7 @@ ownerCurrentProductionContract:
       - MOBILE_PLAYABLE
       - RUNTIME_STABLE
       - CATEGORY_PROFILE_MATCH
+      - COMMON_DEVELOPMENT_QUALITY
     objectiveScoring:
       order:
         - HARD_GATES
@@ -376,7 +377,7 @@ ownerCurrentProductionContract:
       developmentScoreDisplayEnabled: true
       developmentScoreSource: CURRENT_WEB_INITIAL_CYCLE_STRICT_SCORE
       developmentScoreRequiresInitialCyclePass: true
-      developmentScoreRequiresSchema13: true
+      developmentScoreRequiresSchema14: true
       developmentScoreRequiresMusicPass: true
       developmentScoreRequiresCurrentSourceAndBaselineBindingWhenAvailable: true
       reworkOrRevalidationScoresNotShownAsCurrent: true
@@ -452,6 +453,87 @@ documentationSynchronization:
   syncRelevantWorkDocumentsOnEveryPolicyChange: true
   implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized: true
   workDocumentsCannotOverrideCentralPolicy: true
+
+
+commonDevelopmentQuality:
+  version: 1
+  sourceOfTruth: COMPANY_FLOW.md
+  executableMirror: tools/company-common-development-quality-contract.mjs
+  appliesAcross:
+    - WEB_PREPLATFORM_PLAYABLE_GAME
+    - SELECTED_TARGET_PLATFORM_DEVELOPMENT
+    - RELEASE_REVALIDATION
+  webRole: SCALED_COMPLETE_PREPLATFORM_GAME
+  coreQualityParityWithTargetPlatform: true
+  webContentQuantityMayBeReduced: true
+  webCoreMechanicsMayNotBeDeferredToTargetPlatform: true
+  targetPlatformRole: EXPAND_VALIDATED_WEB_CORE
+  targetPlatformDispatchRequiresPass: true
+  scoreCannotOverrideFailedGate: true
+  genreApplicabilityDerivedFromApprovedDesign: true
+  runtimeEvidencePreferredOverSourceKeywords: true
+  antiFakeCrossChecksInternalStateVisibleStateAndInputOutcome: true
+  gates:
+    - REAL_CORE_LOOP
+    - GAME_STATE_INTEGRITY
+    - DESIGN_FIDELITY
+    - ANTI_FAKE_RUNTIME
+    - MOBILE_INPUT_AND_LAYOUT
+    - WORLD_PLAYABILITY
+    - PLAYER_MOVEMENT
+    - COLLISION_AND_WORLD_BOUNDS
+    - CAMERA_OR_WORLD_FOLLOW
+    - MAP_DENSITY_AND_DISCOVERY
+    - PROXIMITY_INTERACTION
+    - ENEMY_AI_AND_THREAT
+    - COMBAT_RANGE_AND_DAMAGE_FAIRNESS
+    - SPAWN_AND_RESPAWN_SAFETY
+    - CHARACTER_COMBAT_FEEDBACK
+    - BOSS_ENCOUNTER_QUALITY
+    - PROGRESSION_AND_REWARD
+    - ECONOMY_AND_EQUIPMENT_INTEGRITY
+    - SAVE_RESTORE_AND_MIGRATION
+    - SOFTLOCK_RECOVERABILITY
+    - PERFORMANCE_AND_RUNTIME_STABILITY
+    - REGRESSION_REPLAY
+    - FUN_AND_PACING
+    - PORTABILITY_READINESS
+  requiredChecks:
+    - REAL_WORLD_COORDINATE_MOVEMENT_WHEN_AVATAR_GENRE
+    - MOBILE_TOUCH_OR_JOYSTICK_AND_KEYBOARD_WHEN_AVATAR_GENRE
+    - COLLISION_WORLD_BOUNDS_CAMERA_OR_WORLD_FOLLOW_WHEN_APPLICABLE
+    - MULTI_AREA_WORLD_REGION_IDENTITY_LANDMARK_DISCOVERY_AND_EXPLORATION_REWARD
+    - PROXIMITY_BASED_INTERACTION_WHEN_WORLD_INTERACTION_EXISTS
+    - ENEMY_AI_PERCEPTION_TRACKING_DISENGAGE_UNSTUCK_AND_TERRITORY_WHEN_APPLICABLE
+    - COMBAT_RANGE_HITBOX_COOLDOWN_IFRAME_PROJECTILE_TARGETING_AND_DAMAGE_SOURCE_INTEGRITY
+    - SPAWN_RESPAWN_CHECKPOINT_REENTRY_AND_SCENE_CLEANUP_SAFETY
+    - BOSS_MULTI_PATTERN_TELEGRAPH_DODGE_SPACE_REWARD_AND_RETRY_WHEN_APPROVED
+    - INVENTORY_EQUIPMENT_CRAFT_SHOP_QUEST_TRANSACTION_AND_DISPLAY_STATE_INTEGRITY
+    - PROGRESSION_ECONOMY_REWARD_RISK_RETURN_PROBABILITY_AND_EXPLOIT_RESISTANCE
+    - SAVE_RESTORE_WORLD_STATE_SCHEMA_MIGRATION_CORRUPT_DATA_RECOVERY_AND_NEW_GAME_RESET
+    - STATE_MACHINE_INVARIANTS_EVENT_ORDER_DUPLICATE_REWARD_AND_SOFTLOCK_PREVENTION
+    - DELTA_TIME_PAUSE_TAB_RESUME_TIMER_LISTENER_ENTITY_AND_PROJECTILE_LIFECYCLE_STABILITY
+    - NAN_INFINITY_COORDINATE_RANGE_INPUT_LOCK_MULTITOUCH_ROTATION_DPR_AND_VIEWPORT_RESILIENCE
+    - ASSET_LOAD_FAILURE_ERROR_ISOLATION_CONSOLE_ERROR_AND_OFFLINE_CORE_RUNTIME_RESILIENCE
+    - DATA_DRIVEN_RULES_STABLE_IDS_SINGLE_SOURCE_OF_TRUTH_AND_SAVE_COMPATIBILITY
+    - DEBUG_CHEAT_VALIDATION_ONLY_PATH_AND_HIDDEN_ADMIN_CONTROL_ABSENCE
+    - DETERMINISTIC_REPLAY_FAILURE_REPRODUCTION_REGRESSION_BASELINE_AND_EVIDENCE_RETENTION
+    - CONTENT_REACHABILITY_PROGRESS_DEPENDENCY_REQUIRED_ITEM_AND_MAP_CONNECTIVITY
+    - CONTENT_DIVERSITY_REGION_IDENTITY_FIRST_MINUTE_ONBOARDING_GOAL_CLARITY_AND_REPETITION_CONTROL
+    - FUN_PACING_ACTION_FEEDBACK_REWARD_INTERVAL_DIFFICULTY_WAVE_SESSION_LENGTH_AND_COMPLETION_FEEL
+    - LOW_END_MOBILE_PEAK_LOAD_LONG_SESSION_MEMORY_EVENT_LISTENER_AND_SPAWN_STRESS
+    - UI_GAME_STATE_SAVE_STATE_VISUAL_STATE_EQUIVALENCE_AND_TEXT_READABILITY
+    - PORTABLE_SIMULATION_MODEL_SEPARATED_FROM_WEB_RENDER_INPUT_STORAGE_WHERE_PRACTICAL
+    - DESIGN_REQUIREMENT_TO_IMPLEMENTATION_TO_RUNTIME_EVIDENCE_TRACEABILITY
+  evidenceFallbackPolicy:
+    directRuntimeEvidencePreferred: true
+    observedOutcomeFallbackAllowedWhenDirectProbeUnavailable: true
+    fallbackUseMustBeReportedAsEvidenceQualityWarning: true
+    missingMandatoryGenreEvidenceBlocksPromotion: true
+  futureExtension:
+    addPolicyHereFirst: true
+    updateExecutableMirrorAndTestsInSameChange: true
+    schemaVersionMustIncreaseWhenEvidenceMeaningChanges: true
 
 homepageOperations:
   mode: SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR
@@ -688,6 +770,7 @@ GAME_SEED:
     mayStudy:
       - CORE_FUN
       - CORE_LOOP
+      - COMMON_DEVELOPMENT_QUALITY_CONTRACT
       - COMBAT_TEMPO
       - SESSION_STRUCTURE
       - PROGRESSION_PATTERN
@@ -1389,6 +1472,7 @@ flows:
     musicValidationRequired: true
     webCandidateMustPassBeforeTargetPlatformDispatch: true
     webCandidateFormalImplementationPassRequiredBeforeTargetPlatformDispatch: true
+    commonDevelopmentQualityPassRequiredBeforeTargetPlatformDispatch: true
     webStrictHomepageMinimum: 80
     formalImplementationMinimumForTargetPlatformDispatch: 90
     artbookAfterWebStrictReview: true
@@ -1462,6 +1546,7 @@ flows:
     baselineReadyRequires:
       - DESIGN_BASELINE_EXISTS
       - REAL_WEB_GAMEPLAY_PASS
+      - COMMON_DEVELOPMENT_QUALITY_PASS
       - APPROVED_SCOPE_FULLY_IMPLEMENTED
       - MUSIC_RUNTIME_PASS
       - REAL_TARGET_PLATFORM_GAMEPLAY_PASS
@@ -1520,6 +1605,7 @@ flows:
     releaseReadyRequires:
       - DEVELOPMENT_BASELINE_CONFIRMED
       - CURRENT_WEB_COMPANION_RUNTIME_PASS
+      - CURRENT_COMMON_DEVELOPMENT_QUALITY_PASS
       - APPROVED_SCOPE_FULLY_IMPLEMENTED
       - CURRENT_TARGET_PLATFORM_BUILD_OR_PACKAGE_SUCCESS
       - BUILD_PREFLIGHT_NO_RELEASE_BLOCKER
