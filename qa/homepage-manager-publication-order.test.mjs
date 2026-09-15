@@ -77,7 +77,9 @@ test('development games auto-display from runtime progress while Top30 promotion
   assert.ok(homepageCore.includes('data-homepage-game-source="CANONICAL_TOP30"'));
   assert.ok(homepageEntry.includes("card.dataset?.homepageGameSource==='DEVELOPMENT_QUEUE'"));
   assert.ok(homepageEntry.includes("card.dataset?.homepageGameSource==='CANONICAL_TOP30'"));
-  assert.ok(manager.includes('HOMEPAGE_PRIMARY_GAME_SOURCE=CANONICAL_TOP30'));
+  assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_SOURCE=DEVELOPMENT_QUEUE'));
+  assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_VISIBILITY=PROGRESS_ONLY'));
+  assert.ok(manager.includes('HOMEPAGE_TOP30_SOURCE=CANONICAL_TOP30'));
 });
 
 test('APK install control is relocated away from the homepage top without deleting install contracts',()=>{
