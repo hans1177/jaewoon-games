@@ -124,7 +124,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.gameId }}
           EXPECTED_ARTIFACT: ${{ matrix.artifactIdentity }}
-        shell: pwsh
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           $name = "development-roblox-package-$env:GAME_ID"
@@ -155,7 +155,7 @@ jobs:
         id: studio
         if: steps.package.outcome == 'success'
         continue-on-error: true
-        shell: pwsh
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           $studio = $null
@@ -181,7 +181,7 @@ jobs:
         env:
           STUDIO_EXE: ${{ steps.studio.outputs.studio_exe }}
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
-        shell: pwsh
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           $script = (Resolve-Path 'tools/company-development-roblox-multiplayer-qa.luau').Path
@@ -219,7 +219,7 @@ jobs:
           PACKAGE_OUTCOME: ${{ steps.package.outcome }}
           STUDIO_OUTCOME: ${{ steps.studio.outcome }}
           MULTIPLAYER_OUTCOME: ${{ steps.multiplayer.outcome }}
-        shell: pwsh
+        shell: powershell
         run: |
           $root = Join-Path $env:RUNNER_TEMP 'roblox-multiplayer-qa-evidence'
           $results = Join-Path $root 'results'
@@ -257,7 +257,7 @@ jobs:
         if: always()
         env:
           MULTIPLAYER_OUTCOME: ${{ steps.multiplayer.outcome }}
-        shell: pwsh
+        shell: powershell
         run: |
           if ($env:MULTIPLAYER_OUTCOME -ne 'success') { Write-Host 'ROBLOX_MULTIPLAYER_QA=FAIL'; exit 1 }
           Write-Host 'ROBLOX_MULTIPLAYER_QA=PASS'
