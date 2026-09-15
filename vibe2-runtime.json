@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [
@@ -10,7 +10,8 @@
     "runtimeState": {
       "queue": ".vibe2/queue.json",
       "parallelism": ".vibe2/parallelism-control.json",
-      "experience": ".vibe2/experience.json"
+      "experience": ".vibe2/experience.json",
+      "gameStudyKnowledge": ".vibe2/game-study-knowledge.json"
     },
     "generatedHandoffTool": "tools/vibe2-handoff.mjs",
     "manualHandoffDocumentsAllowed": false,
@@ -21,11 +22,12 @@
       "VIBE2_VISUAL_AUTONOMY_PLAN.md"
     ],
     "machineStateVersions": {
-      "runtime": 7,
+      "runtime": 8,
       "queue": 5,
       "parallelism": 2,
       "experience": 1,
-      "handoff": 2
+      "gameStudyKnowledge": 1,
+      "handoff": 3
     },
     "disallowUnlistedVibe2Markdown": true,
     "generatedHandoffArtifact": "vibe2-machine-handoff"
@@ -46,7 +48,8 @@
       "vibe2-runtime.json",
       ".vibe2/queue.json",
       ".vibe2/parallelism-control.json",
-      ".vibe2/experience.json"
+      ".vibe2/experience.json",
+      ".vibe2/game-study-knowledge.json"
     ],
     "humanMaintainedHandoff": false,
     "machineContextRequired": true,
@@ -141,9 +144,88 @@
     "missingStateFallbackMax": 20,
     "corruptStateFallbackMax": 20
   },
+  "gameStudy": {
+    "enabled": true,
+    "mode": "server-hourly-24h-parallel-study",
+    "workflow": ".github/workflows/vibe2-game-study-continuous.yml",
+    "targets": ".vibe2/game-study-targets.json",
+    "knowledgeState": ".vibe2/game-study-knowledge.json",
+    "experienceState": ".vibe2/experience.json",
+    "worker": "tools/vibe2-game-study-worker.mjs",
+    "intelligence": "tools/vibe2-game-study-intelligence.mjs",
+    "featureCount": 25,
+    "features": [
+      "mechanic-mining",
+      "system-graph-learning",
+      "progression-curve-learning",
+      "economy-simulation-learning",
+      "difficulty-curve-learning",
+      "ui-interaction-mining",
+      "onboarding-learning",
+      "retention-loop-mining",
+      "state-machine-extraction",
+      "event-flow-extraction",
+      "save-schema-learning",
+      "architecture-distillation",
+      "dependency-learning",
+      "change-impact-learning",
+      "bug-reproduction-learning",
+      "exploit-resistance-pattern-learning",
+      "performance-profiling-learning",
+      "game-dna",
+      "nearest-game-retrieval",
+      "novelty-detection",
+      "knowledge-merge",
+      "knowledge-conflict",
+      "automatic-hypothesis-testing",
+      "synthetic-mini-game-training",
+      "continual-distillation"
+    ],
+    "engines": [
+      "web",
+      "roblox"
+    ],
+    "sharedMaxConcurrentTasks": 20,
+    "sharesAdaptiveBackpressure": true,
+    "backpressureSteps": [
+      20,
+      16,
+      12,
+      8,
+      4
+    ],
+    "workerWritesLongTermState": false,
+    "fanInWrites": [
+      ".vibe2/queue.json",
+      ".vibe2/experience.json",
+      ".vibe2/game-study-knowledge.json"
+    ],
+    "evidencePolicy": {
+      "realInputRequired": true,
+      "requiredCheckpointsMustPass": true,
+      "runtimeErrorsMustBeZeroForVerifiedPromotion": true,
+      "quantitativeSeriesRequiredForCurves": true,
+      "insufficientEvidenceIsNotFact": true,
+      "noInventedCausality": true,
+      "rawSourceCopiedIntoKnowledge": false,
+      "rawGameplayValuesAutoCopied": false,
+      "learningMayExpandAuthority": false
+    },
+    "externalSourcePolicy": {
+      "webPublicObservation": "observation-only",
+      "sourceAnalysisRequires": "owned-or-authorized-server-workspace",
+      "robloxPublicObservation": "observation-only",
+      "robloxCopyEnabledDownload": "creator-enabled-place-copying",
+      "robloxCopyLockedDownload": false,
+      "authorizedDownloadFormat": "rbxlx",
+      "authorizedDownloadRawPlacePersisted": false,
+      "authorizedDownloadRawSourcePersisted": false
+    }
+  },
   "sources": {
     "queue": ".vibe2/queue.json",
     "experience": ".vibe2/experience.json",
+    "gameStudyKnowledge": ".vibe2/game-study-knowledge.json",
     "workOrder": ".vibe2/work-order.json",
     "parallelism": ".vibe2/parallelism-control.json"
   },
@@ -254,6 +336,7 @@
         "preserve-protected-game-and-save-semantics",
         "short-verified-work-loop",
         "reuse-verified-success-and-failure-experience",
+        "cross-game-verified-study-distillation",
         "motion-as-core-quality-axis"
       ],
       "authority": {
@@ -529,7 +612,8 @@
     "automaticMainPromotion": false,
     "automaticExperiencePromotion": true,
     "automaticExperiencePromotionRequiresVerifiedRevote": true,
-    "reviewedExperienceRequired": true
+    "reviewedExperienceRequired": true,
+    "gameStudyKnowledgePromotionRequiresVerifiedStudy": true
   },
   "safety": {
     "existingWebMaintenanceAllowed": true,
@@ -550,7 +634,10 @@
     "binaryAssetsDirectTextEditForbidden": true,
     "sharedWorkLockRequired": false,
     "queueSourceRootLeaseRequired": true,
-    "homepagePublicationAutomatic": false
+    "homepagePublicationAutomatic": false,
+    "gameStudyNoInventedCausality": true,
+    "externalRobloxCopyLockedDownloadAllowed": false,
+    "gameStudyRawSourcePersistenceAllowed": false
   },
   "workPackages": {
     "enabled": true,

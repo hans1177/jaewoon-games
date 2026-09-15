@@ -1,12 +1,13 @@
 // 파일명: tools/vibe2-game-study-queue.mjs
-// 역할: GAME STUDY를 기존 Vibe2 병렬 큐/백프레셔 안에서 서버에서 24시간 반복 예약하고 fan-in에서 Experience Memory로 승격한다.
-// 원칙: 일반 작업과 같은 maxConcurrentTasks/currentMax를 공유하며, Study worker는 control/main을 직접 쓰지 않는다.
+// 역할: GAME STUDY를 기존 Vibe2 병렬 큐/백프레셔 안에서 서버에서 24시간 반복 예약하고 fan-in에서 Experience Memory + cross-game knowledge로 승격한다.
+// 원칙: 일반 작업과 같은 maxConcurrentTasks/currentMax를 공유하며, Study worker는 control/main/experience/knowledge를 직접 쓰지 않는다.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, selectVibeQueueBatch, summarizeVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 import { promoteGameStudyToExperience } from './vibe2-game-study.mjs';
+import { createGameStudyKnowledge, updateGameStudyKnowledge, gameStudyIntelligenceSummary } from './vibe2-game-study-intelligence.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
@@ -88,7 +89,7 @@ function taskForTarget(target) {
     target: target.engine,
     department: 'qa',
     type: 'research',
-    goal: `[GAME_STUDY:${target.id}] server-side verified observation and pattern distillation for ${target.gameId}`,
+    goal: `[GAME_STUDY:${target.id}] server-side verified observation, 25-axis intelligence and cross-game distillation for ${target.gameId}`,
     responsibleFiles: [],
     dependencies: [],
     priority: target.priority,
@@ -108,7 +109,8 @@ function taskForTarget(target) {
       `game-study-engine:${target.engine}`,
       `game-study-source-access:${target.sourceAccess}`,
       'game-study-execution:server',
-      'game-study-shared-parallel-cap'
+      'game-study-shared-parallel-cap',
+      'game-study-intelligence:25-features'
     ]
   };
 }
@@ -164,7 +166,7 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
     };
   });
   return Object.freeze({
-    version: 1,
+    version: 2,
     createdAt: new Date().toISOString(),
     executionLocation: 'server',
     queue,
@@ -186,9 +188,10 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
   });
 }
 
-export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, results = [] } = {}) {
+export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, knowledgeInput = {}, results = [] } = {}) {
   let queue = createVibeContinuousQueue(queueInput);
   let memory = experienceInput || { records: [] };
+  let knowledge = createGameStudyKnowledge(knowledgeInput);
   const applied = [];
   for (const raw of results || []) {
     const taskId = clean(raw?.taskId);
@@ -196,6 +199,8 @@ export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, res
     let outcome = clean(raw?.outcome).toUpperCase();
     let promoted = false;
     let reinforced = false;
+    let knowledgeUpdated = false;
+    let knowledgeReason = null;
     let reason = clean(raw?.reason || raw?.blocker);
     if (outcome === 'PASS' && raw?.study?.verified === true) {
       const promotion = promoteGameStudyToExperience(memory, raw.study);
@@ -203,20 +208,39 @@ export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, res
       promoted = promotion.promoted === true;
       reinforced = promotion.reinforced === true;
       reason = promotion.reason;
-      if (!promotion.promoted) outcome = 'BLOCKED';
+      if (promotion.promoted) {
+        const knowledgeResult = updateGameStudyKnowledge(knowledge, raw.study);
+        knowledge = knowledgeResult.knowledge;
+        knowledgeUpdated = knowledgeResult.updated === true;
+        knowledgeReason = knowledgeResult.reason;
+      } else {
+        outcome = 'BLOCKED';
+      }
     }
     const tasks = queue.tasks.map((task) => {
       if (task.id !== taskId) return task;
-      const evidence = unique([...(task.evidence || []), ...(raw?.evidence || []), raw?.study?.id ? `game-study:${raw.study.id}` : '', promoted ? 'game-study-promoted' : '', reinforced ? 'game-study-reinforced' : '']);
+      const evidence = unique([
+        ...(task.evidence || []), ...(raw?.evidence || []), raw?.study?.id ? `game-study:${raw.study.id}` : '',
+        promoted ? 'game-study-promoted' : '', reinforced ? 'game-study-reinforced' : '', knowledgeUpdated ? 'game-study-knowledge-updated' : ''
+      ]);
       if (outcome === 'PASS') return { ...task, status: 'done', blocker: null, lastOutcome: 'PASS', evidence };
       if (outcome === 'BLOCKED') return { ...task, status: 'blocked', blocker: clean(raw?.blocker) || reason || 'game-study-blocked', lastOutcome: 'BLOCKED', evidence };
       const retries = Number(task.retries || 0) + 1;
       return { ...task, status: retries <= Number(task.maxRetries || 2) ? 'queued' : 'failed', retries, blocker: clean(raw?.blocker) || 'game-study-failed', lastOutcome: 'FAIL', evidence };
     });
     queue = createVibeContinuousQueue({ maxConcurrentTasks: queue.maxConcurrentTasks, tasks });
-    applied.push({ taskId, outcome: outcome || 'FAIL', promoted, reinforced, reason });
+    applied.push({ taskId, outcome: outcome || 'FAIL', promoted, reinforced, knowledgeUpdated, knowledgeReason, reason });
   }
-  return Object.freeze({ queue, memory, applied: Object.freeze(applied), summary: summarizeVibeContinuousQueue(queue), executionLocation: 'server', authorityExpanded: false });
+  return Object.freeze({
+    queue,
+    memory,
+    knowledge,
+    knowledgeSummary: gameStudyIntelligenceSummary(knowledge),
+    applied: Object.freeze(applied),
+    summary: summarizeVibeContinuousQueue(queue),
+    executionLocation: 'server',
+    authorityExpanded: false
+  });
 }
 
 export function reserveGameStudyFiles({ queueFile = '.vibe2/queue.json', targetsFile = '.vibe2/game-study-targets.json', controlFile = '.vibe2/parallelism-control.json', outputFile = '', maxConcurrentTasks = 20 } = {}) {
@@ -226,12 +250,18 @@ export function reserveGameStudyFiles({ queueFile = '.vibe2/queue.json', targets
   return result;
 }
 
-export function fanInGameStudyFiles({ queueFile = '.vibe2/queue.json', experienceFile = '.vibe2/experience.json', resultsDir = '', outputFile = '' } = {}) {
+export function fanInGameStudyFiles({ queueFile = '.vibe2/queue.json', experienceFile = '.vibe2/experience.json', knowledgeFile = '.vibe2/game-study-knowledge.json', resultsDir = '', outputFile = '' } = {}) {
   const files = clean(resultsDir) && fs.existsSync(resultsDir) ? fs.readdirSync(resultsDir).filter((file) => file.endsWith('.json')).sort() : [];
   const results = files.map((file) => JSON.parse(fs.readFileSync(path.join(resultsDir, file), 'utf8')));
-  const result = applyGameStudyFanIn({ queueInput: readJson(queueFile, { tasks: [] }), experienceInput: readJson(experienceFile, { records: [] }), results });
+  const result = applyGameStudyFanIn({
+    queueInput: readJson(queueFile, { tasks: [] }),
+    experienceInput: readJson(experienceFile, { records: [] }),
+    knowledgeInput: readJson(knowledgeFile, { entries: [] }),
+    results
+  });
   writeJson(queueFile, result.queue);
   writeJson(experienceFile, result.memory);
+  writeJson(knowledgeFile, result.knowledge);
   if (outputFile) writeJson(outputFile, result);
   return result;
 }
@@ -246,10 +276,18 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_GAME_STUDY_EFFECTIVE_MAX=${result.effectiveMax}`);
     console.log(`VIBE2_GAME_STUDY_INVALID_TARGETS=${result.invalidTargets.length}`);
   } else if (args.command === 'fan-in') {
-    const result = fanInGameStudyFiles({ queueFile: clean(args.queue) || '.vibe2/queue.json', experienceFile: clean(args.experience) || '.vibe2/experience.json', resultsDir: clean(args.results), outputFile: clean(args.output) });
+    const result = fanInGameStudyFiles({
+      queueFile: clean(args.queue) || '.vibe2/queue.json',
+      experienceFile: clean(args.experience) || '.vibe2/experience.json',
+      knowledgeFile: clean(args.knowledge) || '.vibe2/game-study-knowledge.json',
+      resultsDir: clean(args.results),
+      outputFile: clean(args.output)
+    });
     console.log(`VIBE2_GAME_STUDY_EXECUTION=SERVER`);
     console.log(`VIBE2_GAME_STUDY_FANIN=${result.applied.length}`);
     console.log(`VIBE2_GAME_STUDY_MEMORY_RECORDS=${result.memory?.records?.length || 0}`);
+    console.log(`VIBE2_GAME_STUDY_KNOWLEDGE_ENTRIES=${result.knowledgeSummary?.entryCount || 0}`);
+    console.log(`VIBE2_GAME_STUDY_CROSS_GAME_PATTERNS=${result.knowledgeSummary?.crossGamePatternCount || 0}`);
   } else {
     const targets = loadGameStudyTargets(readJson(clean(args.targets) || '.vibe2/game-study-targets.json', { targets: [] }));
     console.log(`VIBE2_GAME_STUDY_EXECUTION=SERVER`);

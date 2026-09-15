@@ -43,6 +43,7 @@ jobs:
           git fetch origin vibe2-unreal-core --quiet
           git reset --hard origin/vibe2-unreal-core
           node --check tools/vibe2-game-study.mjs
+          node --check tools/vibe2-game-study-intelligence.mjs
           node --check tools/vibe2-game-study-queue.mjs
           node --check tools/vibe2-game-study-worker.mjs
           node tools/vibe2-game-study-queue.mjs reserve \
@@ -220,12 +221,13 @@ jobs:
           node tools/vibe2-game-study-queue.mjs fan-in \
             --queue=.vibe2/queue.json \
             --experience=.vibe2/experience.json \
+            --knowledge=.vibe2/game-study-knowledge.json \
             --results=/tmp/vibe2-game-study-results \
             --output=/tmp/vibe2-game-study-fanin.json | tee /tmp/vibe2-game-study-fanin.log
-          if git diff --quiet -- .vibe2/queue.json .vibe2/experience.json; then
+          if git diff --quiet -- .vibe2/queue.json .vibe2/experience.json .vibe2/game-study-knowledge.json; then
             echo 'VIBE2_GAME_STUDY_FANIN_WRITE=NO'
           else
-            git add .vibe2/queue.json .vibe2/experience.json
+            git add .vibe2/queue.json .vibe2/experience.json .vibe2/game-study-knowledge.json
             git commit -m "vibe2: learn verified parallel game studies [skip ci]"
             git push origin HEAD:vibe2-unreal-core
             echo 'VIBE2_GAME_STUDY_FANIN_WRITE=YES'

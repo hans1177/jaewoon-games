@@ -8,6 +8,7 @@ on:
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
       - '.vibe2/game-study-targets.json'
+      - '.vibe2/game-study-knowledge.json'
       - 'assets/vibe-engine-adapter.js'
       - 'assets/vibe-workbench.js'
       - 'assets/vibe-core-runtime.js'
@@ -29,6 +30,7 @@ on:
       - 'tools/vibe2-uefn-auto-player.mjs'
       - 'tools/vibe2-unreal-auto-player.mjs'
       - 'tools/vibe2-game-study.mjs'
+      - 'tools/vibe2-game-study-intelligence.mjs'
       - 'tools/vibe2-web-game-study.mjs'
       - 'tools/vibe2-roblox-game-study.mjs'
       - 'tools/vibe2-game-study-queue.mjs'
@@ -50,6 +52,7 @@ on:
       - 'qa/vibe2-auto-planner.test.mjs'
       - 'qa/vibe2-auto-player.test.mjs'
       - 'qa/vibe2-game-study.test.mjs'
+      - 'qa/vibe2-game-study-intelligence.test.mjs'
       - 'qa/fixtures/vibe2-auto-player-web/**'
       - 'qa/fixtures/vibe2-fake-engine-runtime.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
@@ -76,6 +79,7 @@ on:
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
       - '.vibe2/game-study-targets.json'
+      - '.vibe2/game-study-knowledge.json'
       - 'assets/vibe-continuous-queue.js'
       - 'tools/vibe2-*.mjs'
       - 'tools/runtime/**'
@@ -130,6 +134,7 @@ jobs:
           node --check tools/vibe2-uefn-auto-player.mjs
           node --check tools/vibe2-unreal-auto-player.mjs
           node --check tools/vibe2-game-study.mjs
+          node --check tools/vibe2-game-study-intelligence.mjs
           node --check tools/vibe2-web-game-study.mjs
           node --check tools/vibe2-roblox-game-study.mjs
           node --check tools/vibe2-game-study-queue.mjs
@@ -148,6 +153,7 @@ jobs:
           node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe2-auto-player.test.mjs
           node --check qa/vibe2-game-study.test.mjs
+          node --check qa/vibe2-game-study-intelligence.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
@@ -196,6 +202,7 @@ jobs:
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
           node --test qa/vibe2-game-study.test.mjs
+          node --test qa/vibe2-game-study-intelligence.test.mjs
           node --test qa/vibe2-handoff.test.mjs
 
       - name: Generate machine handoff

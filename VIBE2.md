@@ -6,13 +6,14 @@ Vibe2에서 사람이 유지하는 운영 문서는 이 파일 하나다.
 - 현재 작업 상태: `.vibe2/queue.json`
 - Adaptive 병렬 상태: `.vibe2/parallelism-control.json`
 - 검증 경험: `.vibe2/experience.json`
+- 교차게임 학습 지식: `.vibe2/game-study-knowledge.json`
 - 자동 인수인계 출력: `node tools/vibe2-handoff.mjs`
 - 제어 브랜치: `vibe2-unreal-core`
 - 실제 후보 작업 기준: 최신 `main`
 
 작업량이 크면 파일 개수로 억지 분할하지 않고 **검증 가능한 구현 단계로 나눠 연속 진행**한다. 새 작업자는 위 기계 파일을 순서대로 읽고 자동 인수인계 출력을 확인한 뒤 이어서 작업한다.
 
-정책·Motion·Visual Autonomy·Adaptive Backpressure의 상세 계약은 사람이 별도 문서로 중복 관리하지 않고 `vibe2-runtime.json`을 기준으로 한다. 수동 인수인계 문서는 만들지 않는다.
+정책·Motion·Visual Autonomy·Adaptive Backpressure·GAME STUDY의 상세 계약은 사람이 별도 문서로 중복 관리하지 않고 `vibe2-runtime.json`을 기준으로 한다. 수동 인수인계 문서는 만들지 않는다.
 
 ## Work Package Execution
 
@@ -40,3 +41,71 @@ Package 역할은 `exploration → implementation → test → performance → r
 낮은 효율이 연속 package에서 반복되면 다음 planning cycle의 최소 package 작업량을 단계적으로 높인다. 안전 규칙, QA, 보호된 게임 규칙이나 저장 의미를 낮춰서 처리량을 올리지는 않는다.
 
 중앙 machine 계약은 `vibe2-runtime.json`이다. 구현 구조가 바뀌는 작업은 별도 지시 없이 해당 계약과 이 문서를 함께 동기화한다. 핵심 권한/보호 규칙 변경은 owner 지시 없이 자동 확정하지 않는다.
+
+## GAME STUDY — External Game Learning
+
+GAME STUDY는 기존 게임을 그대로 복제하는 기능이 아니라 **검증된 플레이·허가된 소스에서 일반화 가능한 제작 지식만 증류**하는 서버 학습 파이프라인이다.
+
+기본 흐름은 다음과 같다.
+
+`외부 Web/Roblox 대상 → 실제 AUTO PLAYER/허가 소스 분석 → 단일게임 25축 intelligence → Experience Memory → fan-in → 교차게임 knowledge → 다음 학습/제작에서 재사용`
+
+운영 규칙:
+
+- 실행 위치는 서버다. client local learning은 사용하지 않는다.
+- 24시간 runner가 반복 호출하며 일반 Vibe2 작업과 같은 병렬 풀을 사용한다.
+- 절대 병렬 상한은 20이고 Adaptive Backpressure `20 → 16 → 12 → 8 → 4`를 공유한다.
+- worker는 `.vibe2/experience.json`, `.vibe2/game-study-knowledge.json`, `.vibe2/queue.json`을 직접 쓰지 않는다.
+- 장기 상태는 fan-in 한 곳에서만 직렬화해서 갱신한다.
+- 실제 입력, 필수 checkpoint 전부 PASS, runtime error 0인 검증 결과만 장기 학습에 승격한다.
+- 수치·인과·품질을 관찰하지 못했으면 추측하지 않고 `INSUFFICIENT_EVIDENCE`로 남긴다.
+- `authorityExpanded=false`이며 학습이 보호된 gameplay/save/economy/progression 권한을 확대하지 않는다.
+
+### Source / Download Policy
+
+Web 공개 게임은 기본적으로 `observation-only`다. 소스 분석은 소유했거나 명시적으로 허가된 서버 workspace에서만 수행한다.
+
+Roblox 외부 게임은 두 경로로 나눈다.
+
+- 공개 플레이만 가능: 관찰 학습만 한다.
+- 제작자가 Place Copying/Download를 명시적으로 허용: 서버에서 임시 `.rbxlx` 사본을 받아 구조·스크립트 패턴을 분석할 수 있다.
+
+Roblox 허가 다운로드는 `creator-enabled-place-copying` 증거와 nonce-bound 다운로드 증거가 일치해야 한다. copy-locked Place 우회 다운로드는 허용하지 않는다. 다운로드한 raw Place는 임시 workspace에서만 사용하고 분석 후 삭제한다. Experience Memory와 GAME STUDY Knowledge에는 raw source나 게임 고유 수치를 복사하지 않고 일반화 패턴만 남긴다.
+
+### 25 Learning Axes
+
+`tools/vibe2-game-study-intelligence.mjs`가 아래 25축을 공통 계약으로 제공한다.
+
+1. Mechanic Mining — 전투, 이동, 상점, 저장 같은 기능 단위를 분리한다.
+2. System Graph Learning — 관찰된 시스템 전환을 그래프로 만든다.
+3. Progression Curve Learning — 실제 수치 시계열이 있을 때만 성장곡선을 학습한다.
+4. Economy Simulation Learning — 실제 경제 시계열을 오프라인으로 분석한다.
+5. Difficulty Curve Learning — 피해·HP·사망·클리어 등 수치 시계열이 있을 때만 난이도 곡선을 만든다.
+6. UI Interaction Mining — 실제 입력 순서에서 UI 흐름을 추출한다.
+7. Onboarding Learning — 첫 입력·checkpoint·전투·보상 위치를 학습한다.
+8. Retention Loop Mining — 반복 관찰된 플레이 루프를 찾는다.
+9. State Machine Extraction — 관찰 순서에서 상태/전환을 추출한다.
+10. Event Flow Extraction — runtime 순서와 허가 소스의 co-occurrence를 이벤트 흐름으로 기록한다.
+11. Save Schema Learning — 저장 provider/구조 패턴만 학습하고 실제 키·값은 보존하지 않는다.
+12. Architecture Distillation — 입력/저장/네트워크/runtime/world 등 아키텍처 블록으로 압축한다.
+13. Dependency Learning — 같은 허가 소스 파일에서 함께 나타난 시스템 관계를 기록한다.
+14. Change Impact Learning — dependency 근거로 잠재 영향 범위를 제시하며 인과로 단정하지 않는다.
+15. Bug Reproduction Learning — runtime error가 관찰된 경우 재현 action trace를 증거로 남긴다.
+16. Exploit-Resistance Pattern Learning — Remote/서버 handler/validation guard 같은 정적 방어 패턴을 구분한다.
+17. Performance Profiling Learning — 실제 telemetry와 loop 신호를 분리해 기록한다.
+18. Game DNA — 시스템 존재/관찰 비중을 공통 벡터로 압축한다.
+19. Nearest-Game Retrieval — Game DNA 유사도로 이미 학습한 가까운 게임을 찾는다.
+20. Novelty Detection — 가장 가까운 기존 지식과의 차이로 새로움을 계산한다.
+21. Knowledge Merge — 여러 게임에서 반복된 일반화 패턴을 confirmations와 함께 병합한다.
+22. Knowledge Conflict — 서로 반대되는 검증 패턴은 덮어쓰지 않고 충돌 상태로 유지한다.
+23. Automatic Hypothesis Testing — 동일한 관찰 가설이 여러 게임에서 재확인되는지 추적한다.
+24. Synthetic Mini-Game Training — 추출한 상태/전환 그래프를 작은 추상 replay로 재검증한다. 원본 구현을 재현했다고 주장하지 않는다.
+25. Continual Distillation — 중복 경험을 압축하고 cross-game 검증 패턴만 장기 지식으로 강화한다.
+
+### Learning State
+
+`.vibe2/experience.json`은 **개별 검증 경험과 반복 확인 confidence**를 담당한다.
+
+`.vibe2/game-study-knowledge.json`은 **Game DNA, nearest-game, novelty, cross-game merge/conflict, hypothesis, continual distillation** 같은 여러 게임을 함께 봐야 하는 파생 지식을 담당한다.
+
+둘은 역할이 다르며 raw source 저장소가 아니다. GAME STUDY fan-in이 두 상태를 함께 갱신하고 `node tools/vibe2-handoff.mjs`가 현재 지식 개수·교차게임 패턴·충돌·가설 요약을 중앙 인수인계에 포함한다.
