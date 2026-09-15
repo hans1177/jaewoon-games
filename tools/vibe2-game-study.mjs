@@ -81,11 +81,11 @@ const SOURCE_PATTERNS = freeze({
   web: freeze([
     ['input-events', /addEventListener\s*\(\s*['"](?:key|pointer|mouse|touch|click)/i],
     ['client-persistence', /\b(?:localStorage|sessionStorage|indexedDB)\b/i],
-    ['network-io', /\b(?:fetch\s*\(|XMLHttpRequest|WebSocket)\b/i],
+    ['network-io', /\b(?:XMLHttpRequest|WebSocket)\b|\bfetch\s*\(/i],
     ['frame-loop', /\brequestAnimationFrame\s*\(/i],
     ['timer-loop', /\b(?:setInterval|setTimeout)\s*\(/i],
-    ['canvas-rendering', /\b(?:getContext\s*\(|HTMLCanvasElement|WebGL)\b/i],
-    ['audio-system', /\b(?:AudioContext|HTMLAudioElement|new\s+Audio\s*\()\b/i]
+    ['canvas-rendering', /\b(?:getContext\s*\(|HTMLCanvasElement|WebGL)/i],
+    ['audio-system', /\b(?:AudioContext|HTMLAudioElement)\b|\bnew\s+Audio\s*\(/i]
   ]),
   roblox: freeze([
     ['datastore-persistence', /\bDataStoreService\b/i],
@@ -186,6 +186,7 @@ export function createVerifiedGameStudy({ gameId = '', engine = '', autoPlayerRe
   const normalizedEngine = normalizeEngine(engine || autoPlayerResult?.engine);
   const runtimeValidation = verifyAutoPlayerAuthority(normalizedEngine, autoPlayerResult);
   const systems = observedSystems(autoPlayerResult);
+  const normalizedTags = freezeList(tags);
   const source = analyzeAuthorizedGameSource({ engine: normalizedEngine, root: sourceRoot, sourceAccess });
   const runId = clean(autoPlayerResult?.runId);
   const evidence = freezeList([
@@ -196,10 +197,11 @@ export function createVerifiedGameStudy({ gameId = '', engine = '', autoPlayerRe
   ]);
   const distilledPatterns = freezeList([
     ...systems.map((system) => `verified-play-observation:${system}`),
-    ...source.patterns.map((row) => `authorized-source-pattern:${row.name}`)
+    ...source.patterns.map((row) => `authorized-source-pattern:${row.name}`),
+    ...normalizedTags.map((tag) => `study-tag:${tag.toLowerCase()}`)
   ]);
   const verified = runtimeValidation.valid && distilledPatterns.length > 0;
-  const idSeed = [clean(gameId), normalizedEngine, systems.join(','), source.sourceFingerprint || '', distilledPatterns.join('|')].join('::');
+  const idSeed = [clean(gameId), normalizedEngine, systems.join(','), source.sourceFingerprint || '', normalizedTags.join(','), distilledPatterns.join('|')].join('::');
   return freeze({
     version: 1,
     kind: 'vibe2-game-study',
@@ -212,7 +214,7 @@ export function createVerifiedGameStudy({ gameId = '', engine = '', autoPlayerRe
     sourceAccess: clean(sourceAccess) || OBSERVATION_ONLY_ACCESS,
     sourceAnalysis: source,
     observedSystems: systems,
-    tags: freezeList(tags),
+    tags: normalizedTags,
     distilledPatterns,
     evidence,
     runtimeValidation,
