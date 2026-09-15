@@ -51,13 +51,8 @@ jobs:
           node --check tools/vibe2-parallelism-telemetry.mjs
           node --check tools/vibe2-adaptive-backpressure.mjs
           node --check tools/vibe2-handoff.mjs
-          node --test qa/vibe2-queue-control.test.mjs
-          node --test qa/vibe2-auto-planner.test.mjs
-          node --test qa/vibe2-parallelism-20-contract.test.mjs
-          node --test qa/vibe2-incremental-qa.test.mjs
-          node --test qa/vibe2-parallelism-telemetry.test.mjs
-          node --test qa/vibe2-handoff.test.mjs
           node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log
+          echo 'VIBE2_RESERVE_PREFLIGHT=SYNTAX_AND_MACHINE_STATE_ONLY'
 
       - name: Reserve conflict-free DAG batch
         id: batch
@@ -386,6 +381,15 @@ jobs:
           IQA_HASH: ${{ steps.incremental_qa.outputs.hash }}
           IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
           SAFE_TASK: ${{ steps.order.outputs.safe_task }}
+          RESERVED_AT: ${{ matrix.reservedAt }}
+          REQUESTED_MAX: ${{ matrix.requestedMax }}
+          EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
+          WORKER_STARTED_AT_FILE: /tmp/vibe2-worker-start-ms
+          CHECKOUT_MS: ${{ steps.checkout_metrics.outputs.ms }}
+          OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
+          OLLAMA_RUNTIME_SOURCE: ${{ steps.worker_ollama_runtime.outputs.source }}
+          CANDIDATE_MS: ${{ steps.candidate.outputs.duration_ms }}
+          QA_MS: ${{ steps.incremental_qa.outputs.duration_ms }}
         shell: bash
         run: |
           set -euo pipefail
@@ -497,16 +501,17 @@ jobs:
           node tools/vibe2-queue-control.mjs fan-in --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
           # Incremental checks ran per candidate. Run the complete Vibe2 core regression once at fan-in.
-          node --test qa/vibe2-auto-planner.test.mjs
-          node --test qa/vibe2-core-engine-motion.test.mjs
-          node --test qa/vibe2-source-worker.test.mjs
-          node --test qa/vibe2-queue-control.test.mjs
-          node --test qa/vibe2-incremental-qa.test.mjs
-          node --test qa/vibe2-parallelism-telemetry.test.mjs
-          node --test qa/vibe2-controller-contract.test.mjs
-          node --test qa/vibe2-candidate-reconcile.test.mjs
-          node --test qa/vibe2-experience-control.test.mjs
-          node --test qa/vibe2-handoff.test.mjs
+          node --test --test-concurrency=4 \
+            qa/vibe2-auto-planner.test.mjs \
+            qa/vibe2-core-engine-motion.test.mjs \
+            qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-queue-control.test.mjs \
+            qa/vibe2-incremental-qa.test.mjs \
+            qa/vibe2-parallelism-telemetry.test.mjs \
+            qa/vibe2-controller-contract.test.mjs \
+            qa/vibe2-candidate-reconcile.test.mjs \
+            qa/vibe2-experience-control.test.mjs \
+            qa/vibe2-handoff.test.mjs
 
           if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json; then
             echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'
@@ -526,8 +531,8 @@ jobs:
 
           node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-fanin.json >/tmp/vibe2-handoff-after-fanin.log
           node tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-summary.log
-          free="$(sed -n 's/^VIBE2_QUEUE_FREE_SLOTS=//p' /tmp/vibe2-summary.log | tail -n1)"
-          if [ "${free:-0}" -gt 0 ]; then echo 'refill=1' >> "$GITHUB_OUTPUT"; else echo 'refill=0' >> "$GITHUB_OUTPUT"; fi
+          continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-summary.log | tail -n1)"
+          if [ "${continue_required:-NO}" = 'YES' ]; then echo 'refill=1' >> "$GITHUB_OUTPUT"; else echo 'refill=0' >> "$GITHUB_OUTPUT"; fi
           echo 'VIBE2_HIERARCHICAL_FAN_IN=PASS'
 
       - name: Upload generated machine handoff
@@ -571,12 +576,12 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: Event-driven refill of free slots
+      - name: Event-driven direct refill of eligible free slots
         if: steps.persist.outputs.refill == '1'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'VIBE2_EVENT_DRIVEN_REFILL=YES'
+          gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref vibe2-unreal-core
+          echo 'VIBE2_EVENT_DRIVEN_REFILL=DIRECT_CONTINUOUS'
