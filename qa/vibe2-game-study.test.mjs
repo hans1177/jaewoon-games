@@ -11,6 +11,7 @@ import { createAutoPlayerResult } from '../tools/vibe2-auto-player-contract.mjs'
 import { findChromeBinary } from '../tools/vibe2-web-auto-player.mjs';
 import { runWebGameStudy } from '../tools/vibe2-web-game-study.mjs';
 import { runRobloxGameStudy } from '../tools/vibe2-roblox-game-study.mjs';
+import { runAuthorizedRobloxDownloadRuntime, COPY_PERMISSION } from '../tools/vibe2-roblox-authorized-download-runner.mjs';
 import {
   AUTHORIZED_SOURCE_ACCESS,
   OBSERVATION_ONLY_ACCESS,
@@ -23,6 +24,8 @@ import { reserveGameStudyBatch, applyGameStudyFanIn } from '../tools/vibe2-game-
 const here = path.dirname(fileURLToPath(import.meta.url));
 const webFixture = path.join(here, 'fixtures', 'vibe2-auto-player-web');
 const fakeEngine = path.join(here, 'fixtures', 'vibe2-fake-engine-runtime.mjs');
+const fakeRobloxDownload = path.join(here, 'fixtures', 'vibe2-fake-roblox-copy-download.mjs');
+const authorizedDownloadRunner = path.join(here, '..', 'tools', 'vibe2-roblox-authorized-download-runner.mjs');
 function temp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-game-study-test-')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(value, null, 2), 'utf8'); }
 
@@ -108,6 +111,77 @@ test('Roblox study requires Studio runtime authority and capabilities', () => {
   });
   assert.equal(valid.verified, true);
   assert.equal(valid.executionLocation, 'server');
+});
+
+test('authorized Roblox downloader rejects learning without creator-enabled copying permission', async () => {
+  const cwd = temp();
+  await assert.rejects(() => runAuthorizedRobloxDownloadRuntime({
+    placeId: '123456789',
+    copyPermission: 'public-play-only',
+    permissionEvidence: 'https://example.invalid/permission',
+    sourceRoot: path.join(cwd, 'source'),
+    downloadCommand: process.execPath,
+    downloadArgs: [fakeRobloxDownload],
+    runtimeCommand: process.execPath,
+    runtimeArgs: [fakeEngine],
+    cwd
+  }), /creator-enabled place copying permission required/);
+});
+
+test('copy-enabled external Roblox place is downloaded temporarily, distilled, and verified through Studio runtime contract', async () => {
+  const cwd = temp();
+  const scenarioFile = path.join(cwd, 'scenario.json');
+  const sourceRoot = path.join(cwd, 'authorized-source');
+  const permissionEvidence = 'https://create.roblox.com/docs/projects/configure-games#allow-copying';
+  writeJson(scenarioFile, {
+    version: 1,
+    engine: 'roblox',
+    actions: [
+      { id: 'move', type: 'key', key: 'W' },
+      { id: 'movement', type: 'expect', name: 'movement state', expression: 'true' }
+    ]
+  });
+  const result = await runRobloxGameStudy({
+    gameId: 'external-copy-enabled-roblox',
+    scenarioFile,
+    command: process.execPath,
+    commandArgs: [
+      authorizedDownloadRunner,
+      '--place-id=123456789',
+      `--copy-permission=${COPY_PERMISSION}`,
+      `--permission-evidence=${permissionEvidence}`,
+      `--source-root=${sourceRoot}`,
+      `--download-command=${process.execPath}`,
+      `--download-args-json=${JSON.stringify([fakeRobloxDownload])}`,
+      `--runtime-command=${process.execPath}`,
+      `--runtime-args-json=${JSON.stringify([fakeEngine])}`
+    ],
+    cwd,
+    sourceRoot,
+    sourceAccess: AUTHORIZED_SOURCE_ACCESS
+  });
+  assert.equal(result.autoPlayer.verified, true);
+  assert.equal(result.study.verified, true);
+  assert.equal(result.study.sourceAnalysis.authorized, true);
+  assert.equal(result.study.sourceAnalysis.scanned, true);
+  const patterns = result.study.sourceAnalysis.patterns.map((row) => row.name);
+  assert(patterns.includes('datastore-persistence'));
+  assert(patterns.includes('network-remotes'));
+  assert(patterns.includes('input-services'));
+  assert(patterns.includes('frame-loop'));
+  assert(patterns.includes('pathfinding'));
+  assert(patterns.includes('monetization-api'));
+  assert(patterns.includes('character-humanoid'));
+  const sourceFiles = fs.readdirSync(sourceRoot).sort();
+  assert.deepEqual(sourceFiles, ['authorized-download-manifest.json', 'authorized-pattern-evidence.luau']);
+  const evidence = fs.readFileSync(path.join(sourceRoot, 'authorized-pattern-evidence.luau'), 'utf8');
+  assert.equal(evidence.includes('game:GetService'), false);
+  const manifest = JSON.parse(fs.readFileSync(path.join(sourceRoot, 'authorized-download-manifest.json'), 'utf8'));
+  assert.equal(manifest.copyAllowed, true);
+  assert.equal(manifest.permission, COPY_PERMISSION);
+  assert.equal(manifest.rawSourcePersisted, false);
+  assert.equal(manifest.rawPlacePersisted, false);
+  assert.equal(JSON.stringify(result.study).includes('game:GetService'), false);
 });
 
 test('verified GAME STUDY promotes into server Experience Memory and can reinforce', () => {
