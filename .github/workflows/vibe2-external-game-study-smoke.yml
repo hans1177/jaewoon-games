@@ -1,0 +1,112 @@
+name: Vibe2 External Game Study Smoke
+
+on:
+  pull_request:
+    branches:
+      - vibe2-unreal-core
+    paths:
+      - '.vibe2/game-study-targets.json'
+      - '.vibe2/game-study-scenarios/**'
+      - 'tools/vibe2-game-study*.mjs'
+      - 'tools/vibe2-web-auto-player.mjs'
+      - '.github/workflows/vibe2-external-game-study-smoke.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vibe2-external-game-study-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  external-web-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - target_id: external-tictactoe-flow-a
+            task_id: game-study-external-tictactoe-flow-a
+          - target_id: external-tictactoe-flow-b
+            task_id: game-study-external-tictactoe-flow-b
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate external-only target policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('fs');
+          const cfg = JSON.parse(fs.readFileSync('.vibe2/game-study-targets.json','utf8'));
+          if (!Array.isArray(cfg.targets) || cfg.targets.length < 2) throw new Error('two parallel external study targets required');
+          for (const target of cfg.targets) {
+            if (target.origin !== 'external-public') throw new Error(`non-external target registered: ${target.id}`);
+            if (target.sourceAccess !== 'observation-only') throw new Error(`external source access must be observation-only: ${target.id}`);
+            if (target.root || target.sourceRoot) throw new Error(`external target may not attach local source: ${target.id}`);
+            if (target.engine === 'web' && !String(target.url || '').startsWith('https://')) throw new Error(`external Web target requires HTTPS: ${target.id}`);
+            if (target.engine === 'roblox') throw new Error(`external Roblox active automation is prohibited: ${target.id}`);
+            if (!target.scenarioFile || !fs.existsSync(target.scenarioFile)) throw new Error(`external scenario missing: ${target.id}`);
+          }
+          if (cfg.policy?.externalRobloxActiveAutomation !== false) throw new Error('external Roblox active automation must remain disabled');
+          console.log(`VIBE2_EXTERNAL_TARGETS=${cfg.targets.length}`);
+          console.log('VIBE2_EXTERNAL_SOURCE_ACCESS=OBSERVATION_ONLY');
+          NODE
+
+      - name: Require Chrome runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v google-chrome >/dev/null 2>&1; then chrome="$(command -v google-chrome)";
+          elif command -v google-chrome-stable >/dev/null 2>&1; then chrome="$(command -v google-chrome-stable)";
+          elif command -v chromium >/dev/null 2>&1; then chrome="$(command -v chromium)";
+          elif command -v chromium-browser >/dev/null 2>&1; then chrome="$(command -v chromium-browser)";
+          else echo 'Chrome/Chromium required for external GAME STUDY smoke' >&2; exit 1; fi
+          echo "VIBE2_STUDY_CHROME=$chrome" >> "$GITHUB_ENV"
+
+      - name: Run real external Web observation
+        shell: bash
+        env:
+          TARGET_ID: ${{ matrix.target_id }}
+          TASK_ID: ${{ matrix.task_id }}
+        run: |
+          set -euo pipefail
+          node tools/vibe2-game-study-worker.mjs \
+            --task-id="$TASK_ID" \
+            --target-id="$TARGET_ID" \
+            --targets=.vibe2/game-study-targets.json \
+            --chrome="$VIBE2_STUDY_CHROME" \
+            --output="/tmp/vibe2-external-study-${TARGET_ID}.json"
+          TARGET_ID="$TARGET_ID" node <<'NODE'
+          const fs = require('fs');
+          const targetId = process.env.TARGET_ID;
+          const result = JSON.parse(fs.readFileSync(`/tmp/vibe2-external-study-${targetId}.json`,'utf8'));
+          if (result.outcome !== 'PASS') throw new Error(`external study failed: ${result.reason || result.blocker}`);
+          if (result.study?.verified !== true) throw new Error('external study must be verified');
+          if (result.study?.sourceAccess !== 'observation-only') throw new Error('external study source access changed');
+          if (result.study?.sourceAnalysis?.scanned === true) throw new Error('external source must not be scanned');
+          if (result.study?.executionLocation !== 'server') throw new Error('external study must execute on server');
+          if ((result.runtimeDiagnostics?.inputActionCount || 0) < 1) throw new Error('real external input required');
+          if ((result.runtimeDiagnostics?.checkpointCount || 0) < 1 || result.runtimeDiagnostics?.checkpointPassCount !== result.runtimeDiagnostics?.checkpointCount) throw new Error('all external checkpoints must pass');
+          if (result.authorityExpanded === true || result.study?.authorityExpanded === true) throw new Error('authority expansion prohibited');
+          console.log(`VIBE2_EXTERNAL_STUDY=${result.outcome}`);
+          console.log(`VIBE2_EXTERNAL_INPUTS=${result.runtimeDiagnostics?.inputActionCount || 0}`);
+          console.log(`VIBE2_EXTERNAL_CHECKPOINTS=${result.runtimeDiagnostics?.checkpointPassCount || 0}/${result.runtimeDiagnostics?.checkpointCount || 0}`);
+          console.log(`VIBE2_EXTERNAL_PATTERNS=${result.study?.distilledPatterns?.length || 0}`);
+          NODE
+
+      - name: Upload external observation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-external-game-study-smoke-${{ matrix.target_id }}-${{ github.run_id }}
+          path: /tmp/vibe2-external-study-${{ matrix.target_id }}.json
+          if-no-files-found: warn
+          retention-days: 3
