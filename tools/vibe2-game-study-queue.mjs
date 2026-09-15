@@ -18,7 +18,6 @@ function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: 
 function parseArgs(argv = process.argv.slice(2)) { const [command = 'summary', ...rest] = argv; const args = { command }; for (const raw of rest) { if (!raw.startsWith('--')) continue; const body = raw.slice(2); const at = body.indexOf('='); if (at < 0) args[body] = true; else args[body.slice(0, at)] = body.slice(at + 1); } return args; }
 function clamp(value, min = 1, max = 20) { return Math.max(min, Math.min(max, Math.floor(Number(value) || min))); }
 function safeId(value) { return clean(value).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 72) || 'study'; }
-function bool(value) { return value === true || ['1', 'true', 'yes', 'y'].includes(clean(value).toLowerCase()); }
 
 export function normalizeGameStudyTarget(input = {}, index = 0) {
   const id = safeId(input.id || input.gameId || `target-${index + 1}`);
@@ -121,7 +120,8 @@ export function prepareGameStudyQueue(queueInput = {}, targetInput = {}) {
     if (!target) return task;
     seen.add(task.id);
     if (task.status === 'running') return task;
-    return { ...taskForTarget(target), evidence: unique([...(task.evidence || []), ...taskForTarget(target).evidence]) };
+    const refreshed = taskForTarget(target);
+    return { ...refreshed, evidence: unique([...(task.evidence || []), ...refreshed.evidence]) };
   });
   for (const target of targets.runnable) if (!seen.has(target.taskId)) tasks.push(taskForTarget(target));
   return {
@@ -147,6 +147,7 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
     maxConcurrentTasks: prepared.queue.maxConcurrentTasks,
     tasks: prepared.queue.tasks.map((task) => selectedIds.has(task.id) ? { ...task, status: 'running', blocker: null } : task)
   });
+  const effectiveMax = Number(selection.effectiveMaxConcurrentTasks || requestedMax);
   const matrix = selection.selected.map((task) => {
     const target = prepared.targetByTask.get(task.id);
     return {
@@ -156,7 +157,7 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
       engine: target?.engine || clean(task.target),
       gameId: target?.gameId || clean(task.gameId),
       requestedMax,
-      effectiveMax: Number(selection?.concurrency?.effectiveMaxConcurrentTasks || requestedMax)
+      effectiveMax
     };
   });
   return Object.freeze({
@@ -168,9 +169,15 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
     robloxMatrix: Object.freeze(matrix.filter((row) => row.engine === 'roblox')),
     selectedCount: matrix.length,
     requestedMax,
-    effectiveMax: Number(selection?.concurrency?.effectiveMaxConcurrentTasks || requestedMax),
+    effectiveMax,
     invalidTargets: prepared.targets.invalid,
-    scheduler: selection.concurrency || null,
+    scheduler: Object.freeze({
+      persistentMaxConcurrentTasks: selection.persistentMaxConcurrentTasks,
+      requestedMaxConcurrentTasks: selection.requestedMaxConcurrentTasks,
+      effectiveMaxConcurrentTasks: selection.effectiveMaxConcurrentTasks,
+      freeSlots: selection.freeSlots,
+      backpressure: selection.backpressure
+    }),
     authorityExpanded: false
   });
 }
@@ -182,7 +189,7 @@ export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, res
   for (const raw of results || []) {
     const taskId = clean(raw?.taskId);
     if (!taskId || !isStudyTask(queue.tasks.find((task) => task.id === taskId) || {})) continue;
-    const outcome = clean(raw?.outcome).toUpperCase();
+    let outcome = clean(raw?.outcome).toUpperCase();
     let promoted = false;
     let reinforced = false;
     let reason = clean(raw?.reason || raw?.blocker);
@@ -192,12 +199,13 @@ export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, res
       promoted = promotion.promoted === true;
       reinforced = promotion.reinforced === true;
       reason = promotion.reason;
+      if (!promotion.promoted) outcome = 'BLOCKED';
     }
     const tasks = queue.tasks.map((task) => {
       if (task.id !== taskId) return task;
       const evidence = unique([...(task.evidence || []), ...(raw?.evidence || []), raw?.study?.id ? `game-study:${raw.study.id}` : '', promoted ? 'game-study-promoted' : '', reinforced ? 'game-study-reinforced' : '']);
       if (outcome === 'PASS') return { ...task, status: 'done', blocker: null, lastOutcome: 'PASS', evidence };
-      if (outcome === 'BLOCKED') return { ...task, status: 'blocked', blocker: clean(raw?.blocker) || 'game-study-blocked', lastOutcome: 'BLOCKED', evidence };
+      if (outcome === 'BLOCKED') return { ...task, status: 'blocked', blocker: clean(raw?.blocker) || reason || 'game-study-blocked', lastOutcome: 'BLOCKED', evidence };
       const retries = Number(task.retries || 0) + 1;
       return { ...task, status: retries <= Number(task.maxRetries || 2) ? 'queued' : 'failed', retries, blocker: clean(raw?.blocker) || 'game-study-failed', lastOutcome: 'FAIL', evidence };
     });
