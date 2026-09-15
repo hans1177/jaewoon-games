@@ -1,0 +1,48 @@
+name: One-shot Common Development Policy Migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/apply-common-development-quality-policy.mjs'
+      - '.github/workflows/one-shot-common-development-policy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply idempotent policy migration
+        run: |
+          node --check tools/apply-common-development-quality-policy.mjs
+          node tools/apply-common-development-quality-policy.mjs
+      - name: Verify modified contracts
+        run: |
+          node --check tools/company-common-development-quality-contract.mjs
+          node --check tools/company-web-validation-evidence-contract.mjs
+          node --check tools/company-development-web-bootstrap.mjs
+          node --check tools/company-development-web-gameplay-validation.mjs
+          node --check tools/company-development-validation-cycle.mjs
+          node --test qa/company-common-development-quality-contract.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/company-central-policy-contract.test.mjs
+      - name: Commit migration result
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo 'MIGRATION_NO_CHANGES=YES'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add COMPANY_FLOW.md company-directive.json tools/company-web-validation-evidence-contract.mjs qa/company-common-development-quality-contract.test.mjs .github/workflows/company-central-policy-contract-qa.yml
+          git commit -m 'apply common development quality policy'
+          git push origin HEAD:main
