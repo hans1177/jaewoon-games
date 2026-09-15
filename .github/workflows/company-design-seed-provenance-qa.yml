@@ -16,6 +16,7 @@ jobs:
         run: |
           node --check tools/company-design-seed-provenance.mjs
           node --check tools/design-only-promotion-sync.mjs
+          node --check tools/artbook-production-pipeline.mjs
           node --check qa/company-design-seed-provenance-qa.mjs
       - name: Verify owner rebuild design provenance
         run: node qa/company-design-seed-provenance-qa.mjs
@@ -27,4 +28,5 @@ jobs:
           grep -Fq "seed_revision" .github/workflows/company-seed-design-runtime.yml
           grep -Fq "DESIGN_SEED_PROVENANCE_BIND=PASS" .github/workflows/company-seed-design-runtime.yml
           grep -Fq "CURRENT_SEED_DESIGN_BASELINE_NOT_READY" tools/design-only-promotion-sync.mjs
+          grep -Fq "DESIGN_CYCLE_REUSE_PROVENANCE=REJECTED" tools/artbook-production-pipeline.mjs
           echo 'PASS current-seed design provenance contract'
