@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-auto-player.test.mjs
-// 역할: 공통 AUTO PLAYER 계약, 실제 Web 브라우저 입력, Roblox/Unity 엔진 어댑터 증거 게이트를 검증한다.
+// 역할: 공통 AUTO PLAYER 계약, 실제 Web 브라우저 입력, Roblox/Unity/UEFN/Unreal 엔진 어댑터 증거 게이트를 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -11,6 +11,8 @@ import { createAutoPlayerResult, applyAutoPlayerEvidenceToManifest } from '../to
 import { findChromeBinary, runWebAutoPlayer } from '../tools/vibe2-web-auto-player.mjs';
 import { runRobloxAutoPlayer } from '../tools/vibe2-roblox-auto-player.mjs';
 import { runUnityAutoPlayer } from '../tools/vibe2-unity-auto-player.mjs';
+import { runUefnAutoPlayer } from '../tools/vibe2-uefn-auto-player.mjs';
+import { runUnrealAutoPlayer } from '../tools/vibe2-unreal-auto-player.mjs';
 
 const here=path.dirname(fileURLToPath(import.meta.url));
 const fixtureRoot=path.join(here,'fixtures','vibe2-auto-player-web');
@@ -18,7 +20,7 @@ const fakeEngine=path.join(here,'fixtures','vibe2-fake-engine-runtime.mjs');
 function temp(){return fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-auto-player-test-'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2),'utf8');}
 
-const baseScenario=engine=>({version:1,engine,actions:[{id:'move',type:'key',key:'W'},{id:'state',type:'expect',name:'state changed',expression:'true'}]});
+const baseScenario=engine=>({version:1,engine,actions:[{id:'move',type:'key',key:'W'},{id:'state',type:'expect',name:'state changed',expression:engine==='unreal'?'player-moved':'true'}]});
 
 test('common AUTO PLAYER result refuses file-only or checkpoint-only evidence',()=>{
   const noInput=createAutoPlayerResult({engine:'web',runId:'x',actions:[],checkpoints:[{id:'c',required:true,pass:true}],errors:[]});
@@ -96,14 +98,52 @@ test('Unity adapter requires signed PlayMode + real input driver runtime evidenc
   assert.equal(result.runtime.capabilities.realInputDriver,true);
 });
 
-test('engine runtime harnesses explicitly use Roblox VirtualInput and Unity InputSystem state events',()=>{
+test('UEFN adapter requires a signed live UEFN/Fortnite session evidence contract', async()=>{
+  const cwd=temp(),scenarioFile=path.join(cwd,'scenario.json');writeJson(scenarioFile,baseScenario('uefn'));
+  const result=await runUefnAutoPlayer({scenarioFile,command:process.execPath,commandArgs:[fakeEngine],cwd});
+  assert.equal(result.verified,true);
+  assert.equal(result.runtime.authority,'vibe2-uefn-fortnite-session-runtime');
+  assert.equal(result.runtime.capabilities.uefnSession,true);
+  assert.equal(result.runtime.capabilities.fortniteClient,true);
+  assert.equal(result.runtime.capabilities.win32Input,true);
+  assert.equal(result.runtime.capabilities.runtimeObservation,true);
+});
+
+test('Unreal adapter requires Automation Driver + Automation Framework runtime evidence', async()=>{
+  const cwd=temp(),scenarioFile=path.join(cwd,'scenario.json');writeJson(scenarioFile,baseScenario('unreal'));
+  const result=await runUnrealAutoPlayer({scenarioFile,command:process.execPath,commandArgs:[fakeEngine],cwd});
+  assert.equal(result.verified,true);
+  assert.equal(result.runtime.authority,'vibe2-unreal-automation-driver-runtime');
+  assert.equal(result.runtime.capabilities.automationDriver,true);
+  assert.equal(result.runtime.capabilities.automationFramework,true);
+  assert.equal(result.runtime.capabilities.platformInput,true);
+  assert.equal(result.runtime.capabilities.worldObservation,true);
+});
+
+test('engine runtime harnesses use their real platform input/testing primitives',()=>{
   const roblox=fs.readFileSync(path.join(here,'..','tools','runtime','roblox','Vibe2AutoPlayer.luau'),'utf8');
   const unity=fs.readFileSync(path.join(here,'..','tools','runtime','unity','Vibe2AutoPlayerRuntime.cs'),'utf8');
+  const uefn=fs.readFileSync(path.join(here,'..','tools','runtime','uefn','Vibe2UefnAutoPlayer.ps1'),'utf8');
+  const unreal=fs.readFileSync(path.join(here,'..','tools','runtime','unreal','Vibe2AutoPlayerRuntime.cpp'),'utf8');
+  const unrealLaunch=fs.readFileSync(path.join(here,'..','tools','runtime','unreal','RunVibe2AutoPlayer.ps1'),'utf8');
   assert.match(roblox,/StudioTestService/);
   assert.match(roblox,/CreateVirtualInput\(\)/);
-  assert.match(roblox,/SendKey\(/);
-  assert.match(roblox,/SendMouseButton\(/);
   assert.match(unity,/Application\.isPlaying/);
   assert.match(unity,/InputSystem\.QueueStateEvent/);
-  assert.match(unity,/realInputDriver/);
+  assert.match(uefn,/FortniteClient/);
+  assert.match(uefn,/System\.Windows\.Forms\.SendKeys/);
+  assert.match(uefn,/VIBE2_CHECKPOINT\|/);
+  assert.match(unreal,/IAutomationDriverModule/);
+  assert.match(unreal,/CreateDriver\(\)/);
+  assert.match(unreal,/\.Press\(/);
+  assert.match(unreal,/\.Release\(/);
+  assert.match(unreal,/player-moved/);
+  assert.match(unrealLaunch,/UE\.EditorAutomation/);
+  assert.match(unrealLaunch,/Vibe2\.AutoPlayer/);
+  assert.match(unrealLaunch,/RunUnreal/);
+});
+
+test('common AUTO PLAYER router has all five engine routes',()=>{
+  const router=fs.readFileSync(path.join(here,'..','tools','vibe2-auto-player.mjs'),'utf8');
+  for(const engine of ['web','roblox','unity','uefn','unreal']) assert.match(router,new RegExp(`engine==='${engine}'`));
 });

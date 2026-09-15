@@ -25,8 +25,12 @@ on:
       - 'tools/vibe2-engine-auto-player.mjs'
       - 'tools/vibe2-roblox-auto-player.mjs'
       - 'tools/vibe2-unity-auto-player.mjs'
+      - 'tools/vibe2-uefn-auto-player.mjs'
+      - 'tools/vibe2-unreal-auto-player.mjs'
       - 'tools/runtime/roblox/Vibe2AutoPlayer.luau'
       - 'tools/runtime/unity/Vibe2AutoPlayerRuntime.cs'
+      - 'tools/runtime/uefn/Vibe2UefnAutoPlayer.ps1'
+      - 'tools/runtime/unreal/**'
       - 'tools/vibe2-performance-sanity.mjs'
       - 'tools/vibe2-fan-in-review.mjs'
       - 'tools/vibe2-queue-control.mjs'
@@ -113,6 +117,8 @@ jobs:
           node --check tools/vibe2-engine-auto-player.mjs
           node --check tools/vibe2-roblox-auto-player.mjs
           node --check tools/vibe2-unity-auto-player.mjs
+          node --check tools/vibe2-uefn-auto-player.mjs
+          node --check tools/vibe2-unreal-auto-player.mjs
           node --check tools/vibe2-performance-sanity.mjs
           node --check tools/vibe2-fan-in-review.mjs
           node --check tools/vibe2-queue-control.mjs
@@ -139,6 +145,7 @@ jobs:
           node --check qa/vibe2-candidate-reconcile.test.mjs
           node --check qa/vibe2-experience-control.test.mjs
           node --check qa/vibe2-handoff.test.mjs
+          pwsh -NoLogo -NoProfile -Command "[scriptblock]::Create((Get-Content 'tools/runtime/uefn/Vibe2UefnAutoPlayer.ps1' -Raw)) | Out-Null; [scriptblock]::Create((Get-Content 'tools/runtime/unreal/RunVibe2AutoPlayer.ps1' -Raw)) | Out-Null"
 
       - name: Require Chrome runtime for real Web AUTO PLAYER QA
         shell: bash
