@@ -7,21 +7,39 @@ import { runVibe2SourceWorker } from '../tools/vibe2-source-worker.mjs';
 
 function tempRoot(){return fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-roblox-full-rebuild-'));}
 function write(file,content){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,content,'utf8');}
+function fullServerReplacement(){return [
+  "local Players = game:GetService('Players')",
+  "local Workspace = game:GetService('Workspace')",
+  "local course = Instance.new('Folder')",
+  "course.Name = 'SkylineSprintCourse'",
+  "course.Parent = Workspace",
+  ...Array.from({length:24},(_,i)=>`local stage${i+1}=Instance.new('Part'); stage${i+1}.Name='Checkpoint${i+1}'; stage${i+1}.Anchored=true; stage${i+1}.Parent=course`),
+  "Players.PlayerAdded:Connect(function(player) player:SetAttribute('Checkpoint',1) end)"
+].join('\n');}
+function ownerWorkOrder(root,responsibleFiles){return {
+  run:true,
+  workMode:'source-change-candidate',
+  taskId:'OWNER-ROBLOX-OBBY-WORLD-CORE-20260916',
+  gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
+  target:'roblox',
+  goal:'FULL_ROBLOX_GAME_REBUILD FULL_REBUILD_PHASE_1_WORLD_CORE 실제 물리 오비 코스와 체크포인트 구현',
+  department:'development',
+  source:{root,responsibleFiles},
+  qa:['syntax','checkpoint progression','hazard recovery'],
+  workerPolicy:{directMainWrite:false},
+  selectedTask:{
+    ownerDirective:true,
+    rebuildMode:'FULL_REBUILD',
+    evidence:['owner-directive:full-roblox-game-rebuild']
+  }
+};}
 
 test('owner-authorized Roblox FULL_REBUILD accepts complete Lua and JSON replacements',async()=>{
   const cwd=tempRoot();
   const root='roblox-games/seed-roblox-obby-party-minigam-tower-of-hell';
   const server='server/Game.server.luau';
   const config='shared/GameConfig.json';
-  const serverReplacement=[
-    "local Players = game:GetService('Players')",
-    "local Workspace = game:GetService('Workspace')",
-    "local course = Instance.new('Folder')",
-    "course.Name = 'SkylineSprintCourse'",
-    "course.Parent = Workspace",
-    ...Array.from({length:24},(_,i)=>`local stage${i+1}=Instance.new('Part'); stage${i+1}.Name='Checkpoint${i+1}'; stage${i+1}.Anchored=true; stage${i+1}.Parent=course`),
-    "Players.PlayerAdded:Connect(function(player) player:SetAttribute('Checkpoint',1) end)"
-  ].join('\n');
+  const serverReplacement=fullServerReplacement();
   const configReplacement=JSON.stringify({
     gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
     stageCount:24,
@@ -33,23 +51,7 @@ test('owner-authorized Roblox FULL_REBUILD accepts complete Lua and JSON replace
   },null,2);
   write(path.join(cwd,root,server),'return { status = "prototype" }\n');
   write(path.join(cwd,root,config),'{}\n');
-  const workOrder={
-    run:true,
-    workMode:'source-change-candidate',
-    taskId:'OWNER-ROBLOX-OBBY-WORLD-CORE-20260916',
-    gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
-    target:'roblox',
-    goal:'FULL_ROBLOX_GAME_REBUILD FULL_REBUILD_PHASE_1_WORLD_CORE 실제 물리 오비 코스와 체크포인트 구현',
-    department:'development',
-    source:{root,responsibleFiles:[`${root}/${server}`,`${root}/${config}`]},
-    qa:['syntax','checkpoint progression','hazard recovery'],
-    workerPolicy:{directMainWrite:false},
-    selectedTask:{
-      ownerDirective:true,
-      rebuildMode:'FULL_REBUILD',
-      evidence:['owner-directive:full-roblox-game-rebuild']
-    }
-  };
+  const workOrder=ownerWorkOrder(root,[`${root}/${server}`,`${root}/${config}`]);
   const responseFile=path.join(cwd,'model.json');
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
   write(responseFile,JSON.stringify({
@@ -69,6 +71,26 @@ test('owner-authorized Roblox FULL_REBUILD accepts complete Lua and JSON replace
   assert.deepEqual(result.changedFiles,[server,config]);
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916/files',server),'utf8'),/SkylineSprintCourse/);
   assert.equal(JSON.parse(fs.readFileSync(path.join(cwd,'.vibe2/candidates/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916/files',config),'utf8')).finishRequiresFinalGoal,true);
+});
+
+test('owner-authorized Roblox FULL_REBUILD promotes findless edits replacement to whole-file replacement',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/seed-roblox-obby-party-minigam-tower-of-hell';
+  const server='server/Game.server.luau';
+  const serverReplacement=fullServerReplacement();
+  write(path.join(cwd,root,server),'return { status = "prototype" }\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(ownerWorkOrder(root,[`${root}/${server}`]),null,2));
+  const responseFile=path.join(cwd,'model.json');
+  write(responseFile,JSON.stringify({
+    summary:'실제 worker 실패 응답 형식 재현',
+    edits:[{path:server,replace:serverReplacement}],
+    replaceFiles:[],
+    tests:['checkpoint progression']
+  }));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.fullFileRewriteAllowed,true);
+  assert.deepEqual(result.changedFiles,[server]);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916/files',server),'utf8'),/SkylineSprintCourse/);
 });
 
 test('ordinary Roblox maintenance cannot use replaceFiles',async()=>{
@@ -91,4 +113,26 @@ test('ordinary Roblox maintenance cannot use replaceFiles',async()=>{
   const responseFile=path.join(cwd,'model.json');
   write(responseFile,JSON.stringify({replaceFiles:[{path:server,content:'local rebuilt = true\n'.repeat(60)}]}));
   await assert.rejects(runVibe2SourceWorker({cwd,responseFile}),/전체 파일 교체는 명시적으로 승인된 FULL_REBUILD/);
+});
+
+test('ordinary Roblox maintenance does not promote a findless edit into a whole-file replacement',async()=>{
+  const cwd=tempRoot();
+  const root='roblox-games/demo';
+  const server='server/Game.server.luau';
+  write(path.join(cwd,root,server),'local value = 1\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify({
+    run:true,
+    workMode:'source-change-candidate',
+    taskId:'roblox-maintenance-findless',
+    gameId:'demo',
+    target:'roblox',
+    goal:'일반 오류 수정',
+    department:'development',
+    source:{root,responsibleFiles:[`${root}/${server}`]},
+    qa:['syntax'],
+    workerPolicy:{directMainWrite:false}
+  },null,2));
+  const responseFile=path.join(cwd,'model.json');
+  write(responseFile,JSON.stringify({edits:[{path:server,replace:'local rebuilt = true\n'.repeat(60)}]}));
+  await assert.rejects(runVibe2SourceWorker({cwd,responseFile}),/edit find 비어 있음/);
 });
