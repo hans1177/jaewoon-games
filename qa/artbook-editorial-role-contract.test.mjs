@@ -80,41 +80,66 @@ test('DESIGN_ONLY flow and baseline mirror current central requirements',()=>{
   ])assert.ok(design.baselineReadyRequires.includes(token),`missing DESIGN_ONLY requirement: ${token}`);
   assert.equal(design.readyState,'DESIGN_BASELINE_READY');
   assert.match(flow,/TARGET_PLATFORM_UX_DIRECTION_DEFINED/);
+  assert.match(flow,/FIVE_DEPARTMENT_SCORES_RECORDED/);
 });
 
 test('five departments keep distinct lead models and multimodel reviews',()=>{
   assert.equal(directive.ai.departmentLeadModelsMustBeDistinct,true);
-  assert.equal(directive.ai.minDistinctModelsPerDepartment>=3,true);
-  assert.equal(directive.ai.departmentReviewModelCount>=3,true);
-  const leads=roles.map(role=>directive.ai.departmentLeadModels?.[role]);
-  assert.equal(new Set(leads).size,5);
-  for(const role of roles){
-    assert.ok(leads[roles.indexOf(role)]);
-    assert.ok(directive.ai.modelPool.includes(leads[roles.indexOf(role)]));
-  }
+  assert.equal(directive.ai.departmentLeadAssignmentRemappable,true);
+  const leadModels=roles.map(role=>directive.ai.departmentLeadModels?.[role]);
+  assert.equal(new Set(leadModels).size,5);
+  assert.ok(leadModels.every(model=>directive.ai.modelPool.includes(model)));
+  assert.ok(directive.ai.minDistinctModelsPerDepartment>=3);
+  assert.match(flow,/fiveDistinctLeadModelIdsRequiredPerCycle: true/);
+  assert.match(flow,/allModelsWithinDepartmentMustBeDistinct: true/);
+  assert.match(cycle,/DEPARTMENT_LEAD_GATE/);
+  assert.match(devCycle,/DEPARTMENT_LEAD_GATE/);
+  assert.match(releaseCycle,/DEPARTMENT_LEAD_GATE/);
 });
 
 test('department lead remains representative and rebuttal owner',()=>{
   assert.equal(directive.ai.departmentRepresentativeAuthoredByLead,true);
   assert.equal(directive.ai.departmentRebuttalAuthoredByLead,true);
+  assert.equal(directive.ai.meeting.internalRepresentativeOwner,'DEPARTMENT_LEAD_MODEL');
+  assert.equal(directive.ai.meeting.rebuttalOwner,'DEPARTMENT_LEAD_MODEL');
+  assert.match(flow,/representativeAuthor: DEPARTMENT_LEAD/);
+  assert.match(flow,/rebuttalAuthor: SAME_DEPARTMENT_LEAD/);
   assert.match(cycle,/representativeAuthoredByLead:true/);
   assert.match(cycle,/rebuttalAuthoredByDepartmentLeads:true/);
 });
 
 test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary in RELEASE_CONFIRMED',()=>{
-  assert.match(flow,/startsAt: DEVELOPMENT_CONFIRMED/);
-  assert.equal(directive.classes.DEVELOPMENT_CONFIRMED.vibe2SupportAllowed,true);
-  assert.equal(directive.classes.RELEASE_CONFIRMED.vibe2PrimaryDeveloper,true);
+  assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(directive.ai.vibe2.designOnlyActive,false);
+  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
+  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_DEVELOPMENT_ENGINE');
+  assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
 
 test('DEVELOPMENT_CONFIRMED requires full approved-scope Web companion gameplay and music before selected-platform validation',()=>{
   const dev=directive.classes.DEVELOPMENT_CONFIRMED;
+  assert.equal(dev.executionMode,'GATED_DIRECT');
+  assert.equal(dev.resumeFromLatestEvidence,true);
   assert.equal(dev.webPurpose,'MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION');
+  assert.equal(dev.targetPlatformPurpose,'TECHNICAL_AND_GAMEPLAY_VALIDATION');
+  assert.equal(dev.webBeforeTargetPlatformByDefault,true);
+  assert.equal(dev.targetPlatformMayRunImmediately,false);
   assert.equal(dev.webGameplayValidationRequired,true);
+  assert.equal(dev.webCompanionValidationRequired,true);
+  assert.equal(dev.approvedScopeCompletionRequired,true);
   assert.equal(dev.musicValidationRequired,true);
   assert.equal(dev.webCandidateMustPassBeforeTargetPlatformDispatch,true);
-  assert.equal(dev.approvedScopeCompletionRequired,true);
-  assert.match(devCycle,/WEB_GAMEPLAY/);
+  assert.equal(dev.webCandidatePublicPromotionRequiresValidationPass,true);
+  assert.equal(dev.platformSpecificValidationRequired,true);
+  assert.equal(dev.materialChangeRequiresTargetedRevalidation,true);
+  assert.equal(dev.artbookRevisionOnlyAfterBaselineReady,true);
+  assert.deepEqual(dev.waitingStates,['WAITING_WEB_PLAYABLE','WAITING_WEB_GAMEPLAY_VALIDATION','WAITING_WEB_GAMEPLAY_REVALIDATION','WAITING_POST_WEB_ARTBOOK','WAITING_WEB_STRICT_IMPROVEMENT','WAITING_TARGET_PLATFORM_VALIDATION','WAITING_TARGET_PLATFORM_REVALIDATION','WAITING_REVALIDATION']);
+  for(const token of ['WEB_PLAYABLE_QUEUE','FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP','MUSIC_RUNTIME_BIND','WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION','WEB_EVIDENCE_DEPARTMENT_MEETING','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_GAMEPLAY_VALIDATION','TARGET_PLATFORM_TECHNICAL_VALIDATION','TARGET_PLATFORM_EVIDENCE_DEPARTMENT_MEETING'])assert.ok(dev.requiredFlow.includes(token));
+  assert.match(flow,/webPurpose: MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION/);
+  assert.match(flow,/targetPlatformPurpose: TECHNICAL_AND_GAMEPLAY_VALIDATION/);
+  assert.doesNotMatch(JSON.stringify(dev),/ANDROID_TECHNICAL_VALIDATION_PROTOTYPE/);
+  assert.match(JSON.stringify(dev),/WEB_GAMEPLAY_MUSIC_AND_APPROVED_SCOPE_VALIDATION/);
+  assert.match(devCycle,/DEVELOPMENT_DIRECT_STATE=/);
   assert.match(pipeline,/DEVELOPMENT_EXECUTION_MODE=GATED_DIRECT/);
 });
 
@@ -122,20 +147,48 @@ test('RELEASE_CONFIRMED targets the project selected platform',()=>{
   const release=directive.classes.RELEASE_CONFIRMED;
   assert.equal(release.target,'PROJECT_SELECTED_PLATFORM');
   assert.equal(release.targetPlatformProjectRequired,true);
-  assert.equal(release.coreDesignLock,true);
   assert.equal(release.sourceTreeBindingRequired,true);
-  assert.match(releaseCycle,/currentUnitySourceTreeSha/);
+  assert.equal(release.sourceChangeInvalidatesOldBuildValidation,true);
+  assert.equal(release.buildPreflightIsNotFinalApproval,true);
+  assert.equal(release.finalReviewMustReadSameCurrentBuildRuntimeQaEvidence,true);
+  assert.equal(release.independentQaSeparatedFromVibe2SelfCheck,true);
+  assert.deepEqual(release.waitingStates,['BUILDING','WAITING_WEB_COMPANION_VALIDATION','WAITING_BUILD','WAITING_RUNTIME_VALIDATION']);
+  for(const token of ['BIND_CURRENT_TARGET_PLATFORM_SOURCE_TREE','TARGET_PLATFORM_BUILD_OR_PACKAGE','TARGET_PLATFORM_RUNTIME_VALIDATION','INDEPENDENT_QA_AND_REGRESSION'])assert.ok(release.requiredFlow.includes(token));
+  assert.doesNotMatch(JSON.stringify(release),/UNITY_ANDROID/);
+  assert.doesNotMatch(JSON.stringify(release),/BIND_CURRENT_UNITY_SOURCE_TREE/);
+  assert.match(releaseCycle,/currentSourceTreeSha/);
+  assert.match(releaseCycle,/boundToCurrentSource/);
+  assert.match(releaseCycle,/boundToImplementation/);
+  assert.match(releaseCycle,/FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_RUNTIME_PASS/);
+  assert.match(releaseCycle,/FINAL_RISK_WATCH_REQUIRES_CURRENT_BUILD_INDEPENDENT_QA_PASS/);
+  assert.match(pipeline,/RELEASE_EXECUTION_MODE=GATED_DIRECT_RELEASE_PRODUCTION/);
 });
 
 test('platform priority is focus order only and cannot create entry gates',()=>{
-  assert.equal(directive.platformStrategy.priorityDoesNotCreatePlatformLock,true);
-  assert.equal(directive.platformStrategy.roadmapPhaseEntryGatesForbidden,true);
-  assert.equal(directive.platformStrategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
+  const strategy=directive.platformStrategy;
+  assert.equal(strategy.primaryPlatform,'ROBLOX');
+  assert.deepEqual(strategy.priority,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(strategy.priorityMeaning,'DEFAULT_FOCUS_AND_EXPERIENCE_ACCUMULATION_ORDER_ONLY');
+  assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'ALWAYS_ALLOWED'});
+  assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,true);
+  assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
+  assert.equal(strategy.roadmapPhaseEntryGatesForbidden,true);
+  assert.equal(strategy.platformDevelopmentMayStartWithoutPriorPlatformCompletion,true);
+  assert.equal(strategy.platformReleaseMayProceedWhenItsOwnEvidenceGatesPass,true);
+  assert.equal(strategy.focusMilestones.ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE.entryGate,false);
+  assert.equal(strategy.focusMilestones.FORTNITE_UEFN_EXPANSION.entryGate,false);
+  assert.equal(strategy.UNITY.existingPathPreserved,true);
+  assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
+  assert.match(flow,/allThreePlatformsMayBeDevelopedConcurrently: true/);
+  assert.match(flow,/roadmapPhaseEntryGatesForbidden: true/);
 });
 
 test('artbook authorship and provenance rules remain unchanged',()=>{
-  assert.equal(directive.artbook.singleEditor,true);
-  assert.equal(directive.artbook.editorReadsRevisedDesign,true);
-  assert.equal(directive.artbook.departmentsDoNotAuthorPages,true);
-  assert.equal(directive.artbook.preserveRevisionHistoryByDefault,true);
+  assert.equal(directive.ai.artbookEditor.singleEditor,true);
+  assert.equal(directive.ai.artbookEditor.departmentPageAuthorship,false);
+  assert.equal(directive.ai.artbookEditor.mayInventNewClaims,false);
+  assert.equal(directive.ai.vibe2.designOrArtbookPrimaryAuthorInDevelopmentClass,false);
+  assert.match(flow,/ArtbookEditor:[\s\S]*?singleEditor: true/);
+  assert.match(flow,/mayInventNewClaims: false/);
+  assert.match(pipeline,/DEPARTMENT_ARTBOOK_AUTHORSHIP=NO/);
 });
