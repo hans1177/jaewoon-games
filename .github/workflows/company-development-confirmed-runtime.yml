@@ -512,18 +512,97 @@ jobs:
         id: runtime_binding
         env:
           PLANNED_RUNTIME_SHA: ${{ needs.web-plan.outputs.runtime_sha }}
+          EXPECTED_TARGETS_JSON: ${{ needs.web-plan.outputs.targets_json }}
         shell: bash
         run: |
           set -euo pipefail
           current="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
-          if [[ -n "$PLANNED_RUNTIME_SHA" && "$current" == "$PLANNED_RUNTIME_SHA" ]]; then
+          if [[ -z "$PLANNED_RUNTIME_SHA" ]]; then
+            echo 'fresh=false' >> "$GITHUB_OUTPUT"
+            echo 'WEB_RUNTIME_BINDING_PLANNED=NONE'
+            echo "WEB_RUNTIME_BINDING_CURRENT=$current"
+            echo 'WEB_RUNTIME_BINDING_STALE_SKIP=YES'
+          elif [[ "$current" == "$PLANNED_RUNTIME_SHA" ]]; then
             echo 'fresh=true' >> "$GITHUB_OUTPUT"
             echo "WEB_RUNTIME_BINDING_FRESH=$current"
           else
-            echo 'fresh=false' >> "$GITHUB_OUTPUT"
-            echo "WEB_RUNTIME_BINDING_PLANNED=${PLANNED_RUNTIME_SHA:-NONE}"
-            echo "WEB_RUNTIME_BINDING_CURRENT=$current"
-            echo 'WEB_RUNTIME_BINDING_STALE_SKIP=YES'
+            if ! git cat-file -e "$PLANNED_RUNTIME_SHA^{commit}" 2>/dev/null; then
+              git fetch --no-tags --deepen=100 origin "$COMPANY_RUNTIME_BRANCH"
+            fi
+            if ! git cat-file -e "$PLANNED_RUNTIME_SHA^{commit}" 2>/dev/null; then
+              echo 'fresh=false' >> "$GITHUB_OUTPUT"
+              echo "WEB_RUNTIME_BINDING_PLANNED=$PLANNED_RUNTIME_SHA"
+              echo "WEB_RUNTIME_BINDING_CURRENT=$current"
+              echo 'WEB_RUNTIME_BINDING_HISTORY_UNAVAILABLE=YES'
+              echo 'WEB_RUNTIME_BINDING_STALE_SKIP=YES'
+            elif PLANNED_RUNTIME_SHA="$PLANNED_RUNTIME_SHA" CURRENT_RUNTIME_SHA="$current" EXPECTED_TARGETS_JSON="$EXPECTED_TARGETS_JSON" node --input-type=module <<'NODE'
+            import {execFileSync} from 'node:child_process';
+            const planned=process.env.PLANNED_RUNTIME_SHA;
+            const current=process.env.CURRENT_RUNTIME_SHA;
+            const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
+            const show=(ref,file)=>{try{return execFileSync('git',['show',`${ref}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});}catch{return null;}};
+            const currentQueue=JSON.parse(show(current,'development-queue.json')||'{"items":[]}');
+            const rowFor=item=>{
+              const canonicalState=String(item?.canonicalState||'').toUpperCase();
+              const runtimeStage=canonicalState==='WAITING_WEB_FINAL_CONTENT_DEPTH'?'final-content-depth':'initial-cycle';
+              return {
+                gameId:item?.gameId,
+                gameName:item?.gameName||item?.gameId,
+                designBaselineSource:item?.designBaselineSource,
+                designDate:item?.designDate||'',
+                selectedPlatform:item?.selectedPlatform||item?.targetPlatform||'ROBLOX',
+                targetSourcePath:item?.targetSourcePath||item?.sourcePath||'',
+                webSourcePath:item?.webSourcePath||item?.optionalWebSourcePath||`web-games/${item?.gameId}`,
+                runtimeStage,
+                existingWebValidated:Boolean(item?.webValidationPassedAt),
+                webInitialCyclePassed:item?.webInitialCyclePassed===true,
+                webInitialCyclePassedAt:item?.webInitialCyclePassedAt||'',
+                webInitialCycleEvidencePath:item?.webInitialCycleEvidencePath||'',
+                webInitialCycleSourcePath:item?.webInitialCycleSourcePath||'',
+                webInitialCycleSourceIndexSha256:item?.webInitialCycleSourceIndexSha256||'',
+                webInitialCycleDesignBaselineSha256:item?.webInitialCycleDesignBaselineSha256||'',
+                webInitialCycleValidationSchemaVersion:Number(item?.webInitialCycleValidationSchemaVersion||0)||0,
+                webInitialCycleStrictScore:Number(item?.webInitialCycleStrictScore||0)||0,
+                webInitialCycleStrictReviewPath:item?.webInitialCycleStrictReviewPath||'',
+                webInitialCycleSourceRevision:item?.webInitialCycleSourceRevision||'',
+                webInitialCycleMusicValidationPassed:item?.webInitialCycleMusicValidationPassed===true,
+                webFinalContentDepthEvidencePath:item?.webFinalContentDepthEvidencePath||'',
+              };
+            };
+            const blockers=[];
+            const sameFile=file=>!file||show(planned,file)===show(current,file);
+            for(const target of expected){
+              const item=(currentQueue.items||[]).find(x=>x.gameId===target.gameId);
+              if(!item){blockers.push(`TARGET_QUEUE_MISSING:${target.gameId}`);continue;}
+              const currentRow=rowFor(item);
+              for(const key of Object.keys(target)){
+                if(JSON.stringify(currentRow[key])!==JSON.stringify(target[key])){blockers.push(`TARGET_QUEUE_BINDING_CHANGED:${target.gameId}:${key}`);break;}
+              }
+              const baseline=String(target.designBaselineSource||'').trim();
+              const status=baseline?baseline.replace(/design-revised\.json$/,'cycle-status.json'):'';
+              const source=String(target.webInitialCycleSourcePath||target.webSourcePath||'').replace(/^\/+|\/+$/g,'');
+              const files=[baseline,status,source?`${source}/index.html`:'',target.webInitialCycleEvidencePath||'',target.webFinalContentDepthEvidencePath||''];
+              for(const file of new Set(files.filter(Boolean))){
+                if(!sameFile(file))blockers.push(`TARGET_RUNTIME_BINDING_CHANGED:${target.gameId}:${file}`);
+              }
+            }
+            if(blockers.length){
+              console.log(`WEB_RUNTIME_TARGET_BINDING_BLOCKERS=${blockers.join('|')}`);
+              process.exit(2);
+            }
+            console.log(`WEB_RUNTIME_TARGET_BINDINGS_UNCHANGED=${expected.length}`);
+            NODE
+            then
+              echo 'fresh=true' >> "$GITHUB_OUTPUT"
+              echo "WEB_RUNTIME_BINDING_PLANNED=$PLANNED_RUNTIME_SHA"
+              echo "WEB_RUNTIME_BINDING_CURRENT=$current"
+              echo 'WEB_RUNTIME_BINDING_UNRELATED_CHANGE_ACCEPTED=YES'
+            else
+              echo 'fresh=false' >> "$GITHUB_OUTPUT"
+              echo "WEB_RUNTIME_BINDING_PLANNED=$PLANNED_RUNTIME_SHA"
+              echo "WEB_RUNTIME_BINDING_CURRENT=$current"
+              echo 'WEB_RUNTIME_BINDING_STALE_SKIP=YES'
+            fi
           fi
 
       - name: Download parallel Web worker results

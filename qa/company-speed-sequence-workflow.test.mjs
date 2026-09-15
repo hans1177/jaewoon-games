@@ -124,3 +124,17 @@ test('DEVELOPMENT runtime does not serialize whole runs and serializes only shar
   assert.match(router,/needs\.web-plan\.outputs\.runtime_sha/);
   assert.match(router,/cancel-in-progress:\s*false/);
 });
+
+test('Web batch binding accepts unrelated runtime commits but rejects changes to target inputs',()=>{
+  assert.match(router,/EXPECTED_TARGETS_JSON:\s*\$\{\{ needs\.web-plan\.outputs\.targets_json \}\}/);
+  assert.match(router,/TARGET_QUEUE_BINDING_CHANGED:/);
+  assert.match(router,/TARGET_RUNTIME_BINDING_CHANGED:/);
+  assert.match(router,/WEB_RUNTIME_BINDING_UNRELATED_CHANGE_ACCEPTED=YES/);
+  assert.match(router,/WEB_RUNTIME_TARGET_BINDINGS_UNCHANGED=/);
+  assert.match(router,/show\(planned,file\)===show\(current,file\)/);
+  assert.match(router,/designBaselineSource/);
+  assert.match(router,/cycle-status\.json/);
+  assert.match(router,/webInitialCycleEvidencePath/);
+  assert.match(router,/webFinalContentDepthEvidencePath/);
+  assert.match(router,/WEB_RUNTIME_BINDING_HISTORY_UNAVAILABLE=YES/);
+});
