@@ -51,13 +51,22 @@ jobs:
           node --test qa/vibe2-parallelism-telemetry.test.mjs
           git diff --check
 
-      - name: Remove temporary refactor assets and commit
+      - name: Persist verified code and workflow snapshots
         shell: bash
         run: |
           set -euo pipefail
-          rm -f .github/workflows/vibe2-machine-handoff-refactor-temp.yml
-          rm -f tools/vibe2-machine-handoff-refactor-temp.py
-          rm -f tools/vibe2-machine-handoff-refactor-temp-fix.py
+          mkdir -p .vibe2/workflow-snapshots
+          cp .github/workflows/vibe2-24h-runner.yml .vibe2/workflow-snapshots/vibe2-24h-runner.yml
+          cp .github/workflows/vibe2-continuous-core.yml .vibe2/workflow-snapshots/vibe2-continuous-core.yml
+          cp .github/workflows/vibe2-core-qa.yml .vibe2/workflow-snapshots/vibe2-core-qa.yml
+
+          git checkout -- .github/workflows/vibe2-continuous-core.yml
+          git checkout -- .github/workflows/vibe2-core-qa.yml
+          git checkout -- .github/workflows/vibe2-machine-handoff-refactor-temp.yml
+          git checkout -- tools/vibe2-machine-handoff-refactor-temp.py
+          git checkout -- tools/vibe2-machine-handoff-refactor-temp-fix.py
+          rm -f .github/workflows/vibe2-24h-runner.yml
+
           git diff --check
           git config user.name 'jaewoon-vibe2-refactor'
           git config user.email 'vibe2-refactor@users.noreply.github.com'
