@@ -1,3 +1,5 @@
+// 파일명: qa/vibe2-parallelism-telemetry.test.mjs
+
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { computeParallelismTelemetry } from '../tools/vibe2-parallelism-telemetry.mjs';
@@ -7,12 +9,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-const row=(i,{start=1000,end=5000,cache=true,outcome='PASS',runId=null}={})=>({
+const row=(i,{start=1000,end=5000,cache=true,outcome='PASS',runId=null,evidence=[],metrics={}}={})=>({
   taskId:`t${i}`,outcome,
-  evidence:runId?[`actions-run:${runId}`]:[],
+  evidence:[...(runId?[`actions-run:${runId}`]:[]),...evidence],
   metrics:{
     requestedMax:20,effectiveMax:20,reservedAt:0,workerStartedAt:start,workerFinishedAt:end,
-    checkoutMs:100+i,candidateMs:1000+i*10,qaMs:200+i,workerTotalMs:end-start,ollamaCacheHit:cache
+    checkoutMs:100+i,candidateMs:1000+i*10,qaMs:200+i,workerTotalMs:end-start,ollamaCacheHit:cache,
+    ...metrics
   }
 });
 
@@ -52,6 +55,29 @@ test('mixed actions runs are not treated as one adaptive sample',()=>{
   const t=computeParallelismTelemetry({results,requestedMax:20,effectiveMax:20,taskCount:2});
   assert.equal(t.runId,null);
   assert.deepEqual(t.runIds,['101','102']);
+});
+
+test('workload telemetry measures completed features actual change volume rework qa duplicates and cycle time',()=>{
+  const results=[
+    row(1,{start:1000,end:5000,runId:'150',evidence:['incremental-qa-hash:same'],metrics:{changedFileCount:2,addedLineCount:30,deletedLineCount:4,modelPrepMs:100}}),
+    row(2,{start:1200,end:6200,runId:'150',evidence:['incremental-qa-hash:same','incremental-qa-hash:same'],metrics:{changedFileCount:1,addedLineCount:8,deletedLineCount:2,modelPrepMs:100}})
+  ];
+  const tasks=[
+    {id:'t1',packageId:'p1',status:'running',retries:1},
+    {id:'t2',packageId:'p1',status:'running',retries:0}
+  ];
+  const t=computeParallelismTelemetry({results,tasks,requestedMax:2,effectiveMax:2,taskCount:2});
+  assert.equal(t.workload.completedFeatureCount,1);
+  assert.equal(t.workload.changedFileCount,3);
+  assert.equal(t.workload.addedLineCount,38);
+  assert.equal(t.workload.deletedLineCount,6);
+  assert.equal(t.workload.changedLineCount,44);
+  assert.equal(t.workload.reworkedTaskCount,1);
+  assert.equal(t.workload.reworkRatePct,50);
+  assert.ok(t.workload.qaDuplicateRatePct>0);
+  assert.equal(t.workload.packageCycleTime.packageCount,1);
+  assert.equal(t.workload.packageCycleTime.maxMs,5200);
+  assert.equal(t.workload.actualChangeMetricsKnown,true);
 });
 
 test('adaptive controller steps down exactly once under saturated runner pressure',()=>{

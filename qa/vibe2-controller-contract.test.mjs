@@ -95,6 +95,8 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert(workflow.includes('node --test --test-concurrency=4'));
   assert(workflow.includes('qa/vibe2-controller-contract.test.mjs'));
   assert(workflow.includes('qa/vibe2-source-worker.test.mjs'));
+  assert(workflow.includes('qa/vibe2-work-package.test.mjs'));
+  assert(workflow.includes('qa/vibe2-adaptive-backpressure.test.mjs'));
   assert.equal(runtime.qaOptimization.perWorkerQa,'impact-first-incremental');
   assert.equal(runtime.qaOptimization.fanInQa,'single-node-test-process');
   assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
@@ -106,6 +108,7 @@ test('reserve preflight stays syntax-and-machine-state only instead of rerunning
   assert(start>=0 && end>start);
   const preflight=workflow.slice(start,end);
   assert(preflight.includes('node --check assets/vibe-continuous-queue.js'));
+  assert(preflight.includes('node --check tools/vibe2-work-package.mjs'));
   assert(preflight.includes('node tools/vibe2-handoff.mjs --check'));
   assert(!preflight.includes('node --test '));
   assert.equal(runtime.qaOptimization.reservePreflight,'syntax-and-machine-state-only');
@@ -161,14 +164,16 @@ test('worker never writes queue or parallelism state directly during early refil
   assert(workerPart.includes('git push origin "HEAD:refs/heads/${callback}"'));
 });
 
-test('worker result keeps throughput telemetry inputs in the immutable result step',()=>{
+test('worker result keeps throughput and actual workload telemetry inputs in the immutable result step',()=>{
   const start=workflow.indexOf('- name: Build immutable worker result');
   const end=workflow.indexOf('- name: Upload worker result for fan-in');
   assert(start>=0 && end>start);
   const resultStep=workflow.slice(start,end);
-  for(const key of ['RESERVED_AT:','REQUESTED_MAX:','EFFECTIVE_MAX:','WORKER_STARTED_AT_FILE:','CHECKOUT_MS:','CANDIDATE_MS:','QA_MS:']) {
+  for(const key of ['RESERVED_AT:','REQUESTED_MAX:','EFFECTIVE_MAX:','WORKER_STARTED_AT_FILE:','CHECKOUT_MS:','MODEL_PREP_MS:','CANDIDATE_MS:','QA_MS:','CHANGED_FILE_COUNT:','ADDED_LINE_COUNT:','DELETED_LINE_COUNT:']) {
     assert(resultStep.includes(key),`missing result telemetry env ${key}`);
   }
+  assert(workflow.includes('git diff --cached --numstat -- "$SOURCE_ROOT"'));
+  assert(workflow.includes('JSON.stringify({version:2,results,tasks:queue.tasks||[]}'));
 });
 
 test('explicit work-order output path overrides runtime default path',()=>{
@@ -208,12 +213,19 @@ test('explicit work-order output path overrides runtime default path',()=>{
   assert.equal(fs.existsSync(runtimeDefault),false);
 });
 
-
 test('central runtime enables functional work packages and adaptive workload telemetry',()=>{
   assert.equal(runtime.workPackages.enabled,true);
   assert.equal(runtime.workPackages.smallTaskAction,'auto-expand-or-defer');
+  assert.equal(runtime.workPackages.automaticExpansionMode,'real-disjoint-candidates-first-explicit-related-scopes-fallback');
+  assert.equal(runtime.workPackages.minRelatedImprovementsPerPackage,3);
+  assert.equal(runtime.workPackages.targetFeaturePackagesPerCycle,1);
+  assert.equal(runtime.workPackages.sameFileParallelWrite,false);
   assert.equal(runtime.workPackages.sharedPreparation,true);
   assert.equal(runtime.workPackages.longWorkSlotProtection,true);
   assert.equal(runtime.workPackages.workloadTelemetry.enabled,true);
+  for(const metric of ['completedFeaturePackageCount','actualChangedFileCount','actualChangedLineCount','historicalReworkRatePct','historicalQaDuplicateRatePct','averagePackageCycleTimeMs']) {
+    assert(runtime.workPackages.workloadTelemetry.metrics.includes(metric),`missing work package metric ${metric}`);
+  }
+  assert.equal(runtime.workPackages.efficiencyAdaptation.lowEfficiencyStreakThreshold,2);
   assert.equal(runtime.workPackages.efficiencyAdaptation.neverReduceSafetyOrQa,true);
 });

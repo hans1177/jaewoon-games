@@ -199,6 +199,13 @@
       "workerTotalDuration",
       "failureRate",
       "fanInDuration",
+      "completedFeatureCount",
+      "changedFileCount",
+      "changedLineCount",
+      "reworkRatePct",
+      "qaDuplicateRatePct",
+      "packageCycleTime",
+      "preparationRatioPct",
       "bottleneck"
     ],
     "loadProbeTargetWorkers": 20,
@@ -522,11 +529,14 @@
     "minWorkUnitsPerPackage": 3,
     "minTasksPerPackage": 2,
     "substantialSingleTaskWorkUnits": 3,
+    "minRelatedImprovementsPerPackage": 3,
     "targetWorkUnitsPerCycle": 12,
     "targetPackagesPerCycle": 4,
+    "targetFeaturePackagesPerCycle": 1,
     "maxPackagesPerCycle": 10,
     "maxTasksPerPackage": 5,
     "smallTaskAction": "auto-expand-or-defer",
+    "automaticExpansionMode": "real-disjoint-candidates-first-explicit-related-scopes-fallback",
     "automaticExpansion": [
       "related-diagnostics",
       "adjacent-safe-maintenance",
@@ -534,6 +544,7 @@
       "qa-hardening",
       "performance-sanity"
     ],
+    "sameFileParallelWrite": false,
     "explorationMode": "planner-precomputed-shared-context",
     "sharedPreparation": true,
     "longWorkSlotProtection": true,
@@ -556,16 +567,26 @@
       "metrics": [
         "plannedPackageCount",
         "plannedWorkUnits",
+        "plannedFeaturePackageCount",
+        "plannedRelatedImprovementCount",
         "completedFeaturePackageCount",
+        "actualChangedFileCount",
+        "actualChangedLineCount",
         "historicalMicroTaskRatePct",
         "historicalReworkRatePct",
+        "historicalQaDuplicateRatePct",
+        "historicalPreparationRatioPct",
+        "averagePackageCycleTimeMs",
         "historicalAvgPackageWorkUnits",
+        "lowEfficiencyStreak",
         "lowEfficiencyDetected"
       ]
     },
     "efficiencyAdaptation": {
       "enabled": true,
-      "lowEfficiencyAction": "increase-minimum-work-units-one-step",
+      "lowEfficiencyAction": "increase-minimum-work-units-progressively",
+      "lowEfficiencyStreakThreshold": 2,
+      "maxAdaptiveBoost": 3,
       "maxMinWorkUnitsPerPackage": 6,
       "neverReduceSafetyOrQa": true
     }
