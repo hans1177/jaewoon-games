@@ -1,1 +1,157 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>수정의 개화</title></head><body><script>window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>수정의 개화</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e1e1e;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      background-color: #1e1e1e;
+    }
+    .game-title {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    .game-description {
+      font-size: 1.2em;
+      max-width: 600px;
+      text-align: center;
+    }
+    .game-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .game-button {
+      padding: 15px 25px;
+      font-size: 1em;
+      border: none;
+      border-radius: 8px;
+      background-color: #08111b;
+      color: #ffffff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .game-button:hover {
+      background-color: #041a2d;
+    }
+    .game-stats {
+      margin-top: 20px;
+      font-size: 1em;
+      text-align: center;
+    }
+    .game-stats span {
+      display: inline-block;
+      margin: 0 10px;
+    }
+    .game-stats .hp {
+      color: #ff4d4d;
+    }
+    .game-stats .gold {
+      color: #ffcc00;
+    }
+    .game-stats .level {
+      color: #00ffcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-title">수정의 개화</div>
+    <div class="game-description">
+      전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.
+    </div>
+    <div class="game-buttons">
+      <button class="game-button" onclick="startGame()">시작</button>
+      <button class="game-button" onclick="restartGame()">재시작</button>
+    </div>
+    <div class="game-stats">
+      <span class="hp">HP: <span id="hp">100</span></span>
+      <span class="gold">골드: <span id="gold">0</span></span>
+      <span class="level">레벨: <span id="level">1</span></span>
+    </div>
+  </div>
+  <script>
+    let game = {
+      hp: 100,
+      gold: 0,
+      level: 1,
+      currentStep: 1,
+      steps: [
+        { name: '초기', description: '방치 상태로 시작합니다.' },
+        { name: '적·단계', description: '적·단계를 통과해야 합니다.' },
+        { name: '보스', description: '보스를 꺼내야 합니다.' },
+        { name: '목표', description: '수정 군주 10단계를 돌파해야 합니다.' }
+      ],
+      progress: 0,
+      isRunning: false,
+      isRestarted: false,
+      isPaused: false,
+      isGameOver: false,
+      isVictory: false,
+      isDefeated: false
+    };
+
+    function startGame() {
+      game.isRunning = true;
+      game.isRestarted = false;
+      game.isPaused = false;
+      game.isGameOver = false;
+      game.isVictory = false;
+      game.isDefeated = false;
+      game.progress = 0;
+      game.currentStep = 1;
+      game.updateUI();
+    }
+
+    function restartGame() {
+      game.isRunning = false;
+      game.isRestarted = true;
+      game.isPaused = false;
+      game.isGameOver = false;
+      game.isVictory = false;
+      game.isDefeated = false;
+      game.progress = 0;
+      game.currentStep = 1;
+      game.updateUI();
+    }
+
+    function updateUI() {
+      document.getElementById('hp').textContent = game.hp;
+      document.getElementById('gold').textContent = game.gold;
+      document.getElementById('level').textContent = game.level;
+    }
+
+    function handleInput(event) {
+      if (game.isRunning) {
+        if (event.type === 'click' && event.target && event.target.classList.contains('game-button')) {
+          if (event.target.textContent === '시작') {
+            startGame();
+          } else if (event.target.textContent === '재시작') {
+            restartGame();
+          }
+        }
+      }
+    }
+
+    document.addEventListener('touchstart', handleInput);
+    document.addEventListener('click', handleInput);
+  </script>
+</body>
+</html>
