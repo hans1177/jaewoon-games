@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "engine": "web",
+  "page": "index.html",
+  "timeoutMs": 30000,
+  "requirePlayability": false,
+  "failOnRuntimeError": false,
+  "metadata": {
+    "origin": "external-public",
+    "study": "difficulty-symbol-ai-first-response",
+    "sourceAccess": "observation-only"
+  },
+  "actions": [
+    {
+      "id": "wait-for-external-game-init",
+      "type": "wait",
+      "ms": 800
+    },
+    {
+      "id": "menu-ready",
+      "type": "expect",
+      "name": "difficulty and player setup UI ready",
+      "expression": "document.querySelectorAll('.difficulty-buttons .btn').length===3 && document.querySelector('#pick-o')!==null"
+    },
+    {
+      "id": "select-easy-difficulty",
+      "type": "click",
+      "selector": ".difficulty-buttons .btn[data-difficulty='easy']"
+    },
+    {
+      "id": "difficulty-feedback",
+      "type": "expect",
+      "name": "difficulty selection UI feedback",
+      "expression": "document.querySelector('.difficulty-buttons .btn[data-difficulty=\"easy\"]')?.classList.contains('active')===true"
+    },
+    {
+      "id": "select-player-o",
+      "type": "click",
+      "selector": "#pick-o"
+    },
+    {
+      "id": "player-symbol-feedback",
+      "type": "expect",
+      "name": "player choice UI feedback",
+      "expression": "document.querySelector('#pick-o')?.classList.contains('active')===true"
+    },
+    {
+      "id": "start-game",
+      "type": "click",
+      "selector": "#new-game-btn"
+    },
+    {
+      "id": "wait-for-ai-first-response",
+      "type": "wait",
+      "ms": 1800
+    },
+    {
+      "id": "ai-first-turn-observed",
+      "type": "expect",
+      "name": "ai response and turn feedback observed",
+      "expression": "document.querySelectorAll('.board-cell.show').length>=1 && document.querySelector('#player-score-label')?.textContent.includes('O') && document.querySelector('#cpu-score-label')?.textContent.includes('X')"
+    },
+    {
+      "id": "player-action-after-ai",
+      "type": "click",
+      "selector": ".board-cell:not(.show)"
+    },
+    {
+      "id": "wait-for-second-ai-response",
+      "type": "wait",
+      "ms": 1800
+    },
+    {
+      "id": "turn-feedback-continues",
+      "type": "expect",
+      "name": "player action ai response turn cycle continues",
+      "expression": "document.querySelectorAll('.board-cell.show').length>=3"
+    }
+  ]
+}
