@@ -36,7 +36,13 @@ function parseArgs(argv = process.argv.slice(2)) {
 }
 function queueFileFrom(args) { return clean(args.queue) || '.vibe2/queue.json'; }
 function controlFileFrom(args) { return clean(args.control) || '.vibe2/parallelism-control.json'; }
-function readParallelismControl(args) { return createParallelismControl(readJson(controlFileFrom(args), {})); }
+function readParallelismControl(args) {
+  try {
+    return createParallelismControl(readJson(controlFileFrom(args), {}));
+  } catch {
+    return createParallelismControl({ lastReason: 'INVALID_STATE_DEFAULT_20' });
+  }
+}
 function priority(value, ownerDirective) { if (ownerDirective) return 'owner-immediate'; return ['critical','high','normal','low'].includes(clean(value)) ? clean(value) : 'normal'; }
 function bool(value) { return value === true || ['1','true','yes','y'].includes(clean(value).toLowerCase()); }
 function list(value) { return clean(value).split(',').map(clean).filter(Boolean); }

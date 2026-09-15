@@ -41,6 +41,16 @@ export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_A
   return Math.max(1, Math.min(requested, control.currentMax));
 }
 
+function pressureLevel(telemetry = {}) {
+  const explicit = clean(telemetry.pressureLevel).toUpperCase();
+  if (['SEVERE', 'HIGH', 'MEDIUM', 'LOW', 'NONE'].includes(explicit)) return explicit;
+  const failureRate = num(telemetry.failureRatePct);
+  if (failureRate >= 40) return 'SEVERE';
+  if (failureRate >= 20) return 'HIGH';
+  if (failureRate >= 10) return 'MEDIUM';
+  return 'LOW';
+}
+
 function pressureReasons(telemetry = {}) {
   const reasons = [];
   const failureRate = num(telemetry.failureRatePct);
@@ -59,6 +69,7 @@ function pressureReasons(telemetry = {}) {
 function isHealthy(telemetry = {}) {
   const bottleneck = clean(telemetry.bottleneck);
   return num(telemetry.failureRatePct) < 10
+    && ['LOW', 'NONE'].includes(pressureLevel(telemetry))
     && (!bottleneck || bottleneck === 'NONE')
     && num(telemetry.effectivePeakUtilizationPct) >= 80
     && num(telemetry.queueWait?.p95Ms) < 15000
@@ -83,7 +94,10 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   const saturationFloor = Math.max(1, Math.ceil(current * 0.75));
   const loaded = workerCount >= saturationFloor;
   const localBackpressureActive = effectiveMax < current;
+  const level = pressureLevel(telemetry);
   const reasons = pressureReasons(telemetry);
+  const strongPressure = ['SEVERE', 'HIGH'].includes(level) || reasons.length > 0;
+  const mediumPressure = level === 'MEDIUM' && reasons.length === 0;
 
   let next = current;
   let healthyStreak = control.healthyStreak;
@@ -99,12 +113,23 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     healthyStreak = 0;
     pressureStreak = 0;
     reason = 'RUN_LOCAL_BACKPRESSURE_ACTIVE';
-  } else if (reasons.length) {
+  } else if (strongPressure) {
     next = stepDown(current);
-    pressureStreak += 1;
     healthyStreak = 0;
+    pressureStreak = 0;
     decision = next < current ? 'DOWN' : 'HOLD';
-    reason = reasons.join('+');
+    reason = reasons.length ? reasons.join('+') : level;
+  } else if (mediumPressure) {
+    healthyStreak = 0;
+    pressureStreak += 1;
+    if (pressureStreak >= 2) {
+      next = stepDown(current);
+      decision = next < current ? 'DOWN' : 'HOLD';
+      reason = next < current ? 'MEDIUM_PRESSURE_STREAK_2' : 'AT_MIN_PRESSURE';
+      pressureStreak = 0;
+    } else {
+      reason = 'MEDIUM_PRESSURE_STREAK_1';
+    }
   } else if (isHealthy(telemetry)) {
     healthyStreak += 1;
     pressureStreak = 0;
@@ -138,6 +163,7 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
       actualPeakConcurrency: num(telemetry.actualPeakConcurrency),
       effectivePeakUtilizationPct: num(telemetry.effectivePeakUtilizationPct),
       failureRatePct: num(telemetry.failureRatePct),
+      pressureLevel: level,
       bottleneck: clean(telemetry.bottleneck) || 'NONE'
     }
   });
