@@ -22,7 +22,7 @@ permissions:
 env:
   VIBE2_PRIORITY_POLICY: owner-release-development
   VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '4'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
 
 concurrency:
@@ -84,7 +84,7 @@ jobs:
           const file = '.vibe2/queue.json';
           const beforeText = fs.readFileSync(file, 'utf8');
           const before = JSON.parse(beforeText);
-          const maxConcurrentTasks = Math.max(1, Math.min(8, Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS) || 4));
+          const maxConcurrentTasks = Math.max(1, Math.min(20, Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS) || 20));
           const normalized = createVibeContinuousQueue({ ...before, maxConcurrentTasks });
           const afterText = `${JSON.stringify(normalized, null, 2)}\n`;
           if (beforeText !== afterText) {
@@ -106,7 +106,7 @@ jobs:
             elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
               commit_message='vibe2: fill safe parallel task slots [skip ci]'
             else
-              commit_message='vibe2: persist four-slot parallel queue state [skip ci]'
+              commit_message='vibe2: persist twenty-slot adaptive parallel queue state [skip ci]'
             fi
             git commit -m "$commit_message"
             if git push origin HEAD:vibe2-unreal-core; then
