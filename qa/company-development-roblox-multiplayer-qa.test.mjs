@@ -41,6 +41,15 @@ test('Windows PowerShell 5.1 caches the process handle before reading Studio exi
   assert.doesNotMatch(workflow, /\$p\.ExitCode -ne 0/);
 });
 
+test('successful multiplayer persistence dispatches canonical final-review revalidation', () => {
+  const workflow = read(workflowPath);
+  assert.match(workflow, /needs\.multiplayer-worker\.result == 'success'/);
+  assert.match(workflow, /gh api --method POST "repos\/\$GITHUB_REPOSITORY\/dispatches"/);
+  assert.match(workflow, /event_type='roblox_multiplayer_qa_persisted'/);
+  assert.match(workflow, /ROBLOX_FINAL_REVIEW_REVALIDATION_DISPATCHED=YES/);
+  assert.doesNotMatch(workflow, /robloxFinalReviewPassed=true/);
+});
+
 test('multiplayer probe requires two distinct clients and server-authoritative peer visibility', () => {
   const probe = read(probePath);
   assert.match(probe, /ExecuteMultiplayerTestAsync\(2/);
