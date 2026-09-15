@@ -20,12 +20,18 @@
       "id": "memory-menu-ready",
       "type": "expect",
       "name": "memory board size selection ready",
-      "expression": "document.querySelector('#size-4')!==null && document.querySelector('#btn')!==null"
+      "expression": "document.querySelector('#size-4')!==null && document.querySelector('label[for=\"size-4\"]')!==null && document.querySelector('#btn')!==null"
     },
     {
       "id": "select-small-board",
       "type": "click",
-      "selector": "#size-4"
+      "selector": "label[for='size-4']"
+    },
+    {
+      "id": "small-board-selected",
+      "type": "expect",
+      "name": "small board option selected",
+      "expression": "document.querySelector('#size-4')?.checked===true"
     },
     {
       "id": "start-small-board",
