@@ -93,18 +93,36 @@ test('event-driven refill removes hourly-only idle gaps',()=>{
 test('explicit work-order output path overrides runtime default path',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-output-path-'));
   const queueFile=path.join(root,'queue.json');
+  const controlFile=path.join(root,'parallelism.json');
   const experienceFile=path.join(root,'experience.json');
   const runtimeDefault=path.join(root,'runtime-default.json');
   const explicitOutput=path.join(root,'explicit-output.json');
   const runtimeFile=path.join(root,'runtime.json');
-  fs.writeFileSync(queueFile,JSON.stringify({tasks:[]}), 'utf8');
-  fs.writeFileSync(experienceFile,JSON.stringify({records:[]}), 'utf8');
-  fs.writeFileSync(runtimeFile,JSON.stringify({
-    continuous:{enabled:false},
-    sources:{queue:queueFile,experience:experienceFile,workOrder:runtimeDefault}
-  }), 'utf8');
+  const fixtureRuntime=structuredClone(runtime);
+
+  fixtureRuntime.continuous={...fixtureRuntime.continuous,enabled:false,entryWorkflow:'.github/workflows/vibe2-24h-runner.yml',workerWorkflow:'.github/workflows/vibe2-continuous-core.yml'};
+  fixtureRuntime.documentation={
+    ...fixtureRuntime.documentation,
+    runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json'},
+    generatedHandoffTool:'tools/vibe2-handoff.mjs'
+  };
+  fixtureRuntime.sources={queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',workOrder:runtimeDefault};
+  fixtureRuntime.adaptiveBackpressure={...fixtureRuntime.adaptiveBackpressure,stateFile:'parallelism.json'};
+
+  fs.mkdirSync(path.join(root,'tools'),{recursive:true});
+  fs.mkdirSync(path.join(root,'.github','workflows'),{recursive:true});
+  fs.writeFileSync(path.join(root,'VIBE2.md'),'# Vibe2\n','utf8');
+  fs.writeFileSync(path.join(root,'tools','vibe2-handoff.mjs'),'// fixture\n','utf8');
+  fs.writeFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'name: fixture\n','utf8');
+  fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
+  fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:20,tasks:[]}), 'utf8');
+  fs.writeFileSync(controlFile,JSON.stringify({version:2,currentMax:20}), 'utf8');
+  fs.writeFileSync(experienceFile,JSON.stringify({version:1,records:[]}), 'utf8');
+  fs.writeFileSync(runtimeFile,JSON.stringify(fixtureRuntime), 'utf8');
+
   const order=runVibeContinuousRunner({runtimeFile,outputFile:explicitOutput});
   assert.equal(order.reason,'CONTINUOUS_DISABLED');
+  assert.equal(order.machineHandoff.consistency.ok,true);
   assert.equal(fs.existsSync(explicitOutput),true);
   assert.equal(fs.existsSync(runtimeDefault),false);
 });
