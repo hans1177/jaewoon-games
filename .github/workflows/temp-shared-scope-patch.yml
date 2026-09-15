@@ -24,6 +24,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          python3 tools/temp-adjust-shared-scope-helper.py
           python3 tools/temp-shared-scope-patch.py
           node --check tools/company-development-web-bootstrap.mjs
           node --check web-games/_shared/vibe2-final.js
@@ -40,4 +41,4 @@ jobs:
           git diff --cached --quiet && { echo 'no canonical diff' >&2; exit 1; }
           git commit -m 'fix(web): bind all approved scopes in shared engine'
           git push origin HEAD:fix/shared-engine-approved-scopes
-# rerun: stable story target
+# rerun: semantic scope mapping
