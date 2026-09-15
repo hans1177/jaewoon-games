@@ -1,0 +1,50 @@
+name: Roblox Bootstrap Command Bar Probe
+
+on:
+  push:
+    branches: [fix/roblox-auto-bootstrap]
+    paths:
+      - '.github/workflows/roblox-bootstrap-commandbar-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: discover Studio command input without changing state
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 10
+    steps:
+      - name: Enumerate main Studio editable controls
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+
+          $p = Get-Process RobloxStudioBeta -ErrorAction Stop | Select-Object -First 1
+          $root = [System.Windows.Automation.AutomationElement]::RootElement
+          $pidCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty,$p.Id)
+          $windows = $root.FindAll([System.Windows.Automation.TreeScope]::Children,$pidCond)
+          $main = $null
+          foreach ($w in $windows) {
+            if ([string]$w.Current.AutomationId -eq 'RBXMainWindow') { $main = $w; break }
+          }
+          if (-not $main) { throw 'RBXMainWindow not detected' }
+
+          $all = $main.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
+          $count = 0
+          foreach ($e in $all) {
+            $ct = [string]$e.Current.ControlType.ProgrammaticName
+            $name = [string]$e.Current.Name
+            $aid = [string]$e.Current.AutomationId
+            $cls = [string]$e.Current.ClassName
+            if ($ct -in @('ControlType.Edit','ControlType.Document','ControlType.ComboBox','ControlType.Pane') -or $name -match '명령|Command') {
+              $r = $e.Current.BoundingRectangle
+              Write-Host ("ROBLOX_BOOTSTRAP_CONTROL type='{0}' name='{1}' automationId='{2}' class='{3}' enabled='{4}' offscreen='{5}' left={6} top={7} width={8} height={9}" -f $ct,$name,$aid,$cls,$e.Current.IsEnabled,$e.Current.IsOffscreen,$r.Left,$r.Top,$r.Width,$r.Height)
+              $count++
+            }
+          }
+          Write-Host "ROBLOX_BOOTSTRAP_CONTROL_COUNT=$count"
+          Write-Host 'ROBLOX_BOOTSTRAP_COMMANDBAR_PROBE=PASS'
+          Write-Host 'ROBLOX_EXPERIENCE_CREATED=NO'
