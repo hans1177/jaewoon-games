@@ -1,0 +1,44 @@
+name: Temp Homepage Development Visibility
+on:
+  push:
+    branches:
+      - fix/homepage-development-visibility
+permissions:
+  contents: write
+jobs:
+  patch-and-test:
+    if: "!contains(github.event.head_commit.message, '[temp-patch-commit]')"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/homepage-development-visibility
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Apply policy and homepage split
+        run: python3 tools/temp-homepage-development-visibility.py
+      - name: Validate JSON and JS syntax
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('company-directive.json','utf8'))"
+          node --check assets/homepage-enhancements.js
+          node --check assets/homepage-enhancements-core.js
+          node --check tools/homepage-test-candidate-sync.mjs
+      - name: Run homepage regression
+        run: node --test qa/homepage-manager-publication-order.test.mjs
+      - name: Verify policy split
+        run: |
+          grep -Fq 'autoRegisterDevelopmentConfirmed: true' COMPANY_FLOW.md
+          grep -Fq 'homepageTestEligibleRequired: false' COMPANY_FLOW.md
+          grep -Fq "getJson('/development-queue.json',{runtime:true})" assets/homepage-enhancements-core.js
+          grep -Fq 'data-homepage-game-source="DEVELOPMENT_QUEUE"' assets/homepage-enhancements-core.js
+          git diff --check
+      - name: Commit validated canonical changes
+        run: |
+          git config user.name hans1177
+          git config user.email anyanguy2@naver.com
+          git add COMPANY_FLOW.md company-directive.json HOMEPAGE_OPERATIONS.md assets/homepage-enhancements.js assets/homepage-enhancements-core.js qa/homepage-manager-publication-order.test.mjs .github/workflows/homepage-manager.yml
+          git diff --cached --quiet && { echo 'NO_CANONICAL_DIFF'; exit 1; }
+          git commit -m 'fix(homepage): separate development visibility from Top30 promotion [temp-patch-commit]'
+          git push origin HEAD:fix/homepage-development-visibility
