@@ -60,13 +60,13 @@ jobs:
               "          console.log(`ROBLOX_RUNTIME_LOCAL_WIP_MAX=${runnerWip}`);\n          console.log('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES');\n          console.log('ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated');",
               'runtime planner evidence')
           cont=replace_once(cont,
-              "      max-parallel: 1\n      matrix: ${{ fromJSON(needs.runtime-plan.outputs.matrix) }}",
-              "      max-parallel: 3\n      matrix: ${{ fromJSON(needs.runtime-plan.outputs.matrix) }}",
+              "      max-parallel: 1\n",
+              "      max-parallel: 3\n",
               'runtime Studio parallelism')
           cont=cont.replace("ROBLOX_RUNTIME_LOCAL_WIP_MAX=1","ROBLOX_RUNTIME_LOCAL_WIP_MAX=3")
           cont=replace_once(cont,
-              "          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'\n          echo \"ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION\"",
-              "          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'\n          echo 'ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'\n          echo \"ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION\"",
+              "          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'\n",
+              "          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'\n          echo 'ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'\n",
               'runtime summary')
           cont_path.write_text(cont)
 
@@ -81,8 +81,8 @@ jobs:
               "          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3');\n          console.log('ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES');",
               'post QA planner evidence')
           qa=replace_once(qa,
-              "      max-parallel: 1\n      matrix: ${{ fromJSON(needs.qa-plan.outputs.matrix) }}",
-              "      max-parallel: 3\n      matrix: ${{ fromJSON(needs.qa-plan.outputs.matrix) }}",
+              "      max-parallel: 1\n",
+              "      max-parallel: 3\n",
               'post QA parallelism')
           qa=replace_once(qa,
               "          echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'\n",
@@ -94,7 +94,14 @@ jobs:
           test=test_path.read_text()
           test=test.replace("ROBLOX_EXECUTION_WIP_MAX=2","ROBLOX_EXECUTION_WIP_MAX=6")
           test=test.replace("ROBLOX_RUNTIME_LOCAL_WIP_MAX=1","ROBLOX_RUNTIME_LOCAL_WIP_MAX=3")
-          test=test.replace("assert.ok(workflow.includes('max-parallel: 1'));","assert.ok(workflow.includes('max-parallel: 3'));\n  assert.ok(workflow.includes(\"ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'\"));\n  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));",1)
+          test=replace_once(test,
+              "assert.ok(workflow.includes('max-parallel: 2'));",
+              "assert.ok(workflow.includes('max-parallel: 6'));",
+              'preflight test parallelism')
+          test=replace_once(test,
+              "assert.ok(workflow.includes('max-parallel: 1'));",
+              "assert.ok(workflow.includes('max-parallel: 3'));\n  assert.ok(workflow.includes(\"ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'\"));\n  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));",
+              'runtime test parallelism')
           test_path.write_text(test)
 
           post_test_path=Path('qa/company-development-roblox-post-runtime-qa.test.mjs')
