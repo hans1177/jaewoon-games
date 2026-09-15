@@ -97,9 +97,43 @@ jobs:
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
           NODE
 
-  worker:
+  model_cache:
     needs: reserve
     if: needs.reserve.outputs.worker_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    continue-on-error: true
+    steps:
+      - name: Restore or persist shared Ollama model cache
+        id: ollama_cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ollama/models
+          key: vibe2-ollama-v1-Linux-qwen3-1.7b
+
+      - name: Warm local coding model once on cache miss
+        if: steps.ollama_cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          installed=0
+          for attempt in 1 2 3; do
+            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+            sleep $((attempt * 4))
+          done
+          test "$installed" = 1
+          nohup ollama serve > /tmp/ollama-prewarm.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+            if [ "$i" = 30 ]; then cat /tmp/ollama-prewarm.log || true; exit 1; fi
+            sleep 2
+          done
+          ollama pull "$VIBE2_LOCAL_MODEL"
+          echo 'VIBE2_MODEL_PREWARM=PASS'
+
+  worker:
+    needs: [reserve, model_cache]
+    if: always() && needs.reserve.outputs.worker_count != '0'
     runs-on: ubuntu-latest
     timeout-minutes: 22
     strategy:
@@ -116,6 +150,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+
+      - name: Restore shared Ollama model cache
+        id: worker_ollama_cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.ollama/models
+          key: vibe2-ollama-v1-Linux-qwen3-1.7b
 
       - name: Build reserved task work order
         id: order
@@ -193,7 +234,12 @@ jobs:
             if [ "$i" = 30 ]; then cat "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
             sleep 2
           done
-          ollama pull "$VIBE2_LOCAL_MODEL"
+          if ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
+            echo 'VIBE2_LOCAL_MODEL_SOURCE=CACHE'
+          else
+            echo 'VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
+            ollama pull "$VIBE2_LOCAL_MODEL"
+          fi
 
           cd "$candidate_dir"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
