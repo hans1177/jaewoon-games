@@ -19,6 +19,18 @@ def patch_source():
         raise SystemExit('continuous preflight source patch target missing')
     text = text.replace(old_preflight, new_preflight, 1)
 
+    old_task = "const task={id:'task-1',gameId:'demo',target:'web',department:'development',type:'implementation',goal:'Edit demo.js',responsibleFiles:['web-games/demo/demo.js'],dependencies:[],priority:'high',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,sourceRoot:'web-games/demo',estimatedRisk:'low'};"
+    new_task = "const task={id:'task-1',gameId:'demo',target:'web',department:'qa',type:'qa',goal:'Inspect demo web source',responsibleFiles:[],dependencies:[],priority:'high',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,sourceRoot:'web-games/demo',estimatedRisk:'low'};"
+    if old_task not in text:
+        raise SystemExit('E2E task fixture target missing')
+    text = text.replace(old_task, new_task, 1)
+
+    old_asserts = """  assert.equal(order.machineHandoff.used,true);\n  assert.equal(order.machineHandoff.currentPersistentMax,20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'),true);"""
+    new_asserts = """  assert.equal(order.run,true);\n  assert.equal(order.executionRoute,'analysis-only');\n  assert.equal(order.machineHandoff.used,true);\n  assert.equal(order.machineHandoff.currentPersistentMax,20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'),true);"""
+    if old_asserts not in text:
+        raise SystemExit('E2E handoff assertion target missing')
+    text = text.replace(old_asserts, new_asserts, 1)
+
     SCRIPT.write_text(text, encoding='utf-8')
 
 
@@ -40,11 +52,6 @@ def migrate_queue_schema_v5():
     text = text.replace('version:4', 'version:5')
     text = text.replace('version: 4,', 'version: 5,')
     text = text.replace('snapshot.generatedFrom.queueVersion, 4', 'snapshot.generatedFrom.queueVersion, 5')
-    target = "  assert.equal(order.machineHandoff.currentPersistentMax, 20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'), true);"
-    diagnostic = "  assert.ok(order.machineHandoff, `missing machine handoff: ${JSON.stringify(order)}`);\n  assert.equal(order.machineHandoff.currentPersistentMax, 20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'), true);"
-    if target not in text:
-        raise SystemExit('E2E machine handoff diagnostic target missing')
-    text = text.replace(target, diagnostic, 1)
     handoff.write_text(text, encoding='utf-8')
 
     planner = Path('qa/vibe2-auto-planner.test.mjs')
