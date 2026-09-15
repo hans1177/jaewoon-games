@@ -11,6 +11,8 @@ const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 const DIGITS=/^[1-9][0-9]*$/;
 const SHA=/^[0-9a-f]{7,40}$/i;
+const COMMIT40=/^[0-9a-f]{40}$/i;
+const ARTIFACT_SHA256=/^sha256:[0-9a-f]{64}$/i;
 const ROBLOX_SOURCE_EXTENSIONS=Object.freeze(['.luau','.lua','.rbxl','.rbxlx']);
 const PUBLISH_EXTENSIONS=Object.freeze(['.rbxl','.rbxlx']);
 const PUBLISH_LIMITED_INSTANCE_TYPES=Object.freeze(['EditableImage','EditableMesh','PartOperation','SurfaceAppearance','BaseWrap']);
@@ -132,6 +134,96 @@ export function assembleRobloxTechnicalEvidence({build={},runtime={},independent
   return Object.freeze(evidence);
 }
 
+export function assembleRobloxDevelopmentReleaseEvidence(item={}){
+  const sourceRevision=clean(item.robloxSourceCommit);
+  const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
+  const preflight=item.robloxBuildPreflightEvidence||{};
+  const runtime=item.robloxRuntimeEvidence||{};
+  const post=item.robloxPostRuntimeQaEvidence||{};
+  const multiplayer=item.robloxMultiplayerQaEvidence||{};
+  const mode=upper(item.robloxMultiplayerMode);
+  const multiplayerApplicable=item.robloxMultiplayerApplicable===true;
+  const requiredBindings=[preflight,runtime,post,...(multiplayerApplicable?[multiplayer]:[])];
+  const sameRevision=COMMIT40.test(sourceRevision)&&requiredBindings.every(row=>clean(row?.sourceRevision)===sourceRevision);
+  const sameArtifact=ARTIFACT_SHA256.test(artifactIdentity)&&requiredBindings.every(row=>clean(row?.artifactIdentity)===artifactIdentity);
+  const runIds=[runtime.artifactRunId,post.artifactRunId,...(multiplayerApplicable?[multiplayer.artifactRunId]:[])]
+    .map(value=>Number(value)).filter(value=>Number.isInteger(value)&&value>0);
+  const sameArtifactRun=runIds.length>0&&runIds.every(value=>value===runIds[0]);
+  const sourceValidated=Boolean(item.robloxSourceBootstrapPassedAt)&&item.robloxBuildPreflightPassed===true&&preflight.pass===true;
+  const buildOrPackagePassed=item.robloxBuildOrPackagePassed===true&&clean(item.robloxBuildSourceRevision)===sourceRevision&&sourceValidated;
+  const runtimePassed=item.robloxRuntimePassed===true&&runtime.runtimePassed===true&&runtime.serverClientBoundaryPassed===true;
+  const serverClientBoundaryPassed=item.robloxServerClientBoundaryPassed===true&&runtime.serverClientBoundaryPassed===true;
+  const saveExists=runtime.saveExists===true;
+  const datastoreRejoinPassed=!saveExists||(item.robloxDatastoreRejoinPassed===true&&runtime.datastoreRejoinPassed===true);
+  const mobileControlUiPassed=item.robloxMobileControlUiPassed===true&&post.mobileControlUiPassed===true;
+  const independentQaPassed=item.robloxIndependentQaPassed===true&&post.independentQaPassed===true;
+  const regressionPassed=item.robloxRegressionPassed===true&&post.regressionPassed===true&&post.exactRevision===true;
+  const multiplayerQaPassed=!multiplayerApplicable||(
+    ['COOP','COMPETITIVE','HYBRID'].includes(mode)
+    &&item.robloxMultiplayerQaPassed===true
+    &&multiplayer.multiplayerQaPassed===true
+    &&multiplayer.actualStudioRuntime===true
+    &&Number(multiplayer.multiplayerClients)===2
+    &&multiplayer.distinctPlayersPassed===true
+    &&multiplayer.serverAuthoritativeRoundtripPassed===true
+    &&multiplayer.peerVisibilityPassed===true
+  );
+  const finalReviewPassed=item.robloxFinalReviewPassed===true;
+  const exactRevision=item.robloxExactRevisionPassed===true&&sameRevision&&sameArtifact&&sameArtifactRun;
+  const protectedStatePreserved=runtimePassed&&serverClientBoundaryPassed&&datastoreRejoinPassed&&mobileControlUiPassed&&independentQaPassed&&regressionPassed&&multiplayerQaPassed&&finalReviewPassed&&exactRevision;
+  const evidence={
+    version:1,
+    platform:'ROBLOX',
+    target:'ROBLOX_DEVELOPMENT_FINAL_RELEASE',
+    checkedAt:new Date().toISOString(),
+    sourceRevision,
+    sourceFingerprint:clean(item.robloxSourceFingerprint)||null,
+    artifactIdentity:artifactIdentity||null,
+    artifactRunId:runIds[0]||null,
+    buildOrPackagePassed,
+    luauOrSourceValidationPassed:sourceValidated,
+    runtimePassed,
+    runtime:runtimePassed?'PASS':'FAIL',
+    serverClientBoundaryPassed,
+    saveExists,
+    datastoreRejoinPassed,
+    mobileControlUiPassed,
+    multiplayerApplicable,
+    multiplayerMode:mode||null,
+    multiplayerQaPassed,
+    independentQaPassed,
+    independentQa:independentQaPassed?'PASS':'FAIL',
+    regressionPassed,
+    protectedStatePreserved,
+    finalReviewPassed,
+    exactRevision,
+    sameRevision,
+    sameArtifact,
+    sameArtifactRun,
+    browserQa:'NOT_APPLICABLE',
+    provenance:{
+      buildPreflight:preflight.authority||null,
+      runtime:runtime.authority||null,
+      postRuntime:post.authority||null,
+      multiplayer:multiplayerApplicable?(multiplayer.authority||null):'NOT_APPLICABLE',
+      finalReview:'company-development-roblox-final-review',
+    },
+  };
+  const gate=validateRobloxReleaseEvidence(evidence,sourceRevision);
+  const blocked=[...gate.blockedReasons];
+  if(!COMMIT40.test(sourceRevision))blocked.push('development-source-revision-invalid');
+  if(!ARTIFACT_SHA256.test(artifactIdentity))blocked.push('development-artifact-identity-invalid');
+  if(!sameArtifactRun)blocked.push('development-artifact-run-mismatch');
+  if(!finalReviewPassed)blocked.push('final-review-not-passed');
+  const blockedReasons=[...new Set(blocked)];
+  evidence.pass=blockedReasons.length===0;
+  evidence.validated=evidence.pass;
+  evidence.state=evidence.pass?'PASS':'FAIL';
+  evidence.blockedReasons=blockedReasons;
+  evidence.authority='roblox-development-canonical-release-evidence';
+  return Object.freeze(evidence);
+}
+
 export function validateRobloxReleaseEvidence(evidence={},sourceRevision=''){
   const blocked=[];
   const revision=clean(sourceRevision||evidence.sourceRevision);
@@ -220,7 +312,7 @@ export async function publishRobloxPlace({plan,apiKey=process.env.ROBLOX_OPEN_CL
   return Object.freeze({version:1,state:'PUBLISHED',platform:'ROBLOX',versionNumber,sourceRevision:plan.sourceRevision,placeFile:plan.placeFile,endpoint:plan.endpoint,credentialPersisted:false,authority:'roblox-place-publish-result'});
 }
 
-function parseArgs(argv){const args={};for(let i=0;i<argv.length;i+=1){const arg=argv[i];if(!arg.startsWith('--'))continue;const [key,inline]=arg.slice(2).split('=',2);if(key==='execute'||key==='assemble-evidence'){args[key]=true;continue;}args[key]=inline??argv[++i];}return args;}
+function parseArgs(argv){const args={};for(let i=0;i<argv.length;i+=1){const arg=argv[i];if(!arg.startsWith('--'))continue;const [key,inline]=arg.slice(2).split('=',2);if(key==='execute'||key==='assemble-evidence'||key==='assemble-development-release-evidence'){args[key]=true;continue;}args[key]=inline??argv[++i];}return args;}
 function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}
 function requireJson(args,key){const file=clean(args[key]);if(!file||!fs.existsSync(file))throw new Error(`${key} evidence missing: ${file}`);const value=readJson(file);return {...value,evidencePath:file};}
 async function main(){
@@ -241,6 +333,22 @@ async function main(){
     if(!evidence.pass)process.exitCode=2;
     return;
   }
+  if(args['assemble-development-release-evidence']===true){
+    const queueFile=clean(args.queue);
+    const gameId=clean(args['game-id']);
+    const output=clean(args.output);
+    if(!queueFile||!gameId||!output)throw new Error('queue, game-id and output required for --assemble-development-release-evidence');
+    const queue=readJson(queueFile);
+    const item=(queue.items||[]).find(row=>clean(row?.gameId)===gameId);
+    if(!item)throw new Error(`development queue item missing: ${gameId}`);
+    const evidence=assembleRobloxDevelopmentReleaseEvidence(item);
+    fs.mkdirSync(path.dirname(output),{recursive:true});
+    fs.writeFileSync(output,`${JSON.stringify(evidence,null,2)}\n`);
+    console.log(`ROBLOX_DEVELOPMENT_RELEASE_EVIDENCE=${evidence.state}`);
+    console.log(`ROBLOX_DEVELOPMENT_RELEASE_BINDING_MATCH=${evidence.sameRevision&&evidence.sameArtifact&&evidence.sameArtifactRun}`);
+    if(!evidence.pass)process.exitCode=2;
+    return;
+  }
   const evidence=args.evidence?readJson(args.evidence):{};
   const plan=createRobloxPlacePublishPlan({
     placeFile:args['place-file'],
@@ -257,6 +365,7 @@ async function main(){
   }
   const result=await publishRobloxPlace({plan});
   console.log('ROBLOX_V3_STATE=PUBLISHED');
+  console.log(`ROBLOX_PUBLISHED_VERSION_NUMBER=${result.versionNumber}`);
   console.log(JSON.stringify(result,null,2));
 }
 
