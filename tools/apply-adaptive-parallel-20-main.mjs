@@ -28,6 +28,36 @@ for(const [from,to] of reps) arch=replaceExact(arch,from,to,`ARCH:${from.slice(0
 fs.writeFileSync(archFile,arch,'utf8');
 
 const testFile='qa/vibe2-parallelism-main-contract.test.mjs';
-fs.writeFileSync(testFile,`import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport fs from 'node:fs';\n\nconst flow=fs.readFileSync('COMPANY_FLOW.md','utf8');\nconst runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');\nconst arch=fs.readFileSync('VIBE2_PARALLEL_ARCHITECTURE.md','utf8');\n\ntest('PARALLELISM_CONTRACT_GATE keeps main policy and runner unified at 20',()=>{\n  for(const token of [\n    'concurrentGameWipTarget: 20',\n    'concurrentGameWipMax: 20',\n    'webValidationParallelismTarget: 20',\n    'webValidationParallelismMax: 20',\n    'adaptiveBackpressureSteps: [20, 16, 12, 8, 4]',\n    'sameSourceRootParallelAllowedWhenResponsibleFilesExplicitAndDisjoint: true',\n    'sameResponsibleFileParallelForbidden: true',\n    'sharedSaveSchemaWritesExclusive: true',\n    'centralPolicyWritesExclusive: true',\n    'parallelismContractGateRequired: true'\n  ]) assert.ok(flow.includes(token),token);\n  assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'"));\n  assert.ok(runner.includes('Math.min(20, Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS) || 20)'));\n  assert.ok(arch.includes('운영 최대 동시 게임 작업 수: \\`20\\`'));\n  assert.ok(arch.includes('20 → 16 → 12 → 8 → 4'));\n  assert.ok(arch.includes('PARALLELISM_CONTRACT_GATE'));\n});\n`,'utf8');
+const testLines=[
+  "import test from 'node:test';",
+  "import assert from 'node:assert/strict';",
+  "import fs from 'node:fs';",
+  '',
+  "const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');",
+  "const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');",
+  "const arch=fs.readFileSync('VIBE2_PARALLEL_ARCHITECTURE.md','utf8');",
+  '',
+  "test('PARALLELISM_CONTRACT_GATE keeps main policy and runner unified at 20',()=>{",
+  '  for(const token of [',
+  "    'concurrentGameWipTarget: 20',",
+  "    'concurrentGameWipMax: 20',",
+  "    'webValidationParallelismTarget: 20',",
+  "    'webValidationParallelismMax: 20',",
+  "    'adaptiveBackpressureSteps: [20, 16, 12, 8, 4]',",
+  "    'sameSourceRootParallelAllowedWhenResponsibleFilesExplicitAndDisjoint: true',",
+  "    'sameResponsibleFileParallelForbidden: true',",
+  "    'sharedSaveSchemaWritesExclusive: true',",
+  "    'centralPolicyWritesExclusive: true',",
+  "    'parallelismContractGateRequired: true'",
+  '  ]) assert.ok(flow.includes(token),token);',
+  '  assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: \'20\'"));',
+  "  assert.ok(runner.includes('Math.min(20, Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS) || 20)'));",
+  "  assert.ok(arch.includes('운영 최대 동시 게임 작업 수: `20`'));",
+  "  assert.ok(arch.includes('20 → 16 → 12 → 8 → 4'));",
+  "  assert.ok(arch.includes('PARALLELISM_CONTRACT_GATE'));",
+  '});',
+  ''
+];
+fs.writeFileSync(testFile,testLines.join('\n'),'utf8');
 
 console.log('ADAPTIVE_PARALLEL_20_MAIN_MIGRATION=PASS');
