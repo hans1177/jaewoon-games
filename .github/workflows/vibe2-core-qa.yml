@@ -15,6 +15,7 @@ on:
       - 'assets/vibe-continuous-queue.js'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
@@ -25,6 +26,7 @@ on:
       - 'tools/vibe2-handoff.mjs'
       - 'qa/vibe2-auto-planner.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
+      - 'qa/vibe2-design-intelligence.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
       - 'qa/vibe2-incremental-qa.test.mjs'
@@ -46,12 +48,14 @@ on:
       - 'assets/vibe-continuous-queue.js'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-queue-control.mjs'
       - 'tools/vibe2-incremental-qa.mjs'
       - 'tools/vibe2-parallelism-telemetry.mjs'
       - 'tools/vibe2-adaptive-backpressure.mjs'
       - 'tools/vibe2-candidate-reconcile.mjs'
+      - 'tools/vibe2-experience-control.mjs'
       - 'tools/vibe2-handoff.mjs'
       - 'qa/vibe2-*.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
@@ -88,6 +92,7 @@ jobs:
           node --check assets/vibe-continuous-queue.js
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-queue-control.mjs
           node --check tools/vibe2-incremental-qa.mjs
@@ -98,6 +103,7 @@ jobs:
           node --check tools/vibe2-handoff.mjs
           node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
+          node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
           node --check qa/vibe2-incremental-qa.test.mjs
@@ -113,6 +119,7 @@ jobs:
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
+          node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-incremental-qa.test.mjs
