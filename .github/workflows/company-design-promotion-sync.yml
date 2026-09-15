@@ -102,35 +102,44 @@ jobs:
           console.log('DESIGN_ONLY_PROMOTION_CONTRACT=PASS');
           NODE
 
-      - name: Preserve promoted runtime files
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/design-promotion-runtime
-          cp game-seed-state.json autonomous-portfolio.json game-catalog.json development-queue.json /tmp/design-promotion-runtime/
-
       - name: Persist promoted state to company runtime branch
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-design-promotion'
           git config user.email 'design-promotion@users.noreply.github.com'
-          git fetch origin main "$COMPANY_RUNTIME_BRANCH"
-          git reset --hard origin/main
-          git clean -fd
-          git checkout -B design-promotion-persist "origin/$COMPANY_RUNTIME_BRANCH"
-          cp /tmp/design-promotion-runtime/game-seed-state.json game-seed-state.json
-          cp /tmp/design-promotion-runtime/autonomous-portfolio.json autonomous-portfolio.json
-          cp /tmp/design-promotion-runtime/game-catalog.json game-catalog.json
-          cp /tmp/design-promotion-runtime/development-queue.json development-queue.json
-          git add -- game-seed-state.json autonomous-portfolio.json game-catalog.json development-queue.json
-          git diff --cached --check
-          if git diff --cached --quiet; then
-            echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=NO'
-          else
+          persisted=0
+          for attempt in 1 2 3; do
+            echo "DESIGN_PROMOTION_RUNTIME_PERSIST_ATTEMPT=${attempt}/3"
+            git fetch origin main "$COMPANY_RUNTIME_BRANCH"
+            git checkout -B design-promotion-persist "origin/$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            git clean -fd
+
+            # Re-run the canonical promotion calculation against the newest runtime state.
+            # Only runtime JSON files are staged; engine files remain main-owned and are never persisted here.
+            git checkout origin/main -- tools/design-only-promotion-sync.mjs tools/company-selected-platform-router.mjs tools/owner-design-reset.mjs
+            git reset -- tools/design-only-promotion-sync.mjs tools/company-selected-platform-router.mjs tools/owner-design-reset.mjs >/dev/null 2>&1 || true
+            node tools/design-only-promotion-sync.mjs
+
+            git add -- game-seed-state.json autonomous-portfolio.json game-catalog.json development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=NO'
+              persisted=1
+              break
+            fi
             git commit -m 'runtime: promote 80-point designs directly to Web gate [skip ci]'
-            git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"
-            echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=PERSISTED'
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+              echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=PERSISTED'
+              persisted=1
+              break
+            fi
+            echo 'DESIGN_PROMOTION_RUNTIME_PERSIST_CONFLICT=RETRY_LATEST_RUNTIME'
+          done
+          if [ "$persisted" -ne 1 ]; then
+            echo 'DESIGN_PROMOTION_RUNTIME_PERSIST=FAILED_AFTER_3_ATTEMPTS' >&2
+            exit 1
           fi
           echo 'PUBLIC_MAIN_WRITE=NO'
 

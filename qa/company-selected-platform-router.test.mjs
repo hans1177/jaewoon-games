@@ -24,7 +24,7 @@ import {createRobloxPlatformContract} from '../tools/vibe3-roblox-platform.mjs';
 
 test('one router recognizes all selected platforms and aliases',()=>{
   assert.deepEqual(SELECTED_PLATFORMS,['ROBLOX','UNITY','FORTNITE_UEFN']);
-  assert.equal(DEVELOPMENT_GAME_WIP_MAX,6);
+  assert.equal(DEVELOPMENT_GAME_WIP_MAX,20);
   assert.equal(normalizeSelectedPlatform('unity-android'),'UNITY');
   assert.equal(normalizeSelectedPlatform('uefn'),'FORTNITE_UEFN');
   assert.equal(resolveSelectedPlatform({targetPlatform:'ROBLOX'}),'ROBLOX');
@@ -48,7 +48,7 @@ test('all three platforms have one common adapter registry entry without inventi
   assert.equal(PLATFORM_EXECUTION_ADAPTERS.FORTNITE_UEFN.existingExecutionPath,null);
 });
 
-test('global selected-platform development window is deterministic, capped at six and excludes stale or unconfigured work',()=>{
+test('global selected-platform development window is deterministic, capped at twenty and excludes stale or unconfigured work',()=>{
   const eligible=(gameId,selectedPlatform,enqueuedAt)=>({
     gameId,selectedPlatform,targetPlatform:selectedPlatform,enqueuedAt,
     productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
@@ -58,34 +58,27 @@ test('global selected-platform development window is deterministic, capped at si
     strictImplementationHardFailures:[],webValidationSchemaVersion:13,webPromotionRevalidationPassed:true,
   });
   const rows=[
-    eligible('g7','UNITY','2026-09-14T00:07:00Z'),
-    eligible('g1','UNITY','2026-09-14T00:01:00Z'),
-    eligible('g2','ROBLOX','2026-09-14T00:02:00Z'),
-    eligible('g3','UNITY','2026-09-14T00:03:00Z'),
-    eligible('g4','ROBLOX','2026-09-14T00:04:00Z'),
-    eligible('g5','UNITY','2026-09-14T00:05:00Z'),
-    eligible('g6','ROBLOX','2026-09-14T00:06:00Z'),
-    eligible('g8','UNITY','2026-09-14T00:08:00Z'),
+    ...Array.from({length:22},(_,i)=>eligible(`g${String(i+1).padStart(2,'0')}`,i%2?'ROBLOX':'UNITY',`2026-09-14T00:${String(i+1).padStart(2,'0')}:00Z`)),
     {...eligible('stale','UNITY','2026-09-13T23:00:00Z'),formalImplementationPassed:false},
     eligible('uefn-not-configured','FORTNITE_UEFN','2026-09-13T22:00:00Z'),
   ];
   assert.equal(targetPlatformDevelopmentEligible(rows[0]),true);
   assert.equal(targetPlatformDevelopmentEligible(rows.at(-1)),false);
   const window=selectTargetPlatformDevelopmentWindow(rows);
-  assert.equal(window.length,6);
-  assert.deepEqual(window.map(x=>x.gameId),['g1','g2','g3','g4','g5','g6']);
+  assert.equal(window.length,20);
+  assert.deepEqual(window.map(x=>x.gameId),Array.from({length:20},(_,i)=>`g${String(i+1).padStart(2,'0')}`));
   assert.equal(window.some(x=>x.gameId==='stale'),false);
   assert.equal(window.some(x=>x.gameId==='uefn-not-configured'),false);
 });
 
-test('global development window never expands beyond the owner six-game maximum',()=>{
-  const rows=Array.from({length:10},(_,i)=>({
+test('global development window never expands beyond the owner twenty-game maximum',()=>{
+  const rows=Array.from({length:25},(_,i)=>({
     gameId:`game-${String(i).padStart(2,'0')}`,selectedPlatform:i%2?'ROBLOX':'UNITY',enqueuedAt:`2026-09-14T00:${String(i).padStart(2,'0')}:00Z`,
     productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
     webValidationPassedAt:'2026-09-14T00:00:00.000Z',musicValidationPassed:true,formalImplementationPassed:true,formalImplementationVerdict:'PASS',
     webStrictScore:100,strictImplementationHardFailures:[],webValidationSchemaVersion:13,webPromotionRevalidationPassed:true,
   }));
-  assert.equal(selectTargetPlatformDevelopmentWindow(rows,999).length,6);
+  assert.equal(selectTargetPlatformDevelopmentWindow(rows,999).length,20);
 });
 
 test('cheap precheck rejects missing selected platform and accepts selected-platform source',()=>{
