@@ -6,6 +6,7 @@ import {spawn} from 'node:child_process';
 import {PRODUCTION_CLASSES,productionClassOf} from './production-classification.mjs';
 import {loadSeedState,activeSeedForGame,saveSeedState} from './game-seed-state.mjs';
 import {ensureOwnerDesignResetSeed} from './owner-design-reset.mjs';
+import {designArtifactsMatchSeed} from './company-design-seed-provenance.mjs';
 
 const gameId=String(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||'').trim();
 const date=String(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||'').trim();
@@ -56,13 +57,16 @@ async function runWithRetry(script,{attempts=2,label='PIPELINE_STAGE',retryWhen=
 function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const g=t=>p.find(x=>x.type===t)?.value||'';return`${g('year')}-${g('month')}-${g('day')}`;}
 function readCycleStatus(){const d=date||kstDate();try{return JSON.parse(fs.readFileSync(path.join('design',gameId,d,'cycle-status.json'),'utf8'));}catch{return null;}}
 function canReuseCompletedDesign(status){
+  const d=date||kstDate();
+  if(!seed)return false;
+  const provenance=designArtifactsMatchSeed({gameId,date:d,seed});
+  if(!provenance.match){console.log(`DESIGN_CYCLE_REUSE_PROVENANCE=REJECTED:${provenance.reason}`);return false;}
   if(status?.status!=='COMPLETE')return false;
   if(String(status?.disposition?.state||'').toUpperCase()!=='REDESIGN')return false;
   if(Number(status?.meeting?.conflictCount||0)!==0||Number(status?.meeting?.holdCount||0)!==0)return false;
   if(status?.disposition?.unanimousFatalDiscard===true)return false;
   const blockers=Array.isArray(status?.baselineGate?.blockers)?status.baselineGate.blockers:[];
   if(!blockers.length||blockers.some(blocker=>!String(blocker).startsWith('design-disposition:')))return false;
-  const d=date||kstDate();
   return fs.existsSync(path.join('design',gameId,d,'design-revised.json'));
 }
 
