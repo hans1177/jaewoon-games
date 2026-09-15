@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "mode": "hourly-24h-parallel-study",
+  "maxConcurrentTasks": 20,
+  "policy": {
+    "publicObservationSourceAccess": "observation-only",
+    "sourceAnalysisRequires": "owned-or-authorized-local-copy",
+    "rawSourceCopiedIntoMemory": false,
+    "mayAutoCopyGameplayValues": false,
+    "mayExpandAuthority": false,
+    "robloxPublicExperienceDownload": false,
+    "robloxStudioRunnerMustBeExplicitlyReady": true
+  },
+  "targets": []
+}
