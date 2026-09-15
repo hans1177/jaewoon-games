@@ -356,6 +356,18 @@ jobs:
               sleep $((attempt*2))
             done
           fi
+      - name: Dispatch canonical final-review revalidation
+        if: needs.multiplayer-plan.outputs.count != '0' && needs.multiplayer-worker.result == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GITHUB_REPOSITORY/dispatches" \
+            -f event_type='roblox_multiplayer_qa_persisted' \
+            -F "client_payload[run_id]=$GITHUB_RUN_ID"
+          echo 'ROBLOX_FINAL_REVIEW_REVALIDATION_DISPATCHED=YES'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
       - name: Multiplayer QA summary
         run: |
           echo 'ROBLOX_MULTIPLAYER_QA_CLIENTS_REQUIRED=2'
