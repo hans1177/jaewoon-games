@@ -51,7 +51,7 @@ jobs:
           "place_file=$matched" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           Write-Host 'ROBLOX_BOOTSTRAP_PROBE_IMMUTABLE_ARTIFACT=PASS'
 
-      - name: Probe Studio publish dialog focus without creating an experience
+      - name: Probe Studio publish webview value without creating an experience
         env:
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: powershell
@@ -85,9 +85,7 @@ jobs:
             $root = [System.Windows.Automation.AutomationElement]::RootElement
             $pidCondition = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $p.Id)
             $shell = New-Object -ComObject WScript.Shell
-            $activated = $shell.AppActivate($p.Id)
-            Write-Host "ROBLOX_BOOTSTRAP_PROBE_APPACTIVATE=$activated"
-            if (-not $activated) { throw 'Authenticated Studio process is not attached to an interactive desktop' }
+            if (-not $shell.AppActivate($p.Id)) { throw 'Authenticated Studio process is not attached to an interactive desktop' }
             Start-Sleep -Seconds 2
             $shell.SendKeys('%p')
             Start-Sleep -Seconds 10
@@ -106,20 +104,22 @@ jobs:
             }
             if (-not $publishWindowFound) { throw 'Publish Experience window not detected' }
 
-            for ($i=0; $i -le 24; $i++) {
-              Start-Sleep -Milliseconds 250
+            for ($i=0; $i -le 18; $i++) {
+              Start-Sleep -Milliseconds 300
               $f = [System.Windows.Automation.AutomationElement]::FocusedElement
               if ($f) {
                 Write-Host ("ROBLOX_BOOTSTRAP_FOCUS step={0} type='{1}' name='{2}' automationId='{3}' class='{4}' enabled='{5}'" -f $i,$f.Current.ControlType.ProgrammaticName,$f.Current.Name,$f.Current.AutomationId,$f.Current.ClassName,$f.Current.IsEnabled)
-                $patterns = @()
-                foreach ($pat in @([System.Windows.Automation.ValuePattern]::Pattern,[System.Windows.Automation.InvokePattern]::Pattern,[System.Windows.Automation.SelectionItemPattern]::Pattern)) {
-                  try { if ($f.GetSupportedPatterns() -contains $pat) { $patterns += $pat.ProgrammaticName } } catch {}
-                }
-                if ($patterns.Count -gt 0) { Write-Host "ROBLOX_BOOTSTRAP_FOCUS_PATTERNS step=$i patterns=$($patterns -join ',')" }
-              } else {
-                Write-Host "ROBLOX_BOOTSTRAP_FOCUS step=$i NONE"
+                try {
+                  $vp = $null
+                  if ($f.TryGetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern,[ref]$vp)) {
+                    $value = [string]$vp.Current.Value
+                    if ($value.Length -gt 240) { $value = $value.Substring(0,240) + '...' }
+                    $value = $value -replace "`r|`n",' '
+                    Write-Host "ROBLOX_BOOTSTRAP_FOCUS_VALUE step=$i value='$value' readOnly=$($vp.Current.IsReadOnly)"
+                  }
+                } catch { Write-Host "ROBLOX_BOOTSTRAP_FOCUS_VALUE step=$i ERROR=$($_.Exception.Message)" }
               }
-              if ($i -lt 24) { $shell.SendKeys('{TAB}') }
+              if ($i -lt 18) { $shell.SendKeys('{TAB}') }
             }
             $shell.SendKeys('{ESC}')
             Write-Host 'ROBLOX_BOOTSTRAP_PROBE=PASS'
