@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {buildOperationalFreeBudgetTelemetry,fetchRepositoryVisibility,repositoryVisibilityFromGitHubEvent} from '../tools/free-budget-telemetry.mjs';
+import {buildOperationalFreeBudgetTelemetry,fetchRepositoryVisibility,repositoryVisibilityFromGitHubEvent,cachedOllamaRuntimeComplete} from '../tools/free-budget-telemetry.mjs';
 
 const base={repository:'hans1177/jaewoon-games',visibility:'public',visibilitySource:'GITHUB_REPO_API',runner:'ubuntu-latest',cashKRW:0,paidApi:false,modelCalls:1,maxModelCalls:1,runnerMinutes:20,maxRunnerMinutes:20,timestamp:'2026-09-09T00:00:00Z'};
 
@@ -30,6 +30,18 @@ test('GitHub event repository metadata is accepted as authoritative visibility p
   const t=buildOperationalFreeBudgetTelemetry({...base,visibilitySource:'GITHUB_EVENT_PAYLOAD'});
   assert.equal(t.allowed,true);
   assert.equal(t.providers[0].source,'GITHUB_PUBLIC_STANDARD_POLICY+GITHUB_EVENT_PAYLOAD');
+});
+
+test('cached Ollama runtime is incomplete until both client and llama-server exist',()=>{
+  const home=fs.mkdtempSync(path.join(os.tmpdir(),'ollama-runtime-'));
+  const bin=path.join(home,'.cache','vibe2-ollama','bin');
+  const lib=path.join(home,'.cache','vibe2-ollama','lib','ollama');
+  fs.mkdirSync(bin,{recursive:true});
+  fs.writeFileSync(path.join(bin,'ollama'),'client');
+  assert.equal(cachedOllamaRuntimeComplete(home),false);
+  fs.mkdirSync(lib,{recursive:true});
+  fs.writeFileSync(path.join(lib,'llama-server'),'server');
+  assert.equal(cachedOllamaRuntimeComplete(home),true);
 });
 
 test('private or unknown visibility fails closed',()=>{
