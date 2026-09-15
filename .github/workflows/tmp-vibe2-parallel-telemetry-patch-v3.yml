@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   patch:
@@ -33,13 +33,19 @@ jobs:
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-parallelism-20-contract.test.mjs
           node --test qa/vibe2-controller-contract.test.mjs
-      - name: Commit verified permanent files
+      - name: Create verified permanent commit
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-migration'
           git config user.email 'vibe2-migration@users.noreply.github.com'
           git add tools/vibe2-queue-control.mjs .github/workflows/vibe2-continuous-core.yml
-          git diff --cached --quiet && exit 0
+          git diff --cached --quiet && { git rev-parse HEAD > /tmp/verified-sha.txt; exit 0; }
           git commit -m 'feat: record Vibe2 20-slot runtime telemetry'
-          git push origin HEAD:feat/vibe2-parallel-load-telemetry
+          git rev-parse HEAD | tee /tmp/verified-sha.txt
+      - name: Export verified commit sha
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-verified-telemetry-commit
+          path: /tmp/verified-sha.txt
+          retention-days: 1
