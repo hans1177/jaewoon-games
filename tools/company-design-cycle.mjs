@@ -75,6 +75,25 @@ async function parallelObject(keys,worker){
   }));
   return Object.fromEntries(entries);
 }
+async function parallelObjectByLane(keys,laneForKey,worker){
+  const entries=new Array(keys.length);
+  const pending=keys.map((key,index)=>({key,index,lane:clean(laneForKey(key))||key}));
+  const active=new Map();
+  while(pending.length||active.size){
+    while(active.size<modelPhaseConcurrency){
+      const pendingIndex=pending.findIndex(item=>!active.has(item.lane));
+      if(pendingIndex<0)break;
+      const [item]=pending.splice(pendingIndex,1);
+      const promise=(async()=>[item,await worker(item.key)])();
+      active.set(item.lane,promise);
+    }
+    if(!active.size)throw new Error('MODEL_LANE_SCHEDULER_STALLED');
+    const [item,value]=await Promise.race(active.values());
+    active.delete(item.lane);
+    entries[item.index]=[item.key,value];
+  }
+  return Object.fromEntries(entries);
+}
 function parseJsonObject(text){
   const raw=String(text??'').trim();
   if(!raw)throw new Error('empty model response');
@@ -168,7 +187,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
 const designDraft=await runPhase('designer_draft',()=>callModel(designerModel,'너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용하며 부서가 대신 초안을 작성하지 않는다. 유명 성공작의 구조는 오마주/재해석하되 보호되는 표현과 소스코드는 복제하지 않는다.',`DESIGN_ONLY 상세 설계 초안을 작성하라. GAME_SEED의 핵심 재미, 선택 플랫폼, 타겟 방향을 보존하라. 현재 게임의 실제 코어루프를 기준으로 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시하고, multiplayerExpansionDecision과 현재 플레이 모드를 혼동하지 마라. 시장근거는 타겟 참고용이며 없는 수치를 발명하지 마라.\nEVIDENCE=${clip(evidence,17000)}`,DESIGN,{predict:1300,temperature:0.35,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})}));
 writeJson(path.join(base,'design-draft.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,singleAuthor:true,content:designDraft});
 
-const independentReviews=await runPhase('independent_department_reviews',()=>parallelObject(Object.keys(independentReviewTasks),async key=>{
+const independentReviews=await runPhase('independent_department_reviews',()=>parallelObjectByLane(Object.keys(independentReviewTasks),key=>independentReviewTasks[key].model,async key=>{
   const {role,model}=independentReviewTasks[key];
   const result=await callModel(model,`너는 ${role} 부서 관점의 독립 검토 모델이다. 같은 상세 설계를 이 전문부서 관점으로만 검토하고 GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다.`,`지정된 ${role} 부서만 검토하라. 다른 부서 출력은 만들지 마라. 각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라.\nASSIGNED_DEPARTMENT=${role}\nGAME_SEED=${clip(seed,4500)}\nDESIGN=${clip(designDraft,9000)}`,reviewsSchemaFor([role]),{predict:420});
   return result[role];
