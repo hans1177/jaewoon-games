@@ -1,0 +1,59 @@
+name: Apply deterministic-first Web runtime patch v2
+
+on:
+  push:
+    branches:
+      - fix/deterministic-first-web-runtime-v2-20260915
+    paths:
+      - '.github/workflows/_apply-deterministic-first-web-runtime-v2.yml'
+      - '.github/scripts/apply-deterministic-first-web-runtime-v2.py'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/deterministic-first-web-runtime-v2-20260915
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply deterministic-first patch
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/apply-deterministic-first-web-runtime-v2.py
+      - name: Verify targeted contracts
+        run: |
+          set -euo pipefail
+          node --check tools/company-development-web-bootstrap.mjs
+          node --test \
+            qa/company-development-web-runtime.test.mjs \
+            qa/company-speed-sequence-workflow.test.mjs \
+            qa/company-vibe2-gameplay-intelligence.test.mjs \
+            qa/company-vibe2-coding-architecture.test.mjs \
+            qa/company-web-validation-evidence-contract.test.mjs \
+            qa/company-development-validation-selected-platform.test.mjs \
+            qa/design-only-promotion-sync.test.mjs
+      - name: Verify policy invariants
+        run: |
+          set -euo pipefail
+          grep -q 'concurrentGameWipTarget: 20' COMPANY_FLOW.md
+          grep -q 'webValidationParallelismMax: 20' COMPANY_FLOW.md
+          grep -q 'designOnlyArtbookForbidden: true' COMPANY_FLOW.md
+          grep -q 'passMinimum: 80' COMPANY_FLOW.md
+          grep -q 'implementationPassMinimum: 90' COMPANY_FLOW.md
+      - name: Commit verified patch
+        run: |
+          set -euo pipefail
+          rm .github/workflows/_apply-deterministic-first-web-runtime-v2.yml
+          rm .github/scripts/apply-deterministic-first-web-runtime-v2.py
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --check
+          git commit -m 'fix: make Web runtime deterministic-first with lazy AI fallback'
+          git push origin HEAD:fix/deterministic-first-web-runtime-v2-20260915
