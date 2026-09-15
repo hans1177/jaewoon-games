@@ -26,7 +26,10 @@ const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,reviewMode
 const independentReviewTasks=Object.fromEntries(ROLES.flatMap(role=>departmentReviewModels[role].map(model=>{const key=`${role}::${model}`;return[key,{role,model}];})));
 const modelPhaseConcurrency=Math.max(1,Math.min(3,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||3)));
 const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'2m');
-const modelCallTimeoutMs=Math.min(75000,Math.max(15000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||75000)));
+const modelCallTimeoutBaseMs=Math.min(180000,Math.max(15000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||75000)));
+const modelCallTimeoutMaxMs=Math.min(180000,Math.max(modelCallTimeoutBaseMs,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MAX_MS||180000)));
+const modelCallTimeoutPerPredictMs=Math.max(60,Math.min(150,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_PER_PREDICT_MS||120)));
+const modelCallTimeoutForPredict=predictTokens=>Math.min(modelCallTimeoutMaxMs,Math.max(modelCallTimeoutBaseMs,Math.ceil(Number(predictTokens||0)*modelCallTimeoutPerPredictMs)));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
@@ -141,10 +144,12 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
     try{
       const schemaPrompt=(deepSeek||attempt>1)?`\nJSON_SCHEMA=${JSON.stringify(schema)}\n사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다.`:'';
       const correction=attempt>1&&lastError?`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message)}\n이 오류를 정확히 수정하고 누락된 필수 구조를 모두 포함하라.`:'';
-      const payload={model,stream:false,think:false,keep_alive:modelKeepAlive,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'+schemaPrompt+correction}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:deepSeek?4096:Math.min(4096,predict*attempt)}};
+      const numPredict=deepSeek?4096:Math.min(4096,predict*attempt);
+      const timeoutMs=modelCallTimeoutForPredict(numPredict);
+      const payload={model,stream:false,think:false,keep_alive:modelKeepAlive,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'+schemaPrompt+correction}],options:{temperature:attempt===1?temperature:0,num_ctx:8192,num_predict:numPredict}};
       if(!deepSeek&&attempt===1)payload.format=schema;
       else if(mode==='json')payload.format='json';
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(modelCallTimeoutMs)});
+      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(timeoutMs)});
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const body=await response.json();const text=String(body?.message?.content??'').trim();
       if(!text){if(clean(body?.message?.thinking))console.log(`MODEL_EMPTY_CONTENT_WITH_THINKING=${model}|attempt=${attempt}|mode=${mode}`);throw new Error(`empty model response (${mode})`);}
@@ -159,7 +164,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
       }
       if(repairs.length)console.log(`MODEL_SCHEMA_NORMALIZED=${model}|attempt=${attempt}|${repairs.join(',')}`);
       assertSchemaValue(normalized,schema);
-      const elapsedMs=Date.now()-callStarted;modelCallStats.push({model,attempt,elapsedMs,predict,mode,schemaRepairs:repairs.length});console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}|mode=${mode}`);return normalized;
+      const elapsedMs=Date.now()-callStarted;modelCallStats.push({model,attempt,elapsedMs,predict,numPredict,timeoutMs,mode,schemaRepairs:repairs.length});console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}|numPredict=${numPredict}|timeoutMs=${timeoutMs}|mode=${mode}`);return normalized;
     }catch(error){lastError=error;if(attempt<2){const nextMode='json';console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${nextMode}|reason=${clean(error?.message)}`);await new Promise(r=>setTimeout(r,800*attempt));}}
   }
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
