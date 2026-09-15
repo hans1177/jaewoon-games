@@ -33,6 +33,13 @@ test('Vibe2 model call timeout mirrors the central 75 second budget and stops du
   assert.match(source,/기존 HTML 전체를 재생성하지 않고 현재 소스에 적용할 최소 exact edits만 생성한다/);
 });
 
+test('Web runtime spatial detector does not treat absent coordinates as 3D and recognizes Korean exploration input',()=>{
+  const source=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
+  assert.ok(source.includes("if(value==='')return null;"));
+  assert.match(source,/탐험\|탐색\|경로/);
+  assert.match(source,/detected3D=spatialDimension==='3d'\|\|\[playerPosition\.x,playerPosition\.y,playerPosition\.z\]\.every\(Number\.isFinite\)/);
+});
+
 test('shared preserved engine binds more than five approved scopes without model regeneration',async()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-shared-scopes-'));
   const source=path.join(root,'source'),candidate=path.join(root,'candidate');
