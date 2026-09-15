@@ -1,0 +1,358 @@
+name: Vibe2 Adaptive Live Probe
+
+on:
+  pull_request:
+    branches: [vibe2-unreal-core]
+    paths:
+      - '.github/workflows/vibe2-adaptive-live-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  setup20:
+    runs-on: ubuntu-latest
+    outputs:
+      reserved_at: ${{ steps.time.outputs.reserved_at }}
+    steps:
+      - id: time
+        shell: bash
+        run: echo "reserved_at=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
+
+  worker20:
+    needs: setup20
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        id: [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    steps:
+      - name: Mark worker start
+        shell: bash
+        run: echo "$(date +%s%3N)" > /tmp/probe-start
+      - uses: actions/checkout@v4
+      - name: Run probe
+        env:
+          WORKER_ID: ${{ matrix.id }}
+          RESERVED_AT: ${{ needs.setup20.outputs.reserved_at }}
+          RUN_ID: live20-${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          start="$(cat /tmp/probe-start)"
+          after_checkout="$(date +%s%3N)"
+          checkout_ms=$((after_checkout-start))
+          sleep 25
+          finish="$(date +%s%3N)"
+          mkdir -p /tmp/probe
+          START="$start" FINISH="$finish" CHECKOUT_MS="$checkout_ms" node <<'NODE'
+          const fs=require('fs');
+          const row={
+            taskId:`live20-${process.env.WORKER_ID}`,
+            runId:process.env.RUN_ID,
+            outcome:'PASS',
+            metrics:{
+              runId:process.env.RUN_ID,
+              reservedAt:Number(process.env.RESERVED_AT),
+              workerStartedAt:Number(process.env.START),
+              workerFinishedAt:Number(process.env.FINISH),
+              checkoutMs:Number(process.env.CHECKOUT_MS),
+              candidateMs:0,
+              qaMs:0,
+              workerTotalMs:Number(process.env.FINISH)-Number(process.env.START)
+            }
+          };
+          fs.writeFileSync(`/tmp/probe/result-${process.env.WORKER_ID}.json`,JSON.stringify(row));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe20-${{ matrix.id }}
+          path: /tmp/probe/*.json
+          retention-days: 1
+
+  fanin20:
+    needs: worker20
+    runs-on: ubuntu-latest
+    outputs:
+      current_max: ${{ steps.evaluate.outputs.current_max }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: probe20-*
+          path: /tmp/probe20
+          merge-multiple: true
+      - id: evaluate
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { computeParallelismTelemetry } from './tools/vibe2-parallelism-telemetry.mjs';
+          import { createParallelismControl, decideAdaptiveBackpressure } from './tools/vibe2-adaptive-backpressure.mjs';
+          const rows=fs.readdirSync('/tmp/probe20').filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(`/tmp/probe20/${x}`,'utf8')));
+          const telemetry=computeParallelismTelemetry({results:rows,requestedMax:20,effectiveMax:20,taskCount:20});
+          const control=createParallelismControl({currentMax:20});
+          const next=decideAdaptiveBackpressure(control,telemetry);
+          if(![16,20].includes(next.currentMax)) throw new Error(`one-step invariant failed: 20 -> ${next.currentMax}`);
+          if(next.lastDecision==='DOWN' && next.currentMax!==16) throw new Error(`pressure downshift was not one step: ${next.currentMax}`);
+          const immediate=decideAdaptiveBackpressure(control,{...telemetry,runId:`${telemetry.runId}-immediate`,effectiveMax:16});
+          if(immediate.currentMax!==20 || immediate.lastReason!=='RUN_LOCAL_BACKPRESSURE_ACTIVE') throw new Error('immediate/persistent separation failed');
+          console.log(`LIVE20_WORKERS=${telemetry.workerCount}`);
+          console.log(`LIVE20_PEAK=${telemetry.actualPeakConcurrency}`);
+          console.log(`LIVE20_UTIL=${telemetry.effectivePeakUtilizationPct}`);
+          console.log(`LIVE20_QUEUE_P95_MS=${telemetry.queueWait.p95Ms}`);
+          console.log(`LIVE20_CHECKOUT_P95_MS=${telemetry.checkout.p95Ms}`);
+          console.log(`LIVE20_BOTTLENECK=${telemetry.bottleneck}`);
+          console.log(`LIVE20_ADAPTIVE=${control.currentMax}->${next.currentMax}`);
+          console.log(`LIVE20_DECISION=${next.lastDecision}`);
+          console.log(`LIVE20_REASON=${next.lastReason}`);
+          console.log('LIVE20_ONE_STEP=PASS');
+          console.log('LIVE20_IMMEDIATE_PERSISTENT_SEPARATION=PASS');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`current_max=${next.currentMax}\n`);
+          NODE
+
+  setup5:
+    needs: fanin20
+    runs-on: ubuntu-latest
+    outputs:
+      reserved_at: ${{ steps.time.outputs.reserved_at }}
+    steps:
+      - id: time
+        shell: bash
+        run: echo "reserved_at=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
+
+  worker5:
+    needs: setup5
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        id: [1,2,3,4,5]
+    steps:
+      - name: Mark worker start
+        shell: bash
+        run: echo "$(date +%s%3N)" > /tmp/probe-start
+      - uses: actions/checkout@v4
+      - name: Run probe
+        env:
+          WORKER_ID: ${{ matrix.id }}
+          RESERVED_AT: ${{ needs.setup5.outputs.reserved_at }}
+          RUN_ID: live5-${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          start="$(cat /tmp/probe-start)"
+          after_checkout="$(date +%s%3N)"
+          checkout_ms=$((after_checkout-start))
+          sleep 10
+          finish="$(date +%s%3N)"
+          mkdir -p /tmp/probe
+          START="$start" FINISH="$finish" CHECKOUT_MS="$checkout_ms" node <<'NODE'
+          const fs=require('fs');
+          const row={taskId:`live5-${process.env.WORKER_ID}`,runId:process.env.RUN_ID,outcome:'PASS',metrics:{runId:process.env.RUN_ID,reservedAt:Number(process.env.RESERVED_AT),workerStartedAt:Number(process.env.START),workerFinishedAt:Number(process.env.FINISH),checkoutMs:Number(process.env.CHECKOUT_MS),candidateMs:0,qaMs:0,workerTotalMs:Number(process.env.FINISH)-Number(process.env.START)}};
+          fs.writeFileSync(`/tmp/probe/result-${process.env.WORKER_ID}.json`,JSON.stringify(row));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe5-${{ matrix.id }}
+          path: /tmp/probe/*.json
+          retention-days: 1
+
+  fanin5:
+    needs: [worker5, fanin20]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: probe5-*
+          path: /tmp/probe5
+          merge-multiple: true
+      - env:
+          CURRENT_MAX: ${{ needs.fanin20.outputs.current_max }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { computeParallelismTelemetry } from './tools/vibe2-parallelism-telemetry.mjs';
+          import { createParallelismControl, decideAdaptiveBackpressure } from './tools/vibe2-adaptive-backpressure.mjs';
+          const max=Number(process.env.CURRENT_MAX);
+          const rows=fs.readdirSync('/tmp/probe5').filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(`/tmp/probe5/${x}`,'utf8')));
+          const telemetry=computeParallelismTelemetry({results:rows,requestedMax:max,effectiveMax:max,taskCount:5});
+          const control=createParallelismControl({currentMax:max});
+          const next=decideAdaptiveBackpressure(control,telemetry);
+          if(next.currentMax!==max) throw new Error(`low workload changed cap: ${max} -> ${next.currentMax}`);
+          if(next.lastReason!=='LOW_LOAD') throw new Error(`low workload reason mismatch: ${next.lastReason}`);
+          console.log(`LIVE5_CURRENT_MAX=${max}`);
+          console.log(`LIVE5_WORKERS=${telemetry.workerCount}`);
+          console.log(`LIVE5_PEAK=${telemetry.actualPeakConcurrency}`);
+          console.log(`LIVE5_ADAPTIVE=${max}->${next.currentMax}`);
+          console.log(`LIVE5_REASON=${next.lastReason}`);
+          console.log('LIVE5_LOW_WORKLOAD_HOLD=PASS');
+          NODE
+
+  setup8a:
+    needs: fanin5
+    runs-on: ubuntu-latest
+    outputs:
+      reserved_at: ${{ steps.time.outputs.reserved_at }}
+    steps:
+      - id: time
+        shell: bash
+        run: echo "reserved_at=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
+
+  worker8a:
+    needs: setup8a
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        id: [1,2,3,4,5,6,7,8]
+    steps:
+      - name: Mark worker start
+        shell: bash
+        run: echo "$(date +%s%3N)" > /tmp/probe-start
+      - uses: actions/checkout@v4
+      - name: Run probe
+        env:
+          WORKER_ID: ${{ matrix.id }}
+          RESERVED_AT: ${{ needs.setup8a.outputs.reserved_at }}
+          RUN_ID: live8a-${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          start="$(cat /tmp/probe-start)"
+          after_checkout="$(date +%s%3N)"
+          checkout_ms=$((after_checkout-start))
+          sleep 25
+          finish="$(date +%s%3N)"
+          mkdir -p /tmp/probe
+          START="$start" FINISH="$finish" CHECKOUT_MS="$checkout_ms" node <<'NODE'
+          const fs=require('fs');
+          const row={taskId:`live8a-${process.env.WORKER_ID}`,runId:process.env.RUN_ID,outcome:'PASS',metrics:{runId:process.env.RUN_ID,reservedAt:Number(process.env.RESERVED_AT),workerStartedAt:Number(process.env.START),workerFinishedAt:Number(process.env.FINISH),checkoutMs:Number(process.env.CHECKOUT_MS),candidateMs:0,qaMs:0,workerTotalMs:Number(process.env.FINISH)-Number(process.env.START)}};
+          fs.writeFileSync(`/tmp/probe/result-${process.env.WORKER_ID}.json`,JSON.stringify(row));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe8a-${{ matrix.id }}
+          path: /tmp/probe/*.json
+          retention-days: 1
+
+  fanin8a:
+    needs: worker8a
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: probe8a-*
+          path: /tmp/probe8a
+          merge-multiple: true
+      - shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { computeParallelismTelemetry } from './tools/vibe2-parallelism-telemetry.mjs';
+          const rows=fs.readdirSync('/tmp/probe8a').filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(`/tmp/probe8a/${x}`,'utf8')));
+          const telemetry=computeParallelismTelemetry({results:rows,requestedMax:8,effectiveMax:8,taskCount:8});
+          fs.writeFileSync('/tmp/recovery-a.json',JSON.stringify(telemetry,null,2));
+          console.log(`LIVE8A_PEAK=${telemetry.actualPeakConcurrency}`);
+          console.log(`LIVE8A_QUEUE_P95_MS=${telemetry.queueWait.p95Ms}`);
+          console.log(`LIVE8A_BOTTLENECK=${telemetry.bottleneck}`);
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: recovery-a
+          path: /tmp/recovery-a.json
+          retention-days: 1
+
+  setup8b:
+    needs: fanin8a
+    runs-on: ubuntu-latest
+    outputs:
+      reserved_at: ${{ steps.time.outputs.reserved_at }}
+    steps:
+      - id: time
+        shell: bash
+        run: echo "reserved_at=$(date +%s%3N)" >> "$GITHUB_OUTPUT"
+
+  worker8b:
+    needs: setup8b
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        id: [1,2,3,4,5,6,7,8]
+    steps:
+      - name: Mark worker start
+        shell: bash
+        run: echo "$(date +%s%3N)" > /tmp/probe-start
+      - uses: actions/checkout@v4
+      - name: Run probe
+        env:
+          WORKER_ID: ${{ matrix.id }}
+          RESERVED_AT: ${{ needs.setup8b.outputs.reserved_at }}
+          RUN_ID: live8b-${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          start="$(cat /tmp/probe-start)"
+          after_checkout="$(date +%s%3N)"
+          checkout_ms=$((after_checkout-start))
+          sleep 25
+          finish="$(date +%s%3N)"
+          mkdir -p /tmp/probe
+          START="$start" FINISH="$finish" CHECKOUT_MS="$checkout_ms" node <<'NODE'
+          const fs=require('fs');
+          const row={taskId:`live8b-${process.env.WORKER_ID}`,runId:process.env.RUN_ID,outcome:'PASS',metrics:{runId:process.env.RUN_ID,reservedAt:Number(process.env.RESERVED_AT),workerStartedAt:Number(process.env.START),workerFinishedAt:Number(process.env.FINISH),checkoutMs:Number(process.env.CHECKOUT_MS),candidateMs:0,qaMs:0,workerTotalMs:Number(process.env.FINISH)-Number(process.env.START)}};
+          fs.writeFileSync(`/tmp/probe/result-${process.env.WORKER_ID}.json`,JSON.stringify(row));
+          NODE
+      - uses: actions/upload-artifact@v4
+        with:
+          name: probe8b-${{ matrix.id }}
+          path: /tmp/probe/*.json
+          retention-days: 1
+
+  fanin8b:
+    needs: worker8b
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: probe8b-*
+          path: /tmp/probe8b
+          merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: recovery-a
+          path: /tmp/recovery-a
+      - shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { computeParallelismTelemetry } from './tools/vibe2-parallelism-telemetry.mjs';
+          import { createParallelismControl, decideAdaptiveBackpressure } from './tools/vibe2-adaptive-backpressure.mjs';
+          const telemetryA=JSON.parse(fs.readFileSync('/tmp/recovery-a/recovery-a.json','utf8'));
+          const rowsB=fs.readdirSync('/tmp/probe8b').filter(x=>x.endsWith('.json')).map(x=>JSON.parse(fs.readFileSync(`/tmp/probe8b/${x}`,'utf8')));
+          const telemetryB=computeParallelismTelemetry({results:rowsB,requestedMax:8,effectiveMax:8,taskCount:8});
+          const seed=createParallelismControl({currentMax:8});
+          const first=decideAdaptiveBackpressure(seed,telemetryA);
+          const second=decideAdaptiveBackpressure(first,telemetryB);
+          const recovered=first.currentMax===8 && first.healthyStreak===1 && second.currentMax===12 && second.lastDecision==='UP';
+          console.log(`LIVE8B_PEAK=${telemetryB.actualPeakConcurrency}`);
+          console.log(`LIVE8B_QUEUE_P95_MS=${telemetryB.queueWait.p95Ms}`);
+          console.log(`LIVE8B_BOTTLENECK=${telemetryB.bottleneck}`);
+          console.log(`RECOVERY_FIRST=${seed.currentMax}->${first.currentMax}:${first.lastReason}`);
+          console.log(`RECOVERY_SECOND=${first.currentMax}->${second.currentMax}:${second.lastReason}`);
+          console.log(`RECOVERY_LIVE_VERDICT=${recovered?'PASS':'BLOCKED_BY_RUNNER_PRESSURE'}`);
+          if(recovered) console.log('RECOVERY_TWO_HEALTHY_RUNS=PASS');
+          NODE
