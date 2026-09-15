@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      padding: 20px;
+      background-color: #fff;
+      margin: 0 auto;
+      max-width: 600px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 5px;
+      margin: 20px auto;
+      background-color: #eee;
+      border: 2px solid #999;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .square {
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #333;
+    }
+    .square.selected {
+      background-color: #007bff;
+      color: white;
+    }
+    .square.empty {
+      background-color: #ddd;
+    }
+    .square.occupied {
+      background-color: #007bff;
+      color: white;
+    }
+    .controls {
+      margin: 20px 0;
+      text-align: center;
+    }
+    .controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: 2px solid #007bff;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #005f99;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div class="game-board" id="board"></div>
+    <div class="controls">
+      <button onclick="makeMove()">Make Move</button>
+    </div>
+  </main>
+
+  <script>
+    const board = document.getElementById('board');
+    const game = {
+      board: [],
+      currentPlayer: 'white',
+      winner: null,
+      gameOver: false
+    };
+
+    // Initialize board
+    for (let row = 0; row < 8; row++) {
+      game.board[row] = [];
+      for (let col = 0; col < 8; col++) {
+        game.board[row][col] = { color: 'white', piece: null };
+      }
+    }
+
+    // Draw board
+    function drawBoard() {
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.className = 'square';
+          if (row % 2 === col % 2) {
+            square.className += ' selected';
+          }
+          square.dataset.row = row;
+          square.dataset.col = col;
+          square.addEventListener('click', makeMove);
+          board.appendChild(square);
+        }
+      }
+    }
+
+    // Make a move
+    function makeMove(e) {
+      const row = parseInt(e.target.dataset.row);
+      const col = parseInt(e.target.dataset.col);
+      const piece = game.board[row][col];
+
+      if (!piece || piece.color !== game.currentPlayer) {
+        return;
+      }
+
+      // Check if move is valid
+      if (isValidMove(row, col, game.currentPlayer)) {
+        game.board[row][col].color = game.currentPlayer === 'white' ? 'black' : 'white';
+        game.board[row][col].piece = null;
+        updateBoard();
+        checkForWin();
+        if (game.gameOver) {
+          alert('Game Over!');
+        } else {
+          switchPlayer();
+        }
+      }
+    }
+
+    // Check if move is valid
+    function isValidMove(row, col, player) {
+      // Simple validation for demonstration
+      return true;
+    }
+
+    // Switch player
+    function switchPlayer() {
+      game.currentPlayer = game.currentPlayer === 'white' ? 'black' : 'white';
+    }
+
+    // Check for win
+    function checkForWin() {
+      // Simple win condition for demonstration
+      if (game.board[0][0].color === game.currentPlayer) {
+        game.winner = game.currentPlayer;
+        game.gameOver = true;
+      }
+    }
+
+    // Update board
+    function updateBoard() {
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.className = 'square';
+          if (row % 2 === col % 2) {
+            square.className += ' selected';
+          }
+          square.dataset.row = row;
+          square.dataset.col = col;
+          square.addEventListener('click', makeMove);
+          board.appendChild(square);
+        }
+      }
+    }
+
+    // Start the game
+    window.onload = function () {
+      drawBoard();
+    };
+  </script>
+</body>
+</html>
