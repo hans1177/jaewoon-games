@@ -28,14 +28,21 @@ jobs:
         run: |
           node --check tools/apply-common-development-quality-policy.mjs
           node tools/apply-common-development-quality-policy.mjs
-      - name: Verify modified contracts
+      - name: Verify modified contract syntax
         run: |
           node --check tools/company-common-development-quality-contract.mjs
           node --check tools/company-web-validation-evidence-contract.mjs
           node --check tools/company-development-web-bootstrap.mjs
           node --check tools/company-development-web-gameplay-validation.mjs
           node --check tools/company-development-validation-cycle.mjs
-          node --test qa/company-common-development-quality-contract.test.mjs qa/company-web-validation-evidence-contract.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/company-central-policy-contract.test.mjs
+      - name: Test common development quality contract
+        run: node --test qa/company-common-development-quality-contract.test.mjs
+      - name: Test web validation evidence contract
+        run: node --test qa/company-web-validation-evidence-contract.test.mjs
+      - name: Test selected platform validation contract
+        run: node --test qa/company-development-validation-selected-platform.test.mjs
+      - name: Test central policy contract
+        run: node --test qa/company-central-policy-contract.test.mjs
       - name: Commit migration result to automation branch
         shell: bash
         run: |
