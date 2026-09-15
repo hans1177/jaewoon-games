@@ -74,7 +74,59 @@ function assertCandidateBranch(cwd){const branch=currentBranch(cwd);if(!branch||
 function applyNewFiles(root,newFiles){const changed=[];for(const file of newFiles){const target=path.join(root,file.path);if(fs.existsSync(target))throw new Error(`newFiles 대상이 이미 존재함: ${file.path}`);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content,'utf8');changed.push(file.path);}return changed;}
 function applyReplaceFiles(root,replaceFiles){const changed=[];for(const file of replaceFiles){const target=path.join(root,file.path);if(!fs.existsSync(target)||!fs.statSync(target).isFile())throw new Error(`replaceFiles 대상 없음: ${file.path}`);fs.writeFileSync(target,file.content.endsWith('\n')?file.content:`${file.content}\n`,'utf8');changed.push(file.path);}return changed;}
 function createCandidateSnapshot(sourceRoot,candidateRoot,candidate){const changed=[];for(const edit of candidate.edits){const source=path.join(sourceRoot,edit.path),target=path.join(candidateRoot,'files',edit.path),before=fs.readFileSync(source,'utf8'),first=before.indexOf(edit.find);if(first<0||before.indexOf(edit.find,first+edit.find.length)>=0)throw new Error(`edit find 고유 일치 실패: ${edit.path}`);const after=before.slice(0,first)+edit.replace+before.slice(first+edit.find.length);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,after,'utf8');changed.push(edit.path);}for(const file of candidate.newFiles){const target=path.join(candidateRoot,'files',file.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content,'utf8');changed.push(file.path);}for(const file of candidate.replaceFiles){const target=path.join(candidateRoot,'files',file.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content.endsWith('\n')?file.content:`${file.content}\n`,'utf8');changed.push(file.path);}return[...new Set(changed)];}
+function designManifestContract(order={}){const design=order?.designIntelligence||{};return{required:design.required===true,version:Number(design.version||0)||null,pipeline:Array.isArray(design.pipeline)?design.pipeline.map(clean).filter(Boolean):[],implementationGate:{allowed:design?.implementationGate?.allowed===true,blockers:Array.isArray(design?.implementationGate?.blockers)?design.implementationGate.blockers.map(clean).filter(Boolean):[]},evidenceRequirements:{autoPlayer:'verified-runtime-play-evidence-required',telemetry:'verified-observed-metrics-required',designReview:'verified-pass-required-before-experience-memory',qa:'verified-qa-evidence-required'},authorityExpanded:false};}
+function waitingDesignEvidence(){return{autoPlayer:{status:'WAITING_EVIDENCE',verified:false},telemetry:{status:'WAITING_EVIDENCE',verified:false},designReview:{status:'WAITING_EVIDENCE',verified:false,decision:null},qa:{status:'WAITING_EVIDENCE',verified:false}};}
 
-export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',model=DEFAULT_MODEL,responseFile='',applySource=false}={}){const order=readJson(path.resolve(cwd,workOrderFile));if(!order?.run||order?.workMode!=='source-change-candidate')throw new Error('실행 가능한 source-change work order 필요');if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');const target=clean(order.target).toLowerCase(),sourceRootRelative=assertSourceRoot(order?.source?.root,target),sourceRoot=path.resolve(cwd,sourceRootRelative);if(!fs.existsSync(sourceRoot)||!fs.statSync(sourceRoot).isDirectory())throw new Error(`source root 없음: ${sourceRootRelative}`);const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target),context=readContext(sourceRoot,target,responsibleFiles,order?.source?.ignoredPaths||[]);if(!context.files.length)throw new Error('worker context 파일 없음');const allowFullRewrite=fullWebRewriteAllowed(order,target);const raw=await requestLocalModel(buildPrompt(order,context,responsibleFiles,{allowFullRewrite}),{model,responseFile,maxPredict:allowFullRewrite?FULL_WEB_MAX_PREDICT:DEFAULT_MAX_PREDICT,timeoutMs:allowFullRewrite?FULL_WEB_TIMEOUT_MS:DEFAULT_TIMEOUT_MS,contextWindow:allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:0});const candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite});const taskId=safeId(order.taskId),candidateRoot=path.resolve(cwd,outputRoot,taskId);fs.rmSync(candidateRoot,{recursive:true,force:true});fs.mkdirSync(candidateRoot,{recursive:true});let changedFiles,branch=null;if(applySource){branch=assertCandidateBranch(cwd);changedFiles=[...applyExactEdits(sourceRoot,candidate.edits),...applyNewFiles(sourceRoot,candidate.newFiles),...applyReplaceFiles(sourceRoot,candidate.replaceFiles)];}else changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate);const manifest={version:3,taskId:order.taskId,gameId:order.gameId||null,target,sourceRoot:sourceRootRelative,releaseState:clean(order.releaseState)||'other',priority:clean(order.priority)||'normal',baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,goal:order.goal,generatedAt:new Date().toISOString(),mode:applySource?'isolated-candidate-branch-source-write':'candidate-snapshot-only',branch,model,changedFiles,summary:candidate.summary,expectedEffect:candidate.expectedEffect,tests:candidate.tests,fullFileRewriteAllowed:allowFullRewrite,protectedGameplayMutationAutomatic:false,binaryAssetsDirectTextEditForbidden:true,directMainWrite:false,verifiedBeforePromotion:false};writeJson(path.join(candidateRoot,'manifest.json'),manifest);writeJson(path.join(candidateRoot,'candidate.json'),candidate);return manifest;}
+export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',model=DEFAULT_MODEL,responseFile='',applySource=false}={}){
+  const order=readJson(path.resolve(cwd,workOrderFile));
+  if(!order?.run||order?.workMode!=='source-change-candidate')throw new Error('실행 가능한 source-change work order 필요');
+  if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');
+  const target=clean(order.target).toLowerCase();
+  const sourceRootRelative=assertSourceRoot(order?.source?.root,target);
+  const sourceRoot=path.resolve(cwd,sourceRootRelative);
+  if(!fs.existsSync(sourceRoot)||!fs.statSync(sourceRoot).isDirectory())throw new Error(`source root 없음: ${sourceRootRelative}`);
+  const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
+  const context=readContext(sourceRoot,target,responsibleFiles,order?.source?.ignoredPaths||[]);
+  if(!context.files.length)throw new Error('worker context 파일 없음');
+  const allowFullRewrite=fullWebRewriteAllowed(order,target);
+  const raw=await requestLocalModel(buildPrompt(order,context,responsibleFiles,{allowFullRewrite}),{model,responseFile,maxPredict:allowFullRewrite?FULL_WEB_MAX_PREDICT:DEFAULT_MAX_PREDICT,timeoutMs:allowFullRewrite?FULL_WEB_TIMEOUT_MS:DEFAULT_TIMEOUT_MS,contextWindow:allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:0});
+  const candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite});
+  const taskId=safeId(order.taskId);
+  const candidateRoot=path.resolve(cwd,outputRoot,taskId);
+  fs.rmSync(candidateRoot,{recursive:true,force:true});
+  fs.mkdirSync(candidateRoot,{recursive:true});
+  let changedFiles,branch=null;
+  if(applySource){branch=assertCandidateBranch(cwd);changedFiles=[...applyExactEdits(sourceRoot,candidate.edits),...applyNewFiles(sourceRoot,candidate.newFiles),...applyReplaceFiles(sourceRoot,candidate.replaceFiles)];}
+  else changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate);
+  const manifest={
+    version:4,
+    taskId:order.taskId,
+    gameId:order.gameId||null,
+    target,
+    sourceRoot:sourceRootRelative,
+    releaseState:clean(order.releaseState)||'other',
+    priority:clean(order.priority)||'normal',
+    baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,
+    goal:order.goal,
+    generatedAt:new Date().toISOString(),
+    mode:applySource?'isolated-candidate-branch-source-write':'candidate-snapshot-only',
+    branch,
+    model,
+    changedFiles,
+    summary:candidate.summary,
+    expectedEffect:candidate.expectedEffect,
+    tests:candidate.tests,
+    designIntelligence:designManifestContract(order),
+    designEvidence:waitingDesignEvidence(),
+    fullFileRewriteAllowed:allowFullRewrite,
+    protectedGameplayMutationAutomatic:false,
+    binaryAssetsDirectTextEditForbidden:true,
+    directMainWrite:false,
+    verifiedBeforePromotion:false
+  };
+  writeJson(path.join(candidateRoot,'manifest.json'),manifest);
+  writeJson(path.join(candidateRoot,'candidate.json'),candidate);
+  return manifest;
+}
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=parseArgs();const result=await runVibe2SourceWorker({workOrderFile:clean(args.order)||'.vibe2/work-order.json',outputRoot:clean(args.output)||'.vibe2/candidates',model:clean(args.model)||DEFAULT_MODEL,responseFile:clean(args.response),applySource:String(args['apply-source']||'').toLowerCase()==='true'});console.log('VIBE2_SOURCE_WORKER=PASS');console.log(`VIBE2_TASK_ID=${result.taskId}`);console.log(`VIBE2_TARGET=${result.target}`);console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);}

@@ -39,6 +39,35 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/task-1/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
 
+test('candidate manifest persists design intelligence requirements and starts evidence unverified', async () => {
+  const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
+  const workOrder = order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'], taskId: 'design-contract' });
+  workOrder.designIntelligence = {
+    version: 1,
+    required: true,
+    pipeline: ['DESIGNER', 'CONSTRAINT_ENGINE', 'IMPLEMENTATION', 'AUTO_PLAYER', 'TELEMETRY', 'DESIGN_REVIEW', 'EXPERIENCE_MEMORY'],
+    implementationGate: { allowed: true, blockers: [] },
+    authorityExpanded: false
+  };
+  write(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'class Player { int Speed() { return 1; } }\n');
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(responseFile, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 1;', replace: 'return 2;' }], newFiles: [] }));
+  const result = await runVibe2SourceWorker({ cwd, responseFile });
+  const persisted = JSON.parse(fs.readFileSync(path.join(cwd, '.vibe2/candidates/design-contract/manifest.json'), 'utf8'));
+  assert.equal(result.version, 4);
+  assert.equal(result.designIntelligence.required, true);
+  assert.equal(result.designIntelligence.implementationGate.allowed, true);
+  assert.equal(result.designIntelligence.authorityExpanded, false);
+  assert.equal(result.designIntelligence.evidenceRequirements.autoPlayer, 'verified-runtime-play-evidence-required');
+  assert.deepEqual(result.designIntelligence.pipeline, workOrder.designIntelligence.pipeline);
+  for (const key of ['autoPlayer', 'telemetry', 'designReview', 'qa']) {
+    assert.equal(result.designEvidence[key].verified, false);
+    assert.equal(result.designEvidence[key].status, 'WAITING_EVIDENCE');
+    assert.equal(persisted.designEvidence[key].verified, false);
+  }
+});
+
 test('single responsible file safely remaps model placeholder path', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
