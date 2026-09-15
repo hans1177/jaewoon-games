@@ -106,7 +106,8 @@ jobs:
       actions: write
 
   game_study:
-    needs: continuous
+    needs: [plan, continuous]
+    if: ${{ always() && needs.plan.result == 'success' }}
     uses: ./.github/workflows/vibe2-game-study-continuous.yml
     permissions:
       contents: write

@@ -11,6 +11,7 @@ on:
       - 'qa/vibe2-game-study*.test.mjs'
       - 'tools/vibe2-web-auto-player.mjs'
       - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-game-study-continuous.yml'
       - '.github/workflows/vibe2-external-game-study-smoke.yml'
   workflow_dispatch:
 
@@ -30,12 +31,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify GAME STUDY planner context safety
+      - name: Verify GAME STUDY planner and production fan-in safety
         run: |
           set -euo pipefail
           node --check tools/vibe2-game-study-planner-context.mjs
+          node --check tools/vibe2-game-study-production-fanin.mjs
           node --check qa/vibe2-game-study-planner-context.test.mjs
+          node --check qa/vibe2-game-study-production-fanin.test.mjs
           node --test qa/vibe2-game-study-planner-context.test.mjs
+          node --test qa/vibe2-game-study-production-fanin.test.mjs
 
   external-web-smoke:
     needs: study-planner-context-contract
@@ -132,3 +136,76 @@ jobs:
           path: /tmp/vibe2-external-study-${{ matrix.target_id }}.json
           if-no-files-found: warn
           retention-days: 3
+
+  production-fanin-e2e:
+    needs: external-web-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download the real Chrome study artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: vibe2-external-game-study-smoke-*-${{ github.run_id }}
+          path: /tmp/vibe2-e2e-results
+          merge-multiple: true
+
+      - name: Fan in real artifacts and reuse the learned knowledge in planner context
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs=require('fs');
+          const rows=[
+            ['game-study-external-tictactoe-flow-a','external-tictactoe-flow-a','web'],
+            ['game-study-external-tictactoe-flow-b','external-tictactoe-flow-b','web'],
+            ['game-study-external-memory-flow-a','external-memory-flow-a','web']
+          ];
+          const tasks=rows.map(([id,target,engine])=>({
+            id, gameId:id, target:engine, department:'qa', type:'research', goal:'production e2e study',
+            status:'running', retries:0, maxRetries:2, ownerDirective:false, protectedChange:false,
+            sourceRoot:`game-study:${target}`, evidence:[`game-study-target:${target}`]
+          }));
+          fs.writeFileSync('/tmp/vibe2-e2e-queue.json',JSON.stringify({version:5,maxConcurrentTasks:20,tasks},null,2));
+          fs.writeFileSync('/tmp/vibe2-e2e-experience.json',JSON.stringify({version:1,records:[]},null,2));
+          fs.writeFileSync('/tmp/vibe2-e2e-knowledge.json',JSON.stringify({version:1,kind:'vibe2-game-study-knowledge',entries:[],derived:{},policy:{serverFanInOnly:true,verifiedStudiesOnly:true,rawSourcePersisted:false,noInventedCausality:true,authorityExpanded:false},authorityExpanded:false,authority:'vibe2-game-study-knowledge-derived'},null,2));
+          fs.writeFileSync('/tmp/vibe2-e2e-plan-queue.json',JSON.stringify({version:5,maxConcurrentTasks:20,tasks:[{id:'implementation-e2e',gameId:'new-game',target:'web',department:'development',type:'implementation',status:'queued',ownerDirective:false,goal:'improve input progression UI flow',evidence:[]}]},null,2));
+          NODE
+          export VIBE2_GAME_STUDY_WEB_MATRIX='{"include":[{"taskId":"game-study-external-tictactoe-flow-a","targetId":"external-tictactoe-flow-a","engine":"web"},{"taskId":"game-study-external-tictactoe-flow-b","targetId":"external-tictactoe-flow-b","engine":"web"},{"taskId":"game-study-external-memory-flow-a","targetId":"external-memory-flow-a","engine":"web"}]}'
+          export VIBE2_GAME_STUDY_ROBLOX_MATRIX='{"include":[]}'
+          node tools/vibe2-game-study-production-fanin.mjs \
+            --results=/tmp/vibe2-e2e-results \
+            --output=/tmp/vibe2-e2e-guard.json
+          node tools/vibe2-game-study-queue.mjs fan-in \
+            --queue=/tmp/vibe2-e2e-queue.json \
+            --experience=/tmp/vibe2-e2e-experience.json \
+            --knowledge=/tmp/vibe2-e2e-knowledge.json \
+            --results=/tmp/vibe2-e2e-results \
+            --output=/tmp/vibe2-e2e-fanin.json
+          node tools/vibe2-game-study-planner-context.mjs \
+            --queue=/tmp/vibe2-e2e-plan-queue.json \
+            --knowledge=/tmp/vibe2-e2e-knowledge.json
+          node <<'NODE'
+          const fs=require('fs');
+          const guard=JSON.parse(fs.readFileSync('/tmp/vibe2-e2e-guard.json','utf8'));
+          const fanin=JSON.parse(fs.readFileSync('/tmp/vibe2-e2e-fanin.json','utf8'));
+          const knowledge=JSON.parse(fs.readFileSync('/tmp/vibe2-e2e-knowledge.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('/tmp/vibe2-e2e-plan-queue.json','utf8'));
+          if(guard.expectedCount!==3||guard.usableResultCount!==3||guard.missingCount!==0||guard.invalidCount!==0||guard.mismatchCount!==0||guard.duplicateCount!==0||guard.unexpectedCount!==0) throw new Error(`production guard failed: ${JSON.stringify(guard)}`);
+          if((fanin.applied||[]).length!==3||(fanin.applied||[]).some(row=>row.outcome!=='PASS')) throw new Error('real study fan-in did not settle all three PASS artifacts');
+          if((knowledge.entries||[]).length!==3) throw new Error('real study knowledge entry count mismatch');
+          if(new Set(knowledge.entries.map(row=>row.gameId)).size<2) throw new Error('cross-game knowledge requires two games');
+          if(!(knowledge.derived?.mergedKnowledge||[]).some(row=>row.crossGameVerified===true)) throw new Error('no cross-game verified pattern produced');
+          if(knowledge.authorityExpanded===true) throw new Error('knowledge authority expanded');
+          const task=queue.tasks[0];
+          if(!String(task.goal||'').includes('GAME STUDY KNOWLEDGE - verified advisory context only')) throw new Error('planner did not reuse live fan-in knowledge');
+          if(!(task.evidence||[]).includes('game-study-planner-context:v1')) throw new Error('planner context evidence missing');
+          console.log('VIBE2_PRODUCTION_FANIN_E2E=PASS');
+          console.log(`VIBE2_PRODUCTION_KNOWLEDGE_ENTRIES=${knowledge.entries.length}`);
+          console.log(`VIBE2_PRODUCTION_CROSS_GAME_PATTERNS=${(knowledge.derived?.mergedKnowledge||[]).filter(row=>row.crossGameVerified===true).length}`);
+          console.log('VIBE2_PRODUCTION_AUTHORITY_EXPANDED=NO');
+          NODE
