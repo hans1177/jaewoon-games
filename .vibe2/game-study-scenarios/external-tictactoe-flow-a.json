@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "engine": "web",
+  "page": "index.html",
+  "timeoutMs": 30000,
+  "requirePlayability": false,
+  "failOnRuntimeError": false,
+  "metadata": {
+    "origin": "external-public",
+    "study": "start-move-ai-response-restart",
+    "sourceAccess": "observation-only"
+  },
+  "actions": [
+    {
+      "id": "wait-for-external-game-init",
+      "type": "wait",
+      "ms": 800
+    },
+    {
+      "id": "initial-board-ready",
+      "type": "expect",
+      "name": "turn based board UI ready",
+      "expression": "document.querySelectorAll('.board-cell').length===9 && document.querySelector('#new-game-btn')!==null"
+    },
+    {
+      "id": "start-game",
+      "type": "click",
+      "selector": "#new-game-btn"
+    },
+    {
+      "id": "game-screen-ready",
+      "type": "expect",
+      "name": "game progression screen visible",
+      "expression": "document.querySelector('#game-screen')!==null && !document.querySelector('#game-screen').classList.contains('hidden')"
+    },
+    {
+      "id": "player-move-center",
+      "type": "click",
+      "selector": ".board-cell[data-index='4']"
+    },
+    {
+      "id": "wait-for-ai-response",
+      "type": "wait",
+      "ms": 1400
+    },
+    {
+      "id": "player-action-ai-response",
+      "type": "expect",
+      "name": "player action followed by ai response board state",
+      "expression": "document.querySelectorAll('.board-cell.show').length>=2 && document.querySelector('.board-cell[data-index=\"4\"]').getAttribute('aria-label')==='Cell marked as X'"
+    },
+    {
+      "id": "restart",
+      "type": "click",
+      "selector": "#restart-btn"
+    },
+    {
+      "id": "restart-modal-visible",
+      "type": "expect",
+      "name": "restart loop confirmation visible",
+      "expression": "document.querySelector('#restart-modal')?.classList.contains('show')===true"
+    },
+    {
+      "id": "confirm-restart",
+      "type": "click",
+      "selector": "#confirm-restart-btn"
+    },
+    {
+      "id": "restart-board-cleared",
+      "type": "expect",
+      "name": "restart loop clears board state",
+      "expression": "document.querySelectorAll('.board-cell[aria-label=\"Empty\"]').length===9"
+    }
+  ]
+}
