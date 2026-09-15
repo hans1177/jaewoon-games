@@ -104,7 +104,7 @@ jobs:
           mapfile -t ids < <(node -e "for (const id of JSON.parse(process.env.PENDING_IDS_JSON || '[]')) console.log(id)")
           for id in "${ids[@]}"; do
             test -n "$id"
-            gh workflow run company-development-roblox-multiplayer-qa.yml --ref main -f game_id="$id"
+            gh workflow run company-development-roblox-multiplayer-qa.yml --repo "$GITHUB_REPOSITORY" --ref main -f game_id="$id"
             echo "ROBLOX_MULTIPLAYER_QA_DISPATCHED_GAME_ID=$id"
           done
           echo 'ROBLOX_STUDIO_PRIOR_QA_REUSED=YES'
