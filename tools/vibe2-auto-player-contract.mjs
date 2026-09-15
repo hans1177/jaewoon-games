@@ -62,6 +62,7 @@ export function createAutoPlayerResult({
     runId:clean(runId),
     verified,
     metrics:freeze({
+      ...metrics,
       durationMs,
       timeToFirstActionMs:finite(metrics?.timeToFirstActionMs),
       inputActionCount:realInputs.length,
@@ -69,8 +70,7 @@ export function createAutoPlayerResult({
       checkpointCount:requiredCheckpoints.length,
       checkpointPassCount:requiredCheckpoints.filter(row=>row.pass===true).length,
       runtimeErrorCount:runtimeErrors.length,
-      consoleErrorCount:finite(metrics?.consoleErrorCount)??0,
-      ...metrics
+      consoleErrorCount:finite(metrics?.consoleErrorCount)??0
     }),
     authority:'vibe2-observed-telemetry'
   };
