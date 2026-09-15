@@ -163,6 +163,20 @@ export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], b
   return createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
 }
 
+export function releaseVibeTaskExecutionSlot(queueInput, { taskId = '', evidence = [], blocker = 'slot-released-awaiting-fan-in' } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  const id = clean(taskId);
+  const task = queue.tasks.find((item) => item.id === id);
+  if (!task) throw new Error(`task not found: ${id}`);
+  if (task.status !== 'running') return { released:false, updated:false, reason:`TASK_${clean(task.status).toUpperCase()}_NOOP`, queue };
+  const currentBlocker = clean(task.blocker);
+  if (/awaiting.*qa|qa.*awaiting/i.test(currentBlocker) || /slot-released.*fan-in/i.test(currentBlocker)) {
+    return { released:false, updated:false, reason:'ALREADY_RELEASED', queue };
+  }
+  const nextQueue = markVibeTaskAwaiting(queue, { taskId:id, evidence, blocker:clean(blocker) || 'slot-released-awaiting-fan-in' });
+  return { released:true, updated:true, reason:'RELEASED', queue:nextQueue };
+}
+
 export function settleVibeTask(queueInput, { taskId = '', outcome = 'PASS', evidence = [], blocker = '', retryable = true } = {}) {
   return finishVibeQueueTask(queueInput, { taskId, outcome, evidence, blocker, retryable });
 }
@@ -261,6 +275,11 @@ export function runQueueCommand(args = {}) {
       });
     }
     result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+  } else if (command === 'release-slot') {
+    const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
+    queue = released.queue;
+    if (released.updated) writeJson(file, queue);
+    result = { command, taskId: clean(args.id), ...released, summary: summarizeVibeContinuousQueue(queue) };
   } else if (command === 'await') {
     queue = markVibeTaskAwaiting(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     writeJson(file, queue);
@@ -313,6 +332,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_QUEUE_AWAITING_QA=${(result.summary?.awaitingQaTaskIds || []).length}`);
   console.log(`VIBE2_QUEUE_FREE_SLOTS=${result.summary?.freeSlots ?? 0}`);
   console.log(`VIBE2_QUEUE_CONTINUE=${result.summary?.continueRequired ? 'YES' : 'NO'}`);
+  console.log(`VIBE2_QUEUE_RELEASED_WORKER_SLOTS=${(result.summary?.releasedWorkerSlotTaskIds || []).length}`);
+  if (result.command === 'release-slot') console.log(`VIBE2_SLOT_RELEASED=${result.released ? 'YES' : 'NO'}`);
   if (result.adaptiveControl) {
     console.log(`VIBE2_ADAPTIVE_MAX=${result.adaptiveControl.currentMax}`);
     console.log(`VIBE2_ADAPTIVE_DECISION=${result.adaptiveControl.lastDecision}`);

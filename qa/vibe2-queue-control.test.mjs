@@ -8,6 +8,7 @@ import {
   reserveNextVibeTask,
   reserveVibeTaskBatch,
   markVibeTaskAwaiting,
+  releaseVibeTaskExecutionSlot,
   settleVibeTask,
   applyVibeFanInResults,
   recoverFixedFullWebTransportFailures
@@ -85,6 +86,39 @@ test('awaiting QA holds its source root but does not block independent work', ()
   const next=selectVibeQueueBatch(done,{maxConcurrentTasks:4});
   assert.equal(next.selected.some(t=>t.id==='same-next'),false);
   assert.equal(next.stopReason,'ONLY_CONFLICTING_WORK_AVAILABLE');
+});
+
+test('completed single worker releases capacity before fan-in without dropping source locks or adding QA pressure', () => {
+  const queue=createVibeContinuousQueue({
+    maxConcurrentTasks:2,
+    tasks:[
+      {id:'first',gameId:'game-a',target:'web',goal:'first',status:'running',responsibleFiles:['first.js']},
+      {id:'other-running',gameId:'game-b',target:'web',goal:'other',status:'running',responsibleFiles:['b.js']},
+      {id:'same-root',gameId:'game-a',target:'web',goal:'same',status:'queued',responsibleFiles:['first.js']},
+      {id:'refill',gameId:'game-c',target:'web',goal:'refill',status:'queued',responsibleFiles:['c.js']}
+    ]
+  });
+  const released=releaseVibeTaskExecutionSlot(queue,{taskId:'first',evidence:['worker-finished']});
+  assert.equal(released.released,true);
+  const batch=selectVibeQueueBatch(released.queue,{maxConcurrentTasks:2});
+  assert.equal(batch.capacityRunning.length,1);
+  assert.equal(batch.releasedWorkerSlots.length,1);
+  assert.equal(batch.backpressure.awaitingQaCount,0);
+  assert.equal(batch.selected.some(t=>t.id==='same-root'),false);
+  assert.equal(batch.selected.some(t=>t.id==='refill'),true);
+  const second=releaseVibeTaskExecutionSlot(released.queue,{taskId:'first'});
+  assert.equal(second.released,false);
+  assert.equal(second.reason,'ALREADY_RELEASED');
+});
+
+test('stale slot-release callback never overwrites a real awaiting-QA blocker', () => {
+  let queue=add(createVibeContinuousQueue(),'task','task','web');
+  queue=reserveNextVibeTask(queue).queue;
+  queue=markVibeTaskAwaiting(queue,{taskId:'task',blocker:'candidate-awaiting-qa-and-deployment'});
+  const released=releaseVibeTaskExecutionSlot(queue,{taskId:'task'});
+  assert.equal(released.released,false);
+  assert.equal(released.reason,'ALREADY_RELEASED');
+  assert.equal(released.queue.tasks[0].blocker,'candidate-awaiting-qa-and-deployment');
 });
 
 test('adaptive backpressure steps 20 down through 16 12 8 4 as pressure rises', () => {

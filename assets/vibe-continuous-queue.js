@@ -175,6 +175,12 @@ function conflictsWith(task, active) {
 function isAwaitingQaTask(task) {
   return task?.status === 'running' && /awaiting.*qa|qa.*awaiting/i.test(clean(task?.blocker));
 }
+function isReleasedWorkerSlotTask(task) {
+  return task?.status === 'running' && /slot-released.*fan-in/i.test(clean(task?.blocker));
+}
+function releasesWorkerCapacity(task) {
+  return isAwaitingQaTask(task) || isReleasedWorkerSlotTask(task);
+}
 function dynamicConcurrency(queue, requested = null) {
   const persistentMax = clampInt(queue?.maxConcurrentTasks || DEFAULT_MAX_CONCURRENT_TASKS, 1, 20);
   const requestedMax = requested === null || requested === undefined || clean(requested) === ''
@@ -212,7 +218,7 @@ function dynamicConcurrency(queue, requested = null) {
 export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const running = queue.tasks.filter((task) => task.status === 'running');
-  const capacityRunning = running.filter((task) => !isAwaitingQaTask(task));
+  const capacityRunning = running.filter((task) => !releasesWorkerCapacity(task));
   const concurrency = dynamicConcurrency(queue, maxConcurrentTasks);
   const effectiveMax = concurrency.effectiveMaxConcurrentTasks;
   // Awaiting-QA tasks keep source/file locks, but their worker process already finished.
@@ -259,6 +265,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
     running: freeze(running),
     capacityRunning: freeze(capacityRunning),
     awaitingQa: freeze(running.filter(isAwaitingQaTask)),
+    releasedWorkerSlots: freeze(running.filter(isReleasedWorkerSlotTask)),
     hasEligibleWork: selected.length > 0,
     blocked: freeze(blocked),
     deferredConflicts: freeze(deferredConflicts),
@@ -350,6 +357,7 @@ export function summarizeVibeContinuousQueue(queueInput) {
     runningTaskIds: freezeList(next.running.map((task) => task.id)),
     capacityRunningTaskIds: freezeList(next.capacityRunning.map((task) => task.id)),
     awaitingQaTaskIds: freezeList(next.awaitingQa.map((task) => task.id)),
+    releasedWorkerSlotTaskIds: freezeList(next.releasedWorkerSlots.map((task) => task.id)),
     nextReleaseState: next.selected[0]?.releaseState || null,
     continueRequired: next.continueRequired,
     stopReason: next.stopReason,

@@ -104,19 +104,40 @@ test('controller allows approved source root but enforces candidate boundary',()
   assert(workflow.includes('candidate escaped approved boundary'));
 });
 
-test('event-driven refill directly starts the next eligible control-branch batch',()=>{
-  assert(workflow.includes('Event-driven direct refill of eligible free slots'));
-  assert(workflow.includes("VIBE2_QUEUE_CONTINUE=//p"));
-  assert(workflow.includes('gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref vibe2-unreal-core'));
-  assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
+test('worker completion uses push callbacks to refill slots before batch fan-in',()=>{
+  assert(workflow.includes("- 'vibe2/refill/**'"));
+  assert(workflow.includes('release-slot'));
+  assert(workflow.includes('slot-released-awaiting-fan-in'));
+  assert(workflow.includes('Signal immediate slot refill after single-variant worker completion'));
+  assert(workflow.includes('vibe2/refill/task/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/${encoded}'));
+  assert(workflow.includes('earlyRefill'));
   assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
-  assert.equal(runtime.continuous.refillMode,'direct-continuous-dispatch-after-fan-in');
-  assert.equal(runtime.continuous.refillRequiresEligibleWork,true);
-  assert.equal(runtime.continuous.refillPlannerOnDispatch,false);
+  assert.equal(runtime.continuous.refillMode,'per-worker-push-callback-with-fan-in-fallback');
+  assert.equal(runtime.continuous.slotRefillTrigger,'push-callback-branch');
+  assert.equal(runtime.continuous.slotRefillSingleVariantOnly,true);
+  assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
+  assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
+});
+
+test('fan-in keeps a push-callback fallback and does not depend on default-branch workflow dispatch',()=>{
+  assert(workflow.includes('Event-driven fan-in refill fallback'));
+  assert(workflow.includes('vibe2/refill/fanin/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'));
+  assert(!workflow.includes('gh workflow run vibe2-continuous-core.yml'));
+  assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'));
   assert(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs'));
   assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
+});
+
+test('worker never writes queue or parallelism state directly during early refill signaling',()=>{
+  const start=workflow.indexOf('  worker:');
+  const end=workflow.indexOf('  fan_in:');
+  assert(start>=0 && end>start);
+  const workerPart=workflow.slice(start,end);
+  assert(!workerPart.includes('vibe2-queue-control.mjs release-slot'));
+  assert(!workerPart.includes('git push origin HEAD:vibe2-unreal-core'));
+  assert(workerPart.includes('git push origin "HEAD:refs/heads/${callback}"'));
 });
 
 test('worker result keeps throughput telemetry inputs in the immutable result step',()=>{
