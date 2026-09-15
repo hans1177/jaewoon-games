@@ -1,0 +1,632 @@
+{
+  "version": 7,
+  "mode": "continuous-core",
+  "documentation": {
+    "humanDocuments": [
+      "VIBE2.md"
+    ],
+    "humanDocumentLimit": 1,
+    "machineSourceOfTruth": "vibe2-runtime.json",
+    "runtimeState": {
+      "queue": ".vibe2/queue.json",
+      "parallelism": ".vibe2/parallelism-control.json",
+      "experience": ".vibe2/experience.json"
+    },
+    "generatedHandoffTool": "tools/vibe2-handoff.mjs",
+    "manualHandoffDocumentsAllowed": false,
+    "legacyHumanDocumentsRemoved": [
+      "VIBE2_CORE.md",
+      "VIBE2_CONTINUOUS_OPERATIONS.md",
+      "VIBE2_MOTION_CORE.md",
+      "VIBE2_VISUAL_AUTONOMY_PLAN.md"
+    ],
+    "machineStateVersions": {
+      "runtime": 7,
+      "queue": 5,
+      "parallelism": 2,
+      "experience": 1,
+      "handoff": 2
+    },
+    "disallowUnlistedVibe2Markdown": true,
+    "generatedHandoffArtifact": "vibe2-machine-handoff"
+  },
+  "branches": {
+    "control": "vibe2-unreal-core",
+    "candidateBase": "main",
+    "candidatePrefix": "vibe2/candidate/",
+    "directControlWriteByWorkers": false,
+    "directMainWriteByWorkers": false
+  },
+  "workManagement": {
+    "largeWorkExecution": "phased-until-complete",
+    "splitRule": "split-by-implementation-phase-not-artificial-file-count",
+    "ownerDirectivePreemptsAutonomy": true,
+    "handoffMode": "generated-from-machine-state",
+    "handoffReadOrder": [
+      "vibe2-runtime.json",
+      ".vibe2/queue.json",
+      ".vibe2/parallelism-control.json",
+      ".vibe2/experience.json"
+    ],
+    "humanMaintainedHandoff": false,
+    "machineContextRequired": true,
+    "reusableWorkerContext": true,
+    "handoffConsumers": [
+      "planner",
+      "reserve",
+      "worker",
+      "fan-in"
+    ]
+  },
+  "continuous": {
+    "enabled": true,
+    "strategy": "hierarchical-dag-sharded-work-stealing",
+    "singleLongRunningJob": false,
+    "wakeMode": "event-driven-plus-hourly-safety-net",
+    "wakeCron": "17 * * * *",
+    "scheduleBecomesActiveOnDefaultBranchIntegration": true,
+    "maxTaskRetries": 2,
+    "maxWorkMinutes": 22,
+    "maxModelCallsPerWorker": 1,
+    "dispatchNextWhenCapacityOpens": true,
+    "refillMode": "per-worker-push-callback-with-fan-in-fallback",
+    "refillRef": "vibe2-unreal-core",
+    "refillRequiresEligibleWork": true,
+    "refillPlannerOnDispatch": false,
+    "ownerDirectivePreemptsAutonomy": true,
+    "maxConcurrentGameTasks": 20,
+    "unityReleaseFocusSlots": 1,
+    "longWorkProtectedSlots": 1,
+    "priorityOrder": [
+      "owner-directive",
+      "release-confirmed",
+      "development-confirmed",
+      "reviewing",
+      "other"
+    ],
+    "sameTierEngineOrder": [
+      "existing-roblox",
+      "existing-unity",
+      "existing-web",
+      "new-unity",
+      "other-engine"
+    ],
+    "shards": [
+      "roblox",
+      "unity",
+      "web",
+      "verification",
+      "support"
+    ],
+    "workStealing": true,
+    "dynamicBackpressure": true,
+    "speculativeParallelism": {
+      "enabled": true,
+      "variants": 2,
+      "highRiskOptInOnly": true,
+      "unityBuildCandidatesExcluded": true
+    },
+    "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
+    "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+    "slotRefillTrigger": "push-callback-branch",
+    "slotRefillBranchPrefix": "vibe2/refill/",
+    "slotRefillSingleVariantOnly": true,
+    "slotRefillWorkerDirectControlWrite": false,
+    "slotRefillSourceLocksHeldUntilFanIn": true
+  },
+  "adaptiveBackpressure": {
+    "enabled": true,
+    "mode": "persistent-next-run-cap-plus-immediate-current-batch-protection",
+    "stateFile": ".vibe2/parallelism-control.json",
+    "steps": [
+      20,
+      16,
+      12,
+      8,
+      4
+    ],
+    "maxStepChangesPerRun": 1,
+    "saturationFloorRatio": 0.75,
+    "strongPressureLevels": [
+      "HIGH",
+      "SEVERE"
+    ],
+    "strongPressureDownAfterRuns": 1,
+    "mediumPressureDownAfterRuns": 2,
+    "healthySaturatedUpAfterRuns": 2,
+    "lowWorkloadChangesPersistentCap": false,
+    "lowWorkloadBuildsRecoveryStreak": false,
+    "immediateDynamicCapMayAlsoDownshiftPersistentCap": false,
+    "duplicateRunMayChangePersistentCap": false,
+    "missingStateFallbackMax": 20,
+    "corruptStateFallbackMax": 20
+  },
+  "sources": {
+    "queue": ".vibe2/queue.json",
+    "experience": ".vibe2/experience.json",
+    "workOrder": ".vibe2/work-order.json",
+    "parallelism": ".vibe2/parallelism-control.json"
+  },
+  "workers": {
+    "exploration": {
+      "configured": true,
+      "tool": "tools/vibe2-exploration-worker.mjs",
+      "sourceWrite": false,
+      "artifactReusable": true,
+      "reusedBy": [
+        "implementation",
+        "test",
+        "performance",
+        "review"
+      ]
+    },
+    "textSource": {
+      "configured": true,
+      "tool": "tools/vibe2-source-worker.mjs",
+      "model": "qwen3:1.7b",
+      "candidateBranchPrefix": "vibe2/candidate/",
+      "directMainWrite": false
+    },
+    "performance": {
+      "configured": true,
+      "tool": "tools/vibe2-performance-sanity.mjs",
+      "sourceWrite": false
+    },
+    "review": {
+      "configured": true,
+      "tool": "tools/vibe2-fan-in-review.mjs",
+      "sourceWrite": false
+    },
+    "analysis": {
+      "configured": false,
+      "reason": "general-analysis-worker-not-connected-yet"
+    }
+  },
+  "coordination": {
+    "mode": "dag-batch-source-root-exclusive-file-aware",
+    "sourceRootExclusive": true,
+    "separateFileLocks": true,
+    "sameFileParallelWrite": false,
+    "activeTaskSource": ".vibe2/queue.json",
+    "chatgptAvoidsActiveResponsibleFiles": true,
+    "baseShaOverlapAction": "REPLAN_REQUIRED",
+    "baseShaNonOverlapAction": "REBASE_THEN_QA",
+    "fanOutFanIn": true,
+    "stateWritesSerialized": true,
+    "workerBranchesIsolated": true,
+    "sharedPreparationSinglePass": true,
+    "longWorkProtectedSlots": 1
+  },
+  "qaOptimization": {
+    "incrementalFirst": true,
+    "tool": "tools/vibe2-incremental-qa.mjs",
+    "performanceSanityWorker": "tools/vibe2-performance-sanity.mjs",
+    "fanInReviewWorker": "tools/vibe2-fan-in-review.mjs",
+    "contentHashCache": true,
+    "persistentActionsCache": true,
+    "reservePreflight": "syntax-and-machine-state-only",
+    "duplicateFullRegressionBeforeReserve": false,
+    "perWorkerQa": "impact-first-incremental",
+    "fanInQa": "single-node-test-process",
+    "fanInTestConcurrency": 4,
+    "fullCoreRegressionOnceAtFanIn": true,
+    "incrementalPassNeverReplacesFinalVerification": true
+  },
+  "parallelismTelemetry": {
+    "enabled": true,
+    "tool": "tools/vibe2-parallelism-telemetry.mjs",
+    "requestedMax": 20,
+    "artifact": "vibe2-parallelism-telemetry",
+    "metrics": [
+      "actualPeakConcurrency",
+      "slotUtilization",
+      "queueWait",
+      "checkout",
+      "ollamaCacheHitRate",
+      "candidateDuration",
+      "incrementalQaDuration",
+      "workerTotalDuration",
+      "failureRate",
+      "fanInDuration",
+      "completedFeatureCount",
+      "changedFileCount",
+      "changedLineCount",
+      "reworkRatePct",
+      "qaDuplicateRatePct",
+      "packageCycleTime",
+      "preparationRatioPct",
+      "bottleneck"
+    ],
+    "loadProbeTargetWorkers": 20,
+    "backpressureSteps": [
+      20,
+      16,
+      12,
+      8,
+      4
+    ]
+  },
+  "contracts": {
+    "core": {
+      "purpose": [
+        "natural-language-to-engine-independent-work-plan",
+        "engine-adapter-routing",
+        "preserve-protected-game-and-save-semantics",
+        "short-verified-work-loop",
+        "reuse-verified-success-and-failure-experience",
+        "motion-as-core-quality-axis"
+      ],
+      "authority": {
+        "ownerDirectiveHighestPriority": true,
+        "learningMayExpandAuthority": false,
+        "homepagePublicationSeparated": true,
+        "coreDecisionRequiresOwner": true
+      },
+      "protectedSemantics": [
+        "health",
+        "attack",
+        "waves",
+        "rewards",
+        "drop-rate",
+        "save-keys",
+        "save-schema",
+        "progression-meaning",
+        "approved-core-gameplay",
+        "locked-artbook-concept"
+      ],
+      "engineTargets": {
+        "unity": {
+          "sourceRoots": [
+            "unity-games/<slug>/Assets/**",
+            "unity-games/<slug>/Packages/**",
+            "unity-games/<slug>/ProjectSettings/**"
+          ],
+          "verification": [
+            "csharp-compile",
+            "scene-prefab-references",
+            "animation-links",
+            "android-build",
+            "runtime-evidence"
+          ]
+        },
+        "unreal": {
+          "sourceRoots": [
+            "unreal-games/<slug>/*.uproject",
+            "unreal-games/<slug>/Content/**",
+            "unreal-games/<slug>/Config/**",
+            "unreal-games/<slug>/Source/**"
+          ],
+          "excluded": [
+            "Binaries/**",
+            "DerivedDataCache/**",
+            "Intermediate/**",
+            "Saved/**"
+          ],
+          "verification": [
+            "cpp-compile",
+            "blueprint-references",
+            "map-load",
+            "animation-stack",
+            "packaging",
+            "target-build",
+            "mobile-performance"
+          ]
+        },
+        "godot": {
+          "sourceRoots": [
+            "godot-games/<slug>/**"
+          ]
+        },
+        "web": {
+          "automaticNewGame": false,
+          "existingMaintenanceAllowed": true
+        }
+      }
+    },
+    "motion": {
+      "purpose": "verify-natural-motion-and-gameplay-event-synchronization-not-file-existence",
+      "requiredStates": [
+        "idle",
+        "move",
+        "attack",
+        "hit",
+        "death"
+      ],
+      "optionalStates": [
+        "run",
+        "attack-combo",
+        "skill",
+        "cast",
+        "block",
+        "dodge",
+        "stun",
+        "knockback",
+        "jump",
+        "fall",
+        "land",
+        "interact"
+      ],
+      "combatPhases": [
+        "windup",
+        "active-hit-frame",
+        "recovery"
+      ],
+      "qualityAxes": [
+        "coverage",
+        "transition",
+        "combatSync",
+        "footStability",
+        "rootMotion",
+        "retarget",
+        "readability",
+        "performance",
+        "repetition"
+      ],
+      "hardFailGates": [
+        "required-motion-missing",
+        "attack-hit-timing-mismatch",
+        "death-returns-to-locomotion",
+        "severe-foot-sliding",
+        "retarget-breakage",
+        "transition-teleport-or-rotation-pop",
+        "animation-reference-error",
+        "mobile-performance-regression"
+      ],
+      "learningMayCopyGameplayNumbers": false
+    },
+    "visualAutonomy": {
+      "status": "PROPOSED",
+      "implementationState": "DOCUMENTED_NOT_IMPLEMENTED",
+      "purpose": "game-specific-identity-aware-visual-and-motion-improvement-with-safe-candidates-verification-learning",
+      "principles": [
+        "understand-game-before-change",
+        "no-one-style-fits-all",
+        "game-identity-over-genre-template",
+        "include-readability-performance-mobile-ui-audio-timing-regression",
+        "candidate-verify-adopt-or-reject",
+        "learn-success-and-failure",
+        "learning-does-not-expand-authority",
+        "owner-preference-is-highest-learning-signal",
+        "do-not-change-gameplay-save-progression-economy-for-visual-reasons",
+        "all-automatic-changes-must-be-reversible"
+      ],
+      "components": [
+        "game-identity-profile",
+        "visual-dna-generator",
+        "graphics-evolution-engine",
+        "motion-engine",
+        "scene-presentation-engine",
+        "graphic-issue-detector",
+        "style-drift-detector",
+        "visual-reference-memory",
+        "camera-director",
+        "readability-heatmap",
+        "boss-presentation-engine",
+        "progression-visualizer",
+        "biome-identity-engine",
+        "adaptive-ui-engine",
+        "animation-personality-engine",
+        "audio-visual-sync-engine",
+        "screenshot-critic",
+        "asset-reuse-intelligence",
+        "performance-aware-beauty",
+        "visual-ab-tournament",
+        "failure-memory",
+        "human-preference-learning",
+        "visual-aging-detector",
+        "polish-budget-manager",
+        "visual-director-memory",
+        "learning-engine",
+        "genre-pattern-learning",
+        "autopilot-loop"
+      ],
+      "candidateLevels": [
+        "SAFE",
+        "NORMAL",
+        "AGGRESSIVE"
+      ],
+      "automaticSafeScope": [
+        "color",
+        "contrast",
+        "ui-alignment-spacing-size",
+        "composition",
+        "non-destructive-effects",
+        "animation-timing",
+        "background-enhancement",
+        "readability",
+        "small-camera-adjustment",
+        "graphics-quality",
+        "asset-enhance-or-combine-candidate"
+      ],
+      "requiresHigherGate": [
+        "core-combat-rule-change",
+        "save-schema-change",
+        "progression-change",
+        "economy-or-reward-change",
+        "game-identity-change",
+        "large-content-deletion",
+        "public-release-promotion",
+        "unclear-license-asset",
+        "large-performance-regression",
+        "irreversible-change"
+      ],
+      "maturityLevels": {
+        "L1": "observe",
+        "L2": "recommend",
+        "L3": "safe-candidate-auto-edit",
+        "L4": "verified-autonomous-improvement",
+        "L5": "long-term-autonomous-learning"
+      },
+      "implementationPriority": [
+        "game-identity-analyzer",
+        "visual-dna-generator",
+        "graphic-issue-detector",
+        "visual-director-memory-learning",
+        "graphics-evolution-engine",
+        "motion-animation-personality",
+        "scene-camera-boss-biome",
+        "readability-screenshot-critic",
+        "performance-mobile-qa",
+        "ab-tournament-polish-budget",
+        "autopilot-scheduler"
+      ],
+      "ownerDecisionsRequiredBeforeImplementation": [
+        "allowed-autonomy-level-L1-to-L5",
+        "safe-candidate-auto-apply-or-preapproval",
+        "preference-scope-game-only-or-global",
+        "learning-memory-persistence-location",
+        "daily-and-per-game-experiment-budget"
+      ]
+    }
+  },
+  "assetDecision": {
+    "mode": "fixed-safety-plus-verified-preference-learning",
+    "fixedRules": [
+      "license",
+      "commercial-use",
+      "animation-evidence",
+      "no-static-actor",
+      "source-record",
+      "mobile-performance",
+      "size-budget"
+    ],
+    "learnedSignals": [
+      "style-fit",
+      "motion-quality",
+      "mobile-performance",
+      "qa-pass-rate",
+      "cross-game-reuse-success"
+    ],
+    "verifiedEvidenceRequired": true,
+    "learningMayOverrideFixedRules": false
+  },
+  "engineEditors": {
+    "roblox": {
+      "authoringWorkerConfigured": false,
+      "editorRuntime": "roblox-studio-or-cloud-runtime",
+      "workflow": null,
+      "runnerLabel": null
+    },
+    "unity": {
+      "authoringWorkerConfigured": false,
+      "editorRuntime": "unity-editor",
+      "buildVerificationWorkflow": ".github/workflows/unity-hybrid-android-build.yml",
+      "workflow": null,
+      "runnerLabel": null
+    },
+    "unreal": {
+      "authoringWorkerConfigured": false,
+      "editorRuntime": "unreal-editor-or-commandlet",
+      "workflow": null,
+      "runnerLabel": null
+    }
+  },
+  "verification": {
+    "candidateCreationIsFinalPass": false,
+    "incrementalQaIsFinalPass": false,
+    "engineBuildSuccessIsFinalPass": false,
+    "engineBuildSuccessState": "verification-passed-awaiting-review",
+    "automaticMainPromotion": false,
+    "automaticExperiencePromotion": true,
+    "automaticExperiencePromotionRequiresVerifiedRevote": true,
+    "reviewedExperienceRequired": true
+  },
+  "safety": {
+    "existingWebMaintenanceAllowed": true,
+    "newWebGameAutomatic": false,
+    "allowedWritableTargets": [
+      "web",
+      "unity",
+      "unreal",
+      "godot",
+      "roblox"
+    ],
+    "paidAIAllowed": false,
+    "paidRunnerAllowed": false,
+    "coreDecisionRequiresOwner": true,
+    "saveBreakingChangeRequiresMigration": true,
+    "verifiedEvidenceRequiredForLearning": true,
+    "directMainWriteByWorker": false,
+    "binaryAssetsDirectTextEditForbidden": true,
+    "sharedWorkLockRequired": false,
+    "queueSourceRootLeaseRequired": true,
+    "homepagePublicationAutomatic": false
+  },
+  "workPackages": {
+    "enabled": true,
+    "scheduler": "feature-boundary-work-package",
+    "minWorkUnitsPerPackage": 3,
+    "minTasksPerPackage": 2,
+    "substantialSingleTaskWorkUnits": 3,
+    "minRelatedImprovementsPerPackage": 3,
+    "targetWorkUnitsPerCycle": 12,
+    "targetPackagesPerCycle": 4,
+    "targetFeaturePackagesPerCycle": 1,
+    "maxPackagesPerCycle": 10,
+    "maxTasksPerPackage": 5,
+    "smallTaskAction": "auto-expand-or-defer",
+    "automaticExpansionMode": "real-disjoint-candidates-first-explicit-related-scopes-fallback",
+    "automaticExpansion": [
+      "related-diagnostics",
+      "adjacent-safe-maintenance",
+      "ux-readability",
+      "qa-hardening",
+      "performance-sanity"
+    ],
+    "sameFileParallelWrite": false,
+    "explorationMode": "dedicated-exploration-worker-handoff",
+    "explorationRequired": true,
+    "reusableMachineHandoff": true,
+    "sharedPreparation": true,
+    "longWorkSlotProtection": true,
+    "longWorkProtectedSlots": 1,
+    "parallelRoles": [
+      "work-package-owner",
+      "read-only-exploration-worker",
+      "source-write-implementation-worker",
+      "incremental-qa-worker",
+      "performance-sanity-worker",
+      "single-fan-in-regression-worker",
+      "fan-in-package-review-worker"
+    ],
+    "completionCriteria": [
+      "exploration-handoff-produced-and-reused",
+      "functional-scope-implemented",
+      "all-package-task-incremental-qa-pass",
+      "performance-sanity-pass",
+      "full-core-regression-once-at-fan-in",
+      "fan-in-package-review-pass",
+      "machine-contract-and-central-doc-synced-when-architecture-changes"
+    ],
+    "preferredDeliveryUnit": "one-functional-pr-per-work-package-after-package-qa",
+    "workloadTelemetry": {
+      "enabled": true,
+      "tool": "tools/vibe2-work-package.mjs",
+      "metrics": [
+        "plannedPackageCount",
+        "plannedWorkUnits",
+        "plannedFeaturePackageCount",
+        "plannedRelatedImprovementCount",
+        "completedFeaturePackageCount",
+        "actualChangedFileCount",
+        "actualChangedLineCount",
+        "historicalMicroTaskRatePct",
+        "historicalReworkRatePct",
+        "historicalQaDuplicateRatePct",
+        "historicalPreparationRatioPct",
+        "averagePackageCycleTimeMs",
+        "historicalAvgPackageWorkUnits",
+        "lowEfficiencyStreak",
+        "lowEfficiencyDetected"
+      ]
+    },
+    "efficiencyAdaptation": {
+      "enabled": true,
+      "lowEfficiencyAction": "increase-minimum-work-units-progressively",
+      "lowEfficiencyStreakThreshold": 2,
+      "maxAdaptiveBoost": 3,
+      "maxMinWorkUnitsPerPackage": 6,
+      "neverReduceSafetyOrQa": true
+    }
+  }
+}
