@@ -77,6 +77,9 @@ jobs:
       - name: Run Roblox Phase 1 adapter tests
         run: node qa/vibe3-roblox-platform.test.mjs
 
+      - name: Run Orb Rush source contract QA
+        run: node qa/roblox-orb-rush.test.mjs
+
       - name: Check trainer syntax
         run: python -m py_compile tools/vibe2-train.py qa/vibe3-trainer-black-box.test.py
 
