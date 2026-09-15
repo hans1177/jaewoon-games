@@ -109,23 +109,29 @@ jobs:
             $windowsAfter = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $pidCondition)
             Write-Host "ROBLOX_BOOTSTRAP_PROBE_TOP_WINDOWS_AFTER_PUBLISH=$($windowsAfter.Count)"
             $publishLike = 0
+            $interesting = 0
             foreach ($window in $windowsAfter) {
               Write-Host ("ROBLOX_BOOTSTRAP_PROBE_WINDOW_AFTER name='{0}' automationId='{1}' class='{2}'" -f $window.Current.Name,$window.Current.AutomationId,$window.Current.ClassName)
               $all = $window.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
-              $limit = [Math]::Min($all.Count, 900)
+              $limit = [Math]::Min($all.Count, 1200)
               for ($i=0; $i -lt $limit; $i++) {
                 $e = $all.Item($i)
                 $name = [string]$e.Current.Name
                 $aid = [string]$e.Current.AutomationId
                 $ctype = [string]$e.Current.ControlType.ProgrammaticName
-                if ($name -match '(Publish|Roblox|Create|Experience|Name|게시|만들|체험|이름)' -or $aid -match '(publish|create|name|experience)') {
+                if ($name -match '(Publish|Roblox|Create|Experience|Name)' -or $aid -match '(?i)(publish|create|name|experience)') {
                   $publishLike++
-                  Write-Host ("ROBLOX_BOOTSTRAP_PROBE_CONTROL type='{0}' name='{1}' automationId='{2}' enabled='{3}'" -f $ctype,$name,$aid,$e.Current.IsEnabled)
+                  Write-Host ("ROBLOX_BOOTSTRAP_PROBE_MATCH type='{0}' name='{1}' automationId='{2}' enabled='{3}'" -f $ctype,$name,$aid,$e.Current.IsEnabled)
+                }
+                if ($interesting -lt 300 -and $ctype -match 'ControlType\.(Button|Edit|ComboBox|MenuItem|TabItem)' -and ($name -or $aid)) {
+                  $interesting++
+                  Write-Host ("ROBLOX_BOOTSTRAP_PROBE_CONTROL type='{0}' name='{1}' automationId='{2}' enabled='{3}' offscreen='{4}'" -f $ctype,$name,$aid,$e.Current.IsEnabled,$e.Current.IsOffscreen)
                 }
               }
             }
-            Write-Host "ROBLOX_BOOTSTRAP_PROBE_PUBLISH_CONTROLS=$publishLike"
-            if ($publishLike -lt 1) { throw 'Publish dialog/control tree was not discoverable through UI Automation' }
+            Write-Host "ROBLOX_BOOTSTRAP_PROBE_PUBLISH_MATCHES=$publishLike"
+            Write-Host "ROBLOX_BOOTSTRAP_PROBE_INTERESTING_CONTROLS=$interesting"
+            if ($interesting -lt 1) { throw 'Studio UI Automation tree was not discoverable' }
             $shell.SendKeys('{ESC}')
             Write-Host 'ROBLOX_BOOTSTRAP_PROBE=PASS'
             Write-Host 'ROBLOX_EXPERIENCE_CREATED=NO'
