@@ -29,6 +29,18 @@ function peakConcurrency(rows){
   return peak;
 }
 function durationStats(rows,key){const values=rows.map(row=>num(row?.metrics?.[key])).filter(v=>v>=0&&Number.isFinite(v));return{avgMs:round(avg(values)),p95Ms:round(p95(values)),maxMs:round(values.length?Math.max(...values):0)};}
+function actionRunIds(rows){
+  const ids=new Set();
+  for(const row of rows){
+    const direct=clean(row?.runId||row?.metrics?.runId);
+    if(direct)ids.add(direct);
+    for(const evidence of Array.isArray(row?.evidence)?row.evidence:[]){
+      const match=/^actions-run:(.+)$/.exec(clean(evidence));
+      if(match&&clean(match[1]))ids.add(clean(match[1]));
+    }
+  }
+  return [...ids].sort();
+}
 
 export function computeParallelismTelemetry(input={}){
   const rows=Array.isArray(input.results)?input.results:[];
@@ -36,6 +48,8 @@ export function computeParallelismTelemetry(input={}){
   const effectiveMax=clamp(Math.floor(num(input.effectiveMax||rows[0]?.metrics?.effectiveMax||requestedMax)||requestedMax),1,requestedMax);
   const taskCount=Math.max(0,Math.floor(num(input.taskCount||0)));
   const workerCount=rows.length;
+  const runIds=actionRunIds(rows);
+  const runId=runIds.length===1?runIds[0]:null;
   const starts=rows.map(row=>parseTime(row?.metrics?.workerStartedAt)).filter(Boolean);
   const queueWait=rows.map(row=>{const s=parseTime(row?.metrics?.workerStartedAt),r=parseTime(row?.metrics?.reservedAt);return s&&r&&s>=r?s-r:0;}).filter(v=>v>=0);
   const peak=peakConcurrency(rows);
@@ -56,7 +70,9 @@ export function computeParallelismTelemetry(input={}){
   const failureRate=workerCount?(outcomes.FAIL+outcomes.BLOCKED)/workerCount:0;
   const pressureLevel=failureRate>=.4?'SEVERE':failureRate>=.2?'HIGH':failureRate>=.1?'MEDIUM':'LOW';
   return{
-    version:1,
+    version:2,
+    runId,
+    runIds,
     requestedMax,
     effectiveMax,
     taskCount,
@@ -90,6 +106,7 @@ export function runTelemetryCommand(args={}){
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const t=runTelemetryCommand(parseArgs());
+  console.log(`VIBE2_PARALLEL_RUN_ID=${t.runId||'NONE'}`);
   console.log(`VIBE2_PARALLEL_PEAK=${t.actualPeakConcurrency}`);
   console.log(`VIBE2_PARALLEL_UTILIZATION=${t.observedPeakUtilizationPct}`);
   console.log(`VIBE2_PARALLEL_CACHE_HIT_RATE=${t.ollamaCache.hitRatePct}`);
