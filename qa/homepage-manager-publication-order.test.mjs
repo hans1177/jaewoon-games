@@ -66,6 +66,10 @@ test('development games auto-display from runtime progress while Top30 promotion
   assert.ok(homepageCore.includes("productionClass||'').trim().toUpperCase()==='DEVELOPMENT_CONFIRMED'"));
   assert.ok(homepageCore.includes("getJson('/development-queue.json',{runtime:true})"));
   assert.ok(homepageCore.includes("wrapper.id='homeDevelopmentGameCenter'"));
+  assert.ok(homepageCore.includes('const developmentScoreOf=row=>'));
+  assert.ok(homepageCore.includes('if(sb!==sa)return sb-sa'));
+  assert.ok(homepageCore.includes('data-development-score='));
+  assert.ok(homepageCore.includes('점수 미평가'));
   assert.ok(homepageCore.includes('const developmentWebTestTarget=item=>'));
   assert.ok(homepageCore.includes('const developmentPlatformTestTarget=(item,status)=>'));
   assert.ok(homepageCore.includes('data-development-web-test=\"true\"'));
@@ -86,6 +90,8 @@ test('development games auto-display from runtime progress while Top30 promotion
   assert.ok(homepageEntry.includes("card.dataset?.homepageGameSource==='CANONICAL_TOP30'"));
   assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_SOURCE=DEVELOPMENT_QUEUE'));
   assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_VISIBILITY=PROGRESS_ONLY'));
+  assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_ORDER=SCORE_DESC'));
+  assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_SCORE_VISIBLE=YES'));
   assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_TEST_BUTTONS=WEB_AND_PLATFORM'));
   assert.ok(manager.includes('HOMEPAGE_TOP30_SOURCE=CANONICAL_TOP30'));
 });

@@ -25,7 +25,8 @@
 - 입력 원본: `company-runtime:development-queue.json`
 - `productionClass=DEVELOPMENT_CONFIRMED`이면 검증 점수와 무관하게 자동 표시한다.
 - `homepageTestEligible`, Web strict 점수, 30분 최종검증, 아트북은 개발 진행 목록의 등록 조건이 아니다.
-- 표시 정보는 게임명과 `status`, `currentStep`, `selectedPlatform` 중심으로 제한한다.
+- 표시 정보는 게임명과 `status`, `currentStep`, `selectedPlatform`, 현재 개발 점수를 표시한다.
+- 개발게임은 현재 검증 점수 높은 순으로 자동 정렬하고, 점수가 아직 없는 게임은 아래에 둔다. 같은 점수면 ACTIVE 상태와 최근 업데이트 순을 보조 기준으로 사용한다.
 - 검증 실패/대기 상태여도 개발게임 카드는 유지하며 현재 진행 상태를 표시한다.
 - 개발 진행 카드는 출시 승인, Top30 통과를 의미하지 않는다.
 - 모든 개발 카드에 `웹 테스트` 버튼을 별도로 표시하고 현재 Web 개발본으로 바로 접속한다.

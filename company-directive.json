@@ -81,7 +81,8 @@
       "displayFields": [
         "status",
         "currentStep",
-        "selectedPlatform"
+        "selectedPlatform",
+        "score"
       ],
       "separateFromTop30Promotion": true,
       "mustNotClaimValidationOrRelease": true,
@@ -90,7 +91,10 @@
       "platformTestButtonEnabled": true,
       "platformTestButtonLabelMode": "PLATFORM_NAME",
       "webAndPlatformTestButtonsMustBeSeparate": true,
-      "missingPlatformTestTargetDisablesOnlyPlatformButton": true
+      "missingPlatformTestTargetDisablesOnlyPlatformButton": true,
+      "scoreDisplayEnabled": true,
+      "ranking": "SCORE_DESC",
+      "unratedGamesLast": true
     }
   },
   "production": {
