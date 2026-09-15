@@ -1,0 +1,20 @@
+<!doctype html>
+<html><body>
+<button id="start">start</button><button id="restart">restart</button>
+<div id="state"></div>
+<script>
+window.game={started:false,x:0,attacks:0,enemyHp:2,gold:0,restarts:0};
+function render(){document.querySelector('#state').textContent=JSON.stringify(window.game)}
+function reset(){Object.assign(window.game,{started:true,x:0,attacks:0,enemyHp:2,gold:0});render()}
+document.querySelector('#start').addEventListener('click',()=>{window.game.started=true;render()});
+document.querySelector('#restart').addEventListener('click',()=>{window.game.restarts++;reset()});
+addEventListener('keydown',e=>{
+ if(!window.game.started)return;
+ if(e.code==='ArrowRight')window.game.x+=1;
+ if(e.code==='Space'){window.game.attacks++;window.game.enemyHp=Math.max(0,window.game.enemyHp-1);if(window.game.enemyHp===0)window.game.gold=10;}
+ render();
+});
+window.__VIBE2_PLAYABILITY_EVIDENCE__={version:1,playable:true,failures:[],authority:'v2-playability-evidence'};
+render();
+</script>
+</body></html>
