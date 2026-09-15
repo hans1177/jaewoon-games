@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "The Lost Gardens of Eldoria"
+        ],
+        "fix": [
+          "The Lost Gardens of Eldoria"
+        ],
+        "add": [
+          "The Lost Gardens of Eldoria"
+        ],
+        "risks": [
+          "The Lost Gardens of Eldoria"
+        ],
+        "evidence": [
+          "The Lost Gardens of Eldoria"
+        ],
+        "questions": [
+          "The Lost Gardens of Eldoria"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "simple gameplay loops with clear scoring and rewards for a fun, rewarding experience"
+        ],
+        "fix": [
+          "clear and simple progression benefits for a smooth gameplay experience"
+        ],
+        "add": [
+          "bright, colorful, and slightly whimsical visuals to enhance the game experience"
+        ],
+        "risks": [
+          "minimal friction in the progression and retry system"
+        ],
+        "evidence": [
+          "global casual session signals and mobile gaming benchmarks"
+        ],
+        "questions": [
+          "validation of the core gameplay and progression systems"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "SEED_MATERIAL_IDS"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "evidence": [
+          "REFERENCE_INPUTS"
+        ],
+        "questions": [
+          "SEED_CATEGORY_SELECTION_ROLE"
+        ]
+      }
+    }
+  ]
+}

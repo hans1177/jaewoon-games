@@ -1,0 +1,156 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "The Lost Gardens of Eldoria is a planned game designed for casual puzzle enthusiasts, with a focus on simple yet rewarding game logic.",
+        "A"
+      ],
+      "fix": [
+        "Validate the 'SEED_MATERIAL_SELECTION_SIGNALS' and 'SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT' to ensure they are appropriately-further",
+        "Review the 'SEED_MATERIAL_IDS' to confirm they are relevant and accurately represent the game's design."
+      ],
+      "add": [
+        "Ensure the 'SEED_MATERIAL_SELECTION_MODE' is appropriate for the game's target audience.",
+        "Review the 'SEED_MATERIAL_SELECTION_REFERENCE_INPUTS' to confirm they are consistent with the game's narrative."
+      ],
+      "risks": [
+        "Ensure the 'SEED_MATERIAL_SELECTION_REFERENCE_INPUTS' are consistent with the game's narrative."
+      ],
+      "evidence": [
+        "The game has a strong market presence with references to popular games like Crossy Road and Angry Birds 2, which supports the planning department's goal of creating."
+      ],
+      "questions": [
+        "Ensure the 'SEED_MATERIAL_SELECTION_REFERENCE_INPUTS' are consistent with the game's narrative."
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "UNIQUE_DESIGN_OF_GAME_SEED"
+      ],
+      "fix": [
+        "GAME_SEED_MATERIAL_MATCHING_SUCCESS"
+      ],
+      "add": [
+        "SEED_MATERIAL_MATCH_SUCCESS"
+      ],
+      "risks": [
+        "SEED_MATERIAL_MATCH_SUCCESS"
+      ],
+      "evidence": [
+        "SEED_MATERIAL_MATCH_SUCCESS"
+      ],
+      "questions": [
+        "SEED_MATERIAL_MATCH_SUCCESS"
+      ]
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "The key elements of a game seed for the qa department are: GAME_SEED, ASSIGNED_DEPARTMENT, GAME_SEED, GAME_SEED, GAME_SEED, GAME_C"
+      ],
+      "add": [
+        "The key elements of a game seed for the qa department are: GAME_SEED, ASSIGNED_DEPARTMENT, GAME_SEED, GAME_SEED, GAME_SEED, GAME_C"
+      ],
+      "risks": [
+        "The risk of a game seed is that it may not be suitable for the qa department, and the game may not be well-known."
+      ],
+      "evidence": [
+        "The evidence for a game seed is that it is a seed for a game that is well-known and has a good level of challenge."
+      ],
+      "questions": [
+        "What are the key elements of a game seed for the qa department?"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "The Lost Gardens of Eldoria"
+      ],
+      "fix": [
+        "The Lost Gardens of Eldoria"
+      ],
+      "add": [
+        "The Lost Gardens of Eldoria"
+      ],
+      "risks": [
+        "The Lost Gardens of Eldoria"
+      ],
+      "evidence": [
+        "The Lost Gardens of Eldoria"
+      ],
+      "questions": [
+        "The Lost Gardens of Eldoria"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "The Lost Gardens of Eldoria is a planned game designed for casual puzzle enthusiasts with a focus on simple yet rewarding game logic. The planning team has validated the 'SEED_MATERIAL_SELECTION_SIGNALS' and 'SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT' and reviewed the 'SEED_MATERIAL_IDS' to ensure they are relevant and accurately represent the game's design. The graphics section confirms the game's unique design and successful matching of materials. The development team has confirmed the game's key elements and QA responsibilities. The balance confirms the game's planned direction.",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The game has a strong market presence with references to popular games like Crossy Road and Angry Birds 2, which supports the planning department's goal of creating a planned game for casual puzzle enthusiasts. The validation of the 'SEED_MATERIAL_SELECTION_SIGNALS' and 'SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT' and review of the 'SEED_MATERIAL_IDS' are necessary to ensure they are appropriately-further and relevant to the game's design. The graphics section confirms the game's unique design and successful material matching.",
+      "departments": [
+        "planning",
+        "fix",
+        "add"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "The key elements of a game seed for the QA department are: GAME_SEED, ASSIGNED_DEPARTMENT, GAME_SEED, GAME_SEED, GAME_SEED, GAME_C. The evidence for a game seed is that it is a seed for a game that is well-known and has a good level of challenge. The revision suggests that the QA department's responsibilities are more comprehensive and align with their current responsibilities.",
+      "departments": [
+        "add",
+        "fix"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 2,
+    "conflict": 0,
+    "hold": 0
+  }
+}

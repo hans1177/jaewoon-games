@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What are the key elements of a game seed for the qa department?"
+        ],
+        "fix": [
+          "The key elements of a game seed for the qa department are: GAME_SEED, ASSIGNED_DEPARTMENT, GAME_SEED, GAME_SEED, GAME_SEED, GAME_C"
+        ],
+        "add": [
+          "The key elements of a game seed for the qa department are: GAME_SEED, ASSIGNED_DEPARTMENT, GAME_SEED, GAME_SEED, GAME_SEED, GAME_C"
+        ],
+        "risks": [
+          "The risk of a game seed is that it may not be suitable for the qa department, and the game may not be well-known."
+        ],
+        "evidence": [
+          "The evidence for a game seed is that it is a seed for a game that is well-known and has a good level of challenge."
+        ],
+        "questions": [
+          "What are the key elements of a game seed for the qa department?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The Lost Gardens of Eldoria is a casual puzzle game developed by QA Department, with a focus on simple and rewarding gameplay."
+        ],
+        "fix": [
+          "The game is designed with a simple and rewarding gameplay loop, suitable for casual players."
+        ],
+        "add": [
+          "The game has a bright, colorful, and whimsical visual design."
+        ],
+        "risks": [
+          "The game has a medium expansion, suitable for both casual and puzzle enthusiasts."
+        ],
+        "evidence": [
+          "The game has a strong market presence, with references to Crossy Road and Angry Birds 2."
+        ],
+        "questions": [
+          "What is the core gameplay focus of The Lost Gardens of Eldoria?"
+        ]
+      }
+    }
+  ]
+}

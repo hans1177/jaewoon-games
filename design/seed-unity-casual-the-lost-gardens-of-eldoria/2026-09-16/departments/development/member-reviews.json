@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "fix": [
+          "GAME_SEED = {'version': 2, 'seedId': 'SEED-UNITY-CASUAL-001', 'gameId': 'seed-unity-casual-the-lost-gardens-of-eldoria', 'gameName"
+        ],
+        "add": [
+          "The Lost Gardens of Eldoria', 'status': 'ACTIVE', 'generation': 'HISTORICAL_INITIAL_BOOTSTRAP', 'GAME_CATEGORY': 'CASUAL', 'SEED_M"
+        ],
+        "risks": [
+          "SEED_MATERIALS = ['MAT-004', 'MAT-100', 'MAT-016']"
+        ],
+        "evidence": [
+          "REFERENCE_INPUTS = [{'type': 'SEED_MATERIAL', 'id': 'MAT-004', 'sourceFamily': 'NATURE_ECOLOGY_SCIENCE', 'value': 'NATURE_ECOLOGY'"
+        ],
+        "questions": [
+          "REFERENCE_GAMES = ['Crossy Road', 'Angry Birds 2']"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game should have a simple and intuitive control scheme."
+        ],
+        "fix": [
+          "The game should have a more polished and visually appealing art style."
+        ],
+        "add": [
+          "The game should have a multiplayer mode with cooperative gameplay."
+        ],
+        "risks": [
+          "The game should not be too easy or too hard for casual players."
+        ],
+        "evidence": [
+          "The game should have a strong online presence and community."
+        ],
+        "questions": [
+          "What are the key features and mechanics of the game?"
+        ]
+      }
+    }
+  ]
+}
