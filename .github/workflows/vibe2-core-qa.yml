@@ -20,6 +20,7 @@ on:
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-code-intelligence.mjs'
       - 'tools/vibe2-auto-player-contract.mjs'
+      - 'tools/vibe2-auto-player.mjs'
       - 'tools/vibe2-web-auto-player.mjs'
       - 'tools/vibe2-engine-auto-player.mjs'
       - 'tools/vibe2-roblox-auto-player.mjs'
@@ -107,6 +108,7 @@ jobs:
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-code-intelligence.mjs
           node --check tools/vibe2-auto-player-contract.mjs
+          node --check tools/vibe2-auto-player.mjs
           node --check tools/vibe2-web-auto-player.mjs
           node --check tools/vibe2-engine-auto-player.mjs
           node --check tools/vibe2-roblox-auto-player.mjs
@@ -149,11 +151,15 @@ jobs:
           else echo 'Chrome/Chromium required for real Web AUTO PLAYER QA' >&2; exit 1; fi
           echo "VIBE2_WEB_AUTO_PLAYER_CHROME=$chrome"
 
+      - name: AUTO PLAYER runtime tests
+        run: |
+          set -euo pipefail
+          node --test --test-force-exit qa/vibe2-auto-player.test.mjs
+
       - name: Vibe2 core tests
         run: |
           set -euo pipefail
           node --test qa/vibe2-auto-planner.test.mjs
-          node --test qa/vibe2-auto-player.test.mjs
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-exploration-worker.test.mjs
