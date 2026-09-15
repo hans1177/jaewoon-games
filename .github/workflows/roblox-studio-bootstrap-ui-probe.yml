@@ -60,6 +60,7 @@ jobs:
           Add-Type -AssemblyName UIAutomationClient
           Add-Type -AssemblyName UIAutomationTypes
           Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class MouseNative { [DllImport("user32.dll")] public static extern bool SetCursorPos(int X,int Y); [DllImport("user32.dll")] public static extern void mouse_event(uint f,uint dx,uint dy,uint data,UIntPtr extra); }'
           $studio = $null
           $roots = @("$env:LOCALAPPDATA\Roblox\Versions","$env:PROGRAMFILES\Roblox\Versions","${env:ProgramFiles(x86)}\Roblox\Versions") | Where-Object { $_ -and (Test-Path $_) }
           foreach ($rootPath in $roots) {
@@ -85,32 +86,25 @@ jobs:
             $top = @($menuItems | Where-Object { $_.Current.BoundingRectangle.Top -lt ($main.Current.BoundingRectangle.Top + 55) -and $_.Current.BoundingRectangle.Width -gt 10 } | Sort-Object { $_.Current.BoundingRectangle.Left })
             if ($top.Count -lt 1) { throw 'Studio top menu not discoverable' }
             $fileMenu = $top[0]
-            Write-Host ("ROBLOX_BOOTSTRAP_FILE_MENU name='{0}' automationId='{1}' left='{2}'" -f $fileMenu.Current.Name,$fileMenu.Current.AutomationId,$fileMenu.Current.BoundingRectangle.Left)
-            $opened = $false
-            try {
-              $expand = $null
-              if ($fileMenu.TryGetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern,[ref]$expand)) { $expand.Expand(); $opened=$true }
-            } catch {}
-            if (-not $opened) {
-              try {
-                $invoke=$null
-                if ($fileMenu.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$invoke)) { $invoke.Invoke(); $opened=$true }
-              } catch {}
-            }
-            if (-not $opened) { throw 'Studio File menu exposes neither Expand nor Invoke pattern' }
+            $r=$fileMenu.Current.BoundingRectangle
+            Write-Host ("ROBLOX_BOOTSTRAP_FILE_MENU name='{0}' left='{1}' top='{2}' width='{3}' height='{4}'" -f $fileMenu.Current.Name,$r.Left,$r.Top,$r.Width,$r.Height)
+            $shell=New-Object -ComObject WScript.Shell
+            if (-not $shell.AppActivate($p.Id)) { throw 'Studio not interactive' }
+            [MouseNative]::SetCursorPos([int]($r.Left+$r.Width/2),[int]($r.Top+$r.Height/2)) | Out-Null
+            [MouseNative]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero)
+            [MouseNative]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero)
             Start-Sleep -Seconds 2
             $allProcess = $root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$pidCondition)
             $found=0
             foreach ($e in $allProcess) {
-              if ($e.Current.ControlType.ProgrammaticName -eq 'ControlType.MenuItem' -and -not $e.Current.IsOffscreen) {
+              $ct=[string]$e.Current.ControlType.ProgrammaticName
+              if (($ct -eq 'ControlType.MenuItem' -or $ct -eq 'ControlType.Menu') -and -not $e.Current.IsOffscreen) {
                 $found++
-                Write-Host ("ROBLOX_BOOTSTRAP_MENU_ITEM name='{0}' automationId='{1}' class='{2}' enabled='{3}'" -f $e.Current.Name,$e.Current.AutomationId,$e.Current.ClassName,$e.Current.IsEnabled)
+                Write-Host ("ROBLOX_BOOTSTRAP_MENU_ITEM type='{0}' name='{1}' automationId='{2}' class='{3}' enabled='{4}'" -f $ct,$e.Current.Name,$e.Current.AutomationId,$e.Current.ClassName,$e.Current.IsEnabled)
               }
             }
             Write-Host "ROBLOX_BOOTSTRAP_VISIBLE_MENU_ITEMS=$found"
-            if ($found -lt 2) { throw 'File menu did not expose menu items' }
-            $shell=New-Object -ComObject WScript.Shell
-            $null=$shell.AppActivate($p.Id)
+            if ($found -lt 8) { throw 'File menu did not expose submenu items' }
             $shell.SendKeys('{ESC}')
             Write-Host 'ROBLOX_BOOTSTRAP_PROBE=PASS'
             Write-Host 'ROBLOX_EXPERIENCE_CREATED=NO'
