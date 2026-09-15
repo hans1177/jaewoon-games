@@ -43,8 +43,8 @@ jobs:
           if (-not $shell.AppActivate($p.Id)) { throw 'Studio is not interactive' }
           Start-Sleep -Milliseconds 700
 
-          $nameX = [int]($r.Left + ($r.Width * 0.70))
-          $nameY = [int]($r.Top + ($r.Height * 0.145))
+          $nameX = [int]($r.Left + ($r.Width * 0.705))
+          $nameY = [int]($r.Top + ($r.Height * 0.107))
           [MouseNative]::SetCursorPos($nameX,$nameY) | Out-Null
           [MouseNative]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero)
           [MouseNative]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero)
