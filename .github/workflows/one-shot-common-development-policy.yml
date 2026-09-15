@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   migrate:
@@ -116,3 +116,17 @@ jobs:
             .github/workflows/company-central-policy-contract-qa.yml
           if-no-files-found: error
           retention-days: 1
+      - name: Commit non-workflow migration result to automation branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add COMPANY_FLOW.md company-directive.json tools/company-common-development-quality-contract.mjs tools/company-web-validation-evidence-contract.mjs qa/company-common-development-quality-contract.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/company-web-real-game-regression.test.mjs
+          if git diff --cached --quiet; then
+            echo 'MIGRATION_NO_NONWORKFLOW_CHANGES=YES'
+            exit 0
+          fi
+          git commit -m 'apply common development quality policy'
+          git push --force origin HEAD:refs/heads/automation/common-development-policy-migration
+          echo 'MIGRATION_BRANCH=automation/common-development-policy-migration'
