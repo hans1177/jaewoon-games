@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "mode": "server-hourly-24h-parallel-study",
+  "maxConcurrentTasks": 20,
+  "policy": {
+    "execution": "server-only",
+    "learningState": ".vibe2/experience.json",
+    "publicObservationSourceAccess": "observation-only",
+    "sourceAnalysisRequires": "owned-or-authorized-server-workspace",
+    "rawSourceCopiedIntoMemory": false,
+    "mayAutoCopyGameplayValues": false,
+    "mayExpandAuthority": false,
+    "robloxPublicExperienceDownload": false,
+    "robloxStudioRunnerMustBeExplicitlyReady": true,
+    "clientLocalLearning": false
+  },
+  "targets": []
+}

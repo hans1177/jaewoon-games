@@ -7,6 +7,7 @@ on:
     paths:
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
+      - '.vibe2/game-study-targets.json'
       - 'assets/vibe-engine-adapter.js'
       - 'assets/vibe-workbench.js'
       - 'assets/vibe-core-runtime.js'
@@ -27,6 +28,11 @@ on:
       - 'tools/vibe2-unity-auto-player.mjs'
       - 'tools/vibe2-uefn-auto-player.mjs'
       - 'tools/vibe2-unreal-auto-player.mjs'
+      - 'tools/vibe2-game-study.mjs'
+      - 'tools/vibe2-web-game-study.mjs'
+      - 'tools/vibe2-roblox-game-study.mjs'
+      - 'tools/vibe2-game-study-queue.mjs'
+      - 'tools/vibe2-game-study-worker.mjs'
       - 'tools/runtime/roblox/Vibe2AutoPlayer.luau'
       - 'tools/runtime/unity/Vibe2AutoPlayerRuntime.cs'
       - 'tools/runtime/uefn/Vibe2UefnAutoPlayer.ps1'
@@ -43,6 +49,7 @@ on:
       - 'tools/vibe2-handoff.mjs'
       - 'qa/vibe2-auto-planner.test.mjs'
       - 'qa/vibe2-auto-player.test.mjs'
+      - 'qa/vibe2-game-study.test.mjs'
       - 'qa/fixtures/vibe2-auto-player-web/**'
       - 'qa/fixtures/vibe2-fake-engine-runtime.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
@@ -60,6 +67,7 @@ on:
       - 'qa/vibe2-handoff.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-game-study-continuous.yml'
       - '.github/workflows/vibe2-core-qa.yml'
   pull_request:
     branches:
@@ -67,6 +75,7 @@ on:
     paths:
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
+      - '.vibe2/game-study-targets.json'
       - 'assets/vibe-continuous-queue.js'
       - 'tools/vibe2-*.mjs'
       - 'tools/runtime/**'
@@ -75,6 +84,7 @@ on:
       - 'qa/fixtures/vibe2-fake-engine-runtime.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-game-study-continuous.yml'
       - '.github/workflows/vibe2-core-qa.yml'
   workflow_dispatch:
 
@@ -119,6 +129,11 @@ jobs:
           node --check tools/vibe2-unity-auto-player.mjs
           node --check tools/vibe2-uefn-auto-player.mjs
           node --check tools/vibe2-unreal-auto-player.mjs
+          node --check tools/vibe2-game-study.mjs
+          node --check tools/vibe2-web-game-study.mjs
+          node --check tools/vibe2-roblox-game-study.mjs
+          node --check tools/vibe2-game-study-queue.mjs
+          node --check tools/vibe2-game-study-worker.mjs
           node --check tools/vibe2-performance-sanity.mjs
           node --check tools/vibe2-fan-in-review.mjs
           node --check tools/vibe2-queue-control.mjs
@@ -132,6 +147,7 @@ jobs:
           node --check qa/fixtures/vibe2-fake-engine-runtime.mjs
           node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe2-auto-player.test.mjs
+          node --check qa/vibe2-game-study.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
@@ -179,6 +195,7 @@ jobs:
           node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
+          node --test qa/vibe2-game-study.test.mjs
           node --test qa/vibe2-handoff.test.mjs
 
       - name: Generate machine handoff
