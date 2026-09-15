@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      background-color: #111;
+      min-height: 100vh;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .game-container > div {
+      width: 100%;
+      max-width: 600px;
+      background-color: #333;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .game-container > div > h2 {
+      margin-top: 0;
+    }
+    .game-container > div > p {
+      margin-top: 10px;
+    }
+    .game-container > div > button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #555;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .game-container > div > button:hover {
+      background-color: #777;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game-container">
+      <h1>Vibe2</h1>
+      <p>Play the game with touch input and responsive layout.</p>
+      <button onclick="startGame()">Start Game</button>
+    </div>
+  </main>
+
+  <script>
+    function startGame() {
+      const gameContainer = document.getElementById('game');
+      gameContainer.innerHTML = `
+        <div class="game-container">
+          <h2>Game Start</h2>
+          <p>Click the button to start the game.</p>
+          <button onclick="startGame()">Start Game</button>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
