@@ -1,0 +1,70 @@
+name: Roblox Bootstrap Output Menu Probe
+
+on:
+  push:
+    branches: [fix/roblox-auto-bootstrap]
+    paths:
+      - '.github/workflows/roblox-bootstrap-output-menu-probe.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: capture Studio Window menu without model changes
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 10
+    steps:
+      - name: Open Window menu and capture screen
+        shell: powershell
+        run: |
+          $ErrorActionPreference='Stop'
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+          Add-Type -AssemblyName System.Drawing
+          Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class MouseNative { [DllImport("user32.dll")] public static extern bool SetCursorPos(int X,int Y); [DllImport("user32.dll")] public static extern void mouse_event(uint f,uint dx,uint dy,uint data,UIntPtr extra); }'
+
+          $p=Get-Process RobloxStudioBeta -ErrorAction Stop | Select-Object -First 1
+          $root=[System.Windows.Automation.AutomationElement]::RootElement
+          $pidCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty,$p.Id)
+          $windows=$root.FindAll([System.Windows.Automation.TreeScope]::Children,$pidCond)
+          $main=$null
+          foreach($w in $windows){ if([string]$w.Current.AutomationId -eq 'RBXMainWindow'){ $main=$w; break } }
+          if(-not $main){ throw 'RBXMainWindow not detected' }
+
+          $publishCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs')
+          if($main.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$publishCond)){ throw 'Publish dialog unexpectedly open' }
+
+          $menus=@($main.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition) | Where-Object { [string]$_.Current.ControlType.ProgrammaticName -eq 'ControlType.MenuItem' -and [string]$_.Current.Name -eq '창' -and $_.Current.IsEnabled -and -not $_.Current.IsOffscreen })
+          if($menus.Count -lt 1){ throw 'Window menu not detected' }
+          $menu=$menus[0]
+          $r=$menu.Current.BoundingRectangle
+          Write-Host ("ROBLOX_BOOTSTRAP_WINDOW_MENU=PASS left={0} top={1} width={2} height={3}" -f $r.Left,$r.Top,$r.Width,$r.Height)
+
+          $shell=New-Object -ComObject WScript.Shell
+          if(-not $shell.AppActivate($p.Id)){ throw 'Studio not interactive' }
+          [MouseNative]::SetCursorPos([int]($r.Left+$r.Width/2),[int]($r.Top+$r.Height/2)) | Out-Null
+          [MouseNative]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero)
+          [MouseNative]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero)
+          Start-Sleep -Seconds 2
+
+          $mr=$main.Current.BoundingRectangle
+          $x=[int][Math]::Floor($mr.Left); $y=[int][Math]::Floor($mr.Top)
+          $w=[int][Math]::Ceiling($mr.Width); $h=[int][Math]::Ceiling($mr.Height)
+          $bmp=New-Object System.Drawing.Bitmap($w,$h)
+          $g=[System.Drawing.Graphics]::FromImage($bmp)
+          try{$g.CopyFromScreen($x,$y,0,0,$bmp.Size)}finally{$g.Dispose()}
+          $out=Join-Path $env:RUNNER_TEMP 'roblox-bootstrap-output-menu'
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          $shot=Join-Path $out 'window-menu.png'
+          $bmp.Save($shot,[System.Drawing.Imaging.ImageFormat]::Png)
+          $bmp.Dispose()
+          Write-Host 'ROBLOX_BOOTSTRAP_WINDOW_MENU_CAPTURE=PASS'
+
+      - name: Upload Window menu proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-bootstrap-output-menu-proof
+          path: ${{ runner.temp }}/roblox-bootstrap-output-menu
+          retention-days: 1
+          if-no-files-found: error
