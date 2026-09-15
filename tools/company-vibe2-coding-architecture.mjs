@@ -150,22 +150,46 @@ function regressionPlan(systems=[]){
   return systems.map(system=>({id:`REGRESSION_${system}`,trigger:`ANY_PATCH_TOUCHING_${system}_OR_ITS_OWNED_STATE`,assertions:['PRIOR_WORKING_BEHAVIOR_REMAINS','NEW_EXPECTED_BEHAVIOR_OBSERVED','NO_RELEVANT_INVARIANT_VIOLATION','NO_DUPLICATE_CAUSAL_EVENT']}));
 }
 
-export function buildCodingArchitecture({gameId='',genre='',baseline={},gameplaySketch={},sourceAnalysis={},explicitDevelopmentMode=''}={}){
-  const developmentMode=resolveDevelopmentMode({baseline,sourceAnalysis,explicitDevelopmentMode}),mode=modeContract(developmentMode,baseline),systems=activeSystems({gameplaySketch,sourceAnalysis}),owners=stateOwnership(systems),units=implementationUnits(systems);
+function compactForModel(architecture={}){
   return{
+    version:architecture.version,
+    developmentMode:architecture.developmentMode,
+    modeContract:architecture.modeContract,
+    architectureOrder:architecture.architectureOrder,
+    sourceLayout:architecture.sourceLayout,
+    stateOwnership:(architecture.stateOwnership||[]).map(({system,owns})=>({system,owns})),
+    apiContracts:(architecture.apiContracts||[]).map(({system,api})=>({system,api})),
+    eventContract:'ONCE_PER_CAUSAL_ACTION; DUPLICATE_CAUSAL_EVENT_MUST_NOT_DUPLICATE_REWARD_DAMAGE_PURCHASE_OR_PROGRESS',
+    codingLoop:architecture.codingLoop,
+    microRuntimeContract:'TARGETED_REPAIR_ITERATION_ONLY; CANNOT_SUBSTITUTE_FOR_FULL_CANONICAL_PROMOTION_VALIDATION',
+    invariantIds:(architecture.invariants||[]).map(row=>row.id),
+    impactRule:'PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED',
+    regressionRule:'ADD_OR_UPDATE_REGRESSION_CASE_PER_FEATURE_OR_FIXED_BUG',
+    changeBudget:architecture.changeBudget,
+    refactorPolicy:architecture.refactorPolicy,
+    recoveryRules:architecture.recoveryPolicy?.rules,
+    performanceRules:architecture.performancePolicy?.rules,
+    selfReview:architecture.selfReview?.questions,
+    forbidden:architecture.forbidden,
+  };
+}
+
+export function buildCodingArchitecture({gameId='',genre='',baseline={},gameplaySketch={},sourceAnalysis={},explicitDevelopmentMode=''}={}){
+  const developmentMode=resolveDevelopmentMode({baseline,sourceAnalysis,explicitDevelopmentMode}),mode=modeContract(developmentMode,baseline),systems=activeSystems({gameplaySketch,sourceAnalysis}),owners=stateOwnership(systems),units=implementationUnits(systems),apis=apiContracts(systems),events=eventContracts(systems),microTests=microRuntimeTests(systems),assertions=invariants({systems,gameplaySketch}),impact=impactPrediction(systems),regressions=regressionPlan(systems);
+  const architecture={
     version:1,
     gameId:clean(gameId),genre:clean(genre),developmentMode,modeContract:mode,
     architectureOrder:['GAME_FLOW_ARCHITECT','GAMEPLAY_SKETCH','SYSTEM_BOUNDARIES','STATE_OWNERSHIP','DATA_SCHEMA','API_CONTRACTS','EVENT_CONTRACTS','IMPLEMENTATION_UNITS','MICRO_RUNTIME_TESTS','INTEGRATION','FULL_CANONICAL_VALIDATION','BUILD'],
     sourceLayout:{logicalModules:systems,physicalPolicy:developmentMode==='PRESERVE_PATCH'?'PRESERVE_EXISTING_PHYSICAL_LAYOUT':developmentMode==='GREENFIELD'?'PLATFORM_APPROPRIATE_MODULES':'NEW_COHERENT_PROJECT_LAYOUT_FROM_ALLOWED_COMPONENTS',webCompatibility:'WEB_CAN_REMAIN_SINGLE_SELF_CONTAINED_HTML_WHILE_KEEPING_LOGICAL_MODULE_BOUNDARIES',singleResponsibility:'ONE_MODULE_OR_FUNCTION_SHOULD_NOT_OWN_UNRELATED_WORLD_COMBAT_UI_SAVE_AND_ECONOMY_MUTATIONS'},
     stateOwnership:owners,
     dataSchema:{rule:'CRITICAL_ENTITY_PLAYER_WORLD_ECONOMY_PROGRESSION_AND_SAVE_STATE_MUST_HAVE_DECLARED_SHAPE_DEFAULTS_AND_VALIDATION',saveMigration:'VERSION_AND_MIGRATION_REQUIRED_WHEN_EXISTING_PERSISTED_SHAPE_CHANGES',corruptRecovery:'RECOVER_LAST_VALID_OR_SAFE_PARTIAL_STATE_WHEN_SUPPORTED_INSTEAD_OF_SILENT_TOTAL_RESET'},
-    apiContracts:apiContracts(systems),eventContracts:eventContracts(systems),
+    apiContracts:apis,eventContracts:events,
     implementationUnits:units,
     codingLoop:['PLAN_CHANGE','PREDICT_IMPACT','IMPLEMENT_ONE_COHERENT_UNIT','SYNTAX_TYPE_IMPORT_CHECK','MICRO_RUNTIME_TEST','INVARIANT_CHECK','ADD_OR_UPDATE_REGRESSION_CASE','SELF_REVIEW','INTEGRATE','FULL_VALIDATION_AT_CANONICAL_GATE'],
-    microRuntimeTests:microRuntimeTests(systems),
-    invariants:invariants({systems,gameplaySketch}),
-    impactPrediction:impactPrediction(systems),
-    regressionPlan:regressionPlan(systems),
+    microRuntimeTests:microTests,
+    invariants:assertions,
+    impactPrediction:impact,
+    regressionPlan:regressions,
     changeBudget:{rule:'PREFER_MINIMUM_COHERENT_CHANGE_SET',warning:'SMALL_DEFECT_SHOULD_NOT_CAUSE_UNRELATED_MULTI_SYSTEM_REWRITE',preserveWorkingCode:developmentMode==='PRESERVE_PATCH'},
     refactorPolicy:{mode:'SEPARATE_FROM_FEATURE_CHANGE_WHEN_PRACTICAL',behaviorContract:'REFACTOR_MUST_PRESERVE_OBSERVABLE_GAMEPLAY_AND_SAVE_BEHAVIOR',requiredEvidence:['REPLAY_OR_EQUIVALENT_REGRESSION','SAVE_COMPATIBILITY_WHEN_APPLICABLE','MICRO_TESTS_FOR_TOUCHED_SYSTEMS']},
     duplicationPolicy:{rule:'DO_NOT_COPY_CORE_DAMAGE_SAVE_REWARD_TRANSACTION_OR_STATE_TRANSITION_LOGIC_ACROSS_UNRELATED_CALL_SITES',action:'CENTRALIZE_ONLY_WHEN_IT_REDUCES_DUPLICATE_CAUSAL_LOGIC_WITHOUT_FORCING_UNRELATED_REWRITE'},
@@ -174,6 +198,8 @@ export function buildCodingArchitecture({gameId='',genre='',baseline={},gameplay
     selfReview:{questions:['DID_THE_CHANGE_IMPLEMENT_THE_LOCKED_REQUIREMENT','WHO_OWNS_EACH_MUTATED_STATE','CAN_ONE_INPUT_APPLY_THE_EFFECT_TWICE','WHAT_EXISTING_SYSTEMS_CAN_THIS_BREAK','WHAT_HAPPENS_ON_INVALID_OR_MISSING_STATE','DID_UI_OR_PRESENTATION_MUTATE_GAMEPLAY_DIRECTLY','ARE_SAVE_AND_REPLAY_SEMANTICS_PRESERVED','DID_THE_MICRO_TEST_AND_REGRESSION_CASE_COVER_THE_FAILURE_MODE']},
     forbidden:['WRITE_WHOLE_COMPLEX_GAME_IN_ONE_UNVERIFIED_PASS','DIRECT_CROSS_SYSTEM_STATE_MUTATION_WITHOUT_CONTRACT','MICRO_TEST_AS_SUBSTITUTE_FOR_FULL_PROMOTION_VALIDATION','UNAUTHORIZED_EXTERNAL_SOURCE_OR_ASSET_COPY','FEATURE_CHANGE_PLUS_UNRELATED_REFACTOR','STATIC_LABEL_OR_TEST_PANEL_AS_GAMEPLAY_IMPLEMENTATION'],
   };
+  Object.defineProperty(architecture,'toJSON',{enumerable:false,value(){return compactForModel(architecture);}});
+  return architecture;
 }
 
 export function evaluateCodingArchitecture(architecture={}){
