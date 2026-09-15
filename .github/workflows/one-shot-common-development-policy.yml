@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   migrate:
@@ -96,35 +96,23 @@ jobs:
       - name: Test common development quality contract
         run: node --test qa/company-common-development-quality-contract.test.mjs
       - name: Test web validation evidence contract
-        id: web_validation_test
-        continue-on-error: true
-        run: node --test qa/company-web-validation-evidence-contract.test.mjs > web-validation-test.log 2>&1
-      - name: Upload web validation test log
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-validation-test-log
-          path: web-validation-test.log
-          if-no-files-found: error
-          retention-days: 1
-      - name: Fail on web validation test error
-        if: steps.web_validation_test.outcome != 'success'
-        run: exit 1
+        run: node --test qa/company-web-validation-evidence-contract.test.mjs
       - name: Test selected platform validation contract
         run: node --test qa/company-development-validation-selected-platform.test.mjs
       - name: Test central policy contract
         run: node --test qa/company-central-policy-contract.test.mjs
-      - name: Commit migration result to automation branch
-        shell: bash
-        run: |
-          set -euo pipefail
-          if git diff --quiet && git diff --cached --quiet; then
-            echo 'MIGRATION_NO_CHANGES=YES'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add COMPANY_FLOW.md company-directive.json tools/company-common-development-quality-contract.mjs tools/company-web-validation-evidence-contract.mjs qa/company-common-development-quality-contract.test.mjs qa/company-development-validation-selected-platform.test.mjs qa/company-web-real-game-regression.test.mjs .github/workflows/company-central-policy-contract-qa.yml
-          git commit -m 'apply common development quality policy'
-          git push --force origin HEAD:refs/heads/automation/common-development-policy-migration
-          echo 'MIGRATION_BRANCH=automation/common-development-policy-migration'
+      - name: Export verified migration result
+        uses: actions/upload-artifact@v4
+        with:
+          name: common-development-policy-migration-result
+          path: |
+            COMPANY_FLOW.md
+            company-directive.json
+            tools/company-common-development-quality-contract.mjs
+            tools/company-web-validation-evidence-contract.mjs
+            qa/company-common-development-quality-contract.test.mjs
+            qa/company-development-validation-selected-platform.test.mjs
+            qa/company-web-real-game-regression.test.mjs
+            .github/workflows/company-central-policy-contract-qa.yml
+          if-no-files-found: error
+          retention-days: 1
