@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';
+import {repairDesignRequiredFields} from './company-design-prepromotion-repair.mjs';
 
 const ROLES=['planning','graphics','development','qa','balance'];
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
@@ -131,7 +132,7 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
   return value;
 }
 
-async function callModel(model,system,user,schema,{predict=1100,temperature=0.25}={}){
+async function callModel(model,system,user,schema,{predict=1100,temperature=0.25,repairRequired=null}={}){
   const callStarted=Date.now();
   const deepSeek=model.startsWith('deepseek-r1');
   let lastError=null;
@@ -147,14 +148,24 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
       if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
       const body=await response.json();const text=String(body?.message?.content??'').trim();
       if(!text){if(clean(body?.message?.thinking))console.log(`MODEL_EMPTY_CONTENT_WITH_THINKING=${model}|attempt=${attempt}|mode=${mode}`);throw new Error(`empty model response (${mode})`);}
-      const parsed=parseJsonObject(text);const repairs=[];const normalized=normalizeSchemaValue(parsed,schema,'root',repairs);if(repairs.length)console.log(`MODEL_SCHEMA_NORMALIZED=${model}|attempt=${attempt}|${repairs.join(',')}`);assertSchemaValue(normalized,schema);
+      const parsed=parseJsonObject(text);const repairs=[];let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
+      if(typeof repairRequired==='function'){
+        const grounded=repairRequired(normalized);
+        if(grounded?.value)normalized=grounded.value;
+        if(Array.isArray(grounded?.repairs)&&grounded.repairs.length){
+          for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
+          console.log(`MODEL_REQUIRED_FIELD_REPAIRED=${model}|attempt=${attempt}|${grounded.repairs.map(item=>`${item.field}<-${item.source}`).join(',')}`);
+        }
+      }
+      if(repairs.length)console.log(`MODEL_SCHEMA_NORMALIZED=${model}|attempt=${attempt}|${repairs.join(',')}`);
+      assertSchemaValue(normalized,schema);
       const elapsedMs=Date.now()-callStarted;modelCallStats.push({model,attempt,elapsedMs,predict,mode,schemaRepairs:repairs.length});console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}|mode=${mode}`);return normalized;
     }catch(error){lastError=error;if(attempt<2){const nextMode='json';console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${nextMode}|reason=${clean(error?.message)}`);await new Promise(r=>setTimeout(r,800*attempt));}}
   }
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
 
-const designDraft=await runPhase('designer_draft',()=>callModel(designerModel,'너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용하며 부서가 대신 초안을 작성하지 않는다. 유명 성공작의 구조는 오마주/재해석하되 보호되는 표현과 소스코드는 복제하지 않는다.',`DESIGN_ONLY 상세 설계 초안을 작성하라. GAME_SEED의 핵심 재미, 선택 플랫폼, 타겟 방향을 보존하라. 현재 게임의 실제 코어루프를 기준으로 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시하고, multiplayerExpansionDecision과 현재 플레이 모드를 혼동하지 마라. 시장근거는 타겟 참고용이며 없는 수치를 발명하지 마라.\nEVIDENCE=${clip(evidence,17000)}`,DESIGN,{predict:1300,temperature:0.35}));
+const designDraft=await runPhase('designer_draft',()=>callModel(designerModel,'너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용하며 부서가 대신 초안을 작성하지 않는다. 유명 성공작의 구조는 오마주/재해석하되 보호되는 표현과 소스코드는 복제하지 않는다.',`DESIGN_ONLY 상세 설계 초안을 작성하라. GAME_SEED의 핵심 재미, 선택 플랫폼, 타겟 방향을 보존하라. 현재 게임의 실제 코어루프를 기준으로 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시하고, multiplayerExpansionDecision과 현재 플레이 모드를 혼동하지 마라. 시장근거는 타겟 참고용이며 없는 수치를 발명하지 마라.\nEVIDENCE=${clip(evidence,17000)}`,DESIGN,{predict:1300,temperature:0.35,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})}));
 writeJson(path.join(base,'design-draft.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,singleAuthor:true,content:designDraft});
 
 const independentReviews=await runPhase('independent_department_reviews',()=>parallelObject(Object.keys(independentReviewTasks),async key=>{
@@ -180,7 +191,7 @@ const meeting=await runPhase('cross_department_meeting',()=>callModel(coordinato
 const consensus=meeting.decisions.filter(x=>x.status==='CONSENSUS');const conflicts=meeting.decisions.filter(x=>x.status==='CONFLICT');const holds=meeting.decisions.filter(x=>x.status==='HOLD');
 writeJson(path.join(base,'department-meeting.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',coordinatorModel,departmentLeadModels:leadModels,distinctLeadModels,distinctLeadModelCount:distinctLeadModels.length,representatives,rebuttalRound:1,rebuttalAuthoredByDepartmentLeads:true,...meeting,counts:{consensus:consensus.length,conflict:conflicts.length,hold:holds.length}});
 
-const revisedDesign=await runPhase('designer_revision',()=>callModel(designerModel,'너는 초안을 작성한 동일 Game Designer AI다. CONSENSUS만 설계에 반영하고 CONFLICT/HOLD는 openQuestions에 남긴다. GAME_SEED의 정체성과 타겟 근거를 잃지 않는다. multiplayerMode는 실제 코어루프와 합의 근거 없이 임의 변경하지 않는다.',`같은 설계자가 수정한다. 최종 multiplayerMode는 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 반드시 유지한다.\nGAME_SEED=${clip(seed,6500)}\nDRAFT=${clip(designDraft,12000)}\nCONSENSUS=${clip(consensus,6500)}\nCONFLICT=${clip(conflicts,3500)}\nHOLD=${clip(holds,3500)}`,DESIGN,{predict:1300,temperature:0.2}));
+const revisedDesign=await runPhase('designer_revision',()=>callModel(designerModel,'너는 초안을 작성한 동일 Game Designer AI다. CONSENSUS만 설계에 반영하고 CONFLICT/HOLD는 openQuestions에 남긴다. GAME_SEED의 정체성과 타겟 근거를 잃지 않는다. multiplayerMode는 실제 코어루프와 합의 근거 없이 임의 변경하지 않는다.',`같은 설계자가 수정한다. 최종 multiplayerMode는 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 반드시 유지한다.\nGAME_SEED=${clip(seed,6500)}\nDRAFT=${clip(designDraft,12000)}\nCONSENSUS=${clip(consensus,6500)}\nCONFLICT=${clip(conflicts,3500)}\nHOLD=${clip(holds,3500)}`,DESIGN,{predict:1300,temperature:0.2,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})}));
 writeJson(path.join(base,'design-revised.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,sameModelAsDraft:true,appliedConsensusCount:consensus.length,unresolvedConflictCount:conflicts.length,heldCount:holds.length,status:'DESIGN_BASELINE_CANDIDATE',content:revisedDesign});
 
 const fatalReviews=await runPhase('five_lead_fatal_review',()=>parallelObject(ROLES,role=>callModel(leadModels[role],`너는 ${role} 부서 Lead AI다. Game Designer 수정 이후 폐기 안전 재검토를 한다. 단순 불만·시장수치·수정가능 문제로 DISCARD를 선택하면 안 된다. DISCARD는 중앙정책의 fatalCriteria 중 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 가능하다.`,`수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라.\nVALID_FATAL_CRITERIA=${JSON.stringify(FATAL_CRITERIA)}\nGAME_SEED=${clip(seed,6000)}\nREVISED_DESIGN=${clip(revisedDesign,13000)}\nINITIAL_MEETING=${clip(meeting,5000)}`,FATAL_REVIEW,{predict:450,temperature:0.1})));

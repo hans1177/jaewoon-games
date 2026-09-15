@@ -154,6 +154,7 @@ jobs:
           node --check tools/game-seed-state.mjs
           node --check tools/company-game-seed-contract.mjs
           node --check tools/company-strict-production-review.mjs
+          node --check tools/company-design-prepromotion-repair.mjs
           node --check tools/company-design-cycle.mjs
       - name: Restore Ollama model cache
         if: steps.target.outputs.should_run == 'true'
@@ -193,6 +194,22 @@ jobs:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
         run: node tools/artbook-production-pipeline.mjs
+      - name: Repair missing pre-promotion design requirements
+        if: steps.target.outputs.should_run == 'true'
+        env:
+          GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-design-prepromotion-repair.mjs --game-id="$GAME_ID" --date="$ARTBOOK_DATE" --phase=PRE_REVIEW | tee /tmp/prepromotion-repair.txt
+          node tools/company-baseline-gate.mjs
+          unresolved="$(sed -n 's/^PREPROMOTION_REPAIR_UNRESOLVED=//p' /tmp/prepromotion-repair.txt | tail -n 1)"
+          if [ -n "$unresolved" ]; then
+            echo "PREPROMOTION_REPAIR_BLOCKED=$unresolved" >&2
+            exit 1
+          fi
+          echo 'PREPROMOTION_REPAIR_GATE=PASS'
       - name: Apply strict 30-minute design review
         if: steps.target.outputs.should_run == 'true'
         env:
@@ -206,6 +223,26 @@ jobs:
           set -e
           if [ "$rc" -eq 0 ]; then echo 'STRICT_DESIGN_GATE=PASS'; else echo 'STRICT_DESIGN_GATE=REVISE_OR_REBUILD'; fi
           exit 0
+      - name: Apply one bounded review-feedback repair and re-review
+        if: steps.target.outputs.should_run == 'true'
+        env:
+          GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-design-prepromotion-repair.mjs --game-id="$GAME_ID" --date="$ARTBOOK_DATE" --phase=REVIEW_FEEDBACK | tee /tmp/review-feedback-repair.txt
+          if grep -q '^PREPROMOTION_REPAIR_CHANGED=YES$' /tmp/review-feedback-repair.txt; then
+            node tools/company-baseline-gate.mjs
+            set +e
+            node tools/company-strict-production-review.mjs --mode=design --game-id="$GAME_ID" --date="$ARTBOOK_DATE"
+            rc=$?
+            set -e
+            if [ "$rc" -eq 0 ]; then echo 'STRICT_DESIGN_REREVIEW=PASS'; else echo 'STRICT_DESIGN_REREVIEW=REVISE_OR_REBUILD'; fi
+          else
+            echo 'STRICT_DESIGN_REREVIEW=SKIPPED_NO_GROUNDED_REPAIR'
+          fi
+          echo 'REVIEW_FEEDBACK_REPAIR_MAX=1'
       - name: Verify baseline and strict review contract
         if: steps.target.outputs.should_run == 'true'
         env:
@@ -214,7 +251,7 @@ jobs:
         shell: bash
         run: |
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
+          import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('STRICT_DESIGN_SCORE_SYNTHESIZED=NO');console.log('STRICT_DESIGN_VERDICT_SYNTHESIZED=NO');console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
       - name: Persist validated design evidence to company runtime branch
         if: steps.target.outputs.should_run == 'true'
