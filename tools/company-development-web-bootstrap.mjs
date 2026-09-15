@@ -231,6 +231,24 @@ function preservedResult({gameId,gameName,html,inventory,notes=[]}){
     artifactType:REAL_ARTIFACT_TYPE
   };
 }
+function sharedScopeActionIndex(item={},index=0){
+  const text=`${clean(item?.path)} ${clean(item?.label)}`.toLowerCase();
+  if(/mobileux|mobile|touch/.test(text))return 2;
+  if(/explor|area|quest|discover|character/.test(text))return 0;
+  if(/progress through|real ending|complete story|major encounter/.test(text))return 4;
+  if(/fight|combat|attack|enemy|boss/.test(text))return index%2===0?3:1;
+  if(/equip|skill|upgrade|growth|level/.test(text))return 3;
+  return index%5;
+}
+function sharedScopeButtons(inventory=[]){
+  const mechanicIds=['action-primary','action-secondary','action-tertiary','action-support','action-accelerated'];
+  const count=Math.max(5,inventory.length);
+  return Array.from({length:count},(_,index)=>{
+    const item=inventory[index],actionIndex=item?sharedScopeActionIndex(item,index):index%5;
+    const scope=item?` data-scope-id="${esc(item.id)}"`:'';
+    return `<button id="a${index}" class="action" data-gameplay-action="true"${scope} data-mechanic-id="${mechanicIds[actionIndex]}" data-action-index="${actionIndex}"></button>`;
+  }).join('');
+}
 function buildPreservedSharedGame({gameId,gameName,sourcePath,inventory}){
   const indexFile=path.join(sourcePath,'index.html');
   if(!fs.existsSync(indexFile)||!fs.existsSync(SHARED_REAL_ENGINE))return null;
@@ -238,10 +256,12 @@ function buildPreservedSharedGame({gameId,gameName,sourcePath,inventory}){
   if(!sharedScript.test(original))return null;
   if(inventory.length<1)throw new Error(`SOURCE_PRESERVE_SCOPE_COUNT_UNSUPPORTED:${inventory.length}`);
   let engine=fs.readFileSync(SHARED_REAL_ENGINE,'utf8').replaceAll('__SCOPE_COUNT__',String(inventory.length));
+  const actionMarkup=sharedScopeButtons(inventory);
+  engine=engine.replace(/<section class="actions">[\s\S]*?<\/section>/,`<section class="actions">${actionMarkup}</section>`);
   for(let i=0;i<5;i++)engine=engine.replaceAll(`__SCOPE_${i}__`,inventory[i]?.id||`unused-scope-${i+1}`);
   engine=bindInitialCycleContract(engine,inventory.length);
   if(!/data-web-artifact-type=["']REAL_PLAYABLE_GAME/i.test(engine))engine=engine.replace('<main ',`<main data-web-artifact-type="${REAL_ARTIFACT_TYPE}" data-approved-scope-count="${inventory.length}" data-gameplay-system-count="7" data-run-result="running" `);
-  const validation=`<script>window.GAME_CONFIG=window.GAME_CONFIG||{};window.GAME_CONFIG.validationScopes=${JSON.stringify(inventory.map(x=>({id:x.id,path:x.path,label:x.label})))};</script>`;
+  const validation=`<script>window.GAME_CONFIG=window.GAME_CONFIG||{};window.GAME_CONFIG.validationScopes=${JSON.stringify(inventory.map((x,index)=>({id:x.id,path:x.path,label:x.label,actionIndex:sharedScopeActionIndex(x,index)})))};</script>`;
   const html=original.replace(sharedScript,`${validation}<script>${engine}</script>`);
   return preservedResult({gameId,gameName,html,inventory,notes:['existing shared real game source preserved before Vibe2 regeneration','shared runtime inlined for immutable source binding','save key and gameplay state retained']});
 }
