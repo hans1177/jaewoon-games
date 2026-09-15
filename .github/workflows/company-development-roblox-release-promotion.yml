@@ -105,16 +105,34 @@ jobs:
             &&sourceRoot===`roblox-games/${gameId}`
             &&Number.isInteger(artifactRunId)&&artifactRunId>0;
           if(!canonical)throw new Error(`ROBLOX_RELEASE_CANONICAL_GATE_BLOCKED:${gameId}`);
+
+          const knownGood=JSON.parse(fs.readFileSync('roblox-games/known-good-runtime-evidence.json','utf8'));
+          const targetEvidence=(knownGood.records||[]).find(row=>
+            row.gameId===gameId
+            &&row.sourceRevision===revision
+            &&row.artifactIdentity===artifact
+            &&Number(row.artifactRunId)===artifactRunId
+          );
+          const universeId=String(targetEvidence?.publicationTarget?.universeId||'').trim();
+          const placeId=String(targetEvidence?.publicationTarget?.placeId||'').trim();
+          const publicationTargetValid=/^[1-9][0-9]*$/.test(universeId)&&/^[1-9][0-9]*$/.test(placeId);
+          if(!publicationTargetValid)throw new Error(`ROBLOX_RELEASE_PUBLICATION_TARGET_MISSING_OR_MISMATCH:${gameId}`);
+
           put('skip','false');
           put('game_id',gameId);
           put('source_revision',revision);
           put('artifact_identity',artifact);
           put('artifact_run_id',artifactRunId);
           put('source_root',sourceRoot);
+          put('universe_id',universeId);
+          put('place_id',placeId);
           console.log(`ROBLOX_RELEASE_CANONICAL_TARGET=${gameId}`);
           console.log(`ROBLOX_RELEASE_SOURCE_REVISION=${revision}`);
           console.log(`ROBLOX_RELEASE_ARTIFACT_IDENTITY=${artifact}`);
           console.log(`ROBLOX_RELEASE_ARTIFACT_RUN_ID=${artifactRunId}`);
+          console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
+          console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
+          console.log('ROBLOX_RELEASE_PUBLICATION_TARGET_SOURCE=known-good-runtime-evidence');
           NODE
 
       - name: Verify unchanged source and assemble canonical release evidence
@@ -181,8 +199,8 @@ jobs:
         if: steps.target.outputs.skip != 'true'
         working-directory: main
         env:
-          ROBLOX_UNIVERSE_ID: ${{ vars.ROBLOX_UNIVERSE_ID || secrets.ROBLOX_UNIVERSE_ID }}
-          ROBLOX_PLACE_ID: ${{ vars.ROBLOX_PLACE_ID || secrets.ROBLOX_PLACE_ID }}
+          ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
+          ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: bash
@@ -201,8 +219,8 @@ jobs:
         working-directory: main
         env:
           ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
-          ROBLOX_UNIVERSE_ID: ${{ vars.ROBLOX_UNIVERSE_ID || secrets.ROBLOX_UNIVERSE_ID }}
-          ROBLOX_PLACE_ID: ${{ vars.ROBLOX_PLACE_ID || secrets.ROBLOX_PLACE_ID }}
+          ROBLOX_UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
+          ROBLOX_PLACE_ID: ${{ steps.target.outputs.place_id }}
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: bash
@@ -227,6 +245,8 @@ jobs:
           SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
           ARTIFACT_IDENTITY: ${{ steps.target.outputs.artifact_identity }}
           ARTIFACT_RUN_ID: ${{ steps.target.outputs.artifact_run_id }}
+          UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
+          PLACE_ID: ${{ steps.target.outputs.place_id }}
           VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
           RELEASE_RUN_ID: ${{ github.run_id }}
         shell: bash
@@ -242,10 +262,13 @@ jobs:
           const version=Number(process.env.VERSION_NUMBER);
           const artifactRunId=Number(process.env.ARTIFACT_RUN_ID);
           const releaseRunId=Number(process.env.RELEASE_RUN_ID);
+          const universeId=String(process.env.UNIVERSE_ID||'').trim();
+          const placeId=String(process.env.PLACE_ID||'').trim();
           if(item.robloxSourceCommit!==process.env.SOURCE_REVISION)throw new Error('release source revision changed before persist');
           if(item.robloxBuildArtifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('release artifact identity changed before persist');
           if(item.robloxFinalReviewPassed!==true)throw new Error('final review no longer passed before release persist');
           if(!Number.isInteger(version)||version<=0)throw new Error('published Roblox version missing');
+          if(!/^[1-9][0-9]*$/.test(universeId)||!/^[1-9][0-9]*$/.test(placeId))throw new Error('published Roblox target IDs missing');
           const stamp=new Date().toISOString();
           item.robloxReleaseEvidence={
             version:1,
@@ -254,6 +277,8 @@ jobs:
             sourceRevision:process.env.SOURCE_REVISION,
             artifactIdentity:process.env.ARTIFACT_IDENTITY,
             artifactRunId,
+            universeId,
+            placeId,
             finalReviewPassed:true,
             published:true,
             versionNumber:version,
@@ -278,6 +303,8 @@ jobs:
           fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
           console.log(`ROBLOX_RELEASE_CLAIM=${item.robloxReleaseClaim?'YES':'NO'}`);
           console.log(`ROBLOX_RELEASE_VERSION_NUMBER=${version}`);
+          console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
+          console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
           NODE
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
