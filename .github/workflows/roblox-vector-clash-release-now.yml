@@ -1,0 +1,234 @@
+name: Roblox Vector Clash Verified Target Release
+
+on:
+  push:
+    branches: [fix/roblox-vector-clash-release-target]
+    paths:
+      - '.github/workflows/roblox-vector-clash-release-now.yml'
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: roblox-vector-clash-verified-target-release
+  cancel-in-progress: false
+
+env:
+  GAME_ID: seed-roblox-battleground-fight-welcome-to-bloxburg
+  COMPANY_RUNTIME_BRANCH: company-runtime
+  ROBLOX_UNIVERSE_ID: '10766519079'
+  ROBLOX_PLACE_ID: '120787429678729'
+
+jobs:
+  release:
+    name: publish exact reviewed Vector Clash artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout canonical main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Resolve exact canonical target
+        id: target
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C ../runtime fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git -C ../runtime reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const gameId=process.env.GAME_ID;
+          const item=(q.items||[]).find(row=>row.gameId===gameId);
+          if(!item)throw new Error(`target missing:${gameId}`);
+          const revision=String(item.robloxSourceCommit||'').trim();
+          const artifact=String(item.robloxBuildArtifactIdentity||'').trim();
+          const sourceRoot=String(item.robloxProjectPath||item.targetSourcePath||'').replace(/^\/+|\/+$/g,'');
+          const artifactRunId=Number(item.robloxRuntimeEvidence?.artifactRunId||0);
+          const multiplayerApplicable=item.robloxMultiplayerApplicable===true;
+          const canonical=
+            String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'
+            &&String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='ROBLOX'
+            &&item.robloxFinalReviewPassed===true
+            &&item.robloxFailureStage==='RELEASE_PROMOTION'
+            &&item.robloxFailureSignature==='ROBLOX_RELEASE_PROMOTION_PENDING'
+            &&item.robloxReleaseClaim!==true
+            &&item.robloxBuildOrPackagePassed===true
+            &&item.robloxBuildSourceRevision===revision
+            &&item.robloxBuildPreflightPassed===true
+            &&item.robloxRuntimePassed===true
+            &&item.robloxServerClientBoundaryPassed===true
+            &&item.robloxMobileControlUiPassed===true
+            &&item.robloxIndependentQaPassed===true
+            &&item.robloxRegressionPassed===true
+            &&item.robloxExactRevisionPassed===true
+            &&(!multiplayerApplicable||item.robloxMultiplayerQaPassed===true)
+            &&/^[0-9a-f]{40}$/i.test(revision)
+            &&/^sha256:[0-9a-f]{64}$/i.test(artifact)
+            &&sourceRoot===`roblox-games/${gameId}`
+            &&Number.isInteger(artifactRunId)&&artifactRunId>0;
+          if(!canonical)throw new Error(`canonical gate blocked:${gameId}`);
+          const put=(k,v)=>fs.appendFileSync(process.env.GITHUB_OUTPUT,`${k}=${v}\n`);
+          put('source_revision',revision);
+          put('artifact_identity',artifact);
+          put('artifact_run_id',artifactRunId);
+          put('source_root',sourceRoot);
+          console.log(`ROBLOX_RELEASE_TARGET_BIND=PASS`);
+          console.log(`ROBLOX_UNIVERSE_ID=${process.env.ROBLOX_UNIVERSE_ID}`);
+          console.log(`ROBLOX_PLACE_ID=${process.env.ROBLOX_PLACE_ID}`);
+          NODE
+
+      - name: Verify unchanged source and canonical release evidence
+        working-directory: main
+        env:
+          SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
+          SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "${SOURCE_REVISION}^{commit}"
+          git merge-base --is-ancestor "$SOURCE_REVISION" HEAD
+          git diff --quiet "$SOURCE_REVISION" HEAD -- "$SOURCE_ROOT"
+          node tools/vibe3-roblox-platform.mjs \
+            --assemble-development-release-evidence \
+            --queue ../runtime/development-queue.json \
+            --game-id "$GAME_ID" \
+            --output /tmp/roblox-development-release-evidence.json
+          grep -q '"state": "PASS"' /tmp/roblox-development-release-evidence.json
+          echo 'ROBLOX_RELEASE_CANONICAL_EVIDENCE=PASS'
+          echo 'ROBLOX_RUNTIME_RERUN=NO'
+          echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
+          echo 'ROBLOX_REGRESSION_RERUN=NO'
+          echo 'ROBLOX_MULTIPLAYER_QA_RERUN=NO'
+
+      - name: Resolve retained immutable package by exact SHA256
+        id: package
+        working-directory: main
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_RUN_ID: ${{ steps.target.outputs.artifact_run_id }}
+          EXPECTED_ARTIFACT: ${{ steps.target.outputs.artifact_identity }}
+          SOURCE_ROOT: ${{ steps.target.outputs.source_root }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          name="development-roblox-package-$GAME_ID"
+          root="/tmp/roblox-vector-clash-release"
+          rm -rf "$root" "$SOURCE_ROOT/.canonical-release"
+          mkdir -p "$root" "$SOURCE_ROOT/.canonical-release"
+          gh run download "$ARTIFACT_RUN_ID" --repo "$GITHUB_REPOSITORY" -n "$name" -D "$root"
+          mapfile -t place_files < <(find "$root" -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) | sort)
+          [ "${#place_files[@]}" -eq 1 ]
+          place="${place_files[0]}"
+          hash="$(sha256sum "$place" | awk '{print tolower($1)}')"
+          expected="$(printf '%s' "$EXPECTED_ARTIFACT" | tr '[:upper:]' '[:lower:]')"
+          [ "sha256:$hash" = "$expected" ]
+          ext="${place##*.}"
+          release_file="$SOURCE_ROOT/.canonical-release/place.$ext"
+          cp "$place" "$release_file"
+          [ "$(sha256sum "$release_file" | awk '{print tolower($1)}')" = "$hash" ]
+          printf 'place_file=%s\n' "$release_file" >> "$GITHUB_OUTPUT"
+          echo "ROBLOX_RELEASE_PACKAGE_SHA256=$hash"
+          echo 'ROBLOX_RELEASE_IMMUTABLE_ARTIFACT_BIND=PASS'
+
+      - name: Validate verified Open Cloud target
+        working-directory: main
+        env:
+          SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe3-roblox-platform.mjs \
+            --place-file "$PLACE_FILE" \
+            --evidence /tmp/roblox-development-release-evidence.json \
+            --source-revision "$SOURCE_REVISION" | tee /tmp/roblox-plan.log
+          grep -q '^ROBLOX_V3_STATE=READY$' /tmp/roblox-plan.log
+          echo 'ROBLOX_RELEASE_OPEN_CLOUD_PLAN=READY'
+
+      - name: Publish exact final-reviewed package
+        id: publish
+        working-directory: main
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe3-roblox-platform.mjs \
+            --place-file "$PLACE_FILE" \
+            --evidence /tmp/roblox-development-release-evidence.json \
+            --source-revision "$SOURCE_REVISION" \
+            --execute | tee /tmp/roblox-publish.log
+          grep -q '^ROBLOX_V3_STATE=PUBLISHED$' /tmp/roblox-publish.log
+          version="$(sed -n 's/^ROBLOX_PUBLISHED_VERSION_NUMBER=//p' /tmp/roblox-publish.log | tail -n1)"
+          [[ "$version" =~ ^[1-9][0-9]*$ ]]
+          printf 'version_number=%s\n' "$version" >> "$GITHUB_OUTPUT"
+          echo 'ROBLOX_RELEASE_OPEN_CLOUD_PUBLISH=PASS'
+
+      - name: Persist proven release state only
+        if: steps.publish.outcome == 'success'
+        working-directory: runtime
+        env:
+          SOURCE_REVISION: ${{ steps.target.outputs.source_revision }}
+          ARTIFACT_IDENTITY: ${{ steps.target.outputs.artifact_identity }}
+          ARTIFACT_RUN_ID: ${{ steps.target.outputs.artifact_run_id }}
+          VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
+          RELEASE_RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          if(!item)throw new Error('queue item missing');
+          const version=Number(process.env.VERSION_NUMBER);
+          const artifactRunId=Number(process.env.ARTIFACT_RUN_ID);
+          const releaseRunId=Number(process.env.RELEASE_RUN_ID);
+          if(item.robloxSourceCommit!==process.env.SOURCE_REVISION)throw new Error('source changed');
+          if(item.robloxBuildArtifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('artifact changed');
+          if(item.robloxFinalReviewPassed!==true)throw new Error('final review changed');
+          if(!Number.isInteger(version)||version<=0)throw new Error('version missing');
+          const stamp=new Date().toISOString();
+          item.robloxReleaseEvidence={version:1,gameId:item.gameId,platform:'ROBLOX',sourceRevision:process.env.SOURCE_REVISION,artifactIdentity:process.env.ARTIFACT_IDENTITY,artifactRunId,finalReviewPassed:true,published:true,versionNumber:version,workflowRunId:releaseRunId,publishedAt:stamp,universeId:process.env.ROBLOX_UNIVERSE_ID,placeId:process.env.ROBLOX_PLACE_ID,authority:'roblox-open-cloud-final-review-release-promotion'};
+          item.robloxReleaseClaim=true;
+          item.robloxReleasePublishedAt=stamp;
+          item.robloxReleaseVersionNumber=version;
+          item.robloxLastSuccessfulStage='RELEASE_PROMOTION';
+          item.robloxFailureStage=null;
+          item.robloxFailureSignature=null;
+          item.routingBlockers=(item.routingBlockers||[]).filter(v=>v!=='roblox-release-promotion-pending');
+          if(item.executionEvidence){item.executionEvidence.lastSuccessfulStage='RELEASE_PROMOTION';item.executionEvidence.failureStage=null;item.executionEvidence.failureSignature=null;}
+          item.updatedAt=stamp;q.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          console.log(`ROBLOX_RELEASE_CLAIM=${item.robloxReleaseClaim?'YES':'NO'}`);
+          console.log(`ROBLOX_RELEASE_VERSION_NUMBER=${version}`);
+          NODE
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          git commit -m 'runtime: persist proven Vector Clash Roblox release [skip ci]'
+          git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"
+          echo 'ROBLOX_RELEASE_RUNTIME_PERSIST=PASS'
