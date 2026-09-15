@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 38,
-  "updatedAt": "2026-09-14",
+  "revision": 39,
+  "updatedAt": "2026-09-15",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
   "instruction": "Use COMPANY_FLOW.md as the machine-oriented production policy source of truth. This file mirrors executable values and invariant flags only and cannot create policy.",
@@ -70,7 +70,22 @@
     ],
     "secondHomepageManagerForbidden": true,
     "secondHomepageSupervisorForbidden": true,
-    "supervisorMayVerifyAndBlockButMustNotSilentlyRewriteManagerOutput": true
+    "supervisorMayVerifyAndBlockButMustNotSilentlyRewriteManagerOutput": true,
+    "developmentProgressDisplay": {
+      "source": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "autoRegisterProductionClass": "DEVELOPMENT_CONFIRMED",
+      "requiresHomepageTestEligible": false,
+      "requiresWebValidation": false,
+      "requiresFinalThirtyMinuteContentDepth": false,
+      "requiresArtbook": false,
+      "displayFields": [
+        "status",
+        "currentStep",
+        "selectedPlatform"
+      ],
+      "separateFromTop30Promotion": true,
+      "mustNotClaimValidationOrRelease": true
+    }
   },
   "production": {
     "classificationMode": "SEMANTIC_EVIDENCE_DYNAMIC_MEMBERSHIP",

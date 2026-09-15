@@ -59,19 +59,24 @@ test('verified runtime status/catalog join the same supervised publication candi
   assert.ok(manage.includes('Prepare verified runtime status/catalog candidate'));
 });
 
-test('homepage primary game implementation is canonical Top30, not the legacy catalog',()=>{
-  assert.ok(operations.includes('홈페이지 게임 구현 = Top30'));
-  assert.ok(operations.includes('홈페이지의 **주 게임 구현 영역은 canonical Web Top30 그 자체**'));
+test('development games auto-display from runtime progress while Top30 promotion stays separately gated',()=>{
+  assert.ok(operations.includes('개발게임 자동 표시와 Top30 분리'));
+  assert.ok(operations.includes('`productionClass=DEVELOPMENT_CONFIRMED`이면 검증 점수와 무관하게 자동 표시'));
+  assert.ok(homepageCore.includes('const developmentItems=queue=>'));
+  assert.ok(homepageCore.includes("productionClass||'').trim().toUpperCase()==='DEVELOPMENT_CONFIRMED'"));
+  assert.ok(homepageCore.includes("getJson('/development-queue.json',{runtime:true})"));
+  assert.ok(homepageCore.includes("wrapper.id='homeDevelopmentGameCenter'"));
+  assert.ok(homepageCore.includes('class="foldGameCard developmentGameCard"'));
+  assert.ok(homepageCore.includes('data-homepage-game-source="DEVELOPMENT_QUEUE"'));
+  const devFilter=homepageCore.slice(homepageCore.indexOf('const developmentItems=queue=>'),homepageCore.indexOf('const developmentStateLabel='));
+  assert.ok(!devFilter.includes('homepageTestEligible'));
   assert.ok(homepageCore.includes('const TOP30_LIMIT=30;'));
   assert.ok(homepageCore.includes('const TOP30_MIN_SCORE=80;'));
   assert.ok(homepageCore.includes("getJson('/test-game-candidates.json')"));
   assert.ok(homepageCore.includes("wrapper.id='homeTop30GameCenter'"));
-  assert.ok(homepageCore.includes('class="foldGameCard top30GameCard"'));
   assert.ok(homepageCore.includes('data-homepage-game-source="CANONICAL_TOP30"'));
-  assert.ok(homepageCore.includes("homePrimaryGameSource='CANONICAL_TOP30'"));
-  assert.ok(homepageEntry.includes("card.classList.contains('top30GameCard')"));
+  assert.ok(homepageEntry.includes("card.dataset?.homepageGameSource==='DEVELOPMENT_QUEUE'"));
   assert.ok(homepageEntry.includes("card.dataset?.homepageGameSource==='CANONICAL_TOP30'"));
-  assert.ok(!homepageEntry.includes('renderCompactTestShelf'));
   assert.ok(manager.includes('HOMEPAGE_PRIMARY_GAME_SOURCE=CANONICAL_TOP30'));
 });
 
