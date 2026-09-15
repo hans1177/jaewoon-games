@@ -85,3 +85,9 @@ jobs:
     permissions:
       contents: write
       actions: write
+
+  game_study:
+    needs: continuous
+    uses: ./.github/workflows/vibe2-game-study-continuous.yml
+    permissions:
+      contents: write
