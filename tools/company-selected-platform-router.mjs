@@ -257,3 +257,37 @@ export function createSelectedPlatformExecutionPlan({
     qualityGateWeakeningAllowed:false,
   });
 }
+
+export function selectRepresentativeCanary(rows=[]){
+  const eligible=rows.filter(Boolean).map(row=>({...row,selectedPlatform:resolveSelectedPlatform(row)})).filter(row=>row.selectedPlatform);
+  if(!eligible.length)return null;
+  eligible.sort((a,b)=>{
+    const af=Number(a.failureCount||0),bf=Number(b.failureCount||0);
+    if(af!==bf)return bf-af;
+    const ap=SELECTED_PLATFORMS.indexOf(a.selectedPlatform),bp=SELECTED_PLATFORMS.indexOf(b.selectedPlatform);
+    if(ap!==bp)return ap-bp;
+    return clean(a.gameId).localeCompare(clean(b.gameId));
+  });
+  return Object.freeze(eligible[0]);
+}
+
+export function recordExecutionStage(evidence={},stage,{passed,artifactIdentity=null,failureCode='',failureMessage=''}={}){
+  const normalized=normalizeCommonEvidence(evidence);
+  const target=upper(stage);
+  if(!SPEED_EXECUTION_STAGES.includes(target))throw new Error(`unknown execution stage: ${stage}`);
+  const next={...normalized};
+  if(passed===true){
+    next.lastSuccessfulStage=target;
+    next.failureStage=null;
+    next.failureSignature=null;
+    if(target==='SINGLE_BUILD_OR_PACKAGE')next.buildOrPackagePassed=true;
+    if(target==='IMMUTABLE_ARTIFACT_BIND')next.artifactIdentity=clean(artifactIdentity||next.artifactIdentity)||null;
+    if(target==='TARGET_PLATFORM_RUNTIME')next.runtimePassed=true;
+    if(target==='INDEPENDENT_QA')next.independentQaPassed=true;
+    if(target==='REGRESSION')next.regressionPassed=true;
+  }else{
+    next.failureStage=target;
+    next.failureSignature=failureSignature({stage:target,code:failureCode,message:failureMessage});
+  }
+  return Object.freeze(next);
+}
