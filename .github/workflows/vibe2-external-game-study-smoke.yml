@@ -8,7 +8,9 @@ on:
       - '.vibe2/game-study-targets.json'
       - '.vibe2/game-study-scenarios/**'
       - 'tools/vibe2-game-study*.mjs'
+      - 'qa/vibe2-game-study*.test.mjs'
       - 'tools/vibe2-web-auto-player.mjs'
+      - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/vibe2-external-game-study-smoke.yml'
   workflow_dispatch:
 
@@ -20,18 +22,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  study-planner-context-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify GAME STUDY planner context safety
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-game-study-planner-context.mjs
+          node --check qa/vibe2-game-study-planner-context.test.mjs
+          node --test qa/vibe2-game-study-planner-context.test.mjs
+
   external-web-smoke:
+    needs: study-planner-context-contract
     runs-on: ubuntu-latest
     timeout-minutes: 8
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 3
       matrix:
         include:
           - target_id: external-tictactoe-flow-a
             task_id: game-study-external-tictactoe-flow-a
           - target_id: external-tictactoe-flow-b
             task_id: game-study-external-tictactoe-flow-b
+          - target_id: external-memory-flow-a
+            task_id: game-study-external-memory-flow-a
     steps:
       - uses: actions/checkout@v4
 
@@ -46,7 +66,8 @@ jobs:
           node <<'NODE'
           const fs = require('fs');
           const cfg = JSON.parse(fs.readFileSync('.vibe2/game-study-targets.json','utf8'));
-          if (!Array.isArray(cfg.targets) || cfg.targets.length < 2) throw new Error('two parallel external study targets required');
+          if (!Array.isArray(cfg.targets) || cfg.targets.length < 3) throw new Error('three parallel external study targets required');
+          if (new Set(cfg.targets.map(target => target.gameId)).size < 2) throw new Error('at least two distinct external games required for cross-game study');
           for (const target of cfg.targets) {
             if (target.origin !== 'external-public') throw new Error(`non-external target registered: ${target.id}`);
             if (target.sourceAccess !== 'observation-only') throw new Error(`external source access must be observation-only: ${target.id}`);
@@ -57,6 +78,7 @@ jobs:
           }
           if (cfg.policy?.externalRobloxActiveAutomation !== false) throw new Error('external Roblox active automation must remain disabled');
           console.log(`VIBE2_EXTERNAL_TARGETS=${cfg.targets.length}`);
+          console.log(`VIBE2_EXTERNAL_GAMES=${new Set(cfg.targets.map(target => target.gameId)).size}`);
           console.log('VIBE2_EXTERNAL_SOURCE_ACCESS=OBSERVATION_ONLY');
           NODE
 

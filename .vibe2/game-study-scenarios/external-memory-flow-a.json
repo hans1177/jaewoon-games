@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "engine": "web",
+  "page": "index.html",
+  "timeoutMs": 30000,
+  "requirePlayability": false,
+  "failOnRuntimeError": false,
+  "metadata": {
+    "origin": "external-public",
+    "study": "board-size-start-two-card-interaction",
+    "sourceAccess": "observation-only"
+  },
+  "actions": [
+    {
+      "id": "wait-for-external-game-init",
+      "type": "wait",
+      "ms": 1000
+    },
+    {
+      "id": "memory-menu-ready",
+      "type": "expect",
+      "name": "memory board size selection ready",
+      "expression": "document.querySelector('#size-4')!==null && document.querySelector('#btn')!==null"
+    },
+    {
+      "id": "select-small-board",
+      "type": "click",
+      "selector": "#size-4"
+    },
+    {
+      "id": "start-small-board",
+      "type": "click",
+      "selector": "#btn"
+    },
+    {
+      "id": "memory-board-ready",
+      "type": "expect",
+      "name": "small memory board created",
+      "expression": "document.querySelectorAll('.card-grid-small .cards-small').length===16 && !document.querySelector('.card-grid-small').classList.contains('hidden') && !document.querySelector('.score-board').classList.contains('hidden')"
+    },
+    {
+      "id": "open-memory-card-one",
+      "type": "click",
+      "selector": ".card-grid-small .cards-small:nth-child(1)"
+    },
+    {
+      "id": "open-memory-card-two",
+      "type": "click",
+      "selector": ".card-grid-small .cards-small:nth-child(2)"
+    },
+    {
+      "id": "wait-for-memory-feedback",
+      "type": "wait",
+      "ms": 300
+    },
+    {
+      "id": "memory-move-feedback",
+      "type": "expect",
+      "name": "two card actions update move state",
+      "expression": "document.querySelector('#moves-display')?.textContent==='2' && document.querySelectorAll('.card-grid-small .cards-small.visible').length>=2 && !document.querySelector('#refresh').classList.contains('hidden')"
+    }
+  ]
+}

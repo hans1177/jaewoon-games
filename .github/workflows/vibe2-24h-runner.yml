@@ -36,7 +36,7 @@ jobs:
           git show origin/main:company-status.json > /tmp/vibe2-main-company-status.json
           git show origin/main:game-catalog.json > /tmp/vibe2-main-game-catalog.json
 
-      - name: Plan from generated handoff and persist queue only when changed
+      - name: Plan from generated handoff and apply verified GAME STUDY context
         shell: bash
         run: |
           set -euo pipefail
@@ -50,6 +50,9 @@ jobs:
             --control=.vibe2/parallelism-control.json \
             --experience=.vibe2/experience.json \
             --max=20 | tee /tmp/vibe2-plan.log
+          node tools/vibe2-game-study-planner-context.mjs \
+            --queue=.vibe2/queue.json \
+            --knowledge=.vibe2/game-study-knowledge.json | tee /tmp/vibe2-study-planner-context.log
           node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-plan.json >/tmp/vibe2-handoff-after-plan.log
           if git diff --quiet -- .vibe2/queue.json; then
             echo 'VIBE2_PLAN_QUEUE_WRITE=NO'
@@ -76,6 +79,7 @@ jobs:
             /tmp/vibe2-handoff-before-plan.json
             /tmp/vibe2-handoff-after-plan.json
             /tmp/vibe2-plan.log
+            /tmp/vibe2-study-planner-context.log
           if-no-files-found: error
           retention-days: 7
 
