@@ -27,18 +27,6 @@
       "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root"]
     },
     {
-      "id": "OWNER-FULL-REBUILD-ISLAND-VILLAGE-20260916",
-      "gameId": "island-village",
-      "title": "무인도 마을",
-      "sourceRoot": "web-games/island-village",
-      "responsibleFiles": ["web-games/island-village/index.html"],
-      "priority": "critical",
-      "workUnits": 5,
-      "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED. 무인도 마을은 현재 main에 소스 루트가 없으므로 이 오너 지시에 한해서 격리된 Vibe2 후보 브랜치 안에서 web-games/island-village/index.html 루트를 안전하게 부트스트랩한 뒤 실제 게임으로 전면 제작한다. 포근섬과는 별도 게임이다. 자원 수집→건설→주민·생존→확장으로 이어지는 실제 플레이 루프, 시간·위험·상태 피드백, 승패 또는 장기 진행, 재시작, 모바일 터치와 반응형 UI를 갖춘다. main 직접 쓰기 금지, 홈페이지·공용 카탈로그는 구현 단계에서 수정 금지, 검증 승격 단계에서만 연결한다.",
-      "evidence": ["owner-selected:2026-09-16", "source-root-bootstrap:owner-authorized-isolated-candidate-only", "rebuild-scope:single-game-root"]
-    },
-    {
       "id": "OWNER-FULL-REBUILD-EGG-HEIST-20260916",
       "gameId": "egg-heist",
       "title": "알 도둑 대작전",
