@@ -1,0 +1,114 @@
+TAP version 13
+# Subtest: owner directive preempts release and development work
+ok 1 - owner directive preempts release and development work
+  ---
+  duration_ms: 3.735923
+  type: 'test'
+  ...
+# Subtest: release-confirmed preempts development-confirmed
+ok 2 - release-confirmed preempts development-confirmed
+  ---
+  duration_ms: 0.669243
+  type: 'test'
+  ...
+# Subtest: independent source roots fan out in one reservation batch
+not ok 3 - independent source roots fan out in one reservation batch
+  ---
+  duration_ms: 2.797697
+  type: 'test'
+  location: '/home/runner/work/jaewoon-games/jaewoon-games/qa/vibe2-queue-control.test.mjs:36:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    false !== true
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/runner/work/jaewoon-games/jaewoon-games/qa/vibe2-queue-control.test.mjs:44:10)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: same source root may fan out when responsibility files are concrete and disjoint
+ok 4 - same source root may fan out when responsibility files are concrete and disjoint
+  ---
+  duration_ms: 0.482653
+  type: 'test'
+  ...
+# Subtest: same source root remains exclusive when responsibility files overlap or are unspecified
+ok 5 - same source root remains exclusive when responsibility files overlap or are unspecified
+  ---
+  duration_ms: 0.462926
+  type: 'test'
+  ...
+# Subtest: DAG dependency starts only after predecessor PASS
+ok 6 - DAG dependency starts only after predecessor PASS
+  ---
+  duration_ms: 0.906858
+  type: 'test'
+  ...
+# Subtest: awaiting QA holds its source root but does not block independent work
+ok 7 - awaiting QA holds its source root but does not block independent work
+  ---
+  duration_ms: 0.908501
+  type: 'test'
+  ...
+# Subtest: adaptive backpressure steps 20 down through 16 12 8 4 as pressure rises
+ok 8 - adaptive backpressure steps 20 down through 16 12 8 4 as pressure rises
+  ---
+  duration_ms: 0.570087
+  type: 'test'
+  ...
+# Subtest: high-risk opt-in task creates two speculative worker variants
+ok 9 - high-risk opt-in task creates two speculative worker variants
+  ---
+  duration_ms: 0.423242
+  type: 'test'
+  ...
+# Subtest: fan-in accepts first passing speculative variant and keeps task awaiting full QA
+ok 10 - fan-in accepts first passing speculative variant and keeps task awaiting full QA
+  ---
+  duration_ms: 1.000162
+  type: 'test'
+  ...
+# Subtest: retryable failure clears blocker and remains selectable until retry limit
+ok 11 - retryable failure clears blocker and remains selectable until retry limit
+  ---
+  duration_ms: 0.500708
+  type: 'test'
+  ...
+# Subtest: output-budget repair requeues capped owner full-web rebuild failures once even after v1 transport retry
+ok 12 - output-budget repair requeues capped owner full-web rebuild failures once even after v1 transport retry
+  ---
+  duration_ms: 0.295443
+  type: 'test'
+  ...
+# Subtest: protected or paid autonomous work remains ineligible
+ok 13 - protected or paid autonomous work remains ineligible
+  ---
+  duration_ms: 0.201427
+  type: 'test'
+  ...
+# Subtest: twenty independent tasks can fill all 20 slots
+ok 14 - twenty independent tasks can fill all 20 slots
+  ---
+  duration_ms: 3.502406
+  type: 'test'
+  ...
+1..14
+# tests 14
+# suites 0
+# pass 13
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 98.131228
