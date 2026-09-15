@@ -23,6 +23,10 @@ function jungleUnlocked() {
   return Boolean(currentGame?.state?.southernJungle?.unlocked);
 }
 
+function jungleWestUnlocked() {
+  return Boolean(currentGame?.state?.jungleWestCamp?.unlocked);
+}
+
 function northUnlocked() {
   return Boolean(currentGame?.state?.northernRegion?.unlocked);
 }
@@ -55,6 +59,10 @@ function inJungle(x, y) {
   return jungleUnlocked() && x >= 1435 && x <= 2820 && y >= 980 && y <= 2025;
 }
 
+function inJungleWest(x, y) {
+  return jungleWestUnlocked() && x >= 300 && x <= 1485 && y >= 1200 && y <= 2025;
+}
+
 function inNorth(x, y) {
   return northUnlocked() && x >= 1435 && x <= 2820 && y >= -820 && y <= 220;
 }
@@ -64,7 +72,7 @@ function inWest(x, y) {
 }
 
 function canStandAt(x, y) {
-  return inMainVillage(x, y) || inEast(x, y) || inJungle(x, y) || inNorth(x, y) || inWest(x, y);
+  return inMainVillage(x, y) || inEast(x, y) || inJungle(x, y) || inJungleWest(x, y) || inNorth(x, y) || inWest(x, y);
 }
 
 function baseCandidate(x, y) {
@@ -85,6 +93,10 @@ function jungleCandidate(x, y) {
   return { x: Math.max(1435, Math.min(2820, x)), y: Math.max(980, Math.min(2025, y)) };
 }
 
+function jungleWestCandidate(x, y) {
+  return { x: Math.max(300, Math.min(1485, x)), y: Math.max(1200, Math.min(2025, y)) };
+}
+
 function northCandidate(x, y) {
   return { x: Math.max(1435, Math.min(2820, x)), y: Math.max(-820, Math.min(220, y)) };
 }
@@ -98,6 +110,7 @@ function recoverInvalidPosition(player) {
   const candidates = [baseCandidate(player.x, player.y)];
   if (eastUnlocked()) candidates.push(eastCandidate(player.x, player.y));
   if (jungleUnlocked()) candidates.push(jungleCandidate(player.x, player.y));
+  if (jungleWestUnlocked()) candidates.push(jungleWestCandidate(player.x, player.y));
   if (northUnlocked()) candidates.push(northCandidate(player.x, player.y));
   if (westUnlocked()) candidates.push(westCandidate(player.x, player.y));
 
