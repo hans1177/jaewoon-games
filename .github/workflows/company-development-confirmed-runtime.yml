@@ -169,8 +169,8 @@ jobs:
           console.log('WEB_STALE_SOURCE_OR_BASELINE_REQUEUED=YES');
           console.log('WEB_FORMAL_IMPLEMENTATION_THRESHOLD=90');
           console.log('WEB_VALIDATION_TIERS=MICRO_FAST_INITIAL_FULL_FINAL');
-          console.log('WEB_PARALLEL_TARGET=6');
-          console.log('WEB_PARALLEL_MAX=6');
+          console.log('WEB_PARALLEL_TARGET=20');
+          console.log('WEB_PARALLEL_MAX=20');
           NODE
 
   web-worker:
@@ -179,7 +179,7 @@ jobs:
     if: needs.web-plan.outputs.target_count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 6
+      max-parallel: 20
       matrix: ${{ fromJSON(needs.web-plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 85
@@ -668,12 +668,12 @@ jobs:
           queue.webValidationContractVersion=4;
           queue.webValidationEvidenceSchemaMinimum=13;
           queue.webPromotionRevalidationRequired=true;
-          queue.webValidationParallelism=6;
+          queue.webValidationParallelism=20;
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`WEB_GAMEPLAY_MUSIC_PASS_COUNT=${passCount}`);
           console.log(`WEB_GAMEPLAY_MUSIC_FAIL_COUNT=${failCount}`);
-          console.log('WEB_PARALLEL_ACTIVE_MAX=6');
+          console.log('WEB_PARALLEL_ACTIVE_MAX=20');
           NODE
           git add development-queue.json web-games/ design/ game-seed-state.json 2>/dev/null || git add development-queue.json web-games/ design/
           git diff --cached --check
@@ -695,7 +695,7 @@ jobs:
         if: needs.web-plan.outputs.target_count == '0'
         run: |
           echo 'WEB_REQUIRED_QUEUE=EMPTY'
-          echo 'WEB_PARALLEL_ACTIVE_MAX=6'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=20'
 
   post-web-artbook:
     name: post-Web artbook and homepage eligibility
@@ -992,7 +992,7 @@ jobs:
           echo 'FORMAL_IMPLEMENTATION_GATE=90'
           echo 'POST_WEB_ARTBOOK=YES'
           echo 'WEB_VALIDATION_TIERS=MICRO_FAST_INITIAL_FULL_FINAL'
-          echo 'WEB_PARALLEL_ACTIVE_MAX=6'
+          echo 'WEB_PARALLEL_ACTIVE_MAX=20'
           echo 'PLATFORM_ROUTER=tools/company-selected-platform-router.mjs'
           echo 'CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY'
           echo 'QUALITY_GATE_WEAKENING=NO'
