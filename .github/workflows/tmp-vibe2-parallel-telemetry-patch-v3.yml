@@ -1,0 +1,45 @@
+name: TMP Vibe2 Parallel Telemetry Patch V3
+
+on:
+  push:
+    branches: [feat/vibe2-parallel-load-telemetry]
+    paths:
+      - '.github/workflows/tmp-vibe2-parallel-telemetry-patch-v3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/vibe2-parallel-load-telemetry
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply permanent telemetry wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/tmp-vibe2-parallel-telemetry-patch.mjs
+          node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-parallelism-telemetry.mjs
+          node --test qa/vibe2-parallelism-telemetry.test.mjs
+          node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-parallelism-20-contract.test.mjs
+          node --test qa/vibe2-controller-contract.test.mjs
+      - name: Commit verified permanent files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-migration'
+          git config user.email 'vibe2-migration@users.noreply.github.com'
+          git add tools/vibe2-queue-control.mjs .github/workflows/vibe2-continuous-core.yml
+          git diff --cached --quiet && exit 0
+          git commit -m 'feat: record Vibe2 20-slot runtime telemetry'
+          git push origin HEAD:feat/vibe2-parallel-load-telemetry
