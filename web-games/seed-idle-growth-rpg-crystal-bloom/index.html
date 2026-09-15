@@ -1,1 +1,175 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>수정의 개화</title></head><body><script>window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>수정의 개화</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e1e1e;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .game-title {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+    }
+    .game-description {
+      font-size: 1.2em;
+      max-width: 600px;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .control {
+      padding: 10px 15px;
+      background-color: #2e2e2e;
+      border: 1px solid #444;
+      border-radius: 8px;
+      font-size: 1em;
+      width: 120px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .control:hover {
+      background-color: #3e3e3e;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 1em;
+      color: #ffcc00;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <div class="game-title">수정의 개화</div>
+    <div class="game-description">전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.</div>
+    <div class="controls">
+      <div class="control" onclick="startCombat()">전투 시작</div>
+      <div class="control" onclick="startProgression()">진행 시작</div>
+      <div class="control" onclick="restartGame()">재시작</div>
+    </div>
+    <div class="status">HP: 100 | 골드: 0 | 강화: 0</div>
+  </div>
+  <script>
+    let game = {
+      id: 'seed-idle-growth-rpg-crystal-bloom',
+      name: '수정의 개화',
+      mode: 'crystal-idle',
+      hp: 100,
+      gold: 0,
+      level: 0,
+      equipment: [],
+      progress: {
+        current: 0,
+        target: 10
+      },
+      status: {
+        hp: 100,
+        gold: 0,
+        level: 0,
+        equipment: []
+      },
+      combat: {
+        active: false,
+        current: 0,
+        target: 10
+      },
+      restart: function() {
+        this.status.hp = 100;
+        this.status.gold = 0;
+        this.status.level = 0;
+        this.status.equipment = [];
+        this.combat.active = false;
+        this.combat.current = 0;
+        this.combat.target = 10;
+        this.progress.current = 0;
+        this.progress.target = 10;
+      },
+      startCombat: function() {
+        if (!this.combat.active) {
+          this.combat.active = true;
+          this.combat.current = 1;
+          this.combat.target = 10;
+          this.status.gold += 10;
+          this.status.hp -= 10;
+          this.status.level += 1;
+          this.status.equipment.push('장비1');
+        }
+      },
+      startProgression: function() {
+        if (!this.progress.active) {
+          this.progress.active = true;
+          this.progress.current = 1;
+          this.progress.target = 10;
+          this.status.gold += 5;
+          this.status.hp -= 5;
+          this.status.level += 1;
+          this.status.equipment.push('장비2');
+        }
+      }
+    };
+
+    function updateStatus() {
+      document.querySelector('.status').textContent = `HP: ${game.status.hp} | 골드: ${game.status.gold} | 강화: ${game.status.equipment.length}`;
+    }
+
+    function updateControls() {
+      const controls = document.querySelector('.controls');
+      controls.innerHTML = '';
+      game.status.equipment.forEach((item, index) => {
+        const control = document.createElement('div');
+        control.className = 'control';
+        control.textContent = index + 1 + '. ' + item;
+        control.onclick = () => {
+          if (index < game.status.equipment.length - 1) {
+            game.status.equipment.splice(index + 1, 1);
+          } else {
+            game.status.equipment.splice(index, 1);
+          }
+        };
+        controls.appendChild(control);
+      });
+    }
+
+    function updateGame() {
+      updateStatus();
+      updateControls();
+    }
+
+    function startCombat() {
+      game.startCombat();
+      updateGame();
+    }
+
+    function startProgression() {
+      game.startProgression();
+      updateGame();
+    }
+
+    function restartGame() {
+      game.restart();
+      updateGame();
+    }
+
+    // Initial setup
+    updateGame();
+  </script>
+</body>
+</html>
