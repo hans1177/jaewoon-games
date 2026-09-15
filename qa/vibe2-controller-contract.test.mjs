@@ -75,6 +75,18 @@ test('controller runs content-hash incremental QA per worker and full core regre
   assert(workflow.includes('node --test qa/vibe2-controller-contract.test.mjs'));
 });
 
+test('reserve preflight stays syntax-and-machine-state only instead of rerunning full QA',()=>{
+  const start=workflow.indexOf('- name: Fast scheduler preflight');
+  const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');
+  assert(start>=0 && end>start);
+  const preflight=workflow.slice(start,end);
+  assert(preflight.includes('node --check assets/vibe-continuous-queue.js'));
+  assert(preflight.includes('node tools/vibe2-handoff.mjs --check'));
+  assert(!preflight.includes('node --test '));
+  assert.equal(runtime.qaOptimization.reservePreflight,'syntax-and-machine-state-only');
+  assert.equal(runtime.qaOptimization.duplicateFullRegressionBeforeReserve,false);
+});
+
 test('controller serializes only shared queue state writes while worker branches stay parallel',()=>{
   assert(workflow.includes('concurrency:\n      group: vibe2-control-state-vibe2-unreal-core'));
   assert(workflow.includes('actions/upload-artifact@v4'));
@@ -88,9 +100,13 @@ test('controller allows approved source root but enforces candidate boundary',()
   assert(workflow.includes('candidate escaped approved boundary'));
 });
 
-test('event-driven refill removes hourly-only idle gaps',()=>{
+test('event-driven refill targets the Vibe2 control branch and not main',()=>{
   assert(workflow.includes('Event-driven refill of free slots'));
   assert(workflow.includes('gh workflow run vibe2-24h-runner.yml'));
+  assert(workflow.includes('--ref vibe2-unreal-core'));
+  assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
+  assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
+  assert.equal(runtime.continuous.refillMode,'fan-in-event-driven-control-branch');
   assert(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'));
   assert(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs'));
   assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
