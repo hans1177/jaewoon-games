@@ -218,7 +218,24 @@ export function runQueueCommand(args = {}) {
   } else if (command === 'reserve-batch') {
     const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: maxConcurrent(args.max) });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
-    if (clean(args.output)) writeJson(clean(args.output), { version:1, createdAt:new Date().toISOString(), matrix:reserved.matrix });
+    if (clean(args.output)) {
+      const createdAt=new Date().toISOString();
+      const requestedMaxConcurrentTasks=maxConcurrent(args.max);
+      writeJson(clean(args.output), {
+        version:2, createdAt, matrix:reserved.matrix,
+        scheduler:{
+          requestedMaxConcurrentTasks,
+          effectiveMaxConcurrentTasks:reserved.selection?.effectiveMaxConcurrentTasks ?? requestedMaxConcurrentTasks,
+          freeSlotsBeforeReservation:reserved.selection?.freeSlots ?? 0,
+          runningBeforeReservation:reserved.selection?.running?.length ?? 0,
+          blockedCount:reserved.selection?.blocked?.length ?? 0,
+          conflictCount:reserved.selection?.deferredConflicts?.length ?? 0,
+          workStealingUsed:reserved.selection?.workStealingUsed === true,
+          shardUse:reserved.selection?.shardUse || {},
+          stopReason:reserved.selection?.stopReason || null
+        }
+      });
+    }
     result = { command, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'await') {
     queue = markVibeTaskAwaiting(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });

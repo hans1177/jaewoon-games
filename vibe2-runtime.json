@@ -65,6 +65,27 @@
     "fullCoreRegressionOnceAtFanIn": true,
     "incrementalPassNeverReplacesFinalVerification": true
   },
+  "parallelismTelemetry": {
+    "enabled": true,
+    "tool": "tools/vibe2-parallelism-telemetry.mjs",
+    "requestedMax": 20,
+    "artifact": "vibe2-parallelism-telemetry",
+    "metrics": [
+      "actualPeakConcurrency",
+      "slotUtilization",
+      "queueWait",
+      "checkout",
+      "ollamaCacheHitRate",
+      "candidateDuration",
+      "incrementalQaDuration",
+      "workerTotalDuration",
+      "failureRate",
+      "fanInDuration",
+      "bottleneck"
+    ],
+    "loadProbeTargetWorkers": 20,
+    "backpressureSteps": [20, 16, 12, 8, 4]
+  },
   "assetDecision": {
     "mode": "fixed-safety-plus-verified-preference-learning",
     "fixedRules": ["license", "commercial-use", "animation-evidence", "no-static-actor", "source-record", "mobile-performance", "size-budget"],
