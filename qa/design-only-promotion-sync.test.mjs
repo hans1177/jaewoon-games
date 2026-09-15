@@ -9,9 +9,12 @@ import {promoteReadyDesignSeeds} from '../tools/design-only-promotion-sync.mjs';
 const write=(root,file,value)=>{const out=path.join(root,file);fs.mkdirSync(path.dirname(out),{recursive:true});fs.writeFileSync(out,JSON.stringify(value,null,2));};
 const read=(root,file)=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
 const writeReadyDesign=(root,gameId,date='2026-09-11',review={verdict:'PASS',totalScore:82,hardFailures:[]})=>{
+  const seed=read(root,'game-seed-state.json').seeds.find(row=>String(row.gameId)===String(gameId)&&String(row.status).toUpperCase()==='ACTIVE');
+  if(!seed?.seedId)throw new Error(`active seed required for ${gameId}`);
+  const revision=String(seed.ownerResetRevision||seed.seedRevision||seed.revision||'').trim();
   const sourceDesign=`design/${gameId}/${date}/design-revised.json`;
-  write(root,sourceDesign,{gameId,content:{identity:'distinct design'},session30MinutePlan:{targetMinutes:30}});
-  write(root,`design/${gameId}/${date}/cycle-status.json`,{gameId,productionClass:'DESIGN_ONLY',status:'COMPLETE',baselineGate:{state:'DESIGN_BASELINE_READY',ready:true},departments:{count:5,leadModelsDistinct:true}});
+  write(root,sourceDesign,{gameId,gameSeedId:seed.seedId,...(revision?{gameSeedRevision:revision,ownerResetRevision:revision}:{}),content:{identity:'distinct design'},session30MinutePlan:{targetMinutes:30}});
+  write(root,`design/${gameId}/${date}/cycle-status.json`,{gameId,productionClass:'DESIGN_ONLY',status:'COMPLETE',gameSeed:{seedId:seed.seedId,...(revision?{revision,ownerResetRevision:revision}:{}),provenanceBound:true},baselineGate:{state:'DESIGN_BASELINE_READY',ready:true},departments:{count:5,leadModelsDistinct:true}});
   write(root,`design/${gameId}/${date}/strict-design-review.json`,{version:2,gameId,reviewStage:'DESIGN_STRICT_REVIEW',passThreshold:80,...review});
   return {sourceDesign,date};
 };
