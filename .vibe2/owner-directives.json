@@ -11,8 +11,8 @@
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 기존 영토전쟁의 영토 점령·확장 정체성을 먼저 읽고 보존하면서 허접한 구현은 전면 재구현한다. 실제 맵 점령 루프, 적 진영 AI, 거점 충돌, 명확한 전황 피드백, 승패·재시작, 모바일 터치 조작과 반응형 UI, 런타임 안정성과 성능을 갖춘 실제 플레이 가능한 게임으로 만든다. 기존 세이브 의미가 있으면 호환 또는 명시적 마이그레이션을 유지한다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다. 임의 유료 서비스·광고·새 과금은 추가하지 않는다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized"]
+      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 기존 영토전쟁의 영토 점령·확장 정체성을 먼저 읽고 보존하면서 허접한 구현은 전면 재구현한다. 실제 맵 점령 루프, 적 진영 AI, 거점 충돌, 명확한 전황 피드백, 승패·재시작, 모바일 터치 조작과 반응형 UI, 런타임 안정성과 성능을 갖춘 실제 플레이 가능한 게임으로 만든다. 전체 index.html은 단순 껍데기나 짧은 샘플이 아니라 실제 플레이 루프가 완결되는 충분한 분량의 self-contained 단일 HTML이어야 하며, 모델 출력이 너무 짧아 전체 파일 품질 하한을 통과하지 못하는 형태는 금지한다. 기존 세이브 의미가 있으면 호환 또는 명시적 마이그레이션을 유지한다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다. 임의 유료 서비스·광고·새 과금은 추가하지 않는다.",
+      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized", "pipeline-fix:complete-full-file-output"]
     },
     {
       "id": "OWNER-FULL-REBUILD-CRYSTAL-DEFENSE-20260916",
