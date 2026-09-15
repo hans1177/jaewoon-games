@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "kind": "VIBE2_PARALLEL_IMPLEMENTATION_CONTRACT",
+  "policyDocument": "company-policy.json",
+  "policyAuthority": false,
+  "maxConcurrency": 20,
+  "adaptiveBackpressureSteps": [
+    20,
+    16,
+    12,
+    8,
+    4
+  ],
+  "parallelFirst": true,
+  "architecture": [
+    "DAG",
+    "HIERARCHICAL_PARALLELISM",
+    "SHARDS",
+    "WORK_STEALING",
+    "SOURCE_FILE_LOCKS",
+    "INCREMENTAL_QA",
+    "FAN_IN"
+  ],
+  "defaultShards": {
+    "unity": 3,
+    "web": 7,
+    "verification": 5,
+    "support": 5
+  },
+  "sameSourceRootParallelRequiresExplicitDisjointResponsibleFiles": true,
+  "sameResponsibleFileParallelForbidden": true,
+  "sharedSaveSchemaWritesExclusive": true,
+  "centralPolicyWritesExclusive": true,
+  "candidateIsolationRequired": true,
+  "eventDrivenRefill": true,
+  "incrementalQa": true,
+  "contentHashCacheAllowed": true,
+  "fanInFullRegressionRequired": true,
+  "sharedQueueWritesByFanOutWorkersForbidden": true,
+  "sharedStateAggregationSingleWriter": true,
+  "paidApiAllowed": false,
+  "paidRunnerAllowed": false,
+  "fixedProductionClassCountsForbidden": true,
+  "deprecatedFixedCountsRemoved": true
+}

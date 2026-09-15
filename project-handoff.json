@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "kind": "IMPLEMENTATION_HANDOFF_CONTRACT",
+  "policyDocument": "company-policy.json",
+  "policyAuthority": false,
+  "policyRefs": [
+    "POLICY.DEVELOPMENTSAFETY",
+    "POLICY.ASSETPOLICY",
+    "POLICY.DEPARTMENTSTANDARDS",
+    "POLICY.FLOWS.DEVELOPMENT_CONFIRMED"
+  ],
+  "implementationGuidance": {
+    "inspectExistingSourceFirst": true,
+    "preferResponsibleSystemDirectEdit": true,
+    "preserveExistingBehaviorAndSaveMeaning": true,
+    "mobileFirst": true,
+    "separatePresentationFromGameStateWherePractical": true,
+    "incrementalChangeAndRegression": true,
+    "saveSchemaChangeRequiresMigration": true,
+    "movementAndCombatUseLocalRuntimeLogic": true,
+    "externalGenerativeModelPerFrameGameplayForbidden": true,
+    "reuseRepositoryAssetsFirst": true,
+    "licenseVerificationRequired": true
+  },
+  "qaFocus": [
+    "LOAD_AND_START",
+    "SOFTLOCK",
+    "BUTTONS",
+    "TOUCH",
+    "JOYSTICK",
+    "SCROLL_AND_CLIPPING",
+    "SAVE_AND_RELOAD",
+    "PAUSE_AND_RESTART",
+    "RUNTIME_ERRORS",
+    "PERFORMANCE",
+    "MOBILE_LAYOUT"
+  ],
+  "sharedRuntimeAssetsRoot": "assets/"
+}

@@ -1,10 +1,10 @@
 {
   "version": 1,
-  "revision": 39,
+  "revision": 40,
   "updatedAt": "2026-09-15",
   "priority": "owner-immediate",
-  "policyDocument": "COMPANY_FLOW.md",
-  "instruction": "Use COMPANY_FLOW.md as the machine-oriented production policy source of truth. This file mirrors executable values and invariant flags only and cannot create policy.",
+  "policyDocument": "company-policy.json",
+  "instruction": "Use company-policy.json as the only machine production policy source of truth. This file mirrors executable values and invariant flags only and cannot create policy.",
   "documentationSynchronization": {
     "centralPolicyFirst": true,
     "workDocumentsMustMirrorCurrentCentralPolicy": true,
@@ -160,7 +160,7 @@
     "enabled": true,
     "stage": "BEFORE_GAME_DESIGNER_DRAFT",
     "requiredBeforeDesignerDraft": true,
-    "selectionMode": "FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK",
+    "selectionMode": "MATERIAL_COMPOSITION",
     "transformationModes": [
       "HOMAGE",
       "REINTERPRETATION"
@@ -231,7 +231,15 @@
     "derivedProductionRequirements": [
       "MANDATORY_WEB_GAME_COMPANION",
       "FULL_APPROVED_SCOPE_IMPLEMENTATION"
-    ]
+    ],
+    "referenceGameIsOptionalMaterialType": true,
+    "combinePerGameSeed": {
+      "min": 2,
+      "max": 4
+    },
+    "finalConceptMaterialDuplicateForbidden": true,
+    "actualGameCountCap": null,
+    "fixedSixCategoryProductionQuotaForbidden": true
   },
   "discardPolicy": {
     "general": {
@@ -746,5 +754,24 @@
       "singleModelCallTimeoutSeconds": 75,
       "designSchemaAttemptsMax": 2
     }
+  },
+  "policyVersion": "2026-09-15.r40",
+  "developmentConcurrency": {
+    "scope": "DEVELOPMENT_CONFIRMED_SELECTED_PLATFORM_GAME_IMPLEMENTATION",
+    "concurrentGameWipTarget": 20,
+    "concurrentGameWipMax": 20,
+    "webValidationParallelismTarget": 20,
+    "webValidationParallelismMax": 20,
+    "parallelExecutionDefault": true,
+    "adaptiveBackpressureSteps": [
+      20,
+      16,
+      12,
+      8,
+      4
+    ],
+    "sameResponsibleFileParallelForbidden": true,
+    "sharedSaveSchemaWritesExclusive": true,
+    "centralPolicyWritesExclusive": true
   }
 }

@@ -1,58 +1,11 @@
-# 재운컴퍼니 AI 작업 규칙
+# JAEWOON AGENT BOOTSTRAP
 
-## 정책 원본
+This file is a loader, not a policy source.
 
-재운컴퍼니의 제작 정책 원본은 **`COMPANY_FLOW.md` 하나**다.
+1. Read `company-policy.json` before planning, editing, reviewing, validating, or releasing.
+2. Read `company-directive.json` only as the executable mirror of that policy.
+3. Resolve authority strictly as declared in `company-policy.json::_meta.authorityOrder`.
+4. Use `_ruleIndex` rule IDs / JSON paths when recording applied policy in status, audit, QA, or learning evidence.
+5. Evidence, status, workflow, implementation contracts, and secondary documents cannot create or override policy.
 
-- `COMPANY_FLOW.md`는 기계 중심 정책 명세이며 사람용 서술 형식을 요구하지 않는다.
-- 분류별 역할, GAME_SEED, Game Designer AI, 다중모델 부서회의, Web/Unity 검증, 폐기/강등, Artbook Editor, Vibe2 역할을 이 파일에 다시 복제하지 않는다.
-- AI 직원과 자동화는 작업 시작 전 `COMPANY_FLOW.md`와 `company-directive.json`을 읽는다.
-- `company-directive.json`은 중앙 정책을 실행하기 위한 기계 설정값과 불변조건을 가진다.
-- 과거 아트북, 상태 파일, 로그, 레거시 문서의 문구가 중앙 정책과 충돌하면 중앙 정책이 우선한다.
-- 사용자의 최신 직접 지시는 중앙 정책보다도 우선한다.
-
-## 실행 안전 규칙
-
-- 유료 AI, 유료 runner, 자동 초과결제를 사용하지 않는다.
-- 기존 공개 Web 빌드와 저장 의미를 분류 이동 때문에 삭제하지 않는다.
-- 핵심 게임 규칙, 세이브 의미, 과금, 플랫폼, 대형 콘텐츠 방향은 사용자 결정 없이 임의 변경하지 않는다.
-- 같은 게임 source root는 동시에 여러 개발 플로어가 직접 수정하지 않는다.
-- 모델이 만든 후보는 검증 전 main/public에 직접 쓰지 않는다.
-- 의미 있는 수정은 격리 후보 → 통합 → 독립 QA → release gate 순서를 통과한다.
-- 임시 wrapper, 전역 override, 함수 덮어쓰기 체인을 누적하지 말고 가능하면 담당 시스템을 직접 수정한다.
-- Unity 개발 연결은 외부 공개 포트가 아니라 `127.0.0.1` 로컬 우선이다.
-- Unity Android 빌드 성공은 비어 있지 않은 실제 APK와 SHA-256 등 확인 가능한 근거를 요구한다.
-- 홈페이지 노출은 제작 승인이나 출시 승인과 동일하지 않다.
-
-## 분류/설계 실행
-
-분류와 설계 정책의 상세 내용은 **오직 `COMPANY_FLOW.md`를 따른다.** 실행 도구는 `company-directive.json`의 기계 설정을 사용하되 중앙 정책보다 우선할 수 없다.
-
-- `productionClass` 의미 기반 분류와 근거 기반 동적 멤버십
-- 분류별 개수는 현재 멤버십에서 계산하며 고정 슬롯 수를 두지 않는 조건
-- `productionTier` 숫자는 표시/레거시 호환 별칭이며 정책 판단에 사용하지 않는 조건
-- 무료 실제 모델 풀
-- 부서당 최소 distinct model 수
-- Game Designer 단일 저자/동일 모델 수정 조건
-- 부서 내부 합의 및 부서 간 1회 반박 회의
-- Artbook Editor 단일 편집자 조건
-- `DESIGN_ONLY` / `DEVELOPMENT_CONFIRMED` / `RELEASE_CONFIRMED`별 Vibe2 역할
-
-새 분류·GAME_SEED·폐기·아트북·회의 정책을 이 파일에 추가하지 말고 `COMPANY_FLOW.md`를 수정한다.
-
-## 코드 작업 원칙
-
-- 작업은 가능한 한 문제 1개와 책임 범위를 명확히 한 micro-task로 줄인다.
-- 저장키, 핵심 규칙, 공개 안정판 보호조건을 바꾸는 패치는 별도 검증 없이 자동 적용하지 않는다.
-- 코드 생성 실패를 같은 넓은 요청으로 반복하지 않는다. 실패 유형과 책임 파일을 좁힌 뒤 재시도한다.
-- 수정 파일 0개, 문법 오류, exact-edit 불일치, 저장 의미 변경은 성공으로 처리하지 않는다.
-- `NO_SCOPE`는 해당 작업에서 분리 가능한 책임 파일이 없다는 정상 결과일 수 있다.
-- 공유 branch 쓰기는 최종 통합 이후에만 한다.
-
-## QA와 릴리즈
-
-- Web은 실제 브라우저 실행, 입력, 모바일 화면, 저장/재로드, 런타임 오류를 확인한다.
-- Unity는 빌드 성공만 보지 않고 실제 실행, 입력, 프로세스 생존, 크래시, 저장, 화면 증거를 확인한다.
-- 수정 후 기존 QA 판정을 그대로 승계하지 않고 영향 범위를 다시 검증한다.
-- release 성공은 실제 public health 또는 Unity runtime 검증 뒤에만 확정한다.
-- 검증된 성공/실패 근거만 Company DNA/Vibe2 학습 근거로 승격한다.
+Bootstrap hard stops: no paid AI/runner, no unvalidated direct public/main game write, no save-meaning change without owner authority, no wrapper/override-chain patching, and no invented QA/runtime/release evidence. Full definitions are authoritative only in `company-policy.json`.
