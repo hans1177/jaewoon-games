@@ -46,7 +46,7 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add COMPANY_FLOW.md company-directive.json tools/company-common-development-quality-contract.mjs tools/company-web-validation-evidence-contract.mjs qa/company-common-development-quality-contract.test.mjs .github/workflows/company-central-policy-contract-qa.yml
+          git add COMPANY_FLOW.md company-directive.json tools/company-common-development-quality-contract.mjs tools/company-web-validation-evidence-contract.mjs qa/company-common-development-quality-contract.test.mjs qa/company-development-validation-selected-platform.test.mjs .github/workflows/company-central-policy-contract-qa.yml
           git commit -m 'apply common development quality policy'
           git push --force origin HEAD:refs/heads/automation/common-development-policy-migration
           echo 'MIGRATION_BRANCH=automation/common-development-policy-migration'
