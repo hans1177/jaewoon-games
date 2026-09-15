@@ -60,10 +60,18 @@ ownerCurrentProductionContract:
     concurrentGameWipTarget: 6
     concurrentGameWipMax: 6
     globalAcrossConfiguredSelectedPlatformExecutors: true
-    webValidationParallelismUnchanged: true
+    parallelExecutionDefault: true
+    webValidationParallelismTarget: 6
+    webValidationParallelismMax: 6
+    independentGamesMustRunInParallelWhenCapacityExists: true
+    sharedRuntimeStatePersistedBySingleAggregationStep: true
+    validationTiers:
+      - MICRO_TARGETED_CHECK
+      - FAST_INITIAL_INTEGRATION
+      - FULL_FINAL_VALIDATION
     qualityAndEvidenceGatesUnchanged: true
     representativeCanaryMayTemporarilyReduceActiveWorkers: true
-    runtimeRunnerCapacityMaySerializeRuntimeQaWithoutReducingDevelopmentWipPolicy: true
+    runtimeRunnerCapacityMayReduceActualConcurrencyWithoutChangingParallelFirstPolicy: true
   multiplayer:
     decisionStage: GAME_DESIGN
     allowedModes:
@@ -361,8 +369,10 @@ ownerCurrentProductionContract:
     totalGameProductionCountCap: null
     concurrentGameWipMax: 6
     concurrentGameWipScope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
-    webValidationParallelismControlledSeparately: true
-    runtimeCapacityMayReduceActiveWorkers: true
+    webValidationParallelismTarget: 6
+    webValidationParallelismMax: 6
+    webValidationParallelFirst: true
+    runtimeCapacityMayReduceActualConcurrency: true
     idleAutonomousProduction:
       enabled: true
       requiresNoHigherPriorityWorkForHours: 24
@@ -525,7 +535,9 @@ portfolioGovernance:
       target: 6
       max: 6
       scope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
-      webValidationParallelismUnchanged: true
+      parallelExecutionDefault: true
+      webValidationParallelismTarget: 6
+      webValidationParallelismMax: 6
     UNITY:
       preserveExistingHistoricalSix: true
       robloxSetMustNotConsumeOrRewriteUnitySet: true
@@ -836,6 +848,13 @@ platformStrategy:
   developmentSpeedExecution:
     scope: EXECUTION_SPEED_ONLY
     qualityOrEvidenceGateWeakeningForbidden: true
+    parallelFirst: true
+    independentGamesRunConcurrentlyWhenCapacityExists: true
+    sharedStateWritesUseSingleAggregationPoint: true
+    validationTiers:
+      - MICRO_TARGETED_CHECK
+      - FAST_INITIAL_INTEGRATION
+      - FULL_FINAL_VALIDATION
     canonicalSequence:
       - CHANGE_DETECTION
       - CHEAP_PRECHECK
