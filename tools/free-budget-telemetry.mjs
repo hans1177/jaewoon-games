@@ -7,6 +7,7 @@ const STANDARD_PUBLIC_RUNNERS = new Set([
   'windows-latest','windows-2025','windows-2022',
   'macos-latest','macos-14','macos-15','macos-15-intel',
 ]);
+const VERIFIED_VISIBILITY_SOURCES = new Set(['GITHUB_REPO_API','GITHUB_EVENT_PAYLOAD']);
 
 const readJson=(file,fallback={})=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const arg=(name,fallback=null)=>{
@@ -40,6 +41,16 @@ export async function fetchRepositoryVisibility(repository,{fetchImpl=globalThis
   return 'unknown';
 }
 
+export function repositoryVisibilityFromGitHubEvent(repository,eventPath=process.env.GITHUB_EVENT_PATH||''){
+  if(!eventPath)return 'unknown';
+  const event=readJson(eventPath,null);
+  const repo=event?.repository;
+  if(!repo||String(repo.full_name||'')!==repository)return 'unknown';
+  if(repo.private===false||repo.visibility==='public')return 'public';
+  if(repo.private===true||repo.visibility==='private')return 'private';
+  return 'unknown';
+}
+
 export function buildOperationalFreeBudgetTelemetry({
   repository='hans1177/jaewoon-games',
   visibility='unknown',
@@ -55,6 +66,7 @@ export function buildOperationalFreeBudgetTelemetry({
 }={}){
   const exactRepo=repository==='hans1177/jaewoon-games';
   const publicRepo=visibility==='public';
+  const verifiedVisibility=VERIFIED_VISIBILITY_SOURCES.has(visibilitySource);
   const standardRunner=STANDARD_PUBLIC_RUNNERS.has(runner);
   const cashOk=finite(cashKRW,NaN)===0;
   const paidOk=paidApi===false;
@@ -65,7 +77,7 @@ export function buildOperationalFreeBudgetTelemetry({
   const modelCapOk=modelCallsN>=0&&modelCallsN<=maxModelCallsN;
   const runnerCapOk=runnerMinutesN>=0&&runnerMinutesN<=maxRunnerMinutesN;
 
-  const actionsVerified=exactRepo&&publicRepo&&standardRunner&&visibilitySource==='GITHUB_REPO_API';
+  const actionsVerified=exactRepo&&publicRepo&&standardRunner&&verifiedVisibility;
   const actions=actionsVerified?{
     providerId:'GITHUB_PUBLIC_STANDARD',
     resourceType:'ACTIONS_RUNNER',
@@ -74,7 +86,7 @@ export function buildOperationalFreeBudgetTelemetry({
     metered:false,
     remaining:null,
     remainingRatio:1,
-    source:'GITHUB_PUBLIC_STANDARD_POLICY+GITHUB_REPO_API',
+    source:`GITHUB_PUBLIC_STANDARD_POLICY+${visibilitySource}`,
     repository,
     visibility,
     visibilitySource,
@@ -107,7 +119,7 @@ export function buildOperationalFreeBudgetTelemetry({
 
   const failures=[];
   if(!exactRepo)failures.push('UNEXPECTED_REPOSITORY');
-  if(!publicRepo||visibilitySource!=='GITHUB_REPO_API')failures.push('PUBLIC_VISIBILITY_NOT_VERIFIED');
+  if(!publicRepo||!verifiedVisibility)failures.push('PUBLIC_VISIBILITY_NOT_VERIFIED');
   if(!standardRunner)failures.push('STANDARD_RUNNER_NOT_VERIFIED');
   if(!cashOk)failures.push('CASH_BUDGET_FORBIDDEN');
   if(!paidOk)failures.push('PAID_API_FORBIDDEN');
@@ -141,8 +153,15 @@ async function main(){
   const portfolio=readJson('autonomous-portfolio.json',{});
   const repository=arg('repository',process.env.GITHUB_REPOSITORY||'hans1177/jaewoon-games');
   const verifyRepo=String(arg('verify-public-repo','false'))==='true';
-  const visibility=verifyRepo?await fetchRepositoryVisibility(repository,{token:process.env.GITHUB_TOKEN||''}):arg('visibility',process.env.JAEWOON_REPO_VISIBILITY||'unknown');
-  const visibilitySource=verifyRepo?'GITHUB_REPO_API':arg('visibility-source','UNVERIFIED');
+  let visibility=verifyRepo?await fetchRepositoryVisibility(repository,{token:process.env.GITHUB_TOKEN||''}):arg('visibility',process.env.JAEWOON_REPO_VISIBILITY||'unknown');
+  let visibilitySource=verifyRepo?'GITHUB_REPO_API':arg('visibility-source','UNVERIFIED');
+  if(verifyRepo&&visibility==='unknown'){
+    const eventVisibility=repositoryVisibilityFromGitHubEvent(repository);
+    if(eventVisibility!=='unknown'){
+      visibility=eventVisibility;
+      visibilitySource='GITHUB_EVENT_PAYLOAD';
+    }
+  }
   const telemetry=buildOperationalFreeBudgetTelemetry({
     repository,
     visibility,
@@ -166,4 +185,4 @@ if(import.meta.url===pathToFileURL(process.argv[1]).href){
   main().catch(error=>{console.error(error.stack||error.message);process.exitCode=2;});
 }
 
-export { STANDARD_PUBLIC_RUNNERS };
+export { STANDARD_PUBLIC_RUNNERS, VERIFIED_VISIBILITY_SOURCES };
