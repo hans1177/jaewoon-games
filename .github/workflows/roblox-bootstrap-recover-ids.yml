@@ -15,27 +15,13 @@ jobs:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 10
     steps:
-      - name: Execute ID command with Studio Run button
+      - name: Execute ID command with Ctrl+Enter
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           Add-Type -AssemblyName UIAutomationClient
           Add-Type -AssemblyName UIAutomationTypes
           Add-Type -AssemblyName System.Windows.Forms
-          Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class MouseNative { [DllImport("user32.dll")] public static extern bool SetCursorPos(int X,int Y); [DllImport("user32.dll")] public static extern void mouse_event(uint f,uint dx,uint dy,uint data,UIntPtr extra); }'
-
-          function Click-Element($e) {
-            $inv=$null
-            try {
-              if ($e.TryGetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern,[ref]$inv)) { $inv.Invoke(); return }
-            } catch {}
-            $r=$e.Current.BoundingRectangle
-            if ($r.Width -le 0 -or $r.Height -le 0) { throw 'Target element has invalid bounds' }
-            [MouseNative]::SetCursorPos([int]($r.Left+$r.Width/2),[int]($r.Top+$r.Height/2)) | Out-Null
-            Start-Sleep -Milliseconds 150
-            [MouseNative]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero)
-            [MouseNative]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero)
-          }
 
           $p=Get-Process RobloxStudioBeta -ErrorAction Stop | Select-Object -First 1
           $root=[System.Windows.Automation.AutomationElement]::RootElement
@@ -54,24 +40,6 @@ jobs:
           $bar=$main.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$barCond)
           if (-not $bar -or -not $bar.Current.IsEnabled) { throw 'commandBarScriptEditor not available' }
 
-          $all=$main.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
-          $runButton=$null
-          foreach ($e in $all) {
-            if ([string]$e.Current.ControlType.ProgrammaticName -eq 'ControlType.Button' -and [string]$e.Current.Name -eq '실행' -and $e.Current.IsEnabled -and -not $e.Current.IsOffscreen) {
-              $r=$e.Current.BoundingRectangle
-              $br=$bar.Current.BoundingRectangle
-              if ($r.Top -ge ($br.Top-20) -and $r.Top -le ($br.Bottom+20)) { $runButton=$e; break }
-            }
-          }
-          if (-not $runButton) {
-            foreach ($e in $all) {
-              if ([string]$e.Current.ControlType.ProgrammaticName -eq 'ControlType.Button' -and [string]$e.Current.Name -eq '실행' -and $e.Current.IsEnabled -and -not $e.Current.IsOffscreen) { $runButton=$e; break }
-            }
-          }
-          if (-not $runButton) { throw 'Studio command Run button not detected' }
-          $rr=$runButton.Current.BoundingRectangle
-          Write-Host ("ROBLOX_BOOTSTRAP_RUN_BUTTON=PASS left={0} top={1} width={2} height={3}" -f $rr.Left,$rr.Top,$rr.Width,$rr.Height)
-
           $shell=New-Object -ComObject WScript.Shell
           if (-not $shell.AppActivate($p.Id)) { throw 'Studio is not interactive' }
           $bar.SetFocus()
@@ -83,8 +51,8 @@ jobs:
           $shell.SendKeys('^v')
           Start-Sleep -Milliseconds 300
           $commandAt=Get-Date
-          Click-Element $runButton
-          Write-Host 'ROBLOX_BOOTSTRAP_COMMAND_EXECUTE=PASS'
+          $shell.SendKeys('^{ENTER}')
+          Write-Host 'ROBLOX_BOOTSTRAP_COMMAND_CTRL_ENTER=PASS'
 
           $logRoot=Join-Path $env:LOCALAPPDATA 'Roblox\logs'
           if (-not (Test-Path $logRoot)) { throw "Roblox log directory missing: $logRoot" }
@@ -102,7 +70,7 @@ jobs:
             }
             if ($universe -and $place) { break }
           }
-          if (-not $universe -or -not $place -or [int64]$universe -le 0 -or [int64]$place -le 0) { throw 'Positive Universe ID / Place ID not recovered after explicit Run button execution' }
+          if (-not $universe -or -not $place -or [int64]$universe -le 0 -or [int64]$place -le 0) { throw 'Positive Universe ID / Place ID not recovered after Ctrl+Enter execution' }
 
           $persistDir='C:\actions-runner\_diag\roblox-bootstrap-calibration'
           New-Item -ItemType Directory -Force -Path $persistDir | Out-Null
