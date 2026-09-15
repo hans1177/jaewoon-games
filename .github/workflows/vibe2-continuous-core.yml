@@ -104,12 +104,14 @@ jobs:
     timeout-minutes: 12
     continue-on-error: true
     steps:
-      - name: Restore or persist shared Ollama model cache
+      - name: Restore or persist shared Ollama runtime cache
         id: ollama_cache
         uses: actions/cache@v4
         with:
-          path: ~/.ollama/models
-          key: vibe2-ollama-v1-Linux-qwen3-1.7b
+          path: |
+            ~/.ollama/models
+            ~/.cache/vibe2-ollama/bin/ollama
+          key: vibe2-ollama-v2-Linux-qwen3-1.7b
 
       - name: Warm local coding model once on cache miss
         if: steps.ollama_cache.outputs.cache-hit != 'true'
@@ -122,6 +124,9 @@ jobs:
             sleep $((attempt * 4))
           done
           test "$installed" = 1
+          mkdir -p "$HOME/.cache/vibe2-ollama/bin"
+          cp "$(command -v ollama)" "$HOME/.cache/vibe2-ollama/bin/ollama"
+          chmod +x "$HOME/.cache/vibe2-ollama/bin/ollama"
           nohup ollama serve > /tmp/ollama-prewarm.log 2>&1 &
           for i in $(seq 1 30); do
             curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
@@ -151,12 +156,37 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Restore shared Ollama model cache
+      - name: Restore shared Ollama runtime cache
         id: worker_ollama_cache
         uses: actions/cache/restore@v4
         with:
-          path: ~/.ollama/models
-          key: vibe2-ollama-v1-Linux-qwen3-1.7b
+          path: |
+            ~/.ollama/models
+            ~/.cache/vibe2-ollama/bin/ollama
+          key: vibe2-ollama-v2-Linux-qwen3-1.7b
+
+      - name: Prepare cached Ollama runtime
+        id: worker_ollama_runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          cached="$HOME/.cache/vibe2-ollama/bin/ollama"
+          if [ -x "$cached" ]; then
+            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
+            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=CACHE'
+          else
+            installed=0
+            for attempt in 1 2 3; do
+              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+              sleep $((attempt * 4))
+            done
+            test "$installed" = 1
+            mkdir -p "$HOME/.cache/vibe2-ollama/bin"
+            cp "$(command -v ollama)" "$cached"
+            chmod +x "$cached"
+            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
+            echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL'
+          fi
 
       - name: Build reserved task work order
         id: order
@@ -222,12 +252,7 @@ jobs:
           mkdir -p "$candidate_dir/.vibe2"
           cp /tmp/vibe2-work-order.json "$candidate_dir/.vibe2/work-order.json"
 
-          installed=0
-          for attempt in 1 2 3; do
-            if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
-            sleep $((attempt * 4))
-          done
-          test "$installed" = 1
+          command -v ollama >/dev/null
           nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
           for i in $(seq 1 30); do
             curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
