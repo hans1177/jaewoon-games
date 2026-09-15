@@ -1,0 +1,38 @@
+name: Policy Machine Migration
+
+on:
+  push:
+    branches:
+      - chore/machine-policy-contract-20260915
+    paths:
+      - tools/migrate-company-policy.rb
+      - .github/workflows/policy-machine-migration.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Generate canonical machine policy
+        run: ruby tools/migrate-company-policy.rb
+      - name: Validate canonical machine policy
+        run: node tools/validate-company-policy.mjs
+      - name: Commit generated policy migration
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "POLICY_MIGRATION_CHANGES=0"
+            exit 0
+          fi
+          git commit -m "refactor(policy): canonicalize machine policy contract"
+          git push origin HEAD:chore/machine-policy-contract-20260915
