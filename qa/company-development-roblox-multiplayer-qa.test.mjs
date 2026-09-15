@@ -22,6 +22,8 @@ test('Roblox multiplayer QA is exact-artifact, authenticated-Studio, and two-cli
   assert.match(workflow, /robloxMultiplayerQaPassed=multiplayerPass/);
   assert.match(workflow, /ROBLOX_EXISTING_RUNTIME_MOBILE_REGRESSION_EVIDENCE_PRESERVED=YES/);
   assert.match(workflow, /ROBLOX_RELEASE_CLAIM=NO/);
+  assert.match(workflow, /shell: powershell/);
+  assert.doesNotMatch(workflow, /shell: pwsh/);
   assert.doesNotMatch(workflow, /company-development-roblox-mobile-independent-qa\.luau/);
   assert.doesNotMatch(workflow, /company-development-roblox-runtime-smoke\.luau/);
   assert.doesNotMatch(workflow, /windows-latest/);
