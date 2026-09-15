@@ -1,0 +1,57 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-UNITY-PUZZLE-001",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "qwen3:0.6b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 5,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "Unique Puzzle Mechanics",
+    "playerFantasy": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+    "coreFun": "Logical Thinking, Pattern Recognition",
+    "coreLoop": [
+      "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Unity",
+        "purpose": "Design a puzzle mechanic that aligns with the game's core functionality and design principles.",
+        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+      }
+    ],
+    "progressionDirection": "30분 기준으로 첫 번째 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복, 15~25분 변주·난이도·스토리, 25~30분 중간 목표·보상·다음 플레이 동기.",
+    "visualDirection": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복, 15~25분 변주·난이도·스토리, 25~30분 중간 목표·보상·다음 플레이 동기.",
+    "mobileUx": "Unity",
+    "marketTargetDirection": "Puzzle enthusiasts and casual gamers",
+    "steamExpansionDecision": "NOT_RECOMMENDED",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "None",
+    "technicalAssumptions": [
+      "The game's mechanics are designed to be modular and adaptable to different player preferences.",
+      "The core gameplay focuses on logical reasoning and pattern recognition."
+    ],
+    "validationQuestions": [
+      "What is the purpose of the puzzle mechanics?",
+      "How does the gameplay loop work?",
+      "What are the progression directions?",
+      "What is the visual design of the game?",
+      "What is the relationship between the player's actions and the game's state?"
+    ],
+    "openQuestions": [
+      "What is the role of the player in the game's progression?",
+      "How does the game handle rewards and unlocking mechanisms?",
+      "What is the relationship between the player's actions and the game's state?",
+      "What are the potential risks or failures associated with the game's design?"
+    ]
+  }
+}

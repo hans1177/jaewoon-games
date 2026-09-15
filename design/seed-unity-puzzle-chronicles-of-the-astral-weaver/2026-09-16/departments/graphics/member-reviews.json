@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "SEED_MATERIAL_IDS"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "risks": [
+          "TARGET_PLATFORM_FIT"
+        ],
+        "evidence": [
+          "Royal Match"
+        ],
+        "questions": [
+          "What is the purpose of the puzzle mechanics?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Unique Puzzle Mechanics"
+        ],
+        "fix": [
+          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        ],
+        "add": [
+          "Logical Thinking, Pattern Recognition"
+        ],
+        "risks": [
+          "What is the purpose of the puzzle mechanics?"
+        ],
+        "evidence": [
+          "What is the visual design of the game?"
+        ],
+        "questions": [
+          "What is the role of the player in the game's progression?"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ]
+      }
+    }
+  ]
+}

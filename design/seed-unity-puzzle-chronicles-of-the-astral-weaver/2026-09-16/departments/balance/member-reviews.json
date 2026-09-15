@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Unity"
+        ],
+        "fix": [
+          "Core Gameplay"
+        ],
+        "add": [
+          "Unity"
+        ],
+        "risks": [
+          "Unity"
+        ],
+        "evidence": [
+          "Unity"
+        ],
+        "questions": [
+          "What is the purpose of the puzzle mechanics? How does the gameplay loop work? What are the progression directions? What is the vis"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Logical Thinking and Pattern Recognition as core gameplay elements."
+        ],
+        "fix": [
+          "Ensure that the puzzle mechanics are designed to be modular and adaptable."
+        ],
+        "add": [
+          "Implement a progression system that aligns with player expectations."
+        ],
+        "risks": [
+          "Minimize the risk of player frustration or confusion with the mechanics."
+        ],
+        "evidence": [
+          "Support evidence from market data to validate the design."
+        ],
+        "questions": [
+          "What is the role of the player in the game's progression?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "UNIQUE_PUZZLE_MECHANICS"
+        ],
+        "fix": [
+          "GAME_SEED_UNITY_PUZZLE_001"
+        ],
+        "add": [
+          "SEED_MATERIAL_IDS"
+        ],
+        "risks": [
+          "TARGET_PLATFORM_FIT"
+        ],
+        "evidence": [
+          "Royal Match"
+        ],
+        "questions": [
+          "TARGET_DESIGN_REFERENCE"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,184 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen2.5:1.5b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "The game's core mechanics are designed to align with the game's core functionality and design principles, ensuring a logical and 3"
+      ],
+      "fix": [
+        "The game's progression direction is structured to allow for 30-minute sessions, with a focus on 0-5 minutes of constraint-based 0"
+      ],
+      "add": [
+        "The game's visual design is centered around Unity, ensuring a seamless integration with the core gameplay and progression."
+      ],
+      "risks": [
+        "The game's design includes considerations for player choice and feedback, ensuring a balance between simplicity and complexity."
+      ],
+      "evidence": [
+        "The game's market evidence supports its target audience, with strong references to global puzzle mechanics and player engagement."
+      ],
+      "questions": [
+        "What is the purpose of the puzzle mechanics? How does the gameplay loop work? What are the progression directions? What is the 30"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "SEED_MATERIAL_IDS"
+      ],
+      "add": [
+        "Logical Thinking, Pattern Recognition"
+      ],
+      "risks": [
+        "TARGET_PLATFORM_FIT"
+      ],
+      "evidence": [
+        "Royal Match"
+      ],
+      "questions": [
+        "What is the purpose of the puzzle mechanics?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=development"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "GAME_SEED={...}"
+      ],
+      "add": [
+        "DISTINCT_IDENTITY=Unique Puzzle Mechanics"
+      ],
+      "risks": [
+        "market_evidence_summary"
+      ],
+      "evidence": [
+        "Royal Match, Candy Crush Saga"
+      ],
+      "questions": [
+        "core_fun_to_learn"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Unity"
+      ],
+      "fix": [
+        "Core Gameplay"
+      ],
+      "add": [
+        "Unity"
+      ],
+      "risks": [
+        "Unity"
+      ],
+      "evidence": [
+        "Unity"
+      ],
+      "questions": [
+        "What is the purpose of the puzzle mechanics? How does the gameplay loop work? What are the progression directions? What is the vis?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "Planning",
+      "status": "CONSENSUS",
+      "reason": "The game's core mechanics are designed to align with the game's core functionality and design principles, ensuring a logical and 3-minute gameplay loop with a focus on 0-5 minutes of constraint-based mechanics. The visual design is centered around Unity, ensuring a seamless integration with the core gameplay and progression. The game's evidence supports its target audience, with strong references to global puzzle mechanics and player engagement. The questions are: What is the purpose of the puzzle mechanics? How does the gameplay loop work? How",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "Graphics",
+      "status": "CONSENSUS",
+      "reason": "The game's progression direction is structured to allow for 30-minute sessions, with a focus on 0-5 minutes of constraint-based mechanics. The game's visual design is centered around Unity, ensuring a seamless integration with the core gameplay and progression.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "Development",
+      "status": "CONSENSUS",
+      "reason": "own, OTHERS",
+      "departments": [
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "QA",
+      "status": "CONSENSUS",
+      "reason": "OWN, OTHERS",
+      "departments": [
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "Balance",
+      "status": "CONSENSUS",
+      "reason": "The game's core mechanics are designed to align with the game's core functionality and design principles, ensuring a logical and 30-minute sessions, with a focus on 0-5 minutes of constraint-based 0.",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

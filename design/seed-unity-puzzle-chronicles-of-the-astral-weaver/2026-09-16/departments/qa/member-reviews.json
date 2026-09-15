@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What is the purpose of the puzzle mechanics?\n\nThe purpose of the puzzle mechanics is to provide a logical and engaging challenge,\n"
+        ],
+        "fix": [
+          "The purpose of the puzzle mechanics is to provide a logical and engaging challenge, allowing players to\n\nachieve a clear goal,\n"
+        ],
+        "add": [
+          "The purpose of the puzzle mechanics is to provide a logical and engaging challenge, allowing players to\n\nachieve a clear goal,\n"
+        ],
+        "risks": [
+          "The risk of the puzzle mechanics is that they may be too challenging or frustrating for some players,\n"
+        ],
+        "evidence": [
+          "The evidence for the puzzle mechanics is that they have been used in successful games such as\n\nRoyal Match,\n"
+        ],
+        "questions": [
+          "What is the purpose of the puzzle mechanics?\n\nThe purpose of the puzzle mechanics is to provide a logical and engaging challenge,\n"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "GAME_SEED={...}"
+        ],
+        "add": [
+          "DISTINCT_IDENTITY=Unique Puzzle Mechanics"
+        ],
+        "risks": [
+          "market_evidence_summary"
+        ],
+        "evidence": [
+          "Royal Match, Candy Crush Saga"
+        ],
+        "questions": [
+          "core_fun_to_learn"
+        ]
+      }
+    }
+  ]
+}

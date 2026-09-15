@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "ASSIGNED_DEPARTMENT=qa"
+    ],
+    "fix": [
+      "GAME_SEED={...}"
+    ],
+    "add": [
+      "DISTINCT_IDENTITY=Unique Puzzle Mechanics"
+    ],
+    "risks": [
+      "market_evidence_summary"
+    ],
+    "evidence": [
+      "Royal Match, Candy Crush Saga"
+    ],
+    "questions": [
+      "core_fun_to_learn"
+    ]
+  }
+}
