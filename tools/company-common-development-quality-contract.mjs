@@ -114,7 +114,8 @@ export function evaluateCommonDevelopmentQuality({category='',evidence={}}={}){
   const softlockPass=validation?.softlock?.pass===true||cyclePass&&num(metrics.retryPathCount,footprint.retryPathCount)>=1;
   const performancePass=validation?.performance?.pass!==false&&runtimeStable;
   const replay=validation?.replayRegression||evidence?.deterministicReplay||{};
-  const replayPass=replay?.required===false||replay?.pass===true||evidence?.promotionRevalidation?.pass===true;
+  const replayApplicable=req.finalStage||replay?.required===true;
+  const replayPass=!replayApplicable||replay?.required===false||replay?.pass===true||evidence?.promotionRevalidation?.pass===true;
   const pacingPass=!req.finalStage||depth?.pass===true&&num(depth.meaningfulGameplayMilliseconds)>=1800000&&newDimensions>=2&&variations>=2&&duplicateRatio<=0.8&&testUiRatio===0;
   const funPass=cyclePass&&progressionPass&&cycle?.riskFailureOrResourcePressure!==false&&pacingPass;
   const preplatformPass=preplatform?.pass!==false&&movementPass&&worldPass&&explorationPass&&bossPass;
@@ -142,7 +143,7 @@ export function evaluateCommonDevelopmentQuality({category='',evidence={}}={}){
     SAVE_RESTORE_AND_MIGRATION:status(validation?.saveRestore?.required===true,savePass,{saveRestore:validation?.saveRestore||null}),
     SOFTLOCK_RECOVERABILITY:status(true,softlockPass,{softlock:validation?.softlock||null,retryPathCount:num(metrics.retryPathCount,footprint.retryPathCount)}),
     PERFORMANCE_AND_RUNTIME_STABILITY:status(true,performancePass,{runtimeStable,performance:validation?.performance||null,errorCount:errors}),
-    REGRESSION_REPLAY:status(true,replayPass,{replay}),
+    REGRESSION_REPLAY:status(replayApplicable,replayPass,{replay}),
     FUN_AND_PACING:status(true,funPass,{finalStage:req.finalStage,pacingPass,newDimensions,variations,duplicateRatio,testUiRatio}),
     PORTABILITY_READINESS:status(req.finalStage,portabilityPass,{preplatformPass,scopePass,savePass,runtimeStable}),
   };
