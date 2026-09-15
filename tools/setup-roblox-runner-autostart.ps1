@@ -2,7 +2,7 @@ param(
   [string]$RunnerPath = '',
   [string]$TaskName = 'Jaewoon-Roblox-GitHubRunner',
   [string]$ExpectedRunnerName = 'roblox-studio-local',
-  [int]$HealthCheckMinutes = 5
+  [int]$HealthCheckMinutes = 1
 )
 
 $ErrorActionPreference = 'Stop'
