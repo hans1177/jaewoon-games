@@ -1,7 +1,7 @@
 (() => {
   let lastTap = { time: 0, x: 0, y: 0 };
 
-  const api = () => window.__cozyIronV15;
+  const api = () => window.__cozyIronV16 || window.__cozyIronV15;
 
   document.addEventListener('pointerdown', event => {
     if (!event.target?.closest?.('#actionButton')) return;
