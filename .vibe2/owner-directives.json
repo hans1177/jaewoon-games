@@ -11,8 +11,8 @@
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 기존 영토전쟁의 영토 점령·확장 정체성을 먼저 읽고 보존하면서 허접한 구현은 전면 재구현한다. 실제 맵 점령 루프, 적 진영 AI, 거점 충돌, 명확한 전황 피드백, 승패·재시작, 모바일 터치 조작과 반응형 UI, 런타임 안정성과 성능을 갖춘 실제 플레이 가능한 게임으로 만든다. 기존 세이브 의미가 있으면 호환 또는 명시적 마이그레이션을 유지한다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다. 임의 유료 서비스·광고·새 과금은 추가하지 않는다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root"]
+      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 기존 영토전쟁의 영토 점령·확장 정체성을 먼저 읽고 보존하면서 허접한 구현은 전면 재구현한다. 실제 맵 점령 루프, 적 진영 AI, 거점 충돌, 명확한 전황 피드백, 승패·재시작, 모바일 터치 조작과 반응형 UI, 런타임 안정성과 성능을 갖춘 실제 플레이 가능한 게임으로 만든다. 기존 세이브 의미가 있으면 호환 또는 명시적 마이그레이션을 유지한다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다. 임의 유료 서비스·광고·새 과금은 추가하지 않는다.",
+      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized"]
     },
     {
       "id": "OWNER-FULL-REBUILD-CRYSTAL-DEFENSE-20260916",
@@ -23,8 +23,8 @@
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 수정 방어라는 기존 정체성을 먼저 읽고 보존하면서 약한 구현은 전면 재구현한다. 실제 배치 가능한 방어 수단, 적 웨이브와 경로, 자원·업그레이드 루프, 피격·투사체·웨이브 진행 피드백, 패배·재시작, 모바일 터치와 읽기 쉬운 HUD를 갖춘 실제 플레이 가능한 디펜스로 만든다. 기존 규칙과 수치는 근거 없이 임의 변경하지 않는다. 기존 세이브 의미가 있으면 호환 또는 명시적 마이그레이션을 유지한다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root"]
+      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 수정 방어라는 기존 정체성을 먼저 읽고 보존하면서 약한 구현은 전면 재구현한다. 실제 배치 가능한 방어 수단, 적 웨이브와 경로, 자원·업그레이드 루프, 피격·투사체·웨이브 진행 피드백, 패배·재시작, 모바일 터치와 읽기 쉬운 HUD를 갖춘 실제 플레이 가능한 디펜스로 만든다. 기존 규칙과 수치는 근거 없이 임의 변경하지 않는다. 기존 세이브 의미가 있으면 호환 또는 명시적 마이그레이션을 유지한다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
+      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized"]
     },
     {
       "id": "OWNER-FULL-REBUILD-EGG-HEIST-20260916",
@@ -35,8 +35,8 @@
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 기존 알 도둑 대작전의 알 훔치기 정체성은 유지하되 현재의 얇은 구현은 전면 재구현한다. 잠입→알 획득→위험 증가→추격→탈출의 실제 플레이 루프, 적 시야·추격, 단계별 위험, 성공·실패·재시작, 모바일 직접 조작과 명확한 피드백을 갖춘다. 단순 상태 버튼·검증 대시보드·가짜 프로토타입으로 끝내지 않는다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root"]
+      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 기존 알 도둑 대작전의 알 훔치기 정체성은 유지하되 현재의 얇은 구현은 전면 재구현한다. 잠입→알 획득→위험 증가→추격→탈출의 실제 플레이 루프, 적 시야·추격, 단계별 위험, 성공·실패·재시작, 모바일 직접 조작과 명확한 피드백을 갖춘다. 단순 상태 버튼·검증 대시보드·가짜 프로토타입으로 끝내지 않는다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
+      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized"]
     },
     {
       "id": "OWNER-FULL-REBUILD-CHESS-BATTLE-20260916",
@@ -47,8 +47,8 @@
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 기존 체스 배틀의 체스 기반 전술·전투 정체성과 기존 변형 규칙이 있으면 먼저 읽고 보존하면서 허접한 구현은 전면 재구현한다. 실제 합법 수 또는 기존 변형 규칙에 맞는 턴 진행, 상대 AI, 선택 가능한 말과 이동 피드백, 승패·재시작, 전투 연출, 모바일 터치 조작을 갖춘 실제 플레이 가능한 게임으로 만든다. 임의로 체스 규칙을 다른 게임으로 바꾸지 않는다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root"]
+      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 기존 체스 배틀의 체스 기반 전술·전투 정체성과 기존 변형 규칙이 있으면 먼저 읽고 보존하면서 허접한 구현은 전면 재구현한다. 실제 합법 수 또는 기존 변형 규칙에 맞는 턴 진행, 상대 AI, 선택 가능한 말과 이동 피드백, 승패·재시작, 전투 연출, 모바일 터치 조작을 갖춘 실제 플레이 가능한 게임으로 만든다. 임의로 체스 규칙을 다른 게임으로 바꾸지 않는다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
+      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized"]
     },
     {
       "id": "OWNER-FULL-REBUILD-CELESTIAL-BASTION-20260916",
