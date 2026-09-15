@@ -176,6 +176,41 @@ assert.equal(observedRequest.options.headers['x-api-key'],'test-secret-never-per
 assert(!JSON.stringify(xmlPlan).includes('test-secret-never-persist'));
 assert(!JSON.stringify(result).includes('test-secret-never-persist'));
 
+let busyCalls=0;
+const busyWaits=[];
+const busyRetryResult=await publishRobloxPlace({
+  plan:xmlPlan,
+  apiKey:'busy-retry-secret',
+  readFile:()=>Buffer.from('<roblox/>'),
+  retryDelaysMs:[1,2],
+  sleepImpl:async ms=>{busyWaits.push(ms);},
+  fetchImpl:async()=>{
+    busyCalls+=1;
+    if(busyCalls<3)return {ok:false,status:409,text:async()=>JSON.stringify({code:'Conflict',message:'Save failed. Server is busy and unable to process your upload request. Please try again in a couple minutes.'})};
+    return {ok:true,status:200,text:async()=>JSON.stringify({versionNumber:13})};
+  },
+});
+assert.equal(busyRetryResult.versionNumber,13);
+assert.equal(busyCalls,3);
+assert.deepEqual(busyWaits,[1,2]);
+
+let nonBusyConflictCalls=0;
+await assert.rejects(
+  ()=>publishRobloxPlace({
+    plan:xmlPlan,
+    apiKey:'non-busy-conflict-secret',
+    readFile:()=>Buffer.from('<roblox/>'),
+    retryDelaysMs:[1,2],
+    sleepImpl:async()=>{throw new Error('must not wait');},
+    fetchImpl:async()=>{
+      nonBusyConflictCalls+=1;
+      return {ok:false,status:409,text:async()=>JSON.stringify({code:'Conflict',message:'Place version conflict'})};
+    },
+  }),
+  /Roblox publish failed HTTP 409/,
+);
+assert.equal(nonBusyConflictCalls,1);
+
 const reflectedSecret='server-echo-secret';
 await assert.rejects(
   ()=>publishRobloxPlace({
@@ -187,4 +222,4 @@ await assert.rejects(
   error=>error instanceof Error&&error.message.includes('[REDACTED]')&&!error.message.includes(reflectedSecret),
 );
 
-console.log('PASS Roblox V3 platform adapter, technical evidence assembly, canonical runtime gate, root guard and secret-safe publishing plan');
+console.log('PASS Roblox V3 platform adapter, technical evidence assembly, canonical runtime gate, root guard, transient busy retry and secret-safe publishing plan');
