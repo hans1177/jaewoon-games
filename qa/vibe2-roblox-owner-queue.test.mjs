@@ -34,8 +34,12 @@ test('Roblox owner directives import without deleting non-Roblox work and prune 
   const task = result.queue.tasks.find((row) => row.id === directive.id);
   assert.ok(task);
   assert.equal(task.target, 'roblox');
+  assert.equal(task.shard, 'roblox');
   assert.equal(task.ownerDirective, true);
   assert.equal(task.sourceRoot, directive.sourceRoot);
+  assert.equal(task.fullRebuild, true);
+  assert.equal(task.rebuildMode, 'FULL_REBUILD');
+  assert.equal(task.workUnits, 6);
   assert.equal(task.taskWorkUnits, 6);
   assert.ok(task.evidence.includes('owner-directive:full-roblox-game-rebuild'));
   assert.ok(task.evidence.includes('platform-focus:roblox-primary'));
@@ -47,5 +51,9 @@ test('unchanged Roblox owner directive does not reset queued task on the next sy
   assert.equal(second.imported.length, 0);
   assert.equal(second.refreshed.length, 0);
   assert.equal(second.pruned.length, 0);
-  assert.equal(second.queue.tasks.find((task) => task.id === directive.id)?.status, 'queued');
+  const task = second.queue.tasks.find((row) => row.id === directive.id);
+  assert.equal(task?.status, 'queued');
+  assert.equal(task?.shard, 'roblox');
+  assert.equal(task?.fullRebuild, true);
+  assert.equal(task?.rebuildMode, 'FULL_REBUILD');
 });
