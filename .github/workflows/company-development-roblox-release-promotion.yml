@@ -106,6 +106,9 @@ jobs:
             &&Number.isInteger(artifactRunId)&&artifactRunId>0;
           if(!canonical)throw new Error(`ROBLOX_RELEASE_CANONICAL_GATE_BLOCKED:${gameId}`);
 
+          const validIds=(target)=>/^[1-9][0-9]*$/.test(String(target?.universeId||'').trim())&&/^[1-9][0-9]*$/.test(String(target?.placeId||'').trim());
+          const persistedTarget=item.robloxPublicationTarget||{};
+          const priorPublishedTarget=item.robloxReleaseEvidence?.published===true?item.robloxReleaseEvidence:{};
           const knownGood=JSON.parse(fs.readFileSync('roblox-games/known-good-runtime-evidence.json','utf8'));
           const targetEvidence=(knownGood.records||[]).find(row=>
             row.gameId===gameId
@@ -113,10 +116,23 @@ jobs:
             &&row.artifactIdentity===artifact
             &&Number(row.artifactRunId)===artifactRunId
           );
-          const universeId=String(targetEvidence?.publicationTarget?.universeId||'').trim();
-          const placeId=String(targetEvidence?.publicationTarget?.placeId||'').trim();
-          const publicationTargetValid=/^[1-9][0-9]*$/.test(universeId)&&/^[1-9][0-9]*$/.test(placeId);
-          if(!publicationTargetValid)throw new Error(`ROBLOX_RELEASE_PUBLICATION_TARGET_MISSING_OR_MISMATCH:${gameId}`);
+          const evidenceTarget=targetEvidence?.publicationTarget||{};
+          const candidates=[
+            {source:'company-runtime-publication-target',target:persistedTarget,valid:validIds(persistedTarget)&&persistedTarget.verified===true},
+            {source:'company-runtime-prior-release',target:priorPublishedTarget,valid:validIds(priorPublishedTarget)},
+            {source:'known-good-runtime-evidence',target:evidenceTarget,valid:validIds(evidenceTarget)},
+          ].filter(row=>row.valid);
+          if(candidates.length===0)throw new Error(`ROBLOX_RELEASE_PUBLICATION_TARGET_MISSING_OR_MISMATCH:${gameId}`);
+          const selected=candidates[0];
+          const universeId=String(selected.target.universeId).trim();
+          const placeId=String(selected.target.placeId).trim();
+          for(const candidate of candidates.slice(1)){
+            const candidateUniverse=String(candidate.target.universeId).trim();
+            const candidatePlace=String(candidate.target.placeId).trim();
+            if(candidateUniverse!==universeId||candidatePlace!==placeId){
+              throw new Error(`ROBLOX_RELEASE_PUBLICATION_TARGET_CONFLICT:${gameId}:${selected.source}:${candidate.source}`);
+            }
+          }
 
           put('skip','false');
           put('game_id',gameId);
@@ -126,13 +142,14 @@ jobs:
           put('source_root',sourceRoot);
           put('universe_id',universeId);
           put('place_id',placeId);
+          put('publication_target_source',selected.source);
           console.log(`ROBLOX_RELEASE_CANONICAL_TARGET=${gameId}`);
           console.log(`ROBLOX_RELEASE_SOURCE_REVISION=${revision}`);
           console.log(`ROBLOX_RELEASE_ARTIFACT_IDENTITY=${artifact}`);
           console.log(`ROBLOX_RELEASE_ARTIFACT_RUN_ID=${artifactRunId}`);
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
           console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
-          console.log('ROBLOX_RELEASE_PUBLICATION_TARGET_SOURCE=known-good-runtime-evidence');
+          console.log(`ROBLOX_RELEASE_PUBLICATION_TARGET_SOURCE=${selected.source}`);
           NODE
 
       - name: Verify unchanged source and assemble canonical release evidence
@@ -247,6 +264,7 @@ jobs:
           ARTIFACT_RUN_ID: ${{ steps.target.outputs.artifact_run_id }}
           UNIVERSE_ID: ${{ steps.target.outputs.universe_id }}
           PLACE_ID: ${{ steps.target.outputs.place_id }}
+          PUBLICATION_TARGET_SOURCE: ${{ steps.target.outputs.publication_target_source }}
           VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
           RELEASE_RUN_ID: ${{ github.run_id }}
         shell: bash
@@ -264,12 +282,27 @@ jobs:
           const releaseRunId=Number(process.env.RELEASE_RUN_ID);
           const universeId=String(process.env.UNIVERSE_ID||'').trim();
           const placeId=String(process.env.PLACE_ID||'').trim();
+          const targetSource=String(process.env.PUBLICATION_TARGET_SOURCE||'').trim();
           if(item.robloxSourceCommit!==process.env.SOURCE_REVISION)throw new Error('release source revision changed before persist');
           if(item.robloxBuildArtifactIdentity!==process.env.ARTIFACT_IDENTITY)throw new Error('release artifact identity changed before persist');
           if(item.robloxFinalReviewPassed!==true)throw new Error('final review no longer passed before release persist');
           if(!Number.isInteger(version)||version<=0)throw new Error('published Roblox version missing');
           if(!/^[1-9][0-9]*$/.test(universeId)||!/^[1-9][0-9]*$/.test(placeId))throw new Error('published Roblox target IDs missing');
+          const existingTarget=item.robloxPublicationTarget||{};
+          const existingValid=/^[1-9][0-9]*$/.test(String(existingTarget.universeId||''))&&/^[1-9][0-9]*$/.test(String(existingTarget.placeId||''));
+          if(existingValid&&(String(existingTarget.universeId)!==universeId||String(existingTarget.placeId)!==placeId))throw new Error('canonical Roblox publication target changed before persist');
           const stamp=new Date().toISOString();
+          item.robloxPublicationTarget={
+            version:1,
+            gameId:item.gameId,
+            universeId,
+            placeId,
+            verified:true,
+            verifiedAt:existingTarget.verifiedAt||stamp,
+            lastVerifiedAt:stamp,
+            source:existingTarget.source||targetSource||'proven-open-cloud-release',
+            authority:'roblox-canonical-publication-target',
+          };
           item.robloxReleaseEvidence={
             version:1,
             gameId:item.gameId,
@@ -301,6 +334,7 @@ jobs:
           item.updatedAt=stamp;
           q.updatedAt=stamp;
           fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          console.log(`ROBLOX_PUBLICATION_TARGET_PERSISTED=${universeId}/${placeId}`);
           console.log(`ROBLOX_RELEASE_CLAIM=${item.robloxReleaseClaim?'YES':'NO'}`);
           console.log(`ROBLOX_RELEASE_VERSION_NUMBER=${version}`);
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);

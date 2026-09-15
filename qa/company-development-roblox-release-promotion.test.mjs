@@ -68,7 +68,7 @@ test('development final release evidence fails closed on final review, peer or a
   assert.equal(assembleRobloxDevelopmentReleaseEvidence(artifactMismatch).exactRevision,false);
 });
 
-test('release workflow publishes only the retained exact artifact and exact persisted game target after final review',()=>{
+test('release workflow publishes only retained exact artifact and one non-conflicting game publication target',()=>{
   assert.match(workflow,/robloxFinalReviewPassed===true/);
   assert.match(workflow,/ROBLOX_RELEASE_PROMOTION_PENDING/);
   assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
@@ -76,20 +76,27 @@ test('release workflow publishes only the retained exact artifact and exact pers
   assert.match(workflow,/sha256sum "\$place"/);
   assert.match(workflow,/"sha256:\$hash" = "\$expected"/);
   assert.match(workflow,/--assemble-development-release-evidence/);
+  assert.match(workflow,/item\.robloxPublicationTarget/);
+  assert.match(workflow,/company-runtime-publication-target/);
+  assert.match(workflow,/company-runtime-prior-release/);
   assert.match(workflow,/known-good-runtime-evidence\.json/);
   assert.match(workflow,/row\.gameId===gameId/);
   assert.match(workflow,/row\.sourceRevision===revision/);
   assert.match(workflow,/row\.artifactIdentity===artifact/);
   assert.match(workflow,/Number\(row\.artifactRunId\)===artifactRunId/);
-  assert.match(workflow,/publicationTarget\?\.universeId/);
-  assert.match(workflow,/publicationTarget\?\.placeId/);
+  assert.match(workflow,/publicationTarget\|\|\{\}/);
+  assert.match(workflow,/persistedTarget\.verified===true/);
   assert.match(workflow,/ROBLOX_RELEASE_PUBLICATION_TARGET_MISSING_OR_MISMATCH/);
+  assert.match(workflow,/ROBLOX_RELEASE_PUBLICATION_TARGET_CONFLICT/);
   assert.match(workflow,/ROBLOX_UNIVERSE_ID: \$\{\{ steps\.target\.outputs\.universe_id \}\}/);
   assert.match(workflow,/ROBLOX_PLACE_ID: \$\{\{ steps\.target\.outputs\.place_id \}\}/);
   assert.doesNotMatch(workflow,/vars\.ROBLOX_UNIVERSE_ID/);
   assert.doesNotMatch(workflow,/vars\.ROBLOX_PLACE_ID/);
-  assert.match(workflow,/universeId,/);
-  assert.match(workflow,/placeId,/);
+  assert.match(workflow,/item\.robloxPublicationTarget=\{/);
+  assert.match(workflow,/verified:true/);
+  assert.match(workflow,/authority:'roblox-canonical-publication-target'/);
+  assert.match(workflow,/canonical Roblox publication target changed before persist/);
+  assert.match(workflow,/ROBLOX_PUBLICATION_TARGET_PERSISTED/);
   assert.match(workflow,/ROBLOX_V3_STATE=READY/);
   assert.match(workflow,/--execute/);
   assert.match(workflow,/ROBLOX_V3_STATE=PUBLISHED/);
