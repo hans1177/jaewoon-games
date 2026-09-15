@@ -54,6 +54,11 @@ test('self-heal is automatically applied by the authenticated Roblox runner', ()
   assert.match(workflow, /shell: powershell/);
 });
 
+test('new self-heal runs cancel stale runs waiting on an offline runner', () => {
+  assert.match(workflow, /group: roblox-authenticated-runner-self-heal/);
+  assert.match(workflow, /cancel-in-progress: true/);
+});
+
 test('Roblox runner autostart does not reconfigure runner identity or switch to service mode', () => {
   assert.doesNotMatch(script, /config\.cmd/);
   assert.doesNotMatch(script, /svc\.cmd/);
