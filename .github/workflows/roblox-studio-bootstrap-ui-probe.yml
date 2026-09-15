@@ -45,16 +45,13 @@ jobs:
             $place = Get-ChildItem -Path $root -Recurse -File | Where-Object { $_.Extension -in '.rbxl','.rbxlx' } | Select-Object -First 1
             if (-not $place) { continue }
             $hash = (Get-FileHash -Algorithm SHA256 $place.FullName).Hash.ToLowerInvariant()
-            if ("sha256:$hash" -eq $env:EXPECTED_ARTIFACT.ToLowerInvariant()) {
-              $matched = $place.FullName
-              break
-            }
+            if ("sha256:$hash" -eq $env:EXPECTED_ARTIFACT.ToLowerInvariant()) { $matched = $place.FullName; break }
           }
           if (-not $matched) { throw "No retained package matches $env:EXPECTED_ARTIFACT" }
           "place_file=$matched" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           Write-Host 'ROBLOX_BOOTSTRAP_PROBE_IMMUTABLE_ARTIFACT=PASS'
 
-      - name: Probe Studio UI Automation tree without creating an experience
+      - name: Probe Studio publish dialog focus without creating an experience
         env:
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: powershell
@@ -65,18 +62,13 @@ jobs:
           Add-Type -AssemblyName System.Windows.Forms
 
           $studio = $null
-          $roots = @(
-            "$env:LOCALAPPDATA\Roblox\Versions",
-            "$env:PROGRAMFILES\Roblox\Versions",
-            "${env:ProgramFiles(x86)}\Roblox\Versions"
-          ) | Where-Object { $_ -and (Test-Path $_) }
-          foreach ($root in $roots) {
-            $candidate = Get-ChildItem -Path $root -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          $roots = @("$env:LOCALAPPDATA\Roblox\Versions","$env:PROGRAMFILES\Roblox\Versions","${env:ProgramFiles(x86)}\Roblox\Versions") | Where-Object { $_ -and (Test-Path $_) }
+          foreach ($rootPath in $roots) {
+            $candidate = Get-ChildItem -Path $rootPath -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
             if ($candidate) { $studio = $candidate; break }
           }
           if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
-          $running = @(Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue)
-          if ($running.Count -gt 0) { throw 'Roblox Studio must be idle for bootstrap UI probe' }
+          if (@(Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue).Count -gt 0) { throw 'Roblox Studio must be idle for bootstrap UI probe' }
 
           $probeScript = Join-Path $env:RUNNER_TEMP 'roblox-bootstrap-probe.luau'
           @"
@@ -92,12 +84,6 @@ jobs:
             Start-Sleep -Seconds 8
             $root = [System.Windows.Automation.AutomationElement]::RootElement
             $pidCondition = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $p.Id)
-            $windows = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $pidCondition)
-            Write-Host "ROBLOX_BOOTSTRAP_PROBE_TOP_WINDOWS=$($windows.Count)"
-            foreach ($window in $windows) {
-              Write-Host ("ROBLOX_BOOTSTRAP_PROBE_WINDOW name='{0}' automationId='{1}' class='{2}'" -f $window.Current.Name,$window.Current.AutomationId,$window.Current.ClassName)
-            }
-
             $shell = New-Object -ComObject WScript.Shell
             $activated = $shell.AppActivate($p.Id)
             Write-Host "ROBLOX_BOOTSTRAP_PROBE_APPACTIVATE=$activated"
@@ -107,31 +93,34 @@ jobs:
             Start-Sleep -Seconds 10
 
             $windowsAfter = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $pidCondition)
-            Write-Host "ROBLOX_BOOTSTRAP_PROBE_TOP_WINDOWS_AFTER_PUBLISH=$($windowsAfter.Count)"
-            $publishLike = 0
-            $interesting = 0
+            $publishWindowFound = $false
             foreach ($window in $windowsAfter) {
-              Write-Host ("ROBLOX_BOOTSTRAP_PROBE_WINDOW_AFTER name='{0}' automationId='{1}' class='{2}'" -f $window.Current.Name,$window.Current.AutomationId,$window.Current.ClassName)
               $all = $window.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
-              $limit = [Math]::Min($all.Count, 1200)
-              for ($i=0; $i -lt $limit; $i++) {
-                $e = $all.Item($i)
-                $name = [string]$e.Current.Name
-                $aid = [string]$e.Current.AutomationId
-                $ctype = [string]$e.Current.ControlType.ProgrammaticName
-                if ($name -match '(Publish|Roblox|Create|Experience|Name)' -or $aid -match '(?i)(publish|create|name|experience)') {
-                  $publishLike++
-                  Write-Host ("ROBLOX_BOOTSTRAP_PROBE_MATCH type='{0}' name='{1}' automationId='{2}' enabled='{3}'" -f $ctype,$name,$aid,$e.Current.IsEnabled)
-                }
-                if ($interesting -lt 300 -and $ctype -match 'ControlType\.(Button|Edit|ComboBox|MenuItem|TabItem)' -and ($name -or $aid)) {
-                  $interesting++
-                  Write-Host ("ROBLOX_BOOTSTRAP_PROBE_CONTROL type='{0}' name='{1}' automationId='{2}' enabled='{3}' offscreen='{4}'" -f $ctype,$name,$aid,$e.Current.IsEnabled,$e.Current.IsOffscreen)
+              foreach ($e in $all) {
+                if ([string]$e.Current.AutomationId -eq 'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs') {
+                  $publishWindowFound = $true
+                  Write-Host ("ROBLOX_BOOTSTRAP_PROBE_PUBLISH_WINDOW name='{0}' automationId='{1}'" -f $e.Current.Name,$e.Current.AutomationId)
+                  break
                 }
               }
             }
-            Write-Host "ROBLOX_BOOTSTRAP_PROBE_PUBLISH_MATCHES=$publishLike"
-            Write-Host "ROBLOX_BOOTSTRAP_PROBE_INTERESTING_CONTROLS=$interesting"
-            if ($interesting -lt 1) { throw 'Studio UI Automation tree was not discoverable' }
+            if (-not $publishWindowFound) { throw 'Publish Experience window not detected' }
+
+            for ($i=0; $i -le 24; $i++) {
+              Start-Sleep -Milliseconds 250
+              $f = [System.Windows.Automation.AutomationElement]::FocusedElement
+              if ($f) {
+                Write-Host ("ROBLOX_BOOTSTRAP_FOCUS step={0} type='{1}' name='{2}' automationId='{3}' class='{4}' enabled='{5}'" -f $i,$f.Current.ControlType.ProgrammaticName,$f.Current.Name,$f.Current.AutomationId,$f.Current.ClassName,$f.Current.IsEnabled)
+                $patterns = @()
+                foreach ($pat in @([System.Windows.Automation.ValuePattern]::Pattern,[System.Windows.Automation.InvokePattern]::Pattern,[System.Windows.Automation.SelectionItemPattern]::Pattern)) {
+                  try { if ($f.GetSupportedPatterns() -contains $pat) { $patterns += $pat.ProgrammaticName } } catch {}
+                }
+                if ($patterns.Count -gt 0) { Write-Host "ROBLOX_BOOTSTRAP_FOCUS_PATTERNS step=$i patterns=$($patterns -join ',')" }
+              } else {
+                Write-Host "ROBLOX_BOOTSTRAP_FOCUS step=$i NONE"
+              }
+              if ($i -lt 24) { $shell.SendKeys('{TAB}') }
+            }
             $shell.SendKeys('{ESC}')
             Write-Host 'ROBLOX_BOOTSTRAP_PROBE=PASS'
             Write-Host 'ROBLOX_EXPERIENCE_CREATED=NO'
