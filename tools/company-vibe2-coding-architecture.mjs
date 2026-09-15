@@ -150,15 +150,39 @@ function regressionPlan(systems=[]){
   return systems.map(system=>({id:`REGRESSION_${system}`,trigger:`ANY_PATCH_TOUCHING_${system}_OR_ITS_OWNED_STATE`,assertions:['PRIOR_WORKING_BEHAVIOR_REMAINS','NEW_EXPECTED_BEHAVIOR_OBSERVED','NO_RELEVANT_INVARIANT_VIOLATION','NO_DUPLICATE_CAUSAL_EVENT']}));
 }
 
+function patchMode(developmentMode=''){
+  if(developmentMode==='GREENFIELD')return'GREENFIELD_ARCHITECT_THEN_IMPLEMENT';
+  if(developmentMode==='RECOMPOSE')return'RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE';
+  return'PATCH_EXISTING_RESPONSIBLE_SYSTEMS';
+}
+function priorityExecutionSummary({developmentMode='',sourceAnalysis={}}={}){
+  const modeTask=developmentMode==='GREENFIELD'?'IMPLEMENT_GREENFIELD_ARCHITECTURE_FIRST':developmentMode==='RECOMPOSE'?'RECOMPOSE_ALLOWED_COMPONENTS_INTO_NEW_ARCHITECTURE':'PRESERVE_PATCH_CURRENT_CODEBASE';
+  return{
+    developmentMode,
+    patchMode:patchMode(developmentMode),
+    codingTaskIds:['ESTABLISH_CODING_ARCHITECTURE',modeTask,'IMPLEMENT_FEATURE_UNITS_WITH_MICRO_TESTS','ENFORCE_STATE_OWNERSHIP_APIS_AND_INVARIANTS','PREDICT_CHANGE_IMPACT_BEFORE_PATCH','GENERATE_REGRESSION_CASE_PER_FEATURE_OR_BUG','APPLY_RECOVERY_PERFORMANCE_AND_CHANGE_BUDGET'],
+    gameplayTaskIds:['IMPLEMENT_GAME_FLOW_ARCHITECTURE','IMPLEMENT_FLOW_PHASE_TRANSITIONS','IMPLEMENT_WORLD_REACTIVITY_AND_NPC_INITIATIVE','IMPLEMENT_PLAYSTYLE_AND_REGION_RULE_VARIATION','IMPLEMENT_POSITIONAL_PLACEMENT','IMPLEMENT_DIVERGENT_STRATEGY_RESULTS','IMPLEMENT_REPLAY_SEED_CONTRACT'],
+    repairMode:'FAILURE_DRIVEN_TARGETED_REPAIR',
+    runtimeMode:'INDEPENDENT_RUNTIME_EVIDENCE',
+    dependencyRule:'PATCH_DEPENDENCIES_BEFORE_DEPENDENTS_AND_REVALIDATE_AFFECTED_SYSTEMS',
+    replayContract:'REPLAY_SAME_SEED_AND_INPUT_SEQUENCE_OR_EQUIVALENT_SCENARIO_AND_COMPARE_CRITICAL_STATE_TRANSITIONS',
+    protectedSaveKeys:sourceAnalysis.storageKeys||[],
+    modelContextRule:'PRIORITY_EXECUTION_CONTRACTS_MUST_REMAIN_VISIBLE_EVEN_WHEN_DETAILED_CONTEXT_IS_CLIPPED',
+  };
+}
+
 function compactForModel(architecture={}){
   return{
+    priorityExecutionSummary:architecture.priorityExecutionSummary,
     version:architecture.version,
     developmentMode:architecture.developmentMode,
     modeContract:architecture.modeContract,
     architectureOrder:architecture.architectureOrder,
-    sourceLayout:architecture.sourceLayout,
-    stateOwnership:(architecture.stateOwnership||[]).map(({system,owns})=>({system,owns})),
-    apiContracts:(architecture.apiContracts||[]).map(({system,api})=>({system,api})),
+    logicalModules:architecture.sourceLayout?.logicalModules,
+    physicalPolicy:architecture.sourceLayout?.physicalPolicy,
+    webCompatibility:architecture.sourceLayout?.webCompatibility,
+    stateOwnershipSystems:(architecture.stateOwnership||[]).map(row=>row.system),
+    apiNames:(architecture.apiContracts||[]).map(row=>row.api),
     eventContract:'ONCE_PER_CAUSAL_ACTION; DUPLICATE_CAUSAL_EVENT_MUST_NOT_DUPLICATE_REWARD_DAMAGE_PURCHASE_OR_PROGRESS',
     codingLoop:architecture.codingLoop,
     microRuntimeContract:'TARGETED_REPAIR_ITERATION_ONLY; CANNOT_SUBSTITUTE_FOR_FULL_CANONICAL_PROMOTION_VALIDATION',
@@ -166,10 +190,9 @@ function compactForModel(architecture={}){
     impactRule:'PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED',
     regressionRule:'ADD_OR_UPDATE_REGRESSION_CASE_PER_FEATURE_OR_FIXED_BUG',
     changeBudget:architecture.changeBudget,
-    refactorPolicy:architecture.refactorPolicy,
+    refactorContract:architecture.refactorPolicy?.behaviorContract,
     recoveryRules:architecture.recoveryPolicy?.rules,
     performanceRules:architecture.performancePolicy?.rules,
-    selfReview:architecture.selfReview?.questions,
     forbidden:architecture.forbidden,
   };
 }
@@ -179,6 +202,7 @@ export function buildCodingArchitecture({gameId='',genre='',baseline={},gameplay
   const architecture={
     version:1,
     gameId:clean(gameId),genre:clean(genre),developmentMode,modeContract:mode,
+    priorityExecutionSummary:priorityExecutionSummary({developmentMode,sourceAnalysis}),
     architectureOrder:['GAME_FLOW_ARCHITECT','GAMEPLAY_SKETCH','SYSTEM_BOUNDARIES','STATE_OWNERSHIP','DATA_SCHEMA','API_CONTRACTS','EVENT_CONTRACTS','IMPLEMENTATION_UNITS','MICRO_RUNTIME_TESTS','INTEGRATION','FULL_CANONICAL_VALIDATION','BUILD'],
     sourceLayout:{logicalModules:systems,physicalPolicy:developmentMode==='PRESERVE_PATCH'?'PRESERVE_EXISTING_PHYSICAL_LAYOUT':developmentMode==='GREENFIELD'?'PLATFORM_APPROPRIATE_MODULES':'NEW_COHERENT_PROJECT_LAYOUT_FROM_ALLOWED_COMPONENTS',webCompatibility:'WEB_CAN_REMAIN_SINGLE_SELF_CONTAINED_HTML_WHILE_KEEPING_LOGICAL_MODULE_BOUNDARIES',singleResponsibility:'ONE_MODULE_OR_FUNCTION_SHOULD_NOT_OWN_UNRELATED_WORLD_COMBAT_UI_SAVE_AND_ECONOMY_MUTATIONS'},
     stateOwnership:owners,
