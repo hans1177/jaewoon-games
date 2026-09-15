@@ -16,6 +16,7 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'
 
 jobs:
   qa-plan:
@@ -69,7 +70,8 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_POST_RUNTIME_QA_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_POST_RUNTIME_QA_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
-          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1');
+          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3');
+          console.log('ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES');
           NODE
 
   qa-worker:
@@ -78,7 +80,7 @@ jobs:
     if: needs.qa-plan.outputs.count != '0'
     strategy:
       fail-fast: false
-      max-parallel: 1
+      max-parallel: 3
       matrix: ${{ fromJSON(needs.qa-plan.outputs.matrix) }}
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 45
@@ -470,6 +472,8 @@ jobs:
       - name: Final summary
         run: |
           echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'
+          echo 'ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3'
+          echo 'ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES'
           echo 'ROBLOX_MOBILE_CONTROL_UI_REAL_DEVICE_SIMULATION_REQUIRED=YES'
           echo 'ROBLOX_INDEPENDENT_QA_REAL_STUDIO_REQUIRED=YES'
           echo 'ROBLOX_REGRESSION_EXACT_ARTIFACT_REQUIRED=YES'
