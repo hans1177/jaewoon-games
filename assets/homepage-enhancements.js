@@ -1,4 +1,4 @@
-import './homepage-enhancements-core.js?v=20260915-development-score-ranking';
+import './homepage-enhancements-core.js?v=20260915-current-development-score';
 
 function bindNativeApkInstall(){
   const bind=()=>{

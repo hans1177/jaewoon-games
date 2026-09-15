@@ -374,6 +374,12 @@ ownerCurrentProductionContract:
       developmentWebAndPlatformTestButtonsMustBeSeparate: true
       missingPlatformTestTargetDisablesOnlyPlatformButton: true
       developmentScoreDisplayEnabled: true
+      developmentScoreSource: CURRENT_WEB_INITIAL_CYCLE_STRICT_SCORE
+      developmentScoreRequiresInitialCyclePass: true
+      developmentScoreRequiresSchema13: true
+      developmentScoreRequiresMusicPass: true
+      developmentScoreRequiresCurrentSourceAndBaselineBindingWhenAvailable: true
+      reworkOrRevalidationScoresNotShownAsCurrent: true
       developmentRanking: SCORE_DESC
       unratedDevelopmentGamesLast: true
     ownerMayTestBeforeFinalPromotion: true

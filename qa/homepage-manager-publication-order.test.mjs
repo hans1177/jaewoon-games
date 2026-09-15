@@ -66,7 +66,13 @@ test('development games auto-display from runtime progress while Top30 promotion
   assert.ok(homepageCore.includes("productionClass||'').trim().toUpperCase()==='DEVELOPMENT_CONFIRMED'"));
   assert.ok(homepageCore.includes("getJson('/development-queue.json',{runtime:true})"));
   assert.ok(homepageCore.includes("wrapper.id='homeDevelopmentGameCenter'"));
-  assert.ok(homepageCore.includes('const developmentScoreOf=row=>'));
+  assert.ok(homepageCore.includes('const developmentScoreState=row=>'));
+  assert.ok(homepageCore.includes('const developmentScoreOf=row=>developmentScoreState(row).score'));
+  assert.ok(homepageCore.includes('webInitialCycleStrictScore'));
+  assert.ok(homepageCore.includes('webInitialCyclePassed===true'));
+  assert.ok(homepageCore.includes('webInitialCycleValidationSchemaVersion'));
+  assert.ok(homepageCore.includes('webInitialCycleMusicValidationPassed===true'));
+  assert.ok(homepageCore.includes("revalidation?'재검증 필요'"));
   assert.ok(homepageCore.includes('if(sb!==sa)return sb-sa'));
   assert.ok(homepageCore.includes('data-development-score='));
   assert.ok(homepageCore.includes('점수 미평가'));
@@ -92,6 +98,8 @@ test('development games auto-display from runtime progress while Top30 promotion
   assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_VISIBILITY=PROGRESS_ONLY'));
   assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_ORDER=SCORE_DESC'));
   assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_SCORE_VISIBLE=YES'));
+  assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_SCORE_SOURCE=CURRENT_INITIAL_CYCLE'));
+  assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_STALE_SCORE_POLICY=REVALIDATION_NOT_CURRENT'));
   assert.ok(manager.includes('HOMEPAGE_DEVELOPMENT_TEST_BUTTONS=WEB_AND_PLATFORM'));
   assert.ok(manager.includes('HOMEPAGE_TOP30_SOURCE=CANONICAL_TOP30'));
 });
