@@ -48,7 +48,7 @@
       "workUnits": 5,
       "status": "pending",
       "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 기존 체스 배틀의 체스 기반 전술·전투 정체성과 기존 변형 규칙이 있으면 먼저 읽고 보존하면서 허접한 구현은 전면 재구현한다. 실제 합법 수 또는 기존 변형 규칙에 맞는 턴 진행, 상대 AI, 선택 가능한 말과 이동 피드백, 승패·재시작, 전투 연출, 모바일 터치 조작을 갖춘 실제 플레이 가능한 게임으로 만든다. 임의로 체스 규칙을 다른 게임으로 바꾸지 않는다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized"]
+      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized", "pipeline-fix:transient-model-retry-e283735"]
     },
     {
       "id": "OWNER-FULL-REBUILD-CELESTIAL-BASTION-20260916",
