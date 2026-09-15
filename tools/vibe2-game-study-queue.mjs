@@ -1,5 +1,5 @@
 // 파일명: tools/vibe2-game-study-queue.mjs
-// 역할: GAME STUDY를 기존 Vibe2 병렬 큐/백프레셔 안에서 24시간 반복 예약하고 fan-in에서 Experience Memory로 승격한다.
+// 역할: GAME STUDY를 기존 Vibe2 병렬 큐/백프레셔 안에서 서버에서 24시간 반복 예약하고 fan-in에서 Experience Memory로 승격한다.
 // 원칙: 일반 작업과 같은 maxConcurrentTasks/currentMax를 공유하며, Study worker는 control/main을 직접 쓰지 않는다.
 
 import fs from 'node:fs';
@@ -12,6 +12,7 @@ const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const STUDY_EVIDENCE_PREFIX = 'game-study-target:';
+const AUTHORIZED_SERVER_SOURCE = 'owned-or-authorized-server-workspace';
 
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
@@ -24,7 +25,7 @@ export function normalizeGameStudyTarget(input = {}, index = 0) {
   const engine = clean(input.engine).toLowerCase();
   const sourceAccess = clean(input.sourceAccess) || 'observation-only';
   const root = posix(input.root);
-  const sourceRoot = posix(input.sourceRoot || (sourceAccess === 'owned-or-authorized-local-copy' ? root : ''));
+  const sourceRoot = posix(input.sourceRoot || (sourceAccess === AUTHORIZED_SERVER_SOURCE ? root : ''));
   const url = clean(input.url);
   const scenarioFile = posix(input.scenarioFile);
   const issues = [];
@@ -32,8 +33,8 @@ export function normalizeGameStudyTarget(input = {}, index = 0) {
   if (!scenarioFile) issues.push('scenario-file-required');
   if (engine === 'web' && !root && !url) issues.push('web-root-or-url-required');
   if (engine === 'roblox' && input.runnerReady !== true) issues.push('roblox-real-studio-runner-not-ready');
-  if (sourceAccess === 'owned-or-authorized-local-copy' && !sourceRoot) issues.push('authorized-source-root-required');
-  if (!['observation-only', 'owned-or-authorized-local-copy'].includes(sourceAccess)) issues.push('source-access-policy-invalid');
+  if (sourceAccess === AUTHORIZED_SERVER_SOURCE && !sourceRoot) issues.push('authorized-server-source-root-required');
+  if (!['observation-only', AUTHORIZED_SERVER_SOURCE].includes(sourceAccess)) issues.push('source-access-policy-invalid');
   return Object.freeze({
     version: 1,
     id,
@@ -46,6 +47,7 @@ export function normalizeGameStudyTarget(input = {}, index = 0) {
     scenarioFile: scenarioFile || null,
     sourceRoot: sourceRoot || null,
     sourceAccess,
+    executionLocation: 'server',
     tags: Object.freeze(unique(input.tags || [])),
     priority: ['critical', 'high', 'normal', 'low'].includes(clean(input.priority)) ? clean(input.priority) : 'low',
     runnerReady: engine === 'web' ? true : input.runnerReady === true,
@@ -63,7 +65,7 @@ export function loadGameStudyTargets(input = {}) {
   const targets = rows.map(normalizeGameStudyTarget).filter((target) => target.enabled);
   return Object.freeze({
     version: 1,
-    mode: clean(input?.mode) || 'hourly-24h-parallel-study',
+    mode: clean(input?.mode) || 'server-hourly-24h-parallel-study',
     maxConcurrentTasks: clamp(input?.maxConcurrentTasks || 20),
     targets: Object.freeze(targets),
     runnable: Object.freeze(targets.filter((target) => target.valid && target.runnerReady)),
@@ -86,7 +88,7 @@ function taskForTarget(target) {
     target: target.engine,
     department: 'qa',
     type: 'research',
-    goal: `[GAME_STUDY:${target.id}] verified observation and pattern distillation for ${target.gameId}`,
+    goal: `[GAME_STUDY:${target.id}] server-side verified observation and pattern distillation for ${target.gameId}`,
     responsibleFiles: [],
     dependencies: [],
     priority: target.priority,
@@ -105,6 +107,7 @@ function taskForTarget(target) {
       `${STUDY_EVIDENCE_PREFIX}${target.id}`,
       `game-study-engine:${target.engine}`,
       `game-study-source-access:${target.sourceAccess}`,
+      'game-study-execution:server',
       'game-study-shared-parallel-cap'
     ]
   };
@@ -163,6 +166,7 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
   return Object.freeze({
     version: 1,
     createdAt: new Date().toISOString(),
+    executionLocation: 'server',
     queue,
     matrix: Object.freeze(matrix),
     webMatrix: Object.freeze(matrix.filter((row) => row.engine === 'web')),
@@ -212,7 +216,7 @@ export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, res
     queue = createVibeContinuousQueue({ maxConcurrentTasks: queue.maxConcurrentTasks, tasks });
     applied.push({ taskId, outcome: outcome || 'FAIL', promoted, reinforced, reason });
   }
-  return Object.freeze({ queue, memory, applied: Object.freeze(applied), summary: summarizeVibeContinuousQueue(queue), authorityExpanded: false });
+  return Object.freeze({ queue, memory, applied: Object.freeze(applied), summary: summarizeVibeContinuousQueue(queue), executionLocation: 'server', authorityExpanded: false });
 }
 
 export function reserveGameStudyFiles({ queueFile = '.vibe2/queue.json', targetsFile = '.vibe2/game-study-targets.json', controlFile = '.vibe2/parallelism-control.json', outputFile = '', maxConcurrentTasks = 20 } = {}) {
@@ -236,16 +240,19 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const args = parseArgs();
   if (args.command === 'reserve') {
     const result = reserveGameStudyFiles({ queueFile: clean(args.queue) || '.vibe2/queue.json', targetsFile: clean(args.targets) || '.vibe2/game-study-targets.json', controlFile: clean(args.control) || '.vibe2/parallelism-control.json', outputFile: clean(args.output), maxConcurrentTasks: Number(args.max) || 20 });
+    console.log(`VIBE2_GAME_STUDY_EXECUTION=SERVER`);
     console.log(`VIBE2_GAME_STUDY_RESERVED=${result.selectedCount}`);
     console.log(`VIBE2_GAME_STUDY_REQUESTED_MAX=${result.requestedMax}`);
     console.log(`VIBE2_GAME_STUDY_EFFECTIVE_MAX=${result.effectiveMax}`);
     console.log(`VIBE2_GAME_STUDY_INVALID_TARGETS=${result.invalidTargets.length}`);
   } else if (args.command === 'fan-in') {
     const result = fanInGameStudyFiles({ queueFile: clean(args.queue) || '.vibe2/queue.json', experienceFile: clean(args.experience) || '.vibe2/experience.json', resultsDir: clean(args.results), outputFile: clean(args.output) });
+    console.log(`VIBE2_GAME_STUDY_EXECUTION=SERVER`);
     console.log(`VIBE2_GAME_STUDY_FANIN=${result.applied.length}`);
     console.log(`VIBE2_GAME_STUDY_MEMORY_RECORDS=${result.memory?.records?.length || 0}`);
   } else {
     const targets = loadGameStudyTargets(readJson(clean(args.targets) || '.vibe2/game-study-targets.json', { targets: [] }));
+    console.log(`VIBE2_GAME_STUDY_EXECUTION=SERVER`);
     console.log(`VIBE2_GAME_STUDY_TARGETS=${targets.targets.length}`);
     console.log(`VIBE2_GAME_STUDY_RUNNABLE=${targets.runnable.length}`);
   }
