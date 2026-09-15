@@ -43,7 +43,7 @@ class CDP{
   message(text){let m;try{m=JSON.parse(text);}catch{return;}if(m.id){const p=this.pending.get(m.id);if(!p)return;this.pending.delete(m.id);clearTimeout(p.t);m.error?p.fail(new Error(`${p.method}: ${m.error.message}`)):p.ok(m.result||{});return;}for(const fn of this.events.get(m.method)||[]){try{fn(m.params||{});}catch{}}}
   on(name,fn){const a=this.events.get(name)||[];a.push(fn);this.events.set(name,a);}
   send(method,params={}){const id=++this.seq;return new Promise((ok,fail)=>{const t=setTimeout(()=>{this.pending.delete(id);fail(new Error(`CDP timeout: ${method}`));},10000);this.pending.set(id,{ok,fail,t,method});this.ws.send(JSON.stringify({id,method,params}));});}
-  close(){try{this.ws?.close();}catch{}}
+  close(){for(const p of this.pending.values())clearTimeout(p.t);this.pending.clear();this.events.clear();try{this.ws?.close();}catch{}this.ws=null;}
 }
 async function launch(binary){
   const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-chrome-'));
@@ -62,6 +62,8 @@ function keyInfo(key,code){const map={ArrowLeft:['ArrowLeft','ArrowLeft',37],Arr
 async function key(cdp,a){const d=keyInfo(a.key,a.code);await cdp.send('Input.dispatchKeyEvent',{type:'rawKeyDown',key:d.key,code:d.code,windowsVirtualKeyCode:d.vk,nativeVirtualKeyCode:d.vk});await sleep(a.holdMs||50);await cdp.send('Input.dispatchKeyEvent',{type:'keyUp',key:d.key,code:d.code,windowsVirtualKeyCode:d.vk,nativeVirtualKeyCode:d.vk});}
 async function click(cdp,selector){const p=await evalJs(cdp,`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e)return null;const r=e.getBoundingClientRect();return r.width>0&&r.height>0?{x:r.left+r.width/2,y:r.top+r.height/2}:null})()`);if(!p)throw new Error(`click 대상 없음: ${selector}`);await cdp.send('Input.dispatchMouseEvent',{type:'mousePressed',x:p.x,y:p.y,button:'left',buttons:1,clickCount:1});await cdp.send('Input.dispatchMouseEvent',{type:'mouseReleased',x:p.x,y:p.y,button:'left',buttons:0,clickCount:1});}
 async function playability(cdp,required){const v=await evalJs(cdp,`(()=>{const x=window.__VIBE2_PLAYABILITY_EVIDENCE__||null;if(!x)return null;if(x.authority==='v2-playability-evidence'&&typeof window.requireJaewoonVibePlayability==='function')return window.requireJaewoonVibePlayability(x);return x;})()`);return{required:required===true,trusted:v?.authority==='v2-playability-gate'||v?.authority==='v2-playability-evidence',playable:v?.playable===true,value:v};}
+async function cleanupBrowser(browser){if(!browser?.child)return;try{browser.child.stderr?.destroy();}catch{}try{browser.child.kill('SIGKILL');}catch{}try{browser.child.unref();}catch{}await sleep(25);}
+async function cleanupServer(server){if(!server?.server)return;try{server.server.closeAllConnections?.();}catch{}await new Promise(resolve=>{try{server.server.close(()=>resolve());}catch{resolve();}});}
 
 export async function runWebAutoPlayer({root='',url='',scenarioFile='',scenario=null,outputFile='',manifestFile='',chromePath=''}={}){
   const sc=normalizeAutoPlayerScenario(scenario||JSON.parse(fs.readFileSync(scenarioFile,'utf8')));if(sc.engine!=='web')throw new Error('Web AUTO PLAYER engine 불일치');
@@ -85,7 +87,7 @@ export async function runWebAutoPlayer({root='',url='',scenarioFile='',scenario=
     const p=await playability(cdp,sc.requirePlayability);
     const result=createAutoPlayerResult({engine:'web',runId,startedAt,finishedAt:new Date().toISOString(),browser:browser.browser,page:pageUrl,actions,checkpoints,errors:sc.failOnRuntimeError?errors:errors.filter(x=>x.type==='action-error'),playability:p,metrics:{durationMs:Date.now()-t0,timeToFirstActionMs:firstInput==null?null:firstInput-t0,consoleErrorCount:consoleErrors},artifactPath:outputFile});
     if(outputFile)persistAutoPlayerResult(outputFile,result);if(manifestFile)applyAutoPlayerEvidenceToManifest(manifestFile,result,{artifactPath:outputFile});return result;
-  }finally{cdp?.close();try{browser?.child.kill('SIGKILL');}catch{}if(browser?.dir)fs.rmSync(browser.dir,{recursive:true,force:true});if(server)await new Promise(r=>server.server.close(r));}
+  }finally{cdp?.close();await cleanupBrowser(browser);if(browser?.dir)fs.rmSync(browser.dir,{recursive:true,force:true});await cleanupServer(server);}
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const a=argsOf();const result=await runWebAutoPlayer({root:clean(a.root),url:clean(a.url),scenarioFile:clean(a.scenario),outputFile:clean(a.output),manifestFile:clean(a.manifest),chromePath:clean(a.chrome)});console.log(`VIBE2_AUTO_PLAYER_ENGINE=${result.engine}`);console.log(`VIBE2_AUTO_PLAYER_VERIFIED=${result.verified?'YES':'NO'}`);console.log(`VIBE2_AUTO_PLAYER_RUN_ID=${result.runId}`);console.log(`VIBE2_AUTO_PLAYER_INPUTS=${result.telemetry.metrics.inputActionCount}`);console.log(`VIBE2_AUTO_PLAYER_CHECKPOINTS=${result.telemetry.metrics.checkpointPassCount}/${result.telemetry.metrics.checkpointCount}`);if(!result.verified)process.exitCode=1;}
