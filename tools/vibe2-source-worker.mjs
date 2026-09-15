@@ -60,6 +60,7 @@ function readContext(root,target,responsibleFiles=[],ignored=[],smartFiles=[]){c
 
 function extractJson(raw){const text=clean(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();try{return JSON.parse(text);}catch{}const starts=['{','['].map(c=>text.indexOf(c)).filter(i=>i>=0);if(!starts.length)throw new Error('모델 JSON 시작을 찾지 못함');const start=Math.min(...starts),opening=text[start],closing=opening==='{'?'}':']';let depth=0,quoted=false,escape=false;for(let i=start;i<text.length;i++){const ch=text[i];if(quoted){if(escape)escape=false;else if(ch==='\\')escape=true;else if(ch==='"')quoted=false;continue;}if(ch==='"'){quoted=true;continue;}if(ch===opening)depth++;else if(ch===closing&&--depth===0)return JSON.parse(text.slice(start,i+1));}throw new Error('모델 JSON 파싱 실패');}
 function fullWebRewriteAllowed(order,target){return target==='web'&&(order?.workerPolicy?.fullFileRewriteAllowed===true||/FULL_WEB_GAME_REBUILD|실제 웹게임|프로토타입.*웹게임/i.test(clean(order?.goal)));}
+function ownerBootstrapAllowed(order,target,responsibleFiles=[]){const goal=clean(order?.goal);return target==='web'&&order?.selectedTask?.ownerDirective===true&&fullWebRewriteAllowed(order,target)&&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/i.test(goal)&&responsibleFiles.length===1&&responsibleFiles[0]==='index.html';}
 function parseFullFileEnvelope(raw){const text=String(raw??'').replaceAll('\r\n','\n'),trimmed=text.trimStart();if(!trimmed.startsWith(FULL_FILE_PREFIX))return null;const prefixOffset=text.indexOf(FULL_FILE_PREFIX),contentAt=text.indexOf(FULL_FILE_CONTENT_MARKER,prefixOffset+FULL_FILE_PREFIX.length);let endAt=text.indexOf(FULL_FILE_END_MARKER,contentAt+FULL_FILE_CONTENT_MARKER.length),recoveredHtmlEnd=false;if(contentAt>=0&&endAt<0){const htmlEnd=text.toLowerCase().lastIndexOf('</html>');if(htmlEnd>=contentAt&&!text.slice(htmlEnd+7).trim()){endAt=htmlEnd+7;recoveredHtmlEnd=true;}}if(contentAt<0||endAt<0)throw new Error('전체 파일 응답이 잘렸거나 종료 마커가 없음');const trailing=recoveredHtmlEnd?'':text.slice(endAt+FULL_FILE_END_MARKER.length).trim();if(trailing)throw new Error('전체 파일 종료 마커 뒤에 허용되지 않은 출력이 있음');const header=text.slice(prefixOffset,contentAt).trim().split('\n').map(line=>line.trim()).filter(Boolean);if(header.shift()!==FULL_FILE_PREFIX)throw new Error('전체 파일 응답 헤더 오류');const valueOf=key=>{const line=header.find(row=>row.startsWith(`${key}:`));return line?line.slice(key.length+1).trim():'';};const tests=header.filter(row=>row.startsWith('TEST:')).map(row=>row.slice(5).trim()).filter(Boolean);let content=text.slice(contentAt+FULL_FILE_CONTENT_MARKER.length,endAt);if(content.startsWith('\n'))content=content.slice(1);if(content.endsWith('\n'))content=content.slice(0,-1);if(!content.trim())throw new Error('전체 파일 응답 내용이 비어 있음');return{summary:valueOf('SUMMARY')||'Vibe2 full web source candidate',expectedEffect:valueOf('EXPECTED_EFFECT'),edits:[],newFiles:[],replaceFiles:[{path:valueOf('PATH'),content}],tests};}
 
 function normalizeEdit(item,{target,responsibleFiles,sourceRootRelative,symbol=''}){return{path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??''),symbol:clean(symbol||item?.symbol)||null};}
@@ -165,8 +166,15 @@ export async function runVibe2SourceWorker({
   const target=clean(order.target).toLowerCase();
   const sourceRootRelative=assertSourceRoot(order?.source?.root,target);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
-  if(!fs.existsSync(sourceRoot)||!fs.statSync(sourceRoot).isDirectory())throw new Error(`source root 없음: ${sourceRootRelative}`);
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative,target);
+  let sourceRootBootstrapped=false;
+  if(!fs.existsSync(sourceRoot)||!fs.statSync(sourceRoot).isDirectory()){
+    if(!applySource||!ownerBootstrapAllowed(order,target,responsibleFiles))throw new Error(`source root 없음: ${sourceRootRelative}`);
+    assertCandidateBranch(cwd);
+    fs.mkdirSync(sourceRoot,{recursive:true});
+    fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vibe2 bootstrap</title></head><body><main id="game"></main></body></html>\n','utf8');
+    sourceRootBootstrapped=true;
+  }
   const exploration=exploreVibe2WorkOrder({cwd,order});
   const smartContext=buildSmartCodeContext({
     root:sourceRoot,
@@ -253,6 +261,8 @@ export async function runVibe2SourceWorker({
     designIntelligence:designManifestContract(order),
     designEvidence:waitingDesignEvidence(),
     fullFileRewriteAllowed:allowFullRewrite,
+    sourceRootBootstrapped,
+    sourceRootBootstrapOwnerAuthorized:sourceRootBootstrapped,
     protectedGameplayMutationAutomatic:false,
     binaryAssetsDirectTextEditForbidden:true,
     directMainWrite:false,
