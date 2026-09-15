@@ -20,6 +20,7 @@ async function serve(root){
   const base=path.resolve(root);
   const server=http.createServer((req,res)=>{
     const raw=decodeURIComponent(String(req.url||'/').split('?')[0]);
+    if(raw==='/favicon.ico'){res.statusCode=204;res.end();return;}
     const rel=(raw==='/'?'index.html':raw.replace(/^\/+/,''));
     let file=path.resolve(base,rel);
     if(file!==base&&!file.startsWith(base+path.sep)){res.statusCode=403;res.end('forbidden');return;}
