@@ -354,26 +354,31 @@ export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,ca
   const preservationBlockers=[...(preserved?.review?.blockers||[])];
   if(forceRepair)preservationBlockers.push(`RUNTIME_REWORK_REQUIRED:${clean(repairReason)||'CANONICAL_DEVELOPMENT_REWORK'}`);
   const developmentContext=buildVibeDevelopmentContext({gameId,genre:inferDevelopmentGenre({gameId,baseline}),baseline,inventory,existingHtml:preserved?.html||'',blockers:preservationBlockers});
-  let result,review,generation;
+  let result,review,generation,deterministicFailure='';
   if(preserved?.preservationEligible&&!forceRepair){
     result=preserved;
     review=preserved.review;
-    generation={mode:preserved.generationMode,modelAttempts:0,modelContractFailures:[],modelUsed:false,modelInvoked:false,sourcePreserved:true,forcedRepair:false,model:null,developmentContext};
+    generation={mode:preserved.generationMode,modelAttempts:0,modelContractFailures:[],modelUsed:false,modelInvoked:false,sourcePreserved:true,forcedRepair:false,model:null,developmentContext,deterministicFirst:true};
   }else{
-    await ensureLocalVibeRuntime(model);
-    const vibe=await buildVibePlayable({gameId,gameName,baseline,inventory,model,existingHtml:preserved?.html||'',preservationBlockers,developmentContext});
-    ({result,review,generation}=vibe);
-    generation={...generation,forcedRepair:Boolean(forceRepair)};
-    if(!result){
-      if(preserved)throw new Error(`VIBE2_PRESERVED_SOURCE_REPAIR_FAILED:${(generation.modelContractFailures||[]).join(' || ')||'no-valid-model-candidate'}`);
+    if(!preserved&&!forceRepair){
       try{
         const fallback=buildContractSafePlayable({gameId,gameName,baseline});
         result=fallback;
         review=fallback.review||validateBootstrapHtml(fallback.html,{scopeInventory:fallback.approvedScopeInventory});
-        generation={...generation,mode:'VIBE2_FAILED_SAFE_GENRE_FALLBACK',fallbackMode:fallback.generationMode,sourcePreserved:false};
+        generation={mode:'DETERMINISTIC_GENRE_IMPLEMENTATION',fallbackMode:fallback.generationMode,modelAttempts:0,modelContractFailures:[],modelUsed:false,modelInvoked:false,sourcePreserved:false,forcedRepair:false,model:null,developmentContext,deterministicFirst:true};
       }catch(error){
+        deterministicFailure=String(error?.message||error).replace(/\s+/g,' ').slice(0,1800);
+      }
+    }
+    if(!result){
+      await ensureLocalVibeRuntime(model);
+      const vibe=await buildVibePlayable({gameId,gameName,baseline,inventory,model,existingHtml:preserved?.html||'',preservationBlockers,developmentContext});
+      ({result,review,generation}=vibe);
+      generation={...generation,forcedRepair:Boolean(forceRepair),deterministicFirst:true,deterministicFailure:deterministicFailure||null};
+      if(!result){
+        if(preserved)throw new Error(`VIBE2_PRESERVED_SOURCE_REPAIR_FAILED:${(generation.modelContractFailures||[]).join(' || ')||'no-valid-model-candidate'}`);
         const modelFailure=(generation.modelContractFailures||[]).join(' || ');
-        throw new Error(`VIBE2_PRIMARY_IMPLEMENTATION_FAILED:${modelFailure||'no-valid-model-candidate'};${String(error?.message||error)}`);
+        throw new Error(`VIBE2_PRIMARY_IMPLEMENTATION_FAILED:${modelFailure||'no-valid-model-candidate'};DETERMINISTIC_FIRST_FAILED:${deterministicFailure||'not-applicable'}`);
       }
     }
   }
@@ -400,7 +405,10 @@ async function main(){
   console.log('FINAL_CONTENT_DEPTH_MINUTES='+FINAL_CONTENT_DEPTH_MINUTES);
   console.log('SOURCE_PRESERVED='+(generation.sourcePreserved?'YES':'NO'));
   console.log('SOURCE_REPAIRED='+(sourceRepaired?'YES':'NO'));
-  console.log('VIBE2_PRIMARY_DEVELOPER=YES');
+  console.log('DETERMINISTIC_FIRST=YES');
+  console.log('AI_OPTIONAL=YES');
+  console.log('DETERMINISTIC_BUILD_USED='+(generation.modelInvoked?'NO':'YES'));
+  console.log('VIBE2_PRIMARY_DEVELOPER='+(generation.modelInvoked?'YES':'NO'));
   console.log('MODEL_INVOKED='+(generation.modelInvoked?'YES':'NO'));
   console.log('MODEL_USED='+(generation.modelUsed?'YES':'NO'));
   console.log('FORCED_REPAIR='+(generation.forcedRepair?'YES':'NO'));
