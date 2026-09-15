@@ -250,20 +250,42 @@ function sharedScopeButtons(inventory=[]){
     return `<button id="a${index}" class="action" data-gameplay-action="true"${scope} data-mechanic-id="${mechanicIds[actionIndex]}" data-action-index="${actionIndex}"></button>`;
   }).join('');
 }
+function boundSharedEngine(inventory=[]){
+  let engine=fs.readFileSync(SHARED_REAL_ENGINE,'utf8');
+  const actionMarkup=sharedScopeButtons(inventory);
+  engine=engine.replace(/<section class="actions">[\s\S]*?<\/section>/,`<section class="actions">${actionMarkup}</section>`);
+  for(let i=0;i<5;i++)engine=engine.replaceAll(`__SCOPE_${i}__`,inventory[i]?.id||`unused-scope-${i+1}`);
+  engine=bindInitialCycleContract(engine,inventory.length);
+  if(!/data-web-artifact-type=["']REAL_PLAYABLE_GAME/i.test(engine))engine=engine.replace('<main ',`<main data-web-artifact-type="${REAL_ARTIFACT_TYPE}" data-approved-scope-count="${inventory.length}" data-gameplay-system-count="7" data-run-result="running" `);
+  return engine;
+}
+function sharedValidationScript(inventory=[]){
+  return `<script>window.GAME_CONFIG=window.GAME_CONFIG||{};window.GAME_CONFIG.validationScopes=${JSON.stringify(inventory.map((x,index)=>({id:x.id,path:x.path,label:x.label,actionIndex:sharedScopeActionIndex(x,index)})))};</script>`;
+}
+function inlinedSharedEngineScript(text){
+  for(const match of scripts(text)){
+    const body=String(match[2]||'');
+    if(/const C=window\.GAME_CONFIG\|\|\{\};/.test(body)&&/const key='jg-final:'\+C\.id;/.test(body)&&/function renderStory\(\)/.test(body)&&/case'eldoria'/.test(body))return String(match[0]||'');
+  }
+  return '';
+}
+function refreshInlinedSharedEngine(original,inventory=[]){
+  let out=String(original||'');
+  const current=inlinedSharedEngineScript(out);
+  if(!current)return out;
+  const validation=sharedValidationScript(inventory);
+  const existingValidation=/<script>window\.GAME_CONFIG=window\.GAME_CONFIG\|\|\{\};window\.GAME_CONFIG\.validationScopes=[\s\S]*?<\/script>/i;
+  if(existingValidation.test(out))out=out.replace(existingValidation,validation);
+  else out=out.replace(current,`${validation}${current}`);
+  return out.replace(current,`<script>${boundSharedEngine(inventory)}</script>`);
+}
 function buildPreservedSharedGame({gameId,gameName,sourcePath,inventory}){
   const indexFile=path.join(sourcePath,'index.html');
   if(!fs.existsSync(indexFile)||!fs.existsSync(SHARED_REAL_ENGINE))return null;
   const original=fs.readFileSync(indexFile,'utf8'),sharedScript=/<script\b[^>]*src=["']\/web-games\/_shared\/vibe2-final\.js["'][^>]*><\/script\s*>/i;
   if(!sharedScript.test(original))return null;
   if(inventory.length<1)throw new Error(`SOURCE_PRESERVE_SCOPE_COUNT_UNSUPPORTED:${inventory.length}`);
-  let engine=fs.readFileSync(SHARED_REAL_ENGINE,'utf8').replaceAll('__SCOPE_COUNT__',String(inventory.length));
-  const actionMarkup=sharedScopeButtons(inventory);
-  engine=engine.replace(/<section class="actions">[\s\S]*?<\/section>/,`<section class="actions">${actionMarkup}</section>`);
-  for(let i=0;i<5;i++)engine=engine.replaceAll(`__SCOPE_${i}__`,inventory[i]?.id||`unused-scope-${i+1}`);
-  engine=bindInitialCycleContract(engine,inventory.length);
-  if(!/data-web-artifact-type=["']REAL_PLAYABLE_GAME/i.test(engine))engine=engine.replace('<main ',`<main data-web-artifact-type="${REAL_ARTIFACT_TYPE}" data-approved-scope-count="${inventory.length}" data-gameplay-system-count="7" data-run-result="running" `);
-  const validation=`<script>window.GAME_CONFIG=window.GAME_CONFIG||{};window.GAME_CONFIG.validationScopes=${JSON.stringify(inventory.map((x,index)=>({id:x.id,path:x.path,label:x.label,actionIndex:sharedScopeActionIndex(x,index)})))};</script>`;
-  const html=original.replace(sharedScript,`${validation}<script>${engine}</script>`);
+  const html=original.replace(sharedScript,`${sharedValidationScript(inventory)}<script>${boundSharedEngine(inventory)}</script>`);
   return preservedResult({gameId,gameName,html,inventory,notes:['existing shared real game source preserved before Vibe2 regeneration','shared runtime inlined for immutable source binding','save key and gameplay state retained']});
 }
 function buildPreservedStandaloneGame({gameId,gameName,sourcePath,inventory}){
@@ -271,8 +293,10 @@ function buildPreservedStandaloneGame({gameId,gameName,sourcePath,inventory}){
   if(!fs.existsSync(indexFile))return null;
   const original=fs.readFileSync(indexFile,'utf8');
   if(/<script\b[^>]*src=["']\/web-games\/_shared\/vibe2-final\.js["']/i.test(original))return null;
-  const html=preparePreservedStandaloneHtml(original,inventory);
-  return preservedResult({gameId,gameName,html,inventory,notes:['existing standalone real game source preserved before Vibe2 regeneration','gameplay state machine, controls, win/fail rules and visual surface retained']});
+  const refreshed=refreshInlinedSharedEngine(original,inventory);
+  const html=preparePreservedStandaloneHtml(refreshed,inventory);
+  const refreshedShared=refreshed!==original;
+  return preservedResult({gameId,gameName,html,inventory,notes:[refreshedShared?'existing inlined shared runtime deterministically refreshed before validation':'existing standalone real game source preserved before Vibe2 regeneration','gameplay state machine, controls, win/fail rules and visual surface retained']});
 }
 function buildCanonicalGame({template,gameName,baseline,inventory,fallbackName,fallbackCore,validationQuestion,implementationNotes}){
   if(!fs.existsSync(template))throw new Error(`CANONICAL_REAL_GAME_TEMPLATE_MISSING:${template}`);

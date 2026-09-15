@@ -59,6 +59,35 @@ test('Eldoria story runtime exposes changing quest objectives and NPC dialogue i
   assert.match(source,/S\.progress=0;if\(S\.chapter>5\)/);
 });
 
+test('inlined shared-engine snapshots refresh to the current canonical engine without model regeneration',async()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-inline-refresh-'));
+  const source=path.join(root,'source'),firstCandidate=path.join(root,'first'),frozenSource=path.join(root,'frozen'),refreshedCandidate=path.join(root,'refreshed');
+  fs.mkdirSync(source,{recursive:true});
+  fs.writeFileSync(path.join(source,'index.html'),'<!doctype html><html lang="ko"><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><script>window.GAME_CONFIG={id:"inline-refresh-story",name:"Inline Refresh",mode:"eldoria",hp:100,desc:"story",story:"story"}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>');
+  const baseline={content:{coreFun:'Explore an area, meet characters, accept story quests, and discover information.',coreLoop:[
+    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.',
+    'Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.',
+    'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.',
+    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.',
+    'Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion.',
+    'Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.',
+    'Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.'
+  ],mobileUx:'Story Driven'}};
+  const first=await buildFirstPlayable({gameId:'inline-refresh-story',gameName:'Inline Refresh',baseline,sourcePath:source,candidatePath:firstCandidate,candidateId:'inline-refresh-first',sourceCommit:'test',model:'none'});
+  assert.equal(first.generation.modelInvoked,false);
+  let frozen=fs.readFileSync(path.join(firstCandidate,'index.html'),'utf8');
+  frozen=frozen.replace('window.__GAME_REPLAY_SEED__=replaySeed;','');
+  fs.mkdirSync(frozenSource,{recursive:true});
+  fs.writeFileSync(path.join(frozenSource,'index.html'),frozen);
+  const refreshed=await buildFirstPlayable({gameId:'inline-refresh-story',gameName:'Inline Refresh',baseline,sourcePath:frozenSource,candidatePath:refreshedCandidate,candidateId:'inline-refresh-second',sourceCommit:'test',model:'none'});
+  assert.equal(refreshed.generation.modelInvoked,false);
+  assert.equal(refreshed.review.pass,true);
+  const html=fs.readFileSync(path.join(refreshedCandidate,'index.html'),'utf8');
+  assert.match(html,/window\.__GAME_REPLAY_SEED__=replaySeed/);
+  assert.equal((html.match(/data-scope-id=/g)||[]).length,9);
+  assert.match(html,/document\.body\.dataset\.replaySeed=replaySeed/);
+});
+
 test('shared preserved engine binds more than five approved scopes without model regeneration',async()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-shared-scopes-'));
   const source=path.join(root,'source'),candidate=path.join(root,'candidate');
