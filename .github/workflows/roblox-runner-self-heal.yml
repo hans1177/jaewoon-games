@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'tools/setup-roblox-runner-autostart.ps1'
+      - 'tools/install-roblox-runner-watchdog.cmd'
       - 'qa/setup-roblox-runner-autostart.test.mjs'
       - '.github/workflows/roblox-runner-self-heal.yml'
   workflow_dispatch:
@@ -61,6 +62,6 @@ jobs:
           & .\tools\setup-roblox-runner-autostart.ps1 `
             -RunnerPath 'C:\actions-runner' `
             -ExpectedRunnerName 'roblox-studio-local' `
-            -HealthCheckMinutes 5
+            -HealthCheckMinutes 1
           Write-Host 'ROBLOX_RUNNER_SELF_HEAL_APPLIED=YES'
           Write-Host 'ROBLOX_RUNNER_MANUAL_LOCAL_ACTION_REQUIRED=NO'
