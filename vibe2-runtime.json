@@ -515,5 +515,59 @@
     "sharedWorkLockRequired": false,
     "queueSourceRootLeaseRequired": true,
     "homepagePublicationAutomatic": false
+  },
+  "workPackages": {
+    "enabled": true,
+    "scheduler": "feature-boundary-work-package",
+    "minWorkUnitsPerPackage": 3,
+    "minTasksPerPackage": 2,
+    "substantialSingleTaskWorkUnits": 3,
+    "targetWorkUnitsPerCycle": 12,
+    "targetPackagesPerCycle": 4,
+    "maxPackagesPerCycle": 10,
+    "maxTasksPerPackage": 5,
+    "smallTaskAction": "auto-expand-or-defer",
+    "automaticExpansion": [
+      "related-diagnostics",
+      "adjacent-safe-maintenance",
+      "ux-readability",
+      "qa-hardening",
+      "performance-sanity"
+    ],
+    "explorationMode": "planner-precomputed-shared-context",
+    "sharedPreparation": true,
+    "longWorkSlotProtection": true,
+    "parallelRoles": [
+      "work-package-owner",
+      "parallel-implementation-workers",
+      "incremental-qa",
+      "fan-in-package-review"
+    ],
+    "completionCriteria": [
+      "functional-scope-implemented",
+      "all-package-task-incremental-qa-pass",
+      "full-core-regression-once-at-fan-in",
+      "machine-contract-and-central-doc-synced-when-architecture-changes"
+    ],
+    "preferredDeliveryUnit": "one-functional-pr-per-work-package-after-package-qa",
+    "workloadTelemetry": {
+      "enabled": true,
+      "tool": "tools/vibe2-work-package.mjs",
+      "metrics": [
+        "plannedPackageCount",
+        "plannedWorkUnits",
+        "completedFeaturePackageCount",
+        "historicalMicroTaskRatePct",
+        "historicalReworkRatePct",
+        "historicalAvgPackageWorkUnits",
+        "lowEfficiencyDetected"
+      ]
+    },
+    "efficiencyAdaptation": {
+      "enabled": true,
+      "lowEfficiencyAction": "increase-minimum-work-units-one-step",
+      "maxMinWorkUnitsPerPackage": 6,
+      "neverReduceSafetyOrQa": true
+    }
   }
 }

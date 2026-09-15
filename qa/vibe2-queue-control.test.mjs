@@ -247,3 +247,16 @@ test('terminal historical failures do not permanently throttle new work', () => 
   assert.equal(batch.effectiveMaxConcurrentTasks,20);
   assert.equal(batch.selected.length,20);
 });
+
+
+test('work package metadata survives queue normalization and larger functional package wins same-tier scheduling', () => {
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {id:'tiny',gameId:'a',target:'web',goal:'tiny',sourceRoot:'web-games/a',responsibleFiles:['a.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'p-tiny',taskWorkUnits:1,packageWorkUnits:1,packageSize:1},
+    {id:'feature',gameId:'b',target:'web',goal:'feature',sourceRoot:'web-games/b',responsibleFiles:['b.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'p-feature',packageGoal:'finish feature',packageRole:'implementation-owner',taskWorkUnits:3,packageWorkUnits:6,packageSize:2,packageLongWorkProtected:true,completionCriteria:['functional-scope-implemented'],packageContext:{explorationMode:'planner-precomputed-shared-context',sharedPreparation:true,sourceRoot:'web-games/b',responsibleFiles:['b.js']}}
+  ]});
+  const selection=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(selection.selected[0].id,'feature');
+  assert.equal(selection.selected[0].packageId,'p-feature');
+  assert.equal(selection.selected[0].packageContext.sharedPreparation,true);
+  assert.deepEqual([...selection.selected[0].completionCriteria],['functional-scope-implemented']);
+});

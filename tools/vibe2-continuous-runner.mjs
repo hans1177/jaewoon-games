@@ -153,7 +153,26 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const releaseState = clean(task.releaseState) || 'other';
   const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState) && ['roblox','web','unity'].includes(plan.target) && task.requiresOwnerDecision !== true && task.protectedChange !== true;
   const learningGuidance = buildLearningGuidance(plan.learning);
-  const executionGoal = [task.goal, designIntelligence.guidance, learningGuidance].filter(Boolean).join('\n\n');
+  const workPackage=freeze({
+    id:clean(task.packageId)||null,
+    goal:clean(task.packageGoal)||null,
+    role:clean(task.packageRole)||null,
+    owner:clean(task.packageOwner)||null,
+    taskWorkUnits:Number(task.taskWorkUnits||0),
+    packageWorkUnits:Number(task.packageWorkUnits||0),
+    packageSize:Number(task.packageSize||0),
+    longWorkProtected:task.packageLongWorkProtected===true,
+    sharedContext:task.packageContext||null,
+    completionCriteria:freezeList(task.completionCriteria||[])
+  });
+  const packageGuidance=workPackage.id?[
+    `[WORK PACKAGE ${workPackage.id}]`,
+    workPackage.goal||'',
+    `역할=${workPackage.role||'implementation'}; taskWorkUnits=${workPackage.taskWorkUnits}; packageWorkUnits=${workPackage.packageWorkUnits}`,
+    workPackage.sharedContext?.responsibleFiles?.length?`공유 준비 범위=${workPackage.sharedContext.responsibleFiles.join(', ')}`:'',
+    workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
+  ].filter(Boolean).join('\n'):'';
+  const executionGoal = [packageGuidance, task.goal, designIntelligence.guidance, learningGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const qa = freezeList([
     ...(plan.qa || []),
@@ -174,6 +193,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       editorRequiredPatterns:freezeList(adapter.source.editorRequiredPatterns || []), ignoredPaths:freezeList(adapter.source.ignoredPaths), responsibleFiles
     }),
     qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles),
+    workPackage,
     designIntelligence,
     learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance), motion:plan.motion, executionGate:plan.executionGate,
     deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),

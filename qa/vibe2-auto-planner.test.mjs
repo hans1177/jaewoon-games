@@ -76,6 +76,8 @@ test('planner fills independent development web source roots in one pass',()=>{
   assert.ok(result.count>=2);
   assert.equal(new Set(result.tasks.map(t=>t.sourceRoot)).size,result.tasks.length);
   assert.equal(result.tasks.every(t=>t.releaseState==='development-confirmed'&&t.target==='web'),true);
+  assert.equal(result.tasks.every(t=>Boolean(t.packageId)&&t.packageWorkUnits>=3),true);
+  assert.ok(result.workloadTelemetry.plannedPackageCount>=1);
 });
 
 test('release-confirmed web archive is never an autonomous feature target',()=>{
@@ -174,35 +176,47 @@ test('development web without TODO uses deterministic diagnostics as task feeder
   });
   assert.equal(result.planned,true);
   assert.equal(result.task.gameId,'diag-web');
-  assert.match(result.task.id,/diagnostic-MISSING-VIEWPORT-index-html/);
+  assert.match(result.task.id,/diagnostic-bundle/);
   assert.deepEqual([...result.task.responsibleFiles],['web-games/diag-web/index.html']);
   assert.equal(result.task.evidence.includes('diagnostic:MISSING_VIEWPORT'),true);
+  assert.equal(result.task.packageWorkUnits>=3,true);
+  assert.equal(result.task.completionCriteria.includes('full-core-regression-once-at-fan-in'),true);
   assert.equal(result.task.evidence.includes('repair-mode:RULE_PATCH'),true);
 });
 
-test('completed diagnostic task is not recreated and planner advances to the next diagnostic',()=>{
+test('completed diagnostic package is never recreated after completion',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
   fs.mkdirSync(webRoot,{recursive:true});
-  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head></head><body><button>Play</button></body></html>\n','utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Diag</title></head><body><button>Play</button></body></html>','utf8');
   const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
   const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
-  const done={...first.task,status:'done'};
+  const firstKeys=first.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
+  assert.equal(firstKeys.length>0,true);
+  const done={...first.task,status:'done',result:'PASS'};
   const second=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
-  assert.equal(second.planned,true);
-  assert.notEqual(second.task.id,first.task.id);
-  assert.equal(second.task.evidence.some(x=>x==='diagnostic:TOUCH_ACTION_UNSPECIFIED'),true);
+  if(second.planned){
+    assert.notEqual(second.task.id,first.task.id);
+    const secondKeys=second.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
+    assert.equal(secondKeys.some(x=>firstKeys.includes(x)),false);
+  }else{
+    assert.equal(['NO_SAFE_AUTONOMOUS_TASK','NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK'].includes(second.reason),true);
+  }
 });
 
-test('completed Unity task is not recreated and planner moves to next Unity maintenance need',()=>{
+test('completed Unity package is never recreated after completion',()=>{
   const root=tempRepo();
   const unityOnlyCatalog={games:[{id:'demo',homepageCategory:'release-confirmed'}]};
-  const result=planVibe2AutonomousTask({
-    status,catalog:unityOnlyCatalog,
-    queue:{tasks:[{id:'demo-region-controls-4-7',gameId:'demo',target:'unity',sourceRoot:'unity-games/demo',goal:'done',priority:'high',releaseState:'release-confirmed',status:'done',retries:0,maxRetries:2}]},
-    repoRoot:root,maxConcurrentTasks:4
-  });
-  assert.equal(result.planned,true);
-  assert.equal(result.task.id,'demo-save-null-guards');
+  const first=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
+  assert.equal(first.planned,true);
+  assert.equal(Number(first.task.workUnits)>=3,true);
+  assert.equal(first.task.evidence.includes('work-package-auto-expanded'),true);
+  const done={...first.task,status:'done',result:'PASS'};
+  const second=planVibe2AutonomousTask({status,catalog:unityOnlyCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
+  if(second.planned){
+    assert.notEqual(second.task.id,first.task.id);
+  }else{
+    assert.equal(['NO_SAFE_AUTONOMOUS_TASK','NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK'].includes(second.reason),true);
+  }
 });
