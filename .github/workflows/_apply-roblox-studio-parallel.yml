@@ -1,0 +1,121 @@
+name: Apply Roblox Studio Parallelism Patch
+
+on:
+  push:
+    branches:
+      - perf/roblox-studio-parallel-20260915
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: perf/roblox-studio-parallel-20260915
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Patch canonical Roblox runtime and QA workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+
+          def replace_once(text, old, new, label):
+              if old not in text:
+                  raise SystemExit(f'missing patch target: {label}')
+              return text.replace(old, new, 1)
+
+          cont_path=Path('.github/workflows/company-development-roblox-runtime-continuation.yml')
+          cont=cont_path.read_text()
+          cont=replace_once(cont,
+              "  ROBLOX_RUNTIME_HARNESS_VERSION: '8'\n",
+              "  ROBLOX_RUNTIME_HARNESS_VERSION: '8'\n  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'\n",
+              'continuation env')
+          cont=replace_once(cont,
+              "            if(rows.length>=2)break;",
+              "            if(rows.length>=6)break;",
+              'preflight slice')
+          cont=cont.replace("ROBLOX_EXECUTION_WIP_MAX=2","ROBLOX_EXECUTION_WIP_MAX=6")
+          cont=replace_once(cont,
+              "      max-parallel: 2\n",
+              "      max-parallel: 6\n",
+              'preflight parallelism')
+          cont=replace_once(cont,
+              "          const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');\n          const rows=[];",
+              "          const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');\n          const runnerWip=Math.max(1,Number(process.env.ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX||1));\n          const rows=[];",
+              'runtime runner WIP')
+          cont=replace_once(cont,
+              "            if(rows.length>=2)break;",
+              "            if(rows.length>=runnerWip)break;",
+              'runtime slice')
+          cont=replace_once(cont,
+              "          console.log('ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated');",
+              "          console.log(`ROBLOX_RUNTIME_LOCAL_WIP_MAX=${runnerWip}`);\n          console.log('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES');\n          console.log('ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated');",
+              'runtime planner evidence')
+          cont=replace_once(cont,
+              "      max-parallel: 1\n      matrix: ${{ fromJSON(needs.runtime-plan.outputs.matrix) }}",
+              "      max-parallel: 3\n      matrix: ${{ fromJSON(needs.runtime-plan.outputs.matrix) }}",
+              'runtime Studio parallelism')
+          cont=cont.replace("ROBLOX_RUNTIME_LOCAL_WIP_MAX=1","ROBLOX_RUNTIME_LOCAL_WIP_MAX=3")
+          cont=replace_once(cont,
+              "          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'\n          echo \"ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION\"",
+              "          echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'\n          echo 'ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'\n          echo \"ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION\"",
+              'runtime summary')
+          cont_path.write_text(cont)
+
+          qa_path=Path('.github/workflows/company-development-roblox-post-runtime-qa.yml')
+          qa=qa_path.read_text()
+          qa=replace_once(qa,
+              "  COMPANY_RUNTIME_BRANCH: company-runtime\n",
+              "  COMPANY_RUNTIME_BRANCH: company-runtime\n  ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'\n",
+              'post QA env')
+          qa=replace_once(qa,
+              "          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=1');",
+              "          console.log('ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3');\n          console.log('ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES');",
+              'post QA planner evidence')
+          qa=replace_once(qa,
+              "      max-parallel: 1\n      matrix: ${{ fromJSON(needs.qa-plan.outputs.matrix) }}",
+              "      max-parallel: 3\n      matrix: ${{ fromJSON(needs.qa-plan.outputs.matrix) }}",
+              'post QA parallelism')
+          qa=replace_once(qa,
+              "          echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'\n",
+              "          echo 'ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES'\n          echo 'ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3'\n          echo 'ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES'\n",
+              'post QA summary')
+          qa_path.write_text(qa)
+
+          test_path=Path('qa/company-development-roblox-runtime-continuation.test.mjs')
+          test=test_path.read_text()
+          test=test.replace("ROBLOX_EXECUTION_WIP_MAX=2","ROBLOX_EXECUTION_WIP_MAX=6")
+          test=test.replace("ROBLOX_RUNTIME_LOCAL_WIP_MAX=1","ROBLOX_RUNTIME_LOCAL_WIP_MAX=3")
+          test=test.replace("assert.ok(workflow.includes('max-parallel: 1'));","assert.ok(workflow.includes('max-parallel: 3'));\n  assert.ok(workflow.includes(\"ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'\"));\n  assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));",1)
+          test_path.write_text(test)
+
+          post_test_path=Path('qa/company-development-roblox-post-runtime-qa.test.mjs')
+          post=post_test_path.read_text()
+          marker="  assert.match(workflow, /ROBLOX_RELEASE_CLAIM=NO/);\n"
+          insert=(marker+
+              "  assert.match(workflow, /ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'/);\n"
+              "  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_LOCAL_WIP_MAX=3/);\n"
+              "  assert.match(workflow, /ROBLOX_POST_RUNTIME_QA_RUNNER_POOL_CAPACITY_AWARE=YES/);\n"
+              "  assert.match(workflow, /max-parallel: 3/);\n")
+          if marker not in post:
+              raise SystemExit('missing patch target: post QA contract test')
+          post=post.replace(marker,insert,1)
+          post_test_path.write_text(post)
+          PY
+
+          node --test qa/company-development-roblox-runtime-continuation.test.mjs qa/company-development-roblox-post-runtime-qa.test.mjs
+          git diff --check
+          git rm .github/workflows/_apply-roblox-studio-parallel.yml
+          git config user.name 'jaewoon-workflow-maintenance'
+          git config user.email 'actions@users.noreply.github.com'
+          git add .github/workflows/company-development-roblox-runtime-continuation.yml .github/workflows/company-development-roblox-post-runtime-qa.yml qa/company-development-roblox-runtime-continuation.test.mjs qa/company-development-roblox-post-runtime-qa.test.mjs
+          git commit -m 'perf(roblox): parallelize authenticated Studio runner pool'
+          git push origin HEAD:perf/roblox-studio-parallel-20260915
