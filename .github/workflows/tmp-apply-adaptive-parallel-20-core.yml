@@ -44,17 +44,18 @@ jobs:
         run: node --test qa/vibe2-auto-planner.test.mjs
       - name: Verify 20-slot contract
         run: node --test qa/vibe2-parallelism-20-contract.test.mjs
-      - name: Commit verified core changes
+      - name: Commit verified non-workflow core changes
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-migration'
           git config user.email 'vibe2-migration@users.noreply.github.com'
+          cp .github/workflows/vibe2-continuous-core.yml qa/tmp-vibe2-continuous-core.yml.txt
           git add \
-            .github/workflows/vibe2-continuous-core.yml \
             assets/vibe-continuous-queue.js \
             tools/vibe2-auto-planner.mjs \
             qa/vibe2-queue-control.test.mjs \
-            qa/vibe2-parallelism-20-contract.test.mjs
+            qa/vibe2-parallelism-20-contract.test.mjs \
+            qa/tmp-vibe2-continuous-core.yml.txt
           git diff --cached --quiet && exit 0
           git commit -m 'vibe2: enable adaptive 20-slot core parallelism'
           git push origin HEAD:feat/adaptive-parallel-20-final-core
