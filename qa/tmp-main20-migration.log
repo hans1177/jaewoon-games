@@ -1,0 +1,16 @@
+file:///home/runner/work/jaewoon-games/jaewoon-games/tools/apply-adaptive-parallel-20-main.mjs:31
+fs.writeFileSync(testFile,`import test from 'node:test';\nimport assert from 'node:assert/strict';\nimport fs from 'node:fs';\n\nconst flow=fs.readFileSync('COMPANY_FLOW.md','utf8');\nconst runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');\nconst arch=fs.readFileSync('VIBE2_PARALLEL_ARCHITECTURE.md','utf8');\n\ntest('PARALLELISM_CONTRACT_GATE keeps main policy and runner unified at 20',()=>{\n  for(const token of [\n    'concurrentGameWipTarget: 20',\n    'concurrentGameWipMax: 20',\n    'webValidationParallelismTarget: 20',\n    'webValidationParallelismMax: 20',\n    'adaptiveBackpressureSteps: [20, 16, 12, 8, 4]',\n    'sameSourceRootParallelAllowedWhenResponsibleFilesExplicitAndDisjoint: true',\n    'sameResponsibleFileParallelForbidden: true',\n    'sharedSaveSchemaWritesExclusive: true',\n    'centralPolicyWritesExclusive: true',\n    'parallelismContractGateRequired: true'\n  ]) assert.ok(flow.includes(token),token);\n  assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'"));\n  assert.ok(runner.includes('Math.min(20, Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS) || 20)'));\n  assert.ok(arch.includes('운영 최대 동시 게임 작업 수: \\`20\\`'));\n  assert.ok(arch.includes('20 → 16 → 12 → 8 → 4'));\n  assert.ok(arch.includes('PARALLELISM_CONTRACT_GATE'));\n});\n`,'utf8');
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+SyntaxError: missing ) after argument list
+    at compileSourceTextModule (node:internal/modules/esm/utils:346:16)
+    at ModuleLoader.moduleStrategy (node:internal/modules/esm/translators:110:18)
+    at #translate (node:internal/modules/esm/loader:559:20)
+    at afterLoad (node:internal/modules/esm/loader:612:29)
+    at ModuleLoader.loadAndTranslate (node:internal/modules/esm/loader:617:12)
+    at #createModuleJob (node:internal/modules/esm/loader:640:36)
+    at #getJobFromResolveResult (node:internal/modules/esm/loader:353:34)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:321:41)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:680:25)
+
+Node.js v22.23.2
