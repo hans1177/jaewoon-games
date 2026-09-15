@@ -1,0 +1,451 @@
+{
+  "schemaVersion": 1,
+  "policyVersion": "2026.09.15.1",
+  "updatedAt": "2026-09-15",
+  "sourceOfTruth": "company-policy.json",
+  "authority": {
+    "priority": [
+      "OWNER_LATEST_DIRECT_INSTRUCTION",
+      "COMPANY_POLICY",
+      "COMPANY_DIRECTIVE_RUNTIME",
+      "IMPLEMENTATION_TOOL_CONTRACTS",
+      "STATUS_AUDIT_BUILD_HEALTH_EVIDENCE"
+    ],
+    "ownerInstructionOverridesPolicy": true,
+    "separatePolicyDocumentsForbidden": true,
+    "machineContractsMayReferencePolicyButCannotCreatePolicy": true,
+    "evidenceCannotCreatePolicy": true
+  },
+  "documentModel": {
+    "humanBootstrap": "AGENTS.md",
+    "canonicalMachinePolicy": "company-policy.json",
+    "runtimeDirective": "company-directive.json",
+    "humanPolicyDocumentCountTarget": 1,
+    "legacyPolicyMarkdownForbiddenAfterMigration": [
+      "COMPANY_FLOW.md",
+      "PROJECT_HANDOFF.md",
+      "VIBE2_PARALLEL_ARCHITECTURE.md"
+    ]
+  },
+  "production": {
+    "canonicalField": "productionClass",
+    "classes": [
+      "DESIGN_ONLY",
+      "DEVELOPMENT_CONFIRMED",
+      "RELEASE_CONFIRMED"
+    ],
+    "membership": "DYNAMIC_EVIDENCE",
+    "fixedClassCounts": false,
+    "fixedGameSlots": false,
+    "actualGameCountCap": null,
+    "numericLabelsAreAliasesOnly": true,
+    "preserveExistingWebArchives": true,
+    "preserveSaveMeaning": true,
+    "selectedPlatformMustDriveImplementationAndScoring": true,
+    "webIsNotNativeDevelopmentSubstitute": true,
+    "approvedScopeCompletion": {
+      "mode": "FULL_APPROVED_DESIGN_SCOPE_REQUIRED",
+      "prototypeMayBeIntermediateOnly": true,
+      "prototypeCannotSatisfyCompletionOrReleaseCandidateGate": true,
+      "silentScopeReductionForbidden": true
+    }
+  },
+  "seedMaterials": {
+    "poolTarget": 100,
+    "materialIsGame": false,
+    "gameReferenceIsOptionalMaterialType": true,
+    "combinePerGameSeed": {
+      "min": 2,
+      "max": 4
+    },
+    "finalConceptMaterialDuplicateForbidden": true,
+    "actualGameCountCap": null,
+    "fixedSixCategoryProductionQuotaForbidden": true,
+    "legacySixRepresentativeSetsAreHistoricalOnly": true,
+    "allowedSourceFamilies": [
+      "SUCCESSFUL_GAME_STRUCTURE",
+      "STORY_OR_NARRATIVE_STRUCTURE",
+      "REAL_JOB_INDUSTRY_LIFE",
+      "NATURE_ECOLOGY_SCIENCE",
+      "SPORT_BOARD_PLAY_RULE",
+      "SOCIAL_COOP_COMPETITION",
+      "SURVIVAL_ESCAPE_RISK",
+      "SPACE_BUILDING_OPERATION",
+      "SYSTEM_MECHANIC_EXPERIMENT",
+      "FREE_ORIGINAL_IDEA"
+    ]
+  },
+  "concurrency": {
+    "scope": "DEVELOPMENT_CONFIRMED_SELECTED_PLATFORM_GAME_IMPLEMENTATION",
+    "target": 20,
+    "max": 20,
+    "webValidationTarget": 20,
+    "webValidationMax": 20,
+    "parallelFirst": true,
+    "adaptiveBackpressure": [
+      20,
+      16,
+      12,
+      8,
+      4
+    ],
+    "sameSourceRootParallelAllowedOnlyForExplicitDisjointResponsibleFiles": true,
+    "sameResponsibleFileParallelForbidden": true,
+    "sharedSaveSchemaWritesExclusive": true,
+    "centralPolicyWritesExclusive": true,
+    "sharedRuntimeStateSingleAggregation": true,
+    "validationTiers": [
+      "MICRO_TARGETED_CHECK",
+      "FAST_INITIAL_INTEGRATION",
+      "FULL_FINAL_VALIDATION"
+    ]
+  },
+  "multiplayer": {
+    "decisionStage": "GAME_DESIGN",
+    "allowedModes": [
+      "SINGLE",
+      "COOP",
+      "COMPETITIVE",
+      "HYBRID"
+    ],
+    "lateUnplannedAttachmentForbidden": true,
+    "realParticipantQaRequiredWhenApplicable": true,
+    "minimumRealParticipantsWhenApplicable": 2
+  },
+  "gameplayDepth": {
+    "initialImplementationMinimumUnit": "ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+    "finalContentDepthMinutesRequired": 30,
+    "thirtyMinuteInitialGenerationHardGateForbidden": true,
+    "fakeProgressForbidden": true,
+    "directTimeStageControlForbidden": true,
+    "paddingByHealthIdleWaitOrPureRepetitionForbidden": true,
+    "completePlayableCycleRequires": [
+      "START_OR_WORLD_ENTRY",
+      "REAL_PLAYER_INPUT",
+      "CORE_GAMEPLAY_ACTION",
+      "OBSERVABLE_WORLD_OR_SYSTEM_STATE_CHANGE",
+      "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+      "RISK_FAILURE_OR_RESOURCE_PRESSURE",
+      "CYCLE_END_GOAL_OR_RETRY"
+    ]
+  },
+  "review": {
+    "designPassMinimum": 80,
+    "implementationPassMinimum": 90,
+    "hardGateCannotBeOverriddenByAggregateScore": true,
+    "webHardGates": [
+      "REAL_PLAYABLE_GAME",
+      "COMPLETE_PLAYABLE_GAMEPLAY_CYCLE",
+      "REAL_PLAYER_INPUT",
+      "REAL_GAMEPLAY_SURFACE",
+      "MEANINGFUL_INTERCONNECTED_GAME_STATE",
+      "REAL_GOAL_OR_WIN_AND_REAL_FAILURE_PATH",
+      "NO_TEST_PROXY",
+      "NO_FAKE_PROGRESS",
+      "MOBILE_PLAYABLE",
+      "RUNTIME_STABLE",
+      "CATEGORY_PROFILE_MATCH"
+    ],
+    "homepagePromotionMinimum": 80,
+    "targetPlatformDispatchMinimum": 90,
+    "finalThirtyMinuteDepthRequiredForHomepageTop30": true
+  },
+  "artbook": {
+    "designOnlyArtbookForbidden": true,
+    "preWebArtbookForbidden": true,
+    "createOnlyAfterWebStrictReview": true,
+    "minimumWebStrictScore": 80,
+    "failureBlocksHomepageRegistrationOnly": true
+  },
+  "homepage": {
+    "developmentProgressShelfSeparateFromPromotion": true,
+    "developmentCardMustNotClaimValidationOrRelease": true,
+    "officialCardRequiresStrictPassAndPromotion": true
+  },
+  "vibe2": {
+    "startsAtClass": "DEVELOPMENT_CONFIRMED",
+    "roleByClass": {
+      "DEVELOPMENT_CONFIRMED": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
+      "RELEASE_CONFIRMED": "PRIMARY_DEVELOPMENT_ENGINE"
+    },
+    "designOnlyActive": false,
+    "primaryDesignAuthorInDevelopmentClass": false,
+    "primaryArtbookAuthorInDevelopmentClass": false,
+    "architecture": {
+      "candidateDirectMainWrite": false,
+      "selfApprove": false,
+      "bypassIndependentQa": false,
+      "defaultModes": [
+        "GREENFIELD",
+        "PRESERVE_PATCH",
+        "RECOMPOSE"
+      ],
+      "existingSourceDefault": "PRESERVE_PATCH",
+      "wrapperOverrideChainsForbidden": true,
+      "responsibleSystemDirectEditPreferred": true,
+      "explicitStateOwnershipRequired": true,
+      "meaningfulChangesUseIsolatedCandidateBeforeIntegration": true
+    }
+  },
+  "vibe3": {
+    "relationshipToVibe2": "INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE",
+    "parallelPipeline": false,
+    "candidateTournament": {
+      "min": 3,
+      "max": 5,
+      "default": 5
+    },
+    "repairMax": 3,
+    "verifiedRagPositiveMemoryOnly": true,
+    "failureMemoryWarningOnly": true,
+    "platformEvidencePortable": false,
+    "webPassDoesNotEqualNativePass": true,
+    "freshAdapterState": "TRAINED_UNVERIFIED"
+  },
+  "platforms": {
+    "allowed": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "primaryDefault": "ROBLOX",
+    "allMayDevelopConcurrently": true,
+    "currentFocus": "ROBLOX_FAST_RELEASE_STABILIZATION",
+    "currentFocusBlocksUnity": false,
+    "currentFocusBlocksFortnite": false,
+    "webCompanionRequiredForEveryGame": true,
+    "nativeReleaseRequiresNativeEvidence": true,
+    "unity": {
+      "localConnectionHostPreferred": "127.0.0.1",
+      "androidArtifactMustBeNonEmpty": true,
+      "androidSha256EvidenceRequired": true,
+      "runtimeAbiMustMatchApkAbi": true
+    },
+    "roblox": {
+      "realRobloxEvidenceRequired": true,
+      "cookieAuthForbidden": true
+    },
+    "fortniteUefn": {
+      "verseUefnRuntimeQaRequired": true,
+      "publishingEvidenceRequiredForReleaseClaim": true
+    }
+  },
+  "safety": {
+    "paidAiAllowed": false,
+    "paidRunnerAllowed": false,
+    "automaticOverbillingAllowed": false,
+    "coreGameRuleChangeRequiresOwnerDecision": true,
+    "saveMeaningChangeRequiresOwnerDecision": true,
+    "monetizationChangeRequiresOwnerDecision": true,
+    "platformChangeRequiresOwnerDecision": true,
+    "majorContentDirectionChangeRequiresOwnerDecision": true
+  },
+  "qa": {
+    "modificationInvalidatesInheritedQaForImpactScope": true,
+    "webRequires": [
+      "ACTUAL_BROWSER_RUN",
+      "REAL_INPUT",
+      "MOBILE_LAYOUT",
+      "SAVE_RELOAD",
+      "RUNTIME_ERROR_CHECK"
+    ],
+    "unityRequires": [
+      "ACTUAL_RUN",
+      "INPUT",
+      "PROCESS_SURVIVAL",
+      "CRASH_CHECK",
+      "SAVE_WHEN_APPLICABLE",
+      "SCREEN_EVIDENCE"
+    ],
+    "independentQaRequiredBeforeRelease": true,
+    "buildSuccessAloneIsNotRuntimePass": true
+  },
+  "learning": {
+    "canonicalChain": [
+      "VALIDATED_EVIDENCE",
+      "DISTILLATION_INGEST",
+      "VERIFIED_TRAINING_SAMPLE",
+      "DISTILLATION_STATUS",
+      "DETERMINISTIC_TRAINING_REQUEST",
+      "LOCAL_SELF_HOSTED_DATASET_BUILD",
+      "LOCAL_LORA_OR_QLORA_TRAINING",
+      "TRAINED_UNVERIFIED",
+      "FIXED_HOLDOUT_AB",
+      "CANARY",
+      "PROMOTE_OR_ROLLBACK"
+    ],
+    "onlyValidatedEvidenceFeedsPositiveLearning": true,
+    "syntheticPlatformTrainingForbidden": true,
+    "platformLanesAreNotParallelPipelines": true,
+    "commonRealDatasetGate": "tools/vibe2-real-platform-dataset-gate.mjs",
+    "commonLocalTrainer": "tools/vibe2-train.py",
+    "canonicalStatusBuilder": "tools/vibe2-distillation-status.mjs",
+    "deterministicRequestBuilder": "tools/vibe2-training-request.mjs",
+    "secondCronOrShadowRefreshForbidden": true,
+    "localSelfHostedWeightTrainingOnly": true
+  },
+  "pipeline": {
+    "existingPipelineAuthoritative": true,
+    "adHocBypassChainForbidden": true,
+    "wrapperOrShadowChainForbidden": true,
+    "nextCanonicalStageDispatchImmediatelyAfterSuccess": true,
+    "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
+    "cronMustNotBePrimaryProgressionEngine": true,
+    "existingEventChainPreferred": true
+  },
+  "aiOrganization": {
+    "departments": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "minDistinctModelsPerDepartment": 3,
+    "fiveDistinctLeadModelIdsRequiredPerCycle": true,
+    "paidAiAllowed": false,
+    "paidRunnerAllowed": false
+  },
+  "ruleRegistry": [
+    {
+      "id": "POLICY.AUTH.OWNER_LATEST",
+      "path": "authority.ownerInstructionOverridesPolicy",
+      "required": true
+    },
+    {
+      "id": "POLICY.SOLE_SOURCE.JSON",
+      "path": "sourceOfTruth",
+      "equals": "company-policy.json"
+    },
+    {
+      "id": "DOC.HUMAN.BOOTSTRAP_ONLY",
+      "path": "documentModel.humanPolicyDocumentCountTarget",
+      "equals": 1
+    },
+    {
+      "id": "PROD.CLASS.DYNAMIC",
+      "path": "production.fixedClassCounts",
+      "equals": false
+    },
+    {
+      "id": "PROD.COUNT.UNBOUNDED",
+      "path": "production.actualGameCountCap",
+      "equals": null
+    },
+    {
+      "id": "SEED.POOL.100",
+      "path": "seedMaterials.poolTarget",
+      "equals": 100
+    },
+    {
+      "id": "SEED.COMBINE.2_4",
+      "path": "seedMaterials.combinePerGameSeed",
+      "equals": {
+        "min": 2,
+        "max": 4
+      }
+    },
+    {
+      "id": "SEED.NO_FIXED_SIX_QUOTA",
+      "path": "seedMaterials.fixedSixCategoryProductionQuotaForbidden",
+      "equals": true
+    },
+    {
+      "id": "DEV.CONCURRENCY.20",
+      "path": "concurrency.max",
+      "equals": 20
+    },
+    {
+      "id": "DEV.PARALLEL.DISJOINT_ONLY",
+      "path": "concurrency.sameResponsibleFileParallelForbidden",
+      "equals": true
+    },
+    {
+      "id": "DEV.SOURCE.PRESERVE_PATCH",
+      "path": "vibe2.architecture.existingSourceDefault",
+      "equals": "PRESERVE_PATCH"
+    },
+    {
+      "id": "DEV.SOURCE.NO_WRAPPER_CHAIN",
+      "path": "vibe2.architecture.wrapperOverrideChainsForbidden",
+      "equals": true
+    },
+    {
+      "id": "DEV.SOURCE.CANDIDATE_FIRST",
+      "path": "vibe2.architecture.meaningfulChangesUseIsolatedCandidateBeforeIntegration",
+      "equals": true
+    },
+    {
+      "id": "SAVE.MEANING.PRESERVE",
+      "path": "production.preserveSaveMeaning",
+      "equals": true
+    },
+    {
+      "id": "QA.WEB.MOBILE_REQUIRED",
+      "path": "qa.webRequires",
+      "contains": "MOBILE_LAYOUT"
+    },
+    {
+      "id": "QA.RUNTIME.REQUIRED",
+      "path": "qa.buildSuccessAloneIsNotRuntimePass",
+      "equals": true
+    },
+    {
+      "id": "REVIEW.DESIGN.MIN_80",
+      "path": "review.designPassMinimum",
+      "equals": 80
+    },
+    {
+      "id": "REVIEW.IMPLEMENTATION.MIN_90",
+      "path": "review.implementationPassMinimum",
+      "equals": 90
+    },
+    {
+      "id": "VIBE2.START.DEVELOPMENT_CONFIRMED",
+      "path": "vibe2.startsAtClass",
+      "equals": "DEVELOPMENT_CONFIRMED"
+    },
+    {
+      "id": "VIBE3.NO_PARALLEL_PIPELINE",
+      "path": "vibe3.parallelPipeline",
+      "equals": false
+    },
+    {
+      "id": "PLATFORM.WEB.NOT_NATIVE_SUBSTITUTE",
+      "path": "production.webIsNotNativeDevelopmentSubstitute",
+      "equals": true
+    },
+    {
+      "id": "LEARN.VERIFIED_ONLY",
+      "path": "learning.onlyValidatedEvidenceFeedsPositiveLearning",
+      "equals": true
+    },
+    {
+      "id": "LEARN.NO_SYNTHETIC_PLATFORM",
+      "path": "learning.syntheticPlatformTrainingForbidden",
+      "equals": true
+    },
+    {
+      "id": "COST.NO_PAID_AI",
+      "path": "safety.paidAiAllowed",
+      "equals": false
+    },
+    {
+      "id": "COST.NO_PAID_RUNNER",
+      "path": "safety.paidRunnerAllowed",
+      "equals": false
+    },
+    {
+      "id": "PIPELINE.EVENT_CHAIN_PRIMARY",
+      "path": "pipeline.cronMustNotBePrimaryProgressionEngine",
+      "equals": true
+    }
+  ],
+  "deprecatedConflicts": {
+    "fixedDevelopmentConfirmedCount": "FORBIDDEN",
+    "fixedReleaseConfirmedCount": "FORBIDDEN",
+    "concurrentGameWipMax6": "SUPERSEDED_BY_DEV.CONCURRENCY.20",
+    "webValidationParallelismMax6": "SUPERSEDED_BY_DEV.CONCURRENCY.20",
+    "fixedSixCategoryProductionQuota": "FORBIDDEN"
+  }
+}
