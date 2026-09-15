@@ -91,8 +91,8 @@ export function evaluateCommonDevelopmentQuality({category='',evidence={}}={}){
   const stateIntegrity=transitions>=3&&interactionCount>=5&&(stateVars>=2||dependencies>=2||evidence?.stateChanged===true)&&runtimeStable;
   const mobilePass=validation?.mobile?.pass===true||evidence?.mobileViewport?.touch===true&&num(evidence?.after?.scrollWidth)<=num(evidence?.after?.viewportWidth)+2;
   const movementPass=!req.avatarMovement||movement.moved===true&&movement.visualChanged===true&&movement.antiFakePass!==false&&movement.touchControlPresent===true;
-  const collisionPass=!req.avatarMovement||movement.collisionObserved===true||spatial.collisionObserved===true;
-  const cameraPass=!(req.avatarMovement&&req.world)||movement.cameraObserved===true||spatial.cameraObserved===true;
+  const collisionPass=!req.avatarMovement||movement.collisionObserved===true;
+  const cameraPass=!(req.avatarMovement&&req.world)||movement.cameraObserved===true;
   const worldPass=!req.world||areas>=2&&spatialOutcomes>=1;
   const mapDensityPass=!req.world||areas>=2&&(landmarks>=1||objectives>=2||enemyTypes>=2||interactionTargets>=2);
   const proximityFallback=interactionResults>=1;
