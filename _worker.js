@@ -13,7 +13,7 @@ function aiJson(data,status=200,extraHeaders={}){
 }
 function clipText(value,max=4000){return String(value??'').trim().slice(0,max);}
 function handleAiStatus(env){
-  return aiJson({ok:true,geminiConfigured:Boolean(env.GEMINI_API_KEY),model:clipText(env.GEMINI_MODEL||'gemini-2.5-flash-lite',80),scope:'in-game-runtime-only',purposes:[...GAME_AI_PURPOSES]});
+  return aiJson({ok:true,geminiConfigured:Boolean(env.GEMINI_API_KEY),model:clipText(env.GEMINI_MODEL||'gemini-2.5-flash-lite',80),scope: 'in-game-runtime-only',purposes:[...GAME_AI_PURPOSES]});
 }
 function outputContract(purpose){
   if(purpose==='dialogue'||purpose==='npc'||purpose==='merchant'||purpose==='quest')return '{"speech":"short natural in-game line","mood":"neutral|happy|angry|afraid|sad|excited","intent":"talk|warn|help|refuse|trade|quest"}';
