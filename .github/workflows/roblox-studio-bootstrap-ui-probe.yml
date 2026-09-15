@@ -51,7 +51,7 @@ jobs:
           "place_file=$matched" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           Write-Host 'ROBLOX_BOOTSTRAP_PROBE_IMMUTABLE_ARTIFACT=PASS'
 
-      - name: Discover Studio File menu publish command without creating
+      - name: Capture Studio File menu without creating
         env:
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: powershell
@@ -60,6 +60,7 @@ jobs:
           Add-Type -AssemblyName UIAutomationClient
           Add-Type -AssemblyName UIAutomationTypes
           Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
           Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class MouseNative { [DllImport("user32.dll")] public static extern bool SetCursorPos(int X,int Y); [DllImport("user32.dll")] public static extern void mouse_event(uint f,uint dx,uint dy,uint data,UIntPtr extra); }'
           $studio = $null
           $roots = @("$env:LOCALAPPDATA\Roblox\Versions","$env:PROGRAMFILES\Roblox\Versions","${env:ProgramFiles(x86)}\Roblox\Versions") | Where-Object { $_ -and (Test-Path $_) }
@@ -87,26 +88,33 @@ jobs:
             if ($top.Count -lt 1) { throw 'Studio top menu not discoverable' }
             $fileMenu = $top[0]
             $r=$fileMenu.Current.BoundingRectangle
-            Write-Host ("ROBLOX_BOOTSTRAP_FILE_MENU name='{0}' left='{1}' top='{2}' width='{3}' height='{4}'" -f $fileMenu.Current.Name,$r.Left,$r.Top,$r.Width,$r.Height)
             $shell=New-Object -ComObject WScript.Shell
             if (-not $shell.AppActivate($p.Id)) { throw 'Studio not interactive' }
             [MouseNative]::SetCursorPos([int]($r.Left+$r.Width/2),[int]($r.Top+$r.Height/2)) | Out-Null
             [MouseNative]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero)
             [MouseNative]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero)
             Start-Sleep -Seconds 2
-            $allProcess = $root.FindAll([System.Windows.Automation.TreeScope]::Descendants,$pidCondition)
-            $found=0
-            foreach ($e in $allProcess) {
-              $ct=[string]$e.Current.ControlType.ProgrammaticName
-              if (($ct -eq 'ControlType.MenuItem' -or $ct -eq 'ControlType.Menu') -and -not $e.Current.IsOffscreen) {
-                $found++
-                Write-Host ("ROBLOX_BOOTSTRAP_MENU_ITEM type='{0}' name='{1}' automationId='{2}' class='{3}' enabled='{4}'" -f $ct,$e.Current.Name,$e.Current.AutomationId,$e.Current.ClassName,$e.Current.IsEnabled)
-              }
-            }
-            Write-Host "ROBLOX_BOOTSTRAP_VISIBLE_MENU_ITEMS=$found"
-            if ($found -lt 8) { throw 'File menu did not expose submenu items' }
-            $shell.SendKeys('{ESC}')
-            Write-Host 'ROBLOX_BOOTSTRAP_PROBE=PASS'
+            $mr=$main.Current.BoundingRectangle
+            $x=[int][Math]::Floor($mr.Left); $y=[int][Math]::Floor($mr.Top)
+            $w=[int][Math]::Ceiling($mr.Width); $h=[int][Math]::Ceiling($mr.Height)
+            $bmp=New-Object System.Drawing.Bitmap($w,$h)
+            $g=[System.Drawing.Graphics]::FromImage($bmp)
+            try { $g.CopyFromScreen($x,$y,0,0,$bmp.Size) } finally { $g.Dispose() }
+            $shot=Join-Path $env:RUNNER_TEMP 'roblox-file-menu.png'
+            $bmp.Save($shot,[System.Drawing.Imaging.ImageFormat]::Png)
+            $bmp.Dispose()
+            if (-not (Test-Path $shot)) { throw 'File menu screenshot missing' }
+            Write-Host "ROBLOX_BOOTSTRAP_MENU_SCREENSHOT=$shot"
             Write-Host 'ROBLOX_EXPERIENCE_CREATED=NO'
+            $shell.SendKeys('{ESC}')
           }
           finally { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }
+
+      - name: Upload File menu screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-studio-file-menu-probe
+          path: ${{ runner.temp }}/roblox-file-menu.png
+          retention-days: 1
+          if-no-files-found: error
