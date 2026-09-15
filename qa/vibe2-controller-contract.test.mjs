@@ -207,3 +207,13 @@ test('explicit work-order output path overrides runtime default path',()=>{
   assert.equal(fs.existsSync(explicitOutput),true);
   assert.equal(fs.existsSync(runtimeDefault),false);
 });
+
+
+test('central runtime enables functional work packages and adaptive workload telemetry',()=>{
+  assert.equal(runtime.workPackages.enabled,true);
+  assert.equal(runtime.workPackages.smallTaskAction,'auto-expand-or-defer');
+  assert.equal(runtime.workPackages.sharedPreparation,true);
+  assert.equal(runtime.workPackages.longWorkSlotProtection,true);
+  assert.equal(runtime.workPackages.workloadTelemetry.enabled,true);
+  assert.equal(runtime.workPackages.efficiencyAdaptation.neverReduceSafetyOrQa,true);
+});

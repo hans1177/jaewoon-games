@@ -8,6 +8,7 @@ import { pathToFileURL } from 'node:url';
 import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../assets/vibe-continuous-queue.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { diagnoseGame, microTaskFromIssue } from './autonomous-diagnostics.mjs';
+import { buildWorkPackage, computeWorkloadTelemetry, estimateTaskWorkUnits, resolveWorkPackagePolicy } from './vibe2-work-package.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -44,39 +45,120 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
 function looksLikeValidationPrototype(text=''){return /검증 루프:|STATUS:\s*준비|FULL APPROVED WEB COMPANION|DEVELOPMENT_CONFIRMED\s*·/i.test(text)&&(/data-action=|class=["'][^"']*action|scope-action|승인 분량 전체 구현/i.test(text));}
 function findWebFullGameTask(project,repoRoot,queue){if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),text=readText(file);if(!text||!looksLikeValidationPrototype(text))return null;const id=`${project.gameId}-owner-full-web-game-rebuild-v1`;if(hasTask(queue,id))return null;const goal=`[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD\n게임: ${project.name||project.gameId}\n현재 index.html은 검증용 프로토타입이다. 이 파일을 실제 플레이 가능한 모바일 웹게임으로 완전히 재구축한다. 장르와 현재 게임 정체성은 유지하되 검증 버튼/숫자 변화 화면을 게임으로 취급하지 않는다. 실제 직접 조작, 실제 게임 상태 변화, 반복 가능한 핵심 루프, 난이도 또는 진행 상승, 실패/성공 또는 생존/점수 목표, 재시작을 구현한다. 모바일 터치 우선, 화면 잘림 금지, 외부 네트워크/유료 API 없이 단일 기존 Web 루트에서 실행한다. 필요하면 index.html 전체 교체를 사용한다. 홈페이지나 회사 파일은 수정하지 않는다. 완료 후 실제 플레이 QA를 통과한 후보만 main에 올린다.`;const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','full-web-game-rebuild','prototype-completion-forbidden']);out.ownerDirective=true;out.speculativeEligible=false;return out;}
 function findUnityTask(project,repoRoot,queue){const projectPath=posix(project.projectPath),runtimeRel=`${projectPath}/Assets/Scripts/RuntimeBootstrap.cs`,coreRel=`${projectPath}/Assets/Scripts/GameCore.cs`,motionRel=`${projectPath}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,runtime=readText(sourceFile(repoRoot,runtimeRel)),core=readText(sourceFile(repoRoot,coreRel)),motion=readText(sourceFile(repoRoot,motionRel));if(runtime&&core&&core.includes('["field-4"]')&&!runtime.includes('FIELD 4')&&!hasTask(queue,`${project.gameId}-region-controls-4-7`))return task(`${project.gameId}-region-controls-4-7`,project,'GameCatalog에 이미 존재하는 field-4, field-5, field-6, jungle 지역을 RuntimeBootstrap 이동 UI에 연결한다. 기존 RegionDefinition.recommendedLevelMin을 사용하고 전투 수치·보상·세이브·지역 데이터는 변경하지 않는다.',[runtimeRel],'high');if(core&&core.includes('public List<string> ownedWeapons')&&!core.includes('Player.ownedWeapons ??=')&&!hasTask(queue,`${project.gameId}-save-null-guards`))return task(`${project.gameId}-save-null-guards`,project,'GameCore.Load 직후 오래되거나 불완전한 JSON 세이브에서 ownedWeapons, ownedArmors, completedHiddenQuests가 null이면 빈 목록으로 복구한다. SaveKey, 데이터 버전, 수치와 소유 의미는 변경하지 않는다.',[coreRel]);if(motion&&motion.includes('public void PlayTravelToBattle()')&&!/PlayTravelToBattle\(\)[\s\S]{0,500}StopCoroutine\(_combatRoutine\)/.test(motion)&&!hasTask(queue,`${project.gameId}-motion-routine-safety`))return task(`${project.gameId}-motion-routine-safety`,project,'PrototypeAnimatedVisuals에서 전투 코루틴 중 새 이동 모션을 시작할 때 이전 combat routine을 안전하게 중지해 애니메이션 상태 덮어쓰기를 막는다. 전투 판정 타이밍·데미지·보상·에셋은 변경하지 않는다.',[motionRel]);return null;}
-function diagnosticTaskId(project,issue,micro){const token=`${clean(issue?.type)}-${posix(micro?.file)}`.replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').slice(-64)||'issue';return`${project.gameId}-diagnostic-${token}`;}
-function findWebDiagnosticTask(project,repoRoot,queue){if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;const root=sourceFile(repoRoot,project.projectPath);if(!fs.existsSync(root))return null;let report;try{report=diagnoseGame(root,{maxIssues:12});}catch{return null;}for(const issue of report.issues||[]){const micro=microTaskFromIssue(issue);if(!micro?.file||!micro?.goal)continue;const id=diagnosticTaskId(project,issue,micro);if(hasTask(queue,id))continue;const relative=`${posix(project.projectPath)}/${posix(micro.file)}`,priority=SEVERITY_PRIORITY[clean(issue.severity).toLowerCase()]||'normal',estimatedRisk=micro.repairMode==='RULE_PATCH'?'low':'medium';return task(id,project,micro.goal,[relative],priority,estimatedRisk,[`diagnostic:${clean(issue.type)||'UNKNOWN'}`,`diagnostic-severity:${clean(issue.severity)||'unknown'}`,`repair-mode:${clean(micro.repairMode)||'MODEL'}`,`diagnostic-primary-file:${relative}`]);}return null;}
-function scanExplicitMarkerTask(project,repoRoot,queue){const root=sourceFile(repoRoot,project.projectPath);if(!fs.existsSync(root))return null;const extensions=project.engine==='roblox'?new Set(['.luau','.lua','.json']):project.engine==='web'?new Set(['.html','.css','.js','.mjs','.json']):project.engine==='unity'?new Set(['.cs']):project.engine==='unreal'?new Set(['.cpp','.h','.hpp','.ini']):new Set(['.gd']),stack=[root];while(stack.length){const current=stack.pop();for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(['node_modules','dist','build','.rbxcloud','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache','.git'].includes(entry.name))continue;const full=path.join(current,entry.name);if(entry.isDirectory()){stack.push(full);continue;}if(!extensions.has(path.extname(entry.name).toLowerCase()))continue;const text=readText(full);if(!/(TODO|FIXME|NotImplementedException)/.test(text))continue;const relative=posix(path.relative(repoRoot,full)),id=`${project.gameId}-explicit-maintenance-${relative.replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').slice(-48)}`;if(hasTask(queue,id))continue;return task(id,project,`책임 파일 ${relative}에 이미 표시된 TODO/FIXME/NotImplementedException 중 현재 구조 안에서 해결 가능한 저위험 항목 1개를 직접 구현한다. 핵심 규칙·밸런스·세이브 의미·유료 의존성은 바꾸지 않는다.`,[relative],'low','medium');}}return null;}
+function diagnosticKey(issue,micro){return`${clean(issue?.type)||'UNKNOWN'}:${posix(micro?.file)||'unknown'}`;}
+function diagnosticSeen(queue,key){return queue.tasks.some(item=>(item.evidence||[]).some(e=>clean(e)===`diagnostic-key:${key}`));}
+function diagnosticTaskId(project,rows){const token=rows.map(({issue,micro})=>`${clean(issue?.type)}-${posix(micro?.file)}`).join('-').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-|-$/g,'').slice(-72)||'issues';return`${project.gameId}-diagnostic-bundle-${token}`;}
+function findWebDiagnosticTask(project,repoRoot,queue){
+  if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
+  const root=sourceFile(repoRoot,project.projectPath);if(!fs.existsSync(root))return null;
+  let report;try{report=diagnoseGame(root,{maxIssues:20});}catch{return null;}
+  const rows=[];
+  for(const issue of report.issues||[]){
+    const micro=microTaskFromIssue(issue);if(!micro?.file||!micro?.goal)continue;
+    const key=diagnosticKey(issue,micro);if(diagnosticSeen(queue,key))continue;
+    rows.push({issue,micro,key});if(rows.length>=4)break;
+  }
+  if(!rows.length)return null;
+  const id=diagnosticTaskId(project,rows);if(hasTask(queue,id))return null;
+  const files=[...new Set(rows.map(({micro})=>`${posix(project.projectPath)}/${posix(micro.file)}`))];
+  const priorities=rows.map(({issue})=>SEVERITY_PRIORITY[clean(issue.severity).toLowerCase()]||'normal');
+  const priority=priorities.includes('critical')?'critical':priorities.includes('high')?'high':priorities.includes('normal')?'normal':'low';
+  const estimatedRisk=rows.some(({micro})=>micro.repairMode!=='RULE_PATCH')?'medium':'low';
+  const goals=rows.map(({micro},i)=>`${i+1}. ${micro.goal}`);
+  const evidence=rows.flatMap(({issue,micro,key})=>[`diagnostic:${clean(issue.type)||'UNKNOWN'}`,`diagnostic-key:${key}`,`diagnostic-severity:${clean(issue.severity)||'unknown'}`,`repair-mode:${clean(micro.repairMode)||'MODEL'}`]);
+  const out=task(id,project,`[DIAGNOSTIC_BUNDLE] 같은 기능 경계의 관련 문제를 한 번에 해결한다.\n${goals.join('\n')}\n각 수정 후 해당 파일의 접근성/모바일 입력/기본 성능·문법 안정성도 함께 확인한다.`,files,priority,estimatedRisk,evidence);
+  out.workUnits=Math.max(3,Math.min(6,rows.length+1));
+  return out;
+}
+function scanExplicitMarkerTask(project,repoRoot,queue){
+  const root=sourceFile(repoRoot,project.projectPath);if(!fs.existsSync(root))return null;
+  const extensions=project.engine==='roblox'?new Set(['.luau','.lua','.json']):project.engine==='web'?new Set(['.html','.css','.js','.mjs','.json']):project.engine==='unity'?new Set(['.cs']):project.engine==='unreal'?new Set(['.cpp','.h','.hpp','.ini']):new Set(['.gd']);
+  const stack=[root],rows=[];
+  while(stack.length&&rows.length<3){
+    const current=stack.pop();
+    for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
+      if(['node_modules','dist','build','.rbxcloud','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache','.git'].includes(entry.name))continue;
+      const full=path.join(current,entry.name);
+      if(entry.isDirectory()){stack.push(full);continue;}
+      if(!extensions.has(path.extname(entry.name).toLowerCase()))continue;
+      const text=readText(full);if(!/(TODO|FIXME|NotImplementedException)/.test(text))continue;
+      const relative=posix(path.relative(repoRoot,full));
+      if(queue.tasks.some(item=>(item.evidence||[]).includes(`maintenance-file:${relative}`)))continue;
+      rows.push(relative);if(rows.length>=3)break;
+    }
+  }
+  if(!rows.length)return null;
+  const token=rows.map(x=>x.replace(/[^a-zA-Z0-9]+/g,'-')).join('-').slice(-64),id=`${project.gameId}-maintenance-bundle-${token}`;
+  if(hasTask(queue,id))return null;
+  const out=task(id,project,`[MAINTENANCE_BUNDLE] ${rows.join(', ')}에 이미 표시된 TODO/FIXME/NotImplementedException을 같은 기능 경계 안에서 가능한 만큼 함께 해결한다. 단순 한 줄 제거로 끝내지 말고 관련 안전성·오류 처리·기본 QA까지 책임 파일 범위에서 마무리한다. 핵심 규칙·밸런스·세이브 의미·유료 의존성은 바꾸지 않는다.`,rows,'low','medium',rows.map(x=>`maintenance-file:${x}`));
+  out.workUnits=Math.max(3,rows.length+1);
+  return out;
+}
+function expandTaskToMinimumWorkload(taskInput,project,policy){
+  if(!taskInput)return null;
+  const min=Math.max(2,Number(policy?.minWorkUnitsPerPackage||3));
+  const current=estimateTaskWorkUnits(taskInput);
+  if(taskInput.ownerDirective===true||current>=min)return taskInput;
+  const isWeb=project?.engine==='web';
+  const expansion=isWeb
+    ? '같은 책임 파일 범위 안에서 이 기능의 오류 처리와 회귀 안전성을 보강하고, 직접 관련된 접근성·가독성·모바일 입력·기본 성능 문제도 함께 점검해 발견 시 같이 수정한다. 관련 incremental QA까지 통과시킨다.'
+    : '같은 책임 파일 범위 안에서 이 기능의 불변조건·오류 처리·회귀 안전성을 함께 보강하고 관련 incremental QA까지 통과시킨다.';
+  const evidence=[...(taskInput.evidence||[]),'work-package-auto-expanded','work-package-expansion:qa-hardening'];
+  if(isWeb)evidence.push('work-package-expansion:ux-readability','work-package-expansion:performance-sanity');
+  return{
+    ...taskInput,
+    workUnits:min,
+    goal:`${taskInput.goal}\n\n[WORK PACKAGE AUTO-EXPANSION]\n${expansion}`,
+    evidence:[...new Set(evidence)]
+  };
+}
+
 function findSafeTask(project,repoRoot,queue){if(project.engine==='roblox')return scanExplicitMarkerTask(project,repoRoot,queue);if(project.engine==='unity')return findUnityTask(project,repoRoot,queue)||scanExplicitMarkerTask(project,repoRoot,queue);if(project.engine==='web')return findWebFullGameTask(project,repoRoot,queue)||findWebDiagnosticTask(project,repoRoot,queue)||scanExplicitMarkerTask(project,repoRoot,queue);return null;}
 function releaseUnityFocusBusy(queue){return activeTasks(queue).some(item=>item.target==='unity'&&item.releaseState==='release-confirmed');}
 
-export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS}={}){
+export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={}}={}){
   let queue=createVibeContinuousQueue({...(queueInput||{}),maxConcurrentTasks:parallelLimit(maxConcurrentTasks)});
   const active=activeTasks(queue);
-  if(active.some(item=>item.ownerDirective))return{planned:false,count:0,reason:'OWNER_DIRECTIVE_ACTIVE',queue,tasks:[]};
+  if(active.some(item=>item.ownerDirective))return{planned:false,count:0,reason:'OWNER_DIRECTIVE_ACTIVE',queue,tasks:[],packages:[],workloadTelemetry:computeWorkloadTelemetry(queue,[])};
   const capacity=Math.max(0,queue.maxConcurrentTasks-active.length);
-  if(!capacity)return{planned:false,count:0,reason:'PARALLEL_QUEUE_AT_CAPACITY',queue,tasks:[]};
+  if(!capacity)return{planned:false,count:0,reason:'PARALLEL_QUEUE_AT_CAPACITY',queue,tasks:[],packages:[],workloadTelemetry:computeWorkloadTelemetry(queue,[])};
+  const policy=resolveWorkPackagePolicy(workPackagePolicy,queue);
   const allProjects=collectProjects(status,catalog,repoRoot),blockedTier1=allProjects.filter(project=>project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready!==true),projects=allProjects.filter(isAutonomousProductionTarget).sort(projectSort);
-  if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
+  if(!projects.length)return{planned:false,count:0,reason:blockedTier1.length?'DEVELOPMENT_BASELINE_REQUIRED':'NO_CONFIRMED_PRODUCTION_PROJECT',queue,tasks:[],packages:[],workPackagePolicy:policy,workloadTelemetry:computeWorkloadTelemetry(queue,[]),blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
   let unityReleaseFocusTaken=releaseUnityFocusBusy(queue);
-  const planned=[];
+  const planned=[],packages=[],deferredSmallPackages=[];
+  let sequence=0;
   for(const project of projects){
-    if(planned.length>=capacity)break;
+    if(planned.length>=capacity||packages.length>=policy.maxPackagesPerCycle)break;
     if(project.engine==='unity'&&project.releaseState==='release-confirmed'&&unityReleaseFocusTaken)continue;
-    let localAttempts=0;
-    while(planned.length<capacity&&localAttempts<20){
-      localAttempts+=1;
-      const next=findSafeTask(project,repoRoot,queue);
-      if(!next)break;
-      if(plannerConflict(queue,next))break;
-      queue=createVibeContinuousQueue({tasks:[...queue.tasks,next],maxConcurrentTasks:queue.maxConcurrentTasks});
-      planned.push(next);
-      if(project.engine==='unity'&&project.releaseState==='release-confirmed'){unityReleaseFocusTaken=true;break;}
+    let next=findSafeTask(project,repoRoot,queue);
+    if(!next)continue;
+    if(plannerConflict(queue,next))continue;
+    next=expandTaskToMinimumWorkload(next,project,policy);
+    sequence+=1;
+    const pkg=buildWorkPackage({tasks:[next],project,sequence,policy});
+    if(!pkg.accepted){
+      deferredSmallPackages.push({gameId:project.gameId,taskIds:[next.id],workUnits:pkg.packageWorkUnits,reason:pkg.rejectionReason});
+      continue;
     }
+    const acceptedTask=pkg.tasks[0];
+    queue=createVibeContinuousQueue({tasks:[...queue.tasks,acceptedTask],maxConcurrentTasks:queue.maxConcurrentTasks});
+    planned.push(acceptedTask);
+    packages.push({...pkg,tasks:[acceptedTask]});
+    if(project.engine==='unity'&&project.releaseState==='release-confirmed')unityReleaseFocusTaken=true;
   }
-  if(!planned.length)return{planned:false,count:0,reason:active.length?'NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK':'NO_SAFE_AUTONOMOUS_TASK',queue,tasks:[],projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId)};
-  return{planned:true,count:planned.length,reason:'SAFE_PARALLEL_TASKS_PLANNED',queue,tasks:planned,task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),projectPriorityPolicy:'OWNER_WEBGAME_FIRST_THEN_CONFIRMED_WEB_THEN_ROBLOX_THEN_RELEASE_UNITY'};
+  const workloadTelemetry=computeWorkloadTelemetry(queue,packages);
+  const cycleTarget={
+    targetWorkUnits:policy.targetWorkUnitsPerCycle,
+    targetPackages:policy.targetPackagesPerCycle,
+    plannedWorkUnits:workloadTelemetry.plannedWorkUnits,
+    plannedPackages:packages.length,
+    met:workloadTelemetry.plannedWorkUnits>=policy.targetWorkUnitsPerCycle||packages.length>=policy.targetPackagesPerCycle
+  };
+  if(!planned.length)return{planned:false,count:0,reason:deferredSmallPackages.length?'MINIMUM_WORKLOAD_GATE':active.length?'NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK':'NO_SAFE_AUTONOMOUS_TASK',queue,tasks:[],packages:[],projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
+  return{planned:true,count:planned.length,reason:'WORK_PACKAGES_PLANNED',queue,tasks:planned,packages,task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),projectPriorityPolicy:'OWNER_WEBGAME_FIRST_THEN_CONFIRMED_WEB_THEN_ROBLOX_THEN_RELEASE_UNITY',deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
 }
+
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}
 export function runVibe2AutoPlanner({
   statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', queueFile='', runtimeFile='vibe2-runtime.json',
@@ -90,7 +172,7 @@ export function runVibe2AutoPlanner({
   const machineHandoff={used:true,kind:handoff.kind,sourceOfTruth:handoff.sourceOfTruth,consistency:handoff.consistency,currentPersistentMax:handoff.parallelism.currentPersistentMax,lastDecision:handoff.parallelism.lastDecision};
   if(handoff.consistency?.ok!==true)return{planned:false,reason:'MACHINE_STATE_INCONSISTENT',machineHandoff,effectivePlannerMax:0};
   const effectivePlannerMax=Math.min(parallelLimit(maxConcurrentTasks),parallelLimit(handoff.parallelism.currentPersistentMax));
-  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:readJson(resolvedQueueFile,{tasks:[]}),repoRoot,maxConcurrentTasks:effectivePlannerMax});
+  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:readJson(resolvedQueueFile,{tasks:[]}),repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{}});
   if(result.planned)writeJson(resolvedQueueFile,result.queue);
   return{...result,machineHandoff,effectivePlannerMax};
 }
@@ -100,5 +182,5 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
   console.log(`VIBE2_PLANNER_EFFECTIVE_MAX=${result.effectivePlannerMax||0}`);
-  console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);console.log(`VIBE2_AUTO_PLAN_REASON=${result.reason}`);console.log(`VIBE2_AUTO_PLAN_COUNT=${result.count||0}`);console.log(`VIBE2_AUTO_PLAN_PROJECT=${result.projectId||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_RELEASE_STATE=${result.projectReleaseState||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_ENGINE=${result.projectEngine||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_PRIORITY=${result.projectPriorityPolicy||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_TASKS=${(result.tasks||[]).map(t=>t.id).join(',')||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_BLOCKED_TIER1=${(result.blockedTier1GameIds||[]).join(',')||'NONE'}`);
+  console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);console.log(`VIBE2_AUTO_PLAN_REASON=${result.reason}`);console.log(`VIBE2_AUTO_PLAN_COUNT=${result.count||0}`);console.log(`VIBE2_AUTO_PLAN_PROJECT=${result.projectId||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_RELEASE_STATE=${result.projectReleaseState||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_ENGINE=${result.projectEngine||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_PRIORITY=${result.projectPriorityPolicy||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_TASKS=${(result.tasks||[]).map(t=>t.id).join(',')||'NONE'}`);console.log(`VIBE2_AUTO_PLAN_BLOCKED_TIER1=${(result.blockedTier1GameIds||[]).join(',')||'NONE'}`);console.log(`VIBE2_WORK_PACKAGE_COUNT=${result.packages?.length||0}`);console.log(`VIBE2_WORK_PACKAGE_UNITS=${result.workloadTelemetry?.plannedWorkUnits||0}`);console.log(`VIBE2_WORK_PACKAGE_CYCLE_TARGET=${result.cycleTarget?.met?'MET':'NOT_MET'}`);console.log(`VIBE2_WORK_PACKAGE_MICRO_RATE=${result.workloadTelemetry?.historicalMicroTaskRatePct||0}`);console.log(`VIBE2_WORK_PACKAGE_REWORK_RATE=${result.workloadTelemetry?.historicalReworkRatePct||0}`);
 }

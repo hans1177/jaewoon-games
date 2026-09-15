@@ -45,6 +45,18 @@ function inferSourceRoot(input = {}) {
   if (target === 'godot') return `godot-games/${gameId}`;
   return `${target}:${gameId}`;
 }
+function normalizePackageContext(input = {}) {
+  const source=input&&typeof input==='object'?input:{};
+  if(!clean(source.explorationMode)&&!clean(source.sourceRoot)&&!(source.responsibleFiles||[]).length)return null;
+  return freeze({
+    explorationMode:clean(source.explorationMode)||'planner-precomputed-shared-context',
+    sharedPreparation:source.sharedPreparation!==false,
+    sourceRoot:posix(source.sourceRoot)||null,
+    responsibleFiles:freezeList(source.responsibleFiles||[]),
+    diagnosticEvidence:freezeList(source.diagnosticEvidence||[]),
+    roles:freeze({...((source.roles&&typeof source.roles==='object')?source.roles:{})})
+  });
+}
 function normalizeCompanyContext(input = {}) {
   const source = input && typeof input === 'object' ? input : {};
   const hasContext = Boolean(
@@ -92,7 +104,18 @@ function normalizeTask(input = {}, index = 0) {
     companyContext: normalizeCompanyContext(input.companyContext),
     sourceRoot: inferSourceRoot(input),
     speculativeEligible: input.speculativeEligible === true,
-    estimatedRisk: ['low','medium','high'].includes(clean(input.estimatedRisk).toLowerCase()) ? clean(input.estimatedRisk).toLowerCase() : 'low'
+    estimatedRisk: ['low','medium','high'].includes(clean(input.estimatedRisk).toLowerCase()) ? clean(input.estimatedRisk).toLowerCase() : 'low',
+    taskWorkUnits: clampInt(input.taskWorkUnits || input.workUnits || 0, 0, 8),
+    packageId: clean(input.packageId) || null,
+    packageGoal: clean(input.packageGoal) || null,
+    packageRole: clean(input.packageRole) || null,
+    packageOwner: clean(input.packageOwner) || null,
+    packageWorkUnits: clampInt(input.packageWorkUnits || 0, 0, 40),
+    packageSize: clampInt(input.packageSize || 0, 0, 8),
+    packageMinWorkUnits: clampInt(input.packageMinWorkUnits || 0, 0, 12),
+    packageLongWorkProtected: input.packageLongWorkProtected === true,
+    packageContext: normalizePackageContext(input.packageContext),
+    completionCriteria: freezeList(input.completionCriteria || [])
   };
   task.shard = inferShard(task);
   return freeze(task);
@@ -118,7 +141,10 @@ export function createVibeContinuousQueue(seed = {}) {
       unityReleaseFocusSlots: 1,
       baseShardSlots: BASE_SHARD_SLOTS,
       dynamicBackpressure: true,
-      speculativeParallelism: 'high-risk-opt-in-only'
+      speculativeParallelism: 'high-risk-opt-in-only',
+      workPackageAware: true,
+      longWorkPackagePriority: true,
+      minimumWorkloadGate: true
     }),
     defaultMaxRetries: 2,
     tasks: freeze(tasks)
@@ -143,6 +169,8 @@ function scoreTask(task, index) {
   return (task.ownerDirective ? 10000 : 0)
     + (RELEASE_STATE_SCORE[task.releaseState] || 0)
     + (PRIORITY_SCORE[task.priority] || 0)
+    + Math.min(6, Number(task.packageWorkUnits || task.taskWorkUnits || 0))
+    + (task.packageLongWorkProtected ? 3 : 0)
     - index / 1000;
 }
 function fileLocks(task) {
