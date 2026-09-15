@@ -272,17 +272,19 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
 
   let longWorkProtectedSlotUsed = false;
   let longWorkOwnerTaskId = null;
-  if (freeSlots > 0 && !running.some(isProtectedLongOwner)) {
-    const protectedRow = candidates.find((row) => isProtectedLongOwner(row.task));
-    if (protectedRow) {
+  if (freeSlots > 0 && !capacityRunning.some(isProtectedLongOwner)) {
+    for (const protectedRow of candidates.filter((row) => isProtectedLongOwner(row.task))) {
       const conflict = conflictsWith(protectedRow.task, active);
-      if (!conflict) {
-        selected.push(protectedRow.task);
-        active.push(protectedRow.task);
-        shardUse[protectedRow.task.shard] = (shardUse[protectedRow.task.shard] || 0) + 1;
-        longWorkProtectedSlotUsed = true;
-        longWorkOwnerTaskId = protectedRow.task.id;
-      } else deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict }));
+      if (conflict) {
+        if (!deferredConflicts.some((item) => item.task.id === protectedRow.task.id)) deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict }));
+        continue;
+      }
+      selected.push(protectedRow.task);
+      active.push(protectedRow.task);
+      shardUse[protectedRow.task.shard] = (shardUse[protectedRow.task.shard] || 0) + 1;
+      longWorkProtectedSlotUsed = true;
+      longWorkOwnerTaskId = protectedRow.task.id;
+      break;
     }
   }
 
@@ -292,7 +294,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
     const baseSlots = BASE_SHARD_SLOTS[row.task.shard] || 1;
     if ((shardUse[row.task.shard] || 0) >= baseSlots) continue;
     const conflict = conflictsWith(row.task, active);
-    if (conflict) { deferredConflicts.push(freeze({ task: row.task, reason: conflict })); continue; }
+    if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict })); continue; }
     selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1;
   }
   for (const row of candidates) {
