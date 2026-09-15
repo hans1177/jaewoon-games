@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const unity=fs.readFileSync('.github/workflows/company-development-unity-runtime.yml','utf8');
 const router=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+const designRuntime=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
 const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const stages=[
   'Change detection and exact-source reuse',
@@ -111,6 +112,20 @@ test('Web development validation is parallel-first with twenty isolated workers 
   assert.match(policy,/webValidationParallelismTarget: 20/);
   assert.match(policy,/webValidationParallelismMax: 20/);
   assert.match(policy,/sharedRuntimeStatePersistedBySingleAggregationStep: true/);
+});
+
+test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate six-game limit',()=>{
+  assert.match(policy,/concurrentGameWipTarget: 20/);
+  assert.match(policy,/concurrentGameWipMax: 20/);
+  assert.match(policy,/adaptiveBackpressureSteps: \[20, 16, 12, 8, 4\]/);
+  assert.match(designRuntime,/const maxMatch=policy\.match\(\/concurrentGameWipMax:\\\s\*\(\\d\+\)\/\)/);
+  assert.match(designRuntime,/slice\(0,designWipMax\)/);
+  assert.match(designRuntime,/parallel_max=\$\{designWipMax\}/);
+  assert.match(designRuntime,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
+  assert.match(designRuntime,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
+  assert.doesNotMatch(designRuntime,/slice\(0,6\)/);
+  assert.doesNotMatch(designRuntime,/max-parallel:\s*6/);
+  assert.doesNotMatch(designRuntime,/GAME_DESIGN_WIP_MAX=6/);
 });
 
 test('DEVELOPMENT runtime does not serialize whole runs and serializes only shared-state writers',()=>{
