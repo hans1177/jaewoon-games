@@ -177,8 +177,12 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION=SKIP_ACTIVE_BATCH/);
   assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
   assert.match(seedDesignWorkflow,/game-seed-state\.json/);
-  assert.match(seedDesignWorkflow,/max-parallel: 6/);
-  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=6/);
+  assert.match(seedDesignWorkflow,/parallel_max=\$\{designWipMax\}/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=\$\{designWipMax\}/);
+  assert.match(seedDesignWorkflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
+  assert.doesNotMatch(seedDesignWorkflow,/max-parallel:\s*6/);
+  assert.doesNotMatch(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=6/);
   assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
   assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '75000'/);
   assert.match(design,/Math\.min\(75000,Math\.max\(15000,Number\(process\.env\.COMPANY_MODEL_CALL_TIMEOUT_MS\|\|75000\)\)\)/);
