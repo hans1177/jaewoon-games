@@ -47,10 +47,6 @@ permissions:
   contents: write
   actions: write
 
-concurrency:
-  group: company-development-confirmed-runtime
-  cancel-in-progress: false
-
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
 
@@ -63,6 +59,7 @@ jobs:
       target_count: ${{ steps.targets.outputs.target_count }}
       matrix: ${{ steps.targets.outputs.matrix }}
       targets_json: ${{ steps.targets.outputs.targets_json }}
+      runtime_sha: ${{ steps.targets.outputs.runtime_sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -94,6 +91,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          runtime_sha="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
+          printf 'runtime_sha=%s\n' "$runtime_sha" >> "$GITHUB_OUTPUT"
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
@@ -494,6 +493,9 @@ jobs:
     name: required Web gameplay music and 80-point gate
     needs: [web-plan, web-worker]
     if: always() && needs.web-plan.result == 'success'
+    concurrency:
+      group: company-development-runtime-state-writer
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -503,8 +505,29 @@ jobs:
           fetch-depth: 1
           fetch-tags: false
 
+      - name: Fetch current company runtime
+        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+
+      - name: Check planned company-runtime binding
+        id: runtime_binding
+        env:
+          PLANNED_RUNTIME_SHA: ${{ needs.web-plan.outputs.runtime_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
+          if [[ -n "$PLANNED_RUNTIME_SHA" && "$current" == "$PLANNED_RUNTIME_SHA" ]]; then
+            echo 'fresh=true' >> "$GITHUB_OUTPUT"
+            echo "WEB_RUNTIME_BINDING_FRESH=$current"
+          else
+            echo 'fresh=false' >> "$GITHUB_OUTPUT"
+            echo "WEB_RUNTIME_BINDING_PLANNED=${PLANNED_RUNTIME_SHA:-NONE}"
+            echo "WEB_RUNTIME_BINDING_CURRENT=$current"
+            echo 'WEB_RUNTIME_BINDING_STALE_SKIP=YES'
+          fi
+
       - name: Download parallel Web worker results
-        if: needs.web-plan.outputs.target_count != '0'
+        if: needs.web-plan.outputs.target_count != '0' && steps.runtime_binding.outputs.fresh == 'true'
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
@@ -512,11 +535,8 @@ jobs:
           path: /tmp/web-batch
           merge-multiple: true
 
-      - name: Fetch current company runtime
-        run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
-
       - name: Persist parallel Web evidence and queue state
-        if: needs.web-plan.outputs.target_count != '0'
+        if: needs.web-plan.outputs.target_count != '0' && steps.runtime_binding.outputs.fresh == 'true'
         env:
           EXPECTED_TARGETS_JSON: ${{ needs.web-plan.outputs.targets_json }}
         shell: bash
@@ -585,6 +605,13 @@ jobs:
           echo 'WEB_RUNTIME_PERSIST=PASS'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
+      - name: Stale Web worker batch summary
+        if: needs.web-plan.outputs.target_count != '0' && steps.runtime_binding.outputs.fresh != 'true'
+        run: |
+          echo 'WEB_RUNTIME_BINDING_STALE_SKIP=YES'
+          echo 'WEB_WORKER_RESULTS_PERSISTED=NO'
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
       - name: Empty Web queue summary
         if: needs.web-plan.outputs.target_count == '0'
         run: |
@@ -595,6 +622,9 @@ jobs:
     name: post-Web artbook and homepage eligibility
     needs: web-gate
     if: always() && needs.web-gate.result == 'success'
+    concurrency:
+      group: company-development-runtime-state-writer
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -718,6 +748,9 @@ jobs:
     name: route fresh formal 90-point DEVELOPMENT_CONFIRMED selected platforms
     needs: [web-gate, post-web-artbook]
     if: always() && needs.web-gate.result == 'success'
+    concurrency:
+      group: company-development-runtime-state-writer
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     timeout-minutes: 12
     outputs:
