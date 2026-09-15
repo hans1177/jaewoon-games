@@ -134,6 +134,7 @@ test('worker completion uses push callbacks to refill slots before batch fan-in'
   assert(workflow.includes('release-slot'));
   assert(workflow.includes('slot-released-awaiting-fan-in'));
   assert(workflow.includes('Signal immediate slot refill after single-variant worker completion'));
+  assert.match(workflow,/- name: Signal immediate slot refill after single-variant worker completion[\s\S]*?continue-on-error: true/);
   assert(workflow.includes('vibe2/refill/task/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/${encoded}'));
   assert(workflow.includes('earlyRefill'));
   assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
