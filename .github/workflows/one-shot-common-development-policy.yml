@@ -30,35 +30,61 @@ jobs:
           node tools/apply-common-development-quality-policy.mjs
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const file='qa/company-web-real-game-regression.test.mjs';
-          let text=fs.readFileSync(file,'utf8');
-          let changed=false;
 
+          const regressionFile='qa/company-web-real-game-regression.test.mjs';
+          let regression=fs.readFileSync(regressionFile,'utf8');
+          let regressionChanged=false;
           const schemaFrom="assert.equal(WEB_VALIDATION_SCHEMA_VERSION,13,'Web evidence schema must carry staged-play semantics');";
           const schemaTo="assert.equal(WEB_VALIDATION_SCHEMA_VERSION,14,'Web evidence schema must carry common-development-quality semantics');";
-          if(!text.includes(schemaTo)){
-            if(!text.includes(schemaFrom))throw new Error('SCHEMA14_REGRESSION_ASSERTION_ANCHOR_MISSING');
-            text=text.replace(schemaFrom,schemaTo);
-            changed=true;
+          if(!regression.includes(schemaTo)){
+            if(!regression.includes(schemaFrom))throw new Error('SCHEMA14_REGRESSION_ASSERTION_ANCHOR_MISSING');
+            regression=regression.replace(schemaFrom,schemaTo);
+            regressionChanged=true;
           }
-
           const scopeFrom="    musicRuntime:{pass:true},runtimeSmokePassed:true,";
           const scopeTo="    musicRuntime:{pass:true},runtimeSmokePassed:true,\n    approvedScopeFullyImplemented:true,\n    scopeCoverage:{pass:true,mechanicBindings:['tower-place','wave','upgrade','economy','strategy']},";
-          if(!text.includes(scopeTo)){
-            if(!text.includes(scopeFrom))throw new Error('SCHEMA14_SCOPE_FIXTURE_ANCHOR_MISSING');
-            text=text.replace(scopeFrom,scopeTo);
-            changed=true;
+          if(!regression.includes(scopeTo)){
+            if(!regression.includes(scopeFrom))throw new Error('SCHEMA14_SCOPE_FIXTURE_ANCHOR_MISSING');
+            regression=regression.replace(scopeFrom,scopeTo);
+            regressionChanged=true;
           }
-
           const replayFrom="    strictReview:{totalScore:92,hardFailures:[]},webStrictScore:92,";
           const replayTo="    strictReview:{totalScore:92,hardFailures:[]},webStrictScore:92,\n    promotionRevalidation:{pass:true,independentRun:true,sourceHashMatch:true,baselineHashMatch:true,secondSubstancePass:true,secondContentDepthPass:true,secondTerminalReached:true},";
-          if(!text.includes(replayTo)){
-            if(!text.includes(replayFrom))throw new Error('SCHEMA14_REPLAY_FIXTURE_ANCHOR_MISSING');
-            text=text.replace(replayFrom,replayTo);
-            changed=true;
+          if(!regression.includes(replayTo)){
+            if(!regression.includes(replayFrom))throw new Error('SCHEMA14_REPLAY_FIXTURE_ANCHOR_MISSING');
+            regression=regression.replace(replayFrom,replayTo);
+            regressionChanged=true;
           }
+          if(regressionChanged)fs.writeFileSync(regressionFile,regression);
 
-          if(changed)fs.writeFileSync(file,text);
+          const commonFile='tools/company-common-development-quality-contract.mjs';
+          let common=fs.readFileSync(commonFile,'utf8');
+          let commonChanged=false;
+          const commonSignatureFrom="export function evaluateCommonDevelopmentQuality({category='',evidence={}}={}){";
+          const commonSignatureTo="export function evaluateCommonDevelopmentQuality({category='',evidence={},requireRegressionReplay=false}={}){";
+          if(!common.includes(commonSignatureTo)){
+            if(!common.includes(commonSignatureFrom))throw new Error('COMMON_REPLAY_CONTEXT_SIGNATURE_ANCHOR_MISSING');
+            common=common.replace(commonSignatureFrom,commonSignatureTo);
+            commonChanged=true;
+          }
+          const replayApplicableFrom='const replayApplicable=req.finalStage||replay?.required===true;';
+          const replayApplicableTo='const replayApplicable=requireRegressionReplay===true||replay?.required===true;';
+          if(!common.includes(replayApplicableTo)){
+            if(!common.includes(replayApplicableFrom))throw new Error('COMMON_REPLAY_APPLICABILITY_ANCHOR_MISSING');
+            common=common.replace(replayApplicableFrom,replayApplicableTo);
+            commonChanged=true;
+          }
+          if(commonChanged)fs.writeFileSync(commonFile,common);
+
+          const evidenceFile='tools/company-web-validation-evidence-contract.mjs';
+          let evidence=fs.readFileSync(evidenceFile,'utf8');
+          const evidenceReplayFrom='raw=objectiveFromRaw(evidence,declaredCategory),commonQuality=evaluateCommonDevelopmentQuality({category:declaredCategory,evidence}),computedConfidence=';
+          const evidenceReplayTo='raw=objectiveFromRaw(evidence,declaredCategory),commonQuality=evaluateCommonDevelopmentQuality({category:declaredCategory,evidence,requireRegressionReplay:promotion}),computedConfidence=';
+          if(!evidence.includes(evidenceReplayTo)){
+            if(!evidence.includes(evidenceReplayFrom))throw new Error('WEB_PROMOTION_REPLAY_CONTEXT_ANCHOR_MISSING');
+            evidence=evidence.replace(evidenceReplayFrom,evidenceReplayTo);
+            fs.writeFileSync(evidenceFile,evidence);
+          }
           NODE
       - name: Verify modified contract syntax
         run: |
