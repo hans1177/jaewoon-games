@@ -155,6 +155,20 @@
     "intelligence": "tools/vibe2-game-study-intelligence.mjs",
     "robloxStudioCliRunner": "tools/vibe2-roblox-studio-cli-runner.mjs",
     "robloxStudioLiveSmoke": ".github/workflows/vibe2-roblox-studio-live-smoke.yml",
+    "robloxRunnerBootstrap": "tools/vibe2-roblox-runner-bootstrap.ps1",
+    "robloxRunnerReadinessVariable": "VIBE2_ROBLOX_STUDIO_RUNNER_READY",
+    "robloxRunnerRequiredLabels": [
+      "self-hosted",
+      "Windows",
+      "vibe2-roblox"
+    ],
+    "robloxRunnerDefaultMode": "interactive-user-session",
+    "robloxRunnerReadinessRequires": [
+      "roblox-studio-found",
+      "github-runner-online",
+      "vibe2-roblox-label-present"
+    ],
+    "robloxProductionTargetActivationRequiresRealStudioSmoke": true,
     "featureCount": 25,
     "features": [
       "mechanic-mining",
@@ -596,7 +610,12 @@
       "authoringWorkerConfigured": false,
       "editorRuntime": "roblox-studio-or-cloud-runtime",
       "workflow": null,
-      "runnerLabel": null
+      "runnerLabel": "vibe2-roblox",
+      "studioVerificationConfigured": true,
+      "studioVerificationWorkflow": ".github/workflows/vibe2-roblox-studio-live-smoke.yml",
+      "runnerBootstrapTool": "tools/vibe2-roblox-runner-bootstrap.ps1",
+      "runnerReadinessVariable": "VIBE2_ROBLOX_STUDIO_RUNNER_READY",
+      "productionStudyActivationRequiresRealStudioSmoke": true
     },
     "unity": {
       "authoringWorkerConfigured": false,
