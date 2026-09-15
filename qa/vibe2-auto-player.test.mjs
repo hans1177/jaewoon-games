@@ -27,6 +27,23 @@ test('common AUTO PLAYER result refuses file-only or checkpoint-only evidence',(
   assert.equal(noCheckpoint.verified,false);
 });
 
+test('caller metrics cannot spoof authoritative input, checkpoint or runtime error counts',()=>{
+  const result=createAutoPlayerResult({
+    engine:'web',runId:'anti-spoof',
+    actions:[{id:'real',type:'key',dispatched:true}],
+    checkpoints:[{id:'checkpoint',required:true,pass:true}],
+    errors:[{type:'runtime-error',message:'boom'}],
+    metrics:{inputActionCount:999,actionCount:999,checkpointCount:999,checkpointPassCount:999,runtimeErrorCount:0,consoleErrorCount:7,durationMs:12}
+  });
+  assert.equal(result.verified,false);
+  assert.equal(result.telemetry.metrics.inputActionCount,1);
+  assert.equal(result.telemetry.metrics.actionCount,1);
+  assert.equal(result.telemetry.metrics.checkpointCount,1);
+  assert.equal(result.telemetry.metrics.checkpointPassCount,1);
+  assert.equal(result.telemetry.metrics.runtimeErrorCount,1);
+  assert.equal(result.telemetry.metrics.consoleErrorCount,7);
+});
+
 test('verified AUTO PLAYER evidence updates candidate manifest without expanding authority',()=>{
   const cwd=temp(),manifest=path.join(cwd,'manifest.json');
   writeJson(manifest,{version:5,designEvidence:{autoPlayer:{status:'WAITING_EVIDENCE',verified:false},telemetry:{status:'WAITING_EVIDENCE',verified:false}},authorityExpanded:false});
