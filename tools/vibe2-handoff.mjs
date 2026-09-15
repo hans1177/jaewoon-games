@@ -60,11 +60,77 @@ function taskPreview(task = {}) {
   };
 }
 
+
+const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const resolveFrom = (root, file) => path.isAbsolute(clean(file)) ? clean(file) : path.join(root, clean(file));
+
+export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelism = {}, experience = {}, repoRoot = process.cwd() } = {}) {
+  const errors = [];
+  const docs = runtime.documentation || {};
+  const expected = docs.machineStateVersions || {};
+  const state = docs.runtimeState || {};
+  const work = runtime.workManagement || {};
+  const adaptive = runtime.adaptiveBackpressure || {};
+  const sources = runtime.sources || {};
+  const continuous = runtime.continuous || {};
+  const add = (condition, code) => { if (condition) errors.push(code); };
+
+  add(Number(expected.runtime || 0) > 0 && Number(runtime.version || 0) !== Number(expected.runtime), 'RUNTIME_VERSION_MISMATCH');
+  add(Number(expected.queue || 0) > 0 && Number(queue.version || 0) !== Number(expected.queue), 'QUEUE_VERSION_MISMATCH');
+  add(Number(expected.parallelism || 0) > 0 && Number(parallelism.version || 0) !== Number(expected.parallelism), 'PARALLELISM_VERSION_MISMATCH');
+  add(Number(expected.experience || 0) > 0 && Number(experience.version || 0) !== Number(expected.experience), 'EXPERIENCE_VERSION_MISMATCH');
+  add(Number(expected.handoff || 0) > 0 && Number(expected.handoff) !== 2, 'HANDOFF_VERSION_MISMATCH');
+
+  const humanDocs = Array.isArray(docs.humanDocuments) ? docs.humanDocuments.map(clean).filter(Boolean) : [];
+  add(Number(docs.humanDocumentLimit || 0) !== 1, 'HUMAN_DOCUMENT_LIMIT_NOT_ONE');
+  add(humanDocs.length !== 1 || humanDocs[0] !== 'VIBE2.md', 'HUMAN_DOCUMENT_SET_INVALID');
+  add(docs.manualHandoffDocumentsAllowed !== false, 'MANUAL_HANDOFF_DOCUMENT_ALLOWED');
+  add(work.humanMaintainedHandoff !== false, 'HUMAN_HANDOFF_ENABLED');
+  add(work.handoffMode !== 'generated-from-machine-state', 'HANDOFF_MODE_NOT_GENERATED');
+  add(work.machineContextRequired !== true, 'MACHINE_CONTEXT_NOT_REQUIRED');
+  const consumers = Array.isArray(work.handoffConsumers) ? work.handoffConsumers : [];
+  for (const consumer of ['planner', 'reserve', 'worker', 'fan-in']) add(!consumers.includes(consumer), `HANDOFF_CONSUMER_MISSING:${consumer}`);
+
+  add(clean(state.queue) !== clean(sources.queue), 'QUEUE_SOURCE_DIVERGED');
+  add(clean(state.parallelism) !== clean(sources.parallelism || adaptive.stateFile), 'PARALLELISM_SOURCE_DIVERGED');
+  add(clean(state.experience) !== clean(sources.experience), 'EXPERIENCE_SOURCE_DIVERGED');
+  add(clean(adaptive.stateFile) !== clean(state.parallelism), 'ADAPTIVE_STATE_FILE_DIVERGED');
+
+  const steps = Array.isArray(adaptive.steps) ? adaptive.steps.map(Number) : [];
+  const telemetrySteps = Array.isArray(runtime.parallelismTelemetry?.backpressureSteps) ? runtime.parallelismTelemetry.backpressureSteps.map(Number) : [];
+  add(!sameJson(steps, telemetrySteps), 'ADAPTIVE_STEPS_DIVERGED');
+  const configuredMax = Number(continuous.maxConcurrentGameTasks || 0);
+  add(Number(queue.maxConcurrentTasks || configuredMax) !== configuredMax, 'QUEUE_MAX_DIVERGED');
+  add(!steps.includes(Number(parallelism.currentMax || configuredMax)), 'PERSISTENT_MAX_OUTSIDE_STEPS');
+  add(Number(parallelism.currentMax || configuredMax) > configuredMax, 'PERSISTENT_MAX_ABOVE_CONFIGURED');
+
+  if (repoRoot && fs.existsSync(repoRoot)) {
+    for (const file of humanDocs) add(!fs.existsSync(path.join(repoRoot, file)), `HUMAN_DOCUMENT_MISSING:${file}`);
+    for (const file of docs.legacyHumanDocumentsRemoved || []) add(fs.existsSync(path.join(repoRoot, file)), `LEGACY_HUMAN_DOCUMENT_PRESENT:${file}`);
+    if (docs.disallowUnlistedVibe2Markdown === true) {
+      const actual = fs.readdirSync(repoRoot, { withFileTypes: true })
+        .filter((entry) => entry.isFile() && /^VIBE2.*\.md$/i.test(entry.name))
+        .map((entry) => entry.name).sort();
+      const allowed = [...humanDocs].sort();
+      add(!sameJson(actual, allowed), `UNLISTED_VIBE2_MARKDOWN:${actual.filter((file) => !allowed.includes(file)).join(',') || 'SET_MISMATCH'}`);
+    }
+    const generatedTool = clean(docs.generatedHandoffTool);
+    add(!generatedTool || !fs.existsSync(path.join(repoRoot, generatedTool)), 'HANDOFF_TOOL_MISSING');
+    for (const [name, file] of [['ENTRY', continuous.entryWorkflow], ['WORKER', continuous.workerWorkflow]]) {
+      const normalized = clean(file);
+      add(!normalized || !fs.existsSync(path.join(repoRoot, normalized)), `${name}_WORKFLOW_MISSING`);
+    }
+  }
+
+  return { ok: errors.length === 0, errors: [...new Set(errors)] };
+}
+
 export function buildVibe2Handoff({
   runtime = {},
   queue = {},
   parallelism = {},
-  experience = {}
+  experience = {},
+  consistency = { ok: true, errors: [] }
 } = {}) {
   const tasks = Array.isArray(queue.tasks) ? queue.tasks : [];
   const queued = tasks
@@ -79,8 +145,9 @@ export function buildVibe2Handoff({
   const adaptive = runtime.adaptiveBackpressure || {};
 
   return {
-    version: 1,
+    version: 2,
     kind: 'vibe2-machine-handoff',
+    consistency: { ok: consistency?.ok !== false, errors: Array.isArray(consistency?.errors) ? [...consistency.errors] : [] },
     sourceOfTruth: docs.machineSourceOfTruth || 'vibe2-runtime.json',
     controlBranch: runtime.branches?.control || 'vibe2-unreal-core',
     generatedFrom: {
@@ -143,12 +210,18 @@ export function generateVibe2Handoff({
   controlFile = '',
   experienceFile = ''
 } = {}) {
-  const runtime = readJson(runtimeFile);
+  const runtimePath = path.resolve(runtimeFile);
+  const repoRoot = path.dirname(runtimePath);
+  const runtime = readJson(runtimePath);
   const state = runtime.documentation?.runtimeState || {};
-  const queue = readJson(clean(queueFile) || state.queue || runtime.sources?.queue || '.vibe2/queue.json', { version: 0, tasks: [] });
-  const parallelism = readJson(clean(controlFile) || state.parallelism || '.vibe2/parallelism-control.json', { version: 0 });
-  const experience = readJson(clean(experienceFile) || state.experience || runtime.sources?.experience || '.vibe2/experience.json', { version: 0, records: [] });
-  return buildVibe2Handoff({ runtime, queue, parallelism, experience });
+  const queuePath = resolveFrom(repoRoot, clean(queueFile) || state.queue || runtime.sources?.queue || '.vibe2/queue.json');
+  const controlPath = resolveFrom(repoRoot, clean(controlFile) || state.parallelism || runtime.sources?.parallelism || runtime.adaptiveBackpressure?.stateFile || '.vibe2/parallelism-control.json');
+  const experiencePath = resolveFrom(repoRoot, clean(experienceFile) || state.experience || runtime.sources?.experience || '.vibe2/experience.json');
+  const queue = readJson(queuePath, { version: 0, tasks: [] });
+  const parallelism = readJson(controlPath, { version: 0 });
+  const experience = readJson(experiencePath, { version: 0, records: [] });
+  const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, repoRoot });
+  return buildVibe2Handoff({ runtime, queue, parallelism, experience, consistency });
 }
 
 export function writeVibe2Handoff(file, snapshot) {
@@ -168,4 +241,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
   if (clean(args.output)) writeVibe2Handoff(args.output, snapshot);
   console.log(JSON.stringify(snapshot, null, 2));
+  if (args.check === true) {
+    if (snapshot.consistency?.ok === true) console.error('VIBE2_MACHINE_STATE=CONSISTENT');
+    else {
+      console.error(`VIBE2_MACHINE_STATE=INCONSISTENT:${(snapshot.consistency?.errors || []).join('|') || 'UNKNOWN'}`);
+      process.exitCode = 1;
+    }
+  }
 }

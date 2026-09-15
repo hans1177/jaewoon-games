@@ -1,0 +1,87 @@
+name: Vibe2 24h Runner
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    concurrency:
+      group: vibe2-control-state-vibe2-unreal-core
+      cancel-in-progress: false
+    steps:
+      - name: Checkout Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Read current machine state and latest main planning inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-plan.json >/tmp/vibe2-handoff-before-plan.log
+          git fetch --depth=1 origin main:refs/remotes/origin/main --quiet
+          git show origin/main:company-status.json > /tmp/vibe2-main-company-status.json
+          git show origin/main:game-catalog.json > /tmp/vibe2-main-game-catalog.json
+
+      - name: Plan from generated handoff and persist queue only when changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-planner'
+          git config user.email 'vibe2-planner@users.noreply.github.com'
+          node tools/vibe2-auto-planner.mjs \
+            --runtime=vibe2-runtime.json \
+            --status=/tmp/vibe2-main-company-status.json \
+            --catalog=/tmp/vibe2-main-game-catalog.json \
+            --queue=.vibe2/queue.json \
+            --control=.vibe2/parallelism-control.json \
+            --experience=.vibe2/experience.json \
+            --max=20 | tee /tmp/vibe2-plan.log
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-plan.json >/tmp/vibe2-handoff-after-plan.log
+          if git diff --quiet -- .vibe2/queue.json; then
+            echo 'VIBE2_PLAN_QUEUE_WRITE=NO'
+          else
+            git add .vibe2/queue.json
+            git commit -m "vibe2: plan next machine-state work [skip ci]"
+            pushed=0
+            for attempt in 1 2 3; do
+              if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
+              git rebase --abort 2>/dev/null || true
+              git fetch origin vibe2-unreal-core --quiet
+              sleep $((attempt * 2))
+            done
+            test "$pushed" = 1
+            echo 'VIBE2_PLAN_QUEUE_WRITE=YES'
+          fi
+
+      - name: Upload generated machine handoff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-plan-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-before-plan.json
+            /tmp/vibe2-handoff-after-plan.json
+            /tmp/vibe2-plan.log
+          if-no-files-found: error
+          retention-days: 7
+
+  continuous:
+    needs: plan
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    permissions:
+      contents: write
+      actions: write

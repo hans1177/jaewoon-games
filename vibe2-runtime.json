@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [
@@ -19,7 +19,16 @@
       "VIBE2_CONTINUOUS_OPERATIONS.md",
       "VIBE2_MOTION_CORE.md",
       "VIBE2_VISUAL_AUTONOMY_PLAN.md"
-    ]
+    ],
+    "machineStateVersions": {
+      "runtime": 7,
+      "queue": 5,
+      "parallelism": 2,
+      "experience": 1,
+      "handoff": 2
+    },
+    "disallowUnlistedVibe2Markdown": true,
+    "generatedHandoffArtifact": "vibe2-machine-handoff"
   },
   "branches": {
     "control": "vibe2-unreal-core",
@@ -39,7 +48,14 @@
       ".vibe2/parallelism-control.json",
       ".vibe2/experience.json"
     ],
-    "humanMaintainedHandoff": false
+    "humanMaintainedHandoff": false,
+    "machineContextRequired": true,
+    "handoffConsumers": [
+      "planner",
+      "reserve",
+      "worker",
+      "fan-in"
+    ]
   },
   "continuous": {
     "enabled": true,
@@ -83,7 +99,9 @@
       "variants": 2,
       "highRiskOptInOnly": true,
       "unityBuildCandidatesExcluded": true
-    }
+    },
+    "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
+    "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml"
   },
   "adaptiveBackpressure": {
     "enabled": true,
@@ -115,7 +133,8 @@
   "sources": {
     "queue": ".vibe2/queue.json",
     "experience": ".vibe2/experience.json",
-    "workOrder": ".vibe2/work-order.json"
+    "workOrder": ".vibe2/work-order.json",
+    "parallelism": ".vibe2/parallelism-control.json"
   },
   "workers": {
     "textSource": {

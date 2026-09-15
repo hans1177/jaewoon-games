@@ -10,6 +10,7 @@ import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 
 test('Unreal C++ routes to text worker but Blueprint/uasset route to editor',()=>{
@@ -25,7 +26,7 @@ test('non-write QA routes to analysis only',()=>{
 });
 
 test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
-  assert.equal(runtime.version,6);
+  assert.equal(runtime.version,7);
   assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,20);
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
@@ -41,6 +42,9 @@ test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
   assert.equal(runtime.safety.existingWebMaintenanceAllowed,true);
   assert.equal(runtime.safety.newWebGameAutomatic,false);
   assert.equal(runtime.assetDecision.learningMayOverrideFixedRules,false);
+  assert.equal(runtime.workManagement.machineContextRequired,true);
+  assert.deepEqual(runtime.workManagement.handoffConsumers,['planner','reserve','worker','fan-in']);
+  assert.equal(runtime.continuous.entryWorkflow,'.github/workflows/vibe2-24h-runner.yml');
 });
 
 test('controller reserves a batch and fans workers out with a bounded matrix',()=>{
@@ -87,6 +91,9 @@ test('controller allows approved source root but enforces candidate boundary',()
 test('event-driven refill removes hourly-only idle gaps',()=>{
   assert(workflow.includes('Event-driven refill of free slots'));
   assert(workflow.includes('gh workflow run vibe2-24h-runner.yml'));
+  assert(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'));
+  assert(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs'));
+  assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
 });
 
