@@ -1,0 +1,90 @@
+name: Roblox Bootstrap Calibration Read
+
+on:
+  push:
+    branches: [fix/roblox-auto-bootstrap]
+    paths:
+      - '.github/workflows/roblox-bootstrap-calibration-read.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  collect:
+    name: collect saved Studio bootstrap calibration
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 10
+    steps:
+      - name: Read saved calibration and inspect open Publish Experience dialog
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+          Add-Type -AssemblyName System.Drawing
+
+          $dir = 'C:\actions-runner\_diag\roblox-bootstrap-calibration'
+          $json = Join-Path $dir 'publish-dialog.json'
+          $png = Join-Path $dir 'publish-dialog.png'
+          if (-not (Test-Path $json)) { throw "Missing saved calibration: $json" }
+          if (-not (Test-Path $png)) { throw "Missing saved calibration screenshot: $png" }
+
+          Write-Host 'ROBLOX_BOOTSTRAP_CALIBRATION_FILE=PASS'
+          Get-Content -Raw $json | Write-Host
+
+          $p = Get-Process RobloxStudioBeta -ErrorAction Stop | Select-Object -First 1
+          $root = [System.Windows.Automation.AutomationElement]::RootElement
+          $pidCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty, $p.Id)
+          $windows = $root.FindAll([System.Windows.Automation.TreeScope]::Children, $pidCond)
+          $publish = $null
+          foreach ($window in $windows) {
+            $idCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs')
+            $publish = $window.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCond)
+            if ($publish) { break }
+          }
+          if (-not $publish) { throw 'Open Publish Experience dialog not detected' }
+
+          $rect = $publish.Current.BoundingRectangle
+          Write-Host ("ROBLOX_BOOTSTRAP_PUBLISH_WINDOW=PASS name='{0}' left={1} top={2} width={3} height={4}" -f $publish.Current.Name,$rect.Left,$rect.Top,$rect.Width,$rect.Height)
+
+          $out = Join-Path $env:RUNNER_TEMP 'roblox-bootstrap-current'
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          Copy-Item $json (Join-Path $out 'publish-dialog.json') -Force
+          Copy-Item $png (Join-Path $out 'publish-dialog-saved.png') -Force
+
+          $elements = @()
+          $all = $publish.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)
+          foreach ($e in $all) {
+            $r = $e.Current.BoundingRectangle
+            $elements += [pscustomobject]@{
+              name = [string]$e.Current.Name
+              automationId = [string]$e.Current.AutomationId
+              className = [string]$e.Current.ClassName
+              controlType = [string]$e.Current.ControlType.ProgrammaticName
+              enabled = [bool]$e.Current.IsEnabled
+              offscreen = [bool]$e.Current.IsOffscreen
+              left = [double]$r.Left
+              top = [double]$r.Top
+              width = [double]$r.Width
+              height = [double]$r.Height
+            }
+          }
+          $elements | ConvertTo-Json -Depth 4 | Set-Content -Encoding UTF8 (Join-Path $out 'publish-elements.json')
+          Write-Host "ROBLOX_BOOTSTRAP_ELEMENT_COUNT=$($elements.Count)"
+
+          $x=[int][Math]::Floor($rect.Left); $y=[int][Math]::Floor($rect.Top)
+          $w=[int][Math]::Ceiling($rect.Width); $h=[int][Math]::Ceiling($rect.Height)
+          $bmp=New-Object System.Drawing.Bitmap($w,$h)
+          $g=[System.Drawing.Graphics]::FromImage($bmp)
+          try { $g.CopyFromScreen($x,$y,0,0,$bmp.Size) } finally { $g.Dispose() }
+          $bmp.Save((Join-Path $out 'publish-dialog-current.png'),[System.Drawing.Imaging.ImageFormat]::Png)
+          $bmp.Dispose()
+          Write-Host 'ROBLOX_BOOTSTRAP_CALIBRATION_COLLECT=PASS'
+
+      - name: Upload calibration evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-bootstrap-calibration-evidence
+          path: ${{ runner.temp }}/roblox-bootstrap-current
+          retention-days: 1
+          if-no-files-found: error
