@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "engine": "web",
+  "page": "index.html",
+  "timeoutMs": 30000,
+  "requirePlayability": false,
+  "failOnRuntimeError": false,
+  "metadata": {
+    "origin": "external-public",
+    "study": "restart-and-score-feedback",
+    "sourceAccess": "observation-only"
+  },
+  "actions": [
+    {
+      "id": "restart",
+      "type": "click",
+      "selector": ".restart-button"
+    },
+    {
+      "id": "wait-after-restart",
+      "type": "wait",
+      "ms": 180
+    },
+    {
+      "id": "restart-ready",
+      "type": "expect",
+      "name": "restart loop returns to playable board",
+      "expression": "document.querySelectorAll('.grid-cell').length===16 && document.querySelectorAll('.tile-container .tile').length>=2"
+    },
+    {
+      "id": "move-down",
+      "type": "key",
+      "key": "ArrowDown",
+      "holdMs": 60
+    },
+    {
+      "id": "move-right",
+      "type": "key",
+      "key": "ArrowRight",
+      "holdMs": 60
+    },
+    {
+      "id": "wait-for-score-ui",
+      "type": "wait",
+      "ms": 180
+    },
+    {
+      "id": "score-feedback-visible",
+      "type": "expect",
+      "name": "reward score feedback remains visible",
+      "expression": "document.querySelector('.score-container')!==null && document.querySelector('.best-container')!==null && document.querySelector('.restart-button')!==null"
+    }
+  ]
+}
