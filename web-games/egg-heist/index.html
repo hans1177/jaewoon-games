@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      margin: 10px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>잠입 → 알 획득 → 위험 증가 → 추격 → 탈출</h1>
+    <button id="start">시작</button>
+    <div id="game-content"></div>
+  </main>
+
+  <script>
+    document.getElementById('start').addEventListener('click', function() {
+      const gameContent = document.getElementById('game-content');
+      gameContent.innerHTML = `
+        <p>잠입을 수행하세요.</p>
+        <button id="get-al">알 획득</button>
+        <p>위험은 증가 중입니다.</p>
+        <button id="increase-risk">위험 증가</button>
+        <p>추격을 시작합니다.</p>
+        <button id="escape">탈출</button>
+      `;
+      gameContent.style.display = 'block';
+    });
+
+    document.getElementById('get-al').addEventListener('click', function() {
+      const gameContent = document.getElementById('game-content');
+      gameContent.innerHTML = `
+        <p>알을 획득했습니다.</p>
+        <p>위험은 더 커졌습니다.</p>
+        <button id="increase-risk">위험 증가</button>
+        <p>추격이 시작되었습니다.</p>
+        <button id="escape">탈출</button>
+      `;
+    });
+
+    document.getElementById('increase-risk').addEventListener('click', function() {
+      const gameContent = document.getElementById('game-content');
+      gameContent.innerHTML = `
+        <p>위험은 더 커졌습니다.</p>
+        <p>추격이 더 강하게 시작되었습니다.</p>
+        <button id="escape">탈출</button>
+      `;
+    });
+
+    document.getElementById('escape').addEventListener('click', function() {
+      const gameContent = document.getElementById('game-content');
+      gameContent.innerHTML = `
+        <p>탈출에 성공했습니다.</p>
+        <button id="restart">재시작</button>
+      `;
+    });
+
+    document.getElementById('restart').addEventListener('click', function() {
+      const gameContent = document.getElementById('game-content');
+      gameContent.innerHTML = `
+        <p>재시작 중입니다.</p>
+        <button id="start">시작</button>
+      `;
+    });
+  </script>
+</body>
+</html>
