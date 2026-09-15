@@ -124,10 +124,11 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   const validator=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
   const initialAt=source.indexOf('if(!finalStage){');
-  const finalAt=source.indexOf('}else{',initialAt);
+  const finalStageMarker=source.indexOf('if(item.webInitialCyclePassed!==true',initialAt);
+  const finalAt=source.lastIndexOf('}else{',finalStageMarker);
   const catchAt=source.indexOf('}catch(error){',finalAt);
   const resultWriteAt=source.indexOf('fs.writeFileSync(path.join(resultsRoot',catchAt);
-  assert.ok(initialAt>0);assert.ok(finalAt>initialAt);assert.ok(catchAt>finalAt);assert.ok(resultWriteAt>catchAt);
+  assert.ok(initialAt>0);assert.ok(finalStageMarker>initialAt);assert.ok(finalAt>initialAt);assert.ok(catchAt>finalAt);assert.ok(resultWriteAt>catchAt);
   const initialBlock=source.slice(initialAt,finalAt),finalBlock=source.slice(finalAt,catchAt),failureBlock=source.slice(catchAt,resultWriteAt);
 
   // A: initial PASS is persisted before final depth and is not homepage eligible yet.
@@ -142,7 +143,11 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(initialBlock,/WEB_INITIAL_CANONICAL_PERSIST/);
   assert.match(initialBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
 
-  // B: first-time initial failures remain revalidation failures; rework failures preserve repair context.
+  // B: first-time initial failures remain revalidation failures; existing/historical rework failures return to canonical development.
+  assert.match(initialBlock,/if\(item\.existingWebValidated===true\)/);
+  assert.match(initialBlock,/materialize\(`\$\{stableSource\}\/index\.html`\)/);
+  assert.match(initialBlock,/WEB_EXISTING_GAME_FRESH_REVALIDATION/);
+  assert.match(failureBlock,/item\.webInitialCyclePassed===true\|\|item\.existingWebValidated===true/);
   assert.match(failureBlock,/canonicalState:rework\?'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION':'WAITING_WEB_GAMEPLAY_REVALIDATION'/);
   assert.match(failureBlock,/webInitialCyclePassed:rework/);
   assert.match(failureBlock,/WEB_CONTENT_REWORK_RETRY_PRESERVED=YES/);
