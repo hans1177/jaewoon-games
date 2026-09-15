@@ -12,6 +12,11 @@
   },
   "actions": [
     {
+      "id": "wait-for-external-game-init",
+      "type": "wait",
+      "ms": 1800
+    },
+    {
       "id": "restart",
       "type": "click",
       "selector": ".restart-button"
