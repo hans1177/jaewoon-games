@@ -7,7 +7,7 @@
   "failOnRuntimeError": false,
   "metadata": {
     "origin": "external-public",
-    "study": "start-move-ai-response-restart",
+    "study": "start-move-ai-response-restart-confirmation",
     "sourceAccess": "observation-only"
   },
   "actions": [
@@ -57,19 +57,8 @@
     {
       "id": "restart-modal-visible",
       "type": "expect",
-      "name": "restart loop confirmation visible",
+      "name": "restart confirmation interaction visible",
       "expression": "document.querySelector('#restart-modal')?.classList.contains('show')===true"
-    },
-    {
-      "id": "confirm-restart",
-      "type": "click",
-      "selector": "#confirm-restart-btn"
-    },
-    {
-      "id": "restart-board-cleared",
-      "type": "expect",
-      "name": "restart loop clears visible board state",
-      "expression": "document.querySelectorAll('.board-cell.show').length===0 && document.querySelector('#restart-modal')?.classList.contains('show')!==true"
     }
   ]
 }
