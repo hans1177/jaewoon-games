@@ -1,4 +1,4 @@
-import './homepage-enhancements-core.js?v=20260915-development-progress';
+import './homepage-enhancements-core.js?v=20260915-development-test-buttons';
 
 function bindNativeApkInstall(){
   const bind=()=>{

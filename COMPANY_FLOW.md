@@ -366,6 +366,12 @@ ownerCurrentProductionContract:
         - CURRENT_STEP
         - SELECTED_PLATFORM
       developmentCardMustNotClaimValidationOrRelease: true
+      developmentWebTestButtonEnabled: true
+      developmentWebTestButtonLabel: 웹 테스트
+      developmentPlatformTestButtonEnabled: true
+      developmentPlatformTestButtonLabelMode: PLATFORM_NAME
+      developmentWebAndPlatformTestButtonsMustBeSeparate: true
+      missingPlatformTestTargetDisablesOnlyPlatformButton: true
     ownerMayTestBeforeFinalPromotion: true
     prePromotionDisplay: DEVELOPMENT_PROGRESS_SHELF_PLUS_SEPARATE_TOP30_TEST_SHELF
     prePromotionOfficialGameCardForbidden: true

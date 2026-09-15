@@ -84,7 +84,13 @@
         "selectedPlatform"
       ],
       "separateFromTop30Promotion": true,
-      "mustNotClaimValidationOrRelease": true
+      "mustNotClaimValidationOrRelease": true,
+      "webTestButtonEnabled": true,
+      "webTestButtonLabel": "웹 테스트",
+      "platformTestButtonEnabled": true,
+      "platformTestButtonLabelMode": "PLATFORM_NAME",
+      "webAndPlatformTestButtonsMustBeSeparate": true,
+      "missingPlatformTestTargetDisablesOnlyPlatformButton": true
     }
   },
   "production": {
