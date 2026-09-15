@@ -188,6 +188,10 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.match(design,/Math\.min\(75000,Math\.max\(15000,Number\(process\.env\.COMPANY_MODEL_CALL_TIMEOUT_MS\|\|75000\)\)\)/);
   assert.match(design,/AbortSignal\.timeout\(modelCallTimeoutMs\)/);
   assert.match(design,/const independentReviewTasks=/);
+  assert.match(design,/async function parallelObjectByLane/);
+  assert.match(design,/pending\.findIndex\(item=>!active\.has\(item\.lane\)\)/);
+  assert.match(design,/Promise\.race\(active\.values\(\)\)/);
+  assert.match(design,/parallelObjectByLane\(Object\.keys\(independentReviewTasks\),key=>independentReviewTasks\[key\]\.model/);
   assert.match(design,/reviewsSchemaFor\(\[role\]\)/);
   assert.match(design,/\{predict:420\}/);
   assert.match(design,/DESIGN,\{predict:1300/);
