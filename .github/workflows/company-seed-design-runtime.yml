@@ -60,6 +60,7 @@ jobs:
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
           import fs from 'node:fs';
           import path from 'node:path';
+          import {designArtifactsMatchSeed,seedRevisionOf} from './tools/company-design-seed-provenance.mjs';
           const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
           const maxMatch=policy.match(/concurrentGameWipMax:\s*(\d+)/);
           const designWipMax=Number(maxMatch?.[1]||0);
@@ -78,8 +79,9 @@ jobs:
                 if(!fs.existsSync(statusPath)||!fs.existsSync(strictPath))continue;
                 const status=JSON.parse(fs.readFileSync(statusPath,'utf8'));
                 const review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
+                const provenance=designArtifactsMatchSeed({gameId:String(seed.gameId),date,seed});
                 const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
-                if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0)return true;
+                if(provenance.match&&ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0)return true;
               }
             }catch{}
             return false;
@@ -87,7 +89,7 @@ jobs:
           const pending=active.filter(seed=>!strictPassFor(seed)).sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''))).slice(0,designWipMax);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=pending.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
+          const targets=pending.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,seed_revision:seedRevisionOf(seed),category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.log(`parallel_max=${designWipMax}`);
@@ -96,6 +98,7 @@ jobs:
           console.error('GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW');
           console.error('STRICT_DESIGN_PASS_THRESHOLD=80');
           console.error('STRICT_DESIGN_EXCELLENT_THRESHOLD=90');
+          console.error('DESIGN_SEED_PROVENANCE_REQUIRED=YES');
           console.error('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
 
@@ -134,32 +137,37 @@ jobs:
         env:
           TARGET_GAME_ID: ${{ matrix.target.game_id }}
           TARGET_SEED_ID: ${{ matrix.target.seed_id }}
+          TARGET_SEED_REVISION: ${{ matrix.target.seed_revision }}
         shell: bash
         run: |
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
           import fs from 'node:fs';import path from 'node:path';
-          const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim();
+          import {designArtifactsMatchSeed,seedRevisionOf} from './tools/company-design-seed-provenance.mjs';
+          const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim(),seedRevision=String(process.env.TARGET_SEED_REVISION||'').trim();
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&String(x.status).toUpperCase()==='ACTIVE');
+          const targetCurrent=Boolean(seed&&String(seed.seedId)===seedId&&seedRevisionOf(seed)===seedRevision);
           let strictPass=false;
           const gameRoot=path.join('design',gameId);
-          if(seed&&String(seed.seedId)===seedId&&fs.existsSync(gameRoot)){
+          if(targetCurrent&&fs.existsSync(gameRoot)){
             try{
               const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
               for(const date of dates){
                 const base=path.join(gameRoot,date),statusPath=path.join(base,'cycle-status.json'),strictPath=path.join(base,'strict-design-review.json');
                 if(!fs.existsSync(statusPath)||!fs.existsSync(strictPath))continue;
                 const status=JSON.parse(fs.readFileSync(statusPath,'utf8')),review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
-                if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){strictPass=true;break;}
+                const provenance=designArtifactsMatchSeed({gameId,date,seed});
+                if(provenance.match&&status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){strictPass=true;break;}
               }
             }catch{}
           }
-          console.log(`should_run=${seed&&String(seed.seedId)===seedId&&!strictPass?'true':'false'}`);
+          console.log(`should_run=${targetCurrent&&!strictPass?'true':'false'}`);
           NODE
       - name: Static strict contracts
         if: steps.target.outputs.should_run == 'true'
         run: |
           node --check tools/game-seed-state.mjs
           node --check tools/company-game-seed-contract.mjs
+          node --check tools/company-design-seed-provenance.mjs
           node --check tools/company-strict-production-review.mjs
           node --check tools/company-design-prepromotion-repair.mjs
           node --check tools/company-design-cycle.mjs
@@ -201,6 +209,27 @@ jobs:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
         run: node tools/artbook-production-pipeline.mjs
+      - name: Bind generated design to current seed provenance
+        if: steps.target.outputs.should_run == 'true'
+        env:
+          GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+          TARGET_SEED_ID: ${{ matrix.target.seed_id }}
+          TARGET_SEED_REVISION: ${{ matrix.target.seed_revision }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import {loadSeedState,activeSeedForGame} from './tools/game-seed-state.mjs';
+          import {seedRevisionOf,stampDesignSeedProvenance} from './tools/company-design-seed-provenance.mjs';
+          const gameId=String(process.env.GAME_ID||'').trim(),date=String(process.env.ARTBOOK_DATE||'').trim();
+          const expectedSeedId=String(process.env.TARGET_SEED_ID||'').trim(),expectedRevision=String(process.env.TARGET_SEED_REVISION||'').trim();
+          const seed=activeSeedForGame(loadSeedState(),gameId);
+          if(!seed||String(seed.seedId||'').trim()!==expectedSeedId||seedRevisionOf(seed)!==expectedRevision)throw new Error('DESIGN_SEED_TARGET_CHANGED_DURING_RUN');
+          const result=stampDesignSeedProvenance({gameId,date,seed});
+          if(!result.match)throw new Error(`DESIGN_SEED_PROVENANCE_BIND_FAILED ${result.reason}`);
+          console.log('DESIGN_SEED_PROVENANCE_BIND=PASS');
+          NODE
       - name: Repair missing pre-promotion design requirements
         if: steps.target.outputs.should_run == 'true'
         env:
@@ -255,10 +284,15 @@ jobs:
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
+          TARGET_SEED_ID: ${{ matrix.target.seed_id }}
+          TARGET_SEED_REVISION: ${{ matrix.target.seed_revision }}
         shell: bash
         run: |
           node --input-type=module <<'NODE'
-          import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('STRICT_DESIGN_SCORE_SYNTHESIZED=NO');console.log('STRICT_DESIGN_VERDICT_SYNTHESIZED=NO');console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
+          import fs from 'node:fs';import path from 'node:path';
+          import {loadSeedState,activeSeedForGame} from './tools/game-seed-state.mjs';
+          import {designArtifactsMatchSeed,seedRevisionOf} from './tools/company-design-seed-provenance.mjs';
+          const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');const seed=activeSeedForGame(loadSeedState(),gameId);if(!seed||String(seed.seedId||'').trim()!==String(process.env.TARGET_SEED_ID||'').trim()||seedRevisionOf(seed)!==String(process.env.TARGET_SEED_REVISION||'').trim())throw new Error('DESIGN_SEED_TARGET_CHANGED_BEFORE_PERSIST');const provenance=designArtifactsMatchSeed({gameId,date,seed});if(!provenance.match)throw new Error(`DESIGN_SEED_PROVENANCE_REQUIRED ${provenance.reason}`);if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log('DESIGN_SEED_PROVENANCE=PASS');console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('STRICT_DESIGN_SCORE_SYNTHESIZED=NO');console.log('STRICT_DESIGN_VERDICT_SYNTHESIZED=NO');console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
       - name: Persist validated design evidence to company runtime branch
         if: steps.target.outputs.should_run == 'true'
