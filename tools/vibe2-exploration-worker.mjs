@@ -37,6 +37,10 @@ function goalTokens(goal=''){return unique(clean(goal).toLowerCase().split(/[^a-
 function protectedSignals(text=''){const checks=[['save',/save|세이브|progress|진행/i],['combat-number',/damage|attack|health|hp|reward|drop|데미지|공격|체력|보상|드랍/i],['network',/fetch\(|axios|websocket|http:/i],['storage',/localStorage|PlayerPrefs|SaveGame|DataStore/i]];return checks.filter(([,re])=>re.test(text)).map(([name])=>name);}
 function scoreRelated(row,{responsible,goalTokens:tokens,responsibleNames,responsibleDirs}){let score=0;const text=safeRead(row.full);if(responsible.has(row.relative))return{...row,score:10000,text};const lower=row.relative.toLowerCase(),dir=posix(path.dirname(row.relative));if(responsibleDirs.has(dir))score+=35;for(const token of tokens)if(lower.includes(token))score+=5;for(const name of responsibleNames)if(name&&text.includes(name))score+=24;if(/(?:test|spec|qa|playmode|editmode)/i.test(row.relative))score+=8;return{...row,score,text};}
 function compactFile(row){return{path:row.relative,hash:sha(row.text||safeRead(row.full)).slice(0,16),bytes:Buffer.byteLength(row.text||safeRead(row.full),'utf8')};}
+function ownerBootstrapAllowed(order,target,responsible=[]){
+  const goal=clean(order?.goal);
+  return target==='web'&&order?.selectedTask?.ownerDirective===true&&/FULL_WEB_GAME_REBUILD/i.test(goal)&&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/i.test(goal)&&responsible.length===1&&responsible[0]==='index.html';
+}
 function reusableArtifact(cwd,order){
   const file=clean(process.env.VIBE2_EXPLORATION_FILE);
   if(!file)return null;
@@ -57,8 +61,22 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const target=clean(order.target).toLowerCase();
   const rootRelative=assertRoot(order?.source?.root,target);
   const root=path.resolve(cwd,rootRelative);
-  if(!fs.existsSync(root)||!fs.statSync(root).isDirectory())throw new Error(`exploration source root 없음: ${rootRelative}`);
   const responsible=unique(order?.source?.responsibleFiles||[]).map(v=>normalizeRelative(v,rootRelative));
+  const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
+  if(!fs.existsSync(root)||!fs.statSync(root).isDirectory()){
+    if(!ownerBootstrapAllowed(order,target,responsible))throw new Error(`exploration source root 없음: ${rootRelative}`);
+    const diagnosticEvidence=unique([...(order?.workPackage?.sharedContext?.diagnosticEvidence||[]),'source-root-missing-owner-bootstrap-authorized']);
+    const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,responsible,diagnosticEvidence})).slice(0,24);
+    const handoff={
+      version:1,role:'exploration',sourceWrite:false,reused:false,taskId:clean(order.taskId)||null,
+      packageId:clean(order?.workPackage?.id)||null,target,sourceRoot:rootRelative,baseMainSha,
+      responsibleFiles:responsible,impactFiles:responsible,contextFiles:[],relatedFiles:[],testTargets:[],
+      protectedScopeSignals:[],diagnosticEvidence,fileDigests:[],reuseKey,sourceRootMissing:true,bootstrapAuthorized:true,
+      generatedAt:new Date().toISOString()
+    };
+    if(outputFile)writeJson(path.resolve(cwd,outputFile),handoff);
+    return handoff;
+  }
   const responsibleSet=new Set(responsible);
   const responsibleNames=new Set(responsible.map(v=>path.basename(v)).filter(Boolean));
   const responsibleDirs=new Set(responsible.map(v=>posix(path.dirname(v))).filter(Boolean));
@@ -72,7 +90,6 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const protectedScopeSignals=unique(responsibilityRows.flatMap(row=>protectedSignals(row.text)));
   const diagnosticEvidence=unique(order?.workPackage?.sharedContext?.diagnosticEvidence||[]);
   const fileDigests=[...responsibilityRows,...related.slice(0,6)].map(compactFile);
-  const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
   const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence})).slice(0,24);
   const handoff={
     version:1,
@@ -107,8 +124,9 @@ export function explorationGuidance(handoff={}){
     `읽기 전용 영향 파일=${(handoff.impactFiles||[]).filter(x=>!(handoff.responsibleFiles||[]).includes(x)).join(', ')||'NONE'}`,
     `검증 후보=${(handoff.testTargets||[]).join(', ')||'NONE'}`,
     `보호 신호=${(handoff.protectedScopeSignals||[]).join(', ')||'NONE'}`,
+    handoff.sourceRootMissing===true?'소스 루트가 현재 main에 없고 오너 FULL REBUILD 부트스트랩이 승인되어 있다. exploration은 읽기 전용으로 이 사실만 기록한다.':'',
     '영향 파일은 참고용이다. Allowed edit paths 밖 파일은 수정하지 않는다.'
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 }
 
 export function runVibe2ExplorationWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputFile=''}={}){
