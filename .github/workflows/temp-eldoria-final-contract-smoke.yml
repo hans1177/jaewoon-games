@@ -1,0 +1,60 @@
+name: Temp Eldoria Final Contract Smoke
+on:
+  push:
+    branches:
+      - fix/eldoria-final-evidence-contracts
+    paths:
+      - .github/workflows/temp-eldoria-final-contract-smoke.yml
+permissions:
+  contents: read
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/eldoria-final-evidence-contracts
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser runtime
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Materialize canonical Eldoria inputs
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          baseline='design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-11/design-revised.json'
+          source='web-games/seed-story-complete-rpg-chronicles-of-eldoria/index.html'
+          mkdir -p "$(dirname "$baseline")" "$(dirname "$source")"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:$baseline" > "$baseline"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:$source" > "$source"
+      - name: Run real Eldoria initial runtime smoke with patched shared engine
+        env:
+          DESIGN_BASELINE_SOURCE: design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-11/design-revised.json
+        run: |
+          set -euo pipefail
+          node tools/company-development-web-gameplay-validation.mjs \
+            --game-id=seed-story-complete-rpg-chronicles-of-eldoria \
+            --source=web-games/seed-story-complete-rpg-chronicles-of-eldoria \
+            --port=4189 \
+            --output=/tmp/eldoria-smoke.json \
+            --screenshot=/tmp/eldoria-smoke.png \
+            --validation-stage=initial-cycle
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const r=JSON.parse(fs.readFileSync('/tmp/eldoria-smoke.json','utf8'));
+          const replay=r.runtimeValidationEvidence?.replayRegression;
+          const save=r.runtimeValidationEvidence?.saveRestore;
+          console.log(`ELDORIA_REPLAY=${replay?.status}:${replay?.pass}`);
+          console.log(`ELDORIA_SAVE_RESTORE=${save?.status}:${save?.pass}`);
+          console.log(`ELDORIA_INITIAL_CYCLE=${r.initialPlayableCycle?.pass}`);
+          if(replay?.pass!==true)throw new Error(`REPLAY_NOT_PASS:${replay?.status}`);
+          if(save?.pass!==true)throw new Error(`SAVE_RESTORE_NOT_PASS:${save?.status}`);
+          if(r.initialPlayableCycle?.pass!==true)throw new Error('INITIAL_CYCLE_REGRESSION');
+          NODE
