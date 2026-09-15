@@ -1,0 +1,54 @@
+name: Temporary Eldoria Preserve Diagnostic
+
+on:
+  push:
+    branches:
+      - diag/eldoria-preserve-blockers
+    paths:
+      - '.github/workflows/temp-eldoria-preserve-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: diag/eldoria-preserve-blockers
+      - name: Fetch runtime baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin company-runtime
+          mkdir -p design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-11
+          git show origin/company-runtime:design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-11/design-revised.json > design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-11/design-revised.json
+      - name: Print canonical preservation blockers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('tools/company-development-web-bootstrap.mjs')
+          s=p.read_text()
+          old="""  }else{\n    await ensureLocalVibeRuntime(model);"""
+          new="""  }else{\n    console.log('PRESERVATION_ELIGIBLE='+(preserved?.preservationEligible?'YES':'NO'));\n    console.log('PRESERVATION_BLOCKERS='+(preservationBlockers.join('|')||'NONE'));\n    console.log('PRESERVATION_SCOPE_COUNT='+inventory.length);\n    await ensureLocalVibeRuntime(model);"""
+          if s.count(old)!=1: raise SystemExit(f'target count={s.count(old)}')
+          p.write_text(s.replace(old,new))
+          PY
+          mkdir -p /tmp/eldoria-candidate
+          set +e
+          node tools/company-development-web-bootstrap.mjs \
+            --game-id=seed-story-complete-rpg-chronicles-of-eldoria \
+            --game-name='Chronicles of Eldoria' \
+            --baseline=design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-11/design-revised.json \
+            --source-path=web-games/seed-story-complete-rpg-chronicles-of-eldoria \
+            --candidate-id=eldoria-diagnostic \
+            --candidate-path=/tmp/eldoria-candidate \
+            --source-commit=e4363f15fe35d8e8c864469bb7b3f122361b1790 \
+            --model=none \
+            --evidence=/tmp/eldoria-bootstrap.json
+          status=$?
+          set -e
+          echo "DIAGNOSTIC_EXIT=$status"
