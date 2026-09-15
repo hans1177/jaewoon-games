@@ -1,0 +1,78 @@
+name: Roblox Bootstrap Stage Name
+
+on:
+  push:
+    branches: [fix/roblox-auto-bootstrap]
+    paths:
+      - '.github/workflows/roblox-bootstrap-stage-name.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  stage:
+    name: stage Vector Clash name without creating
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 10
+    steps:
+      - name: Fill experience name and capture proof
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
+          Add-Type -TypeDefinition 'using System; using System.Runtime.InteropServices; public static class MouseNative { [DllImport("user32.dll")] public static extern bool SetCursorPos(int X,int Y); [DllImport("user32.dll")] public static extern void mouse_event(uint f,uint dx,uint dy,uint data,UIntPtr extra); }'
+
+          $p = Get-Process RobloxStudioBeta -ErrorAction Stop | Select-Object -First 1
+          $root = [System.Windows.Automation.AutomationElement]::RootElement
+          $pidCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ProcessIdProperty,$p.Id)
+          $windows = $root.FindAll([System.Windows.Automation.TreeScope]::Children,$pidCond)
+          $publish = $null
+          foreach ($window in $windows) {
+            $idCond = New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'RBXMainWindow.edit_builtin_PublishPlaceAs.rbxm_PublishPlaceAs')
+            $publish = $window.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCond)
+            if ($publish) { break }
+          }
+          if (-not $publish) { throw 'Open Publish Experience dialog not detected' }
+          $r = $publish.Current.BoundingRectangle
+          if ($r.Width -lt 900 -or $r.Height -lt 700) { throw 'Unexpected publish dialog geometry' }
+
+          $shell = New-Object -ComObject WScript.Shell
+          if (-not $shell.AppActivate($p.Id)) { throw 'Studio is not interactive' }
+          Start-Sleep -Milliseconds 700
+
+          $nameX = [int]($r.Left + ($r.Width * 0.70))
+          $nameY = [int]($r.Top + ($r.Height * 0.145))
+          [MouseNative]::SetCursorPos($nameX,$nameY) | Out-Null
+          [MouseNative]::mouse_event(0x0002,0,0,0,[UIntPtr]::Zero)
+          [MouseNative]::mouse_event(0x0004,0,0,0,[UIntPtr]::Zero)
+          Start-Sleep -Milliseconds 400
+          $shell.SendKeys('^a')
+          Start-Sleep -Milliseconds 150
+          $shell.SendKeys('Vector Clash')
+          Start-Sleep -Seconds 1
+
+          $out = Join-Path $env:RUNNER_TEMP 'roblox-bootstrap-stage-name'
+          New-Item -ItemType Directory -Force -Path $out | Out-Null
+          $x=[int][Math]::Floor($r.Left); $y=[int][Math]::Floor($r.Top)
+          $w=[int][Math]::Ceiling($r.Width); $h=[int][Math]::Ceiling($r.Height)
+          $bmp=New-Object System.Drawing.Bitmap($w,$h)
+          $g=[System.Drawing.Graphics]::FromImage($bmp)
+          try { $g.CopyFromScreen($x,$y,0,0,$bmp.Size) } finally { $g.Dispose() }
+          $shot=Join-Path $out 'stage-name.png'
+          $bmp.Save($shot,[System.Drawing.Imaging.ImageFormat]::Png)
+          $bmp.Dispose()
+
+          Write-Host "ROBLOX_BOOTSTRAP_NAME_POINT=$nameX,$nameY"
+          Write-Host 'ROBLOX_BOOTSTRAP_NAME_STAGED=PASS'
+          Write-Host 'ROBLOX_EXPERIENCE_CREATED=NO'
+
+      - name: Upload staged-name proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: roblox-bootstrap-stage-name-proof
+          path: ${{ runner.temp }}/roblox-bootstrap-stage-name
+          retention-days: 1
+          if-no-files-found: error
