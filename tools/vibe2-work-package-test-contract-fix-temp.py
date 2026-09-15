@@ -12,7 +12,7 @@ diag_replacement = r'''test('completed diagnostic package is never recreated aft
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
   fs.mkdirSync(webRoot,{recursive:true});
-  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head></head><body><button>Play</button></body></html>\n','utf8');
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head></head><body><button>Play</button></body></html>','utf8');
   const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
   const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
