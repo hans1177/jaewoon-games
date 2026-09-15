@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-game-study-worker.mjs
-// 역할: 예약된 GAME STUDY 대상 하나를 실제 AUTO PLAYER로 관찰하고 immutable study 결과만 만든다.
-// 원칙: worker는 queue/experience/control을 직접 수정하지 않는다. Experience Memory 승격은 fan-in에서만 한다.
+// 역할: 예약된 GAME STUDY 대상 하나를 실제 AUTO PLAYER로 관찰하고 25축 intelligence가 붙은 immutable study 결과만 만든다.
+// 원칙: worker는 queue/experience/knowledge/control을 직접 수정하지 않는다. 장기 학습 승격은 fan-in에서만 한다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -8,6 +8,7 @@ import { pathToFileURL } from 'node:url';
 import { loadGameStudyTargets } from './vibe2-game-study-queue.mjs';
 import { runWebGameStudy } from './vibe2-web-game-study.mjs';
 import { runRobloxGameStudy } from './vibe2-roblox-game-study.mjs';
+import { attachGameStudyIntelligence } from './vibe2-game-study-intelligence.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -57,7 +58,7 @@ function autoPlayerDiagnostics(autoPlayer = {}) {
 
 function blockedResult(taskId, target, blocker) {
   return Object.freeze({
-    version: 1,
+    version: 2,
     taskId: clean(taskId) || target.taskId,
     targetId: target.id,
     engine: target.engine,
@@ -111,22 +112,23 @@ export async function runGameStudyWorker({ taskId = '', targetId = '', targetsFi
           timeoutMs: target.timeoutMs,
           experienceMemory: null
         });
-    const study = execution.study;
+    const study = attachGameStudyIntelligence(execution.study, execution.autoPlayer);
     const outcome = study?.verified === true ? 'PASS' : 'FAIL';
     const blocker = outcome === 'PASS' ? null : `game-study-verification-failed:${(study?.runtimeValidation?.issues || []).join('|') || 'unknown'}`;
     const result = Object.freeze({
-      version: 1,
+      version: 2,
       taskId: clean(taskId) || target.taskId,
       targetId: target.id,
       engine: target.engine,
       gameId: target.gameId,
       outcome,
       blocker,
-      reason: outcome === 'PASS' ? 'verified-game-study-complete' : blocker,
+      reason: outcome === 'PASS' ? 'verified-game-study-intelligence-complete' : blocker,
       evidence: Object.freeze([
         `game-study-target:${target.id}`,
         study?.id ? `game-study:${study.id}` : '',
-        execution?.autoPlayer?.runId ? `auto-player-run:${execution.autoPlayer.runId}` : ''
+        execution?.autoPlayer?.runId ? `auto-player-run:${execution.autoPlayer.runId}` : '',
+        study?.intelligence ? `game-study-intelligence:${study.intelligence.featureCatalog.length}` : ''
       ].filter(Boolean)),
       study,
       runtimeDiagnostics: autoPlayerDiagnostics(execution?.autoPlayer),
@@ -137,7 +139,7 @@ export async function runGameStudyWorker({ taskId = '', targetId = '', targetsFi
   } catch (error) {
     const message = clean(error?.message || error);
     const result = Object.freeze({
-      version: 1,
+      version: 2,
       taskId: clean(taskId) || target.taskId,
       targetId: target.id,
       engine: target.engine,
@@ -168,6 +170,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_GAME_STUDY_ENGINE=${result.engine}`);
   console.log(`VIBE2_GAME_STUDY_TARGET=${result.targetId}`);
   console.log(`VIBE2_GAME_STUDY_VERIFIED=${result.study?.verified === true ? 'YES' : 'NO'}`);
+  console.log(`VIBE2_GAME_STUDY_INTELLIGENCE_FEATURES=${result.study?.intelligence?.featureCatalog?.length || 0}`);
   if (result.runtimeDiagnostics?.errors?.length) console.log(`VIBE2_GAME_STUDY_ERRORS=${JSON.stringify(result.runtimeDiagnostics.errors)}`);
   if (result.outcome === 'FAIL') process.exitCode = 1;
 }

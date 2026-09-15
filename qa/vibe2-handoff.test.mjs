@@ -11,15 +11,15 @@ import { runVibe2AutoPlanner } from '../tools/vibe2-auto-planner.mjs';
 import { runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
 import { runQueueCommand } from '../tools/vibe2-queue-control.mjs';
 
-test('machine handoff summarizes queue and adaptive state deterministically', () => {
+test('machine handoff summarizes queue, adaptive state, and game study knowledge deterministically', () => {
   const runtime = {
-    version: 7,
+    version: 8,
     documentation: { machineSourceOfTruth: 'vibe2-runtime.json' },
     branches: { control: 'vibe2-unreal-core' },
     workManagement: {
       largeWorkExecution: 'phased-until-complete',
       splitRule: 'split-by-implementation-phase-not-artificial-file-count',
-      handoffReadOrder: ['vibe2-runtime.json', '.vibe2/queue.json']
+      handoffReadOrder: ['vibe2-runtime.json', '.vibe2/queue.json', '.vibe2/game-study-knowledge.json']
     },
     continuous: { maxConcurrentGameTasks: 20 },
     adaptiveBackpressure: { steps: [20, 16, 12, 8, 4] }
@@ -42,9 +42,18 @@ test('machine handoff summarizes queue and adaptive state deterministically', ()
     lastReason: 'HEALTHY_STREAK_1'
   };
   const experience = { version: 1, records: [{ id: 'x' }] };
+  const knowledge = {
+    version: 1,
+    entries: [{ studyId: 'study-a', gameId: 'game-a', engine: 'web' }],
+    derived: {
+      mergedKnowledge: [{ pattern: 'mechanic:combat', crossGameVerified: true }],
+      conflicts: [],
+      hypotheses: [{ hypothesis: 'combat->economy', status: 'SUPPORTED_ACROSS_GAMES' }]
+    }
+  };
 
-  const first = buildVibe2Handoff({ runtime, queue, parallelism, experience });
-  const second = buildVibe2Handoff({ runtime, queue, parallelism, experience });
+  const first = buildVibe2Handoff({ runtime, queue, parallelism, experience, knowledge });
+  const second = buildVibe2Handoff({ runtime, queue, parallelism, experience, knowledge });
 
   assert.deepEqual(first, second);
   assert.equal(first.sourceOfTruth, 'vibe2-runtime.json');
@@ -58,6 +67,9 @@ test('machine handoff summarizes queue and adaptive state deterministically', ()
   assert.equal(first.parallelism.currentPersistentMax, 16);
   assert.deepEqual(first.parallelism.steps, [20, 16, 12, 8, 4]);
   assert.equal(first.experience.recordCount, 1);
+  assert.equal(first.gameStudyKnowledge.entryCount, 1);
+  assert.equal(first.gameStudyKnowledge.crossGamePatternCount, 1);
+  assert.equal(first.gameStudyKnowledge.supportedHypothesisCount, 1);
 });
 
 test('repository uses exactly one Vibe2 human document and legacy Vibe2 docs are removed', () => {
@@ -66,6 +78,7 @@ test('repository uses exactly one Vibe2 human document and legacy Vibe2 docs are
   assert.equal(runtime.documentation?.humanDocumentLimit, 1);
   assert.equal(runtime.documentation?.manualHandoffDocumentsAllowed, false);
   assert.equal(fs.existsSync('VIBE2.md'), true);
+  assert.equal(fs.existsSync(runtime.documentation?.runtimeState?.gameStudyKnowledge), true);
 
   for (const file of runtime.documentation?.legacyHumanDocumentsRemoved || []) {
     assert.equal(fs.existsSync(file), false, `${file} must stay removed`);
@@ -75,20 +88,22 @@ test('repository uses exactly one Vibe2 human document and legacy Vibe2 docs are
 test('repository handoff is generated entirely from machine state', () => {
   const snapshot = generateVibe2Handoff();
   assert.equal(snapshot.kind, 'vibe2-machine-handoff');
-  assert.equal(snapshot.generatedFrom.runtimeVersion, 7);
+  assert.equal(snapshot.generatedFrom.runtimeVersion, 8);
   assert.equal(snapshot.generatedFrom.queueVersion, 5);
   assert.equal(snapshot.generatedFrom.parallelismVersion, 2);
   assert.equal(snapshot.generatedFrom.experienceVersion, 1);
+  assert.equal(snapshot.generatedFrom.gameStudyKnowledgeVersion, 1);
   assert.equal(snapshot.workPolicy.humanMaintainedHandoff, false);
   assert.equal(snapshot.parallelism.configuredMax, 20);
   assert.deepEqual(snapshot.parallelism.steps, [20, 16, 12, 8, 4]);
+  assert.equal(typeof snapshot.gameStudyKnowledge.entryCount, 'number');
   assert.ok(snapshot.workState.taskCount > 0);
 });
 
 
 test('repository machine state is internally consistent and no extra Vibe2 human docs exist', () => {
   const snapshot = generateVibe2Handoff();
-  assert.equal(snapshot.version, 2);
+  assert.equal(snapshot.version, 3);
   assert.equal(snapshot.consistency.ok, true, snapshot.consistency.errors.join(','));
   assert.deepEqual(snapshot.consistency.errors, []);
   const actual = fs.readdirSync('.').filter((file) => /^VIBE2.*\.md$/i.test(file)).sort();
@@ -101,14 +116,17 @@ test('consistency gate rejects an unlisted Vibe2 markdown file and divergent ada
   fs.writeFileSync(path.join(tempRoot, 'VIBE2_STALE.md'), '# stale\n');
   fs.mkdirSync(path.join(tempRoot, 'tools'), { recursive: true });
   fs.mkdirSync(path.join(tempRoot, '.github/workflows'), { recursive: true });
+  fs.mkdirSync(path.join(tempRoot, '.vibe2'), { recursive: true });
   fs.writeFileSync(path.join(tempRoot, 'tools/vibe2-handoff.mjs'), '');
   fs.writeFileSync(path.join(tempRoot, '.github/workflows/vibe2-24h-runner.yml'), '');
   fs.writeFileSync(path.join(tempRoot, '.github/workflows/vibe2-continuous-core.yml'), '');
+  fs.writeFileSync(path.join(tempRoot, '.vibe2/game-study-knowledge.json'), JSON.stringify({ version:1, entries:[], derived:{} }));
   const runtime = JSON.parse(fs.readFileSync('vibe2-runtime.json', 'utf8'));
   const queue = { version: 5, maxConcurrentTasks: 20, tasks: [] };
   const parallelism = { version: 2, currentMax: 10 };
   const experience = { version: 1, records: [] };
-  const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, repoRoot: tempRoot });
+  const knowledge = { version: 1, entries: [], derived: {} };
+  const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, knowledge, repoRoot: tempRoot });
   assert.equal(consistency.ok, false);
   assert.equal(consistency.errors.some((x) => x.startsWith('UNLISTED_VIBE2_MARKDOWN:')), true);
   assert.equal(consistency.errors.includes('PERSISTENT_MAX_OUTSIDE_STEPS'), true);
