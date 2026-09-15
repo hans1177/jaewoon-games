@@ -32,24 +32,19 @@ def replace_once_file(path, old, new, label):
 
 
 def migrate_queue_schema_v5():
-    replace_once_file(
-        'vibe2-runtime.json',
-        '"queue": 4,',
-        '"queue": 5,',
-        'runtime queue schema version',
-    )
-    replace_once_file(
-        '.vibe2/queue.json',
-        '"version": 4,',
-        '"version": 5,',
-        'persisted queue schema version',
-    )
+    replace_once_file('vibe2-runtime.json', '"queue": 4,', '"queue": 5,', 'runtime queue schema version')
+    replace_once_file('.vibe2/queue.json', '"version": 4,', '"version": 5,', 'persisted queue schema version')
 
     handoff = Path('qa/vibe2-handoff.test.mjs')
     text = handoff.read_text(encoding='utf-8')
     text = text.replace('version:4', 'version:5')
     text = text.replace('version: 4,', 'version: 5,')
     text = text.replace('snapshot.generatedFrom.queueVersion, 4', 'snapshot.generatedFrom.queueVersion, 5')
+    target = "  assert.equal(order.machineHandoff.currentPersistentMax, 20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'), true);"
+    diagnostic = "  assert.ok(order.machineHandoff, `missing machine handoff: ${JSON.stringify(order)}`);\n  assert.equal(order.machineHandoff.currentPersistentMax, 20);\n  assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'), true);"
+    if target not in text:
+        raise SystemExit('E2E machine handoff diagnostic target missing')
+    text = text.replace(target, diagnostic, 1)
     handoff.write_text(text, encoding='utf-8')
 
     planner = Path('qa/vibe2-auto-planner.test.mjs')
