@@ -25,7 +25,7 @@ test('non-write QA routes to analysis only',()=>{
 });
 
 test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
-  assert.equal(runtime.version,5);
+  assert.equal(runtime.version,6);
   assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,20);
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
