@@ -6,12 +6,14 @@ on:
       - vibe2-unreal-core
     paths:
       - 'tools/vibe2-roblox-studio-cli-runner.mjs'
+      - 'tools/vibe2-roblox-runner-bootstrap.ps1'
       - 'tools/runtime/roblox/**'
       - 'tools/vibe2-roblox-auto-player.mjs'
       - 'tools/vibe2-roblox-game-study.mjs'
       - '.vibe2/game-study-targets.json'
       - '.vibe2/game-study-scenarios/external-roblox-*.json'
       - 'qa/vibe2-roblox-studio-cli-runner.test.mjs'
+      - 'qa/vibe2-roblox-runner-bootstrap.test.mjs'
       - 'qa/fixtures/vibe2-roblox-studio-smoke-scenario.json'
       - '.github/workflows/vibe2-roblox-studio-live-smoke.yml'
   workflow_dispatch:
@@ -32,13 +34,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify Studio CLI wrapper contract
+      - name: Verify Studio CLI and self-hosted runner bootstrap contracts
         shell: bash
         run: |
           set -euo pipefail
           node --check tools/vibe2-roblox-studio-cli-runner.mjs
           node --check qa/vibe2-roblox-studio-cli-runner.test.mjs
+          node --check qa/vibe2-roblox-runner-bootstrap.test.mjs
           node --test qa/vibe2-roblox-studio-cli-runner.test.mjs
+          node --test qa/vibe2-roblox-runner-bootstrap.test.mjs
+          pwsh -NoLogo -NoProfile -Command "[scriptblock]::Create((Get-Content 'tools/vibe2-roblox-runner-bootstrap.ps1' -Raw)) | Out-Null"
           node <<'NODE'
           const fs=require('fs');
           const cfg=JSON.parse(fs.readFileSync('.vibe2/game-study-targets.json','utf8'));
@@ -89,10 +94,13 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Locate real Roblox Studio
+      - name: Verify runner identity and locate real Roblox Studio
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          Write-Host "VIBE2_ROBLOX_RUNNER_NAME=$env:RUNNER_NAME"
+          Write-Host "VIBE2_ROBLOX_RUNNER_OS=$env:RUNNER_OS"
+          if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio runner must be Windows' }
           node -e "import('./tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p);require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n')})"
 
       - name: Verify official Studio CLI with real VirtualInput
