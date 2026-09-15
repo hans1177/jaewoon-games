@@ -1,0 +1,118 @@
+name: Company DEVELOPMENT_CONFIRMED Roblox Final Review Revalidation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/company-development-roblox-final-review-revalidation.yml'
+      - 'tools/company-development-roblox-final-review.mjs'
+      - 'qa/company-development-roblox-final-review-revalidation.test.mjs'
+  workflow_run:
+    workflows: ["Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA"]
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-development-roblox-final-review-revalidation
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  final-review:
+    name: re-evaluate canonical Roblox final-review only
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    outputs:
+      multiplayer_pending_count: ${{ steps.evaluate.outputs.multiplayer_pending_count }}
+      multiplayer_pending_ids_json: ${{ steps.evaluate.outputs.multiplayer_pending_ids_json }}
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - name: Checkout canonical runtime state
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Checkout current canonical policy implementation
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify final-review-only contract
+        working-directory: main
+        run: |
+          set -euo pipefail
+          node --test qa/company-development-roblox-final-review-revalidation.test.mjs
+
+      - name: Re-evaluate canonical final-review without rerunning Studio QA
+        id: evaluate
+        working-directory: runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+          ROBLOX_FINAL_REVIEW_QUEUE=development-queue.json \
+          ROBLOX_FINAL_REVIEW_DESIGN_ROOT=design \
+            node ../main/tools/company-development-roblox-final-review.mjs
+          git config user.name 'jaewoon-roblox-runtime'
+          git config user.email 'actions@users.noreply.github.com'
+          git add development-queue.json
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'runtime: revalidate Roblox final review only [skip ci]'
+            pushed=0
+            for attempt in 1 2 3; do
+              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+              git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+              git rebase "origin/$COMPANY_RUNTIME_BRANCH" || { git rebase --abort || true; exit 1; }
+              sleep $((attempt*2))
+            done
+            test "$pushed" = '1'
+          fi
+          echo 'ROBLOX_RUNTIME_RERUN=NO'
+          echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
+          echo 'ROBLOX_REGRESSION_RERUN=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+
+      - name: Dispatch exact pending multiplayer QA target
+        if: github.event_name != 'workflow_run' && steps.evaluate.outputs.multiplayer_pending_count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PENDING_IDS_JSON: ${{ steps.evaluate.outputs.multiplayer_pending_ids_json }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -t ids < <(node -e "for (const id of JSON.parse(process.env.PENDING_IDS_JSON || '[]')) console.log(id)")
+          for id in "${ids[@]}"; do
+            test -n "$id"
+            gh workflow run company-development-roblox-multiplayer-qa.yml --ref main -f game_id="$id"
+            echo "ROBLOX_MULTIPLAYER_QA_DISPATCHED_GAME_ID=$id"
+          done
+          echo 'ROBLOX_STUDIO_PRIOR_QA_REUSED=YES'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+
+      - name: Final-review revalidation summary
+        run: |
+          echo 'ROBLOX_FINAL_REVIEW_ONLY=YES'
+          echo 'ROBLOX_EXISTING_RUNTIME_MOBILE_REGRESSION_EVIDENCE_PRESERVED=YES'
+          echo 'ROBLOX_MULTIPLAYER_QA_USES_EXISTING_CANONICAL_WORKFLOW=YES'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
