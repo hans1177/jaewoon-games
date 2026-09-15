@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 - Territory War</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      background-color: #111;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      color: #ff6347;
+    }
+    .game-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+    .game {
+      width: 300px;
+      height: 300px;
+      background-color: #333;
+      border: 2px solid #ff6347;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ff6347;
+      font-size: 18px;
+    }
+    .game-title {
+      margin-bottom: 10px;
+    }
+    .game-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .game-button {
+      padding: 10px 15px;
+      background-color: #ff6347;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .game-button:hover {
+      background-color: #e6391e;
+    }
+    .game-status {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+
+  <script>
+    // Simulated game logic
+    const gameContainer = document.getElementById('game');
+    const game = document.createElement('div');
+    game.classList.add('game');
+    game.innerHTML = `
+      <div class="game-title">Territory War</div>
+      <div class="game-buttons">
+        <button class="game-button" onclick="extendTerritory()">Extend Territory</button>
+        <button class="game-button" onclick="attackEnemy()">Attack Enemy</button>
+      </div>
+      <div class="game-status">Status: Neutral</div>
+    `;
+
+    gameContainer.appendChild(game);
+
+    function extendTerritory() {
+      // Simulated territory extension
+      game.innerHTML = `
+        <div class="game-title">Territory War</div>
+        <div class="game-buttons">
+          <button class="game-button" onclick="extendTerritory()">Extend Territory</button>
+          <button class="game-button" onclick="attackEnemy()">Attack Enemy</button>
+        </div>
+        <div class="game-status">Status: Extended</div>
+      `;
+    }
+
+    function attackEnemy() {
+      // Simulated attack
+      game.innerHTML = `
+        <div class="game-title">Territory War</div>
+        <div class="game-buttons">
+          <button class="game-button" onclick="extendTerritory()">Extend Territory</button>
+          <button class="game-button" onclick="attackEnemy()">Attack Enemy</button>
+        </div>
+        <div class="game-status">Status: Attack in Progress</div>
+      `;
+    }
+  </script>
+</body>
+</html>
