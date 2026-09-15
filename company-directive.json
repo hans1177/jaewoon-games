@@ -94,7 +94,13 @@
       "missingPlatformTestTargetDisablesOnlyPlatformButton": true,
       "scoreDisplayEnabled": true,
       "ranking": "SCORE_DESC",
-      "unratedGamesLast": true
+      "unratedGamesLast": true,
+      "scoreSource": "CURRENT_WEB_INITIAL_CYCLE_STRICT_SCORE",
+      "scoreRequiresInitialCyclePass": true,
+      "scoreRequiresSchema13": true,
+      "scoreRequiresMusicPass": true,
+      "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": true,
+      "reworkOrRevalidationScoresNotShownAsCurrent": true
     }
   },
   "production": {
