@@ -27,7 +27,7 @@ test('non-write QA routes to analysis only',()=>{
 test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
   assert.equal(runtime.version,5);
   assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
-  assert.equal(runtime.continuous.maxConcurrentGameTasks,4);
+  assert.equal(runtime.continuous.maxConcurrentGameTasks,20);
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
   assert.equal(runtime.continuous.workStealing,true);
   assert.equal(runtime.continuous.dynamicBackpressure,true);
@@ -46,7 +46,7 @@ test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
 test('controller reserves a batch and fans workers out with a bounded matrix',()=>{
   assert(workflow.includes('reserve-batch'));
   assert(workflow.includes('strategy:'));
-  assert(workflow.includes('max-parallel: 4'));
+  assert(workflow.includes('max-parallel: 20'));
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
   assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
