@@ -50,11 +50,14 @@ jobs:
           node --check tools/vibe2-incremental-qa.mjs
           node --check tools/vibe2-parallelism-telemetry.mjs
           node --check tools/vibe2-adaptive-backpressure.mjs
+          node --check tools/vibe2-handoff.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-auto-planner.test.mjs
           node --test qa/vibe2-parallelism-20-contract.test.mjs
           node --test qa/vibe2-incremental-qa.test.mjs
           node --test qa/vibe2-parallelism-telemetry.test.mjs
+          node --test qa/vibe2-handoff.test.mjs
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log
 
       - name: Reserve conflict-free DAG batch
         id: batch
@@ -65,10 +68,12 @@ jobs:
           git config user.email 'vibe2-scheduler@users.noreply.github.com'
           git fetch origin vibe2-unreal-core --quiet
           git reset --hard origin/vibe2-unreal-core
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
 
           node tools/vibe2-queue-control.mjs reserve-batch \
             --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" \
             --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-reserve.json >/tmp/vibe2-handoff-after-reserve.log
 
           if git diff --quiet -- .vibe2/queue.json; then
             echo 'VIBE2_BATCH_RESERVATION_WRITE=NO'
@@ -501,6 +506,7 @@ jobs:
           node --test qa/vibe2-controller-contract.test.mjs
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
+          node --test qa/vibe2-handoff.test.mjs
 
           if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json; then
             echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'
@@ -518,10 +524,22 @@ jobs:
             echo 'VIBE2_FAN_IN_QUEUE_WRITE=YES'
           fi
 
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-fanin.json >/tmp/vibe2-handoff-after-fanin.log
           node tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-summary.log
           free="$(sed -n 's/^VIBE2_QUEUE_FREE_SLOTS=//p' /tmp/vibe2-summary.log | tail -n1)"
           if [ "${free:-0}" -gt 0 ]; then echo 'refill=1' >> "$GITHUB_OUTPUT"; else echo 'refill=0' >> "$GITHUB_OUTPUT"; fi
           echo 'VIBE2_HIERARCHICAL_FAN_IN=PASS'
+
+      - name: Upload generated machine handoff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-after-fanin.json
+            /tmp/vibe2-handoff-after-fanin.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Aggregate Vibe2 parallelism telemetry
         if: always()

@@ -8,6 +8,7 @@ import { pathToFileURL } from 'node:url';
 import { planVibeCoreTask } from '../assets/vibe-core-runtime.js';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
+import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
@@ -101,11 +102,12 @@ function incrementalQaPlan(task, target, responsibleFiles) {
   });
 }
 
-export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, taskId = '' } = {}) {
+export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '' } = {}) {
   const normalizedQueue = createVibeContinuousQueue(queue);
   const resolved = resolveTask(normalizedQueue, taskId);
   const base = {
-    version:4, generatedAt:new Date().toISOString(), run:false, reason:null, mode:'vibe2-parallel-work-order',
+    version:5, generatedAt:new Date().toISOString(), run:false, reason:null, mode:'vibe2-parallel-work-order',
+    machineHandoff:freeze({ used:Boolean(handoff?.kind), kind:handoff?.kind || null, sourceOfTruth:handoff?.sourceOfTruth || null, consistency:handoff?.consistency || {ok:true,errors:[]}, currentPersistentMax:Number(handoff?.parallelism?.currentPersistentMax || runtime?.continuous?.maxConcurrentGameTasks || 20), lastDecision:handoff?.parallelism?.lastDecision || null, ownerDirectiveOpenCount:Number(handoff?.workState?.ownerDirectiveOpenCount || 0) }),
     scheduler:freeze({ hierarchicalParallelism:true, dag:true, shardAware:true, workStealing:true, sourceRootLock:true, eventDriven:true, dynamicBackpressure:true }),
     safety:freeze({
       directMainWrite:false,
@@ -116,6 +118,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       binaryAssetsDirectTextEditForbidden:true
     })
   };
+  if (handoff?.kind && handoff.consistency?.ok !== true) return freeze({ ...base, reason:`MACHINE_STATE_INCONSISTENT:${(handoff.consistency?.errors || []).join('|') || 'UNKNOWN'}` });
   if (runtime?.continuous?.enabled === false) return freeze({ ...base, reason:'CONTINUOUS_DISABLED' });
   if (!resolved.task) return freeze({ ...base, reason:resolved.reason || 'NO_ELIGIBLE_WORK' });
   const task = resolved.task;
@@ -164,12 +167,14 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   });
 }
 
-export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='.vibe2/queue.json', experienceFile='.vibe2/experience.json', outputFile='', taskId='' } = {}) {
+export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', outputFile='', taskId='' } = {}) {
   const runtime = readJson(runtimeFile, {});
-  const resolvedQueueFile = clean(runtime?.sources?.queue) || queueFile;
-  const resolvedExperienceFile = clean(runtime?.sources?.experience) || experienceFile;
+  const resolvedQueueFile = clean(queueFile) || clean(runtime?.sources?.queue) || '.vibe2/queue.json';
+  const resolvedControlFile = clean(controlFile) || clean(runtime?.sources?.parallelism) || clean(runtime?.adaptiveBackpressure?.stateFile) || '.vibe2/parallelism-control.json';
+  const resolvedExperienceFile = clean(experienceFile) || clean(runtime?.sources?.experience) || '.vibe2/experience.json';
   const resolvedOutputFile = clean(outputFile) || clean(runtime?.sources?.workOrder) || '.vibe2/work-order.json';
-  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), taskId });
+  const handoff = generateVibe2Handoff({ runtimeFile, queueFile:resolvedQueueFile, controlFile:resolvedControlFile, experienceFile:resolvedExperienceFile });
+  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId });
   writeJson(resolvedOutputFile, order);
   return order;
 }
@@ -177,10 +182,13 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = parseArgs();
   const order = runVibeContinuousRunner({
-    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue)||'.vibe2/queue.json', experienceFile:clean(args.experience)||'.vibe2/experience.json', outputFile:clean(args.output), taskId:clean(args['task-id'])
+    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), outputFile:clean(args.output), taskId:clean(args['task-id'])
   });
   console.log(`VIBE2_CONTINUOUS_RUN=${order.run?'YES':'NO'}`);
   console.log(`VIBE2_CONTINUOUS_REASON=${order.reason}`);
+  console.log(`VIBE2_MACHINE_HANDOFF=${order.machineHandoff?.used?'USED':'NOT_USED'}`);
+  console.log(`VIBE2_MACHINE_STATE=${order.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
+  console.log(`VIBE2_MACHINE_PERSISTENT_MAX=${order.machineHandoff?.currentPersistentMax||0}`);
   if (order.run) {
     console.log(`VIBE2_TASK_ID=${order.taskId}`);
     console.log(`VIBE2_TARGET=${order.target}`);

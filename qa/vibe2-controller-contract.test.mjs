@@ -10,6 +10,7 @@ import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 
 test('Unreal C++ routes to text worker but Blueprint/uasset route to editor',()=>{
@@ -25,7 +26,7 @@ test('non-write QA routes to analysis only',()=>{
 });
 
 test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
-  assert.equal(runtime.version,6);
+  assert.equal(runtime.version,7);
   assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,20);
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
@@ -41,6 +42,9 @@ test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
   assert.equal(runtime.safety.existingWebMaintenanceAllowed,true);
   assert.equal(runtime.safety.newWebGameAutomatic,false);
   assert.equal(runtime.assetDecision.learningMayOverrideFixedRules,false);
+  assert.equal(runtime.workManagement.machineContextRequired,true);
+  assert.deepEqual(runtime.workManagement.handoffConsumers,['planner','reserve','worker','fan-in']);
+  assert.equal(runtime.continuous.entryWorkflow,'.github/workflows/vibe2-24h-runner.yml');
 });
 
 test('controller reserves a batch and fans workers out with a bounded matrix',()=>{
@@ -87,24 +91,45 @@ test('controller allows approved source root but enforces candidate boundary',()
 test('event-driven refill removes hourly-only idle gaps',()=>{
   assert(workflow.includes('Event-driven refill of free slots'));
   assert(workflow.includes('gh workflow run vibe2-24h-runner.yml'));
+  assert(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'));
+  assert(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs'));
+  assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
 });
 
 test('explicit work-order output path overrides runtime default path',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-output-path-'));
   const queueFile=path.join(root,'queue.json');
+  const controlFile=path.join(root,'parallelism.json');
   const experienceFile=path.join(root,'experience.json');
   const runtimeDefault=path.join(root,'runtime-default.json');
   const explicitOutput=path.join(root,'explicit-output.json');
   const runtimeFile=path.join(root,'runtime.json');
-  fs.writeFileSync(queueFile,JSON.stringify({tasks:[]}), 'utf8');
-  fs.writeFileSync(experienceFile,JSON.stringify({records:[]}), 'utf8');
-  fs.writeFileSync(runtimeFile,JSON.stringify({
-    continuous:{enabled:false},
-    sources:{queue:queueFile,experience:experienceFile,workOrder:runtimeDefault}
-  }), 'utf8');
+  const fixtureRuntime=structuredClone(runtime);
+
+  fixtureRuntime.continuous={...fixtureRuntime.continuous,enabled:false,entryWorkflow:'.github/workflows/vibe2-24h-runner.yml',workerWorkflow:'.github/workflows/vibe2-continuous-core.yml'};
+  fixtureRuntime.documentation={
+    ...fixtureRuntime.documentation,
+    runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json'},
+    generatedHandoffTool:'tools/vibe2-handoff.mjs'
+  };
+  fixtureRuntime.sources={queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',workOrder:runtimeDefault};
+  fixtureRuntime.adaptiveBackpressure={...fixtureRuntime.adaptiveBackpressure,stateFile:'parallelism.json'};
+
+  fs.mkdirSync(path.join(root,'tools'),{recursive:true});
+  fs.mkdirSync(path.join(root,'.github','workflows'),{recursive:true});
+  fs.writeFileSync(path.join(root,'VIBE2.md'),'# Vibe2\n','utf8');
+  fs.writeFileSync(path.join(root,'tools','vibe2-handoff.mjs'),'// fixture\n','utf8');
+  fs.writeFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'name: fixture\n','utf8');
+  fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
+  fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:20,tasks:[]}), 'utf8');
+  fs.writeFileSync(controlFile,JSON.stringify({version:2,currentMax:20}), 'utf8');
+  fs.writeFileSync(experienceFile,JSON.stringify({version:1,records:[]}), 'utf8');
+  fs.writeFileSync(runtimeFile,JSON.stringify(fixtureRuntime), 'utf8');
+
   const order=runVibeContinuousRunner({runtimeFile,outputFile:explicitOutput});
   assert.equal(order.reason,'CONTINUOUS_DISABLED');
+  assert.equal(order.machineHandoff.consistency.ok,true);
   assert.equal(fs.existsSync(explicitOutput),true);
   assert.equal(fs.existsSync(runtimeDefault),false);
 });
