@@ -54,7 +54,7 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
 });
 
 test('controller starts isolated candidates from fresh main and never writes main directly',()=>{
-  assert(workflow.includes('git fetch origin main'));
+  assert(workflow.includes('git fetch --depth=1 origin main:refs/remotes/origin/main --quiet'));
   assert(workflow.includes('git worktree add -b "$candidate_branch" "$candidate_dir" origin/main'));
   assert(workflow.includes('export VIBE2_BASE_MAIN_SHA="$base_sha"'));
   assert(workflow.includes('vibe2/candidate/'));

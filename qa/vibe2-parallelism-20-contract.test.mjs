@@ -21,6 +21,9 @@ test('core parallelism contract is uniformly 20',()=>{
   assert.match(workflow,/~\/.cache\/vibe2-ollama\/bin\/ollama/);
   assert.match(workflow,/VIBE2_OLLAMA_RUNTIME_SOURCE=CACHE/);
   assert.match(workflow,/VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL/);
+  assert.match(workflow,/worker:[\s\S]*?ref: vibe2-unreal-core\n\s+fetch-depth: 1/);
+  assert.match(workflow,/git fetch --depth=1 origin main:refs\/remotes\/origin\/main --quiet/);
+  assert.match(workflow,/fan_in:[\s\S]*?ref: vibe2-unreal-core\n\s+fetch-depth: 0/);
   assert.match(planner,/Math\.min\(20,/);
   assert.match(queueControl,/function maxConcurrent\(value\) \{ return Math\.max\(1, Math\.min\(20,/);
   const q=createVibeContinuousQueue({maxConcurrentTasks:999,tasks:[]});
