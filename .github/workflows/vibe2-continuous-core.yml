@@ -3,6 +3,9 @@ name: Vibe2 Continuous Core
 on:
   workflow_call:
   workflow_dispatch:
+  push:
+    branches:
+      - 'vibe2/refill/**'
 
 permissions:
   contents: write
@@ -63,6 +66,28 @@ jobs:
           git config user.email 'vibe2-scheduler@users.noreply.github.com'
           git fetch origin vibe2-unreal-core --quiet
           git reset --hard origin/vibe2-unreal-core
+
+          callback_ref="${GITHUB_REF_NAME:-}"
+          callback_kind='none'
+          if [ "${GITHUB_EVENT_NAME:-}" = 'push' ] && [[ "$callback_ref" == vibe2/refill/task/*/* ]]; then
+            encoded="${callback_ref##*/}"
+            task_id="$(node - "$encoded" <<'NODECB'
+          const encoded=process.argv[2]||'';
+          process.stdout.write(Buffer.from(encoded,'base64url').toString('utf8'));
+          NODECB
+          )"
+            test -n "$task_id"
+            node tools/vibe2-queue-control.mjs release-slot \
+              --id="$task_id" \
+              --blocker=slot-released-awaiting-fan-in \
+              --evidence="slot-callback:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}" | tee /tmp/vibe2-slot-release.log
+            callback_kind='task'
+            echo "VIBE2_SLOT_CALLBACK_TASK=$task_id"
+          elif [ "${GITHUB_EVENT_NAME:-}" = 'push' ] && [[ "$callback_ref" == vibe2/refill/fanin/* ]]; then
+            callback_kind='fanin'
+            echo 'VIBE2_SLOT_CALLBACK_FANIN=YES'
+          fi
+
           node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
 
           node tools/vibe2-queue-control.mjs reserve-batch \
@@ -86,14 +111,20 @@ jobs:
             echo 'VIBE2_BATCH_RESERVATION_WRITE=YES'
           fi
 
+          if [ "$callback_kind" != 'none' ]; then
+            git push origin --delete "$callback_ref" >/dev/null 2>&1 || true
+            echo "VIBE2_SLOT_CALLBACK_CLEANUP=$callback_ref"
+          fi
+
           node <<'NODE'
           const fs=require('fs');
           const out=process.env.GITHUB_OUTPUT;
           const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
           const include=[];
           for(const row of batch.matrix||[]){
-            include.push({taskId:row.taskId,shard:row.shard,variant:'primary',reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)});
-            if(Number(row.speculativeVariants||1)>1)include.push({taskId:row.taskId,shard:row.shard,variant:'speculative',reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)});
+            const earlyRefill=Number(row.speculativeVariants||1)===1;
+            include.push({taskId:row.taskId,shard:row.shard,variant:'primary',earlyRefill,reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)});
+            if(Number(row.speculativeVariants||1)>1)include.push({taskId:row.taskId,shard:row.shard,variant:'speculative',earlyRefill:false,reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)});
           }
           fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include})}\n`);
           fs.appendFileSync(out,`worker_count=${include.length}\n`);
@@ -435,6 +466,19 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: Signal immediate slot refill after single-variant worker completion
+        if: always() && matrix.earlyRefill == true && steps.result.outputs.file != ''
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          encoded="$(node -e "process.stdout.write(Buffer.from(process.env.TASK_ID||'').toString('base64url'))")"
+          test -n "$encoded"
+          callback="vibe2/refill/task/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/${encoded}"
+          git push origin "HEAD:refs/heads/${callback}"
+          echo "VIBE2_EARLY_SLOT_REFILL_SIGNAL=$callback"
+
   fan_in:
     needs: [reserve, worker]
     if: always() && needs.reserve.outputs.worker_count != '0'
@@ -576,12 +620,12 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: Event-driven direct refill of eligible free slots
+      - name: Event-driven fan-in refill fallback
         if: steps.persist.outputs.refill == '1'
-        env:
-          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref vibe2-unreal-core
-          echo 'VIBE2_EVENT_DRIVEN_REFILL=DIRECT_CONTINUOUS'
+          git fetch origin vibe2-unreal-core:refs/remotes/origin/vibe2-unreal-core --depth=1 --quiet
+          callback="vibe2/refill/fanin/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git push origin "refs/remotes/origin/vibe2-unreal-core:refs/heads/${callback}"
+          echo "VIBE2_EVENT_DRIVEN_REFILL=FANIN_PUSH_CALLBACK:$callback"
