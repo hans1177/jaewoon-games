@@ -139,6 +139,9 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } =
     matrix: (started.tasks || []).map((task) => ({
       taskId: task.id,
       shard: task.shard,
+      packageId: task.packageId || null,
+      packageRole: task.packageRole || null,
+      longWorkProtected: task.packageLongWorkProtected === true,
       speculativeVariants: task.target !== 'unity' && task.speculativeEligible && task.estimatedRisk === 'high' ? 2 : 1
     }))
   };
@@ -195,6 +198,18 @@ function workloadEvidence(row = {}) {
   if(cycleMs>0)evidence.push(`workload:cycle-ms:${cycleMs}`);
   return evidence;
 }
+function reusableWorkerEvidence(row = {}) {
+  const evidence=[];
+  const exploration=row?.exploration||{};
+  if(clean(exploration.reuseKey))evidence.push(`exploration-reuse:${clean(exploration.reuseKey)}`);
+  if(Array.isArray(exploration.impactFiles)&&exploration.impactFiles.length)evidence.push(`exploration-impact:${exploration.impactFiles.map(clean).filter(Boolean).join('|')}`);
+  if(Array.isArray(exploration.testTargets)&&exploration.testTargets.length)evidence.push(`exploration-tests:${exploration.testTargets.map(clean).filter(Boolean).join('|')}`);
+  const roles=row?.roleResults&&typeof row.roleResults==='object'?row.roleResults:{};
+  for(const [role,status] of Object.entries(roles))if(clean(status))evidence.push(`role-result:${clean(role)}:${clean(status)}`);
+  const outcome=clean(row?.outcome).toUpperCase();
+  if(['FAIL','BLOCKED'].includes(outcome)&&clean(row?.blocker))evidence.push(`failure-cause:${clean(row.blocker)}`);
+  return evidence;
+}
 
 export function applyVibeFanInResults(queueInput, results = []) {
   let queue = createVibeContinuousQueue(queueInput);
@@ -211,12 +226,14 @@ export function applyVibeFanInResults(queueInput, results = []) {
     const winner = passes.sort((a,b) => Number(a.durationMs || 0) - Number(b.durationMs || 0))[0] || variants[0];
     const allEvidence = [...new Set(variants.flatMap((row) => [
       ...(Array.isArray(row.evidence) ? row.evidence : []),
-      ...workloadEvidence(row)
+      ...workloadEvidence(row),
+      ...reusableWorkerEvidence(row)
     ]).map(clean).filter(Boolean))];
     if (passes.length) {
       const winnerEvidence = [
         ...(Array.isArray(winner.evidence) ? winner.evidence.map(clean).filter(Boolean) : []),
-        ...workloadEvidence(winner)
+        ...workloadEvidence(winner),
+        ...reusableWorkerEvidence(winner)
       ];
       const variantSummary = variants.map((row) => `speculative-result:${clean(row.variant) || 'primary'}:${clean(row.outcome).toUpperCase() || 'UNKNOWN'}`);
       queue = markVibeTaskAwaiting(queue, {
@@ -229,11 +246,12 @@ export function applyVibeFanInResults(queueInput, results = []) {
     }
     const blocked = variants.every((row) => clean(row.outcome).toUpperCase() === 'BLOCKED');
     const outcome = blocked ? 'BLOCKED' : 'FAIL';
+    const blocker=clean(winner.blocker) || (blocked ? 'worker-route-blocked' : 'parallel-candidate-generation-failed');
     const settled = settleVibeTask(queue, {
       taskId,
       outcome,
-      blocker: clean(winner.blocker) || (blocked ? 'worker-route-blocked' : 'parallel-candidate-generation-failed'),
-      evidence: allEvidence,
+      blocker,
+      evidence: [...allEvidence, `failure-cause:${blocker}`],
       retryable: outcome === 'FAIL'
     });
     queue = settled.queue;
@@ -275,7 +293,7 @@ export function runQueueCommand(args = {}) {
       const requestedMaxConcurrentTasks=reserved.selection?.requestedMaxConcurrentTasks ?? adaptiveMaxConcurrentTasks;
       const persistentMaxConcurrentTasks=reserved.selection?.persistentMaxConcurrentTasks ?? queue.maxConcurrentTasks;
       writeJson(clean(args.output), {
-        version:3, createdAt, matrix:reserved.matrix,
+        version:4, createdAt, matrix:reserved.matrix,
         scheduler:{
           persistentMaxConcurrentTasks,
           configuredMaxConcurrentTasks,
@@ -290,6 +308,8 @@ export function runQueueCommand(args = {}) {
           blockedCount:reserved.selection?.blocked?.length ?? 0,
           conflictCount:reserved.selection?.deferredConflicts?.length ?? 0,
           workStealingUsed:reserved.selection?.workStealingUsed === true,
+          longWorkProtectedSlotUsed:reserved.selection?.longWorkProtectedSlotUsed === true,
+          longWorkOwnerTaskId:reserved.selection?.longWorkOwnerTaskId || null,
           shardUse:reserved.selection?.shardUse || {},
           stopReason:reserved.selection?.stopReason || null
         }
@@ -353,6 +373,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_QUEUE_ACTIVE_WORKERS=${(result.summary?.capacityRunningTaskIds || []).length}`);
   console.log(`VIBE2_QUEUE_AWAITING_QA=${(result.summary?.awaitingQaTaskIds || []).length}`);
   console.log(`VIBE2_QUEUE_FREE_SLOTS=${result.summary?.freeSlots ?? 0}`);
+  console.log(`VIBE2_QUEUE_LONG_WORK_SLOT=${result.summary?.longWorkProtectedSlotUsed ? 'USED' : 'NOT_USED'}`);
   console.log(`VIBE2_QUEUE_CONTINUE=${result.summary?.continueRequired ? 'YES' : 'NO'}`);
   console.log(`VIBE2_QUEUE_RELEASED_WORKER_SLOTS=${(result.summary?.releasedWorkerSlotTaskIds || []).length}`);
   if (result.command === 'release-slot') console.log(`VIBE2_SLOT_RELEASED=${result.released ? 'YES' : 'NO'}`);

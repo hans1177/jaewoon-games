@@ -28,6 +28,8 @@ jobs:
     outputs:
       worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
       worker_count: ${{ steps.batch.outputs.worker_count }}
+      exploration_matrix: ${{ steps.batch.outputs.exploration_matrix }}
+      exploration_count: ${{ steps.batch.outputs.exploration_count }}
       task_count: ${{ steps.batch.outputs.task_count }}
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
       effective_max: ${{ steps.batch.outputs.effective_max }}
@@ -49,7 +51,10 @@ jobs:
           node --check assets/vibe-continuous-queue.js
           node --check tools/vibe2-auto-planner.mjs
           node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-performance-sanity.mjs
+          node --check tools/vibe2-fan-in-review.mjs
           node --check tools/vibe2-queue-control.mjs
           node --check tools/vibe2-work-package.mjs
           node --check tools/vibe2-incremental-qa.mjs
@@ -91,7 +96,6 @@ jobs:
           fi
 
           node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
-
           node tools/vibe2-queue-control.mjs reserve-batch \
             --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" \
             --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
@@ -122,19 +126,28 @@ jobs:
           const fs=require('fs');
           const out=process.env.GITHUB_OUTPUT;
           const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
-          const include=[];
+          const workers=[];
+          const exploration=[];
+          const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
           for(const row of batch.matrix||[]){
+            const safeTask=safe(row.taskId);
+            exploration.push({taskId:row.taskId,safeTask});
             const earlyRefill=Number(row.speculativeVariants||1)===1;
-            include.push({taskId:row.taskId,shard:row.shard,variant:'primary',earlyRefill,reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)});
-            if(Number(row.speculativeVariants||1)>1)include.push({taskId:row.taskId,shard:row.shard,variant:'speculative',earlyRefill:false,reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)});
+            const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)};
+            workers.push({...shared,variant:'primary',earlyRefill});
+            if(Number(row.speculativeVariants||1)>1)workers.push({...shared,variant:'speculative',earlyRefill:false});
           }
-          fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include})}\n`);
-          fs.appendFileSync(out,`worker_count=${include.length}\n`);
+          fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
+          fs.appendFileSync(out,`worker_count=${workers.length}\n`);
+          fs.appendFileSync(out,`exploration_matrix=${JSON.stringify({include:exploration})}\n`);
+          fs.appendFileSync(out,`exploration_count=${exploration.length}\n`);
           fs.appendFileSync(out,`task_count=${(batch.matrix||[]).length}\n`);
           fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
           fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)}\n`);
-          console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${include.length}`);
+          console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
+          console.log(`VIBE2_EXPLORATION_FAN_OUT=${exploration.length}`);
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
+          console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
 
   model_cache:
@@ -176,9 +189,78 @@ jobs:
           ollama pull "$VIBE2_LOCAL_MODEL"
           echo 'VIBE2_MODEL_PREWARM=PASS'
 
+  exploration:
+    needs: reserve
+    if: needs.reserve.outputs.exploration_count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJSON(needs.reserve.outputs.exploration_matrix) }}
+    steps:
+      - name: Checkout Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build exploration work order
+        id: order
+        continue-on-error: true
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-continuous-runner.mjs --task-id="$TASK_ID" --output=/tmp/vibe2-work-order.json
+          node <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${x.run?'true':'false'}\nroute=${x.executionRoute||''}\n`);
+          NODE
+
+      - name: Explore current main read-only
+        id: explore
+        continue-on-error: true
+        if: steps.order.outcome == 'success' && steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --depth=1 origin main:refs/remotes/origin/main --quiet
+          base_sha="$(git rev-parse origin/main)"
+          explore_dir="/tmp/vibe2-explore-${SAFE_TASK}-${GITHUB_RUN_ID}"
+          git worktree add --detach "$explore_dir" origin/main
+          mkdir -p "$explore_dir/.vibe2"
+          cp /tmp/vibe2-work-order.json "$explore_dir/.vibe2/work-order.json"
+          cd "$explore_dir"
+          export VIBE2_BASE_MAIN_SHA="$base_sha"
+          node "$GITHUB_WORKSPACE/tools/vibe2-exploration-worker.mjs" \
+            --order=.vibe2/work-order.json \
+            --output=/tmp/vibe2-exploration.json | tee /tmp/vibe2-exploration.log
+          test -s /tmp/vibe2-exploration.json
+          echo 'VIBE2_EXPLORATION_ROLE=PASS'
+          echo 'VIBE2_EXPLORATION_SOURCE_WRITE=NO'
+
+      - name: Upload reusable exploration handoff
+        if: steps.explore.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-exploration-${{ matrix.safeTask }}
+          path: /tmp/vibe2-exploration.json
+          if-no-files-found: error
+          retention-days: 1
+
   worker:
-    needs: [reserve, model_cache]
-    if: always() && needs.reserve.outputs.worker_count != '0'
+    needs: [reserve, model_cache, exploration]
+    if: always() && needs.reserve.outputs.worker_count != '0' && needs.exploration.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 22
     strategy:
@@ -250,22 +332,20 @@ jobs:
         env:
           TASK_ID: ${{ matrix.taskId }}
           VARIANT: ${{ matrix.variant }}
+          SAFE_TASK: ${{ matrix.safeTask }}
         shell: bash
         run: |
           set -euo pipefail
-          node tools/vibe2-continuous-runner.mjs \
-            --task-id="$TASK_ID" \
-            --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
+          node tools/vibe2-continuous-runner.mjs --task-id="$TASK_ID" --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
           node <<'NODE'
           const fs=require('fs');
           const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
           const out=process.env.GITHUB_OUTPUT;
           const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
-          const safe=String(order.taskId||process.env.TASK_ID||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
           put('run',order.run?'true':'false');
           put('reason',order.reason||'');
           put('task_id',order.taskId||process.env.TASK_ID||'');
-          put('safe_task',safe);
+          put('safe_task',process.env.SAFE_TASK||'');
           put('game_id',order.gameId||'');
           put('target',order.target||'');
           put('route',order.executionRoute||'');
@@ -274,6 +354,13 @@ jobs:
           put('cache_namespace',order.incrementalQa?.cacheNamespace||`${order.target||'unknown'}:${order.gameId||'global'}`);
           put('variant',process.env.VARIANT||'primary');
           NODE
+
+      - name: Download reusable exploration handoff
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
+        uses: actions/download-artifact@v4
+        with:
+          name: vibe2-exploration-${{ matrix.safeTask }}
+          path: /tmp/vibe2-exploration
 
       - name: Verify free execution budget
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
@@ -295,7 +382,7 @@ jobs:
         continue-on-error: true
         env:
           TASK_ID: ${{ steps.order.outputs.task_id }}
-          SAFE_TASK: ${{ steps.order.outputs.safe_task }}
+          SAFE_TASK: ${{ matrix.safeTask }}
           SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
           VARIANT: ${{ matrix.variant }}
         shell: bash
@@ -309,6 +396,7 @@ jobs:
           git worktree add -b "$candidate_branch" "$candidate_dir" origin/main
           mkdir -p "$candidate_dir/.vibe2"
           cp /tmp/vibe2-work-order.json "$candidate_dir/.vibe2/work-order.json"
+          cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
 
           command -v ollama >/dev/null
           nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
@@ -327,6 +415,7 @@ jobs:
           cd "$candidate_dir"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
+          export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
           node "$GITHUB_WORKSPACE/tools/vibe2-source-worker.mjs" --apply-source=true
           git diff --check
 
@@ -372,12 +461,11 @@ jobs:
           restore-keys: |
             vibe2-iqa-v2-${{ runner.os }}-${{ steps.order.outputs.game_id }}-
 
-      - name: Run impact-first incremental QA
+      - name: Run impact-first incremental QA role
         id: incremental_qa
         if: steps.candidate.outcome == 'success'
         continue-on-error: true
         env:
-          TASK_ID: ${{ steps.order.outputs.task_id }}
           CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
           CACHE_NAMESPACE: ${{ steps.order.outputs.cache_namespace }}
         shell: bash
@@ -385,8 +473,8 @@ jobs:
           set -euo pipefail
           qa_started="$(date +%s%3N)"
           mkdir -p /tmp/vibe2-qa-cache
-          manifest_id="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-80)"
-          manifest="$CANDIDATE_DIR/.vibe2/candidates/$manifest_id/manifest.json"
+          manifest="$(find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit)"
+          test -n "$manifest"
           node "$GITHUB_WORKSPACE/tools/vibe2-incremental-qa.mjs" \
             --root="$CANDIDATE_DIR" \
             --manifest="$manifest" \
@@ -399,6 +487,26 @@ jobs:
           echo "cache=$cache" >> "$GITHUB_OUTPUT"
           qa_finished="$(date +%s%3N)"
           echo "duration_ms=$((qa_finished-qa_started))" >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_TEST_ROLE=PASS'
+          echo 'VIBE2_TEST_ROLE_SOURCE_WRITE=NO'
+
+      - name: Run read-only performance sanity role
+        id: performance
+        if: steps.candidate.outcome == 'success' && steps.incremental_qa.outcome == 'success'
+        continue-on-error: true
+        env:
+          CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$(find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit)"
+          test -n "$manifest"
+          node "$GITHUB_WORKSPACE/tools/vibe2-performance-sanity.mjs" \
+            --root="$CANDIDATE_DIR" \
+            --manifest="$manifest" \
+            --output=/tmp/vibe2-performance.json | tee /tmp/vibe2-performance.log
+          echo 'VIBE2_PERFORMANCE_ROLE=PASS'
+          echo 'VIBE2_PERFORMANCE_ROLE_SOURCE_WRITE=NO'
 
       - name: Build immutable worker result
         id: result
@@ -412,6 +520,7 @@ jobs:
           CANDIDATE_OUTCOME: ${{ steps.candidate.outcome }}
           CANDIDATE_BRANCH: ${{ steps.candidate.outputs.candidate_branch }}
           CANDIDATE_SHA: ${{ steps.candidate.outputs.candidate_sha }}
+          CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
           BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
           CHANGED_FILE_COUNT: ${{ steps.candidate.outputs.changed_file_count }}
           ADDED_LINE_COUNT: ${{ steps.candidate.outputs.added_line_count }}
@@ -419,7 +528,8 @@ jobs:
           IQA_OUTCOME: ${{ steps.incremental_qa.outcome }}
           IQA_HASH: ${{ steps.incremental_qa.outputs.hash }}
           IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
-          SAFE_TASK: ${{ steps.order.outputs.safe_task }}
+          PERFORMANCE_OUTCOME: ${{ steps.performance.outcome }}
+          SAFE_TASK: ${{ matrix.safeTask }}
           RESERVED_AT: ${{ matrix.reservedAt }}
           REQUESTED_MAX: ${{ matrix.requestedMax }}
           EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
@@ -435,22 +545,43 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/vibe2-result
           node <<'NODE'
-          const fs=require('fs');
+          const fs=require('fs'),path=require('path');
           const clean=v=>String(v??'').trim();
           const route=clean(process.env.ROUTE);
+          const candidateOk=process.env.CANDIDATE_OUTCOME==='success';
+          const testOk=process.env.IQA_OUTCOME==='success';
+          const performanceOk=process.env.PERFORMANCE_OUTCOME==='success';
           let outcome='BLOCKED', blocker=clean(process.env.ORDER_REASON)||'work-order-not-runnable';
           if(process.env.ORDER_RUN==='true' && route==='text-source-worker'){
-            if(process.env.CANDIDATE_OUTCOME==='success' && process.env.IQA_OUTCOME==='success'){
-              outcome='PASS'; blocker='candidate-awaiting-qa-and-deployment';
-            }else{ outcome='FAIL'; blocker=process.env.CANDIDATE_OUTCOME==='success'?'incremental-qa-failed':'source-candidate-generation-failed'; }
+            if(candidateOk&&testOk&&performanceOk){outcome='PASS';blocker='candidate-awaiting-qa-and-deployment';}
+            else if(!candidateOk){outcome='FAIL';blocker='source-candidate-generation-failed';}
+            else if(!testOk){outcome='FAIL';blocker='incremental-qa-failed';}
+            else{outcome='FAIL';blocker='performance-sanity-failed';}
           }else if(process.env.ORDER_RUN==='true' && route==='engine-editor') blocker='engine-editor-worker-not-connected';
           else if(process.env.ORDER_RUN==='true' && route==='analysis-only') blocker='analysis-worker-not-connected';
+
+          let manifest={};
+          const candidateDir=clean(process.env.CANDIDATE_DIR);
+          if(candidateDir){
+            const root=path.join(candidateDir,'.vibe2','candidates');
+            if(fs.existsSync(root))for(const dir of fs.readdirSync(root)){const file=path.join(root,dir,'manifest.json');if(fs.existsSync(file)){manifest=JSON.parse(fs.readFileSync(file,'utf8'));break;}}
+          }
+          const exploration=manifest.exploration||null;
+          const roleResults={
+            exploration:exploration?.reuseKey?'PASS':'FAIL',
+            implementation:candidateOk?'PASS':'FAIL',
+            test:testOk?'PASS':'FAIL',
+            performance:performanceOk?'PASS':'FAIL',
+            regression:'WAITING_FAN_IN',
+            review:'WAITING_FAN_IN'
+          };
           const evidence=[
             clean(process.env.CANDIDATE_BRANCH),
             clean(process.env.CANDIDATE_SHA)&&`candidate-sha:${clean(process.env.CANDIDATE_SHA)}`,
             clean(process.env.BASE_SHA)&&`base-main:${clean(process.env.BASE_SHA)}`,
             clean(process.env.IQA_HASH)&&`incremental-qa-hash:${clean(process.env.IQA_HASH)}`,
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
+            ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             `actions-run:${process.env.GITHUB_RUN_ID}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`
           ].filter(Boolean);
@@ -464,19 +595,22 @@ jobs:
             changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
             ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null
           };
-          const result={version:3,taskId:clean(process.env.TASK_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,evidence,durationMs:metrics.workerTotalMs,metrics};
+          const result={version:4,taskId:clean(process.env.TASK_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,evidence,exploration,roleResults,durationMs:metrics.workerTotalMs,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`file=${file}\n`);
           console.log(`VIBE2_WORKER_RESULT=${outcome}`);
+          console.log(`VIBE2_IMPLEMENTATION_ROLE=${roleResults.implementation}`);
+          console.log(`VIBE2_TEST_ROLE=${roleResults.test}`);
+          console.log(`VIBE2_PERFORMANCE_ROLE=${roleResults.performance}`);
           NODE
 
       - name: Upload worker result for fan-in
         if: always() && steps.result.outputs.file != ''
         uses: actions/upload-artifact@v4
         with:
-          name: vibe2-result-${{ steps.order.outputs.safe_task }}-${{ matrix.variant }}
+          name: vibe2-result-${{ matrix.safeTask }}-${{ matrix.variant }}
           path: ${{ steps.result.outputs.file }}
           if-no-files-found: error
           retention-days: 1
@@ -544,11 +678,11 @@ jobs:
           const files=fs.readdirSync(dir).filter(f=>f.endsWith('.json')).sort();
           const results=files.map(f=>JSON.parse(fs.readFileSync(path.join(dir,f),'utf8')));
           const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
-          fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:2,results,tasks:queue.tasks||[]},null,2)+'\n');
+          fs.writeFileSync('/tmp/vibe2-fan-in.json',JSON.stringify({version:3,results,tasks:queue.tasks||[]},null,2)+'\n');
           console.log(`VIBE2_FAN_IN_RESULT_COUNT=${results.length}`);
           NODE
 
-      - name: Merge worker outcomes and run one full scheduler regression
+      - name: Merge outcomes run regression and package review
         id: persist
         shell: bash
         run: |
@@ -560,11 +694,12 @@ jobs:
 
           node tools/vibe2-queue-control.mjs fan-in --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
-          # Incremental checks ran per candidate. Run the complete Vibe2 core regression once at fan-in.
+          # Per-candidate test/performance roles already ran. Regression runs once at fan-in.
           node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
             qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-exploration-worker.test.mjs \
             qa/vibe2-queue-control.test.mjs \
             qa/vibe2-work-package.test.mjs \
             qa/vibe2-incremental-qa.test.mjs \
@@ -574,6 +709,14 @@ jobs:
             qa/vibe2-candidate-reconcile.test.mjs \
             qa/vibe2-experience-control.test.mjs \
             qa/vibe2-handoff.test.mjs
+          echo 'VIBE2_REGRESSION_ROLE=PASS'
+          echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+
+          node tools/vibe2-fan-in-review.mjs \
+            --queue=.vibe2/queue.json \
+            --input=/tmp/vibe2-fan-in.json \
+            --output=/tmp/vibe2-package-review.json | tee /tmp/vibe2-package-review.log
+          echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
 
           if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json; then
             echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'
@@ -597,7 +740,7 @@ jobs:
           if [ "${continue_required:-NO}" = 'YES' ]; then echo 'refill=1' >> "$GITHUB_OUTPUT"; else echo 'refill=0' >> "$GITHUB_OUTPUT"; fi
           echo 'VIBE2_HIERARCHICAL_FAN_IN=PASS'
 
-      - name: Upload generated machine handoff
+      - name: Upload generated machine handoff and role review
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -605,6 +748,8 @@ jobs:
           path: |
             /tmp/vibe2-handoff-after-fanin.json
             /tmp/vibe2-handoff-after-fanin.log
+            /tmp/vibe2-package-review.json
+            /tmp/vibe2-package-review.log
           if-no-files-found: ignore
           retention-days: 7
 

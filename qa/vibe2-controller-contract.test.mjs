@@ -91,7 +91,8 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert(workflow.includes('actions/cache@v4'));
   assert(workflow.includes('tools/vibe2-incremental-qa.mjs'));
   assert(workflow.includes('incremental-qa-hash:'));
-  assert(workflow.includes('Run the complete Vibe2 core regression once at fan-in'));
+  assert(workflow.includes('Merge outcomes run regression and package review'));
+  assert(workflow.includes('Per-candidate test/performance roles already ran. Regression runs once at fan-in.'));
   assert(workflow.includes('node --test --test-concurrency=4'));
   assert(workflow.includes('qa/vibe2-controller-contract.test.mjs'));
   assert(workflow.includes('qa/vibe2-source-worker.test.mjs'));
@@ -173,7 +174,7 @@ test('worker result keeps throughput and actual workload telemetry inputs in the
     assert(resultStep.includes(key),`missing result telemetry env ${key}`);
   }
   assert(workflow.includes('git diff --cached --numstat -- "$SOURCE_ROOT"'));
-  assert(workflow.includes('JSON.stringify({version:2,results,tasks:queue.tasks||[]}'));
+  assert(workflow.includes('JSON.stringify({version:3,results,tasks:queue.tasks||[]}'));
 });
 
 test('explicit work-order output path overrides runtime default path',()=>{

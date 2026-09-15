@@ -67,6 +67,27 @@ function buildLearningGuidance(learning = {}) {
   }
   return lines.join('\n');
 }
+function reusableContextsForTask(handoff = {}, task = {}) {
+  const contexts = Array.isArray(handoff?.workState?.reusableContexts) ? handoff.workState.reusableContexts : [];
+  const packageId = clean(task.packageId);
+  return contexts.filter((row) => clean(row.taskId) === clean(task.id) || (packageId && clean(row.packageId) === packageId)).slice(-8);
+}
+function buildReusableHandoffGuidance(contexts = []) {
+  if (!contexts.length) return '';
+  const lines = ['[REUSABLE MACHINE HANDOFF - do not rediscover already known facts]'];
+  for (const row of contexts) {
+    const parts = [
+      `task=${clean(row.taskId)}`,
+      clean(row.packageId) ? `package=${clean(row.packageId)}` : '',
+      (row.responsibleFiles || []).length ? `files=${row.responsibleFiles.join(',')}` : '',
+      (row.reusableEvidence || []).length ? `evidence=${row.reusableEvidence.join(' | ')}` : '',
+      clean(row.blocker) ? `lastBlocker=${clean(row.blocker)}` : '',
+      clean(row.lastOutcome) ? `lastOutcome=${clean(row.lastOutcome)}` : ''
+    ].filter(Boolean);
+    lines.push(`- ${parts.join('; ')}`);
+  }
+  return lines.join('\n');
+}
 export function classifyVibeExecutionRoute({ target = '', task = {}, adapter = {} } = {}) {
   const normalizedTarget = clean(target).toLowerCase();
   if (!taskRequiresWrite(task)) return freeze({ route: 'analysis-only', requiresEditor: false, reason: 'non-write-task' });
@@ -107,16 +128,17 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const normalizedQueue = createVibeContinuousQueue(queue);
   const resolved = resolveTask(normalizedQueue, taskId);
   const base = {
-    version:5, generatedAt:new Date().toISOString(), run:false, reason:null, mode:'vibe2-parallel-work-order',
-    machineHandoff:freeze({ used:Boolean(handoff?.kind), kind:handoff?.kind || null, sourceOfTruth:handoff?.sourceOfTruth || null, consistency:handoff?.consistency || {ok:true,errors:[]}, currentPersistentMax:Number(handoff?.parallelism?.currentPersistentMax || runtime?.continuous?.maxConcurrentGameTasks || 20), lastDecision:handoff?.parallelism?.lastDecision || null, ownerDirectiveOpenCount:Number(handoff?.workState?.ownerDirectiveOpenCount || 0) }),
-    scheduler:freeze({ hierarchicalParallelism:true, dag:true, shardAware:true, workStealing:true, sourceRootLock:true, eventDriven:true, dynamicBackpressure:true }),
+    version:6, generatedAt:new Date().toISOString(), run:false, reason:null, mode:'vibe2-parallel-work-order',
+    machineHandoff:freeze({ used:Boolean(handoff?.kind), kind:handoff?.kind || null, sourceOfTruth:handoff?.sourceOfTruth || null, consistency:handoff?.consistency || {ok:true,errors:[]}, currentPersistentMax:Number(handoff?.parallelism?.currentPersistentMax || runtime?.continuous?.maxConcurrentGameTasks || 20), lastDecision:handoff?.parallelism?.lastDecision || null, ownerDirectiveOpenCount:Number(handoff?.workState?.ownerDirectiveOpenCount || 0), reusableContextCount:Number(handoff?.workState?.reusableContexts?.length || 0) }),
+    scheduler:freeze({ hierarchicalParallelism:true, dag:true, shardAware:true, workStealing:true, sourceRootLock:true, eventDriven:true, dynamicBackpressure:true, longWorkProtectedSlot:true, roleSeparated:true }),
     safety:freeze({
       directMainWrite:false,
       existingWebMaintenanceAllowed:runtime?.safety?.existingWebMaintenanceAllowed === true,
       newWebGameAutomatic:runtime?.safety?.newWebGameAutomatic === true,
       paidAIAllowed:runtime?.safety?.paidAIAllowed === true,
       paidRunnerAllowed:runtime?.safety?.paidRunnerAllowed === true,
-      binaryAssetsDirectTextEditForbidden:true
+      binaryAssetsDirectTextEditForbidden:true,
+      sameFileParallelWrite:false
     })
   };
   if (handoff?.kind && handoff.consistency?.ok !== true) return freeze({ ...base, reason:`MACHINE_STATE_INCONSISTENT:${(handoff.consistency?.errors || []).join('|') || 'UNKNOWN'}` });
@@ -153,6 +175,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const releaseState = clean(task.releaseState) || 'other';
   const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState) && ['roblox','web','unity'].includes(plan.target) && task.requiresOwnerDecision !== true && task.protectedChange !== true;
   const learningGuidance = buildLearningGuidance(plan.learning);
+  const reusedContexts = reusableContextsForTask(handoff || {}, task);
+  const reusedGuidance = buildReusableHandoffGuidance(reusedContexts);
   const workPackage=freeze({
     id:clean(task.packageId)||null,
     goal:clean(task.packageGoal)||null,
@@ -163,22 +187,34 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     packageSize:Number(task.packageSize||0),
     longWorkProtected:task.packageLongWorkProtected===true,
     sharedContext:task.packageContext||null,
-    completionCriteria:freezeList(task.completionCriteria||[])
+    completionCriteria:freezeList(task.completionCriteria||[]),
+    rolePlan:freeze({
+      exploration:'read-only-exploration-worker',
+      implementation:'source-worker-exclusive-write',
+      test:'incremental-qa-worker-read-only',
+      performance:'performance-sanity-worker-read-only',
+      regression:'single-fan-in-regression-worker-read-only',
+      review:'fan-in-package-review-worker-read-only'
+    })
   });
   const packageGuidance=workPackage.id?[
     `[WORK PACKAGE ${workPackage.id}]`,
     workPackage.goal||'',
     `역할=${workPackage.role||'implementation'}; taskWorkUnits=${workPackage.taskWorkUnits}; packageWorkUnits=${workPackage.packageWorkUnits}`,
     workPackage.sharedContext?.responsibleFiles?.length?`공유 준비 범위=${workPackage.sharedContext.responsibleFiles.join(', ')}`:'',
+    `역할 분리=${Object.entries(workPackage.rolePlan).map(([k,v])=>`${k}:${v}`).join(' | ')}`,
     workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
   ].filter(Boolean).join('\n'):'';
-  const executionGoal = [packageGuidance, task.goal, designIntelligence.guidance, learningGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, designIntelligence.guidance, learningGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const qa = freezeList([
     ...(plan.qa || []),
     'design-intelligence-contract',
+    'exploration-handoff-required-before-implementation',
     'auto-player-evidence-after-implementation',
     'telemetry-evidence-after-implementation',
+    'performance-sanity-after-implementation',
+    'fan-in-regression-before-package-review',
     'design-review-before-experience-promotion'
   ]);
 
@@ -194,6 +230,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     }),
     qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles),
     workPackage,
+    reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
     learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance), motion:plan.motion, executionGate:plan.executionGate,
     deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
@@ -202,6 +239,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
       paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
       binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
+      explorationRequired:true, explorationWorker:'tools/vibe2-exploration-worker.mjs', explorationSourceWrite:false,
+      roleSeparation:true, sameFileParallelWrite:false,
       speculativeParallelism:task.speculativeEligible && task.estimatedRisk==='high', speculativeVariants:task.speculativeEligible && task.estimatedRisk==='high'?2:1
     })
   });
@@ -244,5 +283,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_INCREMENTAL_QA=YES`);
     console.log(`VIBE2_SPECULATIVE_VARIANTS=${order.incrementalQa.speculativeVariants}`);
     console.log(`VIBE2_EXPERIENCE_CONTEXT_APPLIED=${order.learningAppliedToWorkerGoal?'YES':'NO'}`);
+    console.log(`VIBE2_REUSABLE_HANDOFF_CONTEXT=${order.reusedMachineContext?.used?'YES':'NO'}`);
+    console.log(`VIBE2_ROLE_SEPARATION=${order.workerPolicy?.roleSeparation?'YES':'NO'}`);
   }
 }

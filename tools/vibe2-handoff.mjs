@@ -43,6 +43,17 @@ function priorityRank(task = {}) {
   return map[clean(task.priority).toLowerCase()] ?? 5;
 }
 
+function reusableEvidence(task = {}) {
+  const prefixes = [
+    'exploration-reuse:', 'exploration-impact:', 'exploration-tests:', 'role-result:',
+    'incremental-qa-hash:', 'incremental-qa-cache:', 'workload:', 'failure-cause:',
+    'speculative-result:', 'speculative-winner:', 'repair-mode:', 'diagnostic:'
+  ];
+  return [...new Set((Array.isArray(task.evidence) ? task.evidence : [])
+    .map(clean)
+    .filter((value) => prefixes.some((prefix) => value.startsWith(prefix))))];
+}
+
 function taskPreview(task = {}) {
   return {
     id: clean(task.id) || null,
@@ -56,10 +67,30 @@ function taskPreview(task = {}) {
     responsibleFiles: Array.isArray(task.responsibleFiles) ? task.responsibleFiles : [],
     dependencies: Array.isArray(task.dependencies) ? task.dependencies : [],
     blocker: clean(task.blocker) || null,
-    ownerDirective: task.ownerDirective === true
+    lastOutcome: clean(task.lastOutcome) || null,
+    ownerDirective: task.ownerDirective === true,
+    packageId: clean(task.packageId) || null,
+    packageRole: clean(task.packageRole) || null,
+    packageLongWorkProtected: task.packageLongWorkProtected === true,
+    packageContext: task.packageContext || null,
+    reusableEvidence: reusableEvidence(task)
   };
 }
 
+function reusableContext(task = {}) {
+  return {
+    taskId: clean(task.id) || null,
+    packageId: clean(task.packageId) || null,
+    packageRole: clean(task.packageRole) || null,
+    sourceRoot: clean(task.sourceRoot) || null,
+    responsibleFiles: Array.isArray(task.responsibleFiles) ? task.responsibleFiles : [],
+    sharedPreparation: task.packageContext || null,
+    reusableEvidence: reusableEvidence(task),
+    blocker: clean(task.blocker) || null,
+    lastOutcome: clean(task.lastOutcome) || null,
+    retries: Number(task.retries || 0)
+  };
+}
 
 const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const resolveFrom = (root, file) => path.isAbsolute(clean(file)) ? clean(file) : path.join(root, clean(file));
@@ -143,6 +174,7 @@ export function buildVibe2Handoff({
   const docs = runtime.documentation || {};
   const work = runtime.workManagement || {};
   const adaptive = runtime.adaptiveBackpressure || {};
+  const reusable = tasks.filter((task) => clean(task.packageId) || reusableEvidence(task).length || clean(task.blocker));
 
   return {
     version: 2,
@@ -160,7 +192,8 @@ export function buildVibe2Handoff({
       largeWorkExecution: work.largeWorkExecution || 'phased-until-complete',
       splitRule: work.splitRule || 'split-by-implementation-phase-not-artificial-file-count',
       ownerDirectivePreemptsAutonomy: work.ownerDirectivePreemptsAutonomy !== false,
-      humanMaintainedHandoff: work.humanMaintainedHandoff === true
+      humanMaintainedHandoff: work.humanMaintainedHandoff === true,
+      reusableWorkerContext: work.reusableWorkerContext !== false
     },
     workState: {
       taskCount: tasks.length,
@@ -175,7 +208,8 @@ export function buildVibe2Handoff({
       queuedPreview: queued.slice(0, 20).map(taskPreview),
       running: running.map(taskPreview),
       failed: failed.slice(0, 20).map(taskPreview),
-      blocked: blocked.slice(0, 20).map(taskPreview)
+      blocked: blocked.slice(0, 20).map(taskPreview),
+      reusableContexts: reusable.slice(-40).map(reusableContext)
     },
     parallelism: {
       configuredMax: Number(runtime.continuous?.maxConcurrentGameTasks || 20),

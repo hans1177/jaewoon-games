@@ -20,7 +20,13 @@ Vibe2 개발은 작은 파일 수정 개수나 동시에 돈 worker 수를 성�
 
 Planner는 작은 seed task를 받으면 먼저 같은 기능 경계에서 실제로 존재하는 진단, 유지보수, UX/가독성, QA 보강, 성능 안전성 후보를 찾고 서로 다른 책임 파일이면 같은 package로 묶는다. 실제 관련 후보가 부족한 경우에만 직접 연관된 오류 처리, 모바일 UX, 회귀 QA, 기본 성능 점검 scope를 명시적으로 추가한다. 숫자만 올려 작은 task를 큰 작업처럼 취급하지 않는다.
 
-각 package는 공유 준비 컨텍스트, 기능 owner, 구현 역할, incremental QA, fan-in 전체 회귀, 완료 기준을 가진다. 같은 파일 동시 수정은 계속 금지한다. 긴 package는 짧은 작업에 계속 밀리지 않도록 우선순위를 보강하고, 완료는 코드 수정만으로 처리하지 않고 구현 + 관련 QA + 전체 회귀 + 필요한 machine 계약/중앙 문서 동기화까지 확인한다.
+구현 전에는 **읽기 전용 exploration worker**가 구조, 영향 범위, 관련 파일, 테스트 후보를 먼저 수집한다. 이 결과는 reuse key가 붙은 handoff로 구현 worker에 전달하며, 이후 QA·성능·리뷰 worker와 다음 사이클도 같은 조사 결과와 실패 원인을 재사용한다. 같은 내용을 worker마다 다시 찾는 준비 낭비를 줄이는 목적이다.
+
+Package 역할은 `exploration → implementation → test → performance → regression → review`로 분리한다. **소스 수정 권한은 implementation worker만 가진다.** 탐색·QA·성능·회귀·리뷰 역할은 읽기 전용 검증 역할이며 같은 파일 동시 수정은 계속 금지한다. 전체 회귀가 실제 통과하고 앞선 필수 역할 증거가 모두 PASS여야 fan-in review가 PASS된다.
+
+긴 package의 `implementation-owner`에는 **보호 슬롯 1개**를 먼저 배정한다. 작은 작업이 계속 들어와도 큰 기능 owner가 무기한 밀리지 않게 하되, source/file lock과 기존 안전 규칙은 그대로 적용한다.
+
+완료는 코드 수정만으로 처리하지 않는다. 탐색 handoff 재사용 + 구현 + incremental QA + 성능 sanity + 전체 회귀 + fan-in review + 필요한 machine 계약/중앙 문서 동기화까지 확인해야 package 완료 조건을 만족한다.
 
 작업량 telemetry는 다음을 기준으로 본다.
 

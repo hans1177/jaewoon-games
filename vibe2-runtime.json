@@ -50,6 +50,7 @@
     ],
     "humanMaintainedHandoff": false,
     "machineContextRequired": true,
+    "reusableWorkerContext": true,
     "handoffConsumers": [
       "planner",
       "reserve",
@@ -75,6 +76,7 @@
     "ownerDirectivePreemptsAutonomy": true,
     "maxConcurrentGameTasks": 20,
     "unityReleaseFocusSlots": 1,
+    "longWorkProtectedSlots": 1,
     "priorityOrder": [
       "owner-directive",
       "release-confirmed",
@@ -146,6 +148,18 @@
     "parallelism": ".vibe2/parallelism-control.json"
   },
   "workers": {
+    "exploration": {
+      "configured": true,
+      "tool": "tools/vibe2-exploration-worker.mjs",
+      "sourceWrite": false,
+      "artifactReusable": true,
+      "reusedBy": [
+        "implementation",
+        "test",
+        "performance",
+        "review"
+      ]
+    },
     "textSource": {
       "configured": true,
       "tool": "tools/vibe2-source-worker.mjs",
@@ -153,26 +167,41 @@
       "candidateBranchPrefix": "vibe2/candidate/",
       "directMainWrite": false
     },
+    "performance": {
+      "configured": true,
+      "tool": "tools/vibe2-performance-sanity.mjs",
+      "sourceWrite": false
+    },
+    "review": {
+      "configured": true,
+      "tool": "tools/vibe2-fan-in-review.mjs",
+      "sourceWrite": false
+    },
     "analysis": {
       "configured": false,
-      "reason": "analysis-worker-not-connected-yet"
+      "reason": "general-analysis-worker-not-connected-yet"
     }
   },
   "coordination": {
     "mode": "dag-batch-source-root-exclusive-file-aware",
     "sourceRootExclusive": true,
     "separateFileLocks": true,
+    "sameFileParallelWrite": false,
     "activeTaskSource": ".vibe2/queue.json",
     "chatgptAvoidsActiveResponsibleFiles": true,
     "baseShaOverlapAction": "REPLAN_REQUIRED",
     "baseShaNonOverlapAction": "REBASE_THEN_QA",
     "fanOutFanIn": true,
     "stateWritesSerialized": true,
-    "workerBranchesIsolated": true
+    "workerBranchesIsolated": true,
+    "sharedPreparationSinglePass": true,
+    "longWorkProtectedSlots": 1
   },
   "qaOptimization": {
     "incrementalFirst": true,
     "tool": "tools/vibe2-incremental-qa.mjs",
+    "performanceSanityWorker": "tools/vibe2-performance-sanity.mjs",
+    "fanInReviewWorker": "tools/vibe2-fan-in-review.mjs",
     "contentHashCache": true,
     "persistentActionsCache": true,
     "reservePreflight": "syntax-and-machine-state-only",
@@ -545,19 +574,28 @@
       "performance-sanity"
     ],
     "sameFileParallelWrite": false,
-    "explorationMode": "planner-precomputed-shared-context",
+    "explorationMode": "dedicated-exploration-worker-handoff",
+    "explorationRequired": true,
+    "reusableMachineHandoff": true,
     "sharedPreparation": true,
     "longWorkSlotProtection": true,
+    "longWorkProtectedSlots": 1,
     "parallelRoles": [
       "work-package-owner",
-      "parallel-implementation-workers",
-      "incremental-qa",
-      "fan-in-package-review"
+      "read-only-exploration-worker",
+      "source-write-implementation-worker",
+      "incremental-qa-worker",
+      "performance-sanity-worker",
+      "single-fan-in-regression-worker",
+      "fan-in-package-review-worker"
     ],
     "completionCriteria": [
+      "exploration-handoff-produced-and-reused",
       "functional-scope-implemented",
       "all-package-task-incremental-qa-pass",
+      "performance-sanity-pass",
       "full-core-regression-once-at-fan-in",
+      "fan-in-package-review-pass",
       "machine-contract-and-central-doc-synced-when-architecture-changes"
     ],
     "preferredDeliveryUnit": "one-functional-pr-per-work-package-after-package-qa",
