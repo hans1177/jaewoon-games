@@ -1,0 +1,46 @@
+name: Temporary Vibe2 Adaptive V2 Verification
+
+on:
+  push:
+    branches:
+      - feat/vibe2-adaptive-backpressure-v2
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/vibe2-adaptive-backpressure-v2
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply verified adaptive patch
+        run: node tools/tmp-vibe2-adaptive-v2-patch.mjs
+      - name: Verify contracts
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-adaptive-backpressure.mjs
+          node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-parallelism-telemetry.mjs
+          node --test qa/vibe2-parallelism-telemetry.test.mjs
+          node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-parallelism-20-contract.test.mjs
+          node --test qa/vibe2-controller-contract.test.mjs
+      - name: Persist non-workflow verified changes
+        run: |
+          set -euo pipefail
+          cp .github/workflows/vibe2-continuous-core.yml tools/generated-vibe2-continuous-core.yml
+          git checkout -- .github/workflows/vibe2-continuous-core.yml
+          git config user.name 'jaewoon-vibe2-adaptive'
+          git config user.email 'vibe2-adaptive@users.noreply.github.com'
+          git add tools/vibe2-queue-control.mjs qa/vibe2-parallelism-telemetry.test.mjs tools/generated-vibe2-continuous-core.yml
+          git diff --cached --quiet && exit 0
+          git commit -m 'feat: wire adaptive backpressure controller [skip ci]'
+          git push origin HEAD:feat/vibe2-adaptive-backpressure-v2
