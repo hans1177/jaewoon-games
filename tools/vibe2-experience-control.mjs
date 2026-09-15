@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createVibeExperienceMemory, addVibeExperience } from '../assets/vibe-experience-memory.js';
+import { validateDesignAwareExperience } from './vibe2-design-intelligence.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
@@ -40,12 +41,18 @@ function normalizeOutcome(value) {
 }
 function sameValue(a, b) { return clean(a) === clean(b); }
 function sameOptionalNumber(a, b) { return clean(a) === clean(b); }
+function verifiedEvidence(value) {
+  if (value === true) return true;
+  if (!value || typeof value !== 'object') return false;
+  return value.verified === true && Boolean(clean(value.evidence || value.id || value.runId || value.path));
+}
 
 export function validateVibeExperiencePromotion(review = {}) {
   const outcome = normalizeOutcome(review.outcome);
   const reviewDecision = normalizeDecision(review.reviewDecision);
   const evidence = unique(review.evidence || []);
-  const issues = [];
+  const designValidation = validateDesignAwareExperience(review);
+  const issues = [...designValidation.issues];
   if (!clean(review.gameId)) issues.push('game-id-required');
   if (!clean(review.engine)) issues.push('engine-required');
   if (!clean(review.taskType)) issues.push('task-type-required');
@@ -62,7 +69,8 @@ export function validateVibeExperiencePromotion(review = {}) {
     issues: Object.freeze(unique(issues)),
     outcome,
     reviewDecision,
-    evidence: Object.freeze(evidence)
+    evidence: Object.freeze(evidence),
+    designValidation
   });
 }
 
@@ -161,12 +169,21 @@ export function buildVibeExperienceReviewFromRevote({ request = {}, departmentVo
   const failureCause = outcome === 'FAIL' && verifiedBuildFailure
     ? `${clean(request.buildStage)}: ${clean(request.buildError)}`
     : '';
+  const designIntelligenceRequired = request.designIntelligenceRequired === true || request?.designIntelligence?.required === true;
+  const autoPlayerVerified = verifiedEvidence(request?.designEvidence?.autoPlayer);
+  const telemetryVerified = verifiedEvidence(request?.designEvidence?.telemetry);
+  const designReviewEvidence = request?.designEvidence?.designReview || null;
+  const designReviewVerified = verifiedEvidence(designReviewEvidence);
+  const designReviewDecision = normalizeDecision(designReviewEvidence?.decision);
   const evidence = unique([
     requestId ? `revote-request:${requestId}` : '',
     modificationCommit ? `modification-commit:${modificationCommit}` : '',
     buildRunId && buildConclusion ? `engine-build-run:${buildRunId}:${buildConclusion}` : '',
     integrity.valid ? `department-revotes:${requestId}:5/5` : '',
-    integrity.valid ? `director-aggregation:${requestId}:${directorDecision}` : ''
+    integrity.valid ? `director-aggregation:${requestId}:${directorDecision}` : '',
+    autoPlayerVerified ? `design-auto-player:${clean(request?.designEvidence?.autoPlayer?.evidence || request?.designEvidence?.autoPlayer?.runId || requestId)}` : '',
+    telemetryVerified ? `design-telemetry:${clean(request?.designEvidence?.telemetry?.evidence || request?.designEvidence?.telemetry?.runId || requestId)}` : '',
+    designReviewVerified ? `design-review:${clean(designReviewEvidence?.evidence || designReviewEvidence?.id || requestId)}:${designReviewDecision}` : ''
   ]);
   const scope = clean(request.scope);
   const problem = failureCause || clean(request.buildStage) || scope || `post-modification review ${requestId}`;
@@ -185,7 +202,10 @@ export function buildVibeExperienceReviewFromRevote({ request = {}, departmentVo
     qa: Object.freeze(unique([
       integrity.valid ? 'five-independent-department-revotes' : '',
       engineQaVerified ? 'engine-build-and-qa-pass' : '',
-      verifiedBuildFailure ? 'engine-build-failure-cause-verified' : ''
+      verifiedBuildFailure ? 'engine-build-failure-cause-verified' : '',
+      autoPlayerVerified ? 'design-auto-player-verified' : '',
+      telemetryVerified ? 'design-telemetry-verified' : '',
+      designReviewVerified ? `design-review-${designReviewDecision.toLowerCase()}` : ''
     ])),
     build: buildRunId ? `run ${buildRunId} ${buildConclusion || 'unknown'}` : '',
     evidence: Object.freeze(evidence),
@@ -194,6 +214,11 @@ export function buildVibeExperienceReviewFromRevote({ request = {}, departmentVo
     engineQaVerified,
     reviewVerified: integrity.valid,
     reviewDecision: integrity.valid ? 'PASS' : 'REVISE',
+    designIntelligenceRequired,
+    autoPlayerVerified,
+    telemetryVerified,
+    designReviewVerified,
+    designReviewDecision,
     authorityExpanded: false,
     revoteDecision: directorDecision,
     integrity
@@ -266,6 +291,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_EXPERIENCE_REVOTE_DECISION=${result.review.revoteDecision}`);
     console.log(`VIBE2_EXPERIENCE_REVIEW_VERIFIED=${result.review.reviewVerified ? 'YES' : 'NO'}`);
     console.log(`VIBE2_EXPERIENCE_ENGINE_QA_VERIFIED=${result.review.engineQaVerified ? 'YES' : 'NO'}`);
+    console.log(`VIBE2_EXPERIENCE_DESIGN_REQUIRED=${result.review.designIntelligenceRequired ? 'YES' : 'NO'}`);
+    if (result.review.designIntelligenceRequired) {
+      console.log(`VIBE2_EXPERIENCE_AUTO_PLAYER_VERIFIED=${result.review.autoPlayerVerified ? 'YES' : 'NO'}`);
+      console.log(`VIBE2_EXPERIENCE_TELEMETRY_VERIFIED=${result.review.telemetryVerified ? 'YES' : 'NO'}`);
+      console.log(`VIBE2_EXPERIENCE_DESIGN_REVIEW=${result.review.designReviewDecision}`);
+    }
   }
   if (result.storageError) console.log(`VIBE2_EXPERIENCE_STORAGE_ERROR=${result.storageError}`);
   if (!autoRevote && !result.promoted && result.reason !== 'duplicate-experience') process.exitCode = 2;
