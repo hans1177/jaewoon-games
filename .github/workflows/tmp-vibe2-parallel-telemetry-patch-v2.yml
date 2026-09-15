@@ -1,0 +1,58 @@
+name: TMP Vibe2 Parallel Telemetry Patch V2
+
+on:
+  push:
+    branches: [feat/vibe2-parallel-load-telemetry]
+    paths:
+      - '.github/workflows/tmp-vibe2-parallel-telemetry-patch-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/vibe2-parallel-load-telemetry
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Extract and run corrected patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          from pathlib import Path
+          import textwrap
+          src=Path('.github/workflows/tmp-vibe2-parallel-telemetry-patch.yml').read_text()
+          start=src.index("          node <<'NODE'\n")+len("          node <<'NODE'\n")
+          end=src.index("\n          NODE\n",start)
+          script=textwrap.dedent(src[start:end])
+          old="const expr=s=>'$'+'"+chr(123)+chr(123)+" '+s+' "+chr(125)+chr(125)+"';"
+          new="const expr=s=>'$'+String.fromCharCode(123,123)+' '+s+' '+String.fromCharCode(125,125);"
+          if old not in script:
+              raise SystemExit('EXPR_PATCH_MARKER_NOT_FOUND')
+          Path('/tmp/vibe2-parallel-telemetry-patch.cjs').write_text(script.replace(old,new))
+          PY
+          node /tmp/vibe2-parallel-telemetry-patch.cjs
+          node --check tools/vibe2-queue-control.mjs
+          node --check tools/vibe2-parallelism-telemetry.mjs
+          node --test qa/vibe2-parallelism-telemetry.test.mjs
+          node --test qa/vibe2-queue-control.test.mjs
+          node --test qa/vibe2-parallelism-20-contract.test.mjs
+          node --test qa/vibe2-controller-contract.test.mjs
+      - name: Commit verified telemetry wiring
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-migration'
+          git config user.email 'vibe2-migration@users.noreply.github.com'
+          git add tools/vibe2-queue-control.mjs .github/workflows/vibe2-continuous-core.yml
+          git diff --cached --quiet && exit 0
+          git commit -m 'feat: record Vibe2 20-slot runtime telemetry'
+          git push origin HEAD:feat/vibe2-parallel-load-telemetry
