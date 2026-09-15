@@ -1,6 +1,9 @@
 name: Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA
 
 on:
+  workflow_run:
+    workflows: ["Company DEVELOPMENT_CONFIRMED Roblox Post-Runtime QA"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       game_id:
@@ -23,6 +26,7 @@ env:
 jobs:
   multiplayer-plan:
     name: resolve Roblox multiplayer QA work
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     outputs:
