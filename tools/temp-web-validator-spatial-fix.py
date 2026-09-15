@@ -16,9 +16,9 @@ t=test.read_text()
 anchor="test('shared preserved engine binds more than five approved scopes without model regeneration',async()=>{"
 addition="""test('Web runtime spatial detector does not treat absent coordinates as 3D and recognizes Korean exploration input',()=>{
   const source=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
-  assert.match(source,/if\(value===' '\.trim\(\)\)return null|if\(value==='\'\)return null/);
-  assert.match(source,/탐험\|탐색\|경로/);
-  assert.match(source,/detected3D=spatialDimension==='3d'\|\|\[playerPosition\.x,playerPosition\.y,playerPosition\.z\]\.every\(Number\.isFinite\)/);
+  assert.ok(source.includes(\"if(value==='')return null;\"));
+  assert.match(source,/탐험\\|탐색\\|경로/);
+  assert.match(source,/detected3D=spatialDimension==='3d'\\|\\|\\[playerPosition\\.x,playerPosition\\.y,playerPosition\\.z\\]\\.every\\(Number\\.isFinite\\)/);
 });
 
 """+anchor
