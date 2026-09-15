@@ -617,6 +617,7 @@ jobs:
 
       - name: Signal immediate slot refill after single-variant worker completion
         if: always() && matrix.earlyRefill == true && steps.result.outputs.file != ''
+        continue-on-error: true
         env:
           TASK_ID: ${{ matrix.taskId }}
         shell: bash
