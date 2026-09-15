@@ -90,3 +90,5 @@ if __name__ == '__main__':
         fix_generated_yaml()
     else:
         raise SystemExit(f'unknown mode: {mode}')
+
+# Temporary trigger marker; removed with this script after successful verification.
