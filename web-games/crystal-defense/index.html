@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #1e1e1e;
+      color: #ffffff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .shield {
+      width: 200px;
+      height: 200px;
+      background-color: #4a90e2;
+      border-radius: 10px;
+      margin: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 24px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .hud {
+      width: 300px;
+      background-color: #2e2e2e;
+      padding: 10px;
+      border-radius: 5px;
+      margin: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .hud h2 {
+      margin-bottom: 5px;
+    }
+    .hud p {
+      margin: 5px 0;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      background-color: #4a90e2;
+      color: white;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #3366cc;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="shield">🛡️</div>
+    <div class="hud">
+      <h2>Shield Status</h2>
+      <p>Health: <span id="shield-health">100%</span></p>
+      <p>Damage: <span id="shield-damage">0%</span></p>
+    </div>
+    <div class="controls">
+      <button onclick="attack()">Attack</button>
+      <button onclick="defend()">Defend</button>
+      <button onclick="restartGame()">Restart</button>
+    </div>
+  </main>
+
+  <script>
+    let shieldHealth = 100;
+    let shieldDamage = 0;
+
+    function attack() {
+      shieldHealth -= 10;
+      shieldDamage += 5;
+      updateHUD();
+    }
+
+    function defend() {
+      shieldHealth += 10;
+      shieldDamage -= 5;
+      updateHUD();
+    }
+
+    function updateHUD() {
+      document.getElementById("shield-health").textContent = shieldHealth + "%";
+      document.getElementById("shield-damage").textContent = shieldDamage + "%";
+    }
+
+    function restartGame() {
+      shieldHealth = 100;
+      shieldDamage = 0;
+      updateHUD();
+    }
+  </script>
+</body>
+</html>
