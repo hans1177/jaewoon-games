@@ -1,0 +1,79 @@
+name: Vibe2 Platform Focus Apply
+
+on:
+  push:
+    branches:
+      - vibe2-unreal-core
+    paths:
+      - '.vibe2/platform-focus.json'
+      - 'tools/vibe2-platform-focus-policy.mjs'
+      - 'qa/vibe2-platform-focus-policy.test.mjs'
+      - '.github/workflows/vibe2-platform-focus-apply.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    concurrency:
+      group: vibe2-control-state-vibe2-unreal-core
+      cancel-in-progress: false
+    steps:
+      - name: Checkout Vibe2 control line
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify platform focus contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-platform-focus-policy.mjs
+          node --test qa/vibe2-platform-focus-policy.test.mjs
+
+      - name: Apply focus to current control queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-platform-focus'
+          git config user.email 'vibe2-platform-focus@users.noreply.github.com'
+          git fetch origin vibe2-unreal-core --quiet
+          git reset --hard origin/vibe2-unreal-core
+          node tools/vibe2-platform-focus-policy.mjs \
+            --queue=.vibe2/queue.json \
+            --config=.vibe2/platform-focus.json | tee /tmp/vibe2-platform-focus.log
+          if git diff --quiet -- .vibe2/queue.json; then
+            echo 'VIBE2_PLATFORM_FOCUS_LIVE_QUEUE_WRITE=NO'
+            exit 0
+          fi
+          git add .vibe2/queue.json
+          git commit -m 'vibe2: apply Roblox primary focus to queue [skip ci]'
+          pushed=0
+          for attempt in 1 2 3; do
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
+              pushed=1
+              break
+            fi
+            git rebase --abort 2>/dev/null || true
+            git fetch origin vibe2-unreal-core --quiet
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo 'VIBE2_PLATFORM_FOCUS_LIVE_QUEUE_WRITE=YES'
+
+      - name: Upload focus evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-platform-focus-${{ github.run_id }}
+          path: /tmp/vibe2-platform-focus.log
+          if-no-files-found: ignore
+          retention-days: 7
