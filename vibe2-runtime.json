@@ -13,7 +13,7 @@
     "maxModelCallsPerWorker": 1,
     "dispatchNextWhenCapacityOpens": true,
     "ownerDirectivePreemptsAutonomy": true,
-    "maxConcurrentGameTasks": 4,
+    "maxConcurrentGameTasks": 20,
     "unityReleaseFocusSlots": 1,
     "priorityOrder": ["owner-directive", "release-confirmed", "development-confirmed", "reviewing", "other"],
     "sameTierEngineOrder": ["existing-roblox", "existing-unity", "existing-web", "new-unity", "other-engine"],
