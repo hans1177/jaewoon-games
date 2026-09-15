@@ -6,11 +6,20 @@ WORKFLOW = Path('.github/workflows/vibe2-continuous-core.yml')
 
 def patch_source():
     text = SCRIPT.read_text(encoding='utf-8')
-    old = """text = replace_once(text, old_paths, new_paths, 'core qa push path')\ntext = replace_once(text, old_paths, new_paths, 'core qa pr path')"""
-    new = """if text.count(old_paths) != 2:\n    raise SystemExit(f'core qa workflow paths: expected two matches, got {text.count(old_paths)}')\ntext = text.replace(old_paths, new_paths, 2)"""
-    if old not in text:
-        raise SystemExit('temporary refactor source patch target missing')
-    SCRIPT.write_text(text.replace(old, new, 1), encoding='utf-8')
+
+    old_paths_patch = """text = replace_once(text, old_paths, new_paths, 'core qa push path')\ntext = replace_once(text, old_paths, new_paths, 'core qa pr path')"""
+    new_paths_patch = """if text.count(old_paths) != 2:\n    raise SystemExit(f'core qa workflow paths: expected two matches, got {text.count(old_paths)}')\ntext = text.replace(old_paths, new_paths, 2)"""
+    if old_paths_patch not in text:
+        raise SystemExit('core qa duplicate path patch target missing')
+    text = text.replace(old_paths_patch, new_paths_patch, 1)
+
+    old_preflight = '''text = replace_once(text, "          node --test qa/vibe2-parallelism-telemetry.test.mjs\\n", "          node --test qa/vibe2-parallelism-telemetry.test.mjs\\n          node --test qa/vibe2-handoff.test.mjs\\n          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log\\n", 'continuous preflight handoff')'''
+    new_preflight = '''text = replace_once(\n    text,\n    "          node --test qa/vibe2-incremental-qa.test.mjs\\n          node --test qa/vibe2-parallelism-telemetry.test.mjs\\n\\n      - name: Reserve conflict-free DAG batch\\n",\n    "          node --test qa/vibe2-incremental-qa.test.mjs\\n          node --test qa/vibe2-parallelism-telemetry.test.mjs\\n          node --test qa/vibe2-handoff.test.mjs\\n          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log\\n\\n      - name: Reserve conflict-free DAG batch\\n",\n    'continuous reserve preflight handoff',\n)'''
+    if old_preflight not in text:
+        raise SystemExit('continuous preflight source patch target missing')
+    text = text.replace(old_preflight, new_preflight, 1)
+
+    SCRIPT.write_text(text, encoding='utf-8')
 
 
 def fix_generated_yaml():
