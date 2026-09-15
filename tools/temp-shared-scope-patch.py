@@ -48,7 +48,7 @@ repls=[
 ("function applyScopes(){document.body.dataset.approvedScopeCount=String(scopes.length);for(let i=0;i<5;i++){const b=$('#a'+i);if(scopes[i]?.id)b.dataset.scopeId=scopes[i].id;else b.removeAttribute('data-scope-id');}}","function applyScopes(){const controls=[...document.querySelectorAll('.actions .action')];document.body.dataset.approvedScopeCount=String(scopes.length);controls.forEach((b,i)=>{if(scopes[i]?.id)b.dataset.scopeId=scopes[i].id;else b.removeAttribute('data-scope-id');b.dataset.actionIndex=String(Number.isFinite(Number(scopes[i]?.actionIndex))?Number(scopes[i].actionIndex):i%5);});}"),
 ("function buttons(items){for(let i=0;i<5;i++){const b=$('#a'+i);b.textContent=items[i]||'행동';b.disabled=S.ended;}}","function buttons(items){document.querySelectorAll('.actions .action').forEach((b,i)=>{const actionIndex=Number(b.dataset.actionIndex||i%5);b.textContent=items[actionIndex]||items[i%Math.max(1,items.length)]||'행동';b.disabled=S.ended;});}"),
 ("const b=$('.board');b.innerHTML=`<div style=\"padding:25px 12px;text-align:center\"><div style=\"font-size:54px\">${['🌲','🏰','💎','👑','🐉'][Math.min(4,S.chapter-1)]}</div><h2>${names[Math.min(4,S.chapter-1)]}</h2><p style=\"color:#bcd0df;line-height:1.6\">${C.story||'엘도리아를 되찾기 위한 여정이 계속된다.'}</p></div>`;","const b=$('.board');b.dataset.area=`chapter-${Math.min(5,S.chapter)}-route-${S.progress||0}`;b.innerHTML=`<div style=\"padding:25px 12px;text-align:center\"><div style=\"font-size:54px\">${['🌲','🏰','💎','👑','🐉'][Math.min(4,S.chapter-1)]}</div><h2>${names[Math.min(4,S.chapter-1)]}</h2><p style=\"color:#bcd0df;line-height:1.6\">${C.story||'엘도리아를 되찾기 위한 여정이 계속된다.'}</p></div>`;"),
-("if(i===0){S.gold+=4+S.chapter;S.score+=5;log('지역을 탐색해 단서를 찾았다.');}","if(i===0){S.progress=(S.progress+1)%4;S.gold+=4+S.chapter;S.score+=5;log('지역을 탐색해 단서를 찾았다.');}"),
+("function actStory(i){if(i===0){","function actStory(i){if(i===0){S.progress=(S.progress+1)%4;"),
 ("for(let i=0;i<5;i++)$('#a'+i).onclick=()=>act(i);","document.querySelectorAll('.actions .action').forEach((b,i)=>{b.onclick=()=>act(Number(b.dataset.actionIndex||i%5));});")
 ]
 for old,new in repls:
@@ -59,7 +59,7 @@ engine.write_text(e)
 test=Path('qa/company-development-web-runtime.test.mjs')
 t=test.read_text()
 anchor="test('approved scope inventory captures core gameplay',()=>{"
-addition="""test('shared preserved engine binds more than five approved scopes without model regeneration',async()=>{
+addition=r'''test('shared preserved engine binds more than five approved scopes without model regeneration',async()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-shared-scopes-'));
   const source=path.join(root,'source'),candidate=path.join(root,'candidate');
   fs.mkdirSync(source,{recursive:true});
@@ -83,6 +83,6 @@ addition="""test('shared preserved engine binds more than five approved scopes w
   assert.doesNotMatch(html,/validationScopes\)\?C\.validationScopes\.slice\(0,5\)/);
 });
 
-"""+anchor
+'''+anchor
 if t.count(anchor)!=1: raise SystemExit(f'test anchor count={t.count(anchor)}')
 test.write_text(t.replace(anchor,addition))
