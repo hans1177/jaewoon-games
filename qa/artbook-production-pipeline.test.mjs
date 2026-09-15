@@ -19,9 +19,13 @@ test('DESIGN_ONLY pipeline is GAME_SEED-backed design -> baseline and stops befo
   assert.match(source,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
   assert.match(source,/attempts=2/);
   assert.match(source,/function designSchemaRetryable/);
+  assert.match(source,/const schemaOrJsonFailure=/);
+  assert.match(source,/const transientModelFailure=/);
+  assert.match(source,/return schemaOrJsonFailure\|\|transientModelFailure/);
   assert.match(source,/aborted due to timeout/);
+  assert.doesNotMatch(source,/if\(\/\(\?:aborted due to timeout\|timeout\|timed out\)\/i\.test\(output\)\)return false/);
   assert.match(source,/retryWhen:designSchemaRetryable/);
-  assert.match(source,/RETRY=NO\|reason=NON_SCHEMA_FAILURE/);
+  assert.match(source,/RETRY=NO\|reason=NON_RETRYABLE_FAILURE/);
   assert.match(source,/DESIGN_ONLY_VIBE2_USED=NO/);
   assert.match(source,/PAID_API=NO/);
 });

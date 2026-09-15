@@ -196,13 +196,20 @@ jobs:
           echo 'persisted=true' >> "$GITHUB_OUTPUT"
           echo 'PUBLIC_MAIN_WRITE=NO'
 
-      - name: Continue composed seeds into DESIGN_ONLY without cancelling active batch
-        if: steps.persist.outputs.persisted == 'true'
+      - name: Continue active DESIGN_ONLY work without cancelling active batch
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
+          remaining="$(node -e "const s=require('./game-seed-state.json');console.log((s.seeds||[]).filter(x=>{const status=String(x.status||'').toUpperCase();const pc=String(x.productionClass||'DESIGN_ONLY').toUpperCase();const life=String(x.lifecycleState||'').toUpperCase();return status==='ACTIVE'&&!['DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(pc)&&!life.includes('HOLD')}).length)")"
+          echo "ACTIVE_DESIGN_ONLY_SEEDS=$remaining"
+          if [ "$remaining" -eq 0 ]; then
+            echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=NO'
+            echo 'GAME_SEED_DESIGN_CONTINUATION=NO_ACTIVE_DESIGN_ONLY'
+            exit 0
+          fi
           active=0
           for attempt in $(seq 1 12); do
             active="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?branch=main&per_page=100" --jq '[.workflow_runs[] | select(.path==".github/workflows/company-seed-design-runtime.yml") | select(.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="requested" or .status=="waiting")] | length')"
