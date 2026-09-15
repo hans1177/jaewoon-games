@@ -1,3 +1,6 @@
+// 파일명: tools/autonomous-safe-edit.mjs
+// 역할: 자율/Vibe2 소스 편집의 정확 일치와 안전한 들여쓰기·줄바꿈 차이만 처리한다.
+
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -45,10 +48,40 @@ export function applyExactEdits(root,edits=[]){
     const target=path.join(root,edit.path);
     if(!fs.existsSync(target)||!fs.statSync(target).isFile())throw new Error(`edit 대상 없음: ${edit.path}`);
     const before=fs.readFileSync(target,'utf8');
-    const first=before.indexOf(edit.find);
-    if(first<0)throw new Error(`edit find 불일치: ${edit.path}`);
-    if(before.indexOf(edit.find,first+edit.find.length)>=0)throw new Error(`edit find 다중일치: ${edit.path}`);
-    const after=before.slice(0,first)+edit.replace+before.slice(first+edit.find.length);
+    let first=before.indexOf(edit.find);
+    let end=first<0?-1:first+edit.find.length;
+    if(first>=0&&before.indexOf(edit.find,end)>=0)throw new Error(`edit find 다중일치: ${edit.path}`);
+
+    if(first<0){
+      const wanted=edit.find.replaceAll('\r\n','\n').split('\n').map(line=>line.trim());
+      while(wanted.length&&wanted[0]==='')wanted.shift();
+      while(wanted.length&&wanted[wanted.length-1]==='')wanted.pop();
+      const sourceLines=before.split('\n');
+      const offsets=[];
+      let offset=0;
+      for(const line of sourceLines){offsets.push(offset);offset+=line.length+1;}
+      const matches=[];
+      for(let i=0;i+wanted.length<=sourceLines.length;i+=1){
+        let same=wanted.length>0;
+        for(let j=0;j<wanted.length&&same;j+=1){
+          same=sourceLines[i+j].replace(/\r$/,'').trim()===wanted[j];
+        }
+        if(!same)continue;
+        const firstLine=sourceLines[i].replace(/\r$/,'');
+        const lastIndex=i+wanted.length-1;
+        const lastLine=sourceLines[lastIndex].replace(/\r$/,'');
+        const localStart=firstLine.indexOf(wanted[0]);
+        const localEnd=lastLine.lastIndexOf(wanted[wanted.length-1])+wanted[wanted.length-1].length;
+        if(localStart<0||localEnd<0)continue;
+        matches.push({first:offsets[i]+localStart,end:offsets[lastIndex]+localEnd});
+      }
+      if(matches.length>1)throw new Error(`edit find 다중일치: ${edit.path}`);
+      if(matches.length===0)throw new Error(`edit find 불일치: ${edit.path}`);
+      ({first,end}=matches[0]);
+      console.log(`VIBE2_EDIT_MATCH=TRIMMED_LINES:${edit.path}`);
+    }
+
+    const after=before.slice(0,first)+edit.replace+before.slice(end);
     fs.writeFileSync(target,after,'utf8');
     changed.add(edit.path);
   }

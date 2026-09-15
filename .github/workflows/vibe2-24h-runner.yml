@@ -5,14 +5,19 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-continuous-core.yml'
+      - 'VIBE2.md'
+      - 'vibe2-runtime.json'
       - 'game-catalog.json'
+      - 'company-status.json'
       - 'design/**/design-development-baseline.json'
       - 'design/**/release-production-request.json'
       - 'web-games/**'
       - 'unity-games/**'
       - 'roblox-games/**'
+      - 'unreal-games/**'
   schedule:
-    - cron: '11 * * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -26,13 +31,13 @@ env:
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
 
 concurrency:
-  group: vibe2-24h-runner
+  group: vibe2-control-state-vibe2-unreal-core
   cancel-in-progress: false
 
 jobs:
-  autoplan:
+  plan:
     runs-on: ubuntu-latest
-    timeout-minutes: 6
+    timeout-minutes: 8
     steps:
       - name: Checkout Vibe2 control branch
         uses: actions/checkout@v4
@@ -44,19 +49,25 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Fill available conflict-free parallel slots
+      - name: Verify machine state and planner tools
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'jaewoon-vibe2-core'
-          git config user.email 'vibe2-core@users.noreply.github.com'
+          node --check tools/vibe2-release-baseline-queue.mjs
+          node --check tools/vibe2-auto-planner.mjs
+          node --check tools/vibe2-handoff.mjs
+          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-plan.json >/tmp/vibe2-handoff-before-plan.log
           echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
           echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
           echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
           echo "VIBE2_WORK_ORDER_OUTPUT_CONTRACT=$VIBE2_WORK_ORDER_OUTPUT_CONTRACT"
 
-          node --check tools/vibe2-release-baseline-queue.mjs
-          node --check tools/vibe2-auto-planner.mjs
+      - name: Plan from latest main and persist control queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-planner'
+          git config user.email 'vibe2-planner@users.noreply.github.com'
 
           for attempt in 1 2 3; do
             echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/3"
@@ -66,15 +77,20 @@ jobs:
             git worktree prune
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
 
+            node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-attempt.json >/tmp/vibe2-handoff-before-attempt.log
+
             node tools/vibe2-release-baseline-queue.mjs \
               --catalog=/tmp/vibe2-main/game-catalog.json \
               --queue=.vibe2/queue.json \
               --root=/tmp/vibe2-main | tee /tmp/vibe2-release-baseline-plan.log
 
             node tools/vibe2-auto-planner.mjs \
+              --runtime=vibe2-runtime.json \
               --status=/tmp/vibe2-main/company-status.json \
               --catalog=/tmp/vibe2-main/game-catalog.json \
               --queue=.vibe2/queue.json \
+              --control=.vibe2/parallelism-control.json \
+              --experience=.vibe2/experience.json \
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
 
@@ -95,6 +111,8 @@ jobs:
           }
           NODE
 
+            node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-plan.json >/tmp/vibe2-handoff-after-plan.log
+
             git add .vibe2/queue.json
             if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
@@ -104,22 +122,40 @@ jobs:
             if grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
               commit_message='vibe2: queue release baseline implementation gap [skip ci]'
             elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
-              commit_message='vibe2: fill safe parallel task slots [skip ci]'
+              commit_message='vibe2: plan next machine-state work [skip ci]'
             else
               commit_message='vibe2: persist twenty-slot adaptive parallel queue state [skip ci]'
             fi
+
             git commit -m "$commit_message"
-            if git push origin HEAD:vibe2-unreal-core; then
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
               echo 'VIBE2_AUTOPLAN_WRITE=YES'
               exit 0
             fi
+            git rebase --abort 2>/dev/null || true
             sleep $((attempt * 2))
           done
 
           echo 'VIBE2_AUTOPLAN_PUSH=FAILED' >&2
           exit 1
 
-  controller:
-    needs: autoplan
-    uses: hans1177/jaewoon-games/.github/workflows/vibe2-continuous-core.yml@vibe2-unreal-core
-    secrets: inherit
+      - name: Upload generated machine handoff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-plan-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-before-plan.json
+            /tmp/vibe2-handoff-before-attempt.json
+            /tmp/vibe2-handoff-after-plan.json
+            /tmp/vibe2-autoplan.log
+            /tmp/vibe2-release-baseline-plan.log
+          if-no-files-found: warn
+          retention-days: 7
+
+  continuous:
+    needs: plan
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    permissions:
+      contents: write
+      actions: write
