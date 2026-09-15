@@ -118,19 +118,27 @@ function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,expl
   ].filter(Boolean).join('\n');
 }
 
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,contextWindow=0}={}){
   const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
   if(fake)return fs.readFileSync(path.resolve(fake),'utf8');
   const options={num_predict:maxPredict,temperature:.08};
   if(contextWindow>0)options.num_ctx=contextWindow;
-  const body=JSON.stringify({model,prompt,stream:true,think:false,options});
-  return await new Promise((resolve,reject)=>{
+  const body=JSON.stringify({model,prompt,stream:true,think:false,keep_alive:'15m',options});
+  const requestOnce=()=>new Promise((resolve,reject)=>{
     let settled=false,request=null;
     const finish=(error,value='')=>{if(settled)return;settled=true;clearTimeout(timer);if(request&&!request.destroyed)request.destroy();if(error)reject(error);else resolve(value);};
     const timer=setTimeout(()=>finish(new Error(`Ollama 응답 시간 초과: ${timeoutMs}ms`)),timeoutMs);
     request=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},response=>{
-      if((response.statusCode||0)<200||(response.statusCode||0)>=300){response.resume();finish(new Error(`Ollama HTTP ${response.statusCode}`));return;}
+      const status=response.statusCode||0;
       response.setEncoding('utf8');
+      if(status<200||status>=300){
+        let detail='';
+        response.on('data',chunk=>{if(detail.length<4000)detail+=chunk;});
+        response.on('end',()=>finish(new Error(`Ollama HTTP ${status}${clean(detail)?`: ${clean(detail).slice(0,1200)}`:''}`)));
+        response.on('error',finish);
+        return;
+      }
       let pending='',output='';
       const consume=line=>{const text=line.trim();if(!text)return;let payload;try{payload=JSON.parse(text);}catch(error){throw new Error(`Ollama 스트림 JSON 파싱 실패: ${error.message}`);}if(payload?.error)throw new Error(`Ollama 오류: ${payload.error}`);if(typeof payload?.response==='string')output+=payload.response;};
       response.on('data',chunk=>{if(settled)return;try{pending+=chunk;let at;while((at=pending.indexOf('\n'))>=0){const line=pending.slice(0,at);pending=pending.slice(at+1);consume(line);}}catch(error){finish(error);}});
@@ -140,6 +148,19 @@ async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',max
     request.on('error',finish);
     request.end(body);
   });
+  let lastError=null;
+  for(let attempt=1;attempt<=3;attempt+=1){
+    try{return await requestOnce();}
+    catch(error){
+      lastError=error;
+      const message=clean(error?.message);
+      const transient=/Ollama HTTP 5\d\d|ECONNRESET|ECONNREFUSED|socket hang up|EPIPE/i.test(message);
+      if(!transient||attempt===3)throw error;
+      console.warn(`VIBE2_LOCAL_MODEL_TRANSIENT_RETRY=${attempt}/3 ${message.slice(0,500)}`);
+      await wait(attempt*1500);
+    }
+  }
+  throw lastError||new Error('Ollama 요청 실패');
 }
 
 function currentBranch(cwd){try{return clean(execFileSync('git',['rev-parse','--abbrev-ref','HEAD'],{cwd,encoding:'utf8'}));}catch{return'';}}
