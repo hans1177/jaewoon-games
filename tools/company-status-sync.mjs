@@ -26,7 +26,7 @@ const CENTRAL_POLICY_REQUIRED_TOKENS=[
   'requiredForEveryGame: true',
   'approvedDesignBaselineMustBeFullyImplemented: true',
   'silentScopeReductionForbidden: true',
-  'webBuildIsNotNativePlatformSubstitute: true',
+  'webBuildIsNotNativeDevelopmentSubstitute: true',
   'nativePlatformReleaseStillRequiresNativeEvidence: true',
   'target: PROJECT_SELECTED_PLATFORM',
 ];
