@@ -9,7 +9,7 @@ import path from 'node:path';
 import { exploreVibe2WorkOrder } from '../tools/vibe2-exploration-worker.mjs';
 import { verifyPerformanceSanity } from '../tools/vibe2-performance-sanity.mjs';
 import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
-import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
+import { createVibeContinuousQueue, selectVibeQueueBatch, beginVibeQueueBatch, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
 import { buildWorkPackage } from '../tools/vibe2-work-package.mjs';
 
 const tempRoot=()=>fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-explore-'));
@@ -108,6 +108,28 @@ test('released QA waiting long owner does not keep the protected worker slot occ
   assert.equal(selected.selected[0].id,'long-next');
   assert.equal(selected.longWorkProtectedSlotUsed,true);
   assert.equal(selected.longWorkOwnerTaskId,'long-next');
+});
+
+test('scheduler flow starts eligible long work, keeps conflicts, and dispatches next work after finish',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {id:'active-qa',gameId:'conflict',target:'web',goal:'qa wait',sourceRoot:'web-games/conflict',responsibleFiles:['a.js'],status:'running',blocker:'candidate-awaiting-qa-and-deployment',packageId:'old-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
+    {id:'long-conflict',gameId:'conflict',target:'web',goal:'blocked long',sourceRoot:'web-games/conflict',responsibleFiles:['a.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'long-conflict-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
+    {id:'long-safe',gameId:'safe',target:'web',goal:'safe long',sourceRoot:'web-games/safe',responsibleFiles:['b.js'],status:'queued',priority:'normal',releaseState:'development-confirmed',packageId:'long-safe-wp',packageRole:'implementation-owner',packageWorkUnits:6,packageLongWorkProtected:true},
+    {id:'short-critical',gameId:'short',target:'web',goal:'short',sourceRoot:'web-games/short',responsibleFiles:['c.js'],status:'queued',priority:'critical',releaseState:'development-confirmed',packageId:'short-wp',packageRole:'implementation-owner',packageWorkUnits:1}
+  ]});
+  const started=beginVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(started.started,true);
+  assert.deepEqual(started.tasks.map(task=>task.id),['long-safe']);
+  assert.equal(started.selection.longWorkProtectedSlotUsed,true);
+  assert.equal(started.selection.longWorkOwnerTaskId,'long-safe');
+  assert.equal(started.selection.deferredConflicts.filter(row=>row.task.id==='long-conflict').length,1);
+
+  const finished=finishVibeQueueTask(started.queue,{taskId:'long-safe',outcome:'PASS'});
+  assert.equal(finished.updated,true);
+  assert.equal(finished.queue.tasks.find(task=>task.id==='long-safe').status,'done');
+  assert.equal(finished.next.selected[0].id,'short-critical');
+  assert.equal(finished.dispatchNext,true);
+  assert.ok(finished.next.deferredConflicts.some(row=>row.task.id==='long-conflict'));
 });
 
 test('work package declares separate read only verification roles and keeps implementation write ownership',()=>{
