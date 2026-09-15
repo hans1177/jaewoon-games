@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-game-study.mjs
-// 역할: Web/Roblox의 검증된 AUTO PLAYER 결과와 허가된 로컬 소스에서 일반화 가능한 게임 패턴만 추출해 기존 Experience Memory에 연결한다.
-// 원칙: 공개 관찰은 플레이 증거만 사용하고, 소스 분석은 소유/복사 허가가 명시된 로컬 사본에서만 read-only로 수행한다.
+// 역할: Web/Roblox의 검증된 AUTO PLAYER 결과와 허가된 서버 워크스페이스 소스에서 일반화 가능한 게임 패턴만 추출해 기존 Experience Memory에 연결한다.
+// 원칙: 공개 관찰은 플레이 증거만 사용하고, 소스 분석은 소유/복사 허가가 명시된 서버 워크스페이스 사본에서만 read-only로 수행한다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -12,7 +12,7 @@ const freeze = (value) => Object.freeze(value);
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const freezeList = (values = []) => freeze(unique(values));
 const SUPPORTED_ENGINES = freeze(['web', 'roblox']);
-export const AUTHORIZED_SOURCE_ACCESS = 'owned-or-authorized-local-copy';
+export const AUTHORIZED_SOURCE_ACCESS = 'owned-or-authorized-server-workspace';
 export const OBSERVATION_ONLY_ACCESS = 'observation-only';
 
 function hash(value = '') {
@@ -137,14 +137,14 @@ export function analyzeAuthorizedGameSource({ engine = '', root = '', sourceAcce
       engine: normalizedEngine,
       authorized: false,
       scanned: false,
-      reason: 'source-analysis-requires-owned-or-authorized-local-copy',
+      reason: 'source-analysis-requires-owned-or-authorized-server-workspace',
       fileCount: 0,
       bytesRead: 0,
       patterns: freeze([]),
       authority: 'read-only-no-source-copy'
     });
   }
-  if (!clean(root)) throw new Error('authorized GAME STUDY source root required');
+  if (!clean(root)) throw new Error('authorized GAME STUDY server workspace root required');
   const { base, files } = collectSourceFiles(root, normalizedEngine, { maxFiles: Math.max(1, Math.min(1000, Math.floor(finite(maxFiles, 240)))) });
   const matches = new Map();
   let bytesRead = 0;
@@ -193,7 +193,7 @@ export function createVerifiedGameStudy({ gameId = '', engine = '', autoPlayerRe
     runId ? `auto-player-run:${runId}` : '',
     `real-inputs:${runtimeValidation.inputActionCount}`,
     `required-checkpoints:${runtimeValidation.checkpointPassCount}/${runtimeValidation.checkpointCount}`,
-    source.scanned ? `authorized-source:${source.sourceFingerprint}` : ''
+    source.scanned ? `authorized-server-source:${source.sourceFingerprint}` : ''
   ]);
   const distilledPatterns = freezeList([
     ...systems.map((system) => `verified-play-observation:${system}`),
@@ -211,6 +211,8 @@ export function createVerifiedGameStudy({ gameId = '', engine = '', autoPlayerRe
     verified,
     reusable: verified,
     createdAt: clean(createdAt) || new Date().toISOString(),
+    executionLocation: 'server',
+    learningState: '.vibe2/experience.json',
     sourceAccess: clean(sourceAccess) || OBSERVATION_ONLY_ACCESS,
     sourceAnalysis: source,
     observedSystems: systems,
@@ -226,8 +228,10 @@ export function createVerifiedGameStudy({ gameId = '', engine = '', autoPlayerRe
       durationMs: Math.max(0, finite(autoPlayerResult?.telemetry?.metrics?.durationMs))
     }),
     policy: freeze({
+      serverSideLearning: true,
+      clientLocalLearning: false,
       observationDoesNotGrantSourceAccess: true,
-      sourceScanRequiresOwnedOrAuthorizedLocalCopy: true,
+      sourceScanRequiresOwnedOrAuthorizedServerWorkspace: true,
       rawSourceCopiedIntoMemory: false,
       causalClaimsFromObservation: false,
       mayAutoCopyGameplayValues: false,
@@ -242,6 +246,9 @@ export function promoteGameStudyToExperience(memoryInput = {}, study = {}) {
   const memory = createVibeExperienceMemory(memoryInput);
   if (study?.kind !== 'vibe2-game-study' || study?.verified !== true || study?.reusable !== true) {
     return freeze({ promoted: false, reason: 'verified-game-study-required', memory, study, authority: 'unchanged' });
+  }
+  if (study?.executionLocation !== 'server' || study?.policy?.serverSideLearning !== true || study?.policy?.clientLocalLearning === true) {
+    return freeze({ promoted: false, reason: 'server-side-game-study-required', memory, study, authority: 'unchanged' });
   }
   if (study?.authorityExpanded === true || study?.policy?.mayExpandAuthority === true || study?.policy?.mayAutoCopyGameplayValues === true) {
     return freeze({ promoted: false, reason: 'game-study-authority-policy-invalid', memory, study, authority: 'unchanged' });
@@ -258,9 +265,10 @@ export function promoteGameStudyToExperience(memoryInput = {}, study = {}) {
     change: patterns.join(' | '),
     outcome: 'PASS',
     qa: freezeList([
+      'server-side-study-verified',
       'real-input-auto-player-verified',
       'required-checkpoints-passed',
-      study?.sourceAnalysis?.scanned ? 'authorized-source-read-only-scan' : 'observation-only-source-policy'
+      study?.sourceAnalysis?.scanned ? 'authorized-server-source-read-only-scan' : 'observation-only-source-policy'
     ]),
     build: study?.run?.runId ? `study-run:${study.run.runId}` : '',
     evidence: freezeList([`game-study:${clean(study.id)}`, ...(study.evidence || [])]),
@@ -291,5 +299,6 @@ export function persistGameStudy(file, study) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   console.log('VIBE2_GAME_STUDY_CORE=READY');
   console.log(`VIBE2_GAME_STUDY_ENGINES=${SUPPORTED_ENGINES.join(',')}`);
-  console.log('VIBE2_GAME_STUDY_SOURCE_POLICY=OWNED_OR_AUTHORIZED_LOCAL_COPY_ONLY');
+  console.log('VIBE2_GAME_STUDY_EXECUTION=SERVER_ONLY');
+  console.log('VIBE2_GAME_STUDY_SOURCE_POLICY=OWNED_OR_AUTHORIZED_SERVER_WORKSPACE_ONLY');
 }
