@@ -67,12 +67,16 @@ test('controller starts isolated candidates from fresh main and never writes mai
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
 });
 
-test('controller runs content-hash incremental QA per worker and full core regression once at fan-in',()=>{
+test('controller runs content-hash incremental QA per worker and one parallel full regression at fan-in',()=>{
   assert(workflow.includes('actions/cache@v4'));
   assert(workflow.includes('tools/vibe2-incremental-qa.mjs'));
   assert(workflow.includes('incremental-qa-hash:'));
   assert(workflow.includes('Run the complete Vibe2 core regression once at fan-in'));
-  assert(workflow.includes('node --test qa/vibe2-controller-contract.test.mjs'));
+  assert(workflow.includes('node --test --test-concurrency=4'));
+  assert(workflow.includes('qa/vibe2-controller-contract.test.mjs'));
+  assert.equal(runtime.qaOptimization.perWorkerQa,'impact-first-incremental');
+  assert.equal(runtime.qaOptimization.fanInQa,'single-node-test-process');
+  assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
 });
 
 test('reserve preflight stays syntax-and-machine-state only instead of rerunning full QA',()=>{
@@ -100,17 +104,29 @@ test('controller allows approved source root but enforces candidate boundary',()
   assert(workflow.includes('candidate escaped approved boundary'));
 });
 
-test('event-driven refill targets the Vibe2 control branch and not main',()=>{
-  assert(workflow.includes('Event-driven refill of free slots'));
-  assert(workflow.includes('gh workflow run vibe2-24h-runner.yml'));
-  assert(workflow.includes('--ref vibe2-unreal-core'));
+test('event-driven refill directly starts the next eligible control-branch batch',()=>{
+  assert(workflow.includes('Event-driven direct refill of eligible free slots'));
+  assert(workflow.includes("VIBE2_QUEUE_CONTINUE=//p"));
+  assert(workflow.includes('gh workflow run vibe2-continuous-core.yml --repo "$GITHUB_REPOSITORY" --ref vibe2-unreal-core'));
   assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
-  assert.equal(runtime.continuous.refillMode,'fan-in-event-driven-control-branch');
+  assert.equal(runtime.continuous.refillMode,'direct-continuous-dispatch-after-fan-in');
+  assert.equal(runtime.continuous.refillRequiresEligibleWork,true);
+  assert.equal(runtime.continuous.refillPlannerOnDispatch,false);
   assert(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'));
   assert(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs'));
   assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
+});
+
+test('worker result keeps throughput telemetry inputs in the immutable result step',()=>{
+  const start=workflow.indexOf('- name: Build immutable worker result');
+  const end=workflow.indexOf('- name: Upload worker result for fan-in');
+  assert(start>=0 && end>start);
+  const resultStep=workflow.slice(start,end);
+  for(const key of ['RESERVED_AT:','REQUESTED_MAX:','EFFECTIVE_MAX:','WORKER_STARTED_AT_FILE:','CHECKOUT_MS:','CANDIDATE_MS:','QA_MS:']) {
+    assert(resultStep.includes(key),`missing result telemetry env ${key}`);
+  }
 });
 
 test('explicit work-order output path overrides runtime default path',()=>{
