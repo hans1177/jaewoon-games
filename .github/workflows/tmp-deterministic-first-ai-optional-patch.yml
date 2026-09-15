@@ -95,14 +95,7 @@ jobs:
 
           workflow = Path('.github/workflows/company-development-confirmed-runtime.yml')
           w = workflow.read_text()
-          eager = """      - name: Prepare local Vibe2 model for development cycles
-        if: matrix.runtimeStage == 'initial-cycle' && matrix.existingWebValidated != true
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: qwen3:1.7b
-          pull-model: 'true'
-
-          """
+          eager = "      - name: Prepare local Vibe2 model for development cycles\n" + "        if: matrix.runtimeStage == 'initial-cycle' && matrix.existingWebValidated != true\n" + "        uses: ./.github/actions/prepare-ollama\n" + "        with:\n" + "          model: qwen3:1.7b\n" + "          pull-model: 'true'\n\n"
           if w.count(eager) != 1:
               raise SystemExit(f'eager model step count={w.count(eager)}')
           workflow.write_text(w.replace(eager, ''))
