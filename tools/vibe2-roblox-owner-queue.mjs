@@ -37,7 +37,7 @@ function rebuildContract(directive = {}) {
   };
 }
 
-function directiveTask(directive = {}) {
+function directiveTask(directive = {}, { completedDirectiveIds = new Set() } = {}) {
   const id = clean(directive.id);
   const gameId = clean(directive.gameId);
   const sourceRoot = posix(directive.sourceRoot);
@@ -47,7 +47,9 @@ function directiveTask(directive = {}) {
   const responsibleFiles = [...new Set((directive.responsibleFiles || []).map(posix).filter(Boolean))];
   if (!responsibleFiles.length || responsibleFiles.some((file) => !file.startsWith(`${sourceRoot}/`))) return null;
 
-  const dependencies = [...new Set((directive.dependencies || []).map(clean).filter(Boolean))];
+  const declaredDependencies = [...new Set((directive.dependencies || []).map(clean).filter(Boolean))];
+  const completedDependencies = declaredDependencies.filter((dependency) => completedDirectiveIds.has(dependency));
+  const dependencies = declaredDependencies.filter((dependency) => !completedDirectiveIds.has(dependency));
   const workUnits = Math.max(5, Math.trunc(Number(directive.workUnits) || 5));
   const extraEvidence = (directive.evidence || []).map(clean).filter(Boolean);
   const rebuild = rebuildContract(directive);
@@ -84,6 +86,7 @@ function directiveTask(directive = {}) {
       'platform-focus:roblox-primary',
       `source-root:${sourceRoot}`,
       ...extraEvidence,
+      ...completedDependencies.map((dependency) => `completed-owner-dependency:${dependency}`),
     ],
   };
 }
@@ -117,11 +120,16 @@ function taskSpec(task = {}) {
 
 export function syncRobloxOwnerDirectives(queueInput = {}, directivesInput = {}, { inboxExists = true } = {}) {
   let queue = createVibeContinuousQueue(queueInput);
+  const directives = Array.isArray(directivesInput.directives) ? directivesInput.directives : [];
+  const completedDirectiveIds = new Set(directives
+    .filter((directive) => clean(directive.status || 'pending').toLowerCase() === 'completed')
+    .map((directive) => clean(directive.id))
+    .filter(Boolean));
   const active = [];
-  for (const directive of directivesInput.directives || []) {
+  for (const directive of directives) {
     const state = clean(directive.status || 'pending').toLowerCase();
     if (['cancelled', 'disabled', 'completed'].includes(state)) continue;
-    const task = directiveTask(directive);
+    const task = directiveTask(directive, { completedDirectiveIds });
     if (task) active.push(task);
   }
 

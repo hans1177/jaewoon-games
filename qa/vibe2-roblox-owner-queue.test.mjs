@@ -69,3 +69,36 @@ test('completed Roblox owner directive is inactive and prunes its imported queue
   assert.equal(second.queue.tasks.some((row) => row.id === directive.id), false);
   assert.equal(second.queue.tasks.some((row) => row.id === 'KEEP-UNITY'), true);
 });
+
+test('completed owner directive satisfies a dependency of an active owner directive after pruning', () => {
+  const completed = { ...directive, id: 'OWNER-R4', status: 'completed' };
+  const next = {
+    ...directive,
+    id: 'OWNER-R5',
+    status: 'pending',
+    dependencies: ['OWNER-R4'],
+    goal: 'PHASE_5_AFTER_COMPLETED_R4'
+  };
+  const result = syncRobloxOwnerDirectives({ maxConcurrentTasks: 20, tasks: [unityTask] }, { directives: [completed, next] });
+  const task = result.queue.tasks.find((row) => row.id === 'OWNER-R5');
+  assert.ok(task);
+  assert.deepEqual(task.dependencies, []);
+  assert.ok(task.evidence.includes('completed-owner-dependency:OWNER-R4'));
+  assert.equal(result.queue.tasks.some((row) => row.id === 'OWNER-R4'), false);
+});
+
+test('cancelled owner directive does not satisfy a dependency', () => {
+  const cancelled = { ...directive, id: 'OWNER-CANCELLED', status: 'cancelled' };
+  const next = {
+    ...directive,
+    id: 'OWNER-AFTER-CANCELLED',
+    status: 'pending',
+    dependencies: ['OWNER-CANCELLED'],
+    goal: 'MUST_STAY_BLOCKED_BY_CANCELLED_DEPENDENCY'
+  };
+  const result = syncRobloxOwnerDirectives({ maxConcurrentTasks: 20, tasks: [unityTask] }, { directives: [cancelled, next] });
+  const task = result.queue.tasks.find((row) => row.id === 'OWNER-AFTER-CANCELLED');
+  assert.ok(task);
+  assert.deepEqual(task.dependencies, ['OWNER-CANCELLED']);
+  assert.equal(task.evidence.includes('completed-owner-dependency:OWNER-CANCELLED'), false);
+});
