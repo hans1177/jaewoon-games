@@ -67,6 +67,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const requested=String(process.env.REQUESTED_GAME_ID||'').trim();
           const multiplayerModes=new Set(['COOP','COMPETITIVE','HYBRID']);
+          const validTarget=(target)=>/^[1-9][0-9]*$/.test(String(target?.universeId||'').trim())&&/^[1-9][0-9]*$/.test(String(target?.placeId||'').trim())&&target?.verified===true;
           const findLatestDesign=(gameId)=>{
             const root=path.join('/tmp/roblox-design/design',gameId);
             if(!fs.existsSync(root))return null;
@@ -88,14 +89,16 @@ jobs:
             const design=findLatestDesign(item.gameId);
             const rawMode=design?.content?.multiplayerMode??design?.content?.multiplayer?.mode??design?.multiplayerMode??'';
             const mode=String(rawMode||'').trim().toUpperCase();
-            if(!exact||!prior||!multiplayerModes.has(mode)||item.robloxMultiplayerQaPassed===true)continue;
-            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity:artifact,multiplayerMode:mode});
+            const publicationTargetRecovery=Boolean(requested)&&item.gameId===requested&&item.robloxMultiplayerQaPassed===true&&!validTarget(item.robloxPublicationTarget);
+            if(!exact||!prior||!multiplayerModes.has(mode)||(item.robloxMultiplayerQaPassed===true&&!publicationTargetRecovery))continue;
+            rows.push({gameId:item.gameId,gameName:item.gameName||item.gameId,sourceRevision:revision,artifactIdentity:artifact,multiplayerMode:mode,publicationTargetRecovery});
           }
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`targets_json=${JSON.stringify(rows)}\n`);
           console.log(`ROBLOX_MULTIPLAYER_QA_TARGET_COUNT=${rows.length}`);
           console.log(`ROBLOX_MULTIPLAYER_QA_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
+          console.log(`ROBLOX_PUBLICATION_TARGET_RECOVERY=${rows.some(x=>x.publicationTargetRecovery)?'YES':'NO'}`);
           console.log('ROBLOX_MULTIPLAYER_QA_CLIENTS_REQUIRED=2');
           console.log('ROBLOX_MULTIPLAYER_QA_EXACT_ARTIFACT_REQUIRED=YES');
           NODE
@@ -181,6 +184,7 @@ jobs:
         env:
           STUDIO_EXE: ${{ steps.studio.outputs.studio_exe }}
           PLACE_FILE: ${{ steps.package.outputs.place_file }}
+          PUBLICATION_TARGET_RECOVERY: ${{ matrix.publicationTargetRecovery }}
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -211,6 +215,10 @@ jobs:
           if ($combined -notmatch 'ROBLOX_MULTIPLAYER_SERVER_AUTHORITATIVE_ROUNDTRIP=YES') { throw 'Server-authoritative roundtrip sentinel missing' }
           if ($combined -notmatch 'ROBLOX_MULTIPLAYER_PEER_VISIBILITY=YES') { throw 'Peer visibility sentinel missing' }
           if ($combined -notmatch 'ROBLOX_MULTIPLAYER_QA=PASS') { throw 'Multiplayer QA PASS sentinel missing' }
+          if ($env:PUBLICATION_TARGET_RECOVERY -eq 'true') {
+            if ($combined -notmatch '(?m)^ROBLOX_STUDIO_UNIVERSE_ID=[1-9][0-9]*\r?$') { throw 'Authenticated Studio positive Universe ID missing' }
+            if ($combined -notmatch '(?m)^ROBLOX_STUDIO_PLACE_ID=[1-9][0-9]*\r?$') { throw 'Authenticated Studio positive Place ID missing' }
+          }
 
       - name: Record exact multiplayer QA evidence
         if: always()
@@ -232,6 +240,16 @@ jobs:
           $failure = if ($env:PACKAGE_OUTCOME -ne 'success') { 'immutable-package-unavailable' } elseif ($env:STUDIO_OUTCOME -ne 'success') { 'roblox-studio-local-profile-unavailable' } elseif (-not $pass) { 'two-client-multiplayer-qa-failed' } else { $null }
           $combined = Join-Path $env:RUNNER_TEMP 'roblox-multiplayer-qa-combined.log'
           $outputSha = if (Test-Path $combined) { (Get-FileHash -Algorithm SHA256 $combined).Hash.ToLowerInvariant() } else { $null }
+          $combinedText = if (Test-Path $combined) { Get-Content $combined -Raw } else { '' }
+          $universeMatch = [regex]::Match($combinedText, '(?m)^ROBLOX_STUDIO_UNIVERSE_ID=([1-9][0-9]*)\r?$')
+          $placeMatch = [regex]::Match($combinedText, '(?m)^ROBLOX_STUDIO_PLACE_ID=([1-9][0-9]*)\r?$')
+          $publicationTarget = $null
+          if ($universeMatch.Success -and $placeMatch.Success) {
+            $publicationTarget = [ordered]@{
+              universeId=$universeMatch.Groups[1].Value; placeId=$placeMatch.Groups[1].Value; verified=$true;
+              observedFrom='authenticated Roblox Studio output'; observedAt=(Get-Date).ToUniversalTime().ToString('o')
+            }
+          }
           $runId = 0
           if ($env:ARTIFACT_RUN -match '^\d+$') { $runId = [int64]$env:ARTIFACT_RUN }
           $evidence = [ordered]@{
@@ -239,12 +257,13 @@ jobs:
             sourceRevision=$env:SOURCE_REVISION; artifactIdentity=$env:ARTIFACT_IDENTITY; artifactRunId=$runId; exactRevision=$true;
             actualStudioRuntime=$true; multiplayerMode=$env:MULTIPLAYER_MODE; multiplayerClients=2;
             distinctPlayersPassed=$pass; serverAuthoritativeRoundtripPassed=$pass; peerVisibilityPassed=$pass;
-            multiplayerQaPassed=$pass; outputSha256=$outputSha; failure=$failure; authority='roblox-real-studio-multiplayer-qa'
+            multiplayerQaPassed=$pass; publicationTarget=$publicationTarget; outputSha256=$outputSha; failure=$failure; authority='roblox-real-studio-multiplayer-qa'
           }
           $safe = $env:GAME_ID -replace '[^a-zA-Z0-9._-]+','-'
           $evidence | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 (Join-Path $results "$safe.multiplayer.json")
           if (Test-Path $combined) { Copy-Item $combined (Join-Path $root 'roblox-multiplayer-qa-combined.log') -Force }
           Write-Host "ROBLOX_MULTIPLAYER_QA=$(if($pass){'PASS'}else{'FAIL'})"
+          Write-Host "ROBLOX_PUBLICATION_TARGET_OBSERVED=$(if($publicationTarget){'YES'}else{'NO'})"
           Write-Host 'ROBLOX_MULTIPLAYER_QA_CLIENTS=2'
           Write-Host 'ROBLOX_RELEASE_CLAIM=NO'
 
@@ -311,6 +330,7 @@ jobs:
           const results=files.sort().map(file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,'')));
           const byId=new Map(results.map(x=>[x.gameId,x]));
           const stamp=new Date().toISOString();let pass=0,fail=0;
+          const validTarget=(target)=>/^[1-9][0-9]*$/.test(String(target?.universeId||'').trim())&&/^[1-9][0-9]*$/.test(String(target?.placeId||'').trim())&&target?.verified===true;
           console.log(`ROBLOX_MULTIPLAYER_QA_CHECKPOINT_FILES=${files.length}`);
           for(const target of expected){
             const item=(queue.items||[]).find(x=>x.gameId===target.gameId);if(!item)throw new Error(`queue item missing: ${target.gameId}`);
@@ -320,6 +340,23 @@ jobs:
             const mode=String(target.multiplayerMode||'').toUpperCase();
             const modeMatch=r?.multiplayerMode===mode&&['COOP','COMPETITIVE','HYBRID'].includes(mode);
             const multiplayerPass=exact&&prior&&modeMatch&&r?.actualStudioRuntime===true&&r?.multiplayerClients===2&&r?.distinctPlayersPassed===true&&r?.serverAuthoritativeRoundtripPassed===true&&r?.peerVisibilityPassed===true&&r?.multiplayerQaPassed===true;
+            const observedTarget=r?.publicationTarget||null;
+            const targetValid=validTarget(observedTarget);
+            if(target.publicationTargetRecovery===true&&multiplayerPass&&!targetValid){
+              throw new Error(`ROBLOX_MULTIPLAYER_PUBLICATION_TARGET_OBSERVATION_MISSING:${target.gameId}`);
+            }
+            if(multiplayerPass&&targetValid){
+              const existing=item.robloxPublicationTarget||null;
+              if(validTarget(existing)&&(String(existing.universeId)!==String(observedTarget.universeId)||String(existing.placeId)!==String(observedTarget.placeId))){
+                throw new Error(`ROBLOX_MULTIPLAYER_PUBLICATION_TARGET_CONFLICT:${target.gameId}`);
+              }
+              item.robloxPublicationTarget={
+                universeId:String(observedTarget.universeId),placeId:String(observedTarget.placeId),verified:true,
+                observedFrom:'authenticated Roblox Studio output',observedAt:String(observedTarget.observedAt||stamp),
+                sourceRevision:item.robloxSourceCommit,artifactIdentity:item.robloxBuildArtifactIdentity,artifactRunId:Number(r.artifactRunId||0),
+                authority:'roblox-real-studio-multiplayer-qa'
+              };
+            }
             item.robloxMultiplayerMode=mode;
             item.robloxMultiplayerApplicable=true;
             item.robloxMultiplayerQaEvidence=r||null;
