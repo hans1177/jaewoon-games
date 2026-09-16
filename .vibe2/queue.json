@@ -2235,7 +2235,7 @@
       "target": "roblox",
       "department": "development",
       "type": "implementation",
-      "goal": "[OWNER_ROBLOX_PRIMARY] PHASE_2_ROUND_LOOP. 현재 main의 검증된 12-stage 물리 오비 코어를 유지하면서 실제 반복 플레이가 가능한 라운드 루프를 추가한다. GAME STUDY planner context에서 교차게임 검증된 input, movement, progression, UI 일반화 패턴을 실제 제작 판단에 사용한다. 완주 후 재접속 없이 짧은 결과 표시 뒤 다음 라운드를 시작할 수 있어야 하고, 새 라운드는 서버 권위로 stage/progress/score/time/finished 상태를 안전하게 초기화한 뒤 시작 지점에서 다시 물리 플레이하게 한다. 라운드 번호와 완주/다음 라운드 상태가 HUD에서 읽혀야 한다. RemoteEvent 버튼으로 stage를 올리거나 완주를 조작하지 않는다. 기존 체크포인트 순서 검증, hazard death, checkpoint respawn, 기본 Roblox 이동/점프/모바일 터치, per-player 상태 분리를 깨지 않는다. 외부 게임의 코드·고유 수치·에셋을 복제하지 않는다. 새 GAME STUDY 세션을 이 작업의 선행조건으로 만들지 말고 이미 fan-in된 검증 지식을 사용한다. 최종 candidate는 실제 Roblox Studio Play Mode에서 1라운드 완주 후 2라운드 초기화/재시작까지 검증한다.",
+      "goal": "[OWNER_ROBLOX_PRIMARY] PHASE_2_ROUND_LOOP. 현재 main의 검증된 12-stage 물리 오비 코어를 유지하면서 실제 반복 플레이가 가능한 라운드 루프를 추가한다. GAME STUDY planner context에서 교차게임 검증된 input, movement, progression, UI 일반화 패턴을 실제 제작 판단에 사용한다. 완주 후 재접속 없이 짧은 결과 표시 뒤 다음 라운드를 시작할 수 있어야 하고, 새 라운드는 서버 권위로 stage/progress/score/time/finished 상태를 안전하게 초기화한 뒤 시작 지점에서 다시 물리 플레이하게 한다. 라운드 번호와 완주/다음 라운드 상태가 HUD에서 읽혀야 한다. RemoteEvent 버튼으로 stage를 올리거나 완주를 조작하지 않는다. 기존 체크포인트 순서 검증, hazard death, checkpoint respawn, 기본 Roblox 이동/점프/모바일 터치, per-player 상태 분리를 깨지 않는다. 외부 게임의 코드·고유 수치·에셋을 복제하지 않는다. 새 GAME STUDY 세션을 이 작업의 선행조건으로 만들지 말고 이미 fan-in된 검증 지식을 사용한다. 최종 candidate는 실제 Roblox Studio Play Mode에서 1라운드 완주 후 2라운드 초기화/재시작까지 검증한다.\n\n[GAME STUDY KNOWLEDGE - verified advisory context only]\n외부 게임에서 반복 검증된 일반화 패턴이다. 현재 제작 작업의 기능 선택·구현 방향을 정할 때 실제 planning input으로 사용하되 현재 소스/요구와 맞을 때만 적용한다.\n원본 코드·게임 고유 수치·보상값을 복사하지 말고, 보호된 gameplay/save/economy/progression 규칙과 작업 권한을 바꾸지 않는다.\n관련 시스템=input, movement, progression, ui, restart, networking, ai\n- pattern=observed-flow:ai->progression; games=2; confirmations=3; relevance=23.5\n- pattern=observed-flow:input->ai; games=2; confirmations=3; relevance=23.5\n- pattern=observed-flow:input->progression; games=2; confirmations=3; relevance=23.5\n- pattern=observed-flow:progression->input; games=2; confirmations=3; relevance=23.5\n- pattern=observed-loop:progression>input; games=2; confirmations=3; relevance=23.5\n- pattern=observed-loop:input>progression; games=2; confirmations=2; relevance=23\n- pattern=architecture:input; games=2; confirmations=3; relevance=13.5\n- pattern=architecture:progression; games=2; confirmations=3; relevance=13.5\nnearest=INSUFFICIENT_TARGET_DNA",
       "responsibleFiles": [
         "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/server/Game.server.luau",
         "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/client/Game.client.luau"
@@ -2243,7 +2243,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
@@ -2266,7 +2266,12 @@
         "qa-required:round-2-restart",
         "direct-main-write:false",
         "ai-required:false",
-        "base-main:6d0099ab0740a336153cbd4aab56d52fd18d9204"
+        "base-main:6d0099ab0740a336153cbd4aab56d52fd18d9204",
+        "game-study-planner-context:v1",
+        "game-study-owner-directive:yes",
+        "game-study-goal-systems:input,movement,progression,ui,restart,networking,ai",
+        "game-study-cross-game-patterns:8",
+        "game-study-nearest-status:INSUFFICIENT_TARGET_DNA"
       ],
       "lastOutcome": null,
       "companyContext": null,
