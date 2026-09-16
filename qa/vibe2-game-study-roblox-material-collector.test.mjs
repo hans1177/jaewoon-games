@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {
   buildGameStudyPlannerContext,
   enrichQueueWithGameStudyKnowledge,
@@ -216,4 +217,17 @@ test('multi-source learning is injected once and remains advisory across later q
   assert.equal(second.multiSourceCollectedCount, 0);
   assert.equal((second.queue.tasks[0].goal.match(/VIBE2 MULTI-SOURCE LEARNING/g) || []).length, 1);
   assert.equal(second.authorityExpanded, false);
+});
+
+test('canonical auto planner invokes multi-source learning before downstream reservation workflows', () => {
+  const source = fs.readFileSync(new URL('../tools/vibe2-auto-planner.mjs', import.meta.url), 'utf8');
+  const planWrite = source.indexOf('if(result.planned)writeJson(resolvedQueueFile,result.queue)');
+  const learningCall = source.indexOf('const learningContext=runGameStudyPlannerContext({');
+  assert.ok(planWrite >= 0);
+  assert.ok(learningCall > planWrite);
+  assert.match(source, /knowledgeFile:resolvedKnowledgeFile/);
+  assert.match(source, /experienceFile:resolvedExperienceFile/);
+  assert.match(source, /runtimeEvidenceRoot:resolvedRuntimeEvidenceRoot/);
+  assert.match(source, /VIBE2_PLANNER_MULTI_SOURCE_MATERIALS/);
+  assert.match(source, /VIBE2_PLANNER_LEARNING_AUTHORITY_EXPANDED=NO/);
 });
