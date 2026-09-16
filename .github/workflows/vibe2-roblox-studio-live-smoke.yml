@@ -7,6 +7,7 @@ on:
     paths:
       - 'tools/vibe2-roblox-studio-cli-runner.mjs'
       - 'tools/vibe2-roblox-project-runtime-smoke.mjs'
+      - 'tools/vibe2-roblox-round-loop-smoke.mjs'
       - 'tools/runtime/roblox/**'
       - 'tools/vibe2-roblox-auto-player.mjs'
       - 'qa/vibe2-roblox-project-runtime-smoke.test.mjs'
@@ -17,7 +18,7 @@ on:
       candidate_ref:
         description: Candidate branch/ref to validate in real Roblox Studio
         required: false
-        default: 'vibe2/candidate/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2-primary-35049190491-1'
+        default: 'vibe2/candidate/OWNER-ROBLOX-OBBY-ROUND-LOOP-20260916-R3'
       project_root:
         description: Roblox project root inside the candidate ref
         required: false
@@ -45,6 +46,7 @@ jobs:
           set -euo pipefail
           node --check tools/vibe2-roblox-studio-cli-runner.mjs
           node --check tools/vibe2-roblox-project-runtime-smoke.mjs
+          node --check tools/vibe2-roblox-round-loop-smoke.mjs
           node --check qa/vibe2-roblox-project-runtime-smoke.test.mjs
           node --test qa/vibe2-roblox-project-runtime-smoke.test.mjs
           node <<'NODE'
@@ -53,10 +55,11 @@ jobs:
           if(!workflow.includes('git archive --format=zip')) throw new Error('candidate checkout must be stateless git archive');
           const retainedWorktreeCommand=['git','worktree','add','--detach'].join(' ');
           if(workflow.includes(retainedWorktreeCommand)) throw new Error('candidate checkout must not retain worktree state');
+          if(!workflow.includes('vibe2-roblox-round-loop-smoke.mjs')) throw new Error('round-loop Studio QA missing');
           console.log('VIBE2_ROBLOX_STUDIO_CONTRACT=PASS');
           console.log('VIBE2_ROBLOX_EXISTING_AUTHENTICATED_RUNNER_REUSE=YES');
           console.log('VIBE2_ROBLOX_PROJECT_RUNTIME_CONTRACT=PASS');
-          console.log('VIBE2_ROBLOX_GAME_STUDY_SKIPPED=YES');
+          console.log('VIBE2_ROBLOX_ROUND_LOOP_CONTRACT=PASS');
           NODE
 
   live-studio:
@@ -99,10 +102,10 @@ jobs:
             --timeout=120000
           if ($LASTEXITCODE -ne 0) { throw 'baseplate VirtualInput smoke failed' }
 
-      - name: Validate latest canonical Roblox obby candidate in real Studio play mode
+      - name: Validate R3 Roblox obby candidate in real Studio play mode
         shell: powershell
         env:
-          CANDIDATE_REF: ${{ inputs.candidate_ref || 'vibe2/candidate/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2-primary-35049190491-1' }}
+          CANDIDATE_REF: ${{ inputs.candidate_ref || 'vibe2/candidate/OWNER-ROBLOX-OBBY-ROUND-LOOP-20260916-R3' }}
           CANDIDATE_PROJECT_ROOT: ${{ inputs.project_root || 'roblox-games/seed-roblox-obby-party-minigam-tower-of-hell' }}
         run: |
           $ErrorActionPreference = 'Stop'
@@ -122,10 +125,15 @@ jobs:
             "--project-root=$projectRoot" `
             --output="$env:RUNNER_TEMP/vibe2-roblox-project-runtime.json" `
             --timeout=300000
-          if ($LASTEXITCODE -ne 0) { throw 'candidate Studio QA failed' }
+          if ($LASTEXITCODE -ne 0) { throw 'candidate Studio physical-course QA failed' }
+          node tools/vibe2-roblox-round-loop-smoke.mjs `
+            "--project-root=$projectRoot" `
+            --output="$env:RUNNER_TEMP/vibe2-roblox-round-loop.json" `
+            --timeout=180000
+          if ($LASTEXITCODE -ne 0) { throw 'candidate Studio round-loop QA failed' }
           Write-Host "VIBE2_ROBLOX_CANDIDATE_REF=$env:CANDIDATE_REF"
           Write-Host 'VIBE2_ROBLOX_CANDIDATE_STUDIO_QA=PASS'
-          Write-Host 'VIBE2_ROBLOX_GAME_STUDY_SKIPPED=YES'
+          Write-Host 'VIBE2_ROBLOX_ROUND_LOOP_STUDIO_QA=PASS'
 
       - name: Upload focused Roblox Studio evidence
         if: always()
@@ -135,5 +143,6 @@ jobs:
           path: |
             ${{ runner.temp }}/vibe2-roblox-studio-baseplate.json
             ${{ runner.temp }}/vibe2-roblox-project-runtime.json
+            ${{ runner.temp }}/vibe2-roblox-round-loop.json
           if-no-files-found: warn
           retention-days: 3
