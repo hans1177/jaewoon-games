@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "representativeModel": "gemma3:1b",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "MAT-005"
+    ],
+    "fix": [
+      "GAME_SEED=2, SEED_ID=SEED-UNITY-IDLE-GROWTH-RPG-001, GAME_ID=seed-unity-idle-growth-rpg-aethelgards"
+    ],
+    "add": [
+      "SEED_MATERIAL_IDS=MAT-005, MAT-023, MAT-011, SEED_MATERIAL_COUNT=3, SEED_MATERIAL_SELECTION_MODE=DYNAMIC_CONTEXTUAL_2_TO_4, SEED"
+    ],
+    "risks": [
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT=1, SEED_CATEGORY_SELECTION_ROLE=HISTORICAL_BASELINE, REFERENCE_INPUTS=AFK Arena, Legend"
+    ],
+    "evidence": [
+      "CORE_FUN_TO_LEARN=Heroes or characters fight automatically and continue generating useful idle or offline progression resources between"
+    ],
+    "questions": [
+      "CORE_LOOP=Heroes or characters fight automatically and continue generating useful idle or offline progression resources between"
+    ]
+  }
+}

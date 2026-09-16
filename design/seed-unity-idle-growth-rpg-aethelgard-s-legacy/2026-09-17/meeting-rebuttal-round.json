@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "I have reviewed the content and made a few revisions to ensure clarity and correctness."
+    },
+    "graphics": {
+      "accept": [
+        "GAME_SEED",
+        "SEED_MATERIAL_IDS",
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "challenge": [
+        "ASSIGNED_DEPARTMENT=development",
+        "DISTINCT_IDENTITY",
+        "RISK=DISTINCT_IDENTITY"
+      ],
+      "revision": [
+        "ASSIGNED_DEPARTMENT=qa",
+        "evidence=GAME_SEED=4"
+      ],
+      "reason": "CORE_LOOP=Heroes or characters fight automatically and continue generating useful idle or offline progression resources between"
+    },
+    "development": {
+      "accept": [
+        "own",
+        "others"
+      ],
+      "challenge": [
+        "own",
+        "others"
+      ],
+      "revision": [
+        "own",
+        "others"
+      ],
+      "reason": "own: development, others: planning, graphics, qa, balance"
+    },
+    "qa": {
+      "accept": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "challenge": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "revision": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "reason": "QA 부서의 책임범위 내에서 모든 항목을 수용합니다."
+    },
+    "balance": {
+      "accept": [
+        "Unique Character Customization"
+      ],
+      "challenge": [
+        "GAME_SEED"
+      ],
+      "revision": [
+        "GAME_SEED=3"
+      ],
+      "reason": "GAME_SEED=4"
+    }
+  }
+}

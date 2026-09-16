@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Keep the core gameplay intact"
+        ],
+        "fix": [
+          "Fix the bug that causes the game to crash"
+        ],
+        "add": [
+          "Add a new feature to the game"
+        ],
+        "risks": [
+          "Risk of losing players due to the new feature"
+        ],
+        "evidence": [
+          "Evidence of player feedback that supports the new feature"
+        ],
+        "questions": [
+          "What are the potential risks of adding a new feature to the game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Aethelgard's Legacy is a historical initial bootstrap seed for an IDLE_GROWTH_RPG game, developed by QA department with a focus on"
+        ],
+        "fix": [
+          "The game's core fun to learn includes 'Idle Game Management' and 'Resource Optimization', with a progression system that allows"
+        ],
+        "add": [
+          "The game has a progression direction from simple to complex, with a visual style that blends traditional and modern elements."
+        ],
+        "risks": [
+          "The game's risk management systems are designed to manage and mitigate risks associated with the game, ensuring players can make"
+        ],
+        "evidence": [
+          "The game has a market evidence summary that references global RPG sessions, mobile gaming benchmarks, and global player data."
+        ],
+        "questions": [
+          "How can the game be improved to provide a more engaging experience for players?"
+        ]
+      }
+    }
+  ]
+}

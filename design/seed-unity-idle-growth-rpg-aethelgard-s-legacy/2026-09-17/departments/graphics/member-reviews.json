@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "MAT-005"
+        ],
+        "fix": [
+          "MAT-023"
+        ],
+        "add": [
+          "MAT-011"
+        ],
+        "risks": [
+          "MAT-011"
+        ],
+        "evidence": [
+          "AFK Arena"
+        ],
+        "questions": [
+          "Resource Management"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED=2, SEED_ID=SEED-UNITY-IDLE_GROWTH_RPG-001, GAME_ID=seed-unity-idle-growth-rpg-aethelgard-s-legacy, GAME_NAME=Aethelgards"
+        ],
+        "add": [
+          "SEED_MATERIAL_IDS=MAT-005, MAT-023, MAT-011, SEED_MATERIAL_COUNT=3, SEED_MATERIAL_SELECTION_MODE=DYNAMIC_CONTEXTUAL_2_TO_4, SEED"
+        ],
+        "risks": [
+          "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT=1, SEED_CATEGORY_SELECTION_ROLE=HISTORICAL_BASELINE, REFERENCE_INPUTS=AFK Arena, Legend"
+        ],
+        "evidence": [
+          "CORE_FUN_TO_LEARN=Idle Game Management, Resource Optimization, DISTINCT_IDENTITY=Unique Character Customization, MARKET_EVIDENCE"
+        ],
+        "questions": [
+          "CORE_LOOP=Heroes or characters fight automatically and continue generating useful idle or offline progression resources between"
+        ]
+      }
+    }
+  ]
+}

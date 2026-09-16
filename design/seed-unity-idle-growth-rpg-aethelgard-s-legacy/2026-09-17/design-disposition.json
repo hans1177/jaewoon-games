@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-17",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 1,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The game's progression system is clear and provides a structured way for players to track and improve their progress.",
+        "The game's visual design is user-friendly and focuses on simplicity and ease of use.",
+        "The game's mobile interface is optimized for mobile usability and intuitive controls.",
+        "The market target is directed towards idle game enthusiasts and strategy players, with a strong focus on engagement."
+      ],
+      "reason": "The game has a clear progression system, user-friendly design, and a mobile-friendly interface, making it suitable for the target audience. No major issues identified in the design or market evidence."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY"
+      ],
+      "evidence": [],
+      "reason": "The proposed changes introduce a core loop that duplicates the existing gameplay experience, relies heavily on a specific target platform, and lacks a distinct identity.  The proposed changes also deviate significantly from the core design and introduce a potential for material duplication, which is a critical failure criterion."
+    },
+    "development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json",
+        "game-seed-market-evidence.json"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "The current design fails to provide a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved.",
+        "The current design does not provide a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved.",
+        "The current design does not provide a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved.",
+        "The current design does not provide a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved."
+      ],
+      "reason": "The current design fails to meet the essential criteria for a successful idle game, which includes a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

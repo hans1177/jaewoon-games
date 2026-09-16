@@ -1,0 +1,87 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Unique Character Customization"
+        ],
+        "fix": [
+          "DISTINCT_IDENTITY"
+        ],
+        "add": [
+          "DISTINCT_IDENTITY"
+        ],
+        "risks": [
+          "DISTINCT_IDENTITY"
+        ],
+        "evidence": [],
+        "questions": []
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game focuses on idle game management and resource optimization, ensuring players can progress efficiently without frequent in-"
+        ],
+        "fix": [
+          "The game has a clear progression system that tracks and improves players' progress, allowing for easy understanding of their path."
+        ],
+        "add": [
+          "The game provides a progression direction from simple to complex, with a focus on resource optimization and progression."
+        ],
+        "risks": [
+          "The game includes systems to manage and mitigate risks, such as resource management and progression systems."
+        ],
+        "evidence": [
+          "The game has evidence from various sources, including market data and references to other games."
+        ],
+        "questions": [
+          "How can the game be improved to provide a more engaging experience for players?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "UNIQUE_CHARACTER_CUSTOMIZATION"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+        ],
+        "evidence": [
+          "REFERENCE_INPUTS"
+        ],
+        "questions": [
+          "Does the game have a clear and understandable progression system that allows players to easily understand how their progress is be"
+        ]
+      }
+    }
+  ]
+}

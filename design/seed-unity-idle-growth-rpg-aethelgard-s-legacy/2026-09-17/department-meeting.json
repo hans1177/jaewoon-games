@@ -1,0 +1,187 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "smollm2:1.7b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "SEED_MATERIAL_IDS"
+      ],
+      "add": [
+        "SEED_MATERIAL_SELECTION_SIGNALS"
+      ],
+      "risks": [
+        "REFERENCE_GAMES"
+      ],
+      "evidence": [
+        "GAME_SEED=3"
+      ],
+      "questions": [
+        "GAME_SEED=4"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "MAT-005"
+      ],
+      "fix": [
+        "GAME_SEED=2, SEED_ID=SEED-UNITY-IDLE-GROWTH-RPG-001, GAME_ID=seed-unity-idle-growth-rpg-aethelgards"
+      ],
+      "add": [
+        "SEED_MATERIAL_IDS=MAT-005, MAT-023, MAT-011, SEED_MATERIAL_COUNT=3, SEED_MATERIAL_SELECTION_MODE=DYNAMIC_CONTEXTUAL_2_TO_4, SEED"
+      ],
+      "risks": [
+        "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT=1, SEED_CATEGORY_SELECTION_ROLE=HISTORICAL_BASELINE, REFERENCE_INPUTS=AFK Arena, Legend"
+      ],
+      "evidence": [
+        "CORE_FUN_TO_LEARN=Heroes or characters fight automatically and continue generating useful idle or offline progression resources between"
+      ],
+      "questions": [
+        "CORE_LOOP=Heroes or characters fight automatically and continue generating useful idle or offline progression resources between"
+      ]
+    },
+    "development": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=development"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Unique Character Customization"
+      ],
+      "fix": [
+        "DISTINCT_IDENTITY"
+      ],
+      "add": [
+        "DISTINCT_IDENTITY"
+      ],
+      "risks": [
+        "DISTINCT_IDENTITY"
+      ],
+      "evidence": [],
+      "questions": [
+        "How can the game be improved to provide a more engaging experience for players?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS만 자동 수정에 사용한다. 새 기능을 창작하지 않고 대표의견을 정리한다.",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "departments": [
+        "development",
+        "graphics",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 5,
+    "conflict": 0,
+    "hold": 0
+  }
+}

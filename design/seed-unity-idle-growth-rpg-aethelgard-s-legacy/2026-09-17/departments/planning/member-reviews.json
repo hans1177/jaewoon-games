@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-idle-growth-rpg-aethelgard-s-legacy",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "The game's core focus is on resource optimization and progression, ensuring players can efficiently manage their idle or offline R"
+        ],
+        "fix": [
+          "The game's progression system is designed to be clear and intuitive, allowing players to track their progress and improve it in a "
+        ],
+        "add": [
+          "The game's visual design blends traditional and modern elements, aiming for simplicity and ease of use. The mobile UX is user-foc"
+        ],
+        "risks": [
+          "The game includes systems to manage and mitigate risks, ensuring players can make informed decisions and avoid potential pitfalls."
+        ],
+        "evidence": [
+          "The game has a strong market presence, supported by references from AFK Arena, Legend of Slime, and Idle Heroes, as well as global"
+        ],
+        "questions": [
+          "How can the game be improved to provide a more engaging experience for players?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "SEED_MATERIAL_IDS"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "risks": [
+          "REFERENCE_GAMES"
+        ],
+        "evidence": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "questions": [
+          "How can the game be improved to provide a more engaging experience for players?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=planning"
+        ],
+        "fix": [
+          "GAME_SEED=0"
+        ],
+        "add": [
+          "GAME_SEED=1"
+        ],
+        "risks": [
+          "GAME_SEED=2"
+        ],
+        "evidence": [
+          "GAME_SEED=3"
+        ],
+        "questions": [
+          "GAME_SEED=4"
+        ]
+      }
+    }
+  ]
+}
