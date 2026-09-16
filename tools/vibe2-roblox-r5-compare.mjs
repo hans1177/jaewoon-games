@@ -6,7 +6,7 @@ const AUTHORITY='vibe2-roblox-skyline-input-playtest';
 const RECIPE='roblox-obby-autonomous-balance-v1';
 const clean=value=>String(value??'').trim();
 
-function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8'));}
+function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
 function parseArgs(argv=process.argv.slice(2)){const args={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)args[body]=true;else args[body.slice(0,at)]=body.slice(at+1);}return args;}
 function assertTelemetry(label,value){
