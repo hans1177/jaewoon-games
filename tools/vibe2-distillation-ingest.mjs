@@ -9,6 +9,19 @@ const SAFE_ID = /^[A-Za-z0-9._-]+$/;
 const SHA = /^[0-9a-f]{7,40}$/i;
 const SHA256_DIGEST = /^sha256:[0-9a-f]{64}$/i;
 const EXTERNAL_DISTILLATION_PATH = /^company-learning\/external-game-playtest\/[A-Za-z0-9._-]+-runtime-distillation\.json$/;
+const EXTERNAL_BLACK_BOX_REQUIRED_STAGES = Object.freeze([
+  'APP_LAUNCH',
+  'GAME_ENTRY',
+  'INPUT_EXERCISE',
+  'VISUAL_STATE_CHANGE',
+  'PROCESS_SURVIVAL',
+  'NO_FATAL_CRASH_OR_ANR',
+]);
+const LEGACY_EXTERNAL_BLACK_BOX_FACT_IDS = Object.freeze([
+  'actual-game-entry-correlated',
+  'drag-input-changed-board-state',
+  'runtime-survived-observed-input',
+]);
 
 function git(args, { allowFailure = false } = {}) {
   const result = spawnSync('git', args, { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 });
@@ -186,20 +199,27 @@ function externalBlackBoxRecord(mainRef, distillationPath) {
   const artifactDigest = clean(source.latestArtifactDigest);
   const facts = Array.isArray(record?.verifiedObservedFacts) ? record.verifiedObservedFacts : [];
   const factIds = new Set(facts.map((fact) => clean(fact?.id)));
+  const observedStages = new Set((Array.isArray(record?.verifiedObservedStages) ? record.verifiedObservedStages : []).map(upper));
   if (!record || !gameId || !SAFE_ID.test(gameId)) return { pass: false, reason: 'INVALID_EXTERNAL_GAME_ID', distillationPath };
   if (upper(record.authority) !== 'PRACTICE_ONLY_MIXED_EVIDENCE') return { pass: false, reason: 'EXTERNAL_AUTHORITY_NOT_PRACTICE_ONLY', gameId, distillationPath };
   if (record.runtimePromotionAllowed !== true || record.gameplayBehaviorPromotionAllowed !== true || record.positiveTrainingSample !== true) return { pass: false, reason: 'POSITIVE_PROMOTION_GATE_NOT_PASS', gameId, distillationPath };
   if (record.verifiedRuntimePass !== true || record.stablePlaytestVerified !== true) return { pass: false, reason: 'VERIFIED_RUNTIME_GATE_NOT_PASS', gameId, distillationPath };
   if (record.codeExtractionAllowed !== false || record.binaryRedistributionAllowed !== false) return { pass: false, reason: 'PROPRIETARY_BOUNDARY_NOT_ENFORCED', gameId, distillationPath };
   if (upper(source.latestResult) !== 'PASS' || !Number.isInteger(runId) || runId <= 0 || !Number.isInteger(runNumber) || runNumber <= 0 || !Number.isInteger(artifactId) || artifactId <= 0 || !SHA256_DIGEST.test(artifactDigest)) return { pass: false, reason: 'SOURCE_EVIDENCE_IDENTITY_INVALID', gameId, distillationPath };
-  for (const requiredFact of ['actual-game-entry-correlated', 'drag-input-changed-board-state', 'runtime-survived-observed-input']) {
-    if (!factIds.has(requiredFact)) return { pass: false, reason: `REQUIRED_OBSERVED_FACT_MISSING:${requiredFact}`, gameId, distillationPath };
+  if (observedStages.size > 0) {
+    for (const requiredStage of EXTERNAL_BLACK_BOX_REQUIRED_STAGES) {
+      if (!observedStages.has(requiredStage)) return { pass: false, reason: `REQUIRED_OBSERVED_STAGE_MISSING:${requiredStage}`, gameId, distillationPath };
+    }
+  } else {
+    for (const requiredFact of LEGACY_EXTERNAL_BLACK_BOX_FACT_IDS) {
+      if (!factIds.has(requiredFact)) return { pass: false, reason: `REQUIRED_OBSERVED_FACT_MISSING:${requiredFact}`, gameId, distillationPath };
+    }
   }
   const candidateId = `external-black-box-${gameId}-run-${runNumber}`;
-  const instruction = '외부 상용 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.';
+  const instruction = '외부 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.';
   const input = JSON.stringify({
     evidenceMode: 'EXTERNAL_BLACK_BOX',
-    stages: ['APP_LAUNCH', 'GAME_ENTRY', 'INPUT_EXERCISE', 'VISUAL_STATE_CHANGE', 'PROCESS_SURVIVAL', 'NO_FATAL_CRASH_OR_ANR'],
+    stages: EXTERNAL_BLACK_BOX_REQUIRED_STAGES,
     stableBoundary: clean(record.stablePlaytestBoundary),
     runId,
     runNumber,
@@ -213,7 +233,7 @@ function externalBlackBoxRecord(mainRef, distillationPath) {
     '- 시스템 오버레이·동의 화면·게임 진입·입력 반응을 서로 다른 증거 단계로 보존한다.',
     '- 성공 범위는 캡처된 검증 구간으로 제한하고 장시간 안정성이나 숨은 규칙을 추정하지 않는다.',
     '- 부분 성공 뒤 실패가 생기면 성공 경계와 실패 경계를 모두 기록한다.',
-    '- 상용 게임의 소스 코드, 에셋, 고유 UI 표현, 내부 알고리즘, 숨은 점수·경제 규칙은 학습 데이터로 추출하거나 복제하지 않는다.',
+    '- 외부 게임의 소스 코드, 에셋, 고유 UI 표현, 내부 알고리즘, 숨은 점수·경제 규칙은 black-box 학습 데이터로 추출하거나 복제하지 않는다.',
   ].join('\n');
   const sample = {
     version: TRAINING_SAMPLE_VERSION,
