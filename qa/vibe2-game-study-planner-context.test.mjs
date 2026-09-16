@@ -16,13 +16,13 @@ const knowledge = {
     {
       studyId: 'study-a', gameId: 'external-a', engine: 'web', confirmations: 2,
       gameDna: { combat: 0.8, ui: 0.5, input: 0.5 },
-      reusablePatterns: ['mechanic:combat', 'observed-flow:ui->combat', 'mechanic:economy'],
+      reusablePatterns: ['mechanic:combat', 'observed-flow:ui->combat', 'mechanic:economy', 'mechanic:restart'],
       hypotheses: [], features: {}, firstSeenAt: '2026-09-10T00:00:00Z', lastSeenAt: '2026-09-11T00:00:00Z'
     },
     {
       studyId: 'study-b', gameId: 'external-b', engine: 'web', confirmations: 3,
       gameDna: { combat: 0.7, ui: 0.6, input: 0.4 },
-      reusablePatterns: ['mechanic:combat', 'observed-flow:ui->combat'],
+      reusablePatterns: ['mechanic:combat', 'observed-flow:ui->combat', 'mechanic:restart'],
       hypotheses: [], features: {}, firstSeenAt: '2026-09-10T00:00:00Z', lastSeenAt: '2026-09-12T00:00:00Z'
     },
     {
@@ -65,7 +65,7 @@ test('nearest-game retrieval is used only when the target game already has verif
   assert.notEqual(context.nearest[0].gameId, 'target-game');
 });
 
-test('queue enrichment is idempotent, advisory, and skips owner directives', () => {
+test('queue enrichment is idempotent, advisory, and includes owner directives', () => {
   const queue = {
     version: 5,
     maxConcurrentTasks: 20,
@@ -76,10 +76,13 @@ test('queue enrichment is idempotent, advisory, and skips owner directives', () 
   };
   const first = enrichQueueWithGameStudyKnowledge({ queueInput: queue, knowledgeInput: knowledge });
   assert.equal(first.changed, true);
-  assert.equal(first.enrichedCount, 1);
+  assert.equal(first.enrichedCount, 2);
   assert.match(first.queue.tasks[0].goal, /GAME STUDY KNOWLEDGE/);
+  assert.match(first.queue.tasks[1].goal, /GAME STUDY KNOWLEDGE/);
   assert.equal(first.queue.tasks[0].evidence.includes('game-study-planner-context:v1'), true);
-  assert.equal(first.queue.tasks[1].goal, 'combat attack UI fix');
+  assert.equal(first.queue.tasks[1].evidence.includes('game-study-planner-context:v1'), true);
+  assert.equal(first.queue.tasks[0].evidence.includes('game-study-owner-directive:no'), true);
+  assert.equal(first.queue.tasks[1].evidence.includes('game-study-owner-directive:yes'), true);
   assert.equal(first.queue.maxConcurrentTasks, 20);
   assert.equal(first.authorityExpanded, false);
 
@@ -87,20 +90,32 @@ test('queue enrichment is idempotent, advisory, and skips owner directives', () 
   assert.equal(second.changed, false);
   assert.equal(second.enrichedCount, 0);
   assert.equal((second.queue.tasks[0].goal.match(/GAME STUDY KNOWLEDGE/g) || []).length, 1);
+  assert.equal((second.queue.tasks[1].goal.match(/GAME STUDY KNOWLEDGE/g) || []).length, 1);
 });
 
-test('guidance never presents source, exact values, or authority expansion as available', () => {
+test('guidance is a real production planning input but never exposes source, exact values, or authority expansion', () => {
   const context = buildGameStudyPlannerContext({
     knowledgeInput: knowledge,
     task: { gameId: 'new-game', target: 'web', goal: 'combat attack UI fix' }
   });
   const guidance = gameStudyPlannerGuidance(context);
   assert.match(guidance, /verified advisory context only/);
+  assert.match(guidance, /기능 선택·구현 방향/);
   assert.match(guidance, /원본 코드·게임 고유 수치/);
   assert.equal(context.policy.rawSourceAvailableToPlanner, false);
   assert.equal(context.policy.rawGameplayValuesAvailableToPlanner, false);
   assert.equal(context.policy.mayAutoExecute, false);
   assert.equal(context.policy.mayExpandAuthority, false);
+});
+
+test('restart and round goals can retrieve verified restart knowledge', () => {
+  const context = buildGameStudyPlannerContext({
+    knowledgeInput: knowledge,
+    task: { gameId: 'roblox-obby', target: 'roblox', goal: 'add round retry restart loop after finish' }
+  });
+  assert.equal(context.applied, true);
+  assert.ok(context.goalSystems.includes('restart'));
+  assert.ok(context.crossGamePatterns.some((row) => row.pattern === 'mechanic:restart'));
 });
 
 test('central GAME STUDY knowledge is populated from verified real-browser studies', () => {
@@ -135,7 +150,7 @@ test('central GAME STUDY knowledge is populated from verified real-browser studi
   assert.ok(merged.every((row) => row.confirmations >= row.gameCount));
 });
 
-test('central live knowledge reaches queued planner work end-to-end as advisory context', () => {
+test('central live knowledge reaches queued owner and autonomous planner work end-to-end', () => {
   const context = buildGameStudyPlannerContext({
     knowledgeInput: liveKnowledge,
     task: { gameId: 'new-production-game', target: 'web', goal: 'improve input movement progression UI flow' }
@@ -161,10 +176,11 @@ test('central live knowledge reaches queued planner work end-to-end as advisory 
   };
   const result = enrichQueueWithGameStudyKnowledge({ queueInput: queue, knowledgeInput: liveKnowledge });
   assert.equal(result.changed, true);
-  assert.equal(result.enrichedCount, 1);
+  assert.equal(result.enrichedCount, 2);
   assert.match(result.queue.tasks[0].goal, /GAME STUDY KNOWLEDGE - verified advisory context only/);
+  assert.match(result.queue.tasks[1].goal, /GAME STUDY KNOWLEDGE - verified advisory context only/);
   assert.ok(result.queue.tasks[0].evidence.includes('game-study-planner-context:v1'));
-  assert.equal(result.queue.tasks[1].goal, queue.tasks[1].goal);
+  assert.ok(result.queue.tasks[1].evidence.includes('game-study-planner-context:v1'));
   assert.equal(result.queue.maxConcurrentTasks, 20);
   assert.equal(result.authorityExpanded, false);
 });
@@ -213,7 +229,7 @@ test('production reserve-batch injects verified GAME STUDY knowledge before sele
   }
 });
 
-test('production reservation keeps owner directives untouched by GAME STUDY advisory knowledge', () => {
+test('production reservation injects verified GAME STUDY knowledge into owner directives too', () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-game-study-owner-'));
   try {
     const queueFile = path.join(root, 'queue.json');
@@ -234,9 +250,11 @@ test('production reservation keeps owner directives untouched by GAME STUDY advi
     writeJson(controlFile, { version: 1, currentMax: 20 });
 
     const result = runQueueCommand({ command: 'reserve', queue: queueFile, knowledge: knowledgeFile, control: controlFile, max: '20' });
-    assert.equal(result.gameStudyPlanner.enrichedCount, 0);
-    assert.equal(result.task.goal, 'owner combat request');
-    assert.equal(result.task.evidence.includes('game-study-planner-context:v1'), false);
+    assert.equal(result.gameStudyPlanner.enrichedCount, 1);
+    assert.match(result.task.goal, /GAME STUDY KNOWLEDGE - verified advisory context only/);
+    assert.equal(result.task.evidence.includes('game-study-planner-context:v1'), true);
+    assert.equal(result.task.evidence.includes('game-study-owner-directive:yes'), true);
+    assert.equal(result.gameStudyPlanner.authorityExpanded, false);
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
