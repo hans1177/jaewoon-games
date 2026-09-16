@@ -51,6 +51,11 @@ test('deterministic Roblox world core replaces button shell without AI',()=>{
     assert.equal(manifest.deterministicRecipe,'roblox-obby-world-core-v1');
     assert.deepEqual(manifest.changedFiles,['server/Game.server.luau']);
     assert.match(source,/local STAGE_COUNT = 12/);
+    assert.match(source,/local previousPosition = START_POSITION/);
+    assert.match(source,/local segment = checkpointPosition - previousPosition/);
+    assert.match(source,/local stepAPosition = previousPosition \+ segment \* \(1 \/ 3\)/);
+    assert.match(source,/local stepBPosition = previousPosition \+ segment \* \(2 \/ 3\)/);
+    assert.match(source,/previousPosition = checkpointPosition/);
     assert.match(source,/Checkpoint%02d/);
     assert.match(source,/stage ~= state\.stage \+ 1/);
     assert.match(source,/player:SetAttribute\("Position", stage\)/);
@@ -61,6 +66,8 @@ test('deterministic Roblox world core replaces button shell without AI',()=>{
     assert.match(source,/humanoid\.Health = 0/);
     assert.match(source,/remote\.OnServerEvent:Connect\(function\(_player, _actionId\)\s+return\s+end\)/s);
     assert.doesNotMatch(source,/scopeHandler[1-9]/);
+    assert.doesNotMatch(source,/bridgeZ/);
+    assert.ok(manifest.tests.includes('physically-connected-default-jump-course'));
     const manifestFile=path.join(cwd,'.vibe2/candidates/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2/manifest.json');
     assert.equal(fs.existsSync(manifestFile),true);
     assert.equal(JSON.parse(fs.readFileSync(manifestFile,'utf8')).aiUsed,false);
