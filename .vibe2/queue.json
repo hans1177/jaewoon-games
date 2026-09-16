@@ -2464,7 +2464,7 @@
       "target": "roblox",
       "department": "development",
       "type": "implementation",
-      "goal": "[OWNER_ROBLOX_PRIMARY] PHASE_3_MAP_AND_OBSTACLE_DIVERSITY. 최신 main의 R3 12-stage 체크포인트/리스폰/서버권위/반복 라운드 구조를 보존하면서 Skyline Sprint의 실제 맵 공간과 장애물을 게임답게 고도화한다. 큰 공간 흐름은 시작 로비에서 도시를 타고 올라가 정상에 도달하는 수직 진행으로 유지하고 Stage 1-3 Rooftop, 4-6 Construction, 7-9 Machinery, 10-12 Skyline Summit의 네 구역 정체성을 사용한다. 각 구역의 지형, 높이, 동선, 장애물 조합, 시각적 구분, 난이도 상승은 Vibe가 현재 게임 구조와 모바일 기본 이동/점프 물리를 보고 직접 설계한다. 초반은 읽기 쉬운 정적 점프, 중반은 이동/타이밍, 후반은 회전/소멸/복합 패턴처럼 체감 다양성이 증가해야 하며 모든 스테이지가 동일한 Step A/Step B 반복처럼 보이면 안 된다. 외부 게임 맵/고유 연출/코드 복제 금지. GameConfig/RemoteEvent 호환성, 순차 체크포인트, 낙하/위험 사망, 최신 체크포인트 복귀, Round 1→2 자동 반복, per-player 상태 분리, 모바일 기본 조작을 깨지 않는다. Vibe가 candidate 제작 후 실제 Roblox 런타임에서 전구간 진행·사망복귀·완주·다음 라운드 회귀를 검증하고 실패하면 원인을 수정해 재검증한다.",
+      "goal": "[OWNER_ROBLOX_PRIMARY] PHASE_3_MAP_AND_OBSTACLE_DIVERSITY. 최신 main의 R3 12-stage 체크포인트/리스폰/서버권위/반복 라운드 구조를 보존하면서 Skyline Sprint의 실제 맵 공간과 장애물을 게임답게 고도화한다. 큰 공간 흐름은 시작 로비에서 도시를 타고 올라가 정상에 도달하는 수직 진행으로 유지하고 Stage 1-3 Rooftop, 4-6 Construction, 7-9 Machinery, 10-12 Skyline Summit의 네 구역 정체성을 사용한다. 각 구역의 지형, 높이, 동선, 장애물 조합, 시각적 구분, 난이도 상승은 Vibe가 현재 게임 구조와 모바일 기본 이동/점프 물리를 보고 직접 설계한다. 초반은 읽기 쉬운 정적 점프, 중반은 이동/타이밍, 후반은 회전/소멸/복합 패턴처럼 체감 다양성이 증가해야 하며 모든 스테이지가 동일한 Step A/Step B 반복처럼 보이면 안 된다. 외부 게임 맵/고유 연출/코드 복제 금지. GameConfig/RemoteEvent 호환성, 순차 체크포인트, 낙하/위험 사망, 최신 체크포인트 복귀, Round 1→2 자동 반복, per-player 상태 분리, 모바일 기본 조작을 깨지 않는다. Vibe가 candidate 제작 후 실제 Roblox 런타임에서 전구간 진행·사망복귀·완주·다음 라운드 회귀를 검증하고 실패하면 원인을 수정해 재검증한다.\n\n[GAME STUDY KNOWLEDGE - verified advisory context only]\n외부 게임에서 반복 검증된 일반화 패턴이다. 현재 제작 작업의 기능 선택·구현 방향을 정할 때 실제 planning input으로 사용하되 현재 소스/요구와 맞을 때만 적용한다.\n원본 코드·게임 고유 수치·보상값을 복사하지 말고, 보호된 gameplay/save/economy/progression 규칙과 작업 권한을 바꾸지 않는다.\n관련 시스템=movement, combat, progression, restart, networking, ai\n- pattern=observed-flow:ai->progression; games=2; confirmations=27; relevance=27\n- pattern=architecture:progression; games=2; confirmations=27; relevance=17\n- pattern=mechanic:progression; games=2; confirmations=27; relevance=17\n- pattern=observed-flow:input->ai; games=2; confirmations=27; relevance=17\n- pattern=observed-flow:input->progression; games=2; confirmations=27; relevance=17\n- pattern=observed-flow:progression->input; games=2; confirmations=27; relevance=17\n- pattern=observed-loop:progression>input; games=2; confirmations=27; relevance=17\n- pattern=architecture:movement; games=2; confirmations=18; relevance=17\nnearest=INSUFFICIENT_TARGET_DNA",
       "responsibleFiles": [
         "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/server/Game.server.luau",
         "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/client/Game.client.luau"
@@ -2472,7 +2472,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
@@ -2498,7 +2498,12 @@
         "server-authority:preserve",
         "game-study-source:verified-existing-knowledge-only",
         "game-study-new-session-required:false",
-        "base-main:6baf6083cce129f3cbdfd4d0efcf4833b150573b"
+        "base-main:6baf6083cce129f3cbdfd4d0efcf4833b150573b",
+        "game-study-planner-context:v1",
+        "game-study-owner-directive:yes",
+        "game-study-goal-systems:movement,combat,progression,restart,networking,ai",
+        "game-study-cross-game-patterns:8",
+        "game-study-nearest-status:INSUFFICIENT_TARGET_DNA"
       ],
       "lastOutcome": null,
       "companyContext": null,
