@@ -2,14 +2,15 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { resolveVibeDevelopmentExecution } from '../tools/vibe2-development-execution-policy.mjs';
 
+const root='roblox-games/seed-roblox-obby-party-minigam-tower-of-hell';
 const r2Task={
   id:'OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2',
   target:'roblox',
   ownerDirective:true,
   fullRebuild:true,
   rebuildMode:'FULL_REBUILD',
-  responsibleFiles:['roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/server/Game.server.luau'],
-  goal:'FULL_REBUILD Roblox obby world core with checkpoints and obstacle course',
+  responsibleFiles:[`${root}/server/Game.server.luau`,`${root}/client/Game.client.luau`],
+  goal:'FULL_REBUILD Roblox obby world core with checkpoints, obstacle course, and read-only progress HUD',
   evidence:['owner-directive:full-roblox-game-rebuild','rebuild-phase:world-core']
 };
 
@@ -23,8 +24,14 @@ test('platform-decided structured Roblox work uses deterministic worker without 
   assert.equal(plan.recipe,'roblox-obby-world-core-v1');
 });
 
-test('relative Roblox responsibility path resolves the same deterministic recipe',()=>{
+test('server-only legacy responsibility remains compatible with the obby deterministic recipe',()=>{
   const plan=resolveVibeDevelopmentExecution({task:{...r2Task,responsibleFiles:['server/Game.server.luau']},target:'roblox',route:'text-source-worker'});
+  assert.equal(plan.executor,'deterministic-source-worker');
+  assert.equal(plan.recipe,'roblox-obby-world-core-v1');
+});
+
+test('server plus client HUD responsibility resolves the same deterministic recipe',()=>{
+  const plan=resolveVibeDevelopmentExecution({task:{...r2Task,responsibleFiles:['server/Game.server.luau','client/Game.client.luau']},target:'roblox',route:'text-source-worker'});
   assert.equal(plan.executor,'deterministic-source-worker');
   assert.equal(plan.recipe,'roblox-obby-world-core-v1');
 });
