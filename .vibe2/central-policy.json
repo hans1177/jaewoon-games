@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "updatedAt": "2026-09-16",
   "executionRoles": {
     "vibe": {
@@ -16,6 +16,26 @@
       "regressionGate": true,
       "promoteVerifiedLearning": true
     }
+  },
+  "autonomy": {
+    "mode": "long-horizon-self-directed",
+    "assistantPerGameDesignDependency": false,
+    "aiCallsAllowed": false,
+    "implementationMode": "deterministic-first-no-ai",
+    "capabilityGapOutcome": "BLOCKED_FOR_RECIPE_LEARNING",
+    "internalFailureMustFailWorker": true,
+    "sourceChangeRequiresIncrementalQa": true,
+    "runtimeEvidenceRequiredBeforePass": true,
+    "closedLoop": [
+      "detect",
+      "design",
+      "implement",
+      "incremental-qa",
+      "runtime-qa",
+      "repair",
+      "retest",
+      "verified-learning"
+    ]
   },
   "engineEditor": {
     "actor": "vibe",

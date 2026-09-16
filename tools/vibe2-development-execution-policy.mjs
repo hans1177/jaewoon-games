@@ -1,5 +1,5 @@
 // 파일명: tools/vibe2-development-execution-policy.mjs
-// 역할: 플랫폼 결정 이후 개발 실행기를 deterministic-first로 선택하고 AI를 선택적 보조 수단으로 제한한다.
+// 역할: 플랫폼 결정 이후 개발 실행기를 deterministic-only로 선택하고 AI 호출을 금지한다.
 
 const clean=value=>String(value??'').trim();
 const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
@@ -36,43 +36,13 @@ export function resolveDeterministicRecipe({task={},target=''}={}){
 export function resolveVibeDevelopmentExecution({task={},target='',route='text-source-worker'}={}){
   const normalized=clean(target||task.target).toLowerCase();
   const platformDecisionResolved=SUPPORTED_TARGETS.has(normalized);
-  const explicitAiRequired=task.aiRequired===true||evidence(task).includes('ai-required:true');
+  const aiRequested=task.aiRequired===true||evidence(task).includes('ai-required:true');
   const recipe=platformDecisionResolved?resolveDeterministicRecipe({task,target:normalized}):null;
   if(route!=='text-source-worker'){
-    return Object.freeze({
-      version:1,
-      platformDecisionResolved,
-      deterministicFirst:platformDecisionResolved,
-      aiRequired:false,
-      aiAssist:false,
-      aiFallbackAvailable:false,
-      executor:route,
-      recipe:null,
-      reason:`non-text-route:${clean(route)||'unknown'}`
-    });
+    return Object.freeze({version:2,platformDecisionResolved,deterministicFirst:platformDecisionResolved,aiRequested,aiAllowed:false,aiRequired:false,aiAssist:false,aiFallbackAvailable:false,executor:route,recipe:null,reason:`non-text-route:${clean(route)||'unknown'}`});
   }
-  if(recipe&&!explicitAiRequired){
-    return Object.freeze({
-      version:1,
-      platformDecisionResolved,
-      deterministicFirst:true,
-      aiRequired:false,
-      aiAssist:false,
-      aiFallbackAvailable:true,
-      executor:'deterministic-source-worker',
-      recipe,
-      reason:'deterministic-recipe-available'
-    });
+  if(recipe){
+    return Object.freeze({version:2,platformDecisionResolved,deterministicFirst:true,aiRequested,aiAllowed:false,aiRequired:false,aiAssist:false,aiFallbackAvailable:false,executor:'deterministic-source-worker',recipe,reason:aiRequested?'ai-request-ignored-deterministic-recipe-available':'deterministic-recipe-available'});
   }
-  return Object.freeze({
-    version:1,
-    platformDecisionResolved,
-    deterministicFirst:platformDecisionResolved,
-    aiRequired:explicitAiRequired,
-    aiAssist:true,
-    aiFallbackAvailable:Boolean(recipe),
-    executor:'ai-source-worker',
-    recipe,
-    reason:explicitAiRequired?'explicit-ai-required':'no-deterministic-recipe-for-task'
-  });
+  return Object.freeze({version:2,platformDecisionResolved,deterministicFirst:true,aiRequested,aiAllowed:false,aiRequired:false,aiAssist:false,aiFallbackAvailable:false,executor:'deterministic-capability-gap',recipe:null,reason:aiRequested?'ai-disabled-by-central-policy':'deterministic-recipe-required'});
 }
