@@ -2,6 +2,7 @@ import { IslandRendererV3 } from './render-v3.js';
 
 const proto = IslandRendererV3.prototype;
 const originalDraw = proto.draw;
+const TARGET_FRAME_MS = 1000 / 32;
 
 // 모바일에서 2x DPR 전체 월드를 매 프레임 그리던 비용을 낮춘다.
 proto.resize = function optimizedResize() {
@@ -44,7 +45,8 @@ proto.drawSea = function optimizedSea(ctx, game) {
 let lastPaintAt = 0;
 proto.draw = function optimizedDraw(game) {
   const now = performance.now();
-  if (now - lastPaintAt < 32) return;
+  // 전역 32FPS 스케줄러와 겹쳐 16FPS로 떨어지지 않도록 여유값을 둔다.
+  if (now - lastPaintAt < TARGET_FRAME_MS - 2) return;
   lastPaintAt = now;
 
   // 예전 저장에 기사 4명 이상이 남아 있어도 새 최대치 3명을 강제한다.
