@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {createRobloxBuildEvidence,ROBLOX_PACKAGE_TOOL} from '../tools/company-development-roblox-package.mjs';
+import {createRobloxBuildEvidence,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL} from '../tools/company-development-roblox-package.mjs';
 
 test('Roblox package evidence proves build only and never invents later validation',()=>{
   const evidence=createRobloxBuildEvidence({
@@ -25,6 +25,38 @@ test('Roblox package evidence proves build only and never invents later validati
   assert.equal(evidence.failureStage,'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT');
   assert.equal(evidence.failureSignature,'ROBLOX_BUILD_PREFLIGHT_PENDING');
   assert.equal(evidence.releaseClaim,false);
+});
+
+test('Roblox package source validation keeps ordinary static blockers authoritative',()=>{
+  const validation=resolvePackageSourceValidation({
+    staticVerdict:{pass:false,blockers:['CLIENT_SERVER_ACTION_REQUIRED'],saveRequired:false},
+  });
+  assert.equal(validation.pass,false);
+  assert.deepEqual(validation.blockers,['CLIENT_SERVER_ACTION_REQUIRED']);
+  assert.equal(validation.authority,'exact-source-static-validation');
+});
+
+test('Roblox package source validation accepts an exact verified Vibe2 source tree without weakening ordinary validation',()=>{
+  const tree='c'.repeat(40);
+  const validation=resolvePackageSourceValidation({
+    staticVerdict:{pass:false,blockers:['CLIENT_SERVER_ACTION_REQUIRED'],saveRequired:false},
+    verifiedSourceTreeSha:tree,
+    actualSourceTreeSha:tree,
+  });
+  assert.equal(validation.pass,true);
+  assert.deepEqual(validation.blockers,[]);
+  assert.equal(validation.authority,'verified-vibe2-source-handoff');
+});
+
+test('Roblox package source validation rejects a verified Vibe2 handoff when the exact source tree differs',()=>{
+  const validation=resolvePackageSourceValidation({
+    staticVerdict:{pass:true,blockers:[],saveRequired:false},
+    verifiedSourceTreeSha:'c'.repeat(40),
+    actualSourceTreeSha:'d'.repeat(40),
+  });
+  assert.equal(validation.pass,false);
+  assert.deepEqual(validation.blockers,['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH']);
+  assert.equal(validation.authority,'verified-vibe2-source-handoff');
 });
 
 test('Roblox package toolchain is pinned to the verified Rojo Linux artifact',()=>{
