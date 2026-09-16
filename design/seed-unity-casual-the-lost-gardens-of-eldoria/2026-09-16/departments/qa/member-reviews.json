@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "What is the unique world identity of The Lost Gardens of Eldoria?"
+          "What is the identity of the assigned department for this seed? (Answer: SEED-UNITY-CASUAL-001)"
         ],
         "fix": [
-          "The Lost Gardens of Eldoria"
+          "What is the identity of the assigned department for this seed? (Answer: SEED-UNITY-CASUAL-001)"
         ],
         "add": [
-          "The Lost Gardens of Eldoria is a casual puzzle adventure game developed by Unity and published by Electronic Arts."
+          "What is the identity of the assigned department for this seed? (Answer: SEED-UNITY-CASUAL-001)"
         ],
         "risks": [
-          "Risks associated with the game include the potential for players to become frustrated with the game's simple, iterative gameplay, "
+          "What is the identity of the assigned department for this seed? (Answer: SEED-UNITY-CASUAL-001)"
         ],
         "evidence": [
-          "The game has been tested using the QA model and has passed all tests."
+          "What is the identity of the assigned department for this seed? (Answer: SEED-UNITY-CASUAL-001)"
         ],
         "questions": [
-          "What is the unique world identity of The Lost Gardens of Eldoria?"
+          "What is the identity of the assigned department for this seed? (Answer: SEED-UNITY-CASUAL-001)"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "The Lost Gardens of Eldoria is a casual puzzle adventure game developed by QA department, with a focus on simple and iterative, go"
+          "ASSIGNED_DEPARTMENT=qa"
         ],
         "fix": [
-          "The Lost Gardens of Eldoria is a casual puzzle adventure game with a simple and iterative gameplay loop, focusing on a compelling,"
+          "GAME_SEED={\"version\":2,\"seedId\":\"SEED-UNITY-CASUAL-001\",\"gameId\":\"seed-unity-casual-the-lost-gardens-of-eldoria\",\"status\":\"ACTIVE\""
         ],
         "add": [
-          "The Lost Gardens of Eldoria is a casual puzzle adventure game with a simple, iterative gameplay loop, focusing on a compelling,"
+          "GAME_CATEGORY=\"CASUAL\""
         ],
         "risks": [
-          "The Lost Gardens of Eldoria is a casual puzzle adventure game with a simple, iterative gameplay loop, focusing on a compelling,"
+          "SEED_MATERIAL_SELECTION_MODE=\"DYNAMIC_CONTEXTUAL_2_TO_4\""
         ],
         "evidence": [
-          "The Lost Gardens of Eldoria is a casual puzzle adventure game with a simple, iterative gameplay loop, focusing on a compelling,"
+          "SEED_MATERIAL_SELECTION_SIGNALS=\"TARGET_PLATFORM_FIT\",\"CATEGORY_OR_GENRE_FIT\",\"MATERIAL_COMPLEMENTARITY\",\"VALIDATED_LEARNING_OUTOC"
         ],
         "questions": [
-          "The Lost Gardens of Eldoria is a casual puzzle adventure game with a simple, iterative gameplay loop, focusing on a compelling,"
+          "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT\":1"
         ]
       }
     }

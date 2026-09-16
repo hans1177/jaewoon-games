@@ -15,77 +15,85 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and",
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and",
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
+        "Ensure the game is suitable for the target platform and audience through platform-specific design choices and validation feedback.",
+        "Align the game's content with the target audience's preferences through genre and category selection.",
+        "Enhance the game's immersion and visual appeal through material complementarity."
       ],
       "challenge": [
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and",
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and",
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
+        "Optimize gameplay through validated learning outcomes and player feedback.",
+        "Crossy Road, Angry Birds 2, and other games with similar design principles."
       ],
       "revision": [
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and",
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and",
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
+        "Align the game's content with the target audience's preferences through genre and category selection.",
+        "Enhance the game's immersion and visual appeal through material complementarity."
       ],
-      "reason": "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
+      "reason": "The game's design should be aligned with the target audience's preferences and validated through platform-specific feedback. Additionally, the game's content should be enhanced through material complementarity, and the design should be optimized for validated learning outcomes and player feedback."
     },
     "graphics": {
       "accept": [
-        "Visual Style",
-        "Color Palette",
-        "Risk Management"
+        "UNIQUE_WORLD_DESIGN",
+        "MARKET_EVIDENCE_SUMMARY",
+        "SEED_MATERIAL_SELECTION_SIGNALS"
       ],
       "challenge": [
-        "Level Design",
-        "Evidence",
-        "Questions"
+        "PLAYER_TARGET_SESSION_MINUTES_IS_SUCH_THAT_THE_GAME_WILL_BE_PLAYED_ON_THE_PLATFORM",
+        "risks",
+        "evidence"
       ],
       "revision": [
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and",
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
+        "NATURE_ECOLOGY_SCIENCE",
+        "SOCIAL_COOP_COMPETITION",
+        "game-seed"
       ],
-      "reason": "The game is successful and has strong market, so we should keep it as is."
+      "reason": "The 'SEED_MATERIAL_SELECTION_SIGNALS' suggests a core gameplay loop that aligns with the target platform and audience.  The 'PLAYER_TARGET_DESIGN_REFERENCE_IS_SUCH_THAT_THE_GAME_MUST_BE_PLAYED_ON_THE_PLATFORM' highlights the importance of platform-specific considerations.  The 'challenge' suggests a need to balance the game with the target platform."
     },
     "development": {
       "accept": [
-        "OWN",
-        "OTHERS"
+        "keep",
+        "add",
+        "risks"
       ],
       "challenge": [
-        "OWN",
-        "OTHERS"
+        "keep",
+        "add",
+        "risks"
       ],
       "revision": [
-        "OWN",
-        "OTHERS"
+        "keep",
+        "add",
+        "risks"
       ],
-      "reason": "own.json"
+      "reason": "game-seed"
     },
     "qa": {
       "accept": [
-        "The Lost Gardens of Eldoria is a casual puzzle adventure game developed by Unity and published by Electronic Arts."
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "challenge": [
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "revision": [
-        "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
-      "reason": "The game has been tested using the QA model and has passed all tests."
+      "reason": "ASSIGNED_DEPARTMENT=qa"
     },
     "balance": {
       "accept": [
-        "The Lost Gardens of Eldoria"
+        "UNIQUE_WORLD_DESIGN",
+        "GAME_REFERENCE",
+        "GAME_REFERENCE"
       ],
       "challenge": [
-        "The Lost Gardens of Eldoria"
+        "GAME_REFERENCE",
+        "GAME_REFERENCE",
+        "GAME_REFERENCE"
       ],
       "revision": [
-        "The Lost Gardens of Eldoria"
+        "GAME_REFERENCE",
+        "GAME_REFERENCE",
+        "GAME_REFERENCE"
       ],
-      "reason": "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and"
+      "reason": "GAME_REFERENCE"
     }
   }
 }

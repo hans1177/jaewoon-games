@@ -9797,6 +9797,40 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-16T07:45:17.676Z"
+      },
+      {
+        "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+        "seedId": "SEED-UNITY-CASUAL-001",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "improvementTargets": [
+          {
+            "dimension": "ideaDistinctness",
+            "current": 6,
+            "maxScore": 15,
+            "gap": 9
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [
+          "NATURE_ECOLOGY_SCIENCE",
+          "SOCIAL_COOP_COMPETITION",
+          "FREE_ORIGINAL_IDEA"
+        ],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-16T14:23:56.516Z"
       }
     ],
     "causeCounts": {
@@ -9804,7 +9838,7 @@
       "COMPLETE_PLAYABLE_CYCLE_REQUIRED": 1,
       "FAIL_OR_LOSS_CONDITION_REQUIRED": 1,
       "CATEGORY_PROFILE_MATCH": 2,
-      "CORE_FUN_WEAK": 16,
+      "CORE_FUN_WEAK": 17,
       "REQUIRED_AXIS_MINIMUM": 1
     },
     "preferSeedMaterialFamilies": [],
@@ -9819,7 +9853,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-16T07:45:17.677Z"
+    "updatedAt": "2026-09-16T14:23:56.517Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,

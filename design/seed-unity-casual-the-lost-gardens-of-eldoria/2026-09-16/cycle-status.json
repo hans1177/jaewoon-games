@@ -170,29 +170,24 @@
         "recommendedState": "ACTIVE",
         "fatalCriteria": [],
         "evidence": [
-          "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and has been tested using the QA model and has passed all tests.",
-          "The game is successful and has strong market, so we should keep it as is."
+          "The game's core fun is aligned with simple gameplay and creative problem-solving, which are well-suited for the target audience and platform. Crossy Road and Angry Birds 2 demonstrate design principles that support the intended content and user experience.",
+          "The game's content is validated through material complementarity and learning outcomes, ensuring a positive impact on gameplay and player engagement."
         ],
-        "reason": "The game is a successful and active product with strong market potential, and it has passed all necessary tests. It aligns with the current design and market expectations."
+        "reason": "The game design is optimized for platform-specific considerations, validated content alignment, and learning outcomes. It aligns with the target audience and platform, making it a suitable candidate for active redesign."
       },
       "graphics": {
         "recommendedState": "DISCARD",
         "fatalCriteria": [
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
-          "CORE_FUN_CANNOT_BE_RECOVERED"
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
         ],
-        "evidence": [
-          "GAME_SEED",
-          "validationQuestions",
-          "openQuestions",
-          "technicalAssumptions"
-        ],
-        "reason": "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and has been tested using the QA model and has passed all tests. The game is successful and has strong market, so we should keep it as is."
+        "evidence": [],
+        "reason": "The proposed design deviates significantly from the core gameplay loop and established design principles of the game. While incorporating user feedback is important, the proposed changes – particularly the shift to a casual, single-thumb-tap experience – are not aligned with the core design goals and could lead to a fundamentally different and less engaging experience. The design also lacks a clear, distinct identity and relies heavily on a single, potentially limiting gameplay loop.  The proposed changes threaten the core fun and could result in a game that fails to resonate with the target audience and platform.  Further, the design lacks a clear path to monetization and long-term success."
       },
       "development": {
-        "recommendedState": "REDESIGN",
+        "recommendedState": "ACTIVE",
         "fatalCriteria": [
           "CORE_FUN_CANNOT_BE_RECOVERED",
           "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
@@ -200,10 +195,9 @@
           "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
         ],
         "evidence": [
-          "VALID_FATAL_CRITERIA",
-          "GAME_SEED"
+          "VALID_FATAL_CRITERIA"
         ],
-        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+        "reason": "VALID_FATAL_CRITERIA를 통해 치명적인 문제가 identified. 치명적인 문제는 실제 설계 근거로 확인될 때만 가능하다."
       },
       "qa": {
         "recommendedState": "REDESIGN",
@@ -214,9 +208,9 @@
           "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
         ],
         "evidence": [
-          "The game has strong market evidence, including high downloads, revenue, and player engagement metrics."
+          "The game's content should be enhanced through material complementarity, and the design should be validated through platform feedback to ensure a suitable experience for the target audience and platform."
         ],
-        "reason": "The current design is highly successful and has strong market evidence, but it may not meet the future design criteria due to the identified fatal criteria. The redesign is necessary to ensure the game remains competitive and meets the future design requirements."
+        "reason": "The current design does not meet the criteria for a successful game, as it lacks the necessary platform-specific considerations, validated content alignment, and optimized learning outcomes. The redesign is necessary to ensure the game's success and aligns with the target audience and platform."
       },
       "balance": {
         "recommendedState": "ACTIVE",
@@ -228,27 +222,27 @@
         ],
         "evidence": [
           "CORE_FUN_TO_LEARN",
-          "DISTINCT_IDENTITY",
-          "VALID_FATAL_CRITERIA",
-          "VALID_FATAL_CRITERIA"
+          "DISTINCT_IDENTITY_TO_LEARN",
+          "SELECTED_TARGET_PLATFORM_TO_LEARN",
+          "REQUIRED_PRODUCTION_SCOPE_TO_LEARN"
         ],
-        "reason": "The Lost Gardens of Eldoria is a highly successful and active game in the Casual Puzzle Adventure category, with strong market and has been tested using the QA model and has passed all tests. The game is successful and has strong market, so we should keep it as is."
+        "reason": "The game should be designed with platform-specific considerations, validated content alignment, and optimized for learning outcomes and player feedback. Crossy Road, Angry Birds 2, and similar games demonstrate design principles that align with the target audience and platform. The game's content should be enhanced through material complementarity, and the design should be validated through platform feedback to ensure a suitable experience for the target audience and platform."
       }
     },
     "marketMetricAloneUsedForDiscard": false
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft": 35625,
-      "independent_department_reviews": 308450,
-      "department_representatives": 34118,
-      "lead_rebuttals": 36906,
-      "cross_department_meeting": 7542,
-      "designer_revision": 23577,
-      "five_lead_fatal_review": 191581
+      "designer_draft": 42029,
+      "independent_department_reviews": 322820,
+      "department_representatives": 32250,
+      "lead_rebuttals": 36533,
+      "cross_department_meeting": 5946,
+      "designer_revision": 29553,
+      "five_lead_fatal_review": 185059
     },
     "totalModelCalls": 33,
-    "totalModelCallMs": 1262109,
+    "totalModelCallMs": 1298292,
     "modelPhaseConcurrency": 3,
     "modelKeepAlive": "1m",
     "independentReviewOutputs": 15,
@@ -358,7 +352,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-15T23:58:33.029Z"
+    "checkedAt": "2026-09-16T14:23:56.471Z"
   },
   "artbookUi": {
     "status": "WRITING",

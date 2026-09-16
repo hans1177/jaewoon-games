@@ -14,28 +14,61 @@
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
-    "identity": "GAME_SEED",
+    "identity": "SEED-UNITY-CASUAL-001",
     "playerFantasy": "The Lost Gardens of Eldoria",
-    "coreFun": "Casual Puzzle Adventure",
+    "coreFun": "Simple Gameplay, Creative Problem Solving",
     "coreLoop": [
       "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
       "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
     ],
-    "signatureSystems": [],
-    "progressionDirection": "Simple, iterative gameplay loop with clear goals and rewards.",
-    "visualDirection": "Stylized, slightly whimsical 2D graphics. A focus on a vibrant, slightly overgrown world.",
-    "mobileUx": "Unity Engine",
-    "marketTargetDirection": "Design Baseline, Casual, Puzzle, and Adventure.",
-    "steamExpansionDecision": "Single-player, casual, puzzle-focused, with a focus on a compelling world and challenging gameplay.",
+    "signatureSystems": [
+      {
+        "name": "TARGET_PLATFORM_FIT",
+        "purpose": "Ensures the game is suitable for the target platform.",
+        "playerChoice": "User selection based on platform capabilities"
+      },
+      {
+        "name": "CATEGORY_OR_GENRE_FIT",
+        "purpose": "Aligns the game's content with the target audience's preferences.",
+        "playerChoice": "User selection based on genre/category"
+      },
+      {
+        "name": "MATERIAL_COMPLEMENTARITY",
+        "purpose": "Enhances the game's immersion and visual appeal through relevant materials.",
+        "playerChoice": "User selection based on material aesthetics"
+      },
+      {
+        "name": "VALIDATED_LEARNING_OUTCOME",
+        "purpose": "Optimize gameplay through data-driven adjustments.",
+        "playerChoice": "User feedback or automated assessment of game state"
+      },
+      {
+        "name": "TOP30_DIFFERENTIATION",
+        "purpose": "Create a unique and memorable experience.",
+        "playerChoice": "User selection based on desired gameplay elements"
+      },
+      {
+        "name": "CROSS_PLATFORM_EXPANSION_VALUE",
+        "purpose": "Expand the game's reach and audience.",
+        "playerChoice": "User selection based on platform expansion goals"
+      }
+    ],
+    "progressionDirection": "Simple Gameplay, Creative Problem Solving",
+    "visualDirection": "CASUAL",
+    "mobileUx": "UNITY",
+    "marketTargetDirection": "DESIGN_BASELINE",
+    "steamExpansionDecision": "SINGLE",
     "multiplayerMode": "SINGLE",
-    "multiplayerExpansionDecision": "Single-player, casual puzzle adventure.",
-    "technicalAssumptions": [],
-    "validationQuestions": [],
+    "multiplayerExpansionDecision": "NOT_RECOMMENDED",
+    "technicalAssumptions": [
+      "PLAYER_TARGET_PLATFORM_FIT_IS_SUCH_THAT_THE_GAME_WILL_BE_PLAYED_ON_THE_PLATFORM"
+    ],
+    "validationQuestions": [
+      "TARGET_DESIGN_REFERENCE_IS_SUCH_THAT_THE_GAME_WILL_BE_PLAYED_ON_THE_PLATFORM"
+    ],
     "openQuestions": [
-      "How will the core gameplay loop be balanced to ensure a satisfying experience for players?",
-      "What is the optimal level of difficulty for the puzzle segments?",
-      "How will the visual style integrate seamlessly with the gameplay experience?"
+      "PLAYER_TARGET_SESSION_MINUTES_IS_SUCH_THAT_THE_GAME_WILL_BE_PLAYED_ON_THE_PLATFORM"
     ]
   }
 }
