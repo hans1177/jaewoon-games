@@ -29,7 +29,8 @@ function writeProject(root) {
 test('project runtime helper keeps required physical obby checks', () => {
   for (const token of [
     'CreateVirtualInput', 'skip-rejected', 'hazard-death-respawn', 'remote-cannot-progress',
-    'physical-movement', 'jump-input', 'Checkpoint%02d', 'VIBE2_ROBLOX_PROJECT_RUNTIME=PASS'
+    'physical-movement', 'jump-input', 'Checkpoint%02d', 'VIBE2_ROBLOX_PROJECT_RUNTIME=PASS',
+    'child ~= Workspace.Terrain'
   ]) assert.equal(helperSource.includes(token), true, `missing ${token}`);
 });
 
@@ -54,7 +55,7 @@ test('project runtime helper injects the Rojo source tree and accepts nonce-boun
     errors: [],
     final: { position: 12, progress: 100, score: 1200, roundTime: 8.4, finished: true },
   };
-  fs.writeFileSync(fakeStudio, `#!/usr/bin/env node\nconst fs=require('fs');const args=process.argv.slice(2);const get=n=>{const i=args.indexOf(n);return i>=0?args[i+1]:''};const bootstrap=fs.readFileSync(get('--runScriptFile'),'utf8');if(!bootstrap.includes('local STAGE_COUNT = 12'))throw new Error('server source missing');if(!bootstrap.includes('GameConfig'))throw new Error('config source missing');const payload=${JSON.stringify(JSON.stringify(runtime))};fs.writeFileSync(get('--outputFile'),'${marker}'+Buffer.from(payload).toString('base64')+'\\n');\n`);
+  fs.writeFileSync(fakeStudio, `#!/usr/bin/env node\nconst fs=require('fs');const args=process.argv.slice(2);const get=n=>{const i=args.indexOf(n);return i>=0?args[i+1]:''};const bootstrap=fs.readFileSync(get('--runScriptFile'),'utf8');if(!bootstrap.includes('local STAGE_COUNT = 12'))throw new Error('server source missing');if(!bootstrap.includes('GameConfig'))throw new Error('config source missing');if(!bootstrap.includes('child ~= Workspace.Terrain'))throw new Error('Terrain preservation missing');const payload=${JSON.stringify(JSON.stringify(runtime))};fs.writeFileSync(get('--outputFile'),'${marker}'+Buffer.from(payload).toString('base64')+'\\n');\n`);
   fs.chmodSync(fakeStudio, 0o755);
   const result = await runRobloxProjectRuntimeSmoke({ projectRoot, studioPath: fakeStudio, outputFile, nonce: 'abcdef123456', timeoutMs: 15000 });
   assert.equal(result.runtimeVerified, true);
