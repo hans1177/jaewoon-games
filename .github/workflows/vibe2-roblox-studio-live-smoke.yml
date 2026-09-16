@@ -115,6 +115,7 @@ jobs:
             --command=node `
             --output="$env:RUNNER_TEMP/vibe2-roblox-studio-baseplate.json" `
             --timeout=120000
+          if ($LASTEXITCODE -ne 0) { throw 'baseplate VirtualInput smoke failed' }
 
       - name: Validate Roblox obby candidate in real Studio play mode
         shell: powershell
@@ -123,15 +124,20 @@ jobs:
           CANDIDATE_PROJECT_ROOT: ${{ inputs.project_root || 'roblox-games/seed-roblox-obby-party-minigam-tower-of-hell' }}
         run: |
           $ErrorActionPreference = 'Stop'
+          git config --global --add safe.directory "$env:GITHUB_WORKSPACE"
+          if ($LASTEXITCODE -ne 0) { throw 'git safe.directory setup failed' }
           $candidateDir = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-candidate-runtime'
           if (Test-Path $candidateDir) { Remove-Item -Recurse -Force $candidateDir }
           git fetch origin $env:CANDIDATE_REF
+          if ($LASTEXITCODE -ne 0) { throw 'candidate fetch failed' }
           git worktree add --detach $candidateDir FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'candidate worktree failed' }
           $projectRoot = Join-Path $candidateDir $env:CANDIDATE_PROJECT_ROOT
           node tools/vibe2-roblox-project-runtime-smoke.mjs `
             "--project-root=$projectRoot" `
             --output="$env:RUNNER_TEMP/vibe2-roblox-project-runtime.json" `
             --timeout=300000
+          if ($LASTEXITCODE -ne 0) { throw 'candidate Studio QA failed' }
           Write-Host "VIBE2_ROBLOX_CANDIDATE_REF=$env:CANDIDATE_REF"
           Write-Host 'VIBE2_ROBLOX_CANDIDATE_STUDIO_QA=PASS'
 
@@ -156,7 +162,9 @@ jobs:
             --play-output="$env:RUNNER_TEMP/vibe2-potion-shop-play.json" `
             --output="$env:RUNNER_TEMP/vibe2-potion-shop-study.json" `
             --timeout=240000
+          if ($LASTEXITCODE -ne 0) { throw 'Potion Shop Studio study failed' }
           node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/vibe2-potion-shop-study.json','utf8'));if(s.verified!==true)throw new Error('Potion Shop study not verified');if(s.sourceAnalysis?.scanned!==true)throw new Error('authorized source evidence not scanned');if(s.sourceAnalysis?.authorized!==true)throw new Error('authorized source evidence rejected');if(s.policy?.rawSourceCopiedIntoMemory!==false)throw new Error('raw source policy changed');if(s.authorityExpanded===true)throw new Error('authority expanded');if(Number(s.run?.inputActionCount||0)<1)throw new Error('real input was not observed');if(Number(s.run?.checkpointPassCount||0)!==Number(s.run?.checkpointCount||0))throw new Error('runtime checkpoint mismatch');console.log('VIBE2_ROBLOX_POTION_SHOP_STUDY=PASS');console.log('VIBE2_ROBLOX_POTION_SHOP_PATTERNS='+(s.distilledPatterns?.length||0))"
+          if ($LASTEXITCODE -ne 0) { throw 'Potion Shop evidence validation failed' }
           $manifest = Get-Content (Join-Path $sourceRoot 'authorized-studio-manifest.json') -Raw | ConvertFrom-Json
           if ($manifest.placeId -ne '14215142052') { throw 'Potion Shop source provenance place id mismatch' }
           if ([string]$manifest.observedPlaceId -ne '0') { throw 'Potion Shop must open as an uncopylocked Studio copy' }
