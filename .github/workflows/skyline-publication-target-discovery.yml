@@ -85,25 +85,25 @@ jobs:
           $stderr = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.stderr.log'
           $output = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.output.log'
           $scriptText = @'
-print("SKYLINE_TARGET_EXECUTION" .. "=YES")
-print("SKYLINE_TARGET_LOCAL_GAME_ID" .. "=" .. tostring(game.GameId))
-print("SKYLINE_TARGET_LOCAL_PLACE_ID" .. "=" .. tostring(game.PlaceId))
-local okService, studioService = pcall(function()
-    return game:GetService("StudioService")
-end)
-print("SKYLINE_TARGET_STUDIO_SERVICE_OK" .. "=" .. tostring(okService))
-if okService then
-    local okUser, userId = pcall(function()
-        return studioService:GetUserId()
-    end)
-    print("SKYLINE_TARGET_STUDIO_USER_OK" .. "=" .. tostring(okUser))
-    if okUser then
-        print("SKYLINE_TARGET_STUDIO_USER_ID" .. "=" .. tostring(userId))
-    else
-        print("SKYLINE_TARGET_STUDIO_USER_ERROR" .. "=" .. tostring(userId))
-    end
-end
-'@
+          print("SKYLINE_TARGET_EXECUTION" .. "=YES")
+          print("SKYLINE_TARGET_LOCAL_GAME_ID" .. "=" .. tostring(game.GameId))
+          print("SKYLINE_TARGET_LOCAL_PLACE_ID" .. "=" .. tostring(game.PlaceId))
+          local okService, studioService = pcall(function()
+              return game:GetService("StudioService")
+          end)
+          print("SKYLINE_TARGET_STUDIO_SERVICE_OK" .. "=" .. tostring(okService))
+          if okService then
+              local okUser, userId = pcall(function()
+                  return studioService:GetUserId()
+              end)
+              print("SKYLINE_TARGET_STUDIO_USER_OK" .. "=" .. tostring(okUser))
+              if okUser then
+                  print("SKYLINE_TARGET_STUDIO_USER_ID" .. "=" .. tostring(userId))
+              else
+                  print("SKYLINE_TARGET_STUDIO_USER_ERROR" .. "=" .. tostring(userId))
+              end
+          end
+          '@
           [System.IO.File]::WriteAllText($script, $scriptText, (New-Object System.Text.UTF8Encoding($false)))
           Remove-Item -Force $stdout,$stderr,$output -ErrorAction SilentlyContinue
           $started = Get-Date
