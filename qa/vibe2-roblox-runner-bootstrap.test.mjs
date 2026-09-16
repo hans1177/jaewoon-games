@@ -4,6 +4,8 @@ import fs from 'node:fs';
 
 const file = 'tools/vibe2-roblox-runner-bootstrap.ps1';
 const source = fs.readFileSync(file, 'utf8');
+const liveSmokeFile = '.github/workflows/vibe2-roblox-studio-live-smoke.yml';
+const liveSmoke = fs.readFileSync(liveSmokeFile, 'utf8');
 
 test('Roblox runner bootstrap uses official GitHub registration and readiness contracts', () => {
   assert.match(source, /actions\/runners\/registration-token/);
@@ -49,4 +51,13 @@ test('Roblox runner bootstrap can dispatch the dedicated live smoke only explici
   assert.match(source, /\[switch\]\$DispatchLiveSmoke/);
   assert.match(source, /vibe2-roblox-studio-live-smoke\.yml\/dispatches/);
   assert.match(source, /if \(\$DispatchLiveSmoke\) \{ Dispatch-LiveSmoke/);
+});
+
+test('Roblox live smoke runs only on the dedicated isolated Studio runner', () => {
+  assert.match(liveSmoke, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
+  assert.match(liveSmoke, /VIBE2_ROBLOX_STUDY_ISOLATED_SESSION: 'true'/);
+  assert.equal(/runs-on:.*roblox-studio-authenticated/.test(liveSmoke), false);
+  assert.match(liveSmoke, /agentName -eq 'roblox-studio-local'/);
+  assert.match(liveSmoke, /Production Roblox Studio runner must not execute dedicated GAME STUDY smoke/);
+  assert.match(liveSmoke, /VIBE2_PRODUCTION_RUNNER_TOUCHED=NO/);
 });
