@@ -40,24 +40,49 @@ function runningTask(extra = {}) {
   };
 }
 
+function leaseEvidence(task) {
+  return (task.evidence || []).find((row) => row.startsWith('game-study-reservation-at:')) || null;
+}
+
 test('legacy GAME STUDY running task with settled missing-result evidence is recovered', () => {
   const nowMs = Date.parse('2026-09-16T09:00:00Z');
   const prepared = prepareGameStudyQueue({ maxConcurrentTasks: 20, tasks: [runningTask()] }, targets, { nowMs });
   const task = prepared.queue.tasks.find((row) => row.id === taskId);
   assert.equal(task.status, 'queued');
   assert.equal(task.retries, 1);
+  assert.equal(leaseEvidence(task), null);
   assert(task.evidence.includes('game-study-stale-running-recovered'));
 });
 
-test('fresh leased GAME STUDY task is not reclaimed even with historical missing-result evidence', () => {
+test('fresh legacy field lease migrates to persistent evidence and is not reclaimed', () => {
   const nowMs = Date.parse('2026-09-16T09:00:00Z');
+  const lease = new Date(nowMs - 60000).toISOString();
   const prepared = prepareGameStudyQueue({
     maxConcurrentTasks: 20,
-    tasks: [runningTask({ gameStudyReservationAt: new Date(nowMs - 60000).toISOString() })]
+    tasks: [runningTask({ gameStudyReservationAt: lease })]
   }, targets, { nowMs });
   const task = prepared.queue.tasks.find((row) => row.id === taskId);
   assert.equal(task.status, 'running');
-  assert.equal(task.gameStudyReservationAt, new Date(nowMs - 60000).toISOString());
+  assert.equal(leaseEvidence(task), `game-study-reservation-at:${lease}`);
+  assert.equal(task.evidence.includes('game-study-stale-running-recovered'), false);
+});
+
+test('fresh persistent lease evidence survives a later queue normalization cycle', () => {
+  const nowMs = Date.parse('2026-09-16T09:00:00Z');
+  const lease = new Date(nowMs - 60000).toISOString();
+  const first = prepareGameStudyQueue({
+    maxConcurrentTasks: 20,
+    tasks: [runningTask({ evidence: [
+      `game-study-target:${targetId}`,
+      'game-study-engine:roblox',
+      'game-study-production-fanin:game-study-result-missing',
+      `game-study-reservation-at:${lease}`
+    ] })]
+  }, targets, { nowMs });
+  const second = prepareGameStudyQueue(first.queue, targets, { nowMs: nowMs + 1000 });
+  const task = second.queue.tasks.find((row) => row.id === taskId);
+  assert.equal(task.status, 'running');
+  assert.equal(leaseEvidence(task), `game-study-reservation-at:${lease}`);
   assert.equal(task.evidence.includes('game-study-stale-running-recovered'), false);
 });
 
@@ -68,12 +93,17 @@ test('normal running GAME STUDY task without fan-in failure evidence is never re
   assert.equal(prepared.queue.tasks.find((row) => row.id === taskId).status, 'running');
 });
 
-test('new reservation records a lease timestamp so later cycles can distinguish live from stale work', () => {
+test('new reservation records persistent lease evidence so later cycles can distinguish live from stale work', () => {
   const nowMs = Date.parse('2026-09-16T09:00:00Z');
   const result = reserveGameStudyBatch({ maxConcurrentTasks: 20, tasks: [runningTask()] }, targets, { currentMax: 20 }, { maxConcurrentTasks: 20, nowMs });
   const task = result.queue.tasks.find((row) => row.id === taskId);
   assert.equal(result.robloxMatrix.length, 1);
   assert.equal(task.status, 'running');
-  assert.equal(task.gameStudyReservationAt, new Date(nowMs).toISOString());
+  assert.equal(leaseEvidence(task), `game-study-reservation-at:${new Date(nowMs).toISOString()}`);
   assert(task.evidence.includes('game-study-stale-running-recovered'));
+
+  const next = prepareGameStudyQueue(result.queue, targets, { nowMs: nowMs + 60000 });
+  const nextTask = next.queue.tasks.find((row) => row.id === taskId);
+  assert.equal(nextTask.status, 'running');
+  assert.equal(leaseEvidence(nextTask), `game-study-reservation-at:${new Date(nowMs).toISOString()}`);
 });
