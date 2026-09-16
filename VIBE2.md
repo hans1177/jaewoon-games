@@ -107,9 +107,10 @@ Roblox 허가 다운로드는 `creator-enabled-place-copying` 증거와 nonce-bo
 
 - production GAME STUDY의 Roblox worker는 `VIBE2_ROBLOX_STUDIO_RUNNER_READY=true`일 때만 `[self-hosted, Windows, vibe2-roblox]` 전용 runner로 dispatch한다.
 - 전용 runner가 offline/unregistered 상태면 `roblox-studio-local`로 fallback하지 않는다. Ubuntu defer worker가 `BLOCKED` 결과(`roblox-dedicated-studio-runner-offline-deferred`)를 immutable artifact로 만들고 fan-in이 예약을 정산한다. 따라서 Roblox Studio 학습은 검증 없이 PASS로 승격되지 않지만 Web GAME STUDY와 전체 fan-in 순환은 계속 진행한다.
-- `roblox-studio-local`은 production/Live Smoke 용도이며 GAME STUDY 전용 runner의 대체 경로가 아니다. production Studio 프로세스를 종료하거나 같은 Windows 세션에서 강제로 학습을 병행하지 않는다.
+- `roblox-studio-local`은 production 제작용 runner이며 GAME STUDY와 전용 Live Smoke의 대체 경로가 아니다. Live Smoke와 production GAME STUDY는 `[self-hosted, Windows, vibe2-roblox]` 전용 runner만 사용하고 production Studio 프로세스를 종료하거나 같은 Windows 세션에서 강제로 학습을 병행하지 않는다.
 - 2026-09-16 격리 검증에서는 GitHub-hosted `windows-latest` VM이 Roblox 공식 배포 CDN에서 유효 서명된 `RobloxStudioBeta.exe` 조립에는 성공했지만, 외부 place 없이 실행한 Baseplate Studio CLI `RunScript` smoke도 120초 timeout으로 끝났다. 따라서 이 hosted VM 경로는 현재 Roblox Studio GAME STUDY의 검증된 대체 실행 자원으로 취급하지 않는다.
 - 실제 제작 Studio와 Roblox GAME STUDY를 동시에 유지하려면 production과 다른 interactive Windows session/runner가 online이어야 하며, 완료 증거는 그 격리 runner에서 실제 Studio 입력·checkpoint·25축 학습이 `VERIFIED=YES`로 끝난 run이다.
+- 2026-09-16 PR #710에서 Live Smoke의 실행 대상을 전용 `vibe2-roblox` runner로 변경했고 Core QA, Vibe QA, Integrated Regression, runner contract는 PASS했다. 전용 interactive runner가 online이 아니어서 실제 `live-studio`는 대기 상태이며, 이 실증 전에는 제작 중 Roblox 학습 동시 실행 완료로 기록하지 않는다.
 
 권장 1회 등록 명령은 **관리자 PowerShell**에서 토큰을 환경변수로 주입한 뒤 `pwsh -File tools/vibe2-roblox-runner-bootstrap.ps1 -Mode Install -SyncReadiness -DispatchLiveSmoke`다. 토큰 값 자체는 저장소나 명령 기록에 남기지 않는다.
 
