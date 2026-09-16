@@ -142,17 +142,46 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
   const controlMax = clamp(controlInput?.currentMax || persistentMax);
   const targetMax = clamp(prepared.targets.maxConcurrentTasks || persistentMax);
   const requestedMax = Math.min(clamp(maxConcurrentTasks || 20), persistentMax, controlMax, targetMax);
+
+  // Protect production capacity even when GAME STUDY wins the shared control-state lock first.
+  // Study tasks are hidden from this dry selection so only immediately runnable normal work
+  // contributes to the number of slots that must remain available for production.
+  const productionSelectionQueue = createVibeContinuousQueue({
+    maxConcurrentTasks: prepared.queue.maxConcurrentTasks,
+    tasks: prepared.queue.tasks.map((task) => isStudyTask(task) && task.status === 'queued'
+      ? { ...task, status: 'blocked', blocker: task.blocker || 'reserved-for-game-study-worker' }
+      : task)
+  });
+  const productionSelection = selectVibeQueueBatch(productionSelectionQueue, { maxConcurrentTasks: requestedMax });
+  const productionReservedSlots = productionSelection.selected.length;
+  const studySlotCap = Math.max(0, requestedMax - productionReservedSlots);
+
   const selectionQueue = createVibeContinuousQueue({
     maxConcurrentTasks: prepared.queue.maxConcurrentTasks,
-    tasks: prepared.queue.tasks.map((task) => isStudyTask(task) || task.status !== 'queued' ? task : { ...task, status: 'blocked', blocker: task.blocker || 'reserved-for-normal-vibe2-worker' })
+    tasks: prepared.queue.tasks.map((task) => isStudyTask(task) || task.status !== 'queued'
+      ? task
+      : { ...task, status: 'blocked', blocker: task.blocker || 'reserved-for-normal-vibe2-worker' })
   });
-  const selection = selectVibeQueueBatch(selectionQueue, { maxConcurrentTasks: requestedMax });
+  const selection = studySlotCap > 0
+    ? selectVibeQueueBatch(selectionQueue, { maxConcurrentTasks: studySlotCap })
+    : {
+        selected: [],
+        persistentMaxConcurrentTasks: persistentMax,
+        requestedMaxConcurrentTasks: 0,
+        effectiveMaxConcurrentTasks: 0,
+        freeSlots: 0,
+        backpressure: productionSelection.backpressure || { awaitingQaCount: 0, retryPressureCount: 0 }
+      };
   const selectedIds = new Set(selection.selected.map((task) => task.id));
   const queue = createVibeContinuousQueue({
     maxConcurrentTasks: prepared.queue.maxConcurrentTasks,
-    tasks: prepared.queue.tasks.map((task) => selectedIds.has(task.id) ? { ...task, status: 'running', blocker: null } : task)
+    tasks: prepared.queue.tasks.map((task) => {
+      if (selectedIds.has(task.id)) return { ...task, status: 'running', blocker: null };
+      if (isStudyTask(task) && task.status === 'queued') return { ...task, status: 'blocked', blocker: 'game-study-awaiting-next-cycle' };
+      return task;
+    })
   });
-  const effectiveMax = Number(selection.effectiveMaxConcurrentTasks || requestedMax);
+  const effectiveMax = Number(selection.effectiveMaxConcurrentTasks || 0);
   const matrix = selection.selected.map((task) => {
     const target = prepared.targetByTask.get(task.id);
     return {
@@ -166,7 +195,7 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
     };
   });
   return Object.freeze({
-    version: 2,
+    version: 3,
     createdAt: new Date().toISOString(),
     executionLocation: 'server',
     queue,
@@ -176,13 +205,18 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
     selectedCount: matrix.length,
     requestedMax,
     effectiveMax,
+    productionReservedSlots,
+    studySlotCap,
     invalidTargets: prepared.targets.invalid,
     scheduler: Object.freeze({
       persistentMaxConcurrentTasks: selection.persistentMaxConcurrentTasks,
       requestedMaxConcurrentTasks: selection.requestedMaxConcurrentTasks,
       effectiveMaxConcurrentTasks: selection.effectiveMaxConcurrentTasks,
       freeSlots: selection.freeSlots,
-      backpressure: selection.backpressure
+      backpressure: selection.backpressure,
+      productionPriorityProtected: true,
+      productionReservedSlots,
+      studySlotCap
     }),
     authorityExpanded: false
   });
@@ -274,6 +308,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_GAME_STUDY_RESERVED=${result.selectedCount}`);
     console.log(`VIBE2_GAME_STUDY_REQUESTED_MAX=${result.requestedMax}`);
     console.log(`VIBE2_GAME_STUDY_EFFECTIVE_MAX=${result.effectiveMax}`);
+    console.log(`VIBE2_GAME_STUDY_PRODUCTION_RESERVED=${result.productionReservedSlots}`);
+    console.log(`VIBE2_GAME_STUDY_SLOT_CAP=${result.studySlotCap}`);
     console.log(`VIBE2_GAME_STUDY_INVALID_TARGETS=${result.invalidTargets.length}`);
   } else if (args.command === 'fan-in') {
     const result = fanInGameStudyFiles({
