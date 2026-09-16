@@ -84,21 +84,27 @@ jobs:
           $stdout = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.stderr.log'
           $output = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.output.log'
-          @'
-          local StudioService = game:GetService("StudioService")
-          local ok, userId = pcall(function()
-              return StudioService:GetUserId()
-          end)
-          print("SKYLINE_TARGET_EXECUTION" .. "=YES")
-          print("SKYLINE_TARGET_STUDIO_USER_OK" .. "=" .. tostring(ok))
-          if ok then
-              print("SKYLINE_TARGET_STUDIO_USER_ID" .. "=" .. tostring(userId))
-          else
-              print("SKYLINE_TARGET_STUDIO_USER_ERROR" .. "=" .. tostring(userId))
-          end
-          print("SKYLINE_TARGET_LOCAL_GAME_ID" .. "=" .. tostring(game.GameId))
-          print("SKYLINE_TARGET_LOCAL_PLACE_ID" .. "=" .. tostring(game.PlaceId))
-          '@ | Set-Content -Path $script -Encoding utf8
+          $scriptText = @'
+print("SKYLINE_TARGET_EXECUTION" .. "=YES")
+print("SKYLINE_TARGET_LOCAL_GAME_ID" .. "=" .. tostring(game.GameId))
+print("SKYLINE_TARGET_LOCAL_PLACE_ID" .. "=" .. tostring(game.PlaceId))
+local okService, studioService = pcall(function()
+    return game:GetService("StudioService")
+end)
+print("SKYLINE_TARGET_STUDIO_SERVICE_OK" .. "=" .. tostring(okService))
+if okService then
+    local okUser, userId = pcall(function()
+        return studioService:GetUserId()
+    end)
+    print("SKYLINE_TARGET_STUDIO_USER_OK" .. "=" .. tostring(okUser))
+    if okUser then
+        print("SKYLINE_TARGET_STUDIO_USER_ID" .. "=" .. tostring(userId))
+    else
+        print("SKYLINE_TARGET_STUDIO_USER_ERROR" .. "=" .. tostring(userId))
+    end
+end
+'@
+          [System.IO.File]::WriteAllText($script, $scriptText, (New-Object System.Text.UTF8Encoding($false)))
           Remove-Item -Force $stdout,$stderr,$output -ErrorAction SilentlyContinue
           $started = Get-Date
           $argLine = "--task RunScript --localPlaceFile `"$($place.FullName)`" --runScriptFile `"$script`" --outputFile `"$output`" --quitAfterExecution"
@@ -115,8 +121,12 @@ jobs:
               $combined += "`n" + (Get-Content $f.FullName -Raw -ErrorAction SilentlyContinue)
             }
           }
-          if ($combined -notmatch '(?m)^SKYLINE_TARGET_EXECUTION=YES\r?$') { throw 'Studio identity probe execution sentinel missing' }
-          foreach ($key in @('SKYLINE_TARGET_STUDIO_USER_OK','SKYLINE_TARGET_STUDIO_USER_ID','SKYLINE_TARGET_STUDIO_USER_ERROR','SKYLINE_TARGET_LOCAL_GAME_ID','SKYLINE_TARGET_LOCAL_PLACE_ID')) {
+          if ($combined -notmatch '(?m)^SKYLINE_TARGET_EXECUTION=YES\r?$') {
+            $diagnostic = @($combined -split "`r?`n" | Where-Object { $_ -match '(?i)RunScript|error|skyline-target-identity' } | Select-Object -First 30)
+            foreach ($line in $diagnostic) { Write-Host "SKYLINE_TARGET_PROBE_DIAGNOSTIC=$line" }
+            throw 'Studio identity probe execution sentinel missing'
+          }
+          foreach ($key in @('SKYLINE_TARGET_LOCAL_GAME_ID','SKYLINE_TARGET_LOCAL_PLACE_ID','SKYLINE_TARGET_STUDIO_SERVICE_OK','SKYLINE_TARGET_STUDIO_USER_OK','SKYLINE_TARGET_STUDIO_USER_ID','SKYLINE_TARGET_STUDIO_USER_ERROR')) {
             $m = [regex]::Match($combined, "(?m)^$key=([^\r\n]+)\r?$")
             if ($m.Success) { Write-Host "$key=$($m.Groups[1].Value.Trim())" } else { Write-Host "$key=UNOBSERVED" }
           }
