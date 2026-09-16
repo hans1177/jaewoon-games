@@ -1,92 +1,81 @@
 local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
 local player = Players.LocalPlayer
-local Shared = ReplicatedStorage:WaitForChild("Shared")
-local Config = require(Shared:WaitForChild("GameConfig"))
-local remote = ReplicatedStorage:WaitForChild(Config.RemoteName)
 
 local gui = Instance.new("ScreenGui")
-gui.Name = "ApprovedScopeHud"
+gui.Name = "ObbyHud"
 gui.ResetOnSpawn = false
 gui.IgnoreGuiInset = false
 gui.Parent = player:WaitForChild("PlayerGui")
 
-local root = Instance.new("Frame")
-root.Name = "Root"
-root.AnchorPoint = Vector2.new(0.5, 1)
-root.Position = UDim2.fromScale(0.5, 0.98)
-root.Size = UDim2.new(1, -24, 0, 330)
-root.BackgroundTransparency = 0.15
-root.BackgroundColor3 = Color3.fromRGB(18, 28, 48)
-root.Parent = gui
+local panel = Instance.new("Frame")
+panel.Name = "Panel"
+panel.AnchorPoint = Vector2.new(0.5, 0)
+panel.Position = UDim2.fromScale(0.5, 0.025)
+panel.Size = UDim2.new(1, -28, 0, 108)
+panel.BackgroundColor3 = Color3.fromRGB(16, 24, 40)
+panel.BackgroundTransparency = 0.08
+panel.BorderSizePixel = 0
+panel.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 14)
+corner.Parent = panel
 
 local title = Instance.new("TextLabel")
 title.Name = "Title"
-title.Size = UDim2.new(1, -20, 0, 44)
-title.Position = UDim2.fromOffset(10, 8)
 title.BackgroundTransparency = 1
+title.Position = UDim2.fromOffset(14, 8)
+title.Size = UDim2.new(1, -28, 0, 26)
+title.Font = Enum.Font.GothamBold
 title.TextColor3 = Color3.fromRGB(245, 248, 255)
 title.TextScaled = true
-title.Text = Config.GameName .. (UserInputService.TouchEnabled and " · TOUCH" or " · DESKTOP")
-title.Parent = root
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Text = UserInputService.TouchEnabled and "SKYLINE SPRINT · TOUCH" or "SKYLINE SPRINT · DESKTOP"
+title.Parent = panel
 
 local status = Instance.new("TextLabel")
 status.Name = "Status"
-status.Size = UDim2.new(1, -20, 0, 52)
-status.Position = UDim2.fromOffset(10, 54)
-status.BackgroundColor3 = Color3.fromRGB(10, 17, 30)
-status.TextColor3 = Color3.fromRGB(220, 232, 250)
+status.BackgroundTransparency = 1
+status.Position = UDim2.fromOffset(14, 38)
+status.Size = UDim2.new(1, -28, 0, 30)
+status.Font = Enum.Font.GothamSemibold
+status.TextColor3 = Color3.fromRGB(215, 230, 255)
 status.TextScaled = true
-status.Parent = root
+status.TextXAlignment = Enum.TextXAlignment.Left
+status.Parent = panel
 
-local list = Instance.new("ScrollingFrame")
-list.Name = "ApprovedActions"
-list.Size = UDim2.new(1, -20, 1, -116)
-list.Position = UDim2.fromOffset(10, 108)
-list.BackgroundTransparency = 1
-list.BorderSizePixel = 0
-list.AutomaticCanvasSize = Enum.AutomaticSize.Y
-list.CanvasSize = UDim2.new()
-list.ScrollBarThickness = 6
-list.Parent = root
+local hint = Instance.new("TextLabel")
+hint.Name = "Hint"
+hint.BackgroundTransparency = 1
+hint.Position = UDim2.fromOffset(14, 72)
+hint.Size = UDim2.new(1, -28, 0, 22)
+hint.Font = Enum.Font.Gotham
+hint.TextColor3 = Color3.fromRGB(165, 185, 215)
+hint.TextScaled = true
+hint.TextXAlignment = Enum.TextXAlignment.Left
+hint.Text = UserInputService.TouchEnabled
+  and "Move with the default thumbstick · Jump with the default jump button"
+  or "Move with WASD · Jump with Space"
+hint.Parent = panel
 
-local layout = Instance.new("UIListLayout")
-layout.Padding = UDim.new(0, 8)
-layout.SortOrder = Enum.SortOrder.LayoutOrder
-layout.Parent = list
-
-for index, action in ipairs(Config.Actions) do
-  local button = Instance.new("TextButton")
-  button.Name = "ScopeAction" .. index
-  button.LayoutOrder = index
-  button.Size = UDim2.new(1, -4, 0, 56)
-  button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)
-  button.TextColor3 = Color3.fromRGB(16, 24, 40)
-  button.TextWrapped = true
-  button.TextScaled = true
-  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)
-  button.Parent = list
-  button.Activated:Connect(function()
-    remote:FireServer(action.Id)
-  end)
-end
-
-local watched = {"Score", "Coins", "Level", "Progress", "Health", "Wave", "Position", "Objective", "Combo", "EnemyHealth", "LastApprovedScope"}
 local function render()
-  status.Text = string.format(
-    "Score %d · Coins %d · Lv %d · Progress %d · HP %d · Wave %d",
-    player:GetAttribute("Score") or 0,
-    player:GetAttribute("Coins") or 0,
-    player:GetAttribute("Level") or 1,
-    player:GetAttribute("Progress") or 0,
-    player:GetAttribute("Health") or 100,
-    player:GetAttribute("Wave") or 1
-  )
+  local stage = player:GetAttribute("Position") or 0
+  local progress = player:GetAttribute("Progress") or 0
+  local score = player:GetAttribute("Score") or 0
+  local roundTime = tonumber(player:GetAttribute("RoundTime")) or 0
+  local finished = player:GetAttribute("Finished") == true
+
+  if finished then
+    status.Text = string.format("FINISH · Stage %d/12 · %d%% · Score %d · %.1fs", stage, progress, score, roundTime)
+  else
+    status.Text = string.format("Stage %d/12 · %d%% · Score %d · %.1fs", stage, progress, score, roundTime)
+  end
 end
 
-for _, name in ipairs(watched) do
+for _, name in ipairs({"Position", "Progress", "Score", "RoundTime", "Finished"}) do
   player:GetAttributeChangedSignal(name):Connect(render)
 end
+
 render()
