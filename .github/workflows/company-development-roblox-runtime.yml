@@ -664,8 +664,11 @@ jobs:
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
                 robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
-                robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,robloxBuildPreflightPassed:false,
-                robloxRuntimePassed:false,robloxIndependentQaPassed:false,robloxRegressionPassed:false,robloxFinalReviewPassed:false,
+                robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
+                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
+                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,
+                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxPostRuntimeQaEvidence:null,
                 robloxLastSuccessfulStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureStage:'FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT',
                 robloxFailureSignature:'ROBLOX_BUILD_PREFLIGHT_PENDING',routingBlockers:['roblox-build-preflight-pending'],updatedAt:stamp,
               });
@@ -673,8 +676,12 @@ jobs:
             }else{
               Object.assign(item,{
                 status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
-                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:result.sourceRevision,robloxBuildFailedAt:stamp,robloxBuildPreflightPassed:false,
-                robloxRuntimePassed:false,robloxIndependentQaPassed:false,robloxRegressionPassed:false,robloxFinalReviewPassed:false,
+                robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:result.sourceRevision,robloxBuildFailedAt:stamp,
+                robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
+                robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
+                robloxServerClientBoundaryPassed:false,robloxDatastoreRejoinPassed:false,robloxMobileControlUiPassed:false,
+                robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
+                robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxPostRuntimeQaEvidence:null,
                 robloxFailureStage:'TARGET_PLATFORM_BUILD_OR_PACKAGE',robloxFailureSignature:result.failure||'ROBLOX_BUILD_PACKAGE_FAILED',
                 routingBlockers:[`roblox-build-package:${result.failure||'ROBLOX_BUILD_PACKAGE_FAILED'}`],updatedAt:stamp,
               });
