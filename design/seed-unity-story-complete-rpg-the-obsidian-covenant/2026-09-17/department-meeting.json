@@ -22,43 +22,44 @@
   "representatives": {
     "planning": {
       "keep": [
-        "SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
+        "지정된 planning 부서의 기능과 목표를 명확히 정의하고, 관련된 프로세스와 기준을 명시합니다."
       ],
       "fix": [
-        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+        "기존 프로세스의 불일치를 수정하고, 관련된 기준을 정확히 명확히 합니다."
       ],
       "add": [
-        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+        "추가적인 기능을 추가하고, 기능의 정확성과 효율성을 고려합니다."
       ],
       "risks": [
-        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+        "프로세스의 불일치를 줄이고, 기능의 정확성과 효율성을 고려합니다."
       ],
       "evidence": [
-        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+        "기존 프로세스의 불일치를 수정하고, 기능의 정확성과 효율성을 고려합니다."
       ],
       "questions": [
-        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+        "기존 프로세스의 불일치를 수정하고, 기능의 정확성과 효율성을 고려합니다."
       ]
     },
     "graphics": {
       "keep": [
         "Rich Lore and Complex Story",
-        "Game Reference: Chrono Trigger"
+        "Narrative Driven Gameplay"
       ],
       "fix": [
         "Character Development"
       ],
       "add": [
-        "Game Reference: Chrono Trigger"
-      ],
-      "risks": [
-        "Battle Chasers: Nightwar"
-      ],
-      "evidence": [
         "Chrono Trigger"
       ],
+      "risks": [
+        "Failure"
+      ],
+      "evidence": [
+        "SEED_MATERIAL_SELECTION_SIGNALS",
+        "GAME_SEED=2, SEED_ID=SEED-UNITY-STORY-COMPLETE_RPG-001, GAME_ID=seed-unity-story-complete-rpg-the-obsidian-covenant, GAME_NAME=The"
+      ],
       "questions": [
-        "ESA Power of Play 2025 Global Report"
+        "TARGET_PLATFORM_FIT"
       ]
     },
     "development": {
@@ -86,39 +87,39 @@
         "ASSIGNED_DEPARTMENT=qa"
       ],
       "fix": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "The Obsidian Covenant is a story-driven RPG that combines narrative-driven gameplay with character development and exploration."
       ],
       "add": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "The Obsidian Covenant is a story-driven RPG that combines narrative-driven gameplay with character development and exploration."
       ],
       "risks": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "The Obsidian Covenant is a story-driven RPG that combines narrative-driven gameplay with character development and exploration."
       ],
       "evidence": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "The Obsidian Covenant is a story-driven RPG that combines narrative-driven gameplay with character development and exploration."
       ],
       "questions": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "What is the Obsidian Covenant?"
       ]
     },
     "balance": {
       "keep": [
-        "SEED_MATERIAL_SELECTION_SIGNALS"
+        "SOCIAL_COOP_COMPETITION"
       ],
       "fix": [
-        "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+        "STORY_OR_NARRATIVE_STRUCTURE"
       ],
       "add": [
-        "SEED_MATERIAL_ID"
+        "MAT-018"
       ],
       "risks": [
-        "SEED_MATERIAL_SELECTION_MODE"
+        "STORY_COMPLETE_RPG_DIFFICULTY_FACTORS_1_TO_3"
       ],
       "evidence": [
-        "GAME_CATEGORY"
+        "CHRONO TRIGGER"
       ],
       "questions": [
-        "GAME_SEED"
+        "How does the balance department's approach to isolationist games compare to other departments?"
       ]
     }
   },
@@ -127,16 +128,48 @@
   "summary": "CONSENSUS",
   "decisions": [
     {
-      "topic": "SEED_MATERIAL_SELECTION_SIGNALS",
+      "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "add Game Reference: Chrono Trigger",
+      "reason": "OWN의 기능 정의 및 기준 명확성과 OTHERS의 기능 추가 및 정확성 확보를 강화합니다.",
+      "departments": [
+        "planning"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "Rich Lore and Complex Story, Narrative Driven Gameplay, Chrono Trigger의 Reference에 대한 의견을 읽고 자기 책임 범위에서 한 번만 수용/반박/수정합니다.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "이러한 부서의 대표 의견을 읽고 자기 책임 범위에서 한 번만 수용/반박/수정합니다.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "The Obsidian Covenant is a story-driven RPG that combines narrative-driven gameplay with character development and exploration.",
       "departments": [
         "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "risks",
+      "departments": [
+        "balance"
       ]
     }
   ],
   "counts": {
-    "consensus": 1,
+    "consensus": 5,
     "conflict": 0,
     "hold": 0
   }

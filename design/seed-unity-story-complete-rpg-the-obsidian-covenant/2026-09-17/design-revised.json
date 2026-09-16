@@ -9,13 +9,13 @@
   "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "gemma3:1b",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 1,
+  "appliedConsensusCount": 5,
   "unresolvedConflictCount": 0,
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
     "identity": "The Obsidian Covenant",
-    "playerFantasy": "고대 신의 계약",
+    "playerFantasy": "고대 신의  covenants, 잊혀진 유물, 그리고 비밀스러운 계약의 웅덩이에서 발견된 잊혀진 유물",
     "coreFun": "STORY_COMPLETE_RPG",
     "coreLoop": [
       "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
@@ -24,14 +24,30 @@
       "위험·실패·자원 압박 경험",
       "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
     ],
-    "signatureSystems": [],
-    "progressionDirection": "THE_OBSIDIAN_Covenant_GAME_PROGRESS_PATH",
-    "visualDirection": "THE_OBSIDIAN_Covenant_GAME_VISUAL_STYLE",
-    "mobileUx": "MOBILE_GAME_PLAY_TYPE",
-    "marketTargetDirection": "GLOBAL_GAME_PLAY_TARGET",
-    "steamExpansionDecision": "HIGH_GAME_Expansion_Value",
+    "signatureSystems": [
+      {
+        "name": "Chrono Trigger Reference",
+        "purpose": "GAME_REFERENCE",
+        "playerChoice": "COMPLETE_RPG_STRUCTURE_Benchmark"
+      },
+      {
+        "name": "Final Fantasy VI Reference",
+        "purpose": "GAME_REFERENCE",
+        "playerChoice": "FINAL_FANTASY_VI"
+      },
+      {
+        "name": "Dragon Quest VIII Reference",
+        "purpose": "GAME_REFERENCE",
+        "playerChoice": "DRAGON_QUEST_VIII"
+      }
+    ],
+    "progressionDirection": "THE_CORE_GAMEPLAY_ACTION",
+    "visualDirection": "THE_GAME_SEED_MATERIAL_IDS",
+    "mobileUx": "1",
+    "marketTargetDirection": "GLOBAL",
+    "steamExpansionDecision": "HIGH",
     "multiplayerMode": "COOP",
-    "multiplayerExpansionDecision": "COOP_COMPetition",
+    "multiplayerExpansionDecision": "DYNAMIC_CONTEXTUAL_2_TO_4",
     "technicalAssumptions": [],
     "validationQuestions": [],
     "openQuestions": []

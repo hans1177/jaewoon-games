@@ -15,76 +15,64 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "keep: SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4",
-        "fix: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
-        "add: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+        "OWN",
+        "OTHERS"
       ],
       "challenge": [
-        "keep: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
-        "fix: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
-        "add: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+        "OWN",
+        "OTHERS"
       ],
       "revision": [
-        "keep: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
-        "fix: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
-        "add: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+        "OWN",
+        "OTHERS"
       ],
-      "reason": "The structure and content of the SEED_MATERIAL_SELECTION_SIGNALS are consistent with the requirements. The evidence and questions provided are relevant to the context of the SEED_MATERIAL_SELECTION_MODE. The risks and evidence are also aligned with the goals of the SEED_MATERIAL_SELECTION_SIGNALS."
+      "reason": "OWN의 기능 정의 및 기준 명확성과 OTHERS의 기능 추가 및 정확성 확보를 강화합니다."
     },
     "graphics": {
       "accept": [
         "Rich Lore and Complex Story",
-        "Game Reference: Chrono Trigger"
+        "Narrative Driven Gameplay",
+        "Chrono Trigger"
       ],
       "challenge": [
         "Character Development"
       ],
       "revision": [
-        "Game Reference: Chrono Trigger"
+        "Risks",
+        "Evidence",
+        "Questions"
       ],
-      "reason": "add Game Reference: Chrono Trigger,"
+      "reason": "The SEED_MATERIAL_SELECTION_SIGNALS and GAME_SEED values suggest a focus on narrative depth, which aligns with the 'Rich Lore and Complex Story' requirement. The 'Chrono Trigger' reference indicates a desire for a classic RPG experience, which is also a key element of the narrative-driven gameplay aspect."
     },
     "development": {
-      "accept": [
-        "GAME_SEED"
-      ],
-      "challenge": [
-        "GAME_SEED"
-      ],
-      "revision": [
-        "GAME_SEED"
-      ],
-      "reason": "GAME_SEED"
+      "accept": [],
+      "challenge": [],
+      "revision": [],
+      "reason": "이러한 부서의 대표 의견을 읽고 자기 책임 범위에서 한 번만 수용/반박/수정합니다."
     },
     "qa": {
       "accept": [
-        "qa"
+        "OWN"
       ],
       "challenge": [
-        "qa"
+        "OTHERS"
       ],
       "revision": [
-        "qa"
+        "OWN"
       ],
-      "reason": "QA 부서의 책임범위를 따르는 것이 가장 적절한 결정입니다."
+      "reason": "The Obsidian Covenant is a story-driven RPG that combines narrative-driven gameplay with character development and exploration."
     },
     "balance": {
       "accept": [
-        "keep",
-        "add",
-        "risks"
+        "keep"
       ],
       "challenge": [
-        "fix",
-        "evidence",
-        "questions"
+        "fix"
       ],
       "revision": [
-        "planning",
-        "graphics",
-        "development"
+        "add"
       ],
-      "reason": "스키마에 맞는 JSON 객체만 반환한다."
+      "reason": "risks"
     }
   }
 }
