@@ -29,6 +29,15 @@
     "rawGameplayValuesAutoCopy": false,
     "mayExpandAuthority": false
   },
+  "workerDiscipline": {
+    "readCentralPolicyBeforeWork": true,
+    "readCompanyFlowBeforeWork": true,
+    "inspectExistingImplementationBeforeCreatingNewWork": true,
+    "duplicateImplementationForbidden": true,
+    "reuseExistingWorkflowRunnerAndContractsFirst": true,
+    "recordDurablePolicyHere": true,
+    "recordOperationalStateInMachineStateOnly": true
+  },
   "humanDocs": {
     "policy": "minimal-maintenance-only",
     "retain": [
