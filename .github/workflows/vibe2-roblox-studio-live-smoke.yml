@@ -34,7 +34,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify Studio CLI and authenticated runner contracts
+      - name: Verify Studio CLI and dedicated runner contracts
         shell: bash
         run: |
           set -euo pipefail
@@ -56,6 +56,8 @@ jobs:
           if(cfg.policy?.externalCopyEnabledRobloxAutomation!==true) throw new Error('explicit copy-enabled Roblox automation policy missing');
           if(Number(cfg.policy?.robloxStudioConcurrency?.defaultMultiplayerClients||0)!==2) throw new Error('default Roblox multiplayer regression must be 2 clients');
           if(Number(cfg.policy?.robloxStudioConcurrency?.maxStudioTestClients||0)!==8) throw new Error('Roblox Studio client cap contract changed');
+          if(cfg.policy?.robloxStudioConcurrency?.sameWindowsSessionConcurrent!==false) throw new Error('same-session production and study must stay disabled');
+          if(cfg.policy?.robloxStudioConcurrency?.isolatedRunnerOrSessionConcurrent!==true) throw new Error('isolated Roblox study concurrency must stay enabled');
           const scenario=JSON.parse(fs.readFileSync(target.scenarioFile,'utf8'));
           if(!scenario.actions.some(x=>x.type==='key'&&x.key==='P')) throw new Error('Potion Shop real input action missing');
           for(const expression of ['game-loaded','player-present','player-gui-nonempty']) {
@@ -63,15 +65,17 @@ jobs:
           }
           if(scenario.actions.some(x=>String(x.expression||'').startsWith('instance-path:'))) throw new Error('Studio edit objects must not be asserted from the play client');
           console.log('VIBE2_ROBLOX_STUDIO_CONTRACT=PASS');
-          console.log('VIBE2_ROBLOX_EXISTING_AUTHENTICATED_RUNNER_REUSE=YES');
+          console.log('VIBE2_ROBLOX_DEDICATED_RUNNER_REQUIRED=YES');
           console.log('VIBE2_ROBLOX_POTION_SHOP_TARGET_ACTIVE=YES');
           console.log('VIBE2_ROBLOX_MULTIPLAYER_CONTRACT=2_OF_8');
           NODE
 
   live-studio:
     needs: contract
-    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    runs-on: [self-hosted, Windows, vibe2-roblox]
     timeout-minutes: 16
+    env:
+      VIBE2_ROBLOX_STUDY_ISOLATED_SESSION: 'true'
     steps:
       - uses: actions/checkout@v4
 
@@ -79,20 +83,21 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify existing authenticated runner identity and locate real Roblox Studio
+      - name: Verify dedicated interactive runner identity and locate real Roblox Studio
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           Write-Host "VIBE2_ROBLOX_RUNNER_NAME=$env:RUNNER_NAME"
           Write-Host "VIBE2_ROBLOX_RUNNER_OS=$env:RUNNER_OS"
           if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio runner must be Windows' }
+          if ($env:VIBE2_ROBLOX_STUDY_ISOLATED_SESSION -ne 'true') { throw 'Dedicated Roblox study session flag missing' }
           $runnerRoot = 'C:\actions-runner'
           $runnerMetadata = Get-Content (Join-Path $runnerRoot '.runner') -Raw | ConvertFrom-Json
-          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') {
-            throw "Unexpected authenticated Roblox runner: $($runnerMetadata.agentName)"
+          if ([string]$runnerMetadata.agentName -eq 'roblox-studio-local') {
+            throw 'Production Roblox Studio runner must not execute dedicated GAME STUDY smoke'
           }
-          Write-Host 'VIBE2_ROBLOX_EXISTING_RUNNER_IDENTITY=PASS'
-          Write-Host 'VIBE2_ROBLOX_NEW_RUNNER_REGISTRATION_REQUIRED=NO'
+          Write-Host 'VIBE2_ROBLOX_DEDICATED_RUNNER_IDENTITY=PASS'
+          Write-Host 'VIBE2_PRODUCTION_RUNNER_TOUCHED=NO'
           node -e "import('./tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p);require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n')})"
 
       - name: Verify official Studio CLI with real VirtualInput
@@ -116,7 +121,7 @@ jobs:
             --timeout=150000
           node -e "const fs=require('fs');const p=process.env.RUNNER_TEMP+'/vibe2-roblox-multiplayer.json';const r=JSON.parse(fs.readFileSync(p,'utf8'));if(r.runtimeVerified!==true)throw new Error('multiplayer runtime not verified');if(Number(r.multiplayer?.expectedClients||0)!==2)throw new Error('expected clients mismatch');if(Number(r.multiplayer?.resultCount||0)<2)throw new Error('not all clients reported');if(Number(r.multiplayer?.verifiedClients||0)<2)throw new Error('not all clients dispatched VirtualInput');if(r.authorityExpanded===true)throw new Error('authority expanded');console.log('VIBE2_ROBLOX_MULTIPLAYER_2_CLIENT=PASS')"
 
-      - name: Study official uncopylocked Potion Shop through authenticated Studio
+      - name: Study official uncopylocked Potion Shop through dedicated Studio runner
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
