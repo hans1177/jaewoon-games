@@ -1,0 +1,48 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-UNITY-PUZZLE-001",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "qwen3:0.6b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "Unique Puzzle Mechanics",
+    "playerFantasy": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+    "coreFun": "Logical Thinking, Pattern Recognition",
+    "coreLoop": [
+      "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective.",
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Unity",
+        "purpose": "Design a puzzle game that combines logic, pattern recognition, and board mechanics.",
+        "playerChoice": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+      }
+    ],
+    "progressionDirection": "Progression from initial board entry to progression through rewards and new challenges.",
+    "visualDirection": "Visual direction of the game's design.",
+    "mobileUx": "Designed for mobile platforms, with a focus on usability and intuitive gameplay.",
+    "marketTargetDirection": "Targeted at puzzle enthusiasts and casual gamers.",
+    "steamExpansionDecision": "Expansion is recommended for the current platform, with no expansion needed for the initial gameplay mode.",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "No expansion is required for the current multiplayer mode.",
+    "technicalAssumptions": [
+      "The game's mechanics are based on logical thinking and pattern recognition.",
+      "The game is designed to be played on mobile platforms with intuitive UI design."
+    ],
+    "validationQuestions": [
+      "Are there any potential issues with the current gameplay loop or mechanics?",
+      "Is there a risk of overuse or repetition in the current gameplay cycle?"
+    ],
+    "openQuestions": [
+      "What are the next steps in the progression from initial entry to progression?"
+    ]
+  }
+}

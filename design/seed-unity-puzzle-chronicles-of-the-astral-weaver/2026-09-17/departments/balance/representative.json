@@ -1,0 +1,35 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "smollm2:1.7b",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint.",
+      "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+    ],
+    "fix": [
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    ],
+    "add": [
+      "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+    ],
+    "risks": [
+      "Logical Thinking, Pattern Recognition"
+    ],
+    "evidence": [
+      "Royal Match"
+    ],
+    "questions": [
+      "Are there any potential issues with the current gameplay loop or mechanics?"
+    ]
+  }
+}

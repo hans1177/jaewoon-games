@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Ensure that the design is focused on puzzle mechanics and logical thinking."
+        ],
+        "fix": [
+          "Clarify the progression from initial entry to progression through rewards and new challenges."
+        ],
+        "add": [
+          "Integrate Unity as the core design system for the puzzle game."
+        ],
+        "risks": [
+          "Address potential issues with the gameplay loop or mechanics."
+        ],
+        "evidence": [
+          "Provide evidence from market data and industry benchmarks."
+        ],
+        "questions": [
+          "What are the next steps in the progression from initial entry to progression?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED_DATA_COMPLEXITY_LEVEL=HIGH"
+        ],
+        "fix": [
+          "SEED_MATERIAL_MATCH_QUALITY=HIGH"
+        ],
+        "add": [
+          "SEED_MATERIAL_COUNT=3"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_RISK=LOW"
+        ],
+        "evidence": [
+          "SEED_MATERIAL_REFERENCE_COUNT=1"
+        ],
+        "questions": [
+          "SEED_MATERIAL_SELECTION_SIGNALS_TARGET_PLATFORM_FIT"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}

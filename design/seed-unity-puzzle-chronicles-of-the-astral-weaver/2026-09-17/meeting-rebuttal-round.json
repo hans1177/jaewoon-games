@@ -1,0 +1,97 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "Ensure that the design is focused on puzzle mechanics and logical thinking.",
+        "Clarify the progression from initial entry to progression through rewards and new challenges.",
+        "Integrate Unity as the core design system for the puzzle game."
+      ],
+      "challenge": [
+        "Clarify the progression from initial entry to progression through rewards and new challenges.",
+        "Address potential issues with the gameplay loop or mechanics.",
+        "Provide evidence from market data and industry benchmarks."
+      ],
+      "revision": [
+        "Ensure that the design is focused on puzzle mechanics and logical thinking.",
+        "Clarify the progression from initial entry to progression through rewards and new challenges.",
+        "Integrate Unity as the core design system for the puzzle game."
+      ],
+      "reason": "The current approach is well-aligned with the objectives of the design. The focus on puzzle mechanics and logical thinking is consistent with the core principles. The integration of Unity as the design system is appropriate for the puzzle game. The evidence provided is relevant and supports the progression from initial entry to progression through rewards and challenges."
+    },
+    "graphics": {
+      "accept": [
+        "UNIQUE_PUZZLE_MECHANICS"
+      ],
+      "challenge": [
+        "fix",
+        "Clarify the progression from initial entry to progression through rewards and new challenges."
+      ],
+      "revision": [
+        "Integrate Unity as the core design system for the puzzle game."
+      ],
+      "reason": "Unity provides a robust and scalable platform for game development, streamlining the puzzle game creation process and offering advanced features like physics and animation."
+    },
+    "development": {
+      "accept": [
+        "own",
+        "own",
+        "own"
+      ],
+      "challenge": [
+        "own",
+        "own",
+        "own"
+      ],
+      "revision": [
+        "own",
+        "own",
+        "own"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "ASSIGNED_DEPARTMENT: qa",
+        "GAME_SEED={\"version\":2,\"seedId\":\"SEED-UNITY-PUZZLE-001\",\"gameId\":\"seed-unity-puzzle-chronicles-of-the-astral-weaver\",\"status\":\"ACT\"}",
+        "SEED_MATERIAL_SELECTION_MODE=\"DYNAMIC_CONTEXTUAL_2_TO_4\""
+      ],
+      "challenge": [
+        "GAME_SEED_DATA",
+        "REFERENCE_INPUTS",
+        "game-seed=2025-12-24, 5.7 puzzleSessionMinutesLate, 55 globalMobilePlayerSharePercent, 20 actionAndPuzzleTopTwoGenresCountryCount"
+      ],
+      "revision": [
+        "SEED_MATERIAL_SELECTION_SIGNALS=\"TARGET_PLATFORM_FIT\"",
+        "TARGET_DESIGN_REFERENCE",
+        "game-seed"
+      ],
+      "reason": "The provided suggestions are relevant and aligned with the QA department's responsibilities and objectives."
+    },
+    "balance": {
+      "accept": [
+        "keep",
+        "add"
+      ],
+      "challenge": [
+        "fix"
+      ],
+      "revision": [
+        "add"
+      ],
+      "reason": "Logical Thinking, Pattern Recognition"
+    }
+  }
+}

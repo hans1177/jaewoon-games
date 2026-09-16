@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-puzzle-chronicles-of-the-astral-weaver",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        ],
+        "fix": [
+          "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective."
+        ],
+        "add": [
+          "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        ],
+        "risks": [
+          "Logical Thinking, Pattern Recognition"
+        ],
+        "evidence": [
+          "Royal Match"
+        ],
+        "questions": [
+          "Are there any potential issues with the current gameplay loop or mechanics?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Logical Thinking, Pattern Recognition"
+        ],
+        "fix": [
+          "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
+        ],
+        "add": [
+          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint."
+        ],
+        "risks": [
+          "Potential issues with the current gameplay loop or mechanics"
+        ],
+        "evidence": [
+          "Royal Match, Candy Crush Saga"
+        ],
+        "questions": [
+          "Are there any potential issues with the current gameplay loop or mechanics?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "evidence": [
+          "REFERENCE_GAMES"
+        ],
+        "questions": [
+          "DESIGN"
+        ]
+      }
+    }
+  ]
+}
