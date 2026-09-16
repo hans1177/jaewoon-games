@@ -1,0 +1,166 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "llama3.2:1b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME, TOP]"
+      ],
+      "fix": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME, TOP]"
+      ],
+      "add": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME, TOP]"
+      ],
+      "risks": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME, TOP]"
+      ],
+      "evidence": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME, TOP]"
+      ],
+      "questions": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME, TOP]"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "SEED_MATERIAL_SELECTION_SIGNALS"
+      ],
+      "fix": [
+        "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+      ],
+      "add": [
+        "SEED_MATERIAL_CATEGORY_SELECTION_ROLE"
+      ],
+      "risks": [
+        "SEED_MATERIAL_COMPLEMENTARITY"
+      ],
+      "evidence": [
+        "Chrono Trigger"
+      ],
+      "questions": [
+        "SEED_MATERIAL_TYPE"
+      ]
+    },
+    "development": {
+      "keep": [
+        "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:SE"
+      ],
+      "fix": [
+        "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:SE"
+      ],
+      "add": [
+        "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:SE"
+      ],
+      "risks": [
+        "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:SE"
+      ],
+      "evidence": [
+        "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:SE"
+      ],
+      "questions": [
+        "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:SE"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "GAME_SEED=2025-06-18"
+      ],
+      "risks": [
+        "validationQuestions"
+      ],
+      "evidence": [
+        "DESIGN=STORY_COMPLETE_RPG"
+      ],
+      "questions": [
+        "coreFun=STORY_COMPLETE_RPG"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "SOCIAL_COOP_COMPETITION"
+      ],
+      "fix": [
+        "STORY_OR_NARRATIVE_STRUCTURE"
+      ],
+      "add": [
+        "SPACE_BUILDING_OPERATION"
+      ],
+      "risks": [
+        "MATERIAL_COMPLEMENTARITY"
+      ],
+      "evidence": [
+        "MAT-006"
+      ],
+      "questions": [
+        "CORE_FUN_TO_LEARN"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "evidence_Chrono_Trigger",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "own",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "OWN",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "OWN",
+      "departments": [
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 4,
+    "conflict": 0,
+    "hold": 0
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "The current structure is already optimized for the given requirements. The changes are already in place and should be accepted as per the guidelines."
+    },
+    "graphics": {
+      "accept": [
+        "SEED_MATERIAL_SELECTION_SIGNALS",
+        "fix_SEED_MATERIAL_SELECTION_REFERENCE_COUNT",
+        "add_SEED_MATERIAL_CATEGORY_SELECTION_ROLE"
+      ],
+      "challenge": [
+        "SEED_MATERIAL_COMPLEMENTARITY"
+      ],
+      "revision": [
+        "Chrono Trigger"
+      ],
+      "reason": "evidence_Chrono_Trigger"
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "own",
+        "others"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "OWN",
+        "OTHERS",
+        "development"
+      ],
+      "challenge": [
+        "OTHERS",
+        "graphics",
+        "balance"
+      ],
+      "revision": [
+        "OWN",
+        "development",
+        "balance"
+      ],
+      "reason": "..."
+    },
+    "balance": {
+      "accept": [
+        "keep",
+        "add",
+        "fix"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "planning",
+        "graphics",
+        "development"
+      ],
+      "reason": "OWN"
+    }
+  }
+}

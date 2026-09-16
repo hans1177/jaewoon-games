@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "GAME_SEED=2025-06-18"
+        ],
+        "risks": [
+          "validationQuestions"
+        ],
+        "evidence": [
+          "DESIGN=STORY_COMPLETE_RPG"
+        ],
+        "questions": [
+          "coreFun=STORY_COMPLETE_RPG"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The Obsidian Covenant is a narrative-driven game with a strong focus on storytelling and character development."
+        ],
+        "fix": [
+          "The Obsidian Covenant is a narrative-driven game with a strong focus on storytelling and character development."
+        ],
+        "add": [
+          "The Obsidian Covenant is a narrative-driven game with a strong focus on storytelling and character development."
+        ],
+        "risks": [
+          "The Obsidian Covenant is a narrative-driven game with a strong focus on storytelling and character development."
+        ],
+        "evidence": [
+          "The Obsidian Covenant is a narrative-driven game with a strong focus on storytelling and character development."
+        ],
+        "questions": [
+          "What are the core gameplay mechanics of The Obsidian Covenant?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
+        ],
+        "fix": [
+          "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT: 1"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENre_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME"
+        ],
+        "evidence": [
+          "Chrono Trigger: Complete story arc, exploration, battles, boss progression and ending benchmark"
+        ],
+        "questions": [
+          "initial_play_cycle_goal"
+        ]
+      }
+    }
+  ]
+}

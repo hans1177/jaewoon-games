@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:セ"
+        ],
+        "fix": [
+          "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:セ"
+        ],
+        "add": [
+          "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:セ"
+        ],
+        "risks": [
+          "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:セ"
+        ],
+        "evidence": [
+          "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:セ"
+        ],
+        "questions": [
+          "gameId:seed-unity-story-complete-rpg-the-obsidian-covenant,gameName:THE_OBSIDIAN_Covenant,gameCategory:STORY_COMPLETE_RPG,seedId:セ"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "fix": [
+          "GAME_SEED=GAME_SEED_2.0"
+        ],
+        "add": [
+          "REFERENCE_GAMES=['Chrono Trigger', 'FINAL FANTASY VI', 'DRAGON QUEST VIII']"
+        ],
+        "risks": [
+          "validationQuestions=['gameplayLoop', 'input', 'combat', 'progression', 'persistence', 'uiArt', 'risk']"
+        ],
+        "evidence": [
+          "MARKET_EVIDENCE_SUMMARY=MARKET_EVIDENCE_2.0"
+        ],
+        "questions": [
+          "DESIGN=DESIGN_2.0"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The Obsidian Covenant is a narrative-driven game that focuses on storytelling and character development."
+        ],
+        "fix": [
+          "The game's combat system is designed to be challenging and engaging, with a variety of enemy types and difficulty levels."
+        ],
+        "add": [
+          "The game includes a multiplayer mode, allowing players to team up with friends and work together to progress through the story."
+        ],
+        "risks": [
+          "One of the main risks is that the game's narrative may be too complex or convoluted for some players."
+        ],
+        "evidence": [
+          "The game's market evidence suggests that it has a strong potential for success, with a large and engaged player base."
+        ],
+        "questions": [
+          "What is the Obsidian Covenant's narrative focus and how does it compare to other narrative-driven games?"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "SOCIAL_COOP_COMPETITION"
+        ],
+        "fix": [
+          "STORY_OR_NARRATIVE_STRUCTURE"
+        ],
+        "add": [
+          "SPACE_BUILDING_OPERATION"
+        ],
+        "risks": [
+          "MATERIAL_COMPLEMENTARITY"
+        ],
+        "evidence": [
+          "MAT-006"
+        ],
+        "questions": [
+          "CORE_FUN_TO_LEARN"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Narrative Driven Gameplay"
+        ],
+        "fix": [
+          "Character Development"
+        ],
+        "add": [
+          "Story Complete RPG"
+        ],
+        "risks": [
+          "progression"
+        ],
+        "evidence": [
+          "Chrono Trigger: Complete story arc, exploration, battles, boss progression and ending benchmark (metrics: [])"
+        ],
+        "questions": [
+          "initial_play_cycle_goal"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED={"
+        ],
+        "fix": [
+          "MAT-006"
+        ],
+        "add": [
+          "MAT-012"
+        ],
+        "risks": [
+          "MAT-018"
+        ],
+        "evidence": [
+          "MAT-006"
+        ],
+        "questions": [
+          "TARGET_PLATFORM_FIT"
+        ]
+      }
+    }
+  ]
+}

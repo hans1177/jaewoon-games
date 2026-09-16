@@ -1,0 +1,47 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-UNITY-STORY_COMPLETE_RPG-001",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "gemma3:1b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "SEED-UNITY-STORY_COMPLETE_RPG-001",
+    "playerFantasy": "THE_OBSIDIAN_Covenant",
+    "coreFun": "STORY_COMPLETE_RPG",
+    "coreLoop": [
+      "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward.",
+      "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter.",
+      "Progress through the complete story arc to a final boss and a real ending, with optional post-game or sequel hooks kept separate from the base conclusion."
+    ],
+    "signatureSystems": [],
+    "progressionDirection": "HISTORICAL_INITIAL_BOOTSTRAP",
+    "visualDirection": "DESIGN_BASELINE",
+    "mobileUx": "UNITY",
+    "marketTargetDirection": "GLOBAL",
+    "steamExpansionDecision": "HIGH",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "COOP",
+    "technicalAssumptions": [
+      "Unity Engine"
+    ],
+    "validationQuestions": [
+      "gameplayLoop",
+      "input",
+      "combat",
+      "progression",
+      "persistence",
+      "uiArt",
+      "risk"
+    ],
+    "openQuestions": [
+      "initial_play_cycle_goal",
+      "initial_player_interaction_goal"
+    ]
+  }
+}
