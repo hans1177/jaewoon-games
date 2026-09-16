@@ -22,42 +22,42 @@
   "representatives": {
     "planning": {
       "keep": [
-        "GAME_SEED"
+        "Ensure that the game's core features align with the planning objectives and are implemented in a way that supports long-term user."
       ],
       "fix": [
-        "SEED_MATERIAL_IDS"
+        "Address any issues that may affect the game's performance or functionality. Ensure that the system is stable and reliable."
       ],
       "add": [
-        "SEED_MATERIAL_SELECTION_SIGNALS"
+        "Provide clear guidance on how to implement the features in the planning phase. Ensure that all elements are aligned with the game."
       ],
       "risks": [
-        "REFERENCE_GAMES"
+        "Identify potential risks and develop contingency plans. Ensure that the game is resilient and can handle any unexpected challenges"
       ],
       "evidence": [
-        "GAME_SEED=3"
+        "Provide evidence that the game is aligned with the planning objectives. Ensure that all elements are in line with the game's core."
       ],
       "questions": [
-        "GAME_SEED=4"
+        "What are the main challenges we face in developing the game? What are the key features that make the game unique and enjoyable?"
       ]
     },
     "graphics": {
       "keep": [
-        "MAT-005"
+        "character_design"
       ],
       "fix": [
-        "GAME_SEED=2, SEED_ID=SEED-UNITY-IDLE-GROWTH-RPG-001, GAME_ID=seed-unity-idle-growth-rpg-aethelgards"
+        "visual_style"
       ],
       "add": [
-        "SEED_MATERIAL_IDS=MAT-005, MAT-023, MAT-011, SEED_MATERIAL_COUNT=3, SEED_MATERIAL_SELECTION_MODE=DYNAMIC_CONTEXTUAL_2_TO_4, SEED"
+        "color_palette"
       ],
       "risks": [
-        "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT=1, SEED_CATEGORY_SELECTION_ROLE=HISTORICAL_BASELINE, REFERENCE_INPUTS=AFK Arena, Legend"
+        "visual_quality"
       ],
       "evidence": [
-        "CORE_FUN_TO_LEARN=Heroes or characters fight automatically and continue generating useful idle or offline progression resources between"
+        "game_assets"
       ],
       "questions": [
-        "CORE_LOOP=Heroes or characters fight automatically and continue generating useful idle or offline progression resources between"
+        "character_design"
       ]
     },
     "development": {
@@ -68,16 +68,16 @@
         "ASSIGNED_DEPARTMENT=development"
       ],
       "add": [
-        "ASSIGNED_DEPARTMENT=development"
+        "GAME_SEED={version:2,seedId:SEED-UNITY-IDLE_GROWTH_RPG-001,gameId:seed-unity-idle-growth-rpg-aethelgard-s-legacy,gameName:Aethelgä}], "
       ],
       "risks": [
-        "ASSIGNED_DEPARTMENT=development"
+        "GAME_SEED={version:2,seedId:SEED-UNITY-IDLE_GROWTH_RPG-001,gameId:seed-unity-idle-growth-rpg-aethelgard-s-legacy,gameName:Aethelgä}"
       ],
       "evidence": [
-        "ASSIGNED_DEPARTMENT=development"
+        "GAME_SEED={version:2,seedId:SEED-UNITY-IDLE_GROWTH_RPG-001,gameId:seed-unity-idle-growth-rpg-aethelgard-s-legacy,gameName:Aethelgä}"
       ],
       "questions": [
-        "ASSIGNED_DEPARTMENT=development"
+        "How can we improve the game's difficulty curve to make it more challenging for players?"
       ]
     },
     "qa": {
@@ -102,86 +102,89 @@
     },
     "balance": {
       "keep": [
-        "Unique Character Customization"
+        "MAT-005"
       ],
       "fix": [
-        "DISTINCT_IDENTITY"
+        "MAT-023"
       ],
       "add": [
-        "DISTINCT_IDENTITY"
+        "MAT-011"
       ],
-      "risks": [
-        "DISTINCT_IDENTITY"
-      ],
+      "risks": [],
       "evidence": [],
       "questions": [
-        "How can the game be improved to provide a more engaging experience for players?"
+        "How can we improve the game's balance and engagement further?"
       ]
     }
   },
   "rebuttalRound": 1,
   "rebuttalAuthoredByDepartmentLeads": true,
-  "summary": "CONSENSUS만 자동 수정에 사용한다. 새 기능을 창작하지 않고 대표의견을 정리한다.",
+  "summary": "The game's core features align with the planning objectives and are implemented in a way that supports long-term user experience.",
   "decisions": [
     {
-      "topic": "planning",
+      "topic": "character_design",
       "status": "CONSENSUS",
-      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "reason": "Ensure that the game's core features align with the planning objectives and are implemented in a way that supports long-term user experience.",
       "departments": [
-        "graphics",
         "development",
-        "qa",
-        "balance"
+        "graphics"
       ]
     },
     {
-      "topic": "graphics",
-      "status": "CONSENSUS",
-      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "topic": "visual_style",
+      "status": "CONFLICT",
+      "reason": "Address any issues that may affect the game's performance or functionality. Ensure that the system is stable and reliable.",
       "departments": [
-        "graphics",
         "development",
-        "qa",
-        "balance"
+        "graphics"
       ]
     },
     {
-      "topic": "development",
-      "status": "CONSENSUS",
-      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "topic": "color_palette",
+      "status": "HOLD",
+      "reason": "Provide clear guidance on how to implement the features in the planning phase. Ensure that all elements are aligned with the game's core.",
       "departments": [
         "development",
-        "graphics",
-        "qa",
-        "balance"
+        "graphics"
       ]
     },
     {
-      "topic": "qa",
-      "status": "CONSENSUS",
-      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "topic": "visual_quality",
+      "status": "HOLD",
+      "reason": "Identify potential risks and develop contingency plans. Ensure that the game is resilient and can handle any unexpected challenges.",
       "departments": [
-        "graphics",
         "development",
-        "qa",
-        "balance"
+        "graphics"
       ]
     },
     {
-      "topic": "balance",
+      "topic": "GAME_SEED={version:2,seedId:SEED-UNITY-IDLE_GROWTH_RPG-001,gameId:seed-unity-idle-growth-rpg-aethelgard-s-legacy,gameName:Aethelgä}",
       "status": "CONSENSUS",
-      "reason": "새 기능을 창작하지 않고 대표의견을 정리한다.",
+      "reason": "Provide evidence that the game is aligned with the planning objectives. Ensure that all elements are in line with the game's core.",
       "departments": [
-        "graphics",
-        "development",
-        "qa",
-        "balance"
+        "qa"
+      ]
+    },
+    {
+      "topic": "What are the main challenges we face in developing the game? What are the key features that make the game unique and enjoyable?",
+      "status": "CONFLICT",
+      "reason": "What are the main challenges we face in developing the game? What are the key features that make the game unique and enjoyable?",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "How can we improve the game's balance and engagement further?",
+      "status": "CONSENSUS",
+      "reason": "How can we improve the game's balance and engagement further?",
+      "departments": [
+        "qa"
       ]
     }
   ],
   "counts": {
-    "consensus": 5,
-    "conflict": 0,
-    "hold": 0
+    "consensus": 3,
+    "conflict": 2,
+    "hold": 2
   }
 }

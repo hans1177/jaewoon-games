@@ -9,14 +9,14 @@
   "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "qwen2.5:1.5b",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 5,
-  "unresolvedConflictCount": 0,
-  "heldCount": 0,
+  "appliedConsensusCount": 3,
+  "unresolvedConflictCount": 2,
+  "heldCount": 2,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
     "identity": "Aethelgard's Legacy",
-    "playerFantasy": "Idle Game Management",
-    "coreFun": "Resource Optimization",
+    "playerFantasy": "Idle Game Management and Resource Optimization",
+    "coreFun": "Idle Game Management and Resource Optimization",
     "coreLoop": [
       "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
       "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
@@ -24,46 +24,41 @@
     ],
     "signatureSystems": [
       {
-        "name": "Resource Management",
-        "purpose": "To manage and optimize the resources used in the game, ensuring that the players can progress efficiently and effectively without the need for frequent input or decisions.",
-        "playerChoice": "Players can choose which resource management system they want to use, such as maximizing the use of idle time or investing in specific skills or gear."
+        "name": "IDLE_GROWTH_RPG",
+        "purpose": "Unique Character Customization",
+        "playerChoice": "Player can customize their heroes or characters with various attributes and skills."
       },
       {
-        "name": "Progression System",
-        "purpose": "To provide a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved.",
-        "playerChoice": "Players can choose which progression system they want to use, such as leveling up or upgrading their gear."
-      },
-      {
-        "name": "Risk Management",
-        "purpose": "To manage and mitigate the risks associated with the game, ensuring that players can make informed decisions and avoid potential pitfalls.",
-        "playerChoice": "Players can choose which risk management system they want to use, such as avoiding certain stages or bosses or investing in specific skills or gear."
+        "name": "SUCCESSFUL_GAME_STRUCTURE",
+        "purpose": "Successful Game Structure",
+        "playerChoice": "The game structure is designed to provide a balanced and engaging experience for players."
       }
     ],
-    "progressionDirection": "From simple to complex, with a focus on resource optimization and progression.",
-    "visualDirection": "The game's visual style will be a blend of traditional and modern elements, with a focus on simplicity and ease of use.",
-    "mobileUx": "The game will be designed with a focus on mobile usability, with a user-friendly interface and intuitive controls.",
-    "marketTargetDirection": "The game will target idle game enthusiasts and strategy game players, with a focus on providing a unique and engaging experience.",
-    "steamExpansionDecision": "The game will not be expanded for Steam, as it is not recommended.",
+    "progressionDirection": "Ongoing and Continuous",
+    "visualDirection": "Dynamic and Continuous",
+    "mobileUx": "User-friendly and intuitive",
+    "marketTargetDirection": "Global",
+    "steamExpansionDecision": "High",
     "multiplayerMode": "COOP",
     "multiplayerExpansionDecision": "COOP",
     "technicalAssumptions": [
-      "The game will be designed with a focus on multiplayer functionality, with a balance between single-player and multiplayer modes.",
-      "The game will be designed with a focus on multiplayer functionality, with a balance between single-player and multiplayer modes.",
-      "The game will be designed with a focus on multiplayer functionality, with a balance between single-player and multiplayer modes.",
-      "The game will be designed with a focus on multiplayer functionality, with a balance between single-player and multiplayer modes.",
-      "The game will be designed with a focus on multiplayer functionality, with a balance between single-player and multiplayer modes."
+      "Unity",
+      "C#",
+      "2D/3D",
+      "WebGL",
+      "WebXR",
+      "WebGL2",
+      "WebGL2XR"
     ],
     "validationQuestions": [
-      "Does the game have a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved?",
-      "Does the game have a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved?",
-      "Does the game have a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved?",
-      "Does the game have a clear and understandable progression system that allows players to easily understand how their progress is being tracked and improved?"
+      "Is the game balanced and engaging for players?",
+      "Does the game provide a fair and enjoyable experience for players?",
+      "Is the game easy to use and navigate?"
     ],
     "openQuestions": [
-      "How can the game be improved to provide a more engaging experience for players?",
-      "How can the game be improved to provide a more engaging experience for players?",
-      "How can the game be improved to provide a more engaging experience for players?",
-      "How can the game be improved to provide a more engaging experience for players?"
+      "How can we improve the game's balance and engagement?",
+      "What are the main challenges we face in developing the game?",
+      "What are the key features that make the game unique and enjoyable?"
     ]
   }
 }

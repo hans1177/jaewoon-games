@@ -20,17 +20,15 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "Unique Character Customization"
+          "MAT-005"
         ],
         "fix": [
-          "DISTINCT_IDENTITY"
+          "MAT-023"
         ],
         "add": [
-          "DISTINCT_IDENTITY"
+          "MAT-011"
         ],
-        "risks": [
-          "DISTINCT_IDENTITY"
-        ],
+        "risks": [],
         "evidence": [],
         "questions": []
       }
@@ -40,22 +38,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "The game focuses on idle game management and resource optimization, ensuring players can progress efficiently without frequent in-"
+          "The game provides a balanced and engaging experience for players, ensuring that all characters and heroes have meaningful growth."
         ],
         "fix": [
-          "The game has a clear progression system that tracks and improves players' progress, allowing for easy understanding of their path."
+          "The game's progression system is designed to encourage continuous improvement and adaptation."
         ],
         "add": [
-          "The game provides a progression direction from simple to complex, with a focus on resource optimization and progression."
+          "The game supports dynamic customization of characters and heroes, allowing players to explore different attributes and skills."
         ],
         "risks": [
-          "The game includes systems to manage and mitigate risks, such as resource management and progression systems."
+          "The game's market evidence is limited, but it provides a solid foundation for its potential success."
         ],
         "evidence": [
-          "The game has evidence from various sources, including market data and references to other games."
+          "The game's market evidence is based on credible sources, including industry reports and game analytics."
         ],
         "questions": [
-          "How can the game be improved to provide a more engaging experience for players?"
+          "How can we improve the game's balance and engagement further?"
         ]
       }
     },
@@ -64,22 +62,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "UNIQUE_CHARACTER_CUSTOMIZATION"
+          "Unique Character Customization"
         ],
         "fix": [
-          "SEED_MATERIAL_SELECTION_SIGNALS"
+          "TARGET_DESIGN_REFERENCE"
         ],
         "add": [
-          "SEED_MATERIAL_SELECTION_MODE"
+          "GAME_CATEGORY"
         ],
         "risks": [
-          "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+          "MARKET_EVIDENCE_SUMMARY"
         ],
         "evidence": [
-          "REFERENCE_INPUTS"
+          "AFK Arena"
         ],
         "questions": [
-          "Does the game have a clear and understandable progression system that allows players to easily understand how their progress is be"
+          "Is the game balanced and engaging for players?"
         ]
       }
     }

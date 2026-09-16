@@ -15,77 +15,77 @@
   "rebuttals": {
     "planning": {
       "accept": [
+        "Ensure that the game's core features align with the planning objectives and are implemented in a way that supports long-term user experience.",
+        "Address any issues that may affect the game's performance or functionality. Ensure that the system is stable and reliable.",
+        "Provide clear guidance on how to implement the features in the planning phase. Ensure that all elements are aligned with the game's core."
+      ],
+      "challenge": [
+        "What are the main challenges we face in developing the game? What are the key features that make the game unique and enjoyable?"
+      ],
+      "revision": [
+        "Identify potential risks and develop contingency plans. Ensure that the game is resilient and can handle any unexpected challenges.",
+        "Provide evidence that the game is aligned with the planning objectives. Ensure that all elements are in line with the game's core."
+      ],
+      "reason": "The game's core features should be aligned with the planning objectives and supported for long-term user experience. We should ensure that all elements are in line with the game's core and that the system is stable and reliable."
+    },
+    "graphics": {
+      "accept": [
+        "character_design"
+      ],
+      "challenge": [
+        "visual_quality"
+      ],
+      "revision": [
+        "game_assets"
+      ],
+      "reason": "visual_quality"
+    },
+    "development": {
+      "accept": [
         "keep",
         "fix",
         "add"
       ],
       "challenge": [
         "risks",
-        "evidence",
         "questions"
       ],
       "revision": [
-        "keep",
-        "fix",
-        "add"
+        "OTHERS",
+        "balance"
       ],
-      "reason": "I have reviewed the content and made a few revisions to ensure clarity and correctness."
-    },
-    "graphics": {
-      "accept": [
-        "GAME_SEED",
-        "SEED_MATERIAL_IDS",
-        "ASSIGNED_DEPARTMENT=development"
-      ],
-      "challenge": [
-        "ASSIGNED_DEPARTMENT=development",
-        "DISTINCT_IDENTITY",
-        "RISK=DISTINCT_IDENTITY"
-      ],
-      "revision": [
-        "ASSIGNED_DEPARTMENT=qa",
-        "evidence=GAME_SEED=4"
-      ],
-      "reason": "CORE_LOOP=Heroes or characters fight automatically and continue generating useful idle or offline progression resources between"
-    },
-    "development": {
-      "accept": [
-        "own",
-        "others"
-      ],
-      "challenge": [
-        "own",
-        "others"
-      ],
-      "revision": [
-        "own",
-        "others"
-      ],
-      "reason": "own: development, others: planning, graphics, qa, balance"
+      "reason": "Development 부서 Lead AI"
     },
     "qa": {
       "accept": [
         "ASSIGNED_DEPARTMENT=qa"
       ],
       "challenge": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "Ensure that the game's core features align with the planning objectives and are implemented in a way that supports long-term user.",
+        "What are the main challenges we face in developing the game? What are the key features that make the game unique and enjoyable?"
       ],
       "revision": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "GAME_SEED={version:2,seedId:SEED-UNITY-IDLE_GROWTH_RPG-001,gameId:seed-unity-idle-growth-rpg-aethelgard-s-legacy,gameName:Aethelgä}"
       ],
-      "reason": "QA 부서의 책임범위 내에서 모든 항목을 수용합니다."
+      "reason": "The provided evidence supports the game's alignment with the planning objectives, ensuring that all elements are in line with the game's core."
     },
     "balance": {
       "accept": [
-        "Unique Character Customization"
+        "https://example.com/accept",
+        "https://example.com/accept",
+        "https://example.com/accept"
       ],
       "challenge": [
-        "GAME_SEED"
+        "https://example.com/challenge",
+        "https://example.com/challenge",
+        "https://example.com/challenge"
       ],
       "revision": [
-        "GAME_SEED=3"
+        "https://example.com/revision",
+        "https://example.com/revision",
+        "https://example.com/revision"
       ],
-      "reason": "GAME_SEED=4"
+      "reason": "This is a valid JSON object"
     }
   }
 }
