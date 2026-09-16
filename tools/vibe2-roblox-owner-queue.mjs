@@ -6,6 +6,7 @@ import { createVibeContinuousQueue } from '../assets/vibe-continuous-queue.js';
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
 const OWNER_EVIDENCE = 'owner-directive:full-roblox-game-rebuild';
+const OWNER_TASK_EVIDENCE = 'owner-directive:roblox-development';
 
 function readJson(file, fallback = {}) {
   try { return JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return fallback; }
@@ -26,6 +27,16 @@ function parseArgs(argv = process.argv.slice(2)) {
   return args;
 }
 
+function rebuildContract(directive = {}) {
+  const mode = clean(directive.rebuildMode).toUpperCase();
+  const explicitFalse = directive.fullRebuild === false || mode === 'INCREMENTAL';
+  const fullRebuild = explicitFalse ? false : directive.fullRebuild === true || mode === 'FULL_REBUILD' || !mode;
+  return {
+    fullRebuild,
+    rebuildMode: fullRebuild ? 'FULL_REBUILD' : 'INCREMENTAL'
+  };
+}
+
 function directiveTask(directive = {}) {
   const id = clean(directive.id);
   const gameId = clean(directive.gameId);
@@ -39,6 +50,7 @@ function directiveTask(directive = {}) {
   const dependencies = [...new Set((directive.dependencies || []).map(clean).filter(Boolean))];
   const workUnits = Math.max(5, Math.trunc(Number(directive.workUnits) || 5));
   const extraEvidence = (directive.evidence || []).map(clean).filter(Boolean);
+  const rebuild = rebuildContract(directive);
 
   return {
     id,
@@ -61,13 +73,14 @@ function directiveTask(directive = {}) {
     sourceRoot,
     estimatedRisk: 'high',
     speculativeEligible: false,
-    fullRebuild: true,
-    rebuildMode: 'FULL_REBUILD',
+    fullRebuild: rebuild.fullRebuild,
+    rebuildMode: rebuild.rebuildMode,
     workUnits,
     taskWorkUnits: workUnits,
     evidence: [
       'central-policy:COMPANY_FLOW.md',
-      OWNER_EVIDENCE,
+      OWNER_TASK_EVIDENCE,
+      ...(rebuild.fullRebuild ? [OWNER_EVIDENCE] : []),
       'platform-focus:roblox-primary',
       `source-root:${sourceRoot}`,
       ...extraEvidence,
@@ -79,7 +92,7 @@ function isImportedRobloxOwnerTask(task = {}) {
   return task.ownerDirective === true
     && clean(task.target).toLowerCase() === 'roblox'
     && Array.isArray(task.evidence)
-    && task.evidence.includes(OWNER_EVIDENCE);
+    && (task.evidence.includes(OWNER_TASK_EVIDENCE) || task.evidence.includes(OWNER_EVIDENCE));
 }
 
 function taskSpec(task = {}) {
