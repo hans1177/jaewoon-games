@@ -50,8 +50,21 @@ function stageBlock(source,stage){
   return{chain,start:chain.start+localStart,end:chain.start+localEnd,text:chain.text.slice(localStart,localEnd)};
 }
 function replaceBlock(source,block,newBlock){return source.slice(0,block.start)+newBlock+source.slice(block.end);}
-function tuneStage(source,stage){
+function failedPlatformOffset(text,stage,row){
+  const target=clean(row?.failedTarget).match(/^Step(\d{2})([A-Z]):(?:dead|timeout)$/);
+  if(!target||Number(target[1])!==stage)return null;
+  const suffix=target[2];
+  const pattern=new RegExp(`(addPlatform\\(stageModel, stage, "${suffix}", stagePoint\\(previousPosition, checkpointPosition, [^\\n]*?Vector3\\.new\\(\\s*0\\s*,\\s*0\\s*,\\s*)(-?\\d+(?:\\.\\d+)?)(\\s*\\)\\))`);
+  const match=text.match(pattern);if(!match)return null;
+  const before=Number(match[2]);if(!Number.isFinite(before)||Math.abs(before)<0.5)return null;
+  const after=0;
+  const tuned=text.replace(pattern,(_,a,_offset,c)=>`${a}${fmt(after)}${c}`);
+  return{text:tuned,adjustment:{kind:'failed-platform-lateral-offset',target:`Step${String(stage).padStart(2,'0')}${suffix}`,before,after}};
+}
+function tuneStage(source,stage,row=null){
   const block=stageBlock(source,stage);let text=block.text;let adjustment=null;
+  const failedOffset=failedPlatformOffset(text,stage,row);
+  if(failedOffset)return{source:replaceBlock(source,block,failedOffset.text),adjustment:failedOffset.adjustment,stage};
   const spinner=/(addSpinner\([\s\S]*?,\s*\d+(?:\.\d+)?\s*,\s*)(-?\d+(?:\.\d+)?)(\s*,\s*-?\d+(?:\.\d+)?\s*\))/;
   if(spinner.test(text)){
     text=text.replace(spinner,(_,a,speed,c)=>{const before=Number(speed),after=Math.sign(before||1)*clamp(Math.abs(before)*0.90,0.5,3);adjustment={kind:'spinner-speed',before,after};return`${a}${fmt(after)}${c}`;});
@@ -89,7 +102,7 @@ export function runRobloxAutonomousBalanceWorker({cwd=process.cwd(),workOrderFil
   const telemetryPath=path.resolve(clean(evidenceFile||process.env.VIBE2_RUNTIME_EVIDENCE_FILE)||DEFAULT_EVIDENCE);if(!fs.existsSync(telemetryPath))throw new Error(`R5 verified input telemetry missing: ${telemetryPath}`);
   const telemetry=readJson(telemetryPath),stages=validateTelemetry(telemetry),selection=chooseStage(stages);const original=fs.readFileSync(serverFile,'utf8');
   if(!original.includes('course:SetAttribute("MapRevision", "R4")'))throw new Error('R5 expects verified R4 map baseline');
-  const tuned=tuneStage(original,selection.stage);if(tuned.source===original)throw new Error('R5 balance worker produced no source change');
+  const tuned=tuneStage(original,selection.stage,selection.row);if(tuned.source===original)throw new Error('R5 balance worker produced no source change');
   const branch=applySource?assertCandidateBranch(cwd):null;if(applySource)fs.writeFileSync(serverFile,tuned.source.endsWith('\n')?tuned.source:`${tuned.source}\n`,'utf8');
   const taskId=safeId(order.taskId),candidateRoot=path.resolve(cwd,outputRoot,taskId);fs.rmSync(candidateRoot,{recursive:true,force:true});fs.mkdirSync(candidateRoot,{recursive:true});
   if(!applySource){const file=path.join(candidateRoot,'files','server','Game.server.luau');fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,tuned.source,'utf8');}
