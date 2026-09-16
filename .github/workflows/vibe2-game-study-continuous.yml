@@ -119,8 +119,8 @@ jobs:
         id: study
         continue-on-error: true
         env:
-          TASK_ID: ${{ matrix.taskId }}
           TARGET_ID: ${{ matrix.targetId }}
+          TASK_ID: ${{ matrix.taskId }}
         shell: bash
         run: |
           set -euo pipefail
@@ -144,7 +144,7 @@ jobs:
   roblox:
     needs: reserve
     if: needs.reserve.outputs.roblox_count != '0'
-    runs-on: [self-hosted, Windows, vibe2-roblox]
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 20
     strategy:
       fail-fast: false

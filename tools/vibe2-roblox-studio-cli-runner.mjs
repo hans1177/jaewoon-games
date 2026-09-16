@@ -108,10 +108,25 @@ async function resolveUniverseId(placeId, fetchImpl = globalThis.fetch) {
 }
 
 function parseMarker(text, marker) {
-  const line = String(text || '').split(/\r?\n/).reverse().find((row) => row.includes(marker));
-  if (!line) return null;
-  const at = line.indexOf(marker);
-  return line.slice(at + marker.length).trim();
+  const rows = String(text || '').split(/\r?\n/).reverse();
+  for (const row of rows) {
+    let offset = 0;
+    while (offset < row.length) {
+      const at = row.indexOf(marker, offset);
+      if (at < 0) break;
+      const tail = row.slice(at + marker.length).trim();
+      const candidate = tail.match(/^([A-Za-z0-9+/]{16,}={0,2})(?:\s|$)/)?.[1] || '';
+      if (candidate) {
+        try {
+          const decoded = Buffer.from(candidate, 'base64').toString('utf8');
+          const parsed = JSON.parse(decoded);
+          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return candidate;
+        } catch {}
+      }
+      offset = at + marker.length;
+    }
+  }
+  return null;
 }
 
 function decodeBase64Json(encoded, label) {
@@ -132,14 +147,21 @@ const GENERALIZED_PATTERNS = Object.freeze([
   ['character-humanoid', 'Humanoid']
 ]);
 
-function clientSource(moduleSource) {
-  return `local StudioTestService = game:GetService("StudioTestService")\nlocal HttpService = game:GetService("HttpService")\nlocal Players = game:GetService("Players")\nlocal Vibe2AutoPlayer = (function()\n${moduleSource}\nend)()\n\nlocal payload = HttpService:JSONDecode(tostring(StudioTestService:GetTestArgs()))\n\nlocal function verify(action)\n    local expression = string.lower(tostring(action.expression or ""))\n    if expression == "true" or expression == "studio-runtime-ready" then\n        return true, expression\n    elseif expression == "game-loaded" then\n        return game:IsLoaded(), game.Name\n    elseif expression == "workspace-nonempty" then\n        local count = #workspace:GetChildren()\n        return count > 0, count\n    elseif expression == "player-present" then\n        return Players.LocalPlayer ~= nil, Players.LocalPlayer and Players.LocalPlayer.Name or nil\n    elseif expression == "player-gui-nonempty" then\n        local player = Players.LocalPlayer\n        local gui = player and player:FindFirstChildOfClass("PlayerGui")\n        local count = gui and #gui:GetDescendants() or 0\n        return count > 0, count\n    end\n    local expectedPlace = string.match(expression, "^place%-id:(%d+)$")\n    if expectedPlace then\n        return tostring(game.PlaceId) == expectedPlace, tostring(game.PlaceId)\n    end\n    return false, "unsupported-safe-expression:" .. expression\nend\n\nlocal ok, result = pcall(function()\n    return Vibe2AutoPlayer.Run(payload.scenario, { nonce = payload.nonce, verify = verify })\nend)\nif not ok then\n    result = {\n        version = 1, engine = "roblox", nonce = tostring(payload.nonce or ""),\n        authority = "${AUTHORITY}", runtimeVerified = false,\n        capabilities = { studioTestService = true, virtualInput = false },\n        place = game.Name, actions = {}, checkpoints = {},\n        errors = {{ type = "studio-runtime-error", message = tostring(result) }},\n        metrics = { consoleErrorCount = 1 }\n    }\nend\nStudioTestService:EndTest(Vibe2AutoPlayer.EncodeStdout(result))\n`;
+function clientSource(moduleSource, payloadJson, resultRemoteName) {
+  return `local HttpService = game:GetService("HttpService")\nlocal Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal Vibe2AutoPlayer = (function()\n${moduleSource}\nend)()\n\nlocal payload = HttpService:JSONDecode(${longBracket(payloadJson)})\nlocal resultRemote = ReplicatedStorage:WaitForChild(${longBracket(resultRemoteName)}, 15)\nif not resultRemote then return end\n\nlocal function verify(action)\n    local expression = string.lower(tostring(action.expression or ""))\n    if expression == "true" or expression == "studio-runtime-ready" then\n        return true, expression\n    elseif expression == "game-loaded" then\n        return game:IsLoaded(), game.Name\n    elseif expression == "workspace-nonempty" then\n        local count = #workspace:GetChildren()\n        return count > 0, count\n    elseif expression == "player-present" then\n        return Players.LocalPlayer ~= nil, Players.LocalPlayer and Players.LocalPlayer.Name or nil\n    elseif expression == "player-gui-nonempty" then\n        local player = Players.LocalPlayer\n        local gui = player and player:FindFirstChildOfClass("PlayerGui")\n        local count = gui and #gui:GetDescendants() or 0\n        return count > 0, count\n    end\n    local expectedPlace = string.match(expression, "^place%-id:(%d+)$")\n    if expectedPlace then\n        return tostring(game.PlaceId) == expectedPlace, tostring(game.PlaceId)\n    end\n    local instancePath = string.match(expression, "^instance%-path:(.+)$")\n    if instancePath then\n        local current = game\n        for segment in string.gmatch(instancePath, "[^/]+") do\n            current = current and current:FindFirstChild(segment) or nil\n            if not current then return false, instancePath end\n        end\n        return true, instancePath\n    end\n    return false, "unsupported-safe-expression:" .. expression\nend\n\nlocal ok, result = pcall(function()\n    return Vibe2AutoPlayer.Run(payload.scenario, { nonce = payload.nonce, verify = verify })\nend)\nif not ok then\n    result = {\n        version = 1, engine = "roblox", nonce = tostring(payload.nonce or ""),\n        authority = "${AUTHORITY}", runtimeVerified = false,\n        capabilities = { studioTestService = true, virtualInput = false },\n        place = game.Name, actions = {}, checkpoints = {},\n        errors = {{ type = "studio-runtime-error", message = tostring(result) }},\n        metrics = { consoleErrorCount = 1 }\n    }\nend\nresultRemote:FireServer(result)\n`;
 }
 
-function bootstrapSource({ moduleSource, payloadJson, allowSourceScan, expectedPlaceId }) {
-  const client = clientSource(moduleSource);
-  const scan = allowSourceScan ? `\nlocal patternDefs = {\n${GENERALIZED_PATTERNS.map(([name, token]) => `    { name = ${longBracket(name)}, token = ${longBracket(token)} },`).join('\n')}\n}\nlocal found, scriptCount = {}, 0\nfor _, instance in ipairs(game:GetDescendants()) do\n    if instance:IsA("LuaSourceContainer") then\n        scriptCount += 1\n        local ok, source = pcall(function() return instance.Source end)\n        if ok and type(source) == "string" then\n            for _, row in ipairs(patternDefs) do\n                if string.find(source, row.token, 1, true) then found[row.name] = true end\n            end\n        end\n    end\nend\nlocal patterns = {}\nfor name in pairs(found) do table.insert(patterns, name) end\ntable.sort(patterns)\nlocal sourceEvidence = { version = 1, placeId = tostring(game.PlaceId), expectedPlaceId = ${longBracket(expectedPlaceId || '')}, scriptCount = scriptCount, patterns = patterns, rawSourcePersisted = false, authorityExpanded = false }\nlocal encodedSource = EncodingService:Base64Encode(buffer.fromstring(HttpService:JSONEncode(sourceEvidence)))\nprint("${SOURCE_MARKER}" .. buffer.tostring(encodedSource))\n` : '';
-  return `local StudioTestService = game:GetService("StudioTestService")\nlocal HttpService = game:GetService("HttpService")\nlocal EncodingService = game:GetService("EncodingService")\nlocal StarterPlayer = game:GetService("StarterPlayer")\n${expectedPlaceId ? `if tostring(game.PlaceId) ~= ${longBracket(expectedPlaceId)} then error("Roblox Studio loaded unexpected place: " .. tostring(game.PlaceId)) end\n` : ''}${scan}\nlocal runner = Instance.new("LocalScript")\nrunner.Name = "__Vibe2AutoPlayerRuntime"\nrunner.Source = ${longBracket(client)}\nrunner.Parent = StarterPlayer:WaitForChild("StarterPlayerScripts")\nlocal ok, value = pcall(function() return StudioTestService:ExecutePlayModeAsync(${longBracket(payloadJson)}) end)\nrunner:Destroy()\nif not ok then error("Vibe2 Studio play mode failed: " .. tostring(value)) end\nprint(tostring(value))\n`;
+function serverSource(payloadJson, resultRemoteName) {
+  const expectedNonce = clean(JSON.parse(payloadJson)?.nonce);
+  return `local StudioTestService = game:GetService("StudioTestService")\nlocal HttpService = game:GetService("HttpService")\nlocal EncodingService = game:GetService("EncodingService")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal resultRemote = ReplicatedStorage:WaitForChild(${longBracket(resultRemoteName)}, 15)\nlocal expectedNonce = ${longBracket(expectedNonce)}\nlocal finished = false\n\nlocal function finish(result)\n    if finished then return end\n    finished = true\n    local json = HttpService:JSONEncode(result)\n    local encoded = EncodingService:Base64Encode(buffer.fromstring(json))\n    StudioTestService:EndTest("${RUNTIME_MARKER}" .. buffer.tostring(encoded))\nend\n\nif resultRemote then\n    resultRemote.OnServerEvent:Connect(function(_, result)\n        if type(result) ~= "table" then return end\n        if tostring(result.nonce or "") ~= expectedNonce then return end\n        if tostring(result.authority or "") ~= "${AUTHORITY}" then return end\n        finish(result)\n    end)\nend\n\ntask.delay(45, function()\n    if finished then return end\n    finish({\n        version = 1, engine = "roblox", nonce = expectedNonce,\n        authority = "${AUTHORITY}", runtimeVerified = false,\n        capabilities = { studioTestService = true, virtualInput = false },\n        place = game.Name, actions = {}, checkpoints = {},\n        errors = {{ type = "studio-runtime-timeout", message = "client result timeout" }},\n        metrics = { consoleErrorCount = 1 }\n    })\nend)\n`;
+}
+
+function bootstrapSource({ moduleSource, payloadJson, allowSourceScan, expectedPlaceId, sourcePlaceId }) {
+  const resultRemoteName = `__Vibe2AutoPlayerResult_${clean(JSON.parse(payloadJson)?.nonce).slice(0, 12)}`;
+  const client = clientSource(moduleSource, payloadJson, resultRemoteName);
+  const server = serverSource(payloadJson, resultRemoteName);
+  const scan = allowSourceScan ? `\nlocal patternDefs = {\n${GENERALIZED_PATTERNS.map(([name, token]) => `    { name = ${longBracket(name)}, token = ${longBracket(token)} },`).join('\n')}\n}\nlocal found, scriptCount = {}, 0\nfor _, instance in ipairs(game:GetDescendants()) do\n    if instance:IsA("LuaSourceContainer") then\n        scriptCount += 1\n        local ok, source = pcall(function() return instance.Source end)\n        if ok and type(source) == "string" then\n            for _, row in ipairs(patternDefs) do\n                if string.find(source, row.token, 1, true) then found[row.name] = true end\n            end\n        end\n    end\nend\nlocal patterns = {}\nfor name in pairs(found) do table.insert(patterns, name) end\ntable.sort(patterns)\nlocal sourceEvidence = { version = 1, placeId = ${longBracket(sourcePlaceId || '')}, observedPlaceId = tostring(game.PlaceId), expectedPlaceId = ${longBracket(expectedPlaceId || '')}, scriptCount = scriptCount, patterns = patterns, rawSourcePersisted = false, authorityExpanded = false }\nlocal encodedSource = EncodingService:Base64Encode(buffer.fromstring(HttpService:JSONEncode(sourceEvidence)))\nprint("${SOURCE_MARKER}" .. buffer.tostring(encodedSource))\n` : '';
+  return `local StudioTestService = game:GetService("StudioTestService")\nlocal HttpService = game:GetService("HttpService")\nlocal EncodingService = game:GetService("EncodingService")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal ServerScriptService = game:GetService("ServerScriptService")\nlocal StarterPlayer = game:GetService("StarterPlayer")\n${expectedPlaceId ? `if tostring(game.PlaceId) ~= ${longBracket(expectedPlaceId)} then error("Roblox Studio loaded unexpected place: " .. tostring(game.PlaceId)) end\n` : ''}${scan}\nlocal oldRemote = ReplicatedStorage:FindFirstChild(${longBracket(resultRemoteName)})\nif oldRemote then oldRemote:Destroy() end\nlocal resultRemote = Instance.new("RemoteEvent")\nresultRemote.Name = ${longBracket(resultRemoteName)}\nresultRemote.Parent = ReplicatedStorage\nlocal serverRunner = Instance.new("Script")\nserverRunner.Name = "__Vibe2AutoPlayerServerRuntime"\nserverRunner.Source = ${longBracket(server)}\nserverRunner.Parent = ServerScriptService\nlocal clientRunner = Instance.new("LocalScript")\nclientRunner.Name = "__Vibe2AutoPlayerClientRuntime"\nclientRunner.Source = ${longBracket(client)}\nclientRunner.Parent = StarterPlayer:WaitForChild("StarterPlayerScripts")\nlocal ok, value = pcall(function() return StudioTestService:ExecutePlayModeAsync(${longBracket(payloadJson)}) end)\nclientRunner:Destroy()\nserverRunner:Destroy()\nresultRemote:Destroy()\nif not ok then error("Vibe2 Studio play mode failed: " .. tostring(value)) end\nprint(tostring(value))\n`;
 }
 
 function persistSanitizedSourceEvidence(sourceRoot, evidence, { placeId, permissionEvidence }) {
@@ -158,6 +180,7 @@ function persistSanitizedSourceEvidence(sourceRoot, evidence, { placeId, permiss
     version: 1,
     authority: 'vibe2-roblox-authorized-studio-copy-session',
     placeId: clean(placeId),
+    observedPlaceId: clean(evidence?.observedPlaceId),
     permission: COPY_PERMISSION,
     permissionEvidence: clean(permissionEvidence),
     copyAllowed: true,
@@ -184,22 +207,24 @@ export async function runRobloxStudioCliRuntime({
   if (!fs.existsSync(modulePath)) throw new Error(`Roblox AUTO PLAYER module missing: ${modulePath}`);
   const resolvedStudio = findRobloxStudioBinary({ override: studioPath });
   if (!resolvedStudio) throw new Error('RobloxStudioBeta.exe not found; set VIBE2_ROBLOX_STUDIO_PATH on the self-hosted runner');
+  const normalizedPlaceFile = clean(placeFile);
   const normalizedPlaceId = clean(placeId);
-  const authorizedScan = clean(sourceRoot) && clean(copyPermission) === COPY_PERMISSION && clean(permissionEvidence);
-  if (clean(sourceRoot) && !authorizedScan) throw new Error('authorized Studio source scan requires creator-enabled place copying permission and evidence');
-  if (authorizedScan && !/^\d+$/.test(normalizedPlaceId)) throw new Error('authorized Studio source scan requires numeric placeId');
+  const authorizedCopy = clean(copyPermission) === COPY_PERMISSION && Boolean(clean(permissionEvidence)) && /^\d+$/.test(normalizedPlaceId);
+  const expectedRuntimePlaceId = authorizedCopy || normalizedPlaceFile ? '' : normalizedPlaceId;
+  const authorizedScan = Boolean(clean(sourceRoot)) && authorizedCopy;
+  if (clean(sourceRoot) && !authorizedScan) throw new Error('authorized Studio source scan requires creator-enabled place copying permission, numeric source placeId and evidence');
   let resolvedUniverse = clean(universeId);
-  if (normalizedPlaceId && !resolvedUniverse) resolvedUniverse = await resolveUniverseId(normalizedPlaceId, fetchImpl);
+  if (!normalizedPlaceFile && normalizedPlaceId && !resolvedUniverse) resolvedUniverse = await resolveUniverseId(normalizedPlaceId, fetchImpl);
 
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-roblox-studio-cli-'));
   const bootstrapFile = path.join(tempRoot, 'vibe2-bootstrap.luau');
   const studioOutput = path.join(tempRoot, 'studio-output.log');
   const moduleSource = fs.readFileSync(modulePath, 'utf8');
   const payloadJson = JSON.stringify({ nonce: clean(nonce), scenario });
-  fs.writeFileSync(bootstrapFile, bootstrapSource({ moduleSource, payloadJson, allowSourceScan: Boolean(authorizedScan), expectedPlaceId: normalizedPlaceId }), 'utf8');
+  fs.writeFileSync(bootstrapFile, bootstrapSource({ moduleSource, payloadJson, allowSourceScan: authorizedScan, expectedPlaceId: expectedRuntimePlaceId, sourcePlaceId: normalizedPlaceId }), 'utf8');
   try {
     const studioArgs = ['--task', 'RunScript'];
-    if (clean(placeFile)) studioArgs.push('--localPlaceFile', path.resolve(placeFile));
+    if (normalizedPlaceFile) studioArgs.push('--localPlaceFile', path.resolve(normalizedPlaceFile));
     else if (normalizedPlaceId) {
       studioArgs.push('--placeId', normalizedPlaceId);
       if (resolvedUniverse) studioArgs.push('--universeId', resolvedUniverse);
@@ -217,14 +242,15 @@ export async function runRobloxStudioCliRuntime({
       const sourceEncoded = parseMarker(output, SOURCE_MARKER);
       if (!sourceEncoded) throw new Error('authorized Roblox Studio source evidence missing');
       const sourceEvidence = decodeBase64Json(sourceEncoded, 'authorized Roblox Studio source evidence');
-      if (clean(sourceEvidence?.placeId) !== normalizedPlaceId) throw new Error('authorized Roblox Studio source placeId mismatch');
+      if (clean(sourceEvidence?.placeId) !== normalizedPlaceId) throw new Error('authorized Roblox Studio source provenance placeId mismatch');
       persistSanitizedSourceEvidence(path.resolve(cwd, sourceRoot), sourceEvidence, { placeId: normalizedPlaceId, permissionEvidence });
     }
     writeJson(runtimeResultFile, runtime);
     process.stdout.write(`${RUNTIME_MARKER}${runtimeEncoded}\n`);
     process.stderr.write('VIBE2_ROBLOX_STUDIO_CLI=PASS\n');
+    process.stderr.write(`VIBE2_ROBLOX_STUDIO_SOURCE_PLACE_ID=${normalizedPlaceId || 'NONE'}\n`);
     process.stderr.write(`VIBE2_ROBLOX_STUDIO_PLACE=${clean(runtime?.place) || normalizedPlaceId || 'baseplate'}\n`);
-    return Object.freeze({ verifiedRuntime: runtime?.runtimeVerified === true, studioPath: resolvedStudio, placeId: normalizedPlaceId || null, universeId: resolvedUniverse || null, authorityExpanded: false });
+    return Object.freeze({ verifiedRuntime: runtime?.runtimeVerified === true, studioPath: resolvedStudio, placeId: normalizedPlaceId || null, universeId: resolvedUniverse || null, authorizedCopy, localPlaceFile: Boolean(normalizedPlaceFile), authorityExpanded: false });
   } finally {
     try { fs.rmSync(tempRoot, { recursive: true, force: true }); } catch {}
   }
@@ -238,7 +264,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     runtimeResultFile: clean(args.output) || clean(process.env.VIBE2_AUTO_PLAYER_RUNTIME_RESULT),
     nonce: clean(args.nonce) || clean(process.env.VIBE2_AUTO_PLAYER_NONCE),
     placeFile: clean(args['place-file']) || clean(process.env.VIBE2_ROBLOX_AUTHORIZED_PLACE_FILE) || clean(process.env.VIBE2_ROBLOX_STUDIO_PLACE_FILE),
-    placeId: clean(args['place-id']) || clean(process.env.VIBE2_ROBLOX_STUDIO_PLACE_ID),
+    placeId: clean(args['place-id']) || clean(process.env.VIBE2_ROBLOX_STUDIO_PLACE_ID) || clean(process.env.VIBE2_ROBLOX_AUTHORIZED_SOURCE_PLACE_ID),
     universeId: clean(args['universe-id']) || clean(process.env.VIBE2_ROBLOX_STUDIO_UNIVERSE_ID),
     copyPermission: clean(args['copy-permission']) || clean(process.env.VIBE2_ROBLOX_COPY_PERMISSION),
     permissionEvidence: clean(args['permission-evidence']) || clean(process.env.VIBE2_ROBLOX_PERMISSION_EVIDENCE),
