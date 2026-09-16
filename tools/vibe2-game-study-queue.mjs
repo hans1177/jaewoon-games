@@ -13,6 +13,7 @@ const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const STUDY_EVIDENCE_PREFIX = 'game-study-target:';
+const STUDY_RESERVATION_EVIDENCE_PREFIX = 'game-study-reservation-at:';
 const AUTHORIZED_SERVER_SOURCE = 'owned-or-authorized-server-workspace';
 const STALE_FANIN_EVIDENCE = new Set([
   'game-study-production-fanin:game-study-result-missing',
@@ -31,6 +32,31 @@ function booleanFlag(value, fallback = false) {
   if (['1', 'true', 'yes', 'on'].includes(normalized)) return true;
   if (['0', 'false', 'no', 'off'].includes(normalized)) return false;
   return fallback;
+}
+function withoutStudyReservationEvidence(values = []) {
+  return unique(values).filter((value) => !clean(value).startsWith(STUDY_RESERVATION_EVIDENCE_PREFIX));
+}
+function withStudyReservationEvidence(values = [], reservationAt = '') {
+  const next = withoutStudyReservationEvidence(values);
+  const lease = clean(reservationAt);
+  return lease ? unique([...next, `${STUDY_RESERVATION_EVIDENCE_PREFIX}${lease}`]) : next;
+}
+function studyReservationAt(task = {}) {
+  const direct = clean(task?.gameStudyReservationAt);
+  if (direct) return direct;
+  const marker = (task?.evidence || []).find((value) => clean(value).startsWith(STUDY_RESERVATION_EVIDENCE_PREFIX));
+  return marker ? clean(marker).slice(STUDY_RESERVATION_EVIDENCE_PREFIX.length) : '';
+}
+function queueSeedWithPersistentStudyLeases(queueInput = {}) {
+  if (!Array.isArray(queueInput?.tasks)) return queueInput;
+  return {
+    ...queueInput,
+    tasks: queueInput.tasks.map((task) => {
+      const direct = clean(task?.gameStudyReservationAt);
+      if (!direct) return task;
+      return { ...task, evidence: withStudyReservationEvidence(task?.evidence || [], direct) };
+    })
+  };
 }
 
 export function normalizeGameStudyTarget(input = {}, index = 0) {
@@ -98,7 +124,7 @@ function hasStaleFaninEvidence(task = {}) {
 }
 function staleReservation(task = {}, target = {}, nowMs = Date.now()) {
   if (task.status !== 'running' || !hasStaleFaninEvidence(task)) return false;
-  const reservedAt = Date.parse(clean(task.gameStudyReservationAt));
+  const reservedAt = Date.parse(studyReservationAt(task));
   if (!Number.isFinite(reservedAt)) return true;
   return nowMs - reservedAt > Number(target.timeoutMs || 180000) + STUDY_RESERVATION_GRACE_MS;
 }
@@ -137,7 +163,7 @@ function taskForTarget(target) {
 }
 
 export function prepareGameStudyQueue(queueInput = {}, targetInput = {}, { nowMs = Date.now() } = {}) {
-  const queue = createVibeContinuousQueue(queueInput);
+  const queue = createVibeContinuousQueue(queueSeedWithPersistentStudyLeases(queueInput));
   const targets = loadGameStudyTargets(targetInput);
   const targetByTask = new Map(targets.runnable.map((target) => [target.taskId, target]));
   const seen = new Set();
@@ -148,12 +174,12 @@ export function prepareGameStudyQueue(queueInput = {}, targetInput = {}, { nowMs
     const recoverStale = staleReservation(task, target, nowMs);
     if (task.status === 'running' && !recoverStale) return task;
     const refreshed = taskForTarget(target);
-    if (!recoverStale) return { ...refreshed, evidence: unique([...(task.evidence || []), ...refreshed.evidence]) };
+    if (!recoverStale) return { ...refreshed, evidence: withStudyReservationEvidence([...(task.evidence || []), ...refreshed.evidence]) };
     return {
       ...refreshed,
       retries: Number(task.retries || 0),
       maxRetries: Number(task.maxRetries || refreshed.maxRetries),
-      evidence: unique([...(task.evidence || []), ...refreshed.evidence, 'game-study-stale-running-recovered'])
+      evidence: withStudyReservationEvidence([...(task.evidence || []), ...refreshed.evidence, 'game-study-stale-running-recovered'])
     };
   });
   for (const target of targets.runnable) if (!seen.has(target.taskId)) tasks.push(taskForTarget(target));
@@ -215,15 +241,24 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
   const queue = createVibeContinuousQueue({
     maxConcurrentTasks: prepared.queue.maxConcurrentTasks,
     tasks: prepared.queue.tasks.map((task) => {
-      if (selectedIds.has(task.id)) return { ...task, status: 'running', blocker: null, gameStudyReservationAt: reservationAt };
+      if (selectedIds.has(task.id)) return {
+        ...task,
+        status: 'running',
+        blocker: null,
+        evidence: withStudyReservationEvidence(task.evidence || [], reservationAt)
+      };
       if (runtimeDeferredIds.has(task.id)) return {
         ...task,
         status: 'blocked',
         blocker: 'roblox-dedicated-runner-offline-deferred',
-        gameStudyReservationAt: null,
-        evidence: unique([...(task.evidence || []), 'game-study-runtime-readiness:roblox-offline', 'production-studio-untouched'])
+        evidence: withStudyReservationEvidence([...(task.evidence || []), 'game-study-runtime-readiness:roblox-offline', 'production-studio-untouched'])
       };
-      if (isStudyTask(task) && task.status === 'queued') return { ...task, status: 'blocked', blocker: 'game-study-awaiting-next-cycle' };
+      if (isStudyTask(task) && task.status === 'queued') return {
+        ...task,
+        status: 'blocked',
+        blocker: 'game-study-awaiting-next-cycle',
+        evidence: withStudyReservationEvidence(task.evidence || [])
+      };
       return task;
     })
   });
@@ -276,7 +311,7 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
 }
 
 export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, knowledgeInput = {}, results = [] } = {}) {
-  let queue = createVibeContinuousQueue(queueInput);
+  let queue = createVibeContinuousQueue(queueSeedWithPersistentStudyLeases(queueInput));
   let memory = experienceInput || { records: [] };
   let knowledge = createGameStudyKnowledge(knowledgeInput);
   const applied = [];
@@ -306,14 +341,14 @@ export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, kno
     }
     const tasks = queue.tasks.map((task) => {
       if (task.id !== taskId) return task;
-      const evidence = unique([
+      const evidence = withStudyReservationEvidence(unique([
         ...(task.evidence || []), ...(raw?.evidence || []), raw?.study?.id ? `game-study:${raw.study.id}` : '',
         promoted ? 'game-study-promoted' : '', reinforced ? 'game-study-reinforced' : '', knowledgeUpdated ? 'game-study-knowledge-updated' : ''
-      ]);
-      if (outcome === 'PASS') return { ...task, status: 'done', blocker: null, lastOutcome: 'PASS', gameStudyReservationAt: null, evidence };
-      if (outcome === 'BLOCKED') return { ...task, status: 'blocked', blocker: clean(raw?.blocker) || reason || 'game-study-blocked', lastOutcome: 'BLOCKED', gameStudyReservationAt: null, evidence };
+      ]));
+      if (outcome === 'PASS') return { ...task, status: 'done', blocker: null, lastOutcome: 'PASS', evidence };
+      if (outcome === 'BLOCKED') return { ...task, status: 'blocked', blocker: clean(raw?.blocker) || reason || 'game-study-blocked', lastOutcome: 'BLOCKED', evidence };
       const retries = Number(task.retries || 0) + 1;
-      return { ...task, status: retries <= Number(task.maxRetries || 2) ? 'queued' : 'failed', retries, blocker: clean(raw?.blocker) || 'game-study-failed', lastOutcome: 'FAIL', gameStudyReservationAt: null, evidence };
+      return { ...task, status: retries <= Number(task.maxRetries || 2) ? 'queued' : 'failed', retries, blocker: clean(raw?.blocker) || 'game-study-failed', lastOutcome: 'FAIL', evidence };
     });
     queue = createVibeContinuousQueue({ maxConcurrentTasks: queue.maxConcurrentTasks, tasks });
     applied.push({ taskId, outcome: outcome || 'FAIL', promoted, reinforced, knowledgeUpdated, knowledgeReason, reason });
