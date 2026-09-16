@@ -45,6 +45,39 @@ test('five-lead preflight requires an exact immutable build before runtime',()=>
   assert.ok(workflow.includes("robloxFailureStage:'TARGET_PLATFORM_RUNTIME'"));
 });
 
+test('verified Vibe2 source handoff replaces stale Web and music eligibility at preflight without weakening exact build checks',()=>{
+  const item={
+    gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',webValidationPassedAt:null,musicValidationPassed:false,
+    robloxSourceBootstrapPassedAt:'2026-09-16T00:00:00Z',robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:`sha256:${'b'.repeat(64)}`,
+    robloxVibe2VerifiedHandoff:{
+      verified:true,gameId:'g',sourceRevision:'c'.repeat(40),candidateSha:'d'.repeat(40),sourceTreeSha:'e'.repeat(40),qaRunId:35070803443,
+    },
+  };
+  const result=inspectRobloxBuildPreflight({item,directive});
+  assert.equal(result.pass,true,result.blockers.join(','));
+  assert.equal(result.build.webValidationPassed,true);
+  assert.equal(result.build.musicValidationPassed,true);
+  assert.equal(result.build.nativeWebValidationPassed,false);
+  assert.equal(result.build.nativeMusicValidationPassed,false);
+  assert.equal(result.build.sourceEligibilityAuthority,'verified-vibe2-source-handoff');
+});
+
+test('malformed Vibe2 handoff cannot bypass missing Web or music eligibility at preflight',()=>{
+  const item={
+    gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',webValidationPassedAt:null,musicValidationPassed:false,
+    robloxSourceBootstrapPassedAt:'2026-09-16T00:00:00Z',robloxSourceCommit:'a'.repeat(40),robloxBuildOrPackagePassed:true,
+    robloxBuildSourceRevision:'a'.repeat(40),robloxBuildArtifactIdentity:`sha256:${'b'.repeat(64)}`,
+    robloxVibe2VerifiedHandoff:{
+      verified:true,gameId:'g',sourceRevision:'c'.repeat(40),candidateSha:'d'.repeat(40),sourceTreeSha:'e'.repeat(40),qaRunId:0,
+    },
+  };
+  const result=inspectRobloxBuildPreflight({item,directive});
+  assert.equal(result.pass,false);
+  assert.ok(result.blockers.includes('web-validation-missing'));
+  assert.ok(result.blockers.includes('music-validation-missing'));
+});
+
 test('runtime uses authenticated self-hosted Windows runner pool and the original package identity for actual Roblox Studio multiplayer sessions',()=>{
   assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '8'"));
   assert.ok(workflow.includes("ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'"));
