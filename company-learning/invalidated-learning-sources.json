@@ -144,6 +144,16 @@
       ],
       "invalidateIfTimestampMissing": true,
       "reason": "legacy generated homepage/platform candidate before flow reset"
+    },
+    {
+      "gameId": "unciv",
+      "label": "Unciv run 9 black-box sample",
+      "lane": "EXTERNAL_ANDROID_BLACK_BOX",
+      "sourceRevisions": [
+        "sha256:0879c796c4aad4591f5fdeca9ec8bfb5f0f82289866b51f31e7b19d86fe6b511"
+      ],
+      "invalidateIfTimestampMissing": false,
+      "reason": "visual review showed the Move a unit tutorial guide still covering the map, so GAME_ENTRY was not valid"
     }
   ]
 }
