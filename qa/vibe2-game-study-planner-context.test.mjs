@@ -1,11 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {
   buildGameStudyPlannerContext,
   enrichQueueWithGameStudyKnowledge,
   gameStudyPlannerGuidance
 } from '../tools/vibe2-game-study-planner-context.mjs';
+import { runQueueCommand } from '../tools/vibe2-queue-control.mjs';
 
 const knowledge = {
   version: 1,
@@ -31,6 +34,11 @@ const knowledge = {
 };
 
 const liveKnowledge = JSON.parse(fs.readFileSync('.vibe2/game-study-knowledge.json', 'utf8'));
+
+function writeJson(file, value) {
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
+}
 
 test('planner context uses only cross-game verified patterns relevant to the task goal', () => {
   const context = buildGameStudyPlannerContext({
@@ -159,4 +167,77 @@ test('central live knowledge reaches queued planner work end-to-end as advisory 
   assert.equal(result.queue.tasks[1].goal, queue.tasks[1].goal);
   assert.equal(result.queue.maxConcurrentTasks, 20);
   assert.equal(result.authorityExpanded, false);
+});
+
+test('production reserve-batch injects verified GAME STUDY knowledge before selecting work', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-game-study-reserve-'));
+  try {
+    const queueFile = path.join(root, 'queue.json');
+    const knowledgeFile = path.join(root, 'knowledge.json');
+    const controlFile = path.join(root, 'parallelism.json');
+    const outputFile = path.join(root, 'batch.json');
+    writeJson(queueFile, {
+      version: 5,
+      maxConcurrentTasks: 20,
+      tasks: [{
+        id: 'production-combat-task', gameId: 'new-game', target: 'web', department: 'development', type: 'implementation',
+        goal: 'improve combat attack UI feedback', responsibleFiles: ['web-games/new-game/game.js'], dependencies: [],
+        priority: 'normal', releaseState: 'development-confirmed', status: 'queued', retries: 0, maxRetries: 2,
+        ownerDirective: false, requiresOwnerDecision: false, protectedChange: false, paidResourceRequired: false,
+        sourceRoot: 'web-games/new-game', speculativeEligible: false, estimatedRisk: 'low', evidence: []
+      }]
+    });
+    writeJson(knowledgeFile, knowledge);
+    writeJson(controlFile, { version: 1, currentMax: 20 });
+
+    const result = runQueueCommand({
+      command: 'reserve-batch', queue: queueFile, knowledge: knowledgeFile, control: controlFile, output: outputFile, max: '20'
+    });
+    assert.equal(result.gameStudyPlanner.changed, true);
+    assert.equal(result.gameStudyPlanner.enrichedCount, 1);
+    assert.equal(result.gameStudyPlanner.authorityExpanded, false);
+    assert.equal(result.tasks.length, 1);
+    assert.match(result.tasks[0].goal, /GAME STUDY KNOWLEDGE - verified advisory context only/);
+    assert.ok(result.tasks[0].evidence.includes('game-study-planner-context:v1'));
+
+    const persisted = JSON.parse(fs.readFileSync(queueFile, 'utf8'));
+    assert.equal(persisted.tasks[0].status, 'running');
+    assert.match(persisted.tasks[0].goal, /GAME STUDY KNOWLEDGE - verified advisory context only/);
+    assert.ok(persisted.tasks[0].evidence.includes('game-study-planner-context:v1'));
+
+    const batch = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
+    assert.equal(batch.scheduler.gameStudyPlannerEnrichedCount, 1);
+    assert.equal(batch.scheduler.gameStudyPlannerAuthorityExpanded, false);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test('production reservation keeps owner directives untouched by GAME STUDY advisory knowledge', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-game-study-owner-'));
+  try {
+    const queueFile = path.join(root, 'queue.json');
+    const knowledgeFile = path.join(root, 'knowledge.json');
+    const controlFile = path.join(root, 'parallelism.json');
+    writeJson(queueFile, {
+      version: 5,
+      maxConcurrentTasks: 20,
+      tasks: [{
+        id: 'owner-task', gameId: 'new-game', target: 'web', department: 'development', type: 'implementation',
+        goal: 'owner combat request', responsibleFiles: ['web-games/new-game/game.js'], dependencies: [],
+        priority: 'owner-immediate', releaseState: 'development-confirmed', status: 'queued', retries: 0, maxRetries: 2,
+        ownerDirective: true, requiresOwnerDecision: false, protectedChange: false, paidResourceRequired: false,
+        sourceRoot: 'web-games/new-game', speculativeEligible: false, estimatedRisk: 'low', evidence: []
+      }]
+    });
+    writeJson(knowledgeFile, knowledge);
+    writeJson(controlFile, { version: 1, currentMax: 20 });
+
+    const result = runQueueCommand({ command: 'reserve', queue: queueFile, knowledge: knowledgeFile, control: controlFile, max: '20' });
+    assert.equal(result.gameStudyPlanner.enrichedCount, 0);
+    assert.equal(result.task.goal, 'owner combat request');
+    assert.equal(result.task.evidence.includes('game-study-planner-context:v1'), false);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });
