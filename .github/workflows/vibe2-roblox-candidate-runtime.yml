@@ -6,6 +6,7 @@ on:
       - 'vibe2/candidate/OWNER-ROBLOX-OBBY-*'
   pull_request:
     branches:
+      - main
       - vibe2-unreal-core
     paths:
       - 'tools/vibe2-roblox-skyline-runtime-smoke.mjs'
@@ -23,10 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - name: Checkout Vibe2 control verifier
-        uses: actions/checkout@v4
-        with:
-          ref: vibe2-unreal-core
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
