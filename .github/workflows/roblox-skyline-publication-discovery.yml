@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   discover:
@@ -20,6 +21,29 @@ jobs:
           ref: main
           fetch-depth: 1
           fetch-tags: false
+
+      - name: Resolve immutable Skyline package
+        id: package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: seed-roblox-obby-party-minigam-tower-of-hell
+          ARTIFACT_RUN_ID: '35110903876'
+          EXPECTED_ARTIFACT: sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $name = "development-roblox-package-$env:GAME_ID"
+          $root = Join-Path $env:RUNNER_TEMP 'skyline-publication-discovery-package'
+          Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $root | Out-Null
+          gh run download $env:ARTIFACT_RUN_ID --repo $env:GITHUB_REPOSITORY -n $name -D $root
+          $places = @(Get-ChildItem -Path $root -Recurse -File | Where-Object { $_.Extension -in @('.rbxl','.rbxlx') })
+          if ($places.Count -ne 1) { throw "Expected exactly one Roblox place package; found $($places.Count)" }
+          $place = $places[0]
+          $hash = (Get-FileHash -Algorithm SHA256 $place.FullName).Hash.ToLowerInvariant()
+          if ("sha256:$hash" -ne $env:EXPECTED_ARTIFACT.ToLowerInvariant()) { throw 'Immutable Skyline package SHA256 mismatch' }
+          "place_file=$($place.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_DISCOVERY_IMMUTABLE_ARTIFACT_BIND=PASS'
 
       - name: Resolve authenticated local Roblox Studio
         id: studio
@@ -46,6 +70,7 @@ jobs:
         id: owner
         env:
           STUDIO_EXE: ${{ steps.studio.outputs.studio_exe }}
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -65,7 +90,7 @@ jobs:
           print("ROBLOX_STUDIO_USER_ID=" .. tostring(value))
           '@ | Set-Content -Encoding utf8 $script
           Remove-Item -Force $out,$stdout,$stderr -ErrorAction SilentlyContinue
-          $argLine = "--task RunScript --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
+          $argLine = "--task RunScript --localPlaceFile `"$env:PLACE_FILE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
           $p = Start-Process -FilePath $env:STUDIO_EXE -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
           $processHandle = $p.Handle
           if (-not $p.WaitForExit(120000)) {
