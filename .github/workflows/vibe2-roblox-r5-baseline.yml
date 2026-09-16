@@ -1,0 +1,196 @@
+name: Vibe2 Roblox R5 Baseline
+
+on:
+  pull_request:
+    branches:
+      - vibe2-unreal-core
+    paths:
+      - 'tools/vibe2-roblox-skyline-input-playtest.mjs'
+      - 'tools/vibe2-roblox-autonomous-balance-worker.mjs'
+      - 'tools/vibe2-roblox-r5-compare.mjs'
+      - 'tools/vibe2-development-execution-policy.mjs'
+      - 'tools/vibe2-implementation-worker.mjs'
+      - 'qa/vibe2-development-execution-policy.test.mjs'
+      - 'qa/vibe2-roblox-autonomous-balance-worker.test.mjs'
+      - 'qa/vibe2-roblox-r5-compare.test.mjs'
+      - '.github/workflows/vibe2-roblox-r5-baseline.yml'
+      - '.github/workflows/vibe2-roblox-candidate-runtime.yml'
+  push:
+    branches:
+      - vibe2-unreal-core
+    paths:
+      - 'tools/vibe2-roblox-skyline-input-playtest.mjs'
+      - 'tools/vibe2-roblox-autonomous-balance-worker.mjs'
+      - 'tools/vibe2-roblox-r5-compare.mjs'
+      - 'tools/vibe2-development-execution-policy.mjs'
+      - 'tools/vibe2-implementation-worker.mjs'
+      - 'qa/vibe2-roblox-r5-compare.test.mjs'
+      - '.github/workflows/vibe2-roblox-r5-baseline.yml'
+      - '.github/workflows/vibe2-roblox-candidate-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: vibe2-roblox-r5-baseline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify no-AI R5 capability contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-roblox-skyline-input-playtest.mjs
+          node --check tools/vibe2-roblox-autonomous-balance-worker.mjs
+          node --check tools/vibe2-roblox-r5-compare.mjs
+          node --check tools/vibe2-development-execution-policy.mjs
+          node --check tools/vibe2-implementation-worker.mjs
+          node --test qa/vibe2-development-execution-policy.test.mjs qa/vibe2-roblox-autonomous-balance-worker.test.mjs qa/vibe2-roblox-r5-compare.test.mjs
+          node <<'NODE'
+          const fs=require('fs');
+          const s=fs.readFileSync('tools/vibe2-roblox-skyline-input-playtest.mjs','utf8');
+          for(const token of ['CreateVirtualInput()','SendKey','physical-stage-%02d','stalledMs','inputBased=true'])if(!s.includes(token))throw new Error(`missing R5 physical-input contract: ${token}`);
+          if(/root\.CFrame\s*=/.test(s))throw new Error('R5 physical traversal must not teleport HumanoidRootPart');
+          const c=fs.readFileSync('tools/vibe2-roblox-r5-compare.mjs','utf8');
+          for(const token of ['baseline/main revision mismatch','failed-target-stage-now-passes','earlier-stage-regression'])if(!c.includes(token))throw new Error(`missing R5 comparison contract: ${token}`);
+          console.log('VIBE2_ROBLOX_R5_INPUT_CONTRACT=PASS');
+          console.log('VIBE2_ROBLOX_R5_COMPARE_CONTRACT=PASS');
+          NODE
+
+  baseline:
+    needs: contract
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 12
+    steps:
+      - name: Checkout R5 control capability
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify authenticated Studio runner
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio runner must be Windows' }
+          $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
+          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
+          node -e "import('./tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p);require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n')})"
+          if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio discovery failed' }
+          Write-Host 'VIBE2_ROBLOX_R5_RUNNER=roblox-studio-local'
+
+      - name: Fetch current main Skyline source only
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $projectDir = Join-Path $env:RUNNER_TEMP 'vibe2-r5-main-source'
+          $projectZip = Join-Path $env:RUNNER_TEMP 'vibe2-r5-main-source.zip'
+          if (Test-Path $projectDir) { Remove-Item -Recurse -Force $projectDir }
+          if (Test-Path $projectZip) { Remove-Item -Force $projectZip }
+          git fetch origin main
+          if ($LASTEXITCODE -ne 0) { throw 'main fetch failed' }
+          $baseMain = (git rev-parse origin/main).Trim()
+          if (-not $baseMain) { throw 'main revision resolution failed' }
+          git archive --format=zip --output="$projectZip" origin/main roblox-games/seed-roblox-obby-party-minigam-tower-of-hell
+          if ($LASTEXITCODE -ne 0) { throw 'Skyline main archive failed' }
+          Expand-Archive -Path $projectZip -DestinationPath $projectDir -Force
+          "VIBE2_R5_PROJECT_ROOT=$projectDir\roblox-games\seed-roblox-obby-party-minigam-tower-of-hell" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "VIBE2_R5_BASE_MAIN=$baseMain" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "VIBE2_R5_BASE_MAIN=$baseMain"
+
+      - name: Run functional regression baseline in real Studio
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node tools/vibe2-roblox-skyline-runtime-smoke.mjs `
+            "--project-root=$env:VIBE2_R5_PROJECT_ROOT" `
+            --output="$env:RUNNER_TEMP/vibe2-r5-functional.json" `
+            --timeout=210000
+          if ($LASTEXITCODE -ne 0) { throw 'R5 functional baseline failed' }
+          Write-Host 'VIBE2_ROBLOX_R5_FUNCTIONAL_BASELINE=PASS'
+
+      - name: Capture physical-input baseline telemetry in real Studio
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $baselineFile = "$env:RUNNER_TEMP/vibe2-r5-baseline.json"
+          node tools/vibe2-roblox-skyline-input-playtest.mjs `
+            "--project-root=$env:VIBE2_R5_PROJECT_ROOT" `
+            --output="$baselineFile" `
+            --timeout=300000 `
+            --allow-incomplete=true
+          if ($LASTEXITCODE -ne 0) { throw 'R5 physical input telemetry capture failed' }
+          $evidence = Get-Content $baselineFile -Raw | ConvertFrom-Json
+          if ($evidence.runtimeVerified -ne $true -or $evidence.inputBased -ne $true -or $evidence.capabilities.virtualInput -ne $true) { throw 'R5 baseline evidence is not trusted physical input' }
+          if ([int]$evidence.metrics.inputActions -lt 2 -or [int]$evidence.metrics.jumpCount -lt 1) { throw 'R5 baseline lacks dispatched movement input' }
+          if (-not $env:VIBE2_R5_BASE_MAIN) { throw 'R5 baseline main revision missing' }
+          $evidence | Add-Member -NotePropertyName baseMainSha -NotePropertyValue $env:VIBE2_R5_BASE_MAIN -Force
+          $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+          [System.IO.File]::WriteAllText($baselineFile, (($evidence | ConvertTo-Json -Depth 20) + "`n"), $utf8NoBom)
+          Write-Host "VIBE2_ROBLOX_R5_BASELINE_MAIN=$($evidence.baseMainSha)"
+          Write-Host "VIBE2_ROBLOX_R5_BASELINE_STAGES=$($evidence.stages.Count)"
+          Write-Host "VIBE2_ROBLOX_R5_BASELINE_DEATHS=$($evidence.metrics.deaths)"
+          Write-Host "VIBE2_ROBLOX_R5_BASELINE_RETRIES=$($evidence.metrics.retries)"
+
+      - name: Persist verified baseline machine evidence
+        if: github.event_name == 'push'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          git config user.name 'jaewoon-vibe2-r5-evidence'
+          git config user.email 'vibe2-r5@users.noreply.github.com'
+          git fetch origin vibe2-unreal-core
+          git checkout -B vibe2-unreal-core origin/vibe2-unreal-core
+          New-Item -ItemType Directory -Force '.vibe2/runtime-evidence' | Out-Null
+          Copy-Item "$env:RUNNER_TEMP/vibe2-r5-baseline.json" '.vibe2/runtime-evidence/skyline-r5-baseline.json' -Force
+          git add .vibe2/runtime-evidence/skyline-r5-baseline.json
+          if (git diff --cached --quiet) { Write-Host 'VIBE2_ROBLOX_R5_EVIDENCE_WRITE=NO'; exit 0 }
+          git commit -m 'vibe2: record verified Skyline R5 input baseline'
+          $pushed = $false
+          for ($attempt = 1; $attempt -le 3; $attempt++) {
+            git pull --rebase origin vibe2-unreal-core
+            if ($LASTEXITCODE -eq 0) {
+              git push origin HEAD:vibe2-unreal-core
+              if ($LASTEXITCODE -eq 0) { $pushed = $true; break }
+            }
+            git rebase --abort 2>$null
+            git fetch origin vibe2-unreal-core
+            Start-Sleep -Seconds ($attempt * 2)
+          }
+          if (-not $pushed) { throw 'failed to persist R5 baseline evidence' }
+          Write-Host 'VIBE2_ROBLOX_R5_EVIDENCE_WRITE=YES'
+
+      - name: Cleanup Vibe2 Studio sessions
+        if: always()
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $owned = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object {
+            $commandLine = [string]$_.CommandLine
+            ($commandLine -match 'vibe2-roblox-skyline-') -or ($commandLine -match 'vibe2-roblox-skyline-input-') -or (($commandLine -match '(?i)--task\s+RunScript') -and ($commandLine -match '(?i)--quitAfterExecution'))
+          })
+          foreach ($process in $owned) { Stop-Process -Id ([int]$process.ProcessId) -Force -ErrorAction SilentlyContinue }
+          if ($owned.Count -gt 0) { Start-Sleep -Milliseconds 750 }
+          Write-Host "VIBE2_ROBLOX_R5_STUDIO_REAPED=$($owned.Count)"
+
+      - name: Upload R5 baseline evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-roblox-r5-baseline-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/vibe2-r5-functional.json
+            ${{ runner.temp }}/vibe2-r5-baseline.json
+          if-no-files-found: warn
+          retention-days: 7

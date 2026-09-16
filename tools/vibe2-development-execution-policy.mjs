@@ -16,21 +16,30 @@ function explicitRecipe(task={}){
 function isPath(file,suffix){
   return file===suffix||file.endsWith(`/${suffix}`);
 }
-function robloxObbyWorldCoreRecipe(task={},target=''){
-  if(target!=='roblox'||task.ownerDirective!==true)return'';
+function supportedRobloxObbyFiles(task={}){
   const files=unique(task.responsibleFiles||[]);
   const hasServer=files.some(file=>isPath(file,'server/Game.server.luau'));
   const onlySupported=files.length>=1&&files.every(file=>isPath(file,'server/Game.server.luau')||isPath(file,'client/Game.client.luau'));
-  if(!hasServer||!onlySupported)return'';
+  return hasServer&&onlySupported;
+}
+function robloxObbyWorldCoreRecipe(task={},target=''){
+  if(target!=='roblox'||task.ownerDirective!==true||!supportedRobloxObbyFiles(task))return'';
   const rows=evidence(task);
   const rebuild=clean(task.rebuildMode).toUpperCase()==='FULL_REBUILD'||task.fullRebuild===true||rows.includes('owner-directive:full-roblox-game-rebuild');
   const worldCore=rows.includes('rebuild-phase:world-core')||/WORLD[- _]?CORE|checkpoint|obby|obstacle/i.test(clean(task.goal));
   if(!rebuild||!worldCore)return'';
   return'roblox-obby-world-core-v1';
 }
+function robloxObbyAutonomousBalanceRecipe(task={},target=''){
+  if(target!=='roblox'||task.ownerDirective!==true||!supportedRobloxObbyFiles(task))return'';
+  const rows=evidence(task);
+  const autonomousBalance=rows.includes('development-phase:autonomous-playtest-balance')||/AUTONOMOUS[_ -]?PLAYTEST[_ -]?BALANCE/i.test(clean(task.goal));
+  if(!autonomousBalance)return'';
+  return'roblox-obby-autonomous-balance-v1';
+}
 export function resolveDeterministicRecipe({task={},target=''}={}){
   const normalized=clean(target||task.target).toLowerCase();
-  return explicitRecipe(task)||robloxObbyWorldCoreRecipe(task,normalized)||null;
+  return explicitRecipe(task)||robloxObbyAutonomousBalanceRecipe(task,normalized)||robloxObbyWorldCoreRecipe(task,normalized)||null;
 }
 
 export function resolveVibeDevelopmentExecution({task={},target='',route='text-source-worker'}={}){
