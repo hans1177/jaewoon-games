@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {hasVerifiedVibe2SourceHandoff} from './company-development-roblox-source-reconcile.mjs';
 
 const ROLES=Object.freeze(['planning','graphics','development','qa','balance']);
 const SHA256=/^sha256:[0-9a-f]{64}$/i;
@@ -19,10 +20,15 @@ function configuredLeads(directive={}){
 export function inspectRobloxBuildPreflight({item={},directive={}}={}){
   const blockers=[];
   const {leads,distinct,pool}=configuredLeads(directive);
+  const verifiedVibe2Handoff=hasVerifiedVibe2SourceHandoff(item);
+  const nativeWebValidationPassed=Boolean(item.webValidationPassedAt);
+  const nativeMusicValidationPassed=item.musicValidationPassed===true;
+  const webValidationPassed=nativeWebValidationPassed||verifiedVibe2Handoff;
+  const musicValidationPassed=nativeMusicValidationPassed||verifiedVibe2Handoff;
   if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')blockers.push('development-confirmed-required');
   if(upper(item.selectedPlatform||item.targetPlatform)!=='ROBLOX')blockers.push('roblox-platform-required');
-  if(!item.webValidationPassedAt)blockers.push('web-validation-missing');
-  if(item.musicValidationPassed!==true)blockers.push('music-validation-missing');
+  if(!webValidationPassed)blockers.push('web-validation-missing');
+  if(!musicValidationPassed)blockers.push('music-validation-missing');
   if(!item.robloxSourceBootstrapPassedAt)blockers.push('source-validation-missing');
   if(item.robloxBuildOrPackagePassed!==true)blockers.push('build-package-not-passed');
   if(!COMMIT.test(clean(item.robloxSourceCommit)))blockers.push('source-revision-invalid');
@@ -41,8 +47,11 @@ export function inspectRobloxBuildPreflight({item={},directive={}}={}){
     build:Object.freeze({
       sourceRevision:clean(item.robloxSourceCommit)||null,
       artifactIdentity:clean(item.robloxBuildArtifactIdentity)||null,
-      webValidationPassed:Boolean(item.webValidationPassedAt),
-      musicValidationPassed:item.musicValidationPassed===true,
+      webValidationPassed,
+      musicValidationPassed,
+      nativeWebValidationPassed,
+      nativeMusicValidationPassed,
+      sourceEligibilityAuthority:verifiedVibe2Handoff?'verified-vibe2-source-handoff':'web-music-validation',
       sourceValidationPassed:Boolean(item.robloxSourceBootstrapPassedAt),
       buildOrPackagePassed:item.robloxBuildOrPackagePassed===true,
     }),
