@@ -8,7 +8,7 @@
                    "physical-round-1-finished",
                    "round-2-reset"
                ],
-    "nonce":  "57f47d9d8fe951a0a9346587",
+    "nonce":  "8c30319aadc031a0a94ee30b",
     "final":  {
                   "finished":  false,
                   "score":  100,
@@ -16,30 +16,30 @@
                   "progress":  8,
                   "round":  1,
                   "restarting":  false,
-                  "roundTime":  27.7
+                  "roundTime":  28.2
               },
     "stages":  [
                    {
                        "deaths":  0,
                        "retries":  0,
-                       "elapsedMs":  2603,
+                       "elapsedMs":  2581,
                        "inputActionsStart":  0,
-                       "inputActions":  22,
+                       "inputActions":  20,
                        "success":  true,
                        "jumpCountStart":  0,
-                       "jumpCount":  7,
+                       "jumpCount":  6,
                        "stage":  1,
                        "stalledMs":  0
                    },
                    {
                        "deaths":  3,
                        "retries":  3,
-                       "elapsedMs":  17223,
+                       "elapsedMs":  17682,
                        "failedTarget":  "Step02C:dead",
-                       "inputActionsStart":  22,
+                       "inputActionsStart":  20,
                        "inputActions":  54,
                        "success":  false,
-                       "jumpCountStart":  7,
+                       "jumpCountStart":  6,
                        "jumpCount":  18,
                        "stage":  2,
                        "stalledMs":  0
@@ -47,9 +47,9 @@
                ],
     "metrics":  {
                     "deaths":  3,
-                    "inputActions":  76,
-                    "durationMs":  33599,
-                    "jumpCount":  25,
+                    "inputActions":  74,
+                    "durationMs":  33296,
+                    "jumpCount":  24,
                     "retries":  3,
                     "stalledMs":  0
                 },
@@ -70,12 +70,12 @@
                             "value":  {
                                           "deaths":  0,
                                           "retries":  0,
-                                          "elapsedMs":  2603,
+                                          "elapsedMs":  2581,
                                           "inputActionsStart":  0,
-                                          "inputActions":  22,
+                                          "inputActions":  20,
                                           "success":  true,
                                           "jumpCountStart":  0,
-                                          "jumpCount":  7,
+                                          "jumpCount":  6,
                                           "stage":  1,
                                           "stalledMs":  0
                                       },
@@ -86,12 +86,12 @@
                             "value":  {
                                           "deaths":  3,
                                           "retries":  3,
-                                          "elapsedMs":  17223,
+                                          "elapsedMs":  17682,
                                           "failedTarget":  "Step02C:dead",
-                                          "inputActionsStart":  22,
+                                          "inputActionsStart":  20,
                                           "inputActions":  54,
                                           "success":  false,
-                                          "jumpCountStart":  7,
+                                          "jumpCountStart":  6,
                                           "jumpCount":  18,
                                           "stage":  2,
                                           "stalledMs":  0
@@ -102,7 +102,7 @@
                         {
                             "value":  {
                                           "position":  1,
-                                          "roundTime":  19.3
+                                          "roundTime":  20.4
                                       },
                             "name":  "physical-round-1-finished",
                             "pass":  false
@@ -121,5 +121,5 @@
     "inputProfile":  "keyboard-default-movement",
     "authority":  "vibe2-roblox-skyline-input-playtest",
     "inputBased":  true,
-    "baseMainSha":  "00a31f1d8214ecef0c209f5abc801c36a82709c6"
+    "baseMainSha":  "14be6929c4f7d7af4d122d833b50cd3cf2048dcb"
 }
