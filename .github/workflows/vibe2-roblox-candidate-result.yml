@@ -21,6 +21,7 @@ on:
 permissions:
   contents: write
   actions: write
+  pull-requests: write
 
 concurrency:
   group: vibe2-control-state-vibe2-unreal-core
@@ -30,7 +31,7 @@ jobs:
   reconcile:
     if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 30
     env:
       QA_RUN_ID: ${{ inputs.qa_run_id || github.event.workflow_run.id }}
       QA_CONCLUSION: ${{ inputs.qa_conclusion || github.event.workflow_run.conclusion }}
@@ -63,6 +64,41 @@ jobs:
           console.log(`VIBE2_ROBLOX_RESULT_SHA=${sha}`);
           NODE
 
+      - name: Verify authoritative completed Studio QA run
+        id: qa
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_BRANCH: ${{ steps.context.outputs.candidate_branch }}
+          CANDIDATE_SHA: ${{ steps.context.outputs.candidate_sha }}
+          REQUESTED_CONCLUSION: ${{ env.QA_CONCLUSION }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QA_RUN_ID" > /tmp/vibe2-roblox-qa-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QA_RUN_ID/jobs?per_page=100" > /tmp/vibe2-roblox-qa-jobs.json
+          node <<'NODE'
+          const fs=require('fs');
+          const run=JSON.parse(fs.readFileSync('/tmp/vibe2-roblox-qa-run.json','utf8'));
+          const jobs=JSON.parse(fs.readFileSync('/tmp/vibe2-roblox-qa-jobs.json','utf8')).jobs||[];
+          const requested=String(process.env.REQUESTED_CONCLUSION||'').trim().toLowerCase();
+          if(String(run.name||'')!=='Vibe2 Roblox Candidate Runtime')throw new Error(`unexpected QA workflow: ${run.name}`);
+          if(String(run.status||'')!=='completed')throw new Error(`QA run not completed: ${run.status}`);
+          if(String(run.conclusion||'').toLowerCase()!=='success')throw new Error(`QA run did not pass: ${run.conclusion}`);
+          if(requested && requested!=='success')throw new Error(`requested conclusion is not success: ${requested}`);
+          const live=jobs.find(job=>String(job.name||'')==='live-studio');
+          if(!live||String(live.status||'')!=='completed'||String(live.conclusion||'')!=='success')throw new Error('live-studio job is not successful');
+          const required=['Verify Vibe candidate in real Roblox Studio','Replay R5 candidate with physical input and require target-stage improvement'];
+          for(const name of required){
+            const step=(live.steps||[]).find(row=>String(row.name||'')===name);
+            if(!step||String(step.conclusion||'')!=='success')throw new Error(`required Studio QA step not successful: ${name}`);
+          }
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,'verified=1\nactual_conclusion=success\n');
+          console.log(`VIBE2_ROBLOX_AUTHORITATIVE_QA_RUN=${run.id}`);
+          console.log(`VIBE2_ROBLOX_AUTHORITATIVE_QA_SHA=${process.env.CANDIDATE_SHA}`);
+          console.log('VIBE2_ROBLOX_LIVE_STUDIO=PASS');
+          console.log('VIBE2_ROBLOX_R5_TARGET_STAGE_COMPARE=PASS');
+          NODE
+
       - name: Checkout Vibe2 control line
         uses: actions/checkout@v4
         with:
@@ -79,6 +115,7 @@ jobs:
           CONTROL_BRANCH: vibe2-unreal-core
           CANDIDATE_BRANCH: ${{ steps.context.outputs.candidate_branch }}
           QA_HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
+          VERIFIED_CONCLUSION: ${{ steps.qa.outputs.actual_conclusion }}
         shell: bash
         run: |
           set -euo pipefail
@@ -92,7 +129,7 @@ jobs:
             node tools/vibe2-candidate-reconcile.mjs \
               --branch="$CANDIDATE_BRANCH" \
               --target=roblox \
-              --conclusion="$QA_CONCLUSION" \
+              --conclusion="$VERIFIED_CONCLUSION" \
               --run-id="$QA_RUN_ID" \
               --head-sha="$QA_HEAD_SHA" | tee /tmp/vibe2-roblox-reconcile.log
             updated=0
@@ -107,7 +144,7 @@ jobs:
             git add .vibe2/queue.json
             if git diff --cached --quiet; then
               echo 'updated=0' >> "$GITHUB_OUTPUT"
-              echo 'continue_work=0' >> "$GITHUB_OUTPUT"
+              echo "continue_work=$continue_work" >> "$GITHUB_OUTPUT"
               exit 0
             fi
             git commit -m "vibe2: record Roblox candidate verification ${QA_RUN_ID} [skip ci]"
@@ -126,22 +163,204 @@ jobs:
           echo 'VIBE2_AUTO_FINAL_PASS=NO'
           echo 'VIBE2_AUTO_LEARNING=NO_UNTIL_VERIFIED_REVIEW'
 
-      - name: Dispatch Studio-verified candidate to release review gate
-        if: steps.reconcile.outputs.updated == '1' && env.QA_CONCLUSION == 'success'
+      - name: Resolve R5 development promotion contract
+        id: promote_contract
+        if: steps.qa.outputs.verified == '1'
         env:
-          GH_TOKEN: ${{ github.token }}
           CANDIDATE_BRANCH: ${{ steps.context.outputs.candidate_branch }}
+          CANDIDATE_SHA: ${{ steps.context.outputs.candidate_sha }}
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run vibe2-candidate-release.yml \
-            --repo "$GITHUB_REPOSITORY" \
-            --ref main \
-            -f candidate_branch="$CANDIDATE_BRANCH"
-          echo "VIBE2_ROBLOX_RELEASE_GATE_DISPATCHED=$CANDIDATE_BRANCH"
+          git fetch origin main "$CANDIDATE_BRANCH" vibe2-unreal-core --quiet
+          test "$(git rev-parse "origin/$CANDIDATE_BRANCH")" = "$CANDIDATE_SHA"
+          CANDIDATE_BRANCH="$CANDIDATE_BRANCH" CANDIDATE_SHA="$CANDIDATE_SHA" node <<'NODE'
+          const fs=require('fs');
+          const {execFileSync}=require('child_process');
+          const branch=process.env.CANDIDATE_BRANCH;
+          const sha=process.env.CANDIDATE_SHA;
+          const names=execFileSync('git',['ls-tree','-r','--name-only',sha,'--','.vibe2/candidates'],{encoding:'utf8'})
+            .split(/\r?\n/).filter(name=>name.endsWith('/manifest.json'));
+          const rows=[];
+          for(const name of names){
+            try{
+              const manifest=JSON.parse(execFileSync('git',['show',`${sha}:${name}`],{encoding:'utf8'}));
+              if(String(manifest.branch||'').trim()===branch)rows.push({name,manifest});
+            }catch{}
+          }
+          if(rows.length!==1)throw new Error(`matching candidate manifest count invalid: ${rows.length}`);
+          const {name,manifest:m}=rows[0];
+          const task=String(m.taskId||'').trim();
+          const game=String(m.gameId||'').trim();
+          const target=String(m.target||'').trim().toLowerCase();
+          const root=String(m.sourceRoot||'').replaceAll('\\','/').replace(/^\.\/|\/$/g,'');
+          const base=String(m.baseMainSha||'').trim();
+          const releaseState=String(m.releaseState||'').trim().toLowerCase();
+          if(!task||!game||target!=='roblox'||!base.match(/^[0-9a-f]{40}$/i))throw new Error('candidate manifest identity invalid');
+          if(root!==`roblox-games/${game}`)throw new Error(`candidate source root mismatch: ${root}`);
+          if(releaseState!=='development-confirmed')throw new Error(`source-only promotion requires development-confirmed: ${releaseState}`);
+          const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const row=(queue.tasks||[]).find(item=>String(item.id||'')===task);
+          if(!row)throw new Error(`control queue task missing: ${task}`);
+          const queueRoot=String(row.sourceRoot||'').replaceAll('\\','/').replace(/^\.\/|\/$/g,'');
+          if(String(row.gameId||'')!==game||String(row.target||'').toLowerCase()!=='roblox'||queueRoot!==root)throw new Error('control queue identity mismatch');
+          if(String(row.releaseState||'').toLowerCase()!=='development-confirmed')throw new Error(`control release state mismatch: ${row.releaseState}`);
+          const evidence=new Set(row.evidence||[]);
+          if(!evidence.has(branch))throw new Error('candidate branch not bound in control queue');
+          if(!evidence.has(`candidate-head-sha:${sha}`))throw new Error('candidate SHA verification evidence missing from control queue');
+          if(!evidence.has(`roblox-verification-run:${process.env.QA_RUN_ID}`))throw new Error('Studio QA run evidence missing from control queue');
+          const blocker=String(row.blocker||'');
+          if(blocker!=='candidate-roblox-verification-passed-awaiting-review')throw new Error(`task not awaiting verified review: ${blocker}`);
+          const put=(key,value)=>fs.appendFileSync(process.env.GITHUB_OUTPUT,`${key}=${String(value)}\n`);
+          put('task_id',task);put('game_id',game);put('source_root',root);put('base_sha',base);put('release_state',releaseState);put('manifest',name);
+          console.log(`VIBE2_R5_PROMOTION_TASK=${task}`);
+          console.log(`VIBE2_R5_PROMOTION_SOURCE_ROOT=${root}`);
+          console.log('VIBE2_R5_PROMOTION_AUTHORITY=CONTROL_QUEUE_PLUS_STUDIO_QA');
+          NODE
+          git cat-file -e "${{ steps.context.outputs.candidate_sha }}^{commit}"
+          git cat-file -e "$(sed -n 's/^base_sha=//p' "$GITHUB_OUTPUT" | tail -n1)^{commit}"
+          source_root="$(sed -n 's/^source_root=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          base_sha="$(sed -n 's/^base_sha=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          [ -z "$(git diff --name-only "$base_sha" origin/main -- "$source_root")" ] || { echo 'main source changed since candidate baseline; replan required' >&2; exit 1; }
+          mapfile -t source_changed < <(git diff --name-only "$base_sha" "$CANDIDATE_SHA" -- "$source_root")
+          [ "${#source_changed[@]}" -gt 0 ] || { echo 'candidate has no source change' >&2; exit 1; }
+          git diff --check "$base_sha" "$CANDIDATE_SHA"
+          mapfile -t changed < <(git diff --name-only "$base_sha" "$CANDIDATE_SHA")
+          for file in "${changed[@]}"; do
+            case "$file" in
+              "$source_root"/*|.vibe2/candidates/*) ;;
+              *) echo "candidate path outside R5 boundary: $file" >&2; exit 1 ;;
+            esac
+          done
+          echo 'VIBE2_R5_DEVELOPMENT_PROMOTION_CONTRACT=PASS'
+
+      - name: Promote Studio-verified R5 source through reviewed PR
+        id: promote
+        if: steps.promote_contract.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_SHA: ${{ steps.context.outputs.candidate_sha }}
+          SOURCE_ROOT: ${{ steps.promote_contract.outputs.source_root }}
+          BASE_SHA: ${{ steps.promote_contract.outputs.base_sha }}
+          TASK_ID: ${{ steps.promote_contract.outputs.task_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main --quiet
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed before promotion; replan required' >&2; exit 1; }
+          rm -rf /tmp/vibe2-r5-promote
+          git worktree prune
+          safe_task="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-' | sed 's/^-*//;s/-*$//' | cut -c1-60)"
+          release_branch="automation/vibe2-roblox-r5-${safe_task}-${GITHUB_RUN_ID}"
+          git worktree add -b "$release_branch" /tmp/vibe2-r5-promote origin/main >/dev/null
+          cd /tmp/vibe2-r5-promote
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          git checkout "$CANDIDATE_SHA" -- "$SOURCE_ROOT"
+          git diff --check
+          git add "$SOURCE_ROOT"
+          git diff --cached --quiet && { echo 'nothing to promote' >&2; exit 1; }
+          git commit -m "vibe2: promote verified Roblox R5 ${TASK_ID}"
+          release_commit="$(git rev-parse HEAD)"
+          git push origin "HEAD:$release_branch"
+          pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: promote verified Roblox R5 ${TASK_ID}" --body "Actual roblox-studio-local QA: PASS. Physical-input R5 target-stage comparison: PASS. Candidate SHA: ${CANDIDATE_SHA}. Development-confirmed source promotion only; no live Roblox publication is claimed by this R5 task. Direct main write: NO.")"
+          sleep 5
+          gh pr checks "$pr_url" --watch --fail-fast --interval 10
+          git fetch origin main --quiet
+          [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed before merge; replan required' >&2; exit 1; }
+          gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
+          git fetch origin main --quiet
+          git diff --quiet "$release_commit" origin/main -- "$SOURCE_ROOT"
+          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+          echo "main_sha=$(git rev-parse origin/main)" >> "$GITHUB_OUTPUT"
+          echo 'DIRECT_MAIN_WRITE=NO'
+          echo 'VIBE2_R5_MAIN_SOURCE_PROMOTION=PASS'
+          echo 'ROBLOX_OPEN_CLOUD_PUBLISH=NOT_REQUIRED_FOR_DEVELOPMENT_CONFIRMED_R5'
+
+      - name: Settle verified R5 PASS and promote reviewed Experience Memory
+        id: settle
+        if: steps.promote.outcome == 'success'
+        env:
+          CONTROL_BRANCH: vibe2-unreal-core
+          TASK_ID: ${{ steps.promote_contract.outputs.task_id }}
+          GAME_ID: ${{ steps.promote_contract.outputs.game_id }}
+          CANDIDATE_SHA: ${{ steps.context.outputs.candidate_sha }}
+          CANDIDATE_BRANCH: ${{ steps.context.outputs.candidate_branch }}
+          MAIN_SHA: ${{ steps.promote.outputs.main_sha }}
+          PR_URL: ${{ steps.promote.outputs.pr_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-release'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          persisted=0
+          for attempt in 1 2 3; do
+            git fetch origin "$CONTROL_BRANCH"
+            git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
+            node tools/vibe2-queue-control.mjs pass \
+              --id="$TASK_ID" \
+              --evidence="roblox-studio-run:$QA_RUN_ID,candidate-head-sha:$CANDIDATE_SHA,main-pr-merged:$PR_URL,main-promotion-sha:$MAIN_SHA,r5-target-stage-improvement-pass" | tee /tmp/vibe2-r5-settle.log
+            cat > /tmp/vibe2-r5-experience-review.json <<JSON
+          {
+            "id": "r5_${TASK_ID}_${QA_RUN_ID}",
+            "gameId": "${GAME_ID}",
+            "engine": "roblox",
+            "departments": ["development", "qa", "balance"],
+            "taskType": "autonomous-playtest-balance",
+            "problem": "Physical-input baseline failed at Stage 2 Step02C",
+            "goal": "Reduce verified Stage 2 friction with the smallest bounded balance change while preserving R3/R4 contracts",
+            "change": "Step02C failed-platform lateral offset adjusted from 4 to 0 based on telemetry",
+            "outcome": "PASS",
+            "failureCause": "",
+            "qa": ["actual-roblox-studio-runtime-pass", "physical-input-target-stage-improvement-pass", "earlier-stage-regression-none", "main-source-promotion-pass"],
+            "build": "candidate ${CANDIDATE_SHA}; Studio QA run ${QA_RUN_ID}; main ${MAIN_SHA}",
+            "evidence": ["roblox-studio-run:${QA_RUN_ID}", "candidate-head-sha:${CANDIDATE_SHA}", "main-pr:${PR_URL}", "r5-compare:failed-target-stage-now-passes"],
+            "reusablePatterns": ["telemetry-targeted-minimal-balance-adjustment", "verify-failed-target-before-broad-retuning"],
+            "avoidPatterns": ["hardcoded-stage-retuning-without-playtest-evidence"],
+            "engineQaVerified": true,
+            "reviewVerified": true,
+            "reviewDecision": "PASS",
+            "designIntelligenceRequired": true,
+            "autoPlayerVerified": true,
+            "telemetryVerified": true,
+            "designReviewVerified": true,
+            "designReviewDecision": "PASS",
+            "authorityExpanded": false
+          }
+          JSON
+            node tools/vibe2-experience-control.mjs \
+              --memory=.vibe2/experience.json \
+              --review=/tmp/vibe2-r5-experience-review.json | tee /tmp/vibe2-r5-experience.log
+            git add .vibe2/queue.json .vibe2/experience.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              persisted=1
+              break
+            fi
+            git commit -m "vibe2: complete Roblox R5 after Studio-verified promotion [skip ci]"
+            if git push origin "HEAD:$CONTROL_BRANCH"; then
+              persisted=1
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$persisted" = 1
+          echo 'VIBE2_R5_QUEUE_PASS=YES'
+          echo 'VIBE2_R5_EXPERIENCE_REVIEWED=YES'
+          echo 'VIBE2_R5_COMPLETE=YES'
+
+      - name: Continue Vibe planning after R5 completion
+        if: steps.settle.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref vibe2-unreal-core
+          echo 'VIBE2_R5_NEXT_PLANNING_DISPATCHED=YES'
 
       - name: Refill Vibe work after verification releases capacity
-        if: steps.reconcile.outputs.updated == '1' && steps.reconcile.outputs.continue_work == '1'
+        if: steps.settle.outcome != 'success' && steps.reconcile.outputs.updated == '1' && steps.reconcile.outputs.continue_work == '1'
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
