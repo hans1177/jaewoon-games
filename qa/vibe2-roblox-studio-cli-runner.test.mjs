@@ -35,6 +35,17 @@ test('continuous Roblox GAME STUDY reuses the existing authenticated Studio runn
   assert.doesNotMatch(continuousWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
 });
 
+test('continuous Roblox GAME STUDY reaps only stale Vibe2-owned Studio sessions before production guard', () => {
+  const reapAt = continuousWorkflow.indexOf('Reap stale Vibe2-owned Studio sessions');
+  const guardAt = continuousWorkflow.indexOf('Protect active Roblox production Studio session');
+  assert.ok(reapAt >= 0 && guardAt > reapAt);
+  assert.match(continuousWorkflow, /Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta\.exe'"/);
+  assert.match(continuousWorkflow, /vibe2-roblox-\(skyline\|studio-cli\)-/);
+  assert.match(continuousWorkflow, /VIBE2_ROBLOX_STALE_OWNED_STUDIO_REAPED=/);
+  assert.match(continuousWorkflow, /Stop-Process -Id \(\[int\]\$process\.ProcessId\) -Force/);
+  assert.match(continuousWorkflow, /Failed to reap stale Vibe2-owned Studio sessions/);
+});
+
 test('Roblox production Studio has priority on a shared Windows session while isolated sessions may learn concurrently', async () => {
   assert.match(continuousWorkflow, /Protect active Roblox production Studio session/);
   assert.match(continuousWorkflow, /Get-Process -Name RobloxStudioBeta/);
