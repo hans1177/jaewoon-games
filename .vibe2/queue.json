@@ -2242,7 +2242,7 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
+      "status": "queued",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
@@ -2263,6 +2263,8 @@
         "repair-retry:roblox-full-source-rewrite-v1",
         "execution-policy:deterministic-first-ai-optional-v1",
         "deterministic-recipe:roblox-obby-world-core-v1",
+        "deterministic-recipe-build:30dee706",
+        "round-time-contract:live-attribute-v1",
         "ai-required:false",
         "supersedes:OWNER-ROBLOX-OBBY-WORLD-CORE-20260916"
       ],
