@@ -769,6 +769,66 @@ jobs:
           if [ "${continue_required:-NO}" = 'YES' ]; then echo 'refill=1' >> "$GITHUB_OUTPUT"; else echo 'refill=0' >> "$GITHUB_OUTPUT"; fi
           echo 'VIBE2_HIERARCHICAL_FAN_IN=PASS'
 
+      - name: Dispatch Roblox candidate Studio QA
+        if: steps.persist.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE' > /tmp/vibe2-roblox-candidates.txt
+          const fs=require('fs');
+          const prefix='vibe2/candidate/OWNER-ROBLOX-OBBY-';
+          const runEvidence=`actions-run:${process.env.GITHUB_RUN_ID}`;
+          const fan=JSON.parse(fs.readFileSync('/tmp/vibe2-fan-in.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const passByTask=new Map();
+          for(const row of fan.results||[]){
+            if(String(row.outcome||'').toUpperCase()!=='PASS')continue;
+            const branches=(row.evidence||[]).filter(value=>String(value).startsWith(prefix));
+            if(branches.length!==1)continue;
+            if(!passByTask.has(row.taskId))passByTask.set(row.taskId,new Set());
+            passByTask.get(row.taskId).add(branches[0]);
+          }
+          const selected=[];
+          for(const task of queue.tasks||[]){
+            if(String(task.target||'').toLowerCase()!=='roblox')continue;
+            if(task.blocker!=='candidate-awaiting-qa-and-deployment')continue;
+            if(!(task.evidence||[]).includes(runEvidence))continue;
+            const passed=passByTask.get(task.id);
+            if(!passed)continue;
+            const winner=(task.evidence||[]).filter(value=>passed.has(value)&&String(value).startsWith(prefix));
+            if(winner.length!==1)throw new Error(`expected exactly one Roblox winner candidate for ${task.id}, got ${winner.length}`);
+            selected.push(winner[0]);
+          }
+          console.log([...new Set(selected)].join('\n'));
+          NODE
+
+          if [ ! -s /tmp/vibe2-roblox-candidates.txt ]; then
+            echo 'VIBE2_ROBLOX_CANDIDATE_QA_DISPATCH=NONE'
+            exit 0
+          fi
+
+          while IFS= read -r candidate_ref; do
+            test -n "$candidate_ref"
+            payload="$(node -e "process.stdout.write(JSON.stringify({ref:'main',inputs:{candidate_ref:process.argv[1]}}))" "$candidate_ref")"
+            code="$(curl -sS --retry 3 --retry-all-errors \
+              -o /tmp/vibe2-roblox-dispatch-response.txt \
+              -w '%{http_code}' \
+              -X POST \
+              -H 'Accept: application/vnd.github+json' \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-roblox-candidate-runtime.yml/dispatches" \
+              -d "$payload")"
+            if [ "$code" != '204' ]; then
+              cat /tmp/vibe2-roblox-dispatch-response.txt >&2 || true
+              echo "Roblox candidate QA dispatch failed: $candidate_ref ($code)" >&2
+              exit 1
+            fi
+            echo "VIBE2_ROBLOX_CANDIDATE_QA_DISPATCH=$candidate_ref"
+          done < /tmp/vibe2-roblox-candidates.txt
+
       - name: Upload generated machine handoff and role review
         if: always()
         uses: actions/upload-artifact@v4
