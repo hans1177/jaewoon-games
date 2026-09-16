@@ -14,6 +14,11 @@ const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '')
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const STUDY_EVIDENCE_PREFIX = 'game-study-target:';
 const AUTHORIZED_SERVER_SOURCE = 'owned-or-authorized-server-workspace';
+const STALE_FANIN_EVIDENCE = new Set([
+  'game-study-production-fanin:game-study-result-missing',
+  'game-study-production-fanin:game-study-result-ambiguous'
+]);
+const STUDY_RESERVATION_GRACE_MS = 10 * 60 * 1000;
 
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
@@ -81,6 +86,15 @@ function studyTargetId(task = {}) {
   const row = (task.evidence || []).find((item) => clean(item).startsWith(STUDY_EVIDENCE_PREFIX));
   return row ? clean(row).slice(STUDY_EVIDENCE_PREFIX.length) : null;
 }
+function hasStaleFaninEvidence(task = {}) {
+  return (task.evidence || []).some((item) => STALE_FANIN_EVIDENCE.has(clean(item)));
+}
+function staleReservation(task = {}, target = {}, nowMs = Date.now()) {
+  if (task.status !== 'running' || !hasStaleFaninEvidence(task)) return false;
+  const reservedAt = Date.parse(clean(task.gameStudyReservationAt));
+  if (!Number.isFinite(reservedAt)) return true;
+  return nowMs - reservedAt > Number(target.timeoutMs || 180000) + STUDY_RESERVATION_GRACE_MS;
+}
 function taskForTarget(target) {
   const sourceRoot = target.sourceRoot || target.root || `game-study:${target.id}`;
   return {
@@ -115,7 +129,7 @@ function taskForTarget(target) {
   };
 }
 
-export function prepareGameStudyQueue(queueInput = {}, targetInput = {}) {
+export function prepareGameStudyQueue(queueInput = {}, targetInput = {}, { nowMs = Date.now() } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const targets = loadGameStudyTargets(targetInput);
   const targetByTask = new Map(targets.runnable.map((target) => [target.taskId, target]));
@@ -124,9 +138,16 @@ export function prepareGameStudyQueue(queueInput = {}, targetInput = {}) {
     const target = targetByTask.get(task.id);
     if (!target) return task;
     seen.add(task.id);
-    if (task.status === 'running') return task;
+    const recoverStale = staleReservation(task, target, nowMs);
+    if (task.status === 'running' && !recoverStale) return task;
     const refreshed = taskForTarget(target);
-    return { ...refreshed, evidence: unique([...(task.evidence || []), ...refreshed.evidence]) };
+    if (!recoverStale) return { ...refreshed, evidence: unique([...(task.evidence || []), ...refreshed.evidence]) };
+    return {
+      ...refreshed,
+      retries: Number(task.retries || 0),
+      maxRetries: Number(task.maxRetries || refreshed.maxRetries),
+      evidence: unique([...(task.evidence || []), ...refreshed.evidence, 'game-study-stale-running-recovered'])
+    };
   });
   for (const target of targets.runnable) if (!seen.has(target.taskId)) tasks.push(taskForTarget(target));
   return {
@@ -136,8 +157,8 @@ export function prepareGameStudyQueue(queueInput = {}, targetInput = {}) {
   };
 }
 
-export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, controlInput = {}, { maxConcurrentTasks = 20 } = {}) {
-  const prepared = prepareGameStudyQueue(queueInput, targetInput);
+export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, controlInput = {}, { maxConcurrentTasks = 20, nowMs = Date.now() } = {}) {
+  const prepared = prepareGameStudyQueue(queueInput, targetInput, { nowMs });
   const persistentMax = clamp(prepared.queue.maxConcurrentTasks || 20);
   const controlMax = clamp(controlInput?.currentMax || persistentMax);
   const targetMax = clamp(prepared.targets.maxConcurrentTasks || persistentMax);
@@ -173,10 +194,11 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
         backpressure: productionSelection.backpressure || { awaitingQaCount: 0, retryPressureCount: 0 }
       };
   const selectedIds = new Set(selection.selected.map((task) => task.id));
+  const reservationAt = new Date(nowMs).toISOString();
   const queue = createVibeContinuousQueue({
     maxConcurrentTasks: prepared.queue.maxConcurrentTasks,
     tasks: prepared.queue.tasks.map((task) => {
-      if (selectedIds.has(task.id)) return { ...task, status: 'running', blocker: null };
+      if (selectedIds.has(task.id)) return { ...task, status: 'running', blocker: null, gameStudyReservationAt: reservationAt };
       if (isStudyTask(task) && task.status === 'queued') return { ...task, status: 'blocked', blocker: 'game-study-awaiting-next-cycle' };
       return task;
     })
@@ -196,7 +218,7 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
   });
   return Object.freeze({
     version: 3,
-    createdAt: new Date().toISOString(),
+    createdAt: reservationAt,
     executionLocation: 'server',
     queue,
     matrix: Object.freeze(matrix),
@@ -257,10 +279,10 @@ export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, kno
         ...(task.evidence || []), ...(raw?.evidence || []), raw?.study?.id ? `game-study:${raw.study.id}` : '',
         promoted ? 'game-study-promoted' : '', reinforced ? 'game-study-reinforced' : '', knowledgeUpdated ? 'game-study-knowledge-updated' : ''
       ]);
-      if (outcome === 'PASS') return { ...task, status: 'done', blocker: null, lastOutcome: 'PASS', evidence };
-      if (outcome === 'BLOCKED') return { ...task, status: 'blocked', blocker: clean(raw?.blocker) || reason || 'game-study-blocked', lastOutcome: 'BLOCKED', evidence };
+      if (outcome === 'PASS') return { ...task, status: 'done', blocker: null, lastOutcome: 'PASS', gameStudyReservationAt: null, evidence };
+      if (outcome === 'BLOCKED') return { ...task, status: 'blocked', blocker: clean(raw?.blocker) || reason || 'game-study-blocked', lastOutcome: 'BLOCKED', gameStudyReservationAt: null, evidence };
       const retries = Number(task.retries || 0) + 1;
-      return { ...task, status: retries <= Number(task.maxRetries || 2) ? 'queued' : 'failed', retries, blocker: clean(raw?.blocker) || 'game-study-failed', lastOutcome: 'FAIL', evidence };
+      return { ...task, status: retries <= Number(task.maxRetries || 2) ? 'queued' : 'failed', retries, blocker: clean(raw?.blocker) || 'game-study-failed', lastOutcome: 'FAIL', gameStudyReservationAt: null, evidence };
     });
     queue = createVibeContinuousQueue({ maxConcurrentTasks: queue.maxConcurrentTasks, tasks });
     applied.push({ taskId, outcome: outcome || 'FAIL', promoted, reinforced, knowledgeUpdated, knowledgeReason, reason });
