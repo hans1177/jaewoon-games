@@ -57,6 +57,9 @@ on:
       - 'qa/vibe2-game-study-intelligence.test.mjs'
       - 'qa/vibe2-game-study-planner-context.test.mjs'
       - 'qa/vibe2-game-study-production-fanin.test.mjs'
+      - 'qa/vibe2-game-study-roblox-material-collector.test.mjs'
+      - 'qa/vibe2-game-study-runtime-readiness.test.mjs'
+      - 'qa/vibe2-game-study-stale-reservation.test.mjs'
       - 'qa/fixtures/vibe2-auto-player-web/**'
       - 'qa/fixtures/vibe2-fake-engine-runtime.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
@@ -164,6 +167,9 @@ jobs:
           node --check qa/vibe2-game-study-intelligence.test.mjs
           node --check qa/vibe2-game-study-planner-context.test.mjs
           node --check qa/vibe2-game-study-production-fanin.test.mjs
+          node --check qa/vibe2-game-study-roblox-material-collector.test.mjs
+          node --check qa/vibe2-game-study-runtime-readiness.test.mjs
+          node --check qa/vibe2-game-study-stale-reservation.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
@@ -215,6 +221,9 @@ jobs:
           node --test qa/vibe2-game-study-intelligence.test.mjs
           node --test qa/vibe2-game-study-planner-context.test.mjs
           node --test qa/vibe2-game-study-production-fanin.test.mjs
+          node --test qa/vibe2-game-study-roblox-material-collector.test.mjs
+          node --test qa/vibe2-game-study-runtime-readiness.test.mjs
+          node --test qa/vibe2-game-study-stale-reservation.test.mjs
           node --test qa/vibe2-handoff.test.mjs
 
       - name: Generate machine handoff
