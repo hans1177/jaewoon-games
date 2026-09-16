@@ -1,1 +1,708 @@
-{"version":1,"kind":"vibe2-game-study-knowledge","entries":[{"studyId":"study_1yxj4pj","gameId":"external-memory-game","engine":"web","confirmations":1,"gameDna":{"input":0.9,"movement":0.7,"combat":0,"economy":0,"progression":0.8,"ui":0.7,"restart":0,"persistence":0,"networking":0,"ai":0.7,"monetization":0,"runtimeComplexity":0.4667},"reusablePatterns":["mechanic:input","mechanic:movement","mechanic:progression","mechanic:ui","architecture:input","architecture:movement","architecture:progression","architecture:ui","observed-flow:progression->input","observed-flow:input->progression","observed-flow:ai->movement","observed-flow:ai->progression","observed-flow:input->ai","observed-flow:movement->ui","observed-flow:runtime-flow->movement","observed-flow:ui->runtime-flow","observed-loop:progression>input","observed-loop:input>progression"],"hypotheses":["progression->input","input->progression","ai->movement","ai->progression","input->ai","movement->ui","runtime-flow->movement","ui->runtime-flow"],"features":{"mechanic-mining":"VERIFIED","system-graph-learning":"VERIFIED","progression-curve-learning":"INSUFFICIENT_EVIDENCE","economy-simulation-learning":"INSUFFICIENT_EVIDENCE","difficulty-curve-learning":"INSUFFICIENT_EVIDENCE","ui-interaction-mining":"VERIFIED","onboarding-learning":"VERIFIED","retention-loop-mining":"VERIFIED","state-machine-extraction":"VERIFIED","event-flow-extraction":"VERIFIED","save-schema-learning":"INSUFFICIENT_EVIDENCE","architecture-distillation":"VERIFIED","dependency-learning":"INSUFFICIENT_EVIDENCE","change-impact-learning":"INSUFFICIENT_EVIDENCE","bug-reproduction-learning":"NO_FAILURE_OBSERVED","exploit-resistance-pattern-learning":"INSUFFICIENT_EVIDENCE","performance-profiling-learning":"VERIFIED","game-dna":"VERIFIED","nearest-game-retrieval":"PENDING_CROSS_GAME","novelty-detection":"PENDING_CROSS_GAME","knowledge-merge":"PENDING_CROSS_GAME","knowledge-conflict":"PENDING_CROSS_GAME","automatic-hypothesis-testing":"PENDING_CROSS_GAME","synthetic-mini-game-training":"VERIFIED","continual-distillation":"PENDING_CROSS_GAME"},"firstSeenAt":"2026-09-15T21:14:49.642Z","lastSeenAt":"2026-09-15T21:14:49.642Z"},{"studyId":"study_16i6nw3","gameId":"external-tictactoe","engine":"web","confirmations":1,"gameDna":{"input":0.8,"movement":0.65,"combat":0,"economy":0,"progression":1,"ui":0.7,"restart":0.65,"persistence":0,"networking":0,"ai":0.8,"monetization":0,"runtimeComplexity":0.4333},"reusablePatterns":["mechanic:ai","mechanic:input","mechanic:movement","mechanic:progression","mechanic:restart","mechanic:ui","architecture:input","architecture:movement","architecture:progression","architecture:restart","architecture:ui","observed-flow:progression->input","observed-flow:ai->progression","observed-flow:input->progression","observed-flow:ai->ui","observed-flow:input->ai","observed-flow:progression->ai","observed-flow:progression->ui","observed-flow:ui->progression","observed-loop:progression>input"],"hypotheses":["progression->input","ai->progression","input->progression","ai->ui","input->ai","progression->ai","progression->ui","ui->progression"],"features":{"mechanic-mining":"VERIFIED","system-graph-learning":"VERIFIED","progression-curve-learning":"INSUFFICIENT_EVIDENCE","economy-simulation-learning":"INSUFFICIENT_EVIDENCE","difficulty-curve-learning":"INSUFFICIENT_EVIDENCE","ui-interaction-mining":"VERIFIED","onboarding-learning":"VERIFIED","retention-loop-mining":"VERIFIED","state-machine-extraction":"VERIFIED","event-flow-extraction":"VERIFIED","save-schema-learning":"INSUFFICIENT_EVIDENCE","architecture-distillation":"VERIFIED","dependency-learning":"INSUFFICIENT_EVIDENCE","change-impact-learning":"INSUFFICIENT_EVIDENCE","bug-reproduction-learning":"NO_FAILURE_OBSERVED","exploit-resistance-pattern-learning":"INSUFFICIENT_EVIDENCE","performance-profiling-learning":"VERIFIED","game-dna":"VERIFIED","nearest-game-retrieval":"PENDING_CROSS_GAME","novelty-detection":"PENDING_CROSS_GAME","knowledge-merge":"PENDING_CROSS_GAME","knowledge-conflict":"PENDING_CROSS_GAME","automatic-hypothesis-testing":"PENDING_CROSS_GAME","synthetic-mini-game-training":"VERIFIED","continual-distillation":"PENDING_CROSS_GAME"},"firstSeenAt":"2026-09-15T21:14:55.488Z","lastSeenAt":"2026-09-15T21:14:55.488Z"},{"studyId":"study_n446gd","gameId":"external-tictactoe","engine":"web","confirmations":1,"gameDna":{"input":0.9,"movement":0,"combat":0,"economy":0,"progression":1,"ui":0.8,"restart":0,"persistence":0,"networking":0,"ai":1,"monetization":0,"runtimeComplexity":0.5667},"reusablePatterns":["mechanic:ai","mechanic:input","mechanic:progression","mechanic:ui","architecture:input","architecture:progression","architecture:ui","observed-flow:progression->input","observed-flow:ai->progression","observed-flow:input->ai","observed-flow:input->progression","observed-flow:progression->ui","observed-flow:ui->ai","observed-loop:progression>input","observed-loop:input>progression","observed-loop:progression>input>ai","observed-loop:input>ai>progression"],"hypotheses":["progression->input","ai->progression","input->ai","input->progression","progression->ui","ui->ai"],"features":{"mechanic-mining":"VERIFIED","system-graph-learning":"VERIFIED","progression-curve-learning":"INSUFFICIENT_EVIDENCE","economy-simulation-learning":"INSUFFICIENT_EVIDENCE","difficulty-curve-learning":"INSUFFICIENT_EVIDENCE","ui-interaction-mining":"VERIFIED","onboarding-learning":"VERIFIED","retention-loop-mining":"VERIFIED","state-machine-extraction":"VERIFIED","event-flow-extraction":"VERIFIED","save-schema-learning":"INSUFFICIENT_EVIDENCE","architecture-distillation":"VERIFIED","dependency-learning":"INSUFFICIENT_EVIDENCE","change-impact-learning":"INSUFFICIENT_EVIDENCE","bug-reproduction-learning":"NO_FAILURE_OBSERVED","exploit-resistance-pattern-learning":"INSUFFICIENT_EVIDENCE","performance-profiling-learning":"VERIFIED","game-dna":"VERIFIED","nearest-game-retrieval":"PENDING_CROSS_GAME","novelty-detection":"PENDING_CROSS_GAME","knowledge-merge":"PENDING_CROSS_GAME","knowledge-conflict":"PENDING_CROSS_GAME","automatic-hypothesis-testing":"PENDING_CROSS_GAME","synthetic-mini-game-training":"VERIFIED","continual-distillation":"PENDING_CROSS_GAME"},"firstSeenAt":"2026-09-15T21:15:02.493Z","lastSeenAt":"2026-09-15T21:15:02.493Z"}],"derived":{"mergedKnowledge":[{"pattern":"architecture:input","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"architecture:progression","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"architecture:ui","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"mechanic:input","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"mechanic:progression","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"mechanic:ui","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"observed-flow:ai->progression","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"observed-flow:input->ai","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"observed-flow:input->progression","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"observed-flow:progression->input","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"observed-loop:progression>input","confirmations":3,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"architecture:movement","confirmations":2,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"mechanic:movement","confirmations":2,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"observed-loop:input>progression","confirmations":2,"gameCount":2,"games":["external-memory-game","external-tictactoe"],"engines":["web"],"crossGameVerified":true},{"pattern":"mechanic:ai","confirmations":2,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-flow:progression->ui","confirmations":2,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false},{"pattern":"architecture:restart","confirmations":1,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false},{"pattern":"mechanic:restart","confirmations":1,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-flow:ai->movement","confirmations":1,"gameCount":1,"games":["external-memory-game"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-flow:ai->ui","confirmations":1,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-flow:movement->ui","confirmations":1,"gameCount":1,"games":["external-memory-game"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-flow:progression->ai","confirmations":1,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-flow:runtime-flow->movement","confirmations":1,"gameCount":1,"games":["external-memory-game"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-flow:ui->ai","confirmations":1,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-flow:ui->progression","confirmations":1,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-flow:ui->runtime-flow","confirmations":1,"gameCount":1,"games":["external-memory-game"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-loop:input>ai>progression","confirmations":1,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false},{"pattern":"observed-loop:progression>input>ai","confirmations":1,"gameCount":1,"games":["external-tictactoe"],"engines":["web"],"crossGameVerified":false}],"conflicts":[],"hypotheses":[{"hypothesis":"ai->progression","confirmations":3,"gameCount":2,"status":"SUPPORTED_ACROSS_GAMES"},{"hypothesis":"input->ai","confirmations":3,"gameCount":2,"status":"SUPPORTED_ACROSS_GAMES"},{"hypothesis":"input->progression","confirmations":3,"gameCount":2,"status":"SUPPORTED_ACROSS_GAMES"},{"hypothesis":"progression->input","confirmations":3,"gameCount":2,"status":"SUPPORTED_ACROSS_GAMES"},{"hypothesis":"progression->ui","confirmations":2,"gameCount":1,"status":"OBSERVED_ONCE"},{"hypothesis":"ai->movement","confirmations":1,"gameCount":1,"status":"OBSERVED_ONCE"},{"hypothesis":"ai->ui","confirmations":1,"gameCount":1,"status":"OBSERVED_ONCE"},{"hypothesis":"movement->ui","confirmations":1,"gameCount":1,"status":"OBSERVED_ONCE"},{"hypothesis":"progression->ai","confirmations":1,"gameCount":1,"status":"OBSERVED_ONCE"},{"hypothesis":"runtime-flow->movement","confirmations":1,"gameCount":1,"status":"OBSERVED_ONCE"},{"hypothesis":"ui->ai","confirmations":1,"gameCount":1,"status":"OBSERVED_ONCE"},{"hypothesis":"ui->progression","confirmations":1,"gameCount":1,"status":"OBSERVED_ONCE"},{"hypothesis":"ui->runtime-flow","confirmations":1,"gameCount":1,"status":"OBSERVED_ONCE"}],"continualDistillation":{"inputEntryCount":3,"uniquePatternCount":28,"crossGamePatternCount":14,"compressedPatternCount":28,"duplicatePatternObservations":27},"nearestForLatest":[{"gameId":"external-memory-game","engine":"web","studyId":"study_1yxj4pj","similarity":0.9112,"confirmations":1}],"latestNovelty":{"gameId":"external-tictactoe","novelty":0.0888,"basis":"nearest-game-dna"},"updatedAt":"2026-09-15T21:15:02.493Z"},"policy":{"serverFanInOnly":true,"verifiedStudiesOnly":true,"rawSourcePersisted":false,"noInventedCausality":true,"authorityExpanded":false},"authorityExpanded":false,"authority":"vibe2-game-study-knowledge-derived"}
+{
+  "version": 1,
+  "kind": "vibe2-game-study-knowledge",
+  "entries": [
+    {
+      "studyId": "study_1yxj4pj",
+      "gameId": "external-memory-game",
+      "engine": "web",
+      "confirmations": 2,
+      "gameDna": {
+        "input": 0.9,
+        "movement": 0.7,
+        "combat": 0,
+        "economy": 0,
+        "progression": 0.8,
+        "ui": 0.7,
+        "restart": 0,
+        "persistence": 0,
+        "networking": 0,
+        "ai": 0.7,
+        "monetization": 0,
+        "runtimeComplexity": 0.4667
+      },
+      "reusablePatterns": [
+        "mechanic:input",
+        "mechanic:movement",
+        "mechanic:progression",
+        "mechanic:ui",
+        "architecture:input",
+        "architecture:movement",
+        "architecture:progression",
+        "architecture:ui",
+        "observed-flow:progression->input",
+        "observed-flow:input->progression",
+        "observed-flow:ai->movement",
+        "observed-flow:ai->progression",
+        "observed-flow:input->ai",
+        "observed-flow:movement->ui",
+        "observed-flow:runtime-flow->movement",
+        "observed-flow:ui->runtime-flow",
+        "observed-loop:progression>input",
+        "observed-loop:input>progression"
+      ],
+      "hypotheses": [
+        "progression->input",
+        "input->progression",
+        "ai->movement",
+        "ai->progression",
+        "input->ai",
+        "movement->ui",
+        "runtime-flow->movement",
+        "ui->runtime-flow"
+      ],
+      "features": {
+        "mechanic-mining": "VERIFIED",
+        "system-graph-learning": "VERIFIED",
+        "progression-curve-learning": "INSUFFICIENT_EVIDENCE",
+        "economy-simulation-learning": "INSUFFICIENT_EVIDENCE",
+        "difficulty-curve-learning": "INSUFFICIENT_EVIDENCE",
+        "ui-interaction-mining": "VERIFIED",
+        "onboarding-learning": "VERIFIED",
+        "retention-loop-mining": "VERIFIED",
+        "state-machine-extraction": "VERIFIED",
+        "event-flow-extraction": "VERIFIED",
+        "save-schema-learning": "INSUFFICIENT_EVIDENCE",
+        "architecture-distillation": "VERIFIED",
+        "dependency-learning": "INSUFFICIENT_EVIDENCE",
+        "change-impact-learning": "INSUFFICIENT_EVIDENCE",
+        "bug-reproduction-learning": "NO_FAILURE_OBSERVED",
+        "exploit-resistance-pattern-learning": "INSUFFICIENT_EVIDENCE",
+        "performance-profiling-learning": "VERIFIED",
+        "game-dna": "VERIFIED",
+        "nearest-game-retrieval": "PENDING_CROSS_GAME",
+        "novelty-detection": "PENDING_CROSS_GAME",
+        "knowledge-merge": "PENDING_CROSS_GAME",
+        "knowledge-conflict": "PENDING_CROSS_GAME",
+        "automatic-hypothesis-testing": "PENDING_CROSS_GAME",
+        "synthetic-mini-game-training": "VERIFIED",
+        "continual-distillation": "PENDING_CROSS_GAME"
+      },
+      "firstSeenAt": "2026-09-15T21:14:49.642Z",
+      "lastSeenAt": "2026-09-16T03:31:51.178Z"
+    },
+    {
+      "studyId": "study_16i6nw3",
+      "gameId": "external-tictactoe",
+      "engine": "web",
+      "confirmations": 2,
+      "gameDna": {
+        "input": 0.8,
+        "movement": 0.65,
+        "combat": 0,
+        "economy": 0,
+        "progression": 1,
+        "ui": 0.7,
+        "restart": 0.65,
+        "persistence": 0,
+        "networking": 0,
+        "ai": 0.8,
+        "monetization": 0,
+        "runtimeComplexity": 0.4333
+      },
+      "reusablePatterns": [
+        "mechanic:ai",
+        "mechanic:input",
+        "mechanic:movement",
+        "mechanic:progression",
+        "mechanic:restart",
+        "mechanic:ui",
+        "architecture:input",
+        "architecture:movement",
+        "architecture:progression",
+        "architecture:restart",
+        "architecture:ui",
+        "observed-flow:progression->input",
+        "observed-flow:ai->progression",
+        "observed-flow:input->progression",
+        "observed-flow:ai->ui",
+        "observed-flow:input->ai",
+        "observed-flow:progression->ai",
+        "observed-flow:progression->ui",
+        "observed-flow:ui->progression",
+        "observed-loop:progression>input"
+      ],
+      "hypotheses": [
+        "progression->input",
+        "ai->progression",
+        "input->progression",
+        "ai->ui",
+        "input->ai",
+        "progression->ai",
+        "progression->ui",
+        "ui->progression"
+      ],
+      "features": {
+        "mechanic-mining": "VERIFIED",
+        "system-graph-learning": "VERIFIED",
+        "progression-curve-learning": "INSUFFICIENT_EVIDENCE",
+        "economy-simulation-learning": "INSUFFICIENT_EVIDENCE",
+        "difficulty-curve-learning": "INSUFFICIENT_EVIDENCE",
+        "ui-interaction-mining": "VERIFIED",
+        "onboarding-learning": "VERIFIED",
+        "retention-loop-mining": "VERIFIED",
+        "state-machine-extraction": "VERIFIED",
+        "event-flow-extraction": "VERIFIED",
+        "save-schema-learning": "INSUFFICIENT_EVIDENCE",
+        "architecture-distillation": "VERIFIED",
+        "dependency-learning": "INSUFFICIENT_EVIDENCE",
+        "change-impact-learning": "INSUFFICIENT_EVIDENCE",
+        "bug-reproduction-learning": "NO_FAILURE_OBSERVED",
+        "exploit-resistance-pattern-learning": "INSUFFICIENT_EVIDENCE",
+        "performance-profiling-learning": "VERIFIED",
+        "game-dna": "VERIFIED",
+        "nearest-game-retrieval": "PENDING_CROSS_GAME",
+        "novelty-detection": "PENDING_CROSS_GAME",
+        "knowledge-merge": "PENDING_CROSS_GAME",
+        "knowledge-conflict": "PENDING_CROSS_GAME",
+        "automatic-hypothesis-testing": "PENDING_CROSS_GAME",
+        "synthetic-mini-game-training": "VERIFIED",
+        "continual-distillation": "PENDING_CROSS_GAME"
+      },
+      "firstSeenAt": "2026-09-15T21:14:55.488Z",
+      "lastSeenAt": "2026-09-16T03:31:40.134Z"
+    },
+    {
+      "studyId": "study_n446gd",
+      "gameId": "external-tictactoe",
+      "engine": "web",
+      "confirmations": 2,
+      "gameDna": {
+        "input": 0.9,
+        "movement": 0,
+        "combat": 0,
+        "economy": 0,
+        "progression": 1,
+        "ui": 0.8,
+        "restart": 0,
+        "persistence": 0,
+        "networking": 0,
+        "ai": 1,
+        "monetization": 0,
+        "runtimeComplexity": 0.5667
+      },
+      "reusablePatterns": [
+        "mechanic:ai",
+        "mechanic:input",
+        "mechanic:progression",
+        "mechanic:ui",
+        "architecture:input",
+        "architecture:progression",
+        "architecture:ui",
+        "observed-flow:progression->input",
+        "observed-flow:ai->progression",
+        "observed-flow:input->ai",
+        "observed-flow:input->progression",
+        "observed-flow:progression->ui",
+        "observed-flow:ui->ai",
+        "observed-loop:progression>input",
+        "observed-loop:input>progression",
+        "observed-loop:progression>input>ai",
+        "observed-loop:input>ai>progression"
+      ],
+      "hypotheses": [
+        "progression->input",
+        "ai->progression",
+        "input->ai",
+        "input->progression",
+        "progression->ui",
+        "ui->ai"
+      ],
+      "features": {
+        "mechanic-mining": "VERIFIED",
+        "system-graph-learning": "VERIFIED",
+        "progression-curve-learning": "INSUFFICIENT_EVIDENCE",
+        "economy-simulation-learning": "INSUFFICIENT_EVIDENCE",
+        "difficulty-curve-learning": "INSUFFICIENT_EVIDENCE",
+        "ui-interaction-mining": "VERIFIED",
+        "onboarding-learning": "VERIFIED",
+        "retention-loop-mining": "VERIFIED",
+        "state-machine-extraction": "VERIFIED",
+        "event-flow-extraction": "VERIFIED",
+        "save-schema-learning": "INSUFFICIENT_EVIDENCE",
+        "architecture-distillation": "VERIFIED",
+        "dependency-learning": "INSUFFICIENT_EVIDENCE",
+        "change-impact-learning": "INSUFFICIENT_EVIDENCE",
+        "bug-reproduction-learning": "NO_FAILURE_OBSERVED",
+        "exploit-resistance-pattern-learning": "INSUFFICIENT_EVIDENCE",
+        "performance-profiling-learning": "VERIFIED",
+        "game-dna": "VERIFIED",
+        "nearest-game-retrieval": "PENDING_CROSS_GAME",
+        "novelty-detection": "PENDING_CROSS_GAME",
+        "knowledge-merge": "PENDING_CROSS_GAME",
+        "knowledge-conflict": "PENDING_CROSS_GAME",
+        "automatic-hypothesis-testing": "PENDING_CROSS_GAME",
+        "synthetic-mini-game-training": "VERIFIED",
+        "continual-distillation": "PENDING_CROSS_GAME"
+      },
+      "firstSeenAt": "2026-09-15T21:15:02.493Z",
+      "lastSeenAt": "2026-09-16T03:31:41.041Z"
+    }
+  ],
+  "derived": {
+    "mergedKnowledge": [
+      {
+        "pattern": "architecture:input",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "architecture:progression",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "architecture:ui",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "mechanic:input",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "mechanic:progression",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "mechanic:ui",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "observed-flow:ai->progression",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "observed-flow:input->ai",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "observed-flow:input->progression",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "observed-flow:progression->input",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "observed-loop:progression>input",
+        "confirmations": 6,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "architecture:movement",
+        "confirmations": 4,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "mechanic:movement",
+        "confirmations": 4,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "observed-loop:input>progression",
+        "confirmations": 4,
+        "gameCount": 2,
+        "games": [
+          "external-memory-game",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "mechanic:ai",
+        "confirmations": 4,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:progression->ui",
+        "confirmations": 4,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "architecture:restart",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "mechanic:restart",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ai->movement",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-memory-game"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ai->ui",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:movement->ui",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-memory-game"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:progression->ai",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:runtime-flow->movement",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-memory-game"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ui->ai",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ui->progression",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ui->runtime-flow",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-memory-game"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-loop:input>ai>progression",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-loop:progression>input>ai",
+        "confirmations": 2,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      }
+    ],
+    "conflicts": [],
+    "hypotheses": [
+      {
+        "hypothesis": "ai->progression",
+        "confirmations": 6,
+        "gameCount": 2,
+        "status": "SUPPORTED_ACROSS_GAMES"
+      },
+      {
+        "hypothesis": "input->ai",
+        "confirmations": 6,
+        "gameCount": 2,
+        "status": "SUPPORTED_ACROSS_GAMES"
+      },
+      {
+        "hypothesis": "input->progression",
+        "confirmations": 6,
+        "gameCount": 2,
+        "status": "SUPPORTED_ACROSS_GAMES"
+      },
+      {
+        "hypothesis": "progression->input",
+        "confirmations": 6,
+        "gameCount": 2,
+        "status": "SUPPORTED_ACROSS_GAMES"
+      },
+      {
+        "hypothesis": "progression->ui",
+        "confirmations": 4,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "ai->movement",
+        "confirmations": 2,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "ai->ui",
+        "confirmations": 2,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "movement->ui",
+        "confirmations": 2,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "progression->ai",
+        "confirmations": 2,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "runtime-flow->movement",
+        "confirmations": 2,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "ui->ai",
+        "confirmations": 2,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "ui->progression",
+        "confirmations": 2,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "ui->runtime-flow",
+        "confirmations": 2,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      }
+    ],
+    "continualDistillation": {
+      "inputEntryCount": 3,
+      "uniquePatternCount": 28,
+      "crossGamePatternCount": 14,
+      "compressedPatternCount": 28,
+      "duplicatePatternObservations": 27
+    },
+    "nearestForLatest": [
+      {
+        "gameId": "external-memory-game",
+        "engine": "web",
+        "studyId": "study_1yxj4pj",
+        "similarity": 0.9112,
+        "confirmations": 2
+      }
+    ],
+    "latestNovelty": {
+      "gameId": "external-tictactoe",
+      "novelty": 0.0888,
+      "basis": "nearest-game-dna"
+    },
+    "updatedAt": "2026-09-16T03:31:41.041Z"
+  },
+  "policy": {
+    "serverFanInOnly": true,
+    "verifiedStudiesOnly": true,
+    "rawSourcePersisted": false,
+    "noInventedCausality": true,
+    "authorityExpanded": false
+  },
+  "authorityExpanded": false,
+  "authority": "vibe2-game-study-knowledge-derived"
+}
