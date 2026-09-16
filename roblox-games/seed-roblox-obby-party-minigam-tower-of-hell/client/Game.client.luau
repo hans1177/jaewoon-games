@@ -16,7 +16,7 @@ local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.AnchorPoint = Vector2.new(0.5, 0)
 panel.Position = UDim2.fromScale(0.5, 0.025)
-panel.Size = UDim2.new(1, -28, 0, 108)
+panel.Size = UDim2.new(1, -28, 0, 116)
 panel.BackgroundColor3 = Color3.fromRGB(16, 24, 40)
 panel.BackgroundTransparency = 0.08
 panel.BorderSizePixel = 0
@@ -42,7 +42,7 @@ local status = Instance.new("TextLabel")
 status.Name = "Status"
 status.BackgroundTransparency = 1
 status.Position = UDim2.fromOffset(14, 38)
-status.Size = UDim2.new(1, -28, 0, 30)
+status.Size = UDim2.new(1, -28, 0, 34)
 status.Font = Enum.Font.GothamSemibold
 status.TextColor3 = Color3.fromRGB(215, 230, 255)
 status.TextScaled = true
@@ -52,32 +52,40 @@ status.Parent = panel
 local hint = Instance.new("TextLabel")
 hint.Name = "Hint"
 hint.BackgroundTransparency = 1
-hint.Position = UDim2.fromOffset(14, 72)
-hint.Size = UDim2.new(1, -28, 0, 22)
+hint.Position = UDim2.fromOffset(14, 78)
+hint.Size = UDim2.new(1, -28, 0, 24)
 hint.Font = Enum.Font.Gotham
 hint.TextColor3 = Color3.fromRGB(165, 185, 215)
 hint.TextScaled = true
 hint.TextXAlignment = Enum.TextXAlignment.Left
-hint.Text = UserInputService.TouchEnabled
-  and "Move with the default thumbstick · Jump with the default jump button"
-  or "Move with WASD · Jump with Space"
 hint.Parent = panel
 
+local movementHint = UserInputService.TouchEnabled
+  and "Move with the default thumbstick · Jump with the default jump button"
+  or "Move with WASD · Jump with Space"
+
 local function render()
+  local round = player:GetAttribute("Round") or 1
   local stage = player:GetAttribute("Position") or 0
   local progress = player:GetAttribute("Progress") or 0
   local score = player:GetAttribute("Score") or 0
   local roundTime = tonumber(player:GetAttribute("RoundTime")) or 0
   local finished = player:GetAttribute("Finished") == true
+  local restarting = player:GetAttribute("Restarting") == true
 
-  if finished then
-    status.Text = string.format("FINISH · Stage %d/12 · %d%% · Score %d · %.1fs", stage, progress, score, roundTime)
+  if finished and restarting then
+    status.Text = string.format("Round %d FINISH · Stage %d/12 · %d%% · Score %d · %.1fs", round, stage, progress, score, roundTime)
+    hint.Text = "New round starts automatically in 3 seconds"
+  elseif finished then
+    status.Text = string.format("Round %d FINISH · Stage %d/12 · %d%% · Score %d · %.1fs", round, stage, progress, score, roundTime)
+    hint.Text = "Finish recorded"
   else
-    status.Text = string.format("Stage %d/12 · %d%% · Score %d · %.1fs", stage, progress, score, roundTime)
+    status.Text = string.format("Round %d · Stage %d/12 · %d%% · Score %d · %.1fs", round, stage, progress, score, roundTime)
+    hint.Text = movementHint
   end
 end
 
-for _, name in ipairs({"Position", "Progress", "Score", "RoundTime", "Finished"}) do
+for _, name in ipairs({"Round", "Position", "Progress", "Score", "RoundTime", "Finished", "Restarting"}) do
   player:GetAttributeChangedSignal(name):Connect(render)
 end
 
