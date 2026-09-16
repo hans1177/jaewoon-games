@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 - Chess Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #fff;
+    }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 2px;
+      margin: 20px;
+      background-color: #e0e0e0;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+    .game-board .square {
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #333;
+    }
+    .game-board .square.selected {
+      background-color: #007bff;
+      color: white;
+    }
+    .game-board .square.occupied {
+      background-color: #007bff;
+      color: white;
+    }
+    .game-board .square.empty {
+      background-color: #e0e0e0;
+    }
+    .game-board .square.occupied .piece {
+      font-weight: bold;
+    }
+    .game-control {
+      margin: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .game-control button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .game-control button:hover {
+      background-color: #005a9e;
+    }
+    .game-control .status {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game-board" id="game-board"></div>
+    <div class="game-control">
+      <button id="new-game">새 게임</button>
+      <button id="start-game">게임 시작</button>
+      <div class="status" id="status">게임 시작 중</div>
+    </div>
+  </main>
+
+  <script>
+    const gameBoard = document.getElementById('game-board');
+    const status = document.getElementById('status');
+    const startGameBtn = document.getElementById('start-game');
+    const newGameBtn = document.getElementById('new-game');
+
+    // Initialize game board
+    function initBoard() {
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.classList.add('square');
+          square.dataset.row = row;
+          square.dataset.col = col;
+          square.addEventListener('click', () => selectSquare(square));
+          gameBoard.appendChild(square);
+        }
+      }
+    }
+
+    // Select a square
+    function selectSquare(square) {
+      if (square.classList.contains('selected')) return;
+      square.classList.add('selected');
+      status.textContent = '선택 중';
+    }
+
+    // Start game
+    function startGame() {
+      status.textContent = '게임 시작 중';
+      // Game logic here
+    }
+
+    // New game
+    function newGame() {
+      status.textContent = '새 게임 시작 중';
+      // Game logic here
+    }
+
+    // Event listeners
+    startGameBtn.addEventListener('click', startGame);
+    newGameBtn.addEventListener('click', newGame);
+
+    // Initialize game
+    initBoard();
+  </script>
+</body>
+</html>
