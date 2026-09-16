@@ -237,84 +237,184 @@
       },
       "firstSeenAt": "2026-09-15T21:15:02.493Z",
       "lastSeenAt": "2026-09-16T05:27:51.766Z"
+    },
+    {
+      "studyId": "study_m43i0t",
+      "gameId": "external-roblox-potion-shop-demo",
+      "engine": "roblox",
+      "confirmations": 1,
+      "gameDna": {
+        "input": 0.65,
+        "movement": 0,
+        "combat": 0,
+        "economy": 0.65,
+        "progression": 0.8,
+        "ui": 0.65,
+        "restart": 0,
+        "persistence": 0.6,
+        "networking": 0,
+        "ai": 0.6,
+        "monetization": 0,
+        "runtimeComplexity": 0.3
+      },
+      "reusablePatterns": [
+        "mechanic:economy",
+        "mechanic:input",
+        "mechanic:progression",
+        "mechanic:runtime-loop",
+        "mechanic:ui",
+        "architecture:economy",
+        "architecture:input",
+        "architecture:progression",
+        "architecture:runtime",
+        "architecture:ui",
+        "observed-flow:ai->input",
+        "observed-flow:input->progression",
+        "observed-flow:persistence->runtime-flow",
+        "observed-flow:progression->persistence",
+        "observed-flow:runtime-flow->economy"
+      ],
+      "hypotheses": [
+        "ai->input",
+        "input->progression",
+        "persistence->runtime-flow",
+        "progression->persistence",
+        "runtime-flow->economy"
+      ],
+      "features": {
+        "mechanic-mining": "VERIFIED",
+        "system-graph-learning": "VERIFIED",
+        "progression-curve-learning": "INSUFFICIENT_EVIDENCE",
+        "economy-simulation-learning": "INSUFFICIENT_EVIDENCE",
+        "difficulty-curve-learning": "INSUFFICIENT_EVIDENCE",
+        "ui-interaction-mining": "INSUFFICIENT_EVIDENCE",
+        "onboarding-learning": "VERIFIED",
+        "retention-loop-mining": "INSUFFICIENT_EVIDENCE",
+        "state-machine-extraction": "VERIFIED",
+        "event-flow-extraction": "VERIFIED",
+        "save-schema-learning": "INSUFFICIENT_EVIDENCE",
+        "architecture-distillation": "VERIFIED",
+        "dependency-learning": "INSUFFICIENT_EVIDENCE",
+        "change-impact-learning": "INSUFFICIENT_EVIDENCE",
+        "bug-reproduction-learning": "NO_FAILURE_OBSERVED",
+        "exploit-resistance-pattern-learning": "INSUFFICIENT_EVIDENCE",
+        "performance-profiling-learning": "VERIFIED",
+        "game-dna": "VERIFIED",
+        "nearest-game-retrieval": "PENDING_CROSS_GAME",
+        "novelty-detection": "PENDING_CROSS_GAME",
+        "knowledge-merge": "PENDING_CROSS_GAME",
+        "knowledge-conflict": "PENDING_CROSS_GAME",
+        "automatic-hypothesis-testing": "PENDING_CROSS_GAME",
+        "synthetic-mini-game-training": "VERIFIED",
+        "continual-distillation": "PENDING_CROSS_GAME"
+      },
+      "firstSeenAt": "2026-09-16T00:52:38.538Z",
+      "lastSeenAt": "2026-09-16T00:52:38.538Z"
     }
   ],
   "derived": {
     "mergedKnowledge": [
       {
         "pattern": "architecture:input",
-        "confirmations": 32,
-        "gameCount": 2,
+        "confirmations": 33,
+        "gameCount": 3,
         "games": [
           "external-memory-game",
+          "external-roblox-potion-shop-demo",
           "external-tictactoe"
         ],
         "engines": [
+          "roblox",
           "web"
         ],
         "crossGameVerified": true
       },
       {
         "pattern": "architecture:progression",
-        "confirmations": 32,
-        "gameCount": 2,
+        "confirmations": 33,
+        "gameCount": 3,
         "games": [
           "external-memory-game",
+          "external-roblox-potion-shop-demo",
           "external-tictactoe"
         ],
         "engines": [
+          "roblox",
           "web"
         ],
         "crossGameVerified": true
       },
       {
         "pattern": "architecture:ui",
-        "confirmations": 32,
-        "gameCount": 2,
+        "confirmations": 33,
+        "gameCount": 3,
         "games": [
           "external-memory-game",
+          "external-roblox-potion-shop-demo",
           "external-tictactoe"
         ],
         "engines": [
+          "roblox",
           "web"
         ],
         "crossGameVerified": true
       },
       {
         "pattern": "mechanic:input",
-        "confirmations": 32,
-        "gameCount": 2,
+        "confirmations": 33,
+        "gameCount": 3,
         "games": [
           "external-memory-game",
+          "external-roblox-potion-shop-demo",
           "external-tictactoe"
         ],
         "engines": [
+          "roblox",
           "web"
         ],
         "crossGameVerified": true
       },
       {
         "pattern": "mechanic:progression",
-        "confirmations": 32,
-        "gameCount": 2,
+        "confirmations": 33,
+        "gameCount": 3,
         "games": [
           "external-memory-game",
+          "external-roblox-potion-shop-demo",
           "external-tictactoe"
         ],
         "engines": [
+          "roblox",
           "web"
         ],
         "crossGameVerified": true
       },
       {
         "pattern": "mechanic:ui",
-        "confirmations": 32,
-        "gameCount": 2,
+        "confirmations": 33,
+        "gameCount": 3,
         "games": [
           "external-memory-game",
+          "external-roblox-potion-shop-demo",
           "external-tictactoe"
         ],
         "engines": [
+          "roblox",
+          "web"
+        ],
+        "crossGameVerified": true
+      },
+      {
+        "pattern": "observed-flow:input->progression",
+        "confirmations": 33,
+        "gameCount": 3,
+        "games": [
+          "external-memory-game",
+          "external-roblox-potion-shop-demo",
+          "external-tictactoe"
+        ],
+        "engines": [
+          "roblox",
           "web"
         ],
         "crossGameVerified": true
@@ -334,19 +434,6 @@
       },
       {
         "pattern": "observed-flow:input->ai",
-        "confirmations": 32,
-        "gameCount": 2,
-        "games": [
-          "external-memory-game",
-          "external-tictactoe"
-        ],
-        "engines": [
-          "web"
-        ],
-        "crossGameVerified": true
-      },
-      {
-        "pattern": "observed-flow:input->progression",
         "confirmations": 32,
         "gameCount": 2,
         "games": [
@@ -590,10 +677,112 @@
           "web"
         ],
         "crossGameVerified": false
+      },
+      {
+        "pattern": "architecture:economy",
+        "confirmations": 1,
+        "gameCount": 1,
+        "games": [
+          "external-roblox-potion-shop-demo"
+        ],
+        "engines": [
+          "roblox"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "architecture:runtime",
+        "confirmations": 1,
+        "gameCount": 1,
+        "games": [
+          "external-roblox-potion-shop-demo"
+        ],
+        "engines": [
+          "roblox"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "mechanic:economy",
+        "confirmations": 1,
+        "gameCount": 1,
+        "games": [
+          "external-roblox-potion-shop-demo"
+        ],
+        "engines": [
+          "roblox"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "mechanic:runtime-loop",
+        "confirmations": 1,
+        "gameCount": 1,
+        "games": [
+          "external-roblox-potion-shop-demo"
+        ],
+        "engines": [
+          "roblox"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ai->input",
+        "confirmations": 1,
+        "gameCount": 1,
+        "games": [
+          "external-roblox-potion-shop-demo"
+        ],
+        "engines": [
+          "roblox"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:persistence->runtime-flow",
+        "confirmations": 1,
+        "gameCount": 1,
+        "games": [
+          "external-roblox-potion-shop-demo"
+        ],
+        "engines": [
+          "roblox"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:progression->persistence",
+        "confirmations": 1,
+        "gameCount": 1,
+        "games": [
+          "external-roblox-potion-shop-demo"
+        ],
+        "engines": [
+          "roblox"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:runtime-flow->economy",
+        "confirmations": 1,
+        "gameCount": 1,
+        "games": [
+          "external-roblox-potion-shop-demo"
+        ],
+        "engines": [
+          "roblox"
+        ],
+        "crossGameVerified": false
       }
     ],
     "conflicts": [],
     "hypotheses": [
+      {
+        "hypothesis": "input->progression",
+        "confirmations": 33,
+        "gameCount": 3,
+        "status": "SUPPORTED_ACROSS_GAMES"
+      },
       {
         "hypothesis": "ai->progression",
         "confirmations": 32,
@@ -602,12 +791,6 @@
       },
       {
         "hypothesis": "input->ai",
-        "confirmations": 32,
-        "gameCount": 2,
-        "status": "SUPPORTED_ACROSS_GAMES"
-      },
-      {
-        "hypothesis": "input->progression",
         "confirmations": 32,
         "gameCount": 2,
         "status": "SUPPORTED_ACROSS_GAMES"
@@ -671,30 +854,68 @@
         "confirmations": 10,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "ai->input",
+        "confirmations": 1,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "persistence->runtime-flow",
+        "confirmations": 1,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "progression->persistence",
+        "confirmations": 1,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "runtime-flow->economy",
+        "confirmations": 1,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
       }
     ],
     "continualDistillation": {
-      "inputEntryCount": 3,
-      "uniquePatternCount": 28,
+      "inputEntryCount": 4,
+      "uniquePatternCount": 36,
       "crossGamePatternCount": 14,
-      "compressedPatternCount": 28,
-      "duplicatePatternObservations": 27
+      "compressedPatternCount": 36,
+      "duplicatePatternObservations": 34
     },
     "nearestForLatest": [
+      {
+        "gameId": "external-tictactoe",
+        "engine": "web",
+        "studyId": "study_n446gd",
+        "similarity": 0.8356,
+        "confirmations": 10
+      },
       {
         "gameId": "external-memory-game",
         "engine": "web",
         "studyId": "study_1yxj4pj",
-        "similarity": 0.9112,
+        "similarity": 0.7671,
+        "confirmations": 11
+      },
+      {
+        "gameId": "external-tictactoe",
+        "engine": "web",
+        "studyId": "study_16i6nw3",
+        "similarity": 0.7419,
         "confirmations": 11
       }
     ],
     "latestNovelty": {
-      "gameId": "external-tictactoe",
-      "novelty": 0.0888,
+      "gameId": "external-roblox-potion-shop-demo",
+      "novelty": 0.1644,
       "basis": "nearest-game-dna"
     },
-    "updatedAt": "2026-09-16T05:27:51.766Z"
+    "updatedAt": "2026-09-16T00:52:38.538Z"
   },
   "policy": {
     "serverFanInOnly": true,

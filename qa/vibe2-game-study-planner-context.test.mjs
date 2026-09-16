@@ -118,10 +118,11 @@ test('restart and round goals can retrieve verified restart knowledge', () => {
   assert.ok(context.crossGamePatterns.some((row) => row.pattern === 'mechanic:restart'));
 });
 
-test('central GAME STUDY knowledge is populated from verified real-browser studies', () => {
+test('central GAME STUDY knowledge preserves the verified real-browser baseline as other engines are added', () => {
   assert.equal(liveKnowledge.kind, 'vibe2-game-study-knowledge');
-  assert.equal(liveKnowledge.entries.length, 3);
-  assert.equal(new Set(liveKnowledge.entries.map((row) => row.gameId)).size, 2);
+  const webEntries = liveKnowledge.entries.filter((row) => row.engine === 'web');
+  assert.equal(webEntries.length, 3);
+  assert.equal(new Set(webEntries.map((row) => row.gameId)).size, 2);
   assert.equal(liveKnowledge.policy.serverFanInOnly, true);
   assert.equal(liveKnowledge.policy.verifiedStudiesOnly, true);
   assert.equal(liveKnowledge.policy.rawSourcePersisted, false);
@@ -129,7 +130,7 @@ test('central GAME STUDY knowledge is populated from verified real-browser studi
   assert.equal(liveKnowledge.policy.authorityExpanded, false);
   assert.equal(liveKnowledge.authorityExpanded, false);
 
-  for (const entry of liveKnowledge.entries) {
+  for (const entry of webEntries) {
     assert.ok(entry.studyId);
     assert.equal(entry.engine, 'web');
     assert.ok(entry.confirmations >= 1);
@@ -141,11 +142,11 @@ test('central GAME STUDY knowledge is populated from verified real-browser studi
   const merged = liveKnowledge.derived.mergedKnowledge || [];
   const crossGame = merged.filter((row) => row.crossGameVerified === true);
   const supported = (liveKnowledge.derived.hypotheses || []).filter((row) => row.status === 'SUPPORTED_ACROSS_GAMES');
-  assert.equal(liveKnowledge.derived.continualDistillation.inputEntryCount, 3);
-  assert.equal(liveKnowledge.derived.continualDistillation.uniquePatternCount, 28);
-  assert.equal(liveKnowledge.derived.continualDistillation.crossGamePatternCount, 14);
-  assert.equal(crossGame.length, 14);
-  assert.equal(supported.length, 4);
+  assert.ok(liveKnowledge.derived.continualDistillation.inputEntryCount >= 3);
+  assert.ok(liveKnowledge.derived.continualDistillation.uniquePatternCount >= 28);
+  assert.ok(liveKnowledge.derived.continualDistillation.crossGamePatternCount >= 14);
+  assert.ok(crossGame.length >= 14);
+  assert.ok(supported.length >= 4);
   assert.ok(crossGame.every((row) => row.gameCount >= 2));
   assert.ok(merged.every((row) => row.confirmations >= row.gameCount));
 });

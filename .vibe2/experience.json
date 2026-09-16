@@ -240,6 +240,68 @@
       "createdAt": "2026-09-16T03:31:41.041Z",
       "lastVerifiedAt": "2026-09-16T05:27:51.766Z",
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "exp_i00mwv",
+      "fingerprint": "fp_l4173p",
+      "gameId": "external-roblox-potion-shop-demo",
+      "engine": "roblox",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "game-study",
+      "problem": "reference-game-structure-and-play-observation",
+      "goal": "reuse only verified generalized game patterns without copying protected values or raw source",
+      "change": "verified-play-observation:input | verified-play-observation:economy | verified-play-observation:progression | verified-play-observation:ui | authorized-source-pattern:frame-loop | study-intelligence:mechanic:economy | study-intelligence:mechanic:input | study-intelligence:mechanic:progression | study-intelligence:mechanic:runtime-loop | study-intelligence:mechanic:ui | study-intelligence:architecture:economy | study-intelligence:architecture:input | study-intelligence:architecture:progression | study-intelligence:architecture:runtime | study-intelligence:architecture:ui | study-intelligence:observed-flow:ai->input | study-intelligence:observed-flow:input->progression | study-intelligence:observed-flow:persistence->runtime-flow | study-intelligence:observed-flow:progression->persistence | study-intelligence:observed-flow:runtime-flow->economy",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "server-side-study-verified",
+        "real-input-auto-player-verified",
+        "required-checkpoints-passed",
+        "authorized-server-source-read-only-scan"
+      ],
+      "build": "study-run:roblox-1789519907651-25796",
+      "evidence": [
+        "game-study:study_m43i0t",
+        "auto-player-run:roblox-1789519907651-25796",
+        "real-inputs:1",
+        "required-checkpoints:3/3",
+        "authorized-server-source:src_a59dif"
+      ],
+      "reusablePatterns": [
+        "GAME_STUDY:verified-play-observation:input",
+        "GAME_STUDY:verified-play-observation:economy",
+        "GAME_STUDY:verified-play-observation:progression",
+        "GAME_STUDY:verified-play-observation:ui",
+        "GAME_STUDY:authorized-source-pattern:frame-loop",
+        "GAME_STUDY:study-intelligence:mechanic:economy",
+        "GAME_STUDY:study-intelligence:mechanic:input",
+        "GAME_STUDY:study-intelligence:mechanic:progression",
+        "GAME_STUDY:study-intelligence:mechanic:runtime-loop",
+        "GAME_STUDY:study-intelligence:mechanic:ui",
+        "GAME_STUDY:study-intelligence:architecture:economy",
+        "GAME_STUDY:study-intelligence:architecture:input",
+        "GAME_STUDY:study-intelligence:architecture:progression",
+        "GAME_STUDY:study-intelligence:architecture:runtime",
+        "GAME_STUDY:study-intelligence:architecture:ui",
+        "GAME_STUDY:study-intelligence:observed-flow:ai->input",
+        "GAME_STUDY:study-intelligence:observed-flow:input->progression",
+        "GAME_STUDY:study-intelligence:observed-flow:persistence->runtime-flow",
+        "GAME_STUDY:study-intelligence:observed-flow:progression->persistence",
+        "GAME_STUDY:study-intelligence:observed-flow:runtime-flow->economy"
+      ],
+      "avoidPatterns": [],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": "2026-09-16T00:52:38.538Z",
+      "lastVerifiedAt": "2026-09-16T00:52:38.538Z",
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
     }
   ]
 }
