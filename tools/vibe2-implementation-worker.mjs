@@ -6,7 +6,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { resolveVibeDevelopmentExecution } from './vibe2-development-execution-policy.mjs';
 import { runVibe2DeterministicSourceWorker } from './vibe2-deterministic-source-worker.mjs';
-import { RECIPE as ROBLOX_BALANCE_RECIPE, runRobloxAutonomousBalanceWorker } from './vibe2-roblox-autonomous-balance-worker.mjs';
+import { DEFAULT_EVIDENCE as ROBLOX_BALANCE_DEFAULT_EVIDENCE, RECIPE as ROBLOX_BALANCE_RECIPE, runRobloxAutonomousBalanceWorker } from './vibe2-roblox-autonomous-balance-worker.mjs';
 
 const clean=value=>String(value??'').trim();
 function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8'));}
@@ -22,6 +22,20 @@ function assertDeterministicManifest(manifest,developmentExecution){
   return manifest;
 }
 
+function resolveVerifiedR5Evidence(cwd,evidenceFile=''){
+  const requested=clean(evidenceFile||process.env.VIBE2_RUNTIME_EVIDENCE_FILE)||ROBLOX_BALANCE_DEFAULT_EVIDENCE;
+  const resolved=path.isAbsolute(requested)?requested:path.resolve(cwd,requested);
+  if(!fs.existsSync(resolved))throw new Error(`R5 verified input telemetry missing: ${resolved}`);
+  const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA);
+  if(!baseMainSha)throw new Error('R5 requires VIBE2_BASE_MAIN_SHA before source mutation');
+  const evidence=readJson(resolved);
+  const evidenceMainSha=clean(evidence?.baseMainSha);
+  if(!evidenceMainSha||evidenceMainSha!==baseMainSha){
+    throw new Error(`R5 baseline/main revision mismatch: ${evidenceMainSha||'NONE'} != ${baseMainSha}`);
+  }
+  return resolved;
+}
+
 export async function runVibe2ImplementationWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',applySource=false,evidenceFile=''}={}){
   const input=readJson(path.resolve(cwd,workOrderFile));
   const developmentExecution=resolveVibeDevelopmentExecution({task:input?.selectedTask||{},target:input?.target,route:input?.executionRoute||'text-source-worker'});
@@ -35,8 +49,9 @@ export async function runVibe2ImplementationWorker({cwd=process.cwd(),workOrderF
   if(developmentExecution.executor!=='deterministic-source-worker')throw new Error(`implementation worker cannot execute source route: ${developmentExecution.executor}`);
 
   const workerArgs={cwd,workOrderFile:path.relative(cwd,effectiveFile),outputRoot,applySource};
+  const verifiedR5Evidence=developmentExecution.recipe===ROBLOX_BALANCE_RECIPE?resolveVerifiedR5Evidence(cwd,evidenceFile):'';
   const rawManifest=developmentExecution.recipe===ROBLOX_BALANCE_RECIPE
-    ?runRobloxAutonomousBalanceWorker({...workerArgs,evidenceFile})
+    ?runRobloxAutonomousBalanceWorker({...workerArgs,evidenceFile:verifiedR5Evidence})
     :runVibe2DeterministicSourceWorker(workerArgs);
   const manifest=assertDeterministicManifest(rawManifest,developmentExecution);
   return{manifest,developmentExecution};
