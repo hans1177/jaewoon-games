@@ -42,6 +42,19 @@ test('content change invalidates cache key',()=>{
   assert.equal(two.cached,false);
 });
 
+test('manifest changedFiles resolve under manifest sourceRoot',()=>{
+  const root=repo();
+  const sourceRoot='roblox-games/demo';
+  const relative='server/Game.server.luau';
+  fs.mkdirSync(path.join(root,sourceRoot,'server'),{recursive:true});
+  fs.writeFileSync(path.join(root,sourceRoot,relative),'local x = 1\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({sourceRoot,changedFiles:[relative]})+'\n','utf8');
+  const result=runIncrementalQa({root,manifest,namespace:'roblox:demo'});
+  assert.equal(result.outcome,'PASS');
+  assert.deepEqual(result.changedFiles,[`${sourceRoot}/${relative}`]);
+});
+
 test('invalid JS fails fast before full regression',()=>{
   const root=repo();
   fs.writeFileSync(path.join(root,'a.js'),'export const = ;\n','utf8');
