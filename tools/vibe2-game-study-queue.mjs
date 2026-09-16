@@ -14,6 +14,10 @@ const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '')
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const STUDY_EVIDENCE_PREFIX = 'game-study-target:';
 const AUTHORIZED_SERVER_SOURCE = 'owned-or-authorized-server-workspace';
+const TERMINAL_MISSING_RESULT_EVIDENCE = new Set([
+  'game-study-production-fanin:game-study-result-missing',
+  'game-study-production-fanin:game-study-result-ambiguous'
+]);
 
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
@@ -81,6 +85,9 @@ function studyTargetId(task = {}) {
   const row = (task.evidence || []).find((item) => clean(item).startsWith(STUDY_EVIDENCE_PREFIX));
   return row ? clean(row).slice(STUDY_EVIDENCE_PREFIX.length) : null;
 }
+function hasMissingResultEvidence(task = {}) {
+  return (task.evidence || []).some((item) => TERMINAL_MISSING_RESULT_EVIDENCE.has(clean(item)));
+}
 function taskForTarget(target) {
   const sourceRoot = target.sourceRoot || target.root || `game-study:${target.id}`;
   return {
@@ -124,9 +131,17 @@ export function prepareGameStudyQueue(queueInput = {}, targetInput = {}) {
     const target = targetByTask.get(task.id);
     if (!target) return task;
     seen.add(task.id);
-    if (task.status === 'running') return task;
+    const staleRunning = task.status === 'running' && task.lastOutcome !== 'PASS' && hasMissingResultEvidence(task);
+    if (task.status === 'running' && !staleRunning) return task;
     const refreshed = taskForTarget(target);
-    return { ...refreshed, evidence: unique([...(task.evidence || []), ...refreshed.evidence]) };
+    return {
+      ...refreshed,
+      evidence: unique([
+        ...(task.evidence || []),
+        ...refreshed.evidence,
+        staleRunning ? 'game-study-stale-running-recovered' : ''
+      ])
+    };
   });
   for (const target of targets.runnable) if (!seen.has(target.taskId)) tasks.push(taskForTarget(target));
   return {
