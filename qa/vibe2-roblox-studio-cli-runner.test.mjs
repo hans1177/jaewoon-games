@@ -21,13 +21,14 @@ test('Studio binary override must exist', () => {
   assert.throws(() => findRobloxStudioBinary({ override: path.join(root, 'missing.exe') }), /not found/);
 });
 
-test('Vibe2 live smoke reuses the existing authenticated Roblox Studio runner', () => {
-  assert.match(liveSmokeWorkflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.match(liveSmokeWorkflow, /roblox-studio-local/);
-  assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_NEW_RUNNER_REGISTRATION_REQUIRED=NO/);
+test('Vibe2 live smoke uses the dedicated isolated Roblox Studio runner', () => {
+  assert.match(liveSmokeWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
+  assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_STUDY_ISOLATED_SESSION: 'true'/);
+  assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_DEDICATED_RUNNER_IDENTITY=PASS/);
+  assert.match(liveSmokeWorkflow, /VIBE2_PRODUCTION_RUNNER_TOUCHED=NO/);
+  assert.match(liveSmokeWorkflow, /Production Roblox Studio runner must not execute dedicated GAME STUDY smoke/);
   assert.match(liveSmokeWorkflow, /shell: powershell/);
-  assert.doesNotMatch(liveSmokeWorkflow, /VIBE2_ROBLOX_STUDIO_RUNNER_READY/);
-  assert.doesNotMatch(liveSmokeWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
+  assert.doesNotMatch(liveSmokeWorkflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
 });
 
 test('continuous Roblox GAME STUDY uses the dedicated isolated Studio runner', () => {
