@@ -43,6 +43,10 @@ function lv3VillageUnlocked() {
   return Boolean(currentGame?.state?.villageExpansionV14?.townHallLv3);
 }
 
+function volcanoUnlocked() {
+  return northUnlocked() && lv3VillageUnlocked();
+}
+
 function blockedOnMainIsland(x, y) {
   if (y > 1025 || y < 160) return false;
   const pond = Math.pow((x - 390) / 150, 2) + Math.pow((y - 370) / 112, 2) < 1;
@@ -72,12 +76,16 @@ function inNorth(x, y) {
   return northUnlocked() && x >= 1435 && x <= 2820 && y >= -820 && y <= 220;
 }
 
+function inVolcano(x, y) {
+  return volcanoUnlocked() && x >= 2760 && x <= 4320 && y >= -820 && y <= 220;
+}
+
 function inWest(x, y) {
   return westUnlocked() && x >= -2850 && x <= 165 && y >= 160 && y <= 1025;
 }
 
 function canStandAt(x, y) {
-  return inMainVillage(x, y) || inEast(x, y) || inJungle(x, y) || inJungleWest(x, y) || inNorth(x, y) || inWest(x, y);
+  return inMainVillage(x, y) || inEast(x, y) || inJungle(x, y) || inJungleWest(x, y) || inNorth(x, y) || inVolcano(x, y) || inWest(x, y);
 }
 
 function baseCandidate(x, y) {
@@ -107,6 +115,10 @@ function northCandidate(x, y) {
   return { x: Math.max(1435, Math.min(2820, x)), y: Math.max(-820, Math.min(220, y)) };
 }
 
+function volcanoCandidate(x, y) {
+  return { x: Math.max(2760, Math.min(4320, x)), y: Math.max(-820, Math.min(220, y)) };
+}
+
 function westCandidate(x, y) {
   return { x: Math.max(-2850, Math.min(165, x)), y: Math.max(160, Math.min(1025, y)) };
 }
@@ -118,6 +130,7 @@ function recoverInvalidPosition(player) {
   if (jungleUnlocked()) candidates.push(jungleCandidate(player.x, player.y));
   if (jungleWestUnlocked()) candidates.push(jungleWestCandidate(player.x, player.y));
   if (northUnlocked()) candidates.push(northCandidate(player.x, player.y));
+  if (volcanoUnlocked()) candidates.push(volcanoCandidate(player.x, player.y));
   if (westUnlocked()) candidates.push(westCandidate(player.x, player.y));
 
   let best = candidates[0];
