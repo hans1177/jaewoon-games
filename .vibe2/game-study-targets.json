@@ -31,6 +31,24 @@
       "ownerDirectiveFeedback": true,
       "rawExternalSourceMemory": false
     },
+    "robloxMaterialCollector": {
+      "enabled": true,
+      "tool": "tools/vibe2-game-study-planner-context.mjs",
+      "targetEngine": "roblox",
+      "verifiedCrossGamePatternsOnly": true,
+      "maxMaterialsPerTask": 6,
+      "autoConnectBeforeReservation": true,
+      "rawSourceIncluded": false,
+      "rawGameplayValuesIncluded": false,
+      "authorityExpanded": false
+    },
+    "runtimeReadinessScheduling": {
+      "robloxReadinessVariable": "VIBE2_ROBLOX_STUDIO_RUNNER_READY",
+      "offlineBehavior": "preserve-queue-without-consuming-study-slot",
+      "onlineBehavior": "reserve-on-dedicated-vibe2-roblox-runner",
+      "productionRunnerFallback": false,
+      "productionStudioUntouched": true
+    },
     "robloxStudioConcurrency": {
       "productionPriority": true,
       "sameWindowsSessionConcurrent": false,
@@ -53,7 +71,14 @@
       "scenarioFile": ".vibe2/game-study-scenarios/external-tictactoe-flow-a.json",
       "sourceAccess": "observation-only",
       "priority": "low",
-      "tags": ["external-reference", "turn-based", "board-state", "ai-opponent", "restart-confirmation", "mit-licensed-reference"]
+      "tags": [
+        "external-reference",
+        "turn-based",
+        "board-state",
+        "ai-opponent",
+        "restart-confirmation",
+        "mit-licensed-reference"
+      ]
     },
     {
       "id": "external-tictactoe-flow-b",
@@ -65,7 +90,14 @@
       "scenarioFile": ".vibe2/game-study-scenarios/external-tictactoe-flow-b.json",
       "sourceAccess": "observation-only",
       "priority": "low",
-      "tags": ["external-reference", "difficulty-selection", "turn-feedback", "player-action", "ai-response", "mit-licensed-reference"]
+      "tags": [
+        "external-reference",
+        "difficulty-selection",
+        "turn-feedback",
+        "player-action",
+        "ai-response",
+        "mit-licensed-reference"
+      ]
     },
     {
       "id": "external-memory-flow-a",
@@ -77,7 +109,13 @@
       "scenarioFile": ".vibe2/game-study-scenarios/external-memory-flow-a.json",
       "sourceAccess": "observation-only",
       "priority": "low",
-      "tags": ["external-reference", "memory-game", "board-size-selection", "card-interaction", "move-feedback"]
+      "tags": [
+        "external-reference",
+        "memory-game",
+        "board-size-selection",
+        "card-interaction",
+        "move-feedback"
+      ]
     },
     {
       "id": "external-roblox-potion-shop-flow-a",
