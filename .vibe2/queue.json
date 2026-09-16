@@ -2242,14 +2242,14 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "queued",
-      "retries": 2,
+      "status": "failed",
+      "retries": 3,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "current-production-class-not-auto-deployable",
       "evidence": [
         "central-policy:COMPANY_FLOW.md",
         "owner-directive:full-roblox-game-rebuild",
@@ -2296,7 +2296,8 @@
         "package-review:all-required-roles-pass",
         "candidate-release-rejected",
         "actions-run-35048570677",
-        "actions-run-35048725347"
+        "actions-run-35048725347",
+        "actions-run-35048730415"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
