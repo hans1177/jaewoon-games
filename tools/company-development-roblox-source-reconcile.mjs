@@ -10,11 +10,27 @@ import {validateRobloxBootstrap} from './company-development-roblox-bootstrap.mj
 const clean=value=>String(value??'').trim();
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 const arg=(name,fallback='')=>process.argv.find(value=>value.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
+const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
+
+export function hasVerifiedVibe2SourceHandoff(item={}){
+  const handoff=item.robloxVibe2VerifiedHandoff;
+  return Boolean(
+    handoff?.verified===true
+    &&clean(handoff.gameId)===clean(item.gameId)
+    &&sha40(handoff.sourceRevision)
+    &&sha40(handoff.candidateSha)
+    &&sha40(handoff.sourceTreeSha)
+    &&Number.isInteger(Number(handoff.qaRunId))
+    &&Number(handoff.qaRunId)>0
+  );
+}
 
 export function eligibleForRobloxSourceReconciliation(item={}){
   if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
   if(clean(item.selectedPlatform||item.targetPlatform).toUpperCase()!=='ROBLOX')return false;
-  if(!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true))return false;
+  const ordinaryWebGate=Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true;
+  const verifiedVibe2Handoff=hasVerifiedVibe2SourceHandoff(item);
+  if(!(ordinaryWebGate||verifiedVibe2Handoff))return false;
   if(clean(item.currentStep).toUpperCase()!=='TARGET_PLATFORM_SOURCE_BIND')return false;
   if(clean(item.canonicalState).toUpperCase()==='DEVELOPMENT_BLOCKED')return false;
   return Boolean(clean(item.gameId));
@@ -49,6 +65,14 @@ export function validateExistingRobloxSourceTree({root='',baseline={}}={}){
   return {pass:blockers.length===0,blockers:[...new Set(blockers)],saveRequired:verdict.saveRequired};
 }
 
+function currentSourceTreeSha({repoRoot='.',sourcePath=''}){
+  try{
+    return clean(execFileSync('git',['rev-parse',`HEAD:${sourcePath}`],{cwd:repoRoot,encoding:'utf8'}));
+  }catch{
+    return '';
+  }
+}
+
 export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevision='',loadBaseline}={}){
   if(typeof loadBaseline!=='function')throw new Error('loadBaseline callback required');
   const results=[];
@@ -57,6 +81,23 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
     const sourcePath=`roblox-games/${item.gameId}`;
     const root=path.join(repoRoot,sourcePath);
     if(!fs.existsSync(root))continue;
+    const handoffVerified=hasVerifiedVibe2SourceHandoff(item);
+    if(handoffVerified){
+      const expectedTree=clean(item.robloxVibe2VerifiedHandoff.sourceTreeSha);
+      const actualTree=currentSourceTreeSha({repoRoot,sourcePath});
+      if(!actualTree||actualTree!==expectedTree){
+        results.push({
+          gameId:item.gameId,
+          pass:false,
+          sourcePath,
+          sourceRevision:clean(sourceRevision),
+          saveRequired:false,
+          blockers:['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH'],
+          failure:'verified-vibe2-source-handoff-mismatch',
+        });
+        continue;
+      }
+    }
     try{
       const baseline=loadBaseline(item);
       const verdict=validateExistingRobloxSourceTree({root,baseline});
