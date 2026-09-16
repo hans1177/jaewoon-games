@@ -10,7 +10,9 @@ import { createGameStudyKnowledge, findNearestGameStudies } from './vibe2-game-s
 const clean = (value) => String(value ?? '').trim();
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const MARKER = 'game-study-planner-context:v1';
+const MATERIAL_MARKER = 'game-study-material-collector:v1';
 const MAX_PATTERNS = 8;
+const MAX_MATERIALS = 6;
 
 const GOAL_SYSTEMS = Object.freeze({
   input: /input|key|click|pointer|touch|gamepad|키|클릭|입력/i,
@@ -79,14 +81,31 @@ function latestOwnDna(entries = [], gameId = '') {
   const rows = entries.filter((entry) => clean(entry?.gameId) === clean(gameId) && entry?.gameDna && Object.keys(entry.gameDna).length);
   return rows.sort((a, b) => clean(b?.lastSeenAt).localeCompare(clean(a?.lastSeenAt)) || Number(b?.confirmations || 0) - Number(a?.confirmations || 0))[0]?.gameDna || null;
 }
+function collectTargetMaterials(patterns = [], target = '') {
+  const normalizedTarget = clean(target).toLowerCase();
+  if (normalizedTarget !== 'roblox') return [];
+  return patterns.slice(0, MAX_MATERIALS).map((row) => Object.freeze({
+    pattern: row.pattern,
+    matchedSystems: Object.freeze([...(row.matchedSystems || [])]),
+    relevance: row.relevance,
+    confirmations: row.confirmations,
+    gameCount: row.gameCount,
+    engines: Object.freeze([...(row.engines || [])]),
+    transferClass: row.engines.includes('roblox') ? 'roblox-observed' : 'cross-engine-generalized',
+    verified: row.crossGameVerified === true,
+    rawSourceIncluded: false,
+    rawGameplayValuesIncluded: false
+  }));
+}
 
 export function buildGameStudyPlannerContext({ knowledgeInput = {}, task = {} } = {}) {
   const knowledge = createGameStudyKnowledge(knowledgeInput);
   const systems = goalSystems(task?.goal);
+  const target = clean(task?.target).toLowerCase();
   const patterns = crossGamePatterns(knowledge.entries)
     .map((row) => {
       const matchedSystems = patternSystems(row.pattern).filter((system) => systems.includes(system));
-      const targetEngineObserved = row.engines.includes(clean(task?.target).toLowerCase());
+      const targetEngineObserved = row.engines.includes(target);
       const relevance = matchedSystems.length * 10 + (targetEngineObserved ? 2 : 0) + Math.min(5, row.gameCount) + Math.min(5, row.confirmations / 2);
       return { ...row, matchedSystems, relevance: Number(relevance.toFixed(2)) };
     })
@@ -94,6 +113,7 @@ export function buildGameStudyPlannerContext({ knowledgeInput = {}, task = {} } 
     .sort((a, b) => b.relevance - a.relevance || b.gameCount - a.gameCount || b.confirmations - a.confirmations || a.pattern.localeCompare(b.pattern))
     .slice(0, MAX_PATTERNS);
 
+  const materials = collectTargetMaterials(patterns, target);
   const ownDna = latestOwnDna(knowledge.entries, task?.gameId);
   const nearest = ownDna ? findNearestGameStudies(knowledge, ownDna, { limit: 3, excludeGameId: task?.gameId }) : [];
   const nearestStatus = ownDna ? (nearest.length ? 'VERIFIED_TARGET_DNA_MATCHES' : 'NO_OTHER_GAME_DNA') : 'INSUFFICIENT_TARGET_DNA';
@@ -104,9 +124,20 @@ export function buildGameStudyPlannerContext({ knowledgeInput = {}, task = {} } 
     kind: 'vibe2-game-study-planner-context',
     applied,
     gameId: clean(task?.gameId) || null,
-    target: clean(task?.target).toLowerCase() || null,
+    target: target || null,
     goalSystems: Object.freeze(systems),
     crossGamePatterns: Object.freeze(patterns.map((row) => Object.freeze(row))),
+    materials: Object.freeze(materials),
+    materialCollector: Object.freeze({
+      enabled: target === 'roblox',
+      targetEngine: target || null,
+      materialCount: materials.length,
+      robloxObservedCount: materials.filter((row) => row.transferClass === 'roblox-observed').length,
+      crossEngineGeneralizedCount: materials.filter((row) => row.transferClass === 'cross-engine-generalized').length,
+      autoConnectedAtReservation: target === 'roblox',
+      verifiedOnly: true,
+      authorityExpanded: false
+    }),
     nearest: Object.freeze(nearest),
     nearestStatus,
     policy: Object.freeze({
@@ -145,33 +176,62 @@ export function gameStudyPlannerGuidance(context = {}) {
   return lines.join('\n');
 }
 
+export function gameStudyMaterialGuidance(context = {}) {
+  if (context?.target !== 'roblox' || !(context.materials || []).length) return '';
+  const lines = [
+    '[GAME STUDY ROBLOX MATERIAL COLLECTOR - verified generalized materials only]',
+    'Roblox 제작 목표와 직접 관련된 검증 학습 재료만 자동 연결한다. 원본 소스·게임 고유 수치·권한은 재료에 포함하지 않는다.'
+  ];
+  for (const row of context.materials || []) {
+    lines.push(`- material=${row.pattern}; systems=${row.matchedSystems.join(',')}; transfer=${row.transferClass}; confirmations=${row.confirmations}; relevance=${row.relevance}`);
+  }
+  return lines.join('\n');
+}
+
 export function enrichQueueWithGameStudyKnowledge({ queueInput = {}, knowledgeInput = {} } = {}) {
   const tasks = Array.isArray(queueInput?.tasks) ? queueInput.tasks : [];
   let enrichedCount = 0;
+  let materialCollectedCount = 0;
   const nextTasks = tasks.map((task) => {
     if (clean(task?.status).toLowerCase() !== 'queued' || clean(task?.type).toLowerCase() !== 'implementation') return task;
-    if ((task?.evidence || []).some((value) => clean(value) === MARKER)) return task;
+    const existingEvidence = task?.evidence || [];
+    const plannerApplied = existingEvidence.some((value) => clean(value) === MARKER);
+    const materialApplied = existingEvidence.some((value) => clean(value) === MATERIAL_MARKER);
     const context = buildGameStudyPlannerContext({ knowledgeInput, task });
     if (!context.applied) return task;
-    const guidance = gameStudyPlannerGuidance(context);
-    enrichedCount += 1;
+    const plannerGuidance = plannerApplied ? '' : gameStudyPlannerGuidance(context);
+    const materialGuidance = materialApplied ? '' : gameStudyMaterialGuidance(context);
+    if (!plannerGuidance && !materialGuidance) return task;
+    const additions = [plannerGuidance, materialGuidance].filter(Boolean).join('\n\n');
+    if (plannerGuidance) enrichedCount += 1;
+    if (materialGuidance) materialCollectedCount += context.materials.length;
     return {
       ...task,
-      goal: `${clean(task.goal)}\n\n${guidance}`,
+      goal: `${clean(task.goal)}\n\n${additions}`,
       evidence: unique([
-        ...(task.evidence || []),
-        MARKER,
-        `game-study-owner-directive:${task?.ownerDirective === true ? 'yes' : 'no'}`,
-        `game-study-goal-systems:${context.goalSystems.join(',') || 'none'}`,
-        `game-study-cross-game-patterns:${context.crossGamePatterns.length}`,
-        `game-study-nearest-status:${context.nearestStatus}`
+        ...existingEvidence,
+        ...(plannerGuidance ? [
+          MARKER,
+          `game-study-owner-directive:${task?.ownerDirective === true ? 'yes' : 'no'}`,
+          `game-study-goal-systems:${context.goalSystems.join(',') || 'none'}`,
+          `game-study-cross-game-patterns:${context.crossGamePatterns.length}`,
+          `game-study-nearest-status:${context.nearestStatus}`
+        ] : []),
+        ...(materialGuidance ? [
+          MATERIAL_MARKER,
+          `game-study-material-target:${context.target}`,
+          `game-study-material-count:${context.materials.length}`,
+          `game-study-material-roblox-observed:${context.materialCollector.robloxObservedCount}`,
+          `game-study-material-cross-engine:${context.materialCollector.crossEngineGeneralizedCount}`
+        ] : [])
       ])
     };
   });
   return {
     queue: { ...queueInput, tasks: nextTasks },
     enrichedCount,
-    changed: enrichedCount > 0,
+    materialCollectedCount,
+    changed: enrichedCount > 0 || materialCollectedCount > 0,
     authorityExpanded: false
   };
 }
@@ -192,5 +252,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
   console.log(`VIBE2_GAME_STUDY_PLANNER_CONTEXT=${result.changed ? 'APPLIED' : 'NO_CHANGE'}`);
   console.log(`VIBE2_GAME_STUDY_PLANNER_ENRICHED=${result.enrichedCount}`);
+  console.log(`VIBE2_GAME_STUDY_ROBLOX_MATERIALS=${result.materialCollectedCount}`);
   console.log('VIBE2_GAME_STUDY_PLANNER_AUTHORITY_EXPANDED=NO');
 }
