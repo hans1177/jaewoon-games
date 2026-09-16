@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "fix": [
+          "GAME_SEED: seed-unity-story-complete-rpg-the-obsidian-covenant, seed-unity-story-complete-rpg-the-obsidian-covenant, seed-unity-st"
+        ],
+        "add": [
+          "GAME_SEED: seed-unity-story-complete-rpg-the-obsidian-covenant, seed-unity-story-complete-rpg-the-obsidian-covenant, seed-unity-st"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "evidence": [
+          "REFERENCE_GAMES: Chrono Trigger, FINAL FANTASY VI, DRAGON QUEST VIII, Chrono Trigger, FINAL FANTASY VI, DRAGON QUEST VIII"
+        ],
+        "questions": [
+          "CORE_FUN_TO_LEARN: Narrative Driven Gameplay, Character Development"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The Obsidian Covenant's narrative is well-structured and engaging."
+        ],
+        "fix": [
+          "The game's combat mechanics could be improved for more variety and challenge."
+        ],
+        "add": [
+          "The game's multiplayer mode could be improved with more features and options."
+        ],
+        "risks": [
+          "The game's narrative could be improved with more depth and complexity."
+        ],
+        "evidence": [
+          "The game's technical performance could be improved with more optimization and updates."
+        ],
+        "questions": [
+          "How can the game's combat mechanics be improved for more variety and challenge?"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What is the Obsidian Covenant?"
+        ],
+        "fix": [
+          "The Obsidian Covenant is a narrative-driven game where you play as a space-faring adventurer exploring the galaxy, meeting other N"
+        ],
+        "add": [
+          "You can also choose to play as a space smuggler, bounty hunter, or space explorer, each with their own unique abilities and"
+        ],
+        "risks": [
+          "You can encounter hostile alien species, hostile space stations, and even hostile space pirates, all of which can pose a"
+        ],
+        "evidence": [
+          "The Obsidian Covenant is a narrative-driven game where you play as a space-faring adventurer exploring the galaxy, meeting other N"
+        ],
+        "questions": [
+          "What is the Obsidian Covenant?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: DYNAMIC_CONTEXTUAL_2_TO_4"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: DYNAMIC_CONTEXTUAL_2_TO_4"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: DYNAMIC_CONTEXTUAL_2_TO_4"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: DYNAMIC_CONTEXTUAL_2_TO_4"
+        ],
+        "evidence": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: DYNAMIC_CONTEXTUAL_2_TO_4"
+        ],
+        "questions": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: DYNAMIC_CONTEXTUAL_2_TO_4"
+        ]
+      }
+    }
+  ]
+}

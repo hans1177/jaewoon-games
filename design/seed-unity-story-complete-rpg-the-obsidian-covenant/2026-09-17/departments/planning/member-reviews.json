@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME"
+        ],
+        "add": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME"
+        ],
+        "evidence": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME"
+        ],
+        "questions": [
+          "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED_UNITY_STORY_COMPLETE_RPG-001"
+        ],
+        "fix": [
+          "MAT-006: Social Co-op Competition에서 얻은 독립 게임 재료 6"
+        ],
+        "add": [
+          "MAT-012: Story or Narrative Structure에서 얻은 게임 재료 12"
+        ],
+        "risks": [
+          "MAT-018: Space Building Operation에서 얻은 게임 재료 18"
+        ],
+        "evidence": [
+          "Chrono Trigger: complete story arc, exploration, battles, boss progression and ending benchmark"
+        ],
+        "questions": [
+          "TARGET_PLATFORM_FIT: SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 6"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}

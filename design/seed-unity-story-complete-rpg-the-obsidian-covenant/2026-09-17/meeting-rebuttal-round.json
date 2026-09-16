@@ -1,0 +1,90 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep: SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4",
+        "fix: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
+        "add: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+      ],
+      "challenge": [
+        "keep: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
+        "fix: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
+        "add: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+      ],
+      "revision": [
+        "keep: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
+        "fix: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]",
+        "add: SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+      ],
+      "reason": "The structure and content of the SEED_MATERIAL_SELECTION_SIGNALS are consistent with the requirements. The evidence and questions provided are relevant to the context of the SEED_MATERIAL_SELECTION_MODE. The risks and evidence are also aligned with the goals of the SEED_MATERIAL_SELECTION_SIGNALS."
+    },
+    "graphics": {
+      "accept": [
+        "Rich Lore and Complex Story",
+        "Game Reference: Chrono Trigger"
+      ],
+      "challenge": [
+        "Character Development"
+      ],
+      "revision": [
+        "Game Reference: Chrono Trigger"
+      ],
+      "reason": "add Game Reference: Chrono Trigger,"
+    },
+    "development": {
+      "accept": [
+        "GAME_SEED"
+      ],
+      "challenge": [
+        "GAME_SEED"
+      ],
+      "revision": [
+        "GAME_SEED"
+      ],
+      "reason": "GAME_SEED"
+    },
+    "qa": {
+      "accept": [
+        "qa"
+      ],
+      "challenge": [
+        "qa"
+      ],
+      "revision": [
+        "qa"
+      ],
+      "reason": "QA 부서의 책임범위를 따르는 것이 가장 적절한 결정입니다."
+    },
+    "balance": {
+      "accept": [
+        "keep",
+        "add",
+        "risks"
+      ],
+      "challenge": [
+        "fix",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "planning",
+        "graphics",
+        "development"
+      ],
+      "reason": "스키마에 맞는 JSON 객체만 반환한다."
+    }
+  }
+}

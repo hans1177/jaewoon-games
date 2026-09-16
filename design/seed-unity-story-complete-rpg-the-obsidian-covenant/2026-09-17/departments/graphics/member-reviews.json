@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Rich Lore and Complex Story"
+        ],
+        "fix": [
+          "Character Development"
+        ],
+        "add": [
+          "Game Reference: Chrono Trigger"
+        ],
+        "risks": [
+          "Battle Chasers: Nightwar"
+        ],
+        "evidence": [
+          "Chrono Trigger"
+        ],
+        "questions": [
+          "ESA Power of Play 2025 Global Report"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "gameName: The Obsidian Covenant"
+        ],
+        "fix": [
+          "gameId: seed-unity-story-complete-rpg-the-obsidian-covenant"
+        ],
+        "add": [
+          "gameId: seed-unity-story-complete-rpg-the-obsidian-covenant"
+        ],
+        "risks": [
+          "gameId: seed-unity-story-complete-rpg-the-obsidian-covenant"
+        ],
+        "evidence": [
+          "gameId: seed-unity-story-complete-rpg-the-obsidian-covenant"
+        ],
+        "questions": [
+          "gameId: seed-unity-story-complete-rpg-the-obsidian-covenant"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"SEED-UNITY-STORY-complete-RPG-001\",\"gameId\":\"seed-unity-story-complete-rpg-the-obsidian-covenant\""
+        ],
+        "add": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"SEED-UNITY-STORY-complete-RPG-001\",\"gameId\":\"seed-unity-story-complete-rpg-the-obsidian-covenant\""
+        ],
+        "risks": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"SEED-UNITY-STORY-complete-RPG-001\",\"gameId\":\"seed-unity-story-complete-rpg-the-obsidian-covenant\""
+        ],
+        "evidence": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"SEED-UNITY-STORY-complete-RPG-001\",\"gameId\":\"seed-unity-story-complete-rpg-the-obsidian-covenant\""
+        ],
+        "questions": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"SEED-UNITY-STORY-complete-RPG-001\",\"gameId\":\"seed-unity-story-complete-rpg-the-obsidian-covenant\""
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "llama3.2:1b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "SEED_MATERIAL_SELECTION_MODE: DYNAMIC_CONTEXTUAL_2_TO_4"
+      ],
+      "fix": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+      ],
+      "add": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+      ],
+      "risks": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+      ],
+      "evidence": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+      ],
+      "questions": [
+        "SEED_MATERIAL_SELECTION_SIGNALS: [TARGET_PLATFORM_FIT, CATEGORY_OR_GENRE_FIT, MATERIAL_COMPLEMENTARITY, VALIDATED_LEARNING_OUTCOME]"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Rich Lore and Complex Story",
+        "Game Reference: Chrono Trigger"
+      ],
+      "fix": [
+        "Character Development"
+      ],
+      "add": [
+        "Game Reference: Chrono Trigger"
+      ],
+      "risks": [
+        "Battle Chasers: Nightwar"
+      ],
+      "evidence": [
+        "Chrono Trigger"
+      ],
+      "questions": [
+        "ESA Power of Play 2025 Global Report"
+      ]
+    },
+    "development": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "GAME_SEED"
+      ],
+      "add": [
+        "GAME_SEED"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "GAME_SEED"
+      ],
+      "questions": [
+        "GAME_SEED"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "SEED_MATERIAL_SELECTION_SIGNALS"
+      ],
+      "fix": [
+        "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+      ],
+      "add": [
+        "SEED_MATERIAL_ID"
+      ],
+      "risks": [
+        "SEED_MATERIAL_SELECTION_MODE"
+      ],
+      "evidence": [
+        "GAME_CATEGORY"
+      ],
+      "questions": [
+        "GAME_SEED"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "SEED_MATERIAL_SELECTION_SIGNALS",
+      "status": "CONSENSUS",
+      "reason": "add Game Reference: Chrono Trigger",
+      "departments": [
+        "qa"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 1,
+    "conflict": 0,
+    "hold": 0
+  }
+}

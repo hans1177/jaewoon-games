@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-story-complete-rpg-the-obsidian-covenant",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "SOCIAL_COOP_COMPETITION"
+        ],
+        "fix": [
+          "STORY_OR_NARRATIVE_STRUCTURE"
+        ],
+        "add": [
+          "SPACE_BUILDING_OPERATION"
+        ],
+        "risks": [
+          "STORY_COMPLETE_RPG_GAME_RISK_1_1"
+        ],
+        "evidence": [
+          "SOCIAL_COOP_COMPETITION_EVIDENCER"
+        ],
+        "questions": [
+          "What are the most important factors that contribute to the success of a narrative-driven game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Narrative Driven Gameplay, Character Development, and Story Progression"
+        ],
+        "fix": [
+          "Explore an area, meet characters, accept or advance story quests, and discover information that moves the main narrative forward."
+        ],
+        "add": [
+          "Fight enemies and bosses, gain equipment or skills, and use that growth to reach the next story location or major encounter."
+        ],
+        "risks": [
+          "Risk of failure, loss of progress, and a lack of growth in the story"
+        ],
+        "evidence": [
+          "Chrono Trigger, Final Fantasy VI, and Battle Chasers: Nightwar"
+        ],
+        "questions": [
+          "What is the Obsidian Covenant's progression path?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+        ],
+        "add": [
+          "SEED_MATERIAL_ID"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_MODE"
+        ],
+        "evidence": [
+          "GAME_CATEGORY"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    }
+  ]
+}
