@@ -2425,14 +2425,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "other",
-      "status": "blocked",
+      "status": "running",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "roblox-dedicated-runner-offline-deferred",
+      "blocker": null,
       "evidence": [
         "game-study-target:external-roblox-potion-shop-flow-a",
         "game-study-engine:roblox",
@@ -2444,7 +2444,8 @@
         "game-study-stale-running-recovered",
         "game-study-dedicated-runner:offline",
         "production-studio-untouched",
-        "game-study-runtime-readiness:roblox-offline"
+        "game-study-runtime-readiness:roblox-offline",
+        "game-study-reservation-at:2026-09-16T11:32:07.635Z"
       ],
       "lastOutcome": null,
       "companyContext": null,
