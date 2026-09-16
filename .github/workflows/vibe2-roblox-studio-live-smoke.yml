@@ -6,16 +6,15 @@ on:
       - vibe2-unreal-core
     paths:
       - 'tools/vibe2-roblox-studio-cli-runner.mjs'
-      - 'tools/vibe2-roblox-runner-bootstrap.ps1'
       - 'tools/runtime/roblox/**'
       - 'tools/vibe2-roblox-auto-player.mjs'
       - 'tools/vibe2-roblox-game-study.mjs'
       - '.vibe2/game-study-targets.json'
       - '.vibe2/game-study-scenarios/external-roblox-*.json'
       - 'qa/vibe2-roblox-studio-cli-runner.test.mjs'
-      - 'qa/vibe2-roblox-runner-bootstrap.test.mjs'
       - 'qa/fixtures/vibe2-roblox-studio-smoke-scenario.json'
       - '.github/workflows/vibe2-roblox-studio-live-smoke.yml'
+      - '.github/workflows/vibe2-game-study-continuous.yml'
   workflow_dispatch:
 
 permissions:
@@ -34,58 +33,39 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify Studio CLI and self-hosted runner bootstrap contracts
+      - name: Verify Studio CLI and authenticated runner contracts
         shell: bash
         run: |
           set -euo pipefail
           node --check tools/vibe2-roblox-studio-cli-runner.mjs
           node --check qa/vibe2-roblox-studio-cli-runner.test.mjs
-          node --check qa/vibe2-roblox-runner-bootstrap.test.mjs
           node --test qa/vibe2-roblox-studio-cli-runner.test.mjs
-          node --test qa/vibe2-roblox-runner-bootstrap.test.mjs
-          pwsh -NoLogo -NoProfile -Command "[scriptblock]::Create((Get-Content 'tools/vibe2-roblox-runner-bootstrap.ps1' -Raw)) | Out-Null"
           node <<'NODE'
           const fs=require('fs');
           const cfg=JSON.parse(fs.readFileSync('.vibe2/game-study-targets.json','utf8'));
           const target=cfg.targets.find(x=>x.id==='external-roblox-potion-shop-flow-a');
           if(!target) throw new Error('Potion Shop Roblox target missing');
-          if(target.enabled!==false) throw new Error('Potion Shop target must remain disabled until real Studio smoke passes');
+          if(target.enabled!==true) throw new Error('Potion Shop target must stay enabled after verified real Studio smoke');
           if(target.engine!=='roblox'||target.runnerReady!==true) throw new Error('Potion Shop target Studio contract invalid');
           if(target.sourceAccess!=='owned-or-authorized-server-workspace') throw new Error('Potion Shop target source access must be explicitly authorized');
           if(!target.commandArgs.some(x=>String(x).includes('14215142052'))) throw new Error('official Potion Shop place id missing');
           if(!target.commandArgs.some(x=>String(x).includes('creator-enabled-place-copying'))) throw new Error('copy permission contract missing');
           if(cfg.policy?.externalRobloxActiveAutomation!==false) throw new Error('generic external Roblox automation must remain disabled');
           if(cfg.policy?.externalCopyEnabledRobloxAutomation!==true) throw new Error('explicit copy-enabled Roblox automation policy missing');
+          const scenario=JSON.parse(fs.readFileSync(target.scenarioFile,'utf8'));
+          if(!scenario.actions.some(x=>x.type==='key'&&x.key==='P')) throw new Error('Potion Shop real input action missing');
+          for(const expression of ['game-loaded','player-present','player-gui-nonempty']) {
+            if(!scenario.actions.some(x=>x.type==='expect'&&x.expression===expression)) throw new Error(`Potion Shop runtime checkpoint missing: ${expression}`);
+          }
+          if(scenario.actions.some(x=>String(x.expression||'').startsWith('instance-path:'))) throw new Error('Studio edit objects must not be asserted from the play client');
           console.log('VIBE2_ROBLOX_STUDIO_CONTRACT=PASS');
+          console.log('VIBE2_ROBLOX_EXISTING_AUTHENTICATED_RUNNER_REUSE=YES');
+          console.log('VIBE2_ROBLOX_POTION_SHOP_TARGET_ACTIVE=YES');
           NODE
 
-  runner-readiness:
-    needs: contract
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    outputs:
-      ready: ${{ steps.gate.outputs.ready }}
-    steps:
-      - name: Gate real self-hosted Studio execution
-        id: gate
-        shell: bash
-        env:
-          RUNNER_READY: ${{ vars.VIBE2_ROBLOX_STUDIO_RUNNER_READY }}
-        run: |
-          set -euo pipefail
-          if [ "$RUNNER_READY" = "true" ]; then
-            echo 'ready=true' >> "$GITHUB_OUTPUT"
-            echo 'VIBE2_ROBLOX_STUDIO_RUNNER_READY=YES'
-          else
-            echo 'ready=false' >> "$GITHUB_OUTPUT"
-            echo 'VIBE2_ROBLOX_STUDIO_RUNNER_READY=NO'
-            echo 'Live Studio verification remains gated; production Roblox study target must stay disabled.'
-          fi
-
   live-studio:
-    needs: [contract, runner-readiness]
-    if: needs.runner-readiness.outputs.ready == 'true'
-    runs-on: [self-hosted, Windows, vibe2-roblox]
+    needs: contract
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
@@ -94,56 +74,65 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify runner identity and locate real Roblox Studio
-        shell: pwsh
+      - name: Verify existing authenticated runner identity and locate real Roblox Studio
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           Write-Host "VIBE2_ROBLOX_RUNNER_NAME=$env:RUNNER_NAME"
           Write-Host "VIBE2_ROBLOX_RUNNER_OS=$env:RUNNER_OS"
           if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio runner must be Windows' }
+          $runnerRoot = 'C:\actions-runner'
+          $runnerMetadata = Get-Content (Join-Path $runnerRoot '.runner') -Raw | ConvertFrom-Json
+          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') {
+            throw "Unexpected authenticated Roblox runner: $($runnerMetadata.agentName)"
+          }
+          Write-Host 'VIBE2_ROBLOX_EXISTING_RUNNER_IDENTITY=PASS'
+          Write-Host 'VIBE2_ROBLOX_NEW_RUNNER_REGISTRATION_REQUIRED=NO'
           node -e "import('./tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p);require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n')})"
 
       - name: Verify official Studio CLI with real VirtualInput
-        shell: pwsh
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          $argsJson = @('tools/vibe2-roblox-studio-cli-runner.mjs') | ConvertTo-Json -Compress
+          $env:VIBE2_ROBLOX_AUTO_PLAYER_ARGS = ConvertTo-Json -InputObject @('tools/vibe2-roblox-studio-cli-runner.mjs') -Compress
           node tools/vibe2-roblox-auto-player.mjs `
             --scenario=qa/fixtures/vibe2-roblox-studio-smoke-scenario.json `
             --command=node `
-            "--args-json=$argsJson" `
             --output="$env:RUNNER_TEMP/vibe2-roblox-studio-baseplate.json" `
             --timeout=120000
 
-      - name: Study official copy-enabled Potion Shop in real Studio
-        shell: pwsh
+      - name: Study official uncopylocked Potion Shop through authenticated Studio
+        shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
           $sourceRoot = Join-Path $env:RUNNER_TEMP 'vibe2-potion-shop-source'
-          $argsJson = @(
+          $env:VIBE2_ROBLOX_AUTO_PLAYER_ARGS = ConvertTo-Json -InputObject @(
             'tools/vibe2-roblox-studio-cli-runner.mjs',
             '--place-id=14215142052',
             '--copy-permission=creator-enabled-place-copying',
             '--permission-evidence=https://create.roblox.com/docs/cloud/guides/instance#potion-shop-demo',
             "--source-root=$sourceRoot"
-          ) | ConvertTo-Json -Compress
+          ) -Compress
           node tools/vibe2-roblox-game-study.mjs `
             --game-id=external-roblox-potion-shop-demo `
             --scenario=.vibe2/game-study-scenarios/external-roblox-potion-shop-flow-a.json `
             --command=node `
-            "--args-json=$argsJson" `
             "--source-root=$sourceRoot" `
             --source-access=owned-or-authorized-server-workspace `
             --play-output="$env:RUNNER_TEMP/vibe2-potion-shop-play.json" `
             --output="$env:RUNNER_TEMP/vibe2-potion-shop-study.json" `
             --timeout=240000
-          node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/vibe2-potion-shop-study.json','utf8'));if(s.verified!==true)throw new Error('Potion Shop study not verified');if(s.sourceAnalysis?.scanned!==true)throw new Error('authorized source evidence not scanned');if(s.sourceAnalysis?.authorized!==true)throw new Error('authorized source evidence rejected');if(s.policy?.rawSourceCopiedIntoMemory!==false)throw new Error('raw source policy changed');if(s.authorityExpanded===true)throw new Error('authority expanded');console.log('VIBE2_ROBLOX_POTION_SHOP_STUDY=PASS');console.log('VIBE2_ROBLOX_POTION_SHOP_PATTERNS='+(s.distilledPatterns?.length||0))"
+          node -e "const fs=require('fs');const s=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/vibe2-potion-shop-study.json','utf8'));if(s.verified!==true)throw new Error('Potion Shop study not verified');if(s.sourceAnalysis?.scanned!==true)throw new Error('authorized source evidence not scanned');if(s.sourceAnalysis?.authorized!==true)throw new Error('authorized source evidence rejected');if(s.policy?.rawSourceCopiedIntoMemory!==false)throw new Error('raw source policy changed');if(s.authorityExpanded===true)throw new Error('authority expanded');if(Number(s.run?.inputActionCount||0)<1)throw new Error('real input was not observed');if(Number(s.run?.checkpointPassCount||0)!==Number(s.run?.checkpointCount||0))throw new Error('runtime checkpoint mismatch');console.log('VIBE2_ROBLOX_POTION_SHOP_STUDY=PASS');console.log('VIBE2_ROBLOX_POTION_SHOP_PATTERNS='+(s.distilledPatterns?.length||0))"
           $manifest = Get-Content (Join-Path $sourceRoot 'authorized-studio-manifest.json') -Raw | ConvertFrom-Json
+          if ($manifest.placeId -ne '14215142052') { throw 'Potion Shop source provenance place id mismatch' }
+          if ([string]$manifest.observedPlaceId -ne '0') { throw 'Potion Shop must open as an uncopylocked Studio copy' }
           if ($manifest.rawSourcePersisted -ne $false -or $manifest.rawPlacePersisted -ne $false) { throw 'raw Roblox source/place persisted' }
-          if ([int]$manifest.scriptCount -lt 1) { throw 'Potion Shop source scripts were not observed' }
+          if ([int]$manifest.scriptCount -lt 6) { throw 'Potion Shop copy did not expose the expected source structure' }
           if (@($manifest.generalizedPatterns).Count -lt 1) { throw 'Potion Shop produced no generalized source patterns' }
+          Write-Host "VIBE2_ROBLOX_POTION_SHOP_OBSERVED_PLACE_ID=$($manifest.observedPlaceId)"
           Write-Host "VIBE2_ROBLOX_POTION_SHOP_SCRIPT_COUNT=$($manifest.scriptCount)"
           Write-Host "VIBE2_ROBLOX_POTION_SHOP_GENERALIZED_PATTERNS=$(@($manifest.generalizedPatterns).Count)"
+          Write-Host 'VIBE2_ROBLOX_POTION_SHOP_COPY_SESSION_IDENTITY=PASS'
 
       - name: Upload real Roblox Studio evidence
         if: always()

@@ -5,12 +5,66 @@ import os from 'node:os';
 import path from 'node:path';
 import { runRobloxStudioCliRuntime, findRobloxStudioBinary } from '../tools/vibe2-roblox-studio-cli-runner.mjs';
 
+const liveSmokeWorkflow = fs.readFileSync('.github/workflows/vibe2-roblox-studio-live-smoke.yml', 'utf8');
+const continuousWorkflow = fs.readFileSync('.github/workflows/vibe2-game-study-continuous.yml', 'utf8');
+const studioCliSource = fs.readFileSync('tools/vibe2-roblox-studio-cli-runner.mjs', 'utf8');
+const potionScenario = fs.readFileSync('.vibe2/game-study-scenarios/external-roblox-potion-shop-flow-a.json', 'utf8');
+
 function temp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-roblox-studio-cli-test-')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(value, null, 2), 'utf8'); }
 
 test('Studio binary override must exist', () => {
   const root = temp();
   assert.throws(() => findRobloxStudioBinary({ override: path.join(root, 'missing.exe') }), /not found/);
+});
+
+test('Vibe2 live smoke reuses the existing authenticated Roblox Studio runner', () => {
+  assert.match(liveSmokeWorkflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.match(liveSmokeWorkflow, /roblox-studio-local/);
+  assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_NEW_RUNNER_REGISTRATION_REQUIRED=NO/);
+  assert.match(liveSmokeWorkflow, /shell: powershell/);
+  assert.doesNotMatch(liveSmokeWorkflow, /VIBE2_ROBLOX_STUDIO_RUNNER_READY/);
+  assert.doesNotMatch(liveSmokeWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
+});
+
+test('continuous Roblox GAME STUDY reuses the existing authenticated Studio runner', () => {
+  assert.match(continuousWorkflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.doesNotMatch(continuousWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
+});
+
+test('Vibe2 live smoke transports Studio command args through environment on Windows PowerShell', () => {
+  const envAssignments = liveSmokeWorkflow.match(/\$env:VIBE2_ROBLOX_AUTO_PLAYER_ARGS = ConvertTo-Json -InputObject @\(/g) || [];
+  assert.equal(envAssignments.length, 2);
+  assert.doesNotMatch(liveSmokeWorkflow, /--args-json=/);
+});
+
+test('Studio play-test completion is server-owned and nonce-bound', () => {
+  assert.match(studioCliSource, /resultRemote:FireServer\(result\)/);
+  assert.match(studioCliSource, /resultRemote\.OnServerEvent:Connect/);
+  assert.match(studioCliSource, /tostring\(result\.nonce or ""\) ~= expectedNonce/);
+  assert.match(studioCliSource, /StudioTestService:EndTest\(/);
+  assert.doesNotMatch(studioCliSource, /StudioTestService:GetTestArgs\(/);
+  assert.doesNotMatch(studioCliSource, /StudioTestService:EndTest\(Vibe2AutoPlayer\.EncodeStdout/);
+});
+
+test('Studio marker parser accepts only decodable JSON evidence', () => {
+  assert.match(studioCliSource, /JSON\.parse\(decoded\)/);
+  assert.equal(studioCliSource.includes('tail.match(/^([A-Za-z0-9+/]{16,}={0,2})'), true);
+});
+
+test('uncopylocked Studio copies separate edit-time identity evidence from play-client checkpoints', () => {
+  assert.match(studioCliSource, /const authorizedCopy =/);
+  assert.match(studioCliSource, /const expectedRuntimePlaceId = authorizedCopy \|\| normalizedPlaceFile \? '' : normalizedPlaceId/);
+  assert.match(studioCliSource, /observedPlaceId = tostring\(game\.PlaceId\)/);
+  assert.match(potionScenario, /"key": "P"/);
+  assert.match(potionScenario, /"expression": "game-loaded"/);
+  assert.match(potionScenario, /"expression": "player-present"/);
+  assert.match(potionScenario, /"expression": "player-gui-nonempty"/);
+  assert.doesNotMatch(potionScenario, /instance-path:/);
+  assert.match(liveSmokeWorkflow, /\$manifest\.observedPlaceId -ne '0'/);
+  assert.match(liveSmokeWorkflow, /\$manifest\.scriptCount -lt 6/);
+  assert.match(liveSmokeWorkflow, /VIBE2_ROBLOX_POTION_SHOP_COPY_SESSION_IDENTITY=PASS/);
+  assert.doesNotMatch(liveSmokeWorkflow, /vibe2-roblox-authorized-download-runner/);
 });
 
 test('official Studio CLI runner persists nonce-bound runtime and sanitized authorized source evidence', async () => {
@@ -27,7 +81,7 @@ test('official Studio CLI runner persists nonce-bound runtime and sanitized auth
       { id: 'loaded', type: 'expect', expression: 'game-loaded' }
     ]
   });
-  fs.writeFileSync(fakeStudio, `#!/usr/bin/env node\nconst fs=require('fs');\nconst args=process.argv.slice(2);\nconst get=(name)=>{const i=args.indexOf(name);return i>=0?args[i+1]:''};\nconst bootstrap=fs.readFileSync(get('--runScriptFile'),'utf8');\nconst nonce=(bootstrap.match(/\\"nonce\\":\\"([a-f0-9]+)\\"/)||[])[1];\nif(!nonce) throw new Error('nonce missing from generated bootstrap');\nconst placeId=get('--placeId')||'0';\nconst runtime={version:1,engine:'roblox',nonce,authority:'vibe2-roblox-studio-runtime',runtimeVerified:true,capabilities:{studioTestService:true,virtualInput:true},place:'fixture',actions:[{id:'input',type:'key',dispatched:true,ok:true}],checkpoints:[{id:'loaded',name:'loaded',required:true,pass:true,value:true}],errors:[],metrics:{timeToFirstActionMs:1,consoleErrorCount:0}};\nconst source={version:1,placeId,expectedPlaceId:placeId,scriptCount:7,patterns:['datastore-persistence','network-remotes','input-services'],rawSourcePersisted:false,authorityExpanded:false};\nconst enc=x=>Buffer.from(JSON.stringify(x)).toString('base64');\nfs.writeFileSync(get('--outputFile'),'VIBE2_ROBLOX_SOURCE_PATTERNS_JSON='+enc(source)+'\\nVIBE2_AUTO_PLAYER_RUNTIME_JSON='+enc(runtime)+'\\n','utf8');\n`, 'utf8');
+  fs.writeFileSync(fakeStudio, `#!/usr/bin/env node\nconst fs=require('fs');\nconst args=process.argv.slice(2);\nconst get=(name)=>{const i=args.indexOf(name);return i>=0?args[i+1]:''};\nconst bootstrap=fs.readFileSync(get('--runScriptFile'),'utf8');\nconst nonce=(bootstrap.match(/\\"nonce\\":\\"([a-f0-9]+)\\"/)||[])[1];\nif(!nonce) throw new Error('nonce missing from generated bootstrap');\nconst sourcePlaceId=(bootstrap.match(/placeId = \\[\\[([0-9]+)\\]\\]/)||[])[1]||get('--placeId')||'0';\nconst runtime={version:1,engine:'roblox',nonce,authority:'vibe2-roblox-studio-runtime',runtimeVerified:true,capabilities:{studioTestService:true,virtualInput:true},place:'fixture-copy',actions:[{id:'input',type:'key',dispatched:true,ok:true}],checkpoints:[{id:'loaded',name:'loaded',required:true,pass:true,value:true}],errors:[],metrics:{timeToFirstActionMs:1,consoleErrorCount:0}};\nconst source={version:1,placeId:sourcePlaceId,observedPlaceId:'0',expectedPlaceId:'',scriptCount:7,patterns:['datastore-persistence','network-remotes','input-services'],rawSourcePersisted:false,authorityExpanded:false};\nconst enc=x=>Buffer.from(JSON.stringify(x)).toString('base64');\nfs.writeFileSync(get('--outputFile'),'VIBE2_ROBLOX_SOURCE_PATTERNS_JSON='+enc(source)+'\\nVIBE2_AUTO_PLAYER_RUNTIME_JSON='+enc(runtime)+'\\nVIBE2_AUTO_PLAYER_RUNTIME_JSON=bm90LWpzb24=\\nprint(\\"VIBE2_AUTO_PLAYER_RUNTIME_JSON=\\" .. encoded)\\n','utf8');\n`, 'utf8');
   fs.chmodSync(fakeStudio, 0o755);
   const result = await runRobloxStudioCliRuntime({
     studioPath: fakeStudio,
@@ -43,6 +97,7 @@ test('official Studio CLI runner persists nonce-bound runtime and sanitized auth
     timeoutMs: 15000
   });
   assert.equal(result.verifiedRuntime, true);
+  assert.equal(result.authorizedCopy, true);
   const runtime = JSON.parse(fs.readFileSync(runtimeFile, 'utf8'));
   assert.equal(runtime.nonce, 'abcdef123456');
   assert.equal(runtime.authority, 'vibe2-roblox-studio-runtime');
@@ -54,6 +109,8 @@ test('official Studio CLI runner persists nonce-bound runtime and sanitized auth
   assert.match(evidence, /(?:UserInputService|ContextActionService)/);
   assert.equal(evidence.includes('game:GetService'), false);
   const manifest = JSON.parse(fs.readFileSync(path.join(sourceRoot, 'authorized-studio-manifest.json'), 'utf8'));
+  assert.equal(manifest.placeId, '14215142052');
+  assert.equal(manifest.observedPlaceId, '0');
   assert.equal(manifest.copyAllowed, true);
   assert.deepEqual(manifest.generalizedPatterns.sort(), ['datastore-persistence', 'input-services', 'network-remotes']);
   assert.equal(manifest.rawSourcePersisted, false);
