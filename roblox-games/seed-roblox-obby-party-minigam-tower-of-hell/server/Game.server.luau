@@ -99,17 +99,17 @@ for stage = 1, STAGE_COUNT do
     makePart(string.format("Step%02dC", stage), Vector3.new(6.5, 1, 6.5), CFrame.new(stepC), Color3.fromRGB(235, 140, 70))
   elseif tier == 3 then
     local stepA = previousPosition + segment * 0.25
-    local stepB = previousPosition + segment * 0.50
-    local stepC = previousPosition + segment * 0.75
-    local partA = makePart(string.format("Step%02dA", stage), Vector3.new(8.5, 1, 8.5), CFrame.new(stepA), Color3.fromRGB(110, 205, 245))
-    local partB = makePart(string.format("Step%02dB", stage), Vector3.new(8.5, 1, 8.5), CFrame.new(stepB), Color3.fromRGB(90, 190, 240))
-    local partC = makePart(string.format("Step%02dC", stage), Vector3.new(8.5, 1, 8.5), CFrame.new(stepC), Color3.fromRGB(70, 170, 230))
+    local stepC = previousPosition + segment * 0.50
+    local stepB = previousPosition + segment * 0.75
+    local partA = makePart(string.format("Step%02dA", stage), Vector3.new(9, 1, 9), CFrame.new(stepA), Color3.fromRGB(110, 205, 245))
+    local partC = makePart(string.format("Step%02dC", stage), Vector3.new(9, 1, 9), CFrame.new(stepC), Color3.fromRGB(90, 190, 240))
+    local partB = makePart(string.format("Step%02dB", stage), Vector3.new(9, 1, 9), CFrame.new(stepB), Color3.fromRGB(70, 170, 230))
     partA:SetAttribute("MovingPlatform", true)
     partB:SetAttribute("MovingPlatform", true)
     partC:SetAttribute("MovingPlatform", true)
-    table.insert(movingPlatforms, {part = partA, base = stepA, axis = perpendicular, amplitude = 2.5, speed = 0.75, phase = stage * 0.55})
-    table.insert(movingPlatforms, {part = partB, base = stepB, axis = perpendicular, amplitude = 2.5, speed = 0.90, phase = stage * 0.55 + math.pi * 0.66})
-    table.insert(movingPlatforms, {part = partC, base = stepC, axis = perpendicular, amplitude = 2.5, speed = 1.05, phase = stage * 0.55 + math.pi * 1.33})
+    table.insert(movingPlatforms, {part = partA, base = stepA, axis = perpendicular, amplitude = 2.0, speed = 0.65, phase = stage * 0.55})
+    table.insert(movingPlatforms, {part = partC, base = stepC, axis = perpendicular, amplitude = 2.0, speed = 0.80, phase = stage * 0.55 + math.pi * 0.66})
+    table.insert(movingPlatforms, {part = partB, base = stepB, axis = perpendicular, amplitude = 2.0, speed = 0.95, phase = stage * 0.55 + math.pi * 1.33})
   else
     local stepA = previousPosition + segment * 0.24
     local deckPosition = previousPosition + segment * 0.50
