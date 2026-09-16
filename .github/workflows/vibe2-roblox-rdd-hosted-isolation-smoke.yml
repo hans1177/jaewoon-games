@@ -1,0 +1,103 @@
+name: Vibe2 Roblox RDD Hosted Isolation Smoke
+
+on:
+  push:
+    branches:
+      - test/vibe2-roblox-rdd-isolation-20260916
+
+permissions:
+  contents: read
+
+jobs:
+  hosted-isolated-study:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      VIBE2_ROBLOX_STUDY_ISOLATED_SESSION: 'true'
+    steps:
+      - name: Checkout Vibe2 control code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Assemble official signed Roblox Studio from deployment CDN
+        id: studio
+        continue-on-error: true
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $rdd = Join-Path $env:RUNNER_TEMP 'roblox-rdd-downloader'
+          $studioRoot = Join-Path $env:RUNNER_TEMP 'RobloxStudio'
+          if (Test-Path $rdd) { Remove-Item -Recurse -Force $rdd }
+          if (Test-Path $studioRoot) { Remove-Item -Recurse -Force $studioRoot }
+          git clone --quiet https://github.com/setup-rbxcdn/roblox-rdd-downloader.git $rdd
+          git -C $rdd checkout --detach 5a12f17937a44e805188ba5037a9890c6f3dcf44
+          if ($LASTEXITCODE -ne 0) { throw 'Pinned Roblox deployment downloader checkout failed' }
+          Push-Location $rdd
+          try {
+            npm install --omit=dev --no-audit --no-fund
+            if ($LASTEXITCODE -ne 0) { throw 'Pinned Roblox deployment downloader dependency install failed' }
+            node rdd-download.mjs --binaryType WindowsStudio64 --channel LIVE --out $studioRoot
+            if ($LASTEXITCODE -ne 0) { throw 'Official Roblox Studio CDN assembly failed' }
+          } finally {
+            Pop-Location
+          }
+          $studio = Get-ChildItem -Path $studioRoot -Filter RobloxStudioBeta.exe -File -Recurse | Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe missing from assembled deployment' }
+          $signature = Get-AuthenticodeSignature -FilePath $studio.FullName
+          if ([string]$signature.Status -ne 'Valid') { throw "Roblox Studio signature invalid: $($signature.Status)" }
+          $subject = [string]$signature.SignerCertificate.Subject
+          if ($subject -notmatch '(?i)Roblox') { throw "Unexpected Roblox Studio signer: $subject" }
+          "VIBE2_ROBLOX_STUDIO_PATH=$($studio.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "VIBE2_HOSTED_ROBLOX_STUDIO=$($studio.FullName)"
+          Write-Host "VIBE2_HOSTED_ROBLOX_SIGNER=$subject"
+          Write-Host 'VIBE2_HOSTED_ROBLOX_CDN_ASSEMBLY=PASS'
+
+      - name: Run isolated Potion Shop GAME STUDY
+        id: study
+        if: steps.studio.outcome == 'success'
+        continue-on-error: true
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Write-Host 'VIBE2_ROBLOX_STUDY_CONCURRENCY=ISOLATED_CONCURRENT'
+          $out = Join-Path $env:RUNNER_TEMP 'vibe2-rdd-potion-shop-study.json'
+          node tools/vibe2-game-study-worker.mjs `
+            --task-id=game-study-external-roblox-potion-shop-flow-a `
+            --target-id=external-roblox-potion-shop-flow-a `
+            --targets=.vibe2/game-study-targets.json `
+            "--output=$out"
+          if ($LASTEXITCODE -ne 0) { throw 'Hosted isolated GAME STUDY worker failed' }
+          $result = Get-Content $out -Raw | ConvertFrom-Json
+          if ([string]$result.outcome -ne 'PASS') { throw "Hosted study outcome was $($result.outcome): $($result.blocker)" }
+          if ($result.study.verified -ne $true) { throw 'Hosted study was not verified' }
+          $featureCount = @($result.study.intelligence.featureCatalog).Count
+          if ($featureCount -ne 25) { throw "Expected 25 intelligence features, got $featureCount" }
+          Write-Host 'VIBE2_HOSTED_ROBLOX_GAME_STUDY=PASS'
+          Write-Host 'VIBE2_GAME_STUDY_VERIFIED=YES'
+          Write-Host "VIBE2_GAME_STUDY_INTELLIGENCE_FEATURES=$featureCount"
+
+      - name: Upload hosted isolation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-roblox-rdd-hosted-isolation-${{ github.run_id }}
+          path: ${{ runner.temp }}/vibe2-rdd-potion-shop-study.json
+          if-no-files-found: ignore
+          retention-days: 1
+
+      - name: Hosted isolation verdict
+        if: always()
+        shell: powershell
+        run: |
+          Write-Host "VIBE2_HOSTED_CDN_STEP=${{ steps.studio.outcome }}"
+          Write-Host "VIBE2_HOSTED_STUDY_STEP=${{ steps.study.outcome }}"
+          Write-Host 'VIBE2_PRODUCTION_RUNNER_TOUCHED=NO'
+          if ('${{ steps.studio.outcome }}' -ne 'success' -or '${{ steps.study.outcome }}' -ne 'success') {
+            throw 'VIBE2_HOSTED_ISOLATION_PATH=NOT_VIABLE'
+          }
+          Write-Host 'VIBE2_HOSTED_ISOLATION_PATH=VIABLE'
