@@ -25,6 +25,13 @@ function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: 
 function parseArgs(argv = process.argv.slice(2)) { const [command = 'summary', ...rest] = argv; const args = { command }; for (const raw of rest) { if (!raw.startsWith('--')) continue; const body = raw.slice(2); const at = body.indexOf('='); if (at < 0) args[body] = true; else args[body.slice(0, at)] = body.slice(at + 1); } return args; }
 function clamp(value, min = 1, max = 20) { return Math.max(min, Math.min(max, Math.floor(Number(value) || min))); }
 function safeId(value) { return clean(value).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 72) || 'study'; }
+function booleanFlag(value, fallback = false) {
+  const normalized = clean(value).toLowerCase();
+  if (!normalized) return fallback;
+  if (['1', 'true', 'yes', 'on'].includes(normalized)) return true;
+  if (['0', 'false', 'no', 'off'].includes(normalized)) return false;
+  return fallback;
+}
 
 export function normalizeGameStudyTarget(input = {}, index = 0) {
   const id = safeId(input.id || input.gameId || `target-${index + 1}`);
@@ -157,12 +164,20 @@ export function prepareGameStudyQueue(queueInput = {}, targetInput = {}, { nowMs
   };
 }
 
-export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, controlInput = {}, { maxConcurrentTasks = 20, nowMs = Date.now() } = {}) {
+export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, controlInput = {}, { maxConcurrentTasks = 20, nowMs = Date.now(), robloxRunnerReady = true } = {}) {
   const prepared = prepareGameStudyQueue(queueInput, targetInput, { nowMs });
   const persistentMax = clamp(prepared.queue.maxConcurrentTasks || 20);
   const controlMax = clamp(controlInput?.currentMax || persistentMax);
   const targetMax = clamp(prepared.targets.maxConcurrentTasks || persistentMax);
   const requestedMax = Math.min(clamp(maxConcurrentTasks || 20), persistentMax, controlMax, targetMax);
+  const runtimeRobloxReady = robloxRunnerReady === true;
+  const runtimeDeferredIds = new Set(prepared.queue.tasks
+    .filter((task) => {
+      if (!isStudyTask(task) || task.status !== 'queued') return false;
+      const target = prepared.targetByTask.get(task.id);
+      return target?.engine === 'roblox' && !runtimeRobloxReady;
+    })
+    .map((task) => task.id));
 
   // Protect production capacity even when GAME STUDY wins the shared control-state lock first.
   // Study tasks are hidden from this dry selection so only immediately runnable normal work
@@ -179,9 +194,11 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
 
   const selectionQueue = createVibeContinuousQueue({
     maxConcurrentTasks: prepared.queue.maxConcurrentTasks,
-    tasks: prepared.queue.tasks.map((task) => isStudyTask(task) || task.status !== 'queued'
-      ? task
-      : { ...task, status: 'blocked', blocker: task.blocker || 'reserved-for-normal-vibe2-worker' })
+    tasks: prepared.queue.tasks.map((task) => {
+      if (runtimeDeferredIds.has(task.id)) return { ...task, status: 'blocked', blocker: 'roblox-dedicated-runner-offline-deferred' };
+      if (isStudyTask(task) || task.status !== 'queued') return task;
+      return { ...task, status: 'blocked', blocker: task.blocker || 'reserved-for-normal-vibe2-worker' };
+    })
   });
   const selection = studySlotCap > 0
     ? selectVibeQueueBatch(selectionQueue, { maxConcurrentTasks: studySlotCap })
@@ -199,6 +216,13 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
     maxConcurrentTasks: prepared.queue.maxConcurrentTasks,
     tasks: prepared.queue.tasks.map((task) => {
       if (selectedIds.has(task.id)) return { ...task, status: 'running', blocker: null, gameStudyReservationAt: reservationAt };
+      if (runtimeDeferredIds.has(task.id)) return {
+        ...task,
+        status: 'blocked',
+        blocker: 'roblox-dedicated-runner-offline-deferred',
+        gameStudyReservationAt: null,
+        evidence: unique([...(task.evidence || []), 'game-study-runtime-readiness:roblox-offline', 'production-studio-untouched'])
+      };
       if (isStudyTask(task) && task.status === 'queued') return { ...task, status: 'blocked', blocker: 'game-study-awaiting-next-cycle' };
       return task;
     })
@@ -217,7 +241,7 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
     };
   });
   return Object.freeze({
-    version: 3,
+    version: 4,
     createdAt: reservationAt,
     executionLocation: 'server',
     queue,
@@ -229,6 +253,12 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
     effectiveMax,
     productionReservedSlots,
     studySlotCap,
+    runtimeReadiness: Object.freeze({
+      robloxRunnerReady: runtimeRobloxReady,
+      deferredRobloxCount: runtimeDeferredIds.size,
+      offlineBehavior: 'preserve-queue-without-consuming-study-slot',
+      productionFallback: false
+    }),
     invalidTargets: prepared.targets.invalid,
     scheduler: Object.freeze({
       persistentMaxConcurrentTasks: selection.persistentMaxConcurrentTasks,
@@ -238,7 +268,8 @@ export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, control
       backpressure: selection.backpressure,
       productionPriorityProtected: true,
       productionReservedSlots,
-      studySlotCap
+      studySlotCap,
+      runtimeDeferredRobloxCount: runtimeDeferredIds.size
     }),
     authorityExpanded: false
   });
@@ -299,8 +330,13 @@ export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, kno
   });
 }
 
-export function reserveGameStudyFiles({ queueFile = '.vibe2/queue.json', targetsFile = '.vibe2/game-study-targets.json', controlFile = '.vibe2/parallelism-control.json', outputFile = '', maxConcurrentTasks = 20 } = {}) {
-  const result = reserveGameStudyBatch(readJson(queueFile, { tasks: [] }), readJson(targetsFile, { targets: [] }), readJson(controlFile, {}), { maxConcurrentTasks });
+export function reserveGameStudyFiles({ queueFile = '.vibe2/queue.json', targetsFile = '.vibe2/game-study-targets.json', controlFile = '.vibe2/parallelism-control.json', outputFile = '', maxConcurrentTasks = 20, robloxRunnerReady = true } = {}) {
+  const result = reserveGameStudyBatch(
+    readJson(queueFile, { tasks: [] }),
+    readJson(targetsFile, { targets: [] }),
+    readJson(controlFile, {}),
+    { maxConcurrentTasks, robloxRunnerReady }
+  );
   writeJson(queueFile, result.queue);
   if (outputFile) writeJson(outputFile, result);
   return result;
@@ -325,13 +361,22 @@ export function fanInGameStudyFiles({ queueFile = '.vibe2/queue.json', experienc
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = parseArgs();
   if (args.command === 'reserve') {
-    const result = reserveGameStudyFiles({ queueFile: clean(args.queue) || '.vibe2/queue.json', targetsFile: clean(args.targets) || '.vibe2/game-study-targets.json', controlFile: clean(args.control) || '.vibe2/parallelism-control.json', outputFile: clean(args.output), maxConcurrentTasks: Number(args.max) || 20 });
+    const result = reserveGameStudyFiles({
+      queueFile: clean(args.queue) || '.vibe2/queue.json',
+      targetsFile: clean(args.targets) || '.vibe2/game-study-targets.json',
+      controlFile: clean(args.control) || '.vibe2/parallelism-control.json',
+      outputFile: clean(args.output),
+      maxConcurrentTasks: Number(args.max) || 20,
+      robloxRunnerReady: booleanFlag(args['roblox-ready'], true)
+    });
     console.log(`VIBE2_GAME_STUDY_EXECUTION=SERVER`);
     console.log(`VIBE2_GAME_STUDY_RESERVED=${result.selectedCount}`);
     console.log(`VIBE2_GAME_STUDY_REQUESTED_MAX=${result.requestedMax}`);
     console.log(`VIBE2_GAME_STUDY_EFFECTIVE_MAX=${result.effectiveMax}`);
     console.log(`VIBE2_GAME_STUDY_PRODUCTION_RESERVED=${result.productionReservedSlots}`);
     console.log(`VIBE2_GAME_STUDY_SLOT_CAP=${result.studySlotCap}`);
+    console.log(`VIBE2_GAME_STUDY_ROBLOX_RUNTIME_READY=${result.runtimeReadiness.robloxRunnerReady ? 'YES' : 'NO'}`);
+    console.log(`VIBE2_GAME_STUDY_ROBLOX_RUNTIME_DEFERRED=${result.runtimeReadiness.deferredRobloxCount}`);
     console.log(`VIBE2_GAME_STUDY_INVALID_TARGETS=${result.invalidTargets.length}`);
   } else if (args.command === 'fan-in') {
     const result = fanInGameStudyFiles({
