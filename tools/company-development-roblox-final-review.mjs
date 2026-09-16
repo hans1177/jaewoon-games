@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import {repairPersistedDesignForPromotion} from './company-design-prepromotion-repair.mjs';
 
 const queuePath = process.env.ROBLOX_FINAL_REVIEW_QUEUE || 'development-queue.json';
 const designRoot = process.env.ROBLOX_FINAL_REVIEW_DESIGN_ROOT || 'design';
@@ -20,7 +21,7 @@ function findLatestDesign(gameId) {
   files.sort().reverse();
   if (!files.length) return null;
   try {
-    return JSON.parse(fs.readFileSync(files[0], 'utf8'));
+    return {design:JSON.parse(fs.readFileSync(files[0], 'utf8')),file:files[0],date:path.basename(path.dirname(files[0]))};
   } catch {
     return null;
   }
@@ -48,9 +49,22 @@ for (const item of queue.items || []) {
   if (String(item.selectedPlatform || item.targetPlatform || '').toUpperCase() !== 'ROBLOX') continue;
   if (item.robloxRuntimePassed !== true || item.robloxIndependentQaPassed !== true || item.robloxRegressionPassed !== true) continue;
 
-  const design = findLatestDesign(item.gameId);
-  const rawMode = design?.content?.multiplayerMode ?? design?.content?.multiplayer?.mode ?? design?.multiplayerMode ?? '';
-  const mode = String(rawMode || '').trim().toUpperCase();
+  let designRecord = findLatestDesign(item.gameId);
+  let design = designRecord?.design || null;
+  let rawMode = design?.content?.multiplayerMode ?? design?.content?.multiplayer?.mode ?? design?.multiplayerMode ?? '';
+  let mode = String(rawMode || '').trim().toUpperCase();
+  if (!allowedModes.has(mode) && designRecord?.date) {
+    const repair = repairPersistedDesignForPromotion({
+      root:process.cwd(),designRoot,gameId:item.gameId,date:designRecord.date,phase:'FINAL_REVIEW_LEGACY_NORMALIZATION'
+    });
+    if (repair.changed) {
+      designRecord = findLatestDesign(item.gameId);
+      design = designRecord?.design || null;
+      rawMode = design?.content?.multiplayerMode ?? design?.content?.multiplayer?.mode ?? design?.multiplayerMode ?? '';
+      mode = String(rawMode || '').trim().toUpperCase();
+      console.log(`ROBLOX_FINAL_REVIEW_LEGACY_DESIGN_REPAIR=${item.gameId}:${repair.repairs.map(row=>`${row.field}:${row.source}`).join('|')}`);
+    }
+  }
   const saveRequired = item.robloxRuntimeEvidence?.saveExists === true;
   const saveGate = !saveRequired || item.robloxDatastoreRejoinPassed === true;
   const modeDefined = allowedModes.has(mode);
