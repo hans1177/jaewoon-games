@@ -321,7 +321,7 @@ for stage = 1, STAGE_COUNT do
   elseif stage == 2 then
     addPlatform(stageModel, stage, "A", stagePoint(previousPosition, checkpointPosition, 0.24, Vector3.new(0, 0, 4)), Vector3.new(9, 1, 9), neutral, Enum.Material.Concrete)
     addPlatform(stageModel, stage, "B", stagePoint(previousPosition, checkpointPosition, 0.50, Vector3.new(0, 0, -4)), Vector3.new(8, 1, 8), dark, Enum.Material.Concrete)
-    addPlatform(stageModel, stage, "C", stagePoint(previousPosition, checkpointPosition, 0.76, Vector3.new(0, 0, 4)), Vector3.new(8, 1, 8), neutral, Enum.Material.Concrete)
+    addPlatform(stageModel, stage, "C", stagePoint(previousPosition, checkpointPosition, 0.76, Vector3.new(0, 0, 0)), Vector3.new(8, 1, 8), neutral, Enum.Material.Concrete)
   elseif stage == 3 then
     addPlatform(stageModel, stage, "A", stagePoint(previousPosition, checkpointPosition, 0.23), Vector3.new(11, 1, 5), accent, Enum.Material.Metal)
     addPlatform(stageModel, stage, "B", stagePoint(previousPosition, checkpointPosition, 0.48), Vector3.new(9, 1, 4), dark, Enum.Material.Metal)
