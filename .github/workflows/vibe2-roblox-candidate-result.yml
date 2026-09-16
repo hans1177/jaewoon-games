@@ -17,10 +17,38 @@ concurrency:
 
 jobs:
   reconcile:
-    if: startsWith(github.event.workflow_run.head_branch, 'vibe2/candidate/OWNER-ROBLOX-OBBY-')
+    if: github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Download candidate machine context from Studio QA run
+        uses: actions/download-artifact@v4
+        with:
+          name: vibe2-roblox-candidate-context-${{ github.event.workflow_run.id }}
+          path: /tmp/vibe2-roblox-candidate-context
+          github-token: ${{ github.token }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Resolve verified candidate identity
+        id: context
+        shell: bash
+        run: |
+          set -euo pipefail
+          file='/tmp/vibe2-roblox-candidate-context/vibe2-roblox-candidate-context.json'
+          test -s "$file"
+          node - "$file" <<'NODE'
+          const fs=require('fs');
+          const file=process.argv[2];
+          const x=JSON.parse(fs.readFileSync(file,'utf8'));
+          const branch=String(x.candidateBranch||'').trim();
+          const sha=String(x.candidateSha||'').trim();
+          if(!branch.startsWith('vibe2/candidate/OWNER-ROBLOX-OBBY-'))throw new Error(`invalid candidate branch: ${branch}`);
+          if(!/^[0-9a-f]{40}$/i.test(sha))throw new Error(`invalid candidate sha: ${sha}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`candidate_branch=${branch}\ncandidate_sha=${sha}\n`);
+          console.log(`VIBE2_ROBLOX_RESULT_CANDIDATE=${branch}`);
+          console.log(`VIBE2_ROBLOX_RESULT_SHA=${sha}`);
+          NODE
+
       - name: Checkout Vibe2 control line
         uses: actions/checkout@v4
         with:
@@ -35,10 +63,10 @@ jobs:
         id: reconcile
         env:
           CONTROL_BRANCH: vibe2-unreal-core
-          CANDIDATE_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          CANDIDATE_BRANCH: ${{ steps.context.outputs.candidate_branch }}
           QA_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           QA_RUN_ID: ${{ github.event.workflow_run.id }}
-          QA_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          QA_HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
         shell: bash
         run: |
           set -euo pipefail
