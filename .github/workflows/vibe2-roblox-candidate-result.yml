@@ -114,6 +114,20 @@ jobs:
           echo 'VIBE2_AUTO_FINAL_PASS=NO'
           echo 'VIBE2_AUTO_LEARNING=NO_UNTIL_VERIFIED_REVIEW'
 
+      - name: Dispatch Studio-verified candidate to release review gate
+        if: steps.reconcile.outputs.updated == '1' && github.event.workflow_run.conclusion == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_BRANCH: ${{ steps.context.outputs.candidate_branch }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run vibe2-candidate-release.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f candidate_branch="$CANDIDATE_BRANCH"
+          echo "VIBE2_ROBLOX_RELEASE_GATE_DISPATCHED=$CANDIDATE_BRANCH"
+
       - name: Refill Vibe work after verification releases capacity
         if: steps.reconcile.outputs.updated == '1' && steps.reconcile.outputs.continue_work == '1'
         env:
