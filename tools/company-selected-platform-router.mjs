@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
+const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
 
 export const SELECTED_PLATFORMS=Object.freeze(['ROBLOX','UNITY','FORTNITE_UEFN']);
 export const DEVELOPMENT_GAME_WIP_MAX=20;
@@ -71,14 +72,7 @@ export function resolveSelectedPlatform(...sources){
       if(platform)return platform;
       continue;
     }
-    const candidates=[
-      source.selectedPlatform,
-      source.targetPlatform,
-      source.initialTargetPlatform,
-      source.INITIAL_TARGET_PLATFORM,
-      source.platform,
-      source.preferredPlatform,
-    ];
+    const candidates=[source.selectedPlatform,source.targetPlatform,source.initialTargetPlatform,source.INITIAL_TARGET_PLATFORM,source.platform,source.preferredPlatform];
     for(const candidate of candidates){
       const platform=normalizeSelectedPlatform(candidate);
       if(platform)return platform;
@@ -93,6 +87,21 @@ export function adapterForPlatform(value){
   return PLATFORM_EXECUTION_ADAPTERS[platform]||null;
 }
 
+export function verifiedOwnerReleaseHandoffEligible(item={}){
+  const handoff=item.robloxVibe2VerifiedHandoff;
+  return Boolean(
+    upper(item.selectedPlatform||item.targetPlatform)==='ROBLOX'&&
+    handoff?.verified===true&&
+    clean(handoff.authority)==='vibe2-authoritative-studio-qa-plus-owner-release-intent'&&
+    clean(handoff.gameId)===clean(item.gameId)&&
+    clean(handoff.requestedReleaseState)==='release-confirmed'&&
+    sha40(handoff.sourceRevision)&&
+    sha40(handoff.sourceTreeSha)&&
+    sha40(handoff.candidateSha)&&
+    Number.isInteger(Number(handoff.qaRunId))&&Number(handoff.qaRunId)>0
+  );
+}
+
 export function targetPlatformDevelopmentEligible(item={}){
   if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')return false;
   const status=upper(item.status);
@@ -104,88 +113,46 @@ export function targetPlatformDevelopmentEligible(item={}){
   const platform=resolveSelectedPlatform(item);
   const adapter=adapterForPlatform(platform);
   if(!adapter?.existingExecutionPath)return false;
+  if(verifiedOwnerReleaseHandoffEligible(item))return true;
   const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
   const score=Number(item.webStrictScore??item.strictImplementationScore);
   return Boolean(
-    item.webValidationPassedAt&&
-    item.musicValidationPassed===true&&
-    item.formalImplementationPassed===true&&
-    upper(item.formalImplementationVerdict)==='PASS'&&
-    Number.isFinite(score)&&score>=90&&
-    hard.length===0&&
-    Number(item.webValidationSchemaVersion)===13&&
-    item.webPromotionRevalidationPassed===true
+    item.webValidationPassedAt&&item.musicValidationPassed===true&&item.formalImplementationPassed===true&&
+    upper(item.formalImplementationVerdict)==='PASS'&&Number.isFinite(score)&&score>=90&&hard.length===0&&
+    Number(item.webValidationSchemaVersion)===13&&item.webPromotionRevalidationPassed===true
   );
 }
 
 export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_GAME_WIP_MAX){
   const limit=Math.max(0,Math.min(DEVELOPMENT_GAME_WIP_MAX,Number(max)||0));
-  return Object.freeze(items
-    .filter(targetPlatformDevelopmentEligible)
-    .map(item=>({...item,selectedPlatform:resolveSelectedPlatform(item)}))
-    .sort((a,b)=>{
-      const at=Date.parse(a.enqueuedAt||'')||0;
-      const bt=Date.parse(b.enqueuedAt||'')||0;
-      if(at!==bt)return at-bt;
-      return clean(a.gameId).localeCompare(clean(b.gameId));
-    })
-    .slice(0,limit)
-    .map(item=>Object.freeze(item)));
+  return Object.freeze(items.filter(targetPlatformDevelopmentEligible).map(item=>({...item,selectedPlatform:resolveSelectedPlatform(item)})).sort((a,b)=>{
+    const at=Date.parse(a.enqueuedAt||'')||0;
+    const bt=Date.parse(b.enqueuedAt||'')||0;
+    if(at!==bt)return at-bt;
+    return clean(a.gameId).localeCompare(clean(b.gameId));
+  }).slice(0,limit).map(item=>Object.freeze(item)));
 }
 
-export function canonicalTargetWaitingState(){
-  return 'WAITING_TARGET_PLATFORM_VALIDATION';
-}
-
-export function canonicalTargetRevalidationState(){
-  return 'WAITING_TARGET_PLATFORM_REVALIDATION';
-}
-
-export function canonicalTargetStep(){
-  return 'TARGET_PLATFORM_TECHNICAL_VALIDATION';
-}
+export function canonicalTargetWaitingState(){return 'WAITING_TARGET_PLATFORM_VALIDATION';}
+export function canonicalTargetRevalidationState(){return 'WAITING_TARGET_PLATFORM_REVALIDATION';}
+export function canonicalTargetStep(){return 'TARGET_PLATFORM_TECHNICAL_VALIDATION';}
 
 export function sourceFingerprint({platform,sourceRevision='',dependencyFingerprint='',buildConfigFingerprint=''}={}){
   const normalized=normalizeSelectedPlatform(platform);
   if(!normalized)throw new Error(`unsupported selected platform: ${platform}`);
-  return crypto.createHash('sha256').update(JSON.stringify({
-    platform:normalized,
-    sourceRevision:clean(sourceRevision),
-    dependencyFingerprint:clean(dependencyFingerprint),
-    buildConfigFingerprint:clean(buildConfigFingerprint),
-  })).digest('hex');
+  return crypto.createHash('sha256').update(JSON.stringify({platform:normalized,sourceRevision:clean(sourceRevision),dependencyFingerprint:clean(dependencyFingerprint),buildConfigFingerprint:clean(buildConfigFingerprint)})).digest('hex');
 }
 
 export function failureSignature({stage='',code='',message=''}={}){
   const normalizedStage=upper(stage);
   const normalizedCode=upper(code);
-  const normalizedMessage=normalizedCode==='STAGE_NOT_PASSED'
-    ? 'COMMON_STAGE_NOT_PASSED'
-    : clean(message)
-      .replace(/[0-9a-f]{7,40}/gi,'<REV>')
-      .replace(/\d+/g,'<N>')
-      .replace(/[a-z0-9]+(?:-[a-z0-9]+){2,}/gi,'<ID>')
-      .slice(0,500);
+  const normalizedMessage=normalizedCode==='STAGE_NOT_PASSED'?'COMMON_STAGE_NOT_PASSED':clean(message).replace(/[0-9a-f]{7,40}/gi,'<REV>').replace(/\d+/g,'<N>').replace(/[a-z0-9]+(?:-[a-z0-9]+){2,}/gi,'<ID>').slice(0,500);
   return crypto.createHash('sha256').update(JSON.stringify({stage:normalizedStage,code:normalizedCode,message:normalizedMessage})).digest('hex');
 }
 
 export function normalizeCommonEvidence(evidence={},defaults={}){
   const platform=resolveSelectedPlatform(evidence,defaults);
-  const value={
-    version:1,
-    platform,
-    sourceRevision:clean(evidence.sourceRevision||defaults.sourceRevision)||null,
-    sourceFingerprint:clean(evidence.sourceFingerprint||defaults.sourceFingerprint)||null,
-    buildOrPackagePassed:evidence.buildOrPackagePassed===true,
-    artifactIdentity:clean(evidence.artifactIdentity||defaults.artifactIdentity)||null,
-    runtimePassed:evidence.runtimePassed===true,
-    independentQaPassed:evidence.independentQaPassed===true,
-    regressionPassed:evidence.regressionPassed===true,
-    exactRevision:evidence.exactRevision===true,
-    lastSuccessfulStage:upper(evidence.lastSuccessfulStage||defaults.lastSuccessfulStage)||null,
-    failureStage:upper(evidence.failureStage||defaults.failureStage)||null,
-    failureSignature:clean(evidence.failureSignature||defaults.failureSignature)||null,
-  };
+  const value={version:1,platform,sourceRevision:clean(evidence.sourceRevision||defaults.sourceRevision)||null,sourceFingerprint:clean(evidence.sourceFingerprint||defaults.sourceFingerprint)||null,buildOrPackagePassed:evidence.buildOrPackagePassed===true,artifactIdentity:clean(evidence.artifactIdentity||defaults.artifactIdentity)||null,runtimePassed:evidence.runtimePassed===true,independentQaPassed:evidence.independentQaPassed===true,regressionPassed:evidence.regressionPassed===true,exactRevision:evidence.exactRevision===true,lastSuccessfulStage:upper(evidence.lastSuccessfulStage||defaults.lastSuccessfulStage)||null,failureStage:upper(evidence.failureStage||defaults.failureStage)||null,failureSignature:clean(evidence.failureSignature||defaults.failureSignature)||null};
   return Object.freeze(value);
 }
 
@@ -217,45 +184,16 @@ export function cheapPrecheck({selectedPlatform,sourceRevision='',sourcePath=''}
   return Object.freeze({pass:errors.length===0,platform,adapter,sourceRevision:revision||null,sourcePath:path||null,errors:Object.freeze(errors)});
 }
 
-export function createSelectedPlatformExecutionPlan({
-  selectedPlatform,
-  sourceRevision='',
-  dependencyFingerprint='',
-  buildConfigFingerprint='',
-  sourcePath='',
-  previousEvidence={},
-  sharedExecutionContractChanged=false,
-  commonFailureDetected=false,
-}={}){
+export function createSelectedPlatformExecutionPlan({selectedPlatform,sourceRevision='',dependencyFingerprint='',buildConfigFingerprint='',sourcePath='',previousEvidence={},sharedExecutionContractChanged=false,commonFailureDetected=false}={}){
   const precheck=cheapPrecheck({selectedPlatform,sourceRevision,sourcePath});
   const platform=precheck.platform;
   const fingerprint=platform?sourceFingerprint({platform,sourceRevision,dependencyFingerprint,buildConfigFingerprint}):null;
   const previous=normalizeCommonEvidence(previousEvidence,{platform});
   const sameFingerprint=Boolean(fingerprint&&previous.sourceFingerprint===fingerprint);
-  const artifactReusable=Boolean(
-    sameFingerprint&&
-    previous.buildOrPackagePassed===true&&
-    previous.artifactIdentity&&
-    previous.exactRevision===true
-  );
+  const artifactReusable=Boolean(sameFingerprint&&previous.buildOrPackagePassed===true&&previous.artifactIdentity&&previous.exactRevision===true);
   const canaryRequired=Boolean(sharedExecutionContractChanged||commonFailureDetected);
   const resumeStage=precheck.pass?resumeStageForEvidence(previous,fingerprint):'CHEAP_PRECHECK';
-  return Object.freeze({
-    version:1,
-    platform,
-    adapter:precheck.adapter,
-    precheck,
-    sourceFingerprint:fingerprint,
-    sameFingerprint,
-    canaryRequired,
-    artifactReusable,
-    buildRequired:!artifactReusable,
-    resumeStage,
-    canonicalQueueStep:canonicalTargetStep(),
-    canonicalWaitingState:canonicalTargetWaitingState(),
-    cronRole:'WATCHDOG_AND_RECOVERY_ONLY',
-    qualityGateWeakeningAllowed:false,
-  });
+  return Object.freeze({version:1,platform,adapter:precheck.adapter,precheck,sourceFingerprint:fingerprint,sameFingerprint,canaryRequired,artifactReusable,buildRequired:!artifactReusable,resumeStage,canonicalQueueStep:canonicalTargetStep(),canonicalWaitingState:canonicalTargetWaitingState(),cronRole:'WATCHDOG_AND_RECOVERY_ONLY',qualityGateWeakeningAllowed:false});
 }
 
 export function selectRepresentativeCanary(rows=[]){
@@ -277,9 +215,7 @@ export function recordExecutionStage(evidence={},stage,{passed,artifactIdentity=
   if(!SPEED_EXECUTION_STAGES.includes(target))throw new Error(`unknown execution stage: ${stage}`);
   const next={...normalized};
   if(passed===true){
-    next.lastSuccessfulStage=target;
-    next.failureStage=null;
-    next.failureSignature=null;
+    next.lastSuccessfulStage=target;next.failureStage=null;next.failureSignature=null;
     if(target==='SINGLE_BUILD_OR_PACKAGE')next.buildOrPackagePassed=true;
     if(target==='IMMUTABLE_ARTIFACT_BIND')next.artifactIdentity=clean(artifactIdentity||next.artifactIdentity)||null;
     if(target==='TARGET_PLATFORM_RUNTIME')next.runtimePassed=true;
