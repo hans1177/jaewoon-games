@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-16",
+  "executionRoles": {
+    "vibe": {
+      "engineEditorOwner": true,
+      "design": true,
+      "implement": true,
+      "runtimeQa": true,
+      "repairAndRetest": true
+    },
+    "verifierLearner": {
+      "engineEditorWrite": false,
+      "validateCandidate": true,
+      "validateRuntimeEvidence": true,
+      "regressionGate": true,
+      "promoteVerifiedLearning": true
+    }
+  },
+  "engineEditor": {
+    "actor": "vibe",
+    "verifierMaySubstitute": false,
+    "runtimeEvidenceRequiredForPass": true,
+    "runnerUnavailableOutcome": "BLOCKED"
+  },
+  "learning": {
+    "verifiedEvidenceOnly": true,
+    "rawExternalSourceCopy": false,
+    "rawGameplayValuesAutoCopy": false,
+    "mayExpandAuthority": false
+  },
+  "humanDocs": {
+    "policy": "minimal-maintenance-only",
+    "newRoleDocsAllowed": false
+  }
+}
