@@ -16,7 +16,8 @@ function explicitRecipe(task={}){
 function robloxObbyWorldCoreRecipe(task={},target=''){
   if(target!=='roblox'||task.ownerDirective!==true)return'';
   const files=unique(task.responsibleFiles||[]);
-  if(files.length!==1||!files[0].endsWith('/server/Game.server.luau'))return'';
+  const serverFile=files[0]||'';
+  if(files.length!==1||(serverFile!=='server/Game.server.luau'&&!serverFile.endsWith('/server/Game.server.luau')))return'';
   const rows=evidence(task);
   const rebuild=clean(task.rebuildMode).toUpperCase()==='FULL_REBUILD'||task.fullRebuild===true||rows.includes('owner-directive:full-roblox-game-rebuild');
   const worldCore=rows.includes('rebuild-phase:world-core')||/WORLD[- _]?CORE|checkpoint|obby|obstacle/i.test(clean(task.goal));
