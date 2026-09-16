@@ -21,6 +21,12 @@ local STAGE_COUNT = 12
 local FALL_Y = -12
 local RESTART_DELAY = 3
 local START_POSITION = Vector3.new(0, 7, 0)
+local CHALLENGES = {
+  "Wide Jumps",
+  "Precision Steps",
+  "Moving Platforms",
+  "Sweeper Run",
+}
 
 local oldCourse = Workspace:FindFirstChild(COURSE_NAME)
 if oldCourse then oldCourse:Destroy() end
@@ -43,6 +49,11 @@ local function makePart(name, size, cframe, color, parent)
   return part
 end
 
+local function challengeForStage(stage)
+  local tier = math.clamp(math.ceil(stage / 3), 1, #CHALLENGES)
+  return CHALLENGES[tier], tier
+end
+
 local startSpawn = Instance.new("SpawnLocation")
 startSpawn.Name = "CourseStart"
 startSpawn.Size = Vector3.new(18, 1, 18)
@@ -58,6 +69,8 @@ startSpawn.Parent = course
 local checkpointCFrames = {[0] = startSpawn.CFrame + Vector3.new(0, 4, 0)}
 local checkpoints = {}
 local hazards = {}
+local movingPlatforms = {}
+local sweepers = {}
 local previousPosition = START_POSITION
 
 for stage = 1, STAGE_COUNT do
@@ -66,21 +79,55 @@ for stage = 1, STAGE_COUNT do
   local y = 8 + math.floor((stage - 1) / 4) * 5
   local checkpointPosition = Vector3.new(x, y, z)
   local segment = checkpointPosition - previousPosition
-  local stepAPosition = previousPosition + segment * (1 / 3)
-  local stepBPosition = previousPosition + segment * (2 / 3)
+  local horizontal = Vector3.new(segment.X, 0, segment.Z)
+  local direction = horizontal.Magnitude > 0 and horizontal.Unit or Vector3.new(1, 0, 0)
+  local perpendicular = Vector3.new(-direction.Z, 0, direction.X)
+  local challenge, tier = challengeForStage(stage)
 
-  makePart(
-    string.format("Step%02dA", stage),
-    Vector3.new(8, 1, 8),
-    CFrame.new(stepAPosition),
-    Color3.fromRGB(195, 205, 220)
-  )
-  makePart(
-    string.format("Step%02dB", stage),
-    Vector3.new(8, 1, 8),
-    CFrame.new(stepBPosition),
-    Color3.fromRGB(165, 180, 205)
-  )
+  if tier == 1 then
+    local stepA = previousPosition + segment * (1 / 3)
+    local stepB = previousPosition + segment * (2 / 3)
+    makePart(string.format("Step%02dA", stage), Vector3.new(10, 1, 10), CFrame.new(stepA), Color3.fromRGB(205, 215, 230))
+    makePart(string.format("Step%02dB", stage), Vector3.new(9, 1, 9), CFrame.new(stepB), Color3.fromRGB(175, 195, 220))
+  elseif tier == 2 then
+    local lateral = (stage % 2 == 0) and 2.5 or -2.5
+    local stepA = previousPosition + segment * 0.25 + perpendicular * lateral
+    local stepB = previousPosition + segment * 0.50 - perpendicular * lateral
+    local stepC = previousPosition + segment * 0.75 + perpendicular * lateral
+    makePart(string.format("Step%02dA", stage), Vector3.new(6, 1, 6), CFrame.new(stepA), Color3.fromRGB(245, 190, 95))
+    makePart(string.format("Step%02dB", stage), Vector3.new(5.5, 1, 5.5), CFrame.new(stepB), Color3.fromRGB(240, 165, 80))
+    makePart(string.format("Step%02dC", stage), Vector3.new(5, 1, 5), CFrame.new(stepC), Color3.fromRGB(235, 140, 70))
+  elseif tier == 3 then
+    local stepA = previousPosition + segment * (1 / 3)
+    local stepB = previousPosition + segment * (2 / 3)
+    local partA = makePart(string.format("Step%02dA", stage), Vector3.new(8, 1, 8), CFrame.new(stepA), Color3.fromRGB(110, 205, 245))
+    local partB = makePart(string.format("Step%02dB", stage), Vector3.new(8, 1, 8), CFrame.new(stepB), Color3.fromRGB(80, 175, 235))
+    partA:SetAttribute("MovingPlatform", true)
+    partB:SetAttribute("MovingPlatform", true)
+    table.insert(movingPlatforms, {part = partA, base = stepA, axis = perpendicular, amplitude = 4.5, speed = 1.45, phase = stage * 0.7})
+    table.insert(movingPlatforms, {part = partB, base = stepB, axis = perpendicular, amplitude = 4.5, speed = 1.65, phase = stage * 0.7 + math.pi})
+  else
+    local stepA = previousPosition + segment * 0.24
+    local deckPosition = previousPosition + segment * 0.50
+    local stepB = previousPosition + segment * 0.76
+    makePart(string.format("Step%02dA", stage), Vector3.new(8, 1, 8), CFrame.new(stepA), Color3.fromRGB(180, 120, 240))
+    local deck = makePart(string.format("Step%02dC", stage), Vector3.new(12, 1, 12), CFrame.new(deckPosition), Color3.fromRGB(140, 95, 220))
+    deck:SetAttribute("SweeperDeck", true)
+    makePart(string.format("Step%02dB", stage), Vector3.new(8, 1, 8), CFrame.new(stepB), Color3.fromRGB(165, 105, 235))
+
+    local sweepCenter = deckPosition + Vector3.new(0, 2.2, 0)
+    local sweeper = makePart(
+      string.format("Sweeper%02d", stage),
+      Vector3.new(16, 1.2, 2),
+      CFrame.new(sweepCenter),
+      Color3.fromRGB(255, 65, 85)
+    )
+    sweeper.Material = Enum.Material.Neon
+    sweeper.CanCollide = false
+    sweeper:SetAttribute("KillSweeper", true)
+    table.insert(hazards, sweeper)
+    table.insert(sweepers, {part = sweeper, center = sweepCenter, speed = 1.15 + (stage - 10) * 0.18, phase = stage})
+  end
 
   local checkpoint = makePart(
     string.format("Checkpoint%02d", stage),
@@ -89,6 +136,8 @@ for stage = 1, STAGE_COUNT do
     stage == STAGE_COUNT and Color3.fromRGB(255, 220, 70) or Color3.fromRGB(70, 170, 255)
   )
   checkpoint:SetAttribute("Stage", stage)
+  checkpoint:SetAttribute("Challenge", challenge)
+  checkpoint:SetAttribute("DifficultyTier", tier)
   checkpoints[stage] = checkpoint
   checkpointCFrames[stage] = checkpoint.CFrame + Vector3.new(0, 4, 0)
 
@@ -131,6 +180,8 @@ local function initializeAttributes(player)
   player:SetAttribute("RoundTime", 0)
   player:SetAttribute("Finished", false)
   player:SetAttribute("Restarting", false)
+  player:SetAttribute("Challenge", CHALLENGES[1])
+  player:SetAttribute("DifficultyTier", 1)
   player:SetAttribute("LastApprovedScope", "physical-course-ready")
 end
 
@@ -179,6 +230,8 @@ local function resetRoundProgress(player, state)
   player:SetAttribute("RoundTime", 0)
   player:SetAttribute("Finished", false)
   player:SetAttribute("Restarting", false)
+  player:SetAttribute("Challenge", CHALLENGES[1])
+  player:SetAttribute("DifficultyTier", 1)
   player:SetAttribute("LastApprovedScope", "physical-course-ready")
   teleportToRoundStart(player)
 end
@@ -210,6 +263,14 @@ local function acceptCheckpoint(player, stage)
   player:SetAttribute("Progress", math.floor(stage / STAGE_COUNT * 100))
   player:SetAttribute("Score", stage * 100)
   player:SetAttribute("LastApprovedScope", string.format("physical-checkpoint-%02d", stage))
+
+  if stage < STAGE_COUNT then
+    local nextChallenge, nextTier = challengeForStage(stage + 1)
+    player:SetAttribute("Challenge", nextChallenge)
+    player:SetAttribute("DifficultyTier", nextTier)
+  else
+    player:SetAttribute("Challenge", "Course Complete")
+  end
 
   if stage == STAGE_COUNT then
     state.finished = true
@@ -264,6 +325,24 @@ end)
 
 remote.OnServerEvent:Connect(function(_player, _actionId)
   return
+end)
+
+task.spawn(function()
+  while true do
+    task.wait(0.04)
+    local now = os.clock()
+    for _, moving in ipairs(movingPlatforms) do
+      if moving.part.Parent then
+        local offset = math.sin(now * moving.speed + moving.phase) * moving.amplitude
+        moving.part.CFrame = CFrame.new(moving.base + moving.axis * offset)
+      end
+    end
+    for _, sweeper in ipairs(sweepers) do
+      if sweeper.part.Parent then
+        sweeper.part.CFrame = CFrame.new(sweeper.center) * CFrame.Angles(0, now * sweeper.speed + sweeper.phase, 0)
+      end
+    end
+  end
 end)
 
 task.spawn(function()
