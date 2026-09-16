@@ -22,7 +22,7 @@ on:
       candidate_ref:
         description: Candidate branch/ref to validate in real Roblox Studio
         required: false
-        default: 'vibe2/candidate/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2-hudfix-1'
+        default: 'vibe2/candidate/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2-primary-35049028665-1'
       project_root:
         description: Roblox project root inside the candidate ref
         required: false
@@ -125,7 +125,7 @@ jobs:
       - name: Validate Roblox obby candidate in real Studio play mode
         shell: powershell
         env:
-          CANDIDATE_REF: ${{ inputs.candidate_ref || 'vibe2/candidate/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2-hudfix-1' }}
+          CANDIDATE_REF: ${{ inputs.candidate_ref || 'vibe2/candidate/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2-primary-35049028665-1' }}
           CANDIDATE_PROJECT_ROOT: ${{ inputs.project_root || 'roblox-games/seed-roblox-obby-party-minigam-tower-of-hell' }}
         run: |
           $ErrorActionPreference = 'Stop'
