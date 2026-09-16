@@ -4,7 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
-import {validateExistingRobloxSourceTree} from './company-development-roblox-source-reconcile.mjs';
+import {hasVerifiedVibe2SourceHandoff,validateExistingRobloxSourceTree} from './company-development-roblox-source-reconcile.mjs';
 
 const SHA=/^[0-9a-f]{40}$/i;
 const clean=value=>String(value??'').trim();
@@ -46,7 +46,59 @@ export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevisio
   });
 }
 
-export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',sourceRevision='',baseline={},rojoPath='',outputDir=''}={}){
+export function resolvePackageSourceValidation({staticVerdict={},verifiedSourceTreeSha='',actualSourceTreeSha=''}={}){
+  const blockers=Array.isArray(staticVerdict?.blockers)?[...staticVerdict.blockers]:[];
+  const saveRequired=staticVerdict?.saveRequired===true;
+  const expectedTree=clean(verifiedSourceTreeSha);
+  if(!expectedTree){
+    return Object.freeze({
+      pass:staticVerdict?.pass===true,
+      blockers:Object.freeze([...new Set(blockers)]),
+      saveRequired,
+      authority:'exact-source-static-validation',
+    });
+  }
+  if(!SHA.test(expectedTree)){
+    return Object.freeze({
+      pass:false,
+      blockers:Object.freeze(['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_INVALID']),
+      saveRequired,
+      authority:'verified-vibe2-source-handoff',
+    });
+  }
+  const actualTree=clean(actualSourceTreeSha);
+  if(!SHA.test(actualTree)||actualTree!==expectedTree){
+    return Object.freeze({
+      pass:false,
+      blockers:Object.freeze(['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH']),
+      saveRequired,
+      authority:'verified-vibe2-source-handoff',
+    });
+  }
+  return Object.freeze({
+    pass:true,
+    blockers:Object.freeze([]),
+    saveRequired,
+    authority:'verified-vibe2-source-handoff',
+  });
+}
+
+export function verifiedVibe2SourceTreeShaFromRuntime({repoRoot='.',runtimeRef='',gameId=''}={}){
+  const ref=clean(runtimeRef);
+  const id=clean(gameId);
+  if(!ref||!id)return '';
+  try{
+    const text=execFileSync('git',['-C',path.resolve(repoRoot),'show',`${ref}:development-queue.json`],{encoding:'utf8',maxBuffer:16*1024*1024});
+    const queue=JSON.parse(text.replace(/^\uFEFF/,''));
+    const item=(queue.items||[]).find(row=>clean(row?.gameId)===id);
+    if(!hasVerifiedVibe2SourceHandoff(item))return '';
+    return clean(item.robloxVibe2VerifiedHandoff.sourceTreeSha);
+  }catch{
+    return '';
+  }
+}
+
+export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',sourceRevision='',baseline={},rojoPath='',outputDir='',verifiedSourceTreeSha=''}={}){
   const id=clean(gameId);
   const relativeSource=clean(sourcePath).replaceAll('\\','/');
   const revision=clean(sourceRevision);
@@ -63,8 +115,10 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
   try{
     execFileSync('git',['-C',path.resolve(repoRoot),'worktree','add','--detach',worktree,revision],{stdio:'pipe',encoding:'utf8'});
     const root=path.join(worktree,relativeSource);
-    const verdict=validateExistingRobloxSourceTree({root,baseline});
-    if(!verdict.pass)throw new Error(`exact-source static validation failed: ${verdict.blockers.join(',')}`);
+    const staticVerdict=validateExistingRobloxSourceTree({root,baseline});
+    const actualSourceTreeSha=clean(execFileSync('git',['-C',path.resolve(repoRoot),'rev-parse',`${revision}:${relativeSource}`],{stdio:'pipe',encoding:'utf8'}));
+    const validation=resolvePackageSourceValidation({staticVerdict,verifiedSourceTreeSha,actualSourceTreeSha});
+    if(!validation.pass)throw new Error(`exact-source validation failed: ${validation.blockers.join(',')}`);
     const artifact=path.join(outDir,`${safeName(id)}.rbxlx`);
     execFileSync(rojo,['build','default.project.json','--output',artifact],{cwd:root,stdio:'pipe',encoding:'utf8',maxBuffer:16*1024*1024});
     const stat=fs.statSync(artifact);
@@ -77,7 +131,7 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
       artifactPath:artifact,
       artifactSha256:sha256,
       sourceValidationPassed:true,
-      saveRequired:verdict.saveRequired,
+      saveRequired:validation.saveRequired,
     });
   }finally{
     try{execFileSync('git',['-C',path.resolve(repoRoot),'worktree','remove','--force',worktree],{stdio:'ignore'});}catch{}
@@ -89,20 +143,27 @@ function runCli(){
   const baselineFile=arg('baseline');
   const evidenceFile=arg('evidence');
   if(!baselineFile||!evidenceFile)throw new Error('required: --baseline and --evidence');
+  const repoRoot=arg('repo-root','.');
+  const gameId=arg('game-id');
+  const runtimeBranch=clean(process.env.COMPANY_RUNTIME_BRANCH);
+  const runtimeRef=arg('runtime-ref',runtimeBranch?`origin/${runtimeBranch}`:'');
+  const verifiedSourceTreeSha=verifiedVibe2SourceTreeShaFromRuntime({repoRoot,runtimeRef,gameId});
   const evidence=packageRobloxSource({
-    repoRoot:arg('repo-root','.'),
-    gameId:arg('game-id'),
+    repoRoot,
+    gameId,
     sourcePath:arg('source-path'),
     sourceRevision:arg('source-revision'),
     baseline:readJson(baselineFile),
     rojoPath:arg('rojo'),
     outputDir:arg('output-dir'),
+    verifiedSourceTreeSha,
   });
   fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
   fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`);
   console.log(`ROBLOX_BUILD_PACKAGE=PASS:${evidence.gameId}`);
   console.log(`ROBLOX_BUILD_ARTIFACT_IDENTITY=${evidence.artifactIdentity}`);
   console.log(`ROBLOX_BUILD_SOURCE_REVISION=${evidence.sourceRevision}`);
+  console.log(`ROBLOX_BUILD_SOURCE_VALIDATION=${verifiedSourceTreeSha?'VERIFIED_VIBE2_HANDOFF':'EXACT_SOURCE_STATIC'}`);
   console.log('ROBLOX_BUILD_PREFLIGHT_PASS=NO');
   console.log('ROBLOX_RUNTIME_PASS=NO');
   console.log('ROBLOX_RELEASE_CLAIM=NO');
