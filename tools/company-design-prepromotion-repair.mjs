@@ -8,6 +8,7 @@ const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
 const clip=(value,max)=>clean(value).slice(0,max);
 const MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
+const MULTIPLAYER_MODE_CONTRACT_DATE='2026-09-15';
 
 function cloneObject(value){
   if(!value||Array.isArray(value)||typeof value!=='object')return {};
@@ -33,6 +34,38 @@ function seedMode(seed){
   const initial=clean(seed?.INITIAL_PLAY_MODE).toUpperCase();if(MODES.has(initial))return initial;
   return '';
 }
+function legacyDesignDate(date){
+  const value=clean(date);
+  return /^\d{4}-\d{2}-\d{2}$/.test(value)&&value<MULTIPLAYER_MODE_CONTRACT_DATE;
+}
+function designSignalText(value){
+  const out=cloneObject(value);
+  const signature=Array.isArray(out.signatureSystems)?out.signatureSystems.flatMap(row=>[row?.name,row?.purpose,row?.playerChoice]):[];
+  return [out.identity,out.playerFantasy,out.coreFun,...(Array.isArray(out.coreLoop)?out.coreLoop:[]),...signature].map(clean).filter(Boolean).join(' ').toLowerCase();
+}
+function matchedSignals(text,patterns){
+  return patterns.filter(([pattern])=>pattern.test(text)).map(([,name])=>name);
+}
+export function inferLegacyMultiplayerMode(value,{date=''}={}){
+  const explicit=clean(value?.multiplayerMode).toUpperCase();
+  if(MODES.has(explicit))return {mode:explicit,source:'EXPLICIT_DESIGN_MODE',signals:[]};
+  if(!legacyDesignDate(date))return {mode:'',source:'',signals:[]};
+  const text=designSignalText(value);
+  const multiplayerContext=/\b(multiplayer|party|players?|peers?|opponents?|co-?op|cooperative|team)\b/i.test(text);
+  if(!multiplayerContext)return {mode:'',source:'',signals:[]};
+  const competitive=matchedSignals(text,[
+    [/\brace\b/i,'race'],[/\bposition\b/i,'position'],[/\brank(?:ing)?\b/i,'rank'],[/\bleaderboard\b/i,'leaderboard'],
+    [/\bversus\b|\bvs\.?\b/i,'versus'],[/\bwinner\b/i,'winner'],[/\bpvp\b/i,'pvp'],
+  ]);
+  const cooperative=matchedSignals(text,[
+    [/\bco-?op\b|\bcooperative\b/i,'cooperative'],[/\bshared objective\b/i,'shared-objective'],
+    [/\bwork together\b/i,'work-together'],[/\bteam objective\b/i,'team-objective'],[/\bteam up\b/i,'team-up'],
+  ]);
+  if(competitive.length>=2&&cooperative.length===0)return {mode:'COMPETITIVE',source:'LEGACY_DESIGN.COMPETITIVE_LOOP_SIGNALS',signals:competitive};
+  if(cooperative.length>=2&&competitive.length===0)return {mode:'COOP',source:'LEGACY_DESIGN.COOPERATIVE_LOOP_SIGNALS',signals:cooperative};
+  if(competitive.length>=2&&cooperative.length>=2)return {mode:'HYBRID',source:'LEGACY_DESIGN.HYBRID_LOOP_SIGNALS',signals:[...competitive,...cooperative]};
+  return {mode:'',source:'',signals:[...competitive,...cooperative]};
+}
 function setMissing(out,key,value,max,repairs,source){
   if(clean(out?.[key])||value===undefined||value===null)return;
   const text=clip(value,max);if(!text)return;
@@ -45,9 +78,9 @@ function setMissingArray(out,key,value,repairs,source,{min=0,max=8}={}){
   out[key]=items;repairs.push({field:key,source});
 }
 
-export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNKNOWN'}={}){
+export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNKNOWN',designDate='',allowLegacyMultiplayerInference=false}={}){
   const out=cloneObject(value);const repairs=[];
-  const loop=seedLoop(seed);const mode=seedMode(seed);
+  const loop=seedLoop(seed);let mode=seedMode(seed);
   const identity=firstText(seed?.DISTINCT_IDENTITY,factText(factPack,'distinctIdentity','description'));
   const coreFun=firstText(seed?.CORE_FUN_TO_LEARN,loop.join(' → '),identity);
   const targetAudience=firstText(seed?.TARGET_AUDIENCE,factText(factPack,'targetAudience'));
@@ -67,7 +100,12 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   setMissing(out,'marketTargetDirection',firstText([market,targetAudience].filter(Boolean).join(' / '),targetAudience),900,repairs,'GAME_SEED.MARKET_EVIDENCE_SUMMARY_AND_TARGET_AUDIENCE');
   setMissing(out,'steamExpansionDecision',firstText(expansion,targetPlatform&&`선택 플랫폼 ${targetPlatform} 검증을 우선하고 추가 PC 확장은 검증 후 결정한다`),500,repairs,'GAME_SEED.CROSS_PLATFORM_EXPANSION_VALUE_OR_TARGET_PLATFORM');
   if(!MODES.has(clean(out.multiplayerMode).toUpperCase())&&mode){out.multiplayerMode=mode;repairs.push({field:'multiplayerMode',source:'GAME_SEED.MULTIPLAYER_DESIGN_MODE_OR_INITIAL_PLAY_MODE'});}
-  setMissing(out,'multiplayerExpansionDecision',mode&&firstText(expansion,`${mode} 코어루프를 보존하며 확장은 별도 검증 후 결정한다`),500,repairs,'GAME_SEED.MULTIPLAYER_MODE_AND_CROSS_PLATFORM_VALUE');
+  if(!MODES.has(clean(out.multiplayerMode).toUpperCase())&&allowLegacyMultiplayerInference){
+    const inferred=inferLegacyMultiplayerMode(out,{date:designDate});
+    if(inferred.mode){mode=inferred.mode;out.multiplayerMode=mode;repairs.push({field:'multiplayerMode',source:inferred.source,signals:inferred.signals});}
+  }
+  if(!mode&&MODES.has(clean(out.multiplayerMode).toUpperCase()))mode=clean(out.multiplayerMode).toUpperCase();
+  setMissing(out,'multiplayerExpansionDecision',mode&&firstText(expansion,`${mode} 코어루프를 보존하며 확장은 별도 검증 후 결정한다`),500,repairs,'GAME_SEED_OR_LEGACY_MULTIPLAYER_MODE_AND_CROSS_PLATFORM_VALUE');
   setMissingArray(out,'technicalAssumptions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'validationQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'openQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
@@ -82,16 +120,19 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   return {value:out,repairs,unresolved,phase};
 }
 
-export function repairPersistedDesignForPromotion({root='.',gameId,date,phase='PRE_REVIEW'}={}){
-  const base=path.join(root,'design',gameId,date);const revisedPath=path.join(base,'design-revised.json');
+export function repairPersistedDesignForPromotion({root='.',designRoot='design',gameId,date,phase='PRE_REVIEW'}={}){
+  const resolvedDesignRoot=path.isAbsolute(designRoot)?designRoot:path.join(root,designRoot);
+  const base=path.join(resolvedDesignRoot,gameId,date);const revisedPath=path.join(base,'design-revised.json');
   const revised=readJson(revisedPath,null);if(!revised?.content)return {changed:false,repairs:[],unresolved:['design-revised.json'],reason:'DESIGN_REVISED_MISSING'};
-  const state=loadSeedState(path.join(root,'game-seed-state.json'));const seed=activeSeedForGame(state,gameId);if(!seed)return {changed:false,repairs:[],unresolved:['active-game-seed'],reason:'ACTIVE_SEED_MISSING'};
+  const state=loadSeedState(path.join(root,'game-seed-state.json'));const seed=activeSeedForGame(state,gameId);
+  const legacyEligible=legacyDesignDate(date)&&!MODES.has(clean(revised.content.multiplayerMode).toUpperCase());
+  if(!seed&&!legacyEligible)return {changed:false,repairs:[],unresolved:['active-game-seed'],reason:'ACTIVE_SEED_MISSING'};
   const factPack=readJson(path.join(root,'artbook-submissions',gameId,date,'fact-pack.json'),{});
   const strictPath=path.join(base,'strict-design-review.json');const strictBefore=readJson(strictPath,null);
   if(phase==='REVIEW_FEEDBACK'&&strictBefore?.verdict==='PASS'&&Number(strictBefore?.totalScore)>=80&&Array.isArray(strictBefore?.hardFailures)&&strictBefore.hardFailures.length===0)return {changed:false,repairs:[],unresolved:[],reason:'STRICT_ALREADY_PASS'};
-  const repaired=repairDesignRequiredFields(revised.content,{seed,factPack,phase});
+  const repaired=repairDesignRequiredFields(revised.content,{seed:seed||{},factPack,phase,designDate:date,allowLegacyMultiplayerInference:legacyEligible});
   const changed=repaired.repairs.length>0;
-  if(changed){revised.content=repaired.value;revised.prePromotionRepair={phase,repairs:repaired.repairs,groundedOnly:true,strictScoreOrVerdictModified:false,repairedAt:new Date().toISOString()};writeJson(revisedPath,revised);}
+  if(changed){revised.content=repaired.value;revised.prePromotionRepair={phase,repairs:repaired.repairs,groundedOnly:true,legacyMultiplayerNormalization:repaired.repairs.some(row=>String(row.source||'').startsWith('LEGACY_DESIGN.')),strictScoreOrVerdictModified:false,repairedAt:new Date().toISOString()};writeJson(revisedPath,revised);}
   const strictAfter=readJson(strictPath,null);
   if(JSON.stringify(strictBefore)!==JSON.stringify(strictAfter))throw new Error('STRICT_REVIEW_MUTATION_FORBIDDEN');
   return {changed,repairs:repaired.repairs,unresolved:repaired.unresolved,reason:changed?'GROUNDED_DESIGN_FIELDS_REPAIRED':'NO_SAFE_REPAIR_REQUIRED'};
