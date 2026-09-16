@@ -1,0 +1,125 @@
+{
+    "capabilities":  {
+                         "studioTestService":  true,
+                         "virtualInput":  true
+                     },
+    "errors":  [
+                   "physical-stage-02",
+                   "physical-round-1-finished",
+                   "round-2-reset"
+               ],
+    "nonce":  "026f4f9fa48ee1a0a8cd2ea9",
+    "final":  {
+                  "finished":  false,
+                  "score":  100,
+                  "position":  1,
+                  "progress":  8,
+                  "round":  1,
+                  "restarting":  false,
+                  "roundTime":  28.7
+              },
+    "stages":  [
+                   {
+                       "deaths":  0,
+                       "retries":  0,
+                       "elapsedMs":  2624,
+                       "inputActionsStart":  0,
+                       "inputActions":  22,
+                       "success":  true,
+                       "jumpCountStart":  0,
+                       "jumpCount":  7,
+                       "stage":  1,
+                       "stalledMs":  0
+                   },
+                   {
+                       "deaths":  3,
+                       "retries":  3,
+                       "elapsedMs":  17570,
+                       "failedTarget":  "Step02C:dead",
+                       "inputActionsStart":  22,
+                       "inputActions":  54,
+                       "success":  false,
+                       "jumpCountStart":  7,
+                       "jumpCount":  18,
+                       "stage":  2,
+                       "stalledMs":  0
+                   }
+               ],
+    "metrics":  {
+                    "deaths":  3,
+                    "inputActions":  76,
+                    "durationMs":  32821,
+                    "jumpCount":  25,
+                    "retries":  3,
+                    "stalledMs":  0
+                },
+    "version":  1,
+    "runtimeVerified":  true,
+    "checkpoints":  [
+                        {
+                            "value":  "VirtualInput-only stage traversal",
+                            "name":  "no-teleport-traversal",
+                            "pass":  true
+                        },
+                        {
+                            "value":  "physical-course-started",
+                            "name":  "round-1-start",
+                            "pass":  true
+                        },
+                        {
+                            "value":  {
+                                          "deaths":  0,
+                                          "retries":  0,
+                                          "elapsedMs":  2624,
+                                          "inputActionsStart":  0,
+                                          "inputActions":  22,
+                                          "success":  true,
+                                          "jumpCountStart":  0,
+                                          "jumpCount":  7,
+                                          "stage":  1,
+                                          "stalledMs":  0
+                                      },
+                            "name":  "physical-stage-01",
+                            "pass":  true
+                        },
+                        {
+                            "value":  {
+                                          "deaths":  3,
+                                          "retries":  3,
+                                          "elapsedMs":  17570,
+                                          "failedTarget":  "Step02C:dead",
+                                          "inputActionsStart":  22,
+                                          "inputActions":  54,
+                                          "success":  false,
+                                          "jumpCountStart":  7,
+                                          "jumpCount":  18,
+                                          "stage":  2,
+                                          "stalledMs":  0
+                                      },
+                            "name":  "physical-stage-02",
+                            "pass":  false
+                        },
+                        {
+                            "value":  {
+                                          "position":  1,
+                                          "roundTime":  20.6
+                                      },
+                            "name":  "physical-round-1-finished",
+                            "pass":  false
+                        },
+                        {
+                            "value":  {
+                                          "round":  1,
+                                          "finished":  false,
+                                          "restarting":  false,
+                                          "position":  1
+                                      },
+                            "name":  "round-2-reset",
+                            "pass":  false
+                        }
+                    ],
+    "inputProfile":  "keyboard-default-movement",
+    "authority":  "vibe2-roblox-skyline-input-playtest",
+    "inputBased":  true,
+    "baseMainSha":  "6c1371fa552ecd6e0f3d286c245e132d03d3f30a"
+}
