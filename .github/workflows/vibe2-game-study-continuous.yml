@@ -162,7 +162,7 @@ jobs:
           node-version: '22'
 
       - name: Protect active Roblox production Studio session
-        shell: pwsh
+        shell: powershell
         run: |
           $isolated = @('1','true','yes','on') -contains ([string]$env:VIBE2_ROBLOX_STUDY_ISOLATED_SESSION).ToLowerInvariant()
           $studio = @(Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue)
@@ -181,7 +181,7 @@ jobs:
       - name: Run isolated Roblox Studio GAME STUDY
         id: study
         continue-on-error: true
-        shell: pwsh
+        shell: powershell
         env:
           TASK_ID: ${{ matrix.taskId }}
           TARGET_ID: ${{ matrix.targetId }}
