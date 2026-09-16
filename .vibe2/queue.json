@@ -2235,14 +2235,15 @@
       "target": "roblox",
       "department": "development",
       "type": "implementation",
-      "goal": "[OWNER_ROBLOX_PRIMARY] FULL_ROBLOX_GAME_REBUILD FULL_REBUILD_PHASE_1_WORLD_CORE. 현재 공용 버튼/숫자 증가 셸을 실제 Roblox 오비 게임의 물리 플레이 코어로 처음부터 재제작한다. 새 FULL_REBUILD 전체 소스 재작성 계약을 사용해 server/Game.server.luau의 기존 상태/버튼 중심 구현을 실제 공간형 플레이 구현으로 교체한다. 기존 GameConfig 인터페이스와 RemoteEvent 이름은 이번 단계에서 깨지지 않게 유지한다. Workspace에 실제로 달리고 점프할 수 있는 독자적인 단순 기하 장애물 코스를 런타임에 구성하고, 시작 지점과 최소 12개의 순차 스테이지, 체크포인트, 낙하/위험 구역, 체크포인트 기반 재생성, 완주 판정, 라운드 시간과 스테이지 진행 상태를 구현한다. Position/Progress/Score 같은 기존 attribute는 실제 물리 진행 결과에서만 갱신하고 버튼 클릭만으로 진행되지 않게 한다. 여러 플레이어의 진행 상태를 분리하고 서버 권위로 체크포인트 순서를 검증한다. Roblox 기본 캐릭터 이동/점프를 실제 조작으로 사용하며 모바일에서도 Roblox 기본 터치 이동이 작동해야 한다. 외부 게임의 맵·에셋·코드·고유 연출을 복제하지 않는다. 유료 서비스, 새 과금, 외부 네트워크 의존성은 추가하지 않는다. 완료 후 Roblox 런타임 QA에서 캐릭터 이동, 점프, 위험 구역 사망, 체크포인트 복귀, 순차 진행, 완주가 확인되어야 한다.",
+      "goal": "[OWNER_ROBLOX_PRIMARY] FULL_ROBLOX_GAME_REBUILD FULL_REBUILD_PHASE_1_WORLD_CORE. 현재 공용 버튼/숫자 증가 셸을 실제 Roblox 오비 게임의 물리 플레이 코어로 처음부터 재제작한다. 새 FULL_REBUILD 전체 소스 재작성 계약을 사용해 server/Game.server.luau의 기존 상태/버튼 중심 구현을 실제 공간형 플레이 구현으로 교체하고 client/Game.client.luau의 구형 액션 버튼 대시보드를 읽기 전용 오비 진행 HUD로 교체한다. 기존 GameConfig 인터페이스와 RemoteEvent 이름은 이번 단계에서 깨지지 않게 유지한다. Workspace에 실제로 달리고 점프할 수 있는 독자적인 단순 기하 장애물 코스를 런타임에 구성하고, 시작 지점과 최소 12개의 순차 스테이지, 체크포인트, 낙하/위험 구역, 체크포인트 기반 재생성, 완주 판정, 라운드 시간과 스테이지 진행 상태를 구현한다. Position/Progress/Score 같은 기존 attribute는 실제 물리 진행 결과에서만 갱신하고 버튼 클릭만으로 진행되지 않게 한다. 클라이언트 HUD는 Stage/Progress/Score/RoundTime/Finished를 표시하되 RemoteEvent로 진행을 요청하는 버튼을 만들지 않는다. 여러 플레이어의 진행 상태를 분리하고 서버 권위로 체크포인트 순서를 검증한다. Roblox 기본 캐릭터 이동/점프를 실제 조작으로 사용하며 모바일에서도 Roblox 기본 터치 이동이 작동해야 한다. 외부 게임의 맵·에셋·코드·고유 연출을 복제하지 않는다. 유료 서비스, 새 과금, 외부 네트워크 의존성은 추가하지 않는다. 완료 후 Roblox 런타임 QA에서 캐릭터 이동, 점프, 위험 구역 사망, 체크포인트 복귀, 순차 진행, 완주가 확인되어야 한다.",
       "responsibleFiles": [
-        "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/server/Game.server.luau"
+        "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/server/Game.server.luau",
+        "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/client/Game.client.luau"
       ],
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
+      "status": "queued",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
@@ -2264,6 +2265,8 @@
         "execution-policy:deterministic-first-ai-optional-v1",
         "deterministic-recipe:roblox-obby-world-core-v1",
         "deterministic-recipe-build:30dee706",
+        "client-hud-contract:read-only-physical-progress-v1",
+        "studio-runtime-evidence:waypoint-traversal-pass",
         "round-time-contract:live-attribute-v1",
         "ai-required:false",
         "supersedes:OWNER-ROBLOX-OBBY-WORLD-CORE-20260916"
