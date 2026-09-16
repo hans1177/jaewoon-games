@@ -6,6 +6,17 @@ on:
       - Vibe2 Roblox Candidate Runtime
     types:
       - completed
+  workflow_dispatch:
+    inputs:
+      qa_run_id:
+        description: 'Completed Roblox Candidate Runtime run id'
+        required: true
+        type: string
+      qa_conclusion:
+        description: 'Completed Roblox Candidate Runtime conclusion'
+        required: true
+        default: success
+        type: string
 
 permissions:
   contents: write
@@ -17,17 +28,20 @@ concurrency:
 
 jobs:
   reconcile:
-    if: github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.event == 'push' || github.event.workflow_run.event == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    env:
+      QA_RUN_ID: ${{ inputs.qa_run_id || github.event.workflow_run.id }}
+      QA_CONCLUSION: ${{ inputs.qa_conclusion || github.event.workflow_run.conclusion }}
     steps:
       - name: Download candidate machine context from Studio QA run
         uses: actions/download-artifact@v4
         with:
-          name: vibe2-roblox-candidate-context-${{ github.event.workflow_run.id }}
+          name: vibe2-roblox-candidate-context-${{ env.QA_RUN_ID }}
           path: /tmp/vibe2-roblox-candidate-context
           github-token: ${{ github.token }}
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ env.QA_RUN_ID }}
 
       - name: Resolve verified candidate identity
         id: context
@@ -64,8 +78,6 @@ jobs:
         env:
           CONTROL_BRANCH: vibe2-unreal-core
           CANDIDATE_BRANCH: ${{ steps.context.outputs.candidate_branch }}
-          QA_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
-          QA_RUN_ID: ${{ github.event.workflow_run.id }}
           QA_HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
         shell: bash
         run: |
@@ -115,7 +127,7 @@ jobs:
           echo 'VIBE2_AUTO_LEARNING=NO_UNTIL_VERIFIED_REVIEW'
 
       - name: Dispatch Studio-verified candidate to release review gate
-        if: steps.reconcile.outputs.updated == '1' && github.event.workflow_run.conclusion == 'success'
+        if: steps.reconcile.outputs.updated == '1' && env.QA_CONCLUSION == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           CANDIDATE_BRANCH: ${{ steps.context.outputs.candidate_branch }}
