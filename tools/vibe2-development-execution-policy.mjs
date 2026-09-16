@@ -13,11 +13,15 @@ function evidenceValue(task={},prefix=''){
 function explicitRecipe(task={}){
   return clean(task.deterministicRecipe||task.implementationRecipe||evidenceValue(task,'deterministic-recipe:'));
 }
+function isPath(file,suffix){
+  return file===suffix||file.endsWith(`/${suffix}`);
+}
 function robloxObbyWorldCoreRecipe(task={},target=''){
   if(target!=='roblox'||task.ownerDirective!==true)return'';
   const files=unique(task.responsibleFiles||[]);
-  const serverFile=files[0]||'';
-  if(files.length!==1||(serverFile!=='server/Game.server.luau'&&!serverFile.endsWith('/server/Game.server.luau')))return'';
+  const hasServer=files.some(file=>isPath(file,'server/Game.server.luau'));
+  const onlySupported=files.length>=1&&files.every(file=>isPath(file,'server/Game.server.luau')||isPath(file,'client/Game.client.luau'));
+  if(!hasServer||!onlySupported)return'';
   const rows=evidence(task);
   const rebuild=clean(task.rebuildMode).toUpperCase()==='FULL_REBUILD'||task.fullRebuild===true||rows.includes('owner-directive:full-roblox-game-rebuild');
   const worldCore=rows.includes('rebuild-phase:world-core')||/WORLD[- _]?CORE|checkpoint|obby|obstacle/i.test(clean(task.goal));
