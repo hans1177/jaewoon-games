@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "updatedAt": "2026-09-16",
   "executionRoles": {
     "vibe": {
@@ -31,6 +31,13 @@
   },
   "humanDocs": {
     "policy": "minimal-maintenance-only",
-    "newRoleDocsAllowed": false
+    "retain": [
+      "COMPANY_FLOW.md"
+    ],
+    "newDocsAllowed": false,
+    "contentMode": "core-summary-only",
+    "executionSourceOfTruth": false,
+    "operationalStateAllowed": false,
+    "machineStatePrimary": true
   }
 }
