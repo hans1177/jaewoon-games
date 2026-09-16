@@ -15,6 +15,7 @@ import {
   selectRepresentativeCanary,
   selectTargetPlatformDevelopmentWindow,
   targetPlatformDevelopmentEligible,
+  verifiedOwnerReleaseHandoffEligible,
   canonicalTargetStep,
   canonicalTargetWaitingState,
 } from '../tools/company-selected-platform-router.mjs';
@@ -71,6 +72,26 @@ test('global selected-platform development window is deterministic, capped at tw
   assert.equal(window.some(x=>x.gameId==='uefn-not-configured'),false);
 });
 
+test('verified owner Roblox release handoff enters the platform window without weakening downstream gates',()=>{
+  const item={
+    gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
+    selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',enqueuedAt:'2026-09-13T00:28:35.330Z',
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+    webValidationPassedAt:null,musicValidationPassed:false,formalImplementationPassed:false,formalImplementationVerdict:'REVISE',
+    robloxVibe2VerifiedHandoff:{
+      verified:true,authority:'vibe2-authoritative-studio-qa-plus-owner-release-intent',
+      requestId:'skyline-r5-release-20260916',gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
+      requestedReleaseState:'release-confirmed',sourceRevision:'a'.repeat(40),sourceTreeSha:'b'.repeat(40),candidateSha:'c'.repeat(40),qaRunId:35070803443,
+    },
+  };
+  assert.equal(verifiedOwnerReleaseHandoffEligible(item),true);
+  assert.equal(targetPlatformDevelopmentEligible(item),true);
+  assert.deepEqual(selectTargetPlatformDevelopmentWindow([item]).map(x=>x.gameId),[item.gameId]);
+  assert.equal(verifiedOwnerReleaseHandoffEligible({...item,robloxVibe2VerifiedHandoff:{...item.robloxVibe2VerifiedHandoff,requestedReleaseState:'development-confirmed'}}),false);
+  assert.equal(verifiedOwnerReleaseHandoffEligible({...item,robloxVibe2VerifiedHandoff:{...item.robloxVibe2VerifiedHandoff,sourceTreeSha:'bad'}}),false);
+});
+
 test('global development window never expands beyond the owner twenty-game maximum',()=>{
   const rows=Array.from({length:25},(_,i)=>({
     gameId:`game-${String(i).padStart(2,'0')}`,selectedPlatform:i%2?'ROBLOX':'UNITY',enqueuedAt:`2026-09-14T00:${String(i).padStart(2,'0')}:00Z`,
@@ -90,23 +111,8 @@ test('cheap precheck rejects missing selected platform and accepts selected-plat
 
 test('unchanged source fingerprint reuses one immutable build artifact and resumes exact failed stage',()=>{
   const fingerprint=sourceFingerprint({platform:'UNITY',sourceRevision:'0123456789012345678901234567890123456789'});
-  const previous=normalizeCommonEvidence({
-    platform:'UNITY',
-    sourceRevision:'0123456789012345678901234567890123456789',
-    sourceFingerprint:fingerprint,
-    buildOrPackagePassed:true,
-    artifactIdentity:'artifact:unity:123',
-    exactRevision:true,
-    lastSuccessfulStage:'IMMUTABLE_ARTIFACT_BIND',
-    failureStage:'TARGET_PLATFORM_RUNTIME',
-    failureSignature:'deadbeef',
-  });
-  const plan=createSelectedPlatformExecutionPlan({
-    selectedPlatform:'UNITY',
-    sourceRevision:'0123456789012345678901234567890123456789',
-    sourcePath:'unity-games/game-a',
-    previousEvidence:previous,
-  });
+  const previous=normalizeCommonEvidence({platform:'UNITY',sourceRevision:'0123456789012345678901234567890123456789',sourceFingerprint:fingerprint,buildOrPackagePassed:true,artifactIdentity:'artifact:unity:123',exactRevision:true,lastSuccessfulStage:'IMMUTABLE_ARTIFACT_BIND',failureStage:'TARGET_PLATFORM_RUNTIME',failureSignature:'deadbeef'});
+  const plan=createSelectedPlatformExecutionPlan({selectedPlatform:'UNITY',sourceRevision:'0123456789012345678901234567890123456789',sourcePath:'unity-games/game-a',previousEvidence:previous});
   assert.equal(plan.sameFingerprint,true);
   assert.equal(plan.artifactReusable,true);
   assert.equal(plan.buildRequired,false);
@@ -115,12 +121,7 @@ test('unchanged source fingerprint reuses one immutable build artifact and resum
 
 test('source change invalidates old build evidence without weakening later gates',()=>{
   const oldFingerprint=sourceFingerprint({platform:'ROBLOX',sourceRevision:'old'});
-  const plan=createSelectedPlatformExecutionPlan({
-    selectedPlatform:'ROBLOX',
-    sourceRevision:'new',
-    sourcePath:'roblox-games/a.lua',
-    previousEvidence:{platform:'ROBLOX',sourceFingerprint:oldFingerprint,buildOrPackagePassed:true,artifactIdentity:'old-artifact',exactRevision:true,lastSuccessfulStage:'REGRESSION'},
-  });
+  const plan=createSelectedPlatformExecutionPlan({selectedPlatform:'ROBLOX',sourceRevision:'new',sourcePath:'roblox-games/a.lua',previousEvidence:{platform:'ROBLOX',sourceFingerprint:oldFingerprint,buildOrPackagePassed:true,artifactIdentity:'old-artifact',exactRevision:true,lastSuccessfulStage:'REGRESSION'}});
   assert.equal(plan.sameFingerprint,false);
   assert.equal(plan.artifactReusable,false);
   assert.equal(plan.buildRequired,true);
@@ -136,10 +137,7 @@ test('canary is deterministic and common stage failures dedupe across game ids',
   const sigA=failureSignature({stage:'TARGET_PLATFORM_RUNTIME',code:'STAGE_NOT_PASSED',message:'seed-game-a:TARGET_PLATFORM_RUNTIME'});
   const sigB=failureSignature({stage:'TARGET_PLATFORM_RUNTIME',code:'STAGE_NOT_PASSED',message:'seed-game-b:TARGET_PLATFORM_RUNTIME'});
   assert.equal(sigA,sigB);
-  const canary=selectRepresentativeCanary([
-    {gameId:'b',selectedPlatform:'UNITY',failureCount:0},
-    {gameId:'a',selectedPlatform:'UNITY',failureCount:2},
-  ]);
+  const canary=selectRepresentativeCanary([{gameId:'b',selectedPlatform:'UNITY',failureCount:0},{gameId:'a',selectedPlatform:'UNITY',failureCount:2}]);
   assert.equal(canary.gameId,'a');
 });
 
