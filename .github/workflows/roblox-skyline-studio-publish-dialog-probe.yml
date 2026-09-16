@@ -1,0 +1,130 @@
+name: One-shot Skyline Studio Publish Dialog Probe
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-skyline-studio-publish-dialog-probe.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  probe:
+    name: open Publish to Roblox As and inspect dialog
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Resolve immutable Skyline package
+        id: package
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: seed-roblox-obby-party-minigam-tower-of-hell
+          ARTIFACT_RUN_ID: '35110903876'
+          EXPECTED_ARTIFACT: sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = Join-Path $env:RUNNER_TEMP 'skyline-studio-publish-dialog-package'
+          Remove-Item -Recurse -Force $root -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force -Path $root | Out-Null
+          gh run download $env:ARTIFACT_RUN_ID --repo $env:GITHUB_REPOSITORY -n "development-roblox-package-$env:GAME_ID" -D $root
+          $places = @(Get-ChildItem -Path $root -Recurse -File | Where-Object { $_.Extension -in @('.rbxl','.rbxlx') })
+          if ($places.Count -ne 1) { throw "Expected exactly one Roblox place package; found $($places.Count)" }
+          $place = $places[0]
+          $hash = (Get-FileHash -Algorithm SHA256 $place.FullName).Hash.ToLowerInvariant()
+          if ("sha256:$hash" -ne $env:EXPECTED_ARTIFACT.ToLowerInvariant()) { throw 'Immutable Skyline package SHA256 mismatch' }
+          "place_file=$($place.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_STUDIO_PUBLISH_DIALOG_ARTIFACT_BIND=PASS'
+
+      - name: Open Publish to Roblox As and inspect dialog
+        env:
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Add-Type -AssemblyName UIAutomationClient
+          Add-Type -AssemblyName UIAutomationTypes
+          Add-Type -AssemblyName System.Windows.Forms
+          Add-Type -AssemblyName System.Drawing
+
+          $studio = Get-ChildItem "$env:LOCALAPPDATA\Roblox\Versions" -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction Stop | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+
+          $argLine = "--task EditFile --localPlaceFile `"$env:PLACE_FILE`""
+          $p = Start-Process -FilePath $studio.FullName -ArgumentList $argLine -PassThru
+          $deadline = (Get-Date).AddSeconds(90)
+          do {
+            Start-Sleep -Milliseconds 500
+            $p.Refresh()
+            $hwnd = $p.MainWindowHandle
+          } while ($hwnd -eq 0 -and (Get-Date) -lt $deadline)
+          if ($hwnd -eq 0) { throw 'Studio main window did not become available' }
+
+          $shell = New-Object -ComObject WScript.Shell
+          $null = $shell.AppActivate($p.Id)
+          Start-Sleep -Seconds 2
+          [System.Windows.Forms.SendKeys]::SendWait('%+p')
+          Start-Sleep -Seconds 10
+          Write-Host 'ROBLOX_STUDIO_PUBLISH_AS_SHORTCUT_SENT=YES'
+
+          $desktop = [System.Windows.Automation.AutomationElement]::RootElement
+          $windows = $desktop.FindAll([System.Windows.Automation.TreeScope]::Children,[System.Windows.Automation.Condition]::TrueCondition)
+          for ($i=0; $i -lt $windows.Count; $i++) {
+            $w = $windows.Item($i)
+            try {
+              $name=[string]$w.Current.Name
+              $cls=[string]$w.Current.ClassName
+              $pid=[int]$w.Current.ProcessId
+              if ($pid -eq $p.Id -or $name -match 'Roblox|Publish|Experience') {
+                Write-Host ("TOPWINDOW|PID={0}|NAME={1}|CLASS={2}" -f $pid,$name,$cls)
+                $all=$w.FindAll([System.Windows.Automation.TreeScope]::Subtree,[System.Windows.Automation.Condition]::TrueCondition)
+                $limit=[Math]::Min($all.Count,1200)
+                for($j=0;$j -lt $limit;$j++){
+                  $e=$all.Item($j)
+                  try{
+                    $en=[string]$e.Current.Name
+                    $et=[string]$e.Current.ControlType.ProgrammaticName
+                    $ea=[string]$e.Current.AutomationId
+                    $ec=[string]$e.Current.ClassName
+                    if($en -or $et -match 'Button|Edit|Text|List|Window|Pane'){
+                      Write-Host ("UI|TYPE={0}|NAME={1}|AID={2}|CLASS={3}" -f $et,$en,$ea,$ec)
+                    }
+                  }catch{}
+                }
+              }
+            } catch {}
+          }
+
+          $bounds=[System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bmp=New-Object System.Drawing.Bitmap $bounds.Width,$bounds.Height
+          $gfx=[System.Drawing.Graphics]::FromImage($bmp)
+          $gfx.CopyFromScreen($bounds.Location,[System.Drawing.Point]::Empty,$bounds.Size)
+          $shot=Join-Path $env:RUNNER_TEMP 'skyline-publish-dialog.png'
+          $bmp.Save($shot,[System.Drawing.Imaging.ImageFormat]::Png)
+          $gfx.Dispose(); $bmp.Dispose()
+          Copy-Item $shot "$env:GITHUB_WORKSPACE\skyline-publish-dialog.png" -Force
+
+          [System.Windows.Forms.SendKeys]::SendWait('{ESC}')
+          Start-Sleep -Seconds 1
+          Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+          Write-Host 'ROBLOX_STUDIO_PUBLISH_DIALOG_PROBE=PASS'
+          Write-Host 'ROBLOX_PUBLISH_ATTEMPTED=NO'
+          Write-Host 'ROBLOX_RELEASE_CLAIM=NO'
+
+      - name: Upload publish dialog screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skyline-publish-dialog-probe
+          path: skyline-publish-dialog.png
+          if-no-files-found: ignore
+          retention-days: 1
