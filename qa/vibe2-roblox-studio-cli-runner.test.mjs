@@ -30,22 +30,12 @@ test('Vibe2 live smoke reuses the existing authenticated Roblox Studio runner', 
   assert.doesNotMatch(liveSmokeWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
 });
 
-test('continuous Roblox GAME STUDY reuses the existing authenticated Studio runner', () => {
-  assert.match(continuousWorkflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
-  assert.doesNotMatch(continuousWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
-});
-
-test('continuous Roblox GAME STUDY reaps only stale Vibe2-owned Studio sessions before production guard', () => {
-  const reapAt = continuousWorkflow.indexOf('Reap stale Vibe2-owned Studio sessions');
-  const guardAt = continuousWorkflow.indexOf('Protect active Roblox production Studio session');
-  assert.ok(reapAt >= 0 && guardAt > reapAt);
-  assert.match(continuousWorkflow, /Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta\.exe'"/);
-  assert.match(continuousWorkflow, /vibe2-roblox-\(skyline\|studio-cli\)-/);
-  assert.match(continuousWorkflow, /--task\\s\+RunScript/);
-  assert.match(continuousWorkflow, /--quitAfterExecution/);
-  assert.match(continuousWorkflow, /VIBE2_ROBLOX_STALE_OWNED_STUDIO_REAPED=/);
-  assert.match(continuousWorkflow, /Stop-Process -Id \(\[int\]\$process\.ProcessId\) -Force/);
-  assert.match(continuousWorkflow, /Failed to reap stale Vibe2-owned Studio sessions/);
+test('continuous Roblox GAME STUDY uses the dedicated isolated Studio runner', () => {
+  assert.match(continuousWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
+  assert.match(continuousWorkflow, /VIBE2_ROBLOX_STUDY_ISOLATED_SESSION: 'true'/);
+  assert.doesNotMatch(continuousWorkflow, /runs-on: \[self-hosted, Windows, X64, roblox-studio-authenticated\]/);
+  assert.doesNotMatch(continuousWorkflow, /Reap stale Vibe2-owned Studio sessions/);
+  assert.doesNotMatch(continuousWorkflow, /Stop-Process -Id/);
 });
 
 test('Roblox production Studio has priority on a shared Windows session while isolated sessions may learn concurrently', async () => {

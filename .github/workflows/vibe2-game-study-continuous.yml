@@ -144,8 +144,10 @@ jobs:
   roblox:
     needs: reserve
     if: needs.reserve.outputs.roblox_count != '0'
-    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    runs-on: [self-hosted, Windows, vibe2-roblox]
     timeout-minutes: 20
+    env:
+      VIBE2_ROBLOX_STUDY_ISOLATED_SESSION: 'true'
     strategy:
       fail-fast: false
       max-parallel: 20
@@ -160,27 +162,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Reap stale Vibe2-owned Studio sessions
-        shell: powershell
-        run: |
-          $ErrorActionPreference = 'Stop'
-          $ownedPattern = 'vibe2-roblox-(skyline|studio-cli)-'
-          $owned = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object {
-            $commandLine = [string]$_.CommandLine
-            ($commandLine -match $ownedPattern) -or (($commandLine -match '(?i)--task\s+RunScript') -and ($commandLine -match '(?i)--quitAfterExecution'))
-          })
-          foreach ($process in $owned) {
-            Write-Host "VIBE2_ROBLOX_REAP_STALE_OWNED_PID=$($process.ProcessId)"
-            Stop-Process -Id ([int]$process.ProcessId) -Force -ErrorAction SilentlyContinue
-          }
-          if ($owned.Count -gt 0) { Start-Sleep -Milliseconds 750 }
-          $remaining = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object {
-            $commandLine = [string]$_.CommandLine
-            ($commandLine -match $ownedPattern) -or (($commandLine -match '(?i)--task\s+RunScript') -and ($commandLine -match '(?i)--quitAfterExecution'))
-          })
-          if ($remaining.Count -gt 0) { throw "Failed to reap stale Vibe2-owned Studio sessions: $($remaining.Count)" }
-          Write-Host "VIBE2_ROBLOX_STALE_OWNED_STUDIO_REAPED=$($owned.Count)"
 
       - name: Protect active Roblox production Studio session
         shell: powershell
