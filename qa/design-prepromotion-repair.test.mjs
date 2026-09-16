@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {repairDesignRequiredFields,repairPersistedDesignForPromotion} from '../tools/company-design-prepromotion-repair.mjs';
+import {inferLegacyMultiplayerMode,repairDesignRequiredFields,repairPersistedDesignForPromotion} from '../tools/company-design-prepromotion-repair.mjs';
 
 const write=(root,file,value)=>{const target=path.join(root,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n');};
 const read=(root,file)=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
@@ -18,6 +18,19 @@ const seed={
   MARKET_EVIDENCE_SUMMARY:'퍼즐 선택과 짧은 반복 세션을 핵심 타겟 방향으로 삼는다',
   MULTIPLAYER_DESIGN_MODE:'SINGLE',
   CROSS_PLATFORM_EXPANSION_VALUE:'현재 싱글 코어 검증 뒤 플랫폼 확장을 검토한다'
+};
+
+const legacyCompetitive={
+  identity:'seed-roblox-obby-party-minigam-tower-of-hell',
+  playerFantasy:'Skyline Sprint',
+  coreFun:'obstacle, round, checkpoint, timing',
+  coreLoop:[
+    'Start a short timed round with a clear obstacle or party objective.',
+    'Jump, dodge, race through hazards while checkpoints, score, position, or remaining-time feedback shows immediate progress.',
+    'Finish or fail the round, receive score, then retry quickly.'
+  ],
+  signatureSystems:[],progressionDirection:'ascending',visualDirection:'ascending',mobileUx:'mobile',marketTargetDirection:'ascending',
+  steamExpansionDecision:'not_recommended',multiplayerExpansionDecision:'not_recommended',technicalAssumptions:['ROBLOX'],validationQuestions:[],openQuestions:[]
 };
 
 test('missing required design fields are repaired only from grounded seed/fact evidence',()=>{
@@ -39,6 +52,30 @@ test('missing core decision stays unresolved when seed does not provide it',()=>
   assert.ok(result.unresolved.includes('multiplayerMode'));
 });
 
+test('pre-contract party race design normalizes to COMPETITIVE only from strong legacy signals',()=>{
+  const inferred=inferLegacyMultiplayerMode(legacyCompetitive,{date:'2026-09-12'});
+  assert.equal(inferred.mode,'COMPETITIVE');
+  assert.equal(inferred.source,'LEGACY_DESIGN.COMPETITIVE_LOOP_SIGNALS');
+  assert.ok(inferred.signals.includes('race'));
+  assert.ok(inferred.signals.includes('position'));
+});
+
+test('legacy inference remains fail-closed for ambiguous or post-contract designs',()=>{
+  const ambiguous={...legacyCompetitive,identity:'legacy-party-game',coreLoop:['Start a party round','Clear obstacles','Retry']};
+  assert.equal(inferLegacyMultiplayerMode(ambiguous,{date:'2026-09-12'}).mode,'');
+  assert.equal(inferLegacyMultiplayerMode(legacyCompetitive,{date:'2026-09-15'}).mode,'');
+  assert.equal(inferLegacyMultiplayerMode(legacyCompetitive,{date:'2026-09-16'}).mode,'');
+});
+
+test('explicit canonical multiplayer mode is never overwritten by legacy inference',()=>{
+  const explicit={...legacyCompetitive,multiplayerMode:'COOP'};
+  const inferred=inferLegacyMultiplayerMode(explicit,{date:'2026-09-12'});
+  assert.equal(inferred.mode,'COOP');
+  const result=repairDesignRequiredFields(explicit,{designDate:'2026-09-12',allowLegacyMultiplayerInference:true});
+  assert.equal(result.value.multiplayerMode,'COOP');
+  assert.equal(result.repairs.some(row=>row.field==='multiplayerMode'),false);
+});
+
 test('persisted repair never mutates strict score or verdict and creates no artbook',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-prepromotion-repair-'));
   write(root,'game-seed-state.json',{version:2,seeds:[seed]});
@@ -52,6 +89,22 @@ test('persisted repair never mutates strict score or verdict and creates no artb
   assert.equal(fs.existsSync(path.join(root,'artbook-submissions/repair-game/current.json')),false);
   const revised=read(root,'design/repair-game/2026-09-15/design-revised.json');
   assert.equal(revised.prePromotionRepair.strictScoreOrVerdictModified,false);
+});
+
+test('persisted pre-contract repair can recover only legacy multiplayer mode after active seed has retired',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-prepromotion-legacy-'));
+  write(root,'game-seed-state.json',{version:2,seeds:[]});
+  write(root,'design/legacy-skyline/2026-09-12/design-revised.json',{gameId:'legacy-skyline',content:legacyCompetitive});
+  write(root,'design/legacy-skyline/2026-09-12/strict-design-review.json',{gameId:'legacy-skyline',verdict:'PASS',totalScore:100,hardFailures:[]});
+  const before=read(root,'design/legacy-skyline/2026-09-12/strict-design-review.json');
+  const result=repairPersistedDesignForPromotion({root,gameId:'legacy-skyline',date:'2026-09-12',phase:'FINAL_REVIEW_LEGACY_NORMALIZATION'});
+  const after=read(root,'design/legacy-skyline/2026-09-12/strict-design-review.json');
+  const revised=read(root,'design/legacy-skyline/2026-09-12/design-revised.json');
+  assert.equal(result.changed,true);
+  assert.equal(revised.content.multiplayerMode,'COMPETITIVE');
+  assert.equal(revised.prePromotionRepair.legacyMultiplayerNormalization,true);
+  assert.ok(revised.prePromotionRepair.repairs.some(row=>row.source==='LEGACY_DESIGN.COMPETITIVE_LOOP_SIGNALS'));
+  assert.deepEqual(after,before);
 });
 
 test('review feedback repair is a no-op after a real strict PASS',()=>{

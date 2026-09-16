@@ -23,6 +23,18 @@ test('final-review revalidation reuses prior Studio QA and dispatches only canon
   assert.doesNotMatch(workflow, /company-development-roblox-mobile-independent-qa\.luau/);
 });
 
+test('legacy design normalization is grounded, persisted, and re-enters final review without weakening QA', () => {
+  assert.match(evaluator, /repairPersistedDesignForPromotion/);
+  assert.match(evaluator, /FINAL_REVIEW_LEGACY_NORMALIZATION/);
+  assert.match(evaluator, /ROBLOX_FINAL_REVIEW_LEGACY_DESIGN_REPAIR=/);
+  assert.match(workflow, /tools\/company-design-prepromotion-repair\.mjs/);
+  assert.match(workflow, /qa\/design-prepromotion-repair\.test\.mjs/);
+  assert.match(workflow, /git add development-queue\.json design/);
+  assert.match(workflow, /ROBLOX_LEGACY_DESIGN_REPAIR_GROUNDED_ONLY=YES/);
+  assert.match(evaluator, /ROBLOX_MULTIPLAYER_DESIGN_DECISION_MISSING/);
+  assert.match(evaluator, /ROBLOX_MULTIPLAYER_QA_REQUIRED/);
+});
+
 test('multiplayer and release implementation changes automatically re-enter final-review revalidation', () => {
   assert.match(workflow, /'\.github\/workflows\/company-development-roblox-multiplayer-qa\.yml'/);
   assert.match(workflow, /'\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
