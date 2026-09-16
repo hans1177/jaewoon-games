@@ -90,13 +90,13 @@ for stage = 1, STAGE_COUNT do
     makePart(string.format("Step%02dA", stage), Vector3.new(10, 1, 10), CFrame.new(stepA), Color3.fromRGB(205, 215, 230))
     makePart(string.format("Step%02dB", stage), Vector3.new(9, 1, 9), CFrame.new(stepB), Color3.fromRGB(175, 195, 220))
   elseif tier == 2 then
-    local lateral = (stage % 2 == 0) and 2.5 or -2.5
+    local lateral = (stage % 2 == 0) and 1.5 or -1.5
     local stepA = previousPosition + segment * 0.25 + perpendicular * lateral
     local stepB = previousPosition + segment * 0.50 - perpendicular * lateral
     local stepC = previousPosition + segment * 0.75 + perpendicular * lateral
-    makePart(string.format("Step%02dA", stage), Vector3.new(6, 1, 6), CFrame.new(stepA), Color3.fromRGB(245, 190, 95))
-    makePart(string.format("Step%02dB", stage), Vector3.new(5.5, 1, 5.5), CFrame.new(stepB), Color3.fromRGB(240, 165, 80))
-    makePart(string.format("Step%02dC", stage), Vector3.new(5, 1, 5), CFrame.new(stepC), Color3.fromRGB(235, 140, 70))
+    makePart(string.format("Step%02dA", stage), Vector3.new(7.5, 1, 7.5), CFrame.new(stepA), Color3.fromRGB(245, 190, 95))
+    makePart(string.format("Step%02dB", stage), Vector3.new(7, 1, 7), CFrame.new(stepB), Color3.fromRGB(240, 165, 80))
+    makePart(string.format("Step%02dC", stage), Vector3.new(6.5, 1, 6.5), CFrame.new(stepC), Color3.fromRGB(235, 140, 70))
   elseif tier == 3 then
     local stepA = previousPosition + segment * (1 / 3)
     local stepB = previousPosition + segment * (2 / 3)
