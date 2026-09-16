@@ -1,0 +1,119 @@
+{
+  "version": 3,
+  "gameId": "shattered-pixel-dungeon",
+  "packageId": "com.shatteredpixel.shatteredpixeldungeon",
+  "sourceType": "EXTERNAL_OPEN_SOURCE_BLACK_BOX_RUNTIME_EVIDENCE",
+  "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
+  "observedThrough": "2026-09-16",
+  "runtimePromotionAllowed": true,
+  "gameplayBehaviorPromotionAllowed": true,
+  "partialObservableDistillationAllowed": true,
+  "codeExtractionAllowed": false,
+  "binaryRedistributionAllowed": false,
+  "positiveTrainingSample": true,
+  "verifiedRuntimePass": true,
+  "stablePlaytestVerified": true,
+  "stablePlaytestBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY",
+  "gameEntryObserved": true,
+  "gameEntryEvidenceAuthority": "CORRELATED_GITHUB_ACTIONS_BLACK_BOX_EVIDENCE",
+  "gameEntryObservationRecordedAt": "2026-09-16",
+  "sourceEvidence": {
+    "privateRepository": "hans1177/jaewoon-ai-company",
+    "workflowPath": ".github/workflows/vibe2-shattered-depth-blackbox.yml",
+    "latestCompletedRun": 35098733267,
+    "latestRunNumber": 4,
+    "latestArtifactId": 10447791030,
+    "latestArtifactDigest": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6",
+    "latestResult": "PASS",
+    "latestFailure": null,
+    "runtimeType": "REDROID_NATIVE_ARM64_DIRECT_EXEC",
+    "hostArch": "aarch64",
+    "guestAndroid": "14",
+    "guestAbi": "arm64-v8a",
+    "redroidImage": "redroid/redroid:14.0.0_64only-latest",
+    "apkSha256": "ed1b43d7312a70e86c5cd159d4ac29d7d69fae1033331a4e70f9a00dd346b207",
+    "apkSource": "OFFICIAL_GITHUB_RELEASE"
+  },
+  "verifiedObservedFacts": [
+    {
+      "id": "actual-game-entry-correlated",
+      "evidenceAuthority": "RUN_4_ARTIFACT",
+      "fact": "The captured run progressed from the title and hero-selection flow through the tutorial Continue action into the actual first dungeon tile map with the player character visible.",
+      "boundary": "This is direct black-box game-entry evidence for the captured validation window only."
+    },
+    {
+      "id": "drag-input-changed-board-state",
+      "evidenceAuthority": "RUN_4_ARTIFACT",
+      "fact": "A bounded horizontal swipe on the visible dungeon play surface was followed by a clearly different captured dungeon-board framing and player placement while the game remained active.",
+      "boundary": "Only the directly captured input-to-visible-state transition is promoted; pathfinding, movement rules, hidden map logic and internal algorithms are not inferred."
+    },
+    {
+      "id": "runtime-survived-observed-input",
+      "evidenceAuthority": "RUN_4_ARTIFACT",
+      "fact": "The package remained alive and foreground after the exercised tutorial and dungeon inputs, with no captured FATAL EXCEPTION, SIGABRT, SIGSEGV or ANR marker in the validation log window.",
+      "boundary": "This proves the captured validation window and does not claim indefinite long-run stability."
+    }
+  ],
+  "distilledPositiveRuntimePatterns": [
+    {
+      "id": "separate-android-overlay-onboarding-and-gameplay-entry",
+      "scope": "black-box-playtest-automation",
+      "evidence": [4],
+      "lesson": "A mobile game can be running correctly while an Android immersive-mode overlay, title action, character selection or tutorial screen still blocks actual gameplay entry.",
+      "reuseRule": "Preserve separate visual evidence for system overlay, title/onboarding, character selection, tutorial transition and actual gameplay entry before claiming a playable state."
+    },
+    {
+      "id": "touch-instruction-near-first-play-state",
+      "scope": "mobile-onboarding-observation",
+      "evidence": [4],
+      "lesson": "The first verified dungeon view immediately presents a concise touch interaction instruction while the playable board and character are already visible.",
+      "reuseRule": "For Roblox mobile onboarding, prefer contextual control guidance at the moment the relevant playable state is visible rather than front-loading a long instruction sequence."
+    },
+    {
+      "id": "input-visual-transition-plus-foreground-survival",
+      "scope": "qa-evidence",
+      "evidence": [4],
+      "lesson": "A bounded touch or swipe becomes useful black-box evidence only when a corresponding visible gameplay-state transition is captured and the target process remains foreground and crash-free.",
+      "reuseRule": "Bind mobile input evidence to before/after frames plus process, focus and crash checks; never infer success from input injection alone."
+    }
+  ],
+  "distilledPartialRuntimePatterns": [
+    {
+      "id": "tutorial-screen-is-not-game-entry",
+      "scope": "runtime-evidence",
+      "lesson": "Reaching hero selection or a tutorial descent screen is meaningful partial progress but is not equivalent to actual dungeon gameplay entry.",
+      "reuseRule": "Keep onboarding milestones separate from the first verified playable-state milestone."
+    }
+  ],
+  "distilledFailurePatterns": [
+    {
+      "id": "coordinate-miss-must-not-be-promoted-as-game-failure",
+      "scope": "black-box-input-automation",
+      "evidence": [3],
+      "lesson": "A bounded input can miss a visible control even when the application is healthy; the resulting lack of transition is an automation-coordinate failure, not a game runtime failure.",
+      "reuseRule": "Use captured frames to correct the observed control coordinate and rerun the responsible input stage without lowering evidence gates."
+    }
+  ],
+  "routeDecisions": {
+    "githubHostedArm64Redroid": "VERIFIED_WORKING_ANDROID14_NATIVE_ARM64_RUN4",
+    "sourceOrAssetExtraction": "NOT_USED_FOR_THIS_BLACK_BOX_FLOW",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "learningUse": {
+    "allowed": [
+      "mobile onboarding stage separation",
+      "contextual touch-control guidance timing",
+      "actual gameplay-entry boundary detection",
+      "input-to-visible-state evidence binding",
+      "foreground/process/crash correlation",
+      "runtime infrastructure and automation failure classification",
+      "portable mobile interaction lessons that may inform later Roblox-specific implementation and verification"
+    ],
+    "stillForbidden": [
+      "treating Android evidence as Roblox runtime evidence",
+      "hidden algorithm or pathfinding inference from the captured run",
+      "copying game artwork, UI trade dress, names or implementation details into a Roblox game",
+      "claims about long-run progression, balance or economy not measured by the captured validation window"
+    ]
+  }
+}
