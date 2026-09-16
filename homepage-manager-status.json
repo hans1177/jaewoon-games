@@ -1,1 +1,73 @@
-restore_pending
+{
+  "version": 3,
+  "checkedAtKst": "2026. 09. 08. 16:57:28",
+  "dateKst": "2026-09-08",
+  "manager": "homepage-diagnostics",
+  "status": "historical-snapshot",
+  "snapshotOnly": true,
+  "liveAuthority": false,
+  "authoritativeState": [
+    "company-status.json",
+    "director-supervision-status.json"
+  ],
+  "currentOperation": {
+    "standingWorker": false,
+    "diagnosticOnly": true,
+    "autoMaintenance": false,
+    "runtimeDataSync": true,
+    "runtimeRenderer": "assets/homepage-enhancements.js",
+    "existingWebMaintenanceAllowed": true
+  },
+  "policy": {
+    "otherGamesMayAppearOnHomepage": true,
+    "homepageMustStayCompact": true,
+    "preferredPattern": "short-cards -> dedicated-artbook-detail-page",
+    "artbookVisibilityIsProductionApproval": false,
+    "webArchiveWriteBack": false,
+    "runtimeGameHealthBadgeVisible": false,
+    "gameCardsRequireUniqueTitleImages": true
+  },
+  "counts": {
+    "catalogGames": 11,
+    "artbookQueueGames": 11,
+    "visibleArtbooks": 1,
+    "tinyFontRulesBelow9px": 18,
+    "gameImagesValid": 11,
+    "duplicateGameImages": 0,
+    "placeholderGameImages": 0,
+    "brokenGameImages": 0
+  },
+  "historicalChecks": {
+    "indexExists": true,
+    "artbookDetailExists": true,
+    "homepageEnhancementLoaded": true,
+    "compactLayoutCssLoaded": true,
+    "compactLayoutJsLoaded": true,
+    "everyGameGetsArtbookLink": true,
+    "progressArtbooksMayBeViewed": true,
+    "runtimeHealthBadgeHidden": true,
+    "mobileCardsStackVertically": true,
+    "lowPriorityHomeSectionsCollapsed": true,
+    "noSevereTinyFontExplosion": true,
+    "allQueuedGamesInCatalog": true,
+    "publishedBooksReferenceCatalogGames": true,
+    "requiredArtbookRolesIntact": true,
+    "legacyWebGamesReadOnlyCheck": true,
+    "legacyAutoMaintenanceCheck": true,
+    "artbookPageSupportsGameSelection": true,
+    "allGameImagesPresent": true,
+    "allGameImagesUnique": true,
+    "noPlaceholderGameImages": true,
+    "allCurrentGameImagesValid": true
+  },
+  "findings": {
+    "missingCatalog": [],
+    "unknownCatalog": [],
+    "brokenBookRefs": [],
+    "brokenGameImages": [],
+    "duplicateGameImages": [],
+    "placeholderGameImages": [],
+    "failures": []
+  },
+  "note": "This file preserves the last Homepage Manager diagnostic snapshot only. Live homepage operation status is synchronized through company-status.json and director-supervision-status.json."
+}
