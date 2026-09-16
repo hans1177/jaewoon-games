@@ -23,7 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Vibe2 control verifier
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -47,7 +50,11 @@ jobs:
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 8
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Vibe2 control verifier
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -63,13 +70,30 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio discovery failed' }
           Write-Host 'VIBE2_ROBLOX_CANDIDATE_RUNNER=roblox-studio-local'
 
+      - name: Fetch candidate game source only
+        shell: powershell
+        env:
+          CANDIDATE_REF: ${{ github.ref_name }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $candidateDir = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-candidate-source'
+          $candidateZip = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-candidate-source.zip'
+          if (Test-Path $candidateDir) { Remove-Item -Recurse -Force $candidateDir }
+          if (Test-Path $candidateZip) { Remove-Item -Force $candidateZip }
+          git fetch origin $env:CANDIDATE_REF
+          if ($LASTEXITCODE -ne 0) { throw 'candidate fetch failed' }
+          git archive --format=zip --output="$candidateZip" FETCH_HEAD roblox-games/seed-roblox-obby-party-minigam-tower-of-hell
+          if ($LASTEXITCODE -ne 0) { throw 'candidate source archive failed' }
+          Expand-Archive -Path $candidateZip -DestinationPath $candidateDir -Force
+          "VIBE2_CANDIDATE_PROJECT_ROOT=$candidateDir\roblox-games\seed-roblox-obby-party-minigam-tower-of-hell" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host "VIBE2_ROBLOX_CANDIDATE_REF=$env:CANDIDATE_REF"
+
       - name: Verify Vibe candidate in real Roblox Studio
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          $projectRoot = Join-Path $env:GITHUB_WORKSPACE 'roblox-games/seed-roblox-obby-party-minigam-tower-of-hell'
           node tools/vibe2-roblox-skyline-runtime-smoke.mjs `
-            "--project-root=$projectRoot" `
+            "--project-root=$env:VIBE2_CANDIDATE_PROJECT_ROOT" `
             --output="$env:RUNNER_TEMP/vibe2-roblox-skyline-runtime.json" `
             --timeout=210000
           if ($LASTEXITCODE -ne 0) { throw 'Skyline candidate Studio QA failed' }
