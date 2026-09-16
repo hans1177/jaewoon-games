@@ -1182,10 +1182,10 @@
       "webValidationPassedAt": null,
       "musicValidationPassed": false,
       "routingBlockers": [
-        "roblox-runtime-evidence-pending"
+        "roblox-build-preflight-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-16T12:48:44.789Z",
-      "updatedAt": "2026-09-16T13:05:50.966Z",
+      "updatedAt": "2026-09-16T13:06:32.283Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -1197,18 +1197,18 @@
       "robloxSourceBootstrapPassedAt": "2026-09-16T13:05:50.966Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
-      "robloxBuildOrPackagePassed": false,
-      "robloxBuildFailedAt": "2026-09-16T12:42:05.847Z",
+      "robloxBuildOrPackagePassed": true,
+      "robloxBuildFailedAt": null,
       "robloxBuildPreflightPassed": false,
       "robloxIndependentQaPassed": false,
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
-      "robloxFailureStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxFailureSignature": "roblox-build-package-failed",
-      "robloxBuildSourceRevision": "2dfa45dda24e966f160840599db607a76d575158",
-      "robloxBuildArtifactIdentity": "sha256:2e9e1992e4ade0f9ed3accb210671610b786c6a324f59ae29dbcf7b4370a698d",
-      "robloxBuildPassedAt": "2026-09-13T05:54:37.273Z",
-      "robloxLastSuccessfulStage": "REGRESSION",
+      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "robloxBuildSourceRevision": "9bb320a8b08244053e4aa8748860f25f1de850c6",
+      "robloxBuildArtifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc",
+      "robloxBuildPassedAt": "2026-09-16T13:06:32.283Z",
+      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
       "robloxBuildPreflightPassedAt": "2026-09-13T07:34:10.071Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
@@ -1954,7 +1954,7 @@
       "webInitialCycleMusicValidationPassed": false
     }
   ],
-  "updatedAt": "2026-09-16T13:05:50.966Z",
+  "updatedAt": "2026-09-16T13:06:32.283Z",
   "routerContractVersion": 4,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
