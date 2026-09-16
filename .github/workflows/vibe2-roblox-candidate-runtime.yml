@@ -1,6 +1,12 @@
 name: Vibe2 Roblox Candidate Runtime
 
 on:
+  workflow_dispatch:
+    inputs:
+      candidate_ref:
+        description: 'Vibe2 Roblox candidate branch to verify'
+        required: true
+        type: string
   push:
     branches:
       - 'vibe2/candidate/OWNER-ROBLOX-OBBY-*'
@@ -19,7 +25,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: vibe2-roblox-candidate-runtime-${{ github.ref }}
+  group: vibe2-roblox-candidate-runtime-${{ inputs.candidate_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -27,10 +33,42 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Vibe2 control verifier
+        uses: actions/checkout@v4
+        with:
+          ref: vibe2-unreal-core
+          fetch-depth: 1
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Resolve candidate machine context
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        env:
+          CANDIDATE_REF: ${{ inputs.candidate_ref || github.ref_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$CANDIDATE_REF" in
+            vibe2/candidate/OWNER-ROBLOX-OBBY-*) ;;
+            *) echo "invalid Roblox candidate ref: $CANDIDATE_REF" >&2; exit 1 ;;
+          esac
+          candidate_sha="$(git ls-remote origin "refs/heads/$CANDIDATE_REF" | awk 'NR==1{print $1}')"
+          test -n "$candidate_sha"
+          node - "$CANDIDATE_REF" "$candidate_sha" <<'NODE'
+          const fs=require('fs');
+          const [branch,sha]=process.argv.slice(2);
+          fs.writeFileSync('/tmp/vibe2-roblox-candidate-context.json',JSON.stringify({version:1,candidateBranch:branch,candidateSha:sha},null,2)+'\n');
+          NODE
+          echo "VIBE2_ROBLOX_CANDIDATE_REF=$CANDIDATE_REF"
+          echo "VIBE2_ROBLOX_CANDIDATE_SHA=$candidate_sha"
+      - name: Upload candidate machine context
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-roblox-candidate-context-${{ github.run_id }}
+          path: /tmp/vibe2-roblox-candidate-context.json
+          if-no-files-found: error
+          retention-days: 7
       - name: Verify candidate runtime contract
         shell: bash
         run: |
@@ -55,9 +93,11 @@ jobs:
 
   live-studio:
     needs: contract
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
     timeout-minutes: 12
+    env:
+      CANDIDATE_REF: ${{ inputs.candidate_ref || github.ref_name }}
     steps:
       - name: Checkout Vibe2 control verifier
         uses: actions/checkout@v4
@@ -81,10 +121,9 @@ jobs:
 
       - name: Fetch candidate game source and machine manifest
         shell: powershell
-        env:
-          CANDIDATE_REF: ${{ github.ref_name }}
         run: |
           $ErrorActionPreference = 'Stop'
+          if ($env:CANDIDATE_REF -notmatch '^vibe2/candidate/OWNER-ROBLOX-OBBY-') { throw "invalid candidate ref: $env:CANDIDATE_REF" }
           $candidateDir = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-candidate-source'
           $candidateZip = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-candidate-source.zip'
           if (Test-Path $candidateDir) { Remove-Item -Recurse -Force $candidateDir }
@@ -119,7 +158,7 @@ jobs:
           Write-Host 'VIBE2_ROBLOX_CANDIDATE_STUDIO_QA=PASS'
 
       - name: Replay R5 candidate with physical input and require target-stage improvement
-        if: contains(github.ref_name, 'AUTONOMOUS-BALANCE')
+        if: contains(env.CANDIDATE_REF, 'AUTONOMOUS-BALANCE')
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
