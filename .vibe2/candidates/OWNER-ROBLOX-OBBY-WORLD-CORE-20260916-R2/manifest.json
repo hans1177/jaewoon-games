@@ -1,0 +1,315 @@
+{
+  "version": 6,
+  "taskId": "OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2",
+  "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+  "target": "roblox",
+  "sourceRoot": "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell",
+  "releaseState": "development-confirmed",
+  "priority": "critical",
+  "baseMainSha": "64c0e078b652cfb6634f367fa65854e7bb94d6fb",
+  "goal": "[OWNER_ROBLOX_PRIMARY] FULL_ROBLOX_GAME_REBUILD FULL_REBUILD_PHASE_1_WORLD_CORE. 현재 공용 버튼/숫자 증가 셸을 실제 Roblox 오비 게임의 물리 플레이 코어로 처음부터 재제작한다. 새 FULL_REBUILD 전체 소스 재작성 계약을 사용해 server/Game.server.luau의 기존 상태/버튼 중심 구현을 실제 공간형 플레이 구현으로 교체한다. 기존 GameConfig 인터페이스와 RemoteEvent 이름은 이번 단계에서 깨지지 않게 유지한다. Workspace에 실제로 달리고 점프할 수 있는 독자적인 단순 기하 장애물 코스를 런타임에 구성하고, 시작 지점과 최소 12개의 순차 스테이지, 체크포인트, 낙하/위험 구역, 체크포인트 기반 재생성, 완주 판정, 라운드 시간과 스테이지 진행 상태를 구현한다. Position/Progress/Score 같은 기존 attribute는 실제 물리 진행 결과에서만 갱신하고 버튼 클릭만으로 진행되지 않게 한다. 여러 플레이어의 진행 상태를 분리하고 서버 권위로 체크포인트 순서를 검증한다. Roblox 기본 캐릭터 이동/점프를 실제 조작으로 사용하며 모바일에서도 Roblox 기본 터치 이동이 작동해야 한다. 외부 게임의 맵·에셋·코드·고유 연출을 복제하지 않는다. 유료 서비스, 새 과금, 외부 네트워크 의존성은 추가하지 않는다. 완료 후 Roblox 런타임 QA에서 캐릭터 이동, 점프, 위험 구역 사망, 체크포인트 복귀, 순차 진행, 완주가 확인되어야 한다.\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.",
+  "generatedAt": "2026-09-16T02:43:33.880Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2-primary-35049028665-1",
+  "model": null,
+  "aiUsed": false,
+  "implementationExecutor": "deterministic-source-worker",
+  "deterministicRecipe": "roblox-obby-world-core-v1",
+  "changedFiles": [
+    "server/Game.server.luau",
+    "client/Game.client.luau"
+  ],
+  "summary": "Deterministic Roblox physical obby world core + HUD rebuild",
+  "expectedEffect": "12-stage server-authoritative physically connected obby with read-only progress HUD and no button-driven progression",
+  "tests": [
+    "12-sequential-physical-checkpoints",
+    "physically-connected-default-jump-course",
+    "hazard-death-checkpoint-respawn",
+    "server-authoritative-progress",
+    "per-player-isolation",
+    "finish-and-round-time",
+    "remote-name-preserved-no-button-progress",
+    "read-only-obby-progress-hud"
+  ],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": false,
+    "taskId": "OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2",
+    "packageId": null,
+    "target": "roblox",
+    "sourceRoot": "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell",
+    "baseMainSha": "64c0e078b652cfb6634f367fa65854e7bb94d6fb",
+    "responsibleFiles": [
+      "server/Game.server.luau"
+    ],
+    "impactFiles": [
+      "server/Game.server.luau",
+      "roblox-source-bootstrap.json",
+      "shared/GameConfig.luau",
+      "client/Game.client.luau"
+    ],
+    "contextFiles": [
+      "server/Game.server.luau",
+      "roblox-source-bootstrap.json",
+      "shared/GameConfig.luau",
+      "client/Game.client.luau"
+    ],
+    "relatedFiles": [
+      {
+        "path": "roblox-source-bootstrap.json",
+        "score": 29
+      },
+      {
+        "path": "shared/GameConfig.luau",
+        "score": 10
+      },
+      {
+        "path": "client/Game.client.luau",
+        "score": 5
+      }
+    ],
+    "testTargets": [],
+    "protectedScopeSignals": [
+      "save"
+    ],
+    "diagnosticEvidence": [],
+    "fileDigests": [
+      {
+        "path": "server/Game.server.luau",
+        "hash": "c057e153b2562533",
+        "bytes": 3695
+      },
+      {
+        "path": "roblox-source-bootstrap.json",
+        "hash": "76f4b5530a970a2f",
+        "bytes": 1369
+      },
+      {
+        "path": "shared/GameConfig.luau",
+        "hash": "3c6f263f330c3089",
+        "bytes": 1376
+      },
+      {
+        "path": "client/Game.client.luau",
+        "hash": "4132a71a99a08282",
+        "bytes": 3139
+      }
+    ],
+    "reuseKey": "5cf706a42ad22f7187b47bd1",
+    "generatedAt": "2026-09-16T02:43:19.638Z"
+  },
+  "codeIntelligence": {
+    "version": 1,
+    "deterministicRecipe": {
+      "id": "roblox-obby-world-core-v1",
+      "verified": true
+    },
+    "repairLoop": {
+      "enabled": false,
+      "maxAttempts": 0,
+      "attemptsUsed": 0,
+      "repaired": false,
+      "history": []
+    }
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "version": 1,
+    "required": true,
+    "pipeline": [
+      "DESIGNER",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "stages": [
+      {
+        "name": "DESIGNER",
+        "status": "PASS",
+        "goal": "[OWNER_ROBLOX_PRIMARY] FULL_ROBLOX_GAME_REBUILD FULL_REBUILD_PHASE_1_WORLD_CORE. 현재 공용 버튼/숫자 증가 셸을 실제 Roblox 오비 게임의 물리 플레이 코어로 처음부터 재제작한다. 새 FULL_REBUILD 전체 소스 재작성 계약을 사용해 server/Game.server.luau의 기존 상태/버튼 중심 구현을 실제 공간형 플레이 구현으로 교체한다. 기존 GameConfig 인터페이스와 RemoteEvent 이름은 이번 단계에서 깨지지 않게 유지한다. Workspace에 실제로 달리고 점프할 수 있는 독자적인 단순 기하 장애물 코스를 런타임에 구성하고, 시작 지점과 최소 12개의 순차 스테이지, 체크포인트, 낙하/위험 구역, 체크포인트 기반 재생성, 완주 판정, 라운드 시간과 스테이지 진행 상태를 구현한다. Position/Progress/Score 같은 기존 attribute는 실제 물리 진행 결과에서만 갱신하고 버튼 클릭만으로 진행되지 않게 한다. 여러 플레이어의 진행 상태를 분리하고 서버 권위로 체크포인트 순서를 검증한다. Roblox 기본 캐릭터 이동/점프를 실제 조작으로 사용하며 모바일에서도 Roblox 기본 터치 이동이 작동해야 한다. 외부 게임의 맵·에셋·코드·고유 연출을 복제하지 않는다. 유료 서비스, 새 과금, 외부 네트워크 의존성은 추가하지 않는다. 완료 후 Roblox 런타임 QA에서 캐릭터 이동, 점프, 위험 구역 사망, 체크포인트 복귀, 순차 진행, 완주가 확인되어야 한다.",
+        "designChange": false,
+        "rationale": null,
+        "alternatives": [],
+        "issues": []
+      },
+      {
+        "name": "CONSTRAINT_ENGINE",
+        "status": "PASS",
+        "constraints": [],
+        "blockers": [],
+        "warnings": [
+          "NO_EXPLICIT_DESIGN_CONSTRAINTS_PROVIDED"
+        ],
+        "authorityExpanded": false
+      },
+      {
+        "name": "CRITIC",
+        "status": "ADVISORY",
+        "issues": [
+          "ACCEPTANCE_CRITERIA_MISSING"
+        ],
+        "questions": [
+          "플레이어가 이 시스템을 무시하거나 악용할 수 있는가?",
+          "반복 플레이에서 지배전략 하나로 고착되는가?",
+          "보상과 위험의 변화가 실제 선택을 만드는가?",
+          "기존 세이브/규칙/아트북 의도와 충돌하지 않는가?"
+        ]
+      },
+      {
+        "name": "CAUSALITY_GRAPH",
+        "status": "UNVERIFIED",
+        "nodes": [],
+        "edges": [],
+        "issues": [
+          "CAUSALITY_INPUT_REQUIRED"
+        ],
+        "invented": false
+      },
+      {
+        "name": "PLAYER_MODEL",
+        "status": "MODEL_READY",
+        "archetypes": [
+          {
+            "id": "novice",
+            "label": "초보",
+            "focus": "이해 가능성, 생존, 첫 성공까지의 마찰"
+          },
+          {
+            "id": "optimizer",
+            "label": "최적화형",
+            "focus": "최강 선택 고착, 우회/악용 가능성, 지배전략"
+          },
+          {
+            "id": "farmer",
+            "label": "파밍형",
+            "focus": "반복 보상, 경제 폭주, 무한 루프"
+          },
+          {
+            "id": "aggressive",
+            "label": "공격형",
+            "focus": "공격 편향의 보상과 과도한 위험"
+          },
+          {
+            "id": "safe",
+            "label": "안전형",
+            "focus": "회피/회복/대기 전략의 과도한 효율"
+          }
+        ],
+        "observations": [],
+        "evidenceRequired": true,
+        "predictedFactsInvented": false
+      },
+      {
+        "name": "COMBAT_ECONOMY_SIMULATOR",
+        "status": "UNVERIFIED",
+        "combat": {
+          "verified": false,
+          "reason": "COMBAT_INPUT_INCOMPLETE",
+          "metrics": {}
+        },
+        "economy": {
+          "verified": false,
+          "reason": "ECONOMY_INPUT_INCOMPLETE",
+          "metrics": {}
+        },
+        "inventedInputs": false,
+        "issues": [
+          "UNVERIFIED_SIMULATION_INPUT"
+        ]
+      },
+      {
+        "name": "IMPLEMENTATION",
+        "status": "READY",
+        "allowed": true,
+        "blockers": [],
+        "sourceMutationAuthorized": true,
+        "protectedGameplayMutationAutomatic": false
+      },
+      {
+        "name": "AUTO_PLAYER",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "evidence": null,
+        "requiredEvidence": "실제 입력 기반 플레이/진행/재시작/막힘 여부 증거"
+      },
+      {
+        "name": "TELEMETRY",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "evidence": null,
+        "requiredEvidence": "실제 플레이 수치 또는 엔진 QA 런 증거"
+      },
+      {
+        "name": "DESIGN_REVIEW",
+        "status": "WAITING_EVIDENCE",
+        "verified": false,
+        "decision": null,
+        "evidence": null,
+        "assumptionFailed": false
+      },
+      {
+        "name": "EXPERIENCE_MEMORY",
+        "status": "WAITING_VERIFIED_REVIEW",
+        "ready": false,
+        "qaVerified": false,
+        "authorityExpanded": false,
+        "directMemoryWrite": false,
+        "promotionTool": "tools/vibe2-experience-control.mjs"
+      }
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "advisory": [
+      "NO_EXPLICIT_DESIGN_CONSTRAINTS_PROVIDED",
+      "ACCEPTANCE_CRITERIA_MISSING",
+      "CAUSALITY_INPUT_REQUIRED",
+      "UNVERIFIED_SIMULATION_INPUT"
+    ],
+    "guidance": "[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.",
+    "planTarget": "roblox",
+    "priorExperienceCount": 0,
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "fullFileRewriteAllowed": true,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}
