@@ -57,3 +57,15 @@ test('unchanged Roblox owner directive does not reset queued task on the next sy
   assert.equal(task?.fullRebuild, true);
   assert.equal(task?.rebuildMode, 'FULL_REBUILD');
 });
+
+test('completed Roblox owner directive is inactive and prunes its imported queue task', () => {
+  const first = syncRobloxOwnerDirectives({ maxConcurrentTasks: 20, tasks: [unityTask] }, { directives: [directive] });
+  const completed = { ...directive, status: 'completed' };
+  const second = syncRobloxOwnerDirectives(first.queue, { directives: [completed] });
+  assert.equal(second.imported.length, 0);
+  assert.equal(second.refreshed.length, 0);
+  assert.equal(second.pruned.length, 1);
+  assert.equal(second.pruned[0]?.id, directive.id);
+  assert.equal(second.queue.tasks.some((row) => row.id === directive.id), false);
+  assert.equal(second.queue.tasks.some((row) => row.id === 'KEEP-UNITY'), true);
+});
