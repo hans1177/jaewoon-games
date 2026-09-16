@@ -72,6 +72,9 @@ jobs:
             if(!scenario.actions.some(x=>x.type==='expect'&&x.expression===expression)) throw new Error(`Potion Shop runtime checkpoint missing: ${expression}`);
           }
           if(scenario.actions.some(x=>String(x.expression||'').startsWith('instance-path:'))) throw new Error('Studio edit objects must not be asserted from the play client');
+          const workflow=fs.readFileSync('.github/workflows/vibe2-roblox-studio-live-smoke.yml','utf8');
+          if(!workflow.includes('git archive --format=zip')) throw new Error('candidate checkout must be stateless git archive');
+          if(workflow.includes('git worktree add --detach')) throw new Error('candidate checkout must not retain worktree state');
           console.log('VIBE2_ROBLOX_STUDIO_CONTRACT=PASS');
           console.log('VIBE2_ROBLOX_EXISTING_AUTHENTICATED_RUNNER_REUSE=YES');
           console.log('VIBE2_ROBLOX_POTION_SHOP_TARGET_ACTIVE=YES');
@@ -104,6 +107,7 @@ jobs:
           Write-Host 'VIBE2_ROBLOX_EXISTING_RUNNER_IDENTITY=PASS'
           Write-Host 'VIBE2_ROBLOX_NEW_RUNNER_REGISTRATION_REQUIRED=NO'
           node -e "import('./tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p);require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n')})"
+          if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio discovery failed' }
 
       - name: Verify official Studio CLI with real VirtualInput
         shell: powershell
@@ -127,11 +131,14 @@ jobs:
           git config --global --add safe.directory "$env:GITHUB_WORKSPACE"
           if ($LASTEXITCODE -ne 0) { throw 'git safe.directory setup failed' }
           $candidateDir = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-candidate-runtime'
+          $candidateZip = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-candidate-runtime.zip'
           if (Test-Path $candidateDir) { Remove-Item -Recurse -Force $candidateDir }
+          if (Test-Path $candidateZip) { Remove-Item -Force $candidateZip }
           git fetch origin $env:CANDIDATE_REF
           if ($LASTEXITCODE -ne 0) { throw 'candidate fetch failed' }
-          git worktree add --detach $candidateDir FETCH_HEAD
-          if ($LASTEXITCODE -ne 0) { throw 'candidate worktree failed' }
+          git archive --format=zip --output="$candidateZip" FETCH_HEAD
+          if ($LASTEXITCODE -ne 0) { throw 'candidate archive failed' }
+          Expand-Archive -Path $candidateZip -DestinationPath $candidateDir -Force
           $projectRoot = Join-Path $candidateDir $env:CANDIDATE_PROJECT_ROOT
           node tools/vibe2-roblox-project-runtime-smoke.mjs `
             "--project-root=$projectRoot" `
