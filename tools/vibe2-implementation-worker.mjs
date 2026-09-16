@@ -6,6 +6,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { resolveVibeDevelopmentExecution } from './vibe2-development-execution-policy.mjs';
 import { runVibe2DeterministicSourceWorker } from './vibe2-deterministic-source-worker.mjs';
+import { RECIPE as ROBLOX_BALANCE_RECIPE, runRobloxAutonomousBalanceWorker } from './vibe2-roblox-autonomous-balance-worker.mjs';
 
 const clean=value=>String(value??'').trim();
 function readJson(file){return JSON.parse(fs.readFileSync(file,'utf8'));}
@@ -21,7 +22,7 @@ function assertDeterministicManifest(manifest,developmentExecution){
   return manifest;
 }
 
-export async function runVibe2ImplementationWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',applySource=false}={}){
+export async function runVibe2ImplementationWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',applySource=false,evidenceFile=''}={}){
   const input=readJson(path.resolve(cwd,workOrderFile));
   const developmentExecution=resolveVibeDevelopmentExecution({task:input?.selectedTask||{},target:input?.target,route:input?.executionRoute||'text-source-worker'});
   const effective={...input,developmentExecution,workerPolicy:{...(input.workerPolicy||{}),aiAllowed:false,aiRequired:false,aiAssist:false,deterministicFirst:true,implementationExecutor:developmentExecution.executor,deterministicRecipe:developmentExecution.recipe||null}};
@@ -33,13 +34,17 @@ export async function runVibe2ImplementationWorker({cwd=process.cwd(),workOrderF
   }
   if(developmentExecution.executor!=='deterministic-source-worker')throw new Error(`implementation worker cannot execute source route: ${developmentExecution.executor}`);
 
-  const manifest=assertDeterministicManifest(runVibe2DeterministicSourceWorker({cwd,workOrderFile:path.relative(cwd,effectiveFile),outputRoot,applySource}),developmentExecution);
+  const workerArgs={cwd,workOrderFile:path.relative(cwd,effectiveFile),outputRoot,applySource};
+  const rawManifest=developmentExecution.recipe===ROBLOX_BALANCE_RECIPE
+    ?runRobloxAutonomousBalanceWorker({...workerArgs,evidenceFile})
+    :runVibe2DeterministicSourceWorker(workerArgs);
+  const manifest=assertDeterministicManifest(rawManifest,developmentExecution);
   return{manifest,developmentExecution};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
-  const result=await runVibe2ImplementationWorker({workOrderFile:clean(args.order)||'.vibe2/work-order.json',outputRoot:clean(args.output)||'.vibe2/candidates',applySource:String(args['apply-source']||'').toLowerCase()==='true'});
+  const result=await runVibe2ImplementationWorker({workOrderFile:clean(args.order)||'.vibe2/work-order.json',outputRoot:clean(args.output)||'.vibe2/candidates',applySource:String(args['apply-source']||'').toLowerCase()==='true',evidenceFile:clean(args['evidence-file'])});
   console.log('VIBE2_IMPLEMENTATION_WORKER=PASS');
   console.log('VIBE2_AI_ALLOWED=NO');
   console.log('VIBE2_AI_REQUIRED=NO');
