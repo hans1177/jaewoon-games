@@ -248,8 +248,6 @@ Players.PlayerRemoving:Connect(function(player)
   stateByPlayer[player] = nil
 end)
 
--- Preserve the existing Config.RemoteName/RemoteEvent interface, but never accept
--- client button messages as authoritative course progress.
 remote.OnServerEvent:Connect(function(_player, _actionId)
   return
 end)
@@ -273,12 +271,102 @@ task.spawn(function()
 end)
 `}
 
+function robloxObbyHudSource(){return `local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+
+local player = Players.LocalPlayer
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Config = require(Shared:WaitForChild("GameConfig"))
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "ObbyHud"
+gui.ResetOnSpawn = false
+gui.IgnoreGuiInset = false
+gui.Parent = player:WaitForChild("PlayerGui")
+
+local panel = Instance.new("Frame")
+panel.Name = "Panel"
+panel.AnchorPoint = Vector2.new(0.5, 0)
+panel.Position = UDim2.fromScale(0.5, 0.025)
+panel.Size = UDim2.new(1, -28, 0, 108)
+panel.BackgroundColor3 = Color3.fromRGB(16, 24, 40)
+panel.BackgroundTransparency = 0.08
+panel.BorderSizePixel = 0
+panel.Parent = gui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 14)
+corner.Parent = panel
+
+local title = Instance.new("TextLabel")
+title.Name = "Title"
+title.BackgroundTransparency = 1
+title.Position = UDim2.fromOffset(14, 8)
+title.Size = UDim2.new(1, -28, 0, 26)
+title.Font = Enum.Font.GothamBold
+title.TextColor3 = Color3.fromRGB(245, 248, 255)
+title.TextScaled = true
+title.TextXAlignment = Enum.TextXAlignment.Left
+title.Text = Config.GameName .. (UserInputService.TouchEnabled and " · TOUCH" or " · DESKTOP")
+title.Parent = panel
+
+local status = Instance.new("TextLabel")
+status.Name = "Status"
+status.BackgroundTransparency = 1
+status.Position = UDim2.fromOffset(14, 38)
+status.Size = UDim2.new(1, -28, 0, 30)
+status.Font = Enum.Font.GothamSemibold
+status.TextColor3 = Color3.fromRGB(215, 230, 255)
+status.TextScaled = true
+status.TextXAlignment = Enum.TextXAlignment.Left
+status.Parent = panel
+
+local hint = Instance.new("TextLabel")
+hint.Name = "Hint"
+hint.BackgroundTransparency = 1
+hint.Position = UDim2.fromOffset(14, 72)
+hint.Size = UDim2.new(1, -28, 0, 22)
+hint.Font = Enum.Font.Gotham
+hint.TextColor3 = Color3.fromRGB(165, 185, 215)
+hint.TextScaled = true
+hint.TextXAlignment = Enum.TextXAlignment.Left
+hint.Text = UserInputService.TouchEnabled
+  and "Move with the default thumbstick · Jump with the default jump button"
+  or "Move with WASD · Jump with Space"
+hint.Parent = panel
+
+local function render()
+  local stage = player:GetAttribute("Position") or 0
+  local progress = player:GetAttribute("Progress") or 0
+  local score = player:GetAttribute("Score") or 0
+  local roundTime = tonumber(player:GetAttribute("RoundTime")) or 0
+  local finished = player:GetAttribute("Finished") == true
+
+  if finished then
+    status.Text = string.format("FINISH · Stage %d/12 · %d%% · Score %d · %.1fs", stage, progress, score, roundTime)
+  else
+    status.Text = string.format("Stage %d/12 · %d%% · Score %d · %.1fs", stage, progress, score, roundTime)
+  end
+end
+
+for _, name in ipairs({"Position", "Progress", "Score", "RoundTime", "Finished"}) do
+  player:GetAttributeChangedSignal(name):Connect(render)
+end
+
+render()
+`}
+
 const RECIPES=Object.freeze({
   'roblox-obby-world-core-v1':{
     target:'roblox',
-    file:'server/Game.server.luau',
-    build:robloxObbyWorldCoreSource,
-    tests:['12-sequential-physical-checkpoints','physically-connected-default-jump-course','hazard-death-checkpoint-respawn','server-authoritative-progress','per-player-isolation','finish-and-round-time','remote-name-preserved-no-button-progress']
+    primaryFile:'server/Game.server.luau',
+    companionFiles:['client/Game.client.luau'],
+    buildFiles:()=>({
+      'server/Game.server.luau':robloxObbyWorldCoreSource(),
+      'client/Game.client.luau':robloxObbyHudSource()
+    }),
+    tests:['12-sequential-physical-checkpoints','physically-connected-default-jump-course','hazard-death-checkpoint-respawn','server-authoritative-progress','per-player-isolation','finish-and-round-time','remote-name-preserved-no-button-progress','read-only-obby-progress-hud']
   }
 });
 
@@ -295,12 +383,18 @@ export function runVibe2DeterministicSourceWorker({cwd=process.cwd(),workOrderFi
   if(!sourceRootRelative||sourceRootRelative.includes('..'))throw new Error(`잘못된 source root: ${sourceRootRelative}`);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
   if(!fs.existsSync(sourceRoot)||!fs.statSync(sourceRoot).isDirectory())throw new Error(`source root 없음: ${sourceRootRelative}`);
+
   const responsibleFiles=normalizeResponsibleFiles(order,sourceRootRelative).map(assertInsideSource);
-  if(responsibleFiles.length!==1||responsibleFiles[0]!==recipe.file)throw new Error(`recipe 책임 파일 불일치: ${responsibleFiles.join(',')||'NONE'}`);
-  const relative=responsibleFiles[0],absolute=path.join(sourceRoot,relative);
-  if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())throw new Error(`deterministic 대상 파일 없음: ${relative}`);
-  const content=recipe.build(order);
-  if(Buffer.byteLength(content,'utf8')<1200)throw new Error('deterministic replacement가 비정상적으로 짧음');
+  const allowedResponsible=new Set([recipe.primaryFile,...recipe.companionFiles]);
+  if(!responsibleFiles.includes(recipe.primaryFile)||responsibleFiles.some(file=>!allowedResponsible.has(file)))throw new Error(`recipe 책임 파일 불일치: ${responsibleFiles.join(',')||'NONE'}`);
+
+  const outputs=recipe.buildFiles(order);
+  const changedFiles=Object.keys(outputs).map(assertInsideSource);
+  for(const relative of changedFiles){
+    const absolute=path.join(sourceRoot,relative);
+    if(!fs.existsSync(absolute)||!fs.statSync(absolute).isFile())throw new Error(`deterministic 대상 파일 없음: ${relative}`);
+    if(Buffer.byteLength(outputs[relative],'utf8')<900)throw new Error(`deterministic replacement가 비정상적으로 짧음: ${relative}`);
+  }
 
   const taskId=safeId(order.taskId),candidateRoot=path.resolve(cwd,outputRoot,taskId);
   fs.rmSync(candidateRoot,{recursive:true,force:true});
@@ -308,15 +402,23 @@ export function runVibe2DeterministicSourceWorker({cwd=process.cwd(),workOrderFi
   let branch=null;
   if(applySource){
     branch=assertCandidateBranch(cwd);
-    fs.writeFileSync(absolute,content.endsWith('\n')?content:`${content}\n`,'utf8');
+    for(const relative of changedFiles){
+      const absolute=path.join(sourceRoot,relative);
+      const content=outputs[relative];
+      fs.writeFileSync(absolute,content.endsWith('\n')?content:`${content}\n`,'utf8');
+    }
   }else{
-    const targetFile=path.join(candidateRoot,'files',relative);
-    fs.mkdirSync(path.dirname(targetFile),{recursive:true});
-    fs.writeFileSync(targetFile,content.endsWith('\n')?content:`${content}\n`,'utf8');
+    for(const relative of changedFiles){
+      const targetFile=path.join(candidateRoot,'files',relative);
+      fs.mkdirSync(path.dirname(targetFile),{recursive:true});
+      const content=outputs[relative];
+      fs.writeFileSync(targetFile,content.endsWith('\n')?content:`${content}\n`,'utf8');
+    }
   }
+
   const exploration=order?.exploration||readJson(path.resolve(cwd,process.env.VIBE2_EXPLORATION_FILE||'.vibe2/exploration.json'));
-  const changedFiles=[relative];
-  const candidate={summary:'Deterministic Roblox physical obby world core rebuild',expectedEffect:'12-stage server-authoritative physically connected obby without button-driven progression',edits:[],newFiles:[],replaceFiles:[{path:relative,content}],tests:recipe.tests};
+  const replaceFiles=changedFiles.map(relative=>({path:relative,content:outputs[relative]}));
+  const candidate={summary:'Deterministic Roblox physical obby world core + HUD rebuild',expectedEffect:'12-stage server-authoritative physically connected obby with read-only progress HUD and no button-driven progression',edits:[],newFiles:[],replaceFiles,tests:recipe.tests};
   const manifest={
     version:6,taskId:order.taskId,gameId:order.gameId||null,target,sourceRoot:sourceRootRelative,
     releaseState:clean(order.releaseState)||'other',priority:clean(order.priority)||'normal',baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,
