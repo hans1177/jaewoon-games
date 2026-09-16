@@ -83,44 +83,51 @@ startSpawn.Parent = course
 local checkpointCFrames = {[0] = startSpawn.CFrame + Vector3.new(0, 4, 0)}
 local checkpoints = {}
 local hazards = {}
+local previousPosition = START_POSITION
 
 for stage = 1, STAGE_COUNT do
   local x = stage * 30
   local z = (stage % 2 == 0) and 14 or -14
   local y = 8 + math.floor((stage - 1) / 4) * 5
+  local checkpointPosition = Vector3.new(x, y, z)
+  local segment = checkpointPosition - previousPosition
+  local stepAPosition = previousPosition + segment * (1 / 3)
+  local stepBPosition = previousPosition + segment * (2 / 3)
 
-  local bridgeZ = z * 0.5
   makePart(
     string.format("Step%02dA", stage),
     Vector3.new(8, 1, 8),
-    CFrame.new(x - 20, y - 1, bridgeZ),
+    CFrame.new(stepAPosition),
     Color3.fromRGB(195, 205, 220)
   )
   makePart(
     string.format("Step%02dB", stage),
-    Vector3.new(7, 1, 7),
-    CFrame.new(x - 11, y + 1, z),
+    Vector3.new(8, 1, 8),
+    CFrame.new(stepBPosition),
     Color3.fromRGB(165, 180, 205)
   )
 
   local checkpoint = makePart(
     string.format("Checkpoint%02d", stage),
     Vector3.new(14, 1, 14),
-    CFrame.new(x, y, z),
+    CFrame.new(checkpointPosition),
     stage == STAGE_COUNT and Color3.fromRGB(255, 220, 70) or Color3.fromRGB(70, 170, 255)
   )
   checkpoint:SetAttribute("Stage", stage)
   checkpoints[stage] = checkpoint
   checkpointCFrames[stage] = checkpoint.CFrame + Vector3.new(0, 4, 0)
 
+  local hazardPosition = previousPosition + segment * 0.5 + Vector3.new(0, -4, 0)
   local hazard = makePart(
     string.format("Hazard%02d", stage),
-    Vector3.new(7, 1, 12),
-    CFrame.new(x - 15, y - 3, z),
+    Vector3.new(8, 1, 8),
+    CFrame.new(hazardPosition),
     Color3.fromRGB(235, 70, 70)
   )
   hazard.Material = Enum.Material.Neon
   table.insert(hazards, hazard)
+
+  previousPosition = checkpointPosition
 end
 
 local killFloor = makePart(
@@ -271,7 +278,7 @@ const RECIPES=Object.freeze({
     target:'roblox',
     file:'server/Game.server.luau',
     build:robloxObbyWorldCoreSource,
-    tests:['12-sequential-physical-checkpoints','hazard-death-checkpoint-respawn','server-authoritative-progress','per-player-isolation','finish-and-round-time','remote-name-preserved-no-button-progress']
+    tests:['12-sequential-physical-checkpoints','physically-connected-default-jump-course','hazard-death-checkpoint-respawn','server-authoritative-progress','per-player-isolation','finish-and-round-time','remote-name-preserved-no-button-progress']
   }
 });
 
@@ -309,7 +316,7 @@ export function runVibe2DeterministicSourceWorker({cwd=process.cwd(),workOrderFi
   }
   const exploration=order?.exploration||readJson(path.resolve(cwd,process.env.VIBE2_EXPLORATION_FILE||'.vibe2/exploration.json'));
   const changedFiles=[relative];
-  const candidate={summary:'Deterministic Roblox physical obby world core rebuild',expectedEffect:'12-stage server-authoritative physical obby without button-driven progression',edits:[],newFiles:[],replaceFiles:[{path:relative,content}],tests:recipe.tests};
+  const candidate={summary:'Deterministic Roblox physical obby world core rebuild',expectedEffect:'12-stage server-authoritative physically connected obby without button-driven progression',edits:[],newFiles:[],replaceFiles:[{path:relative,content}],tests:recipe.tests};
   const manifest={
     version:6,taskId:order.taskId,gameId:order.gameId||null,target,sourceRoot:sourceRootRelative,
     releaseState:clean(order.releaseState)||'other',priority:clean(order.priority)||'normal',baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,
