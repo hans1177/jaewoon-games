@@ -2242,8 +2242,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 1,
+      "status": "queued",
+      "retries": 2,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -2295,7 +2295,8 @@
         "role-result:review:PASS",
         "package-review:all-required-roles-pass",
         "candidate-release-rejected",
-        "actions-run-35048570677"
+        "actions-run-35048570677",
+        "actions-run-35048725347"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
