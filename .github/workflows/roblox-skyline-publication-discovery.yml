@@ -1,0 +1,153 @@
+name: One-shot Skyline Roblox Publication Discovery
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-skyline-publication-discovery.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    name: discover Skyline publication target from authenticated Studio owner
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
+      - name: Resolve authenticated local Roblox Studio
+        id: studio
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $studio = $null
+          $roots = @(
+            "$env:LOCALAPPDATA\Roblox\Versions",
+            "$env:PROGRAMFILES\Roblox\Versions",
+            "${env:ProgramFiles(x86)}\Roblox\Versions"
+          ) | Where-Object { $_ -and (Test-Path $_) }
+          foreach ($root in $roots) {
+            $candidate = Get-ChildItem -Path $root -Recurse -File -Filter RobloxStudioBeta.exe -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+            if ($candidate) { $studio = $candidate; break }
+          }
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found in authenticated local profile' }
+          $running = @(Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue)
+          if ($running.Count -gt 0) { throw 'Roblox Studio is already running; discovery requires an idle Studio profile' }
+          "studio_exe=$($studio.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_STUDIO_PROFILE=PASS'
+
+      - name: Read authenticated Studio owner identity
+        id: owner
+        env:
+          STUDIO_EXE: ${{ steps.studio.outputs.studio_exe }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $script = Join-Path $env:RUNNER_TEMP 'roblox-authenticated-owner-discovery.luau'
+          $out = Join-Path $env:RUNNER_TEMP 'roblox-authenticated-owner-output.log'
+          $stdout = Join-Path $env:RUNNER_TEMP 'roblox-authenticated-owner-stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'roblox-authenticated-owner-stderr.log'
+          @'
+          local StudioService = game:GetService("StudioService")
+          local ok, value = pcall(function()
+              return StudioService:GetUserId()
+          end)
+          if not ok then
+              print("ROBLOX_STUDIO_USER_ID_ERROR=" .. tostring(value))
+              return
+          end
+          print("ROBLOX_STUDIO_USER_ID=" .. tostring(value))
+          '@ | Set-Content -Encoding utf8 $script
+          Remove-Item -Force $out,$stdout,$stderr -ErrorAction SilentlyContinue
+          $argLine = "--task RunScript --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
+          $p = Start-Process -FilePath $env:STUDIO_EXE -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          $processHandle = $p.Handle
+          if (-not $p.WaitForExit(120000)) {
+            Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
+            throw 'Roblox authenticated owner discovery timeout'
+          }
+          $p.WaitForExit()
+          $combined = ''
+          if (Test-Path $out) { $combined += (Get-Content $out -Raw) }
+          if (Test-Path $stdout) { $combined += "`n" + (Get-Content $stdout -Raw) }
+          if (Test-Path $stderr) { $combined += "`n" + (Get-Content $stderr -Raw) }
+          $combined | Set-Content -Encoding utf8 (Join-Path $env:RUNNER_TEMP 'roblox-authenticated-owner-combined.log')
+          Write-Host $combined
+          $match = [regex]::Match($combined, '(?m)^ROBLOX_STUDIO_USER_ID=([1-9][0-9]*)\r?$')
+          if (-not $match.Success) { throw 'Authenticated Studio positive user ID missing' }
+          $userId = $match.Groups[1].Value
+          "user_id=$userId" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host 'ROBLOX_STUDIO_OWNER_ID=PASS'
+
+      - name: Query owner-created Roblox experiences and identify Skyline
+        id: target
+        env:
+          USER_ID: ${{ steps.owner.outputs.user_id }}
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $headers = @{ 'User-Agent' = 'jaewoon-games-skyline-publication-recovery/1.0' }
+          $profile = Invoke-RestMethod -Method Get -Headers $headers -Uri "https://users.roblox.com/v1/users/$env:USER_ID"
+          $all = @()
+          $cursor = $null
+          do {
+            $uri = "https://games.roblox.com/v2/users/$env:USER_ID/games?accessFilter=Public&limit=50&sortOrder=Asc"
+            if ($cursor) { $uri += "&cursor=$([uri]::EscapeDataString($cursor))" }
+            $page = Invoke-RestMethod -Method Get -Headers $headers -Uri $uri
+            if ($page.data) { $all += @($page.data) }
+            $cursor = [string]$page.nextPageCursor
+          } while ($cursor)
+
+          $normalize = {
+            param([string]$value)
+            if ($null -eq $value) { return '' }
+            return (($value.ToLowerInvariant()) -replace '[^a-z0-9]+','')
+          }
+          $wanted = @('skyline sprint','skyline rush') | ForEach-Object { & $normalize $_ }
+          $matches = @($all | Where-Object { $wanted -contains (& $normalize ([string]$_.name)) })
+
+          $evidence = [ordered]@{
+            version = 1
+            checkedAt = (Get-Date).ToUniversalTime().ToString('o')
+            authority = 'roblox-authenticated-studio-owner-plus-public-games-api'
+            studioUserId = [string]$env:USER_ID
+            studioUsername = [string]$profile.name
+            queriedExperienceCount = $all.Count
+            targetNames = @('Skyline Sprint','Skyline Rush')
+            matches = @($matches | ForEach-Object {
+              [ordered]@{
+                universeId = [string]$_.id
+                name = [string]$_.name
+                rootPlaceId = [string]$_.rootPlace.id
+                rootPlaceName = [string]$_.rootPlace.name
+              }
+            })
+          }
+          $evidencePath = Join-Path $env:RUNNER_TEMP 'skyline-publication-discovery.json'
+          $evidence | ConvertTo-Json -Depth 10 | Set-Content -Encoding utf8 $evidencePath
+          Get-Content $evidencePath -Raw | Write-Host
+
+          if ($matches.Count -ne 1) { throw "Skyline publication target is not uniquely identified: matches=$($matches.Count)" }
+          $universeId = [string]$matches[0].id
+          $placeId = [string]$matches[0].rootPlace.id
+          if ($universeId -notmatch '^[1-9][0-9]*$' -or $placeId -notmatch '^[1-9][0-9]*$') { throw 'Recovered Skyline target has invalid IDs' }
+
+          "universe_id=$universeId" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "place_id=$placeId" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "experience_name=$([string]$matches[0].name)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          Write-Host "ROBLOX_SKYLINE_UNIVERSE_ID=$universeId"
+          Write-Host "ROBLOX_SKYLINE_PLACE_ID=$placeId"
+          Write-Host 'ROBLOX_SKYLINE_PUBLICATION_DISCOVERY=PASS'
+
+      - name: Summary
+        if: always()
+        shell: powershell
+        run: |
+          Write-Host 'ROBLOX_RELEASE_CLAIM=NO'
+          Write-Host 'ROBLOX_PUBLISH_ATTEMPTED=NO'
