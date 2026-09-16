@@ -6,9 +6,13 @@ on:
       - 'vibe2/candidate/OWNER-ROBLOX-OBBY-*'
   pull_request:
     branches:
+      - main
       - vibe2-unreal-core
     paths:
       - 'tools/vibe2-roblox-skyline-runtime-smoke.mjs'
+      - 'tools/vibe2-roblox-skyline-input-playtest.mjs'
+      - 'tools/vibe2-roblox-r5-compare.mjs'
+      - 'qa/vibe2-roblox-r5-compare.test.mjs'
       - '.github/workflows/vibe2-roblox-candidate-runtime.yml'
 
 permissions:
@@ -35,20 +39,28 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/vibe2-roblox-skyline-runtime-smoke.mjs
+          node --check tools/vibe2-roblox-skyline-input-playtest.mjs
+          node --check tools/vibe2-roblox-r5-compare.mjs
+          node --test qa/vibe2-roblox-r5-compare.test.mjs
           node <<'NODE'
           const fs=require('fs');
           const s=fs.readFileSync('tools/vibe2-roblox-skyline-runtime-smoke.mjs','utf8');
           for(const token of ['vertical-progression','dynamic-obstacle-diversity','checkpoint-respawn','round-1-finished','round-2-reset','round-2-playable','StudioTestService:ExecutePlayModeAsync']){
             if(!s.includes(token))throw new Error(`missing Roblox candidate runtime contract: ${token}`);
           }
+          const p=fs.readFileSync('tools/vibe2-roblox-skyline-input-playtest.mjs','utf8');
+          for(const token of ['CreateVirtualInput()','SendKey','physical-stage-%02d','inputBased=true'])if(!p.includes(token))throw new Error(`missing Roblox R5 physical input contract: ${token}`);
+          const c=fs.readFileSync('tools/vibe2-roblox-r5-compare.mjs','utf8');
+          for(const token of ['failed-target-stage-now-passes','earlier-stage-regression','baseline/main revision mismatch'])if(!c.includes(token))throw new Error(`missing Roblox R5 compare contract: ${token}`);
           console.log('VIBE2_ROBLOX_CANDIDATE_RUNTIME_CONTRACT=PASS');
+          console.log('VIBE2_ROBLOX_R5_CANDIDATE_COMPARE_CONTRACT=PASS');
           NODE
 
   live-studio:
     needs: contract
     if: github.event_name == 'push'
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
-    timeout-minutes: 8
+    timeout-minutes: 12
     steps:
       - name: Checkout Vibe2 control verifier
         uses: actions/checkout@v4
@@ -70,7 +82,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio discovery failed' }
           Write-Host 'VIBE2_ROBLOX_CANDIDATE_RUNNER=roblox-studio-local'
 
-      - name: Fetch candidate game source only
+      - name: Fetch candidate game source and machine manifest
         shell: powershell
         env:
           CANDIDATE_REF: ${{ github.ref_name }}
@@ -82,10 +94,20 @@ jobs:
           if (Test-Path $candidateZip) { Remove-Item -Force $candidateZip }
           git fetch origin $env:CANDIDATE_REF
           if ($LASTEXITCODE -ne 0) { throw 'candidate fetch failed' }
-          git archive --format=zip --output="$candidateZip" FETCH_HEAD roblox-games/seed-roblox-obby-party-minigam-tower-of-hell
+          git archive --format=zip --output="$candidateZip" FETCH_HEAD roblox-games/seed-roblox-obby-party-minigam-tower-of-hell .vibe2/candidates
           if ($LASTEXITCODE -ne 0) { throw 'candidate source archive failed' }
           Expand-Archive -Path $candidateZip -DestinationPath $candidateDir -Force
-          "VIBE2_CANDIDATE_PROJECT_ROOT=$candidateDir\roblox-games\seed-roblox-obby-party-minigam-tower-of-hell" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          $projectRoot = "$candidateDir\roblox-games\seed-roblox-obby-party-minigam-tower-of-hell"
+          "VIBE2_CANDIDATE_PROJECT_ROOT=$projectRoot" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          if ($env:CANDIDATE_REF -match 'AUTONOMOUS-BALANCE') {
+            $manifests = @(Get-ChildItem -Path "$candidateDir\.vibe2\candidates" -Filter 'manifest.json' -Recurse -File)
+            $r5 = @($manifests | Where-Object {
+              try { (Get-Content $_.FullName -Raw | ConvertFrom-Json).deterministicRecipe -eq 'roblox-obby-autonomous-balance-v1' } catch { $false }
+            })
+            if ($r5.Count -ne 1) { throw "expected exactly one R5 candidate manifest, found $($r5.Count)" }
+            "VIBE2_R5_CANDIDATE_MANIFEST=$($r5[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host "VIBE2_R5_CANDIDATE_MANIFEST=$($r5[0].FullName)"
+          }
           Write-Host "VIBE2_ROBLOX_CANDIDATE_REF=$env:CANDIDATE_REF"
 
       - name: Verify Vibe candidate in real Roblox Studio
@@ -99,11 +121,51 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw 'Skyline candidate Studio QA failed' }
           Write-Host 'VIBE2_ROBLOX_CANDIDATE_STUDIO_QA=PASS'
 
+      - name: Replay R5 candidate with physical input and require target-stage improvement
+        if: contains(github.ref_name, 'AUTONOMOUS-BALANCE')
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $baseline = '.vibe2/runtime-evidence/skyline-r5-baseline.json'
+          $candidateEvidence = "$env:RUNNER_TEMP/vibe2-r5-candidate-physical.json"
+          $comparison = "$env:RUNNER_TEMP/vibe2-r5-candidate-compare.json"
+          if (-not (Test-Path $baseline)) { throw 'R5 persisted physical baseline is missing from control branch' }
+          if (-not $env:VIBE2_R5_CANDIDATE_MANIFEST -or -not (Test-Path $env:VIBE2_R5_CANDIDATE_MANIFEST)) { throw 'R5 candidate manifest is missing' }
+          node tools/vibe2-roblox-skyline-input-playtest.mjs `
+            "--project-root=$env:VIBE2_CANDIDATE_PROJECT_ROOT" `
+            --output="$candidateEvidence" `
+            --timeout=300000 `
+            --allow-incomplete=true
+          if ($LASTEXITCODE -ne 0) { throw 'R5 candidate physical input replay failed to produce evidence' }
+          node tools/vibe2-roblox-r5-compare.mjs `
+            "--baseline=$baseline" `
+            "--candidate=$candidateEvidence" `
+            "--manifest=$env:VIBE2_R5_CANDIDATE_MANIFEST" `
+            "--output=$comparison"
+          if ($LASTEXITCODE -ne 0) { throw 'R5 candidate did not improve the verified physical bottleneck' }
+          Write-Host 'VIBE2_ROBLOX_R5_PHYSICAL_REPLAY=PASS'
+
+      - name: Cleanup Vibe2 Studio sessions
+        if: always()
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $owned = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object {
+            $commandLine = [string]$_.CommandLine
+            ($commandLine -match 'vibe2-roblox-skyline-') -or ($commandLine -match 'vibe2-roblox-skyline-input-') -or (($commandLine -match '(?i)--task\s+RunScript') -and ($commandLine -match '(?i)--quitAfterExecution'))
+          })
+          foreach ($process in $owned) { Stop-Process -Id ([int]$process.ProcessId) -Force -ErrorAction SilentlyContinue }
+          if ($owned.Count -gt 0) { Start-Sleep -Milliseconds 750 }
+          Write-Host "VIBE2_ROBLOX_CANDIDATE_STUDIO_REAPED=$($owned.Count)"
+
       - name: Upload candidate runtime evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: vibe2-roblox-candidate-runtime-${{ github.run_id }}
-          path: ${{ runner.temp }}/vibe2-roblox-skyline-runtime.json
+          path: |
+            ${{ runner.temp }}/vibe2-roblox-skyline-runtime.json
+            ${{ runner.temp }}/vibe2-r5-candidate-physical.json
+            ${{ runner.temp }}/vibe2-r5-candidate-compare.json
           if-no-files-found: warn
           retention-days: 7
