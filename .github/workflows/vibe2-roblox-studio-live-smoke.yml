@@ -74,7 +74,8 @@ jobs:
           if(scenario.actions.some(x=>String(x.expression||'').startsWith('instance-path:'))) throw new Error('Studio edit objects must not be asserted from the play client');
           const workflow=fs.readFileSync('.github/workflows/vibe2-roblox-studio-live-smoke.yml','utf8');
           if(!workflow.includes('git archive --format=zip')) throw new Error('candidate checkout must be stateless git archive');
-          if(workflow.includes('git worktree add --detach')) throw new Error('candidate checkout must not retain worktree state');
+          const retainedWorktreeCommand=['git','worktree','add','--detach'].join(' ');
+          if(workflow.includes(retainedWorktreeCommand)) throw new Error('candidate checkout must not retain worktree state');
           console.log('VIBE2_ROBLOX_STUDIO_CONTRACT=PASS');
           console.log('VIBE2_ROBLOX_EXISTING_AUTHENTICATED_RUNNER_REUSE=YES');
           console.log('VIBE2_ROBLOX_POTION_SHOP_TARGET_ACTIVE=YES');
@@ -179,7 +180,7 @@ jobs:
           if ([int]$manifest.scriptCount -lt 6) { throw 'Potion Shop copy did not expose the expected source structure' }
           if (@($manifest.generalizedPatterns).Count -lt 1) { throw 'Potion Shop produced no generalized source patterns' }
           Write-Host "VIBE2_ROBLOX_POTION_SHOP_OBSERVED_PLACE_ID=$($manifest.observedPlaceId)"
-          Write-Host "VIBE2_ROBLOX_POTION_SHOP_SCRIPT_COUNT=$($manifest.scriptCount)"
+          Write-Host "VIBE2_ROBLOX_POTION_SHOP_SCRIPT_COUNT=$([int]$manifest.scriptCount)"
           Write-Host "VIBE2_ROBLOX_POTION_SHOP_GENERALIZED_PATTERNS=$(@($manifest.generalizedPatterns).Count)"
           Write-Host 'VIBE2_ROBLOX_POTION_SHOP_COPY_SESSION_IDENTITY=PASS'
 
