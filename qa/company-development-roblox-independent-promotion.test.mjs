@@ -8,7 +8,7 @@ const parentWorkflow=fs.readFileSync(new URL('../.github/workflows/company-devel
 test('Roblox promotion is per-game while technical evidence remains required',()=>{
   assert.ok(workflow.includes('ROBLOX_PER_GAME_PROMOTION=YES'));
   assert.ok(workflow.includes('ROBLOX_PROMOTION_COUNT_GATE=NONE'));
-  assert.ok(workflow.includes('ROBLOX_EXECUTION_WIP_MAX=2'));
+  assert.ok(workflow.includes('ROBLOX_EXECUTION_WIP_MAX=6'));
   assert.ok(workflow.includes('technical-plan:'));
   assert.ok(workflow.includes('technical-worker:'));
   assert.ok(workflow.includes('technical-persist:'));
