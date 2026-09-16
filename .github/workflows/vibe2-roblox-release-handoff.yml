@@ -1,0 +1,241 @@
+name: Vibe2 Roblox Release Handoff
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.vibe2/roblox-release-intent.json'
+      - '.github/workflows/vibe2-roblox-release-handoff.yml'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
+      - 'qa/company-development-roblox-source-reconcile.test.mjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: vibe2-roblox-release-handoff
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+  INTENT_FILE: .vibe2/roblox-release-intent.json
+
+jobs:
+  handoff:
+    name: verify R5 evidence and hand off to canonical Roblox runtime
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: company-runtime-writer
+      cancel-in-progress: false
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify handoff contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/company-development-roblox-source-reconcile.mjs
+          node --test qa/company-development-roblox-source-reconcile.test.mjs
+
+      - name: Resolve exact owner release intent
+        id: intent
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s "$INTENT_FILE"
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const doc=JSON.parse(fs.readFileSync(process.env.INTENT_FILE,'utf8'));
+          const r=doc.request||{};
+          const clean=v=>String(v??'').trim();
+          const sha=v=>/^[0-9a-f]{40}$/i.test(clean(v));
+          if(Number(doc.version)!==1)throw new Error('ROBLOX_RELEASE_INTENT_VERSION_INVALID');
+          if(clean(r.status)!=='requested')throw new Error('ROBLOX_RELEASE_INTENT_NOT_REQUESTED');
+          if(clean(r.authority)!=='owner-release-directive')throw new Error('ROBLOX_RELEASE_INTENT_AUTHORITY_INVALID');
+          if(clean(r.target).toLowerCase()!=='roblox')throw new Error('ROBLOX_RELEASE_INTENT_TARGET_INVALID');
+          if(clean(r.requestedReleaseState)!=='release-confirmed')throw new Error('ROBLOX_RELEASE_INTENT_STATE_INVALID');
+          if(!clean(r.gameId)||!clean(r.candidateBranch).startsWith('vibe2/candidate/OWNER-ROBLOX-OBBY-'))throw new Error('ROBLOX_RELEASE_INTENT_IDENTITY_INVALID');
+          if(!sha(r.sourceRevision)||!sha(r.candidateSha)||!Number.isInteger(Number(r.qaRunId))||Number(r.qaRunId)<=0)throw new Error('ROBLOX_RELEASE_INTENT_EVIDENCE_INVALID');
+          const out=process.env.GITHUB_OUTPUT;
+          const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v)}\n`);
+          put('request_id',clean(r.id));
+          put('game_id',clean(r.gameId));
+          put('source_revision',clean(r.sourceRevision));
+          put('candidate_branch',clean(r.candidateBranch));
+          put('candidate_sha',clean(r.candidateSha));
+          put('qa_run_id',Number(r.qaRunId));
+          console.log(`ROBLOX_RELEASE_INTENT_GAME_ID=${clean(r.gameId)}`);
+          console.log(`ROBLOX_RELEASE_INTENT_SOURCE_REVISION=${clean(r.sourceRevision)}`);
+          NODE
+
+      - name: Verify exact R5 source and candidate identity
+        id: source
+        env:
+          GAME_ID: ${{ steps.intent.outputs.game_id }}
+          SOURCE_REVISION: ${{ steps.intent.outputs.source_revision }}
+          CANDIDATE_BRANCH: ${{ steps.intent.outputs.candidate_branch }}
+          CANDIDATE_SHA: ${{ steps.intent.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_root="roblox-games/$GAME_ID"
+          git cat-file -e "${SOURCE_REVISION}^{commit}"
+          git merge-base --is-ancestor "$SOURCE_REVISION" HEAD
+          git fetch origin "$CANDIDATE_BRANCH" --quiet
+          test "$(git rev-parse FETCH_HEAD)" = "$CANDIDATE_SHA"
+          git cat-file -e "${CANDIDATE_SHA}^{commit}"
+          test -d "$source_root"
+          [ -z "$(git diff --name-only "$SOURCE_REVISION" HEAD -- "$source_root")" ] || { echo 'R5 source changed after verified main revision' >&2; exit 1; }
+          [ -z "$(git diff --name-only "$CANDIDATE_SHA" "$SOURCE_REVISION" -- "$source_root")" ] || { echo 'verified candidate source differs from promoted R5 source' >&2; exit 1; }
+          CANDIDATE_BRANCH="$CANDIDATE_BRANCH" CANDIDATE_SHA="$CANDIDATE_SHA" GAME_ID="$GAME_ID" SOURCE_ROOT="$source_root" node <<'NODE'
+          const {execFileSync}=require('child_process');
+          const branch=process.env.CANDIDATE_BRANCH;
+          const sha=process.env.CANDIDATE_SHA;
+          const game=process.env.GAME_ID;
+          const root=process.env.SOURCE_ROOT;
+          const names=execFileSync('git',['ls-tree','-r','--name-only',sha,'--','.vibe2/candidates'],{encoding:'utf8'}).split(/\r?\n/).filter(x=>x.endsWith('/manifest.json'));
+          const matches=[];
+          for(const name of names){
+            try{
+              const m=JSON.parse(execFileSync('git',['show',`${sha}:${name}`],{encoding:'utf8'}));
+              if(String(m.branch||'')===branch&&String(m.gameId||'')===game)matches.push({name,m});
+            }catch{}
+          }
+          if(matches.length!==1)throw new Error(`R5 manifest count invalid: ${matches.length}`);
+          const m=matches[0].m;
+          if(String(m.target||'').toLowerCase()!=='roblox'||String(m.sourceRoot||'')!==root)throw new Error('R5 manifest target mismatch');
+          if(String(m.releaseState||'').toLowerCase()!=='development-confirmed')throw new Error(`R5 manifest state invalid: ${m.releaseState}`);
+          console.log(`VIBE2_R5_RELEASE_HANDOFF_MANIFEST=${matches[0].name}`);
+          NODE
+          tree_sha="$(git rev-parse "${SOURCE_REVISION}:${source_root}")"
+          [[ "$tree_sha" =~ ^[0-9a-f]{40}$ ]]
+          echo "source_root=$source_root" >> "$GITHUB_OUTPUT"
+          echo "source_tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
+          echo 'VIBE2_R5_RELEASE_SOURCE_IDENTITY=PASS'
+
+      - name: Verify authoritative Roblox Studio QA evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          QA_RUN_ID: ${{ steps.intent.outputs.qa_run_id }}
+          CANDIDATE_SHA: ${{ steps.intent.outputs.candidate_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QA_RUN_ID" > /tmp/r5-qa-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QA_RUN_ID/jobs?per_page=100" > /tmp/r5-qa-jobs.json
+          node <<'NODE'
+          const fs=require('fs');
+          const run=JSON.parse(fs.readFileSync('/tmp/r5-qa-run.json','utf8'));
+          const jobs=JSON.parse(fs.readFileSync('/tmp/r5-qa-jobs.json','utf8')).jobs||[];
+          if(String(run.name||'')!=='Vibe2 Roblox Candidate Runtime')throw new Error(`unexpected QA workflow: ${run.name}`);
+          if(String(run.status||'')!=='completed'||String(run.conclusion||'')!=='success')throw new Error(`QA run not successful: ${run.status}/${run.conclusion}`);
+          if(String(run.head_sha||'')!==String(process.env.CANDIDATE_SHA||''))throw new Error(`QA candidate SHA mismatch: ${run.head_sha}`);
+          const live=jobs.find(job=>String(job.name||'')==='live-studio');
+          if(!live||String(live.status||'')!=='completed'||String(live.conclusion||'')!=='success')throw new Error('live-studio job is not successful');
+          const required=['Verify Vibe candidate in real Roblox Studio','Replay R5 candidate with physical input and require target-stage improvement'];
+          for(const name of required){
+            const step=(live.steps||[]).find(row=>String(row.name||'')===name);
+            if(!step||String(step.conclusion||'')!=='success')throw new Error(`required Studio QA step not successful: ${name}`);
+          }
+          console.log(`VIBE2_R5_RELEASE_QA_RUN=${run.id}`);
+          console.log('VIBE2_R5_RELEASE_STUDIO_QA=PASS');
+          NODE
+
+      - name: Persist verified Vibe2 source handoff to canonical company runtime
+        env:
+          GAME_ID: ${{ steps.intent.outputs.game_id }}
+          SOURCE_REVISION: ${{ steps.intent.outputs.source_revision }}
+          CANDIDATE_BRANCH: ${{ steps.intent.outputs.candidate_branch }}
+          CANDIDATE_SHA: ${{ steps.intent.outputs.candidate_sha }}
+          QA_RUN_ID: ${{ steps.intent.outputs.qa_run_id }}
+          SOURCE_TREE_SHA: ${{ steps.source.outputs.source_tree_sha }}
+          REQUEST_ID: ${{ steps.intent.outputs.request_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-release-handoff'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          success=0
+          for attempt in 1 2 3; do
+            git fetch origin "$COMPANY_RUNTIME_BRANCH" --quiet
+            work="/tmp/vibe2-roblox-release-handoff-${GITHUB_RUN_ID}-${attempt}"
+            rm -rf "$work"
+            git worktree prune
+            git worktree add --detach "$work" "origin/$COMPANY_RUNTIME_BRANCH" >/dev/null
+            cd "$work"
+            GAME_ID="$GAME_ID" SOURCE_REVISION="$SOURCE_REVISION" CANDIDATE_BRANCH="$CANDIDATE_BRANCH" CANDIDATE_SHA="$CANDIDATE_SHA" QA_RUN_ID="$QA_RUN_ID" SOURCE_TREE_SHA="$SOURCE_TREE_SHA" REQUEST_ID="$REQUEST_ID" node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+          const item=(q.items||[]).find(x=>String(x.gameId||'')===process.env.GAME_ID);
+          if(!item)throw new Error(`ROBLOX_RELEASE_HANDOFF_TARGET_NOT_FOUND:${process.env.GAME_ID}`);
+          if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')throw new Error(`ROBLOX_RELEASE_HANDOFF_CLASS_INVALID:${item.productionClass}`);
+          if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')throw new Error('ROBLOX_RELEASE_HANDOFF_PLATFORM_INVALID');
+          if(String(item.canonicalState||'').toUpperCase()==='DEVELOPMENT_BLOCKED')throw new Error('ROBLOX_RELEASE_HANDOFF_DEVELOPMENT_BLOCKED');
+          const stamp=new Date().toISOString();
+          item.status='ACTIVE';
+          item.currentStep='TARGET_PLATFORM_SOURCE_BIND';
+          item.canonicalState='WAITING_TARGET_PLATFORM_REVALIDATION';
+          item.selectedPlatform='ROBLOX';
+          item.targetPlatform='ROBLOX';
+          item.robloxSourceCandidateBranch=null;
+          item.robloxSourceCandidateReadyAt=null;
+          item.robloxSourceBootstrapFailedAt=null;
+          item.robloxVibe2VerifiedHandoff={
+            version:1,
+            verified:true,
+            authority:'vibe2-authoritative-studio-qa-plus-owner-release-intent',
+            requestId:process.env.REQUEST_ID,
+            gameId:process.env.GAME_ID,
+            sourceRevision:process.env.SOURCE_REVISION,
+            sourceTreeSha:process.env.SOURCE_TREE_SHA,
+            candidateBranch:process.env.CANDIDATE_BRANCH,
+            candidateSha:process.env.CANDIDATE_SHA,
+            qaRunId:Number(process.env.QA_RUN_ID),
+            requestedReleaseState:'release-confirmed',
+            verifiedAt:stamp,
+          };
+          item.routingBlockers=['roblox-vibe2-verified-source-reconciliation-pending'];
+          item.updatedAt=stamp;
+          q.updatedAt=stamp;
+          fs.writeFileSync('development-queue.json',JSON.stringify(q,null,2)+'\n');
+          console.log(`ROBLOX_VIBE2_VERIFIED_HANDOFF_PERSIST=${process.env.GAME_ID}`);
+          NODE
+            git add development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              success=1
+            else
+              git commit -m "runtime: bind verified Vibe2 Roblox release handoff ${GAME_ID} [skip ci]"
+              if git push origin HEAD:"$COMPANY_RUNTIME_BRANCH"; then success=1; fi
+            fi
+            cd "$GITHUB_WORKSPACE"
+            git worktree remove --force "$work" >/dev/null 2>&1 || true
+            [ "$success" = 1 ] && break
+            sleep $((attempt * 2))
+          done
+          test "$success" = 1
+          echo 'ROBLOX_VIBE2_VERIFIED_HANDOFF=PASS'
+          echo 'ROBLOX_RUNTIME_PASS=NO'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
+
+      - name: Dispatch existing canonical Roblox runtime and release chain
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: ${{ steps.intent.outputs.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-roblox-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo "ROBLOX_CANONICAL_RUNTIME_DISPATCHED_GAME_ID=$GAME_ID"
+          echo 'ROBLOX_CANONICAL_PACKAGE_QA_FINAL_REVIEW_RELEASE_CHAIN=DISPATCHED'
