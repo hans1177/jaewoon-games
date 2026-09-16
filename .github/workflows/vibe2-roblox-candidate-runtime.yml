@@ -1,0 +1,85 @@
+name: Vibe2 Roblox Candidate Runtime
+
+on:
+  push:
+    branches:
+      - 'vibe2/candidate/OWNER-ROBLOX-OBBY-*'
+  pull_request:
+    branches:
+      - vibe2-unreal-core
+    paths:
+      - 'tools/vibe2-roblox-skyline-runtime-smoke.mjs'
+      - '.github/workflows/vibe2-roblox-candidate-runtime.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vibe2-roblox-candidate-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify candidate runtime contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/vibe2-roblox-skyline-runtime-smoke.mjs
+          node <<'NODE'
+          const fs=require('fs');
+          const s=fs.readFileSync('tools/vibe2-roblox-skyline-runtime-smoke.mjs','utf8');
+          for(const token of ['vertical-progression','dynamic-obstacle-diversity','checkpoint-respawn','round-1-finished','round-2-reset','round-2-playable','StudioTestService:ExecutePlayModeAsync']){
+            if(!s.includes(token))throw new Error(`missing Roblox candidate runtime contract: ${token}`);
+          }
+          console.log('VIBE2_ROBLOX_CANDIDATE_RUNTIME_CONTRACT=PASS');
+          NODE
+
+  live-studio:
+    needs: contract
+    if: github.event_name == 'push'
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify authenticated Studio runner
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:RUNNER_OS -ne 'Windows') { throw 'Roblox Studio runner must be Windows' }
+          $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
+          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
+          node -e "import('./tools/vibe2-roblox-studio-cli-runner.mjs').then(m=>{const p=m.findRobloxStudioBinary({});if(!p)throw new Error('RobloxStudioBeta.exe not found');console.log('VIBE2_ROBLOX_STUDIO_PATH='+p);require('fs').appendFileSync(process.env.GITHUB_ENV,'VIBE2_ROBLOX_STUDIO_PATH='+p+'\n')})"
+          if ($LASTEXITCODE -ne 0) { throw 'Roblox Studio discovery failed' }
+          Write-Host 'VIBE2_ROBLOX_CANDIDATE_RUNNER=roblox-studio-local'
+
+      - name: Verify Vibe candidate in real Roblox Studio
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $projectRoot = Join-Path $env:GITHUB_WORKSPACE 'roblox-games/seed-roblox-obby-party-minigam-tower-of-hell'
+          node tools/vibe2-roblox-skyline-runtime-smoke.mjs `
+            "--project-root=$projectRoot" `
+            --output="$env:RUNNER_TEMP/vibe2-roblox-skyline-runtime.json" `
+            --timeout=210000
+          if ($LASTEXITCODE -ne 0) { throw 'Skyline candidate Studio QA failed' }
+          Write-Host 'VIBE2_ROBLOX_CANDIDATE_STUDIO_QA=PASS'
+
+      - name: Upload candidate runtime evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-roblox-candidate-runtime-${{ github.run_id }}
+          path: ${{ runner.temp }}/vibe2-roblox-skyline-runtime.json
+          if-no-files-found: warn
+          retention-days: 7
