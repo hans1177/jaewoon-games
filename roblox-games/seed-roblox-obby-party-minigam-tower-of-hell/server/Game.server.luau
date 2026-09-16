@@ -19,6 +19,7 @@ end
 local COURSE_NAME = "Vibe2SkylineSprintCourse"
 local STAGE_COUNT = 12
 local FALL_Y = -12
+local RESTART_DELAY = 3
 local START_POSITION = Vector3.new(0, 7, 0)
 
 local oldCourse = Workspace:FindFirstChild(COURSE_NAME)
@@ -126,14 +127,17 @@ local function initializeAttributes(player)
   for key, value in pairs(Config.InitialState) do
     player:SetAttribute(key, value)
   end
+  player:SetAttribute("Round", 1)
   player:SetAttribute("RoundTime", 0)
   player:SetAttribute("Finished", false)
+  player:SetAttribute("Restarting", false)
   player:SetAttribute("LastApprovedScope", "physical-course-ready")
 end
 
 local function freshState(player)
   stateByPlayer[player] = {
     stage = 0,
+    round = 1,
     started = false,
     roundStartedAt = nil,
     finished = false,
@@ -153,12 +157,47 @@ local function teleportToSavedCheckpoint(player, character)
   end)
 end
 
+local function teleportToRoundStart(player)
+  local character = player.Character
+  local root = character and character:FindFirstChild("HumanoidRootPart")
+  local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+  if not root or not humanoid or humanoid.Health <= 0 then return end
+  root.CFrame = checkpointCFrames[0]
+end
+
+local function resetRoundProgress(player, state)
+  state.stage = 0
+  state.started = false
+  state.roundStartedAt = nil
+  state.finished = false
+  state.round = state.round + 1
+
+  player:SetAttribute("Round", state.round)
+  player:SetAttribute("Position", 0)
+  player:SetAttribute("Progress", 0)
+  player:SetAttribute("Score", 0)
+  player:SetAttribute("RoundTime", 0)
+  player:SetAttribute("Finished", false)
+  player:SetAttribute("Restarting", false)
+  player:SetAttribute("LastApprovedScope", "physical-course-ready")
+  teleportToRoundStart(player)
+end
+
 local function startRound(player)
   local state = stateByPlayer[player]
   if not state or state.finished or state.started then return end
   state.started = true
   state.roundStartedAt = os.clock()
   player:SetAttribute("LastApprovedScope", "physical-course-started")
+end
+
+local function scheduleNextRound(player, finishedState)
+  player:SetAttribute("Restarting", true)
+  task.delay(RESTART_DELAY, function()
+    local state = stateByPlayer[player]
+    if state ~= finishedState or not state or not state.finished then return end
+    resetRoundProgress(player, state)
+  end)
 end
 
 local function acceptCheckpoint(player, stage)
@@ -178,6 +217,7 @@ local function acceptCheckpoint(player, stage)
     player:SetAttribute("RoundTime", math.floor(elapsed * 100) / 100)
     player:SetAttribute("Finished", true)
     player:SetAttribute("LastApprovedScope", "physical-course-finished")
+    scheduleNextRound(player, state)
   end
 end
 
