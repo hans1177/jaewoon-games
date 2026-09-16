@@ -161,6 +161,21 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Reap stale Vibe2-owned Studio sessions
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $ownedPattern = 'vibe2-roblox-(skyline|studio-cli)-'
+          $owned = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object { ([string]$_.CommandLine) -match $ownedPattern })
+          foreach ($process in $owned) {
+            Write-Host "VIBE2_ROBLOX_REAP_STALE_OWNED_PID=$($process.ProcessId)"
+            Stop-Process -Id ([int]$process.ProcessId) -Force -ErrorAction SilentlyContinue
+          }
+          if ($owned.Count -gt 0) { Start-Sleep -Milliseconds 750 }
+          $remaining = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object { ([string]$_.CommandLine) -match $ownedPattern })
+          if ($remaining.Count -gt 0) { throw "Failed to reap stale Vibe2-owned Studio sessions: $($remaining.Count)" }
+          Write-Host "VIBE2_ROBLOX_STALE_OWNED_STUDIO_REAPED=$($owned.Count)"
+
       - name: Protect active Roblox production Studio session
         shell: powershell
         run: |
