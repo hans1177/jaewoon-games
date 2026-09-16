@@ -144,9 +144,11 @@ jobs:
   roblox:
     needs: reserve
     if: needs.reserve.outputs.roblox_count != '0'
-    runs-on: [self-hosted, Windows, vibe2-roblox]
+    # Online route contract: runs-on: [self-hosted, Windows, vibe2-roblox]
+    runs-on: ${{ vars.VIBE2_ROBLOX_STUDIO_RUNNER_READY == 'true' && fromJSON('["self-hosted","Windows","vibe2-roblox"]') || 'ubuntu-latest' }}
     timeout-minutes: 20
     env:
+      VIBE2_ROBLOX_DEDICATED_RUNNER_READY: ${{ vars.VIBE2_ROBLOX_STUDIO_RUNNER_READY }}
       VIBE2_ROBLOX_STUDY_ISOLATED_SESSION: 'true'
     strategy:
       fail-fast: false
@@ -163,7 +165,49 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Defer Roblox GAME STUDY when dedicated runner is offline
+        if: env.VIBE2_ROBLOX_DEDICATED_RUNNER_READY != 'true'
+        shell: bash
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          TARGET_ID: ${{ matrix.targetId }}
+          GAME_ID: ${{ matrix.gameId }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/vibe2-game-study-result"
+          node <<'NODE'
+          const fs=require('fs');
+          const path=require('path');
+          const taskId=process.env.TASK_ID;
+          const targetId=process.env.TARGET_ID;
+          const result={
+            version:2,
+            taskId,
+            targetId,
+            engine:'roblox',
+            gameId:process.env.GAME_ID,
+            outcome:'BLOCKED',
+            blocker:'roblox-dedicated-runner-offline-deferred',
+            reason:'dedicated Roblox Studio study runner is offline; production Studio was not touched',
+            evidence:[
+              `game-study-target:${targetId}`,
+              'game-study-engine:roblox',
+              'game-study-dedicated-runner:offline',
+              'production-studio-untouched'
+            ],
+            study:null,
+            runtimeDiagnostics:null,
+            authorityExpanded:false
+          };
+          fs.writeFileSync(path.join(process.env.RUNNER_TEMP,'vibe2-game-study-result',`${process.env.SAFE_TASK}.json`),JSON.stringify(result,null,2)+'\n');
+          NODE
+          echo 'VIBE2_ROBLOX_DEDICATED_RUNNER_READY=NO'
+          echo 'VIBE2_ROBLOX_STUDY=DEFERRED_RUNNER_OFFLINE'
+          echo 'VIBE2_PRODUCTION_RUNNER_TOUCHED=NO'
+
       - name: Protect active Roblox production Studio session
+        if: env.VIBE2_ROBLOX_DEDICATED_RUNNER_READY == 'true'
         shell: powershell
         run: |
           $isolated = @('1','true','yes','on') -contains ([string]$env:VIBE2_ROBLOX_STUDY_ISOLATED_SESSION).ToLowerInvariant()
@@ -182,6 +226,7 @@ jobs:
 
       - name: Run isolated Roblox Studio GAME STUDY
         id: study
+        if: env.VIBE2_ROBLOX_DEDICATED_RUNNER_READY == 'true'
         continue-on-error: true
         shell: powershell
         env:
