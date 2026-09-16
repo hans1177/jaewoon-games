@@ -6,16 +6,27 @@ on:
       - vibe2-unreal-core
     paths:
       - 'tools/vibe2-roblox-studio-cli-runner.mjs'
+      - 'tools/vibe2-roblox-project-runtime-smoke.mjs'
       - 'tools/runtime/roblox/**'
       - 'tools/vibe2-roblox-auto-player.mjs'
       - 'tools/vibe2-roblox-game-study.mjs'
       - '.vibe2/game-study-targets.json'
       - '.vibe2/game-study-scenarios/external-roblox-*.json'
       - 'qa/vibe2-roblox-studio-cli-runner.test.mjs'
+      - 'qa/vibe2-roblox-project-runtime-smoke.test.mjs'
       - 'qa/fixtures/vibe2-roblox-studio-smoke-scenario.json'
       - '.github/workflows/vibe2-roblox-studio-live-smoke.yml'
       - '.github/workflows/vibe2-game-study-continuous.yml'
   workflow_dispatch:
+    inputs:
+      candidate_ref:
+        description: Candidate branch/ref to validate in real Roblox Studio
+        required: false
+        default: 'vibe2/candidate/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2-primary-35041264873-1'
+      project_root:
+        description: Roblox project root inside the candidate ref
+        required: false
+        default: 'roblox-games/seed-roblox-obby-party-minigam-tower-of-hell'
 
 permissions:
   contents: read
@@ -38,8 +49,11 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/vibe2-roblox-studio-cli-runner.mjs
+          node --check tools/vibe2-roblox-project-runtime-smoke.mjs
           node --check qa/vibe2-roblox-studio-cli-runner.test.mjs
+          node --check qa/vibe2-roblox-project-runtime-smoke.test.mjs
           node --test qa/vibe2-roblox-studio-cli-runner.test.mjs
+          node --test qa/vibe2-roblox-project-runtime-smoke.test.mjs
           node <<'NODE'
           const fs=require('fs');
           const cfg=JSON.parse(fs.readFileSync('.vibe2/game-study-targets.json','utf8'));
@@ -61,12 +75,13 @@ jobs:
           console.log('VIBE2_ROBLOX_STUDIO_CONTRACT=PASS');
           console.log('VIBE2_ROBLOX_EXISTING_AUTHENTICATED_RUNNER_REUSE=YES');
           console.log('VIBE2_ROBLOX_POTION_SHOP_TARGET_ACTIVE=YES');
+          console.log('VIBE2_ROBLOX_PROJECT_RUNTIME_CONTRACT=PASS');
           NODE
 
   live-studio:
     needs: contract
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
-    timeout-minutes: 12
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
 
@@ -100,6 +115,25 @@ jobs:
             --command=node `
             --output="$env:RUNNER_TEMP/vibe2-roblox-studio-baseplate.json" `
             --timeout=120000
+
+      - name: Validate Roblox obby candidate in real Studio play mode
+        shell: powershell
+        env:
+          CANDIDATE_REF: ${{ inputs.candidate_ref || 'vibe2/candidate/OWNER-ROBLOX-OBBY-WORLD-CORE-20260916-R2-primary-35041264873-1' }}
+          CANDIDATE_PROJECT_ROOT: ${{ inputs.project_root || 'roblox-games/seed-roblox-obby-party-minigam-tower-of-hell' }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $candidateDir = Join-Path $env:RUNNER_TEMP 'vibe2-roblox-candidate-runtime'
+          if (Test-Path $candidateDir) { Remove-Item -Recurse -Force $candidateDir }
+          git fetch origin $env:CANDIDATE_REF
+          git worktree add --detach $candidateDir FETCH_HEAD
+          $projectRoot = Join-Path $candidateDir $env:CANDIDATE_PROJECT_ROOT
+          node tools/vibe2-roblox-project-runtime-smoke.mjs `
+            "--project-root=$projectRoot" `
+            --output="$env:RUNNER_TEMP/vibe2-roblox-project-runtime.json" `
+            --timeout=300000
+          Write-Host "VIBE2_ROBLOX_CANDIDATE_REF=$env:CANDIDATE_REF"
+          Write-Host 'VIBE2_ROBLOX_CANDIDATE_STUDIO_QA=PASS'
 
       - name: Study official uncopylocked Potion Shop through authenticated Studio
         shell: powershell
@@ -141,6 +175,7 @@ jobs:
           name: vibe2-roblox-studio-live-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/vibe2-roblox-studio-baseplate.json
+            ${{ runner.temp }}/vibe2-roblox-project-runtime.json
             ${{ runner.temp }}/vibe2-potion-shop-play.json
             ${{ runner.temp }}/vibe2-potion-shop-study.json
             ${{ runner.temp }}/vibe2-potion-shop-source/authorized-studio-manifest.json
