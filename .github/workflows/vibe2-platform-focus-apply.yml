@@ -14,6 +14,7 @@ on:
       - 'tools/vibe2-development-execution-policy.mjs'
       - 'tools/vibe2-deterministic-source-worker.mjs'
       - 'tools/vibe2-implementation-worker.mjs'
+      - 'tools/vibe2-incremental-qa.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - 'qa/vibe2-platform-focus-policy.test.mjs'
       - 'qa/vibe2-roblox-owner-queue.test.mjs'
@@ -21,6 +22,7 @@ on:
       - 'qa/vibe2-source-worker-roblox-full-rebuild.test.mjs'
       - 'qa/vibe2-development-execution-policy.test.mjs'
       - 'qa/vibe2-deterministic-source-worker.test.mjs'
+      - 'qa/vibe2-incremental-qa.test.mjs'
       - '.github/workflows/vibe2-platform-focus-apply.yml'
   workflow_dispatch:
 
@@ -57,12 +59,14 @@ jobs:
           node --check tools/vibe2-development-execution-policy.mjs
           node --check tools/vibe2-deterministic-source-worker.mjs
           node --check tools/vibe2-implementation-worker.mjs
+          node --check tools/vibe2-incremental-qa.mjs
           node --test qa/vibe2-platform-focus-policy.test.mjs
           node --test qa/vibe2-roblox-owner-queue.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-source-worker-roblox-full-rebuild.test.mjs
           node --test qa/vibe2-development-execution-policy.test.mjs
           node --test qa/vibe2-deterministic-source-worker.test.mjs
+          node --test qa/vibe2-incremental-qa.test.mjs
 
       - name: Apply Roblox owner work and focus to current control queue
         shell: bash
