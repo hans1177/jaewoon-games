@@ -6,6 +6,9 @@ on:
     paths:
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/vibe2-continuous-core.yml'
+      - '.github/workflows/vibe2-roblox-candidate-result.yml'
+      - '.github/workflows/vibe2-roblox-candidate-runtime.yml'
+      - 'tools/vibe2-roblox-skyline-runtime-smoke.mjs'
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
       - 'game-catalog.json'
