@@ -1,5 +1,5 @@
-# kickoff-marker: roblox-runtime-v9-skyline-post-runtime-qa-20260917
-name: One-shot Roblox Post-Runtime QA Kickoff
+# kickoff-marker: skyline-publication-target-recovery-20260917
+name: One-shot Skyline Roblox Publication Target Recovery Kickoff
 
 on:
   push:
@@ -16,11 +16,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Dispatch canonical Roblox post-runtime QA
+      - name: Dispatch canonical Skyline multiplayer QA target recovery
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-development-roblox-post-runtime-qa.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'ROBLOX_POST_RUNTIME_QA_DISPATCH=YES'
+          gh workflow run company-development-roblox-multiplayer-qa.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f game_id='seed-roblox-obby-party-minigam-tower-of-hell'
+          echo 'ROBLOX_MULTIPLAYER_QA_DISPATCH=YES'
+          echo 'ROBLOX_MULTIPLAYER_QA_TARGET=seed-roblox-obby-party-minigam-tower-of-hell'
+          echo 'ROBLOX_RELEASE_CLAIM=NO'
