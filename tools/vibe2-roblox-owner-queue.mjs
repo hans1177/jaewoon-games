@@ -107,7 +107,7 @@ export function syncRobloxOwnerDirectives(queueInput = {}, directivesInput = {},
   const active = [];
   for (const directive of directivesInput.directives || []) {
     const state = clean(directive.status || 'pending').toLowerCase();
-    if (['cancelled', 'disabled'].includes(state)) continue;
+    if (['cancelled', 'disabled', 'completed'].includes(state)) continue;
     const task = directiveTask(directive);
     if (task) active.push(task);
   }
