@@ -57,9 +57,27 @@ jobs:
           Write-Host "VIBE2_HOSTED_ROBLOX_SIGNER=$subject"
           Write-Host 'VIBE2_HOSTED_ROBLOX_CDN_ASSEMBLY=PASS'
 
+      - name: Verify hosted Studio CLI on local Baseplate
+        id: baseplate
+        if: steps.studio.outcome == 'success'
+        continue-on-error: true
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $env:VIBE2_ROBLOX_AUTO_PLAYER_ARGS = ConvertTo-Json -InputObject @('tools/vibe2-roblox-studio-cli-runner.mjs') -Compress
+          node tools/vibe2-roblox-auto-player.mjs `
+            --scenario=qa/fixtures/vibe2-roblox-studio-smoke-scenario.json `
+            --command=node `
+            --output="$env:RUNNER_TEMP/vibe2-rdd-baseplate.json" `
+            --timeout=120000
+          if ($LASTEXITCODE -ne 0) { throw 'Hosted Baseplate Studio CLI smoke failed' }
+          $base = Get-Content "$env:RUNNER_TEMP/vibe2-rdd-baseplate.json" -Raw | ConvertFrom-Json
+          if ($base.verified -ne $true) { throw 'Hosted Baseplate Studio CLI was not verified' }
+          Write-Host 'VIBE2_HOSTED_ROBLOX_BASEPLATE=PASS'
+
       - name: Run isolated Potion Shop GAME STUDY
         id: study
-        if: steps.studio.outcome == 'success'
+        if: steps.baseplate.outcome == 'success'
         continue-on-error: true
         shell: powershell
         run: |
@@ -86,7 +104,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: vibe2-roblox-rdd-hosted-isolation-${{ github.run_id }}
-          path: ${{ runner.temp }}/vibe2-rdd-potion-shop-study.json
+          path: |
+            ${{ runner.temp }}/vibe2-rdd-baseplate.json
+            ${{ runner.temp }}/vibe2-rdd-potion-shop-study.json
           if-no-files-found: ignore
           retention-days: 1
 
@@ -95,9 +115,10 @@ jobs:
         shell: powershell
         run: |
           Write-Host "VIBE2_HOSTED_CDN_STEP=${{ steps.studio.outcome }}"
+          Write-Host "VIBE2_HOSTED_BASEPLATE_STEP=${{ steps.baseplate.outcome }}"
           Write-Host "VIBE2_HOSTED_STUDY_STEP=${{ steps.study.outcome }}"
           Write-Host 'VIBE2_PRODUCTION_RUNNER_TOUCHED=NO'
-          if ('${{ steps.studio.outcome }}' -ne 'success' -or '${{ steps.study.outcome }}' -ne 'success') {
-            throw 'VIBE2_HOSTED_ISOLATION_PATH=NOT_VIABLE'
-          }
+          if ('${{ steps.studio.outcome }}' -ne 'success') { throw 'VIBE2_HOSTED_CDN_PATH=NOT_VIABLE' }
+          if ('${{ steps.baseplate.outcome }}' -ne 'success') { throw 'VIBE2_HOSTED_STUDIO_CLI=NOT_VIABLE' }
+          if ('${{ steps.study.outcome }}' -ne 'success') { throw 'VIBE2_HOSTED_POTION_SHOP=NOT_VIABLE' }
           Write-Host 'VIBE2_HOSTED_ISOLATION_PATH=VIABLE'
