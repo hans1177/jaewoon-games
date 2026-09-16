@@ -50,6 +50,18 @@ test('successful multiplayer persistence dispatches canonical final-review reval
   assert.doesNotMatch(workflow, /robloxFinalReviewPassed=true/);
 });
 
+test('manual exact-game QA can recover only a missing verified publication target', () => {
+  const workflow = read(workflowPath);
+  assert.match(workflow, /publicationTargetRecovery/);
+  assert.match(workflow, /requested&&item\.gameId===requested/);
+  assert.match(workflow, /ROBLOX_PUBLICATION_TARGET_RECOVERY/);
+  assert.match(workflow, /ROBLOX_STUDIO_UNIVERSE_ID/);
+  assert.match(workflow, /ROBLOX_STUDIO_PLACE_ID/);
+  assert.match(workflow, /robloxPublicationTarget/);
+  assert.match(workflow, /verified:true/);
+  assert.match(workflow, /ROBLOX_MULTIPLAYER_PUBLICATION_TARGET_OBSERVATION_MISSING/);
+});
+
 test('multiplayer probe requires two distinct clients and server-authoritative peer visibility', () => {
   const probe = read(probePath);
   assert.match(probe, /ExecuteMultiplayerTestAsync\(2/);
@@ -59,6 +71,8 @@ test('multiplayer probe requires two distinct clients and server-authoritative p
   assert.match(probe, /PEER_ROSTER_ACK/);
   assert.match(probe, /count\(rosterAck\) >= 2/);
   assert.match(probe, /PASS:TWO_CLIENT_SERVER_AUTHORITATIVE_PEER_ROUNDTRIP/);
+  assert.match(probe, /ROBLOX_STUDIO_UNIVERSE_ID/);
+  assert.match(probe, /ROBLOX_STUDIO_PLACE_ID/);
   assert.match(probe, /ROBLOX_MULTIPLAYER_QA_CLIENTS=2/);
   assert.match(probe, /ROBLOX_MULTIPLAYER_QA.*PASS/);
 });
