@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compareR5PhysicalTelemetry } from '../tools/vibe2-roblox-r5-compare.mjs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { compareR5PhysicalTelemetry, runR5PhysicalCompare } from '../tools/vibe2-roblox-r5-compare.mjs';
 
 const baseStage=(stage,overrides={})=>({stage,success:true,elapsedMs:1000,retries:0,deaths:0,stalledMs:0,...overrides});
 const telemetry=(stages,baseMainSha='main-sha')=>({
@@ -49,4 +52,21 @@ test('R5 compare rejects a regression before the selected target stage',()=>{
   const result=compareR5PhysicalTelemetry({baseline,candidate,manifest:manifest()});
   assert.equal(result.pass,false);
   assert.match(result.reason,/earlier-stage-regression/);
+});
+
+test('R5 file compare accepts a UTF-8 BOM on Windows-generated JSON',()=>{
+  const temp=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-r5-bom-'));
+  try {
+    const baselineFile=path.join(temp,'baseline.json');
+    const candidateFile=path.join(temp,'candidate.json');
+    const manifestFile=path.join(temp,'manifest.json');
+    fs.writeFileSync(baselineFile,JSON.stringify(telemetry([baseStage(1),baseStage(2,{success:false,deaths:3,retries:3})])),'utf8');
+    fs.writeFileSync(candidateFile,JSON.stringify(telemetry([baseStage(1),baseStage(2,{success:true})])),'utf8');
+    fs.writeFileSync(manifestFile,`\uFEFF${JSON.stringify(manifest())}`,'utf8');
+    const result=runR5PhysicalCompare({baselineFile,candidateFile,manifestFile});
+    assert.equal(result.pass,true);
+    assert.equal(result.reason,'failed-target-stage-now-passes');
+  } finally {
+    fs.rmSync(temp,{recursive:true,force:true});
+  }
 });
