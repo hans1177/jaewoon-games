@@ -1182,10 +1182,10 @@
       "webValidationPassedAt": null,
       "musicValidationPassed": false,
       "routingBlockers": [
-        "roblox-build-preflight-pending"
+        "roblox-runtime-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-16T14:24:44.394Z",
-      "updatedAt": "2026-09-16T14:49:05.184Z",
+      "updatedAt": "2026-09-16T14:51:36.075Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -1199,19 +1199,89 @@
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": true,
       "robloxBuildFailedAt": null,
-      "robloxBuildPreflightPassed": false,
+      "robloxBuildPreflightPassed": true,
       "robloxIndependentQaPassed": false,
       "robloxRegressionPassed": false,
       "robloxFinalReviewPassed": false,
-      "robloxFailureStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
-      "robloxFailureSignature": "ROBLOX_BUILD_PREFLIGHT_PENDING",
+      "robloxFailureStage": "TARGET_PLATFORM_RUNTIME",
+      "robloxFailureSignature": "ROBLOX_RUNTIME_PENDING",
       "robloxBuildSourceRevision": "117a87320e67c690c1c8b3972598d331cf366c56",
       "robloxBuildArtifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc",
       "robloxBuildPassedAt": "2026-09-16T14:49:05.184Z",
-      "robloxLastSuccessfulStage": "TARGET_PLATFORM_BUILD_OR_PACKAGE",
-      "robloxBuildPreflightPassedAt": null,
+      "robloxLastSuccessfulStage": "FIVE_DISTINCT_LEAD_BUILD_PREFLIGHT",
+      "robloxBuildPreflightPassedAt": "2026-09-16T14:51:36.075Z",
       "robloxBuildPreflightFailedAt": null,
-      "robloxBuildPreflightEvidence": null,
+      "robloxBuildPreflightEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+        "pass": true,
+        "state": "PASS",
+        "checkedAt": "2026-09-16T14:50:48.687Z",
+        "sourceRevision": "117a87320e67c690c1c8b3972598d331cf366c56",
+        "artifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc",
+        "facts": {
+          "pass": true,
+          "blockers": [],
+          "leads": {
+            "planning": "qwen3:0.6b",
+            "graphics": "gemma3:1b",
+            "development": "llama3.2:1b",
+            "qa": "qwen2.5:1.5b",
+            "balance": "smollm2:1.7b"
+          },
+          "distinctLeadCount": 5,
+          "build": {
+            "sourceRevision": "117a87320e67c690c1c8b3972598d331cf366c56",
+            "artifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc",
+            "webValidationPassed": true,
+            "musicValidationPassed": true,
+            "nativeWebValidationPassed": false,
+            "nativeMusicValidationPassed": false,
+            "sourceEligibilityAuthority": "verified-vibe2-source-handoff",
+            "sourceValidationPassed": true,
+            "buildOrPackagePassed": true
+          }
+        },
+        "leadReviews": [
+          {
+            "role": "planning",
+            "model": "qwen3:0.6b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blocker is present."
+          },
+          {
+            "role": "graphics",
+            "model": "gemma3:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": ""
+          },
+          {
+            "role": "development",
+            "model": "llama3.2:1b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "No concrete build-stage blockers found in BUILD_EVIDENCE"
+          },
+          {
+            "role": "qa",
+            "model": "qwen2.5:1.5b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All deterministic policy checks passed before this review."
+          },
+          {
+            "role": "balance",
+            "model": "smollm2:1.7b",
+            "decision": "PASS",
+            "blockers": [],
+            "note": "All deterministic policy checks passed before this review. Return PASS when no concrete build-stage blocker is present."
+          }
+        ],
+        "blockers": [],
+        "authority": "roblox-five-distinct-lead-build-preflight"
+      },
       "robloxRuntimeFailedAt": null,
       "robloxRuntimeEvidence": null,
       "robloxRuntimeRetryCount": 0,
@@ -1887,7 +1957,7 @@
       "webInitialCycleMusicValidationPassed": false
     }
   ],
-  "updatedAt": "2026-09-16T14:49:05.184Z",
+  "updatedAt": "2026-09-16T14:51:36.075Z",
   "routerContractVersion": 4,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
