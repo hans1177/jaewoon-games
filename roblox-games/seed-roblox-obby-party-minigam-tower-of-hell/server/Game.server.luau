@@ -387,7 +387,7 @@ for stage = 1, STAGE_COUNT do
     Vector3.new(stage == STAGE_COUNT and 18 or 14, 1, stage == STAGE_COUNT and 18 or 14),
     CFrame.new(checkpointPosition),
     stage == STAGE_COUNT and Color3.fromRGB(255, 220, 70) or zone.color,
-    stageModel,
+    course,
     stage == STAGE_COUNT and Enum.Material.Neon or Enum.Material.SmoothPlastic
   )
   checkpoint:SetAttribute("Stage", stage)
