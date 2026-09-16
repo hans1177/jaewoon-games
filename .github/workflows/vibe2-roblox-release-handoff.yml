@@ -124,23 +124,36 @@ jobs:
           echo "source_tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
           echo 'VIBE2_R5_RELEASE_SOURCE_IDENTITY=PASS'
 
+      - name: Download authoritative candidate context from Studio QA run
+        uses: actions/download-artifact@v4
+        with:
+          name: vibe2-roblox-candidate-context-${{ steps.intent.outputs.qa_run_id }}
+          path: /tmp/vibe2-roblox-release-context
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.intent.outputs.qa_run_id }}
+
       - name: Verify authoritative Roblox Studio QA evidence
         env:
           GH_TOKEN: ${{ github.token }}
           QA_RUN_ID: ${{ steps.intent.outputs.qa_run_id }}
+          CANDIDATE_BRANCH: ${{ steps.intent.outputs.candidate_branch }}
           CANDIDATE_SHA: ${{ steps.intent.outputs.candidate_sha }}
         shell: bash
         run: |
           set -euo pipefail
+          context=/tmp/vibe2-roblox-release-context/vibe2-roblox-candidate-context.json
+          test -s "$context"
           gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QA_RUN_ID" > /tmp/r5-qa-run.json
           gh api "repos/$GITHUB_REPOSITORY/actions/runs/$QA_RUN_ID/jobs?per_page=100" > /tmp/r5-qa-jobs.json
           node <<'NODE'
           const fs=require('fs');
+          const context=JSON.parse(fs.readFileSync('/tmp/vibe2-roblox-release-context/vibe2-roblox-candidate-context.json','utf8'));
           const run=JSON.parse(fs.readFileSync('/tmp/r5-qa-run.json','utf8'));
           const jobs=JSON.parse(fs.readFileSync('/tmp/r5-qa-jobs.json','utf8')).jobs||[];
+          if(String(context.candidateBranch||'')!==String(process.env.CANDIDATE_BRANCH||''))throw new Error(`QA candidate branch mismatch: ${context.candidateBranch}`);
+          if(String(context.candidateSha||'')!==String(process.env.CANDIDATE_SHA||''))throw new Error(`QA candidate SHA mismatch: ${context.candidateSha}`);
           if(String(run.name||'')!=='Vibe2 Roblox Candidate Runtime')throw new Error(`unexpected QA workflow: ${run.name}`);
           if(String(run.status||'')!=='completed'||String(run.conclusion||'')!=='success')throw new Error(`QA run not successful: ${run.status}/${run.conclusion}`);
-          if(String(run.head_sha||'')!==String(process.env.CANDIDATE_SHA||''))throw new Error(`QA candidate SHA mismatch: ${run.head_sha}`);
           const live=jobs.find(job=>String(job.name||'')==='live-studio');
           if(!live||String(live.status||'')!=='completed'||String(live.conclusion||'')!=='success')throw new Error('live-studio job is not successful');
           const required=['Verify Vibe candidate in real Roblox Studio','Replay R5 candidate with physical input and require target-stage improvement'];
@@ -149,6 +162,7 @@ jobs:
             if(!step||String(step.conclusion||'')!=='success')throw new Error(`required Studio QA step not successful: ${name}`);
           }
           console.log(`VIBE2_R5_RELEASE_QA_RUN=${run.id}`);
+          console.log('VIBE2_R5_RELEASE_CONTEXT_IDENTITY=PASS');
           console.log('VIBE2_R5_RELEASE_STUDIO_QA=PASS');
           NODE
 
