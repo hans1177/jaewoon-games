@@ -28,6 +28,7 @@ jobs:
     outputs:
       worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
       worker_count: ${{ steps.batch.outputs.worker_count }}
+      ai_worker_count: ${{ steps.batch.outputs.ai_worker_count }}
       exploration_matrix: ${{ steps.batch.outputs.exploration_matrix }}
       exploration_count: ${{ steps.batch.outputs.exploration_count }}
       task_count: ${{ steps.batch.outputs.task_count }}
@@ -53,6 +54,9 @@ jobs:
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-development-execution-policy.mjs
+          node --check tools/vibe2-deterministic-source-worker.mjs
+          node --check tools/vibe2-implementation-worker.mjs
           node --check tools/vibe2-performance-sanity.mjs
           node --check tools/vibe2-fan-in-review.mjs
           node --check tools/vibe2-queue-control.mjs
@@ -122,29 +126,43 @@ jobs:
             echo "VIBE2_SLOT_CALLBACK_CLEANUP=$callback_ref"
           fi
 
-          node <<'NODE'
-          const fs=require('fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { resolveVibeDevelopmentExecution } from './tools/vibe2-development-execution-policy.mjs';
           const out=process.env.GITHUB_OUTPUT;
           const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
+          const queue=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const byId=new Map((queue.tasks||[]).map(task=>[task.id,task]));
           const workers=[];
           const exploration=[];
           const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
+            const task=byId.get(row.taskId)||{};
+            const development=resolveVibeDevelopmentExecution({task,target:task.target,route:'text-source-worker'});
             exploration.push({taskId:row.taskId,safeTask});
             const earlyRefill=Number(row.speculativeVariants||1)===1;
-            const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)};
+            const shared={
+              taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',
+              longWorkProtected:row.longWorkProtected===true,reservedAt:batch.createdAt,
+              requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20),
+              aiAssist:development.aiAssist===true,aiRequired:development.aiRequired===true,
+              implementationExecutor:development.executor,deterministicRecipe:development.recipe||''
+            };
             workers.push({...shared,variant:'primary',earlyRefill});
             if(Number(row.speculativeVariants||1)>1)workers.push({...shared,variant:'speculative',earlyRefill:false});
           }
+          const aiWorkerCount=workers.filter(row=>row.aiAssist===true).length;
           fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
           fs.appendFileSync(out,`worker_count=${workers.length}\n`);
+          fs.appendFileSync(out,`ai_worker_count=${aiWorkerCount}\n`);
           fs.appendFileSync(out,`exploration_matrix=${JSON.stringify({include:exploration})}\n`);
           fs.appendFileSync(out,`exploration_count=${exploration.length}\n`);
           fs.appendFileSync(out,`task_count=${(batch.matrix||[]).length}\n`);
           fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
           fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)}\n`);
           console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
+          console.log(`VIBE2_AI_WORKER_COUNT=${aiWorkerCount}`);
           console.log(`VIBE2_EXPLORATION_FAN_OUT=${exploration.length}`);
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
@@ -152,7 +170,7 @@ jobs:
 
   model_cache:
     needs: reserve
-    if: needs.reserve.outputs.worker_count != '0'
+    if: needs.reserve.outputs.ai_worker_count != '0'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     continue-on-error: true
@@ -259,7 +277,7 @@ jobs:
           retention-days: 1
 
   worker:
-    needs: [reserve, model_cache, exploration]
+    needs: [reserve, exploration]
     if: always() && needs.reserve.outputs.worker_count != '0' && needs.exploration.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 22
@@ -290,8 +308,51 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Build reserved task work order
+        id: order
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          VARIANT: ${{ matrix.variant }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+          MATRIX_EXECUTOR: ${{ matrix.implementationExecutor }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-continuous-runner.mjs --task-id="$TASK_ID" --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { resolveVibeDevelopmentExecution } from './tools/vibe2-development-execution-policy.mjs';
+          const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
+          const development=resolveVibeDevelopmentExecution({task:order.selectedTask||{},target:order.target,route:order.executionRoute||'text-source-worker'});
+          if(order.executionRoute==='text-source-worker'&&process.env.MATRIX_EXECUTOR&&development.executor!==process.env.MATRIX_EXECUTOR){
+            throw new Error(`development executor changed after reservation: ${process.env.MATRIX_EXECUTOR} -> ${development.executor}`);
+          }
+          const out=process.env.GITHUB_OUTPUT;
+          const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
+          put('run',order.run?'true':'false');
+          put('reason',order.reason||'');
+          put('task_id',order.taskId||process.env.TASK_ID||'');
+          put('safe_task',process.env.SAFE_TASK||'');
+          put('game_id',order.gameId||'');
+          put('target',order.target||'');
+          put('route',order.executionRoute||'');
+          put('source_root',order.source?.root||'');
+          put('release_state',order.releaseState||'other');
+          put('cache_namespace',order.incrementalQa?.cacheNamespace||`${order.target||'unknown'}:${order.gameId||'global'}`);
+          put('variant',process.env.VARIANT||'primary');
+          put('ai_required',development.aiRequired?'true':'false');
+          put('ai_assist',development.aiAssist?'true':'false');
+          put('implementation_executor',development.executor||'');
+          put('deterministic_recipe',development.recipe||'');
+          console.log(`VIBE2_AI_REQUIRED=${development.aiRequired?'YES':'NO'}`);
+          console.log(`VIBE2_AI_ASSIST=${development.aiAssist?'YES':'NO'}`);
+          console.log(`VIBE2_IMPLEMENTATION_EXECUTOR=${development.executor}`);
+          console.log(`VIBE2_DETERMINISTIC_RECIPE=${development.recipe||'NONE'}`);
+          NODE
+
       - name: Restore shared Ollama runtime cache
         id: worker_ollama_cache
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.ai_assist == 'true'
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -301,6 +362,7 @@ jobs:
 
       - name: Prepare cached Ollama runtime
         id: worker_ollama_runtime
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker' && steps.order.outputs.ai_assist == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -327,34 +389,6 @@ jobs:
           prep_finished="$(date +%s%3N)"
           echo "duration_ms=$((prep_finished-prep_started))" >> "$GITHUB_OUTPUT"
 
-      - name: Build reserved task work order
-        id: order
-        env:
-          TASK_ID: ${{ matrix.taskId }}
-          VARIANT: ${{ matrix.variant }}
-          SAFE_TASK: ${{ matrix.safeTask }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/vibe2-continuous-runner.mjs --task-id="$TASK_ID" --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
-          node <<'NODE'
-          const fs=require('fs');
-          const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
-          const out=process.env.GITHUB_OUTPUT;
-          const put=(k,v)=>fs.appendFileSync(out,`${k}=${String(v??'').replaceAll('\n',' ')}\n`);
-          put('run',order.run?'true':'false');
-          put('reason',order.reason||'');
-          put('task_id',order.taskId||process.env.TASK_ID||'');
-          put('safe_task',process.env.SAFE_TASK||'');
-          put('game_id',order.gameId||'');
-          put('target',order.target||'');
-          put('route',order.executionRoute||'');
-          put('source_root',order.source?.root||'');
-          put('release_state',order.releaseState||'other');
-          put('cache_namespace',order.incrementalQa?.cacheNamespace||`${order.target||'unknown'}:${order.gameId||'global'}`);
-          put('variant',process.env.VARIANT||'primary');
-          NODE
-
       - name: Download reusable exploration handoff
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
         uses: actions/download-artifact@v4
@@ -367,12 +401,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          model_calls=0
+          if [ "${{ steps.order.outputs.ai_assist }}" = 'true' ]; then model_calls=1; fi
           node tools/free-budget-telemetry.mjs \
             --verify-public-repo=true \
             --runner=ubuntu-latest \
-            --model-calls=1 \
+            --model-calls="$model_calls" \
             --runner-minutes=22 \
             --output=/tmp/vibe2-free-budget.json
+          echo "VIBE2_AI_MODEL_CALLS=$model_calls"
           echo 'VIBE2_PAID_API=NO'
           echo 'VIBE2_PAID_RUNNER=NO'
 
@@ -398,25 +435,11 @@ jobs:
           cp /tmp/vibe2-work-order.json "$candidate_dir/.vibe2/work-order.json"
           cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
 
-          command -v ollama >/dev/null
-          nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
-          for i in $(seq 1 30); do
-            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
-            if [ "$i" = 30 ]; then cat "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
-            sleep 2
-          done
-          if ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
-            echo 'VIBE2_LOCAL_MODEL_SOURCE=CACHE'
-          else
-            echo 'VIBE2_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
-            ollama pull "$VIBE2_LOCAL_MODEL"
-          fi
-
           cd "$candidate_dir"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
           export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
-          node "$GITHUB_WORKSPACE/tools/vibe2-source-worker.mjs" --apply-source=true
+          node "$GITHUB_WORKSPACE/tools/vibe2-implementation-worker.mjs" --apply-source=true
           git diff --check
 
           git add "$SOURCE_ROOT" .vibe2/candidates
@@ -581,6 +604,9 @@ jobs:
             clean(process.env.BASE_SHA)&&`base-main:${clean(process.env.BASE_SHA)}`,
             clean(process.env.IQA_HASH)&&`incremental-qa-hash:${clean(process.env.IQA_HASH)}`,
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
+            manifest.implementationExecutor&&`implementation-executor:${clean(manifest.implementationExecutor)}`,
+            manifest.deterministicRecipe&&`deterministic-recipe:${clean(manifest.deterministicRecipe)}`,
+            typeof manifest.aiUsed==='boolean'&&`ai-used:${manifest.aiUsed?'YES':'NO'}`,
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             `actions-run:${process.env.GITHUB_RUN_ID}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`
@@ -700,6 +726,8 @@ jobs:
             qa/vibe2-auto-planner.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
             qa/vibe2-source-worker.test.mjs \
+            qa/vibe2-development-execution-policy.test.mjs \
+            qa/vibe2-deterministic-source-worker.test.mjs \
             qa/vibe2-exploration-worker.test.mjs \
             qa/vibe2-queue-control.test.mjs \
             qa/vibe2-work-package.test.mjs \
