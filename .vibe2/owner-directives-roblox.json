@@ -120,7 +120,7 @@
       ],
       "priority": "critical",
       "workUnits": 12,
-      "status": "pending",
+      "status": "completed",
       "fullRebuild": false,
       "rebuildMode": "INCREMENTAL",
       "goal": "[OWNER_ROBLOX_PRIMARY] PHASE_4_AUTONOMOUS_PLAYTEST_BALANCE. 최신 main의 R4 맵과 R3 라운드/체크포인트/서버권위 시스템을 보존한다. Vibe가 실제 Roblox Studio 입력 기반 플레이 증거와 런타임 텔레메트리를 먼저 수집하고 Stage별 진행시간, 실패/사망/재시도 지점, 동적 장애물 대기시간, 모바일 기본 이동/점프 접근성을 근거로 난이도와 가독성을 스스로 판단한다. 설계자가 미리 고정한 스테이지별 수치를 복사하지 말고 검증 증거에서 필요한 최소 수정만 선택한다. 수정 가능 범위는 기존 맵의 발판 크기/간격, 이동 발판 주기와 이동폭, 회전 장애물 속도, 소멸 주기, 밀치기 강도, 시각적 가독성이다. 체크포인트 순서, 사망/리스폰, Round 1→2 반복, GameConfig/RemoteEvent 호환성, per-player 상태, 서버 권위와 모바일 기본 컨트롤은 변경하지 않는다. 한 번의 수정 후 실제 Studio를 다시 플레이하고 개선 증거와 회귀 PASS가 모두 있을 때만 완료한다. 실패 원인과 성공 패턴은 검증된 것만 Experience로 승격한다.",
@@ -139,7 +139,22 @@
         "qa-required:round-2-regression",
         "learning-promotion:verified-evidence-only",
         "direct-main-write:false",
-        "base-main:ddbe4115ca9c36c77d730ae3fc489fbf716421e3"
+        "base-main:00a31f1d8214ecef0c209f5abc801c36a82709c6",
+        "candidate:vibe2/candidate/OWNER-ROBLOX-OBBY-AUTONOMOUS-BALANCE-20260916-R5-primary-35070683383-1",
+        "candidate-sha:71281f6b27b42b783262b680591575139ca69eb9",
+        "studio-runtime-run:35070803443",
+        "studio-runtime:PASS",
+        "functional-regression:PASS",
+        "physical-input-target-stage-compare:PASS",
+        "baseline-stage2:Step02C-dead-deaths3-retries3",
+        "candidate-stage2:PASS-deaths0-retries0",
+        "earlier-stage-regressions:none",
+        "balance-change:Step02C-lateral-offset-4-to-0",
+        "server-authority:preserved",
+        "round-loop:preserved",
+        "mobile-default-controls:preserved",
+        "promotion-pr:724",
+        "main-merge:a461c4da24de51f2f0dc1f65a28bd65ae4f3fd2d"
       ]
     }
   ]
