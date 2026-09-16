@@ -1,0 +1,162 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "game-seed-market-evidence.json"
+      ],
+      "fix": [
+        "game-seed-platform-profiles.json"
+      ],
+      "add": [
+        "Kingdom Rush",
+        "ESA Power of Play 2025 Global Report"
+      ],
+      "risks": [
+        "globalMobileGamesRevenue2025UsdBillion"
+      ],
+      "evidence": [
+        "globalMobileGamesRevenue2025UsdBillion"
+      ],
+      "questions": [
+        "globalMobileGamesRevenue2025UsdBillion"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "ADD",
+        "RISK"
+      ],
+      "fix": [
+        "FIX",
+        "ADD"
+      ],
+      "add": [
+        "ADD"
+      ],
+      "risks": [
+        "RISK"
+      ],
+      "evidence": [
+        "ADD"
+      ],
+      "questions": [
+        "ADD"
+      ]
+    },
+    "development": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "GAME_SEED"
+      ],
+      "add": [
+        "GAME_SEED"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "GAME_SEED"
+      ],
+      "questions": [
+        "GAME_SEED"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [],
+      "questions": []
+    },
+    "balance": {
+      "keep": [
+        "Read the incoming insect wave and its threat pattern."
+      ],
+      "fix": [
+        "Place or adjust defenders and spend limited resources on the highest-value counter."
+      ],
+      "add": [
+        "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+      ],
+      "risks": [
+        "Ensure the highest-value counter is prioritized."
+      ],
+      "evidence": [
+        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+      ],
+      "questions": [
+        "Are there any specific counter or leak scenarios to consider?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The evidence and questions are consistent with the provided data. The risks and evidence are also aligned with the given information.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "The 'ADD' and 'RISK' are consistent with the provided evidence. The 'FIX' is necessary to address the identified risks.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "The evidence and questions are aligned with the provided data. The risks and evidence are also consistent.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "The evidence and questions are consistent with the provided data. The risks and evidence are also aligned.",
+      "departments": [
+        "qa"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 4,
+    "conflict": 0,
+    "hold": 0
+  }
+}

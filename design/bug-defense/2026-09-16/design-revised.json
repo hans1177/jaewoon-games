@@ -1,0 +1,42 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "llama3.2:1b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 4,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": " Bug-Defense",
+    "playerFantasy": " 30웨이브 곤충 디펜스",
+    "coreFun": "wave defense readability",
+    "coreLoop": [
+      "Read the incoming insect wave and its threat pattern",
+      "Place or adjust defenders and spend limited resources on the highest-value counter",
+      "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision"
+    ],
+    "signatureSystems": [],
+    "progressionDirection": "single-player",
+    "visualDirection": "single-player",
+    "mobileUx": "true",
+    "marketTargetDirection": "global",
+    "steamExpansionDecision": "review_in_design_cycle",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "review_in_design_cycle",
+    "technicalAssumptions": [],
+    "validationQuestions": [],
+    "openQuestions": [
+      "planning",
+      "graphics",
+      "development",
+      "qa"
+    ]
+  }
+}

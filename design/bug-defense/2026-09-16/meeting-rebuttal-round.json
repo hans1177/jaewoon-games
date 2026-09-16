@@ -1,0 +1,98 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "The evidence and questions are consistent with the provided data. The risks and evidence are also aligned with the given information."
+    },
+    "graphics": {
+      "accept": [
+        "FIX",
+        "ADD",
+        "RISK"
+      ],
+      "challenge": [
+        "ADD",
+        "question"
+      ],
+      "revision": [
+        "ADD",
+        "question"
+      ],
+      "reason": "The 'game-seed-market-evidence.json' data suggests a potential risk to the game's market.  We need to address this proactively. Adding a counter strategy is a necessary step to mitigate this risk."
+    },
+    "development": {
+      "accept": [
+        "OWN",
+        "OTHERS"
+      ],
+      "challenge": [
+        "OWN",
+        "OTHERS"
+      ],
+      "revision": [
+        "OWN",
+        "OTHERS"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "game-seed-market-evidence.json",
+        "Kingdom Rush",
+        "ESA Power of Play 2025 Global Report"
+      ],
+      "challenge": [
+        "game-seed-platform-profiles.json",
+        "globalMobileGamesRevenue2025UsdBillion",
+        "Kingdom Rush"
+      ],
+      "revision": [
+        "GAME_SEED",
+        "GAME_SEED",
+        "GAME_SEED"
+      ],
+      "reason": "Ensure the highest-value counter is prioritized."
+    },
+    "balance": {
+      "accept": [
+        "OWN"
+      ],
+      "challenge": [
+        "OTHERS"
+      ],
+      "revision": [
+        "graphics",
+        "development",
+        "qa"
+      ],
+      "reason": "스키마에 맞는 JSON 객체만 반환한다."
+    }
+  }
+}

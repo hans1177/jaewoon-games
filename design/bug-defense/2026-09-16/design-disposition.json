@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "gameId": "bug-defense",
+  "date": "2026-09-16",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 3,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The evidence and questions are consistent with the provided data. The risks and evidence are also aligned with the given information.",
+        "The 'ADD' and 'RISK' are consistent with the provided evidence. The 'FIX' is necessary to address the identified risks."
+      ],
+      "reason": "The evidence and questions are consistent with the provided data. The risks and evidence are also aligned with the given information."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+        "CORE_FUN_CANNOT_BE_RECOVERED"
+      ],
+      "evidence": [
+        "KEY_DATA_POINTS",
+        "GAME_SEED_DETAILS",
+        "DESIGN_CONSISTENCY_ASSESSMENT",
+        "QA_REVIEW_STATUS"
+      ],
+      "reason": "The proposed design introduces a loop that duplicates the core gameplay, relies heavily on a specific target platform, and lacks a clear, sustainable progression path. The 'ADD' and 'RISK' are aligned with the provided data, but the core design is fundamentally flawed and requires significant rework. The 'FIX' is necessary to address the identified risks.  The design is not aligned with the core fun and the evidence suggests it is not a viable design."
+    },
+    "development": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json",
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라. VALID_FATAL_CRITERIA=["
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "The evidence and questions are consistent with the provided data.",
+        "The risks and evidence are also aligned with the given information.",
+        "The risks and evidence are also consistent.",
+        "The evidence and questions are consistent with the provided data. The risks and evidence are also aligned."
+      ],
+      "reason": "The game design needs to be redesigned to ensure it meets the core gameplay and design principles, while also addressing the fatal criteria that cannot be resolved through reinterpretation."
+    },
+    "balance": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [],
+      "reason": "The evidence and questions are inconsistent with the provided data. The risks and evidence are not aligned with the given information."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}
