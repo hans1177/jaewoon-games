@@ -92,14 +92,15 @@ test('malformed Vibe2 handoff cannot bypass missing Web or music eligibility at 
 });
 
 test('runtime uses authenticated self-hosted Windows runner pool and the original package identity for actual Roblox Studio multiplayer sessions',()=>{
-  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '8'"));
+  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '9'"));
   assert.ok(workflow.includes("ROBLOX_AUTHENTICATED_RUNNER_WIP_MAX: '3'"));
   assert.ok(workflow.includes('runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]'));
   assert.ok(!workflow.includes('runs-on: windows-latest'));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));
   assert.ok(workflow.includes('max-parallel: 3'));
-  assert.ok(workflow.includes("const retryableAuthMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required'"));
+  assert.ok(workflow.includes("const retryableStudioBusy=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'"));
+  assert.ok(workflow.includes("const retryableStudioStateMigration=!sameHarness&&item.robloxRuntimePassed!==true&&['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable','roblox-studio-busy'].includes(item.robloxRuntimeEvidence?.failure)"));
   assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
   assert.ok(workflow.includes('No retained package matches'));
   assert.ok(workflow.includes('Resolve authenticated local Roblox Studio'));
@@ -108,11 +109,17 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(workflow.includes('ROBLOX_STUDIO_INSTALL=SKIPPED_EXISTING_AUTHENTICATED_PROFILE'));
   assert.ok(workflow.includes('studio_source=authenticated-local-profile'));
   assert.ok(workflow.includes("'roblox-studio-local-profile-unavailable'"));
+  assert.ok(workflow.includes("'roblox-studio-busy'"));
   assert.ok(!workflow.includes('RobloxStudioInstaller.exe'));
   assert.ok(!workflow.includes("Invoke-WebRequest -Uri 'https://setup.rbxcdn.com/RobloxStudioInstaller.exe'"));
   assert.ok(!workflow.includes("$deadline = (Get-Date).AddMinutes(8)"));
   assert.ok(!workflow.includes("$packageId = 'Roblox.RobloxStudio'"));
-  assert.ok(workflow.includes('Get-Process -Name RobloxStudioBeta'));
+  assert.ok(workflow.includes('Get-CimInstance Win32_Process'));
+  assert.ok(workflow.includes("[string]$_.CommandLine -match '--task\\s+RunScript'"));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_STALE_AUTOMATION_PID='));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_BUSY_PROCESS_COUNT='));
+  assert.ok(workflow.includes("roblox-studio-busy.flag"));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_STALE_AUTOMATION_CLEANUP=YES'));
   assert.ok(workflow.includes('ROBLOX_STUDIO_EXE='));
   assert.ok(!workflow.includes('RobloxStudioLauncherBeta.exe'));
   assert.ok(workflow.includes("item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed'"));
@@ -137,6 +144,14 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(workflow.includes("(item.robloxRuntimePassed===true&&sameHarness)"));
   assert.ok(workflow.includes("(item.robloxRuntimePassed!==true||!sameHarness)"));
   assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
+});
+
+test('Studio busy persistence remains retryable without converting interactive Studio into an automatic kill target',()=>{
+  assert.ok(persistHelper.includes("'roblox-studio-busy'"));
+  assert.ok(workflow.includes("$automation = @($running | Where-Object { [string]$_.CommandLine -match '--task\\s+RunScript' })"));
+  assert.ok(workflow.includes('Stop-Process -Id $proc.ProcessId -Force'));
+  assert.ok(!workflow.includes('Get-Process -Name RobloxStudioBeta | Stop-Process'));
+  assert.ok(workflow.includes("elseif ($studioBusy) { 'roblox-studio-busy' }"));
 });
 
 test('continuation self-dispatch does not duplicate an active sibling run',()=>{

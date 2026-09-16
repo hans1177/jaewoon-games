@@ -40,7 +40,7 @@ for(const target of expected){
     pass++;
   }else{
     const failure=r?.failure||(!harnessExact?'ROBLOX_RUNTIME_HARNESS_MISMATCH':'ROBLOX_RUNTIME_RESULT_MISSING');
-    const retryableFailure=['roblox-studio-install-failed','roblox-studio-runtime-failed','roblox-studio-runtime-timeout','ROBLOX_RUNTIME_RESULT_MISSING'].includes(failure);
+    const retryableFailure=['roblox-studio-install-failed','roblox-studio-busy','roblox-studio-runtime-failed','roblox-studio-runtime-timeout','ROBLOX_RUNTIME_RESULT_MISSING'].includes(failure);
     const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===resultHarness;
     const baseRetryCount=sameHarness?Number(item.robloxRuntimeRetryCount||0):0;
     const retryCount=retryableFailure?baseRetryCount+1:0;
