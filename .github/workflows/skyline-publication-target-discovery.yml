@@ -89,20 +89,24 @@ jobs:
           local ok, userId = pcall(function()
               return StudioService:GetUserId()
           end)
-          print("SKYLINE_TARGET_STUDIO_USER_OK=" .. tostring(ok))
+          print("SKYLINE_TARGET_EXECUTION" .. "=YES")
+          print("SKYLINE_TARGET_STUDIO_USER_OK" .. "=" .. tostring(ok))
           if ok then
-              print("SKYLINE_TARGET_STUDIO_USER_ID=" .. tostring(userId))
+              print("SKYLINE_TARGET_STUDIO_USER_ID" .. "=" .. tostring(userId))
           else
-              print("SKYLINE_TARGET_STUDIO_USER_ERROR=" .. tostring(userId))
+              print("SKYLINE_TARGET_STUDIO_USER_ERROR" .. "=" .. tostring(userId))
           end
-          print("SKYLINE_TARGET_LOCAL_GAME_ID=" .. tostring(game.GameId))
-          print("SKYLINE_TARGET_LOCAL_PLACE_ID=" .. tostring(game.PlaceId))
+          print("SKYLINE_TARGET_LOCAL_GAME_ID" .. "=" .. tostring(game.GameId))
+          print("SKYLINE_TARGET_LOCAL_PLACE_ID" .. "=" .. tostring(game.PlaceId))
           '@ | Set-Content -Path $script -Encoding utf8
           Remove-Item -Force $stdout,$stderr,$output -ErrorAction SilentlyContinue
           $started = Get-Date
           $argLine = "--task RunScript --localPlaceFile `"$($place.FullName)`" --runScriptFile `"$script`" --outputFile `"$output`" --quitAfterExecution"
           $p = Start-Process -FilePath $studio.FullName -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
-          if (-not $p.WaitForExit(90000)) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue; throw 'Studio identity probe timeout' }
+          $exited = $p.WaitForExit(90000)
+          if (-not $exited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue; throw 'Studio identity probe timeout' }
+          $p.WaitForExit()
+          $p.Refresh()
           $combined = ''
           foreach ($f in @($stdout,$stderr,$output)) { if (Test-Path $f) { $combined += "`n" + (Get-Content $f -Raw) } }
           $nativeRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
@@ -111,9 +115,10 @@ jobs:
               $combined += "`n" + (Get-Content $f.FullName -Raw -ErrorAction SilentlyContinue)
             }
           }
-          foreach ($key in @('SKYLINE_TARGET_STUDIO_USER_OK','SKYLINE_TARGET_STUDIO_USER_ID','SKYLINE_TARGET_LOCAL_GAME_ID','SKYLINE_TARGET_LOCAL_PLACE_ID')) {
-            $m = [regex]::Match($combined, "(?m)$key=([^\r\n]+)")
+          if ($combined -notmatch '(?m)^SKYLINE_TARGET_EXECUTION=YES\r?$') { throw 'Studio identity probe execution sentinel missing' }
+          foreach ($key in @('SKYLINE_TARGET_STUDIO_USER_OK','SKYLINE_TARGET_STUDIO_USER_ID','SKYLINE_TARGET_STUDIO_USER_ERROR','SKYLINE_TARGET_LOCAL_GAME_ID','SKYLINE_TARGET_LOCAL_PLACE_ID')) {
+            $m = [regex]::Match($combined, "(?m)^$key=([^\r\n]+)\r?$")
             if ($m.Success) { Write-Host "$key=$($m.Groups[1].Value.Trim())" } else { Write-Host "$key=UNOBSERVED" }
           }
           if ($p.ExitCode -ne 0) { throw "Roblox Studio exited $($p.ExitCode)" }
-          Write-Host 'SKYLINE_TARGET_IDENTITY_PROBE=COMPLETE'
+          Write-Host 'SKYLINE_TARGET_IDENTITY_PROBE=PASS'
