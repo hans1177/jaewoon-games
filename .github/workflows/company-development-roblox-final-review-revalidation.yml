@@ -8,9 +8,11 @@ on:
       - '.github/workflows/company-development-roblox-multiplayer-qa.yml'
       - '.github/workflows/company-development-roblox-release-promotion.yml'
       - 'tools/company-development-roblox-final-review.mjs'
+      - 'tools/company-design-prepromotion-repair.mjs'
       - 'tools/company-development-roblox-multiplayer-qa.luau'
       - 'tools/vibe3-roblox-platform.mjs'
       - 'qa/company-development-roblox-final-review-revalidation.test.mjs'
+      - 'qa/design-prepromotion-repair.test.mjs'
       - 'qa/company-development-roblox-multiplayer-qa.test.mjs'
       - 'qa/company-development-roblox-release-promotion.test.mjs'
       - 'qa/vibe3-roblox-platform.test.mjs'
@@ -86,7 +88,7 @@ jobs:
             node ../main/tools/company-development-roblox-final-review.mjs
           git config user.name 'jaewoon-roblox-runtime'
           git config user.email 'actions@users.noreply.github.com'
-          git add development-queue.json
+          git add development-queue.json design
           git diff --cached --check
           if ! git diff --cached --quiet; then
             git commit -m 'runtime: revalidate Roblox final review only [skip ci]'
@@ -142,6 +144,7 @@ jobs:
         run: |
           echo 'ROBLOX_FINAL_REVIEW_ONLY=YES'
           echo 'ROBLOX_EXISTING_RUNTIME_MOBILE_REGRESSION_EVIDENCE_PRESERVED=YES'
+          echo 'ROBLOX_LEGACY_DESIGN_REPAIR_GROUNDED_ONLY=YES'
           echo 'ROBLOX_MULTIPLAYER_QA_USES_EXISTING_CANONICAL_WORKFLOW=YES'
           echo 'ROBLOX_RELEASE_PROMOTION_USES_EXISTING_CANONICAL_PUBLISHER=YES'
           echo 'ROBLOX_RELEASE_STATE_FORCING=NO'
