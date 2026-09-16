@@ -41,6 +41,8 @@ test('continuous Roblox GAME STUDY reaps only stale Vibe2-owned Studio sessions 
   assert.ok(reapAt >= 0 && guardAt > reapAt);
   assert.match(continuousWorkflow, /Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta\.exe'"/);
   assert.match(continuousWorkflow, /vibe2-roblox-\(skyline\|studio-cli\)-/);
+  assert.match(continuousWorkflow, /--task\\s\+RunScript/);
+  assert.match(continuousWorkflow, /--quitAfterExecution/);
   assert.match(continuousWorkflow, /VIBE2_ROBLOX_STALE_OWNED_STUDIO_REAPED=/);
   assert.match(continuousWorkflow, /Stop-Process -Id \(\[int\]\$process\.ProcessId\) -Force/);
   assert.match(continuousWorkflow, /Failed to reap stale Vibe2-owned Studio sessions/);
