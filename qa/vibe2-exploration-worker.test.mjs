@@ -195,7 +195,7 @@ test('central runtime keeps exploration reuse long slot and six separated roles 
 test('continuous workflow executes exploration before implementation and review after regression',()=>{
   assert.match(workflow,/\n  exploration:\n/);
   assert(workflow.includes('Upload reusable exploration handoff'));
-  assert(workflow.includes('needs: [reserve, model_cache, exploration]'));
+  assert(workflow.includes('needs: [reserve, exploration]'));
   assert(workflow.includes('VIBE2_EXPLORATION_FILE=.vibe2/exploration.json'));
   assert(workflow.includes('Run impact-first incremental QA role'));
   assert(workflow.includes('Run read-only performance sanity role'));
