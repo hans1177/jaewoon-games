@@ -97,18 +97,25 @@ test('exact existing Roblox source tree passes static reconciliation with persis
   }
 });
 
-test('verified Vibe2 handoff accepts only the exact pinned Roblox source tree',()=>{
+test('verified Vibe2 handoff accepts only the exact pinned Roblox source tree without reapplying legacy bootstrap validation',()=>{
   const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-vibe2-handoff-'));
   try{
     const root=path.join(tmp,'roblox-games',gameId);
     writeCompiledTree(root);
+    fs.writeFileSync(path.join(root,'server','Game.server.luau'),'-- Vibe2 Studio-verified custom server source\n');
     initGitRepo(tmp);
     const sourcePath=`roblox-games/${gameId}`;
     const sourceTreeSha=execFileSync('git',['rev-parse',`HEAD:${sourcePath}`],{cwd:tmp,encoding:'utf8'}).trim();
     const item=verifiedHandoffItem(sourceTreeSha);
-    const pass=evaluateExistingRobloxSources({queue:{items:[item]},repoRoot:tmp,sourceRevision:'verified-main-sha',loadBaseline:()=>baseline});
+    const pass=evaluateExistingRobloxSources({
+      queue:{items:[item]},
+      repoRoot:tmp,
+      sourceRevision:'verified-main-sha',
+      loadBaseline:()=>{throw new Error('legacy validator must not run for exact verified handoff');},
+    });
     assert.equal(pass.length,1);
     assert.equal(pass[0].pass,true,pass[0].blockers.join(','));
+    assert.equal(pass[0].authority,'verified-vibe2-source-handoff');
 
     fs.appendFileSync(path.join(root,'server','Game.server.luau'),'\n-- source drift\n');
     execFileSync('git',['add','.'],{cwd:tmp});

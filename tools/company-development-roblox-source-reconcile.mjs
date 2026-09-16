@@ -97,6 +97,17 @@ export function evaluateExistingRobloxSources({queue={},repoRoot='.',sourceRevis
         });
         continue;
       }
+      results.push({
+        gameId:item.gameId,
+        pass:true,
+        sourcePath,
+        sourceRevision:clean(sourceRevision),
+        saveRequired:false,
+        blockers:[],
+        failure:null,
+        authority:'verified-vibe2-source-handoff',
+      });
+      continue;
     }
     try{
       const baseline=loadBaseline(item);
