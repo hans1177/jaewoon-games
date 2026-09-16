@@ -1,16 +1,18 @@
 // 파일명: tools/vibe2-game-study-planner-context.mjs
-// 역할: 검증된 교차게임 GAME STUDY 지식을 새 Vibe2 작업 목표에 production planning context로 주입한다.
-// 원칙: 두 개 이상 서로 다른 게임에서 반복된 일반화 패턴만 재사용하며, 원본 코드/수치/권한은 전달하지 않는다.
+// 역할: 검증된 교차게임 GAME STUDY 지식과 내부 검증 증거를 새 Vibe2 작업 목표에 production planning context로 주입한다.
+// 원칙: 검증된 일반화 패턴만 재사용하며, 원본 코드/수치/권한은 전달하지 않는다.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { createGameStudyKnowledge, findNearestGameStudies } from './vibe2-game-study-intelligence.mjs';
+import { collectMultiSourceLearningMaterials, readRuntimeEvidenceDirectory } from './vibe2-multisource-learning-collector.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const MARKER = 'game-study-planner-context:v1';
 const MATERIAL_MARKER = 'game-study-material-collector:v1';
+const MULTI_SOURCE_MARKER = 'multi-source-learning-collector:v1';
 const MAX_PATTERNS = 8;
 const MAX_MATERIALS = 6;
 
@@ -98,7 +100,12 @@ function collectTargetMaterials(patterns = [], target = '') {
   }));
 }
 
-export function buildGameStudyPlannerContext({ knowledgeInput = {}, task = {} } = {}) {
+export function buildGameStudyPlannerContext({
+  knowledgeInput = {},
+  experienceInput = {},
+  runtimeEvidenceInput = [],
+  task = {}
+} = {}) {
   const knowledge = createGameStudyKnowledge(knowledgeInput);
   const systems = goalSystems(task?.goal);
   const target = clean(task?.target).toLowerCase();
@@ -114,13 +121,19 @@ export function buildGameStudyPlannerContext({ knowledgeInput = {}, task = {} } 
     .slice(0, MAX_PATTERNS);
 
   const materials = collectTargetMaterials(patterns, target);
+  const multiSource = collectMultiSourceLearningMaterials({
+    experienceInput,
+    knowledgeInput: knowledge,
+    runtimeEvidenceInput,
+    task
+  });
   const ownDna = latestOwnDna(knowledge.entries, task?.gameId);
   const nearest = ownDna ? findNearestGameStudies(knowledge, ownDna, { limit: 3, excludeGameId: task?.gameId }) : [];
   const nearestStatus = ownDna ? (nearest.length ? 'VERIFIED_TARGET_DNA_MATCHES' : 'NO_OTHER_GAME_DNA') : 'INSUFFICIENT_TARGET_DNA';
-  const applied = patterns.length > 0 || nearest.length > 0;
+  const applied = patterns.length > 0 || nearest.length > 0 || multiSource.materials.length > 0;
 
   return Object.freeze({
-    version: 1,
+    version: 2,
     kind: 'vibe2-game-study-planner-context',
     applied,
     gameId: clean(task?.gameId) || null,
@@ -138,11 +151,28 @@ export function buildGameStudyPlannerContext({ knowledgeInput = {}, task = {} } 
       verifiedOnly: true,
       authorityExpanded: false
     }),
+    multiSourceMaterials: multiSource.materials,
+    multiSourceCollector: Object.freeze({
+      enabled: multiSource.enabled,
+      targetEngine: multiSource.targetEngine,
+      materialCount: multiSource.materials.length,
+      sourceCounts: multiSource.sourceCounts,
+      verifiedOnly: multiSource.verifiedOnly,
+      internalRuntimeEvidence: true,
+      verifiedExperienceSuccessFailure: true,
+      verifiedQaRegression: true,
+      playTelemetry: true,
+      crossGameHypothesis: true,
+      rawSourceIncluded: false,
+      rawGameplayValuesIncluded: false,
+      authorityExpanded: false
+    }),
     nearest: Object.freeze(nearest),
     nearestStatus,
     policy: Object.freeze({
       advisoryOnly: true,
       verifiedCrossGamePatternsOnly: true,
+      verifiedInternalEvidenceOnly: true,
       targetDnaRequiredForNearestGame: true,
       rawSourceAvailableToPlanner: false,
       rawGameplayValuesAvailableToPlanner: false,
@@ -188,23 +218,45 @@ export function gameStudyMaterialGuidance(context = {}) {
   return lines.join('\n');
 }
 
-export function enrichQueueWithGameStudyKnowledge({ queueInput = {}, knowledgeInput = {} } = {}) {
+export function multiSourceLearningGuidance(context = {}) {
+  if (context?.target !== 'roblox' || !(context.multiSourceMaterials || []).length) return '';
+  const lines = [
+    '[VIBE2 MULTI-SOURCE LEARNING - verified advisory materials only]',
+    '내부 제작 runtime, 검증된 성공/실패 Experience, QA 회귀, 플레이 telemetry, 교차게임 가설에서 Roblox 제작 목표와 직접 관련된 일반화 재료만 사용한다.',
+    '원본 코드·원본 플레이 데이터·게임 고유 수치를 복사하지 않으며 보호된 gameplay/save/economy/progression 규칙과 권한을 자동 변경하지 않는다.'
+  ];
+  for (const row of context.multiSourceMaterials || []) {
+    lines.push(`- source=${row.sourceType}; material=${row.pattern}; systems=${row.matchedSystems.join(',')}; transfer=${row.transferClass}; confirmations=${row.confirmations}; relevance=${row.relevance}`);
+  }
+  return lines.join('\n');
+}
+
+export function enrichQueueWithGameStudyKnowledge({
+  queueInput = {},
+  knowledgeInput = {},
+  experienceInput = {},
+  runtimeEvidenceInput = []
+} = {}) {
   const tasks = Array.isArray(queueInput?.tasks) ? queueInput.tasks : [];
   let enrichedCount = 0;
   let materialCollectedCount = 0;
+  let multiSourceCollectedCount = 0;
   const nextTasks = tasks.map((task) => {
     if (clean(task?.status).toLowerCase() !== 'queued' || clean(task?.type).toLowerCase() !== 'implementation') return task;
     const existingEvidence = task?.evidence || [];
     const plannerApplied = existingEvidence.some((value) => clean(value) === MARKER);
     const materialApplied = existingEvidence.some((value) => clean(value) === MATERIAL_MARKER);
-    const context = buildGameStudyPlannerContext({ knowledgeInput, task });
+    const multiSourceApplied = existingEvidence.some((value) => clean(value) === MULTI_SOURCE_MARKER);
+    const context = buildGameStudyPlannerContext({ knowledgeInput, experienceInput, runtimeEvidenceInput, task });
     if (!context.applied) return task;
     const plannerGuidance = plannerApplied ? '' : gameStudyPlannerGuidance(context);
     const materialGuidance = materialApplied ? '' : gameStudyMaterialGuidance(context);
-    if (!plannerGuidance && !materialGuidance) return task;
-    const additions = [plannerGuidance, materialGuidance].filter(Boolean).join('\n\n');
+    const multiSourceGuidance = multiSourceApplied ? '' : multiSourceLearningGuidance(context);
+    if (!plannerGuidance && !materialGuidance && !multiSourceGuidance) return task;
+    const additions = [plannerGuidance, materialGuidance, multiSourceGuidance].filter(Boolean).join('\n\n');
     if (plannerGuidance) enrichedCount += 1;
     if (materialGuidance) materialCollectedCount += context.materials.length;
+    if (multiSourceGuidance) multiSourceCollectedCount += context.multiSourceMaterials.length;
     return {
       ...task,
       goal: `${clean(task.goal)}\n\n${additions}`,
@@ -223,6 +275,12 @@ export function enrichQueueWithGameStudyKnowledge({ queueInput = {}, knowledgeIn
           `game-study-material-count:${context.materials.length}`,
           `game-study-material-roblox-observed:${context.materialCollector.robloxObservedCount}`,
           `game-study-material-cross-engine:${context.materialCollector.crossEngineGeneralizedCount}`
+        ] : []),
+        ...(multiSourceGuidance ? [
+          MULTI_SOURCE_MARKER,
+          `multi-source-learning-target:${context.target}`,
+          `multi-source-learning-count:${context.multiSourceMaterials.length}`,
+          ...Object.entries(context.multiSourceCollector.sourceCounts || {}).map(([source, count]) => `multi-source-learning-${source}:${count}`)
         ] : [])
       ])
     };
@@ -231,15 +289,28 @@ export function enrichQueueWithGameStudyKnowledge({ queueInput = {}, knowledgeIn
     queue: { ...queueInput, tasks: nextTasks },
     enrichedCount,
     materialCollectedCount,
-    changed: enrichedCount > 0 || materialCollectedCount > 0,
+    multiSourceCollectedCount,
+    changed: enrichedCount > 0 || materialCollectedCount > 0 || multiSourceCollectedCount > 0,
     authorityExpanded: false
   };
 }
 
-export function runGameStudyPlannerContext({ queueFile = '.vibe2/queue.json', knowledgeFile = '.vibe2/game-study-knowledge.json' } = {}) {
+export function runGameStudyPlannerContext({
+  queueFile = '.vibe2/queue.json',
+  knowledgeFile = '.vibe2/game-study-knowledge.json',
+  experienceFile = '.vibe2/experience.json',
+  runtimeEvidenceRoot = '.vibe2/runtime-evidence'
+} = {}) {
   const queue = readJson(queueFile, { version: 5, tasks: [] });
   const knowledge = readJson(knowledgeFile, { version: 1, entries: [] });
-  const result = enrichQueueWithGameStudyKnowledge({ queueInput: queue, knowledgeInput: knowledge });
+  const experience = readJson(experienceFile, { version: 3, records: [] });
+  const runtimeEvidence = readRuntimeEvidenceDirectory(runtimeEvidenceRoot);
+  const result = enrichQueueWithGameStudyKnowledge({
+    queueInput: queue,
+    knowledgeInput: knowledge,
+    experienceInput: experience,
+    runtimeEvidenceInput: runtimeEvidence
+  });
   if (result.changed) writeJson(queueFile, result.queue);
   return result;
 }
@@ -248,10 +319,13 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const args = parseArgs();
   const result = runGameStudyPlannerContext({
     queueFile: clean(args.queue) || '.vibe2/queue.json',
-    knowledgeFile: clean(args.knowledge) || '.vibe2/game-study-knowledge.json'
+    knowledgeFile: clean(args.knowledge) || '.vibe2/game-study-knowledge.json',
+    experienceFile: clean(args.experience) || '.vibe2/experience.json',
+    runtimeEvidenceRoot: clean(args['runtime-evidence-root']) || '.vibe2/runtime-evidence'
   });
   console.log(`VIBE2_GAME_STUDY_PLANNER_CONTEXT=${result.changed ? 'APPLIED' : 'NO_CHANGE'}`);
   console.log(`VIBE2_GAME_STUDY_PLANNER_ENRICHED=${result.enrichedCount}`);
   console.log(`VIBE2_GAME_STUDY_ROBLOX_MATERIALS=${result.materialCollectedCount}`);
+  console.log(`VIBE2_MULTI_SOURCE_LEARNING_MATERIALS=${result.multiSourceCollectedCount}`);
   console.log('VIBE2_GAME_STUDY_PLANNER_AUTHORITY_EXPANDED=NO');
 }
