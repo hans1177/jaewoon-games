@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-game-study-planner-context.mjs
-// 역할: 검증된 교차게임 GAME STUDY 지식을 새 Vibe2 작업 목표에 advisory context로 주입한다.
-// 원칙: 두 개 이상 서로 다른 게임에서 반복된 일반화 패턴만 자동 재사용하며, 원본 코드/수치/권한은 전달하지 않는다.
+// 역할: 검증된 교차게임 GAME STUDY 지식을 새 Vibe2 작업 목표에 production planning context로 주입한다.
+// 원칙: 두 개 이상 서로 다른 게임에서 반복된 일반화 패턴만 재사용하며, 원본 코드/수치/권한은 전달하지 않는다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -19,7 +19,7 @@ const GOAL_SYSTEMS = Object.freeze({
   economy: /gold|coin|reward|shop|buy|currency|price|골드|코인|보상|상점|구매|재화|가격/i,
   progression: /level|stage|quest|xp|progress|unlock|mission|레벨|스테이지|퀘스트|진행|해금|미션/i,
   ui: /ui|menu|button|inventory|hud|dialog|confirm|select|option|메뉴|버튼|인벤|대화창|선택|확인/i,
-  restart: /restart|death|gameover|revive|respawn|재시작|사망|부활|리스폰/i,
+  restart: /restart|retry|death|gameover|revive|respawn|round|재시작|재도전|사망|부활|리스폰|라운드/i,
   persistence: /save|load|datastore|storage|저장|불러오기/i,
   networking: /remote|network|socket|server|client|네트워크|서버|클라이언트/i,
   ai: /ai|bot|npc|opponent|pathfinding|인공지능|봇|엔피씨|상대/i,
@@ -130,7 +130,7 @@ export function gameStudyPlannerGuidance(context = {}) {
   if (context?.applied !== true) return '';
   const lines = [
     '[GAME STUDY KNOWLEDGE - verified advisory context only]',
-    '외부 게임에서 반복 검증된 일반화 패턴이다. 현재 소스/요구와 맞을 때만 참고한다.',
+    '외부 게임에서 반복 검증된 일반화 패턴이다. 현재 제작 작업의 기능 선택·구현 방향을 정할 때 실제 planning input으로 사용하되 현재 소스/요구와 맞을 때만 적용한다.',
     '원본 코드·게임 고유 수치·보상값을 복사하지 말고, 보호된 gameplay/save/economy/progression 규칙과 작업 권한을 바꾸지 않는다.'
   ];
   if ((context.goalSystems || []).length) lines.push(`관련 시스템=${context.goalSystems.join(', ')}`);
@@ -149,7 +149,7 @@ export function enrichQueueWithGameStudyKnowledge({ queueInput = {}, knowledgeIn
   const tasks = Array.isArray(queueInput?.tasks) ? queueInput.tasks : [];
   let enrichedCount = 0;
   const nextTasks = tasks.map((task) => {
-    if (clean(task?.status).toLowerCase() !== 'queued' || task?.ownerDirective === true || clean(task?.type).toLowerCase() !== 'implementation') return task;
+    if (clean(task?.status).toLowerCase() !== 'queued' || clean(task?.type).toLowerCase() !== 'implementation') return task;
     if ((task?.evidence || []).some((value) => clean(value) === MARKER)) return task;
     const context = buildGameStudyPlannerContext({ knowledgeInput, task });
     if (!context.applied) return task;
@@ -161,6 +161,7 @@ export function enrichQueueWithGameStudyKnowledge({ queueInput = {}, knowledgeIn
       evidence: unique([
         ...(task.evidence || []),
         MARKER,
+        `game-study-owner-directive:${task?.ownerDirective === true ? 'yes' : 'no'}`,
         `game-study-goal-systems:${context.goalSystems.join(',') || 'none'}`,
         `game-study-cross-game-patterns:${context.crossGamePatterns.length}`,
         `game-study-nearest-status:${context.nearestStatus}`
