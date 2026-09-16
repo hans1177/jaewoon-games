@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
+const sha40=value=>/^[0-9a-f]{40}$/i.test(clean(value));
 
 export const SELECTED_PLATFORMS=Object.freeze(['ROBLOX','UNITY','FORTNITE_UEFN']);
 export const DEVELOPMENT_GAME_WIP_MAX=20;
@@ -93,6 +94,22 @@ export function adapterForPlatform(value){
   return PLATFORM_EXECUTION_ADAPTERS[platform]||null;
 }
 
+export function verifiedOwnerReleaseHandoffEligible(item={}){
+  const handoff=item.robloxVibe2VerifiedHandoff;
+  return Boolean(
+    upper(item.selectedPlatform||item.targetPlatform)==='ROBLOX'&&
+    handoff?.verified===true&&
+    clean(handoff.authority)==='vibe2-authoritative-studio-qa-plus-owner-release-intent'&&
+    clean(handoff.gameId)===clean(item.gameId)&&
+    clean(handoff.requestedReleaseState)==='release-confirmed'&&
+    sha40(handoff.sourceRevision)&&
+    sha40(handoff.sourceTreeSha)&&
+    sha40(handoff.candidateSha)&&
+    Number.isInteger(Number(handoff.qaRunId))&&
+    Number(handoff.qaRunId)>0
+  );
+}
+
 export function targetPlatformDevelopmentEligible(item={}){
   if(upper(item.productionClass)!=='DEVELOPMENT_CONFIRMED')return false;
   const status=upper(item.status);
@@ -104,6 +121,7 @@ export function targetPlatformDevelopmentEligible(item={}){
   const platform=resolveSelectedPlatform(item);
   const adapter=adapterForPlatform(platform);
   if(!adapter?.existingExecutionPath)return false;
+  if(verifiedOwnerReleaseHandoffEligible(item))return true;
   const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
   const score=Number(item.webStrictScore??item.strictImplementationScore);
   return Boolean(
