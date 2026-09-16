@@ -14,6 +14,7 @@ const clean = (value) => String(value ?? '').trim();
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
 function parseArgs(argv = process.argv.slice(2)) { const args = {}; for (const raw of argv) { if (!raw.startsWith('--')) continue; const body = raw.slice(2); const at = body.indexOf('='); if (at < 0) args[body] = true; else args[body.slice(0, at)] = body.slice(at + 1); } return args; }
+function envTrue(name) { return ['1', 'true', 'yes', 'on'].includes(clean(process.env[name]).toLowerCase()); }
 
 function resolveTarget(targetsFile, targetId) {
   const registry = loadGameStudyTargets(readJson(targetsFile, { targets: [] }));
@@ -26,6 +27,7 @@ function resolveTarget(targetsFile, targetId) {
 function autoPlayerDiagnostics(autoPlayer = {}) {
   const playLog = autoPlayer?.playLog || {};
   const telemetry = autoPlayer?.telemetry?.metrics || {};
+  const multiplayer = autoPlayer?.runtime?.multiplayer || telemetry?.multiplayer || null;
   return Object.freeze({
     verified: autoPlayer?.verified === true,
     runId: clean(autoPlayer?.runId) || null,
@@ -34,6 +36,11 @@ function autoPlayerDiagnostics(autoPlayer = {}) {
     checkpointPassCount: Number(telemetry?.checkpointPassCount || 0),
     checkpointCount: Number(telemetry?.checkpointCount || 0),
     runtimeErrorCount: Number(telemetry?.runtimeErrorCount || 0),
+    multiplayer: multiplayer ? Object.freeze({
+      expectedClients: Number(multiplayer.expectedClients || 0),
+      resultCount: Number(multiplayer.resultCount || 0),
+      verifiedClients: Number(multiplayer.verifiedClients || 0)
+    }) : null,
     actions: Object.freeze((playLog?.actions || []).slice(0, 24).map((row) => Object.freeze({
       id: clean(row?.id),
       type: clean(row?.type),
@@ -77,6 +84,11 @@ export async function runGameStudyWorker({ taskId = '', targetId = '', targetsFi
   const target = resolveTarget(targetsFile, targetId);
   if (target.engine === 'roblox' && target.runnerReady !== true) {
     const result = blockedResult(taskId, target, 'roblox-real-studio-runner-not-ready');
+    if (outputFile) writeJson(outputFile, result);
+    return result;
+  }
+  if (target.engine === 'roblox' && envTrue('VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY') && !envTrue('VIBE2_ROBLOX_STUDY_ISOLATED_SESSION')) {
+    const result = blockedResult(taskId, target, 'roblox-studio-production-busy-deferred');
     if (outputFile) writeJson(outputFile, result);
     return result;
   }
