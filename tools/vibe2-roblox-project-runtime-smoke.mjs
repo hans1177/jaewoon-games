@@ -78,18 +78,264 @@ function readProjectSource(projectRoot) {
 }
 
 function clientHarnessSource(resultRemoteName, stageCount) {
-  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\nlocal Workspace = game:GetService("Workspace")\n\nlocal player = Players.LocalPlayer\nlocal resultRemote = ReplicatedStorage:WaitForChild(${longBracket(resultRemoteName)}, 15)\nlocal virtualInput = UserInputService:CreateVirtualInput()\nlocal result = {\n  version = 1, authority = ${longBracket(AUTHORITY)}, runtimeVerified = true,\n  virtualInput = virtualInput ~= nil, stageCount = ${stageCount}, checkpoints = {}, errors = {},\n  final = {}, movement = { distance = 0, sawAir = false, jumpPulses = 0 },\n}\n\nlocal function checkpoint(name, pass, value)\n  table.insert(result.checkpoints, { name = name, pass = pass == true, value = value })\n  if not pass then table.insert(result.errors, name) end\n  return pass\nend\n\nlocal function characterReady(timeout)\n  local deadline = os.clock() + (timeout or 10)\n  while os.clock() < deadline do\n    local character = player.Character\n    local root = character and character:FindFirstChild("HumanoidRootPart")\n    local humanoid = character and character:FindFirstChildOfClass("Humanoid")\n    if root and humanoid and humanoid.Health > 0 then return character, root, humanoid end\n    task.wait(0.05)\n  end\n  return nil, nil, nil\nend\n\nlocal function waitAttribute(name, expected, timeout)\n  local deadline = os.clock() + (timeout or 6)\n  while os.clock() < deadline do\n    if player:GetAttribute(name) == expected then return true end\n    task.wait(0.05)\n  end\n  return false\nend\n\nlocal function moveToPart(part, expectedStage, timeout)\n  local _, root, humanoid = characterReady(8)\n  if not root then return false, "character-missing" end\n  local camera = Workspace.CurrentCamera\n  local start = root.Position\n  local deadline = os.clock() + (timeout or 7)\n  local nextJump = os.clock()\n  virtualInput:SendKey(true, Enum.KeyCode.W, false)\n  while os.clock() < deadline do\n    if player:GetAttribute("Position") == expectedStage then break end\n    if not root.Parent or humanoid.Health <= 0 then break end\n    local target = Vector3.new(part.Position.X, root.Position.Y, part.Position.Z)\n    if camera then\n      camera.CameraType = Enum.CameraType.Scriptable\n      camera.CFrame = CFrame.lookAt(root.Position + Vector3.new(0, 5, 0), target)\n    end\n    if humanoid.FloorMaterial == Enum.Material.Air then result.movement.sawAir = true end\n    if os.clock() >= nextJump then\n      virtualInput:SendKey(true, Enum.KeyCode.Space, false)\n      task.wait(0.06)\n      virtualInput:SendKey(false, Enum.KeyCode.Space, false)\n      result.movement.jumpPulses += 1\n      nextJump = os.clock() + 0.35\n    end\n    task.wait(0.04)\n  end\n  virtualInput:SendKey(false, Enum.KeyCode.W, false)\n  if root.Parent then result.movement.distance += (root.Position - start).Magnitude end\n  return player:GetAttribute("Position") == expectedStage, player:GetAttribute("Position")\nend\n\nlocal ok, err = pcall(function()\n  local course = Workspace:WaitForChild("Vibe2SkylineSprintCourse", 12)\n  assert(course, "course-missing")\n  checkpoint("course-present", course ~= nil, course and course.Name)\n  local _, root = characterReady(10)\n  assert(root, "character-missing")\n\n  local checkpoint02 = course:WaitForChild("Checkpoint02", 5)\n  root.CFrame = checkpoint02.CFrame + Vector3.new(0, 4, 0)\n  task.wait(0.8)\n  checkpoint("skip-rejected", (player:GetAttribute("Position") or 0) == 0, player:GetAttribute("Position"))\n\n  local start = course:WaitForChild("CourseStart", 5)\n  root.CFrame = start.CFrame + Vector3.new(0, 4, 0)\n  checkpoint("round-started", waitAttribute("LastApprovedScope", "physical-course-started", 4), player:GetAttribute("LastApprovedScope"))\n\n  for stage = 1, ${stageCount} do\n    local target = course:WaitForChild(string.format("Checkpoint%02d", stage), 5)\n    local reached, value = moveToPart(target, stage, 8)\n    checkpoint(string.format("stage-%02d", stage), reached, value)\n    if not reached then break end\n\n    if stage == 3 then\n      local oldCharacter = player.Character\n      local hazard = course:WaitForChild("Hazard03", 5)\n      local oldRoot = oldCharacter and oldCharacter:FindFirstChild("HumanoidRootPart")\n      if oldRoot then oldRoot.CFrame = hazard.CFrame + Vector3.new(0, 2, 0) end\n      local respawnDeadline = os.clock() + 8\n      while os.clock() < respawnDeadline and player.Character == oldCharacter do task.wait(0.05) end\n      local _, respawnRoot = characterReady(8)\n      local saved = player:GetAttribute("Position") == 3\n      local near = respawnRoot and (respawnRoot.Position - target.Position).Magnitude < 12\n      checkpoint("hazard-death-respawn", player.Character ~= oldCharacter and saved and near, { stage = player:GetAttribute("Position"), near = near })\n    elseif stage == 4 then\n      local before = player:GetAttribute("Position")\n      local gameAction = ReplicatedStorage:WaitForChild("GameAction", 5)\n      gameAction:FireServer("advance")\n      task.wait(0.4)\n      checkpoint("remote-cannot-progress", player:GetAttribute("Position") == before, player:GetAttribute("Position"))\n    end\n  end\n\n  result.final = {\n    position = player:GetAttribute("Position"), progress = player:GetAttribute("Progress"),\n    score = player:GetAttribute("Score"), roundTime = player:GetAttribute("RoundTime"),\n    finished = player:GetAttribute("Finished"),\n  }\n  checkpoint("physical-movement", result.movement.distance > 20, result.movement.distance)\n  checkpoint("jump-input", result.movement.jumpPulses > 0 and result.movement.sawAir, result.movement)\n  checkpoint("finish", result.final.position == ${stageCount} and result.final.progress == 100 and result.final.finished == true, result.final)\n  checkpoint("round-time", tonumber(result.final.roundTime or 0) > 0, result.final.roundTime)\nend)\nif not ok then\n  result.runtimeVerified = false\n  table.insert(result.errors, tostring(err))\nend\nresultRemote:FireServer(result)\n`;
+  return `local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local UserInputService = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+
+local player = Players.LocalPlayer
+local resultRemote = ReplicatedStorage:WaitForChild(${longBracket(resultRemoteName)}, 15)
+local virtualInput = UserInputService:CreateVirtualInput()
+local result = {
+  version = 1, authority = ${longBracket(AUTHORITY)}, runtimeVerified = true,
+  virtualInput = virtualInput ~= nil, stageCount = ${stageCount}, checkpoints = {}, errors = {},
+  final = {}, movement = { distance = 0, sawAir = false, jumpPulses = 0, waypoints = 0, diagnostics = {} },
+}
+
+local function checkpoint(name, pass, value)
+  table.insert(result.checkpoints, { name = name, pass = pass == true, value = value })
+  if not pass then table.insert(result.errors, name) end
+  return pass
+end
+
+local function characterReady(timeout)
+  local deadline = os.clock() + (timeout or 10)
+  while os.clock() < deadline do
+    local character = player.Character
+    local root = character and character:FindFirstChild("HumanoidRootPart")
+    local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+    if root and humanoid and humanoid.Health > 0 then return character, root, humanoid end
+    task.wait(0.05)
+  end
+  return nil, nil, nil
+end
+
+local function waitAttribute(name, expected, timeout)
+  local deadline = os.clock() + (timeout or 6)
+  while os.clock() < deadline do
+    if player:GetAttribute(name) == expected then return true end
+    task.wait(0.05)
+  end
+  return false
+end
+
+local function horizontalDistance(a, b)
+  local dx = a.X - b.X
+  local dz = a.Z - b.Z
+  return math.sqrt(dx * dx + dz * dz)
+end
+
+local function moveToWaypoint(part, expectedStage, timeout, requireStage)
+  local _, root, humanoid = characterReady(8)
+  if not root then return false, { reason = "character-missing" } end
+  local camera = Workspace.CurrentCamera
+  local start = root.Position
+  local deadline = os.clock() + (timeout or 5)
+  local nextJump = os.clock()
+  local minDistance = horizontalDistance(root.Position, part.Position)
+  virtualInput:SendKey(true, Enum.KeyCode.W, false)
+  while os.clock() < deadline do
+    if not root.Parent or humanoid.Health <= 0 then break end
+    local distance = horizontalDistance(root.Position, part.Position)
+    minDistance = math.min(minDistance, distance)
+    if requireStage then
+      if player:GetAttribute("Position") == expectedStage then break end
+    elseif distance <= 3.8 then
+      break
+    end
+    local target = Vector3.new(part.Position.X, root.Position.Y, part.Position.Z)
+    if camera then
+      camera.CameraType = Enum.CameraType.Scriptable
+      camera.CFrame = CFrame.lookAt(root.Position + Vector3.new(0, 5, 0), target)
+    end
+    if humanoid.FloorMaterial == Enum.Material.Air then result.movement.sawAir = true end
+    if os.clock() >= nextJump then
+      virtualInput:SendKey(true, Enum.KeyCode.Space, false)
+      task.wait(0.06)
+      virtualInput:SendKey(false, Enum.KeyCode.Space, false)
+      result.movement.jumpPulses += 1
+      nextJump = os.clock() + 0.42
+    end
+    task.wait(0.04)
+  end
+  virtualInput:SendKey(false, Enum.KeyCode.W, false)
+  task.wait(0.12)
+  local finishPosition = root.Parent and root.Position or start
+  result.movement.distance += (finishPosition - start).Magnitude
+  result.movement.waypoints += 1
+  local distance = root.Parent and horizontalDistance(root.Position, part.Position) or minDistance
+  local reached = requireStage and player:GetAttribute("Position") == expectedStage or (not requireStage and distance <= 5.5)
+  local diag = {
+    target = part.Name,
+    expectedStage = expectedStage,
+    requireStage = requireStage,
+    position = player:GetAttribute("Position"),
+    health = humanoid.Health,
+    distance = distance,
+    minDistance = minDistance,
+    root = root.Parent and { x = root.Position.X, y = root.Position.Y, z = root.Position.Z } or nil,
+  }
+  if not reached then table.insert(result.movement.diagnostics, diag) end
+  return reached, diag
+end
+
+local ok, err = pcall(function()
+  local course = Workspace:WaitForChild("Vibe2SkylineSprintCourse", 12)
+  assert(course, "course-missing")
+  checkpoint("course-present", course ~= nil, course and course.Name)
+  local _, root = characterReady(10)
+  assert(root, "character-missing")
+
+  local checkpoint02 = course:WaitForChild("Checkpoint02", 5)
+  root.CFrame = checkpoint02.CFrame + Vector3.new(0, 4, 0)
+  task.wait(0.8)
+  checkpoint("skip-rejected", (player:GetAttribute("Position") or 0) == 0, player:GetAttribute("Position"))
+
+  local start = course:WaitForChild("CourseStart", 5)
+  root.CFrame = start.CFrame + Vector3.new(0, 4, 0)
+  checkpoint("round-started", waitAttribute("LastApprovedScope", "physical-course-started", 4), player:GetAttribute("LastApprovedScope"))
+
+  for stage = 1, ${stageCount} do
+    local stepA = course:WaitForChild(string.format("Step%02dA", stage), 5)
+    local stepB = course:WaitForChild(string.format("Step%02dB", stage), 5)
+    local target = course:WaitForChild(string.format("Checkpoint%02d", stage), 5)
+    local aReached, aValue = moveToWaypoint(stepA, stage, 5, false)
+    checkpoint(string.format("stage-%02d-step-a", stage), aReached, aValue)
+    if not aReached then break end
+    local bReached, bValue = moveToWaypoint(stepB, stage, 5, false)
+    checkpoint(string.format("stage-%02d-step-b", stage), bReached, bValue)
+    if not bReached then break end
+    local reached, value = moveToWaypoint(target, stage, 6, true)
+    checkpoint(string.format("stage-%02d", stage), reached, value)
+    if not reached then break end
+
+    if stage == 3 then
+      local oldCharacter = player.Character
+      local hazard = course:WaitForChild("Hazard03", 5)
+      local oldRoot = oldCharacter and oldCharacter:FindFirstChild("HumanoidRootPart")
+      if oldRoot then oldRoot.CFrame = hazard.CFrame + Vector3.new(0, 2, 0) end
+      local respawnDeadline = os.clock() + 8
+      while os.clock() < respawnDeadline and player.Character == oldCharacter do task.wait(0.05) end
+      local _, respawnRoot = characterReady(8)
+      local saved = player:GetAttribute("Position") == 3
+      local near = respawnRoot and (respawnRoot.Position - target.Position).Magnitude < 12
+      checkpoint("hazard-death-respawn", player.Character ~= oldCharacter and saved and near, { stage = player:GetAttribute("Position"), near = near })
+    elseif stage == 4 then
+      local before = player:GetAttribute("Position")
+      local gameAction = ReplicatedStorage:WaitForChild("GameAction", 5)
+      gameAction:FireServer("advance")
+      task.wait(0.4)
+      checkpoint("remote-cannot-progress", player:GetAttribute("Position") == before, player:GetAttribute("Position"))
+    end
+  end
+
+  result.final = {
+    position = player:GetAttribute("Position"), progress = player:GetAttribute("Progress"),
+    score = player:GetAttribute("Score"), roundTime = player:GetAttribute("RoundTime"),
+    finished = player:GetAttribute("Finished"),
+  }
+  checkpoint("physical-movement", result.movement.distance > 20, result.movement.distance)
+  checkpoint("jump-input", result.movement.jumpPulses > 0 and result.movement.sawAir, result.movement)
+  checkpoint("finish", result.final.position == ${stageCount} and result.final.progress == 100 and result.final.finished == true, result.final)
+  checkpoint("round-time", tonumber(result.final.roundTime or 0) > 0, result.final.roundTime)
+end)
+if not ok then
+  result.runtimeVerified = false
+  table.insert(result.errors, tostring(err))
+end
+resultRemote:FireServer(result)
+`;
 }
 
 function serverCaptureSource(resultRemoteName, nonce) {
-  return `local StudioTestService = game:GetService("StudioTestService")\nlocal HttpService = game:GetService("HttpService")\nlocal EncodingService = game:GetService("EncodingService")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal resultRemote = ReplicatedStorage:WaitForChild(${longBracket(resultRemoteName)}, 15)\nlocal finished = false\nlocal function finish(result)\n  if finished then return end\n  finished = true\n  result.nonce = ${longBracket(nonce)}\n  local json = HttpService:JSONEncode(result)\n  local encoded = EncodingService:Base64Encode(buffer.fromstring(json))\n  StudioTestService:EndTest(${longBracket(MARKER)} .. buffer.tostring(encoded))\nend\nresultRemote.OnServerEvent:Connect(function(_, result)\n  if type(result) ~= "table" then return end\n  if tostring(result.authority or "") ~= ${longBracket(AUTHORITY)} then return end\n  finish(result)\nend)\ntask.delay(100, function()\n  finish({ version = 1, authority = ${longBracket(AUTHORITY)}, runtimeVerified = false, virtualInput = false, errors = {"project-runtime-timeout"}, checkpoints = {} })\nend)\n`;
+  return `local StudioTestService = game:GetService("StudioTestService")
+local HttpService = game:GetService("HttpService")
+local EncodingService = game:GetService("EncodingService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local resultRemote = ReplicatedStorage:WaitForChild(${longBracket(resultRemoteName)}, 15)
+local finished = false
+local function finish(result)
+  if finished then return end
+  finished = true
+  result.nonce = ${longBracket(nonce)}
+  local json = HttpService:JSONEncode(result)
+  local encoded = EncodingService:Base64Encode(buffer.fromstring(json))
+  StudioTestService:EndTest(${longBracket(MARKER)} .. buffer.tostring(encoded))
+end
+resultRemote.OnServerEvent:Connect(function(_, result)
+  if type(result) ~= "table" then return end
+  if tostring(result.authority or "") ~= ${longBracket(AUTHORITY)} then return end
+  finish(result)
+end)
+task.delay(150, function()
+  finish({ version = 1, authority = ${longBracket(AUTHORITY)}, runtimeVerified = false, virtualInput = false, errors = {"project-runtime-timeout"}, checkpoints = {} })
+end)
+`;
 }
 
 function bootstrapSource(project, nonce, stageCount) {
   const resultRemoteName = `__Vibe2ProjectRuntime_${nonce.slice(0, 12)}`;
   const harness = clientHarnessSource(resultRemoteName, stageCount);
   const capture = serverCaptureSource(resultRemoteName, nonce);
-  return `local StudioTestService = game:GetService("StudioTestService")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal ServerScriptService = game:GetService("ServerScriptService")\nlocal StarterPlayer = game:GetService("StarterPlayer")\nlocal Workspace = game:GetService("Workspace")\n\nfor _, child in ipairs(Workspace:GetChildren()) do\n  if child ~= Workspace.Terrain and child:IsA("BasePart") then child:Destroy() end\nend\n\nlocal function resetNamed(parent, name)\n  local old = parent:FindFirstChild(name)\n  if old then old:Destroy() end\nend\nlocal function folder(parent, name)\n  resetNamed(parent, name)\n  local value = Instance.new("Folder")\n  value.Name = name\n  value.Parent = parent\n  return value\nend\n\nlocal shared = folder(ReplicatedStorage, "Shared")\nlocal config = Instance.new("ModuleScript")\nconfig.Name = "GameConfig"\nconfig.Source = ${longBracket(project.config)}\nconfig.Parent = shared\n\nlocal serverFolder = folder(ServerScriptService, "GameServer")\nlocal gameServer = Instance.new("Script")\ngameServer.Name = "Game"\ngameServer.Source = ${longBracket(project.server)}\ngameServer.Parent = serverFolder\n\nlocal starterScripts = StarterPlayer:WaitForChild("StarterPlayerScripts")\nlocal clientFolder = folder(starterScripts, "GameClient")\nlocal gameClient = Instance.new("LocalScript")\ngameClient.Name = "Game"\ngameClient.Source = ${longBracket(project.client)}\ngameClient.Parent = clientFolder\n\nresetNamed(ReplicatedStorage, ${longBracket(resultRemoteName)})\nlocal resultRemote = Instance.new("RemoteEvent")\nresultRemote.Name = ${longBracket(resultRemoteName)}\nresultRemote.Parent = ReplicatedStorage\n\nlocal capture = Instance.new("Script")\ncapture.Name = "__Vibe2ProjectRuntimeServer"\ncapture.Source = ${longBracket(capture)}\ncapture.Parent = ServerScriptService\nlocal harness = Instance.new("LocalScript")\nharness.Name = "__Vibe2ProjectRuntimeClient"\nharness.Source = ${longBracket(harness)}\nharness.Parent = starterScripts\n\nlocal ok, value = pcall(function() return StudioTestService:ExecutePlayModeAsync("{}") end)\nif not ok then error("Vibe2 project runtime failed: " .. tostring(value)) end\nprint(tostring(value))\n`;
+  return `local StudioTestService = game:GetService("StudioTestService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+local StarterPlayer = game:GetService("StarterPlayer")
+local Workspace = game:GetService("Workspace")
+
+for _, child in ipairs(Workspace:GetChildren()) do
+  if child ~= Workspace.Terrain and child:IsA("BasePart") then child:Destroy() end
+end
+
+local function resetNamed(parent, name)
+  local old = parent:FindFirstChild(name)
+  if old then old:Destroy() end
+end
+local function folder(parent, name)
+  resetNamed(parent, name)
+  local value = Instance.new("Folder")
+  value.Name = name
+  value.Parent = parent
+  return value
+end
+
+local shared = folder(ReplicatedStorage, "Shared")
+local config = Instance.new("ModuleScript")
+config.Name = "GameConfig"
+config.Source = ${longBracket(project.config)}
+config.Parent = shared
+
+local serverFolder = folder(ServerScriptService, "GameServer")
+local gameServer = Instance.new("Script")
+gameServer.Name = "Game"
+gameServer.Source = ${longBracket(project.server)}
+gameServer.Parent = serverFolder
+
+local starterScripts = StarterPlayer:WaitForChild("StarterPlayerScripts")
+local clientFolder = folder(starterScripts, "GameClient")
+local gameClient = Instance.new("LocalScript")
+gameClient.Name = "Game"
+gameClient.Source = ${longBracket(project.client)}
+gameClient.Parent = clientFolder
+
+resetNamed(ReplicatedStorage, ${longBracket(resultRemoteName)})
+local resultRemote = Instance.new("RemoteEvent")
+resultRemote.Name = ${longBracket(resultRemoteName)}
+resultRemote.Parent = ReplicatedStorage
+
+local capture = Instance.new("Script")
+capture.Name = "__Vibe2ProjectRuntimeServer"
+capture.Source = ${longBracket(capture)}
+capture.Parent = ServerScriptService
+local harness = Instance.new("LocalScript")
+harness.Name = "__Vibe2ProjectRuntimeClient"
+harness.Source = ${longBracket(harness)}
+harness.Parent = starterScripts
+
+local ok, value = pcall(function() return StudioTestService:ExecutePlayModeAsync("{}") end)
+if not ok then error("Vibe2 project runtime failed: " .. tostring(value)) end
+print(tostring(value))
+`;
 }
 
 function parseMarker(output) {
@@ -121,7 +367,7 @@ export async function runRobloxProjectRuntimeSmoke({ projectRoot, studioPath = '
   if (clean(result.nonce) !== actualNonce) throw new Error('Roblox project runtime nonce mismatch');
   const failed = (result.checkpoints || []).filter((item) => item?.pass !== true);
   if (result.runtimeVerified !== true || result.virtualInput !== true || failed.length > 0 || (result.errors || []).length > 0) {
-    throw new Error(`Roblox project runtime verification failed: ${JSON.stringify({ failed, errors: result.errors, final: result.final })}`);
+    throw new Error(`Roblox project runtime verification failed: ${JSON.stringify({ failed, errors: result.errors, final: result.final, movement: result.movement })}`);
   }
   if (Number(result.final?.position) !== 12 || Number(result.final?.progress) !== 100 || result.final?.finished !== true) throw new Error('Roblox obby did not finish all 12 stages');
   if (outputFile) {
