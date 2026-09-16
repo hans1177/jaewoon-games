@@ -4,11 +4,14 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { runRobloxStudioCliRuntime, findRobloxStudioBinary } from '../tools/vibe2-roblox-studio-cli-runner.mjs';
+import { runGameStudyWorker } from '../tools/vibe2-game-study-worker.mjs';
 
 const liveSmokeWorkflow = fs.readFileSync('.github/workflows/vibe2-roblox-studio-live-smoke.yml', 'utf8');
 const continuousWorkflow = fs.readFileSync('.github/workflows/vibe2-game-study-continuous.yml', 'utf8');
 const studioCliSource = fs.readFileSync('tools/vibe2-roblox-studio-cli-runner.mjs', 'utf8');
+const engineAutoPlayerSource = fs.readFileSync('tools/vibe2-engine-auto-player.mjs', 'utf8');
 const potionScenario = fs.readFileSync('.vibe2/game-study-scenarios/external-roblox-potion-shop-flow-a.json', 'utf8');
+const targetConfig = JSON.parse(fs.readFileSync('.vibe2/game-study-targets.json', 'utf8'));
 
 function temp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-roblox-studio-cli-test-')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(value, null, 2), 'utf8'); }
@@ -32,6 +35,44 @@ test('continuous Roblox GAME STUDY reuses the existing authenticated Studio runn
   assert.doesNotMatch(continuousWorkflow, /runs-on: \[self-hosted, Windows, vibe2-roblox\]/);
 });
 
+test('Roblox production Studio has priority on a shared Windows session while isolated sessions may learn concurrently', async () => {
+  assert.match(continuousWorkflow, /Protect active Roblox production Studio session/);
+  assert.match(continuousWorkflow, /Get-Process -Name RobloxStudioBeta/);
+  assert.match(continuousWorkflow, /VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY=true/);
+  assert.match(continuousWorkflow, /VIBE2_ROBLOX_STUDY_ISOLATED_SESSION/);
+  assert.match(continuousWorkflow, /VIBE2_ROBLOX_STUDY_CONCURRENCY=ISOLATED_CONCURRENT/);
+  assert.equal(targetConfig.policy.robloxStudioConcurrency.productionPriority, true);
+  assert.equal(targetConfig.policy.robloxStudioConcurrency.sameWindowsSessionConcurrent, false);
+  assert.equal(targetConfig.policy.robloxStudioConcurrency.isolatedRunnerOrSessionConcurrent, true);
+  assert.equal(targetConfig.policy.robloxStudioConcurrency.defaultMultiplayerClients, 2);
+  assert.equal(targetConfig.policy.robloxStudioConcurrency.maxStudioTestClients, 8);
+  assert.equal(targetConfig.policy.learningInputs.studioRuntime, true);
+  assert.equal(targetConfig.policy.learningInputs.ciQaRegressionEvidence, true);
+  assert.equal(targetConfig.policy.learningInputs.playTelemetry, true);
+  assert.equal(targetConfig.policy.learningInputs.ownerDirectiveFeedback, true);
+
+  const beforeBusy = process.env.VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY;
+  const beforeIsolated = process.env.VIBE2_ROBLOX_STUDY_ISOLATED_SESSION;
+  process.env.VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY = 'true';
+  delete process.env.VIBE2_ROBLOX_STUDY_ISOLATED_SESSION;
+  try {
+    const result = await runGameStudyWorker({
+      taskId: 'game-study-external-roblox-potion-shop-flow-a',
+      targetId: 'external-roblox-potion-shop-flow-a',
+      targetsFile: '.vibe2/game-study-targets.json'
+    });
+    assert.equal(result.outcome, 'BLOCKED');
+    assert.equal(result.blocker, 'roblox-studio-production-busy-deferred');
+    assert.equal(result.study, null);
+    assert.equal(result.authorityExpanded, false);
+  } finally {
+    if (beforeBusy === undefined) delete process.env.VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY;
+    else process.env.VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY = beforeBusy;
+    if (beforeIsolated === undefined) delete process.env.VIBE2_ROBLOX_STUDY_ISOLATED_SESSION;
+    else process.env.VIBE2_ROBLOX_STUDY_ISOLATED_SESSION = beforeIsolated;
+  }
+});
+
 test('Vibe2 live smoke transports Studio command args through environment on Windows PowerShell', () => {
   const envAssignments = liveSmokeWorkflow.match(/\$env:VIBE2_ROBLOX_AUTO_PLAYER_ARGS = ConvertTo-Json -InputObject @\(/g) || [];
   assert.equal(envAssignments.length, 2);
@@ -45,6 +86,12 @@ test('Studio play-test completion is server-owned and nonce-bound', () => {
   assert.match(studioCliSource, /StudioTestService:EndTest\(/);
   assert.doesNotMatch(studioCliSource, /StudioTestService:GetTestArgs\(/);
   assert.doesNotMatch(studioCliSource, /StudioTestService:EndTest\(Vibe2AutoPlayer\.EncodeStdout/);
+});
+
+test('engine AUTO PLAYER preserves multiplayer evidence for later GAME STUDY diagnostics', () => {
+  assert.match(engineAutoPlayerSource, /expectedClients:Number\(raw\.multiplayer\.expectedClients\|\|0\)/);
+  assert.match(engineAutoPlayerSource, /verifiedClients:Number\(raw\.multiplayer\.verifiedClients\|\|0\)/);
+  assert.match(engineAutoPlayerSource, /runtime:\{authority:clean\(raw\.authority\),capabilities:raw\.capabilities\|\|\{\},multiplayer/);
 });
 
 test('Studio marker parser accepts only decodable JSON evidence', () => {

@@ -21,7 +21,26 @@
     "robloxStudioRunnerMustBeExplicitlyReady": true,
     "externalRobloxActiveAutomation": false,
     "externalCopyEnabledRobloxAutomation": true,
-    "clientLocalLearning": false
+    "clientLocalLearning": false,
+    "learningInputs": {
+      "studioRuntime": true,
+      "ownedOrAuthorizedSourceStructure": true,
+      "webRuntimeObservation": true,
+      "ciQaRegressionEvidence": true,
+      "playTelemetry": true,
+      "ownerDirectiveFeedback": true,
+      "rawExternalSourceMemory": false
+    },
+    "robloxStudioConcurrency": {
+      "productionPriority": true,
+      "sameWindowsSessionConcurrent": false,
+      "sameWindowsSessionBehavior": "defer-study-and-retry-next-cycle",
+      "isolatedRunnerOrSessionConcurrent": true,
+      "isolatedSessionEnv": "VIBE2_ROBLOX_STUDY_ISOLATED_SESSION",
+      "productionBusyEnv": "VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY",
+      "defaultMultiplayerClients": 2,
+      "maxStudioTestClients": 8
+    }
   },
   "targets": [
     {
@@ -86,7 +105,8 @@
         "creator-copy-enabled",
         "official-roblox-demo",
         "studio-cli-runtime",
-        "authorized-source-distillation"
+        "authorized-source-distillation",
+        "production-priority-session-safe"
       ]
     }
   ]

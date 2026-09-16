@@ -161,6 +161,23 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Protect active Roblox production Studio session
+        shell: pwsh
+        run: |
+          $isolated = @('1','true','yes','on') -contains ([string]$env:VIBE2_ROBLOX_STUDY_ISOLATED_SESSION).ToLowerInvariant()
+          $studio = @(Get-Process -Name RobloxStudioBeta -ErrorAction SilentlyContinue)
+          if ($isolated) {
+            "VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host 'VIBE2_ROBLOX_STUDY_CONCURRENCY=ISOLATED_CONCURRENT'
+          } elseif ($studio.Count -gt 0) {
+            "VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY=true" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host "VIBE2_ROBLOX_STUDY_CONCURRENCY=DEFER_TO_PRODUCTION"
+            Write-Host "VIBE2_ROBLOX_ACTIVE_STUDIO_PROCESSES=$($studio.Count)"
+          } else {
+            "VIBE2_ROBLOX_STUDIO_PRODUCTION_BUSY=false" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+            Write-Host 'VIBE2_ROBLOX_STUDY_CONCURRENCY=SHARED_SESSION_AVAILABLE'
+          }
+
       - name: Run isolated Roblox Studio GAME STUDY
         id: study
         continue-on-error: true
