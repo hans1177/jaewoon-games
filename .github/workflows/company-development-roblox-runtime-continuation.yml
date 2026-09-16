@@ -502,7 +502,7 @@ jobs:
           Write-Host "ROBLOX_RUNTIME_PASS=$(if($passed){'YES'}else{'NO'})"
           Write-Host "ROBLOX_RUNTIME_FAILURE=$(if($failure){$failure}else{'NONE'})"
           Write-Host "ROBLOX_RUNTIME_HARNESS_VERSION=$env:RUNTIME_HARNESS_VERSION"
-          Write-Host "ROBLOX_STUDIO_AUTHENTICATION_REQUIRED=$(if($authRequired){'YES'}else{'NO') }"
+          Write-Host "ROBLOX_STUDIO_AUTHENTICATION_REQUIRED=$(if($authRequired){'YES'}else{'NO'})"
           Write-Host "ROBLOX_NATIVE_STUDIO_LOG_COUNT=$nativeLogCount"
           Write-Host "ROBLOX_RUNTIME_OUTPUT_FILE_EXISTS=$outputExists"
           Write-Host "ROBLOX_RUNTIME_STDOUT_BYTES=$stdoutBytes"
