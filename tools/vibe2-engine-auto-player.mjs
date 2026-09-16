@@ -31,10 +31,15 @@ export async function runExternalEngineAutoPlayer({engine='',scenarioFile='',sce
     const raw=rawFromOutput(rawFile,processResult.stdout);
     const validation=validateRaw(raw,{engine:normalizedEngine,nonce,authority,requiredCapabilities});
     const errors=[...(raw.errors||[]),...validation.issues.map(message=>({type:'runtime-evidence',message}))];
-    const result=createAutoPlayerResult({engine:normalizedEngine,runId,startedAt,finishedAt:new Date().toISOString(),browser:'',page:clean(raw.scene||raw.place||raw.project),actions:validation.actions,checkpoints:validation.checkpoints,errors,playability:{required:false,trusted:true,playable:raw.runtimeVerified===true},metrics:{durationMs:Date.now()-startedMs,timeToFirstActionMs:Number.isFinite(Number(raw?.metrics?.timeToFirstActionMs))?Number(raw.metrics.timeToFirstActionMs):null,consoleErrorCount:Number(raw?.metrics?.consoleErrorCount||0),engineRuntimeVerified:raw.runtimeVerified===true,capabilities:raw.capabilities||{}},artifactPath:outputFile});
+    const multiplayer=raw?.multiplayer&&typeof raw.multiplayer==='object'?{
+      expectedClients:Number(raw.multiplayer.expectedClients||0),
+      resultCount:Number(raw.multiplayer.resultCount||0),
+      verifiedClients:Number(raw.multiplayer.verifiedClients||0)
+    }:null;
+    const result=createAutoPlayerResult({engine:normalizedEngine,runId,startedAt,finishedAt:new Date().toISOString(),browser:'',page:clean(raw.scene||raw.place||raw.project),actions:validation.actions,checkpoints:validation.checkpoints,errors,playability:{required:false,trusted:true,playable:raw.runtimeVerified===true},metrics:{durationMs:Date.now()-startedMs,timeToFirstActionMs:Number.isFinite(Number(raw?.metrics?.timeToFirstActionMs))?Number(raw.metrics.timeToFirstActionMs):null,consoleErrorCount:Number(raw?.metrics?.consoleErrorCount||0),engineRuntimeVerified:raw.runtimeVerified===true,capabilities:raw.capabilities||{},multiplayer},artifactPath:outputFile});
     if(outputFile)persistAutoPlayerResult(outputFile,result);
     if(manifestFile)applyAutoPlayerEvidenceToManifest(manifestFile,result,{artifactPath:outputFile});
-    return Object.freeze({...result,runtime:{authority:clean(raw.authority),capabilities:raw.capabilities||{},stdout:processResult.stdout.slice(-8000),stderr:processResult.stderr.slice(-8000)},validation:Object.freeze(validation)});
+    return Object.freeze({...result,runtime:{authority:clean(raw.authority),capabilities:raw.capabilities||{},multiplayer,stdout:processResult.stdout.slice(-8000),stderr:processResult.stderr.slice(-8000)},validation:Object.freeze(validation)});
   }finally{try{fs.rmSync(tempRoot,{recursive:true,force:true});}catch{}}
 }
 
