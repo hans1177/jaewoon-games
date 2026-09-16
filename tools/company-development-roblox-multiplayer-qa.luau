@@ -12,6 +12,9 @@ local PROBE = "__JaewoonCompanyMultiplayerQaProbe"
 local rootThread = coroutine.running()
 local completed = false
 
+print("ROBLOX_STUDIO_UNIVERSE_ID=" .. tostring(game.GameId))
+print("ROBLOX_STUDIO_PLACE_ID=" .. tostring(game.PlaceId))
+
 local function cleanup()
     for _, container in ipairs({ReplicatedStorage, ServerScriptService, StarterPlayer.StarterPlayerScripts}) do
         local old = container:FindFirstChild(PROBE)
