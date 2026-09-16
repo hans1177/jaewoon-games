@@ -1,1 +1,246 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>수정의 개화</title></head><body><script>window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>수정의 개화</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #1e1e1e;
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #08111b;
+      padding: 1rem;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 2rem;
+    }
+    .game-container > div {
+      width: 90%;
+      max-width: 600px;
+      background-color: #2e2e2e;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+    .game-container > div > h2 {
+      margin-bottom: 0.5rem;
+    }
+    .game-container > div > p {
+      margin-bottom: 1rem;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+    .controls button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      border: 1px solid #ffffff;
+      background-color: #08111b;
+      color: #ffffff;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .controls button:hover {
+      background-color: #061a2d;
+    }
+    .status {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #888;
+    }
+    .progress {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      color: #00ffcc;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>수정의 개화</h1>
+  </header>
+  <div class="game-container">
+    <div>
+      <h2>성장의 방치 RPG</h2>
+      <p>전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.</p>
+      <div class="controls">
+        <button onclick="startGame()">시작</button>
+        <button onclick="restartGame()">재시작</button>
+      </div>
+      <div class="status">현재 HP: <span id="currentHp">100</span></div>
+      <div class="progress">성장 단계: <span id="growthStage">1</span>/10</div>
+    </div>
+  </div>
+  <script>
+    let game = {
+      hp: 100,
+      growthStage: 1,
+      currentHp: 100,
+      isRunning: false,
+      isRestarted: false,
+      growthProgress: 0,
+      growthTarget: 10,
+      growthReward: 0,
+      growthSpeed: 1,
+      growthMultiplier: 1,
+      isPaused: false,
+      isGameOver: false,
+      isSaved: false
+    };
+
+    function startGame() {
+      if (!game.isRunning) {
+        game.isRunning = true;
+        game.isPaused = false;
+        game.isGameOver = false;
+        game.isSaved = false;
+        game.growthProgress = 0;
+        game.growthTarget = 10;
+        game.growthReward = 0;
+        game.growthSpeed = 1;
+        game.growthMultiplier = 1;
+        game.currentHp = 100;
+        game.growthStage = 1;
+        game.isRestarted = false;
+        game.isPaused = false;
+        game.isRunning = true;
+        updateDisplay();
+      }
+    }
+
+    function restartGame() {
+      if (game.isRunning) {
+        game.isRunning = false;
+        game.isPaused = true;
+        game.isGameOver = false;
+        game.isSaved = false;
+        game.growthProgress = 0;
+        game.growthTarget = 10;
+        game.growthReward = 0;
+        game.growthSpeed = 1;
+        game.growthMultiplier = 1;
+        game.currentHp = 100;
+        game.growthStage = 1;
+        game.isRestarted = true;
+        updateDisplay();
+      }
+    }
+
+    function updateDisplay() {
+      document.getElementById("currentHp").textContent = game.currentHp;
+      document.getElementById("growthStage").textContent = game.growthStage;
+    }
+
+    function handleCombat() {
+      if (game.isRunning && !game.isPaused) {
+        game.growthProgress += game.growthSpeed;
+        game.growthReward += game.growthMultiplier;
+        if (game.growthProgress >= game.growthTarget) {
+          game.growthProgress = game.growthTarget;
+          game.growthStage++;
+          game.growthReward = 0;
+          game.growthSpeed *= 1.5;
+          game.growthMultiplier *= 1.2;
+          updateDisplay();
+        }
+      }
+    }
+
+    function handlePause() {
+      if (game.isRunning && !game.isPaused) {
+        game.isPaused = true;
+        updateDisplay();
+      }
+    }
+
+    function handleRestart() {
+      if (game.isRunning) {
+        game.isRunning = false;
+        game.isPaused = true;
+        game.isGameOver = false;
+        game.isSaved = false;
+        game.growthProgress = 0;
+        game.growthTarget = 10;
+        game.growthReward = 0;
+        game.growthSpeed = 1;
+        game.growthMultiplier = 1;
+        game.currentHp = 100;
+        game.growthStage = 1;
+        game.isRestarted = true;
+        updateDisplay();
+      }
+    }
+
+    function handleSave() {
+      if (game.isRunning && !game.isPaused) {
+        game.isSaved = true;
+        updateDisplay();
+      }
+    }
+
+    function handleLoad() {
+      if (game.isSaved) {
+        game.isRunning = true;
+        game.isPaused = false;
+        game.isGameOver = false;
+        game.isRestarted = false;
+        game.growthProgress = 0;
+        game.growthTarget = 10;
+        game.growthReward = 0;
+        game.growthSpeed = 1;
+        game.growthMultiplier = 1;
+        game.currentHp = 100;
+        game.growthStage = 1;
+        updateDisplay();
+      }
+    }
+
+    function handleExit() {
+      if (game.isRunning) {
+        game.isRunning = false;
+        game.isPaused = true;
+        game.isGameOver = true;
+        game.isSaved = false;
+        updateDisplay();
+      }
+    }
+
+    // Game loop
+    function gameLoop() {
+      if (game.isRunning && !game.isPaused) {
+        handleCombat();
+        handlePause();
+        handleRestart();
+        handleSave();
+        handleLoad();
+        handleExit();
+      }
+    }
+
+    // Start the game loop
+    setInterval(gameLoop, 1000);
+  </script>
+</body>
+</html>
