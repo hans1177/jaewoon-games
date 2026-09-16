@@ -53,7 +53,7 @@ test('successful multiplayer persistence dispatches canonical final-review reval
 test('manual exact-game QA can recover only a missing verified publication target', () => {
   const workflow = read(workflowPath);
   assert.match(workflow, /publicationTargetRecovery/);
-  assert.match(workflow, /requested&&item\.gameId===requested/);
+  assert.match(workflow, /Boolean\(requested\)&&item\.gameId===requested/);
   assert.match(workflow, /ROBLOX_PUBLICATION_TARGET_RECOVERY/);
   assert.match(workflow, /ROBLOX_STUDIO_UNIVERSE_ID/);
   assert.match(workflow, /ROBLOX_STUDIO_PLACE_ID/);
