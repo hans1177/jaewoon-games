@@ -78,7 +78,7 @@ jobs:
           $out = Join-Path $env:RUNNER_TEMP 'roblox-authenticated-owner-output.log'
           $stdout = Join-Path $env:RUNNER_TEMP 'roblox-authenticated-owner-stdout.log'
           $stderr = Join-Path $env:RUNNER_TEMP 'roblox-authenticated-owner-stderr.log'
-          @'
+          $lua = @'
           local StudioService = game:GetService("StudioService")
           local ok, value = pcall(function()
               return StudioService:GetUserId()
@@ -88,7 +88,8 @@ jobs:
               return
           end
           print("ROBLOX_STUDIO_USER_ID=" .. tostring(value))
-          '@ | Set-Content -Encoding utf8 $script
+          '@
+          [System.IO.File]::WriteAllText($script, $lua, (New-Object System.Text.UTF8Encoding($false)))
           Remove-Item -Force $out,$stdout,$stderr -ErrorAction SilentlyContinue
           $argLine = "--task RunScript --localPlaceFile `"$env:PLACE_FILE`" --runScriptFile `"$script`" --outputFile `"$out`" --quitAfterExecution"
           $p = Start-Process -FilePath $env:STUDIO_EXE -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
