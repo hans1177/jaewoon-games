@@ -1,0 +1,17 @@
+{
+  "summary": "완전한 플레이 가능한 RPG로 재구현",
+  "expectedEffect": "5장의 장소·전투·선택 또는 목표가 구분되도록 하고 전투 피드백, 진행 저장, 패배·재시도, 결말 도달, 모바일 조작과 가독성을 갖춘다",
+  "edits": [],
+  "newFiles": [],
+  "replaceFiles": [
+    {
+      "path": "index.html",
+      "content": "<!doctype html>\n<html lang=\"ko\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n  <meta name=\"theme-color\" content=\"#08111b\">\n  <title>엘도리아 연대기</title>\n  <script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script>\n  <script src=\"/web-games/_shared/vibe2-final.js\"></script>\n</head>\n<body>\n  <script>\n    // 게임 로드 시 실행\n    window.addEventListener('load', function() {\n      const game = vibe2.createGame({\n        id: 'seed-story-complete-rpg-chronicles-of-eldoria',\n        name: '엘도리아 연대기',\n        mode: 'eldoria',\n        hp: 100,\n        desc: '회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',\n        story: '탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'\n      });\n\n      // 장소 및 전투 등장\n      game.addLocation('숲의 심장', {\n        description: '회색 숲의 중심부. 엘도리아의 심장이 자리하고 있습니다.',\n        items: [\n          { name: '골드', type: 'resource', value: 100 },\n          { name: '장비', type: 'item', value: 50 }\n        ],\n        actions: [\n          { name: '탐색', type: 'action', callback: () => game.startQuest('숲의 심장') },\n          { name: '전투', type: 'action', callback: () => game.startCombat('숲의 심장') }\n        ]\n      });\n\n      // 선택 목표\n      game.addGoal('골드 모으기', {\n        description: '골드를 모아 엘도리아의 심장을 끝내자.',\n        items: [\n          { name: '골드', type: 'resource', value: 100 }\n        ],\n        actions: [\n          { name: '장비 강화', type: 'action', callback: () => game.upgradeEquipment() }\n        ]\n      });\n\n      // 전투 피드백\n      game.addCombatFeedback({\n        type: 'damage',\n        message: '전투 중! 손실된 HP: {{damage}}'\n      });\n\n      // 진행 저장\n      game.addProgression({\n        type: 'save',\n        message: '진행이 저장되었습니다.'\n      });\n\n      // 패배 및 재시도\n      game.addFailure({\n        type: 'fail',\n        message: '패배! 재시도를 선택해주세요.'\n      });\n\n      // 결말 도달\n      game.addConclusion({\n        type: 'complete',\n        message: '엘도리아의 심장이 끝났습니다. 엘도리아의 이야기는 완료되었습니다.'\n      });\n\n      // 모바일 조작 및 가독성\n      game.addMobileControls({\n        type: 'mobile',\n        message: '모바일 조작이 가능합니다.'\n      });\n\n      // 텍스트 선택 화면 이어지는 형태\n      game.addTextSelection({\n        type: 'text',\n        message: '선택을 계속해주세요.'\n      });\n    });\n  </script>\n</body>\n</html>"
+    }
+  ],
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ]
+}

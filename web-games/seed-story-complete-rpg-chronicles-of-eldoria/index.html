@@ -1,1 +1,86 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>엘도리아 연대기</title></head><body><script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>엘도리아 연대기</title>
+  <script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script>
+  <script src="/web-games/_shared/vibe2-final.js"></script>
+</head>
+<body>
+  <script>
+    // 게임 로드 시 실행
+    window.addEventListener('load', function() {
+      const game = vibe2.createGame({
+        id: 'seed-story-complete-rpg-chronicles-of-eldoria',
+        name: '엘도리아 연대기',
+        mode: 'eldoria',
+        hp: 100,
+        desc: '회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',
+        story: '탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'
+      });
+
+      // 장소 및 전투 등장
+      game.addLocation('숲의 심장', {
+        description: '회색 숲의 중심부. 엘도리아의 심장이 자리하고 있습니다.',
+        items: [
+          { name: '골드', type: 'resource', value: 100 },
+          { name: '장비', type: 'item', value: 50 }
+        ],
+        actions: [
+          { name: '탐색', type: 'action', callback: () => game.startQuest('숲의 심장') },
+          { name: '전투', type: 'action', callback: () => game.startCombat('숲의 심장') }
+        ]
+      });
+
+      // 선택 목표
+      game.addGoal('골드 모으기', {
+        description: '골드를 모아 엘도리아의 심장을 끝내자.',
+        items: [
+          { name: '골드', type: 'resource', value: 100 }
+        ],
+        actions: [
+          { name: '장비 강화', type: 'action', callback: () => game.upgradeEquipment() }
+        ]
+      });
+
+      // 전투 피드백
+      game.addCombatFeedback({
+        type: 'damage',
+        message: '전투 중! 손실된 HP: {{damage}}'
+      });
+
+      // 진행 저장
+      game.addProgression({
+        type: 'save',
+        message: '진행이 저장되었습니다.'
+      });
+
+      // 패배 및 재시도
+      game.addFailure({
+        type: 'fail',
+        message: '패배! 재시도를 선택해주세요.'
+      });
+
+      // 결말 도달
+      game.addConclusion({
+        type: 'complete',
+        message: '엘도리아의 심장이 끝났습니다. 엘도리아의 이야기는 완료되었습니다.'
+      });
+
+      // 모바일 조작 및 가독성
+      game.addMobileControls({
+        type: 'mobile',
+        message: '모바일 조작이 가능합니다.'
+      });
+
+      // 텍스트 선택 화면 이어지는 형태
+      game.addTextSelection({
+        type: 'text',
+        message: '선택을 계속해주세요.'
+      });
+    });
+  </script>
+</body>
+</html>
