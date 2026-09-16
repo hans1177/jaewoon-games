@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "keep the current design"
+        ],
+        "fix": [
+          "fix the current design"
+        ],
+        "add": [
+          "add a new feature"
+        ],
+        "risks": [
+          "risk of losing players"
+        ],
+        "evidence": [
+          "evidence of player feedback"
+        ],
+        "questions": [
+          "questions to ask players"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "The current playable Web build stays only as rollback and compatibility reference while Vibe rebuilds a new implementation from a "
+        ],
+        "evidence": [
+          "globalTopDownloadsDecember2025Rank: 5, globalTopGrossingDecember2025Rank: 4, globalMedianSessionsPerDayApprox: 4, globalMobileGame"
+        ],
+        "questions": [
+          "globalMobilePlayerSharePercent: 55, globalAveragePlayerAge: 41, globalMobilePlayerSharePercent: 55, globalAveragePlayerAge: 41, "
+        ]
+      }
+    }
+  ]
+}

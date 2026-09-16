@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "smollm2:1.7b",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "game_seed_market_evidence.json"
+    ],
+    "fix": [
+      "OWNER-FULL-REBUILD-20260916-1"
+    ],
+    "add": [
+      "game-seed-market-evidence.json"
+    ],
+    "risks": [
+      "OWNER-FULL-REBUILD-20260916-1"
+    ],
+    "evidence": [
+      "game-seed-market-evidence.json"
+    ],
+    "questions": [
+      "game-seed-market-evidence.json"
+    ]
+  }
+}

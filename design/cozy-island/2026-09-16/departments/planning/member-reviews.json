@@ -1,0 +1,89 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "The current playable Web build stays only as rollback and compatibility reference while Vibe rebuilds a new implementation from a "
+        ],
+        "evidence": [
+          "The current playable Web build stays only as rollback and compatibility reference while Vibe rebuilds a new implementation from a "
+        ],
+        "questions": []
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_market_evidence.json"
+        ],
+        "fix": [
+          "small-island personalization"
+        ],
+        "add": [
+          "start_immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "risks": [
+          "small risk or route choice"
+        ],
+        "evidence": [
+          "Subway Surfers"
+        ],
+        "questions": [
+          "The current playable Web build stays only as rollback and compatibility reference while Vibe rebuilds a new implementation from a-"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "gameId = cozy-island; gameName = 포근섬; status = ACTIVE; generation = OWNER_REDESIGN_RESET; ownerResetRevision = OWNER-FULL-REBUILD-"
+        ],
+        "fix": [
+          "gameId = cozy-island; gameName = 포근섬; status = ACTIVE; generation = OWNER_REDESIGN_RESET; ownerResetRevision = OWNER-FULL-REBUILD-"
+        ],
+        "add": [
+          "gameId = cozy-island; gameName = 포근섬; status = ACTIVE; generation = OWNER_REDESIGN_RESET; ownerResetRevision = OWNER-FULL-REBUILD-"
+        ],
+        "risks": [
+          "gameId = cozy-island; gameName = 포근섬; status = ACTIVE; generation = OWNER_REDESIGN_RESET; ownerResetRevision = OWNER-FULL-REBUILD-"
+        ],
+        "evidence": [
+          "gameId = cozy-island; gameName = 포근섬; status = ACTIVE; generation = OWNER_REDESIGN_RESET; ownerResetRevision = OWNER-FULL-REBUILD-"
+        ],
+        "questions": [
+          "gameId = cozy-island; gameName = 포근섬; status = ACTIVE; generation = OWNER_REDESIGN_RESET; ownerResetRevision = OWNER-FULL-REBUILD-"
+        ]
+      }
+    }
+  ]
+}

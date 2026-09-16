@@ -1,0 +1,36 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "gemma3:1b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "cozy-island_unit_id",
+    "playerFantasy": "player_unit_id",
+    "coreFun": "gameplay_loop",
+    "coreLoop": [
+      "start_immediately",
+      "play_short_run",
+      "repeat_key_elements",
+      "end_or_fail",
+      "receive_reward_or_challenge"
+    ],
+    "signatureSystems": [],
+    "progressionDirection": "gameplay",
+    "visualDirection": "gameplay",
+    "mobileUx": "web-games",
+    "marketTargetDirection": "GLOBAL",
+    "steamExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "KEEP_EXISTING_WEB_PATH",
+    "technicalAssumptions": [],
+    "validationQuestions": [],
+    "openQuestions": []
+  }
+}

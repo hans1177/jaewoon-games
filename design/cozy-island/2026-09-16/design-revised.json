@@ -1,0 +1,58 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "gemma3:1b",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 4,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "small-port-of-a-small-island",
+    "playerFantasy": "The player will be immersed in a relaxing and charming 힐링 생활 게임, where they will be a small, solitary fisherman, a careful collector, and a thoughtful gardener, all while exploring a beautiful, isolated island.",
+    "coreFun": "Relaxing daily activity loop, collection and fishing progression, small-island personalization",
+    "coreLoop": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+      "Explore the island, gather resources, and build a tranquil life.",
+      "The island is a beautiful, isolated place, and the player will be able to customize the island's appearance and layout.",
+      "The game will feature a calming and relaxing atmosphere, with a focus on peaceful gameplay and a sense of discovery.",
+      "The game will have a simple and intuitive user interface, with clear feedback and minimal distractions.",
+      "The game will be designed to be accessible to a wide range of players, with adjustable difficulty levels."
+    ],
+    "signatureSystems": [
+      {
+        "name": "game_seed_market_evidence.json",
+        "purpose": "evidence",
+        "playerChoice": "review_in_design_cycle"
+      },
+      {
+        "name": "own",
+        "purpose": "own",
+        "playerChoice": "review_in_design_cycle"
+      },
+      {
+        "name": "qa",
+        "purpose": "qa",
+        "playerChoice": "review_in_design_cycle"
+      }
+    ],
+    "progressionDirection": "gameplay",
+    "visualDirection": "gameplay",
+    "mobileUx": "web-games",
+    "marketTargetDirection": "GLOBAL",
+    "steamExpansionDecision": "KEEP_EXISTING_WEB_PATH",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "KEEP_EXISTING_WEB_PATH",
+    "technicalAssumptions": [],
+    "validationQuestions": [],
+    "openQuestions": []
+  }
+}

@@ -1,0 +1,89 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "challenge": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Add: Score Distance or Short Session Goal",
+        "Add: Score Distance or Short Session Goal"
+      ],
+      "revision": [
+        "Fix: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Fix: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Fix: Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "reason": "The current playable Web build stays only as rollback and compatibility reference while Vibe rebuilds a new implementation from a. The evidence provided is the current playable Web build's evidence."
+    },
+    "graphics": {
+      "accept": [
+        "fix",
+        "small-island personalization"
+      ],
+      "challenge": [
+        "risks",
+        "play_short_run"
+      ],
+      "revision": [
+        "evidence",
+        "subway_surfers"
+      ],
+      "reason": "game_seed_market_evidence.json"
+    },
+    "development": {
+      "accept": [
+        "own"
+      ],
+      "challenge": [
+        "own"
+      ],
+      "revision": [
+        "own"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "challenge": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "revision": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "reason": "QA 부서는 테스트 및 보안 업무를 담당하는 역할을 수행하며, 이러한 의견을 수용하고 적용하는 것이 가장 적절한 결정입니다."
+    },
+    "balance": {
+      "accept": [
+        "OWN",
+        "OTHERS"
+      ],
+      "challenge": [
+        "graphics",
+        "development",
+        "qa"
+      ],
+      "revision": [
+        "OWN",
+        "OTHERS"
+      ],
+      "reason": "너는 balance 부서 Lead AI다. 다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정한다."
+    }
+  }
+}

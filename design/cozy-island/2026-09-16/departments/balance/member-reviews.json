@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "cozy-island",
+  "date": "2026-09-16",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "cozy-island_unit_id"
+        ],
+        "fix": [
+          "gameplay_loop"
+        ],
+        "add": [
+          "gameplay_loop"
+        ],
+        "risks": [
+          "gameplay_loop"
+        ],
+        "evidence": [
+          "cozy-island_unit_id"
+        ],
+        "questions": [
+          "cozy-island_unit_id"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "The current playable Web build stays only as rollback and compatibility reference while Vibe rebuilds a new implementation from a "
+        ],
+        "evidence": [
+          "globalTopDownloadsDecember2025Rank: 5, globalTopGrossingDecember2025Rank: 4, globalMedianSessionsPerDayApprox: 4, globalMobileGame"
+        ],
+        "questions": [
+          "The current playable Web build stays only as rollback and compatibility reference while Vibe rebuilds a new implementation from a "
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_seed_market_evidence.json"
+        ],
+        "fix": [
+          "OWNER-FULL-REBUILD-20260916-1"
+        ],
+        "add": [
+          "game-seed-market-evidence.json"
+        ],
+        "risks": [
+          "OWNER-FULL-REBUILD-20260916-1"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-market-evidence.json"
+        ]
+      }
+    }
+  ]
+}
