@@ -17,6 +17,14 @@
   "gameEntryObserved": true,
   "gameEntryEvidenceAuthority": "CORRELATED_GITHUB_ACTIONS_BLACK_BOX_EVIDENCE",
   "gameEntryObservationRecordedAt": "2026-09-16",
+  "verifiedObservedStages": [
+    "APP_LAUNCH",
+    "GAME_ENTRY",
+    "INPUT_EXERCISE",
+    "VISUAL_STATE_CHANGE",
+    "PROCESS_SURVIVAL",
+    "NO_FATAL_CRASH_OR_ANR"
+  ],
   "sourceEvidence": {
     "privateRepository": "hans1177/jaewoon-ai-company",
     "workflowPath": ".github/workflows/vibe2-shattered-depth-blackbox.yml",
@@ -42,7 +50,7 @@
       "boundary": "This is direct black-box game-entry evidence for the captured validation window only."
     },
     {
-      "id": "drag-input-changed-board-state",
+      "id": "input-caused-visible-state-change",
       "evidenceAuthority": "RUN_4_ARTIFACT",
       "fact": "A bounded horizontal swipe on the visible dungeon play surface was followed by a clearly different captured dungeon-board framing and player placement while the game remained active.",
       "boundary": "Only the directly captured input-to-visible-state transition is promoted; pathfinding, movement rules, hidden map logic and internal algorithms are not inferred."
