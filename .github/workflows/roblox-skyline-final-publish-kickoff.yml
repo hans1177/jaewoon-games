@@ -1,0 +1,28 @@
+name: One-shot Skyline Rush Final Publish Kickoff
+
+on:
+  push:
+    paths:
+      - '.github/workflows/roblox-skyline-final-publish-kickoff.yml'
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch exact Skyline release promotion
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GAME_ID: seed-roblox-obby-party-minigam-tower-of-hell
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run '.github/workflows/company-development-roblox-release-promotion.yml' \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref main \
+            -f "game_id=$GAME_ID"
+          echo 'ROBLOX_SKYLINE_RELEASE_DISPATCH=PASS'
+          echo "ROBLOX_SKYLINE_GAME_ID=$GAME_ID"
