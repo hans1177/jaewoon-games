@@ -1128,10 +1128,10 @@
       "webValidationPassedAt": null,
       "musicValidationPassed": false,
       "routingBlockers": [
-        "roblox-multiplayer-qa-required"
+        "roblox-final-review-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-16T14:47:35.167Z",
-      "updatedAt": "2026-09-16T15:49:42.052Z",
+      "updatedAt": "2026-09-16T15:51:53.209Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -1150,7 +1150,7 @@
       "robloxRegressionPassed": true,
       "robloxFinalReviewPassed": false,
       "robloxFailureStage": "FINAL_REVIEW",
-      "robloxFailureSignature": "ROBLOX_MULTIPLAYER_QA_REQUIRED",
+      "robloxFailureSignature": "ROBLOX_FINAL_REVIEW_PENDING",
       "robloxBuildSourceRevision": "117a87320e67c690c1c8b3972598d331cf366c56",
       "robloxBuildArtifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc",
       "robloxBuildPassedAt": "2026-09-16T14:49:05.184Z",
@@ -1318,7 +1318,7 @@
         "exactRevision": true,
         "lastSuccessfulStage": "REGRESSION",
         "failureStage": "FINAL_REVIEW",
-        "failureSignature": "ROBLOX_MULTIPLAYER_QA_REQUIRED"
+        "failureSignature": "ROBLOX_FINAL_REVIEW_PENDING"
       },
       "webStrictScore": 100,
       "webValidationSchemaVersion": 10,
@@ -1355,7 +1355,29 @@
         "qaRunId": 35070803443,
         "requestedReleaseState": "release-confirmed",
         "verifiedAt": "2026-09-16T14:47:04.301Z"
-      }
+      },
+      "robloxMultiplayerQaEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+        "platform": "ROBLOX",
+        "checkedAt": "2026-09-16T15:51:27.5067322Z",
+        "sourceRevision": "117a87320e67c690c1c8b3972598d331cf366c56",
+        "artifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc",
+        "artifactRunId": 35110903876,
+        "exactRevision": true,
+        "actualStudioRuntime": true,
+        "multiplayerMode": "COMPETITIVE",
+        "multiplayerClients": 2,
+        "distinctPlayersPassed": true,
+        "serverAuthoritativeRoundtripPassed": true,
+        "peerVisibilityPassed": true,
+        "multiplayerQaPassed": true,
+        "outputSha256": "6f0ff64be78bdd9620141f75f10f07873adeb8fbe1b84646350e85656c75cb55",
+        "failure": null,
+        "authority": "roblox-real-studio-multiplayer-qa"
+      },
+      "robloxMultiplayerQaPassed": true,
+      "robloxMultiplayerQaPassedAt": "2026-09-16T15:51:53.209Z"
     },
     {
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -1916,7 +1938,7 @@
       "webInitialCycleMusicValidationPassed": false
     }
   ],
-  "updatedAt": "2026-09-16T15:49:42.052Z",
+  "updatedAt": "2026-09-16T15:51:53.209Z",
   "routerContractVersion": 4,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
