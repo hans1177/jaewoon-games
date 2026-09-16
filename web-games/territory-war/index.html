@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .status {
+      margin-bottom: 10px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .control {
+      padding: 10px 15px;
+      background: #333;
+      border-radius: 4px;
+      flex: 1;
+      min-width: 120px;
+      transition: background 0.3s;
+    }
+    .control:hover {
+      background: #555;
+    }
+    .map {
+      width: 100%;
+      height: 400px;
+      background: #000;
+      border: 1px solid #444;
+      margin-bottom: 20px;
+    }
+    .turn {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .message {
+      font-size: 14px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game">
+      <h1>Vibe2</h1>
+      <div class="status">Status: <span id="status">Initializing...</span></div>
+      <div class="controls">
+        <div class="control" id="attack">Attack</div>
+        <div class="control" id="defend">Defend</div>
+        <div class="control" id="move">Move</div>
+        <div class="control" id="restart">Restart</div>
+      </div>
+      <div class="map" id="map"></div>
+      <div class="turn">Turn: <span id="turn">1</span></div>
+      <div class="message" id="message">Welcome to Vibe2!</div>
+    </div>
+  </main>
+  <script>
+    // Game logic and state preservation would go here
+    // This is a placeholder for the actual game implementation
+    // It includes basic structure for mobile gameplay, state preservation, and progression
+    // Actual game logic would be implemented here
+
+    // Example of state preservation
+    const state = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: Array(100).fill(null)
+      },
+      turn: 1,
+      status: "Initializing..."
+    };
+
+    // Example of mobile gameplay
+    document.getElementById("attack").addEventListener("click", () => {
+      state.status = "Attacking...";
+      document.getElementById("status").textContent = state.status;
+    });
+
+    // Example of restart functionality
+    document.getElementById("restart").addEventListener("click", () => {
+      state.status = "Restarting...";
+      document.getElementById("status").textContent = state.status;
+    });
+
+    // Example of responsive UI
+    window.addEventListener("resize", () => {
+      document.getElementById("map").style.height = window.innerHeight * 0.3 + "px";
+    });
+
+    // Example of game progression
+    setInterval(() => {
+      state.turn++;
+      document.getElementById("turn").textContent = state.turn;
+    }, 1000);
+  </script>
+</body>
+</html>
