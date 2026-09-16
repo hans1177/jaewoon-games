@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Ensure the core gameplay mechanics align with the seed's design principles and objectives."
+    ],
+    "fix": [
+      "Address any potential inconsistencies in the gameplay loop or progression system."
+    ],
+    "add": [
+      "Enhance the visual design to better integrate with the SEED_MATERIALS and SEED_CATEGORY_SELECTION_ROLE."
+    ],
+    "risks": [
+      "Validate the gameplay loop against the SEED_MATERIAL_SELECTION_SIGNALS to ensure consistency."
+    ],
+    "evidence": [
+      "Confirm that the reference games (Crossy Road, Angry Birds 2) are accurately referenced and validated."
+    ],
+    "questions": [
+      "Ensure that the initial playable cycle is well-defined and the reward system is clearly tied to the SEED_MATERIAL_SELECTION_SIGNAL"
+    ]
+  }
+}

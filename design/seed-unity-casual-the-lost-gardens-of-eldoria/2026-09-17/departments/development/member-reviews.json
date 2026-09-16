@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=development"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game should have a simple gameplay loop that allows players to quickly understand the game mechanics."
+        ],
+        "fix": [
+          "The game should have a risk management system that allows players to make informed decisions about their gameplay."
+        ],
+        "add": [
+          "The game should have a multiplayer mode that allows players to play with friends."
+        ],
+        "risks": [
+          "The game should have a risk of becoming too repetitive or boring."
+        ],
+        "evidence": [
+          "The game should have a strong narrative that provides context and motivation for the gameplay."
+        ],
+        "questions": [
+          "What is the target audience for the game?"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "SEED-UNITY-CASUAL-001",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "gemma3:1b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "SEED-UNITY-CASUAL-001",
+    "playerFantasy": "Casual, Puzzle, Exploration, Time-Based",
+    "coreFun": "Simple Gameplay, Creative Problem Solving",
+    "coreLoop": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "signatureSystems": [],
+    "progressionDirection": "Dynamic Contextual 2-4",
+    "visualDirection": "Nature Ecology, Social Coop Competition, Simple Gameplay",
+    "mobileUx": "Unity",
+    "marketTargetDirection": "DESIGN_REFERENCE",
+    "steamExpansionDecision": "Global Casual/Session Signal",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "High",
+    "technicalAssumptions": [
+      "Unity Engine",
+      "Basic UI",
+      "Simple Game Logic"
+    ],
+    "validationQuestions": [
+      "Gameplay loop",
+      "Input",
+      "Combat",
+      "Progression",
+      "Persistence",
+      "UI Art",
+      "Risk"
+    ],
+    "openQuestions": [
+      "initial_playable_cycle",
+      "initial_playable_cycle_goal",
+      "initial_playable_cycle_reward",
+      "initial_playable_cycle_risk",
+      "initial_playable_cycle_challenge",
+      "initial_playable_cycle_goal_reward",
+      "initial_playable_cycle_retry_time"
+    ]
+  }
+}

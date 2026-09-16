@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Ensure the core gameplay mechanics align with the seed's design principles and objectives."
+        ],
+        "fix": [
+          "Address any potential inconsistencies in the gameplay loop or progression system."
+        ],
+        "add": [
+          "Enhance the visual design to better integrate with the SEED_MATERIALS and SEED_CATEGORY_SELECTION_ROLE."
+        ],
+        "risks": [
+          "Validate the gameplay loop against the SEED_MATERIAL_SELECTION_SIGNALS to ensure consistency."
+        ],
+        "evidence": [
+          "Confirm that the reference games (Crossy Road, Angry Birds 2) are accurately referenced and validated."
+        ],
+        "questions": [
+          "Ensure that the initial playable cycle is well-defined and the reward system is clearly tied to the SEED_MATERIAL_SELECTION_SIGNAL"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "SEED_MATERIAL_SELECTION_SIGNALS"
+        ],
+        "fix": [
+          "SEED_MATERIAL_SELECTION_REFERENCE_COUNT"
+        ],
+        "add": [
+          "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT"
+        ],
+        "risks": [
+          "SEED_MATERIAL_SELECTION_TYPE_UNIQUE_WORLD_DESIGN"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "initial_playable_cycle"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}

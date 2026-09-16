@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "ASSIGNED_DEPARTMENT=qa"
+    ],
+    "fix": [
+      "GAME_SEED={\"version\":2,\"seedId\":\"SEED-UNITY-CASUAL-001\",\"gameId\":\"seed-unity-casual-the-lost-gardens-of-eldoria\",\"status\":\"ACTIVE\"}"
+    ],
+    "add": [
+      "GAME_CATEGORY=\"CASUAL\""
+    ],
+    "risks": [
+      "SEED_MATERIAL_SELECTION_MODE=\"DYNAMIC_CONTEXTUAL_2_TO_4\""
+    ],
+    "evidence": [
+      "SEED_MATERIAL_SELECTION_SIGNALS=\"TARGET_PLATFORM_FIT\",\"CATEGORY_OR_GENRE_FIT\",\"MATERIAL_COMPLEMENTARITY\",\"VALIDATED_LEARNING_OUTOC\""
+    ],
+    "questions": [
+      "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT\":1"
+    ]
+  }
+}

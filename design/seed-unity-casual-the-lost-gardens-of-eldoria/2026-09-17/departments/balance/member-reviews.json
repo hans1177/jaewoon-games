@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 4"
+        ],
+        "fix": [
+          "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 100"
+        ],
+        "add": [
+          "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 16"
+        ],
+        "risks": [
+          "Crossy Road"
+        ],
+        "evidence": [
+          "Crossy Road"
+        ],
+        "questions": [
+          "Gameplay loop"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Simple Gameplay, Creative Problem Solving"
+        ],
+        "fix": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "add": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "risks": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "evidence": [
+          "Crossy Road, Angry Birds 2"
+        ],
+        "questions": [
+          "Core Fun: Simple Gameplay, Creative Problem Solving"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "SEED_UNITY-CASUAL_001_game_seed_material_match_success"
+        ],
+        "fix": [
+          "SEED_MATERIAL_MATCH_SUCCESS"
+        ],
+        "add": [
+          "SEED_MATERIAL_MATCH_SUCCESS"
+        ],
+        "risks": [
+          "SEED_MATERIAL_MATCH_SUCCESS"
+        ],
+        "evidence": [
+          "SEED_MATERIAL_MATCH_SUCCESS"
+        ],
+        "questions": [
+          "SEED_MATERIAL_MATCH_SUCCESS"
+        ]
+      }
+    }
+  ]
+}

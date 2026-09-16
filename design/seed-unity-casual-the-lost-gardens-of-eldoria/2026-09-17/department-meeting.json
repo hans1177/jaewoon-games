@@ -1,0 +1,145 @@
+{
+  "version": 4,
+  "gameId": "seed-unity-casual-the-lost-gardens-of-eldoria",
+  "date": "2026-09-17",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Ensure the core gameplay mechanics align with the seed's design principles and objectives."
+      ],
+      "fix": [
+        "Address any potential inconsistencies in the gameplay loop or progression system."
+      ],
+      "add": [
+        "Enhance the visual design to better integrate with the SEED_MATERIALS and SEED_CATEGORY_SELECTION_ROLE."
+      ],
+      "risks": [
+        "Validate the gameplay loop against the SEED_MATERIAL_SELECTION_SIGNALS to ensure consistency."
+      ],
+      "evidence": [
+        "Confirm that the reference games (Crossy Road, Angry Birds 2) are accurately referenced and validated."
+      ],
+      "questions": [
+        "Ensure that the initial playable cycle is well-defined and the reward system is clearly tied to the SEED_MATERIAL_SELECTION_SIGNAL"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Gameplay Loop"
+      ],
+      "fix": [
+        "Gameplay Design"
+      ],
+      "add": [
+        "Gameplay Flow"
+      ],
+      "risks": [
+        "Risk Management"
+      ],
+      "evidence": [
+        "Gameplay Design"
+      ],
+      "questions": [
+        "Gameplay Design"
+      ]
+    },
+    "development": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "GAME_SEED"
+      ],
+      "add": [
+        "GAME_SEED"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "GAME_SEED"
+      ],
+      "questions": [
+        "GAME_SEED"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "GAME_SEED={\"version\":2,\"seedId\":\"SEED-UNITY-CASUAL-001\",\"gameId\":\"seed-unity-casual-the-lost-gardens-of-eldoria\",\"status\":\"ACTIVE\"}"
+      ],
+      "add": [
+        "GAME_CATEGORY=\"CASUAL\""
+      ],
+      "risks": [
+        "SEED_MATERIAL_SELECTION_MODE=\"DYNAMIC_CONTEXTUAL_2_TO_4\""
+      ],
+      "evidence": [
+        "SEED_MATERIAL_SELECTION_SIGNALS=\"TARGET_PLATFORM_FIT\",\"CATEGORY_OR_GENRE_FIT\",\"MATERIAL_COMPLEMENTARITY\",\"VALIDATED_LEARNING_OUTOC\""
+      ],
+      "questions": [
+        "SEED_TOP30_DIFFERENTIATION_REFERENCE_COUNT\":1"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "NATURE_ECOLOGY_SCIENCE에서 얻은 독립 게임 재료 4"
+      ],
+      "fix": [
+        "FREE_ORIGINAL_IDEA에서 얻은 독립 게임 재료 100"
+      ],
+      "add": [
+        "SOCIAL_COOP_COMPETITION에서 얻은 독립 게임 재료 16"
+      ],
+      "risks": [
+        "Crossy Road"
+      ],
+      "evidence": [
+        "Crossy Road"
+      ],
+      "questions": [
+        "Gameplay loop"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "The current structure aligns with the requirements, but some elements need refinement. For example, the 'risks' section could be more specific to the SEED_MATERIAL_SELECTION_MODE, and the 'questions' could be rephrased to improve clarity.",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The current structure aligns with the requirements, but some elements need refinement. For example, the 'risks' section could be more specific to the SEED_MATERIAL_SELECTION_MODE, and the 'questions' could be rephrased to improve clarity.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 1,
+    "conflict": 0,
+    "hold": 0
+  }
+}
