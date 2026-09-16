@@ -170,6 +170,16 @@ test('Roblox package completion has one canonical continuation into preflight an
   assert.ok(!continuation.includes('company-development-roblox-package.mjs'));
 });
 
+test('new Roblox package identity clears every downstream preflight runtime and QA checkpoint',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  for(const marker of [
+    'robloxBuildPreflightPassedAt:null','robloxBuildPreflightFailedAt:null','robloxBuildPreflightEvidence:null',
+    'robloxRuntimePassedAt:null','robloxRuntimeFailedAt:null','robloxRuntimeEvidence:null','robloxRuntimeRetryCount:0',
+    'robloxServerClientBoundaryPassed:false','robloxDatastoreRejoinPassed:false','robloxMobileControlUiPassed:false',
+    'robloxIndependentQaPassedAt:null','robloxRegressionPassedAt:null','robloxFinalReviewPassedAt:null','robloxPostRuntimeQaEvidence:null',
+  ]) assert.ok(workflow.includes(marker),`missing downstream reset: ${marker}`);
+});
+
 test('bot-dispatched Roblox package flow wakes harness v8 continuation and migrates the old unauthenticated Studio checkpoint once',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
   assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '8'"));

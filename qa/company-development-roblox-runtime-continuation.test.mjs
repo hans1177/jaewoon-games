@@ -45,6 +45,19 @@ test('five-lead preflight requires an exact immutable build before runtime',()=>
   assert.ok(workflow.includes("robloxFailureStage:'TARGET_PLATFORM_RUNTIME'"));
 });
 
+test('newer package and preflight checkpoints invalidate stale downstream failures before Studio runtime planning',()=>{
+  assert.ok(workflow.includes('stalePreflightFailure'));
+  assert.ok(workflow.includes('staleRuntimeFailure'));
+  assert.ok(workflow.includes('robloxRuntimePassedAt:null'));
+  assert.ok(workflow.includes('robloxRuntimeFailedAt:null'));
+  assert.ok(workflow.includes('robloxRuntimeEvidence:null'));
+  assert.ok(workflow.includes('robloxRuntimeRetryCount:0'));
+  assert.ok(workflow.includes('robloxServerClientBoundaryPassed:false'));
+  assert.ok(workflow.includes('robloxDatastoreRejoinPassed:false'));
+  assert.ok(workflow.includes('robloxMobileControlUiPassed:false'));
+  assert.ok(workflow.includes('robloxPostRuntimeQaEvidence:null'));
+});
+
 test('verified Vibe2 source handoff replaces stale Web and music eligibility at preflight without weakening exact build checks',()=>{
   const item={
     gameId:'g',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'ROBLOX',webValidationPassedAt:null,musicValidationPassed:false,
