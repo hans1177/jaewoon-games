@@ -35,7 +35,19 @@ function collectFiles({root, files, manifest}) {
   if (files.length) return files;
   if (manifest) {
     const data = readJson(manifest, {});
-    if (Array.isArray(data.changedFiles)) return data.changedFiles.map(posix).filter(Boolean);
+    if (Array.isArray(data.changedFiles)) {
+      const sourceRoot=posix(data.sourceRoot);
+      return data.changedFiles.map(posix).filter(Boolean).map(relative=>{
+        const direct=assertInside(root,relative);
+        if(fs.existsSync(direct))return relative;
+        if(sourceRoot){
+          const rooted=posix(path.posix.join(sourceRoot,relative));
+          const rootedFile=assertInside(root,rooted);
+          if(fs.existsSync(rootedFile))return rooted;
+        }
+        return relative;
+      });
+    }
   }
   throw new Error('incremental QA changed files required');
 }
@@ -117,7 +129,7 @@ function deterministicCheck(root, relative) {
 export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', cacheFile='', namespace='default', force=false }={}) {
   const started = Date.now();
   const changed = collectFiles({root, files, manifest});
-  const payload = ['vibe2-incremental-qa-v3', namespace];
+  const payload = ['vibe2-incremental-qa-v4', namespace];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -125,7 +137,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   }
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
-  const cache = cachePath ? readJson(cachePath,{version:3,entries:{}}) : {version:3,entries:{}};
+  const cache = cachePath ? readJson(cachePath,{version:4,entries:{}}) : {version:4,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
     return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], durationMs:Date.now()-started, fullRegressionStillRequired:true };
@@ -135,7 +147,7 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   execFileSync('git',['diff','--check'],{cwd:root,stdio:'pipe'});
   const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
-    cache.version=3; cache.entries=cache.entries||{};
+    cache.version=4; cache.entries=cache.entries||{};
     cache.entries[contentHash]={ outcome:'PASS', namespace, checks, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
