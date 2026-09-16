@@ -6,6 +6,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { resolveVibeDevelopmentExecution } from './vibe2-development-execution-policy.mjs';
 import { runVibe2DeterministicSourceWorker } from './vibe2-deterministic-source-worker.mjs';
+import { exploreVibe2WorkOrder } from './vibe2-exploration-worker.mjs';
 import { DEFAULT_EVIDENCE as ROBLOX_BALANCE_DEFAULT_EVIDENCE, RECIPE as ROBLOX_BALANCE_RECIPE, runRobloxAutonomousBalanceWorker } from './vibe2-roblox-autonomous-balance-worker.mjs';
 
 const clean=value=>String(value??'').trim();
@@ -20,6 +21,11 @@ function assertDeterministicManifest(manifest,developmentExecution){
   if(clean(manifest.deterministicRecipe)!==clean(developmentExecution.recipe))throw new Error('deterministic recipe mismatch');
   if(!Array.isArray(manifest.changedFiles)||manifest.changedFiles.length===0)throw new Error('deterministic worker produced no changed files');
   return manifest;
+}
+
+function resolveExplorationHandoff(cwd,input){
+  if(!clean(process.env.VIBE2_EXPLORATION_FILE))return input?.exploration||null;
+  return exploreVibe2WorkOrder({cwd,order:input});
 }
 
 function resolveVerifiedR5Evidence(cwd,evidenceFile=''){
@@ -39,7 +45,8 @@ function resolveVerifiedR5Evidence(cwd,evidenceFile=''){
 export async function runVibe2ImplementationWorker({cwd=process.cwd(),workOrderFile='.vibe2/work-order.json',outputRoot='.vibe2/candidates',applySource=false,evidenceFile=''}={}){
   const input=readJson(path.resolve(cwd,workOrderFile));
   const developmentExecution=resolveVibeDevelopmentExecution({task:input?.selectedTask||{},target:input?.target,route:input?.executionRoute||'text-source-worker'});
-  const effective={...input,developmentExecution,workerPolicy:{...(input.workerPolicy||{}),aiAllowed:false,aiRequired:false,aiAssist:false,deterministicFirst:true,implementationExecutor:developmentExecution.executor,deterministicRecipe:developmentExecution.recipe||null}};
+  const exploration=resolveExplorationHandoff(cwd,input);
+  const effective={...input,exploration,developmentExecution,workerPolicy:{...(input.workerPolicy||{}),aiAllowed:false,aiRequired:false,aiAssist:false,deterministicFirst:true,implementationExecutor:developmentExecution.executor,deterministicRecipe:developmentExecution.recipe||null}};
   const effectiveFile=path.resolve(cwd,'.vibe2','work-order-effective.json');
   writeJson(effectiveFile,effective);
 
