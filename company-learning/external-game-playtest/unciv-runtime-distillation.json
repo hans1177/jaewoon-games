@@ -5,21 +5,20 @@
   "sourceType": "EXTERNAL_OPEN_SOURCE_BLACK_BOX_RUNTIME_EVIDENCE",
   "authority": "PRACTICE_ONLY_MIXED_EVIDENCE",
   "observedThrough": "2026-09-16",
-  "runtimePromotionAllowed": true,
-  "gameplayBehaviorPromotionAllowed": true,
+  "runtimePromotionAllowed": false,
+  "gameplayBehaviorPromotionAllowed": false,
   "partialObservableDistillationAllowed": true,
   "codeExtractionAllowed": false,
   "binaryRedistributionAllowed": false,
-  "positiveTrainingSample": true,
-  "verifiedRuntimePass": true,
-  "stablePlaytestVerified": true,
+  "positiveTrainingSample": false,
+  "verifiedRuntimePass": false,
+  "stablePlaytestVerified": false,
   "stablePlaytestBoundary": "CAPTURED_BLACK_BOX_VALIDATION_WINDOW_ONLY",
-  "gameEntryObserved": true,
-  "gameEntryEvidenceAuthority": "CORRELATED_GITHUB_ACTIONS_BLACK_BOX_EVIDENCE",
+  "gameEntryObserved": false,
+  "gameEntryEvidenceAuthority": "VISUAL_REVIEW_REJECTED_GAME_ENTRY",
   "gameEntryObservationRecordedAt": "2026-09-16",
   "verifiedObservedStages": [
     "APP_LAUNCH",
-    "GAME_ENTRY",
     "INPUT_EXERCISE",
     "VISUAL_STATE_CHANGE",
     "PROCESS_SURVIVAL",
@@ -28,12 +27,12 @@
   "sourceEvidence": {
     "privateRepository": "hans1177/jaewoon-ai-company",
     "workflowPath": ".github/workflows/vibe2-open-source-apk-blackbox.yml",
-    "latestCompletedRun": 35108834552,
-    "latestRunNumber": 9,
-    "latestArtifactId": 10450933474,
-    "latestArtifactDigest": "sha256:0879c796c4aad4591f5fdeca9ec8bfb5f0f82289866b51f31e7b19d86fe6b511",
-    "latestResult": "PASS",
-    "latestFailure": null,
+    "latestCompletedRun": 35109831419,
+    "latestRunNumber": 10,
+    "latestArtifactId": 10451912521,
+    "latestArtifactDigest": "sha256:07eeccecd6e5f11f7e31d3a90e8a00c060b39f4055d5cbb1a5e48ce639176388",
+    "latestResult": "PARTIAL",
+    "latestFailure": "GAME_ENTRY_REJECTED_TUTORIAL_MOVE_GUIDE_REMAINED_VISIBLE_ON_MAP_BEFORE_AND_AFTER_INPUT",
     "runtimeType": "REDROID_NATIVE_ARM64_DIRECT_EXEC",
     "hostArch": "aarch64",
     "guestAndroid": "14",
@@ -44,75 +43,59 @@
   },
   "verifiedObservedFacts": [
     {
-      "id": "actual-game-entry-correlated",
-      "evidenceAuthority": "RUN_9_ARTIFACT",
-      "fact": "After the first-run language and tutorial prompts were cleared, the captured run reached the actual turn-based world map with the Celts game state visible.",
-      "boundary": "This is direct black-box game-entry evidence for the captured validation window only."
+      "id": "tutorial-overlay-still-blocks-clean-game-entry",
+      "evidenceAuthority": "RUN_10_ARTIFACT_VISUAL_REVIEW",
+      "fact": "The actual turn-based map, units and turn UI were visible, but the Move a unit tutorial guide remained over the play surface in the candidate game-entry and input captures.",
+      "boundary": "Because the tutorial overlay was still present, GAME_ENTRY is not promoted for this run even though the underlying map rendered."
     },
     {
-      "id": "input-caused-visible-state-change",
-      "evidenceAuthority": "RUN_9_ARTIFACT",
-      "fact": "A bounded horizontal swipe visibly changed the map viewport, and a later map tap produced visible movement-target feedback on the playable map.",
-      "boundary": "Only the captured input-to-visible-state response is promoted; AI, economy, combat resolution, hidden scoring and long-run strategy rules are not inferred."
+      "id": "input-changed-map-under-tutorial-overlay",
+      "evidenceAuthority": "RUN_10_ARTIFACT_VISUAL_REVIEW",
+      "fact": "A bounded pan changed the visible map framing and a tap produced movement-target feedback while the tutorial guide remained visible.",
+      "boundary": "This proves input response only. It does not satisfy the unobstructed GAME_ENTRY gate."
     },
     {
       "id": "runtime-survived-observed-input",
-      "evidenceAuthority": "RUN_9_ARTIFACT",
-      "fact": "The Unciv package remained alive and foreground after the observed map interactions with no captured FATAL EXCEPTION, native SIGABRT/SIGSEGV or ANR marker.",
-      "boundary": "This proves the captured validation window and does not claim indefinite long-run stability."
+      "evidenceAuthority": "RUN_10_ARTIFACT",
+      "fact": "The Unciv package remained alive after the observed interactions with no captured FATAL EXCEPTION, native SIGABRT/SIGSEGV or ANR marker in the validation window.",
+      "boundary": "This proves process survival and captured-window crash absence only."
     }
   ],
-  "distilledPositiveRuntimePatterns": [
+  "distilledPositiveRuntimePatterns": [],
+  "distilledPartialRuntimePatterns": [
     {
-      "id": "separate-first-run-prompts-from-playable-turn-map",
-      "scope": "mobile-onboarding-observation",
-      "evidence": [9],
-      "lesson": "A healthy strategy game runtime can still be blocked from meaningful play evidence by sequential first-run prompts even after the main map has loaded behind them.",
-      "reuseRule": "For Roblox mobile onboarding, distinguish app readiness, modal onboarding completion and the first unobstructed playable state instead of treating them as one milestone."
-    },
-    {
-      "id": "map-pan-is-direct-navigation-feedback",
-      "scope": "mobile-camera-and-map-input",
-      "evidence": [9],
-      "lesson": "A bounded swipe on the playable strategy map produced an immediately visible viewport change while preserving the surrounding game UI context.",
-      "reuseRule": "When validating Roblox touch camera or map navigation, capture before/after viewport evidence and keep core HUD context stable enough for the player to understand the movement."
-    },
-    {
-      "id": "contextual-tap-feedback-on-play-surface",
-      "scope": "mobile-interaction-feedback",
-      "evidence": [9],
-      "lesson": "A tap on the playable map produced visible contextual movement-target feedback rather than relying on an invisible state change.",
-      "reuseRule": "For Roblox mobile interactions, make actionable touch results visibly legible near the interaction context and verify that feedback from captured runtime evidence."
+      "id": "rendered-map-is-not-clean-game-entry-while-tutorial-overlay-remains",
+      "scope": "runtime-evidence",
+      "lesson": "A rendered strategy map underneath an instructional overlay is still an onboarding state when the evidence rule requires an unobstructed playable screen.",
+      "reuseRule": "For Roblox mobile verification, require the actual controllable play surface without blocking onboarding overlays before promoting GAME_ENTRY."
     }
   ],
   "distilledFailurePatterns": [
     {
-      "id": "tutorial-modal-block-is-automation-boundary-not-runtime-failure",
+      "id": "tutorial-task-must-be-completed-or-dismissed-before-promotion",
       "scope": "black-box-input-automation",
-      "evidence": [7, 8],
-      "lesson": "Repeated map taps did not prove gameplay while tutorial prompts were still intercepting input; the application itself remained healthy.",
-      "reuseRule": "Classify stale onboarding-modal coordinates as an automation-stage failure, correct the observed control boundary, and rerun without weakening the gameplay evidence gate."
+      "evidence": [9, 10],
+      "lesson": "The Move a unit tutorial guide persisted through map pan and tap probes, so the earlier positive promotion was too early.",
+      "reuseRule": "Complete or dismiss the observed tutorial task, recapture a clean play screen, then verify input-caused state change before promotion."
     }
   ],
   "routeDecisions": {
-    "githubHostedArm64Redroid": "VERIFIED_WORKING_ANDROID14_NATIVE_ARM64_RUN9",
+    "githubHostedArm64Redroid": "RUNTIME_HEALTHY_GAME_ENTRY_NOT_YET_VERIFIED_RUN10",
     "sourceOrAssetExtraction": "NOT_USED_FOR_THIS_BLACK_BOX_FLOW",
     "browserQa": "NOT_APPLICABLE"
   },
   "learningUse": {
     "allowed": [
-      "onboarding versus playable-state separation",
-      "mobile map-pan evidence binding",
-      "contextual touch feedback observation",
+      "onboarding versus unobstructed playable-state separation",
+      "partial input-response observation while promotion remains blocked",
       "foreground/process/crash correlation",
-      "automation failure classification",
-      "portable mobile interaction lessons that may inform later Roblox-specific implementation and verification"
+      "automation failure classification"
     ],
     "stillForbidden": [
+      "promoting this Unciv run as a positive training sample",
       "treating Android evidence as Roblox runtime evidence",
       "inferring hidden AI, economy, combat or scoring rules",
-      "copying game artwork, UI trade dress, names or implementation details into a Roblox game",
-      "claims about long-run strategy balance or progression not measured by the captured validation window"
+      "copying game artwork, UI trade dress, names or implementation details into a Roblox game"
     ]
   }
 }
