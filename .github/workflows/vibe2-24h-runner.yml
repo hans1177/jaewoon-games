@@ -20,6 +20,7 @@ on:
       - 'roblox-games/**'
       - 'unreal-games/**'
   schedule:
+    # Canonical hourly safety-net. Re-saved after observed GitHub schedule delivery gaps; runtime contract remains unchanged.
     - cron: '17 * * * *'
   workflow_dispatch:
 
