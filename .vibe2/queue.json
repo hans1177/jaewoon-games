@@ -2466,8 +2466,8 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 1,
+      "status": "queued",
+      "retries": 2,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -2510,7 +2510,10 @@
         "workload:changed-lines:0",
         "workload:prep-ms:1794",
         "workload:cycle-ms:425990",
-        "failure-cause:source-candidate-generation-failed"
+        "failure-cause:source-candidate-generation-failed",
+        "actions-run:35054895039",
+        "workload:prep-ms:1490",
+        "workload:cycle-ms:251252"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
