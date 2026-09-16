@@ -6,6 +6,7 @@ on:
       - vibe2-unreal-core
     paths:
       - 'tools/vibe2-roblox-studio-cli-runner.mjs'
+      - 'tools/vibe2-roblox-multiplayer-regression.mjs'
       - 'tools/runtime/roblox/**'
       - 'tools/vibe2-roblox-auto-player.mjs'
       - 'tools/vibe2-roblox-game-study.mjs'
@@ -38,6 +39,7 @@ jobs:
         run: |
           set -euo pipefail
           node --check tools/vibe2-roblox-studio-cli-runner.mjs
+          node --check tools/vibe2-roblox-multiplayer-regression.mjs
           node --check qa/vibe2-roblox-studio-cli-runner.test.mjs
           node --test qa/vibe2-roblox-studio-cli-runner.test.mjs
           node <<'NODE'
@@ -52,6 +54,8 @@ jobs:
           if(!target.commandArgs.some(x=>String(x).includes('creator-enabled-place-copying'))) throw new Error('copy permission contract missing');
           if(cfg.policy?.externalRobloxActiveAutomation!==false) throw new Error('generic external Roblox automation must remain disabled');
           if(cfg.policy?.externalCopyEnabledRobloxAutomation!==true) throw new Error('explicit copy-enabled Roblox automation policy missing');
+          if(Number(cfg.policy?.robloxStudioConcurrency?.defaultMultiplayerClients||0)!==2) throw new Error('default Roblox multiplayer regression must be 2 clients');
+          if(Number(cfg.policy?.robloxStudioConcurrency?.maxStudioTestClients||0)!==8) throw new Error('Roblox Studio client cap contract changed');
           const scenario=JSON.parse(fs.readFileSync(target.scenarioFile,'utf8'));
           if(!scenario.actions.some(x=>x.type==='key'&&x.key==='P')) throw new Error('Potion Shop real input action missing');
           for(const expression of ['game-loaded','player-present','player-gui-nonempty']) {
@@ -61,12 +65,13 @@ jobs:
           console.log('VIBE2_ROBLOX_STUDIO_CONTRACT=PASS');
           console.log('VIBE2_ROBLOX_EXISTING_AUTHENTICATED_RUNNER_REUSE=YES');
           console.log('VIBE2_ROBLOX_POTION_SHOP_TARGET_ACTIVE=YES');
+          console.log('VIBE2_ROBLOX_MULTIPLAYER_CONTRACT=2_OF_8');
           NODE
 
   live-studio:
     needs: contract
     runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
-    timeout-minutes: 12
+    timeout-minutes: 16
     steps:
       - uses: actions/checkout@v4
 
@@ -100,6 +105,16 @@ jobs:
             --command=node `
             --output="$env:RUNNER_TEMP/vibe2-roblox-studio-baseplate.json" `
             --timeout=120000
+
+      - name: Verify real two-client Studio multiplayer VirtualInput regression
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          node tools/vibe2-roblox-multiplayer-regression.mjs `
+            --clients=2 `
+            --output="$env:RUNNER_TEMP/vibe2-roblox-multiplayer.json" `
+            --timeout=150000
+          node -e "const fs=require('fs');const p=process.env.RUNNER_TEMP+'/vibe2-roblox-multiplayer.json';const r=JSON.parse(fs.readFileSync(p,'utf8'));if(r.runtimeVerified!==true)throw new Error('multiplayer runtime not verified');if(Number(r.multiplayer?.expectedClients||0)!==2)throw new Error('expected clients mismatch');if(Number(r.multiplayer?.resultCount||0)<2)throw new Error('not all clients reported');if(Number(r.multiplayer?.verifiedClients||0)<2)throw new Error('not all clients dispatched VirtualInput');if(r.authorityExpanded===true)throw new Error('authority expanded');console.log('VIBE2_ROBLOX_MULTIPLAYER_2_CLIENT=PASS')"
 
       - name: Study official uncopylocked Potion Shop through authenticated Studio
         shell: powershell
@@ -141,6 +156,7 @@ jobs:
           name: vibe2-roblox-studio-live-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/vibe2-roblox-studio-baseplate.json
+            ${{ runner.temp }}/vibe2-roblox-multiplayer.json
             ${{ runner.temp }}/vibe2-potion-shop-play.json
             ${{ runner.temp }}/vibe2-potion-shop-study.json
             ${{ runner.temp }}/vibe2-potion-shop-source/authorized-studio-manifest.json
