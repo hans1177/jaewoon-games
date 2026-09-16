@@ -1,0 +1,83 @@
+name: One-shot Recover Fresh Skyline Target From Studio Logs
+
+on:
+  push:
+    paths:
+      - '.github/workflows/roblox-skyline-recover-new-target-from-studio-logs.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  recover:
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    steps:
+      - name: Recover only the newly-created Skyline Rush target
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $cutoff = (Get-Date).AddHours(-2)
+          $roots = @(
+            (Join-Path $env:LOCALAPPDATA 'Roblox\logs'),
+            (Join-Path $env:LOCALAPPDATA 'Roblox\Studio\logs')
+          ) | Where-Object { Test-Path $_ }
+
+          if ($roots.Count -eq 0) { throw 'No Roblox Studio log directories found' }
+
+          $files = @()
+          foreach ($r in $roots) {
+            $files += Get-ChildItem -Path $r -Recurse -File -ErrorAction SilentlyContinue |
+              Where-Object { $_.LastWriteTime -ge $cutoff } |
+              Sort-Object LastWriteTime -Descending
+          }
+          $files = @($files | Select-Object -Unique)
+          Write-Host "ROBLOX_SKYLINE_RECOVERY_RECENT_LOG_COUNT=$($files.Count)"
+
+          $nameHit = $false
+          $candidateLines = New-Object System.Collections.Generic.List[string]
+          foreach ($f in $files) {
+            try {
+              $lines = Get-Content -LiteralPath $f.FullName -ErrorAction Stop
+              for ($i=0; $i -lt $lines.Count; $i++) {
+                if ($lines[$i] -match 'Skyline Rush') {
+                  $nameHit = $true
+                  $start = [Math]::Max(0, $i - 40)
+                  $end = [Math]::Min($lines.Count - 1, $i + 80)
+                  for ($j=$start; $j -le $end; $j++) {
+                    if ($lines[$j] -match '(?i)(place.?id|universe.?id|game.?id|publish|Skyline Rush)') {
+                      $candidateLines.Add($lines[$j])
+                    }
+                  }
+                }
+              }
+            } catch {}
+          }
+
+          Write-Host "ROBLOX_SKYLINE_RECOVERY_NAME_HIT=$nameHit"
+          Write-Host 'ROBLOX_SKYLINE_RECOVERY_CONTEXT_BEGIN'
+          $candidateLines | Select-Object -Unique | Select-Object -First 120 | ForEach-Object { Write-Host $_ }
+          Write-Host 'ROBLOX_SKYLINE_RECOVERY_CONTEXT_END'
+
+          $joined = ($candidateLines -join "`n")
+          $placeMatches = [regex]::Matches($joined, '(?i)(?:place.?id|placeId)[^0-9]{0,30}([1-9][0-9]{4,})')
+          $universeMatches = [regex]::Matches($joined, '(?i)(?:universe.?id|game.?id|gameId)[^0-9]{0,30}([1-9][0-9]{4,})')
+          $places = @($placeMatches | ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique)
+          $universes = @($universeMatches | ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique)
+
+          Write-Host "ROBLOX_SKYLINE_RECOVERY_PLACE_CANDIDATES=$($places -join ',')"
+          Write-Host "ROBLOX_SKYLINE_RECOVERY_UNIVERSE_CANDIDATES=$($universes -join ',')"
+
+          if (-not $nameHit) {
+            Write-Host 'ROBLOX_SKYLINE_RECOVERY=NO_NAME_BOUND_EVIDENCE'
+            exit 0
+          }
+          if ($places.Count -eq 1 -and $universes.Count -eq 1) {
+            Write-Host "ROBLOX_SKYLINE_RECOVERY=UNIQUE"
+            Write-Host "ROBLOX_SKYLINE_PLACE_ID=$($places[0])"
+            Write-Host "ROBLOX_SKYLINE_UNIVERSE_ID=$($universes[0])"
+          } else {
+            Write-Host 'ROBLOX_SKYLINE_RECOVERY=AMBIGUOUS'
+          }
+
+          Write-Host 'ROBLOX_PUBLISH_ATTEMPTED=NO'
+          Write-Host 'ROBLOX_RELEASE_CLAIM=NO'
