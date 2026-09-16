@@ -1175,17 +1175,17 @@
       "webValidationRequired": true,
       "musicValidationRequired": true,
       "status": "ACTIVE",
-      "currentStep": "TARGET_PLATFORM_SOURCE_BIND",
-      "canonicalState": "WAITING_TARGET_PLATFORM_REVALIDATION",
-      "sourcePath": "web-games/seed-roblox-obby-party-minigam-tower-of-hell",
+      "currentStep": "TARGET_PLATFORM_TECHNICAL_VALIDATION",
+      "canonicalState": "WAITING_TARGET_PLATFORM_VALIDATION",
+      "sourcePath": "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell",
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": null,
       "musicValidationPassed": false,
       "routingBlockers": [
-        "roblox-vibe2-verified-source-reconciliation-pending"
+        "roblox-runtime-evidence-pending"
       ],
       "webValidationLastAttemptAt": "2026-09-16T12:48:44.789Z",
-      "updatedAt": "2026-09-16T13:05:28.790Z",
+      "updatedAt": "2026-09-16T13:05:50.966Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -1193,8 +1193,8 @@
       "robloxSourceBootstrapFailedAt": null,
       "robloxRuntimePassed": false,
       "robloxProjectPath": "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell",
-      "robloxSourceCommit": "2dfa45dda24e966f160840599db607a76d575158",
-      "robloxSourceBootstrapPassedAt": "2026-09-16T12:20:07.358Z",
+      "robloxSourceCommit": "9bb320a8b08244053e4aa8748860f25f1de850c6",
+      "robloxSourceBootstrapPassedAt": "2026-09-16T13:05:50.966Z",
       "robloxSourceCandidateBranch": null,
       "robloxSourceCandidateReadyAt": null,
       "robloxBuildOrPackagePassed": false,
@@ -1954,7 +1954,7 @@
       "webInitialCycleMusicValidationPassed": false
     }
   ],
-  "updatedAt": "2026-09-16T13:05:28.790Z",
+  "updatedAt": "2026-09-16T13:05:50.966Z",
   "routerContractVersion": 4,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
