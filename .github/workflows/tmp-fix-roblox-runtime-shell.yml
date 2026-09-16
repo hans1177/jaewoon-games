@@ -1,0 +1,50 @@
+name: Temp Fix Roblox Runtime Shell
+
+on:
+  push:
+    branches:
+      - fix/roblox-runtime-windows-powershell-20260916
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[shell-patch]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/roblox-runtime-windows-powershell-20260916
+          fetch-depth: 0
+      - name: Patch authenticated Windows runner shell
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('.github/workflows/company-development-roblox-runtime-continuation.yml')
+          s=p.read_text()
+          old=s
+          count=s.count('shell: pwsh')
+          if count != 5:
+              raise SystemExit(f'expected 5 pwsh shells, found {count}')
+          s=s.replace('shell: pwsh','shell: powershell')
+          needle="artifactRunId=([int64]($env:ARTIFACT_RUN ?? '0'));"
+          replacement="artifactRunId=([int64]$(if ($env:ARTIFACT_RUN) { $env:ARTIFACT_RUN } else { '0' }));"
+          if needle not in s:
+              raise SystemExit('PowerShell 7 null-coalescing expression not found')
+          s=s.replace(needle,replacement,1)
+          if s==old:
+              raise SystemExit('no changes')
+          p.write_text(s)
+          PY
+          git diff --check
+          git diff -- .github/workflows/company-development-roblox-runtime-continuation.yml
+      - name: Commit patch to repair branch
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-release-repair'
+          git config user.email 'vibe2-release@users.noreply.github.com'
+          git add .github/workflows/company-development-roblox-runtime-continuation.yml
+          git commit -m 'fix(roblox): use available Windows PowerShell runtime [shell-patch]'
+          git push origin HEAD:fix/roblox-runtime-windows-powershell-20260916
