@@ -20,6 +20,7 @@ import {
   promoteGameStudyToExperience
 } from '../tools/vibe2-game-study.mjs';
 import { reserveGameStudyBatch, applyGameStudyFanIn } from '../tools/vibe2-game-study-queue.mjs';
+import { reserveVibeTaskBatch } from '../tools/vibe2-queue-control.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const webFixture = path.join(here, 'fixtures', 'vibe2-auto-player-web');
@@ -224,8 +225,64 @@ test('GAME STUDY reservation shares queue capacity and current backpressure cap'
   assert(reserved.selectedCount <= 9);
   assert(reserved.requestedMax <= 12);
   assert(reserved.effectiveMax <= 12);
+  assert.equal(reserved.scheduler.productionPriorityProtected, true);
+  assert.equal(reserved.productionReservedSlots, 0);
   assert.equal(reserved.queue.tasks.filter((row) => row.status === 'running').length <= 12, true);
   assert(reserved.matrix.every((row) => row.engine === 'web'));
+});
+
+test('GAME STUDY protects immediately runnable production slots even when study reserves first', () => {
+  const targets = {
+    version: 1,
+    mode: 'server-hourly-24h-parallel-study',
+    maxConcurrentTasks: 20,
+    targets: Array.from({ length: 20 }, (_, i) => ({
+      id: `study-web-${i}`,
+      enabled: true,
+      engine: 'web',
+      gameId: `study-game-${i}`,
+      url: `https://example.invalid/study-${i}`,
+      scenarioFile: `study/study-${i}.json`,
+      sourceAccess: 'observation-only'
+    }))
+  };
+  const productionTasks = Array.from({ length: 5 }, (_, i) => ({
+    id: `production-${i}`,
+    gameId: `production-game-${i}`,
+    target: 'web',
+    department: 'development',
+    type: 'implementation',
+    goal: `production work ${i}`,
+    status: 'queued',
+    sourceRoot: `web-games/production-${i}`,
+    responsibleFiles: [`web-games/production-${i}/game.js`],
+    dependencies: [],
+    priority: 'normal',
+    retries: 0,
+    maxRetries: 2,
+    evidence: []
+  }));
+  const reserved = reserveGameStudyBatch({ maxConcurrentTasks: 20, tasks: productionTasks }, targets, { currentMax: 20 }, { maxConcurrentTasks: 20 });
+
+  assert.equal(reserved.scheduler.productionPriorityProtected, true);
+  assert.equal(reserved.productionReservedSlots, 5);
+  assert.equal(reserved.studySlotCap, 15);
+  assert.equal(reserved.selectedCount, 15);
+  assert.equal(reserved.queue.tasks.filter((row) => row.id.startsWith('production-') && row.status === 'queued').length, 5);
+  assert.equal(reserved.queue.tasks.filter((row) => row.id.startsWith('game-study-') && row.status === 'running').length, 15);
+  assert.equal(reserved.queue.tasks.filter((row) => row.id.startsWith('game-study-') && row.status === 'blocked').length, 5);
+
+  const production = reserveVibeTaskBatch(reserved.queue, { maxConcurrentTasks: 20 });
+  assert.equal(production.tasks.length, 5);
+  assert(production.tasks.every((row) => row.id.startsWith('production-')));
+  assert.equal(production.queue.tasks.filter((row) => row.status === 'running').length, 20);
+});
+
+test('24h runner starts production and GAME STUDY together after planning', () => {
+  const workflow = fs.readFileSync(path.join(here, '..', '.github', 'workflows', 'vibe2-24h-runner.yml'), 'utf8');
+  assert.match(workflow, /\n  continuous:\n    needs: plan\n/);
+  assert.match(workflow, /\n  game_study:\n    needs: plan\n/);
+  assert.doesNotMatch(workflow, /\n  game_study:\n    needs: \[plan, continuous\]/);
 });
 
 test('GAME STUDY fan-in is the only step that updates server memory and settles study task', () => {
