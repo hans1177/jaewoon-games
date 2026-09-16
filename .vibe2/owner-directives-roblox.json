@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "updatedAt": "2026-09-16",
   "directives": [
     {
@@ -56,22 +56,59 @@
       "dependencies": [],
       "priority": "critical",
       "workUnits": 6,
-      "status": "pending",
+      "status": "completed",
       "fullRebuild": false,
       "rebuildMode": "INCREMENTAL",
-      "goal": "[OWNER_ROBLOX_PRIMARY] PHASE_2_ROUND_LOOP. 현재 main의 검증된 12-stage 물리 오비 코어를 유지하면서 실제 반복 플레이가 가능한 라운드 루프를 추가한다. GAME STUDY planner context에서 교차게임 검증된 input, movement, progression, UI 일반화 패턴을 실제 제작 판단에 사용한다. 완주 후 재접속 없이 짧은 결과 표시 뒤 다음 라운드를 시작할 수 있어야 하고, 새 라운드는 서버 권위로 stage/progress/score/time/finished 상태를 안전하게 초기화한 뒤 시작 지점에서 다시 물리 플레이하게 한다. 라운드 번호와 완주/다음 라운드 상태가 HUD에서 읽혀야 한다. RemoteEvent 버튼으로 stage를 올리거나 완주를 조작하지 않는다. 기존 체크포인트 순서 검증, hazard death, checkpoint respawn, 기본 Roblox 이동/점프/모바일 터치, per-player 상태 분리를 깨지 않는다. 외부 게임의 코드·고유 수치·에셋을 복제하지 않는다. 새 GAME STUDY 세션을 이 작업의 선행조건으로 만들지 말고 이미 fan-in된 검증 지식을 사용한다. 최종 candidate는 실제 Roblox Studio Play Mode에서 1라운드 완주 후 2라운드 초기화/재시작까지 검증한다.",
+      "goal": "[OWNER_ROBLOX_PRIMARY] PHASE_2_ROUND_LOOP. 현재 main의 검증된 12-stage 물리 오비 코어를 유지하면서 실제 반복 플레이가 가능한 라운드 루프를 추가한다. GAME STUDY planner context에서 교차게임 검증된 input, movement, progression, UI 일반화 패턴을 실제 제작 판단에 사용한다. 완주 후 재접속 없이 짧은 결과 표시 뒤 다음 라운드를 시작할 수 있어야 하고, 새 라운드는 서버 권위로 stage/progress/score/time/finished 상태를 안전하게 초기화한 뒤 시작 지점에서 다시 물리 플레이하게 한다. 라운드 번호와 완주/다음 라운드 상태가 HUD에서 읽혀야 한다. RemoteEvent 버튼으로 stage를 올리거나 완주를 조작하지 않는다. 기존 체크포인트 순서 검증, hazard death, checkpoint respawn, 기본 Roblox 이동/점프/모바일 터치, per-player 상태 분리를 깨지 않는다. 외부 게임의 코드·고유 수치·에셋을 복제하지 않는다. 새 GAME STUDY 세션을 이 작업의 선행조건으로 만들지 말고 이미 fan-in된 검증 지식을 사용한다. 최종 candidate는 실제 Roblox Play Mode에서 1라운드 완주 후 2라운드 초기화/재시작까지 검증한다.",
       "evidence": [
         "owner-selected:2026-09-16",
         "roblox-priority:1",
         "development-phase:round-loop",
-        "game-study-required:verified-planner-context",
         "game-study-source:central-fan-in",
         "game-study-new-session-required:false",
-        "qa-required:roblox-studio-runtime",
-        "qa-required:round-2-restart",
         "direct-main-write:false",
         "ai-required:false",
-        "base-main:6d0099ab0740a336153cbd4aab56d52fd18d9204"
+        "studio-runtime-run:35052018297",
+        "studio-runtime:PASS",
+        "round-1-finished:PASS",
+        "round-2-reset:PASS",
+        "round-2-start-position:PASS",
+        "round-2-playable:PASS",
+        "promotion-pr:681",
+        "main-merge:6baf6083cce129f3cbdfd4d0efcf4833b150573b"
+      ]
+    },
+    {
+      "id": "OWNER-ROBLOX-OBBY-MAP-DIVERSITY-20260916-R4",
+      "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+      "title": "Skyline Sprint",
+      "sourceRoot": "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell",
+      "responsibleFiles": [
+        "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/server/Game.server.luau",
+        "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell/client/Game.client.luau"
+      ],
+      "dependencies": [],
+      "priority": "critical",
+      "workUnits": 10,
+      "status": "pending",
+      "fullRebuild": false,
+      "rebuildMode": "INCREMENTAL",
+      "goal": "[OWNER_ROBLOX_PRIMARY] PHASE_3_MAP_AND_OBSTACLE_DIVERSITY. 최신 main의 R3 12-stage 체크포인트/리스폰/서버권위/반복 라운드 구조를 보존하면서 Skyline Sprint의 실제 맵 공간과 장애물을 게임답게 고도화한다. 큰 공간 흐름은 시작 로비에서 도시를 타고 올라가 정상에 도달하는 수직 진행으로 유지하고 Stage 1-3 Rooftop, 4-6 Construction, 7-9 Machinery, 10-12 Skyline Summit의 네 구역 정체성을 사용한다. 각 구역의 지형, 높이, 동선, 장애물 조합, 시각적 구분, 난이도 상승은 Vibe가 현재 게임 구조와 모바일 기본 이동/점프 물리를 보고 직접 설계한다. 초반은 읽기 쉬운 정적 점프, 중반은 이동/타이밍, 후반은 회전/소멸/복합 패턴처럼 체감 다양성이 증가해야 하며 모든 스테이지가 동일한 Step A/Step B 반복처럼 보이면 안 된다. 외부 게임 맵/고유 연출/코드 복제 금지. GameConfig/RemoteEvent 호환성, 순차 체크포인트, 낙하/위험 사망, 최신 체크포인트 복귀, Round 1→2 자동 반복, per-player 상태 분리, 모바일 기본 조작을 깨지 않는다. Vibe가 candidate 제작 후 실제 Roblox 런타임에서 전구간 진행·사망복귀·완주·다음 라운드 회귀를 검증하고 실패하면 원인을 수정해 재검증한다.",
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "roblox-priority:1",
+        "development-phase:map-obstacle-diversity",
+        "vibe-owner:design-implementation-runtime-qa-repair-retest",
+        "verifier-role:evidence-validation-and-learning-only",
+        "qa-required:real-roblox-runtime",
+        "qa-required:12-stage-playthrough",
+        "qa-required:checkpoint-respawn",
+        "qa-required:round-2-regression",
+        "mobile-default-controls:preserve",
+        "server-authority:preserve",
+        "game-study-source:verified-existing-knowledge-only",
+        "game-study-new-session-required:false",
+        "base-main:6baf6083cce129f3cbdfd4d0efcf4833b150573b"
       ]
     }
   ]
