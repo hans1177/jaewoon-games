@@ -2484,7 +2484,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "candidate-awaiting-qa-and-deployment",
       "evidence": [
         "central-policy:COMPANY_FLOW.md",
         "owner-directive:roblox-development",
@@ -2553,7 +2553,13 @@
         "workload:changed-lines:0",
         "workload:prep-ms:1443",
         "workload:cycle-ms:4022",
-        "failure-cause:source-candidate-generation-failed"
+        "failure-cause:source-candidate-generation-failed",
+        "vibe2/candidate/OWNER-ROBLOX-OBBY-AUTONOMOUS-BALANCE-20260916-R5-primary-35070683383-3",
+        "candidate-sha:4b95286f7d8c28304ffdd7ff2ac7c18ee97dfa67",
+        "base-main:14be6929c4f7d7af4d122d833b50cd3cf2048dcb",
+        "incremental-qa-cache:HIT",
+        "workload:prep-ms:1435",
+        "workload:cycle-ms:6801"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
