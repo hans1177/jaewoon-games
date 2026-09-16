@@ -157,6 +157,23 @@ test('fan-in keeps a push-callback fallback and does not depend on default-branc
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
 });
 
+test('fan-in explicitly dispatches only the persisted Roblox winner to Candidate Runtime',()=>{
+  const persist=workflow.indexOf('VIBE2_HIERARCHICAL_FAN_IN=PASS');
+  const start=workflow.indexOf('- name: Dispatch Roblox candidate Studio QA');
+  const end=workflow.indexOf('- name: Upload generated machine handoff and role review',start);
+  assert(persist>=0 && start>persist && end>start);
+  const dispatch=workflow.slice(start,end);
+  assert(dispatch.includes("if: steps.persist.outcome == 'success'"));
+  assert(dispatch.includes("const prefix='vibe2/candidate/OWNER-ROBLOX-OBBY-';"));
+  assert(dispatch.includes("String(task.target||'').toLowerCase()!=='roblox'"));
+  assert(dispatch.includes("task.blocker!=='candidate-awaiting-qa-and-deployment'"));
+  assert(dispatch.includes('actions-run:${process.env.GITHUB_RUN_ID}'));
+  assert(dispatch.includes("ref:'main',inputs:{candidate_ref:process.argv[1]}"));
+  assert(dispatch.includes('vibe2-roblox-candidate-runtime.yml/dispatches'));
+  assert(dispatch.includes("if [ \"$code\" != '204' ]"));
+  assert(!dispatch.includes('git push origin'));
+});
+
 test('worker never writes queue or parallelism state directly during early refill signaling',()=>{
   const start=workflow.indexOf('  worker:');
   const end=workflow.indexOf('  fan_in:');
