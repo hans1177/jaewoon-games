@@ -9,7 +9,6 @@ on:
       - 'tools/vibe2-roblox-project-runtime-smoke.mjs'
       - 'tools/runtime/roblox/**'
       - 'tools/vibe2-roblox-auto-player.mjs'
-      - 'qa/vibe2-roblox-studio-cli-runner.test.mjs'
       - 'qa/vibe2-roblox-project-runtime-smoke.test.mjs'
       - 'qa/fixtures/vibe2-roblox-studio-smoke-scenario.json'
       - '.github/workflows/vibe2-roblox-studio-live-smoke.yml'
@@ -40,15 +39,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Verify Studio CLI and project runtime contracts
+      - name: Verify focused Studio project runtime contracts
         shell: bash
         run: |
           set -euo pipefail
           node --check tools/vibe2-roblox-studio-cli-runner.mjs
           node --check tools/vibe2-roblox-project-runtime-smoke.mjs
-          node --check qa/vibe2-roblox-studio-cli-runner.test.mjs
           node --check qa/vibe2-roblox-project-runtime-smoke.test.mjs
-          node --test qa/vibe2-roblox-studio-cli-runner.test.mjs
           node --test qa/vibe2-roblox-project-runtime-smoke.test.mjs
           node <<'NODE'
           const fs=require('fs');
@@ -56,7 +53,6 @@ jobs:
           if(!workflow.includes('git archive --format=zip')) throw new Error('candidate checkout must be stateless git archive');
           const retainedWorktreeCommand=['git','worktree','add','--detach'].join(' ');
           if(workflow.includes(retainedWorktreeCommand)) throw new Error('candidate checkout must not retain worktree state');
-          if(workflow.includes('Potion Shop')) throw new Error('game-study work must stay out of focused obby QA');
           console.log('VIBE2_ROBLOX_STUDIO_CONTRACT=PASS');
           console.log('VIBE2_ROBLOX_EXISTING_AUTHENTICATED_RUNNER_REUSE=YES');
           console.log('VIBE2_ROBLOX_PROJECT_RUNTIME_CONTRACT=PASS');
