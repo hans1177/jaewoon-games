@@ -104,13 +104,19 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
-          $owned = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object { ([string]$_.CommandLine) -match 'vibe2-roblox-skyline-' })
+          $owned = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object {
+            $commandLine = [string]$_.CommandLine
+            ($commandLine -match 'vibe2-roblox-skyline-') -or (($commandLine -match '(?i)--task\s+RunScript') -and ($commandLine -match '(?i)--quitAfterExecution'))
+          })
           foreach ($process in $owned) {
             Write-Host "VIBE2_ROBLOX_CANDIDATE_CLEANUP_PID=$($process.ProcessId)"
             Stop-Process -Id ([int]$process.ProcessId) -Force -ErrorAction SilentlyContinue
           }
           if ($owned.Count -gt 0) { Start-Sleep -Milliseconds 750 }
-          $remaining = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object { ([string]$_.CommandLine) -match 'vibe2-roblox-skyline-' })
+          $remaining = @(Get-CimInstance Win32_Process -Filter "Name='RobloxStudioBeta.exe'" -ErrorAction SilentlyContinue | Where-Object {
+            $commandLine = [string]$_.CommandLine
+            ($commandLine -match 'vibe2-roblox-skyline-') -or (($commandLine -match '(?i)--task\s+RunScript') -and ($commandLine -match '(?i)--quitAfterExecution'))
+          })
           if ($remaining.Count -gt 0) { throw "Vibe2 candidate Studio cleanup failed: $($remaining.Count)" }
           Write-Host "VIBE2_ROBLOX_CANDIDATE_STUDIO_CLEANUP=PASS"
           Write-Host "VIBE2_ROBLOX_CANDIDATE_STUDIO_REAPED=$($owned.Count)"
