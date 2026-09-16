@@ -1,0 +1,96 @@
+name: Skyline Publication Target Discovery
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/skyline-publication-target-discovery.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skyline-publication-target-discovery
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    if: github.head_ref == 'diag/skyline-publication-target-discovery-20260917'
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 5
+    steps:
+      - name: Verify authenticated Studio runner
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
+          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
+          Write-Host 'SKYLINE_TARGET_DISCOVERY_RUNNER=roblox-studio-local'
+
+      - name: Inspect local Studio logs for Skyline-only target evidence
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $logRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+          if (-not (Test-Path $logRoot)) {
+            Write-Host 'SKYLINE_TARGET_LOG_EVIDENCE=NONE:NO_LOG_ROOT'
+            exit 0
+          }
+          $cutoff = (Get-Date).AddDays(-14)
+          $files = @(Get-ChildItem $logRoot -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -ge $cutoff })
+          $hits = @()
+          foreach ($file in $files) {
+            $lines = @(Get-Content $file.FullName -ErrorAction SilentlyContinue)
+            for ($i = 0; $i -lt $lines.Count; $i++) {
+              if ($lines[$i] -match '(?i)Skyline Sprint|seed-roblox-obby-party-minigam-tower-of-hell') {
+                $from = [Math]::Max(0, $i - 12)
+                $to = [Math]::Min($lines.Count - 1, $i + 12)
+                $context = ($lines[$from..$to] -join "`n")
+                $ids = [regex]::Matches($context, '(?i)(?:universe|game|place)(?:Id|ID)?[^0-9]{0,20}([1-9][0-9]{4,})')
+                foreach ($m in $ids) { $hits += $m.Value }
+              }
+            }
+          }
+          $hits = @($hits | Sort-Object -Unique)
+          if ($hits.Count -eq 0) {
+            Write-Host 'SKYLINE_TARGET_LOG_EVIDENCE=NONE'
+          } else {
+            Write-Host 'SKYLINE_TARGET_LOG_EVIDENCE=FOUND'
+            foreach ($hit in $hits) { Write-Host "SKYLINE_TARGET_LOG_MATCH=$hit" }
+          }
+
+      - name: Resolve authenticated Studio user identity without changing Roblox state
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $studio = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions\*\RobloxStudioBeta.exe') -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          $script = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.luau'
+          $stdout = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.stderr.log'
+          $output = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.output.log'
+          @'
+          local StudioService = game:GetService("StudioService")
+          local ok, userId = pcall(function()
+              return StudioService:GetUserId()
+          end)
+          if not ok then
+              print("SKYLINE_TARGET_STUDIO_USER_ID=UNAVAILABLE")
+              print("SKYLINE_TARGET_STUDIO_USER_ERROR=" .. tostring(userId))
+          else
+              print("SKYLINE_TARGET_STUDIO_USER_ID=" .. tostring(userId))
+          end
+          print("SKYLINE_TARGET_LOCAL_GAME_ID=" .. tostring(game.GameId))
+          print("SKYLINE_TARGET_LOCAL_PLACE_ID=" .. tostring(game.PlaceId))
+          '@ | Set-Content -Path $script -Encoding utf8
+          $args = @('--task','RunScript','--runScriptFile',$script,'--outputFile',$output,'--quitAfterExecution')
+          $p = Start-Process -FilePath $studio.FullName -ArgumentList $args -Wait -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          $combined = ''
+          if (Test-Path $stdout) { $combined += (Get-Content $stdout -Raw) }
+          if (Test-Path $stderr) { $combined += "`n" + (Get-Content $stderr -Raw) }
+          if (Test-Path $output) { $combined += "`n" + (Get-Content $output -Raw) }
+          $sentinels = @($combined -split "`r?`n" | Where-Object { $_ -match '^SKYLINE_TARGET_' })
+          foreach ($line in $sentinels) { Write-Host $line }
+          if ($p.ExitCode -ne 0) { throw "Roblox Studio exited $($p.ExitCode)" }
+          if (-not ($sentinels -match '^SKYLINE_TARGET_STUDIO_USER_ID=[1-9][0-9]*$')) { throw 'authenticated Studio user id not observed' }
+          Write-Host 'SKYLINE_TARGET_IDENTITY_DISCOVERY=PASS'
