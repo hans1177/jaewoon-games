@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: company-seed-design-runtime
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
