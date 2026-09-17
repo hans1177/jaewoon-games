@@ -117,22 +117,8 @@ ownerCurrentProductionContract:
       - MINUTE_15_TO_25_VARIATION_ESCALATION_STORY_OR_STRATEGY_CHANGE
       - MINUTE_25_TO_30_MID_GOAL_REWARD_AND_NEXT_PLAY_MOTIVATION
     paddingByHealthIdleWaitOrPureRepetitionForbidden: true
-  strictReview:
-    scoreScale: 100
-    passMinimum: 80
-    implementationPassMinimum: 90
-    excellentDesignMinimum: 90
+  strictHardGatePolicy:
     scoreCannotOverrideHardGate: true
-    weights:
-      IDEA_AND_DISTINCTNESS: 15
-      CATEGORY_FIT: 10
-      PLATFORM_FIT: 10
-      DESIGN_FIDELITY: 15
-      THIRTY_MINUTE_SESSION_QUALITY: 15
-      IMPLEMENTATION_COMPLETENESS: 15
-      STORY_AND_CAUSALITY: 10
-      PROGRESSION_ECONOMY_BALANCE: 5
-      ART_AND_DIRECTION_FIDELITY: 5
     hardRejectCodes:
       - DESIGN_MISMATCH
       - STORY_INCOHERENT
@@ -147,12 +133,6 @@ ownerCurrentProductionContract:
       - TARGET_PLATFORM_UX_FAIL
       - FATAL_RUNTIME_BUG
       - QA_EVIDENCE_MISSING
-    scoreBands:
-      DESIGN_PASS: 80_TO_100_AND_ALL_HARD_GATES_PASS
-      DESIGN_EXCELLENT: 90_TO_100_AND_ALL_HARD_GATES_PASS
-      DESIGN_REVISE: 60_TO_79_OR_CORRECTABLE_HARD_GATE
-      DESIGN_REBUILD: 0_TO_59_OR_STRUCTURAL_FAILURE
-      IMPLEMENTATION_PASS: 90_TO_100_AND_ALL_HARD_GATES_PASS
     rejectHandling:
       correctable: FIX_EXISTING_CANDIDATE_AND_REVALIDATE
       structural: REMOVE_TEST_CANDIDATE_AND_REBUILD_FROM_APPROVED_DESIGN
@@ -321,7 +301,6 @@ ownerCurrentProductionContract:
   
   webImplementationReview:
     appliesTo: WEB_REAL_PLAYABLE_IMPLEMENTATION
-    supersedesGenericStrictReviewWeightsForWebImplementation: true
     scoreScale: 100
     hardGateBeforeScoring: true
     hardGateFailureForbidsTop30AndPlatformDispatch: true

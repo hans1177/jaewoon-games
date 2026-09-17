@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 40,
+  "revision": 41,
   "updatedAt": "2026-09-17",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
@@ -97,7 +97,6 @@
       "unratedGamesLast": true,
       "scoreSource": "CURRENT_WEB_INITIAL_CYCLE_STRICT_SCORE",
       "scoreRequiresInitialCyclePass": true,
-      "scoreRequiresSchema13": true,
       "scoreRequiresMusicPass": true,
       "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": true,
       "reworkOrRevalidationScoresNotShownAsCurrent": true,
@@ -711,16 +710,6 @@
     "existing-public-web-builds-survive-class-movement",
     "paid-ai-paid-overage-and-paid-runners-remain-forbidden"
   ],
-  "strictReview": {
-    "scoreScale": 100,
-    "designPassMinimum": 80,
-    "homepageTestMinimum": 80,
-    "implementationPassMinimum": 90,
-    "excellentDesignMinimum": 90,
-    "scoreCannotOverrideHardGate": true,
-    "designReviseMin": 60,
-    "designRebuildMax": 59
-  },
   "homepageTesting": {
     "minimumWebStrictScore": 80,
     "hardGatesMustPass": true,
