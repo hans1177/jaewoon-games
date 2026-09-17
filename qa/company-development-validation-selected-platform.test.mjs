@@ -21,17 +21,30 @@ test('DEVELOPMENT_CONFIRMED consumes canonical schema15 Web evidence and indepen
   assert.match(contract,/WEB_PLATFORM_PROMOTION_MINIMUM=90/);
   assert.match(contract,/REAL_ELAPSED_GAMEPLAY/);
   assert.match(contract,/meaningfulGameplayMilliseconds/);
-  assert.match(source,/WAITING_WEB_GAMEPLAY_VALIDATION/);
-  assert.match(source,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/);
+  assert.match(source,/WEB_GAMEPLAY_REPAIR_REQUIRED/);
+  assert.match(source,/WEB_CONTENT_EXPANSION_REPAIR_REQUIRED/);
+  assert.match(source,/WEB_STRICT_REPAIR_REQUIRED/);
   assert.match(source,/insufficientContentReturnsToDevelopment:true/);
   assert.match(source,/finalDepthConsumesPostDevelopmentSource:true/);
   assert.doesNotMatch(source,/WAITING_WEB_FINAL_CONTENT_DEPTH/);
-  assert.match(source,/WAITING_WEB_GAMEPLAY_REVALIDATION/);
-  assert.match(source,/WAITING_WEB_STRICT_IMPROVEMENT/);
   assert.match(source,/webValidationRequired:true/);
   assert.match(source,/musicValidationRequired:true/);
   assert.match(source,/webValidationOptional:false/);
   assert.match(source,/realPlayableWebGameRequired:true/);
+});
+
+test('ordinary gate failure is active unlimited repair, not a waiting terminal state',()=>{
+  assert.match(source,/TARGET_PLATFORM_REPAIR_REQUIRED/);
+  assert.match(source,/DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED/);
+  assert.match(source,/gateFailureMeansImmediateRepair:true/);
+  assert.match(source,/repairUntilPass:true/);
+  assert.match(source,/repairAttemptLimit:null/);
+  assert.match(source,/repairEscalationDoesNotStopLoop:true/);
+  assert.match(source,/FIX_FAILED_AXIS_AND_REVALIDATE/);
+  assert.match(source,/REIMPLEMENT_FAILED_SUBSYSTEM/);
+  assert.match(source,/REVIEW_CORE_LOOP_AND_SYSTEM_CONNECTIONS/);
+  assert.match(source,/REBUILD_FROM_APPROVED_DESIGN_AND_CONTINUE_REPAIR/);
+  assert.match(source,/DEVELOPMENT_REPAIR_LIMIT=UNLIMITED/);
 });
 
 test('Web score and target-platform implementation score are stored separately',()=>{
