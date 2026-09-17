@@ -30,7 +30,7 @@ test('one router recognizes all selected platforms and aliases',()=>{
   assert.equal(normalizeSelectedPlatform('uefn'),'FORTNITE_UEFN');
   assert.equal(resolveSelectedPlatform({targetPlatform:'ROBLOX'}),'ROBLOX');
   assert.equal(canonicalTargetStep(),'TARGET_PLATFORM_TECHNICAL_VALIDATION');
-  assert.equal(canonicalTargetWaitingState(),'WAITING_TARGET_PLATFORM_VALIDATION');
+  assert.equal(canonicalTargetWaitingState(),'TARGET_PLATFORM_REPAIR_REQUIRED');
 });
 
 test('all three platforms have one common adapter registry entry without inventing UEFN runtime success',()=>{
@@ -53,7 +53,7 @@ test('global selected-platform development window is deterministic, capped at tw
   const eligible=(gameId,selectedPlatform,enqueuedAt)=>({
     gameId,selectedPlatform,targetPlatform:selectedPlatform,enqueuedAt,
     productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
-    currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+    currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
     webValidationPassedAt:'2026-09-14T00:00:00.000Z',musicValidationPassed:true,
     formalImplementationPassed:true,formalImplementationVerdict:'PASS',webStrictScore:95,
     strictImplementationHardFailures:[],webValidationSchemaVersion:13,webPromotionRevalidationPassed:true,
@@ -77,7 +77,7 @@ test('verified owner Roblox release handoff enters the platform window without w
     gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
     selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',enqueuedAt:'2026-09-13T00:28:35.330Z',
     productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
-    currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+    currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
     webValidationPassedAt:null,musicValidationPassed:false,formalImplementationPassed:false,formalImplementationVerdict:'REVISE',
     robloxVibe2VerifiedHandoff:{
       verified:true,authority:'vibe2-authoritative-studio-qa-plus-owner-release-intent',
@@ -95,7 +95,7 @@ test('verified owner Roblox release handoff enters the platform window without w
 test('global development window never expands beyond the owner twenty-game maximum',()=>{
   const rows=Array.from({length:25},(_,i)=>({
     gameId:`game-${String(i).padStart(2,'0')}`,selectedPlatform:i%2?'ROBLOX':'UNITY',enqueuedAt:`2026-09-14T00:${String(i).padStart(2,'0')}:00Z`,
-    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+    productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
     webValidationPassedAt:'2026-09-14T00:00:00.000Z',musicValidationPassed:true,formalImplementationPassed:true,formalImplementationVerdict:'PASS',
     webStrictScore:100,strictImplementationHardFailures:[],webValidationSchemaVersion:13,webPromotionRevalidationPassed:true,
   }));
