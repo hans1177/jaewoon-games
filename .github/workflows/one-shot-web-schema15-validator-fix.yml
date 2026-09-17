@@ -1,0 +1,36 @@
+name: One Shot Web Schema15 Validator Fix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/one-shot-web-schema15-validator-fix.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Apply exact schema15 validator correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          target='tools/company-development-web-gameplay-validation.mjs'
+          workflow='.github/workflows/one-shot-web-schema15-validator-fix.yml'
+          count="$(grep -c '^const VALIDATION_SCHEMA_VERSION=14;$' "$target" || true)"
+          test "$count" = "1"
+          sed -i 's/^const VALIDATION_SCHEMA_VERSION=14;$/const VALIDATION_SCHEMA_VERSION=15;/' "$target"
+          grep -q '^const VALIDATION_SCHEMA_VERSION=15;$' "$target"
+          rm "$workflow"
+          git config user.name 'jaewoon-company-ai'
+          git config user.email 'actions@users.noreply.github.com'
+          git add -- "$target" "$workflow"
+          git commit -m 'fix: align Web validator with schema15'
+          git pull --rebase origin main
+          git push origin HEAD:main
