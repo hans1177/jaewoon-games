@@ -163,7 +163,10 @@ function designScoreInfo(seed){
 }
 function scoreInfo(row,productionClass,seed){
   const design=designScoreInfo(seed);
-  if(productionClass==='DESIGN_ONLY')return design||{score:null,label:'점수 미평가',current:false,source:'SERVER_SEED_STRICT_DESIGN_REVIEW'};
+  const seedClass=String(seed?.productionClass||'').trim().toUpperCase();
+  const seedGeneration=String(seed?.generation||seed?.ownerResetRevision||'').trim().toUpperCase();
+  const ownerResetDesign=seedClass==='DESIGN_ONLY'&&seedGeneration.includes('OWNER')&&seedGeneration.includes('DESIGN')&&seedGeneration.includes('RESET');
+  if(ownerResetDesign||productionClass==='DESIGN_ONLY')return design||{score:null,label:'점수 미평가',current:false,source:'SERVER_SEED_STRICT_DESIGN_REVIEW'};
   const revalidating=reworkOrRevalidation(row);
   if(row){
     const queueScores=[
