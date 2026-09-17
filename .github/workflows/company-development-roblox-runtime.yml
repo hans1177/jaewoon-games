@@ -91,7 +91,7 @@ jobs:
             if(state==='DEVELOPMENT_BLOCKED')continue;
             if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
             const target=`roblox-games/${item.gameId}`;
-            if(fs.existsSync(target))continue;
+            if(fs.existsSync(target)&&!item.robloxSourceBootstrapFailedAt)continue;
             rows.push({
               gameId:item.gameId,
               gameName:item.gameName||item.gameId,
@@ -294,7 +294,7 @@ jobs:
             if(!item)throw new Error(`queue item missing during reconciliation: ${result.gameId}`);
             if(result.pass===true){
               Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
                 robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
@@ -304,7 +304,7 @@ jobs:
             }else{
               const detail=Array.isArray(result.blockers)&&result.blockers.length?`:${result.blockers.join('|')}`:'';
               Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_REVALIDATION',
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxSourceBootstrapFailedAt:stamp,
                 robloxRuntimePassed:false,routingBlockers:[`roblox-source-bootstrap:${result.failure||'existing-source-revalidation-failed'}${detail}`],updatedAt:stamp,
               });
@@ -317,7 +317,7 @@ jobs:
             if(!item)throw new Error(`queue item missing: ${result.gameId}`);
             if(result.pass===true){
               Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',sourcePath:result.sourcePath,targetSourcePath:result.sourcePath,
                 robloxProjectPath:result.sourcePath,robloxSourceCommit:result.sourceRevision,robloxSourceBootstrapPassedAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxSourceCandidateBranch:null,robloxSourceCandidateReadyAt:null,
@@ -326,7 +326,7 @@ jobs:
               passCount++;
             }else if(result.candidateReady===true&&String(result.candidateBranch||'').trim()){
               Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_REVALIDATION',
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',
                 robloxSourceCandidateBranch:result.candidateBranch,robloxSourceCandidateReadyAt:stamp,robloxSourceBootstrapFailedAt:null,
                 robloxRuntimePassed:false,routingBlockers:['roblox-source-promotion-pending'],updatedAt:stamp,
@@ -334,7 +334,7 @@ jobs:
               candidateCount++;
             }else{
               Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_REVALIDATION',
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',robloxSourceBootstrapFailedAt:stamp,
                 robloxRuntimePassed:false,routingBlockers:[`roblox-source-bootstrap:${result.failure||'unknown-failure'}`],updatedAt:stamp,
               });
@@ -371,7 +371,7 @@ jobs:
         run: |
           echo 'ROBLOX_SOURCE_FAILURE_ISOLATED=YES'
           echo 'ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO'
-          echo 'ROBLOX_RECURSIVE_RETRY_LOOP=AVOIDED_BY_FAILURE_DEPRIORITIZATION'
+          echo 'ROBLOX_SOURCE_REPAIR_UNLIMITED=YES'
 
       - name: Dispatch next Roblox source execution slice when other eligible work remains
         if: needs.source-plan.outputs.count != '0'
@@ -397,8 +397,7 @@ jobs:
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')continue;
             if(Boolean(item.robloxSourceCandidateReadyAt)&&String(item.robloxSourceCandidateBranch||'').trim())continue;
-            if(Boolean(item.robloxSourceBootstrapFailedAt))continue;
-            try{execFileSync('git',['cat-file','-e',`origin/main:roblox-games/${item.gameId}`],{stdio:'ignore'});continue;}catch{}
+            try{execFileSync('git',['cat-file','-e',`origin/main:roblox-games/${item.gameId}`],{stdio:'ignore'});if(!item.robloxSourceBootstrapFailedAt)continue;}catch{}
             count++;
           }
           process.stdout.write(String(count));
@@ -468,7 +467,7 @@ jobs:
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
-            if(String(item.canonicalState||'').toUpperCase()!=='WAITING_TARGET_PLATFORM_VALIDATION')continue;
+            if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
             const sourcePath=String(item.robloxProjectPath||item.targetSourcePath||item.sourcePath||`roblox-games/${item.gameId}`).trim();
             const sourceRevision=String(item.robloxSourceCommit||'').trim();
             const artifactIdentity=String(item.robloxBuildArtifactIdentity||'').trim();
@@ -662,7 +661,7 @@ jobs:
             if(!item)throw new Error(`queue item missing during Roblox package persist: ${result.gameId}`);
             if(result.pass===true&&String(result.artifactIdentity||'').startsWith('sha256:')){
               Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 robloxBuildOrPackagePassed:true,robloxBuildSourceRevision:result.sourceRevision,robloxBuildArtifactIdentity:result.artifactIdentity,
                 robloxBuildPassedAt:stamp,robloxBuildFailedAt:null,robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
                 robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
@@ -675,7 +674,7 @@ jobs:
               passCount++;
             }else{
               Object.assign(item,{
-                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',
+                status:'ACTIVE',currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
                 robloxBuildOrPackagePassed:false,robloxBuildSourceRevision:result.sourceRevision,robloxBuildFailedAt:stamp,
                 robloxBuildPreflightPassed:false,robloxBuildPreflightPassedAt:null,robloxBuildPreflightFailedAt:null,robloxBuildPreflightEvidence:null,
                 robloxRuntimePassed:false,robloxRuntimePassedAt:null,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:null,robloxRuntimeRetryCount:0,
@@ -717,7 +716,7 @@ jobs:
         run: |
           echo 'ROBLOX_PACKAGE_FAILURE_ISOLATED=YES'
           echo 'ROBLOX_OTHER_GAME_PROMOTION_BLOCKED=NO'
-          echo 'ROBLOX_TECHNICAL_RETRY_LOOP=AVOIDED_BY_FAILURE_DEPRIORITIZATION'
+          echo 'ROBLOX_TECHNICAL_REPAIR_UNLIMITED=YES'
       - name: Dispatch next Roblox technical execution slice when other exact-source work remains
         if: needs.technical-plan.outputs.count != '0'
         env:
@@ -739,12 +738,10 @@ jobs:
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             if(String(item.status||'').toUpperCase()!=='ACTIVE')continue;
             if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
-            if(String(item.canonicalState||'').toUpperCase()!=='WAITING_TARGET_PLATFORM_VALIDATION')continue;
+            if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
             const revision=String(item.robloxSourceCommit||'').trim();
             const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
             if(exactBuild)continue;
-            const orchestrationMissing=String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
-            if(Boolean(item.robloxBuildFailedAt)&&!orchestrationMissing)continue;
             count++;
           }
           process.stdout.write(String(count));
@@ -783,9 +780,8 @@ jobs:
           state="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const q=JSON.parse(fs.readFileSync('/tmp/roblox-continuation-dispatch-queue.json','utf8'));
-          const maxRetryableFailures=3;
           const harnessVersion=String(process.env.ROBLOX_RUNTIME_HARNESS_VERSION||'');
-          let packagePending=0,preflightReady=0,runtimeReady=0;
+          let packagePending=0,preflightReady=0,runtimeReady=0,externalBlocked=0;
           for(const item of q.items||[]){
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
@@ -793,34 +789,30 @@ jobs:
             const revision=String(item.robloxSourceCommit||'').trim();
             const exactBuild=item.robloxBuildOrPackagePassed===true&&item.robloxBuildSourceRevision===revision&&String(item.robloxBuildArtifactIdentity||'').startsWith('sha256:');
             if(exactBuild){
-              if(item.robloxBuildPreflightPassed!==true&&!item.robloxBuildPreflightFailedAt){
+              if(item.robloxBuildPreflightPassed!==true){
                 preflightReady++;
-              }else if(item.robloxBuildPreflightPassed===true&&(item.robloxRuntimePassed!==true||String(item.robloxRuntimeHarnessVersion||'')!==harnessVersion)){
+              }else if(item.robloxRuntimePassed!==true||String(item.robloxRuntimeHarnessVersion||'')!==harnessVersion){
                 const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
-                const retryCount=sameHarness?Number(item.robloxRuntimeRetryCount||0):0;
-                const retryBudgetAvailable=retryCount<maxRetryableFailures;
-                const retryableInstallFailure=retryBudgetAvailable&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
-                const retryableRuntimeFailure=retryBudgetAvailable&&['roblox-studio-runtime-failed','roblox-studio-runtime-timeout'].includes(item.robloxRuntimeEvidence?.failure);
-                const retryableMissingEvidence=retryBudgetAvailable&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
-                const retryableAuthMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required';
-                if(!item.robloxRuntimeFailedAt||retryableInstallFailure||retryableRuntimeFailure||retryableMissingEvidence||retryableAuthMigration)runtimeReady++;
+                const authBlocked=sameHarness&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required';
+                if(authBlocked)externalBlocked++;
+                else runtimeReady++;
               }
               continue;
             }
             if(String(item.currentStep||'').toUpperCase()!=='TARGET_PLATFORM_TECHNICAL_VALIDATION')continue;
-            if(String(item.canonicalState||'').toUpperCase()!=='WAITING_TARGET_PLATFORM_VALIDATION')continue;
-            const orchestrationMissing=String(item.robloxFailureSignature||'')==='roblox-package-result-missing';
-            if(Boolean(item.robloxBuildFailedAt)&&!orchestrationMissing)continue;
+            if(String(item.canonicalState||'').toUpperCase()!=='TARGET_PLATFORM_REPAIR_REQUIRED')continue;
             packagePending++;
           }
-          process.stdout.write(`${packagePending} ${preflightReady} ${runtimeReady}`);
+          process.stdout.write(`${packagePending} ${preflightReady} ${runtimeReady} ${externalBlocked}`);
           NODE
           )"
-          read -r package_pending preflight_ready runtime_ready <<<"$state"
+          read -r package_pending preflight_ready runtime_ready external_blocked <<<"$state"
           echo "ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION=$package_pending"
           echo "ROBLOX_PREFLIGHT_READY_COUNT=$preflight_ready"
           echo "ROBLOX_RUNTIME_READY_COUNT=$runtime_ready"
+          echo "ROBLOX_EXTERNAL_BLOCKED_COUNT=$external_blocked"
           echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
+          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED'
           echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1'
           active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
