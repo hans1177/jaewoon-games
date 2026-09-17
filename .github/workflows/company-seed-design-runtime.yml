@@ -365,6 +365,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 1
+          fetch-tags: false
+
       - name: Continue seed supply and immediately repeat failed design gates
         env:
           GH_TOKEN: ${{ github.token }}
