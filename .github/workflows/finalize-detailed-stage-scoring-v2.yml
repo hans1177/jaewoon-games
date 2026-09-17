@@ -21,27 +21,60 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Clean stale scoring mirror keys
+      - name: Remove legacy scoring structures
         shell: bash
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          const file='company-directive.json';
-          const d=JSON.parse(fs.readFileSync(file,'utf8'));
+
+          const flowFile='COMPANY_FLOW.md';
+          let flow=fs.readFileSync(flowFile,'utf8');
+          const legacy=/  strictReview:\n[\s\S]*?(?=  stageGateScoringV2:)/;
+          if(!legacy.test(flow)) throw new Error('LEGACY_STRICT_REVIEW_BLOCK_NOT_FOUND');
+          const hardGate=`  strictHardGatePolicy:\n    scoreCannotOverrideHardGate: true\n    hardRejectCodes:\n      - DESIGN_MISMATCH\n      - STORY_INCOHERENT\n      - CORE_FUN_WEAK\n      - 30MIN_CONTENT_FAIL\n      - MULTIPLAYER_MISSING\n      - CATEGORY_MISMATCH\n      - IMPLEMENTATION_INCOMPLETE\n      - ARTBOOK_MISMATCH\n      - REPETITIVE_CONTENT\n      - GENERIC_TEMPLATE\n      - TARGET_PLATFORM_UX_FAIL\n      - FATAL_RUNTIME_BUG\n      - QA_EVIDENCE_MISSING\n    rejectHandling:\n      correctable: FIX_EXISTING_CANDIDATE_AND_REVALIDATE\n      structural: REMOVE_TEST_CANDIDATE_AND_REBUILD_FROM_APPROVED_DESIGN\n      automaticDropOnFirstFailureForbidden: true\n`;
+          flow=flow.replace(legacy,hardGate);
+          flow=flow.replace('    supersedesGenericStrictReviewWeightsForWebImplementation: true','    usesStageGateScoringV2ForWebImplementation: true');
+          fs.writeFileSync(flowFile,flow);
+
+          const directiveFile='company-directive.json';
+          const d=JSON.parse(fs.readFileSync(directiveFile,'utf8'));
+          delete d.strictReview;
           const display=d.homepageOperations?.developmentProgressDisplay;
           if(display){
             delete display.scoreRequiresSchema13;
             delete display.scoreRequiresSchema14;
             display.scoreRequiresSchema15=true;
           }
-          fs.writeFileSync(file,JSON.stringify(d,null,2)+'\n');
+          d.revision=Number(d.revision||0)+1;
+          d.updatedAt='2026-09-17';
+          fs.writeFileSync(directiveFile,JSON.stringify(d,null,2)+'\n');
+
+          const testFile='qa/company-detailed-stage-scoring-v2.test.mjs';
+          let test=fs.readFileSync(testFile,'utf8');
+          if(!test.includes("legacy scoring structures are absent")){
+            test += `\ntest('legacy scoring structures are absent',()=>{\n  const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));\n  assert.doesNotMatch(flow,/\\n  strictReview:/);\n  assert.match(flow,/strictHardGatePolicy:/);\n  assert.doesNotMatch(flow,/commonScoreMax: 60/);\n  assert.doesNotMatch(flow,/categoryScoreMax: 40/);\n  assert.equal(Object.hasOwn(directive,'strictReview'),false);\n  assert.equal(Object.hasOwn(directive.homepageOperations.developmentProgressDisplay,'scoreRequiresSchema13'),false);\n  assert.equal(directive.homepageOperations.developmentProgressDisplay.scoreRequiresSchema15,true);\n});\n`;
+            fs.writeFileSync(testFile,test);
+          }
           NODE
+      - name: Verify legacy scoring is gone
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -q '^  strictReview:' COMPANY_FLOW.md
+          ! grep -q 'scoreRequiresSchema13' company-directive.json
+          ! grep -q '"strictReview"[[:space:]]*:' company-directive.json
+          ! grep -q 'commonScoreMax: 60' COMPANY_FLOW.md
+          ! grep -q 'categoryScoreMax: 40' COMPANY_FLOW.md
+          ! grep -q 'CORE_GAME_LOOP:15,SYSTEM_CONNECTIVITY:10' tools/company-web-validation-evidence-contract.mjs
+          grep -q 'COMMON_GAME_QUALITY: 55' COMPANY_FLOW.md
+          grep -q 'CATEGORY_SPECIFIC_QUALITY: 25' COMPANY_FLOW.md
+          grep -q 'WEB_PLATFORM_QUALITY: 20' COMPANY_FLOW.md
       - name: Verify focused scoring contracts
         run: |
           node --test qa/company-detailed-stage-scoring-v2.test.mjs
           node --test qa/company-common-development-quality-contract.test.mjs
           node --test qa/company-development-validation-selected-platform.test.mjs
-      - name: Remove one-shot migration files and commit
+      - name: Remove one-shot files and commit
         shell: bash
         run: |
           set -euo pipefail
@@ -51,10 +84,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          if git diff --cached --quiet; then
-            echo 'FINALIZE_CHANGES=NONE'
-            exit 0
-          fi
-          git commit -m 'vibe2: finalize detailed stage scoring v2'
+          git commit -m 'vibe2: remove legacy scoring structure'
           git push origin HEAD:main
-          echo 'FINALIZE_CHANGES=APPLIED'
