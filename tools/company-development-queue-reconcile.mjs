@@ -10,6 +10,7 @@ const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 const webSourcePathOf=gameId=>`web-games/${gameId}`;
+const webResetTokenOf=game=>clean(game?.productionClassSource||game?.lifecycleReason||'OWNER_WEB_DEVELOPMENT_RESET');
 
 function latestDesignBaseline(root,gameId){
   const gameRoot=path.join(root,'design',gameId);
@@ -31,6 +32,45 @@ function mergeDuplicate(base,extra){
     if(base[key]===undefined||base[key]===null||base[key]==='')base[key]=value;
   }
   return base;
+}
+
+function applyOwnerWebDevelopmentReset(item,game,stamp){
+  if(game?.webDevelopmentResetRequired!==true)return false;
+  const token=webResetTokenOf(game);
+  if(item.ownerWebDevelopmentResetAppliedFor===token)return false;
+  item.currentStep='FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP';
+  item.canonicalState='RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION';
+  item.status='ACTIVE';
+  item.webValidationRequired=true;
+  item.musicValidationRequired=true;
+  item.webValidationPassedAt=null;
+  item.musicValidationPassed=false;
+  item.webPromotionRevalidationPassed=false;
+  item.formalImplementationPassed=false;
+  item.formalImplementationVerdict='REVISE';
+  item.homepageTestEligible=false;
+  item.homepageTestCandidate=false;
+  item.homepageTestScore=null;
+  item.homepageTestVerdict='WAITING_CONTENT_DEVELOPMENT_REWORK';
+  item.webInitialCyclePassed=false;
+  item.webInitialCyclePassedAt='';
+  item.webInitialCycleEvidencePath='';
+  item.webInitialCycleSourcePath='';
+  item.webInitialCycleSourceIndexSha256='';
+  item.webInitialCycleDesignBaselineSha256='';
+  item.webInitialCycleValidationSchemaVersion=0;
+  item.webInitialCycleStrictScore=null;
+  item.webInitialCycleStrictReviewPath='';
+  item.webInitialCycleSourceRevision='';
+  item.webInitialCycleMusicValidationPassed=false;
+  item.routingBlockers=[];
+  item.resumeStage='FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP';
+  item.failureCount=0;
+  item.executionEvidence=null;
+  item.ownerWebDevelopmentResetAppliedFor=token;
+  item.ownerWebDevelopmentResetAppliedAt=stamp;
+  item.updatedAt=stamp;
+  return true;
 }
 
 export function reconcileDevelopmentQueue({root='.'}={}){
@@ -57,6 +97,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const removed=[];
   const created=[];
   const preserved=[];
+  const reset=[];
   const stamp=new Date().toISOString();
 
   for(const [gameId,item] of unique){
@@ -79,7 +120,9 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     if(!item.selectedPlatform&&game.selectedPlatform)item.selectedPlatform=game.selectedPlatform;
     if(!item.targetPlatform&&game.selectedPlatform)item.targetPlatform=game.selectedPlatform;
     const hasExistingWeb=fs.existsSync(path.join(root,item.webSourcePath,'index.html'));
-    if(hasExistingWeb){
+    if(applyOwnerWebDevelopmentReset(item,game,stamp)){
+      reset.push(gameId);
+    }else if(hasExistingWeb){
       if(item.designComplete===undefined)item.designComplete=true;
       if(!item.designGateState)item.designGateState='DESIGN_COMPLETE_EXISTING_GAME_CONTINUATION';
       if(!item.currentStep||item.currentStep==='WEB_PLAYABLE_BOOTSTRAP')item.currentStep='WEB_GAMEPLAY_AND_MUSIC_VALIDATION';
@@ -99,6 +142,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     const hasExistingWeb=fs.existsSync(path.join(root,webSourcePath,'index.html'));
     const baseline=latestDesignBaseline(root,gameId);
     const selectedPlatform=clean(game.selectedPlatform||game.targetPlatform||'');
+    const forceWebDevelopment=game?.webDevelopmentResetRequired===true;
     const item={
       gameId,
       seedId:null,
@@ -114,13 +158,19 @@ export function reconcileDevelopmentQueue({root='.'}={}){
       designDate:baseline?.date||null,
       designComplete:hasExistingWeb||Boolean(baseline),
       designGateState:hasExistingWeb?'DESIGN_COMPLETE_EXISTING_GAME_CONTINUATION':baseline?'DESIGN_BASELINE_READY':'WAITING_DESIGN_BASELINE',
-      currentStep:hasExistingWeb?'WEB_GAMEPLAY_AND_MUSIC_VALIDATION':'WEB_PLAYABLE_BOOTSTRAP',
-      canonicalState:hasExistingWeb?'WAITING_WEB_GAMEPLAY_VALIDATION':'WAITING_WEB_PLAYABLE_BOOTSTRAP',
+      currentStep:forceWebDevelopment?'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP':hasExistingWeb?'WEB_GAMEPLAY_AND_MUSIC_VALIDATION':'WEB_PLAYABLE_BOOTSTRAP',
+      canonicalState:forceWebDevelopment?'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION':hasExistingWeb?'WAITING_WEB_GAMEPLAY_VALIDATION':'WAITING_WEB_PLAYABLE_BOOTSTRAP',
       webValidationRequired:true,
       musicValidationRequired:true,
+      webValidationPassedAt:null,
+      musicValidationPassed:false,
+      homepageTestEligible:false,
       homepageTestCandidate:false,
       homepageTestScore:null,
-      homepageTestVerdict:'WAITING_WEB_STRICT_REVIEW',
+      homepageTestVerdict:forceWebDevelopment?'WAITING_CONTENT_DEVELOPMENT_REWORK':'WAITING_WEB_STRICT_REVIEW',
+      formalImplementationPassed:false,
+      formalImplementationVerdict:forceWebDevelopment?'REVISE':null,
+      webPromotionRevalidationPassed:false,
       postPromotionArtbookRequired:false,
       postWebArtbookRequired:true,
       artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
@@ -128,11 +178,17 @@ export function reconcileDevelopmentQueue({root='.'}={}){
       preservationPolicy:'PRESERVE_EXISTING_REAL_GAME_BEFORE_REGENERATION',
       queueSource:'CANONICAL_DEVELOPMENT_QUEUE_RECONCILE',
       enqueuedAt:stamp,
-      webValidationQueuedAt:stamp
+      webValidationQueuedAt:stamp,
+      resumeStage:forceWebDevelopment?'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP':null,
+      failureCount:0,
+      routingBlockers:[],
+      ownerWebDevelopmentResetAppliedFor:forceWebDevelopment?webResetTokenOf(game):null,
+      ownerWebDevelopmentResetAppliedAt:forceWebDevelopment?stamp:null
     };
     next.push(item);
     queuedIds.add(gameId);
     created.push(gameId);
+    if(forceWebDevelopment)reset.push(gameId);
   }
 
   const before=JSON.stringify(queue.items);
@@ -144,7 +200,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     queue.reconciliationPolicy='CATALOG_ACTIVE_REBUILD_DEVELOPMENT_CONFIRMED_AUTO_GUARANTEE';
     writeJson(queuePath,queue);
   }
-  return {changed,created,removed,duplicateRemoved,preserved,queueCount:next.length};
+  return {changed,created,removed,reset,duplicateRemoved,preserved,queueCount:next.length};
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
@@ -152,6 +208,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DEVELOPMENT_QUEUE_RECONCILE_CHANGED=${result.changed?'YES':'NO'}`);
   console.log(`DEVELOPMENT_QUEUE_CREATED=${result.created.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_REMOVED=${result.removed.join(',')||'NONE'}`);
+  console.log(`DEVELOPMENT_QUEUE_WEB_RESET=${result.reset.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_DUPLICATES_REMOVED=${result.duplicateRemoved}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
 }
