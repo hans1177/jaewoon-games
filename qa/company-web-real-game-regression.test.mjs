@@ -10,6 +10,7 @@ import {
   evaluateWebValidationEvidence,
   finalContentDepthPass,
   resolveWebCategoryProfile,
+  resolveWebCategoryProfiles,
   scoreWebStrictImplementation,
   sha256Text,
 } from '../tools/company-web-validation-evidence-contract.mjs';
@@ -94,23 +95,25 @@ assert.deepEqual(WEB_COMMON_SCORE_WEIGHTS,{
 },'common Web score must remain the central-policy 55 points');
 assert.equal(Object.values(WEB_COMMON_SCORE_WEIGHTS).reduce((a,b)=>a+b,0),55);
 assert.deepEqual(WEB_CATEGORY_PROFILE_MAPPING,{
-  ACTION_SURVIVAL_ROGUELITE:'SURVIVAL',
-  SINGLE_DEFENSE_STRATEGY:'TOWER_DEFENSE',
-  PUZZLE:'PUZZLE',
-  CASUAL:'DESIGN_DERIVED_PROFILE_REQUIRED',
-  IDLE_GROWTH_RPG:'RPG',
-  STORY_COMPLETE_RPG:'STORY_ADVENTURE',
-  ROLEPLAY_LIFE_AVATAR:'LIFE_ROLEPLAY',
-  SIMULATOR_TYCOON_INCREMENTAL:'TYCOON_SIMULATOR',
-  BATTLEGROUND_FIGHTING_SHOOTER:'BATTLE_SHOOTER',
-  SURVIVAL_HORROR_ESCAPE:'SURVIVAL',
-  OBBY_PARTY_MINIGAME:'OBBY_PLATFORMER',
-  STORY_RPG_ADVENTURE_RPG:'STORY_ADVENTURE',
+  ACTION_SURVIVAL_ROGUELITE:['SURVIVAL'],
+  SINGLE_DEFENSE_STRATEGY:['TOWER_DEFENSE'],
+  PUZZLE:['PUZZLE'],
+  CASUAL:['DESIGN_DERIVED_PROFILE_REQUIRED'],
+  IDLE_GROWTH_RPG:['RPG','TYCOON_SIMULATOR'],
+  STORY_COMPLETE_RPG:['STORY_ADVENTURE','RPG'],
+  ROLEPLAY_LIFE_AVATAR:['LIFE_ROLEPLAY'],
+  SIMULATOR_TYCOON_INCREMENTAL:['TYCOON_SIMULATOR'],
+  BATTLEGROUND_FIGHTING_SHOOTER:['BATTLE_SHOOTER'],
+  SURVIVAL_HORROR_ESCAPE:['SURVIVAL'],
+  OBBY_PARTY_MINIGAME:['OBBY_PLATFORMER'],
+  STORY_RPG_ADVENTURE_RPG:['STORY_ADVENTURE','RPG'],
 });
 for(const [profile,weights] of Object.entries(WEB_CATEGORY_SCORE_WEIGHTS))assert.equal(Object.values(weights).reduce((a,b)=>a+b,0),25,`${profile} profile must remain 25 points`);
+assert.deepEqual(resolveWebCategoryProfiles('IDLE_GROWTH_RPG'),['RPG','TYCOON_SIMULATOR'],'composite genre must preserve all declared implementation profiles for OR scoring');
+assert.deepEqual(resolveWebCategoryProfiles('STORY_COMPLETE_RPG'),['STORY_ADVENTURE','RPG']);
 assert.equal(resolveWebCategoryProfile('ROLEPLAY_LIFE_AVATAR'),'LIFE_ROLEPLAY');
 assert.equal(resolveWebCategoryProfile('SINGLE_DEFENSE_STRATEGY'),'TOWER_DEFENSE');
-assert.equal(resolveWebCategoryProfile('CASUAL'),'DESIGN_DERIVED_PROFILE_REQUIRED');
+assert.equal(resolveWebCategoryProfile('CASUAL'),null,'design-derived categories must not invent a profile without design evidence');
 assert.equal(resolveWebCategoryProfile('CASUAL',{designDerivedCategoryProfile:'PUZZLE'}),'PUZZLE');
 
 const towerSource=`
@@ -204,7 +207,7 @@ assert.doesNotMatch(validator,/setAttribute\(\s*["']data-content-depth-stage|dat
 assert.doesNotMatch(validator,/GAMEPLAY_MILESTONE_DEPTH/,'final 30-minute proof must be real gameplay, not milestone proxy metadata');
 
 const cycle=read('tools/company-development-validation-cycle.mjs');
-assert.match(cycle,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/,'insufficient final content must return to canonical Web development');
+assert.match(cycle,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/,'legacy insufficient-content state must still normalize into canonical Web repair');
 assert.match(cycle,/insufficientContentReturnsToDevelopment:true/);
 assert.match(cycle,/finalDepthConsumesPostDevelopmentSource:true/);
 
