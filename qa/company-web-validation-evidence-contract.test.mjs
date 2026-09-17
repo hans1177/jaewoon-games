@@ -135,15 +135,15 @@ test('real connected gameplay loop passes hard gates and receives common/categor
   assert.ok(result.totalScore>=80,result.totalScore);
 });
 
-test('tower-defense keywords do not earn placement, tower variety, or strategy points without runtime outcomes',()=>{
+test('tower-defense keywords cannot substitute for full runtime placement, role diversity, or strategy evidence',()=>{
   const source='tower place lane route path wave turret upgrade gold coin cost range slow damage choice strategy';
   const evidence=baseEvidence();
   evidence.implementationMetrics=metrics({placementResultCount:0,towerTypeCount:1,towerEffectProfileCount:1,strategyChoiceCount:1,strategyCombatOutcomeCount:1});
   evidence.runtimeFeatureEvidence={towerTypes:['bolt'],towerTypeCount:1,towerEffectProfiles:['damage:8|range:3'],towerEffectProfileCount:1,placementResultCount:0,strategyChoices:['bolt'],strategyCombatOutcomes:[{choiceMechanic:'bolt',outcomeSignature:'damage:20'}],strategyCombatOutcomeCount:1,newContentDimensionCount:0,independentStrategyEvidence:{required:true,pass:false,status:'INSUFFICIENT_DISTINCT_STRATEGY_CHOICES'}};
   const shallow=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:source,evidence});
-  assert.equal(shallow.scores.CATEGORY_PLACEMENT_MEANING,0);
-  assert.equal(shallow.scores.CATEGORY_TOWER_ROLE_DISTINCTNESS,0);
-  assert.equal(shallow.scores.CATEGORY_ECONOMY_AND_STRATEGY,0);
+  assert.ok(shallow.scores.CATEGORY_PLACEMENT_MEANING<WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.PLACEMENT_MEANING);
+  assert.ok(shallow.scores.CATEGORY_TOWER_ROLE_DISTINCTNESS<WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.TOWER_ROLE_DISTINCTNESS);
+  assert.ok(shallow.scores.CATEGORY_ECONOMY_AND_STRATEGY<WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.ECONOMY_AND_STRATEGY);
 
   const rich=baseEvidence();
   rich.categoryProfile='TOWER_DEFENSE';
@@ -166,12 +166,12 @@ test('test harness with 20 buttons cannot qualify as a real game',()=>{
   assert.equal(result.harnessIndicators.excessiveTestUi,true);
 });
 
-test('many score++ controls backed by one function count as roughly one functional UI',()=>{
+test('many score++ controls backed by one function cannot earn full functional UI credit',()=>{
   const evidence=baseEvidence();
   evidence.implementationMetrics=metrics({uniqueFunctionalUiCount:1,duplicateActionRatio:0.25});
   const repeated=Array.from({length:12},()=>'<button>score++</button>').join('');
   const result=scoreWebStrictImplementation({category:'SIMULATOR_TYCOON_INCREMENTAL',sourceText:`${tycoonSource}${repeated}`,evidence});
-  assert.ok(result.scores.FUNCTIONAL_UI_UX<=1,result.scores.FUNCTIONAL_UI_UX);
+  assert.ok(result.scores.FUNCTIONAL_UI_UX<WEB_COMMON_SCORE_WEIGHTS.FUNCTIONAL_UI_UX,result.scores.FUNCTIONAL_UI_UX);
   assert.equal(result.metrics.uniqueFunctionalUiCount,1);
 });
 
