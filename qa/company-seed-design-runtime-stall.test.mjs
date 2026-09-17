@@ -60,9 +60,11 @@ test('main engine changes are serialized through bootstrap before one DESIGN_ONL
     'tools/company-design-artbook.mjs',
     'company-directive.json',
   ]) assert.ok(bootstrap.includes(`- '${path}'`),`bootstrap missing design engine path: ${path}`);
-  assert.match(bootstrap,/if: steps\.persist\.outputs\.persisted == 'true' \|\| github\.event_name == 'push'/);
+  assert.match(bootstrap,/Continue active DESIGN_ONLY work without cancelling active batch/);
+  assert.match(bootstrap,/if: always\(\)/);
+  assert.match(bootstrap,/ACTIVE_DESIGN_ONLY_RUNS=/);
+  assert.match(bootstrap,/GAME_SEED_DESIGN_CONTINUATION=SKIP_ACTIVE_BATCH/);
   assert.match(bootstrap,/gh workflow run company-seed-design-runtime\.yml --ref main/);
-  assert.match(bootstrap,/GAME_SEED_DESIGN_DISPATCH_SOURCE=/);
 });
 
 test('runtime state is overlaid onto the main engine without merging unrelated branch history',()=>{
@@ -94,12 +96,12 @@ test('structured Ollama design calls preserve JSON budget and reuse loaded model
   assert.match(design,/if\(!text\)throw new Error\('empty model response'\)/);
 });
 
-test('independent review generation only emits departments assigned to each model',()=>{
-  assert.match(design,/const modelReviewRoles=Object\.fromEntries\(pool\.map\(model=>\[model,ROLES\.filter\(role=>departmentReviewModels\[role\]\.includes\(model\)\)\]\)\);/);
-  assert.match(design,/const activeReviewModels=pool\.filter\(model=>modelReviewRoles\[model\]\.length>0\);/);
+test('independent review generation keeps one department-model task per required review lane',()=>{
+  assert.match(design,/const departmentReviewModels=Object\.fromEntries/);
+  assert.match(design,/const independentReviewTasks=Object\.fromEntries/);
   assert.match(design,/const reviewsSchemaFor=roles=>/);
-  assert.match(design,/parallelObject\(activeReviewModels,async model=>/);
-  assert.match(design,/ASSIGNED_DEPARTMENTS=\$\{roles\.join\(','\)\}/);
+  assert.match(design,/parallelObjectByLane\(Object\.keys\(independentReviewTasks\),key=>independentReviewTasks\[key\]\.model/);
+  assert.match(design,/ASSIGNED_DEPARTMENT=\$\{role\}/);
   assert.match(design,/DEPARTMENT_REVIEW_MISSING/);
 });
 
