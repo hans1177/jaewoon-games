@@ -29,6 +29,9 @@ const CENTRAL_POLICY_REQUIRED_TOKENS=[
   'webBuildIsNotNativeDevelopmentSubstitute: true',
   'nativePlatformReleaseStillRequiresNativeEvidence: true',
   'target: PROJECT_SELECTED_PLATFORM',
+  'canonicalLifecycleAuthority: GAME_CATALOG_LIFECYCLE_STATE_BY_GAME_ID',
+  'developmentPipelineTarget: 60',
+  'staleCompanyStatusCannotResurrectMissingCatalogGame: true',
 ];
 
 const statusMap={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
@@ -55,6 +58,9 @@ const baselineRank=book=>{
   return book?0.5:0;
 };
 const normalizeGenre=value=>clean(value).toLowerCase().replace(/\s+/g,' ');
+const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMOVED']);
+export function gameLifecycleState(game={}){const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
+export function lifecycleAllowsDevelopment(game={}){return ['ACTIVE','REBUILD'].includes(gameLifecycleState(game));}
 
 export function normalizeSelectedPlatform(value){
   const raw=clean(value).toUpperCase().replaceAll('-','_');
@@ -208,8 +214,9 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
   const bySlug=new Map(catalog.games.map(game=>[game.id,game]));
   const rows=portfolio.projects.map(project=>{
     const game=bySlug.get(project.slug)||{};
+    const lifecycleState=gameLifecycleState(game);
     const sourceReady=Boolean(clean(project.sourcePath)&&filesystem?.existsSync?.(project.sourcePath));
-    const hold=isHold(project)||!sourceReady;
+    const hold=isHold(project)||!sourceReady||!bySlug.has(project.slug)||!lifecycleAllowsDevelopment(game);
     const book=latestBook(artbooks,project.slug);
     const baseline=baselineRank(book);
     const targetPlatform=selectedPlatformOf(project,game);
@@ -219,7 +226,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     const family=gameplayFamily(game);
     const productionClass=productionClassOf(project,game);
     const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(platformReady?6:0)+(playable?3:0)+(game?.hasWebArchive===true?1:0);
-    return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,hold,evidenceScore,gameplayFamily:family,productionClass};
+    return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,hold,lifecycleState,evidenceScore,gameplayFamily:family,productionClass};
   });
 
   // 플랫폼 우선순위는 준비된 후보의 기본 집중 순서에만 쓰며 제작 등급 멤버십이나 플랫폼 진입을 제한하지 않는다.
@@ -227,7 +234,9 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
   const rawRankById=new Map(ranked.map((row,index)=>[row.project.id,index+1]));
 
   for(const row of rows){
-    const {project,game,productionClass,targetPlatform}=row;
+    const {project,game,productionClass,targetPlatform,lifecycleState}=row;
+    project.lifecycleState=lifecycleState;
+    if(!lifecycleAllowsDevelopment(game)){project.profileStatus=lifecycleState;project.mode=lifecycleState;project.targetEngine='lifecycle-inactive';continue;}
     project.productionClass=productionClass;
     project.productionClassSource=project.productionClassSource||'CURRENT_EVIDENCE_STATE';
     delete project.productionTier;
@@ -274,8 +283,10 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
   }
 
   for(const game of catalog.games){
+    game.lifecycleState=gameLifecycleState(game);
     const project=portfolio.projects.find(row=>row.slug===game.id);
     if(!project)continue;
+    if(!lifecycleAllowsDevelopment(game)){game.productionTarget='lifecycle-inactive';game.homepageStage=game.lifecycleState;continue;}
     const productionClass=productionClassOf(project,game);
     const targetPlatform=selectedPlatformOf(project,game);
     game.productionClass=productionClass;
@@ -296,10 +307,11 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     }
   }
 
-  const releaseIds=rows.filter(row=>row.productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED).map(row=>row.project.id).sort();
-  const developmentIds=rows.filter(row=>row.productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED).map(row=>row.project.id).sort();
-  const designIds=rows.filter(row=>row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY).map(row=>row.project.id).sort();
-  const counts=productionClassCounts(rows);
+  const liveRows=rows.filter(row=>['ACTIVE','REBUILD'].includes(row.lifecycleState));
+  const releaseIds=liveRows.filter(row=>row.productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED).map(row=>row.project.id).sort();
+  const developmentIds=liveRows.filter(row=>row.productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED).map(row=>row.project.id).sort();
+  const designIds=liveRows.filter(row=>row.productionClass===PRODUCTION_CLASSES.DESIGN_ONLY).map(row=>row.project.id).sort();
+  const counts=productionClassCounts(liveRows);
   const distinctFamilies=[...new Set(rows.filter(row=>row.productionClass!==PRODUCTION_CLASSES.DESIGN_ONLY).map(row=>row.gameplayFamily).filter(family=>family!=='UNCLASSIFIED'))];
   const diversityPolicy=portfolio?.productionClassPolicy?.portfolioDiversity||{};
   portfolio.productionClassState={
@@ -314,7 +326,9 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     releaseConfirmedGameIds:releaseIds,
     developmentConfirmedGameIds:developmentIds,
     designOnlyGameIds:designIds,
-    ranking:ranked.map((row,index)=>({rank:index+1,rawEvidenceRank:rawRankById.get(row.project.id),gameId:row.project.id,slug:row.project.slug,productionClass:row.productionClass,gameplayFamily:row.gameplayFamily,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,targetPlatform:row.targetPlatform||null,targetPlatformReady:row.targetPlatformReady,sourceReady:row.sourceReady})),
+    lifecycle:{active:rows.filter(row=>row.lifecycleState==='ACTIVE').map(row=>row.project.id),paused:rows.filter(row=>row.lifecycleState==='PAUSED').map(row=>row.project.id),rebuild:rows.filter(row=>row.lifecycleState==='REBUILD').map(row=>row.project.id),retired:rows.filter(row=>row.lifecycleState==='RETIRED').map(row=>row.project.id),removed:rows.filter(row=>row.lifecycleState==='REMOVED').map(row=>row.project.id)},
+    pipeline:{target:60,count:liveRows.length,activeDevelopmentWipMax:20,deficit:Math.max(0,60-liveRows.length)},
+    ranking:ranked.map((row,index)=>({rank:index+1,rawEvidenceRank:rawRankById.get(row.project.id),gameId:row.project.id,slug:row.project.slug,lifecycleState:row.lifecycleState,productionClass:row.productionClass,gameplayFamily:row.gameplayFamily,evidenceScore:row.evidenceScore,developmentFocus:row.score,artbookBaselineRank:row.baseline,targetPlatform:row.targetPlatform||null,targetPlatformReady:row.targetPlatformReady,sourceReady:row.sourceReady})),
   };
   delete portfolio.productionTierState;
   delete portfolio.productionTierPolicy;

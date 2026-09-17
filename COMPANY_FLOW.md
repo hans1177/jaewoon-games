@@ -49,6 +49,61 @@ ownerCurrentProductionContract:
     gameSeedBeginsOnlyAfterMaterialComposition: true
     gameProjectBeginsAfterDesignGate: true
     actualGameCountCap: null
+  gameLifecycleAndDevelopmentPipeline:
+    canonicalLifecycleAuthority: GAME_CATALOG_LIFECYCLE_STATE_BY_GAME_ID
+    lifecycleStates: [ACTIVE, PAUSED, REBUILD, RETIRED, REMOVED]
+    missingLifecycleStateDefaultsTo: ACTIVE
+    catalogAbsenceMeansNotDiscoverableForAutonomousDevelopment: true
+    staleCompanyStatusCannotResurrectMissingCatalogGame: true
+    staleQueueCannotResurrectInactiveGame: true
+    sourceFilesMayRemainArchivedAfterRetireOrRemove: true
+    sourceFileExistenceDoesNotImplyActiveLifecycle: true
+    stateRules:
+      ACTIVE:
+        developmentDiscoveryAllowed: true
+        newTaskCreationAllowed: true
+        countsTowardDevelopmentPipeline: true
+      PAUSED:
+        developmentDiscoveryAllowed: false
+        newTaskCreationAllowed: false
+        queuedTasksMustCancel: true
+        runningTaskMustStopAtNextSafeBoundary: true
+        countsTowardDevelopmentPipeline: false
+        sourcePreserved: true
+      REBUILD:
+        developmentDiscoveryAllowed: true
+        newTaskCreationAllowed: true
+        countsTowardDevelopmentPipeline: true
+        rebuildFromApprovedDesignRequired: true
+      RETIRED:
+        developmentDiscoveryAllowed: false
+        newTaskCreationAllowed: false
+        queuedTasksMustCancel: true
+        runningTaskMustStopAtNextSafeBoundary: true
+        countsTowardDevelopmentPipeline: false
+        autonomousRediscoveryForbidden: true
+        sourcePreservedByDefault: true
+      REMOVED:
+        developmentDiscoveryAllowed: false
+        newTaskCreationAllowed: false
+        queuedTasksMustCancel: true
+        runningTaskMustStopAtNextSafeBoundary: true
+        countsTowardDevelopmentPipeline: false
+        autonomousRediscoveryForbidden: true
+    developmentPipelineTarget: 60
+    activeDevelopmentWipMax: 20
+    readyBacklogPreferredRange: [25, 30]
+    reworkRebuildPreferredRange: [10, 15]
+    releasedLiveUsesSeparateSlots: true
+    automaticDropOnScoreFailureForbidden: true
+    repeatedFailureEscalation:
+      first: FIX_FAILED_AXIS_AND_REVALIDATE
+      second: REIMPLEMENT_FAILED_SUBSYSTEM
+      third: REVIEW_CORE_LOOP_AND_SYSTEM_CONNECTIONS
+      fourth: REBUILD_FROM_APPROVED_DESIGN
+      fifthOrLater: RETIRE_REVIEW_REQUIRES_STRUCTURAL_FAILURE_EVIDENCE
+    structuralFailureRequiredForRetire: true
+    emptyPipelineSlotsMustBeRefilledFromNewDesignPassedSeeds: true
   categoryAndPlatform:
     legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true
     fixedSixCategoryProductionQuotaForbidden: true
