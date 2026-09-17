@@ -132,10 +132,10 @@ const keywordOnlyRuntime={...runtimeFeatureEvidence,towerTypes:['fake-one'],towe
 const keywordOnlyScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:`${towerSource} tower tower turret slow range strategy choice strategic damage`,evidence:evidence({metrics:keywordOnlyMetrics,runtime:keywordOnlyRuntime})});
 assert.equal(keywordOnlyScore.scores.CATEGORY_PLACEMENT_MEANING,0,'placement words must not replace a real placement result');
 assert.equal(keywordOnlyScore.scores.CATEGORY_TOWER_ROLE_DISTINCTNESS,0,'tower words must not replace distinct runtime tower types/effects');
-assert.equal(keywordOnlyScore.scores.CATEGORY_ECONOMY_AND_STRATEGY,0,'strategy words must not replace choices with different combat outcomes');
+assert.ok(keywordOnlyScore.scores.CATEGORY_ECONOMY_AND_STRATEGY>0&&keywordOnlyScore.scores.CATEGORY_ECONOMY_AND_STRATEGY<WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.ECONOMY_AND_STRATEGY,'strategy keywords without divergent runtime outcomes may earn partial structural credit but never full strategy credit');
 const sameOutcomeRuntime={...runtimeFeatureEvidence,strategyChoices:['left','right'],strategyCombatOutcomes:[{choiceMechanic:'left',outcomeSignature:'same-result'},{choiceMechanic:'right',outcomeSignature:'same-result'}],independentStrategyEvidence:{required:true,pass:false,status:'STRATEGY_BRANCH_OUTCOMES_NOT_DIVERGENT',choiceCount:2,outcomeCount:1}};
 const sameOutcomeScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:towerSource,evidence:evidence({runtime:sameOutcomeRuntime})});
-assert.equal(sameOutcomeScore.scores.CATEGORY_ECONOMY_AND_STRATEGY,0,'two named choices with the same combat result are not strategic diversity');
+assert.ok(sameOutcomeScore.scores.CATEGORY_ECONOMY_AND_STRATEGY>0&&sameOutcomeScore.scores.CATEGORY_ECONOMY_AND_STRATEGY<WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.ECONOMY_AND_STRATEGY,'two named choices with the same combat result may earn partial structural credit but cannot earn full strategic-diversity credit');
 
 const placementInventory=[{id:'scope-place',path:'coreLoop[0]',label:'Read the next enemy wave and place towers on positions that cover the threatened route.'}];
 const shallowPlacement='<main data-approved-scope-count="1"><button data-scope-id="scope-place" data-mechanic-id="tower-place">타워 설치</button></main>';
