@@ -1,0 +1,46 @@
+name: Apply Game Lifecycle Sync Policy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/apply-game-lifecycle-sync-policy.mjs'
+      - '.github/workflows/apply-game-lifecycle-sync-policy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-game-lifecycle-sync-policy
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply central lifecycle policy and synchronization
+        run: node tools/apply-game-lifecycle-sync-policy.mjs
+      - name: Validate lifecycle synchronization contract
+        run: node --test qa/game-lifecycle-sync-policy.test.mjs
+      - name: Syntax check modified runtime tools
+        run: |
+          node --check tools/company-status-sync.mjs
+          node --check tools/vibe2-auto-planner.mjs
+      - name: Commit applied policy
+        run: |
+          if git diff --quiet -- COMPANY_FLOW.md tools/company-status-sync.mjs tools/vibe2-auto-planner.mjs qa/game-lifecycle-sync-policy.test.mjs; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add COMPANY_FLOW.md tools/company-status-sync.mjs tools/vibe2-auto-planner.mjs qa/game-lifecycle-sync-policy.test.mjs
+          git commit -m 'company: synchronize game lifecycle and development pipeline'
+          git push origin main
