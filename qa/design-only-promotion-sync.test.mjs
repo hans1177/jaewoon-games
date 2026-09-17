@@ -100,3 +100,47 @@ test('incomplete design is not promoted',()=>{
   write(root,'game-seed-state.json',{version:1,seeds:[{seedId:'S2',gameId:'g2',status:'ACTIVE'}]});baseFiles(root);write(root,'design/g2/2026-09-11/cycle-status.json',{baselineGate:{state:'DESIGN_BASELINE_REDESIGN_REQUIRED',ready:false}});
   const result=promoteReadyDesignSeeds({root});assert.equal(result.promoted.length,0);assert.equal(read(root,'development-queue.json').items.length,0);
 });
+
+
+test('owner reset DEVELOPMENT_CONFIRMED seed cannot bypass fresh strict review',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-reset-revise-'));
+  write(root,'game-seed-state.json',{
+    version:1,
+    ownerAllGamesDesignReset:{updatedAt:'2026-09-17T10:40:57.051Z',gameIds:['g-reset']},
+    seeds:[{seedId:'RESET',gameId:'g-reset',gameName:'Reset Game',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',GAME_CATEGORY:'PUZZLE',INITIAL_TARGET_PLATFORM:'UNITY'}]
+  });
+  write(root,'autonomous-portfolio.json',{version:1,projects:[]});
+  write(root,'game-catalog.json',{version:1,games:[{id:'g-reset',name:'Reset Game',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]});
+  write(root,'development-queue.json',{version:1,items:[{gameId:'g-reset',productionClass:'DEVELOPMENT_CONFIRMED',designBaselineSource:'design/g-reset/2026-09-13/design-revised.json',strictImplementationScore:100,webStrictScore:100,formalImplementationPassed:false}]});
+  fs.mkdirSync(path.join(root,'web-games/g-reset'),{recursive:true});fs.writeFileSync(path.join(root,'web-games/g-reset/index.html'),'<html><body>old</body></html>');
+  writeReadyDesign(root,'g-reset','2026-09-18',{verdict:'REVISE',totalScore:91,hardFailures:['CORE_FUN_WEAK'],reviewedAt:'2026-09-17T21:56:54.829Z'});
+  const result=promoteReadyDesignSeeds({root});
+  assert.equal(read(root,'development-queue.json').items.some(x=>x.gameId==='g-reset'),false);
+  assert.ok(result.skipped.some(x=>x.gameId==='g-reset'&&x.reason==='OWNER_RESET_STRICT_DESIGN_REVIEW_NOT_PASS'));
+  const seed=read(root,'game-seed-state.json').seeds.find(x=>x.gameId==='g-reset');
+  assert.equal(seed.strictDesignReview.verdict,'REVISE');
+  assert.deepEqual(seed.strictDesignReview.hardFailures,['CORE_FUN_WEAK']);
+});
+
+test('owner reset fresh strict PASS refreshes old promoted queue to the new baseline',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-reset-pass-'));
+  write(root,'game-seed-state.json',{
+    version:1,
+    ownerAllGamesDesignReset:{updatedAt:'2026-09-17T10:40:57.051Z',gameIds:['g-pass']},
+    seeds:[{seedId:'RESET-PASS',gameId:'g-pass',gameName:'Reset Pass',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY',GAME_CATEGORY:'PUZZLE',INITIAL_TARGET_PLATFORM:'UNITY'}]
+  });
+  write(root,'autonomous-portfolio.json',{version:1,projects:[]});
+  write(root,'game-catalog.json',{version:1,games:[{id:'g-pass',name:'Reset Pass',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]});
+  write(root,'development-queue.json',{version:1,items:[{gameId:'g-pass',productionClass:'DEVELOPMENT_CONFIRMED',designBaselineSource:'design/g-pass/2026-09-13/design-revised.json',designDate:'2026-09-13',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'PENDING_SELECTED_PLATFORM_BIND',strictImplementationScore:100,webStrictScore:100,formalImplementationPassed:true}]});
+  writeReadyDesign(root,'g-pass','2026-09-18',{verdict:'PASS',totalScore:92,hardFailures:[],reviewedAt:'2026-09-17T22:00:00.000Z'});
+  promoteReadyDesignSeeds({root});
+  const queue=read(root,'development-queue.json').items.find(x=>x.gameId==='g-pass');
+  assert.equal(queue.designBaselineSource,'design/g-pass/2026-09-18/design-revised.json');
+  assert.equal(queue.designDate,'2026-09-18');
+  assert.equal(queue.strictDesignScore,92);
+  assert.equal(queue.strictImplementationScore,null);
+  assert.equal(queue.webStrictScore,null);
+  assert.equal(queue.formalImplementationPassed,false);
+  assert.equal(queue.currentStep,'WEB_PLAYABLE_BOOTSTRAP');
+  assert.equal(queue.canonicalState,'WAITING_WEB_GAMEPLAY_VALIDATION');
+});
