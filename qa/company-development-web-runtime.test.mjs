@@ -272,5 +272,6 @@ test('platform routing does not wait for optional post-Web artbook',()=>{
   assert.match(source,/\n  route:\n[\s\S]{0,600}needs: \[web-gate\]/);
   assert.doesNotMatch(source,/\n  route:\n[\s\S]{0,600}needs: \[web-gate, post-web-artbook\]/);
   assert.match(source,/ARTBOOK_FAILURE_ONLY_BLOCKS_HOMEPAGE=YES/);
+  assert.match(source,/post-web-artbook:[\s\S]{0,400}continue-on-error: true/);
   assert.match(source,/POST_WEB_ARTBOOK_FAILURE_NATIVE_BLOCK=NO/);
 });
