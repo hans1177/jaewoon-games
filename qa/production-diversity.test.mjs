@@ -6,7 +6,7 @@ import { productionClassOf } from '../tools/production-classification.mjs';
 
 const fsStub={existsSync:()=>true};
 const project=(id,slug,total,productionClass)=>({id,slug,name:slug,sourcePath:`web-games/${slug}`,productionClass,profileStatus:productionClass,mode:productionClass==='DESIGN_ONLY'?'REDESIGN':'IMPROVE',developmentFocus:{total}});
-const game=(id,genre,productionClass)=>({id,name:id,genre,productionClass,homepageWebPlayable:true,hasWebArchive:true,webPath:`/web-games/${id}/`});
+const game=(id,genre,productionClass)=>({id,name:id,genre,productionClass,releasePublished:productionClass==='RELEASE_CONFIRMED',homepageWebPlayable:true,hasWebArchive:true,webPath:`/web-games/${id}/`});
 
 function fixture(){
   const assignments=[
