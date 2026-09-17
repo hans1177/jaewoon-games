@@ -48,7 +48,7 @@ test('central mirror preserves historical bootstrap while latest owner productio
   assert.match(flow,/thirtyMinuteRequirementStage: FINAL_CONTENT_DEPTH_VALIDATION_ONLY/);
   assert.match(flow,/finalContentDepthMinutesRequired: 30/);
   assert.match(flow,/passMinimum: 80/);
-  assert.match(flow,/implementationPassMinimum: 90/);
+  assert.match(flow,/TARGET_PLATFORM_IMPLEMENTATION_GATE:[\s\S]*?passMinimum: 90/);
   assert.match(flow,/excellentDesignMinimum: 90/);
   assert.match(flow,/designOnlyArtbookForbidden: true/);
   assert.match(flow,/preWebArtbookForbidden: true/);
