@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: company-seed-design-runtime
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -230,7 +230,7 @@ jobs:
           set -e
           if [ "$rc" -eq 0 ]; then echo 'STRICT_DESIGN_GATE=PASS'; else echo 'STRICT_DESIGN_GATE=REVISE_OR_REBUILD'; fi
           exit 0
-      - name: Apply one bounded review-feedback repair and re-review
+      - name: Apply review-feedback repair and re-review within this cycle
         if: steps.target.outputs.should_run == 'true'
         env:
           GAME_ID: ${{ matrix.target.game_id }}
@@ -247,9 +247,10 @@ jobs:
             set -e
             if [ "$rc" -eq 0 ]; then echo 'STRICT_DESIGN_REREVIEW=PASS'; else echo 'STRICT_DESIGN_REREVIEW=REVISE_OR_REBUILD'; fi
           else
-            echo 'STRICT_DESIGN_REREVIEW=SKIPPED_NO_GROUNDED_REPAIR'
+            echo 'STRICT_DESIGN_REREVIEW=NO_TARGETED_FIELD_REPAIR_THIS_CYCLE'
           fi
-          echo 'REVIEW_FEEDBACK_REPAIR_MAX=1'
+          echo 'REVIEW_FEEDBACK_REPAIR_PER_CYCLE=1'
+          echo 'DESIGN_GATE_TOTAL_REPAIR_ATTEMPTS=UNLIMITED'
       - name: Verify baseline and strict review contract
         if: steps.target.outputs.should_run == 'true'
         env:
@@ -283,10 +284,47 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Continue canonical seed supply evaluation once after design batch
+      - name: Continue seed supply and immediately repeat failed design gates
         env:
           GH_TOKEN: ${{ github.token }}
+        shell: bash
         run: |
+          set -euo pipefail
           gh workflow run company-game-seed-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo 'GAME_SEED_CONTINUATION_DISPATCHED=YES'
           echo 'GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX'
+          git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
+          pending="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';import path from 'node:path';import {execFileSync} from 'node:child_process';
+          const branch=process.env.COMPANY_RUNTIME_BRANCH;
+          const show=file=>execFileSync('git',['show',`origin/${branch}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
+          const state=JSON.parse(show('game-seed-state.json'));let count=0;
+          for(const seed of state.seeds||[]){
+            if(String(seed.status||'').toUpperCase()!=='ACTIVE')continue;
+            let passed=false;
+            try{
+              const tree=execFileSync('git',['ls-tree','-r','--name-only',`origin/${branch}`,`design/${seed.gameId}`],{encoding:'utf8',maxBuffer:32*1024*1024}).split(/\r?\n/).filter(Boolean);
+              const dates=[...new Set(tree.map(file=>file.match(new RegExp(`^design/${String(seed.gameId).replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}/(\\d{4}-\\d{2}-\\d{2})/`))?.[1]).filter(Boolean))].sort().reverse();
+              for(const date of dates){
+                const base=`design/${seed.gameId}/${date}`;
+                const status=JSON.parse(show(`${base}/cycle-status.json`));const review=JSON.parse(show(`${base}/strict-design-review.json`));
+                if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){passed=true;break;}
+              }
+            }catch{}
+            if(!passed)count++;
+          }
+          process.stdout.write(String(count));
+          NODE
+          )"
+          echo "DESIGN_GATE_REPAIR_PENDING=$pending"
+          active_other="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-seed-design-runtime.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),current=Number(process.env.GITHUB_RUN_ID);const n=(j.workflow_runs||[]).filter(r=>r.id!==current&&['queued','in_progress','pending','waiting','requested'].includes(r.status)).length;process.stdout.write(String(n));})")"
+          echo "DESIGN_GATE_ACTIVE_OTHER_RUNS=$active_other"
+          if [[ "$pending" =~ ^[1-9][0-9]*$ && "$active_other" == '0' ]]; then
+            gh workflow run company-seed-design-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=YES'
+          elif [[ "$pending" =~ ^[1-9][0-9]*$ ]]; then
+            echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=SKIP_ACTIVE_SIBLING'
+          else
+            echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=NO_ALL_PASS'
+          fi
+          echo 'DESIGN_GATE_REPAIR_LIMIT=UNLIMITED'
