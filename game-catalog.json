@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "updatedAt": "2026-09-17",
   "classificationPolicy": {
     "canonicalField": "productionClass",
@@ -16,11 +16,7 @@
       "id": "insect-survival",
       "name": "곤충 생존기",
       "description": "작은 세계에서 살아남는 생존 게임",
-      "genre": [
-        "생존",
-        "제작",
-        "탐험"
-      ],
+      "genre": ["생존", "제작", "탐험"],
       "image": "assets/insect-main-v3.webp",
       "webPath": "/web-games/insect-survival/",
       "hasWebArchive": true,
@@ -40,11 +36,7 @@
       "id": "bug-defense",
       "name": "곤충 디펜스",
       "description": "30웨이브 곤충 디펜스",
-      "genre": [
-        "웨이브",
-        "전략",
-        "곤충"
-      ],
+      "genre": ["웨이브", "전략", "곤충"],
       "image": "assets/insect-war-v2.webp",
       "webPath": "/web-games/bug-defense/",
       "hasWebArchive": true,
@@ -63,12 +55,8 @@
     {
       "id": "daechung-rpg",
       "name": "대충 RPG",
-      "description": "탐험과 전투가 이어지는 RPG · Unity Android 확장 개발 중",
-      "genre": [
-        "RPG",
-        "탐험",
-        "전투"
-      ],
+      "description": "탐험과 전투가 이어지는 RPG · 웹게임 개발부터 다시 진행 중",
+      "genre": ["RPG", "탐험", "전투"],
       "image": "assets/fantasy-rpg-v2.webp",
       "webPath": "/web-games/daechung-rpg/",
       "hasWebArchive": true,
@@ -76,14 +64,21 @@
       "unityProjectPath": "unity-games/daechung-rpg",
       "preferredPlatform": "unity-android",
       "selectedPlatform": "UNITY",
-      "homepagePublicationApproved": true,
+      "homepagePublicationApproved": false,
       "publishTestBuildWhenReady": true,
-      "homepageCategory": "release-confirmed",
-      "productionClass": "RELEASE_CONFIRMED",
-      "productionClassSource": "CURRENT_EVIDENCE_STATE",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_WEB_DEVELOPMENT_RESET_2026-09-17",
       "productionTarget": "unity-android",
-      "homepageStage": "출시확정 · Unity Android",
-      "homepageRecentWork": "Web 플레이 버전을 유지하면서 기존 Unity Android 확장 개발 경로를 그대로 보존합니다.",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_WEB_DEVELOPMENT_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_WEB_DEVELOPMENT_RESET",
+      "designBaselineMigration": "PRESERVE_EXISTING_GAME_AND_REENTER_WEB_DEVELOPMENT",
+      "webDevelopmentResetRequired": true,
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · 웹게임 개발 중",
+      "homepageRecentWork": "출시 상태를 해제하고 정상 개발 큐에서 웹게임 개발 단계부터 다시 진행합니다.",
       "homepageWebPlayable": true,
       "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg"
     },
@@ -91,10 +86,7 @@
       "id": "survival",
       "name": "나의 생존기",
       "description": "채집과 제작 중심 생존 게임",
-      "genre": [
-        "생존",
-        "채집"
-      ],
+      "genre": ["생존", "채집"],
       "image": "assets/title-survival.svg",
       "webPath": "/web-games/survival/",
       "hasWebArchive": true,
@@ -114,28 +106,25 @@
     {
       "id": "cozy-island",
       "name": "포근섬",
-      "description": "섬에서 채집과 낚시를 즐기는 힐링 생활 게임",
-      "genre": [
-        "힐링",
-        "생활",
-        "낚시"
-      ],
+      "description": "섬에서 채집과 낚시를 즐기는 힐링 생활 게임 · 웹게임 개발부터 다시 진행 중",
+      "genre": ["힐링", "생활", "낚시"],
       "image": "assets/title-cozy-island.svg",
       "webPath": "/web-games/cozy-island/",
       "hasWebArchive": true,
       "featured": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "OWNER_DIRECT_CONTINUE_2026-09-17",
+      "productionClassSource": "OWNER_DIRECT_WEB_DEVELOPMENT_RESET_2026-09-17",
       "productionTarget": "existing-web-game-continuation",
       "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_CONTINUE_DEVELOPMENT",
+      "lifecycleReason": "OWNER_DIRECT_WEB_DEVELOPMENT_RESET",
       "ownerExistingGame": true,
-      "developmentHandling": "OWNER_EXISTING_GAME_CONTINUE",
-      "designBaselineMigration": "PRESERVE_EXISTING_GAME_AND_CONTINUE",
+      "developmentHandling": "OWNER_WEB_DEVELOPMENT_RESET",
+      "designBaselineMigration": "PRESERVE_EXISTING_GAME_AND_REENTER_WEB_DEVELOPMENT",
+      "webDevelopmentResetRequired": true,
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageStage": "개발확정 · Web 개선 개발 중",
-      "homepageRecentWork": "기존 포근섬 Web 게임을 보존하면서 기능·콘텐츠·모바일 플레이 품질 개발을 계속합니다.",
+      "homepageStage": "개발확정 · 웹게임 개발 중",
+      "homepageRecentWork": "정상 개발 큐에서 웹게임 개발 단계부터 다시 진행합니다.",
       "homepageWebPlayable": true,
       "webUpdatedAt": "2026-09-17"
     },
@@ -143,10 +132,7 @@
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star",
       "name": "잃어버린 별의 메아리",
       "description": "액션 생존 로그라이트 · Unity 검증 중",
-      "genre": [
-        "액션",
-        "생존 로그라이트"
-      ],
+      "genre": ["액션", "생존 로그라이트"],
       "image": "assets/homepage-covers/lost-star.svg",
       "webPath": "/web-games/seed-action-survival-rogu-echoes-of-the-lost-star/",
       "hasWebArchive": true,
@@ -167,10 +153,7 @@
       "id": "seed-single-defense-strat-celestial-bastion",
       "name": "천상의 보루",
       "description": "싱글 디펜스 전략 · Unity 검증 중",
-      "genre": [
-        "디펜스",
-        "전략"
-      ],
+      "genre": ["디펜스", "전략"],
       "image": "assets/crystal-v2.webp",
       "webPath": "/web-games/seed-single-defense-strat-celestial-bastion/",
       "hasWebArchive": true,
@@ -191,10 +174,7 @@
       "id": "seed-puzzle-chromatic-cascade",
       "name": "색채의 연쇄",
       "description": "연쇄 퍼즐 · Unity 검증 중",
-      "genre": [
-        "퍼즐",
-        "모바일"
-      ],
+      "genre": ["퍼즐", "모바일"],
       "image": "assets/homepage-covers/chromatic-cascade.svg",
       "webPath": "/web-games/seed-puzzle-chromatic-cascade/",
       "hasWebArchive": true,
@@ -215,10 +195,7 @@
       "id": "seed-casual-realm-weaver",
       "name": "세계의 직조자",
       "description": "캐주얼 세계 창조 게임 · Unity 검증 중",
-      "genre": [
-        "캐주얼",
-        "모바일"
-      ],
+      "genre": ["캐주얼", "모바일"],
       "image": "assets/homepage-covers/realm-weaver.svg",
       "webPath": "/web-games/seed-casual-realm-weaver/",
       "hasWebArchive": true,
@@ -239,10 +216,7 @@
       "id": "seed-idle-growth-rpg-crystal-bloom",
       "name": "수정의 개화",
       "description": "방치 성장 RPG · Unity 검증 중",
-      "genre": [
-        "방치형",
-        "RPG"
-      ],
+      "genre": ["방치형", "RPG"],
       "image": "assets/card-rpg-v2.webp",
       "webPath": "/web-games/seed-idle-growth-rpg-crystal-bloom/",
       "hasWebArchive": true,
@@ -263,10 +237,7 @@
       "id": "seed-story-complete-rpg-chronicles-of-eldoria",
       "name": "엘도리아 연대기",
       "description": "스토리 완결 RPG · Unity 검증 중",
-      "genre": [
-        "스토리",
-        "RPG"
-      ],
+      "genre": ["스토리", "RPG"],
       "image": "assets/homepage-covers/eldoria.svg",
       "webPath": "/web-games/seed-story-complete-rpg-chronicles-of-eldoria/",
       "hasWebArchive": true,
