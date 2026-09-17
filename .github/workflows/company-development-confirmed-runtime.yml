@@ -84,7 +84,7 @@ jobs:
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
 
-      - name: Resolve DEVELOPMENT_CONFIRMED games missing fresh schema13 Web 80-point evidence
+      - name: Resolve DEVELOPMENT_CONFIRMED games missing fresh current-schema Web 80-point evidence
         id: targets
         env:
           PUSH_HEAD_MESSAGE: ${{ github.event.head_commit.message || '' }}
@@ -97,7 +97,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
-          import {evaluateWebValidationEvidence,sha256Text,WEB_HOMEPAGE_MINIMUM} from './tools/company-web-validation-evidence-contract.mjs';
+          import {evaluateWebValidationEvidence,sha256Text,WEB_HOMEPAGE_MINIMUM,WEB_VALIDATION_SCHEMA_VERSION} from './tools/company-web-validation-evidence-contract.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const runtimeRef=`origin/${process.env.COMPANY_RUNTIME_BRANCH}`;
           const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
@@ -168,7 +168,7 @@ jobs:
           console.log(`WEB_REPAIR_TARGET_COUNT=${rows.filter(x=>!x.existingWebValidated&&x.webInitialCyclePassed).length}`);
           console.log(`WEB_PILOT_TARGET=${requestedGameId||'NONE'}`);
           console.log('WEB_HOMEPAGE_THRESHOLD=80');
-          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=13');
+          console.log(`WEB_VALIDATION_SCHEMA_MINIMUM=${WEB_VALIDATION_SCHEMA_VERSION}`);
           console.log('WEB_STALE_SOURCE_OR_BASELINE_REQUEUED=YES');
           console.log('WEB_FORMAL_IMPLEMENTATION_THRESHOLD=90');
           console.log('WEB_VALIDATION_TIERS=MICRO_FAST_INITIAL_FULL_FINAL');
@@ -254,6 +254,7 @@ jobs:
           import path from 'node:path';
           import crypto from 'node:crypto';
           import {execFileSync} from 'node:child_process';
+          import {WEB_VALIDATION_SCHEMA_VERSION} from './tools/company-web-validation-evidence-contract.mjs';
           const item={
             gameId:process.env.GAME_ID,
             gameName:process.env.GAME_NAME,
@@ -328,7 +329,7 @@ jobs:
               const initialReport=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
               const initialScore=Number(initialReport.webStrictScore??initialReport.strictReview?.totalScore);
               const initialHardFailures=Array.isArray(initialReport.strictReview?.hardFailures)?initialReport.strictReview.hardFailures:[];
-              if(Number(initialReport.validationSchemaVersion||initialReport.version)!==13||initialReport.pass!==true||initialReport.initialPlayableCycle?.pass!==true||initialReport.musicRuntime?.pass!==true||!Number.isFinite(initialScore)||initialScore<80||initialHardFailures.length)throw new Error('WEB_INITIAL_CYCLE_OR_80_POINT_GATE_NOT_PASS');
+              if(Number(initialReport.validationSchemaVersion||initialReport.version)!==WEB_VALIDATION_SCHEMA_VERSION||initialReport.pass!==true||initialReport.initialPlayableCycle?.pass!==true||initialReport.musicRuntime?.pass!==true||!Number.isFinite(initialScore)||initialScore<80||initialHardFailures.length)throw new Error('WEB_INITIAL_CYCLE_OR_80_POINT_GATE_NOT_PASS');
               if(initialReport.contentDepthValidation?.pass===true||initialReport.homepageTestEligible===true)throw new Error('WEB_INITIAL_STAGE_MUST_NOT_CLAIM_FINAL_30MIN_PASS');
               initialReport.candidateSourcePath=candidatePath;
               initialReport.sourcePath=stableSource;
@@ -368,13 +369,13 @@ jobs:
               console.log('WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO');
             }else{
               if(item.webInitialCyclePassed!==true||!item.webInitialCyclePassedAt||!item.webInitialCycleEvidencePath||!item.webInitialCycleSourcePath)throw new Error('WEB_FINAL_REQUIRES_PERSISTED_INITIAL_PASS_BINDING');
-              if(item.webInitialCycleValidationSchemaVersion!==13||item.webInitialCycleMusicValidationPassed!==true)throw new Error('WEB_FINAL_REQUIRES_VALID_INITIAL_SCHEMA13_AND_MUSIC_PASS');
+              if(item.webInitialCycleValidationSchemaVersion!==WEB_VALIDATION_SCHEMA_VERSION||item.webInitialCycleMusicValidationPassed!==true)throw new Error('WEB_FINAL_REQUIRES_VALID_INITIAL_CURRENT_SCHEMA_AND_MUSIC_PASS');
               materialize(item.webInitialCycleEvidencePath);
               materialize(`${item.webInitialCycleSourcePath}/index.html`);
               const persistedInitial=JSON.parse(fs.readFileSync(item.webInitialCycleEvidencePath,'utf8'));
               const currentSourceSha256=sha256File(path.join(item.webInitialCycleSourcePath,'index.html'));
               const currentBaselineSha256=sha256File(item.designBaselineSource);
-              if(Number(persistedInitial.validationSchemaVersion||persistedInitial.version)!==13||persistedInitial.pass!==true||persistedInitial.initialPlayableCycle?.pass!==true||persistedInitial.contentDepthValidation?.pass===true||persistedInitial.homepageTestEligible===true)throw new Error('WEB_PERSISTED_INITIAL_EVIDENCE_INVALID');
+              if(Number(persistedInitial.validationSchemaVersion||persistedInitial.version)!==WEB_VALIDATION_SCHEMA_VERSION||persistedInitial.pass!==true||persistedInitial.initialPlayableCycle?.pass!==true||persistedInitial.contentDepthValidation?.pass===true||persistedInitial.homepageTestEligible===true)throw new Error('WEB_PERSISTED_INITIAL_EVIDENCE_INVALID');
               if(String(persistedInitial.sourcePath||'')!==item.webInitialCycleSourcePath)throw new Error('WEB_PERSISTED_INITIAL_SOURCE_PATH_MISMATCH');
               if(!item.webInitialCycleSourceIndexSha256||currentSourceSha256!==item.webInitialCycleSourceIndexSha256||persistedInitial.sourceIndexSha256!==item.webInitialCycleSourceIndexSha256)throw new Error('WEB_PERSISTED_INITIAL_SOURCE_HASH_MISMATCH');
               if(!item.webInitialCycleDesignBaselineSha256||currentBaselineSha256!==item.webInitialCycleDesignBaselineSha256||persistedInitial.designBaselineSha256!==item.webInitialCycleDesignBaselineSha256)throw new Error('WEB_PERSISTED_INITIAL_BASELINE_HASH_MISMATCH');
@@ -385,7 +386,7 @@ jobs:
               const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
               const strictScore=Number(report.webStrictScore??report.strictReview?.totalScore);
               const hardFailures=Array.isArray(report.strictReview?.hardFailures)?report.strictReview.hardFailures:[];
-              if(Number(report.validationSchemaVersion||report.version)!==13||report.pass!==true||report.musicRuntime?.pass!==true||report.contentDepthValidation?.validationMode!=='REAL_ELAPSED_GAMEPLAY'||report.contentDepthValidation?.pass!==true||Number(report.contentDepthValidation?.meaningfulGameplayMilliseconds)<1800000||report.homepageTestEligible!==true||!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_FINAL_REAL_CONTENT_DEPTH_OR_80_POINT_GATE_NOT_PASS');
+              if(Number(report.validationSchemaVersion||report.version)!==WEB_VALIDATION_SCHEMA_VERSION||report.pass!==true||report.musicRuntime?.pass!==true||report.contentDepthValidation?.validationMode!=='REAL_ELAPSED_GAMEPLAY'||report.contentDepthValidation?.pass!==true||Number(report.contentDepthValidation?.meaningfulGameplayMilliseconds)<1800000||report.homepageTestEligible!==true||!Number.isFinite(strictScore)||strictScore<80||hardFailures.length)throw new Error('WEB_FINAL_REAL_CONTENT_DEPTH_OR_80_POINT_GATE_NOT_PASS');
               const formalPass=report.formalImplementationPassed===true&&report.promotionRevalidation?.pass===true&&strictScore>=90&&hardFailures.length===0;
               report.candidateSourcePath=item.webInitialCycleSourcePath;
               report.sourcePath=item.webInitialCycleSourcePath;
@@ -407,7 +408,7 @@ jobs:
               const promotionBlocker=strictScore>=90?'web-90-independent-promotion-revalidation-required':'web-strict-score-below-formal-90';
               result={gameId:item.gameId,pass:true,update:{
                 status:formalPass?'PENDING':'ACTIVE',
-                currentStep:formalPass?'TARGET_PLATFORM_SOURCE_BIND':'WEB_STRICT_IMPROVEMENT',
+                currentStep:formalPass?'TARGET_PLATFORM_SOURCE_BIND':'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',
                 canonicalState:formalPass?'PENDING_SELECTED_PLATFORM_BIND':'WEB_STRICT_REPAIR_REQUIRED',
                 sourcePath:formalPass?item.targetSourcePath:item.webInitialCycleSourcePath,
                 webSourcePath:item.webInitialCycleSourcePath,webValidationRequired:true,musicValidationRequired:true,
@@ -418,7 +419,7 @@ jobs:
                 webValidationSchemaVersion:Number(report.validationSchemaVersion||report.version||0)||null,
                 webSourceIndexSha256:report.sourceIndexSha256||null,webDesignBaselineSha256:report.designBaselineSha256||null,
                 webPromotionRevalidationPassed:report.promotionRevalidation?.pass===true,
-                homepageTestEligible:true,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:'WAITING_ARTBOOK',
+                homepageTestEligible:true,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:formalPass?'WAITING_ARTBOOK':'WEB_STRICT_REPAIR_REQUIRED',
                 formalImplementationPassed:formalPass,formalImplementationVerdict:formalPass?'PASS':'REVISE',
                 postPromotionArtbookRequired:false,postWebArtbookRequired:true,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
                 webValidationSourceRevision:process.env.GITHUB_SHA,
@@ -441,7 +442,7 @@ jobs:
                 finalEvidencePersisted=true;
               }
               result={gameId:item.gameId,pass:false,update:{
-                status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION',
+                status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED',
                 sourcePath:item.webInitialCycleSourcePath||item.webSourcePath,webSourcePath:item.webInitialCycleSourcePath||item.webSourcePath,
                 webValidationRequired:true,musicValidationRequired:true,
                 webInitialCyclePassed:true,webInitialCyclePassedAt:item.webInitialCyclePassedAt,
@@ -452,18 +453,19 @@ jobs:
                 webInitialCycleMusicValidationPassed:item.webInitialCycleMusicValidationPassed,
                 webValidationPassedAt:null,musicValidationPassed:false,
                 webFinalContentDepthEvidencePath:finalEvidencePersisted?finalEvidenceRelative:(item.webFinalContentDepthEvidencePath||null),
-                homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WAITING_CONTENT_DEVELOPMENT_REWORK',
+                homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED',
                 formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
                 routingBlockers:[`web-content-development-rework:${signature}`],webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp,
               }};
               console.log(`WEB_FINAL_CONTENT_DEPTH_FAIL=${item.gameId}:${signature}`);
-              console.log('WEB_CANONICAL_STATE=RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION');
+              console.log('WEB_CANONICAL_STATE=WEB_CONTENT_EXPANSION_REPAIR_REQUIRED');
               console.log('WEB_CONTENT_RETURN_TO_DEVELOPMENT=YES');
               console.log('WEB_INITIAL_PASS_PRESERVED_FOR_REPAIR_CONTEXT=YES');
             }else{
               const rework=item.webInitialCyclePassed===true||item.existingWebValidated===true;
+              const repairState=rework?'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED':'WEB_GAMEPLAY_REPAIR_REQUIRED';
               result={gameId:item.gameId,pass:false,update:{
-                status:'ACTIVE',currentStep:rework?'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP':'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:rework?'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION':'WAITING_WEB_GAMEPLAY_REVALIDATION',
+                status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:repairState,
                 sourcePath:item.webInitialCycleSourcePath||item.webSourcePath,webSourcePath:item.webInitialCycleSourcePath||item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
                 webInitialCyclePassed:rework,webInitialCyclePassedAt:rework?item.webInitialCyclePassedAt:'',
                 webInitialCycleEvidencePath:rework?item.webInitialCycleEvidencePath:'',webInitialCycleSourcePath:rework?(item.webInitialCycleSourcePath||item.webSourcePath):'',
@@ -472,7 +474,7 @@ jobs:
                 webInitialCycleStrictReviewPath:rework?item.webInitialCycleStrictReviewPath:'',webInitialCycleSourceRevision:rework?item.webInitialCycleSourceRevision:'',
                 webInitialCycleMusicValidationPassed:rework?item.webInitialCycleMusicValidationPassed:false,
                 webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,
-                homepageTestVerdict:rework?'WAITING_CONTENT_DEVELOPMENT_REWORK':'WAITING_WEB_GAMEPLAY_REVALIDATION',
+                homepageTestVerdict:repairState,
                 formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
                 routingBlockers:[`${rework?'web-content-development-rework':'web-gameplay-music'}:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp,
               }};
@@ -482,12 +484,6 @@ jobs:
             }
           }
           if(result?.pass!==true&&result?.update){
-            const state=String(result.update.canonicalState||'').toUpperCase();
-            if(state==='WAITING_WEB_GAMEPLAY_VALIDATION'||state==='WAITING_WEB_GAMEPLAY_REVALIDATION')result.update.canonicalState='WEB_GAMEPLAY_REPAIR_REQUIRED';
-            else if(state==='RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION')result.update.canonicalState='WEB_CONTENT_EXPANSION_REPAIR_REQUIRED';
-            else if(state==='WAITING_WEB_STRICT_IMPROVEMENT')result.update.canonicalState='WEB_STRICT_REPAIR_REQUIRED';
-            result.update.currentStep='FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP';
-            result.update.homepageTestVerdict=result.update.canonicalState;
             console.log(`WEB_FAILURE_REPAIR_STATE=${result.update.canonicalState}`);
             console.log('WEB_FAILURE_WAITING_TERMINAL=NO');
           }
@@ -642,9 +638,10 @@ jobs:
           while IFS= read -r -d '' persist_dir; do
             cp -R "$persist_dir"/. .
           done < <(find /tmp/web-batch -type d -name persist -print0)
-          node <<'NODE'
-          const fs=require('fs');
-          const path=require('path');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import {WEB_VALIDATION_SCHEMA_VERSION} from './tools/company-web-validation-evidence-contract.mjs';
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const expected=JSON.parse(process.env.EXPECTED_TARGETS_JSON||'[]');
           const root='/tmp/web-batch';
@@ -681,13 +678,14 @@ jobs:
           for(const result of results){const item=(queue.items||[]).find(x=>x.gameId===result.gameId);if(!item)throw new Error(`queue item missing: ${result.gameId}`);Object.assign(item,result.update);if(result.pass===true)passCount++;else failCount++;}
           queue.webValidationPolicy='WEB_80_FOR_HOMEPAGE_90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM';
           queue.webValidationContractVersion=4;
-          queue.webValidationEvidenceSchemaMinimum=13;
+          queue.webValidationEvidenceSchemaMinimum=WEB_VALIDATION_SCHEMA_VERSION;
           queue.webPromotionRevalidationRequired=true;
           queue.webValidationParallelism=20;
           queue.updatedAt=new Date().toISOString();
           fs.writeFileSync('development-queue.json',JSON.stringify(queue,null,2)+'\n');
           console.log(`WEB_GAMEPLAY_MUSIC_PASS_COUNT=${passCount}`);
           console.log(`WEB_GAMEPLAY_MUSIC_FAIL_COUNT=${failCount}`);
+          console.log(`WEB_VALIDATION_SCHEMA_MINIMUM=${WEB_VALIDATION_SCHEMA_VERSION}`);
           console.log('WEB_PARALLEL_ACTIVE_MAX=20');
           NODE
           git add development-queue.json web-games/ design/ game-seed-state.json 2>/dev/null || git add development-queue.json web-games/ design/
@@ -743,6 +741,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           import {execFileSync} from 'node:child_process';
+          import {WEB_VALIDATION_SCHEMA_VERSION} from './tools/company-web-validation-evidence-contract.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const exists=file=>{try{execFileSync('git',['cat-file','-e',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{stdio:'ignore'});return true;}catch{return false;}};
           const showJson=file=>{try{return JSON.parse(execFileSync('git',['show',`origin/${process.env.COMPANY_RUNTIME_BRANCH}:${file}`],{encoding:'utf8'}));}catch{return null;}};
@@ -753,9 +752,9 @@ jobs:
             if(requestedGameId&&item.gameId!==requestedGameId)continue;
             const score=Number(item.webStrictScore??item.strictImplementationScore);
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
-            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||!item.webValidationPassedAt||item.musicValidationPassed!==true||item.homepageTestEligible!==true||Number(item.webValidationSchemaVersion)!==13||!Number.isFinite(score)||score<80||hard.length)continue;
+            if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED'||!item.webValidationPassedAt||item.musicValidationPassed!==true||item.homepageTestEligible!==true||Number(item.webValidationSchemaVersion)!==WEB_VALIDATION_SCHEMA_VERSION||!Number.isFinite(score)||score<80||hard.length)continue;
             const evidence=showJson(item.webValidationEvidencePath||'');
-            if(Number(evidence?.validationSchemaVersion||evidence?.version)!==13||evidence?.homepageTestEligible!==true||evidence?.contentDepthValidation?.validationMode!=='REAL_ELAPSED_GAMEPLAY'||evidence?.contentDepthValidation?.pass!==true)continue;
+            if(Number(evidence?.validationSchemaVersion||evidence?.version)!==WEB_VALIDATION_SCHEMA_VERSION||evidence?.homepageTestEligible!==true||evidence?.contentDepthValidation?.validationMode!=='REAL_ELAPSED_GAMEPLAY'||evidence?.contentDepthValidation?.pass!==true)continue;
             const artbookSource=item.artbookSource||`artbook-submissions/${item.gameId}/current.json`;
             const artbook=exists(artbookSource)?showJson(artbookSource):null;
             const fresh=artbook?.postWebStrictReview===true&&Number(artbook.webStrictScore)===score&&String(artbook.webValidationEvidencePath||'')===String(item.webValidationEvidencePath||'');
@@ -887,7 +886,7 @@ jobs:
           import crypto from 'node:crypto';
           import {execFileSync} from 'node:child_process';
           import {resolveSelectedPlatform,adapterForPlatform,cheapPrecheck,canonicalTargetStep,canonicalTargetWaitingState} from './tools/company-selected-platform-router.mjs';
-          import {evaluateWebValidationEvidence,sha256Text,WEB_PLATFORM_PROMOTION_MINIMUM} from './tools/company-web-validation-evidence-contract.mjs';
+          import {evaluateWebValidationEvidence,sha256Text,WEB_PLATFORM_PROMOTION_MINIMUM,WEB_VALIDATION_SCHEMA_VERSION} from './tools/company-web-validation-evidence-contract.mjs';
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const catalog=JSON.parse(fs.readFileSync('/tmp/game-catalog.json','utf8'));
           const runtimeRef=`origin/${process.env.COMPANY_RUNTIME_BRANCH}`;
@@ -909,7 +908,7 @@ jobs:
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
             const hard=Array.isArray(item.strictImplementationHardFailures)?item.strictImplementationHardFailures:[];
             const evidenceGate=promotionEvidence(item);
-            const formalPass=item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&evidenceGate.pass===true;
+            const formalPass=item.formalImplementationPassed===true&&String(item.formalImplementationVerdict||'').toUpperCase()==='PASS'&&Number(item.webStrictScore??item.strictImplementationScore)>=90&&hard.length===0&&Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&evidenceGate.pass===true;
             if(!formalPass||!(Boolean(item.webValidationPassedAt)&&item.musicValidationPassed===true)){
               if(item.formalImplementationPassed===true&&!evidenceGate.pass){promotionRejected++;console.log(`WEB_PROMOTION_EVIDENCE_REJECTED=${item.gameId}:${(evidenceGate.blockers||[]).join('|')}`);}
               continue;
@@ -956,7 +955,7 @@ jobs:
           console.log(`DEVELOPMENT_ROUTE_PLATFORMS=${[...platforms].join(',')}`);
           console.log(`WEB_PROMOTION_EVIDENCE_REJECTED_COUNT=${promotionRejected}`);
           console.log('WEB_GAMEPLAY_MUSIC_GATE=ENFORCED');
-          console.log('WEB_VALIDATION_SCHEMA_MINIMUM=13');
+          console.log(`WEB_VALIDATION_SCHEMA_MINIMUM=${WEB_VALIDATION_SCHEMA_VERSION}`);
           console.log('WEB_INDEPENDENT_PROMOTION_REVALIDATION=REQUIRED');
           console.log('FORMAL_IMPLEMENTATION_GATE=90');
           console.log('CHANGE_DETECTION=PASS');
@@ -971,8 +970,9 @@ jobs:
           git config user.name 'jaewoon-development-router'
           git config user.email 'actions@users.noreply.github.com'
           git checkout -B development-router-persist "origin/$COMPANY_RUNTIME_BRANCH"
-          node <<'NODE'
-          const fs=require('fs');
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import {WEB_VALIDATION_SCHEMA_VERSION} from './tools/company-web-validation-evidence-contract.mjs';
           const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
           const updates=JSON.parse(fs.readFileSync('/tmp/development-route/updates.json','utf8'));
           for(const update of updates){const item=(queue.items||[]).find(x=>x.gameId===update.gameId);if(!item)throw new Error(`queue item missing: ${update.gameId}`);Object.assign(item,update);}
@@ -981,7 +981,7 @@ jobs:
           queue.webGateRequired=true;
           queue.homepageTestMinimum=80;
           queue.formalImplementationMinimum=90;
-          queue.webValidationEvidenceSchemaMinimum=13;
+          queue.webValidationEvidenceSchemaMinimum=WEB_VALIDATION_SCHEMA_VERSION;
           queue.webPromotionRevalidationRequired=true;
           queue.cronRole='WATCHDOG_AND_RECOVERY_ONLY';
           queue.updatedAt=new Date().toISOString();
@@ -1000,7 +1000,7 @@ jobs:
         run: |
           echo 'DEVELOPMENT_PIPELINE=ONE_CANONICAL_PIPELINE'
           echo 'WEB_GAMEPLAY_MUSIC_GATE=REQUIRED'
-          echo 'WEB_VALIDATION_SCHEMA_MINIMUM=13'
+          echo 'WEB_VALIDATION_SCHEMA_SOURCE=tools/company-web-validation-evidence-contract.mjs'
           echo 'WEB_STALE_EVIDENCE_REJECTED=YES'
           echo 'WEB_INDEPENDENT_PROMOTION_REVALIDATION=REQUIRED'
           echo 'HOMEPAGE_TEST_GATE=80'
