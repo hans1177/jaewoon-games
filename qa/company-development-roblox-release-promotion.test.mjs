@@ -102,8 +102,8 @@ test('release workflow publishes only retained exact artifact and keeps transien
   assert.match(workflow,/ROBLOX_V3_STATE=PUBLISHED/);
   assert.match(workflow,/actions: write/);
   assert.match(workflow,/timeout-minutes: 300/);
-  assert.match(workflow,/retry_seconds=300/);
-  assert.match(workflow,/retry_window_seconds=16200/);
+  assert.match(workflow,/retry_seconds=60/);
+  assert.match(workflow,/retry_window_seconds=900/);
   assert.match(workflow,/Roblox publish failed HTTP 409/);
   assert.match(workflow,/gh workflow run '\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
   assert.match(workflow,/deferred=true/);
