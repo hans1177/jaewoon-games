@@ -1,0 +1,71 @@
+name: Owner All Games Design Reset
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'game-catalog.json'
+      - 'tools/company-all-games-design-reset.mjs'
+      - '.github/workflows/owner-all-games-design-reset.yml'
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: owner-all-games-design-reset
+  cancel-in-progress: true
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  reset-to-design:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate reset synchronizer
+        run: node --check tools/company-all-games-design-reset.mjs
+      - name: Persist canonical DESIGN_ONLY seed state
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp tools/company-all-games-design-reset.mjs /tmp/company-all-games-design-reset.mjs
+          git config user.name 'jaewoon-owner-design-reset'
+          git config user.email 'owner-design-reset@users.noreply.github.com'
+          pushed=0
+          for attempt in 1 2 3 4; do
+            git fetch origin main "$COMPANY_RUNTIME_BRANCH"
+            git checkout -B owner-all-games-design-reset-runtime "origin/$COMPANY_RUNTIME_BRANCH"
+            git show origin/main:game-catalog.json > game-catalog.json
+            node /tmp/company-all-games-design-reset.mjs | tee /tmp/design-reset-state.txt
+            git add -- game-seed-state.json
+            if git diff --cached --quiet; then
+              pushed=1
+              echo 'OWNER_ALL_GAMES_DESIGN_RESET_RUNTIME_CHANGE=NO'
+              break
+            fi
+            git commit -m 'runtime: reset all catalog games to DESIGN_ONLY'
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+              pushed=1
+              echo 'OWNER_ALL_GAMES_DESIGN_RESET_RUNTIME_CHANGE=PERSISTED'
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          grep -q '^OWNER_ALL_GAMES_DESIGN_RESET_COUNT=19$' /tmp/design-reset-state.txt
+          echo 'OWNER_ALL_GAMES_DESIGN_RESET_EXPECTED_COUNT=19'
+      - name: Dispatch canonical design pipeline
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-seed-design-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'OWNER_ALL_GAMES_DESIGN_PIPELINE_DISPATCHED=YES'
+          echo 'OWNER_ALL_GAMES_DESIGN_PIPELINE=company-seed-design-runtime.yml'
