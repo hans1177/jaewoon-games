@@ -30,18 +30,38 @@ function ownerRedesignResetClass(entity={}){
   return null;
 }
 
+export function releaseEvidenceConfirmed(project={},game={}){
+  const evidence=[project,game];
+  for(const entity of evidence){
+    if(entity?.releasePublished===true||entity?.platformReleasePublished===true||entity?.productionReleased===true)return true;
+    if(entity?.robloxReleaseEvidence?.published===true&&entity?.robloxReleaseEvidence?.verified!==false)return true;
+    if(entity?.robloxPublicationTarget?.published===true&&entity?.robloxPublicationTarget?.verified===true)return true;
+    if(entity?.unityReleaseEvidence?.published===true&&entity?.unityReleaseEvidence?.verified!==false)return true;
+    if(entity?.playStoreReleaseEvidence?.published===true&&entity?.playStoreReleaseEvidence?.verified!==false)return true;
+    if(entity?.uefnReleaseEvidence?.published===true&&entity?.uefnReleaseEvidence?.verified!==false)return true;
+    if(entity?.fortniteReleaseEvidence?.published===true&&entity?.fortniteReleaseEvidence?.verified!==false)return true;
+  }
+  return false;
+}
+
 export function productionClassOf(project={},game={}){
   // Latest owner-directed redesign reset outranks stale runtime/project evidence.
-  // The override naturally ends after the canonical design promotion replaces the
-  // catalog/source marker with DESIGN_BASELINE_READY and a higher production class.
+  // RELEASE_CONFIRMED means actually released. Without explicit platform release
+  // evidence, a previously release-confirmed item is DEVELOPMENT_CONFIRMED.
   const ownerReset=ownerRedesignResetClass(game)||ownerRedesignResetClass(project);
   if(ownerReset)return ownerReset;
   const direct=[project?.productionClass,game?.productionClass,project?.profileStatus]
     .map(normalizeProductionClass)
     .find(Boolean);
+  if(direct===PRODUCTION_CLASSES.RELEASE_CONFIRMED&&!releaseEvidenceConfirmed(project,game)){
+    return PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED;
+  }
   if(direct)return direct;
-  return productionClassFromHomepageCategory(game?.homepageCategory)
-    ||PRODUCTION_CLASSES.DESIGN_ONLY;
+  const categoryClass=productionClassFromHomepageCategory(game?.homepageCategory);
+  if(categoryClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED&&!releaseEvidenceConfirmed(project,game)){
+    return PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED;
+  }
+  return categoryClass||PRODUCTION_CLASSES.DESIGN_ONLY;
 }
 
 export function tierAliasForProductionClass(value,{numericLabels={}}={}){
