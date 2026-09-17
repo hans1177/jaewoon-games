@@ -78,6 +78,14 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     if(!item.artbookTiming)item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';
     if(!item.selectedPlatform&&game.selectedPlatform)item.selectedPlatform=game.selectedPlatform;
     if(!item.targetPlatform&&game.selectedPlatform)item.targetPlatform=game.selectedPlatform;
+    const hasExistingWeb=fs.existsSync(path.join(root,item.webSourcePath,'index.html'));
+    if(hasExistingWeb){
+      if(item.designComplete===undefined)item.designComplete=true;
+      if(!item.designGateState)item.designGateState='DESIGN_COMPLETE_EXISTING_GAME_CONTINUATION';
+      if(!item.currentStep||item.currentStep==='WEB_PLAYABLE_BOOTSTRAP')item.currentStep='WEB_GAMEPLAY_AND_MUSIC_VALIDATION';
+      if(!item.canonicalState||item.canonicalState==='WAITING_WEB_PLAYABLE_BOOTSTRAP')item.canonicalState='WAITING_WEB_GAMEPLAY_VALIDATION';
+      item.existingGameContinuation=true;
+    }
     next.push(item);
     preserved.push(gameId);
   }
@@ -104,8 +112,10 @@ export function reconcileDevelopmentQueue({root='.'}={}){
       targetPlatform:selectedPlatform||null,
       designBaselineSource:baseline?.source||null,
       designDate:baseline?.date||null,
+      designComplete:hasExistingWeb||Boolean(baseline),
+      designGateState:hasExistingWeb?'DESIGN_COMPLETE_EXISTING_GAME_CONTINUATION':baseline?'DESIGN_BASELINE_READY':'WAITING_DESIGN_BASELINE',
       currentStep:hasExistingWeb?'WEB_GAMEPLAY_AND_MUSIC_VALIDATION':'WEB_PLAYABLE_BOOTSTRAP',
-      canonicalState:'WAITING_WEB_GAMEPLAY_VALIDATION',
+      canonicalState:hasExistingWeb?'WAITING_WEB_GAMEPLAY_VALIDATION':'WAITING_WEB_PLAYABLE_BOOTSTRAP',
       webValidationRequired:true,
       musicValidationRequired:true,
       homepageTestCandidate:false,
