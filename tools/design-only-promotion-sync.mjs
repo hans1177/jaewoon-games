@@ -235,6 +235,6 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
   console.log(`DEVELOPMENT_CONFIRMED_SEED_RECONCILED=${result.reconciledPromotedSeeds.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_EXISTING_RECONCILED=${result.reconciledExisting.join(',')||'NONE'}`);
-  console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${resetResult.changed?.join(',')||'NONE'}`);
+  console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${result.ownerResetSeedsMaterialized.join(',')||'NONE'}`);
   if(result.skipped.length)console.log(`DESIGN_PROMOTION_SKIPPED=${JSON.stringify(result.skipped)}`);
 }
