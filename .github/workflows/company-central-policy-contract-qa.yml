@@ -116,6 +116,10 @@ on:
       - '.github/workflows/company-central-policy-contract-qa.yml'
   workflow_dispatch:
 
+concurrency:
+  group: company-central-policy-contract-qa-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
