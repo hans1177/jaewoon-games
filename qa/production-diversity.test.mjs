@@ -58,6 +58,8 @@ test('owner redesign reset outranks stale runtime project class until canonical 
   const staleProject={productionClass:'RELEASE_CONFIRMED',profileStatus:'RELEASE_CONFIRMED'};
   const resetGame={productionClass:'DESIGN_ONLY',productionClassSource:'OWNER_REDESIGN_RESET_2026-09-13',homepageCategory:'design-only'};
   assert.equal(productionClassOf(staleProject,resetGame),'DESIGN_ONLY');
+  const allGamesReset={productionClass:'RELEASE_CONFIRMED',productionClassSource:'OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17',homepageCategory:'release-confirmed'};
+  assert.equal(productionClassOf(staleProject,allGamesReset),'DESIGN_ONLY');
 
   const portfolio={
     productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
