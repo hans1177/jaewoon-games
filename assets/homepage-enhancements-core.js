@@ -41,7 +41,22 @@ const developmentItems=queue=>(Array.isArray(queue?.items)?queue.items:[]).filte
 const developmentStateLabel=value=>{const key=String(value||'ACTIVE').trim().toUpperCase();return ({ACTIVE:'개발 진행중',HOLD:'개발 보류',BLOCKED:'개발 막힘',WAITING:'개발 대기'}[key]||key.replaceAll('_',' '));};
 const developmentStepLabel=value=>{const key=String(value||'').trim().toUpperCase();const labels={WEB_GAMEPLAY_AND_MUSIC_VALIDATION:'Web 개발/검증',TARGET_PLATFORM_RUNTIME:'플랫폼 실행 검증',TARGET_PLATFORM_QA:'플랫폼 QA',ROBLOX_POST_RUNTIME_QA:'Roblox 사후 QA',FINAL_CONTENT_DEPTH:'최종 콘텐츠 검증'};return labels[key]||key.replaceAll('_',' ')||'개발 단계 확인 중';};
 const developmentWebTestTarget=item=>{const raw=String(item?.webSourcePath||item?.sourcePath||'').trim().replace(/^\/+|\/+$/g,'').replace(/\/index\.html$/i,'');if(!raw||raw.includes('..')||!/^web-games\/[A-Za-z0-9._\/-]+$/.test(raw))return'';return`/${raw}/`;};
-const developmentPlatformTestTarget=(item,status)=>{const platform=String(item?.selectedPlatform||item?.targetPlatform||'').trim().toUpperCase();const explicit=String(item?.platformTestUrl||item?.testUrl||(platform==='ROBLOX'?item?.robloxTestUrl:'')||(platform==='UNITY'?item?.unityTestUrl:'')||(platform==='FORTNITE_UEFN'?item?.fortniteTestUrl:'')||'').trim();if(/^https?:\/\//i.test(explicit)||/^roblox:/i.test(explicit))return explicit;if(platform==='UNITY'){const builds=Array.isArray(status?.testBuilds)?status.testBuilds:[];const build=builds.find(entry=>String(entry?.gameId||'')===String(item?.gameId||'')&&String(entry?.status||'').toLowerCase()==='ready'&&typeof entry?.download==='string');if(build?.download)return build.download;}return'';};
+const developmentPlatformTestTarget=(item,status)=>{
+  const platform=String(item?.selectedPlatform||item?.targetPlatform||'').trim().toUpperCase();
+  const explicit=String(item?.platformTestUrl||item?.testUrl||(platform==='ROBLOX'?item?.robloxTestUrl:'')||(platform==='UNITY'?item?.unityTestUrl:'')||(platform==='FORTNITE_UEFN'?item?.fortniteTestUrl:'')||'').trim();
+  if(/^https?:\/\//i.test(explicit)||/^roblox:/i.test(explicit))return explicit;
+  if(platform==='ROBLOX'){
+    const target=item?.robloxPublicationTarget;
+    const placeId=String(target?.placeId||'').trim();
+    if(target?.verified===true&&/^[1-9][0-9]*$/.test(placeId))return`https://www.roblox.com/games/${placeId}`;
+  }
+  if(platform==='UNITY'){
+    const builds=Array.isArray(status?.testBuilds)?status.testBuilds:[];
+    const build=builds.find(entry=>String(entry?.gameId||'')===String(item?.gameId||'')&&String(entry?.status||'').toLowerCase()==='ready'&&typeof entry?.download==='string');
+    if(build?.download)return build.download;
+  }
+  return'';
+};
 
 let homepageInstallPrompt=null;
 function installHomepageAppFlow(){
