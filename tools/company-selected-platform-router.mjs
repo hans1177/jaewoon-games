@@ -152,11 +152,11 @@ export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_G
 }
 
 export function canonicalTargetWaitingState(){
-  return 'WAITING_TARGET_PLATFORM_VALIDATION';
+  return 'TARGET_PLATFORM_REPAIR_REQUIRED';
 }
 
 export function canonicalTargetRevalidationState(){
-  return 'WAITING_TARGET_PLATFORM_REVALIDATION';
+  return 'TARGET_PLATFORM_REPAIR_REQUIRED';
 }
 
 export function canonicalTargetStep(){
