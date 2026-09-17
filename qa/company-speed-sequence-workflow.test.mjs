@@ -146,6 +146,9 @@ test('DEVELOPMENT runtime does not serialize whole runs and serializes only shar
   const jobsAt=router.indexOf('\njobs:');
   assert.ok(jobsAt>0,'jobs block missing');
   assert.doesNotMatch(router.slice(0,jobsAt),/\nconcurrency:/,'workflow-level concurrency would block independent workers across revisions');
+  const webPlan=router.slice(router.indexOf('\n  web-plan:\n'),router.indexOf('\n  web-worker:\n'));
+  assert.match(webPlan,/group:\s*company-development-web-plan/);
+  assert.match(webPlan,/cancel-in-progress:\s*true/);
   const writerLocks=router.match(/group:\s*company-development-runtime-state-writer/g)||[];
   assert.equal(writerLocks.length,3,'web-gate, post-web-artbook and route must share one writer lock');
   assert.match(router,/runtime_sha:\s*\$\{\{ steps\.targets\.outputs\.runtime_sha \}\}/);
