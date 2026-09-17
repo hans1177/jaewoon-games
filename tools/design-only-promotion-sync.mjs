@@ -69,6 +69,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   queue.items ||= [];
   const promoted=[];
   const skipped=[];
+  const reconciledExisting=[];
   const stamp=nowIso();
 
   for(const seed of state.seeds||[]){
@@ -120,9 +121,55 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     promoted.push(gameId);
   }
 
+  // 이미 존재하는 실제 Web 게임이 owner 지시로 DEVELOPMENT_CONFIRMED가 된 경우도
+  // seed 승격 이력이 없다는 이유로 개발 큐에서 빠지면 안 된다.
+  for(const game of catalog.games||[]){
+    const gameId=String(game?.id||'').trim();
+    const productionClass=String(game?.productionClass||'').toUpperCase();
+    const lifecycleState=String(game?.lifecycleState||'ACTIVE').toUpperCase();
+    if(!gameId||productionClass!=='DEVELOPMENT_CONFIRMED'||!['ACTIVE','REBUILD'].includes(lifecycleState))continue;
+    const webSourcePath=webSourcePathOf(gameId);
+    if(!fs.existsSync(p(webSourcePath))||!fs.existsSync(p(webSourcePath,'index.html')))continue;
+    if(queue.items.some(row=>row?.gameId===gameId))continue;
+    const design=latestReadyDesign(root,gameId);
+    const selectedPlatform=resolveSelectedPlatform('',game)||'';
+    const targetSourcePath=selectedPlatform?targetSourcePathOf(gameId,selectedPlatform):'';
+    const item={
+      gameId,
+      seedId:null,
+      gameName:game.name||gameId,
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState,
+      status:'ACTIVE',
+      sourcePath:webSourcePath,
+      webSourcePath,
+      selectedPlatform:selectedPlatform||null,
+      targetPlatform:selectedPlatform||null,
+      targetSourcePath:targetSourcePath||null,
+      designBaselineSource:design?.designSource||null,
+      designDate:design?.date||null,
+      existingGameContinuation:true,
+      preservationPolicy:'PRESERVE_EXISTING_REAL_GAME_BEFORE_REGENERATION',
+      currentStep:design?'WEB_PLAYABLE_BOOTSTRAP':'EXISTING_WEB_GAME_CONTINUATION',
+      canonicalState:'WAITING_WEB_GAMEPLAY_VALIDATION',
+      webValidationRequired:true,
+      musicValidationRequired:true,
+      homepageTestCandidate:false,
+      homepageTestScore:null,
+      homepageTestVerdict:'WAITING_WEB_STRICT_REVIEW',
+      webValidationQueuedAt:stamp,
+      artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
+      postPromotionArtbookRequired:false,
+      postWebArtbookRequired:true,
+      enqueuedAt:stamp
+    };
+    queue.items.push(item);
+    reconciledExisting.push(gameId);
+  }
+
   state.updatedAt=stamp;queue.updatedAt=stamp;queue.webValidationPolicy='REQUIRED_WEB_STRICT_REVIEW_BEFORE_POST_WEB_ARTBOOK_AND_TARGET_PLATFORM';
   writeJson(seedPath,state);writeJson(portfolioPath,portfolio);writeJson(catalogPath,catalog);writeJson(queuePath,queue);
-  return {promoted,skipped,queueCount:queue.items.length,ownerResetSeedsMaterialized:resetResult.changed};
+  return {promoted,skipped,reconciledExisting,queueCount:queue.items.length,ownerResetSeedsMaterialized:resetResult.changed};
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
@@ -130,6 +177,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DESIGN_PROMOTION_COUNT=${result.promoted.length}`);
   console.log(`DESIGN_PROMOTED_GAME_IDS=${result.promoted.join(',')}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
+  console.log(`DEVELOPMENT_EXISTING_RECONCILED=${result.reconciledExisting.join(',')||'NONE'}`);
   console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${result.ownerResetSeedsMaterialized.join(',')}`);
   if(result.skipped.length)console.log(`DESIGN_PROMOTION_SKIPPED=${JSON.stringify(result.skipped)}`);
 }

@@ -120,6 +120,13 @@ ownerCurrentProductionContract:
       weakAxisOrBlockerEvidenceRequired: true
       noBlindScoreInflationTasks: true
     staleCatalogMissingProjectMustBecomeLifecycleInactive: true
+    existingDevelopmentConfirmedReconciliation:
+      activeOrRebuildCatalogGameMustHaveDevelopmentQueueEntry: true
+      existingPlayableWebGameMissingValidationMustStillEnterDevelopment: true
+      missingValidationCannotBecomeNoSafeAutonomousTask: true
+      preserveExistingSourceBeforeAnyRegeneration: true
+      firstContinuationGoal: REAL_GAMEPLAY_IMPLEMENTATION_AND_VALIDATION_READINESS
+      catalogLifecycleRemainsCanonicalAuthority: true
   categoryAndPlatform:
     legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true
     fixedSixCategoryProductionQuotaForbidden: true
