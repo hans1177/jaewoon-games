@@ -1,6 +1,6 @@
 {
-  "version": 18,
-  "updatedAt": "2026-09-13",
+  "version": 19,
+  "updatedAt": "2026-09-17",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -124,16 +124,20 @@
       "webPath": "/web-games/cozy-island/",
       "hasWebArchive": true,
       "featured": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_EXISTING_WEB_GAME",
-      "productionTarget": "design-only",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_CONTINUE_2026-09-17",
+      "productionTarget": "existing-web-game-continuation",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_CONTINUE_DEVELOPMENT",
       "ownerExistingGame": true,
-      "developmentHandling": "OWNER_EXISTING_GAME_SEPARATE",
-      "designBaselineMigration": "DO_NOT_REGENERATE_THROUGH_DESIGN_ONLY",
-      "homepageStage": "플레이 가능 · Web",
-      "homepageRecentWork": "저장소에 있던 모바일 대응 섬 생활·낚시 Web 게임을 홈페이지 카탈로그에 정식 연결했습니다.",
-      "homepageWebPlayable": true
+      "developmentHandling": "OWNER_EXISTING_GAME_CONTINUE",
+      "designBaselineMigration": "PRESERVE_EXISTING_GAME_AND_CONTINUE",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · Web 개선 개발 중",
+      "homepageRecentWork": "기존 포근섬 Web 게임을 보존하면서 기능·콘텐츠·모바일 플레이 품질 개발을 계속합니다.",
+      "homepageWebPlayable": true,
+      "webUpdatedAt": "2026-09-17"
     },
     {
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star",
