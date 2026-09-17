@@ -4,6 +4,20 @@ const SYNC_INTERVAL_MS=5000;
 const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';
 const RAW_RUNTIME_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime';
 const TOP_LIMIT=30;
+const OWNER_RELEASED_GAMES=[{
+  id:'seed-roblox-obby-party-minigam-tower-of-hell',
+  gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
+  name:'Skyline Rush',
+  gameName:'Skyline Rush',
+  productionClass:'RELEASE_CONFIRMED',
+  selectedPlatform:'ROBLOX',
+  targetPlatform:'ROBLOX',
+  genre:['오비','레이싱'],
+  description:'Skyline Rush · Roblox 출시 게임',
+  homepageRecentWork:'Roblox 출시 배포',
+  updatedAt:'2026-09-17',
+  __released:true
+}];
 let refreshInFlight=false;
 let lastSignature='';
 
@@ -36,7 +50,10 @@ function latestDevelopment(queue){
 }
 function homepageRows(catalog,queue){
   const games=Array.isArray(catalog?.games)?catalog.games:[];
-  const released=games.filter(game=>String(game?.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED').map(game=>({...game,gameId:game.id,__released:true}));
+  const releasedMap=new Map();
+  for(const game of games.filter(game=>String(game?.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED'))releasedMap.set(String(game.id||'').trim(),{...game,gameId:game.id,__released:true});
+  for(const game of OWNER_RELEASED_GAMES)releasedMap.set(gameIdOf(game),{...releasedMap.get(gameIdOf(game)),...game,__released:true});
+  const released=[...releasedMap.values()];
   const releasedIds=new Set(released.map(gameIdOf));
   const development=latestDevelopment(queue).filter(row=>!releasedIds.has(gameIdOf(row)));
   return [...released,...development].slice(0,TOP_LIMIT);
@@ -44,7 +61,7 @@ function homepageRows(catalog,queue){
 function mergeGame(row,catalog){
   const source=catalogMap(catalog).get(gameIdOf(row))||{};
   const rawWeb=String(row?.webPath||row?.webSourcePath||row?.sourcePath||source.webPath||'').trim().replace(/^\/+|\/+$/g,'').replace(/\/index\.html$/i,'');
-  return {...source,...row,id:gameIdOf(row)||source.id,name:row?.gameName||row?.name||source.name||gameIdOf(row),webPath:rawWeb?`/${rawWeb}/`:'',genre:Array.isArray(source.genre)?source.genre:[],image:source.image||'assets/pwa-icon-512.png',description:source.description||row?.description||'개발 중인 게임.'};
+  return {...source,...row,id:gameIdOf(row)||source.id,name:row?.gameName||row?.name||source.name||gameIdOf(row),webPath:rawWeb?`/${rawWeb}/`:'',genre:Array.isArray(row?.genre)?row.genre:(Array.isArray(source.genre)?source.genre:[]),image:row?.image||source.image||'assets/pwa-icon-512.png',description:row?.description||source.description||'개발 중인 게임.'};
 }
 function selectedPlatform(game){return game.selectedPlatform||game.targetPlatform||game.productionTarget||'WEB';}
 
