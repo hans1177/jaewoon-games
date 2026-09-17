@@ -91,8 +91,8 @@ assert.deepEqual(WEB_COMMON_SCORE_WEIGHTS,{
   FUNCTIONAL_UI_UX:4,
   STABILITY:4,
   SAVE_AND_RECOVERY:4,
-},'common Web score must remain the central-policy 60 points');
-assert.equal(Object.values(WEB_COMMON_SCORE_WEIGHTS).reduce((a,b)=>a+b,0),60);
+},'common Web score must remain the central-policy 55 points');
+assert.equal(Object.values(WEB_COMMON_SCORE_WEIGHTS).reduce((a,b)=>a+b,0),55);
 assert.deepEqual(WEB_CATEGORY_PROFILE_MAPPING,{
   ACTION_SURVIVAL_ROGUELITE:'SURVIVAL',
   SINGLE_DEFENSE_STRATEGY:'TOWER_DEFENSE',
@@ -120,14 +120,13 @@ const towerSource=`
 `;
 const towerScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:towerSource,evidence:evidence()});
 assert.deepEqual(towerScore.hardFailures,[],'a connected real tower-defense loop should clear Web hard gates');
-assert.ok(towerScore.commonScore<=60&&towerScore.commonScore>=50,'common score must use the 60-point scale');
+assert.ok(towerScore.commonScore<=55&&towerScore.commonScore>=50,'common score must use the 55-point scale');
 assert.equal(towerScore.categoryScore,25,'matching tower-defense profile must use its full 25-point profile');
 assert.ok(towerScore.totalScore>=80,'a strong real implementation remains Top30 score-capable');
 assert.equal(towerScore.hardGates.COMPLETE_PLAYABLE_GAMEPLAY_CYCLE,true);
 assert.equal(towerScore.hardGates.NO_TEST_PROXY,true);
 assert.equal(towerScore.hardGates.NO_FAKE_PROGRESS,true);
 assert.equal(towerScore.hardGates.CATEGORY_PROFILE_MATCH,true);
-
 const keywordOnlyMetrics={...baseMetrics,towerTypeCount:1,towerEffectProfileCount:1,strategyChoiceCount:1,strategyCombatOutcomeCount:1,placementResultCount:0};
 const keywordOnlyRuntime={...runtimeFeatureEvidence,towerTypes:['fake-one'],towerTypeCount:1,towerEffectProfiles:['fake-one:damage'],towerEffectProfileCount:1,strategyChoices:['fake-choice'],strategyCombatOutcomes:[{choiceMechanic:'fake-choice',outcomeSignature:'same'}],strategyCombatOutcomeCount:1,placementResultCount:0,independentStrategyEvidence:{required:true,pass:false,status:'INSUFFICIENT_DISTINCT_STRATEGY_CHOICES'}};
 const keywordOnlyScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:`${towerSource} tower tower turret slow range strategy choice strategic damage`,evidence:evidence({metrics:keywordOnlyMetrics,runtime:keywordOnlyRuntime})});
