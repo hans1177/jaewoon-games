@@ -37,6 +37,7 @@ test('DEVELOPMENT_CONFIRMED consumes canonical schema15 Web evidence and indepen
 test('ordinary gate failure is active unlimited repair, not a waiting terminal state',()=>{
   assert.match(source,/TARGET_PLATFORM_REPAIR_REQUIRED/);
   assert.match(source,/DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED/);
+  assert.doesNotMatch(source,/writeState\('WAITING_REVALIDATION'/);
   assert.match(source,/gateFailureMeansImmediateRepair:true/);
   assert.match(source,/repairUntilPass:true/);
   assert.match(source,/repairAttemptLimit:null/);
