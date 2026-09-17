@@ -5,6 +5,12 @@ policy:
   sourceOfTruth: COMPANY_FLOW.md
   format: MACHINE_ORIENTED_POLICY_SPEC
   humanReadableNarrativeRequired: false
+  naturalLanguagePolicyReplicationForbidden: true
+  ownerDirectiveNaturalLanguageStorageForbidden: true
+  ownerDirectiveParaphraseStorageForbidden: true
+  ownerDirectiveVerbatimStorageForbidden: true
+  nonCanonicalPolicyDocumentMode: MACHINE_POINTER_ONLY
+  nonCanonicalPolicyDocumentCanonicalReference: COMPANY_FLOW.md
   ownerInstructionOverridesPolicy: true
   implementationMustFollowPolicy: true
   evidenceFilesCannotCreatePolicy: true
@@ -197,6 +203,8 @@ ownerCurrentProductionContract:
     paddingByHealthIdleWaitOrPureRepetitionForbidden: true
   strictHardGatePolicy:
     scoreCannotOverrideHardGate: true
+    stageApplicability:
+      30MIN_CONTENT_FAIL: FINAL_CONTENT_DEPTH_GATE_ONLY
     hardRejectCodes:
       - DESIGN_MISMATCH
       - STORY_INCOHERENT
@@ -235,11 +243,33 @@ ownerCurrentProductionContract:
       100: QUALITY_STABILITY_AND_REVALIDATION_PROVEN
     scoreCannotOverrideHardGate: true
     criticalAxisMinimumPercent: 75
+    criticalAxisScope:
+      DESIGN_GATE: ALL_APPLICABLE_AXES
+    weakCriticalAxisScoreCap: 79
+    weakCriticalAxisCreatesHardFailure: true
     runtimeEvidencePreferredOverSourceClaims: true
     sourceKeywordOnlyScoringForbidden: true
     gates:
       DESIGN_GATE:
         currentPassMinimum: 80
+        minimumPerApplicableAxisPercent: 75
+        weakApplicableAxisScoreCap: 79
+        weakApplicableAxisCreatesHardFailure: true
+        thirtyMinuteContentDepthHardGate: FORBIDDEN
+        thirtyMinuteRequirementStage: FINAL_CONTENT_DEPTH_GATE_ONLY
+        robloxGenreProfile:
+          required: true
+          decisionStage: DESIGN_GATE
+          taxonomy: ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES
+          selectionRule: PRIMARY_CORE_GAMEPLAY_BEST_MATCH
+          genreCount: 1
+          subgenreCountMax: 1
+          playModeSource: MULTIPLAYER_DESIGN_MODE
+          allowedPlayModes: [SINGLE, COOP, COMPETITIVE, HYBRID]
+          persistTargets: [STRICT_DESIGN_REVIEW_EVIDENCE, ACTIVE_GAME_SEED]
+          homepageSource: DESIGN_GATE_PROFILE_ONLY
+          homepageIndependentInferenceForbidden: true
+          homepageGameIdDisplayForbidden: true
         axes:
           IDEA_AND_DISTINCTNESS: 12
           CATEGORY_IDENTITY: 10
@@ -578,6 +608,12 @@ ownerCurrentProductionContract:
     artbookFailureMustNotUndoDesignOrWebPass: true
     artbookFailureBlocksHomepageRegistrationOnly: true
   homepageTesting:
+    genreProfileDisplay:
+      source: DESIGN_GATE_ROBLOX_GENRE_PROFILE
+      requiredFields: [GENRE, SUBGENRE_WHEN_APPLICABLE, PLAY_MODE]
+      position: ADJACENT_TO_GENRE
+      gameIdVisible: false
+      independentHomepageInferenceForbidden: true
     developmentProgressDisplay:
       source: COMPANY_RUNTIME_DEVELOPMENT_QUEUE
       autoRegisterDevelopmentConfirmed: true
@@ -674,10 +710,18 @@ pipelineExecution:
 
 documentationSynchronization:
   centralPolicyFirst: true
-  workDocumentsMustMirrorCurrentCentralPolicy: true
-  syncRelevantWorkDocumentsOnEveryPolicyChange: true
-  implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized: true
+  nonCanonicalPolicyDocumentMode: MACHINE_POINTER_ONLY
+  humanReadablePolicyReplicationForbidden: true
+  ownerDirectiveNaturalLanguageReplicationForbidden: true
+  ownerDirectiveParaphraseForbidden: true
+  ownerDirectiveVerbatimReplicationForbidden: true
+  workDocumentsMustMirrorCurrentCentralPolicy: false
+  workDocumentsMayContainPolicyNarrative: false
+  workDocumentsMayContainOwnerDirectiveNarrative: false
+  syncRelevantWorkDocumentsOnEveryPolicyChange: false
+  implementationWorkStartsAfterCentralPolicyUpdate: true
   workDocumentsCannotOverrideCentralPolicy: true
+  canonicalReferenceRequired: COMPANY_FLOW.md
 
 homepageOperations:
   mode: SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR
@@ -1555,17 +1599,11 @@ ArtbookEditor:
   preserveRevisionHistoryByDefault: true
 
 artbookDocumentConsolidation:
-  copiedSourceDocument: ARTBOOK_SUBMISSION_CONTRACT.md
-  copiedSourceWasLatestArtbookDocumentAtConsolidation: true
-  copiedAt: 2026-09-12
-  originalContent: |-
-    # 아트북 제출 호환 문서
-
-    재운컴퍼니의 설계·아트북·부서회의 정책 원본은 **`COMPANY_FLOW.md` 하나뿐**이다.
-
-    이 파일은 과거 도구와 링크의 호환 경로다. 부서가 아트북 파트를 공동 집필한다는 예전 계약이나 별도 제출 정책을 여기서 유지하지 않는다.
-
-    현재 출력 형식과 검증 스키마는 실행 코드가 담당하며, 그 의미와 역할 분리는 항상 `COMPANY_FLOW.md`를 따른다.
+  compatibilityPath: ARTBOOK_SUBMISSION_CONTRACT.md
+  mode: MACHINE_POINTER_ONLY
+  canonicalPolicy: COMPANY_FLOW.md
+  naturalLanguagePolicyReplication: FORBIDDEN
+  ownerDirectiveNaturalLanguageReplication: FORBIDDEN
 
 Vibe2:
   startsAt: DEVELOPMENT_CONFIRMED
@@ -1586,6 +1624,7 @@ flows:
       - CROSS_DEPARTMENT_LEAD_MEETING
       - ONE_LEAD_REBUTTAL_ROUND
       - GAME_DESIGNER_REVISION
+      - ROBLOX_GENRE_PROFILE_ASSIGNMENT
       - DESIGN_BASELINE_GATE
     baselineReadyRequires:
       - GAME_SEED_COMPLETE
@@ -1597,6 +1636,7 @@ flows:
       - PLATFORM_SELECTION_RECORDED
       - MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED
       - APPROVED_SCOPE_INVENTORY_RECORDED
+      - ROBLOX_GENRE_PROFILE_RECORDED
       - FIVE_DISTINCT_LEAD_MODELS
       - FIVE_DEPARTMENT_SCORES_RECORDED
       - PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS
