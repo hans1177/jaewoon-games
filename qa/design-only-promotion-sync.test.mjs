@@ -144,3 +144,20 @@ test('owner reset fresh strict PASS refreshes old promoted queue to the new base
   assert.equal(queue.currentStep,'WEB_PLAYABLE_BOOTSTRAP');
   assert.equal(queue.canonicalState,'WAITING_WEB_GAMEPLAY_VALIDATION');
 });
+
+
+test('owner reset DESIGN_ONLY seed rejects pre-reset PASS evidence',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-reset-stale-'));
+  write(root,'game-seed-state.json',{
+    version:1,
+    ownerAllGamesDesignReset:{updatedAt:'2026-09-17T10:40:57.051Z',gameIds:['g-stale']},
+    seeds:[{seedId:'RESET-STALE',gameId:'g-stale',gameName:'Reset Stale',status:'ACTIVE',GAME_CATEGORY:'PUZZLE',INITIAL_TARGET_PLATFORM:'ROBLOX'}]
+  });
+  baseFiles(root);
+  writeReadyDesign(root,'g-stale','2026-09-16',{verdict:'PASS',totalScore:95,hardFailures:[]});
+  const result=promoteReadyDesignSeeds({root});
+  assert.deepEqual(result.promoted,[]);
+  assert.ok(result.skipped.some(x=>x.gameId==='g-stale'&&x.reason==='OWNER_RESET_FRESH_DESIGN_REQUIRED'));
+  assert.equal(read(root,'development-queue.json').items.length,0);
+  assert.equal(read(root,'game-seed-state.json').seeds[0].productionClass,undefined);
+});
