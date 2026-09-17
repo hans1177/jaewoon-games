@@ -62,3 +62,5 @@ jobs:
           done
           test "$pushed" = '1'
           echo 'RELEASE_ATOMICITY_MIGRATION_PUSH=PASS'
+
+# Trigger marker: 2026-09-17 release-publication-atomicity
