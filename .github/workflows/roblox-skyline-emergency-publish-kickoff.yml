@@ -1,4 +1,4 @@
-name: Kick Skyline Rush Emergency Publish
+name: Kick Skyline Rush Normalized Publish
 
 on:
   push:
@@ -14,10 +14,10 @@ jobs:
   dispatch:
     runs-on: ubuntu-latest
     steps:
-      - name: Dispatch exact Skyline emergency publisher
+      - name: Dispatch normalized Skyline publisher
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           gh workflow run 'roblox-skyline-emergency-final-publish.yml' --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'SKYLINE_EMERGENCY_PUBLISH_DISPATCHED=YES'
+          echo 'SKYLINE_NORMALIZED_PUBLISH_DISPATCHED=YES'
