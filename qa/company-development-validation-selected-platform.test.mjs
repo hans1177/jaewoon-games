@@ -6,7 +6,7 @@ import fs from 'node:fs';
 const source=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 const contract=fs.readFileSync('tools/company-web-validation-evidence-contract.mjs','utf8');
 
-test('DEVELOPMENT_CONFIRMED consumes canonical schema14 Web evidence and independent 90-point promotion revalidation',()=>{
+test('DEVELOPMENT_CONFIRMED consumes canonical schema15 Web evidence and independent 90-point promotion revalidation',()=>{
   assert.match(source,/web-gameplay-validation\.json/);
   assert.match(source,/company-web-validation-evidence-contract\.mjs/);
   assert.match(source,/evaluateWebValidationEvidence/);
@@ -16,7 +16,7 @@ test('DEVELOPMENT_CONFIRMED consumes canonical schema14 Web evidence and indepen
   assert.match(source,/finalContentDepthPass:top30\.finalContentDepthPass/);
   assert.doesNotMatch(source,/\[\[0,5\],\[5,15\],\[15,25\],\[25,30\]\]/);
   assert.doesNotMatch(source,/GAMEPLAY_MILESTONE_DEPTH/);
-  assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=14/);
+  assert.match(contract,/WEB_VALIDATION_SCHEMA_VERSION=15/);
   assert.match(contract,/WEB_HOMEPAGE_MINIMUM=80/);
   assert.match(contract,/WEB_PLATFORM_PROMOTION_MINIMUM=90/);
   assert.match(contract,/REAL_ELAPSED_GAMEPLAY/);

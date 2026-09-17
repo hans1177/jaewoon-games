@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 39,
-  "updatedAt": "2026-09-15",
+  "revision": 40,
+  "updatedAt": "2026-09-17",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
   "instruction": "Use COMPANY_FLOW.md as the machine-oriented production policy source of truth. This file mirrors executable values and invariant flags only and cannot create policy.",
@@ -100,7 +100,8 @@
       "scoreRequiresSchema13": true,
       "scoreRequiresMusicPass": true,
       "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": true,
-      "reworkOrRevalidationScoresNotShownAsCurrent": true
+      "reworkOrRevalidationScoresNotShownAsCurrent": true,
+      "scoreRequiresSchema15": true
     }
   },
   "production": {
@@ -746,5 +747,44 @@
       "singleModelCallTimeoutSeconds": 75,
       "designSchemaAttemptsMax": 2
     }
+  },
+  "stageGateScoringV2": {
+    "version": 2,
+    "policyDocument": "COMPANY_FLOW.md",
+    "scoreScalePerGate": 100,
+    "scoresIndependentBetweenGates": true,
+    "bonusPointsForbidden": true,
+    "penaltyPointsForbidden": true,
+    "directScoreLevels": [
+      0,
+      20,
+      40,
+      60,
+      80,
+      100
+    ],
+    "criticalAxisMinimumPercent": 75,
+    "webStrictComposition": {
+      "commonGameQuality": 55,
+      "categorySpecificQuality": 25,
+      "webPlatformQuality": 20
+    },
+    "currentThresholds": {
+      "design": 80,
+      "web": 80,
+      "webPlatformPromotion": 90,
+      "targetPlatformCompletion": 90,
+      "release": 90
+    },
+    "liveVersionUpdate": {
+      "passMinimum": 80,
+      "scoreStoredPerVersion": true
+    },
+    "expansionPack": {
+      "passMinimum": 85,
+      "scoreStoredPerExpansion": true
+    },
+    "releaseScoreImmutableAfterRelease": true,
+    "continuousContentExpansionAfterRelease": true
   }
 }

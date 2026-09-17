@@ -10,7 +10,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-15
+  latestOwnerDirectiveRecordedAt: 2026-09-17
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -157,6 +157,168 @@ ownerCurrentProductionContract:
       correctable: FIX_EXISTING_CANDIDATE_AND_REVALIDATE
       structural: REMOVE_TEST_CANDIDATE_AND_REBUILD_FROM_APPROVED_DESIGN
       automaticDropOnFirstFailureForbidden: true
+  stageGateScoringV2:
+    version: 2
+    ownerConfirmedAt: 2026-09-17
+    preserveExistingFlowAndStateTransitions: true
+    scoreScalePerGate: 100
+    scoresAreIndependentBetweenGates: true
+    scoreCarryForwardForbidden: true
+    bonusPointsForbidden: true
+    penaltyPointsForbidden: true
+    scoringMethod: DIRECT_EVIDENCE_BASED_PARTIAL_SCORE
+    directScoreLevels: [0, 20, 40, 60, 80, 100]
+    directScoreMeaning:
+      0: MISSING
+      20: SHELL_OR_DECLARATION_ONLY
+      40: BASIC_FUNCTION_EXISTS
+      60: REAL_RUNTIME_FUNCTIONS
+      80: INTERCONNECTED_WITH_OTHER_GAME_SYSTEMS
+      100: QUALITY_STABILITY_AND_REVALIDATION_PROVEN
+    scoreCannotOverrideHardGate: true
+    criticalAxisMinimumPercent: 75
+    runtimeEvidencePreferredOverSourceClaims: true
+    sourceKeywordOnlyScoringForbidden: true
+    gates:
+      DESIGN_GATE:
+        currentPassMinimum: 80
+        axes:
+          IDEA_AND_DISTINCTNESS: 12
+          CATEGORY_IDENTITY: 10
+          CORE_LOOP_DESIGN: 14
+          SYSTEM_INTERCONNECTION_DESIGN: 12
+          PROGRESSION_ECONOMY_BALANCE_DESIGN: 10
+          CONTENT_EXPANSION_PLAN: 10
+          FAILURE_RETRY_RISK_DESIGN: 8
+          PLATFORM_FIT_DESIGN: 8
+          UX_AND_ACCESSIBILITY_PLAN: 6
+          ART_AUDIO_DIRECTION: 5
+          IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY: 5
+      WEB_INITIAL_PLAYABLE_GATE:
+        currentPassMinimum: 80
+        axes:
+          COMPLETE_PLAYABLE_CYCLE: 18
+          REAL_INPUT_AND_CONTROL: 12
+          OBSERVABLE_STATE_CHANGE: 12
+          CORE_SYSTEM_CONNECTIVITY: 12
+          REAL_GOAL_FAILURE_RETRY: 12
+          CATEGORY_CORE_MECHANIC: 12
+          WEB_MOBILE_PLAYABILITY: 10
+          BASIC_RUNTIME_STABILITY: 7
+          NO_PROXY_NO_FAKE_PROGRESS: 5
+      WEB_STRICT_IMPLEMENTATION_GATE:
+        currentPassMinimum: 80
+        composition:
+          COMMON_GAME_QUALITY: 55
+          CATEGORY_SPECIFIC_QUALITY: 25
+          WEB_PLATFORM_QUALITY: 20
+        commonAxes:
+          CORE_GAME_LOOP: 8
+          CONTROLS_AND_GAME_FEEL: 7
+          SYSTEM_CONNECTIVITY: 7
+          CONTENT_DEPTH_AND_VARIATION: 7
+          PROGRESSION_AND_REWARD: 5
+          DIFFICULTY_AND_BALANCE: 5
+          FAILURE_AND_RETRY: 4
+          FUNCTIONAL_UI_UX: 4
+          STABILITY: 4
+          SAVE_AND_RECOVERY: 4
+        webPlatformAxes:
+          MOBILE_TOUCH_AND_SIMULTANEOUS_INPUT: 4
+          BROWSER_PERFORMANCE: 3
+          VIEWPORT_SIZE_AND_ROTATION: 2
+          BACKGROUND_TAB_RESUME: 2
+          REFRESH_STATE_RECOVERY: 2
+          KEYBOARD_TOUCH_INPUT_COMPATIBILITY: 2
+          LOW_END_DEVICE_STABILITY: 2
+          LONG_SESSION_MEMORY_AND_LISTENER_STABILITY: 2
+          BROWSER_ERROR_RECOVERY: 1
+        categoryAxesMustUseApprovedDesignProfile: true
+      FINAL_CONTENT_DEPTH_GATE:
+        currentFlowRequirement: REAL_30_MINUTE_CONTENT_DEPTH
+        axes:
+          EARLY_GAME_CHANGE: 12
+          MID_GAME_CHANGE: 16
+          LATE_GAME_CHANGE: 16
+          NEW_MECHANIC_OR_STRATEGIC_DIMENSIONS: 14
+          CONTENT_BEHAVIORAL_DIVERSITY: 14
+          PACING_AND_REPETITION_CONTROL: 12
+          DIFFICULTY_GROWTH_AND_RECOVERY: 8
+          REWARD_AND_NEXT_PLAY_MOTIVATION: 8
+      WEB_PLATFORM_PROMOTION_GATE:
+        currentPassMinimum: 90
+        independentRevalidationRequired: true
+        usesCurrentWebStrictScore: true
+        additionalAxes:
+          CURRENT_SOURCE_BINDING: 20
+          CURRENT_DESIGN_BASELINE_BINDING: 15
+          INDEPENDENT_SECOND_RUNTIME_PASS: 25
+          SECOND_CONTENT_DEPTH_PASS: 20
+          REGRESSION_STABILITY: 10
+          EVIDENCE_CONFIDENCE: 10
+      TARGET_PLATFORM_IMPLEMENTATION_GATE:
+        passMinimum: 90
+        axes:
+          VALIDATED_WEB_CORE_PORT_FIDELITY: 15
+          TARGET_PLATFORM_NATIVE_INPUT_UX: 15
+          TARGET_PLATFORM_RUNTIME_AND_PERFORMANCE: 15
+          CATEGORY_CORE_QUALITY: 15
+          SYSTEM_CONNECTIVITY: 10
+          SAVE_NETWORK_SESSION_PLATFORM_SERVICES_WHEN_APPLICABLE: 10
+          CONTENT_AND_PROGRESSION_PARITY_OR_EXPANSION: 10
+          REGRESSION_AND_RECOVERABILITY: 10
+        platformSpecificProfileRequired: true
+        webScoreSubstitutionForbidden: true
+      RELEASE_GATE:
+        passMinimum: 90
+        axes:
+          FULL_GAMEPLAY_COMPLETION: 15
+          CATEGORY_QUALITY: 10
+          PLATFORM_QUALITY: 10
+          CONTENT_DEPTH: 10
+          BALANCE_AND_EXPLOIT_RESISTANCE: 10
+          SAVE_MIGRATION_AND_RECOVERY: 10
+          PERFORMANCE_AND_LONG_SESSION_STABILITY: 10
+          REGRESSION_STABILITY: 10
+          UX_ACCESSIBILITY_AND_FEEDBACK: 5
+          RELEASE_EVIDENCE_TRACEABILITY: 10
+      LIVE_VERSION_UPDATE_GATE:
+        passMinimum: 80
+        scoreStoredPerVersion: true
+        releaseScoreRemainsImmutable: true
+        axes:
+          NEW_CONTENT_SUBSTANCE: 20
+          EXISTING_SYSTEM_INTEGRATION: 15
+          GAMEPLAY_CHANGE_VALUE: 15
+          CATEGORY_FIT: 10
+          PLATFORM_FIT: 10
+          BALANCE: 10
+          REGRESSION_STABILITY: 10
+          SAVE_PERFORMANCE_AND_COMPATIBILITY: 10
+      EXPANSION_PACK_GATE:
+        passMinimum: 85
+        scoreStoredPerExpansion: true
+        releaseScoreRemainsImmutable: true
+        axes:
+          NEW_CORE_CONTENT: 20
+          NEW_SYSTEM_OR_MECHANIC: 15
+          NEW_AREA_STAGE_OR_PROGRESSION_AXIS: 15
+          EXISTING_SYSTEM_INTEGRATION: 10
+          NEW_ENEMY_NPC_BOSS_BEHAVIORAL_DISTINCTNESS: 10
+          PROGRESSION_AND_ECONOMY_EXPANSION: 10
+          CATEGORY_IDENTITY_STRENGTH: 5
+          PLATFORM_QUALITY: 5
+          BALANCE: 5
+          REGRESSION_SAVE_COMPATIBILITY_AND_STABILITY: 5
+    liveContentContinuation:
+      releaseEndsInitialDevelopmentOnly: true
+      releasedGamesRemainEligibleForContinuousContentExpansion: true
+      nextVersionPlanningAfterSuccessfulRelease: true
+      updateScoreMustNotReplaceReleaseScore: true
+      expansionScoreMustNotReplaceReleaseScore: true
+      scoreHistoryRequired: true
+  
+  
   webImplementationReview:
     appliesTo: WEB_REAL_PLAYABLE_IMPLEMENTATION
     supersedesGenericStrictReviewWeightsForWebImplementation: true
@@ -196,8 +358,8 @@ ownerCurrentProductionContract:
       sameBuildSeedInputShouldReproduceEquivalentScore: true
       irrelevantGenreAxisStatus: N/A
       strategyRequiredOnlyWhenGenreOrApprovedDesignRequiresIt: true
-      commonCriticalAxisMinimumPercent: 60
-      categoryAggregateMinimumPercent: 60
+      commonCriticalAxisMinimumPercent: 75
+      categoryAggregateMinimumPercent: 75
       weakCriticalAxisCannotBeAveragedAway: true
       weakCriticalAxisScoreCap: 79
       weakCriticalAxisCreatesHardFailure: true
@@ -238,8 +400,9 @@ ownerCurrentProductionContract:
       economyRule: EVALUATE_MEANINGFUL_RESOURCE_AND_PURCHASE_CHOICES_NOT_FIXED_CURRENCY_AMOUNT
       difficultyRule: EVALUATE_CHALLENGE_GROWTH_RECOVERY_REWARD_AND_PLAYER_GROWTH_RELATION_NOT_MONOTONIC_INCREASE_ONLY
       evidenceMissingForApplicableRequiredMeasurementCannotBeInvented: true
-    commonScoreMax: 60
-    categoryScoreMax: 40
+    commonScoreMax: 55
+    categoryScoreMax: 25
+    webPlatformScoreMax: 20
     commonWeights:
       CORE_GAME_LOOP: 15
       SYSTEM_CONNECTIVITY: 10
