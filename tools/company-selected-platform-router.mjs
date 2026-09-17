@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import {WEB_VALIDATION_SCHEMA_VERSION} from './company-web-validation-evidence-contract.mjs';
 
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
@@ -131,7 +132,7 @@ export function targetPlatformDevelopmentEligible(item={}){
     upper(item.formalImplementationVerdict)==='PASS'&&
     Number.isFinite(score)&&score>=90&&
     hard.length===0&&
-    Number(item.webValidationSchemaVersion)===13&&
+    Number(item.webValidationSchemaVersion)===WEB_VALIDATION_SCHEMA_VERSION&&
     item.webPromotionRevalidationPassed===true
   );
 }
