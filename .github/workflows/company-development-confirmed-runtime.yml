@@ -361,6 +361,9 @@ jobs:
                 webValidationPassedAt:null,musicValidationPassed:false,webValidationEvidencePath:null,
                 webFinalContentDepthEvidencePath:null,webFinalContentDepthPassedAt:null,
                 homepageTestEligible:false,homepageTestCandidate:false,homepageTestScore:null,homepageTestVerdict:'WAITING_FINAL_CONTENT_DEPTH',
+                strictImplementationReviewPath:null,strictImplementationScore:null,webStrictScore:null,
+                strictImplementationVerdict:'REVISE',strictImplementationHardFailures:[],
+                webValidationSchemaVersion:null,webSourceIndexSha256:null,webDesignBaselineSha256:null,
                 formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
                 routingBlockers:['web-final-content-depth-required'],webValidationLastAttemptAt:stamp,updatedAt:stamp,
               }};
@@ -485,7 +488,14 @@ jobs:
             }
           }
           if(result?.pass!==true&&result?.update){
+            Object.assign(result.update,{
+              strictImplementationReviewPath:null,strictImplementationScore:null,webStrictScore:null,
+              strictImplementationVerdict:'REVISE',strictImplementationHardFailures:[],
+              webValidationSchemaVersion:null,webSourceIndexSha256:null,webDesignBaselineSha256:null,
+              webValidationEvidencePath:null,homepageTestScore:null,
+            });
             console.log(`WEB_FAILURE_REPAIR_STATE=${result.update.canonicalState}`);
+            console.log('WEB_FAILURE_STALE_FULL_SCORE_INVALIDATED=YES');
             console.log('WEB_FAILURE_WAITING_TERMINAL=NO');
           }
           fs.writeFileSync(path.join(resultsRoot,`${safe}.json`),JSON.stringify(result,null,2)+'\n');
@@ -679,7 +689,17 @@ jobs:
             byId.set(target.gameId,missing);
           }
           let passCount=0,failCount=0;
-          for(const result of results){const item=(queue.items||[]).find(x=>x.gameId===result.gameId);if(!item)throw new Error(`queue item missing: ${result.gameId}`);Object.assign(item,result.update);if(result.pass===true)passCount++;else failCount++;}
+          for(const result of results){
+            const item=(queue.items||[]).find(x=>x.gameId===result.gameId);if(!item)throw new Error(`queue item missing: ${result.gameId}`);
+            if(result.pass!==true)Object.assign(result.update,{
+              strictImplementationReviewPath:null,strictImplementationScore:null,webStrictScore:null,
+              strictImplementationVerdict:'REVISE',strictImplementationHardFailures:[],
+              webValidationSchemaVersion:null,webSourceIndexSha256:null,webDesignBaselineSha256:null,
+              webValidationEvidencePath:null,homepageTestScore:null,
+            });
+            Object.assign(item,result.update);
+            if(result.pass===true)passCount++;else failCount++;
+          }
           queue.webValidationPolicy='WEB_80_FOR_HOMEPAGE_90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM';
           queue.webValidationContractVersion=4;
           queue.webValidationEvidenceSchemaMinimum=WEB_VALIDATION_SCHEMA_VERSION;
