@@ -23,7 +23,7 @@ test('COMPANY_FLOW remains the single machine-oriented production policy source'
   assert.match(flow,/humanReadableNarrativeRequired: false/);
   assert.match(flow,/ownerInstructionOverridesPolicy: true/);
   assert.match(flow,/passMinimum: 80/);
-  assert.match(flow,/implementationPassMinimum: 90/);
+  assert.match(flow,/formalImplementationMinimumForTargetPlatformDispatch: 90/);
   assert.match(flow,/designOnlyArtbookForbidden: true/);
   assert.match(flow,/preWebArtbookForbidden: true/);
   assert.match(flow,/createOnlyAfterWebStrictReview: true/);
@@ -77,9 +77,10 @@ test('DESIGN_ONLY stops at strict design baseline; Web strict review precedes ar
   assert.equal(design.readyState,'DESIGN_BASELINE_READY');
   assert.equal(design.sourceCodeAutoDevelopment,false);
   assert.equal(design.artbookBeforePromotionForbidden,true);
-  assert.equal(directive.strictReview.designPassMinimum,80);
-  assert.equal(directive.strictReview.implementationPassMinimum,90);
-  assert.equal(directive.strictReview.excellentDesignMinimum,90);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.webPlatformPromotion,90);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
   assert.equal(directive.ai.artbookEditor.startsAfterDesignPromotion,true);
   assert.equal(directive.ai.artbookEditor.startsAfterWebStrictReview,true);
   assert.equal(directive.ai.artbookEditor.minimumWebStrictScore,80);
