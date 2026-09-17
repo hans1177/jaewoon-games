@@ -6,6 +6,8 @@ const VIBE_REPOSITORY = 'hans1177/jaewoon-games';
 const VIBE_RUNTIME_BRANCH = 'company-runtime';
 const VIBE_WORKFLOWS = new Set(['Vibe QA','Vibe Integrated Regression']);
 const RUNTIME_SYNC_SECONDS = 30;
+const MIN_DEVELOPMENT_SCORE_SCHEMA = 13;
+const RUNTIME_SUPPORTED_PLATFORMS = ['UNITY','ROBLOX','FORTNITE_UEFN'];
 const UNIVERSAL_TOUCH_SCRIPT='<script src="/web-games/_shared/touch-controls.js?v=20260913-touch1"></script>';
 
 function aiJson(data,status=200,extraHeaders={}){
@@ -13,7 +15,7 @@ function aiJson(data,status=200,extraHeaders={}){
 }
 function clipText(value,max=4000){return String(value??'').trim().slice(0,max);}
 function handleAiStatus(env){
-  return aiJson({ok:true,geminiConfigured:Boolean(env.GEMINI_API_KEY),model:clipText(env.GEMINI_MODEL||'gemini-2.5-flash-lite',80),scope: 'in-game-runtime-only',purposes:[...GAME_AI_PURPOSES]});
+  return aiJson({ok:true,geminiConfigured:Boolean(env.GEMINI_API_KEY),model:clipText(env.GEMINI_MODEL||'gemini-2.5-flash-lite',80),scope:'in-game-runtime-only',purposes:[...GAME_AI_PURPOSES]});
 }
 function outputContract(purpose){
   if(purpose==='dialogue'||purpose==='npc'||purpose==='merchant'||purpose==='quest')return '{"speech":"short natural in-game line","mood":"neutral|happy|angry|afraid|sad|excited","intent":"talk|warn|help|refuse|trade|quest"}';
@@ -117,87 +119,156 @@ function productionCategory(productionClass){
   return 'design-only';
 }
 function stageFor(project,seed,productionClass,platform){
-  if(project?.mode==='HOLD'||String(project?.profileStatus||'').startsWith('HOLD'))return '보류';
   if(productionClass==='RELEASE_CONFIRMED')return `출시확정 · ${platform||'플랫폼 선택 필요'}`;
   if(productionClass==='DEVELOPMENT_CONFIRMED')return `개발확정 · ${platform||'플랫폼 선택 필요'}`;
   const state=String(seed?.lifecycleState||'').replaceAll('_',' ').trim();
   if(state&&state!=='DESIGN ONLY')return `기획 · ${state}`;
   return '기획 · 서버 설계 진행중';
 }
-function projectIsServerActive(project){
-  if(!project||!project.slug)return false;
-  if(String(project.mode||'').toUpperCase()==='HOLD')return false;
-  if(String(project.profileStatus||'').toUpperCase().startsWith('HOLD'))return false;
-  return true;
+function bindingMatches(current,initial){
+  const c=String(current??'').trim(),i=String(initial??'').trim();
+  return !c||(!!i&&c===i);
 }
-function seedIsServerActive(seed,heldGameIds=new Set()){
-  const status=String(seed?.status||'').toUpperCase();
-  return Boolean(seed?.gameId)&&!heldGameIds.has(seed.gameId)&&!['DISCARDED','REMOVED'].includes(status);
+function reworkOrRevalidation(row){
+  return [row?.canonicalState,row?.currentStep,row?.homepageTestVerdict,row?.formalImplementationVerdict,row?.resumeStage].some(value=>{
+    const v=String(value??'').trim().toUpperCase();
+    return v.includes('REWORK')||v.includes('REVALIDATION');
+  });
 }
-function mergeRuntimeCatalog(baseCatalog,portfolio,seedState){
-  const baseGames=Array.isArray(baseCatalog?.games)?baseCatalog.games:[];
+function scoreInfo(row,productionClass){
+  if(productionClass==='RELEASE_CONFIRMED')return {score:null,label:'출시',current:true,source:'SERVER_DEVELOPMENT_QUEUE'};
+  if(!row)return {score:null,label:'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
+  if(reworkOrRevalidation(row))return {score:null,label:'재검증 필요',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
+  const initialPassed=row.webInitialCyclePassed===true;
+  const schema=Number(row.webInitialCycleValidationSchemaVersion);
+  const musicPassed=row.webInitialCycleMusicValidationPassed===true;
+  const sourceBound=bindingMatches(row.webSourceIndexSha256,row.webInitialCycleSourceIndexSha256);
+  const baselineBound=bindingMatches(row.webDesignBaselineSha256,row.webInitialCycleDesignBaselineSha256);
+  const raw=row.webInitialCycleStrictScore;
+  const score=raw===null||raw===undefined||raw===''?NaN:Number(raw);
+  if(!initialPassed||!Number.isFinite(schema)||schema<MIN_DEVELOPMENT_SCORE_SCHEMA||!musicPassed||!sourceBound||!baselineBound||!Number.isFinite(score)||score<0||score>100){
+    const stale=initialPassed&&Number.isFinite(schema)&&schema>=MIN_DEVELOPMENT_SCORE_SCHEMA&&musicPassed&&(!sourceBound||!baselineBound);
+    return {score:null,label:stale?'재검증 필요':'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
+  }
+  return {score,label:`${score}점`,current:true,source:'SERVER_DEVELOPMENT_QUEUE'};
+}
+function playModeLabel(value){
+  const mode=String(value??'').trim().toUpperCase();
+  if(mode==='SINGLE')return '싱글';
+  if(mode==='COOP')return '협동';
+  if(mode==='COMPETITIVE')return '경쟁';
+  if(mode==='HYBRID')return '혼합';
+  return '플레이 방식 미평가';
+}
+function latestWork(base,queue){
+  const direct=String(queue?.homepageRecentWork||'').trim();
+  if(direct)return direct;
+  const raw=String(queue?.currentStep||queue?.resumeStage||queue?.executionEvidence?.failureStage||queue?.canonicalState||'').trim().toUpperCase();
+  const labels={WEB_GAMEPLAY_AND_MUSIC_VALIDATION:'웹 게임플레이·음악 검증',FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP:'승인 범위 웹 콘텐츠 확장',TARGET_PLATFORM_RUNTIME:'플랫폼 실행 검증',TARGET_PLATFORM_QA:'플랫폼 QA',ROBLOX_POST_RUNTIME_QA:'Roblox 실행 후 QA',FINAL_CONTENT_DEPTH:'최종 콘텐츠 깊이 검증',IMMUTABLE_ARTIFACT_BIND:'빌드 결과물 고정',WEB_CONTENT_DEVELOPMENT_REWORK:'웹 콘텐츠 재작업'};
+  if(raw)return labels[raw]||raw.replaceAll('_',' ');
+  return String(base?.homepageRecentWork||'개발 작업 정보 없음');
+}
+function latestById(rows,idField){
+  const map=new Map();
+  for(const row of Array.isArray(rows)?rows:[]){
+    const id=String(row?.[idField]||'').trim();
+    if(!id)continue;
+    const old=map.get(id);
+    const t=Date.parse(row?.ROBLOX_GENRE_REVIEWED_AT||row?.updatedAt||row?.webValidationLastAttemptAt||row?.createdAt||row?.enqueuedAt||'')||0;
+    const oldT=Date.parse(old?.ROBLOX_GENRE_REVIEWED_AT||old?.updatedAt||old?.webValidationLastAttemptAt||old?.createdAt||old?.enqueuedAt||'')||0;
+    if(!old||t>=oldT)map.set(id,row);
+  }
+  return map;
+}
+function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
+  const allBaseGames=Array.isArray(baseCatalog?.games)?baseCatalog.games:[];
+  const baseGames=allBaseGames.filter(game=>['ACTIVE','REBUILD'].includes(String(game?.lifecycleState||'ACTIVE').toUpperCase()));
   const projects=Array.isArray(portfolio?.projects)?portfolio.projects:[];
-  const seeds=Array.isArray(seedState?.seeds)?seedState.seeds:[];
-  const baseById=new Map(baseGames.map(game=>[game.id,game]));
-  const projectBySlug=new Map(projects.map(project=>[project.slug,project]).filter(([slug])=>slug));
-  const seedById=new Map(seeds.map(seed=>[seed.gameId,seed]).filter(([id])=>id));
-  const heldGameIds=new Set(projects.filter(project=>project?.slug&&!projectIsServerActive(project)).map(project=>project.slug));
-  const orderedIds=[];
-  const seen=new Set();
-  const add=id=>{if(id&&!seen.has(id)){seen.add(id);orderedIds.push(id);}};
-  for(const project of projects)if(projectIsServerActive(project))add(project.slug);
-  for(const seed of seeds)if(seedIsServerActive(seed,heldGameIds))add(seed.gameId);
-  const games=orderedIds.map(id=>{
-    const base=baseById.get(id)||{};
+  const activeSeeds=(Array.isArray(seedState?.seeds)?seedState.seeds:[]).filter(seed=>String(seed?.status||'').toUpperCase()==='ACTIVE');
+  const queueItems=Array.isArray(developmentQueue?.items)?developmentQueue.items:[];
+  const projectBySlug=latestById(projects,'slug');
+  const seedById=latestById(activeSeeds,'gameId');
+  const queueById=latestById(queueItems,'gameId');
+  const games=baseGames.map(base=>{
+    const id=String(base.id||'').trim();
     const project=projectBySlug.get(id)||null;
     const seed=seedById.get(id)||null;
-    const productionClass=String(project?.productionClass||seed?.productionClass||base.productionClass||'DESIGN_ONLY').toUpperCase();
-    const platform=normalizePlatform(project?.selectedPlatform||project?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||base.selectedPlatform||base.productionTarget);
+    const queue=queueById.get(id)||null;
+    const productionClass=String(base.productionClass||queue?.productionClass||project?.productionClass||seed?.productionClass||'DESIGN_ONLY').toUpperCase();
+    const platform=normalizePlatform(base.selectedPlatform||queue?.selectedPlatform||queue?.targetPlatform||project?.selectedPlatform||project?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||base.productionTarget);
     const meta=categoryMeta(seed?.GAME_CATEGORY);
-    const sourcePath=String(project?.sourcePath||'').replace(/^\/+|\/+$/g,'');
+    const sourcePath=String(project?.sourcePath||queue?.sourcePath||'').replace(/^\/+|\/+$/g,'');
     const hasProjectWeb=sourcePath.startsWith('web-games/');
     const webPath=base.webPath||(hasProjectWeb?`/${sourcePath}/`:null);
-    const description=base.description||seed?.DISTINCT_IDENTITY||project?.name||seed?.gameName||id;
+    const baseGenres=Array.isArray(base.genre)&&base.genre.length?base.genre:meta.genre;
+    const robloxGenre=String(seed?.ROBLOX_GENRE_LABEL_KO||seed?.ROBLOX_GENRE||queue?.ROBLOX_GENRE_LABEL_KO||queue?.ROBLOX_GENRE||'').trim();
+    const robloxSubgenre=String(seed?.ROBLOX_SUBGENRE_LABEL_KO||seed?.ROBLOX_SUBGENRE||queue?.ROBLOX_SUBGENRE_LABEL_KO||queue?.ROBLOX_SUBGENRE||'').trim();
+    const genreLabel=platform==='ROBLOX'&&robloxGenre?[robloxGenre,robloxSubgenre].filter(Boolean).join(' · '):(baseGenres.join(' · ')||'장르 미평가');
+    const playMode=String(seed?.MULTIPLAYER_DESIGN_MODE||seed?.INITIAL_PLAY_MODE||queue?.ROBLOX_PLAY_MODE||queue?.playMode||'').trim().toUpperCase();
+    const score=scoreInfo(queue,productionClass);
+    const updatedAt=queue?.updatedAt||queue?.webValidationLastAttemptAt||seed?.ROBLOX_GENRE_REVIEWED_AT||seed?.updatedAt||base.updatedAt||baseCatalog?.updatedAt||null;
     return {
       ...base,
       id,
-      name:base.name||project?.name||seed?.gameName||id,
-      description:String(description).slice(0,240),
-      genre:Array.isArray(base.genre)&&base.genre.length?base.genre:meta.genre,
+      name:base.name||project?.name||seed?.gameName||queue?.gameName||id,
+      description:String(base.description||seed?.DISTINCT_IDENTITY||project?.name||seed?.gameName||id).slice(0,240),
+      genre:baseGenres,
       image:base.image||meta.image,
       webPath,
       hasWebArchive:Boolean(base.hasWebArchive||hasProjectWeb),
       homepageWebPlayable:Boolean(base.homepageWebPlayable||hasProjectWeb),
       homepageCategory:productionCategory(productionClass),
       productionClass,
-      productionClassSource:project?.productionClassSource||seed?.productionClassSource||base.productionClassSource||'COMPANY_RUNTIME',
-      selectedPlatform:platform||base.selectedPlatform||null,
+      productionClassSource:base.productionClassSource||queue?.productionClassSource||project?.productionClassSource||seed?.productionClassSource||'COMPANY_RUNTIME',
+      selectedPlatform:platform||null,
       productionTarget:productionClass==='DESIGN_ONLY'?'design-only':targetForPlatform(platform),
       homepageStage:stageFor(project,seed,productionClass,platform),
       runtimeManaged:true,
-      runtimeStatus:project?.mode||seed?.lifecycleState||seed?.status||'ACTIVE',
+      runtimeStatus:String(base.lifecycleState||'ACTIVE').toUpperCase(),
       runtimeSeedStatus:seed?.status||null,
-      runtimeProjectId:project?.id||null
+      runtimeProjectId:project?.id||null,
+      robloxPublicationTarget:queue?.robloxPublicationTarget||base.robloxPublicationTarget||null,
+      robloxReleaseEvidence:queue?.robloxReleaseEvidence||base.robloxReleaseEvidence||null,
+      homepageInfo:{
+        authority:'company-runtime',
+        platform,
+        score:score.score,
+        scoreLabel:score.label,
+        scoreCurrent:score.current,
+        scoreSource:score.source,
+        genre:baseGenres,
+        genreLabel,
+        subgenre:platform==='ROBLOX'?robloxSubgenre:'',
+        playMode,
+        playModeLabel:playModeLabel(playMode),
+        latestWork:latestWork(base,queue),
+        updatedAt,
+        status:String(queue?.canonicalState||queue?.status||seed?.status||base.lifecycleState||'ACTIVE'),
+        productionClass
+      }
     };
   });
   return {
     ...baseCatalog,
     version:Math.max(1,Number(baseCatalog?.version)||0)+1,
     runtimeAuthority:'company-runtime',
+    runtimeInfoAuthority:'company-runtime',
+    runtimeSupportedPlatforms:RUNTIME_SUPPORTED_PLATFORMS,
     runtimeSyncSeconds:RUNTIME_SYNC_SECONDS,
-    runtimeCounts:{games:games.length,portfolioActive:projects.filter(projectIsServerActive).length,activeSeeds:seeds.filter(seed=>seedIsServerActive(seed,heldGameIds)).length},
+    runtimeCounts:{games:games.length,canonicalGames:games.length,portfolioProjects:projects.length,activeSeeds:activeSeeds.length,developmentQueueItems:queueItems.length},
     games
   };
 }
 async function handleRuntimeCatalog(request,env){
   if(request.method!=='GET'&&request.method!=='HEAD')return aiJson({error:'method_not_allowed'},405);
   try{
-    const [catalog,portfolio,seedState]=await Promise.all([
+    const [catalog,portfolio,seedState,developmentQueue]=await Promise.all([
       fetchRuntimeJson('game-catalog.json'),
       fetchRuntimeJson('autonomous-portfolio.json'),
-      fetchRuntimeJson('game-seed-state.json')
+      fetchRuntimeJson('game-seed-state.json'),
+      fetchRuntimeJson('development-queue.json')
     ]);
-    const merged=mergeRuntimeCatalog(catalog,portfolio,seedState);
+    const merged=mergeRuntimeCatalog(catalog,portfolio,seedState,developmentQueue);
     const headers={...AI_JSON_HEADERS,'Cache-Control':`public, max-age=${RUNTIME_SYNC_SECONDS}`,'X-Jaewoon-Runtime-Authority':'company-runtime','X-Jaewoon-Runtime-Games':String(merged.games.length)};
     return new Response(request.method==='HEAD'?null:JSON.stringify(merged),{status:200,headers});
   }catch(error){
