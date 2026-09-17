@@ -1,0 +1,192 @@
+name: Skyline Rush Exact Artifact Emergency Publish
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: skyline-rush-exact-artifact-emergency-publish
+  cancel-in-progress: true
+
+env:
+  GAME_ID: seed-roblox-obby-party-minigam-tower-of-hell
+  SOURCE_REVISION: 117a87320e67c690c1c8b3972598d331cf366c56
+  ARTIFACT_IDENTITY: sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc
+  ARTIFACT_RUN_ID: '35110903876'
+  SOURCE_ROOT: roblox-games/seed-roblox-obby-party-minigam-tower-of-hell
+  ROBLOX_UNIVERSE_ID: '10766723635'
+  ROBLOX_PLACE_ID: '129342889720619'
+
+jobs:
+  publish:
+    name: publish Skyline Rush exact reviewed artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout implementation
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          fetch-depth: 0
+          fetch-tags: false
+
+      - name: Checkout canonical runtime evidence
+        uses: actions/checkout@v4
+        with:
+          ref: company-runtime
+          path: runtime
+          fetch-depth: 1
+          fetch-tags: false
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact reviewed Skyline evidence and target
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('../runtime/development-queue.json','utf8'));
+          const item=(q.items||[]).find(row=>row.gameId===process.env.GAME_ID);
+          if(!item) throw new Error('Skyline runtime item missing');
+          const checks=[
+            ['productionClass',String(item.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'],
+            ['platform',String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='ROBLOX'],
+            ['sourceRevision',item.robloxSourceCommit===process.env.SOURCE_REVISION],
+            ['buildSourceRevision',item.robloxBuildSourceRevision===process.env.SOURCE_REVISION],
+            ['artifactIdentity',item.robloxBuildArtifactIdentity===process.env.ARTIFACT_IDENTITY],
+            ['artifactRunId',Number(item.robloxRuntimeEvidence?.artifactRunId)===Number(process.env.ARTIFACT_RUN_ID)],
+            ['finalReview',item.robloxFinalReviewPassed===true],
+            ['build',item.robloxBuildOrPackagePassed===true],
+            ['preflight',item.robloxBuildPreflightPassed===true],
+            ['runtime',item.robloxRuntimePassed===true],
+            ['serverClient',item.robloxServerClientBoundaryPassed===true],
+            ['mobile',item.robloxMobileControlUiPassed===true],
+            ['independentQa',item.robloxIndependentQaPassed===true],
+            ['regression',item.robloxRegressionPassed===true],
+            ['exactRevision',item.robloxExactRevisionPassed===true],
+            ['multiplayerQa',item.robloxMultiplayerApplicable!==true||item.robloxMultiplayerQaPassed===true],
+            ['universeId',String(item.robloxPublicationTarget?.universeId||'')===process.env.ROBLOX_UNIVERSE_ID],
+            ['placeId',String(item.robloxPublicationTarget?.placeId||'')===process.env.ROBLOX_PLACE_ID],
+            ['targetVerified',item.robloxPublicationTarget?.verified===true],
+          ];
+          const failed=checks.filter(([,ok])=>!ok).map(([name])=>name);
+          if(failed.length) throw new Error(`SKYLINE_EXACT_EVIDENCE_BLOCKED:${failed.join(',')}`);
+          console.log('SKYLINE_EXACT_EVIDENCE=PASS');
+          console.log(`SKYLINE_TARGET=${process.env.ROBLOX_UNIVERSE_ID}/${process.env.ROBLOX_PLACE_ID}`);
+          NODE
+
+      - name: Verify source unchanged and assemble release evidence
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "${SOURCE_REVISION}^{commit}"
+          git merge-base --is-ancestor "$SOURCE_REVISION" HEAD
+          git diff --quiet "$SOURCE_REVISION" HEAD -- "$SOURCE_ROOT"
+          node tools/vibe3-roblox-platform.mjs \
+            --assemble-development-release-evidence \
+            --queue ../runtime/development-queue.json \
+            --game-id "$GAME_ID" \
+            --output /tmp/skyline-release-evidence.json
+          grep -q '"state": "PASS"' /tmp/skyline-release-evidence.json
+          echo 'SKYLINE_SOURCE_AND_RELEASE_EVIDENCE=PASS'
+
+      - name: Download and verify exact immutable place artifact
+        id: package
+        working-directory: main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=/tmp/skyline-exact-artifact
+          rm -rf "$root" "$SOURCE_ROOT/.skyline-release"
+          mkdir -p "$root" "$SOURCE_ROOT/.skyline-release"
+          gh run download "$ARTIFACT_RUN_ID" --repo "$GITHUB_REPOSITORY" -n "development-roblox-package-$GAME_ID" -D "$root"
+          mapfile -t files < <(find "$root" -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) | sort)
+          [ "${#files[@]}" -eq 1 ]
+          src="${files[0]}"
+          hash="$(sha256sum "$src" | awk '{print tolower($1)}')"
+          [ "sha256:$hash" = "$ARTIFACT_IDENTITY" ]
+          ext="${src##*.}"
+          dst="$SOURCE_ROOT/.skyline-release/place.$ext"
+          cp "$src" "$dst"
+          printf 'place_file=%s\n' "$dst" >> "$GITHUB_OUTPUT"
+          echo "SKYLINE_ARTIFACT_SHA256=$hash"
+          echo 'SKYLINE_EXACT_ARTIFACT=PASS'
+
+      - name: Validate exact Open Cloud publish plan
+        working-directory: main
+        env:
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe3-roblox-platform.mjs \
+            --place-file "$PLACE_FILE" \
+            --evidence /tmp/skyline-release-evidence.json \
+            --source-revision "$SOURCE_REVISION" | tee /tmp/skyline-plan.log
+          grep -q '^ROBLOX_V3_STATE=READY$' /tmp/skyline-plan.log
+          echo 'SKYLINE_OPEN_CLOUD_PLAN=READY'
+
+      - name: Publish Skyline Rush through Roblox Open Cloud
+        id: publish
+        working-directory: main
+        env:
+          ROBLOX_OPEN_CLOUD_API_KEY: ${{ secrets.ROBLOX_OPEN_CLOUD_API_KEY }}
+          PLACE_FILE: ${{ steps.package.outputs.place_file }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3; do
+            : > /tmp/skyline-publish.log
+            set +e
+            node --input-type=module <<'NODE' 2>&1 | tee /tmp/skyline-publish.log
+          import fs from 'node:fs';
+          import {createRobloxPlacePublishPlan,publishRobloxPlace} from './tools/vibe3-roblox-platform.mjs';
+          const evidence=JSON.parse(fs.readFileSync('/tmp/skyline-release-evidence.json','utf8'));
+          const plan=createRobloxPlacePublishPlan({
+            placeFile:process.env.PLACE_FILE,
+            universeId:process.env.ROBLOX_UNIVERSE_ID,
+            placeId:process.env.ROBLOX_PLACE_ID,
+            sourceRevision:process.env.SOURCE_REVISION,
+            evidence,
+          });
+          if(plan.executionReady!==true) throw new Error(`Skyline publish blocked: ${(plan.blockedReasons||[]).join(',')}`);
+          const result=await publishRobloxPlace({plan,retryDelaysMs:[]});
+          console.log(`ROBLOX_V3_STATE=${result.state}`);
+          console.log(`ROBLOX_PUBLISHED_VERSION_NUMBER=${result.versionNumber}`);
+          NODE
+            rc=${PIPESTATUS[0]}
+            set -e
+            if [ "$rc" -eq 0 ]; then
+              grep -q '^ROBLOX_V3_STATE=PUBLISHED$' /tmp/skyline-publish.log
+              version="$(sed -n 's/^ROBLOX_PUBLISHED_VERSION_NUMBER=//p' /tmp/skyline-publish.log | tail -n1)"
+              [[ "$version" =~ ^[1-9][0-9]*$ ]]
+              printf 'version_number=%s\n' "$version" >> "$GITHUB_OUTPUT"
+              echo 'SKYLINE_ROBLOX_OPEN_CLOUD_PUBLISH=PASS'
+              exit 0
+            fi
+            if [ "$attempt" -eq 3 ] || ! grep -Eqi 'HTTP 409:.*(server is busy|unable to process your upload request)' /tmp/skyline-publish.log; then
+              exit "$rc"
+            fi
+            echo "SKYLINE_ROBLOX_BUSY_RETRY=$attempt"
+            sleep 60
+          done
+
+      - name: Publish result
+        env:
+          VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
+        run: |
+          set -euo pipefail
+          [[ "$VERSION_NUMBER" =~ ^[1-9][0-9]*$ ]]
+          echo "SKYLINE_RUSH_DEPLOYED_VERSION=$VERSION_NUMBER"
+          echo 'SKYLINE_RUSH_DEPLOYMENT=PASS'
