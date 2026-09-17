@@ -45,7 +45,26 @@ const coordinatorModel=pool[hash(`${gameId}:coordinator`)%pool.length];
 const base=path.join('design',gameId,date);fs.mkdirSync(base,{recursive:true});
 const submissionBase=path.join('artbook-submissions',gameId,date);
 const factPack=readJson(path.join(submissionBase,'fact-pack.json'),{});
-const evidence={game,gameSeed:seed,factPack,centralPolicy:'COMPANY_FLOW.md'};
+const designLearningEvents=(Array.isArray(seedState?.seedMaterialLearning?.events)?seedState.seedMaterialLearning.events:[])
+  .filter(event=>clean(event?.gameId)===gameId&&clean(event?.reviewStage)==='DESIGN_STRICT_REVIEW')
+  .slice(-8);
+const designLearningContext={
+  role:'UNVALIDATED_DESIGN_FEEDBACK_ONLY',
+  successTrainingEligible:false,
+  validatedRuntimeRequiredForPositiveTraining:true,
+  recent:designLearningEvents.map(event=>({
+    verdict:clean(event?.verdict),
+    totalScore:Number.isFinite(Number(event?.totalScore))?Number(event.totalScore):null,
+    previousScore:Number.isFinite(Number(event?.previousScore))?Number(event.previousScore):null,
+    scoreDelta:Number.isFinite(Number(event?.scoreDelta))?Number(event.scoreDelta):null,
+    hardFailures:Array.isArray(event?.hardFailures)?event.hardFailures:[],
+    resolvedHardFailures:Array.isArray(event?.resolvedHardFailures)?event.resolvedHardFailures:[],
+    addedHardFailures:Array.isArray(event?.addedHardFailures)?event.addedHardFailures:[],
+    improvementTargets:Array.isArray(event?.improvementTargets)?event.improvementTargets:[],
+    recordedAt:clean(event?.recordedAt)
+  }))
+};
+const evidence={game,gameSeed:seed,factPack,designLearningContext,centralPolicy:'COMPANY_FLOW.md'};
 
 const MEMBER_TEXT={type:'string',maxLength:130};
 const MEMBER_REVIEW={type:'object',required:['keep','fix','add','risks','evidence','questions'],properties:{keep:{type:'array',maxItems:1,items:MEMBER_TEXT},fix:{type:'array',maxItems:1,items:MEMBER_TEXT},add:{type:'array',maxItems:1,items:MEMBER_TEXT},risks:{type:'array',maxItems:1,items:MEMBER_TEXT},evidence:{type:'array',maxItems:1,items:MEMBER_TEXT},questions:{type:'array',maxItems:1,items:MEMBER_TEXT}},additionalProperties:false};
@@ -210,7 +229,7 @@ const meeting=await runPhase('cross_department_meeting',()=>callModel(coordinato
 const consensus=meeting.decisions.filter(x=>x.status==='CONSENSUS');const conflicts=meeting.decisions.filter(x=>x.status==='CONFLICT');const holds=meeting.decisions.filter(x=>x.status==='HOLD');
 writeJson(path.join(base,'department-meeting.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',coordinatorModel,departmentLeadModels:leadModels,distinctLeadModels,distinctLeadModelCount:distinctLeadModels.length,representatives,rebuttalRound:1,rebuttalAuthoredByDepartmentLeads:true,...meeting,counts:{consensus:consensus.length,conflict:conflicts.length,hold:holds.length}});
 
-const revisedDesign=await runPhase('designer_revision',()=>callModel(designerModel,'너는 초안을 작성한 동일 Game Designer AI다. CONSENSUS만 설계에 반영하고 CONFLICT/HOLD는 openQuestions에 남긴다. GAME_SEED의 정체성과 타겟 근거를 잃지 않는다. multiplayerMode는 실제 코어루프와 합의 근거 없이 임의 변경하지 않는다.',`같은 설계자가 수정한다. 최종 multiplayerMode는 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 반드시 유지한다.\nGAME_SEED=${clip(seed,6500)}\nDRAFT=${clip(designDraft,12000)}\nCONSENSUS=${clip(consensus,6500)}\nCONFLICT=${clip(conflicts,3500)}\nHOLD=${clip(holds,3500)}`,DESIGN,{predict:1300,temperature:0.2,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})}));
+const revisedDesign=await runPhase('designer_revision',()=>callModel(designerModel,'너는 초안을 작성한 동일 Game Designer AI다. CONSENSUS만 설계에 반영하고 CONFLICT/HOLD는 openQuestions에 남긴다. GAME_SEED의 정체성과 타겟 근거를 잃지 않는다. multiplayerMode는 실제 코어루프와 합의 근거 없이 임의 변경하지 않는다.',`같은 설계자가 수정한다. 최종 multiplayerMode는 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 반드시 유지한다.\nGAME_SEED=${clip(seed,6500)}\nDESIGN_LEARNING_CONTEXT=${clip(designLearningContext,4500)}\nDRAFT=${clip(designDraft,12000)}\nCONSENSUS=${clip(consensus,6500)}\nCONFLICT=${clip(conflicts,3500)}\nHOLD=${clip(holds,3500)}`,DESIGN,{predict:1300,temperature:0.2,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})}));
 writeJson(path.join(base,'design-revised.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,sameModelAsDraft:true,appliedConsensusCount:consensus.length,unresolvedConflictCount:conflicts.length,heldCount:holds.length,status:'DESIGN_BASELINE_CANDIDATE',content:revisedDesign});
 
 const fatalReviews=await runPhase('five_lead_fatal_review',()=>parallelObject(ROLES,role=>callModel(leadModels[role],`너는 ${role} 부서 Lead AI다. Game Designer 수정 이후 폐기 안전 재검토를 한다. 단순 불만·시장수치·수정가능 문제로 DISCARD를 선택하면 안 된다. DISCARD는 중앙정책의 fatalCriteria 중 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 가능하다.`,`수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라.\nVALID_FATAL_CRITERIA=${JSON.stringify(FATAL_CRITERIA)}\nGAME_SEED=${clip(seed,6000)}\nREVISED_DESIGN=${clip(revisedDesign,13000)}\nINITIAL_MEETING=${clip(meeting,5000)}`,FATAL_REVIEW,{predict:450,temperature:0.1})));
@@ -225,7 +244,7 @@ writeJson(path.join(base,'design-disposition.json'),dispositionEvidence);
 
 const modelAudit=Object.fromEntries(ROLES.map(role=>{const models=uniq(memberReviews[role].map(x=>x.model));return[role,{leadModel:leadModels[role],assistantModels:models.filter(m=>m!==leadModels[role]),models,count:models.length,required:reviewModelCount,pass:models.length>=reviewModelCount&&models.includes(leadModels[role]),representativeModel:leadModels[role],representativeAuthoredByLead:true,rebuttalModel:leadModels[role],rebuttalAuthoredByLead:true}];}));
 const runtimeMetrics={phaseMs,totalModelCalls:modelCallStats.length,totalModelCallMs:modelCallStats.reduce((sum,item)=>sum+item.elapsedMs,0),modelPhaseConcurrency,modelKeepAlive,independentReviewOutputs:ROLES.reduce((sum,role)=>sum+departmentReviewModels[role].length,0),fullPoolReviewOutputs:pool.length*ROLES.length};
-writeJson(path.join(base,'cycle-status.json'),{version:5,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true},designer:{role:'GAME_DESIGNER_AI',model:designerModel,singleAuthor:true,sameModelRevised:true},departments:{count:ROLES.length,roles:ROLES,leadModels,distinctLeadModels,distinctLeadModelCount:distinctLeadModels.length,leadModelsDistinct:distinctLeadModels.length===ROLES.length,reviewModelCount,modelAudit,rebuttalRounds:1,rebuttalAuthoredByDepartmentLeads:true,repeatedFatalReview:true},meeting:{consensusCount:consensus.length,conflictCount:conflicts.length,holdCount:holds.length,coordinatorModel},disposition:dispositionEvidence,runtimeMetrics,artbook:{created:false,reason:'DESIGN_BASELINE_GATE_MUST_RUN_FIRST'},vibe2Used:false,paidApi:false});
+writeJson(path.join(base,'cycle-status.json'),{version:5,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true},designer:{role:'GAME_DESIGNER_AI',model:designerModel,singleAuthor:true,sameModelRevised:true},departments:{count:ROLES.length,roles:ROLES,leadModels,distinctLeadModels,distinctLeadModelCount:distinctLeadModels.length,leadModelsDistinct:distinctLeadModels.length===ROLES.length,reviewModelCount,modelAudit,rebuttalRounds:1,rebuttalAuthoredByDepartmentLeads:true,repeatedFatalReview:true},meeting:{consensusCount:consensus.length,conflictCount:conflicts.length,holdCount:holds.length,coordinatorModel},disposition:dispositionEvidence,runtimeMetrics,designLearning:{candidateCount:designLearningEvents.length,usedAsDesignContext:designLearningEvents.length>0,positiveTrainingEligible:false,validatedRuntimeRequiredForPositiveTraining:true},artbook:{created:false,reason:'DESIGN_BASELINE_GATE_MUST_RUN_FIRST'},vibe2Used:false,vibe2LearningContextUsed:designLearningEvents.length>0,paidApi:false});
 console.log('COMPANY_DESIGN_CYCLE=COMPLETE');
 console.log(`GAME_ID=${gameId}`);
 console.log(`GAME_SEED_ID=${seed.seedId}`);
@@ -237,4 +256,7 @@ console.log(`TOTAL_MODEL_CALLS=${runtimeMetrics.totalModelCalls}`);
 console.log(`MODEL_PHASE_CONCURRENCY=${runtimeMetrics.modelPhaseConcurrency}`);
 console.log('DESIGN_ONLY_ARTBOOK_CREATED=NO');
 console.log('DESIGN_ONLY_VIBE2_USED=NO');
+console.log(`DESIGN_LEARNING_CONTEXT_CANDIDATES=${designLearningEvents.length}`);
+console.log(`DESIGN_ONLY_VIBE2_LEARNING_CONTEXT=${designLearningEvents.length>0?'YES':'NO'}`);
+console.log('DESIGN_LEARNING_POSITIVE_TRAINING_ELIGIBLE=NO_UNTIL_VALIDATED_RUNTIME');
 console.log('PAID_API=NO');
