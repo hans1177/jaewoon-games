@@ -147,7 +147,8 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   }
   if(!mode&&MODES.has(clean(out.multiplayerMode).toUpperCase()))mode=clean(out.multiplayerMode).toUpperCase();
   setMissing(out,'multiplayerExpansionDecision',mode&&firstText(expansion,`${mode} 코어루프를 보존하며 확장은 별도 검증 후 결정한다`),500,repairs,'GAME_SEED_OR_LEGACY_MULTIPLAYER_MODE_AND_CROSS_PLATFORM_VALUE');
-  if(MODES.has(mode)){
+  const requireRobloxBuildProfile=['PRE_REVIEW','REVIEW_FEEDBACK'].includes(clean(phase).toUpperCase());
+  if(requireRobloxBuildProfile&&MODES.has(mode)){
     const profile=robloxBuildProfile(out,seed,mode);
     if(JSON.stringify(out.robloxBuildProfile||null)!==JSON.stringify(profile)){out.robloxBuildProfile=profile;repairs.push({field:'robloxBuildProfile',source:'GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY'});}
   }
@@ -155,7 +156,7 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   setMissingArray(out,'validationQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'openQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
 
-  const required=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','visualDirection','mobileUx','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','robloxBuildProfile','technicalAssumptions','validationQuestions','openQuestions'];
+  const required=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','visualDirection','mobileUx','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision',...(requireRobloxBuildProfile?['robloxBuildProfile']:[]),'technicalAssumptions','validationQuestions','openQuestions'];
   const unresolved=required.filter(key=>{
     if(key==='coreLoop')return !Array.isArray(out[key])||out[key].length<3;
     if(['signatureSystems','technicalAssumptions','validationQuestions','openQuestions'].includes(key))return !Array.isArray(out[key]);
