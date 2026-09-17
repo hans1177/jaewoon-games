@@ -18,6 +18,47 @@ export const ROBLOX_PACKAGE_TOOL=Object.freeze({
   linuxX64AssetSha256:'22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073',
 });
 
+function walkFiles(root){
+  const files=[];
+  for(const entry of fs.readdirSync(root,{withFileTypes:true})){
+    const full=path.join(root,entry.name);
+    if(entry.isDirectory())files.push(...walkFiles(full));
+    else if(entry.isFile())files.push(full);
+  }
+  return files;
+}
+
+export function collectRobloxSourceScriptInventory(root){
+  const inventory={Script:0,LocalScript:0,ModuleScript:0,total:0};
+  for(const file of walkFiles(path.resolve(root))){
+    const name=path.basename(file).toLowerCase();
+    if(/\.server\.(?:lua|luau)$/.test(name))inventory.Script++;
+    else if(/\.client\.(?:lua|luau)$/.test(name))inventory.LocalScript++;
+    else if(/\.(?:lua|luau)$/.test(name))inventory.ModuleScript++;
+  }
+  inventory.total=inventory.Script+inventory.LocalScript+inventory.ModuleScript;
+  return Object.freeze(inventory);
+}
+
+export function validateRobloxArtifactScriptInventory({artifactPath='',expected={}}={}){
+  const artifact=path.resolve(clean(artifactPath));
+  if(!fs.existsSync(artifact))throw new Error(`Roblox artifact missing: ${artifact}`);
+  const xml=fs.readFileSync(artifact,'utf8');
+  const actual={
+    Script:(xml.match(/<Item\s+class="Script"(?:\s|>)/g)||[]).length,
+    LocalScript:(xml.match(/<Item\s+class="LocalScript"(?:\s|>)/g)||[]).length,
+    ModuleScript:(xml.match(/<Item\s+class="ModuleScript"(?:\s|>)/g)||[]).length,
+  };
+  actual.total=actual.Script+actual.LocalScript+actual.ModuleScript;
+  const missing=[];
+  for(const type of ['Script','LocalScript','ModuleScript']){
+    const required=Number(expected?.[type]||0);
+    if(actual[type]<required)missing.push(`${type}:${actual[type]}/${required}`);
+  }
+  if(missing.length)throw new Error(`Rojo artifact script inventory incomplete: ${missing.join(',')}`);
+  return Object.freeze(actual);
+}
+
 export function createRobloxBuildEvidence({gameId='',sourcePath='',sourceRevision='',artifactPath='',artifactSha256='',sourceValidationPassed=false,saveRequired=false}={}){
   const identity=clean(artifactSha256)?`sha256:${clean(artifactSha256)}`:null;
   return Object.freeze({
@@ -119,11 +160,15 @@ export function packageRobloxSource({repoRoot='.',gameId='',sourcePath='',source
     const actualSourceTreeSha=clean(execFileSync('git',['-C',path.resolve(repoRoot),'rev-parse',`${revision}:${relativeSource}`],{stdio:'pipe',encoding:'utf8'}));
     const validation=resolvePackageSourceValidation({staticVerdict,verifiedSourceTreeSha,actualSourceTreeSha});
     if(!validation.pass)throw new Error(`exact-source validation failed: ${validation.blockers.join(',')}`);
+    const expectedScripts=collectRobloxSourceScriptInventory(root);
+    if(expectedScripts.total<=0)throw new Error('Roblox source contains no executable Luau scripts');
     const artifact=path.join(outDir,`${safeName(id)}.rbxlx`);
     execFileSync(rojo,['build','default.project.json','--output',artifact],{cwd:root,stdio:'pipe',encoding:'utf8',maxBuffer:16*1024*1024});
     const stat=fs.statSync(artifact);
     if(!stat.isFile()||stat.size<=0)throw new Error('Rojo package artifact missing or empty');
+    const actualScripts=validateRobloxArtifactScriptInventory({artifactPath:artifact,expected:expectedScripts});
     const sha256=crypto.createHash('sha256').update(fs.readFileSync(artifact)).digest('hex');
+    console.log(`ROBLOX_BUILD_SCRIPT_INVENTORY=PASS:${actualScripts.Script}/${actualScripts.LocalScript}/${actualScripts.ModuleScript}`);
     return createRobloxBuildEvidence({
       gameId:id,
       sourcePath:relativeSource,
