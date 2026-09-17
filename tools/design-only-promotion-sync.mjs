@@ -179,6 +179,11 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     }
     const design=latestReadyDesign(root,gameId);
     if(!design){skipped.push({gameId,reason:'DESIGN_BASELINE_NOT_READY'});continue;}
+    if(ownerResetIds.has(gameId)&&!designEvidenceAfterReset(design,{resetAt:ownerResetAt,resetDate:ownerResetDate})){
+      queue.items=queue.items.filter(row=>String(row?.gameId||'')!==gameId);
+      skipped.push({gameId,reason:'OWNER_RESET_FRESH_DESIGN_REQUIRED'});
+      continue;
+    }
     const strict=strictDesignPass(design);
     if(!strict.pass){
       seed.strictDesignReview={verdict:strict.review?.verdict||'MISSING',totalScore:Number(strict.review?.totalScore||0),hardFailures:Array.isArray(strict.review?.hardFailures)?strict.review.hardFailures:[],evidencePath:strict.file,passThreshold:DESIGN_PASS_THRESHOLD};
