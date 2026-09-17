@@ -176,6 +176,10 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=/);\n  assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=/);
   assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE/);\n  assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION_SCOPE=REPLACE_STALE_HEAD_BATCH/);
   assert.match(seedDesignWorkflow,/cancel-in-progress: true/);\n  assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
+  assert.ok((seedDesignWorkflow.match(/ownerAllGamesDesignReset/g)||[]).length>=4);
+  assert.ok((seedDesignWorkflow.match(/const evidenceAt=Date\.parse\(review\.reviewedAt\|\|review\.generatedAt\|\|review\.updatedAt\|\|review\.createdAt\|\|''\)\|\|0;/g)||[]).length>=4);
+  assert.ok((seedDesignWorkflow.match(/if\(evidenceAt&&evidenceAt<resetAt\)continue;/g)||[]).length>=4);
+  assert.ok((seedDesignWorkflow.match(/if\(!evidenceAt&&date<=resetDate\)continue;/g)||[]).length>=4);
   assert.match(seedDesignWorkflow,/continue-seed-supply:[\s\S]{0,800}actions\/checkout@v4[\s\S]{0,300}ref: main/);
   assert.match(seedDesignWorkflow,/game-seed-state\.json/);
   assert.match(seedDesignWorkflow,/parallel_max=\$\{designWipMax\}/);
