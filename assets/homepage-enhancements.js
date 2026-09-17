@@ -154,6 +154,36 @@ function buildGameCenter(catalog,status){
   document.documentElement.dataset.homeTop30Count=String(rows.length);
   document.documentElement.dataset.homeServerAuthority=String(catalog?.runtimeInfoAuthority||catalog?.runtimeAuthority||'none');
   document.documentElement.dataset.homeSupportedPlatforms=(catalog?.runtimeSupportedPlatforms||[]).join(',');
+  markDirectPlayCards();
+}
+function directPlayTarget(card){
+  if(!card)return'';
+  const explicit=String(card.dataset?.directPlay||card.dataset?.webPath||'').trim();
+  if(explicit)return explicit;
+  const webAnchor=[...card.querySelectorAll('a[href]')].find(a=>String(a.getAttribute('href')||'').includes('/web-games/'));
+  return String(webAnchor?.getAttribute('href')||'').trim();
+}
+function bindDirectGameLaunch(){
+  if(document.documentElement.dataset.directGameLaunchBound==='1')return;
+  document.documentElement.dataset.directGameLaunchBound='1';
+  document.addEventListener('click',event=>{
+    const interactive=event.target.closest('a,button,input,select,textarea,label');
+    if(interactive)return;
+    const card=event.target.closest('.foldGameCard,.gameCard');
+    if(!card)return;
+    const target=directPlayTarget(card);
+    if(!target)return;
+    window.location.href=target;
+  });
+}
+function markDirectPlayCards(){
+  document.querySelectorAll('.foldGameCard,.gameCard').forEach(card=>{
+    const target=directPlayTarget(card);
+    if(!target)return;
+    card.dataset.directPlay=target;
+    card.dataset.touchLaunch='true';
+    card.style.cursor='pointer';
+  });
 }
 function simplifyPage(){
   document.querySelector('.opsBar')?.remove();
@@ -177,6 +207,7 @@ async function refresh(){
 function main(){
   installStyles();
   simplifyPage();
+  bindDirectGameLaunch();
   refresh();
   setInterval(()=>{if(!document.hidden)refresh();},SYNC_INTERVAL_MS);
   window.addEventListener('focus',refresh);
