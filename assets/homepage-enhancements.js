@@ -1,5 +1,5 @@
-// 파일명: assets/homepage-enhancements-core.js
-// 역할: 홈페이지의 게임을 서버 점수 기준 TOP30으로 5초마다 실시간 동기화하고 기존 PWA/팀 표시를 보존한다.
+// 파일명: assets/homepage-enhancements.js
+// 역할: 홈페이지의 게임을 최신 서버 점수 기준 TOP30으로 5초마다 실시간 동기화하고 기존 PWA/팀 표시를 보존한다.
 const SYNC_INTERVAL_MS=5000;
 const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';
 const RAW_RUNTIME_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime';
@@ -29,18 +29,19 @@ const platformLabel=value=>{
   if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(platform))return'Fortnite UEFN';
   return'선택 플랫폼';
 };
-const scoreOf=row=>{for(const key of ['strictScore','reviewScore','webStrictScore','strictImplementationScore','homepageTestScore','webInitialCycleStrictScore','totalScore','score']){const raw=row?.[key];if(raw===null||raw===undefined||raw==='')continue;const n=Number(raw);if(Number.isFinite(n))return n;}return null;};
+const scoreOf=row=>{for(const key of ['webInitialCycleStrictScore','homepageTestScore','strictImplementationScore','webStrictScore','strictScore','reviewScore','totalScore','score']){const raw=row?.[key];if(raw===null||raw===undefined||raw==='')continue;const n=Number(raw);if(Number.isFinite(n))return n;}return null;};
 const gameIdOf=row=>String(row?.gameId||row?.id||'').trim();
+const updatedTime=row=>{const t=Date.parse(row?.updatedAt||row?.webValidationLastAttemptAt||row?.validatedAt||row?.enqueuedAt||'');return Number.isFinite(t)?t:0;};
 function top30Candidates(queue){
   const rows=Array.isArray(queue?.items)?queue.items:[];
-  const bestByGame=new Map();
+  const latestByGame=new Map();
   for(const row of rows){
     const id=gameIdOf(row);const score=scoreOf(row);
     if(!id||score===null)continue;
-    const previous=bestByGame.get(id);
-    if(!previous||score>scoreOf(previous))bestByGame.set(id,row);
+    const previous=latestByGame.get(id);
+    if(!previous||updatedTime(row)>=updatedTime(previous))latestByGame.set(id,row);
   }
-  return [...bestByGame.values()].sort((a,b)=>scoreOf(b)-scoreOf(a)||gameIdOf(a).localeCompare(gameIdOf(b))).slice(0,TOP30_LIMIT);
+  return [...latestByGame.values()].sort((a,b)=>scoreOf(b)-scoreOf(a)||updatedTime(b)-updatedTime(a)||gameIdOf(a).localeCompare(gameIdOf(b))).slice(0,TOP30_LIMIT);
 }
 
 let homepageInstallPrompt=null;
@@ -115,8 +116,6 @@ function installStyles(){
   document.head.appendChild(style);
 }
 
-function getGameBuild(status,gameId){return status?.testBuilds?.find(b=>b.gameId===gameId&&b.status==='ready')||null;}
-function getGameBaseline(baselines,gameId){return baselines?.games?.find(g=>g.gameId===gameId)||null;}
 function getLatestArtbook(artbooks,gameId){const rows=(artbooks?.artbooks||[]).filter(a=>a.gameId===gameId&&(a.published||a.homepageVisible));return rows.sort((a,b)=>String(b.createdAt||b.updatedAt||'').localeCompare(String(a.createdAt||a.updatedAt||''))||Number(b.edition||0)-Number(a.edition||0))[0]||null;}
 function getHomepagePlatform(game,status){const focus=status?.operations?.autonomousFocus?.games?.find(row=>row.slug===game.id||row.gameId===game.id);const project=status?.projects?.find(row=>row.gameId===game.id||row.name===game.name);const ranking=status?.operations?.productionClasses?.ranking?.find(row=>row.slug===game.id||row.gameId===game.id);const candidates=[game.selectedPlatform,focus?.selectedPlatform,project?.selectedPlatform,project?.target,ranking?.targetPlatform,game.productionTarget,status?.policy?.primaryPlatform,'ROBLOX'];for(const value of candidates){const platform=normalizePlatform(value);if(platform==='ROBLOX')return'ROBLOX';if(['UNITY','UNITY_ANDROID'].includes(platform))return'UNITY';if(['FORTNITE','FORTNITE_UEFN','UEFN'].includes(platform))return'FORTNITE_UEFN';}return'ROBLOX';}
 function catalogMap(catalog){return new Map((catalog?.games||[]).map(game=>[String(game.id||'').trim(),game]));}
@@ -128,17 +127,17 @@ function buildFocus(catalog,status,artbooks,developmentQueue){
   if(!rows.length){hero.className='panel hero homeFocus';hero.style.setProperty('--focus-bg',"url('assets/page-bg-v4.webp')");hero.innerHTML='<div class="homeFocusInner"><small>홈페이지 = 서버 점수 TOP30</small><h1>점수 데이터 대기 중</h1><p>서버에 점수가 기록된 게임이 생기면 높은 점수순으로 최대 30개가 자동 표시돼.</p><div class="homeFocusMeta"><span>최대 30개</span><span>점수순</span><span>서버 동기화</span></div><a class="homeFocusBtn" href="#gameHub">TOP30 보기</a></div>';return;}
   const candidate=rows[0];const game=mergedTop30Game(candidate,catalog);const score=scoreOf(candidate);const selectedPlatform=getHomepagePlatform(game,status);const artbook=getLatestArtbook(artbooks,game.id);const web=String(game.webPath||'').trim();
   hero.className='panel hero homeFocus';hero.style.setProperty('--focus-bg',`url('${String(game.image||'assets/pwa-icon-512.png').replaceAll("'",'%27')}')`);
-  hero.innerHTML=`<div class="homeFocusInner"><small class="gameFocusBar" data-focus-mode="${focusMode}">TOP 1 · 서버 점수 실시간 동기화</small><h1>${esc(game.name)} · ${esc(score)}점</h1><p>${esc(game.description)}</p><div class="homeFocusMeta"><span>${esc(score)}점</span><span>${esc(platformLabel(selectedPlatform))}</span><span>점수순 TOP30</span><span>${artbook?`아트북 ${esc(formatDate(artbook.createdAt||artbooks?.updatedAt))}`:'서버 동기화'}</span></div>${web?`<a class="homeFocusBtn" href="${esc(web)}">1위 게임 시작</a>`:'<a class="homeFocusBtn" href="#gameHub">TOP30 보기</a>'}</div>`;
+  hero.innerHTML=`<div class="homeFocusInner"><small class="gameFocusBar" data-focus-mode="${focusMode}">TOP 1 · 최신 서버 점수 실시간 동기화</small><h1>${esc(game.name)} · ${esc(score)}점</h1><p>${esc(game.description)}</p><div class="homeFocusMeta"><span>${esc(score)}점</span><span>${esc(platformLabel(selectedPlatform))}</span><span>점수순 TOP30</span><span>${artbook?`아트북 ${esc(formatDate(artbook.createdAt||artbooks?.updatedAt))}`:'서버 동기화'}</span></div>${web?`<a class="homeFocusBtn" href="${esc(web)}">1위 웹게임 시작</a>`:'<a class="homeFocusBtn" href="#gameHub">TOP30 보기</a>'}</div>`;
 }
 
-function buildGameCard(candidate,rank,catalog,status,baselines,artbooks){
-  const game=mergedTop30Game(candidate,catalog);const score=scoreOf(candidate);const selectedPlatform=getHomepagePlatform(game,status);const build=getGameBuild(status,game.id);const baseline=getGameBaseline(baselines,game.id);const artbook=getLatestArtbook(artbooks,game.id);const web=String(game.webPath||'').trim();const artbookUrl=String(candidate.artbookPath||candidate.artbookUrl||game.homepageArtbookPath||(artbook?`/artbook-viewer.html?game=${encodeURIComponent(game.id)}`:'')).trim();const buildUrl=baseline?.rollbackActive&&baseline?.fallbackDownload?baseline.fallbackDownload:build?.download;const genre=(game.genre||[]).join(' · ');const validatedAt=formatDate(candidate.validatedAt||candidate.updatedAt);const gameAction=web?`<a class="foldGameBtn" href="${esc(web)}">게임 시작</a>`:'<span class="foldGameBtn off">게임 경로 준비 중</span>';
-  return `<article class="foldGameCard top30GameCard" data-game-id="${esc(game.id)}" data-top30-rank="${rank}" data-top30-score="${esc(score)}" data-direct-play="${esc(web)}" data-homepage-game-source="SCORE_TOP30"><span class="top30Rank">#${rank}</span><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b><small>${esc(genre||'게임')}</small></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(score)}점</span><span class="foldBadge test">점수순 TOP30</span><span class="foldBadge promote">서버 동기화</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">점수 ${esc(score)} · ${esc(validatedAt)} · ${esc(platformLabel(selectedPlatform))}</div><div class="foldGameActions">${gameAction}${artbookUrl?`<a class="foldGameBtn secondary" href="${esc(artbookUrl)}">아트북</a>`:''}${buildUrl?`<a class="foldGameBtn secondary" href="${esc(buildUrl)}">플랫폼 빌드</a>`:''}</div></div></article>`;
+function buildGameCard(candidate,rank,catalog,status,artbooks){
+  const game=mergedTop30Game(candidate,catalog);const score=scoreOf(candidate);const selectedPlatform=getHomepagePlatform(game,status);const artbook=getLatestArtbook(artbooks,game.id);const web=String(game.webPath||'').trim();const artbookUrl=String(candidate.artbookPath||candidate.artbookUrl||game.homepageArtbookPath||(artbook?`/artbook-viewer.html?game=${encodeURIComponent(game.id)}`:'')).trim();const genre=(game.genre||[]).join(' · ');const validatedAt=formatDate(candidate.updatedAt||candidate.webValidationLastAttemptAt||candidate.validatedAt);const gameAction=web?`<a class="foldGameBtn" href="${esc(web)}">웹게임 시작</a>`:'<span class="foldGameBtn off">웹게임 경로 준비 중</span>';
+  return `<article class="foldGameCard top30GameCard" data-game-id="${esc(game.id)}" data-top30-rank="${rank}" data-top30-score="${esc(score)}" data-direct-play="${esc(web)}" data-homepage-game-source="SCORE_TOP30"><span class="top30Rank">#${rank}</span><div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b><small>${esc(genre||'게임')}</small></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(score)}점</span><span class="foldBadge test">최신 점수 TOP30</span><span class="foldBadge promote">서버 동기화</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">최신 점수 ${esc(score)} · ${esc(validatedAt)} · ${esc(platformLabel(selectedPlatform))}</div><div class="foldGameActions">${gameAction}${artbookUrl?`<a class="foldGameBtn secondary" href="${esc(artbookUrl)}">아트북</a>`:''}</div></div></article>`;
 }
 
-function buildGameCenter(catalog,status,baselines,artbooks,developmentQueue){
+function buildGameCenter(catalog,status,artbooks,developmentQueue){
   const hub=document.getElementById('gameHub');if(!hub)return;hub.querySelector('.sectionHead')?.remove();hub.querySelector('.catalogIntro')?.remove();hub.querySelector('.tools')?.remove();hub.querySelector('.filters')?.remove();hub.querySelector('.sortRow')?.remove();document.getElementById('homeFoldedGameCenter')?.remove();document.getElementById('compactTestGameShelf')?.remove();document.getElementById('homeDevelopmentGameCenter')?.remove();document.getElementById('homeTop30GameCenter')?.remove();
-  const rows=top30Candidates(developmentQueue);const wrapper=document.createElement('section');wrapper.id='homeTop30GameCenter';wrapper.dataset.homepageGameSource='SCORE_TOP30';wrapper.innerHTML=`<div class="top30Head"><div><h2>게임 TOP30</h2><p>다른 조건 없이 서버 점수 높은 순 · 5초 동기화</p></div><span class="top30Count">${rows.length} / ${TOP30_LIMIT}</span></div><div class="top30Grid">${rows.length?rows.map((row,index)=>buildGameCard(row,index+1,catalog,status,baselines,artbooks)).join(''):'<div class="top30Empty">현재 서버에 점수가 기록된 게임이 없어.</div>'}</div>`;
+  const rows=top30Candidates(developmentQueue);const wrapper=document.createElement('section');wrapper.id='homeTop30GameCenter';wrapper.dataset.homepageGameSource='SCORE_TOP30';wrapper.innerHTML=`<div class="top30Head"><div><h2>게임 TOP30</h2><p>최신 서버 점수 높은 순 · 웹게임 바로 실행 · 5초 동기화</p></div><span class="top30Count">${rows.length} / ${TOP30_LIMIT}</span></div><div class="top30Grid">${rows.length?rows.map((row,index)=>buildGameCard(row,index+1,catalog,status,artbooks)).join(''):'<div class="top30Empty">현재 서버에 점수가 기록된 게임이 없어.</div>'}</div>`;
   const grid=document.getElementById('gameGrid');hub.insertBefore(wrapper,grid||null);document.documentElement.dataset.homeTop30Count=String(rows.length);document.documentElement.dataset.homePrimaryGameSource='SCORE_TOP30';
 }
 
@@ -150,10 +149,10 @@ function simplifyPage(){document.querySelector('.opsBar')?.remove();document.que
 async function refreshHomepageData(){
   if(refreshInFlight)return;refreshInFlight=true;
   try{
-    const [catalog,status,baselines,artbooks,developmentQueue]=await Promise.all([getJson('/game-catalog.json',{runtime:true}),getJson('/company-status.json',{runtime:true}),getJson('/public-release-baselines.json'),getJson('/game-artbooks.json'),getJson('/development-queue.json',{runtime:true})]);
-    const catalogSafe=catalog||{games:[]};const statusSafe=status||{};const queueSafe=developmentQueue||{items:[]};const signature=JSON.stringify([queueSafe,catalogSafe,statusSafe,baselines||{},artbooks||{}]);
-    if(signature!==lastDataSignature){buildFocus(catalogSafe,statusSafe,artbooks||{},queueSafe);buildGameCenter(catalogSafe,statusSafe,baselines||{},artbooks||{},queueSafe);lastDataSignature=signature;}
-    document.documentElement.dataset.homeSyncSource='company-runtime-development-queue';
+    const [catalog,status,artbooks,developmentQueue]=await Promise.all([getJson('/game-catalog.json',{runtime:true}),getJson('/company-status.json',{runtime:true}),getJson('/game-artbooks.json'),getJson('/development-queue.json',{runtime:true})]);
+    const catalogSafe=catalog||{games:[]};const statusSafe=status||{};const queueSafe=developmentQueue||{items:[]};const signature=JSON.stringify([queueSafe,catalogSafe,statusSafe,artbooks||{}]);
+    if(signature!==lastDataSignature){buildFocus(catalogSafe,statusSafe,artbooks||{},queueSafe);buildGameCenter(catalogSafe,statusSafe,artbooks||{},queueSafe);lastDataSignature=signature;}
+    document.documentElement.dataset.homeSyncSource='company-runtime-development-queue-latest-score';
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
   }finally{refreshInFlight=false;}
 }
