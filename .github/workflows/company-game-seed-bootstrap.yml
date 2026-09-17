@@ -26,7 +26,7 @@ permissions:
 
 concurrency:
   group: company-game-seed-bootstrap
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   GAME_SEED_LOCAL_MODEL: gemma3:1b
