@@ -298,6 +298,10 @@ test('target platform failures use repair states while missing executors block e
 test('development runtime ignores queue entries outside canonical active catalog',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
   assert.ok((source.match(/const canonicalGameIds=new Set\(/g)||[]).length>=3);
+  assert.ok((source.match(/const ownerResetIds=new Set\(/g)||[]).length>=3);
+  assert.ok((source.match(/const resetPassIds=new Set\(/g)||[]).length>=3);
+  assert.ok((source.match(/updatedAt>=ownerResetAt/g)||[]).length>=3);
+  assert.ok((source.match(/!ownerResetIds\.has\(gameId\)\|\|resetPassIds\.has\(gameId\)/g)||[]).length>=3);
   assert.ok((source.match(/\['ACTIVE','REBUILD'\]\.includes\(String\(game\.lifecycleState\|\|'ACTIVE'\)\.toUpperCase\(\)\)&&String\(game\.productionClass\|\|''\)\.toUpperCase\(\)==='DEVELOPMENT_CONFIRMED'/g)||[]).length>=3);
   assert.ok((source.match(/if\(!canonicalGameIds\.has\(String\(item\.gameId\|\|''\)\.trim\(\)\)\)/g)||[]).length>=3);
   assert.match(source,/requestedItem=requestedGameId\?\(q\.items\|\|\[\]\)\.find\(item=>item\.gameId===requestedGameId&&canonicalGameIds\.has/);
