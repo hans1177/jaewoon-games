@@ -14,7 +14,7 @@ permissions:
 
 concurrency:
   group: company-development-roblox-release-promotion-${{ inputs.game_id }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -245,8 +245,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          retry_seconds=300
-          retry_window_seconds=16200
+          retry_seconds=60
+          retry_window_seconds=900
           deadline=$((SECONDS+retry_window_seconds))
           attempt=0
           while true; do
@@ -414,7 +414,7 @@ jobs:
           fi
           if [ "$RETRY_DEFERRED" = 'true' ]; then
             echo 'ROBLOX_RELEASE_PROMOTION=RETRY_QUEUED:ROBLOX_409_SERVER_BUSY'
-            echo 'ROBLOX_RELEASE_RETRY_INTERVAL_SECONDS=300'
+            echo 'ROBLOX_RELEASE_RETRY_INTERVAL_SECONDS=60'
             echo 'ROBLOX_RUNTIME_RERUN=NO'
             echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
             echo 'ROBLOX_REGRESSION_RERUN=NO'
