@@ -261,40 +261,6 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('STRICT_DESIGN_SCORE_SYNTHESIZED=NO');console.log('STRICT_DESIGN_VERDICT_SYNTHESIZED=NO');console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
-      - name: Bind strict design score to canonical seed state
-        if: steps.target.outputs.should_run == 'true'
-        env:
-          GAME_ID: ${{ matrix.target.game_id }}
-          ARTBOOK_DATE: ${{ matrix.target.date }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          node --input-type=module <<'NODE'
-          import fs from 'node:fs';
-          import path from 'node:path';
-          const gameId=String(process.env.GAME_ID||'').trim();
-          const date=String(process.env.ARTBOOK_DATE||'').trim();
-          const statePath='game-seed-state.json';
-          const reviewPath=path.join('design',gameId,date,'strict-design-review.json');
-          const state=JSON.parse(fs.readFileSync(statePath,'utf8'));
-          const review=JSON.parse(fs.readFileSync(reviewPath,'utf8'));
-          const seed=(state.seeds||[]).find(row=>String(row.gameId)===gameId&&String(row.status||'').toUpperCase()==='ACTIVE');
-          if(!seed)throw new Error('ACTIVE_CANONICAL_SEED_REQUIRED');
-          const totalScore=Number(review.totalScore);
-          if(!Number.isFinite(totalScore)||totalScore<0||totalScore>100)throw new Error('STRICT_DESIGN_SCORE_INVALID');
-          seed.strictDesignReview={
-            verdict:String(review.verdict||'').toUpperCase(),
-            totalScore,
-            hardFailures:Array.isArray(review.hardFailures)?review.hardFailures:[],
-            evidencePath:reviewPath.replaceAll('\\','/'),
-            passThreshold:Number(review.passThreshold||80)
-          };
-          seed.strictDesignReviewUpdatedAt=new Date().toISOString();
-          fs.writeFileSync(statePath,JSON.stringify(state,null,2)+'\n');
-          console.log(`STRICT_DESIGN_SCORE_BOUND=${totalScore}`);
-          console.log(`STRICT_DESIGN_SCORE_GAME_ID=${gameId}`);
-          console.log('STRICT_DESIGN_SCORE_SOURCE=STRICT_REVIEW_DIRECT_EVIDENCE');
-          NODE
       - name: Persist validated design evidence to company runtime branch
         if: steps.target.outputs.should_run == 'true'
         shell: bash
@@ -312,8 +278,89 @@ jobs:
           echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
-  continue-seed-supply:
+  sync-strict-design-scores:
     needs: [resolve-seed-targets, design-cycle]
+    if: always() && needs.resolve-seed-targets.outputs.run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Bind latest post-reset strict design scores once
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-design-score-sync'
+          git config user.email 'design-score-sync@users.noreply.github.com'
+          pushed=0
+          for attempt in 1 2 3 4; do
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git checkout -B design-score-sync "origin/$COMPANY_RUNTIME_BRANCH"
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const canonical=new Set((catalog.games||[])
+            .filter(game=>['ACTIVE','REBUILD'].includes(String(game.lifecycleState||'ACTIVE').toUpperCase()))
+            .map(game=>String(game.id||'').trim())
+            .filter(Boolean));
+          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
+          let bound=0;
+          for(const seed of state.seeds||[]){
+            const gameId=String(seed?.gameId||'').trim();
+            if(!canonical.has(gameId)||String(seed?.status||'').toUpperCase()!=='ACTIVE')continue;
+            const root=path.join('design',gameId);
+            if(!fs.existsSync(root))continue;
+            const dates=fs.readdirSync(root,{withFileTypes:true})
+              .filter(entry=>entry.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(entry.name))
+              .map(entry=>entry.name).sort().reverse();
+            let selected=null;
+            for(const date of dates){
+              const reviewPath=path.join(root,date,'strict-design-review.json');
+              if(!fs.existsSync(reviewPath))continue;
+              const review=JSON.parse(fs.readFileSync(reviewPath,'utf8'));
+              const score=Number(review.totalScore);
+              if(!Number.isFinite(score)||score<0||score>100)continue;
+              const evidenceAt=Date.parse(review.reviewedAt||review.generatedAt||review.updatedAt||review.createdAt||'')||0;
+              if(resetAt){
+                if(evidenceAt&&evidenceAt<resetAt)continue;
+                if(!evidenceAt&&date<=resetDate)continue;
+              }
+              selected={review,date,reviewPath,score};
+              break;
+            }
+            if(!selected)continue;
+            const next={
+              verdict:String(selected.review.verdict||'').toUpperCase(),
+              totalScore:selected.score,
+              hardFailures:Array.isArray(selected.review.hardFailures)?selected.review.hardFailures:[],
+              evidencePath:selected.reviewPath.replaceAll('\\','/'),
+              passThreshold:Number(selected.review.passThreshold||80)
+            };
+            if(JSON.stringify(seed.strictDesignReview||null)===JSON.stringify(next))continue;
+            seed.strictDesignReview=next;
+            seed.strictDesignReviewUpdatedAt=new Date().toISOString();
+            bound++;
+          }
+          if(bound>0)fs.writeFileSync('game-seed-state.json',JSON.stringify(state,null,2)+'\n');
+          console.log(`STRICT_DESIGN_SCORE_BOUND_COUNT=${bound}`);
+          console.log(`STRICT_DESIGN_SCORE_RESET_CUTOFF=${state?.ownerAllGamesDesignReset?.updatedAt||'NONE'}`);
+          console.log('STRICT_DESIGN_SCORE_SOURCE=STRICT_REVIEW_DIRECT_EVIDENCE');
+          NODE
+            git add -- game-seed-state.json
+            if git diff --cached --quiet; then pushed=1; echo 'STRICT_DESIGN_SCORE_SYNC_CHANGE=NO'; break; fi
+            git commit -m 'runtime: sync post-reset strict design scores'
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; echo 'STRICT_DESIGN_SCORE_SYNC=PERSISTED'; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+
+  continue-seed-supply:
+    needs: [resolve-seed-targets, design-cycle, sync-strict-design-scores]
     if: always() && needs.resolve-seed-targets.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
