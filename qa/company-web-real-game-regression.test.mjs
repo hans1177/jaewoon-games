@@ -81,14 +81,16 @@ function evidence({finalDepth=true,metrics=baseMetrics,categoryProfile='TOWER_DE
 
 assert.equal(WEB_VALIDATION_SCHEMA_VERSION,15,'Web evidence schema must match the canonical schema15 runtime contract');
 assert.deepEqual(WEB_COMMON_SCORE_WEIGHTS,{
-  CORE_GAME_LOOP:15,
-  SYSTEM_CONNECTIVITY:10,
-  CONTROLS_AND_GAME_FEEL:8,
-  FUNCTIONAL_UI_UX:7,
-  PROGRESSION_GROWTH_REWARD:7,
-  RISK_FAILURE_RETRY:5,
-  GAMEPLAY_FEEDBACK:4,
-  STABILITY_PERFORMANCE:4,
+  CORE_GAME_LOOP:8,
+  CONTROLS_AND_GAME_FEEL:7,
+  SYSTEM_CONNECTIVITY:7,
+  CONTENT_DEPTH_AND_VARIATION:7,
+  PROGRESSION_AND_REWARD:5,
+  DIFFICULTY_AND_BALANCE:5,
+  FAILURE_AND_RETRY:4,
+  FUNCTIONAL_UI_UX:4,
+  STABILITY:4,
+  SAVE_AND_RECOVERY:4,
 },'common Web score must remain the central-policy 60 points');
 assert.equal(Object.values(WEB_COMMON_SCORE_WEIGHTS).reduce((a,b)=>a+b,0),60);
 assert.deepEqual(WEB_CATEGORY_PROFILE_MAPPING,{
@@ -105,7 +107,7 @@ assert.deepEqual(WEB_CATEGORY_PROFILE_MAPPING,{
   OBBY_PARTY_MINIGAME:'OBBY_PLATFORMER',
   STORY_RPG_ADVENTURE_RPG:'STORY_ADVENTURE',
 });
-for(const [profile,weights] of Object.entries(WEB_CATEGORY_SCORE_WEIGHTS))assert.equal(Object.values(weights).reduce((a,b)=>a+b,0),40,`${profile} profile must remain 40 points`);
+for(const [profile,weights] of Object.entries(WEB_CATEGORY_SCORE_WEIGHTS))assert.equal(Object.values(weights).reduce((a,b)=>a+b,0),25,`${profile} profile must remain 25 points`);
 assert.equal(resolveWebCategoryProfile('ROLEPLAY_LIFE_AVATAR'),'LIFE_ROLEPLAY');
 assert.equal(resolveWebCategoryProfile('SINGLE_DEFENSE_STRATEGY'),'TOWER_DEFENSE');
 assert.equal(resolveWebCategoryProfile('CASUAL'),'DESIGN_DERIVED_PROFILE_REQUIRED');
@@ -119,7 +121,7 @@ const towerSource=`
 const towerScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:towerSource,evidence:evidence()});
 assert.deepEqual(towerScore.hardFailures,[],'a connected real tower-defense loop should clear Web hard gates');
 assert.ok(towerScore.commonScore<=60&&towerScore.commonScore>=50,'common score must use the 60-point scale');
-assert.equal(towerScore.categoryScore,40,'matching tower-defense profile must use its full 40-point profile');
+assert.equal(towerScore.categoryScore,25,'matching tower-defense profile must use its full 25-point profile');
 assert.ok(towerScore.totalScore>=80,'a strong real implementation remains Top30 score-capable');
 assert.equal(towerScore.hardGates.COMPLETE_PLAYABLE_GAMEPLAY_CYCLE,true);
 assert.equal(towerScore.hardGates.NO_TEST_PROXY,true);
@@ -129,12 +131,12 @@ assert.equal(towerScore.hardGates.CATEGORY_PROFILE_MATCH,true);
 const keywordOnlyMetrics={...baseMetrics,towerTypeCount:1,towerEffectProfileCount:1,strategyChoiceCount:1,strategyCombatOutcomeCount:1,placementResultCount:0};
 const keywordOnlyRuntime={...runtimeFeatureEvidence,towerTypes:['fake-one'],towerTypeCount:1,towerEffectProfiles:['fake-one:damage'],towerEffectProfileCount:1,strategyChoices:['fake-choice'],strategyCombatOutcomes:[{choiceMechanic:'fake-choice',outcomeSignature:'same'}],strategyCombatOutcomeCount:1,placementResultCount:0,independentStrategyEvidence:{required:true,pass:false,status:'INSUFFICIENT_DISTINCT_STRATEGY_CHOICES'}};
 const keywordOnlyScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:`${towerSource} tower tower turret slow range strategy choice strategic damage`,evidence:evidence({metrics:keywordOnlyMetrics,runtime:keywordOnlyRuntime})});
-assert.equal(keywordOnlyScore.scores.CATEGORY_PLACEMENT_AND_ROUTE,0,'placement words must not replace a real placement result');
-assert.equal(keywordOnlyScore.scores.CATEGORY_TOWER_VARIETY,0,'tower words must not replace distinct runtime tower types/effects');
-assert.equal(keywordOnlyScore.scores.CATEGORY_STRATEGIC_CHOICE,0,'strategy words must not replace choices with different combat outcomes');
+assert.equal(keywordOnlyScore.scores.CATEGORY_PLACEMENT_MEANING,0,'placement words must not replace a real placement result');
+assert.equal(keywordOnlyScore.scores.CATEGORY_TOWER_ROLE_DISTINCTNESS,0,'tower words must not replace distinct runtime tower types/effects');
+assert.equal(keywordOnlyScore.scores.CATEGORY_ECONOMY_AND_STRATEGY,0,'strategy words must not replace choices with different combat outcomes');
 const sameOutcomeRuntime={...runtimeFeatureEvidence,strategyChoices:['left','right'],strategyCombatOutcomes:[{choiceMechanic:'left',outcomeSignature:'same-result'},{choiceMechanic:'right',outcomeSignature:'same-result'}],independentStrategyEvidence:{required:true,pass:false,status:'STRATEGY_BRANCH_OUTCOMES_NOT_DIVERGENT',choiceCount:2,outcomeCount:1}};
 const sameOutcomeScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:towerSource,evidence:evidence({runtime:sameOutcomeRuntime})});
-assert.equal(sameOutcomeScore.scores.CATEGORY_STRATEGIC_CHOICE,0,'two named choices with the same combat result are not strategic diversity');
+assert.equal(sameOutcomeScore.scores.CATEGORY_ECONOMY_AND_STRATEGY,0,'two named choices with the same combat result are not strategic diversity');
 
 const placementInventory=[{id:'scope-place',path:'coreLoop[0]',label:'Read the next enemy wave and place towers on positions that cover the threatened route.'}];
 const shallowPlacement='<main data-approved-scope-count="1"><button data-scope-id="scope-place" data-mechanic-id="tower-place">타워 설치</button></main>';
