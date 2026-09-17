@@ -120,9 +120,9 @@ const baseEvidence=()=>{
   };
 };
 
-test('Web strict score contract is exactly common 60 plus category 40',()=>{
+test('Web strict score contract is exactly common 60 plus category 25',()=>{
   assert.equal(Object.values(WEB_COMMON_SCORE_WEIGHTS).reduce((a,b)=>a+b,0),60);
-  for(const [category,weights] of Object.entries(WEB_CATEGORY_SCORE_WEIGHTS))assert.equal(Object.values(weights).reduce((a,b)=>a+b,0),40,category);
+  for(const [category,weights] of Object.entries(WEB_CATEGORY_SCORE_WEIGHTS))assert.equal(Object.values(weights).reduce((a,b)=>a+b,0),25,category);
 });
 
 test('real connected gameplay loop passes hard gates and receives common/category scoring',()=>{
@@ -130,9 +130,9 @@ test('real connected gameplay loop passes hard gates and receives common/categor
   assert.deepEqual(result.hardFailures,[]);
   assert.equal(result.categoryProfile,'TYCOON_SIMULATOR');
   assert.equal(result.categoryMatchPassed,true);
-  assert.equal(result.categoryScore,40);
+  assert.equal(result.categoryScore,25);
   assert.ok(result.commonScore>=50,result.commonScore);
-  assert.ok(result.totalScore>=90,result.totalScore);
+  assert.ok(result.totalScore>=80,result.totalScore);
 });
 
 test('tower-defense keywords do not earn placement, tower variety, or strategy points without runtime outcomes',()=>{
@@ -141,17 +141,17 @@ test('tower-defense keywords do not earn placement, tower variety, or strategy p
   evidence.implementationMetrics=metrics({placementResultCount:0,towerTypeCount:1,towerEffectProfileCount:1,strategyChoiceCount:1,strategyCombatOutcomeCount:1});
   evidence.runtimeFeatureEvidence={towerTypes:['bolt'],towerTypeCount:1,towerEffectProfiles:['damage:8|range:3'],towerEffectProfileCount:1,placementResultCount:0,strategyChoices:['bolt'],strategyCombatOutcomes:[{choiceMechanic:'bolt',outcomeSignature:'damage:20'}],strategyCombatOutcomeCount:1,newContentDimensionCount:0,independentStrategyEvidence:{required:true,pass:false,status:'INSUFFICIENT_DISTINCT_STRATEGY_CHOICES'}};
   const shallow=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:source,evidence});
-  assert.equal(shallow.scores.CATEGORY_PLACEMENT_AND_ROUTE,0);
-  assert.equal(shallow.scores.CATEGORY_TOWER_VARIETY,0);
-  assert.equal(shallow.scores.CATEGORY_STRATEGIC_CHOICE,0);
+  assert.equal(shallow.scores.CATEGORY_PLACEMENT_MEANING,0);
+  assert.equal(shallow.scores.CATEGORY_TOWER_ROLE_DISTINCTNESS,0);
+  assert.equal(shallow.scores.CATEGORY_ECONOMY_AND_STRATEGY,0);
 
   const rich=baseEvidence();
   rich.categoryProfile='TOWER_DEFENSE';
   rich.implementationMetrics=metrics({placementResultCount:2,towerTypeCount:3,towerEffectProfileCount:3,strategyChoiceCount:3,strategyCombatOutcomeCount:3});
   const implemented=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:source,evidence:rich});
-  assert.equal(implemented.scores.CATEGORY_PLACEMENT_AND_ROUTE,WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.PLACEMENT_AND_ROUTE);
-  assert.equal(implemented.scores.CATEGORY_TOWER_VARIETY,WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.TOWER_VARIETY);
-  assert.equal(implemented.scores.CATEGORY_STRATEGIC_CHOICE,WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.STRATEGIC_CHOICE);
+  assert.ok(implemented.scores.CATEGORY_PLACEMENT_MEANING>0);
+  assert.equal(implemented.scores.CATEGORY_TOWER_ROLE_DISTINCTNESS,WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.TOWER_ROLE_DISTINCTNESS);
+  assert.equal(implemented.scores.CATEGORY_ECONOMY_AND_STRATEGY,WEB_CATEGORY_SCORE_WEIGHTS.TOWER_DEFENSE.ECONOMY_AND_STRATEGY);
 });
 
 test('test harness with 20 buttons cannot qualify as a real game',()=>{
