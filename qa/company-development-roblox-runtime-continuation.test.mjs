@@ -146,6 +146,13 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
 });
 
+test('runtime gate failure remains in repair/revalidation with no retry-count ceiling',()=>{
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED'));
+  assert.ok(workflow.includes('const retryBudgetAvailable=true;'));
+  assert.ok(!workflow.includes('maxRetryableFailures'));
+  assert.ok(!workflow.includes('retryCount<'));
+});
+
 test('Studio busy persistence remains retryable without converting interactive Studio into an automatic kill target',()=>{
   assert.ok(persistHelper.includes("'roblox-studio-busy'"));
   assert.ok(workflow.includes("$automation = @($running | Where-Object { [string]$_.CommandLine -match '--task\\s+RunScript' })"));
