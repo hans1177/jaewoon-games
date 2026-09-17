@@ -54,6 +54,9 @@ env:
 jobs:
   web-plan:
     name: resolve required Web gameplay and music work
+    concurrency:
+      group: company-development-web-plan
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     timeout-minutes: 8
     outputs:
