@@ -1,0 +1,46 @@
+name: Remove Legacy Scoring Structure
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/remove-legacy-scoring-structure.mjs'
+      - '.github/workflows/remove-legacy-scoring-structure.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Remove legacy scoring structure
+        run: node tools/remove-legacy-scoring-structure.mjs
+      - name: Verify scoring contracts
+        run: |
+          node --test qa/company-no-legacy-scoring-structure.test.mjs
+          node --test qa/company-detailed-stage-scoring-v2.test.mjs
+          if [ -f qa/company-common-development-quality-contract.test.mjs ]; then node --test qa/company-common-development-quality-contract.test.mjs; fi
+          if [ -f qa/company-development-validation-selected-platform.test.mjs ]; then node --test qa/company-development-validation-selected-platform.test.mjs; fi
+      - name: Commit cleanup
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add COMPANY_FLOW.md company-directive.json qa/company-no-legacy-scoring-structure.test.mjs
+          if git diff --cached --quiet; then
+            echo 'LEGACY_SCORING_CLEANUP_CHANGES=NONE'
+            exit 0
+          fi
+          git commit -m 'vibe2: remove legacy scoring structure'
+          git push origin HEAD:main
+          echo 'LEGACY_SCORING_CLEANUP_CHANGES=APPLIED'
