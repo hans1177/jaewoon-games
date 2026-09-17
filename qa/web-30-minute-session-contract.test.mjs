@@ -43,6 +43,16 @@ const initialEvidence=()=>({
   mobileViewport:{width:390,height:844,touch:true},
   before:{scrollWidth:390,viewportWidth:390},
   after:{scrollWidth:390,viewportWidth:390},
+  runtimeFeatureEvidence:{
+    areas:['foundry','market'],newAreas:['market'],areaCount:2,newAreaCount:1,
+    objectives:['upgrade-line'],newObjectives:['upgrade-line'],objectiveCount:1,newObjectiveCount:1,
+    strategyChoices:['manual','automatic'],
+    genreEvidence:{
+      profile:'TYCOON_SIMULATOR',runtimeObserved:true,
+      productionNodeCount:3,productionTransitionCount:5,automationEventCount:2,
+      economyTransactionCount:4,upgradeResultCount:3,
+    },
+  },
   initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',
   initialPlayableCycle:{
     unit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',pass:true,
