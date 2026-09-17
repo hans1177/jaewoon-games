@@ -1,0 +1,145 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Ensure that the bug-defense game is designed with a strong focus on wave defense and strategic gameplay as its core mechanics."
+      ],
+      "fix": [
+        "Improve the clarity of the core gameplay loop and progression direction to better align with the intended strategy."
+      ],
+      "add": [
+        "Enhance the visual direction and mobile UX to better support the strategic gameplay experience."
+      ],
+      "risks": [
+        "Address the validation questions to ensure the core gameplay mechanics are well understood and validated."
+      ],
+      "evidence": [
+        "Use the market evidence to support the strategic gameplay direction and core mechanics."
+      ],
+      "questions": [
+        "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "core_fun_to_learn"
+      ],
+      "fix": [
+        "market_evidence_summary"
+      ],
+      "add": [
+        "design"
+      ],
+      "risks": [
+        "market_data_alone_cannot_discard"
+      ],
+      "evidence": [
+        "kingdom_rush"
+      ],
+      "questions": [
+        "what is the main gameplay mechanic of bug-defense?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "GAME_SEED={...}"
+      ],
+      "add": [
+        "CORE_FUN_TO_LEARN=[...]"
+      ],
+      "risks": [
+        "GAME_SEED={...}"
+      ],
+      "evidence": [
+        "REFERENCE_GAMES=[...]"
+      ],
+      "questions": [
+        "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic gameplay in bug-defense?"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "The game's core gameplay loop is a strategic wave defense gameplay loop."
+      ],
+      "fix": [
+        "The game's multiplayer mode is a SINGLE multiplayer mode."
+      ],
+      "add": [
+        "The game's technical requirements are Unity and C#."
+      ],
+      "risks": [
+        "The game's market target direction is strategic gameplay."
+      ],
+      "evidence": [
+        "The game's signature systems are strategic gameplay and wave defense gameplay."
+      ],
+      "questions": [
+        "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The bug-defense game is designed with a strong focus on wave defense and strategic gameplay as its core mechanics. The core gameplay loop and progression direction are improved to better align with the intended strategy. Visual direction and mobile UX are enhanced to support the strategic gameplay experience. The risks are addressed by validating the core mechanics and using market evidence. The evidence is supported by market data. The questions are resolved by clarifying the main gameplay mechanic and purpose of strategic gameplay in bug-defe",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 1,
+    "conflict": 0,
+    "hold": 0
+  }
+}

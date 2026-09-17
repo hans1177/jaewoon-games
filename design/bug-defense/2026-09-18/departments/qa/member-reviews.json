@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What is the main gameplay mechanic of bug-defense?\n\nBug-defense is a strategic game where you must defend your colony from waves\n\n"
+        ],
+        "fix": [
+          "What is the core gameplay loop of bug-defense?\n\nThe core gameplay loop of bug-defense is to read the incoming insect wave and its\n"
+        ],
+        "add": [
+          "What is the purpose of strategic gameplay in bug-defense?\n\nThe purpose of strategic gameplay in bug-defense is to make strategic\n"
+        ],
+        "risks": [
+          "What is the target audience for bug-defense?\n\nThe target audience for bug-defense is players who enjoy strategic gameplay\n"
+        ],
+        "evidence": [
+          "What is the target design reference for bug-defense?\n\nThe target design reference for bug-defense is a single-defense tower-def-e-"
+        ],
+        "questions": [
+          "What is the target audience for bug-defense?\n\nThe target audience for bug-defense is players who enjoy strategic gameplay\n"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "GAME_SEED={...}"
+        ],
+        "add": [
+          "CORE_FUN_TO_LEARN=[...]"
+        ],
+        "risks": [
+          "GAME_SEED={...}"
+        ],
+        "evidence": [
+          "REFERENCE_GAMES=[...]"
+        ],
+        "questions": [
+          "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "smollm2:1.7b",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "The game's core gameplay loop is a strategic wave defense gameplay loop."
+    ],
+    "fix": [
+      "The game's multiplayer mode is a SINGLE multiplayer mode."
+    ],
+    "add": [
+      "The game's technical requirements are Unity and C#."
+    ],
+    "risks": [
+      "The game's market target direction is strategic gameplay."
+    ],
+    "evidence": [
+      "The game's signature systems are strategic gameplay and wave defense gameplay."
+    ],
+    "questions": [
+      "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+    ]
+  }
+}

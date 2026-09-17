@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 2,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The bug-defense game is designed with a strong focus on wave defense and strategic gameplay as its core mechanics. The core gameplay loop and progression direction are improved to better align with the intended strategy.",
+        "Visual direction and mobile UX are enhanced to support the strategic gameplay experience.",
+        "The evidence is supported by market data, including global mobile gaming revenue and player demographics."
+      ],
+      "reason": "The game design is aligned with market trends and has a clear strategy. The core mechanics and progression are validated, and the evidence is solid."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+        "CORE_FUN_CANNOT_BE_RECOVERED"
+      ],
+      "evidence": [
+        "marketDataAloneCannotDiscard",
+        "marketDataAloneCannotDiscard",
+        "marketDataAloneCannotDiscard",
+        "marketDataAloneCannotDiscard"
+      ],
+      "reason": "The proposed design, while aiming for strategic gameplay, introduces a loop that duplicates the core gameplay of Kingdom Rush and Bloons TD 6. While the core concept is interesting, the implementation risks creating a similar experience, potentially diminishing the unique identity of the game. The IP dependence and core loop are significant risks, and the design lacks a distinct identity. Further validation of the core mechanics is needed before proceeding."
+    },
+    "development": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json",
+        "game-seed-market-data-alone-cannot-discard.json",
+        "game-seed-platform-profiles.json"
+      ],
+      "reason": "The bug-defense game is designed with a strong focus on wave defense and strategic gameplay as its core mechanics. The core gameplay loop and progression direction are improved to better align with the intended strategy. Visual direction and mobile UX are enhanced to support the strategic gameplay experience. The risks are addressed by validating the core mechanics and using market evidence."
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "BUG_DEFENSE_SEED",
+        "BUG_DEFENSE_REVISION",
+        "BUG_DEFENSE_REVISION_MARKET_EVIDENCE",
+        "BUG_DEFENSE_REVISION_PLATFORM_PROFILE"
+      ],
+      "reason": "The current design does not meet the core gameplay loop and progression direction as intended. The validation questions and open questions need to be resolved to ensure the core mechanics and purpose of strategic gameplay are accurately understood and addressed."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [],
+      "reason": "The bug-defense game is designed with a strong focus on wave defense and strategic gameplay as its core mechanics. The core gameplay loop and progression direction are improved to better align with the intended strategy. Visual direction and mobile UX are enhanced to support the strategic gameplay experience. The risks are addressed by validating the core mechanics and using market evidence. The evidence is supported by market data. The questions are resolved by clarifying the main gameplay mechanic and purpose of strategic gameplay in bug-defe"
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

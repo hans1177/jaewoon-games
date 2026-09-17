@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "ASSIGNED_DEPARTMENT=qa"
+    ],
+    "fix": [
+      "GAME_SEED={...}"
+    ],
+    "add": [
+      "CORE_FUN_TO_LEARN=[...]"
+    ],
+    "risks": [
+      "GAME_SEED={...}"
+    ],
+    "evidence": [
+      "REFERENCE_GAMES=[...]"
+    ],
+    "questions": [
+      "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic gameplay in bug-defense?"
+    ]
+  }
+}

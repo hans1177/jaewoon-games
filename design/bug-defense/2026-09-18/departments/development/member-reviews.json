@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "fix": [
+          "GAME_SEED=bug-defense"
+        ],
+        "add": [
+          "GAME_SEED=bug-defense"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "evidence": [
+          "GAME_SEED=bug-defense"
+        ],
+        "questions": [
+          "What is the main gameplay mechanic of bug-defense?"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "The game's core loop is designed to be intuitive and easy to understand."
+        ],
+        "fix": [
+          "The game's multiplayer mode is a SINGLE-PLAYER mode, where players can play against AI opponents."
+        ],
+        "add": [
+          "The game's multiplayer mode is a SINGLE-PLAYER mode, where players can play against AI opponents."
+        ],
+        "risks": [
+          "The game's multiplayer mode is a SINGLE-PLAYER mode, where players can play against AI opponents."
+        ],
+        "evidence": [
+          "The game's multiplayer mode is a SINGLE-PLAYER mode, where players can play against AI opponents."
+        ],
+        "questions": [
+          "What is the game's multiplayer mode?"
+        ]
+      }
+    }
+  ]
+}

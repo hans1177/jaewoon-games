@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Ensure that the bug-defense game is designed with a strong focus on wave defense and strategic gameplay as its core mechanics."
+        ],
+        "fix": [
+          "Improve the clarity of the core gameplay loop and progression direction to better align with the intended strategy."
+        ],
+        "add": [
+          "Enhance the visual direction and mobile ux to better support the strategic gameplay experience."
+        ],
+        "risks": [
+          "Address the validation questions to ensure the core gameplay mechanics are well understood and validated."
+        ],
+        "evidence": [
+          "Use the market evidence to support the strategic gameplay direction and core mechanics."
+        ],
+        "questions": [
+          "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed-market-evidence.json"
+        ],
+        "fix": [
+          "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다."
+        ],
+        "add": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "risks": [
+          "GAME_SEED에 없는 유명게임 표현 복제 요구 없음"
+        ],
+        "evidence": [
+          "Kingdom Rush"
+        ],
+        "questions": [
+          "What is the main gameplay mechanic of bug-defense?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed-requirement"
+        ],
+        "fix": [
+          "game-seed-unique"
+        ],
+        "add": [
+          "game-seed-unique"
+        ],
+        "risks": [
+          "game-seed-requirement"
+        ],
+        "evidence": [
+          "game-seed-market-evidence"
+        ],
+        "questions": [
+          "game-seed-unique"
+        ]
+      }
+    }
+  ]
+}

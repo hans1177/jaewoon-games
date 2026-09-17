@@ -1,0 +1,57 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "llama3.2:1b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "bug-defense",
+    "playerFantasy": "strategic",
+    "coreFun": "wave defense",
+    "coreLoop": [
+      "Read the incoming insect wave and its threat pattern",
+      "Place or adjust defenders and spend limited resources on the highest-value counter",
+      "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision"
+    ],
+    "signatureSystems": [
+      {
+        "name": "strategic",
+        "purpose": "strategic gameplay",
+        "playerChoice": "strategic gameplay"
+      },
+      {
+        "name": "wave defense",
+        "purpose": "wave defense gameplay",
+        "playerChoice": "wave defense gameplay"
+      }
+    ],
+    "progressionDirection": "strategic gameplay",
+    "visualDirection": "strategic gameplay",
+    "mobileUx": "strategic gameplay",
+    "marketTargetDirection": "strategic gameplay",
+    "steamExpansionDecision": "strategic gameplay",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "SINGLE",
+    "technicalAssumptions": [
+      "Unity",
+      "C#",
+      "Wave defense gameplay"
+    ],
+    "validationQuestions": [
+      "What is the main gameplay mechanic of bug-defense?",
+      "What is the core gameplay loop of bug-defense?",
+      "What is the purpose of strategic gameplay in bug-defense?"
+    ],
+    "openQuestions": [
+      "What is the target audience for bug-defense?",
+      "What is the core concept of bug-defense?",
+      "What is the purpose of strategic gameplay in bug-defense?"
+    ]
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "bug-defense",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "The game's core gameplay loop is a strategic wave defense gameplay loop."
+        ],
+        "fix": [
+          "The game's multiplayer mode is a SINGLE multiplayer mode."
+        ],
+        "add": [
+          "The game's technical requirements are Unity and C#."
+        ],
+        "risks": [
+          "The game's market target direction is strategic gameplay."
+        ],
+        "evidence": [
+          "The game's signature systems are strategic gameplay and wave defense gameplay."
+        ],
+        "questions": [
+          "What is the main gameplay mechanic of bug-defense?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Read the incoming insect wave and its threat pattern."
+        ],
+        "fix": [
+          "Place or adjust defenders and spend limited resources on the highest-value counter."
+        ],
+        "add": [
+          "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+        ],
+        "risks": [
+          "Ensure that the core gameplay loop is well-defined and logically structured."
+        ],
+        "evidence": [
+          "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        ],
+        "questions": [
+          "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_status_active"
+        ],
+        "fix": [
+          "bug_defense_ACTIVE"
+        ],
+        "add": [
+          "곤충 디펜스_NEW"
+        ],
+        "risks": [
+          "bug_defense_risk_high"
+        ],
+        "evidence": [
+          "game_seed_market_evidence.json"
+        ],
+        "questions": [
+          "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다."
+        ]
+      }
+    }
+  ]
+}
