@@ -1,83 +1,110 @@
 // 파일명: assets/homepage-enhancements.js
-// 역할: 서버 점수 TOP30 홈페이지 표시와 Android 설치/게임 직접 실행을 보조한다.
-import './homepage-enhancements-core.js?v=20260917-score-top30';
+// 역할: 홈페이지 게임 목록을 company-runtime 개발 큐의 점수순 TOP30으로 직접 표시한다.
+const RUNTIME_QUEUE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime/development-queue.json';
+const MAIN_CATALOG='https://raw.githubusercontent.com/hans1177/jaewoon-games/main/game-catalog.json';
+const TOP_LIMIT=30;
+const SYNC_MS=5000;
+let refreshing=false;
 
-function bindNativeApkInstall(){
-  const bind=()=>{
-    const bar=document.getElementById('appInstallBar');
-    const teamWrap=document.querySelector('.teamPanel .teamWrap');
-    if(bar&&teamWrap){
-      teamWrap.appendChild(bar);
-      bar.dataset.placement='company-team-bottom';
-      bar.style.width='100%';
-      bar.style.margin='12px 0 0';
-    }
-    const oldButton=document.getElementById('appInstallBtn');
-    const state=document.getElementById('appInstallState');
-    if(!oldButton)return;
-    const button=oldButton.cloneNode(true);
-    oldButton.replaceWith(button);
-    button.disabled=false;
-    button.textContent='재운컴퍼니 APK 설치';
-    if(state)state.textContent='개발팀 영역에서 Android APK를 직접 설치할 수 있어.';
-    button.addEventListener('click',event=>{
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      window.location.href='/downloads/jaewoon-company.apk';
-    },true);
-  };
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
-  else bind();
+const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const gameId=row=>String(row?.gameId||row?.id||'').trim();
+const scoreOf=row=>{
+  for(const key of ['strictScore','reviewScore','webStrictScore','strictImplementationScore','homepageTestScore','webInitialCycleStrictScore','totalScore','score']){
+    const value=row?.[key];
+    if(value===null||value===undefined||value==='')continue;
+    const score=Number(value);
+    if(Number.isFinite(score))return score;
+  }
+  return null;
+};
+const fetchJson=async url=>{
+  const response=await fetch(`${url}${url.includes('?')?'&':'?'}ts=${Date.now()}`,{cache:'no-store'});
+  if(!response.ok)throw new Error(`${response.status} ${url}`);
+  return response.json();
+};
+
+function top30(queue){
+  const best=new Map();
+  for(const row of Array.isArray(queue?.items)?queue.items:[]){
+    const id=gameId(row),score=scoreOf(row);
+    if(!id||score===null)continue;
+    const old=best.get(id);
+    if(!old||score>scoreOf(old))best.set(id,row);
+  }
+  return [...best.values()].sort((a,b)=>scoreOf(b)-scoreOf(a)||gameId(a).localeCompare(gameId(b))).slice(0,TOP_LIMIT);
 }
 
-const directPlayTarget=card=>String(card?.dataset?.directPlay||'').trim()||String(card?.querySelector('a[href*="/web-games/"]')?.getAttribute('href')||'').trim();
-
-function updateTop30Count(){
-  const top30=document.getElementById('homeTop30GameCenter');
-  if(!top30)return;
-  const cards=[...top30.querySelectorAll('.top30GameCard')];
-  const label=top30.querySelector('.top30Count');
-  if(label)label.textContent=`${cards.length} / 30`;
-  document.documentElement.dataset.homeTop30Count=String(cards.length);
-  document.documentElement.dataset.homePrimaryGameSource='SCORE_TOP30';
+function catalogMap(catalog){
+  return new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[String(game.id||'').trim(),game]));
 }
 
-function bindDirectGameLaunch(){
-  if(document.documentElement.dataset.directGameLaunchBound==='1')return;
-  document.documentElement.dataset.directGameLaunchBound='1';
-  document.addEventListener('click',event=>{
-    if(event.target.closest('a,button,input,select,textarea,label'))return;
-    const card=event.target.closest('.top30GameCard');
-    if(!card)return;
-    const target=directPlayTarget(card);
-    if(target)window.location.href=target;
-  });
+function normalizePath(row,game){
+  const raw=String(row?.webPath||row?.webSourcePath||row?.sourcePath||game?.webPath||'').trim().replace(/^\/+|\/+$/g,'').replace(/\/index\.html$/i,'');
+  return raw?`/${raw}/`:'';
 }
 
-function markDirectPlayCards(){
-  document.querySelectorAll('.top30GameCard').forEach(card=>{
-    const target=directPlayTarget(card);
-    if(!target)return;
-    card.dataset.directPlay=target;
-    card.dataset.touchLaunch='true';
-    card.style.cursor='pointer';
-  });
+function render(queue,catalog){
+  const grid=document.getElementById('gameGrid');
+  if(!grid)return;
+  const rows=top30(queue);
+  const games=catalogMap(catalog);
+  document.querySelector('.tools')?.remove();
+  document.querySelector('.filters')?.remove();
+  document.querySelector('.sortRow')?.remove();
+  document.querySelector('.catalogIntro')?.remove();
+  document.getElementById('homeTop30GameCenter')?.remove();
+  document.getElementById('homeDevelopmentGameCenter')?.remove();
+  document.getElementById('homeServerGameCenter')?.remove();
+  document.getElementById('compactTestGameShelf')?.remove();
+  const heading=document.querySelector('#gameHub .sectionHead h2');
+  const count=document.querySelector('#gameHub .sectionHead span');
+  if(heading)heading.textContent='게임 TOP30';
+  if(count)count.textContent=`서버 점수순 ${rows.length} / ${TOP_LIMIT}`;
+  grid.style.display='grid';
+  grid.innerHTML=rows.length?rows.map((row,index)=>{
+    const base=games.get(gameId(row))||{};
+    const name=row.gameName||row.name||base.name||gameId(row);
+    const image=base.image||'assets/pwa-icon-512.png';
+    const description=base.description||row.description||'서버 점수 기준 게임.';
+    const score=scoreOf(row);
+    const path=normalizePath(row,base);
+    const action=path?`<a class="cardBtn primary" href="${esc(path)}">게임 시작</a>`:'<span class="cardBtn off">게임 경로 준비 중</span>';
+    return `<article class="gameCard" data-game-id="${esc(gameId(row))}" data-rank="${index+1}" data-score="${esc(score)}"><div class="gameArt"><img src="${esc(image)}" alt="${esc(name)}" loading="lazy"><div class="artName"><b>#${index+1} ${esc(name)}</b><small>${esc(score)}점</small></div></div><div class="gameInfo"><div class="badges"><span class="badge stateRelease">${esc(score)}점</span><span class="badge platformWeb">TOP ${index+1}</span></div><p>${esc(description)}</p><div class="stageLine">서버 점수순 · 5초 자동 동기화</div><div class="cardActions">${action}</div></div></article>`;
+  }).join(''):'<div class="empty">서버 개발 큐에서 점수 있는 게임을 찾지 못했어.</div>';
+  document.documentElement.dataset.homeTop30Count=String(rows.length);
+  document.documentElement.dataset.homePrimaryGameSource='DEVELOPMENT_QUEUE';
+  document.documentElement.dataset.homeSyncAt=new Date().toISOString();
 }
 
-function installHomepagePublicationGuard(){
-  const apply=()=>{
-    document.getElementById('homeDevelopmentGameCenter')?.remove();
-    document.getElementById('homeServerGameCenter')?.remove();
-    document.getElementById('compactTestGameShelf')?.remove();
-    markDirectPlayCards();
-    updateTop30Count();
-  };
-  const observer=new MutationObserver(apply);
-  observer.observe(document.documentElement,{subtree:true,childList:true});
-  bindDirectGameLaunch();
-  apply();
+function bindApkInstall(){
+  const button=document.getElementById('appInstallBtn');
+  if(!button||button.dataset.apkBound==='1')return;
+  button.dataset.apkBound='1';
+  button.disabled=false;
+  button.textContent='재운컴퍼니 APK 설치';
+  button.addEventListener('click',event=>{event.preventDefault();window.location.href='/downloads/jaewoon-company.apk';});
 }
 
-bindNativeApkInstall();
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installHomepagePublicationGuard,{once:true});
-else installHomepagePublicationGuard();
+async function refresh(){
+  if(refreshing)return;
+  refreshing=true;
+  try{
+    const [queue,catalog]=await Promise.all([fetchJson(RUNTIME_QUEUE),fetchJson(MAIN_CATALOG)]);
+    render(queue,catalog);
+  }catch(error){
+    console.error('[homepage-top30]',error);
+    const grid=document.getElementById('gameGrid');
+    if(grid&&!grid.children.length)grid.innerHTML='<div class="empty">서버 게임 목록을 불러오지 못했어.</div>';
+  }finally{refreshing=false;}
+}
+
+async function main(){
+  bindApkInstall();
+  await refresh();
+  setInterval(()=>{if(!document.hidden)refresh();},SYNC_MS);
+  window.addEventListener('focus',refresh);
+  window.addEventListener('online',refresh);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
+}
+
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',main,{once:true});else main();
