@@ -85,7 +85,7 @@
       "studyId": "study_16i6nw3",
       "gameId": "external-tictactoe",
       "engine": "web",
-      "confirmations": 20,
+      "confirmations": 21,
       "gameDna": {
         "input": 0.8,
         "movement": 0.65,
@@ -160,13 +160,13 @@
         "continual-distillation": "PENDING_CROSS_GAME"
       },
       "firstSeenAt": "2026-09-15T21:14:55.488Z",
-      "lastSeenAt": "2026-09-17T09:28:45.152Z"
+      "lastSeenAt": "2026-09-17T09:35:49.176Z"
     },
     {
       "studyId": "study_n446gd",
       "gameId": "external-tictactoe",
       "engine": "web",
-      "confirmations": 19,
+      "confirmations": 20,
       "gameDna": {
         "input": 0.9,
         "movement": 0,
@@ -236,7 +236,7 @@
         "continual-distillation": "PENDING_CROSS_GAME"
       },
       "firstSeenAt": "2026-09-15T21:15:02.493Z",
-      "lastSeenAt": "2026-09-17T09:28:46.905Z"
+      "lastSeenAt": "2026-09-17T09:35:50.918Z"
     },
     {
       "studyId": "study_m43i0t",
@@ -316,7 +316,7 @@
     "mergedKnowledge": [
       {
         "pattern": "architecture:input",
-        "confirmations": 60,
+        "confirmations": 62,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -331,7 +331,7 @@
       },
       {
         "pattern": "architecture:progression",
-        "confirmations": 60,
+        "confirmations": 62,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -346,7 +346,7 @@
       },
       {
         "pattern": "architecture:ui",
-        "confirmations": 60,
+        "confirmations": 62,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -361,7 +361,7 @@
       },
       {
         "pattern": "mechanic:input",
-        "confirmations": 60,
+        "confirmations": 62,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -376,7 +376,7 @@
       },
       {
         "pattern": "mechanic:progression",
-        "confirmations": 60,
+        "confirmations": 62,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -391,7 +391,7 @@
       },
       {
         "pattern": "mechanic:ui",
-        "confirmations": 60,
+        "confirmations": 62,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -406,7 +406,7 @@
       },
       {
         "pattern": "observed-flow:input->progression",
-        "confirmations": 60,
+        "confirmations": 62,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -421,7 +421,7 @@
       },
       {
         "pattern": "observed-flow:ai->progression",
-        "confirmations": 59,
+        "confirmations": 61,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -434,7 +434,7 @@
       },
       {
         "pattern": "observed-flow:input->ai",
-        "confirmations": 59,
+        "confirmations": 61,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -447,7 +447,7 @@
       },
       {
         "pattern": "observed-flow:progression->input",
-        "confirmations": 59,
+        "confirmations": 61,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -460,7 +460,7 @@
       },
       {
         "pattern": "observed-loop:progression>input",
-        "confirmations": 59,
+        "confirmations": 61,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -473,7 +473,7 @@
       },
       {
         "pattern": "architecture:movement",
-        "confirmations": 40,
+        "confirmations": 41,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -486,7 +486,7 @@
       },
       {
         "pattern": "mechanic:movement",
-        "confirmations": 40,
+        "confirmations": 41,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -499,7 +499,7 @@
       },
       {
         "pattern": "observed-loop:input>progression",
-        "confirmations": 39,
+        "confirmations": 40,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -512,7 +512,7 @@
       },
       {
         "pattern": "mechanic:ai",
-        "confirmations": 39,
+        "confirmations": 41,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -524,7 +524,7 @@
       },
       {
         "pattern": "observed-flow:progression->ui",
-        "confirmations": 39,
+        "confirmations": 41,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -536,7 +536,7 @@
       },
       {
         "pattern": "architecture:restart",
-        "confirmations": 20,
+        "confirmations": 21,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -548,7 +548,43 @@
       },
       {
         "pattern": "mechanic:restart",
-        "confirmations": 20,
+        "confirmations": 21,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ai->ui",
+        "confirmations": 21,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:progression->ai",
+        "confirmations": 21,
+        "gameCount": 1,
+        "games": [
+          "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ui->progression",
+        "confirmations": 21,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -571,35 +607,11 @@
         "crossGameVerified": false
       },
       {
-        "pattern": "observed-flow:ai->ui",
-        "confirmations": 20,
-        "gameCount": 1,
-        "games": [
-          "external-tictactoe"
-        ],
-        "engines": [
-          "web"
-        ],
-        "crossGameVerified": false
-      },
-      {
         "pattern": "observed-flow:movement->ui",
         "confirmations": 20,
         "gameCount": 1,
         "games": [
           "external-memory-game"
-        ],
-        "engines": [
-          "web"
-        ],
-        "crossGameVerified": false
-      },
-      {
-        "pattern": "observed-flow:progression->ai",
-        "confirmations": 20,
-        "gameCount": 1,
-        "games": [
-          "external-tictactoe"
         ],
         "engines": [
           "web"
@@ -619,7 +631,7 @@
         "crossGameVerified": false
       },
       {
-        "pattern": "observed-flow:ui->progression",
+        "pattern": "observed-flow:ui->ai",
         "confirmations": 20,
         "gameCount": 1,
         "games": [
@@ -643,20 +655,8 @@
         "crossGameVerified": false
       },
       {
-        "pattern": "observed-flow:ui->ai",
-        "confirmations": 19,
-        "gameCount": 1,
-        "games": [
-          "external-tictactoe"
-        ],
-        "engines": [
-          "web"
-        ],
-        "crossGameVerified": false
-      },
-      {
         "pattern": "observed-loop:input>ai>progression",
-        "confirmations": 19,
+        "confirmations": 20,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -668,7 +668,7 @@
       },
       {
         "pattern": "observed-loop:progression>input>ai",
-        "confirmations": 19,
+        "confirmations": 20,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -779,42 +779,54 @@
     "hypotheses": [
       {
         "hypothesis": "input->progression",
-        "confirmations": 60,
+        "confirmations": 62,
         "gameCount": 3,
         "status": "SUPPORTED_ACROSS_GAMES"
       },
       {
         "hypothesis": "ai->progression",
-        "confirmations": 59,
+        "confirmations": 61,
         "gameCount": 2,
         "status": "SUPPORTED_ACROSS_GAMES"
       },
       {
         "hypothesis": "input->ai",
-        "confirmations": 59,
+        "confirmations": 61,
         "gameCount": 2,
         "status": "SUPPORTED_ACROSS_GAMES"
       },
       {
         "hypothesis": "progression->input",
-        "confirmations": 59,
+        "confirmations": 61,
         "gameCount": 2,
         "status": "SUPPORTED_ACROSS_GAMES"
       },
       {
         "hypothesis": "progression->ui",
-        "confirmations": 39,
-        "gameCount": 1,
-        "status": "OBSERVED_ONCE"
-      },
-      {
-        "hypothesis": "ai->movement",
-        "confirmations": 20,
+        "confirmations": 41,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
       },
       {
         "hypothesis": "ai->ui",
+        "confirmations": 21,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "progression->ai",
+        "confirmations": 21,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "ui->progression",
+        "confirmations": 21,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "ai->movement",
         "confirmations": 20,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
@@ -826,19 +838,13 @@
         "status": "OBSERVED_ONCE"
       },
       {
-        "hypothesis": "progression->ai",
-        "confirmations": 20,
-        "gameCount": 1,
-        "status": "OBSERVED_ONCE"
-      },
-      {
         "hypothesis": "runtime-flow->movement",
         "confirmations": 20,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
       },
       {
-        "hypothesis": "ui->progression",
+        "hypothesis": "ui->ai",
         "confirmations": 20,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
@@ -846,12 +852,6 @@
       {
         "hypothesis": "ui->runtime-flow",
         "confirmations": 20,
-        "gameCount": 1,
-        "status": "OBSERVED_ONCE"
-      },
-      {
-        "hypothesis": "ui->ai",
-        "confirmations": 19,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
       },
@@ -908,7 +908,7 @@
       "novelty": 0.0888,
       "basis": "nearest-game-dna"
     },
-    "updatedAt": "2026-09-17T09:28:46.905Z"
+    "updatedAt": "2026-09-17T09:35:50.918Z"
   },
   "policy": {
     "serverFanInOnly": true,
