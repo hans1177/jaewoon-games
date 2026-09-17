@@ -79,7 +79,7 @@ function evidence({finalDepth=true,metrics=baseMetrics,categoryProfile='TOWER_DE
   };
 }
 
-assert.equal(WEB_VALIDATION_SCHEMA_VERSION,14,'Web evidence schema must match the canonical schema14 runtime contract');
+assert.equal(WEB_VALIDATION_SCHEMA_VERSION,15,'Web evidence schema must match the canonical schema15 runtime contract');
 assert.deepEqual(WEB_COMMON_SCORE_WEIGHTS,{
   CORE_GAME_LOOP:15,
   SYSTEM_CONNECTIVITY:10,
