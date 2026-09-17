@@ -24,9 +24,9 @@ for(const role of ROLES)if(!leadModels[role]||!pool.includes(leadModels[role]))t
 function reviewModelsFor(role){const lead=leadModels[role];const start=Math.max(0,pool.indexOf(lead));const models=[lead];for(let i=1;models.length<reviewModelCount&&i<=pool.length*2;i++){const candidate=pool[(start+i)%pool.length];if(candidate&&!models.includes(candidate))models.push(candidate);}if(models.length<reviewModelCount)throw new Error(`${role} review model gate failed`);return models;}
 const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,reviewModelsFor(role)]));
 const independentReviewTasks=Object.fromEntries(ROLES.flatMap(role=>departmentReviewModels[role].map(model=>{const key=`${role}::${model}`;return[key,{role,model}];})));
-const modelPhaseConcurrency=Math.max(1,Math.min(3,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||3)));
+const modelPhaseConcurrency=1;
 const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'2m');
-const modelCallTimeoutMs=Math.min(180000,Math.max(30000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||150000)));
+const modelCallTimeoutMs=Math.min(180000,Math.max(120000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||150000)));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
