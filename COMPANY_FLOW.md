@@ -682,7 +682,7 @@ ownerCurrentProductionContract:
       repeatedOptimizationMustNotStarveOtherGames: true
     modelExecutionBudget:
       designWorkflowTimeoutMinutes: 45
-      singleModelCallTimeoutSeconds: 75
+      singleModelCallTimeoutSeconds: 150
       designSchemaAttemptsMax: 2
   learningFeedback:
     continueLearning: true
