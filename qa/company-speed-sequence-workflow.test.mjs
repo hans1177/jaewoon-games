@@ -46,7 +46,7 @@ test('selected-platform router repairs legacy Web target paths to the platform s
   assert.doesNotMatch(router,/fetch-depth:\s*0/);
 });
 
-test('Web runtime pins source revision and defers local AI setup until deterministic paths are exhausted',()=>{
+test('Web runtime pins source revision and returns failed work directly to repair',()=>{
   const exactRefs=router.match(/ref:\s*\$\{\{\s*github\.sha\s*\}\}/g)||[];
   assert.ok(exactRefs.length>=4,`expected exact revision checkouts, got ${exactRefs.length}`);
   assert.doesNotMatch(router,/Prepare local Vibe2 model for development cycles/);
@@ -55,17 +55,30 @@ test('Web runtime pins source revision and defers local AI setup until determini
   assert.match(router,/WEB_AI_MODE=LAZY_OPTIONAL/);
   assert.match(router,/WEB_MODEL_PREP=DEFERRED_UNTIL_REQUIRED/);
   assert.match(router,/--force-repair=true/,'a returned final-depth failure must force a real preserved-source repair');
-  assert.match(router,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/);
+  assert.match(router,/WEB_GAMEPLAY_REPAIR_REQUIRED/);
+  assert.match(router,/WEB_CONTENT_EXPANSION_REPAIR_REQUIRED/);
+  assert.match(router,/WEB_STRICT_REPAIR_REQUIRED/);
+  assert.doesNotMatch(router,/canonicalState:'WAITING_WEB_GAMEPLAY_REVALIDATION'/);
+  assert.doesNotMatch(router,/canonicalState:'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION'/);
 });
 
-test('source-bind revalidation resumes the selected platform executor without skipping ahead',()=>{
-  assert.match(router,/retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'&&state==='WAITING_TARGET_PLATFORM_REVALIDATION'/);
+test('source-bind repair resumes the selected platform executor without skipping ahead',()=>{
+  assert.match(router,/retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'/);
+  assert.match(router,/state==='TARGET_PLATFORM_REPAIR_REQUIRED'/);
   assert.match(router,/if\(!pending&&!legacyActive&&!waiting&&!retrySourceBind\)continue/);
   assert.match(router,/platforms\.add\(platform\);\s*if\(retrySourceBind\)\{\s*console\.log\(`DEVELOPMENT_ROUTE_RESUME_SOURCE_BIND=/s);
   const retryPos=router.indexOf('if(retrySourceBind){');
   const advancePos=router.indexOf('updates.push({gameId:item.gameId,status:\'ACTIVE\',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep()',retryPos);
   assert.ok(retryPos>=0&&advancePos>retryPos,'retry branch must continue before canonical technical-validation update');
   assert.match(router,/gh workflow run company-development-roblox-runtime\.yml/);
+});
+
+test('confirmed development workflow consumes the current Web evidence schema instead of stale schema13',()=>{
+  assert.match(router,/WEB_VALIDATION_SCHEMA_VERSION/);
+  assert.doesNotMatch(router,/validationSchemaVersion\|\|initialReport\.version\)!==13/);
+  assert.doesNotMatch(router,/webInitialCycleValidationSchemaVersion!==13/);
+  assert.doesNotMatch(router,/webValidationEvidenceSchemaMinimum=13/);
+  assert.doesNotMatch(router,/WEB_VALIDATION_SCHEMA_MINIMUM=13/);
 });
 
 test('Unity source reuse avoids the nested heredoc path that failed in the real canary run',()=>{
