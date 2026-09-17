@@ -1,0 +1,111 @@
+name: Company Development Queue Reconcile
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/company-development-queue-reconcile.mjs'
+      - 'qa/company-development-queue-reconcile.test.mjs'
+      - '.github/workflows/company-development-queue-reconcile.yml'
+      - 'game-catalog.json'
+      - 'COMPANY_FLOW.md'
+  workflow_run:
+    workflows:
+      - Company DESIGN_ONLY Promotion Sync
+      - Company Status Sync
+      - Company Seed DESIGN_ONLY Runtime
+    types: [completed]
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: company-development-queue-reconcile-runtime
+  cancel-in-progress: false
+
+env:
+  COMPANY_RUNTIME_BRANCH: company-runtime
+
+jobs:
+  reconcile:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout main engine
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Validate reconciler
+        run: |
+          node --check tools/company-development-queue-reconcile.mjs
+          node --test qa/company-development-queue-reconcile.test.mjs
+
+      - name: Reconcile and persist company runtime queue
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-development-queue-reconcile'
+          git config user.email 'development-queue@users.noreply.github.com'
+          persisted=0
+          changed=0
+          for attempt in 1 2 3 4; do
+            echo "DEVELOPMENT_QUEUE_RECONCILE_ATTEMPT=${attempt}/4"
+            git fetch origin main "$COMPANY_RUNTIME_BRANCH"
+            git checkout -B development-queue-reconcile-runtime "origin/$COMPANY_RUNTIME_BRANCH"
+            git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
+            git clean -fd
+            git checkout origin/main -- tools/company-development-queue-reconcile.mjs
+            git reset -- tools/company-development-queue-reconcile.mjs >/dev/null 2>&1 || true
+
+            node tools/company-development-queue-reconcile.mjs
+
+            node --input-type=module <<'NODE'
+            import fs from 'node:fs';
+            const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+            const queue=JSON.parse(fs.readFileSync('development-queue.json','utf8'));
+            const active=new Set(['ACTIVE','REBUILD']);
+            const expected=(catalog.games||[]).filter(game=>String(game.productionClass||'').toUpperCase()==='DEVELOPMENT_CONFIRMED'&&active.has(String(game.lifecycleState||'ACTIVE').toUpperCase())).map(game=>String(game.id||'').trim()).filter(Boolean).sort();
+            const actual=(queue.items||[]).map(item=>String(item.gameId||'').trim()).filter(Boolean).sort();
+            if(new Set(actual).size!==actual.length)throw new Error('duplicate development queue gameId');
+            if(JSON.stringify(actual)!==JSON.stringify(expected))throw new Error(`development queue invariant mismatch expected=${expected.join(',')} actual=${actual.join(',')}`);
+            for(const item of queue.items||[]){
+              if(item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`non-development item remains: ${item.gameId}`);
+              if(item.webValidationRequired!==true||item.musicValidationRequired!==true)throw new Error(`validation contract missing: ${item.gameId}`);
+            }
+            console.log(`DEVELOPMENT_QUEUE_INVARIANT_COUNT=${actual.length}`);
+            console.log('DEVELOPMENT_QUEUE_CANONICAL_LIFECYCLE_INVARIANT=PASS');
+            NODE
+
+            git add -- development-queue.json
+            git diff --cached --check
+            if git diff --cached --quiet; then
+              echo 'DEVELOPMENT_QUEUE_RUNTIME_CHANGE=NO'
+              persisted=1
+              break
+            fi
+            changed=1
+            git commit -m 'runtime: reconcile canonical development queue [skip ci]'
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+              echo 'DEVELOPMENT_QUEUE_RUNTIME_CHANGE=PERSISTED'
+              persisted=1
+              break
+            fi
+            echo 'DEVELOPMENT_QUEUE_RUNTIME_CONFLICT=RETRY'
+            sleep $((attempt * 2))
+          done
+          test "$persisted" = 1
+          echo "DEVELOPMENT_QUEUE_RUNTIME_CHANGED=$changed"
+
+      - name: Dispatch development runtime
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh workflow run company-development-confirmed-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'DEVELOPMENT_RUNTIME_DISPATCHED=YES'
