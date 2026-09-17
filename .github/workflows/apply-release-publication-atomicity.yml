@@ -1,0 +1,64 @@
+name: Apply Release Publication Atomicity
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/apply-release-publication-atomicity.mjs'
+      - '.github/workflows/apply-release-publication-atomicity.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-release-publication-atomicity
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Apply central release publication atomicity contract
+        run: |
+          set -euo pipefail
+          node --check tools/apply-release-publication-atomicity.mjs
+          node tools/apply-release-publication-atomicity.mjs
+      - name: Validate syntax and atomicity QA
+        run: |
+          set -euo pipefail
+          node --check assets/homepage-enhancements-core.js
+          node --test qa/release-publication-atomicity.test.mjs
+          node --test qa/company-development-roblox-release-promotion.test.mjs
+          node --test qa/homepage-manager-publication-order.test.mjs
+      - name: Commit validated migration directly to canonical main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add COMPANY_FLOW.md company-directive.json assets/homepage-enhancements-core.js .github/workflows/company-development-roblox-release-promotion.yml qa/release-publication-atomicity.test.mjs
+          git diff --cached --check
+          if git diff --cached --quiet; then
+            echo 'RELEASE_ATOMICITY_MIGRATION_NO_CHANGES=YES'
+            exit 0
+          fi
+          git commit -m 'release: make verified publication atomic with homepage [skip ci]'
+          pushed=0
+          for attempt in 1 2 3 4; do
+            if git push origin HEAD:main; then pushed=1; break; fi
+            git fetch --no-tags origin main
+            git rebase origin/main || { git rebase --abort || true; exit 1; }
+            sleep $((attempt*2))
+          done
+          test "$pushed" = '1'
+          echo 'RELEASE_ATOMICITY_MIGRATION_PUSH=PASS'
