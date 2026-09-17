@@ -1127,11 +1127,9 @@
       "webValidationQueuedAt": "2026-09-13T00:28:35.330Z",
       "webValidationPassedAt": null,
       "musicValidationPassed": false,
-      "routingBlockers": [
-        "roblox-release-promotion-pending"
-      ],
+      "routingBlockers": [],
       "webValidationLastAttemptAt": "2026-09-17T00:58:03.865Z",
-      "updatedAt": "2026-09-17T05:09:07.043Z",
+      "updatedAt": "2026-09-17T06:28:26.321Z",
       "webValidationEvidencePath": "design/seed-roblox-obby-party-minigam-tower-of-hell/2026-09-12/web-gameplay-validation.json",
       "webValidationSourceRevision": "ef31de1b557e5816b89aa39d4ffb0733725671a6",
       "platformAdapter": "tools/vibe3-roblox-platform.mjs",
@@ -1149,12 +1147,12 @@
       "robloxIndependentQaPassed": true,
       "robloxRegressionPassed": true,
       "robloxFinalReviewPassed": true,
-      "robloxFailureStage": "RELEASE_PROMOTION",
-      "robloxFailureSignature": "ROBLOX_RELEASE_PROMOTION_PENDING",
+      "robloxFailureStage": null,
+      "robloxFailureSignature": null,
       "robloxBuildSourceRevision": "117a87320e67c690c1c8b3972598d331cf366c56",
       "robloxBuildArtifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc",
       "robloxBuildPassedAt": "2026-09-16T14:49:05.184Z",
-      "robloxLastSuccessfulStage": "FINAL_REVIEW",
+      "robloxLastSuccessfulStage": "RELEASE_PROMOTION",
       "robloxBuildPreflightPassedAt": "2026-09-16T14:51:36.075Z",
       "robloxBuildPreflightFailedAt": null,
       "robloxBuildPreflightEvidence": {
@@ -1316,9 +1314,9 @@
         "independentQaPassed": true,
         "regressionPassed": true,
         "exactRevision": true,
-        "lastSuccessfulStage": "FINAL_REVIEW",
-        "failureStage": "RELEASE_PROMOTION",
-        "failureSignature": "ROBLOX_RELEASE_PROMOTION_PENDING"
+        "lastSuccessfulStage": "RELEASE_PROMOTION",
+        "failureStage": null,
+        "failureSignature": null
       },
       "webStrictScore": 100,
       "webValidationSchemaVersion": 10,
@@ -1330,7 +1328,7 @@
       "robloxMultiplayerMode": "COMPETITIVE",
       "robloxMultiplayerApplicable": true,
       "robloxFinalReviewCheckedAt": "2026-09-17T05:09:07.043Z",
-      "robloxReleaseClaim": false,
+      "robloxReleaseClaim": true,
       "webInitialCyclePassed": false,
       "webInitialCyclePassedAt": "",
       "webInitialCycleEvidencePath": "",
@@ -1385,13 +1383,28 @@
         "placeId": "129342889720619",
         "verified": true,
         "verifiedAt": "2026-09-16T20:43:09.092Z",
-        "lastVerifiedAt": "2026-09-16T20:43:09.092Z",
+        "lastVerifiedAt": "2026-09-17T06:28:26.321Z",
         "source": "authenticated-studio-log-recovery",
-        "displayName": "Skyline Rush",
-        "recoveryRunId": 35147821179,
-        "recoveryJobId": 104968263007,
-        "evidence": "Studio PublishSuccessful + name-bound telemetry IDs"
-      }
+        "authority": "roblox-canonical-publication-target"
+      },
+      "robloxReleaseEvidence": {
+        "version": 1,
+        "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+        "platform": "ROBLOX",
+        "sourceRevision": "117a87320e67c690c1c8b3972598d331cf366c56",
+        "artifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc",
+        "artifactRunId": 35110903876,
+        "universeId": "10766723635",
+        "placeId": "129342889720619",
+        "finalReviewPassed": true,
+        "published": true,
+        "versionNumber": 4,
+        "workflowRunId": 35189880444,
+        "publishedAt": "2026-09-17T06:28:26.321Z",
+        "authority": "roblox-open-cloud-final-review-release-promotion"
+      },
+      "robloxReleasePublishedAt": "2026-09-17T06:28:26.321Z",
+      "robloxReleaseVersionNumber": 4
     },
     {
       "gameId": "seed-roblox-story-rpg-adventur-blox-fruits",
@@ -1952,7 +1965,7 @@
       "webInitialCycleMusicValidationPassed": false
     }
   ],
-  "updatedAt": "2026-09-17T05:09:07.043Z",
+  "updatedAt": "2026-09-17T06:28:26.321Z",
   "routerContractVersion": 4,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
