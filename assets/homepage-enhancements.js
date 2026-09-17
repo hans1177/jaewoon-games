@@ -23,19 +23,6 @@ const fetchJson=async url=>{
   return response.json();
 };
 
-function applyHomepageVersion(){
-  if(document.getElementById('centeredCompanyLogoVersion'))return;
-  const style=document.createElement('style');
-  style.id='centeredCompanyLogoVersion';
-  style.textContent=`
-.brandRow{justify-content:center!important;position:relative}
-.brand{width:100%;justify-content:center!important}
-.brand img{object-position:center center!important;margin-inline:auto}
-.companyLink{position:absolute;right:0}
-`;
-  document.head.appendChild(style);
-}
-
 function top30(queue){
   const best=new Map();
   for(const row of Array.isArray(queue?.items)?queue.items:[]){
@@ -112,7 +99,6 @@ async function refresh(){
 }
 
 async function main(){
-  applyHomepageVersion();
   bindApkInstall();
   await refresh();
   setInterval(()=>{if(!document.hidden)refresh();},SYNC_MS);
