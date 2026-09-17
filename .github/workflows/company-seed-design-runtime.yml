@@ -66,6 +66,8 @@ jobs:
           if(!Number.isInteger(designWipMax)||designWipMax<1)throw new Error('CENTRAL_GAME_WIP_MAX_REQUIRED');
           const state=(()=>{try{return JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));}catch{return{seeds:[]};}})();
           const active=(state.seeds||[]).filter(seed=>String(seed.status||'').toUpperCase()==='ACTIVE');
+          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
           const strictPassFor=(seed)=>{
             const gameRoot=path.join('design',String(seed.gameId));
             if(!fs.existsSync(gameRoot))return false;
@@ -78,6 +80,11 @@ jobs:
                 if(!fs.existsSync(statusPath)||!fs.existsSync(strictPath))continue;
                 const status=JSON.parse(fs.readFileSync(statusPath,'utf8'));
                 const review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
+                const evidenceAt=Date.parse(review.reviewedAt||review.generatedAt||review.updatedAt||review.createdAt||'')||0;
+                if(resetAt){
+                  if(evidenceAt&&evidenceAt<resetAt)continue;
+                  if(!evidenceAt&&date<=resetDate)continue;
+                }
                 const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
                 if(ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0)return true;
               }
@@ -140,6 +147,8 @@ jobs:
           import fs from 'node:fs';import path from 'node:path';
           const gameId=String(process.env.TARGET_GAME_ID||'').trim(),seedId=String(process.env.TARGET_SEED_ID||'').trim();
           const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));const seed=(state.seeds||[]).find(x=>String(x.gameId)===gameId&&String(x.status).toUpperCase()==='ACTIVE');
+          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
           let strictPass=false;
           const gameRoot=path.join('design',gameId);
           if(seed&&String(seed.seedId)===seedId&&fs.existsSync(gameRoot)){
@@ -149,6 +158,11 @@ jobs:
                 const base=path.join(gameRoot,date),statusPath=path.join(base,'cycle-status.json'),strictPath=path.join(base,'strict-design-review.json');
                 if(!fs.existsSync(statusPath)||!fs.existsSync(strictPath))continue;
                 const status=JSON.parse(fs.readFileSync(statusPath,'utf8')),review=JSON.parse(fs.readFileSync(strictPath,'utf8'));
+                const evidenceAt=Date.parse(review.reviewedAt||review.generatedAt||review.updatedAt||review.createdAt||'')||0;
+                if(resetAt){
+                  if(evidenceAt&&evidenceAt<resetAt)continue;
+                  if(!evidenceAt&&date<=resetDate)continue;
+                }
                 if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){strictPass=true;break;}
               }
             }catch{}
@@ -386,6 +400,8 @@ jobs:
           const branch=process.env.COMPANY_RUNTIME_BRANCH;
           const show=file=>execFileSync('git',['show',`origin/${branch}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
           const state=JSON.parse(show('game-seed-state.json'));let count=0;
+          const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
+          const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
           for(const seed of state.seeds||[]){
             if(String(seed.status||'').toUpperCase()!=='ACTIVE')continue;
             let passed=false;
@@ -395,6 +411,11 @@ jobs:
               for(const date of dates){
                 const base=`design/${seed.gameId}/${date}`;
                 const status=JSON.parse(show(`${base}/cycle-status.json`));const review=JSON.parse(show(`${base}/strict-design-review.json`));
+                const evidenceAt=Date.parse(review.reviewedAt||review.generatedAt||review.updatedAt||review.createdAt||'')||0;
+                if(resetAt){
+                  if(evidenceAt&&evidenceAt<resetAt)continue;
+                  if(!evidenceAt&&date<=resetDate)continue;
+                }
                 if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0){passed=true;break;}
               }
             }catch{}
