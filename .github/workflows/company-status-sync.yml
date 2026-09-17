@@ -4,10 +4,16 @@ on:
   workflow_dispatch:
   workflow_run:
     workflows:
-      - Director Staff Supervisor
-      - Autonomous Continuous Development
-      - Free Artbook Department Bots
       - Company Seed DESIGN_ONLY Runtime
+      - Company DESIGN_ONLY Promotion Sync
+      - Company DEVELOPMENT_CONFIRMED Runtime
+      - Company DEVELOPMENT_CONFIRMED Unity Runtime
+      - Company DEVELOPMENT_CONFIRMED Roblox Runtime
+      - Company DEVELOPMENT_CONFIRMED Roblox Runtime Continuation
+      - Company DEVELOPMENT_CONFIRMED Roblox Post-Runtime QA
+      - Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA
+      - Company DEVELOPMENT_CONFIRMED Roblox Final Review Revalidation
+      - Company DEVELOPMENT_CONFIRMED Roblox Release Promotion
     types: [completed]
   push:
     branches: [main]
