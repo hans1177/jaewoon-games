@@ -145,7 +145,24 @@ function platformDevelopmentReview(targetMeeting,targetData={}){
   const improvementTargets=decisions.filter(row=>['CHANGE','DROP','HOLD'].includes(row.decision)).slice(0,3).map(row=>({decision:row.decision,topic:clean(row.topic),reason:clean(row.reason),validationImpact:row.validationImpact}));
   return {version:1,gameId,selectedPlatform,learningLane:selectedPlatform,score,passMinimum:PLATFORM_DEVELOPMENT_PASS_MINIMUM,verdict:score>=PLATFORM_DEVELOPMENT_PASS_MINIMUM?'PASS':score>=80?'REVISE':'REBUILD_OR_MAJOR_FIX',decisionCounts:counts,penalties,limitations,improvementTargets,realTargetPlatformEvidence:targetData?.pass===true||targetData?.validated===true,reviewedAt:new Date().toISOString(),policyDocument:'COMPANY_FLOW.md'};
 }
+function normalizeRepairState(state){
+  const value=clean(state).toUpperCase();
+  if(value==='PRODUCTION_ARTIFACT_FAILURE')return 'WEB_PRODUCTION_REPAIR_REQUIRED';
+  if(value==='WAITING_WEB_GAMEPLAY_VALIDATION'||value==='WAITING_WEB_GAMEPLAY_REVALIDATION')return 'WEB_GAMEPLAY_REPAIR_REQUIRED';
+  if(value==='RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION')return 'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED';
+  if(value==='WAITING_WEB_STRICT_IMPROVEMENT')return 'WEB_STRICT_REPAIR_REQUIRED';
+  if(value==='WAITING_TARGET_PLATFORM_VALIDATION'||value==='WAITING_TARGET_PLATFORM_REVALIDATION')return 'TARGET_PLATFORM_REPAIR_REQUIRED';
+  if(value==='WAITING_REVALIDATION')return 'DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED';
+  return value;
+}
+function repairEscalationFor(attempt){
+  if(attempt<=1)return 'FIX_FAILED_AXIS_AND_REVALIDATE';
+  if(attempt===2)return 'REIMPLEMENT_FAILED_SUBSYSTEM';
+  if(attempt===3)return 'REVIEW_CORE_LOOP_AND_SYSTEM_CONNECTIONS';
+  return 'REBUILD_FROM_APPROVED_DESIGN_AND_CONTINUE_REPAIR';
+}
 function writeState(state,{sourceDesign=null,web=null,targetPlatform=null,revalidation=null,webMeeting=null,targetMeeting=null,finalDesign=null,artbook=null,platformReview=null,learningFeedback=null,blockers=[],nextAction=null}={}){
+  state=normalizeRepairState(state);
   const webContract=web?.data?structuredWebEvidence(web.data):null;
   const evidence={
     web:web?{state:web.state,path:web.path,musicRuntimePass:web.data?.musicRuntime?.pass===true,webStrictScore:webContract?.score??null,validationSchemaVersion:webContract?.schema??null,realGameSubstancePass:webContract?.substancePass===true,initialRealGamePass:webContract?.initialPass===true,finalContentDepthPass:webContract?.finalContentDepthPass===true,top30Eligible:webContract?.top30Eligible===true,fresh:webContract?.fresh===true,promotionRevalidationPass:web.data?.promotionRevalidation?.pass===true}:null,
@@ -155,24 +172,33 @@ function writeState(state,{sourceDesign=null,web=null,targetPlatform=null,revali
   if(selectedPlatform==='UNITY')evidence.unity=evidence.targetPlatform;
   const meetings={web:webMeeting?{path:webMeeting.path,decisionCounts:webMeeting.decisionCounts}:null,targetPlatform:targetMeeting?{platform:selectedPlatform,path:targetMeeting.path,decisionCounts:targetMeeting.decisionCounts}:null};
   if(selectedPlatform==='UNITY')meetings.unity=meetings.targetPlatform;
+  const repairRequired=state.endsWith('_REPAIR_REQUIRED');
+  const repairScope=repairRequired?state.slice(0,-'_REPAIR_REQUIRED'.length):null;
+  const previousStatus=readJson(path.join(base,'development-validation-status.json'),null);
+  const previousAttempt=repairRequired&&previousStatus?.repairScope===repairScope?Number(previousStatus.repairAttempt||0):0;
+  const repairAttempt=repairRequired?previousAttempt+1:0;
+  const repairEscalation=repairRequired?repairEscalationFor(repairAttempt):null;
   const status={
-    version:4,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'COMPANY_FLOW.md',
+    version:5,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'COMPANY_FLOW.md',
     flow:'DEVELOPMENT_CONFIRMED_GATED_DIRECT',selectedPlatform,platformAdapter:platformAdapter.adapterPath,
     webStrictScore:webContract?.score??null,platformImplementationScore:platformReview?.score??null,platformDevelopmentVerdict:platformReview?.verdict||null,learningLane:selectedPlatform,
-    status:state==='DEVELOPMENT_BASELINE_READY'?'COMPLETE':state==='DEVELOPMENT_BLOCKED'?'BLOCKED':'WAITING',
-    state,sourceDesign:sourceDesign?{path:sourceDesign.path,date:sourceDesign.date,authorModel:sourceDesign.authorModel}:null,
+    status:state==='DEVELOPMENT_BASELINE_READY'?'COMPLETE':state==='DEVELOPMENT_BLOCKED'?'BLOCKED':repairRequired?'REPAIR_REQUIRED':'ACTIVE',
+    state,repairRequired,repairScope,repairAttempt,repairEscalation,repairAttemptLimit:null,
+    sourceDesign:sourceDesign?{path:sourceDesign.path,date:sourceDesign.date,authorModel:sourceDesign.authorModel}:null,
     evidence,meetings,
     platformReview:platformReview?{path:path.join(base,'platform-development-review.json').replaceAll('\\','/'),score:platformReview.score,verdict:platformReview.verdict,improvementTargets:platformReview.improvementTargets}:null,
     learningFeedback:learningFeedback?{path:path.join(base,'development-learning-feedback.json').replaceAll('\\','/'),signal:learningFeedback.signal,scoreDelta:learningFeedback.platformScoreDelta}:null,
     finalDesign:finalDesign?.path||null,artbook:artbook?.path||null,blockers,nextAction,
-    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,singlePlatformRouter:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,webValidationRequired:true,musicValidationRequired:true,webValidationOptional:false,webFreshSchemaAndHashRequired:true,realPlayableWebGameRequired:true,initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',initialThirtyMinuteHardGate:false,insufficientContentReturnsToDevelopment:true,finalDepthConsumesPostDevelopmentSource:true,finalThirtyMinuteContentDepthRequiredForTop30:true,web90PromotionRevalidationRequired:true,webAndPlatformScoresSeparated:true,platform80To89RequiresReevaluation:true,artbookOnlyAfterBaselineReady:true},
+    contracts:{gatedDirect:true,resumeFromLatestEvidence:true,singlePlatformRouter:true,aiMayInventValidationPass:false,webSmokeDoesNotEqualGameplayValidation:true,webValidationRequired:true,musicValidationRequired:true,webValidationOptional:false,webFreshSchemaAndHashRequired:true,realPlayableWebGameRequired:true,initialImplementationUnit:'ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE',initialThirtyMinuteHardGate:false,insufficientContentReturnsToDevelopment:true,finalDepthConsumesPostDevelopmentSource:true,finalThirtyMinuteContentDepthRequiredForTop30:true,web90PromotionRevalidationRequired:true,webAndPlatformScoresSeparated:true,platform80To89RequiresReevaluation:true,artbookOnlyAfterBaselineReady:true,gateFailureMeansImmediateRepair:true,repairUntilPass:true,repairAttemptLimit:null,repairEscalationDoesNotStopLoop:true},
     updatedAt:new Date().toISOString()
   };
   writeJson(path.join(base,'development-validation-status.json'),status);
   writeJson(path.join(base,'cycle-status.json'),status);
-  const requiredEvidence=state.includes('WEB')||state==='PRODUCTION_ARTIFACT_FAILURE'?'web-gameplay-validation.json':state.includes('TARGET_PLATFORM')?platformAdapter.evidenceFile:state==='WAITING_REVALIDATION'?'development-revalidation.json':null;
-  writeJson(path.join(base,'development-validation-request.json'),{version:4,gameId,date,state,selectedPlatform,platformAdapter:platformAdapter.adapterPath,webStrictScore:status.webStrictScore,platformImplementationScore:status.platformImplementationScore,nextAction,blockers,requiredEvidence,policyDocument:'COMPANY_FLOW.md'});
+  const requiredEvidence=state.includes('WEB')?'web-gameplay-validation.json':state.includes('TARGET_PLATFORM')?platformAdapter.evidenceFile:state==='DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED'?'development-revalidation.json':null;
+  writeJson(path.join(base,'development-validation-request.json'),{version:5,gameId,date,state,selectedPlatform,platformAdapter:platformAdapter.adapterPath,webStrictScore:status.webStrictScore,platformImplementationScore:status.platformImplementationScore,repairRequired,repairScope,repairAttempt,repairEscalation,repairAttemptLimit:null,nextAction,blockers,requiredEvidence,policyDocument:'COMPANY_FLOW.md'});
   console.log(`DEVELOPMENT_DIRECT_STATE=${state}`);
+  console.log(`DEVELOPMENT_REPAIR_REQUIRED=${repairRequired?'YES':'NO'}`);
+  if(repairRequired){console.log(`DEVELOPMENT_REPAIR_ATTEMPT=${repairAttempt}`);console.log(`DEVELOPMENT_REPAIR_ESCALATION=${repairEscalation}`);console.log('DEVELOPMENT_REPAIR_LIMIT=UNLIMITED');}
   console.log(`SELECTED_PLATFORM=${selectedPlatform}`);
   console.log(`WEB_STRICT_SCORE=${status.webStrictScore??'NONE'}`);
   console.log(`PLATFORM_IMPLEMENTATION_SCORE=${status.platformImplementationScore??'NONE'}`);
