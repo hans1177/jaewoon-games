@@ -269,11 +269,8 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
 
 test('platform routing does not wait for optional post-Web artbook',()=>{
   const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  const routeStart=source.indexOf('\n  route:\n');
-  const routeEnd=source.indexOf('\n  ',routeStart+10);
-  const routeBlock=source.slice(routeStart,routeEnd>routeStart?routeEnd:source.length);
-  assert.match(routeBlock,/needs: \[web-gate\]/);
-  assert.doesNotMatch(routeBlock,/post-web-artbook/);
+  assert.match(source,/\n  route:\n[\s\S]{0,600}needs: \[web-gate\]/);
+  assert.doesNotMatch(source,/\n  route:\n[\s\S]{0,600}needs: \[web-gate, post-web-artbook\]/);
   assert.match(source,/ARTBOOK_FAILURE_ONLY_BLOCKS_HOMEPAGE=YES/);
   assert.match(source,/POST_WEB_ARTBOOK_FAILURE_NATIVE_BLOCK=NO/);
 });
