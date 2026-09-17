@@ -148,22 +148,47 @@ function reworkOrRevalidation(row){
     return v.includes('REWORK')||v.includes('REVALIDATION');
   });
 }
-function scoreInfo(row,productionClass){
-  if(productionClass==='RELEASE_CONFIRMED')return {score:null,label:'출시',current:true,source:'SERVER_DEVELOPMENT_QUEUE'};
-  if(!row)return {score:null,label:'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
-  if(reworkOrRevalidation(row))return {score:null,label:'재검증 필요',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
-  const initialPassed=row.webInitialCyclePassed===true;
-  const schema=Number(row.webInitialCycleValidationSchemaVersion);
-  const musicPassed=row.webInitialCycleMusicValidationPassed===true;
-  const sourceBound=bindingMatches(row.webSourceIndexSha256,row.webInitialCycleSourceIndexSha256);
-  const baselineBound=bindingMatches(row.webDesignBaselineSha256,row.webInitialCycleDesignBaselineSha256);
-  const raw=row.webInitialCycleStrictScore;
-  const score=raw===null||raw===undefined||raw===''?NaN:Number(raw);
-  if(!initialPassed||!Number.isFinite(schema)||schema<MIN_DEVELOPMENT_SCORE_SCHEMA||!musicPassed||!sourceBound||!baselineBound||!Number.isFinite(score)||score<0||score>100){
-    const stale=initialPassed&&Number.isFinite(schema)&&schema>=MIN_DEVELOPMENT_SCORE_SCHEMA&&musicPassed&&(!sourceBound||!baselineBound);
-    return {score:null,label:stale?'재검증 필요':'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
+function numericScore(value){
+  if(value===null||value===undefined||value==='')return null;
+  const score=Number(value);
+  return Number.isFinite(score)&&score>=0&&score<=100?score:null;
+}
+function designScoreInfo(seed){
+  const score=numericScore(seed?.strictDesignReview?.totalScore);
+  if(score===null)return null;
+  const verdict=String(seed?.strictDesignReview?.verdict||'').toUpperCase();
+  const hardFailures=Array.isArray(seed?.strictDesignReview?.hardFailures)?seed.strictDesignReview.hardFailures:[];
+  const passed=verdict==='PASS'&&hardFailures.length===0;
+  return {score,label:passed?`${score}점`:`${score}점 · 설계 재검토`,current:true,source:'SERVER_SEED_STRICT_DESIGN_REVIEW'};
+}
+function scoreInfo(row,productionClass,seed){
+  const design=designScoreInfo(seed);
+  if(productionClass==='DESIGN_ONLY')return design||{score:null,label:'점수 미평가',current:false,source:'SERVER_SEED_STRICT_DESIGN_REVIEW'};
+  const revalidating=reworkOrRevalidation(row);
+  if(row){
+    const queueScores=[
+      [row.homepageTestScore,'SERVER_DEVELOPMENT_QUEUE_HOMEPAGE_TEST'],
+      [row.strictImplementationScore,'SERVER_DEVELOPMENT_QUEUE_STRICT_IMPLEMENTATION'],
+      [row.webStrictScore,'SERVER_DEVELOPMENT_QUEUE_WEB_STRICT']
+    ];
+    for(const [value,source] of queueScores){
+      const score=numericScore(value);
+      if(score!==null)return {score,label:revalidating?`${score}점 · 재검증 필요`:`${score}점`,current:!revalidating,source};
+    }
+    const initialPassed=row.webInitialCyclePassed===true;
+    const schema=Number(row.webInitialCycleValidationSchemaVersion);
+    const musicPassed=row.webInitialCycleMusicValidationPassed===true;
+    const sourceBound=bindingMatches(row.webSourceIndexSha256,row.webInitialCycleSourceIndexSha256);
+    const baselineBound=bindingMatches(row.webDesignBaselineSha256,row.webInitialCycleDesignBaselineSha256);
+    const score=numericScore(row.webInitialCycleStrictScore);
+    if(initialPassed&&Number.isFinite(schema)&&schema>=MIN_DEVELOPMENT_SCORE_SCHEMA&&musicPassed&&score!==null){
+      const current=!revalidating&&sourceBound&&baselineBound;
+      return {score,label:current?`${score}점`:`${score}점 · 재검증 필요`,current,source:'SERVER_DEVELOPMENT_QUEUE_INITIAL_STRICT'};
+    }
   }
-  return {score,label:`${score}점`,current:true,source:'SERVER_DEVELOPMENT_QUEUE'};
+  if(design)return design;
+  if(productionClass==='RELEASE_CONFIRMED')return {score:null,label:'출시',current:true,source:'SERVER_RUNTIME'};
+  return {score:null,label:'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
 }
 function playModeLabel(value){
   const mode=String(value??'').trim().toUpperCase();
@@ -220,7 +245,7 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
     const robloxSubgenre=String(seed?.ROBLOX_SUBGENRE_LABEL_KO||seed?.ROBLOX_SUBGENRE||queue?.ROBLOX_SUBGENRE_LABEL_KO||queue?.ROBLOX_SUBGENRE||'').trim();
     const genreLabel=platform==='ROBLOX'&&robloxGenre?[robloxGenre,robloxSubgenre].filter(Boolean).join(' · '):(baseGenres.join(' · ')||'장르 미평가');
     const playMode=String(seed?.MULTIPLAYER_DESIGN_MODE||seed?.INITIAL_PLAY_MODE||queue?.ROBLOX_PLAY_MODE||queue?.playMode||'').trim().toUpperCase();
-    const score=scoreInfo(queue,productionClass);
+    const score=scoreInfo(queue,productionClass,seed);
     const updatedAt=queue?.updatedAt||queue?.webValidationLastAttemptAt||seed?.ROBLOX_GENRE_REVIEWED_AT||seed?.updatedAt||base.updatedAt||baseCatalog?.updatedAt||null;
     return {
       ...base,
