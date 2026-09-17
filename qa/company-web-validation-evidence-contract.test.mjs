@@ -58,6 +58,7 @@ const baseEvidence=()=>{
     towerEffectProfiles:['damage:8|range:3','damage:4|range:4|slow:.3','damage:14|range:2'],towerEffectProfileCount:3,
     strategyChoices:['bolt','slow','burst'],strategyCombatOutcomes:[{choiceMechanic:'bolt',outcomeSignature:'damage:20'},{choiceMechanic:'slow',outcomeSignature:'damage:11,slow:1'},{choiceMechanic:'burst',outcomeSignature:'damage:28'}],strategyCombatOutcomeCount:3,
     independentStrategyEvidence:{required:true,pass:true,status:'PASS',independentContexts:2,choiceCount:2,outcomeCount:2},
+    genreEvidence:{profile:'TYCOON_SIMULATOR',runtimeObserved:true,productionNodeCount:3,productionTransitionCount:5,automationEventCount:2,economyTransactionCount:4,upgradeResultCount:2},
     placementResultCount:2,newContentDimensionCount:3,
   };
   return {
