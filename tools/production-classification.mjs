@@ -23,8 +23,7 @@ export function productionClassFromHomepageCategory(value){
 
 function ownerRedesignResetClass(entity={}){
   const source=clean(entity?.productionClassSource).toUpperCase();
-  const productionClass=normalizeProductionClass(entity?.productionClass);
-  if(source.startsWith('OWNER_REDESIGN_RESET_')&&productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
+  if(source.startsWith('OWNER_REDESIGN_RESET_')||source.startsWith('OWNER_ALL_GAMES_DESIGN_RESET_')){
     return PRODUCTION_CLASSES.DESIGN_ONLY;
   }
   return null;
