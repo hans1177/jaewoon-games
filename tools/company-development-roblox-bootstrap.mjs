@@ -12,14 +12,70 @@ const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));
 const arg=(name,fallback='')=>process.argv.find(value=>value.startsWith(`--${name}=`))?.slice(name.length+3)??fallback;
 const luauString=value=>`"${String(value??'').replace(/\\/g,'\\\\').replace(/"/g,'\\"').replace(/\r/g,'\\r').replace(/\n/g,'\\n')}"`;
+const MODES=new Set(['SINGLE','COOP','COMPETITIVE','HYBRID']);
 
+function baselineContent(baseline={}){
+  return baseline?.content&&typeof baseline.content==='object'&&!Array.isArray(baseline.content)?baseline.content:baseline;
+}
 function baselineText(baseline={}){
-  return JSON.stringify(baseline?.content&&typeof baseline.content==='object'?baseline.content:baseline).toLowerCase();
+  return JSON.stringify(baselineContent(baseline)).toLowerCase();
+}
+export function requiresPersistentSave(baseline={}){
+  return /(persistent|persistence|save|long-term progression|long term progression|영구|저장)/i.test(baselineText(baseline));
 }
 
-export function requiresPersistentSave(baseline={}){
-  const text=baselineText(baseline);
-  return /(persistent|persistence|save|long-term progression|long term progression|영구|저장)/i.test(text);
+export function robloxBuildProfileFromBaseline(baseline={}){
+  const profile=baselineContent(baseline)?.robloxBuildProfile;
+  if(!profile||Array.isArray(profile)||typeof profile!=='object')throw new Error('ROBLOX_BUILD_PROFILE_REQUIRED');
+  const playMode=clean(profile.playMode).toUpperCase();
+  const genre=clean(profile.genre);
+  const subgenre=clean(profile.subgenre);
+  if(clean(profile.targetPlatform).toUpperCase()!=='ROBLOX')throw new Error('ROBLOX_BUILD_PROFILE_TARGET_MISMATCH');
+  if(!genre||genre==='Utility & other')throw new Error('ROBLOX_BUILD_PROFILE_GENRE_REQUIRED');
+  if(!MODES.has(playMode))throw new Error('ROBLOX_BUILD_PROFILE_PLAY_MODE_REQUIRED');
+  const multiplayerRequired=playMode!=='SINGLE';
+  const coopRequired=playMode==='COOP'||playMode==='HYBRID';
+  const competitiveRequired=playMode==='COMPETITIVE'||playMode==='HYBRID';
+  if(profile.multiplayerRequired!==multiplayerRequired)throw new Error('ROBLOX_BUILD_PROFILE_MULTIPLAYER_MISMATCH');
+  if(profile.networkingRequired!==multiplayerRequired)throw new Error('ROBLOX_BUILD_PROFILE_NETWORKING_MISMATCH');
+  if(profile.multiplayerQaRequired!==multiplayerRequired)throw new Error('ROBLOX_BUILD_PROFILE_QA_MISMATCH');
+  if(profile.coopImplementationRequired!==coopRequired)throw new Error('ROBLOX_BUILD_PROFILE_COOP_MISMATCH');
+  if(profile.competitiveImplementationRequired!==competitiveRequired)throw new Error('ROBLOX_BUILD_PROFILE_COMPETITIVE_MISMATCH');
+  if(Number(profile.minimumParticipantsForRequiredQa)!==(multiplayerRequired?2:1))throw new Error('ROBLOX_BUILD_PROFILE_PARTICIPANT_MISMATCH');
+  return Object.freeze({
+    version:Number(profile.version||1),
+    targetPlatform:'ROBLOX',
+    taxonomy:clean(profile.taxonomy)||null,
+    declaredGameCategory:clean(profile.declaredGameCategory)||null,
+    genre,
+    subgenre:subgenre||null,
+    playMode,
+    multiplayerRequired,
+    coopImplementationRequired:coopRequired,
+    competitiveImplementationRequired:competitiveRequired,
+    networkingRequired:multiplayerRequired,
+    multiplayerQaRequired:multiplayerRequired,
+    minimumParticipantsForRequiredQa:multiplayerRequired?2:1,
+    displayLabelKo:clean(profile.displayLabelKo)||[genre,subgenre,playMode].filter(Boolean).join(' · '),
+  });
+}
+
+function genreCoreKind(profile){
+  const genre=profile.genre;
+  const sub=profile.subgenre||'';
+  if(genre==='Puzzle')return 'PUZZLE';
+  if(genre==='Obby & platformer')return 'MOVEMENT';
+  if(genre==='Shooter'||genre==='Action')return 'COMBAT';
+  if(genre==='Strategy'&&sub==='Tower Defense')return 'DEFENSE';
+  if(genre==='Strategy')return 'OBJECTIVE';
+  if(genre==='RPG')return 'PROGRESSION';
+  if(genre==='Survival')return 'SURVIVAL';
+  if(genre==='Simulation')return sub==='Tycoon'?'ECONOMY':'PROGRESSION';
+  if(genre==='Adventure')return 'OBJECTIVE';
+  if(genre==='Roleplay & avatar sim'||genre==='Social')return 'SOCIAL';
+  if(genre==='Sports & racing')return 'MOVEMENT';
+  if(genre==='Party & casual')return 'OBJECTIVE';
+  return 'OBJECTIVE';
 }
 
 export function projectJsonForGame(gameId=''){
@@ -27,25 +83,17 @@ export function projectJsonForGame(gameId=''){
     name:clean(gameId)||'jaewoon-roblox-game',
     tree:{
       $className:'DataModel',
-      ReplicatedStorage:{
-        Shared:{$path:'shared'},
-      },
-      ServerScriptService:{
-        GameServer:{$path:'server'},
-      },
-      StarterPlayer:{
-        StarterPlayerScripts:{
-          GameClient:{$path:'client'},
-        },
-      },
+      ReplicatedStorage:{Shared:{$path:'shared'}},
+      ServerScriptService:{GameServer:{$path:'server'}},
+      StarterPlayer:{StarterPlayerScripts:{GameClient:{$path:'client'}}},
     },
   };
 }
 
-function sourceBlockers(text,{kind,saveRequired=false}={}){
+function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
   const value=String(text??'');
   const blockers=[];
-  const minBytes=kind==='config'?300:kind==='server'?1200:1000;
+  const minBytes=kind==='config'?500:kind==='server'?1600:1200;
   if(Buffer.byteLength(value,'utf8')<minBytes)blockers.push(`${kind.toUpperCase()}_SOURCE_TOO_SMALL`);
   if(/\b(TODO|FIXME|NotImplemented|PLACEHOLDER|placeholder)\b/.test(value))blockers.push(`${kind.toUpperCase()}_PLACEHOLDER_FORBIDDEN`);
   if(/loadstring\s*\(/.test(value))blockers.push(`${kind.toUpperCase()}_LOADSTRING_FORBIDDEN`);
@@ -54,6 +102,11 @@ function sourceBlockers(text,{kind,saveRequired=false}={}){
     if(!/PolicySource\s*=\s*["']COMPANY_FLOW\.md["']/.test(value))blockers.push('CONFIG_POLICY_SOURCE_REQUIRED');
     if(!/Platform\s*=\s*["']ROBLOX["']/.test(value))blockers.push('CONFIG_ROBLOX_PLATFORM_REQUIRED');
     if(!/MobileFirst\s*=\s*true/.test(value))blockers.push('CONFIG_MOBILE_FIRST_REQUIRED');
+    if(profile){
+      if(!value.includes(`Genre = ${luauString(profile.genre)}`))blockers.push('CONFIG_GENRE_PROFILE_REQUIRED');
+      if(!value.includes(`PlayMode = ${luauString(profile.playMode)}`))blockers.push('CONFIG_PLAY_MODE_PROFILE_REQUIRED');
+      if(!value.includes(`MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'}`))blockers.push('CONFIG_MULTIPLAYER_PROFILE_REQUIRED');
+    }
   }
   if(kind==='server'){
     if(!/game:GetService\(["']Players["']\)/.test(value))blockers.push('SERVER_PLAYERS_SERVICE_REQUIRED');
@@ -67,6 +120,12 @@ function sourceBlockers(text,{kind,saveRequired=false}={}){
       if(!/GetAsync\s*\(/.test(value))blockers.push('SERVER_DATASTORE_LOAD_REQUIRED');
       if(!/(UpdateAsync|SetAsync)\s*\(/.test(value))blockers.push('SERVER_DATASTORE_SAVE_REQUIRED');
     }
+    if(profile?.multiplayerRequired){
+      if(!/FireAllClients\s*\(/.test(value))blockers.push('SERVER_MULTIPLAYER_BROADCAST_REQUIRED');
+      if(!/Players:GetPlayers\s*\(\)/.test(value))blockers.push('SERVER_MULTIPLAYER_PARTICIPANT_STATE_REQUIRED');
+      if(profile.coopImplementationRequired&&!/SharedObjective/.test(value))blockers.push('SERVER_COOP_SHARED_OBJECTIVE_REQUIRED');
+      if(profile.competitiveImplementationRequired&&!/RoundScore/.test(value))blockers.push('SERVER_COMPETITIVE_SCORE_REQUIRED');
+    }
   }
   if(kind==='client'){
     if(!/game:GetService\(["']UserInputService["']\)/.test(value)&&!/game:GetService\(["']ContextActionService["']\)/.test(value))blockers.push('CLIENT_MOBILE_INPUT_SERVICE_REQUIRED');
@@ -74,26 +133,31 @@ function sourceBlockers(text,{kind,saveRequired=false}={}){
     if(!/FireServer\s*\(/.test(value))blockers.push('CLIENT_SERVER_ACTION_REQUIRED');
     if(!/(ScreenGui|TextButton|ImageButton)/.test(value))blockers.push('CLIENT_MOBILE_UI_REQUIRED');
     if(!/GetAttributeChangedSignal|GetAttribute\s*\(/.test(value))blockers.push('CLIENT_OBSERVABLE_STATE_BIND_REQUIRED');
+    if(profile?.multiplayerRequired&&!/OnClientEvent/.test(value))blockers.push('CLIENT_MULTIPLAYER_SYNC_REQUIRED');
   }
   return blockers;
 }
 
-export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCode='',baseline={}}={}){
+export function validateRobloxBootstrap({sharedConfig='',serverCode='',clientCode='',baseline={},profile=null}={}){
+  const buildProfile=profile||robloxBuildProfileFromBaseline(baseline);
   const saveRequired=requiresPersistentSave(baseline);
   const blockers=[
-    ...sourceBlockers(sharedConfig,{kind:'config',saveRequired}),
-    ...sourceBlockers(serverCode,{kind:'server',saveRequired}),
-    ...sourceBlockers(clientCode,{kind:'client',saveRequired}),
+    ...sourceBlockers(sharedConfig,{kind:'config',saveRequired,profile:buildProfile}),
+    ...sourceBlockers(serverCode,{kind:'server',saveRequired,profile:buildProfile}),
+    ...sourceBlockers(clientCode,{kind:'client',saveRequired,profile:buildProfile}),
   ];
-  return Object.freeze({pass:blockers.length===0,blockers:Object.freeze([...new Set(blockers)]),saveRequired});
+  return Object.freeze({pass:blockers.length===0,blockers:Object.freeze([...new Set(blockers)]),saveRequired,profile:buildProfile});
 }
 
 export function classifyRobloxScope(item={},index=0){
   const text=`${clean(item.path).toLowerCase()} ${clean(item.label).toLowerCase()}`;
+  if(/puzzle|match|merge|word|퍼즐|매치|머지|단어/.test(text))return 'PUZZLE';
+  if(/tower.?defen|defense|디펜스/.test(text))return 'DEFENSE';
   if(/combat|fight|attack|damage|enemy|opponent|skill|cooldown|aim|combo|전투|공격|적|스킬|쿨다운/.test(text))return 'COMBAT';
   if(/move|movement|reposition|explore|navigate|travel|dodge|evade|obby|checkpoint|이동|탐색|회피|위치|오비|체크포인트/.test(text))return 'MOVEMENT';
   if(/reward|progress|upgrade|loadout|level|mastery|grow|unlock|보상|성장|강화|레벨|해금/.test(text))return 'PROGRESSION';
   if(/resource|economy|craft|collect|produce|income|tycoon|자원|경제|제작|수집|생산|수익/.test(text))return 'ECONOMY';
+  if(/social|roleplay|party|team|shared|교류|협동|팀/.test(text))return 'SOCIAL';
   if(/quest|objective|story|goal|round|escape|목표|퀘스트|스토리|탈출/.test(text))return 'OBJECTIVE';
   if(/survive|health|danger|threat|horror|생존|체력|위협|공포/.test(text))return 'SURVIVAL';
   if(/mobile|touch|control|interface|ux|모바일|터치|조작|인터페이스/.test(text))return 'MOBILE';
@@ -101,20 +165,21 @@ export function classifyRobloxScope(item={},index=0){
   return ['OBJECTIVE','ECONOMY','PROGRESSION','MOVEMENT'][index%4];
 }
 
-function approvedActions(baseline={}){
+function approvedActions(baseline={},profile){
   const inventory=deriveApprovedScopeInventory(baseline);
-  if(inventory.length)return inventory.map((item,index)=>({
-    id:item.id,
-    label:clean(item.label)||`Approved action ${index+1}`,
-    path:clean(item.path),
-    kind:classifyRobloxScope(item,index),
-  }));
-  return [{id:'scope-core-fallback',label:'Core gameplay action',path:'coreFun',kind:'OBJECTIVE'}];
+  const actions=inventory.length?inventory.map((item,index)=>({
+    id:item.id,label:clean(item.label)||`Approved action ${index+1}`,path:clean(item.path),kind:classifyRobloxScope(item,index),
+  })):[{id:'scope-core-fallback',label:'Core gameplay action',path:'coreFun',kind:'OBJECTIVE'}];
+  const requiredKind=genreCoreKind(profile);
+  if(!actions.some(action=>action.kind===requiredKind)){
+    actions.unshift({id:'genre-core',label:`${profile.genre}${profile.subgenre?` / ${profile.subgenre}`:''} core gameplay`,path:'robloxBuildProfile',kind:requiredKind});
+  }
+  return actions;
 }
 
-function sharedConfigSource({gameId,gameName,saveRequired,actions}){
+function sharedConfigSource({gameId,gameName,saveRequired,actions,profile}){
   const actionRows=actions.map((action,index)=>`    { Id = ${luauString(action.id)}, Label = ${luauString(action.label)}, Kind = ${luauString(action.kind)}, Order = ${index+1} },`).join('\n');
-  return `local Config = {\n  PolicySource = "COMPANY_FLOW.md",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
+  return `local Config = {\n  PolicySource = "COMPANY_FLOW.md",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n    PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,\n    SharedObjective = 0, RoundScore = 0,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
 }
 
 function serverHandlerBody(kind,index){
@@ -125,52 +190,62 @@ function serverHandlerBody(kind,index){
     PROGRESSION:`  setNumber(player, "Level", readNumber(player, "Level", 1) + 1)\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${7+n})\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${5+n})\n  setNumber(player, "Coins", readNumber(player, "Coins", 0) + ${2+n})`,
     ECONOMY:`  setNumber(player, "Coins", readNumber(player, "Coins", 0) + ${6+n})\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${3+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${4+n})`,
     OBJECTIVE:`  setNumber(player, "Objective", readNumber(player, "Objective", 0) + 1)\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${6+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${8+n})`,
-    SURVIVAL:`  setNumber(player, "Health", math.clamp(readNumber(player, "Health", 100) + ${2+(index%4)}, 0, 100))\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${4+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${5+n})`,
+    SURVIVAL:`  setNumber(player, "Health", math.clamp(readNumber(player, "Health", 100) - ${1+(index%3)}, 0, 100))\n  setNumber(player, "Wave", readNumber(player, "Wave", 1) + 1)\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${5+n})`,
+    PUZZLE:`  local chain = readNumber(player, "PuzzleChain", 0) + 1\n  setNumber(player, "PuzzleChain", chain)\n  setNumber(player, "Score", readNumber(player, "Score", 0) + chain * ${2+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${5+n})`,
+    DEFENSE:`  setNumber(player, "Towers", readNumber(player, "Towers", 0) + 1)\n  setNumber(player, "Wave", readNumber(player, "Wave", 1) + 1)\n  setNumber(player, "BaseHealth", math.max(0, readNumber(player, "BaseHealth", 100) - ${1+(index%2)}))\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${6+n})`,
+    SOCIAL:`  setNumber(player, "SocialBond", readNumber(player, "SocialBond", 0) + 1)\n  setNumber(player, "Objective", readNumber(player, "Objective", 0) + 1)\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${4+n})`,
     MOBILE:`  setNumber(player, "Position", (readNumber(player, "Position", 0) + 1) % 12)\n  setNumber(player, "Score", readNumber(player, "Score", 0) + ${2+n})\n  setNumber(player, "Progress", readNumber(player, "Progress", 0) + ${3+n})`,
   };
   return bodies[kind]||bodies.OBJECTIVE;
 }
 
-function serverSource({gameId,saveRequired,actions}){
-  const handlers=actions.map((action,index)=>`local function scopeHandler${index+1}(player)\n${serverHandlerBody(action.kind,index)}\n  player:SetAttribute("LastApprovedScope", ${luauString(action.id)})\nend`).join('\n\n');
+function serverSource({gameId,saveRequired,actions,profile}){
+  const multiplayerAfterAction=profile.multiplayerRequired?`\n  local participants = Players:GetPlayers()\n  if Config.CoopRequired then\n    local shared = 0\n    for _, participant in ipairs(participants) do\n      shared += readNumber(participant, "Progress", 0)\n    end\n    for _, participant in ipairs(participants) do participant:SetAttribute("SharedObjective", shared) end\n  end\n  if Config.CompetitiveRequired then\n    setNumber(player, "RoundScore", readNumber(player, "RoundScore", 0) + 1)\n  end\n  local snapshot = {ActorUserId = player.UserId, ParticipantCount = #participants, SharedObjective = readNumber(player, "SharedObjective", 0), RoundScore = readNumber(player, "RoundScore", 0)}\n  remote:FireAllClients("MULTIPLAYER_SYNC", snapshot)\n`:``;
+  const handlers=actions.map((action,index)=>`local function scopeHandler${index+1}(player)\n${serverHandlerBody(action.kind,index)}\n  player:SetAttribute("LastApprovedScope", ${luauString(action.id)})\n${multiplayerAfterAction}end`).join('\n\n');
   const mapRows=actions.map((action,index)=>`  [${luauString(action.id)}] = scopeHandler${index+1},`).join('\n');
   const datastoreHead=saveRequired?`local DataStoreService = game:GetService("DataStoreService")\nlocal store = DataStoreService:GetDataStore(${luauString(`${gameId}-development-v1`)})\n`:'';
   const loadBlock=saveRequired?`  local ok, saved = pcall(function()\n    return store:GetAsync("player:" .. player.UserId)\n  end)\n  if ok and typeof(saved) == "table" then\n    for key, fallback in pairs(Config.InitialState) do\n      local value = saved[key]\n      if typeof(value) == "number" then player:SetAttribute(key, value) else player:SetAttribute(key, fallback) end\n    end\n  else\n    initializePlayer(player)\n  end\n`:`  initializePlayer(player)\n`;
-  const saveBlock=saveRequired?`  local snapshot = {}\n  for key, fallback in pairs(Config.InitialState) do\n    snapshot[key] = readNumber(player, key, fallback)\n  end\n  pcall(function()\n    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)\n  end)\n`:'';
-  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\n${datastoreHead}local Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\n\nlocal remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)\nif remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end\nif not remote then\n  remote = Instance.new("RemoteEvent")\n  remote.Name = Config.RemoteName\n  remote.Parent = ReplicatedStorage\nend\n\nlocal lastAction = {}\n\nlocal function readNumber(player, name, fallback)\n  local value = player:GetAttribute(name)\n  if typeof(value) ~= "number" then return fallback end\n  return value\nend\n\nlocal function setNumber(player, name, value)\n  if typeof(value) ~= "number" then return end\n  player:SetAttribute(name, math.floor(value))\nend\n\nlocal function initializePlayer(player)\n  for key, value in pairs(Config.InitialState) do\n    player:SetAttribute(key, value)\n  end\n  player:SetAttribute("LastApprovedScope", "ready")\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n${loadBlock}end)\n\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function()\n    if player:GetAttribute("Score") == nil then initializePlayer(player) end\n  end)\nend\n\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\n\nPlayers.PlayerRemoving:Connect(function(player)\n${saveBlock}  lastAction[player] = nil\nend)\n`;
+  const saveBlock=saveRequired?`  local snapshot = {}\n  for key, fallback in pairs(Config.InitialState) do snapshot[key] = readNumber(player, key, fallback) end\n  pcall(function()\n    store:UpdateAsync("player:" .. player.UserId, function() return snapshot end)\n  end)\n`:'';
+  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\n${datastoreHead}local Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\n\nlocal remote = ReplicatedStorage:FindFirstChild(Config.RemoteName)\nif remote and not remote:IsA("RemoteEvent") then remote:Destroy(); remote = nil end\nif not remote then\n  remote = Instance.new("RemoteEvent")\n  remote.Name = Config.RemoteName\n  remote.Parent = ReplicatedStorage\nend\n\nlocal lastAction = {}\nlocal function readNumber(player, name, fallback)\n  local value = player:GetAttribute(name)\n  if typeof(value) ~= "number" then return fallback end\n  return value\nend\nlocal function setNumber(player, name, value)\n  if typeof(value) ~= "number" then return end\n  player:SetAttribute(name, math.floor(value))\nend\nlocal function initializePlayer(player)\n  for key, value in pairs(Config.InitialState) do player:SetAttribute(key, value) end\n  player:SetAttribute("LastApprovedScope", "ready")\nend\n\n${handlers}\n\nlocal handlers = {\n${mapRows}\n}\n\nPlayers.PlayerAdded:Connect(function(player)\n${loadBlock}end)\nfor _, player in ipairs(Players:GetPlayers()) do\n  task.defer(function() if player:GetAttribute("Score") == nil then initializePlayer(player) end end)\nend\nremote.OnServerEvent:Connect(function(player, actionId)\n  if typeof(actionId) ~= "string" then return end\n  local handler = handlers[actionId]\n  if typeof(handler) ~= "function" then return end\n  local now = os.clock()\n  local previous = lastAction[player] or 0\n  if now - previous < Config.RateLimitSeconds then return end\n  lastAction[player] = now\n  handler(player)\nend)\nPlayers.PlayerRemoving:Connect(function(player)\n${saveBlock}  lastAction[player] = nil\nend)\n`;
 }
 
-function clientSource(){
-  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.IgnoreGuiInset = false\ngui.Parent = player:WaitForChild("PlayerGui")\n\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 330)\nroot.BackgroundTransparency = 0.15\nroot.BackgroundColor3 = Color3.fromRGB(18, 28, 48)\nroot.Parent = gui\n\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = Config.GameName .. (UserInputService.TouchEnabled and " · TOUCH" or " · DESKTOP")\ntitle.Parent = root\n\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 52)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -116)\nlist.Position = UDim2.fromOffset(10, 108)\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\n\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\n\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function()\n    remote:FireServer(action.Id)\n  end)\nend\n\nlocal watched = {"Score", "Coins", "Level", "Progress", "Health", "Wave", "Position", "Objective", "Combo", "EnemyHealth", "LastApprovedScope"}\nlocal function render()\n  status.Text = string.format(\n    "Score %d · Coins %d · Lv %d · Progress %d · HP %d · Wave %d",\n    player:GetAttribute("Score") or 0,\n    player:GetAttribute("Coins") or 0,\n    player:GetAttribute("Level") or 1,\n    player:GetAttribute("Progress") or 0,\n    player:GetAttribute("Health") or 100,\n    player:GetAttribute("Wave") or 1\n  )\nend\n\nfor _, name in ipairs(watched) do\n  player:GetAttributeChangedSignal(name):Connect(render)\nend\nrender()\n`;
+function clientSource({profile}){
+  const multiplayerClient=profile.multiplayerRequired?`\nlocal multiplayerStatus = Instance.new("TextLabel")\nmultiplayerStatus.Name = "MultiplayerStatus"\nmultiplayerStatus.Size = UDim2.new(1, -20, 0, 36)\nmultiplayerStatus.Position = UDim2.fromOffset(10, 104)\nmultiplayerStatus.BackgroundTransparency = 1\nmultiplayerStatus.TextColor3 = Color3.fromRGB(180, 230, 255)\nmultiplayerStatus.TextScaled = true\nmultiplayerStatus.Text = "Multiplayer sync ready"\nmultiplayerStatus.Parent = root\nremote.OnClientEvent:Connect(function(kind, payload)\n  if kind ~= "MULTIPLAYER_SYNC" or typeof(payload) ~= "table" then return end\n  multiplayerStatus.Text = string.format("Players %d · Shared %d · Round %d", payload.ParticipantCount or 0, payload.SharedObjective or 0, payload.RoundScore or 0)\nend)\n`:``;
+  return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.Parent = player:WaitForChild("PlayerGui")\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 360)\nroot.BackgroundTransparency = 0.15\nroot.BackgroundColor3 = Color3.fromRGB(18, 28, 48)\nroot.Parent = gui\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)\ntitle.Parent = root\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 48)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n${multiplayerClient}\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -${profile.multiplayerRequired?150:112})\nlist.Position = UDim2.fromOffset(10, ${profile.multiplayerRequired?142:106})\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function() remote:FireServer(action.Id) end)\nend\nlocal watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}\nlocal function render()\n  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)\nend\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()\n`;
 }
 
 export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={}}={}){
   void artbook;
+  const profile=robloxBuildProfileFromBaseline(baseline);
   const saveRequired=requiresPersistentSave(baseline);
-  const actions=approvedActions(baseline);
+  const actions=approvedActions(baseline,profile);
   const result={
-    sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions}),
-    serverCode:serverSource({gameId,saveRequired,actions}),
-    clientCode:clientSource(),
+    sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions,profile}),
+    serverCode:serverSource({gameId,saveRequired,actions,profile}),
+    clientCode:clientSource({profile}),
     implementationNotes:[
       `approved scope count=${actions.length}`,
-      'each approved scope is compiled to a dedicated server-authoritative handler',
-      'one validated RemoteEvent transports scope ids across the client/server boundary',
-      'mobile-first ScreenGui exposes every approved scope action',
+      `roblox genre=${profile.genre}${profile.subgenre?`/${profile.subgenre}`:''}`,
+      `play mode=${profile.playMode}`,
+      `multiplayer required=${profile.multiplayerRequired?'yes':'no'}`,
+      'genre core action is compiled from the approved Roblox build profile',
+      profile.multiplayerRequired?'server-authoritative actions broadcast synchronized participant state to all clients':'single-player source does not claim multiplayer implementation',
+      profile.coopImplementationRequired?'co-op source maintains SharedObjective across current participants':null,
+      profile.competitiveImplementationRequired?'competitive source maintains per-player RoundScore and broadcasts it':null,
+      'mobile-first ScreenGui exposes approved gameplay actions',
       saveRequired?'persistent player state uses DataStoreService with safe fallback':'no DataStore added because locked baseline does not require persistence',
       'runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass',
-    ],
+    ].filter(Boolean),
   };
-  const validation=validateRobloxBootstrap({...result,baseline});
+  const validation=validateRobloxBootstrap({...result,baseline,profile});
   if(!validation.pass)throw new Error(`ROBLOX_BOOTSTRAP_COMPILER_FAILED: ${validation.blockers.join('|')}`);
-  return {result,validation,actions,generationMode:'DETERMINISTIC_FULL_SCOPE_IMPLEMENTATION',modelUsed:false,attempts:0,failures:[]};
+  return {result,validation,actions,profile,generationMode:'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION',modelUsed:false,attempts:0,failures:[]};
 }
 
 export async function buildRobloxSource({gameId,gameName,baseline,artbook,model}){
   void model;
   return compileRobloxSource({gameId,gameName,baseline,artbook});
 }
-
 function writeSourceTree(root,{sharedConfig,serverCode,clientCode},gameId){
   fs.mkdirSync(path.join(root,'shared'),{recursive:true});
   fs.mkdirSync(path.join(root,'server'),{recursive:true});
@@ -197,29 +272,13 @@ async function main(){
   const built=await buildRobloxSource({gameId,gameName,baseline,artbook,model});
   writeSourceTree(outputRoot,built.result,gameId);
   const evidence={
-    version:2,
-    gameId,
-    gameName,
-    platform:'ROBLOX',
-    policyDocument:'COMPANY_FLOW.md',
-    stage:'TARGET_PLATFORM_SOURCE_BIND',
-    sourcePath:outputRoot,
-    sourceValidationPassed:true,
-    runtimePassed:false,
-    independentQaPassed:false,
-    regressionPassed:false,
-    releaseClaim:false,
-    saveRequired:built.validation.saveRequired,
-    approvedScopeCount:built.actions.length,
+    version:3,gameId,gameName,platform:'ROBLOX',policyDocument:'COMPANY_FLOW.md',stage:'TARGET_PLATFORM_SOURCE_BIND',
+    sourcePath:outputRoot,sourceValidationPassed:true,runtimePassed:false,independentQaPassed:false,regressionPassed:false,releaseClaim:false,
+    saveRequired:built.validation.saveRequired,approvedScopeCount:built.actions.length,
+    robloxBuildProfile:built.profile,genreImplementationRequired:true,multiplayerImplementationRequired:built.profile.multiplayerRequired,
     generatedFiles:['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau','default.project.json'],
-    generationMode:built.generationMode,
-    model,
-    modelUsed:built.modelUsed,
-    modelAttempts:built.attempts,
-    modelContractFailures:built.failures,
-    implementationNotes:built.result.implementationNotes,
-    nextRequiredStage:'TARGET_PLATFORM_RUNTIME',
-    createdAt:new Date().toISOString(),
+    generationMode:built.generationMode,model,modelUsed:built.modelUsed,modelAttempts:built.attempts,modelContractFailures:built.failures,
+    implementationNotes:built.result.implementationNotes,nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
   };
   fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
   fs.writeFileSync(evidenceFile,`${JSON.stringify(evidence,null,2)}\n`,'utf8');
@@ -227,6 +286,9 @@ async function main(){
   console.log('ROBLOX_SOURCE_BOOTSTRAP=PASS');
   console.log(`ROBLOX_GAME_ID=${gameId}`);
   console.log(`ROBLOX_SOURCE_ROOT=${outputRoot}`);
+  console.log(`ROBLOX_GENRE=${built.profile.genre}`);
+  console.log(`ROBLOX_PLAY_MODE=${built.profile.playMode}`);
+  console.log(`ROBLOX_MULTIPLAYER_REQUIRED=${built.profile.multiplayerRequired?'YES':'NO'}`);
   console.log(`ROBLOX_APPROVED_SCOPE_COUNT=${built.actions.length}`);
   console.log(`ROBLOX_SAVE_REQUIRED=${evidence.saveRequired?'YES':'NO'}`);
   console.log(`ROBLOX_GENERATION_MODE=${built.generationMode}`);
@@ -234,7 +296,6 @@ async function main(){
   console.log('ROBLOX_RUNTIME_PASS=NO');
   console.log('ROBLOX_RELEASE_CLAIM=NO');
 }
-
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   main().catch(error=>{console.error(error.stack||error.message);process.exitCode=1;});
 }
