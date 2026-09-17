@@ -146,12 +146,12 @@
       "slug": "survival",
       "name": "나의 생존기",
       "sourcePath": "web-games/survival",
-      "productionClass": "DESIGN_ONLY",
+      "productionClass": "RELEASE_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DESIGN_ONLY",
+      "profileStatus": "RELEASE_CONFIRMED",
       "selectedPlatform": "UNITY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "mode": "UNITY_NEXT",
+      "targetEngine": "unity-android",
       "targetPlatformReady": false,
       "unityProjectReady": false,
       "developmentFocus": {
@@ -179,13 +179,13 @@
       "slug": "insect-survival",
       "name": "곤충 생존기",
       "sourcePath": "web-games/insect-survival",
-      "productionClass": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT",
+      "targetEngine": "unity-android",
       "targetPlatformReady": false,
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -201,7 +201,13 @@
         "save-meaning",
         "core-loop"
       ],
-      "lifecycleState": "ACTIVE"
+      "lifecycleState": "ACTIVE",
+      "selectedPlatform": "UNITY",
+      "webCompanionRequired": true,
+      "approvedDesignScopeMustBeFullyImplemented": true,
+      "webEvidenceMayReplaceNativePlatformEvidence": false,
+      "webGameplayValidationRequired": true,
+      "musicValidationRequired": true
     },
     {
       "id": "P0003",
@@ -210,9 +216,9 @@
       "sourcePath": "web-games/crystal-defense",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "REMOVED",
-      "mode": "REMOVED",
-      "targetEngine": "lifecycle-inactive",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -228,20 +234,21 @@
         "save-meaning",
         "core-loop"
       ],
-      "lifecycleState": "REMOVED"
+      "lifecycleState": "ACTIVE",
+      "targetPlatformReady": false
     },
     {
       "id": "P0004",
       "slug": "bug-defense",
       "name": "곤충 디펜스",
       "sourcePath": "web-games/bug-defense",
-      "productionClass": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
+      "targetEngine": "platform-selection-required",
       "targetPlatformReady": false,
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -257,7 +264,12 @@
         "save-meaning",
         "core-loop"
       ],
-      "lifecycleState": "ACTIVE"
+      "lifecycleState": "ACTIVE",
+      "webCompanionRequired": true,
+      "approvedDesignScopeMustBeFullyImplemented": true,
+      "webEvidenceMayReplaceNativePlatformEvidence": false,
+      "webGameplayValidationRequired": true,
+      "musicValidationRequired": true
     },
     {
       "id": "P0005",
@@ -266,9 +278,9 @@
       "sourcePath": "web-games/human-go",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "REMOVED",
-      "mode": "REMOVED",
-      "targetEngine": "lifecycle-inactive",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "developmentFocus": {
         "scores": {
           "playability": 1,
@@ -284,7 +296,9 @@
         "save-meaning",
         "core-loop"
       ],
-      "lifecycleState": "REMOVED"
+      "lifecycleState": "ACTIVE",
+      "selectedPlatform": "ROBLOX",
+      "targetPlatformReady": false
     },
     {
       "id": "P0006",
@@ -327,11 +341,12 @@
       "sourcePath": "web-games/island-village",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "REMOVED",
-      "mode": "REMOVED",
-      "targetEngine": "lifecycle-inactive",
+      "profileStatus": "HOLD_MISSING_SOURCE",
+      "mode": "HOLD",
+      "targetEngine": "design-only",
       "protectedValues": [],
-      "lifecycleState": "REMOVED"
+      "lifecycleState": "ACTIVE",
+      "targetPlatformReady": false
     },
     {
       "id": "P0008",
@@ -340,11 +355,12 @@
       "sourcePath": "web-games/egg-heist",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "REMOVED",
-      "mode": "REMOVED",
-      "targetEngine": "lifecycle-inactive",
+      "profileStatus": "HOLD_REDIRECT_ONLY",
+      "mode": "HOLD",
+      "targetEngine": "design-only",
       "protectedValues": [],
-      "lifecycleState": "REMOVED"
+      "lifecycleState": "ACTIVE",
+      "targetPlatformReady": false
     },
     {
       "id": "P0009",
@@ -353,11 +369,11 @@
       "sourcePath": "web-games/monster-adventure",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "REMOVED",
-      "mode": "REMOVED",
-      "targetEngine": "lifecycle-inactive",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
+      "targetEngine": "platform-selection-required",
       "targetPlatformReady": false,
-      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
+      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -376,7 +392,12 @@
         "battle",
         "dex"
       ],
-      "lifecycleState": "REMOVED"
+      "lifecycleState": "ACTIVE",
+      "webCompanionRequired": true,
+      "approvedDesignScopeMustBeFullyImplemented": true,
+      "webEvidenceMayReplaceNativePlatformEvidence": false,
+      "webGameplayValidationRequired": true,
+      "musicValidationRequired": true
     },
     {
       "id": "P0101",
@@ -385,16 +406,17 @@
       "sourcePath": "web-games/chess-battle",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "REMOVED",
-      "mode": "REMOVED",
-      "targetEngine": "lifecycle-inactive",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
         "core-loop",
         "public-stable"
       ],
-      "lifecycleState": "REMOVED"
+      "lifecycleState": "ACTIVE",
+      "targetPlatformReady": false
     },
     {
       "id": "P0102",
@@ -403,16 +425,17 @@
       "sourcePath": "web-games/survival2",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "REMOVED",
-      "mode": "REMOVED",
-      "targetEngine": "lifecycle-inactive",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
         "core-loop",
         "public-stable"
       ],
-      "lifecycleState": "REMOVED"
+      "lifecycleState": "ACTIVE",
+      "targetPlatformReady": false
     },
     {
       "id": "P0103",
@@ -421,16 +444,17 @@
       "sourcePath": "web-games/territory-war",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "REMOVED",
-      "mode": "REMOVED",
-      "targetEngine": "lifecycle-inactive",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
         "core-loop",
         "public-stable"
       ],
-      "lifecycleState": "REMOVED"
+      "lifecycleState": "ACTIVE",
+      "targetPlatformReady": false
     }
   ],
   "productionClassState": {
@@ -448,49 +472,60 @@
       "membershipInfluence": false,
       "adjusted": false,
       "distinctFamilies": [
-        "RPG"
+        "SURVIVAL",
+        "DEFENSE",
+        "RPG",
+        "TURN_BASED"
       ]
     },
     "counts": {
-      "releaseConfirmed": 1,
-      "developmentConfirmed": 0,
-      "designOnly": 3
+      "releaseConfirmed": 2,
+      "developmentConfirmed": 3,
+      "designOnly": 7
     },
     "releaseConfirmedGameIds": [
+      "P0001",
       "P0006"
     ],
-    "developmentConfirmedGameIds": [],
-    "designOnlyGameIds": [
-      "P0001",
+    "developmentConfirmedGameIds": [
       "P0002",
-      "P0004"
+      "P0004",
+      "P0009"
+    ],
+    "designOnlyGameIds": [
+      "P0003",
+      "P0005",
+      "P0007",
+      "P0008",
+      "P0101",
+      "P0102",
+      "P0103"
     ],
     "lifecycle": {
       "active": [
         "P0001",
         "P0002",
-        "P0004",
-        "P0006"
-      ],
-      "paused": [],
-      "rebuild": [],
-      "retired": [],
-      "removed": [
         "P0003",
+        "P0004",
         "P0005",
+        "P0006",
         "P0007",
         "P0008",
         "P0009",
         "P0101",
         "P0102",
         "P0103"
-      ]
+      ],
+      "paused": [],
+      "rebuild": [],
+      "retired": [],
+      "removed": []
     },
     "pipeline": {
       "target": 60,
-      "count": 4,
+      "count": 12,
       "activeDevelopmentWipMax": 20,
-      "deficit": 56
+      "deficit": 48
     },
     "ranking": [
       {
@@ -499,7 +534,7 @@
         "gameId": "P0001",
         "slug": "survival",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DESIGN_ONLY",
+        "productionClass": "RELEASE_CONFIRMED",
         "gameplayFamily": "SURVIVAL",
         "evidenceScore": 904,
         "developmentFocus": 9,
@@ -529,12 +564,12 @@
         "gameId": "P0002",
         "slug": "insect-survival",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DESIGN_ONLY",
+        "productionClass": "DEVELOPMENT_CONFIRMED",
         "gameplayFamily": "SURVIVAL",
         "evidenceScore": 804,
         "developmentFocus": 8,
         "artbookBaselineRank": 0,
-        "targetPlatform": null,
+        "targetPlatform": "UNITY",
         "targetPlatformReady": false,
         "sourceReady": true
       },
@@ -544,7 +579,7 @@
         "gameId": "P0004",
         "slug": "bug-defense",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DESIGN_ONLY",
+        "productionClass": "DEVELOPMENT_CONFIRMED",
         "gameplayFamily": "DEFENSE",
         "evidenceScore": 704,
         "developmentFocus": 7,

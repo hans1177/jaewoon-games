@@ -170,49 +170,60 @@
         "membershipInfluence": false,
         "adjusted": false,
         "distinctFamilies": [
-          "RPG"
+          "SURVIVAL",
+          "DEFENSE",
+          "RPG",
+          "TURN_BASED"
         ]
       },
       "counts": {
-        "releaseConfirmed": 1,
-        "developmentConfirmed": 0,
-        "designOnly": 3
+        "releaseConfirmed": 2,
+        "developmentConfirmed": 3,
+        "designOnly": 7
       },
       "releaseConfirmedGameIds": [
+        "P0001",
         "P0006"
       ],
-      "developmentConfirmedGameIds": [],
-      "designOnlyGameIds": [
-        "P0001",
+      "developmentConfirmedGameIds": [
         "P0002",
-        "P0004"
+        "P0004",
+        "P0009"
+      ],
+      "designOnlyGameIds": [
+        "P0003",
+        "P0005",
+        "P0007",
+        "P0008",
+        "P0101",
+        "P0102",
+        "P0103"
       ],
       "lifecycle": {
         "active": [
           "P0001",
           "P0002",
-          "P0004",
-          "P0006"
-        ],
-        "paused": [],
-        "rebuild": [],
-        "retired": [],
-        "removed": [
           "P0003",
+          "P0004",
           "P0005",
+          "P0006",
           "P0007",
           "P0008",
           "P0009",
           "P0101",
           "P0102",
           "P0103"
-        ]
+        ],
+        "paused": [],
+        "rebuild": [],
+        "retired": [],
+        "removed": []
       },
       "pipeline": {
         "target": 60,
-        "count": 4,
+        "count": 12,
         "activeDevelopmentWipMax": 20,
-        "deficit": 56
+        "deficit": 48
       },
       "ranking": [
         {
@@ -221,7 +232,7 @@
           "gameId": "P0001",
           "slug": "survival",
           "lifecycleState": "ACTIVE",
-          "productionClass": "DESIGN_ONLY",
+          "productionClass": "RELEASE_CONFIRMED",
           "gameplayFamily": "SURVIVAL",
           "evidenceScore": 904,
           "developmentFocus": 9,
@@ -251,12 +262,12 @@
           "gameId": "P0002",
           "slug": "insect-survival",
           "lifecycleState": "ACTIVE",
-          "productionClass": "DESIGN_ONLY",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "SURVIVAL",
           "evidenceScore": 804,
           "developmentFocus": 8,
           "artbookBaselineRank": 0,
-          "targetPlatform": null,
+          "targetPlatform": "UNITY",
           "targetPlatformReady": false,
           "sourceReady": true
         },
@@ -266,7 +277,7 @@
           "gameId": "P0004",
           "slug": "bug-defense",
           "lifecycleState": "ACTIVE",
-          "productionClass": "DESIGN_ONLY",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "DEFENSE",
           "evidenceScore": 704,
           "developmentFocus": 7,
