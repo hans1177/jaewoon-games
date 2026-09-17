@@ -137,6 +137,7 @@ test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate 
   assert.match(designRuntime,/parallel_max=\$\{designWipMax\}/);
   assert.match(designRuntime,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
   assert.match(designRuntime,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
+  assert.match(designRuntime,/concurrency:[\s\S]{0,160}group:\s*company-seed-design-runtime[\s\S]{0,100}cancel-in-progress:\s*false/);
   assert.doesNotMatch(designRuntime,/slice\(0,6\)/);
   assert.doesNotMatch(designRuntime,/max-parallel:\s*6/);
   assert.doesNotMatch(designRuntime,/GAME_DESIGN_WIP_MAX=6/);
