@@ -19,6 +19,7 @@ import {
   canonicalTargetStep,
   canonicalTargetWaitingState,
 } from '../tools/company-selected-platform-router.mjs';
+import {WEB_VALIDATION_SCHEMA_VERSION} from '../tools/company-web-validation-evidence-contract.mjs';
 import {createUnityDevelopmentPlatformContract} from '../tools/company-development-unity-platform.mjs';
 import {createUefnDevelopmentPlatformContract} from '../tools/company-development-uefn-platform.mjs';
 import {createRobloxPlatformContract} from '../tools/vibe3-roblox-platform.mjs';
@@ -56,7 +57,7 @@ test('global selected-platform development window is deterministic, capped at tw
     currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
     webValidationPassedAt:'2026-09-14T00:00:00.000Z',musicValidationPassed:true,
     formalImplementationPassed:true,formalImplementationVerdict:'PASS',webStrictScore:95,
-    strictImplementationHardFailures:[],webValidationSchemaVersion:13,webPromotionRevalidationPassed:true,
+    strictImplementationHardFailures:[],webValidationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION,webPromotionRevalidationPassed:true,
   });
   const rows=[
     ...Array.from({length:22},(_,i)=>eligible(`g${String(i+1).padStart(2,'0')}`,i%2?'ROBLOX':'UNITY',`2026-09-14T00:${String(i+1).padStart(2,'0')}:00Z`)),
@@ -97,9 +98,20 @@ test('global development window never expands beyond the owner twenty-game maxim
     gameId:`game-${String(i).padStart(2,'0')}`,selectedPlatform:i%2?'ROBLOX':'UNITY',enqueuedAt:`2026-09-14T00:${String(i).padStart(2,'0')}:00Z`,
     productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
     webValidationPassedAt:'2026-09-14T00:00:00.000Z',musicValidationPassed:true,formalImplementationPassed:true,formalImplementationVerdict:'PASS',
-    webStrictScore:100,strictImplementationHardFailures:[],webValidationSchemaVersion:13,webPromotionRevalidationPassed:true,
+    webStrictScore:100,strictImplementationHardFailures:[],webValidationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION,webPromotionRevalidationPassed:true,
   }));
   assert.equal(selectTargetPlatformDevelopmentWindow(rows,999).length,20);
+});
+
+test('stale Web schema evidence cannot enter selected-platform development',()=>{
+  const item={
+    gameId:'stale-schema',selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
+    currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
+    webValidationPassedAt:'2026-09-17T00:00:00.000Z',musicValidationPassed:true,formalImplementationPassed:true,formalImplementationVerdict:'PASS',
+    webStrictScore:95,strictImplementationHardFailures:[],webValidationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION-1,webPromotionRevalidationPassed:true,
+  };
+  assert.equal(targetPlatformDevelopmentEligible(item),false);
+  assert.equal(targetPlatformDevelopmentEligible({...item,webValidationSchemaVersion:WEB_VALIDATION_SCHEMA_VERSION}),true);
 });
 
 test('cheap precheck rejects missing selected platform and accepts selected-platform source',()=>{
