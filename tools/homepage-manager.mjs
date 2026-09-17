@@ -21,7 +21,6 @@ const enhancementEntry=readText('assets/homepage-enhancements.js');
 const enhancementCore=exists('assets/homepage-enhancements-core.js')?readText('assets/homepage-enhancements-core.js'):'';
 const enhancement=`${enhancementEntry}\n${enhancementCore}`;
 const central=readText('COMPANY_FLOW.md');
-const operations=readText('HOMEPAGE_OPERATIONS.md');
 const manifest=readJson('manifest.webmanifest');
 const install=readText('install.html');
 const serviceWorker=readText('sw.js');
@@ -61,9 +60,9 @@ const pwaFiles=['manifest.webmanifest','install.html','sw.js','offline.html','co
 const checks={
   centralHomepagePolicyExists:central.includes('homepageOperations:')&&central.includes('SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR'),
   centralTop30EligibilityPolicyExists:central.includes('homepageTesting:')&&central.includes('webStrictScoreMinimum: 80')&&central.includes('maxVisibleTestCandidates: 30')&&central.includes('ranking: STRICT_IMPLEMENTATION_SCORE_DESC'),
-  developmentAndTop30PlacementDocumented:operations.includes('개발게임 자동 표시와 Top30 분리')&&operations.includes('`productionClass=DEVELOPMENT_CONFIRMED`이면 검증 점수와 무관하게 자동 표시')&&operations.includes('### canonical Web Top30'),
-  developmentTestButtonsAvailable:operations.includes('`웹 테스트` 버튼')&&operations.includes('플랫폼 전용 테스트 버튼')&&includesAll(enhancementCore,['const developmentWebTestTarget=item=>','const developmentPlatformTestTarget=(item,status)=>','data-development-web-test=\"true\"','data-development-platform-test=']),
-  developmentCurrentScoreRankingAvailable:operations.includes('현재 유효한 플레이 검증 점수')&&operations.includes('`재검증 필요`')&&includesAll(enhancementCore,['const developmentScoreState=row=>','webInitialCycleStrictScore','webInitialCyclePassed===true','webInitialCycleValidationSchemaVersion','webInitialCycleMusicValidationPassed===true','REVALIDATION','if(sb!==sa)return sb-sa','data-development-score=','재검증 필요','점수 미평가']),
+  developmentAndTop30PlacementDocumented:includesAll(central,['homepageTesting:','autoRegisterDevelopmentConfirmed: true','promotionAndTop30RemainSeparate: true','prePromotionDisplay: DEVELOPMENT_PROGRESS_SHELF_PLUS_SEPARATE_TOP30_TEST_SHELF','maxVisibleTestCandidates: 30','ranking: STRICT_IMPLEMENTATION_SCORE_DESC']),
+  developmentTestButtonsAvailable:includesAll(central,['developmentWebTestButtonEnabled: true','developmentWebTestButtonLabel: 웹 테스트','developmentPlatformTestButtonEnabled: true','developmentPlatformTestButtonLabelMode: PLATFORM_NAME','developmentWebAndPlatformTestButtonsMustBeSeparate: true'])&&includesAll(enhancementCore,['const developmentWebTestTarget=item=>','const developmentPlatformTestTarget=(item,status)=>','data-development-web-test=\"true\"','data-development-platform-test=']),
+  developmentCurrentScoreRankingAvailable:includesAll(central,['developmentScoreDisplayEnabled: true','developmentScoreSource: CURRENT_WEB_INITIAL_CYCLE_STRICT_SCORE','developmentScoreRequiresInitialCyclePass: true','developmentScoreRequiresSchema13: true','developmentScoreRequiresMusicPass: true','reworkOrRevalidationScoresNotShownAsCurrent: true','developmentRanking: SCORE_DESC','unratedDevelopmentGamesLast: true'])&&includesAll(enhancementCore,['const developmentScoreState=row=>','webInitialCycleStrictScore','webInitialCyclePassed===true','webInitialCycleValidationSchemaVersion','webInitialCycleMusicValidationPassed===true','REVALIDATION','if(sb!==sa)return sb-sa','data-development-score=','재검증 필요','점수 미평가']),
   documentationSyncPolicyExists:central.includes('documentationSynchronization:')&&central.includes('implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized: true'),
   directiveHomepagePolicyMirrorsCentral:homepagePolicy.mode==='SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR'&&homepagePolicy.manager==='HOMEPAGE'&&homepagePolicy.supervisor==='DIRECTOR'&&homepagePolicy.managerCount===1&&homepagePolicy.supervisorCount===1,
   secondHomepageManagerForbidden:homepagePolicy.secondHomepageManagerForbidden===true&&homepagePolicy.secondHomepageSupervisorForbidden===true,
