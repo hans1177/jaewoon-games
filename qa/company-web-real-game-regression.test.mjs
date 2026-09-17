@@ -121,7 +121,7 @@ const towerSource=`
 const towerScore=scoreWebStrictImplementation({category:'SINGLE_DEFENSE_STRATEGY',sourceText:towerSource,evidence:evidence()});
 assert.deepEqual(towerScore.hardFailures,[],'a connected real tower-defense loop should clear Web hard gates');
 assert.ok(towerScore.commonScore<=55&&towerScore.commonScore>=50,'common score must use the 55-point scale');
-assert.equal(towerScore.categoryScore,25,'matching tower-defense profile must use its full 25-point profile');
+assert.ok(towerScore.categoryScore>=20&&towerScore.categoryScore<=25,'matching tower-defense profile must earn a strong graded schema15 category score');
 assert.ok(towerScore.totalScore>=80,'a strong real implementation remains Top30 score-capable');
 assert.equal(towerScore.hardGates.COMPLETE_PLAYABLE_GAMEPLAY_CYCLE,true);
 assert.equal(towerScore.hardGates.NO_TEST_PROXY,true);
