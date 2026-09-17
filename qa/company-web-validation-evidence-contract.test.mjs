@@ -120,8 +120,8 @@ const baseEvidence=()=>{
   };
 };
 
-test('Web strict score contract is exactly common 60 plus category 25',()=>{
-  assert.equal(Object.values(WEB_COMMON_SCORE_WEIGHTS).reduce((a,b)=>a+b,0),60);
+test('Web strict score contract is exactly common 55 plus category 25',()=>{
+  assert.equal(Object.values(WEB_COMMON_SCORE_WEIGHTS).reduce((a,b)=>a+b,0),55);
   for(const [category,weights] of Object.entries(WEB_CATEGORY_SCORE_WEIGHTS))assert.equal(Object.values(weights).reduce((a,b)=>a+b,0),25,category);
 });
 
