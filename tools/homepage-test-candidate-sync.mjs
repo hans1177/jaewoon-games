@@ -10,6 +10,7 @@ const limit=30;
 const minimumScore=WEB_HOMEPAGE_MINIMUM;
 const minimumValidationSchema=WEB_VALIDATION_SCHEMA_VERSION;
 const requiredArtifactType='REAL_PLAYABLE_GAME';
+const homepageActiveLifecycleStates=new Set(['ACTIVE','REBUILD']);
 const clean=v=>String(v??'').trim();
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const showText=file=>execFileSync('git',['show',`${runtimeRef}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
@@ -18,6 +19,8 @@ const existsRuntime=file=>{try{execFileSync('git',['cat-file','-e',`${runtimeRef
 const checkoutRuntime=file=>execFileSync('git',['checkout',runtimeRef,'--',file],{stdio:'inherit'});
 const sha256Text=value=>crypto.createHash('sha256').update(String(value??'')).digest('hex');
 const scoreOf=evidence=>Number(evidence?.webStrictScore??evidence?.strictReview?.totalScore);
+const lifecycleStateOf=game=>clean(game?.lifecycleState||'ACTIVE').toUpperCase();
+const homepageLifecycleActive=game=>Boolean(game)&&homepageActiveLifecycleStates.has(lifecycleStateOf(game));
 const realPlayableGamePass=html=>{
   const text=String(html??'');
   return new RegExp(`data-web-artifact-type=["']${requiredArtifactType}["']`,'i').test(text)&&/(?:<canvas\b|data-gameplay-surface=)/i.test(text)&&/(victory|승리|목표 달성|달성!)/i.test(text)&&/(defeat|game over|패배|게임 오버|쓰러졌다|파괴됐다)/i.test(text)&&!/FULL APPROVED WEB COMPANION/i.test(text)&&!/<h2[^>]*>\s*30분 플레이 구조\s*<\/h2>/i.test(text)&&!/<h2[^>]*>\s*승인 분량 전체 구현\s*<\/h2>/i.test(text)&&!/data-session-stage=|data-session-proof-mode=["']PROGRESSION_MILESTONES["']/i.test(text);
@@ -43,9 +46,12 @@ const queue=showJson('development-queue.json',{items:[]});
 const runtimeCatalog=showJson('game-catalog.json',{games:[]});
 const catalogById=new Map((runtimeCatalog.games||[]).map(game=>[clean(game.id),game]));
 const candidates=[];
-let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0,postWebArtbookRejectedCount=0;
+let staleEvidenceCount=0,nonPlayableRejectedCount=0,substanceRejectedCount=0,postWebArtbookRejectedCount=0,lifecycleRejectedCount=0;
 for(const item of queue.items||[]){
   const gameId=clean(item.gameId);if(!gameId)continue;
+  const game=catalogById.get(gameId);
+  if(!homepageLifecycleActive(game)){lifecycleRejectedCount++;continue;}
+  if(clean(game.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED'){lifecycleRejectedCount++;continue;}
   if(clean(item.productionClass).toUpperCase()!=='DEVELOPMENT_CONFIRMED')continue;
   if(!item.webValidationPassedAt||item.musicValidationPassed!==true)continue;
   if(item.postWebArtbookPassed!==true||item.homepageTestCandidate!==true||clean(item.homepageTestVerdict).toUpperCase()!=='PASS'){postWebArtbookRejectedCount++;continue;}
@@ -67,11 +73,11 @@ for(const item of queue.items||[]){
   }
   const artbook=showJson(artbookSource,null);
   if(artbook?.postWebStrictReview!==true||Number(artbook?.webStrictScore)!==scoreOf(evidence)||clean(artbook?.webValidationEvidencePath)!==evidencePath){postWebArtbookRejectedCount++;continue;}
-  const game=catalogById.get(gameId)||{};
   candidates.push({
     id:gameId,
     gameId,
     name:clean(game.name||item.gameName||gameId),
+    lifecycleState:lifecycleStateOf(game),
     score:scoreOf(evidence),
     webStrictScore:scoreOf(evidence),
     strictScore:scoreOf(evidence),
@@ -136,9 +142,9 @@ for(const candidate of selected){
 const registryChanged=writeJsonIfSemanticChanged('game-artbooks.json',previousRegistry,registry);
 
 const manifest={
-  version:8,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,
+  version:9,policyDocument:'COMPANY_FLOW.md',officialCardRegistrationRequiresPromotionPass:true,canonicalLifecycleRequired:true,
   homepageTestShelf:{
-    limit,minimumScore,minimumValidationSchema,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresRealPlayableGame:true,requiresRealGameSubstance:true,requiredWebArtifactType:requiredArtifactType,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresFinal30MinuteContentDepth:true,requiredContentDepthValidationMode:'REAL_ELAPSED_GAMEPLAY',hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,
+    limit,minimumScore,minimumValidationSchema,order:'STRICT_IMPLEMENTATION_SCORE_DESC',requiresScore:true,requiresWebGame:true,requiresRealPlayableGame:true,requiresRealGameSubstance:true,requiredWebArtifactType:requiredArtifactType,requiresArtbook:true,requiresFreshSourceHash:true,requiresFreshDesignBaselineHash:true,requiresFinal30MinuteContentDepth:true,requiredContentDepthValidationMode:'REAL_ELAPSED_GAMEPLAY',hardGatesRequired:true,officialCard:false,promotionRequiredForOfficialCard:true,allowedLifecycleStates:[...homepageActiveLifecycleStates],
     cutlineScore,replacementPolicy:'STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT',tieBreak:['EXISTING_TOP30_RANK','PROMOTION_REVALIDATION_PASS','LATEST_VALIDATION','GAME_ID'],
   },
   candidates:selected,
@@ -147,6 +153,7 @@ const manifestChanged=writeJsonIfSemanticChanged(manifestFile,previousManifest,m
 const semanticChanged=registryChanged||manifestChanged;
 console.log(`HOMEPAGE_TEST_CANDIDATE_COUNT=${selected.length}`);
 console.log(`HOMEPAGE_TEST_CANDIDATE_IDS=${selected.map(x=>x.gameId).join(',')}`);
+console.log(`HOMEPAGE_TEST_LIFECYCLE_REJECTED=${lifecycleRejectedCount}`);
 console.log(`HOMEPAGE_TEST_STALE_EVIDENCE_REJECTED=${staleEvidenceCount}`);
 console.log(`HOMEPAGE_TEST_NON_PLAYABLE_REJECTED=${nonPlayableRejectedCount}`);
 console.log(`HOMEPAGE_TEST_SUBSTANCE_REJECTED=${substanceRejectedCount}`);
@@ -158,5 +165,5 @@ console.log(`HOMEPAGE_TEST_REQUIRED_ARTIFACT_TYPE=${requiredArtifactType}`);
 console.log(`HOMEPAGE_TEST_CUTLINE_SCORE=${cutlineScore??'OPEN'}`);
 console.log('HOMEPAGE_TEST_REPLACEMENT=STRICTLY_HIGHER_SCORE;TIE_PRESERVES_INCUMBENT');
 console.log('HOMEPAGE_TEST_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');
-console.log('HOMEPAGE_TEST_REQUIRES=REAL_PLAYABLE_WEB_GAME+REAL_GAME_SUBSTANCE+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+REAL_ELAPSED_30MIN');
+console.log('HOMEPAGE_TEST_REQUIRES=ACTIVE_OR_REBUILD_LIFECYCLE+REAL_PLAYABLE_WEB_GAME+REAL_GAME_SUBSTANCE+POST_WEB_ARTBOOK+80_SCORE+NO_HARD_FAILURE+FRESH_HASHES+REAL_ELAPSED_30MIN');
 console.log(`HOMEPAGE_TEST_SYNC_CHANGED=${semanticChanged?'YES':'NO'}`);
