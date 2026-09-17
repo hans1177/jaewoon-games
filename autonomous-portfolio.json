@@ -171,7 +171,8 @@
         "save-meaning",
         "core-loop",
         "public-web-archive"
-      ]
+      ],
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "P0002",
@@ -199,7 +200,8 @@
       "protectedValues": [
         "save-meaning",
         "core-loop"
-      ]
+      ],
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "P0003",
@@ -208,9 +210,9 @@
       "sourcePath": "web-games/crystal-defense",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "profileStatus": "REMOVED",
+      "mode": "REMOVED",
+      "targetEngine": "lifecycle-inactive",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -226,7 +228,7 @@
         "save-meaning",
         "core-loop"
       ],
-      "targetPlatformReady": false
+      "lifecycleState": "REMOVED"
     },
     {
       "id": "P0004",
@@ -254,7 +256,8 @@
       "protectedValues": [
         "save-meaning",
         "core-loop"
-      ]
+      ],
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "P0005",
@@ -263,9 +266,9 @@
       "sourcePath": "web-games/human-go",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "profileStatus": "REMOVED",
+      "mode": "REMOVED",
+      "targetEngine": "lifecycle-inactive",
       "developmentFocus": {
         "scores": {
           "playability": 1,
@@ -281,7 +284,7 @@
         "save-meaning",
         "core-loop"
       ],
-      "targetPlatformReady": false
+      "lifecycleState": "REMOVED"
     },
     {
       "id": "P0006",
@@ -314,7 +317,8 @@
         "core-loop",
         "unity-primary",
         "public-web-archive"
-      ]
+      ],
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "P0007",
@@ -323,11 +327,11 @@
       "sourcePath": "web-games/island-village",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "HOLD_MISSING_SOURCE",
-      "mode": "HOLD",
-      "targetEngine": "design-only",
+      "profileStatus": "REMOVED",
+      "mode": "REMOVED",
+      "targetEngine": "lifecycle-inactive",
       "protectedValues": [],
-      "targetPlatformReady": false
+      "lifecycleState": "REMOVED"
     },
     {
       "id": "P0008",
@@ -336,11 +340,11 @@
       "sourcePath": "web-games/egg-heist",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "HOLD_REDIRECT_ONLY",
-      "mode": "HOLD",
-      "targetEngine": "design-only",
+      "profileStatus": "REMOVED",
+      "mode": "REMOVED",
+      "targetEngine": "lifecycle-inactive",
       "protectedValues": [],
-      "targetPlatformReady": false
+      "lifecycleState": "REMOVED"
     },
     {
       "id": "P0009",
@@ -349,11 +353,11 @@
       "sourcePath": "web-games/monster-adventure",
       "productionClass": "DEVELOPMENT_CONFIRMED",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
-      "targetEngine": "platform-selection-required",
+      "profileStatus": "REMOVED",
+      "mode": "REMOVED",
+      "targetEngine": "lifecycle-inactive",
       "targetPlatformReady": false,
-      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -372,11 +376,7 @@
         "battle",
         "dex"
       ],
-      "webCompanionRequired": true,
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "webEvidenceMayReplaceNativePlatformEvidence": false,
-      "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      "lifecycleState": "REMOVED"
     },
     {
       "id": "P0101",
@@ -385,16 +385,16 @@
       "sourcePath": "web-games/chess-battle",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "profileStatus": "REMOVED",
+      "mode": "REMOVED",
+      "targetEngine": "lifecycle-inactive",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
         "core-loop",
         "public-stable"
       ],
-      "targetPlatformReady": false
+      "lifecycleState": "REMOVED"
     },
     {
       "id": "P0102",
@@ -403,16 +403,16 @@
       "sourcePath": "web-games/survival2",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "profileStatus": "REMOVED",
+      "mode": "REMOVED",
+      "targetEngine": "lifecycle-inactive",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
         "core-loop",
         "public-stable"
       ],
-      "targetPlatformReady": false
+      "lifecycleState": "REMOVED"
     },
     {
       "id": "P0103",
@@ -421,16 +421,16 @@
       "sourcePath": "web-games/territory-war",
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "profileStatus": "REMOVED",
+      "mode": "REMOVED",
+      "targetEngine": "lifecycle-inactive",
       "publicArchiveStable": true,
       "protectedValues": [
         "save-meaning",
         "core-loop",
         "public-stable"
       ],
-      "targetPlatformReady": false
+      "lifecycleState": "REMOVED"
     }
   ],
   "productionClassState": {
@@ -453,33 +453,52 @@
     },
     "counts": {
       "releaseConfirmed": 1,
-      "developmentConfirmed": 1,
-      "designOnly": 10
+      "developmentConfirmed": 0,
+      "designOnly": 3
     },
     "releaseConfirmedGameIds": [
       "P0006"
     ],
-    "developmentConfirmedGameIds": [
-      "P0009"
-    ],
+    "developmentConfirmedGameIds": [],
     "designOnlyGameIds": [
       "P0001",
       "P0002",
-      "P0003",
-      "P0004",
-      "P0005",
-      "P0007",
-      "P0008",
-      "P0101",
-      "P0102",
-      "P0103"
+      "P0004"
     ],
+    "lifecycle": {
+      "active": [
+        "P0001",
+        "P0002",
+        "P0004",
+        "P0006"
+      ],
+      "paused": [],
+      "rebuild": [],
+      "retired": [],
+      "removed": [
+        "P0003",
+        "P0005",
+        "P0007",
+        "P0008",
+        "P0009",
+        "P0101",
+        "P0102",
+        "P0103"
+      ]
+    },
+    "pipeline": {
+      "target": 60,
+      "count": 4,
+      "activeDevelopmentWipMax": 20,
+      "deficit": 56
+    },
     "ranking": [
       {
         "rank": 1,
         "rawEvidenceRank": 1,
         "gameId": "P0001",
         "slug": "survival",
+        "lifecycleState": "ACTIVE",
         "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "SURVIVAL",
         "evidenceScore": 904,
@@ -494,6 +513,7 @@
         "rawEvidenceRank": 2,
         "gameId": "P0006",
         "slug": "daechung-rpg",
+        "lifecycleState": "ACTIVE",
         "productionClass": "RELEASE_CONFIRMED",
         "gameplayFamily": "RPG",
         "evidenceScore": 815,
@@ -508,6 +528,7 @@
         "rawEvidenceRank": 3,
         "gameId": "P0002",
         "slug": "insect-survival",
+        "lifecycleState": "ACTIVE",
         "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "SURVIVAL",
         "evidenceScore": 804,
@@ -522,6 +543,7 @@
         "rawEvidenceRank": 4,
         "gameId": "P0004",
         "slug": "bug-defense",
+        "lifecycleState": "ACTIVE",
         "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "DEFENSE",
         "evidenceScore": 704,

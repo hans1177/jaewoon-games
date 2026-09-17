@@ -1,6 +1,6 @@
 {
-  "version": 18,
-  "updatedAt": "2026-09-13",
+  "version": 19,
+  "updatedAt": "2026-09-17",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -34,7 +34,8 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 지시에 따라 정식 Web 생존 버전을 다시 제작해 홈페이지에 연결했습니다.",
-      "homepageWebPlayable": true
+      "homepageWebPlayable": true,
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "bug-defense",
@@ -58,7 +59,8 @@
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
       "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
       "homepageRecentWork": "Owner 지시에 따라 30웨이브 정식 Web 디펜스를 다시 제작해 홈페이지에 연결했습니다.",
-      "homepageWebPlayable": true
+      "homepageWebPlayable": true,
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "daechung-rpg",
@@ -85,7 +87,8 @@
       "homepageStage": "출시확정 · Unity Android",
       "homepageRecentWork": "Web 플레이 버전을 유지하면서 기존 Unity Android 확장 개발 경로를 그대로 보존합니다.",
       "homepageWebPlayable": true,
-      "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg"
+      "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "survival",
@@ -109,7 +112,8 @@
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "selectedPlatform": "UNITY"
+      "selectedPlatform": "UNITY",
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "cozy-island",
@@ -124,16 +128,20 @@
       "webPath": "/web-games/cozy-island/",
       "hasWebArchive": true,
       "featured": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_EXISTING_WEB_GAME",
-      "productionTarget": "design-only",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "OWNER_DIRECT_CONTINUE_2026-09-17",
+      "productionTarget": "existing-web-game-continuation",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_CONTINUE_DEVELOPMENT",
       "ownerExistingGame": true,
-      "developmentHandling": "OWNER_EXISTING_GAME_SEPARATE",
-      "designBaselineMigration": "DO_NOT_REGENERATE_THROUGH_DESIGN_ONLY",
-      "homepageStage": "플레이 가능 · Web",
-      "homepageRecentWork": "저장소에 있던 모바일 대응 섬 생활·낚시 Web 게임을 홈페이지 카탈로그에 정식 연결했습니다.",
-      "homepageWebPlayable": true
+      "developmentHandling": "OWNER_EXISTING_GAME_CONTINUE",
+      "designBaselineMigration": "PRESERVE_EXISTING_GAME_AND_CONTINUE",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageStage": "개발확정 · Web 개선 개발 중",
+      "homepageRecentWork": "기존 포근섬 Web 게임을 보존하면서 기능·콘텐츠·모바일 플레이 품질 개발을 계속합니다.",
+      "homepageWebPlayable": true,
+      "webUpdatedAt": "2026-09-17"
     },
     {
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -157,7 +165,8 @@
       "homepageRecentWork": "기존 Web 검증 빌드를 홈페이지 플레이 링크에 다시 연결했습니다.",
       "homepageWebPlayable": true,
       "webUpdatedAt": "2026-09-12T13:33:42.659Z",
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star"
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-action-survival-rogu-echoes-of-the-lost-star",
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "seed-single-defense-strat-celestial-bastion",
@@ -181,7 +190,8 @@
       "homepageRecentWork": "검증용 공용 셸을 15웨이브 정식 Web 전략 디펜스로 교체했습니다.",
       "homepageWebPlayable": true,
       "webUpdatedAt": "2026-09-13T10:10:00Z",
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion"
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-single-defense-strat-celestial-bastion",
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "seed-puzzle-chromatic-cascade",
@@ -205,7 +215,8 @@
       "homepageRecentWork": "검증용 공용 셸을 실제 색 연결·연쇄 점수 퍼즐로 교체했습니다.",
       "homepageWebPlayable": true,
       "webUpdatedAt": "2026-09-13T10:10:00Z",
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-puzzle-chromatic-cascade"
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-puzzle-chromatic-cascade",
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "seed-casual-realm-weaver",
@@ -229,7 +240,8 @@
       "homepageRecentWork": "검증용 공용 셸을 숲·물길·마을을 만드는 실제 세계 창조 게임으로 교체했습니다.",
       "homepageWebPlayable": true,
       "webUpdatedAt": "2026-09-13T10:10:00Z",
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver"
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-casual-realm-weaver",
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "seed-idle-growth-rpg-crystal-bloom",
@@ -253,7 +265,8 @@
       "homepageRecentWork": "검증용 공용 셸을 전투·회복·강화·자동전투가 있는 10단계 성장 RPG로 교체했습니다.",
       "homepageWebPlayable": true,
       "webUpdatedAt": "2026-09-13T10:10:00Z",
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom"
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-idle-growth-rpg-crystal-bloom",
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -277,7 +290,8 @@
       "homepageRecentWork": "검증용 공용 셸을 탐색·전투·휴식·강화와 5장 결말이 있는 정식 Web RPG로 교체했습니다.",
       "homepageWebPlayable": true,
       "webUpdatedAt": "2026-09-13T10:10:00Z",
-      "homepageArtbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria"
+      "homepageArtbookPath": "/artbook-viewer.html?game=seed-story-complete-rpg-chronicles-of-eldoria",
+      "lifecycleState": "ACTIVE"
     }
   ]
 }

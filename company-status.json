@@ -175,33 +175,52 @@
       },
       "counts": {
         "releaseConfirmed": 1,
-        "developmentConfirmed": 1,
-        "designOnly": 10
+        "developmentConfirmed": 0,
+        "designOnly": 3
       },
       "releaseConfirmedGameIds": [
         "P0006"
       ],
-      "developmentConfirmedGameIds": [
-        "P0009"
-      ],
+      "developmentConfirmedGameIds": [],
       "designOnlyGameIds": [
         "P0001",
         "P0002",
-        "P0003",
-        "P0004",
-        "P0005",
-        "P0007",
-        "P0008",
-        "P0101",
-        "P0102",
-        "P0103"
+        "P0004"
       ],
+      "lifecycle": {
+        "active": [
+          "P0001",
+          "P0002",
+          "P0004",
+          "P0006"
+        ],
+        "paused": [],
+        "rebuild": [],
+        "retired": [],
+        "removed": [
+          "P0003",
+          "P0005",
+          "P0007",
+          "P0008",
+          "P0009",
+          "P0101",
+          "P0102",
+          "P0103"
+        ]
+      },
+      "pipeline": {
+        "target": 60,
+        "count": 4,
+        "activeDevelopmentWipMax": 20,
+        "deficit": 56
+      },
       "ranking": [
         {
           "rank": 1,
           "rawEvidenceRank": 1,
           "gameId": "P0001",
           "slug": "survival",
+          "lifecycleState": "ACTIVE",
           "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "SURVIVAL",
           "evidenceScore": 904,
@@ -216,6 +235,7 @@
           "rawEvidenceRank": 2,
           "gameId": "P0006",
           "slug": "daechung-rpg",
+          "lifecycleState": "ACTIVE",
           "productionClass": "RELEASE_CONFIRMED",
           "gameplayFamily": "RPG",
           "evidenceScore": 815,
@@ -230,6 +250,7 @@
           "rawEvidenceRank": 3,
           "gameId": "P0002",
           "slug": "insect-survival",
+          "lifecycleState": "ACTIVE",
           "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "SURVIVAL",
           "evidenceScore": 804,
@@ -244,6 +265,7 @@
           "rawEvidenceRank": 4,
           "gameId": "P0004",
           "slug": "bug-defense",
+          "lifecycleState": "ACTIVE",
           "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "DEFENSE",
           "evidenceScore": 704,
