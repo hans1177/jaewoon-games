@@ -116,26 +116,10 @@
     "autonomousFocus": {
       "enabled": true,
       "targetSlots": 2,
-      "filledSlots": 1,
+      "filledSlots": 0,
       "preferredGameIds": [],
-      "focusedGameIds": [
-        "P0006"
-      ],
-      "games": [
-        {
-          "slot": 1,
-          "gameId": "P0006",
-          "slug": "daechung-rpg",
-          "name": "대충 RPG",
-          "score": 8,
-          "slotRole": "auto-ranked",
-          "lane": "selected-platform",
-          "selectedPlatform": "UNITY",
-          "targetPlatformReady": true,
-          "homepageCategory": "release-confirmed",
-          "webPath": "/web-games/daechung-rpg/"
-        }
-      ],
+      "focusedGameIds": [],
+      "games": [],
       "nextFocusGameIds": [],
       "nextDevelopmentGameIds": [],
       "selection": "AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
@@ -169,32 +153,25 @@
         "source": "CATALOG_GENRE",
         "membershipInfluence": false,
         "adjusted": false,
-        "distinctFamilies": [
-          "SURVIVAL",
-          "DEFENSE",
-          "RPG",
-          "TURN_BASED"
-        ]
+        "distinctFamilies": []
       },
       "counts": {
-        "releaseConfirmed": 2,
-        "developmentConfirmed": 3,
-        "designOnly": 7
+        "releaseConfirmed": 0,
+        "developmentConfirmed": 0,
+        "designOnly": 12
       },
-      "releaseConfirmedGameIds": [
-        "P0001",
-        "P0006"
-      ],
-      "developmentConfirmedGameIds": [
-        "P0002",
-        "P0004",
-        "P0009"
-      ],
+      "releaseConfirmedGameIds": [],
+      "developmentConfirmedGameIds": [],
       "designOnlyGameIds": [
+        "P0001",
+        "P0002",
         "P0003",
+        "P0004",
         "P0005",
+        "P0006",
         "P0007",
         "P0008",
+        "P0009",
         "P0101",
         "P0102",
         "P0103"
@@ -232,7 +209,7 @@
           "gameId": "P0001",
           "slug": "survival",
           "lifecycleState": "ACTIVE",
-          "productionClass": "RELEASE_CONFIRMED",
+          "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "SURVIVAL",
           "evidenceScore": 904,
           "developmentFocus": 9,
@@ -247,7 +224,7 @@
           "gameId": "P0006",
           "slug": "daechung-rpg",
           "lifecycleState": "ACTIVE",
-          "productionClass": "RELEASE_CONFIRMED",
+          "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "RPG",
           "evidenceScore": 815,
           "developmentFocus": 8,
@@ -262,7 +239,7 @@
           "gameId": "P0002",
           "slug": "insect-survival",
           "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "SURVIVAL",
           "evidenceScore": 804,
           "developmentFocus": 8,
@@ -277,7 +254,7 @@
           "gameId": "P0004",
           "slug": "bug-defense",
           "lifecycleState": "ACTIVE",
-          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "DEFENSE",
           "evidenceScore": 704,
           "developmentFocus": 7,

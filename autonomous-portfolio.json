@@ -146,12 +146,12 @@
       "slug": "survival",
       "name": "나의 생존기",
       "sourcePath": "web-games/survival",
-      "productionClass": "RELEASE_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "RELEASE_CONFIRMED",
+      "profileStatus": "DESIGN_ONLY",
       "selectedPlatform": "UNITY",
-      "mode": "UNITY_NEXT",
-      "targetEngine": "unity-android",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": false,
       "unityProjectReady": false,
       "developmentFocus": {
@@ -179,13 +179,13 @@
       "slug": "insect-survival",
       "name": "곤충 생존기",
       "sourcePath": "web-games/insect-survival",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "FULL_WEB_COMPANION_THEN_TARGET_PLATFORM_DEVELOPMENT",
-      "targetEngine": "unity-android",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": false,
-      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -202,12 +202,7 @@
         "core-loop"
       ],
       "lifecycleState": "ACTIVE",
-      "selectedPlatform": "UNITY",
-      "webCompanionRequired": true,
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "webEvidenceMayReplaceNativePlatformEvidence": false,
-      "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      "selectedPlatform": "UNITY"
     },
     {
       "id": "P0003",
@@ -242,13 +237,13 @@
       "slug": "bug-defense",
       "name": "곤충 디펜스",
       "sourcePath": "web-games/bug-defense",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
-      "targetEngine": "platform-selection-required",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": false,
-      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -264,12 +259,7 @@
         "save-meaning",
         "core-loop"
       ],
-      "lifecycleState": "ACTIVE",
-      "webCompanionRequired": true,
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "webEvidenceMayReplaceNativePlatformEvidence": false,
-      "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "P0005",
@@ -306,12 +296,12 @@
       "name": "대충 RPG",
       "sourcePath": "web-games/daechung-rpg",
       "productionSourcePath": "unity-games/daechung-rpg",
-      "productionClass": "RELEASE_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "RELEASE_CONFIRMED",
+      "profileStatus": "DESIGN_ONLY",
       "selectedPlatform": "UNITY",
-      "mode": "UNITY_DEVELOP",
-      "targetEngine": "unity-android",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": true,
       "dedicatedDevelopmentLane": "UNITY_PRIMARY",
       "unityProjectReady": true,
@@ -367,13 +357,13 @@
       "slug": "monster-adventure",
       "name": "몬스터 어드벤처",
       "sourcePath": "web-games/monster-adventure",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClass": "DESIGN_ONLY",
       "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DEVELOPMENT_CONFIRMED",
-      "mode": "FULL_WEB_COMPANION_TARGET_PLATFORM_SELECTION_REQUIRED",
-      "targetEngine": "platform-selection-required",
+      "profileStatus": "DESIGN_ONLY",
+      "mode": "REDESIGN",
+      "targetEngine": "design-only",
       "targetPlatformReady": false,
-      "webPurpose": "FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE",
+      "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
         "scores": {
           "playability": 2,
@@ -392,12 +382,7 @@
         "battle",
         "dex"
       ],
-      "lifecycleState": "ACTIVE",
-      "webCompanionRequired": true,
-      "approvedDesignScopeMustBeFullyImplemented": true,
-      "webEvidenceMayReplaceNativePlatformEvidence": false,
-      "webGameplayValidationRequired": true,
-      "musicValidationRequired": true
+      "lifecycleState": "ACTIVE"
     },
     {
       "id": "P0101",
@@ -471,32 +456,25 @@
       "source": "CATALOG_GENRE",
       "membershipInfluence": false,
       "adjusted": false,
-      "distinctFamilies": [
-        "SURVIVAL",
-        "DEFENSE",
-        "RPG",
-        "TURN_BASED"
-      ]
+      "distinctFamilies": []
     },
     "counts": {
-      "releaseConfirmed": 2,
-      "developmentConfirmed": 3,
-      "designOnly": 7
+      "releaseConfirmed": 0,
+      "developmentConfirmed": 0,
+      "designOnly": 12
     },
-    "releaseConfirmedGameIds": [
-      "P0001",
-      "P0006"
-    ],
-    "developmentConfirmedGameIds": [
-      "P0002",
-      "P0004",
-      "P0009"
-    ],
+    "releaseConfirmedGameIds": [],
+    "developmentConfirmedGameIds": [],
     "designOnlyGameIds": [
+      "P0001",
+      "P0002",
       "P0003",
+      "P0004",
       "P0005",
+      "P0006",
       "P0007",
       "P0008",
+      "P0009",
       "P0101",
       "P0102",
       "P0103"
@@ -534,7 +512,7 @@
         "gameId": "P0001",
         "slug": "survival",
         "lifecycleState": "ACTIVE",
-        "productionClass": "RELEASE_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "SURVIVAL",
         "evidenceScore": 904,
         "developmentFocus": 9,
@@ -549,7 +527,7 @@
         "gameId": "P0006",
         "slug": "daechung-rpg",
         "lifecycleState": "ACTIVE",
-        "productionClass": "RELEASE_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "RPG",
         "evidenceScore": 815,
         "developmentFocus": 8,
@@ -564,7 +542,7 @@
         "gameId": "P0002",
         "slug": "insect-survival",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "SURVIVAL",
         "evidenceScore": 804,
         "developmentFocus": 8,
@@ -579,7 +557,7 @@
         "gameId": "P0004",
         "slug": "bug-defense",
         "lifecycleState": "ACTIVE",
-        "productionClass": "DEVELOPMENT_CONFIRMED",
+        "productionClass": "DESIGN_ONLY",
         "gameplayFamily": "DEFENSE",
         "evidenceScore": 704,
         "developmentFocus": 7,
