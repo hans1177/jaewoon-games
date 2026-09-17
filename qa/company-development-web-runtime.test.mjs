@@ -202,6 +202,8 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(initialBlock,/webInitialCycleEvidencePath:initialEvidenceRelative/);
   assert.match(initialBlock,/webInitialCycleSourcePath:stableSource/);
   assert.match(initialBlock,/homepageTestEligible:false/);
+  assert.match(initialBlock,/strictImplementationReviewPath:null,strictImplementationScore:null,webStrictScore:null/);
+  assert.match(initialBlock,/webValidationSchemaVersion:null,webSourceIndexSha256:null,webDesignBaselineSha256:null/);
   assert.match(initialBlock,/WEB_INITIAL_CANONICAL_PERSIST/);
   assert.match(initialBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
 
@@ -216,6 +218,9 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.doesNotMatch(failureBlock,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/);
   assert.match(failureBlock,/webInitialCyclePassed:rework/);
   assert.match(failureBlock,/WEB_CONTENT_REWORK_RETRY_PRESERVED=YES/);
+  assert.match(source,/WEB_FAILURE_STALE_FULL_SCORE_INVALIDATED=YES/);
+  assert.match(source,/strictImplementationReviewPath:null,strictImplementationScore:null,webStrictScore:null/);
+  assert.match(source,/webValidationEvidencePath:null,homepageTestScore:null/);
   assert.match(failureBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
 
   // C: final run consumes exact persisted source/evidence and verifies hashes.
