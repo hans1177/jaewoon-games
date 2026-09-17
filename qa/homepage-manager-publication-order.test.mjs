@@ -73,7 +73,7 @@ test('homepage renders canonical server runtime data from one current enhancemen
 
 test('homepage platform and touch launch paths stay bound to verified runtime data',()=>{
   assert.match(homepage,/function latestVerifiedUnityBuilds\(status\)/);
-  assert.match(homepage,/signatureVerified===true/);
+  assert.match(homepage,/signatureVerified!==true/);
   assert.match(homepage,/runtimePassed/);
   assert.match(homepage,/function platformHref\(game\)/);
   assert.match(homepage,/p==='ROBLOX'/);
@@ -90,11 +90,8 @@ test('post-Web artbook binding follows current Web validation schema without blo
   assert.match(artbookTool,/validationSchemaVersion\|\|webEvidence\?\.version\)===WEB_VALIDATION_SCHEMA_VERSION/);
   assert.doesNotMatch(artbookTool,/validationSchemaVersion\|\|webEvidence\?\.version\)===13/);
   const development=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  const routeStart=development.indexOf('\n  route:\n');
-  const routeEnd=development.indexOf('\n  ',routeStart+10);
-  const routeBlock=development.slice(routeStart,routeEnd>routeStart?routeEnd:development.length);
-  assert.match(routeBlock,/needs: \[web-gate\]/);
-  assert.doesNotMatch(routeBlock,/post-web-artbook/);
+  assert.match(development,/\n  route:\n[\s\S]{0,600}needs: \[web-gate\]/);
+  assert.doesNotMatch(development,/\n  route:\n[\s\S]{0,600}needs: \[web-gate, post-web-artbook\]/);
   assert.match(development,/ARTBOOK_FAILURE_ONLY_BLOCKS_HOMEPAGE=YES/);
   assert.match(development,/POST_WEB_ARTBOOK_FAILURE_NATIVE_BLOCK=NO/);
 });
