@@ -205,12 +205,15 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(initialBlock,/WEB_INITIAL_CANONICAL_PERSIST/);
   assert.match(initialBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
 
-  // B: first-time initial failures remain revalidation failures; existing/historical rework failures return to canonical development.
+  // B: all initial failures return directly to active repair, preserving prior context when present.
   assert.match(initialBlock,/if\(item\.existingWebValidated===true\)/);
   assert.match(initialBlock,/materialize\(`\$\{stableSource\}\/index\.html`\)/);
   assert.match(initialBlock,/WEB_EXISTING_GAME_FRESH_REVALIDATION/);
   assert.match(failureBlock,/item\.webInitialCyclePassed===true\|\|item\.existingWebValidated===true/);
-  assert.match(failureBlock,/canonicalState:rework\?'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION':'WAITING_WEB_GAMEPLAY_REVALIDATION'/);
+  assert.match(failureBlock,/const repairState=rework\?'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED':'WEB_GAMEPLAY_REPAIR_REQUIRED'/);
+  assert.match(failureBlock,/canonicalState:repairState/);
+  assert.doesNotMatch(failureBlock,/WAITING_WEB_GAMEPLAY_REVALIDATION/);
+  assert.doesNotMatch(failureBlock,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/);
   assert.match(failureBlock,/webInitialCyclePassed:rework/);
   assert.match(failureBlock,/WEB_CONTENT_REWORK_RETRY_PRESERVED=YES/);
   assert.match(failureBlock,/WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO/);
@@ -229,11 +232,11 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(finalBlock,/meaningfulGameplayMilliseconds\)<1800000/);
   assert.match(finalBlock,/homepageTestEligible:true/);
   assert.match(finalBlock,/PENDING_SELECTED_PLATFORM_BIND/);
-  assert.match(finalBlock,/WAITING_WEB_STRICT_IMPROVEMENT/);
+  assert.match(finalBlock,/WEB_STRICT_REPAIR_REQUIRED/);
 
-  // E: final depth failure returns to existing development, and next initial cycle forces Vibe source repair.
+  // E: final depth failure returns directly to active development repair, and next initial cycle forces Vibe source repair.
   assert.doesNotMatch(finalBlock,/company-development-web-bootstrap\.mjs/);
-  assert.match(failureBlock,/canonicalState:'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION'/);
+  assert.match(failureBlock,/canonicalState:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED'/);
   assert.match(failureBlock,/currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP'/);
   assert.match(failureBlock,/webInitialCycleEvidencePath:item\.webInitialCycleEvidencePath/);
   assert.match(failureBlock,/webInitialCycleSourcePath:item\.webInitialCycleSourcePath/);
@@ -253,10 +256,11 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(initialBlock,/`--source-path=\$\{item\.webSourcePath\}`/);
   assert.match(finalBlock,/`--source=\$\{item\.webInitialCycleSourcePath\}`/);
 
-  assert.match(source,/WEB_VALIDATION_SCHEMA_MINIMUM=13/);
-  assert.doesNotMatch(source,/WEB_VALIDATION_SCHEMA_MINIMUM=10/);
-  assert.match(source,/webValidationEvidenceSchemaMinimum=13/);
-  assert.match(source,/Number\(item\.webValidationSchemaVersion\)!==13/);
+  assert.match(source,/WEB_VALIDATION_SCHEMA_VERSION/);
+  assert.match(source,/webValidationEvidenceSchemaMinimum=WEB_VALIDATION_SCHEMA_VERSION/);
+  assert.doesNotMatch(source,/WEB_VALIDATION_SCHEMA_MINIMUM=13/);
+  assert.doesNotMatch(source,/webValidationEvidenceSchemaMinimum=13/);
+  assert.doesNotMatch(source,/Number\(item\.webValidationSchemaVersion\)!==13/);
   assert.match(source,/timeout-minutes: 85/);
   assert.match(source,/cancel-in-progress: false/);
   assert.match(source,/max-parallel: 20/);
