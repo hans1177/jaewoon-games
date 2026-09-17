@@ -638,7 +638,7 @@ ownerCurrentProductionContract:
       developmentScoreDisplayEnabled: true
       developmentScoreSource: CURRENT_WEB_INITIAL_CYCLE_STRICT_SCORE
       developmentScoreRequiresInitialCyclePass: true
-      developmentScoreRequiresSchema13: true
+      developmentScoreRequiresSchema15: true
       developmentScoreRequiresMusicPass: true
       developmentScoreRequiresCurrentSourceAndBaselineBindingWhenAvailable: true
       reworkOrRevalidationScoresNotShownAsCurrent: true
