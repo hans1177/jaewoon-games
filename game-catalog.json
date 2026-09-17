@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "updatedAt": "2026-09-17",
   "classificationPolicy": {
     "canonicalField": "productionClass",
@@ -65,7 +65,7 @@
     {
       "id": "daechung-rpg",
       "name": "대충 RPG",
-      "description": "탐험과 전투가 이어지는 RPG · Unity Android 확장 개발 중",
+      "description": "탐험과 전투가 이어지는 RPG · 웹게임 개발부터 다시 진행 중",
       "genre": [
         "RPG",
         "탐험",
@@ -78,17 +78,23 @@
       "unityProjectPath": "unity-games/daechung-rpg",
       "preferredPlatform": "unity-android",
       "selectedPlatform": "UNITY",
-      "homepagePublicationApproved": true,
+      "homepagePublicationApproved": false,
       "publishTestBuildWhenReady": true,
       "homepageCategory": "release-confirmed",
       "productionClass": "RELEASE_CONFIRMED",
-      "productionClassSource": "CURRENT_EVIDENCE_STATE",
+      "productionClassSource": "OWNER_DIRECT_WEB_DEVELOPMENT_RESET_2026-09-17",
       "productionTarget": "unity-android",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_WEB_DEVELOPMENT_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_WEB_DEVELOPMENT_RESET",
+      "designBaselineMigration": "PRESERVE_EXISTING_GAME_AND_REENTER_WEB_DEVELOPMENT",
+      "webDevelopmentResetRequired": true,
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageStage": "출시확정 · Unity Android",
-      "homepageRecentWork": "Web 플레이 버전을 유지하면서 기존 Unity Android 확장 개발 경로를 그대로 보존합니다.",
+      "homepageRecentWork": "출시 상태를 해제하고 정상 개발 큐에서 웹게임 개발 단계부터 다시 진행합니다.",
       "homepageWebPlayable": true,
-      "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
-      "lifecycleState": "ACTIVE"
+      "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg"
     },
     {
       "id": "survival",
@@ -118,7 +124,7 @@
     {
       "id": "cozy-island",
       "name": "포근섬",
-      "description": "섬에서 채집과 낚시를 즐기는 힐링 생활 게임",
+      "description": "섬에서 채집과 낚시를 즐기는 힐링 생활 게임 · 웹게임 개발부터 다시 진행 중",
       "genre": [
         "힐링",
         "생활",
@@ -130,16 +136,17 @@
       "featured": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "OWNER_DIRECT_CONTINUE_2026-09-17",
+      "productionClassSource": "OWNER_DIRECT_WEB_DEVELOPMENT_RESET_2026-09-17",
       "productionTarget": "existing-web-game-continuation",
       "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_DIRECT_CONTINUE_DEVELOPMENT",
+      "lifecycleReason": "OWNER_DIRECT_WEB_DEVELOPMENT_RESET",
       "ownerExistingGame": true,
-      "developmentHandling": "OWNER_EXISTING_GAME_CONTINUE",
-      "designBaselineMigration": "PRESERVE_EXISTING_GAME_AND_CONTINUE",
+      "developmentHandling": "OWNER_WEB_DEVELOPMENT_RESET",
+      "designBaselineMigration": "PRESERVE_EXISTING_GAME_AND_REENTER_WEB_DEVELOPMENT",
+      "webDevelopmentResetRequired": true,
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageStage": "개발확정 · Web 개선 개발 중",
-      "homepageRecentWork": "기존 포근섬 Web 게임을 보존하면서 기능·콘텐츠·모바일 플레이 품질 개발을 계속합니다.",
+      "homepageStage": "개발확정 · 웹게임 개발 중",
+      "homepageRecentWork": "정상 개발 큐에서 웹게임 개발 단계부터 다시 진행합니다.",
       "homepageWebPlayable": true,
       "webUpdatedAt": "2026-09-17"
     },
