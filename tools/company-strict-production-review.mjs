@@ -116,7 +116,7 @@ function updateLearning(result){
   const rows=(state.seedMaterials||[]).filter(row=>(seed.SEED_MATERIAL_IDS||[]).includes(row.materialId));
   const families=[...new Set(rows.map(row=>row.sourceFamily).filter(Boolean))];
   const validated=result.reviewStage==='IMPLEMENTATION_STRICT_REVIEW'&&result.evidence?.runtimePass===true;
-  const previous=[...learning.events].reverse().find(e=>e.gameId===gameId&&e.reviewStage===result.reviewStage&&e.validatedRealEvidence===true);
+  const previous=[...learning.events].reverse().find(e=>e.gameId===gameId&&e.reviewStage===result.reviewStage&&(result.reviewStage==='DESIGN_STRICT_REVIEW'||e.validatedRealEvidence===true));
   const previousScore=Number.isFinite(Number(previous?.totalScore))?Number(previous.totalScore):null;
   const scoreDelta=previousScore==null?null:result.totalScore-previousScore;
   const previousHard=new Set(Array.isArray(previous?.hardFailures)?previous.hardFailures:[]);
@@ -131,7 +131,7 @@ function updateLearning(result){
   for(const e of learning.events){if(!e.validatedRealEvidence)continue;for(const f of e.materialFamilies||[]){if(e.learningSignal==='POSITIVE_SUCCESS')passCounts[f]=(passCounts[f]||0)+1;if(e.learningSignal==='NEGATIVE_OR_REBUILD'||e.verdict==='REBUILD')rebuildCounts[f]=(rebuildCounts[f]||0)+1;}}
   learning.preferSeedMaterialFamilies=Object.keys(passCounts).filter(f=>passCounts[f]>=2&&passCounts[f]>Number(rebuildCounts[f]||0)).sort();
   learning.avoidSeedMaterialFamilies=Object.keys(rebuildCounts).filter(f=>rebuildCounts[f]>=2&&rebuildCounts[f]>Number(passCounts[f]||0)).sort();
-  learning.rules={designOpinionDoesNotBecomeTrainingSuccess:true,validatedRuntimeRequiredForPreferenceSignals:true,failuresAndFixesRetained:true,scoreDeltaAndFixOutcomeRetained:true,partial80To89IsImprovementSignalNotPositiveSuccess:true,positiveSuccessRequires90PlusAndHardGateClear:true,copyOriginalExpressionForbidden:true,signalsGuideSelectionButDoNotForceCopy:true};
+  learning.rules={designOpinionDoesNotBecomeTrainingSuccess:true,designReviewFeedbackFeedsNextDesignContext:true,designReviewFeedbackStoredAsUnvalidatedLearningCandidate:true,validatedRuntimeRequiredForPreferenceSignals:true,failuresAndFixesRetained:true,scoreDeltaAndFixOutcomeRetained:true,partial80To89IsImprovementSignalNotPositiveSuccess:true,positiveSuccessRequires90PlusAndHardGateClear:true,copyOriginalExpressionForbidden:true,signalsGuideSelectionButDoNotForceCopy:true};
   if(result.reviewStage==='DESIGN_STRICT_REVIEW'&&result.evidence?.robloxGenreProfile){
     const target=(state.seeds||[]).find(row=>clean(row?.gameId)===gameId&&clean(row?.seedId)===clean(seed.seedId));
     if(target){const p=result.evidence.robloxGenreProfile;target.ROBLOX_GENRE=p.genre;target.ROBLOX_SUBGENRE=p.subgenre;target.ROBLOX_GENRE_LABEL_KO=p.genreLabelKo;target.ROBLOX_SUBGENRE_LABEL_KO=p.subgenreLabelKo;target.ROBLOX_PLAY_MODE=p.playMode;target.ROBLOX_PLAY_MODE_LABEL_KO=p.playModeLabelKo;target.ROBLOX_GENRE_DISPLAY_KO=p.displayLabelKo;target.ROBLOX_GENRE_SOURCE=p.taxonomy;target.ROBLOX_GENRE_REVIEWED_AT=result.reviewedAt;}
