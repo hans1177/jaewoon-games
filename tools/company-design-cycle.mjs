@@ -26,7 +26,7 @@ const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,reviewMode
 const independentReviewTasks=Object.fromEntries(ROLES.flatMap(role=>departmentReviewModels[role].map(model=>{const key=`${role}::${model}`;return[key,{role,model}];})));
 const modelPhaseConcurrency=Math.max(1,Math.min(3,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||3)));
 const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'2m');
-const modelCallTimeoutMs=Math.min(75000,Math.max(15000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||75000)));
+const modelCallTimeoutMs=Math.min(180000,Math.max(30000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||150000)));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
@@ -155,7 +155,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
   const callStarted=Date.now();
   const deepSeek=model.startsWith('deepseek-r1');
   let lastError=null;
-  for(let attempt=1;attempt<=2;attempt++){
+  for(let attempt=1;attempt<=3;attempt++){
     const mode=deepSeek?'json':(attempt===1?'schema':'json');
     try{
       const schemaPrompt=(deepSeek||attempt>1)?`\nJSON_SCHEMA=${JSON.stringify(schema)}\n사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다.`:'';
