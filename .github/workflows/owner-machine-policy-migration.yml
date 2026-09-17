@@ -1,0 +1,107 @@
+name: Owner Machine Policy Migration
+
+on:
+  push:
+    paths:
+      - '.github/workflows/owner-machine-policy-migration.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Apply machine-only policy contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+
+          p=Path('COMPANY_FLOW.md')
+          text=p.read_text(encoding='utf-8')
+
+          old='''  humanReadableNarrativeRequired: false\n  ownerInstructionOverridesPolicy: true\n'''
+          new='''  humanReadableNarrativeRequired: false\n  naturalLanguagePolicyReplicationForbidden: true\n  ownerDirectiveNaturalLanguageStorageForbidden: true\n  ownerDirectiveParaphraseStorageForbidden: true\n  ownerDirectiveVerbatimStorageForbidden: true\n  nonCanonicalPolicyDocumentMode: MACHINE_POINTER_ONLY\n  nonCanonicalPolicyDocumentCanonicalReference: COMPANY_FLOW.md\n  ownerInstructionOverridesPolicy: true\n'''
+          if old not in text:
+              raise SystemExit('POLICY_HEADER_TARGET_MISSING')
+          text=text.replace(old,new,1)
+
+          old='''    scoreCannotOverrideHardGate: true\n    hardRejectCodes:\n'''
+          new='''    scoreCannotOverrideHardGate: true\n    stageApplicability:\n      30MIN_CONTENT_FAIL: FINAL_CONTENT_DEPTH_GATE_ONLY\n    hardRejectCodes:\n'''
+          if old not in text:
+              raise SystemExit('HARD_GATE_TARGET_MISSING')
+          text=text.replace(old,new,1)
+
+          old='''    criticalAxisMinimumPercent: 75\n    runtimeEvidencePreferredOverSourceClaims: true\n'''
+          new='''    criticalAxisMinimumPercent: 75\n    criticalAxisScope:\n      DESIGN_GATE: ALL_APPLICABLE_AXES\n    weakCriticalAxisScoreCap: 79\n    weakCriticalAxisCreatesHardFailure: true\n    runtimeEvidencePreferredOverSourceClaims: true\n'''
+          if old not in text:
+              raise SystemExit('V2_CRITICAL_TARGET_MISSING')
+          text=text.replace(old,new,1)
+
+          old='''      DESIGN_GATE:\n        currentPassMinimum: 80\n        axes:\n'''
+          new='''      DESIGN_GATE:\n        currentPassMinimum: 80\n        minimumPerApplicableAxisPercent: 75\n        weakApplicableAxisScoreCap: 79\n        weakApplicableAxisCreatesHardFailure: true\n        thirtyMinuteContentDepthHardGate: FORBIDDEN\n        thirtyMinuteRequirementStage: FINAL_CONTENT_DEPTH_GATE_ONLY\n        robloxGenreProfile:\n          required: true\n          decisionStage: DESIGN_GATE\n          taxonomy: ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES\n          selectionRule: PRIMARY_CORE_GAMEPLAY_BEST_MATCH\n          genreCount: 1\n          subgenreCountMax: 1\n          playModeSource: MULTIPLAYER_DESIGN_MODE\n          allowedPlayModes: [SINGLE, COOP, COMPETITIVE, HYBRID]\n          persistTargets: [STRICT_DESIGN_REVIEW_EVIDENCE, ACTIVE_GAME_SEED]\n          homepageSource: DESIGN_GATE_PROFILE_ONLY\n          homepageIndependentInferenceForbidden: true\n          homepageGameIdDisplayForbidden: true\n        axes:\n'''
+          if old not in text:
+              raise SystemExit('DESIGN_GATE_TARGET_MISSING')
+          text=text.replace(old,new,1)
+
+          old='''  homepageTesting:\n    developmentProgressDisplay:\n'''
+          new='''  homepageTesting:\n    genreProfileDisplay:\n      source: DESIGN_GATE_ROBLOX_GENRE_PROFILE\n      requiredFields: [GENRE, SUBGENRE_WHEN_APPLICABLE, PLAY_MODE]\n      position: ADJACENT_TO_GENRE\n      gameIdVisible: false\n      independentHomepageInferenceForbidden: true\n    developmentProgressDisplay:\n'''
+          if old not in text:
+              raise SystemExit('HOMEPAGE_TARGET_MISSING')
+          text=text.replace(old,new,1)
+
+          old='''documentationSynchronization:\n  centralPolicyFirst: true\n  workDocumentsMustMirrorCurrentCentralPolicy: true\n  syncRelevantWorkDocumentsOnEveryPolicyChange: true\n  implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized: true\n  workDocumentsCannotOverrideCentralPolicy: true\n'''
+          new='''documentationSynchronization:\n  centralPolicyFirst: true\n  nonCanonicalPolicyDocumentMode: MACHINE_POINTER_ONLY\n  humanReadablePolicyReplicationForbidden: true\n  ownerDirectiveNaturalLanguageReplicationForbidden: true\n  ownerDirectiveParaphraseForbidden: true\n  ownerDirectiveVerbatimReplicationForbidden: true\n  workDocumentsMustMirrorCurrentCentralPolicy: false\n  workDocumentsMayContainPolicyNarrative: false\n  workDocumentsMayContainOwnerDirectiveNarrative: false\n  syncRelevantWorkDocumentsOnEveryPolicyChange: false\n  implementationWorkStartsAfterCentralPolicyUpdate: true\n  workDocumentsCannotOverrideCentralPolicy: true\n  canonicalReferenceRequired: COMPANY_FLOW.md\n'''
+          if old not in text:
+              raise SystemExit('DOC_SYNC_TARGET_MISSING')
+          text=text.replace(old,new,1)
+
+          old='''artbookDocumentConsolidation:\n  copiedSourceDocument: ARTBOOK_SUBMISSION_CONTRACT.md\n  copiedSourceWasLatestArtbookDocumentAtConsolidation: true\n  copiedAt: 2026-09-12\n  originalContent: |-\n    # 아트북 제출 호환 문서\n\n    재운컴퍼니의 설계·아트북·부서회의 정책 원본은 **`COMPANY_FLOW.md` 하나뿐**이다.\n\n    이 파일은 과거 도구와 링크의 호환 경로다. 부서가 아트북 파트를 공동 집필한다는 예전 계약이나 별도 제출 정책을 여기서 유지하지 않는다.\n\n    현재 출력 형식과 검증 스키마는 실행 코드가 담당하며, 그 의미와 역할 분리는 항상 `COMPANY_FLOW.md`를 따른다.\n'''
+          new='''artbookDocumentConsolidation:\n  compatibilityPath: ARTBOOK_SUBMISSION_CONTRACT.md\n  mode: MACHINE_POINTER_ONLY\n  canonicalPolicy: COMPANY_FLOW.md\n  naturalLanguagePolicyReplication: FORBIDDEN\n  ownerDirectiveNaturalLanguageReplication: FORBIDDEN\n'''
+          if old not in text:
+              raise SystemExit('ARTBOOK_DOC_TARGET_MISSING')
+          text=text.replace(old,new,1)
+
+          old='''      - GAME_DESIGNER_REVISION\n      - DESIGN_BASELINE_GATE\n'''
+          new='''      - GAME_DESIGNER_REVISION\n      - ROBLOX_GENRE_PROFILE_ASSIGNMENT\n      - DESIGN_BASELINE_GATE\n'''
+          if old not in text:
+              raise SystemExit('DESIGN_FLOW_TARGET_MISSING')
+          text=text.replace(old,new,1)
+
+          old='''      - APPROVED_SCOPE_INVENTORY_RECORDED\n      - FIVE_DISTINCT_LEAD_MODELS\n'''
+          new='''      - APPROVED_SCOPE_INVENTORY_RECORDED\n      - ROBLOX_GENRE_PROFILE_RECORDED\n      - FIVE_DISTINCT_LEAD_MODELS\n'''
+          if old not in text:
+              raise SystemExit('BASELINE_TARGET_MISSING')
+          text=text.replace(old,new,1)
+
+          p.write_text(text,encoding='utf-8')
+
+          pointer='''```yaml\ndocument:\n  mode: MACHINE_POINTER_ONLY\n  canonicalPolicy: COMPANY_FLOW.md\n  executionConfig: company-directive.json\n  naturalLanguagePolicyReplication: FORBIDDEN\n  ownerDirectiveNaturalLanguageStorage: FORBIDDEN\n  ownerDirectiveVerbatimStorage: FORBIDDEN\n  ownerDirectiveParaphraseStorage: FORBIDDEN\n  ruleReplication: FORBIDDEN\n```\n'''
+          Path('PROJECT_HANDOFF.md').write_text(pointer,encoding='utf-8')
+          Path('AGENTS.md').write_text(pointer,encoding='utf-8')
+          PY
+          git diff --check
+          grep -q 'nonCanonicalPolicyDocumentMode: MACHINE_POINTER_ONLY' COMPANY_FLOW.md
+          grep -q 'ownerDirectiveNaturalLanguageReplicationForbidden: true' COMPANY_FLOW.md
+          grep -q 'ROBLOX_GENRE_PROFILE_ASSIGNMENT' COMPANY_FLOW.md
+          grep -q 'thirtyMinuteContentDepthHardGate: FORBIDDEN' COMPANY_FLOW.md
+          grep -q 'mode: MACHINE_POINTER_ONLY' PROJECT_HANDOFF.md
+          grep -q 'mode: MACHINE_POINTER_ONLY' AGENTS.md
+      - name: Persist and remove migration workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-policy-migration'
+          git config user.email 'policy-migration@users.noreply.github.com'
+          git rm .github/workflows/owner-machine-policy-migration.yml
+          git add COMPANY_FLOW.md PROJECT_HANDOFF.md AGENTS.md
+          git diff --cached --check
+          git commit -m 'policy: machine-only canonical references'
+          git push origin HEAD:main
