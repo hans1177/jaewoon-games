@@ -659,10 +659,10 @@ ownerCurrentProductionContract:
   productionThroughput:
     totalWebTestCandidateCountCap: null
     totalGameProductionCountCap: null
-    concurrentGameWipMax: 6
+    concurrentGameWipMax: 20
     concurrentGameWipScope: GLOBAL_SELECTED_PLATFORM_DEVELOPMENT
-    webValidationParallelismTarget: 6
-    webValidationParallelismMax: 6
+    webValidationParallelismTarget: 20
+    webValidationParallelismMax: 20
     webValidationParallelFirst: true
     runtimeCapacityMayReduceActualConcurrency: true
     idleAutonomousProduction:
@@ -688,6 +688,8 @@ ownerCurrentProductionContract:
     continueLearning: true
     recordPassReviseRebuildCauses: true
     recordFixAndRevalidationOutcome: true
+    designReviewFeedbackStoredAsUnvalidatedLearningCandidate: true
+    designReviewFeedbackFeedsNextDesignContext: true
     recordMaterialFamiliesAndCombinations: true
     nextMaterialSelectionMayUsePreferAvoidSignals: true
     designOpinionAloneCannotBecomeValidatedTrainingSuccess: true
