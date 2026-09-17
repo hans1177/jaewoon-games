@@ -64,7 +64,7 @@ jobs:
       - name: Promote 80-point strict-ready design baselines directly to Web gate
         run: node tools/design-only-promotion-sync.mjs
 
-      - name: Verify strict-ready-only promotion and direct Web handoff
+      - name: Verify confirmed-seed queue invariant and strict promotion evidence
         shell: bash
         run: |
           set -euo pipefail
@@ -78,27 +78,35 @@ jobs:
             const dates=fs.readdirSync(root,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
             for(const date of dates){const file=path.join(root,date,'strict-design-review.json');const statusFile=path.join(root,date,'cycle-status.json');if(!fs.existsSync(file)||!fs.existsSync(statusFile))continue;const review=JSON.parse(fs.readFileSync(file,'utf8'));const status=JSON.parse(fs.readFileSync(statusFile,'utf8'));const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;return {pass:ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0,review,file};}return {pass:false,review:null,file:null};
           };
-          const queueByGame=new Map((queue.items||[]).map(item=>[item.gameId,item]));let strictReadyCount=0;
+          const queueByGame=new Map((queue.items||[]).map(item=>[item.gameId,item]));let strictReadyCount=0;let confirmedSeedCount=0;
           for(const seed of state.seeds||[]){
             if(String(seed.status||'').toUpperCase()!=='ACTIVE')continue;
+            const productionClass=String(seed.productionClass||'').toUpperCase();
+            const item=queueByGame.get(seed.gameId);
+            if(productionClass==='DEVELOPMENT_CONFIRMED'){
+              confirmedSeedCount++;
+              if(!item||item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`development-confirmed seed queue missing: ${seed.gameId}`);
+              if(item.webValidationRequired!==true||item.musicValidationRequired!==true)throw new Error(`development-confirmed Web validation contract missing: ${seed.gameId}`);
+              if(String(item.canonicalState||'')==='WAITING_POST_PROMOTION_ARTBOOK')throw new Error(`legacy pre-Web artbook wait remains: ${seed.gameId}`);
+            }
             if(seed.productionClassSource!=='DESIGN_BASELINE_READY_STRICT_PASS')continue;
-            const strict=latestStrict(seed.gameId);const item=queueByGame.get(seed.gameId);
+            const strict=latestStrict(seed.gameId);
             if(!strict.pass)throw new Error(`non-strict design promoted: ${seed.gameId}`);
             strictReadyCount++;
             if(Number(seed.strictDesignReview?.totalScore||0)<80||seed.strictDesignReview?.verdict!=='PASS')throw new Error(`strict evidence not bound to seed: ${seed.gameId}`);
             if(!item||item.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`strict-ready queue handoff missing: ${seed.gameId}`);
             if(item.postPromotionArtbookRequired===true)throw new Error(`pre-Web artbook still required: ${seed.gameId}`);
             if(item.postWebArtbookRequired!==true)throw new Error(`post-Web artbook contract missing: ${seed.gameId}`);
-            if(!['WEB_PLAYABLE_BOOTSTRAP','WEB_GAMEPLAY_AND_MUSIC_VALIDATION'].includes(String(item.currentStep||'')))throw new Error(`direct Web handoff missing: ${seed.gameId}:${item.currentStep}`);
-            if(String(item.canonicalState||'')==='WAITING_POST_PROMOTION_ARTBOOK')throw new Error(`legacy pre-Web artbook wait remains: ${seed.gameId}`);
             const project=(portfolio.projects||[]).find(x=>x.slug===seed.gameId);if(project?.productionClass!=='DEVELOPMENT_CONFIRMED')throw new Error(`portfolio promotion missing: ${seed.gameId}`);
           }
+          console.log(`ACTIVE_DEVELOPMENT_CONFIRMED_SEED_COUNT=${confirmedSeedCount}`);
           console.log(`STRICT_DESIGN_READY_COUNT=${strictReadyCount}`);
           console.log(`DEVELOPMENT_HANDOFF_COUNT=${(queue.items||[]).length}`);
           console.log('DESIGN_PASS_THRESHOLD=80');
           console.log('HOMEPAGE_WEB_THRESHOLD=80');
           console.log('FORMAL_IMPLEMENTATION_THRESHOLD=90');
           console.log('PRE_WEB_ARTBOOK_REQUIRED=NO');
+          console.log('DEVELOPMENT_CONFIRMED_QUEUE_INVARIANT=PASS');
           console.log('DESIGN_ONLY_PROMOTION_CONTRACT=PASS');
           NODE
 
@@ -135,7 +143,7 @@ jobs:
               persisted=1
               break
             fi
-            git commit -m 'runtime: promote 80-point designs directly to Web gate [skip ci]'
+            git commit -m 'runtime: reconcile confirmed seeds into development queue [skip ci]'
             if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
               echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=PERSISTED'
               persisted=1
