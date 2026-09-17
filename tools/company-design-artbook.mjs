@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import {loadSeedState,seedForGame} from './game-seed-state.mjs';
+import {WEB_VALIDATION_SCHEMA_VERSION} from './company-web-validation-evidence-contract.mjs';
 
 const HOMEPAGE_TEST_THRESHOLD=80;
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
@@ -37,13 +38,13 @@ if(webEvidence?.homepageTestEligible!==true||!Number.isFinite(webScore)||webScor
 const legacyBaselineReady=status.baselineGate?.state==='DESIGN_BASELINE_READY'&&status.baselineGate?.ready===true;
 const canonicalRevisedPath=revisedPath.replaceAll('\\','/');
 const statusDesignPath=clean(status.sourceDesign?.path).replaceAll('\\','/');
-const postWebDesignBound=Number(webEvidence?.validationSchemaVersion||webEvidence?.version)===13
+const postWebDesignBound=Number(webEvidence?.validationSchemaVersion||webEvidence?.version)===WEB_VALIDATION_SCHEMA_VERSION
   &&webEvidence?.contentDepthValidation?.validationMode==='REAL_ELAPSED_GAMEPLAY'
   &&webEvidence?.contentDepthValidation?.pass===true
   &&statusDesignPath===canonicalRevisedPath
   &&clean(webEvidence?.designBaselineSha256)===sha256Text(fs.readFileSync(revisedPath,'utf8'));
 if(!legacyBaselineReady&&!postWebDesignBound)throw new Error('DESIGN_ARTBOOK_REQUIRES_APPROVED_DESIGN_BINDING');
-const designBindingState=legacyBaselineReady?'DESIGN_BASELINE_READY':'POST_WEB_SCHEMA13_DESIGN_BOUND';
+const designBindingState=legacyBaselineReady?'DESIGN_BASELINE_READY':`POST_WEB_SCHEMA${WEB_VALIDATION_SCHEMA_VERSION}_DESIGN_BOUND`;
 const directive=readJson('company-directive.json',{});const pool=uniq(directive.ai?.modelPool||[]);if(!pool.length)throw new Error('MODEL_POOL_EMPTY');
 const requestedEditorModel=clean(process.env.ARTBOOK_EDITOR_MODEL);const editorModel=requestedEditorModel&&pool.includes(requestedEditorModel)?requestedEditorModel:pool[hash(`${gameId}:post-web-artbook-editor`)%pool.length];const artbookCallTimeoutMs=Math.max(15000,Number(process.env.ARTBOOK_MODEL_CALL_TIMEOUT_MS||60000));
 const ARTBOOK={type:'object',required:['identity','playerFantasy','coreLoop','signatureSystems','progressionDirection','visualDirection'],properties:{identity:{type:'string',maxLength:800},playerFantasy:{type:'string',maxLength:800},coreLoop:{type:'array',maxItems:7,items:{type:'string',maxLength:320}},signatureSystems:{type:'array',maxItems:6,items:{type:'string',maxLength:420}},progressionDirection:{type:'string',maxLength:800},visualDirection:{type:'string',maxLength:800}},additionalProperties:false};
