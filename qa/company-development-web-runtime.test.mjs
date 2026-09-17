@@ -280,3 +280,16 @@ test('platform routing does not wait for optional post-Web artbook',()=>{
   assert.match(source,/post-web-artbook:[\s\S]{0,400}continue-on-error: true/);
   assert.match(source,/POST_WEB_ARTBOOK_FAILURE_NATIVE_BLOCK=NO/);
 });
+
+
+test('target platform failures use repair states while missing executors block explicitly',()=>{
+  const source=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
+  assert.doesNotMatch(source,/state==='WAITING_REVALIDATION'/);
+  assert.doesNotMatch(source,/state==='WAITING_TARGET_PLATFORM_REVALIDATION'/);
+  assert.doesNotMatch(source,/state==='WAITING_TARGET_PLATFORM_VALIDATION'/);
+  assert.match(source,/state==='DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED'/);
+  assert.match(source,/state==='TARGET_PLATFORM_REPAIR_REQUIRED'/);
+  assert.match(source,/status:'BLOCKED'[\s\S]{0,300}canonicalState:'DEVELOPMENT_BLOCKED'/);
+  assert.match(source,/routingBlockers:\['platform-runtime-executor-not-configured'\]/);
+  assert.match(source,/DEVELOPMENT_ROUTE_EXTERNAL_BLOCKED=/);
+});
