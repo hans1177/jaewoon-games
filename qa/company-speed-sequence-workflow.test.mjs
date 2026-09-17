@@ -154,3 +154,9 @@ test('Web batch binding accepts unrelated runtime commits but rejects changes to
   assert.match(router,/webFinalContentDepthEvidencePath/);
   assert.match(router,/WEB_RUNTIME_BINDING_HISTORY_UNAVAILABLE=YES/);
 });
+
+test('Web validator emits the canonical schema15 evidence version',()=>{
+  const validator=fs.readFileSync('tools/company-development-web-gameplay-validation.mjs','utf8');
+  assert.match(validator,/^const VALIDATION_SCHEMA_VERSION=15;$/m);
+  assert.doesNotMatch(validator,/^const VALIDATION_SCHEMA_VERSION=14;$/m);
+});
