@@ -315,7 +315,7 @@ writeJson(path.join(base,'platform-development-review.json'),platformReview);
 writeJson(path.join(base,'development-learning-feedback.json'),learningFeedback);
 
 if(platformReview.score<80){
-  writeState('WAITING_REVALIDATION',{sourceDesign:sourceBaseline,web,targetPlatform,webMeeting,targetMeeting,finalDesign:afterTarget,platformReview,learningFeedback,blockers:[`platform-implementation-score-below-80:${platformReview.score}`],nextAction:`${platformLabel} 실제 개발 심사 ${platformReview.score}점이다. 감점 원인을 책임 단계에서 수정하고 구조 문제면 재설계한 뒤 같은 플랫폼으로 재검증한다.`});
+  writeState('DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED',{sourceDesign:sourceBaseline,web,targetPlatform,webMeeting,targetMeeting,finalDesign:afterTarget,platformReview,learningFeedback,blockers:[`platform-implementation-score-below-80:${platformReview.score}`],nextAction:`${platformLabel} 실제 개발 심사 ${platformReview.score}점이다. 감점 원인을 책임 단계에서 수정하고 구조 문제면 재설계한 뒤 같은 플랫폼으로 재검증한다.`});
   process.exit(0);
 }
 if(platformReview.score<PLATFORM_DEVELOPMENT_PASS_MINIMUM){
@@ -330,7 +330,7 @@ const revalidatedTargets=new Set(rawTargets);
 if(revalidatedTargets.has(selectedPlatform)||revalidatedTargets.has('UNITY'))revalidatedTargets.add('TARGET_PLATFORM');
 const targetsCovered=targets.every(t=>revalidatedTargets.has(t));
 if(targets.length>0&&(revalidation.state!=='PASS'||!targetsCovered)){
-  writeState('WAITING_REVALIDATION',{sourceDesign:sourceBaseline,web,targetPlatform,revalidation,webMeeting,targetMeeting,finalDesign:afterTarget,platformReview,learningFeedback,blockers:[`revalidation-required:${targets.join('+')}`],nextAction:`변경 영향 범위 ${targets.join('+')}를 실제로 재검증하고 development-revalidation.json에 PASS 근거를 기록한다.`});
+  writeState('DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED',{sourceDesign:sourceBaseline,web,targetPlatform,revalidation,webMeeting,targetMeeting,finalDesign:afterTarget,platformReview,learningFeedback,blockers:[`revalidation-required:${targets.join('+')}`],nextAction:`변경 영향 범위 ${targets.join('+')}를 실제로 재검증하고 development-revalidation.json에 PASS 근거를 기록한다.`});
   process.exit(0);
 }
 
