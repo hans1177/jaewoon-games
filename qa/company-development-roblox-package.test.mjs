@@ -1,7 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {createRobloxBuildEvidence,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL} from '../tools/company-development-roblox-package.mjs';
+import os from 'node:os';
+import path from 'node:path';
+import {collectRobloxSourceScriptInventory,createRobloxBuildEvidence,resolvePackageSourceValidation,ROBLOX_PACKAGE_TOOL,validateRobloxArtifactScriptInventory} from '../tools/company-development-roblox-package.mjs';
 
 test('Roblox package evidence proves build only and never invents later validation',()=>{
   const evidence=createRobloxBuildEvidence({
@@ -57,6 +59,30 @@ test('Roblox package source validation rejects a verified Vibe2 handoff when the
   assert.equal(validation.pass,false);
   assert.deepEqual(validation.blockers,['VIBE2_VERIFIED_HANDOFF_SOURCE_TREE_MISMATCH']);
   assert.equal(validation.authority,'verified-vibe2-source-handoff');
+});
+
+test('Roblox package rejects artifacts missing mapped Luau script classes',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'roblox-package-test-'));
+  try{
+    fs.mkdirSync(path.join(root,'server'));
+    fs.mkdirSync(path.join(root,'client'));
+    fs.mkdirSync(path.join(root,'shared'));
+    fs.writeFileSync(path.join(root,'server','Game.server.luau'),'print("server")\n');
+    fs.writeFileSync(path.join(root,'client','Game.client.luau'),'print("client")\n');
+    fs.writeFileSync(path.join(root,'shared','Config.luau'),'return {}\n');
+    const expected=collectRobloxSourceScriptInventory(root);
+    assert.deepEqual(expected,{Script:1,LocalScript:1,ModuleScript:1,total:3});
+
+    const incomplete=path.join(root,'incomplete.rbxlx');
+    fs.writeFileSync(incomplete,'<roblox><Item class="LocalScript"></Item><Item class="ModuleScript"></Item></roblox>');
+    assert.throws(()=>validateRobloxArtifactScriptInventory({artifactPath:incomplete,expected}),/Script:0\/1/);
+
+    const complete=path.join(root,'complete.rbxlx');
+    fs.writeFileSync(complete,'<roblox><Item class="Script"></Item><Item class="LocalScript"></Item><Item class="ModuleScript"></Item></roblox>');
+    assert.deepEqual(validateRobloxArtifactScriptInventory({artifactPath:complete,expected}),{Script:1,LocalScript:1,ModuleScript:1,total:3});
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
 });
 
 test('Roblox package toolchain is pinned to the verified Rojo Linux artifact',()=>{
