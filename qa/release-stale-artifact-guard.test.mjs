@@ -1,20 +1,36 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import {spawnSync} from 'node:child_process';
-import {PRODUCTION_CLASSES,productionClassOf} from '../tools/production-classification.mjs';
-
-const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
-const numericLabels=directive.production?.numericLabels||{};
-const releaseGame=(catalog.games||[]).find(game=>productionClassOf({},game,{numericLabels})===PRODUCTION_CLASSES.RELEASE_CONFIRMED);
-assert.ok(releaseGame,'test requires at least one RELEASE_CONFIRMED game');
 
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');}
+function cleanup(root){fs.rmSync(root,{recursive:true,force:true});}
+
+const sandbox=fs.mkdtempSync(path.join(os.tmpdir(),'jaewoon-release-stale-'));
+const releaseGame={id:'qa-release-fixture'};
+fs.mkdirSync(path.join(sandbox,'tools'),{recursive:true});
+for(const file of ['company-release-stale-artifact-guard.mjs','production-classification.mjs']){
+  fs.copyFileSync(path.join('tools',file),path.join(sandbox,'tools',file));
+}
+writeJson(path.join(sandbox,'company-directive.json'),{
+  production:{numericLabels:{RELEASE_CONFIRMED:1,DEVELOPMENT_CONFIRMED:2,DESIGN_ONLY:3}}
+});
+writeJson(path.join(sandbox,'game-catalog.json'),{
+  games:[{
+    id:releaseGame.id,
+    name:'QA Release Fixture',
+    productionClass:'RELEASE_CONFIRMED',
+    homepageCategory:'release-confirmed',
+    releasePublished:true
+  }]
+});
+test.after(()=>cleanup(sandbox));
+
 function runGuard(date){
   const result=spawnSync(process.execPath,['tools/company-release-stale-artifact-guard.mjs'],{
-    cwd:process.cwd(),
+    cwd:sandbox,
     env:{...process.env,ARTBOOK_GAME_ID:releaseGame.id,ARTBOOK_DATE:date},
     encoding:'utf8'
   });
@@ -22,9 +38,7 @@ function runGuard(date){
   return result.stdout;
 }
 
-const fixtureRoot=date=>path.join('design',releaseGame.id,date);
-
-function cleanup(root){fs.rmSync(root,{recursive:true,force:true});}
+const fixtureRoot=date=>path.join(sandbox,'design',releaseGame.id,date);
 
 test('non-ready release state archives stale final release artifacts instead of leaving them active',()=>{
   const date='2099-12-30';
