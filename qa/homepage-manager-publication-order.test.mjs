@@ -1,14 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import path from 'node:path';
 
 const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
-const operations=fs.readFileSync('HOMEPAGE_OPERATIONS.md','utf8');
+const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const homepagePolicy=directive.homepageOperations||{};
 const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
 const testSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 const artbookTool=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
 const homepageEntry=fs.readFileSync('assets/homepage-enhancements.js','utf8');
 const homepageCore=fs.readFileSync('assets/homepage-enhancements-core.js','utf8');
+const legacyHomepagePolicyMirror=['HOMEPAGE','OPERATIONS.md'].join('_');
 
 const section=(from,to)=>{
   const start=workflow.indexOf(from);
@@ -17,6 +20,30 @@ const section=(from,to)=>{
   assert.ok(end>start,`invalid section boundary: ${from}`);
   return workflow.slice(start,end);
 };
+
+const collectPolicyTextFiles=(root='.')=>{
+  const allowed=/\.(?:mjs|cjs|js|json|ya?ml|md|html|css|txt)$/i;
+  const ignored=new Set(['.git','node_modules','.wrangler','.cache']);
+  const files=[];
+  const walk=dir=>{
+    for(const entry of fs.readdirSync(dir,{withFileTypes:true})){
+      if(ignored.has(entry.name))continue;
+      const full=path.join(dir,entry.name);
+      if(entry.isDirectory())walk(full);
+      else if(allowed.test(entry.name))files.push(full);
+    }
+  };
+  walk(root);
+  return files;
+};
+
+test('legacy homepage policy mirror stays deleted and unreferenced',()=>{
+  assert.equal(fs.existsSync(legacyHomepagePolicyMirror),false);
+  const offenders=collectPolicyTextFiles().filter(file=>fs.readFileSync(file,'utf8').includes(legacyHomepagePolicyMirror));
+  assert.deepEqual(offenders,[]);
+  assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
+  assert.equal(homepagePolicy.mode,'SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR');
+});
 
 test('Director supervises the exact Homepage Manager candidate before publication',()=>{
   const manage=section('  manage-and-self-qa:','  director-supervision:');
@@ -60,8 +87,12 @@ test('verified runtime status/catalog join the same supervised publication candi
 });
 
 test('development games auto-display from runtime progress while Top30 promotion stays separately gated',()=>{
-  assert.ok(operations.includes('개발게임 자동 표시와 Top30 분리'));
-  assert.ok(operations.includes('`productionClass=DEVELOPMENT_CONFIRMED`이면 검증 점수와 무관하게 자동 표시'));
+  const progress=homepagePolicy.developmentProgressDisplay||{};
+  assert.equal(progress.source,'COMPANY_RUNTIME_DEVELOPMENT_QUEUE');
+  assert.equal(progress.autoRegisterProductionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(progress.requiresHomepageTestEligible,false);
+  assert.equal(progress.separateFromTop30Promotion,true);
+  assert.equal(progress.ranking,'SCORE_DESC');
   assert.ok(homepageCore.includes('const developmentItems=queue=>'));
   assert.ok(homepageCore.includes("productionClass||'').trim().toUpperCase()==='DEVELOPMENT_CONFIRMED'"));
   assert.ok(homepageCore.includes("getJson('/development-queue.json',{runtime:true})"));
@@ -105,8 +136,8 @@ test('development games auto-display from runtime progress while Top30 promotion
 });
 
 test('APK install control is relocated away from the homepage top without deleting install contracts',()=>{
-  assert.ok(operations.includes('APK 설치 배치'));
-  assert.ok(operations.includes('홈페이지 대문 상단에 두지 않는다'));
+  assert.equal(homepagePolicy?.fixedFunctionProtection?.ownerLocked,true);
+  assert.ok(homepagePolicy?.fixedFunctionProtection?.protectedFunctions?.includes('PWA_APP_INSTALL_AND_OFFLINE_RUNTIME'));
   assert.ok(homepageEntry.includes("document.getElementById('appInstallBar')"));
   assert.ok(homepageEntry.includes("document.querySelector('.teamPanel .teamWrap')"));
   assert.ok(homepageEntry.includes('teamWrap.appendChild(bar)'));
@@ -142,7 +173,7 @@ test('post-Web artbook and Top30 both require exact schema13 evidence binding',(
   assert.ok(testSync.includes("clean(artbook?.webValidationEvidencePath)!==evidencePath"));
 });
 
-test('Top30 mirror sync is semantic-idempotent and does not create timestamp-only churn',()=>{
+test('Top30 canonical sync is semantic-idempotent and does not create timestamp-only churn',()=>{
   assert.ok(testSync.includes('const semanticJson=value=>'));
   assert.ok(testSync.includes('delete copy.updatedAt;'));
   assert.ok(testSync.includes('const writeJsonIfSemanticChanged='));
@@ -150,9 +181,6 @@ test('Top30 mirror sync is semantic-idempotent and does not create timestamp-onl
   assert.ok(testSync.includes('HOMEPAGE_TEST_SYNC_CHANGED='));
   assert.ok(!testSync.includes('registry.updatedAt=new Date().toISOString()'));
   assert.ok(!testSync.includes('version:5,updatedAt:new Date().toISOString()'));
-  assert.ok(operations.includes('기존 `updatedAt`을 보존한다'));
-  assert.ok(operations.includes('timestamp-only diff'));
-  assert.ok(operations.includes('timestamp-only churn'));
 });
 
 test('failed upstream events cannot cancel an in-flight supervised homepage candidate',()=>{
@@ -170,15 +198,23 @@ test('PR creation failure is a blocking publication failure, not a green branch-
   assert.ok(publish.includes('HOMEPAGE_PUBLICATION=BLOCKED_PR_PERMISSION_REQUIRED'));
   assert.ok(publish.includes('exit 1'));
   assert.ok(!publish.includes('HOMEPAGE_PUBLICATION=BRANCH_READY_PR_PERMISSION_REQUIRED'));
-  assert.ok(operations.includes('PR 생성/병합 권한이 없거나 PR 생성이 실패하면'));
-  assert.ok(operations.includes('workflow를 BLOCK/FAIL'));
-  assert.ok(operations.includes('`BRANCH_READY`는 완료 증거가 아니다.'));
 });
 
-test('workflow implements documented self-QA -> Director -> PR order',()=>{
-  const selfQa=operations.indexOf('Homepage Manager self-QA');
-  const director=operations.indexOf('기존 Director 1개가 사후 감독');
-  const publication=operations.indexOf('자동화 브랜치/PR을 통해 main에 반영');
-  assert.ok(selfQa!==-1&&director!==-1&&publication!==-1);
-  assert.ok(selfQa<director&&director<publication);
+test('workflow implements machine-contract self-QA -> Director -> live confirmation order',()=>{
+  assert.deepEqual(homepagePolicy.afterWorkFlow,[
+    'HOMEPAGE_MANAGER_APPLY',
+    'HOMEPAGE_MANAGER_SELF_QA',
+    'DIRECTOR_SINGLE_POST_WORK_SUPERVISION',
+    'LIVE_STATUS_CONFIRMATION'
+  ]);
+  assert.equal(homepagePolicy.managerCount,1);
+  assert.equal(homepagePolicy.supervisorCount,1);
+  assert.equal(homepagePolicy.secondHomepageManagerForbidden,true);
+  assert.equal(homepagePolicy.secondHomepageSupervisorForbidden,true);
+  const manage=section('  manage-and-self-qa:','  director-supervision:');
+  const director=section('  director-supervision:','  publish-after-director:');
+  const publish=section('  publish-after-director:');
+  assert.ok(manage.includes('Capture exact self-QA candidate'));
+  assert.ok(director.includes('Verify and apply exact self-QA candidate'));
+  assert.ok(publish.includes('Verify and apply Director-approved candidate'));
 });
