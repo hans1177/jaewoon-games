@@ -1,0 +1,61 @@
+{
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-ENROLL-EGG-HEIST-20260913",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "llama3.2:1b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "알mada",
+    "playerFantasy": "알 도둑 대작전",
+    "coreFun": "수집, 모험",
+    "coreLoop": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "signatureSystems": [
+      {
+        "name": "readable stealth comedy",
+        "purpose": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal",
+        "playerChoice": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+      },
+      {
+        "name": "short objective chains",
+        "purpose": "play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends",
+        "playerChoice": "play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends"
+      },
+      {
+        "name": "risk-reward escape",
+        "purpose": "finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction",
+        "playerChoice": "finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction"
+      }
+    ],
+    "progressionDirection": "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal",
+    "visualDirection": "readable stealth comedy",
+    "mobileUx": "readable stealth comedy",
+    "marketTargetDirection": "TARGET_DESIGN_REFERENCE",
+    "steamExpansionDecision": "TARGET_DESIGN_REFERENCE",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "MULTIPLAYER_DESIGN_MODE",
+    "technicalAssumptions": [
+      "ROS 2.0",
+      "C++"
+    ],
+    "validationQuestions": [
+      "What is the main goal of the game?",
+      "What is the purpose of the core loop?",
+      "What is the main mechanic of the game?"
+    ],
+    "openQuestions": [
+      "What is the main goal of the game?",
+      "What is the purpose of the core loop?",
+      "What is the main mechanic of the game?"
+    ]
+  }
+}

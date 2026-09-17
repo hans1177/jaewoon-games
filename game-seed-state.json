@@ -6039,7 +6039,16 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-17T23:41:47.434Z"
     },
     {
       "version": 1,
@@ -13396,6 +13405,64 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-17T21:27:03.810Z"
+      },
+      {
+        "gameId": "egg-heist",
+        "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "improvementTargets": [
+          {
+            "dimension": "ideaDistinctness",
+            "current": 6,
+            "maxScore": 15,
+            "gap": 9
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-17T23:41:47.253Z"
+      },
+      {
+        "gameId": "egg-heist",
+        "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "previousScore": 91,
+        "scoreDelta": 0,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [],
+        "improvementTargets": [
+          {
+            "dimension": "ideaDistinctness",
+            "current": 6,
+            "maxScore": 15,
+            "gap": 9
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-17T23:41:47.434Z"
       }
     ],
     "causeCounts": {
@@ -13403,13 +13470,15 @@
       "COMPLETE_PLAYABLE_CYCLE_REQUIRED": 1,
       "FAIL_OR_LOSS_CONDITION_REQUIRED": 1,
       "CATEGORY_PROFILE_MATCH": 2,
-      "CORE_FUN_WEAK": 24,
+      "CORE_FUN_WEAK": 26,
       "REQUIRED_AXIS_MINIMUM": 1
     },
     "preferSeedMaterialFamilies": [],
     "avoidSeedMaterialFamilies": [],
     "rules": {
       "designOpinionDoesNotBecomeTrainingSuccess": true,
+      "designReviewFeedbackFeedsNextDesignContext": true,
+      "designReviewFeedbackStoredAsUnvalidatedLearningCandidate": true,
       "validatedRuntimeRequiredForPreferenceSignals": true,
       "failuresAndFixesRetained": true,
       "scoreDeltaAndFixOutcomeRetained": true,
@@ -13418,7 +13487,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-17T21:27:03.811Z"
+    "updatedAt": "2026-09-17T23:41:47.435Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,

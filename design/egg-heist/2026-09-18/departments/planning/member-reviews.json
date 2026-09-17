@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "evidence": [
+          "Readable stealth comedy"
+        ],
+        "questions": [
+          "What is the main goal of the game?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ],
+        "fix": [
+          "TARGET_DESIGN_REFERENCE_MARKET_EVIDENCE_SUMMARY"
+        ],
+        "add": [
+          "GAME_SEED_CORE_FUN_TO_LEARN_KEY_POINTS: 1. Readable stealth comedy 2. Short objective chains 3. Risk-reward escape 4. Start immedi"
+        ],
+        "risks": [
+          "수집, 모험"
+        ],
+        "evidence": [
+          "Subway Surfers"
+        ],
+        "questions": [
+          "What is the main goal of the game? What is the purpose of the core loop? What is the main mechanic of the game?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}

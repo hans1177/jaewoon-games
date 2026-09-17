@@ -1,0 +1,143 @@
+{
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "smollm2:1.7b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "evidence": [
+        "Readable stealth comedy"
+      ],
+      "questions": [
+        "What is the main goal of the game?",
+        "What is the purpose of the core loop?"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "TARGET_DESIGN_REFERENCE_SUCCESS"
+      ],
+      "fix": [
+        "TARGET_DESIGN_REFERENCE_SUCCESS"
+      ],
+      "add": [
+        "TARGET_DESIGN_REFERENCE_SUCCESS"
+      ],
+      "risks": [
+        "TARGET_DESIGN_REFERENCE_SUCCESS"
+      ],
+      "evidence": [
+        "TARGET_DESIGN_REFERENCE_SUCCESS"
+      ],
+      "questions": [
+        "What is the main goal of the game? What is the purpose of the core loop? What is the main mechanic of the game?"
+      ]
+    },
+    "development": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=development"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+      ],
+      "risks": [
+        "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+      ],
+      "evidence": [
+        "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+      ],
+      "questions": [
+        "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run..."
+      ],
+      "fix": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "evidence": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run..."
+      ],
+      "questions": [
+        "What is the main goal of the game?"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "알 도둑 대작전 이벤트가 성공적으로 종료되었습니다.",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "알 도둑 대작전 이벤트가 성공적으로 종료되었습니다.",
+      "departments": [
+        "development"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 1,
+    "conflict": 0,
+    "hold": 0
+  }
+}

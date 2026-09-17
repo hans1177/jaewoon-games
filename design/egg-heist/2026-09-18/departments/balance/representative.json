@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "smollm2:1.7b",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run..."
+    ],
+    "fix": [
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "add": [
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "risks": [
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "evidence": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run..."
+    ],
+    "questions": [
+      "What is the main goal of the game?"
+    ]
+  }
+}

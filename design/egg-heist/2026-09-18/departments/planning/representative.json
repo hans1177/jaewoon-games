@@ -1,0 +1,35 @@
+{
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "qwen3:0.6b",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    ],
+    "fix": [
+      "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+    ],
+    "add": [
+      "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+    ],
+    "risks": [
+      "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+    ],
+    "evidence": [
+      "Readable stealth comedy"
+    ],
+    "questions": [
+      "What is the main goal of the game?",
+      "What is the purpose of the core loop?"
+    ]
+  }
+}

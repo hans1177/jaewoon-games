@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run..."
+        ],
+        "fix": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "evidence": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run..."
+        ],
+        "questions": [
+          "What is the main goal of the game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "The main goal of the game."
+        ],
+        "evidence": [
+          "Readable stealth comedy"
+        ],
+        "questions": [
+          "What is the main goal of the game?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "fix": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "add": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "risks": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "evidence": [
+          "알mada 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "questions": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ]
+      }
+    }
+  ]
+}

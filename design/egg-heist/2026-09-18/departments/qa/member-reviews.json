@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL, "
+        ],
+        "risks": [
+          "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL, "
+        ],
+        "evidence": [
+          "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL, "
+        ],
+        "questions": [
+          "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL, "
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "알마다 다른 게임을 시작하고 있습니다."
+        ],
+        "fix": [
+          "알마다 다른 게임을 시작하고 있습니다."
+        ],
+        "add": [
+          "알마다 다른 게임을 시작하고 있습니다."
+        ],
+        "risks": [
+          "알마다 다른 게임을 시작하고 있습니다."
+        ],
+        "evidence": [
+          "알마다 다른 게임을 시작하고 있습니다."
+        ],
+        "questions": [
+          "알마다 다른 게임을 시작하고 있습니다."
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "알 도둑 대작전"
+        ],
+        "fix": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ],
+        "add": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ],
+        "risks": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ],
+        "evidence": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ],
+        "questions": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ]
+      }
+    }
+  ]
+}

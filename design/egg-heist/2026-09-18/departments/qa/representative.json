@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "ASSIGNED_DEPARTMENT=qa"
+    ],
+    "fix": [
+      "ASSIGNED_DEPARTMENT=qa"
+    ],
+    "add": [
+      "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+    ],
+    "risks": [
+      "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+    ],
+    "evidence": [
+      "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+    ],
+    "questions": [
+      "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+    ]
+  }
+}

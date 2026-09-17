@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "TARGET_DESIGN_REFERENCE_SUCCESS"
+        ],
+        "fix": [
+          "TARGET_DESIGN_REFERENCE_SUCCESS"
+        ],
+        "add": [
+          "TARGET_DESIGN_REFERENCE_SUCCESS"
+        ],
+        "risks": [
+          "TARGET_DESIGN_REFERENCE_SUCCESS"
+        ],
+        "evidence": [
+          "TARGET_DESIGN_REFERENCE_SUCCESS"
+        ],
+        "questions": [
+          "What is the main goal of the game? What is the purpose of the core loop? What is the main mechanic of the game?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal"
+        ],
+        "evidence": [
+          "readable stealth comedy"
+        ],
+        "questions": [
+          "What is the main goal of the game?"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ]
+      }
+    }
+  ]
+}
