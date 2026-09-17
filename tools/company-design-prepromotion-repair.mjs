@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';
+import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
 
 const clean=value=>String(value??'').replace(/\s+/g,' ').trim();
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
@@ -77,6 +78,46 @@ function setMissingArray(out,key,value,repairs,source,{min=0,max=8}={}){
   if(items.length<min)return;
   out[key]=items;repairs.push({field:key,source});
 }
+function robloxBuildProfile(out,seed,mode){
+  if(!MODES.has(mode))return null;
+  const classified=classifyRobloxGenre({
+    category:clean(seed?.GAME_CATEGORY),
+    identity:firstText(out?.identity,seed?.DISTINCT_IDENTITY),
+    coreLoop:Array.isArray(out?.coreLoop)?out.coreLoop:seedLoop(seed),
+    designText:JSON.stringify(out||{}),
+    multiplayerMode:mode
+  });
+  const multiplayerRequired=mode!=='SINGLE';
+  return {
+    version:1,
+    targetPlatform:'ROBLOX',
+    taxonomy:classified.taxonomy,
+    declaredGameCategory:clean(seed?.GAME_CATEGORY),
+    genre:classified.genre,
+    genreLabelKo:classified.genreLabelKo,
+    subgenre:classified.subgenre,
+    subgenreLabelKo:classified.subgenreLabelKo,
+    playMode:mode,
+    playModeLabelKo:classified.playModeLabelKo,
+    multiplayerRequired,
+    coopImplementationRequired:mode==='COOP'||mode==='HYBRID',
+    competitiveImplementationRequired:mode==='COMPETITIVE'||mode==='HYBRID',
+    networkingRequired:multiplayerRequired,
+    multiplayerQaRequired:multiplayerRequired,
+    minimumParticipantsForRequiredQa:multiplayerRequired?2:1,
+    displayLabelKo:classified.displayLabelKo
+  };
+}
+function validRobloxBuildProfile(profile,mode){
+  if(!profile||Array.isArray(profile)||typeof profile!=='object')return false;
+  if(profile.targetPlatform!=='ROBLOX'||clean(profile.playMode).toUpperCase()!==mode)return false;
+  if(!clean(profile.genre)||clean(profile.genre)==='Utility & other')return false;
+  const multi=mode!=='SINGLE';
+  if(profile.multiplayerRequired!==multi||profile.networkingRequired!==multi||profile.multiplayerQaRequired!==multi)return false;
+  if(profile.coopImplementationRequired!==(mode==='COOP'||mode==='HYBRID'))return false;
+  if(profile.competitiveImplementationRequired!==(mode==='COMPETITIVE'||mode==='HYBRID'))return false;
+  return Number(profile.minimumParticipantsForRequiredQa)===(multi?2:1);
+}
 
 export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNKNOWN',designDate='',allowLegacyMultiplayerInference=false}={}){
   const out=cloneObject(value);const repairs=[];
@@ -106,15 +147,20 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   }
   if(!mode&&MODES.has(clean(out.multiplayerMode).toUpperCase()))mode=clean(out.multiplayerMode).toUpperCase();
   setMissing(out,'multiplayerExpansionDecision',mode&&firstText(expansion,`${mode} 코어루프를 보존하며 확장은 별도 검증 후 결정한다`),500,repairs,'GAME_SEED_OR_LEGACY_MULTIPLAYER_MODE_AND_CROSS_PLATFORM_VALUE');
+  if(MODES.has(mode)){
+    const profile=robloxBuildProfile(out,seed,mode);
+    if(JSON.stringify(out.robloxBuildProfile||null)!==JSON.stringify(profile)){out.robloxBuildProfile=profile;repairs.push({field:'robloxBuildProfile',source:'GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY'});}
+  }
   setMissingArray(out,'technicalAssumptions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'validationQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'openQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
 
-  const required=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','visualDirection','mobileUx','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','technicalAssumptions','validationQuestions','openQuestions'];
+  const required=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','visualDirection','mobileUx','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','robloxBuildProfile','technicalAssumptions','validationQuestions','openQuestions'];
   const unresolved=required.filter(key=>{
-    if(['coreLoop'].includes(key))return !Array.isArray(out[key])||out[key].length<3;
+    if(key==='coreLoop')return !Array.isArray(out[key])||out[key].length<3;
     if(['signatureSystems','technicalAssumptions','validationQuestions','openQuestions'].includes(key))return !Array.isArray(out[key]);
     if(key==='multiplayerMode')return !MODES.has(clean(out[key]).toUpperCase());
+    if(key==='robloxBuildProfile')return !validRobloxBuildProfile(out[key],clean(out.multiplayerMode).toUpperCase());
     return !clean(out[key]);
   });
   return {value:out,repairs,unresolved,phase};
@@ -123,19 +169,19 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
 export function repairPersistedDesignForPromotion({root='.',designRoot='design',gameId,date,phase='PRE_REVIEW'}={}){
   const resolvedDesignRoot=path.isAbsolute(designRoot)?designRoot:path.join(root,designRoot);
   const base=path.join(resolvedDesignRoot,gameId,date);const revisedPath=path.join(base,'design-revised.json');
-  const revised=readJson(revisedPath,null);if(!revised?.content)return {changed:false,repairs:[],unresolved:['design-revised.json'],reason:'DESIGN_REVISED_MISSING'};
+  const revised=readJson(revisedPath,null);if(!revised?.content)return {changed:false,repairs:[],unresolved:['design-revised.json'],reason:'DESIGN_REVISED_MISSING',robloxBuildProfile:null};
   const state=loadSeedState(path.join(root,'game-seed-state.json'));const seed=activeSeedForGame(state,gameId);
   const legacyEligible=legacyDesignDate(date)&&!MODES.has(clean(revised.content.multiplayerMode).toUpperCase());
-  if(!seed&&!legacyEligible)return {changed:false,repairs:[],unresolved:['active-game-seed'],reason:'ACTIVE_SEED_MISSING'};
+  if(!seed&&!legacyEligible)return {changed:false,repairs:[],unresolved:['active-game-seed'],reason:'ACTIVE_SEED_MISSING',robloxBuildProfile:revised.content.robloxBuildProfile||null};
   const factPack=readJson(path.join(root,'artbook-submissions',gameId,date,'fact-pack.json'),{});
   const strictPath=path.join(base,'strict-design-review.json');const strictBefore=readJson(strictPath,null);
-  if(phase==='REVIEW_FEEDBACK'&&strictBefore?.verdict==='PASS'&&Number(strictBefore?.totalScore)>=80&&Array.isArray(strictBefore?.hardFailures)&&strictBefore.hardFailures.length===0)return {changed:false,repairs:[],unresolved:[],reason:'STRICT_ALREADY_PASS'};
+  if(phase==='REVIEW_FEEDBACK'&&strictBefore?.verdict==='PASS'&&Number(strictBefore?.totalScore)>=80&&Array.isArray(strictBefore?.hardFailures)&&strictBefore.hardFailures.length===0)return {changed:false,repairs:[],unresolved:[],reason:'STRICT_ALREADY_PASS',robloxBuildProfile:revised.content.robloxBuildProfile||null};
   const repaired=repairDesignRequiredFields(revised.content,{seed:seed||{},factPack,phase,designDate:date,allowLegacyMultiplayerInference:legacyEligible});
   const changed=repaired.repairs.length>0;
   if(changed){revised.content=repaired.value;revised.prePromotionRepair={phase,repairs:repaired.repairs,groundedOnly:true,legacyMultiplayerNormalization:repaired.repairs.some(row=>String(row.source||'').startsWith('LEGACY_DESIGN.')),strictScoreOrVerdictModified:false,repairedAt:new Date().toISOString()};writeJson(revisedPath,revised);}
   const strictAfter=readJson(strictPath,null);
   if(JSON.stringify(strictBefore)!==JSON.stringify(strictAfter))throw new Error('STRICT_REVIEW_MUTATION_FORBIDDEN');
-  return {changed,repairs:repaired.repairs,unresolved:repaired.unresolved,reason:changed?'GROUNDED_DESIGN_FIELDS_REPAIRED':'NO_SAFE_REPAIR_REQUIRED'};
+  return {changed,repairs:repaired.repairs,unresolved:repaired.unresolved,reason:changed?'GROUNDED_DESIGN_FIELDS_REPAIRED':'NO_SAFE_REPAIR_REQUIRED',robloxBuildProfile:repaired.value.robloxBuildProfile||null};
 }
 
 function arg(name){const hit=process.argv.find(value=>value.startsWith(`--${name}=`));return hit?clean(hit.slice(name.length+3)):'';}
@@ -145,10 +191,18 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   const gameId=arg('game-id')||clean(process.env.GAME_ID||process.env.ARTBOOK_GAME_ID);const date=arg('date')||clean(process.env.DESIGN_DATE||process.env.ARTBOOK_DATE)||kstDate();const phase=(arg('phase')||'PRE_REVIEW').toUpperCase();
   if(!gameId)throw new Error('PREPROMOTION_REPAIR_GAME_ID_REQUIRED');
   const result=repairPersistedDesignForPromotion({gameId,date,phase});
+  const build=result.robloxBuildProfile||{};
   console.log(`PREPROMOTION_REPAIR_CHANGED=${result.changed?'YES':'NO'}`);
   console.log(`PREPROMOTION_REPAIR_REASON=${result.reason}`);
   console.log(`PREPROMOTION_REPAIR_FIELDS=${result.repairs.map(x=>x.field).join(',')}`);
   console.log(`PREPROMOTION_REPAIR_UNRESOLVED=${result.unresolved.join(',')}`);
+  console.log(`ROBLOX_BUILD_GENRE=${clean(build.genre)||'MISSING'}`);
+  console.log(`ROBLOX_BUILD_SUBGENRE=${clean(build.subgenre)||'NONE'}`);
+  console.log(`ROBLOX_BUILD_PLAY_MODE=${clean(build.playMode)||'MISSING'}`);
+  console.log(`ROBLOX_BUILD_MULTIPLAYER_REQUIRED=${build.multiplayerRequired===true?'YES':'NO'}`);
+  console.log(`ROBLOX_BUILD_COOP_REQUIRED=${build.coopImplementationRequired===true?'YES':'NO'}`);
+  console.log(`ROBLOX_BUILD_COMPETITIVE_REQUIRED=${build.competitiveImplementationRequired===true?'YES':'NO'}`);
+  console.log(`ROBLOX_BUILD_MIN_QA_PARTICIPANTS=${Number(build.minimumParticipantsForRequiredQa||0)}`);
   console.log('PREPROMOTION_REPAIR_GROUNDED_ONLY=YES');
   console.log('PREPROMOTION_REPAIR_STRICT_SCORE_SYNTHESIZED=NO');
   console.log('PREPROMOTION_REPAIR_STRICT_VERDICT_SYNTHESIZED=NO');
