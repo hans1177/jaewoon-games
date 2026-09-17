@@ -184,6 +184,9 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.ok((seedDesignWorkflow.match(/const evidenceAt=Date\.parse\(review\.reviewedAt\|\|review\.generatedAt\|\|review\.updatedAt\|\|review\.createdAt\|\|''\)\|\|0;/g)||[]).length>=4);
   assert.ok((seedDesignWorkflow.match(/if\(evidenceAt&&evidenceAt<resetAt\)continue;/g)||[]).length>=4);
   assert.ok((seedDesignWorkflow.match(/if\(!evidenceAt&&date<=resetDate\)continue;/g)||[]).length>=4);
+  assert.match(seedDesignWorkflow,/STRICT_DESIGN_SCORE_STALE_CLEAR_COUNT=/);
+  assert.match(seedDesignWorkflow,/seed\.strictDesignReview=null/);
+  assert.match(seedDesignWorkflow,/seed\.strictDesignReviewUpdatedAt=null/);
   assert.match(seedDesignWorkflow,/continue-seed-supply:[\s\S]{0,800}actions\/checkout@v4[\s\S]{0,300}ref: main/);
   assert.match(seedDesignWorkflow,/game-seed-state\.json/);
   assert.match(seedDesignWorkflow,/parallel_max=\$\{designWipMax\}/);
