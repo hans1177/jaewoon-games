@@ -60,7 +60,7 @@ async function handleGemini(request,env){
 }
 
 async function handleVibeWorkflowObservation(request,env,url){
-  if(request.method!!=='GET')return aiJson({error:'method_not_allowed'},405);
+  if(request.method!=='GET')return aiJson({error:'method_not_allowed'},405);
   const headSha=clipText(url.searchParams.get('head_sha'),40).toLowerCase();
   if(!/^[0-9a-f]{40}$/.test(headSha))return aiJson({error:'invalid_head_sha'},400);
   const headers={Accept:'application/vnd.github+json','User-Agent':'jaewoon-vibe-maker','X-GitHub-Api-Version':'2022-11-28'};
