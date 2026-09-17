@@ -17,7 +17,7 @@ const artbooks={artbooks:[
 const catalog={games:[
   {id:'a',homepageCategory:'development-confirmed',productionClass:'DEVELOPMENT_CONFIRMED'},
   {id:'b',homepageCategory:'reviewing'},
-  {id:'release',homepageCategory:'release-confirmed',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'UNITY'},
+  {id:'release',homepageCategory:'release-confirmed',productionClass:'RELEASE_CONFIRMED',releasePublished:true,selectedPlatform:'UNITY'},
 ]};
 
 test('without focus policy the planner rotates eligible non-release projects',()=>{
@@ -50,9 +50,9 @@ function selectedPlatformFixture(){
   };
 }
 const selectedCatalog={games:[
-  {id:'roblox-release',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'ROBLOX'},
-  {id:'unity-release',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'UNITY'},
-  {id:'uefn-release',productionClass:'RELEASE_CONFIRMED',selectedPlatform:'FORTNITE_UEFN'},
+  {id:'roblox-release',productionClass:'RELEASE_CONFIRMED',releasePublished:true,selectedPlatform:'ROBLOX'},
+  {id:'unity-release',productionClass:'RELEASE_CONFIRMED',releasePublished:true,selectedPlatform:'UNITY'},
+  {id:'uefn-release',productionClass:'RELEASE_CONFIRMED',releasePublished:true,selectedPlatform:'FORTNITE_UEFN'},
   {id:'dev-web',productionClass:'DEVELOPMENT_CONFIRMED',homepageCategory:'development-confirmed'},
 ]};
 const selectedBooks={artbooks:[
