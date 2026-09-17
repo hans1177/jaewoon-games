@@ -44,6 +44,25 @@ const workLabels={WEB_GAMEPLAY_AND_MUSIC_VALIDATION:'웹 게임플레이·음악
 const latestWork=row=>{if(row?.homepageRecentWork)return String(row.homepageRecentWork);const raw=String(row?.currentStep||row?.resumeStage||row?.executionEvidence?.failureStage||row?.canonicalState||'').trim().toUpperCase();return workLabels[raw]||raw.replaceAll('_',' ')||'개발 작업 정보 없음';};
 const catalogMap=catalog=>new Map((catalog?.games||[]).map(game=>[String(game.id||'').trim(),game]));
 
+function latestVerifiedUnityBuilds(status){
+  const map=new Map();
+  for(const build of Array.isArray(status?.testBuilds)?status.testBuilds:[]){
+    const id=String(build?.gameId||'').trim();
+    const download=String(build?.download||'').trim();
+    const runtimePassed=build?.installAndLaunchVerified===true||build?.runtimeInstallLaunchVerified===true||String(build?.runtimeVerification||'').toLowerCase().endsWith('-passed');
+    if(!id||!download||build?.status!=='ready'||build?.mobileReady!==true||build?.homepagePublished!==true||build?.signatureVerified!==true||!runtimePassed)continue;
+    const old=map.get(id);const t=Date.parse(build?.builtAt||build?.homepagePublishedAt||'')||0;const oldT=Date.parse(old?.builtAt||old?.homepagePublishedAt||'')||0;
+    if(!old||t>=oldT)map.set(id,build);
+  }
+  return map;
+}
+function bindVerifiedUnityBuild(row,status){
+  const p=normalizePlatform(row?.selectedPlatform||row?.targetPlatform||row?.productionTarget||'');
+  if(!['UNITY','UNITY_ANDROID'].includes(p))return row;
+  const build=latestVerifiedUnityBuilds(status).get(gameIdOf(row));
+  return build?{...row,unityBuildUrl:build.download,unityBuildSha256:build.sha256,unityBuildApplicationId:build.applicationId,unityBuildVerified:true}:row;
+}
+
 function latestDevelopment(catalog,queue){
   const map=new Map();
   for(const row of Array.isArray(queue?.items)?queue.items:[]){
@@ -66,7 +85,7 @@ function latestDevelopment(catalog,queue){
     return updatedTime(b)-updatedTime(a)||gameIdOf(a).localeCompare(gameIdOf(b));
   });
 }
-function homepageRows(catalog,queue){
+function homepageRows(catalog,queue,status){
   const games=Array.isArray(catalog?.games)?catalog.games:[];
   const releasedMap=new Map();
   for(const game of games.filter(game=>String(game?.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED'&&!NON_RELEASED_GAME_IDS.has(String(game.id||'').trim())))releasedMap.set(String(game.id||'').trim(),{...game,gameId:game.id,__released:true});
@@ -74,7 +93,7 @@ function homepageRows(catalog,queue){
   const released=[...releasedMap.values()];
   const releasedIds=new Set(released.map(gameIdOf));
   const development=latestDevelopment(catalog,queue).filter(row=>!releasedIds.has(gameIdOf(row)));
-  return [...released,...development].slice(0,TOP_LIMIT);
+  return [...released,...development].slice(0,TOP_LIMIT).map(row=>bindVerifiedUnityBuild(row,status));
 }
 function mergeGame(row,catalog){
   const source=catalogMap(catalog).get(gameIdOf(row))||{};
@@ -94,23 +113,23 @@ function installStyles(){
 #gameHub{padding:14px 0 3px}#gameHub>.sectionHead,#gameGrid{display:none!important}#homeTop30GameCenter{margin:0 14px 14px}.top30Head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;padding:4px 2px 12px}.top30Head h2{margin:0;font-size:25px;color:#155e9f}.top30Head p{margin:3px 0 0;color:#5f7a8d;font-size:10px;font-weight:800}.top30Count{padding:7px 10px;border-radius:999px;background:#102d42;color:#fff;font-size:10px;font-weight:1000}.top30Grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.foldGameCard{min-width:0;border:1px solid #d5e8f1;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 5px 14px rgba(58,111,146,.10);position:relative}.top30Rank{position:absolute;z-index:4;left:9px;top:9px;min-width:34px;height:34px;padding:0 7px;border-radius:999px;background:#102d42;color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:1000}.releaseTag{position:absolute;z-index:5;right:10px;top:10px;min-width:74px;min-height:42px;padding:0 16px;border-radius:14px;background:#14845b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1;font-weight:1000;letter-spacing:-.02em;box-shadow:0 5px 14px rgba(0,0,0,.22)}.foldGameArt{height:155px;position:relative;background:#264a60;overflow:hidden}.foldGameArt img{width:100%;height:100%;object-fit:cover}.foldGameArt:after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 48%,rgba(2,18,29,.85))}.foldGameTitle{position:absolute;z-index:2;left:12px;right:12px;bottom:10px;color:#fff}.foldGameTitle b{font-size:20px}.foldGameBody{padding:12px}.foldBadges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.foldBadge{display:inline-flex;align-items:center;min-height:22px;padding:0 7px;border-radius:999px;font-size:9px;font-weight:900}.foldBadge.score{background:#d9f4e4;color:#197340}.foldBadge.platform{background:#e7efff;color:#315f9b}.foldBadge.genre{background:#fff0c9;color:#865d00}.foldGameBody p{margin:7px 0;font-size:11px;line-height:1.5;color:#536f82;font-weight:700}.foldGameMeta{font-size:10px;line-height:1.6;color:#415f73;font-weight:850;padding:8px 9px;border-radius:9px;background:#eef7fd}.foldGameActions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:10px}.foldGameBtn{display:flex;align-items:center;justify-content:center;min-height:38px;border-radius:10px;text-decoration:none;font-size:9px;font-weight:900;background:#2488df;color:#fff}.foldGameBtn.secondary{background:#eef8ff;color:#1767a9;border:1px solid #afd7ef}.foldGameBtn.off{background:#e8eef2;color:#7c8c96;pointer-events:none}@media(max-width:700px){.top30Grid{grid-template-columns:1fr}}
 `;document.head.appendChild(style);
 }
-function buildFocus(catalog,queue){
-  const hero=document.getElementById('hero');if(!hero)return;const rows=homepageRows(catalog,queue);if(!rows.length)return;
+function buildFocus(catalog,queue,status){
+  const hero=document.getElementById('hero');if(!hero)return;const rows=homepageRows(catalog,queue,status);if(!rows.length)return;
   const row=rows[0],game=mergeGame(row,catalog),genre=(game.genre||[]).join(' · ')||'게임',web=game.webPath,updated=formatDate(row.updatedAt||row.webValidationLastAttemptAt||game.webUpdatedAt),released=row.__released===true;
   hero.className='panel hero homeFocus';hero.style.setProperty('--focus-bg',`url('${String(game.image).replaceAll("'",'%27')}')`);
   hero.innerHTML=`<div class="homeFocusInner"><h1>${esc(game.name)}</h1><p>${esc(game.description)}</p><div class="homeFocusMeta"><span>${released?'출시':esc(scoreLabel(row))}</span><span>${esc(platformLabel(selectedPlatform(game)))}</span><span>${esc(genre)}</span></div><small style="margin-top:9px">${released?'최신 작업':'최신 개발'}: ${esc(latestWork(released?game:row))}${updated?` · ${esc(updated)}`:''}</small>${web?`<a class="homeFocusBtn" href="${esc(web)}">웹게임 시작</a>`:''}</div>`;
 }
 function buildCard(row,rank,catalog){
-  const game=mergeGame(row,catalog),released=row.__released===true,genre=(game.genre||[]).join(' · ')||'게임',web=game.webPath,updated=formatDate(row.updatedAt||row.webValidationLastAttemptAt||game.webUpdatedAt),artbook=game.homepageArtbookPath||'',platform=platformHref(game);
+  const game=mergeGame(row,catalog),released=row.__released===true,genre=(game.genre||[]).join(' · ')||'게임',web=game.webPath,updated=formatDate(row.updatedAt||row.webValidationLastAttemptAt||game.webUpdatedAt),artbook=game.homepageArtbookPath||'',platform=platformHref(game),isUnity=['UNITY','UNITY_ANDROID'].includes(normalizePlatform(selectedPlatform(game)));
   const webBtn=web?`<a class="foldGameBtn" href="${esc(web)}">웹게임</a>`:'<span class="foldGameBtn off">웹게임</span>';
   const artbookBtn=artbook?`<a class="foldGameBtn secondary" href="${esc(artbook)}">아트북</a>`:'<span class="foldGameBtn off">아트북</span>';
-  const platformBtn=platform?`<a class="foldGameBtn secondary" href="${esc(platform)}">플랫폼게임</a>`:'<span class="foldGameBtn off">플랫폼게임</span>';
+  const platformBtn=platform?`<a class="foldGameBtn secondary" href="${esc(platform)}">${isUnity?'Unity APK':'플랫폼게임'}</a>`:'<span class="foldGameBtn off">플랫폼게임</span>';
   return `<article class="foldGameCard" data-game-id="${esc(game.id)}"><span class="top30Rank">#${rank}</span>${released?'<span class="releaseTag">출시</span>':''}<div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${released?'출시':esc(scoreLabel(row))}</span><span class="foldBadge platform">${esc(platformLabel(selectedPlatform(game)))}</span><span class="foldBadge genre">${esc(genre)}</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">${released?'최신 작업':'최신 개발'}: ${esc(latestWork(released?game:row))}${updated?`<br><span>${esc(updated)}</span>`:''}</div><div class="foldGameActions">${webBtn}${artbookBtn}${platformBtn}</div></div></article>`;
 }
-function buildGameCenter(catalog,queue){
-  const hub=document.getElementById('gameHub');if(!hub)return;document.getElementById('homeTop30GameCenter')?.remove();const rows=homepageRows(catalog,queue);const wrapper=document.createElement('section');wrapper.id='homeTop30GameCenter';wrapper.innerHTML=`<div class="top30Head"><div><h2>게임 TOP30</h2><p>출시 게임 우선 · 개발 게임 최신 점수순</p></div><span class="top30Count">${rows.length} / ${TOP_LIMIT}</span></div><div class="top30Grid">${rows.map((row,i)=>buildCard(row,i+1,catalog)).join('')}</div>`;hub.insertBefore(wrapper,document.getElementById('gameGrid')||null);document.documentElement.dataset.homeTop30Count=String(rows.length);
+function buildGameCenter(catalog,queue,status){
+  const hub=document.getElementById('gameHub');if(!hub)return;document.getElementById('homeTop30GameCenter')?.remove();const rows=homepageRows(catalog,queue,status);const wrapper=document.createElement('section');wrapper.id='homeTop30GameCenter';wrapper.innerHTML=`<div class="top30Head"><div><h2>게임 TOP30</h2><p>출시 게임 우선 · 개발 게임 최신 점수순</p></div><span class="top30Count">${rows.length} / ${TOP_LIMIT}</span></div><div class="top30Grid">${rows.map((row,i)=>buildCard(row,i+1,catalog)).join('')}</div>`;hub.insertBefore(wrapper,document.getElementById('gameGrid')||null);document.documentElement.dataset.homeTop30Count=String(rows.length);
 }
 function simplifyPage(){document.querySelector('.opsBar')?.remove();document.querySelector('.catalogIntro')?.remove();document.querySelector('.reviews')?.remove();document.getElementById('autonomousFocusStrip')?.remove();document.getElementById('homeDevelopmentGameCenter')?.remove();}
-async function refresh(){if(refreshInFlight)return;refreshInFlight=true;try{const [catalog,queue]=await Promise.all([getJson('/game-catalog.json',{runtime:true}),getJson('/development-queue.json',{runtime:true})]);const c=catalog||{games:[]},q=queue||{items:[]},sig=JSON.stringify([c,q]);if(sig!==lastSignature){buildFocus(c,q);buildGameCenter(c,q);lastSignature=sig;}document.documentElement.dataset.homeSyncAt=new Date().toISOString();}finally{refreshInFlight=false;}}
+async function refresh(){if(refreshInFlight)return;refreshInFlight=true;try{const [catalog,queue,status]=await Promise.all([getJson('/game-catalog.json',{runtime:true}),getJson('/development-queue.json',{runtime:true}),getJson('/company-status.json')]);const c=catalog||{games:[]},q=queue||{items:[]},s=status||{testBuilds:[]},sig=JSON.stringify([c,q,s]);if(sig!==lastSignature){buildFocus(c,q,s);buildGameCenter(c,q,s);lastSignature=sig;}document.documentElement.dataset.homeSyncAt=new Date().toISOString();}finally{refreshInFlight=false;}}
 function main(){installStyles();simplifyPage();refresh();setInterval(()=>{if(!document.hidden)refresh();},SYNC_INTERVAL_MS);window.addEventListener('focus',refresh);window.addEventListener('online',refresh);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',main,{once:true});else main();
