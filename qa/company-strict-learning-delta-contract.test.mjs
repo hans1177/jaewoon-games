@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
+const designSource=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 
 test('strict review improvement learning keeps before-after evidence',()=>{
   assert.match(source,/improvementTargets/);
@@ -11,4 +13,17 @@ test('strict review improvement learning keeps before-after evidence',()=>{
   assert.match(source,/resolvedHardFailures/);
   assert.match(source,/addedHardFailures/);
   assert.match(source,/IMPROVEMENT_80_89/);
+});
+
+
+test('design review feedback is reused as unvalidated next-design learning context',()=>{
+  assert.match(source,/result\.reviewStage==='DESIGN_STRICT_REVIEW'\|\|e\.validatedRealEvidence===true/);
+  assert.match(source,/designReviewFeedbackFeedsNextDesignContext:true/);
+  assert.match(designSource,/const designLearningEvents=/);
+  assert.match(designSource,/role:'UNVALIDATED_DESIGN_FEEDBACK_ONLY'/);
+  assert.match(designSource,/successTrainingEligible:false/);
+  assert.match(designSource,/validatedRuntimeRequiredForPositiveTraining:true/);
+  assert.match(designSource,/DESIGN_LEARNING_CONTEXT=/);
+  assert.match(flow,/designReviewFeedbackStoredAsUnvalidatedLearningCandidate: true/);
+  assert.match(flow,/designReviewFeedbackFeedsNextDesignContext: true/);
 });
