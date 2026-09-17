@@ -74,7 +74,25 @@ test('already promoted seed is never reset back to the Web bootstrap stage',()=>
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-idempotent-'));
   write(root,'game-seed-state.json',{version:1,seeds:[{seedId:'S5',gameId:'g5',gameName:'Game Five',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',GAME_CATEGORY:'PUZZLE',INITIAL_TARGET_PLATFORM:'UNITY'}]});baseFiles(root);writeReadyDesign(root,'g5');
   write(root,'development-queue.json',{version:1,items:[{gameId:'g5',productionClass:'DEVELOPMENT_CONFIRMED',status:'PENDING',currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'PENDING_SELECTED_PLATFORM_BIND',strictImplementationScore:96,formalImplementationPassed:true,homepageTestCandidate:true}]});
-  const before=read(root,'development-queue.json').items[0];const result=promoteReadyDesignSeeds({root});const after=read(root,'development-queue.json').items[0];assert.deepEqual(result.promoted,[]);assert.equal(result.skipped[0].reason,'ALREADY_PROMOTED');assert.equal(after.currentStep,before.currentStep);assert.equal(after.canonicalState,before.canonicalState);assert.equal(after.strictImplementationScore,96);assert.equal(after.homepageTestCandidate,true);
+  const before=read(root,'development-queue.json').items[0];const result=promoteReadyDesignSeeds({root});const after=read(root,'development-queue.json').items[0];assert.deepEqual(result.promoted,[]);assert.equal(result.skipped[0].reason,'ALREADY_PROMOTED');assert.equal(after.currentStep,before.currentStep);assert.equal(after.canonicalState,before.canonicalState);assert.equal(after.strictImplementationScore,96);assert.equal(after.homepageTestCandidate,true);assert.equal(result.reconciledPromotedSeeds.length,0);
+});
+
+test('active DEVELOPMENT_CONFIRMED seed self-heals a missing queue entry before Web source exists',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-self-heal-'));
+  write(root,'game-seed-state.json',{version:1,seeds:[{seedId:'S6',gameId:'g6',gameName:'Game Six',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY_STRICT_PASS',selectedPlatform:'ROBLOX',GAME_CATEGORY:'SURVIVAL'}]});baseFiles(root);writeReadyDesign(root,'g6');
+  assert.equal(fs.existsSync(path.join(root,'web-games/g6/index.html')),false);
+  const result=promoteReadyDesignSeeds({root});
+  const queue=read(root,'development-queue.json');
+  assert.deepEqual(result.reconciledPromotedSeeds,['g6']);
+  assert.equal(queue.items.length,1);
+  assert.equal(queue.items[0].gameId,'g6');
+  assert.equal(queue.items[0].queueSource,'ACTIVE_DEVELOPMENT_CONFIRMED_SEED');
+  assert.equal(queue.items[0].currentStep,'WEB_PLAYABLE_BOOTSTRAP');
+  assert.equal(queue.items[0].canonicalState,'WAITING_WEB_GAMEPLAY_VALIDATION');
+  assert.equal(queue.items[0].webValidationRequired,true);
+  assert.equal(queue.items[0].musicValidationRequired,true);
+  promoteReadyDesignSeeds({root});
+  assert.equal(read(root,'development-queue.json').items.filter(x=>x.gameId==='g6').length,1);
 });
 
 test('incomplete design is not promoted',()=>{
