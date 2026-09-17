@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+        ],
+        "fix": [
+          "유명게임 표현 복제를 요구하지 않는다"
+        ],
+        "add": [
+          "나의 생존기에서 유명게임 표현을 추가하는 것이 좋은 것으로 생각된다"
+        ],
+        "risks": [
+          "나의 생존기에서 유명게임 표현을 추가하는 것이 좋은 것으로 생각된다"
+        ],
+        "evidence": [
+          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+        ],
+        "questions": [
+          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "지정된 QA 부서만 검토하라. 다른 부서는 제시되지 않다."
+        ],
+        "fix": [
+          "기존 게임 개발 기록을 반영하여 구체적 근거를 추가하세요."
+        ],
+        "add": [
+          "상세 설정을 통해 중요한 요소를 명확히 하세요."
+        ],
+        "risks": [
+          "GAME_SEED에 없는 유명 게임 표현을 제시하지 않도록 주의."
+        ],
+        "evidence": [
+          "Vampire Survivors, Brotato, Survivor.io, Sensor Tower, Newzoo, GameAnalytics 등으로 기존 게임 데이터를 활용하세요."
+        ],
+        "questions": [
+          "Survival System의 목적과 기능을 명확히 하세요."
+        ]
+      }
+    }
+  ]
+}

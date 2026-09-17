@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "gameId": "survival",
+  "date": "2026-09-18",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 1,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The core loop and market data analysis suggest a focus on gameplay mechanics, while the evidence points to a balance between survival and gameplay. The challenges and revisions indicate a need for consistency in visual and design elements.",
+        "The game design concept details are kept, while visual style consistency is revised. The evidence supports consistency in game mechanics, and the questions focus on user experience."
+      ],
+      "reason": "The core loop and market data analysis suggest a focus on gameplay mechanics, while the evidence points to a balance between survival and gameplay. The challenges and revisions indicate a need for consistency in visual and design elements."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "PLAYER_FEEDBACK",
+        "GAME_DATA_ANALYSIS",
+        "DESIGN_CONSISTENCY_CHECK",
+        "QA_REVIEW_PROPOSED"
+      ],
+      "reason": "The game design concept is fundamentally flawed. The core loop is overly complex and lacks a clear, engaging player experience. The visual style is inconsistent with the core gameplay. The proposed revisions are not sufficiently grounded in the evidence. The game is not viable as is.  The core loop is not compelling enough to sustain player engagement. The design is inconsistent with the target platform and the game's core mechanics. The proposed revisions are not aligned with the existing design and do not address the identified issues.  The game is not viable as is.  The proposed revisions do not address the core issues. The design is inconsistent with the target platform and the game's ID"
+    },
+    "development": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Evidence from market research",
+        "Evidence from gameplay analysis",
+        "Evidence from user feedback"
+      ],
+      "reason": "The core loop and market data analysis suggest a focus on gameplay mechanics, while the evidence points to a balance between survival and gameplay. The challenges and revisions indicate a need for consistency in visual and design elements."
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base.",
+        "Survivor.io: simple attacks, upgrade choices and build combinations.",
+        "Survivor.io: touch readability, wave pressure and upgrade selection.",
+        "Survivor.io: mobile survival-roguelite benchmark for touch readability, wave pressure and upgrade selection."
+      ],
+      "reason": "The current design fails to meet the core fun criteria, as evidenced by the fatal criteria. The evidence provided supports the need for a redesign to ensure consistency and relevance."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [],
+      "reason": "The game design concept details are kept, while visual style consistency is revised. The evidence supports consistency in game mechanics, and the questions focus on user experience."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

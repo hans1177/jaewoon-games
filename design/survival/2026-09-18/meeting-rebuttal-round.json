@@ -1,0 +1,94 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "core loop",
+        "market data analysis",
+        "gameplay loop refinement"
+      ],
+      "challenge": [
+        "gameplay balance",
+        "vampire survivors benchmark"
+      ],
+      "revision": [
+        "gameplay design consistency",
+        "visual style consistency",
+        "color palette consistency"
+      ],
+      "reason": "The core loop and market data analysis suggest a focus on gameplay mechanics, while the evidence points to a balance between survival and gameplay. The challenges and revisions indicate a need for consistency in visual and design elements."
+    },
+    "graphics": {
+      "accept": [
+        "game_design_concept_details"
+      ],
+      "challenge": [
+        "enemy_design_consistency"
+      ],
+      "revision": [
+        "visual_style_consistency"
+      ],
+      "reason": "game_mechanics_consistency"
+    },
+    "development": {
+      "accept": [
+        "OWN",
+        "OTHERS",
+        "graphics"
+      ],
+      "challenge": [
+        "OWN",
+        "OTHERS",
+        "graphics"
+      ],
+      "revision": [
+        "OWN",
+        "OTHERS",
+        "graphics"
+      ],
+      "reason": "own"
+    },
+    "qa": {
+      "accept": [
+        "qa"
+      ],
+      "challenge": [
+        "qa"
+      ],
+      "revision": [
+        "qa"
+      ],
+      "reason": "qa 부서의 책임범위를 수용합니다."
+    },
+    "balance": {
+      "accept": [
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+      ],
+      "challenge": [
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+      ],
+      "revision": [
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+      ],
+      "reason": "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+    }
+  }
+}

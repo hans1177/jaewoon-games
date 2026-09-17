@@ -1,0 +1,175 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen3:0.6b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "core loop"
+      ],
+      "fix": [
+        "market data analysis"
+      ],
+      "add": [
+        "gameplay loop refinement"
+      ],
+      "risks": [
+        "gameplay balance"
+      ],
+      "evidence": [
+        "vampire survivors benchmark"
+      ],
+      "questions": [
+        "core loop"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "game_design_concept_details"
+      ],
+      "fix": [
+        "visual_style_consistency"
+      ],
+      "add": [
+        "color_palette_consistency"
+      ],
+      "risks": [
+        "enemy_design_consistency"
+      ],
+      "evidence": [
+        "game_mechanics_consistency"
+      ],
+      "questions": [
+        "user_experience_consistency"
+      ]
+    },
+    "development": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "GAME_SEED"
+      ],
+      "add": [
+        "GAME_SEED"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "GAME_SEED"
+      ],
+      "questions": [
+        "GAME_SEED"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+      ],
+      "fix": [
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+      ],
+      "add": [
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+      ],
+      "risks": [
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+      ],
+      "evidence": [
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
+        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+      ],
+      "questions": [
+        "What are the key features that make the survival system unique?",
+        "What are the key features that make the survival system unique? "
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "CONSENSUS",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "The core loop and market data analysis suggest a focus on gameplay mechanics, while the evidence points to a balance between survival and gameplay. The challenges and revisions indicate a need for consistency in visual and design elements.",
+      "departments": [
+        "planning",
+        "graphics",
+        "development",
+        "qa"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "The game design concept details are kept, while visual style consistency is revised. The evidence supports consistency in game mechanics, and the questions focus on user experience.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "The GAME_SEED is kept, with no changes made to the evidence or questions.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "The QA department is accepted as the responsible department.",
+      "departments": [
+        "qa"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 4,
+    "conflict": 0,
+    "hold": 0
+  }
+}

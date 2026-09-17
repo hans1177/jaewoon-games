@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+        ],
+        "fix": [
+          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+        ],
+        "add": [
+          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+        ],
+        "risks": [
+          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+        ],
+        "evidence": [
+          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+        ],
+        "questions": [
+          "What are the key features that make the survival system unique?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Survival system design that prioritizes player engagement and progression through a single-player narrative, ensuring a clear path"
+        ],
+        "fix": [
+          "Addressing the core loop's engagement and challenge, ensuring it's both challenging and rewarding"
+        ],
+        "add": [
+          "Enhancing the progression system with clear, actionable features that support player growth"
+        ],
+        "risks": [
+          "Ensuring the survival system is tailored to the target audience, with a focus on mobile and real-time gameplay"
+        ],
+        "evidence": [
+          "Providing evidence from various sources, including market benchmarks and player feedback"
+        ],
+        "questions": [
+          "What are the key features that make the survival system unique? How does it handle player progression and upgrades?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+        ],
+        "fix": [
+          "가장 중요한 근거 한 건만 짧고 구체적으로 작성하라"
+        ],
+        "add": [
+          "게임의 핵심적인 특징을 명확하게 정의합니다."
+        ],
+        "risks": [
+          "생존에 대한 위험을 최소화하고, 플레이어가 안전하게 게임을 즐길 수 있도록 합니다."
+        ],
+        "evidence": [
+          "게임의 핵심적인 특징을 명확하게 정의합니다."
+        ],
+        "questions": [
+          "게임의 목표는 무엇인가요?"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "The survival system is designed to be a single-player experience where players build and evolve their survival capabilities over a"
+        ],
+        "fix": [
+          "The core loop is structured to challenge players in a short real-time survival run, encouraging progression through upgrades and"
+        ],
+        "add": [
+          "The progression direction is set to a single-player format, ensuring a clear path for player development"
+        ],
+        "risks": [
+          "The market evidence suggests a strong potential for the survival system, with a focus on mobile platforms and player engagement"
+        ],
+        "evidence": [
+          "The survival system is based on action-survival benchmarks, ensuring alignment with current survival game design principles"
+        ],
+        "questions": [
+          "What are the key features that make the survival system unique? How does the survival system handle player progression and"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Core Loop Review"
+        ],
+        "fix": [
+          "Market Data Analysis"
+        ],
+        "add": [
+          "Gameplay Loop Refinement"
+        ],
+        "risks": [
+          "Gameplay balance"
+        ],
+        "evidence": [
+          "Vampire Survivors Benchmark"
+        ],
+        "questions": [
+          "What is the core loop?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "GAME_SEED"
+        ],
+        "risks": [
+          "GAME_SEED"
+        ],
+        "evidence": [
+          "GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "fix": [
+          "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+        ],
+        "add": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+        ],
+        "risks": [
+          "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+        ],
+        "evidence": [
+          "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+        ],
+        "questions": [
+          "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+        ],
+        "fix": [
+          "Survival System"
+        ],
+        "add": [
+          "readable survival needs"
+        ],
+        "risks": [
+          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
+        ],
+        "evidence": [
+          "Survival System"
+        ],
+        "questions": [
+          "Is the survival system suitable for the target audience?"
+        ]
+      }
+    }
+  ]
+}

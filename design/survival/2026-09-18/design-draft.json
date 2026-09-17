@@ -1,0 +1,51 @@
+{
+  "version": 4,
+  "gameId": "survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "llama3.2:1b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다",
+    "playerFantasy": "Survival",
+    "coreFun": "readable survival needs",
+    "coreLoop": [
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Survival System",
+        "purpose": "Survival",
+        "playerChoice": "Player"
+      }
+    ],
+    "progressionDirection": "SINGLE_PLAYER",
+    "visualDirection": "SINGLE_PLAYER",
+    "mobileUx": "SINGLE_PLAYER",
+    "marketTargetDirection": "SINGLE_PLAYER",
+    "steamExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
+    "technicalAssumptions": [
+      "Unity",
+      "C#"
+    ],
+    "validationQuestions": [
+      "Is the survival system suitable for the target audience?",
+      "Is the core loop engaging and challenging?",
+      "Are the progression systems clear and easy to understand?"
+    ],
+    "openQuestions": [
+      "What are the key features that make the survival system unique?",
+      "How does the survival system handle player progression and upgrades?",
+      "What are the key challenges and opportunities for the survival system?"
+    ]
+  }
+}
