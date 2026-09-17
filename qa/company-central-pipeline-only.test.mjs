@@ -19,7 +19,7 @@ const centralWorkflows=[
 
 test('COMPANY_FLOW is the only production policy document with authority',()=>{
   assert.equal(exists('AUTONOMOUS_DEVELOPMENT_POLICY.md'),false);
-  assert.match(read('AGENTS.md'),/제작 정책 원본은 \*\*`COMPANY_FLOW\.md` 하나\*\*/);
+  assert.equal(exists('AGENTS.md'),false);
   const directive=JSON.parse(read('company-directive.json'));
   assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
 });
