@@ -1,4 +1,4 @@
-name: Skyline Rush Exact Artifact Emergency Publish
+name: Skyline Rush Normalized Publish
 
 on:
   workflow_dispatch:
@@ -8,21 +8,22 @@ permissions:
   actions: read
 
 concurrency:
-  group: skyline-rush-exact-artifact-emergency-publish
+  group: skyline-rush-normalized-publish
   cancel-in-progress: true
 
 env:
   GAME_ID: seed-roblox-obby-party-minigam-tower-of-hell
   SOURCE_REVISION: 117a87320e67c690c1c8b3972598d331cf366c56
-  ARTIFACT_IDENTITY: sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc
-  ARTIFACT_RUN_ID: '35110903876'
+  REVIEWED_ARTIFACT_IDENTITY: sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc
   SOURCE_ROOT: roblox-games/seed-roblox-obby-party-minigam-tower-of-hell
   ROBLOX_UNIVERSE_ID: '10766723635'
   ROBLOX_PLACE_ID: '129342889720619'
+  ROJO_VERSION: '7.7.0'
+  ROJO_SHA256: 22503e5839864f9d7c2171c48b536fc229f2cc4d8774c9cc149f60941d864073
 
 jobs:
   publish:
-    name: publish Skyline Rush exact reviewed artifact
+    name: rebuild validate and publish Skyline Rush
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -46,7 +47,7 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify exact reviewed Skyline evidence and target
+      - name: Verify reviewed Skyline evidence and target
         working-directory: main
         shell: bash
         run: |
@@ -61,8 +62,7 @@ jobs:
             ['platform',String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='ROBLOX'],
             ['sourceRevision',item.robloxSourceCommit===process.env.SOURCE_REVISION],
             ['buildSourceRevision',item.robloxBuildSourceRevision===process.env.SOURCE_REVISION],
-            ['artifactIdentity',item.robloxBuildArtifactIdentity===process.env.ARTIFACT_IDENTITY],
-            ['artifactRunId',Number(item.robloxRuntimeEvidence?.artifactRunId)===Number(process.env.ARTIFACT_RUN_ID)],
+            ['reviewedArtifactIdentity',item.robloxBuildArtifactIdentity===process.env.REVIEWED_ARTIFACT_IDENTITY],
             ['finalReview',item.robloxFinalReviewPassed===true],
             ['build',item.robloxBuildOrPackagePassed===true],
             ['preflight',item.robloxBuildPreflightPassed===true],
@@ -78,8 +78,10 @@ jobs:
             ['targetVerified',item.robloxPublicationTarget?.verified===true],
           ];
           const failed=checks.filter(([,ok])=>!ok).map(([name])=>name);
-          if(failed.length) throw new Error(`SKYLINE_EXACT_EVIDENCE_BLOCKED:${failed.join(',')}`);
-          console.log('SKYLINE_EXACT_EVIDENCE=PASS');
+          if(failed.length) throw new Error(`SKYLINE_REVIEWED_EVIDENCE_BLOCKED:${failed.join(',')}`);
+          if(!item.designBaselineSource) throw new Error('Skyline design baseline missing');
+          fs.writeFileSync('/tmp/skyline-baseline-path.txt',String(item.designBaselineSource));
+          console.log('SKYLINE_REVIEWED_EVIDENCE=PASS');
           console.log(`SKYLINE_TARGET=${process.env.ROBLOX_UNIVERSE_ID}/${process.env.ROBLOX_PLACE_ID}`);
           NODE
 
@@ -91,37 +93,81 @@ jobs:
           git cat-file -e "${SOURCE_REVISION}^{commit}"
           git merge-base --is-ancestor "$SOURCE_REVISION" HEAD
           git diff --quiet "$SOURCE_REVISION" HEAD -- "$SOURCE_ROOT"
+          git fetch --no-tags origin company-runtime:refs/remotes/origin/company-runtime
           node tools/vibe3-roblox-platform.mjs \
             --assemble-development-release-evidence \
             --queue ../runtime/development-queue.json \
             --game-id "$GAME_ID" \
             --output /tmp/skyline-release-evidence.json
           grep -q '"state": "PASS"' /tmp/skyline-release-evidence.json
+          baseline="../runtime/$(cat /tmp/skyline-baseline-path.txt)"
+          test -f "$baseline"
+          cp "$baseline" /tmp/skyline-baseline.json
           echo 'SKYLINE_SOURCE_AND_RELEASE_EVIDENCE=PASS'
 
-      - name: Download and verify exact immutable place artifact
-        id: package
+      - name: Install pinned Rojo
         working-directory: main
-        env:
-          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          root=/tmp/skyline-exact-artifact
-          rm -rf "$root" "$SOURCE_ROOT/.skyline-release"
-          mkdir -p "$root" "$SOURCE_ROOT/.skyline-release"
-          gh run download "$ARTIFACT_RUN_ID" --repo "$GITHUB_REPOSITORY" -n "development-roblox-package-$GAME_ID" -D "$root"
-          mapfile -t files < <(find "$root" -type f \( -name '*.rbxl' -o -name '*.rbxlx' \) | sort)
-          [ "${#files[@]}" -eq 1 ]
-          src="${files[0]}"
-          hash="$(sha256sum "$src" | awk '{print tolower($1)}')"
-          [ "sha256:$hash" = "$ARTIFACT_IDENTITY" ]
-          ext="${src##*.}"
-          dst="$SOURCE_ROOT/.skyline-release/place.$ext"
-          cp "$src" "$dst"
-          printf 'place_file=%s\n' "$dst" >> "$GITHUB_OUTPUT"
-          echo "SKYLINE_ARTIFACT_SHA256=$hash"
-          echo 'SKYLINE_EXACT_ARTIFACT=PASS'
+          root="$RUNNER_TEMP/rojo-$ROJO_VERSION"
+          archive="$RUNNER_TEMP/rojo.zip"
+          rm -rf "$root" "$archive"
+          mkdir -p "$root"
+          curl -fsSL --retry 3 --retry-all-errors \
+            "https://github.com/rojo-rbx/rojo/releases/download/v${ROJO_VERSION}/rojo-${ROJO_VERSION}-linux-x86_64.zip" \
+            -o "$archive"
+          echo "$ROJO_SHA256  $archive" | sha256sum -c -
+          unzip -q "$archive" -d "$root"
+          chmod +x "$root/rojo"
+          "$root/rojo" --version
+          printf 'ROJO_PATH=%s\n' "$root/rojo" >> "$GITHUB_ENV"
+
+      - name: Test normalized Roblox packager
+        working-directory: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tools/company-development-roblox-package.mjs
+          node --test qa/company-development-roblox-package.test.mjs
+          echo 'SKYLINE_NORMALIZED_PACKAGER_TEST=PASS'
+
+      - name: Rebuild exact reviewed source through normalized packager
+        id: package
+        working-directory: main
+        env:
+          COMPANY_RUNTIME_BRANCH: company-runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/skyline-package"
+          evidence="$RUNNER_TEMP/skyline-build-evidence.json"
+          rm -rf "$out" "$evidence"
+          mkdir -p "$out"
+          node tools/company-development-roblox-package.mjs \
+            --repo-root=. \
+            --game-id="$GAME_ID" \
+            --source-path="$SOURCE_ROOT" \
+            --source-revision="$SOURCE_REVISION" \
+            --baseline=/tmp/skyline-baseline.json \
+            --rojo="$ROJO_PATH" \
+            --output-dir="$out" \
+            --evidence="$evidence" | tee /tmp/skyline-package.log
+          grep -q '^ROBLOX_BUILD_PACKAGE=PASS:' /tmp/skyline-package.log
+          grep -q '^ROBLOX_BUILD_SCRIPT_INVENTORY=PASS:' /tmp/skyline-package.log
+          node --input-type=module <<'NODE'
+          import crypto from 'node:crypto';
+          import fs from 'node:fs';
+          const evidence=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/skyline-build-evidence.json','utf8'));
+          if(!evidence.artifactPath||!fs.existsSync(evidence.artifactPath)) throw new Error('rebuilt Skyline artifact missing');
+          const hash=crypto.createHash('sha256').update(fs.readFileSync(evidence.artifactPath)).digest('hex');
+          const identity=`sha256:${hash}`;
+          if(identity!==evidence.artifactIdentity) throw new Error('fresh build evidence hash mismatch');
+          if(identity!==process.env.REVIEWED_ARTIFACT_IDENTITY) throw new Error(`fresh exact-source artifact differs from reviewed artifact: ${identity}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`place_file=${evidence.artifactPath}\nartifact_identity=${identity}\n`);
+          console.log(`SKYLINE_REBUILT_ARTIFACT_IDENTITY=${identity}`);
+          console.log('SKYLINE_REBUILT_REVIEWED_ARTIFACT_MATCH=PASS');
+          NODE
 
       - name: Validate exact Open Cloud publish plan
         working-directory: main
@@ -185,8 +231,11 @@ jobs:
       - name: Publish result
         env:
           VERSION_NUMBER: ${{ steps.publish.outputs.version_number }}
+          ARTIFACT_IDENTITY: ${{ steps.package.outputs.artifact_identity }}
         run: |
           set -euo pipefail
           [[ "$VERSION_NUMBER" =~ ^[1-9][0-9]*$ ]]
+          [ "$ARTIFACT_IDENTITY" = "$REVIEWED_ARTIFACT_IDENTITY" ]
           echo "SKYLINE_RUSH_DEPLOYED_VERSION=$VERSION_NUMBER"
+          echo "SKYLINE_RUSH_DEPLOYED_ARTIFACT=$ARTIFACT_IDENTITY"
           echo 'SKYLINE_RUSH_DEPLOYMENT=PASS'
