@@ -215,6 +215,35 @@ jobs:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
         run: node tools/artbook-production-pipeline.mjs
+      - name: Verify design learning context consumption
+        if: steps.target.outputs.should_run == 'true'
+        env:
+          ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          const gameId=String(process.env.ARTBOOK_GAME_ID||'').trim();
+          const date=String(process.env.ARTBOOK_DATE||'').trim();
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
+          const status=JSON.parse(fs.readFileSync(path.join('design',gameId,date,'cycle-status.json'),'utf8'));
+          const events=(Array.isArray(state?.seedMaterialLearning?.events)?state.seedMaterialLearning.events:[])
+            .filter(event=>String(event?.gameId||'').trim()===gameId&&String(event?.reviewStage||'').trim()==='DESIGN_STRICT_REVIEW')
+            .slice(-8);
+          const expectedCount=events.length;
+          if(Number(status?.designLearning?.candidateCount)!==expectedCount)throw new Error(`DESIGN_LEARNING_CANDIDATE_COUNT_MISMATCH expected=${expectedCount} actual=${status?.designLearning?.candidateCount}`);
+          if(status?.designLearning?.usedAsDesignContext!==(expectedCount>0))throw new Error('DESIGN_LEARNING_CONTEXT_USAGE_MISMATCH');
+          if(status?.vibe2LearningContextUsed!==(expectedCount>0))throw new Error('VIBE2_LEARNING_CONTEXT_USAGE_MISMATCH');
+          if(status?.designLearning?.positiveTrainingEligible!==false)throw new Error('DESIGN_FEEDBACK_MUST_REMAIN_UNVALIDATED');
+          if(status?.designLearning?.validatedRuntimeRequiredForPositiveTraining!==true)throw new Error('VALIDATED_RUNTIME_REQUIREMENT_MISSING');
+          console.log(`DESIGN_LEARNING_RUNTIME_CHECK=PASS`);
+          console.log(`DESIGN_LEARNING_CONTEXT_CANDIDATES=${expectedCount}`);
+          console.log(`VIBE2_LEARNING_CONTEXT_USED=${expectedCount>0?'YES':'NO'}`);
+          console.log('POSITIVE_TRAINING_FROM_DESIGN_ONLY=NO');
+          NODE
       - name: Repair missing pre-promotion design requirements
         if: steps.target.outputs.should_run == 'true'
         env:
