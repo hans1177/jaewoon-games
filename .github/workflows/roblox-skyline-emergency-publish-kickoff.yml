@@ -1,0 +1,23 @@
+name: Kick Skyline Rush Emergency Publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/roblox-skyline-emergency-publish-kickoff.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch exact Skyline emergency publisher
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh workflow run 'roblox-skyline-emergency-final-publish.yml' --repo "$GITHUB_REPOSITORY" --ref main
+          echo 'SKYLINE_EMERGENCY_PUBLISH_DISPATCHED=YES'
