@@ -31,24 +31,28 @@ function designSchemaRetryable(error){
   const transientModelFailure=/(?:aborted due to timeout|timeout|timed out)/i.test(output);
   return schemaOrJsonFailure||transientModelFailure;
 }
-async function runWithRetry(script,{attempts=2,label='PIPELINE_STAGE',retryWhen=()=>true}={}){
+async function runWithRetry(script,{attempts='UNLIMITED',label='PIPELINE_STAGE',retryWhen=()=>true}={}){
   let lastError=null;
-  for(let attempt=1;attempt<=attempts;attempt++){
+  const unlimited=String(attempts).toUpperCase()==='UNLIMITED';
+  const limit=unlimited?Number.POSITIVE_INFINITY:Math.max(1,Number(attempts)||1);
+  let attempt=0;
+  while(attempt<limit){
+    attempt+=1;
+    const totalLabel=unlimited?'UNLIMITED':String(limit);
     try{
       await run(script,{captureFailureOutput:true});
-      if(attempt>1)console.log(`${label}_RECOVERED=YES|attempt=${attempt}/${attempts}`);
+      if(attempt>1)console.log(`${label}_RECOVERED=YES|attempt=${attempt}/${totalLabel}`);
       return;
     }catch(error){
       lastError=error;
-      console.log(`${label}_ATTEMPT_FAILED=${attempt}/${attempts}|reason=${String(error?.message||error).replace(/\s+/g,' ').trim()}`);
-      if(attempt<attempts){
-        if(!retryWhen(error)){
-          console.log(`${label}_RETRY=NO|reason=NON_RETRYABLE_FAILURE`);
-          throw error;
-        }
-        console.log(`${label}_RETRY=YES|next_attempt=${attempt+1}/${attempts}`);
-        await new Promise(resolve=>setTimeout(resolve,1000));
+      console.log(`${label}_ATTEMPT_FAILED=${attempt}/${totalLabel}|reason=${String(error?.message||error).replace(/\s+/g,' ').trim()}`);
+      if(!retryWhen(error)){
+        console.log(`${label}_RETRY=NO|reason=NON_RETRYABLE_FAILURE`);
+        throw error;
       }
+      if(!unlimited&&attempt>=limit)break;
+      console.log(`${label}_RETRY=YES|next_attempt=${attempt+1}/${totalLabel}`);
+      await new Promise(resolve=>setTimeout(resolve,Math.min(5000,1000*attempt)));
     }
   }
   throw lastError;
@@ -79,7 +83,7 @@ if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
 }else{
   const existingStatus=readCycleStatus();
   if(canReuseCompletedDesign(existingStatus))console.log('DESIGN_CYCLE_REUSED=YES');
-  else{await runWithRetry('tools/company-design-cycle.mjs',{attempts:2,label:'DESIGN_MODEL_SCHEMA',retryWhen:designSchemaRetryable});console.log('DESIGN_CYCLE_REUSED=NO');}
+  else{await runWithRetry('tools/company-design-cycle.mjs',{attempts:'UNLIMITED',label:'DESIGN_MODEL_SCHEMA',retryWhen:designSchemaRetryable});console.log('DESIGN_CYCLE_REUSED=NO');}
   await run('tools/company-baseline-gate.mjs');
   const status=readCycleStatus();
   if(status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true)console.log('DESIGN_ONLY_ARTBOOK_SKIPPED=WAIT_FOR_PROMOTION');
