@@ -140,7 +140,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/skyline-package"
+          out="$SOURCE_ROOT/.release"
           evidence="$RUNNER_TEMP/skyline-build-evidence.json"
           rm -rf "$out" "$evidence"
           mkdir -p "$out"
@@ -158,14 +158,18 @@ jobs:
           node --input-type=module <<'NODE'
           import crypto from 'node:crypto';
           import fs from 'node:fs';
+          import path from 'node:path';
           const evidence=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/skyline-build-evidence.json','utf8'));
           if(!evidence.artifactPath||!fs.existsSync(evidence.artifactPath)) throw new Error('rebuilt Skyline artifact missing');
           const hash=crypto.createHash('sha256').update(fs.readFileSync(evidence.artifactPath)).digest('hex');
           const identity=`sha256:${hash}`;
           if(identity!==evidence.artifactIdentity) throw new Error('fresh build evidence hash mismatch');
           if(identity!==process.env.REVIEWED_ARTIFACT_IDENTITY) throw new Error(`fresh exact-source artifact differs from reviewed artifact: ${identity}`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`place_file=${evidence.artifactPath}\nartifact_identity=${identity}\n`);
+          const placeFile=path.relative(process.cwd(),evidence.artifactPath).replaceAll('\\','/');
+          if(!placeFile.startsWith('roblox-games/')) throw new Error(`rebuilt Skyline artifact outside Roblox source root: ${placeFile}`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`place_file=${placeFile}\nartifact_identity=${identity}\n`);
           console.log(`SKYLINE_REBUILT_ARTIFACT_IDENTITY=${identity}`);
+          console.log(`SKYLINE_REBUILT_PLACE_FILE=${placeFile}`);
           console.log('SKYLINE_REBUILT_REVIEWED_ARTIFACT_MATCH=PASS');
           NODE
 
