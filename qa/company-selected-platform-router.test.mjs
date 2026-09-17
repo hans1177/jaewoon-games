@@ -27,6 +27,7 @@ import {createRobloxPlatformContract} from '../tools/vibe3-roblox-platform.mjs';
 test('one router recognizes all selected platforms and aliases',()=>{
   assert.deepEqual(SELECTED_PLATFORMS,['ROBLOX','UNITY','FORTNITE_UEFN']);
   assert.equal(DEVELOPMENT_GAME_WIP_MAX,20);
+  assert.equal(WEB_VALIDATION_SCHEMA_VERSION,15,'selected-platform admission must stay bound to the current Web schema 15 contract');
   assert.equal(normalizeSelectedPlatform('unity-android'),'UNITY');
   assert.equal(normalizeSelectedPlatform('uefn'),'FORTNITE_UEFN');
   assert.equal(resolveSelectedPlatform({targetPlatform:'ROBLOX'}),'ROBLOX');
