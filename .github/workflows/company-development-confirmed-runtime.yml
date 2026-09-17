@@ -718,6 +718,7 @@ jobs:
     name: post-Web artbook and homepage eligibility
     needs: web-gate
     if: always() && needs.web-gate.result == 'success'
+    continue-on-error: true
     concurrency:
       group: company-development-runtime-state-writer
       cancel-in-progress: false
