@@ -1,5 +1,5 @@
 // 파일명: assets/homepage-enhancements.js
-// 역할: 기존 대문 껍데기는 그대로 두고, 서버 개발 큐가 읽히면 점수순 TOP30만 안전하게 덮어쓴다.
+// 역할: 작업 전 대문 껍데기는 그대로 유지하고 gameGrid의 개발중 게임 카드만 서버 점수순으로 갱신한다.
 const RUNTIME_QUEUE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime/development-queue.json';
 const MAIN_CATALOG='https://raw.githubusercontent.com/hans1177/jaewoon-games/main/game-catalog.json';
 const TOP_LIMIT=30;
@@ -46,19 +46,13 @@ function normalizePath(row,game){
   return raw?`/${raw}/`:'';
 }
 
-function renderTop30(queue,catalog){
+function renderGameCards(queue,catalog){
   const grid=document.getElementById('gameGrid');
   if(!grid)return false;
   const rows=top30(queue);
   if(!rows.length)return false;
   const games=catalogMap(catalog||{});
 
-  const heading=document.querySelector('#gameHub .sectionHead h2');
-  const count=document.querySelector('#gameHub .sectionHead span');
-  if(heading)heading.textContent='게임 TOP30';
-  if(count)count.textContent=`개발중 · 서버 점수순 ${rows.length} / ${TOP_LIMIT}`;
-
-  grid.style.display='grid';
   grid.innerHTML=rows.map((row,index)=>{
     const base=games.get(gameId(row))||{};
     const name=row.gameName||row.name||base.name||gameId(row);
@@ -67,22 +61,9 @@ function renderTop30(queue,catalog){
     const score=scoreOf(row);
     const path=normalizePath(row,base);
     const action=path?`<a class="cardBtn primary" href="${esc(path)}">게임 시작</a>`:'<span class="cardBtn off">개발중</span>';
-    return `<article class="gameCard" data-game-id="${esc(gameId(row))}" data-rank="${index+1}" data-score="${esc(score)}"><div class="gameArt"><img src="${esc(image)}" alt="${esc(name)}" loading="lazy"><div class="artName"><b>#${index+1} ${esc(name)}</b><small>${esc(score)}점</small></div></div><div class="gameInfo"><div class="badges"><span class="badge stateDev">개발중</span><span class="badge platformWeb">${esc(score)}점</span></div><p>${esc(description)}</p><div class="stageLine">서버 점수순 · 5초 자동 동기화</div><div class="cardActions">${action}</div></div></article>`;
+    return `<article class="gameCard" data-game-id="${esc(gameId(row))}" data-rank="${index+1}" data-score="${esc(score)}"><div class="gameArt"><img src="${esc(image)}" alt="${esc(name)}" loading="lazy"><div class="artName"><b>#${index+1} ${esc(name)}</b><small>${esc(score)}점</small></div></div><div class="gameInfo"><div class="badges"><span class="badge stateDev">개발중</span><span class="badge platformWeb">${esc(score)}점</span></div><p>${esc(description)}</p><div class="stageLine">서버 점수순</div><div class="cardActions">${action}</div></div></article>`;
   }).join('');
-
-  document.documentElement.dataset.homeTop30Count=String(rows.length);
-  document.documentElement.dataset.homePrimaryGameSource='DEVELOPMENT_QUEUE';
-  document.documentElement.dataset.homeSyncAt=new Date().toISOString();
   return true;
-}
-
-function bindApkInstall(){
-  const button=document.getElementById('appInstallBtn');
-  if(!button||button.dataset.apkBound==='1')return;
-  button.dataset.apkBound='1';
-  button.disabled=false;
-  button.textContent='재운컴퍼니 APK 설치';
-  button.addEventListener('click',event=>{event.preventDefault();window.location.href='/downloads/jaewoon-company.apk';});
 }
 
 async function refresh(){
@@ -90,17 +71,13 @@ async function refresh(){
   refreshing=true;
   try{
     const queue=await tryJson(RUNTIME_QUEUE);
-    if(!queue){
-      document.documentElement.dataset.homePrimaryGameSource='LEGACY_FALLBACK';
-      return;
-    }
+    if(!queue)return;
     const catalog=await tryJson(MAIN_CATALOG);
-    renderTop30(queue,catalog||{});
+    renderGameCards(queue,catalog||{});
   }finally{refreshing=false;}
 }
 
 async function main(){
-  bindApkInstall();
   await refresh();
   setInterval(()=>{if(!document.hidden)refresh();},SYNC_MS);
   window.addEventListener('focus',refresh);
