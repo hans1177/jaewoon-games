@@ -5,6 +5,7 @@ import fs from 'node:fs';
 
 const source=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
 const contract=fs.readFileSync('tools/company-web-validation-evidence-contract.mjs','utf8');
+const strictReview=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
 
 test('DEVELOPMENT_CONFIRMED consumes canonical schema15 Web evidence and independent 90-point promotion revalidation',()=>{
   assert.match(source,/web-gameplay-validation\.json/);
@@ -45,6 +46,15 @@ test('ordinary gate failure is active unlimited repair, not a waiting terminal s
   assert.match(source,/REVIEW_CORE_LOOP_AND_SYSTEM_CONNECTIONS/);
   assert.match(source,/REBUILD_FROM_APPROVED_DESIGN_AND_CONTINUE_REPAIR/);
   assert.match(source,/DEVELOPMENT_REPAIR_LIMIT=UNLIMITED/);
+});
+
+test('composite genre is OR while multiplayer remains an independent hard gate',()=>{
+  assert.match(contract,/const passingDeclared=declaredProfiles\.filter/);
+  assert.match(contract,/pass=passingDeclared\.length>0&&detectedCompatible/);
+  assert.match(contract,/ANY_ONE_DECLARED_GENRE_MAY_PASS/);
+  assert.match(strictReview,/const multiRequired=multiKnown&&multiMode!=='SINGLE'/);
+  assert.match(strictReview,/Number\(runtime\?\.multiplayer\?\.participants\)>=2&&runtime\?\.multiplayer\?\.meaningfulLoopPassed===true/);
+  assert.match(strictReview,/if\(!multiplayerOk\)hard\.push\('MULTIPLAYER_MISSING'\)/);
 });
 
 test('Web score and target-platform implementation score are stored separately',()=>{
