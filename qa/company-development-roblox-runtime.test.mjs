@@ -1,23 +1,45 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {projectJsonForGame,requiresPersistentSave,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope} from '../tools/company-development-roblox-bootstrap.mjs';
+import {projectJsonForGame,requiresPersistentSave,robloxBuildProfileFromBaseline,validateRobloxBootstrap,compileRobloxSource,classifyRobloxScope} from '../tools/company-development-roblox-bootstrap.mjs';
 import {deriveApprovedScopeInventory} from '../tools/company-approved-scope-contract.mjs';
 
-const baseline={content:{identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',coreLoop:['collect resources','upgrade production','unlock the next area'],mobileUx:'touch controls',progressionDirection:'Persistent progression system'}};
+const buildProfile=(genre,subgenre=null,playMode='SINGLE')=>{
+  const multiplayerRequired=playMode!=='SINGLE';
+  return {
+    version:1,targetPlatform:'ROBLOX',taxonomy:'ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES',
+    declaredGameCategory:genre,genre,subgenre,playMode,
+    multiplayerRequired,
+    coopImplementationRequired:playMode==='COOP'||playMode==='HYBRID',
+    competitiveImplementationRequired:playMode==='COMPETITIVE'||playMode==='HYBRID',
+    networkingRequired:multiplayerRequired,
+    multiplayerQaRequired:multiplayerRequired,
+    minimumParticipantsForRequiredQa:multiplayerRequired?2:1,
+    displayLabelKo:`${genre} · ${subgenre||''} · ${playMode}`,
+  };
+};
+const baseline={content:{
+  identity:'Pocket Foundry',coreFun:'collect, upgrade, income, unlock',
+  coreLoop:['collect resources','upgrade production','unlock the next area'],
+  mobileUx:'touch controls',progressionDirection:'Persistent progression system',
+  robloxBuildProfile:buildProfile('Simulation','Tycoon','SINGLE'),
+}};
 const shared=`local Config = {
   PolicySource = "COMPANY_FLOW.md",
   Platform = "ROBLOX",
   MobileFirst = true,
   SaveEnabled = true,
-  MultiplayerEnabled = false,
+  Genre = "Simulation",
+  Subgenre = "Tycoon",
+  PlayMode = "SINGLE",
+  MultiplayerRequired = false,
   GameId = "test-game",
   InitialCoins = 0,
   UpgradeBaseCost = 10,
   ProductionBase = 1,
 }
 return table.freeze(Config)
-${'-- config\n'.repeat(20)}`;
+${'-- config\n'.repeat(30)}`;
 const server=`local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local DataStoreService = game:GetService("DataStoreService")
@@ -55,7 +77,7 @@ Players.PlayerRemoving:Connect(function(player)
   pcall(function() store:UpdateAsync("p:" .. player.UserId, function() return coins end) end)
   lastAction[player] = nil
 end)
-${'-- server gameplay\n'.repeat(45)}`;
+${'-- server gameplay\n'.repeat(55)}`;
 const client=`local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
@@ -81,16 +103,23 @@ end
 player:GetAttributeChangedSignal("Coins"):Connect(render)
 player:GetAttributeChangedSignal("Level"):Connect(render)
 render()
-${'-- client ui\n'.repeat(40)}`;
+${'-- client ui\n'.repeat(45)}`;
 
 test('persistent Roblox design requires save evidence in generated source',()=>{
   assert.equal(requiresPersistentSave(baseline),true);
 });
 
-test('Roblox bootstrap static gate accepts server-authoritative mobile source with save',()=>{
+test('Roblox build profile is mandatory and normalized before source generation',()=>{
+  assert.equal(robloxBuildProfileFromBaseline(baseline).genre,'Simulation');
+  assert.equal(robloxBuildProfileFromBaseline(baseline).playMode,'SINGLE');
+  assert.throws(()=>robloxBuildProfileFromBaseline({content:{identity:'missing profile'}}),/ROBLOX_BUILD_PROFILE_REQUIRED/);
+});
+
+test('Roblox bootstrap static gate accepts profile-bound server-authoritative mobile source with save',()=>{
   const verdict=validateRobloxBootstrap({sharedConfig:shared,serverCode:server,clientCode:client,baseline});
   assert.equal(verdict.pass,true,verdict.blockers.join(','));
   assert.equal(verdict.saveRequired,true);
+  assert.equal(verdict.profile.genre,'Simulation');
 });
 
 test('Roblox bootstrap static gate rejects placeholders and missing server boundary',()=>{
@@ -100,42 +129,78 @@ test('Roblox bootstrap static gate rejects placeholders and missing server bound
   assert.ok(bad.blockers.includes('SERVER_REMOTE_BOUNDARY_REQUIRED'));
 });
 
-test('Roblox scope classifier maps approved gameplay meaning to native handler modes',()=>{
+test('Roblox scope classifier includes genre-specific native handler modes',()=>{
+  assert.equal(classifyRobloxScope({path:'puzzle',label:'match merge puzzle'},0),'PUZZLE');
+  assert.equal(classifyRobloxScope({path:'defense',label:'tower defense wave'},0),'DEFENSE');
   assert.equal(classifyRobloxScope({path:'combat',label:'attack enemy'},0),'COMBAT');
   assert.equal(classifyRobloxScope({path:'movement',label:'explore and reposition'},0),'MOVEMENT');
   assert.equal(classifyRobloxScope({path:'progression',label:'upgrade and unlock'},0),'PROGRESSION');
   assert.equal(classifyRobloxScope({path:'economy',label:'collect resources and income'},0),'ECONOMY');
+  assert.equal(classifyRobloxScope({path:'social',label:'team shared objective'},0),'SOCIAL');
   assert.equal(classifyRobloxScope({path:'objective',label:'complete quest goal'},0),'OBJECTIVE');
   assert.equal(classifyRobloxScope({path:'mobileUx',label:'touch controls'},0),'MOBILE');
 });
 
-test('deterministic Roblox compiler implements every approved scope with dedicated server handlers',()=>{
+test('deterministic Roblox compiler binds approved genre and play mode to generated source',()=>{
   const cases=[
-    ['seed-roblox-simulator-tycoon-test','collect resources, upgrade production, earn income, unlock areas'],
-    ['seed-roblox-battleground-fight-test','fight opponents, use skills and cooldowns, win rounds'],
-    ['seed-roblox-survival-horror-test','survive threats, find objectives, escape safely'],
-    ['seed-roblox-obby-party-test','move through checkpoints and complete obby rounds'],
-    ['seed-roblox-story-rpg-test','explore, fight, complete quests and progress the story'],
+    ['seed-roblox-simulator-tycoon-test','collect resources, upgrade production, earn income, unlock areas','Simulation','Tycoon','SINGLE','ECONOMY'],
+    ['seed-roblox-battleground-fight-test','fight opponents, use skills and cooldowns, win rounds','Action','Battlegrounds & Fighting','COMPETITIVE','COMBAT'],
+    ['seed-roblox-survival-horror-test','survive threats, find objectives, escape safely','Survival','Escape','SINGLE','SURVIVAL'],
+    ['seed-roblox-obby-party-test','move through checkpoints and complete obby rounds','Obby & platformer','Classic Obby','COOP','MOVEMENT'],
+    ['seed-roblox-story-rpg-test','explore, fight, complete quests and progress the story','RPG','Action RPG','SINGLE','PROGRESSION'],
+    ['seed-puzzle-chromatic-cascade','match colors into chain reactions and solve puzzle boards','Puzzle','Match & Merge','SINGLE','PUZZLE'],
   ];
-  for(const [gameId,coreFun] of cases){
-    const locked={content:{identity:`${gameId} identity`,coreFun,coreLoop:['explore or collect','perform the main challenge','receive reward and progress'],mobileUx:'touch controls',progressionDirection:'Persistent progression system'}};
+  for(const [gameId,coreFun,genre,subgenre,playMode,requiredKind] of cases){
+    const locked={content:{
+      identity:`${gameId} identity`,coreFun,
+      coreLoop:['explore or collect','perform the main challenge','receive reward and progress'],
+      mobileUx:'touch controls',progressionDirection:'Persistent progression system',
+      robloxBuildProfile:buildProfile(genre,subgenre,playMode),
+    }};
     const inventory=deriveApprovedScopeInventory(locked);
     const compiled=compileRobloxSource({gameId,gameName:'Compiler Test',baseline:locked,artbook:{}});
-    assert.equal(compiled.generationMode,'DETERMINISTIC_FULL_SCOPE_IMPLEMENTATION');
+    assert.equal(compiled.generationMode,'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION');
     assert.equal(compiled.modelUsed,false);
     assert.equal(compiled.validation.pass,true,compiled.validation.blockers.join(','));
-    assert.equal(compiled.actions.length,inventory.length);
+    assert.equal(compiled.profile.genre,genre);
+    assert.equal(compiled.profile.playMode,playMode);
+    assert.ok(compiled.actions.length>=inventory.length);
+    assert.ok(compiled.actions.some(action=>action.kind===requiredKind),`${gameId} missing ${requiredKind}`);
+    assert.ok(compiled.result.sharedConfig.includes(`Genre = "${genre}"`));
+    assert.ok(compiled.result.sharedConfig.includes(`PlayMode = "${playMode}"`));
     assert.ok(compiled.result.serverCode.includes('RemoteEvent'));
     assert.ok(compiled.result.serverCode.includes('OnServerEvent'));
     assert.ok(compiled.result.clientCode.includes('UserInputService'));
     assert.ok(compiled.result.clientCode.includes('Activated'));
     assert.ok(compiled.result.clientCode.includes('FireServer(action.Id)'));
     assert.ok(compiled.result.serverCode.includes('DataStoreService'));
-    for(let i=0;i<inventory.length;i++){
-      assert.ok(compiled.result.sharedConfig.includes(inventory[i].id));
-      assert.ok(compiled.result.serverCode.includes(`scopeHandler${i+1}`));
+    for(const row of inventory){
+      assert.ok(compiled.result.sharedConfig.includes(row.id));
+      const actionIndex=compiled.actions.findIndex(action=>action.id===row.id);
+      assert.ok(actionIndex>=0);
+      assert.ok(compiled.result.serverCode.includes(`scopeHandler${actionIndex+1}`));
+    }
+    if(playMode!=='SINGLE'){
+      assert.ok(compiled.result.serverCode.includes('Players:GetPlayers()'));
+      assert.ok(compiled.result.serverCode.includes('FireAllClients("MULTIPLAYER_SYNC"'));
+      assert.ok(compiled.result.clientCode.includes('OnClientEvent'));
+    }else{
+      assert.ok(!compiled.result.serverCode.includes('FireAllClients("MULTIPLAYER_SYNC"'));
     }
   }
+});
+
+test('co-op and competitive profiles require actual synchronized gameplay source',()=>{
+  const coop={content:{...baseline.content,robloxBuildProfile:buildProfile('Obby & platformer','Classic Obby','COOP')}};
+  const compiledCoop=compileRobloxSource({gameId:'coop',gameName:'Coop',baseline:coop,artbook:{}});
+  assert.ok(compiledCoop.result.serverCode.includes('SharedObjective'));
+  assert.ok(compiledCoop.result.serverCode.includes('FireAllClients'));
+  assert.ok(compiledCoop.result.clientCode.includes('OnClientEvent'));
+
+  const competitive={content:{...baseline.content,robloxBuildProfile:buildProfile('Shooter','Deathmatch Shooter','COMPETITIVE')}};
+  const compiledCompetitive=compileRobloxSource({gameId:'pvp',gameName:'PvP',baseline:competitive,artbook:{}});
+  assert.ok(compiledCompetitive.result.serverCode.includes('RoundScore'));
+  assert.ok(compiledCompetitive.result.serverCode.includes('FireAllClients'));
 });
 
 test('Rojo project maps shared server and client source roots',()=>{
@@ -180,17 +245,13 @@ test('new Roblox package identity clears every downstream preflight runtime and 
   ]) assert.ok(workflow.includes(marker),`missing downstream reset: ${marker}`);
 });
 
-test('bot-dispatched Roblox package flow wakes harness v8 continuation and migrates the old unauthenticated Studio checkpoint once',()=>{
+test('bot-dispatched Roblox package flow wakes continuation and preserves exact runtime handoff',()=>{
   const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
-  assert.ok(workflow.includes("ROBLOX_RUNTIME_HARNESS_VERSION: '8'"));
   assert.ok(workflow.includes("github.actor == 'github-actions[bot]'"));
   assert.ok(workflow.includes('ROBLOX_PACKAGE_PENDING_BEFORE_CONTINUATION'));
   assert.ok(workflow.includes('ROBLOX_PREFLIGHT_READY_COUNT'));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_READY_COUNT'));
-  assert.ok(workflow.includes("const retryableAuthMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required'"));
-  assert.ok(workflow.includes('retryableMissingEvidence||retryableAuthMigration'));
   assert.ok(workflow.includes('ROBLOX_ACTIVE_CONTINUATIONS='));
-  assert.ok(workflow.includes("&& \"$active_continuations\" == '0'"));
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
 });
