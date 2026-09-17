@@ -121,6 +121,7 @@ jobs:
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
             const state=String(item.canonicalState||'').toUpperCase();
             if(state==='DEVELOPMENT_BLOCKED')return false;
+            if(state.endsWith('_REPAIR_REQUIRED'))return true;
             return !freshWeb80(item);
           });
           const requestedItem=requestedGameId?(q.items||[]).find(item=>item.gameId===requestedGameId):null;
@@ -130,6 +131,7 @@ jobs:
           const rows=selected.map(item=>{
             const canonicalState=String(item.canonicalState||'').toUpperCase();
             const runtimeStage=canonicalState==='WAITING_WEB_FINAL_CONTENT_DEPTH'?'final-content-depth':'initial-cycle';
+            const forceWebRepair=canonicalState.endsWith('_REPAIR_REQUIRED');
             return {
               gameId:item.gameId,
               gameName:item.gameName||item.gameId,
@@ -139,7 +141,7 @@ jobs:
               targetSourcePath:item.targetSourcePath||item.sourcePath||'',
               webSourcePath:item.webSourcePath||item.optionalWebSourcePath||`web-games/${item.gameId}`,
               runtimeStage,
-              existingWebValidated:Boolean(item.webValidationPassedAt),
+              existingWebValidated:Boolean(item.webValidationPassedAt)&&!forceWebRepair,
               webInitialCyclePassed:item.webInitialCyclePassed===true,
               webInitialCyclePassedAt:item.webInitialCyclePassedAt||'',
               webInitialCycleEvidencePath:item.webInitialCycleEvidencePath||'',
@@ -163,6 +165,7 @@ jobs:
           console.log(`WEB_INITIAL_TARGET_COUNT=${rows.filter(x=>x.runtimeStage==='initial-cycle').length}`);
           console.log(`WEB_FINAL_CONTENT_DEPTH_TARGET_COUNT=${rows.filter(x=>x.runtimeStage==='final-content-depth').length}`);
           console.log(`WEB_EXISTING_REVALIDATION_TARGET_COUNT=${rows.filter(x=>x.existingWebValidated).length}`);
+          console.log(`WEB_REPAIR_TARGET_COUNT=${rows.filter(x=>!x.existingWebValidated&&x.webInitialCyclePassed).length}`);
           console.log(`WEB_PILOT_TARGET=${requestedGameId||'NONE'}`);
           console.log('WEB_HOMEPAGE_THRESHOLD=80');
           console.log('WEB_VALIDATION_SCHEMA_MINIMUM=13');
@@ -405,7 +408,7 @@ jobs:
               result={gameId:item.gameId,pass:true,update:{
                 status:formalPass?'PENDING':'ACTIVE',
                 currentStep:formalPass?'TARGET_PLATFORM_SOURCE_BIND':'WEB_STRICT_IMPROVEMENT',
-                canonicalState:formalPass?'PENDING_SELECTED_PLATFORM_BIND':'WAITING_WEB_STRICT_IMPROVEMENT',
+                canonicalState:formalPass?'PENDING_SELECTED_PLATFORM_BIND':'WEB_STRICT_REPAIR_REQUIRED',
                 sourcePath:formalPass?item.targetSourcePath:item.webInitialCycleSourcePath,
                 webSourcePath:item.webInitialCycleSourcePath,webValidationRequired:true,musicValidationRequired:true,
                 webValidationPassedAt:stamp,musicValidationPassed:true,webValidationEvidencePath:finalEvidenceRelative,
@@ -478,6 +481,16 @@ jobs:
               console.log('WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO');
             }
           }
+          if(result?.pass!==true&&result?.update){
+            const state=String(result.update.canonicalState||'').toUpperCase();
+            if(state==='WAITING_WEB_GAMEPLAY_VALIDATION'||state==='WAITING_WEB_GAMEPLAY_REVALIDATION')result.update.canonicalState='WEB_GAMEPLAY_REPAIR_REQUIRED';
+            else if(state==='RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION')result.update.canonicalState='WEB_CONTENT_EXPANSION_REPAIR_REQUIRED';
+            else if(state==='WAITING_WEB_STRICT_IMPROVEMENT')result.update.canonicalState='WEB_STRICT_REPAIR_REQUIRED';
+            result.update.currentStep='FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP';
+            result.update.homepageTestVerdict=result.update.canonicalState;
+            console.log(`WEB_FAILURE_REPAIR_STATE=${result.update.canonicalState}`);
+            console.log('WEB_FAILURE_WAITING_TERMINAL=NO');
+          }
           fs.writeFileSync(path.join(resultsRoot,`${safe}.json`),JSON.stringify(result,null,2)+'\n');
           NODE
 
@@ -546,6 +559,7 @@ jobs:
           const rowFor=item=>{
             const canonicalState=String(item?.canonicalState||'').toUpperCase();
             const runtimeStage=canonicalState==='WAITING_WEB_FINAL_CONTENT_DEPTH'?'final-content-depth':'initial-cycle';
+            const forceWebRepair=canonicalState.endsWith('_REPAIR_REQUIRED');
             return {
               gameId:item?.gameId,
               gameName:item?.gameName||item?.gameId,
@@ -555,7 +569,7 @@ jobs:
               targetSourcePath:item?.targetSourcePath||item?.sourcePath||'',
               webSourcePath:item?.webSourcePath||item?.optionalWebSourcePath||`web-games/${item?.gameId}`,
               runtimeStage,
-              existingWebValidated:Boolean(item?.webValidationPassedAt),
+              existingWebValidated:Boolean(item?.webValidationPassedAt)&&!forceWebRepair,
               webInitialCyclePassed:item?.webInitialCyclePassed===true,
               webInitialCyclePassedAt:item?.webInitialCyclePassedAt||'',
               webInitialCycleEvidencePath:item?.webInitialCycleEvidencePath||'',
@@ -658,8 +672,8 @@ jobs:
             const finalStage=target.runtimeStage==='final-content-depth';
             const reworkInitial=!finalStage&&(target.webInitialCyclePassed===true||target.existingWebValidated===true);
             const missing=finalStage
-              ?{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION',sourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webSourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:true,webInitialCyclePassedAt:target.webInitialCyclePassedAt||'',webInitialCycleEvidencePath:target.webInitialCycleEvidencePath||'',webInitialCycleSourcePath:target.webInitialCycleSourcePath||'',webInitialCycleSourceIndexSha256:target.webInitialCycleSourceIndexSha256||'',webInitialCycleDesignBaselineSha256:target.webInitialCycleDesignBaselineSha256||'',webInitialCycleValidationSchemaVersion:Number(target.webInitialCycleValidationSchemaVersion||0)||0,webInitialCycleStrictScore:Number(target.webInitialCycleStrictScore||0)||0,webInitialCycleStrictReviewPath:target.webInitialCycleStrictReviewPath||'',webInitialCycleSourceRevision:target.webInitialCycleSourceRevision||'',webInitialCycleMusicValidationPassed:target.webInitialCycleMusicValidationPassed===true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WAITING_CONTENT_DEVELOPMENT_REWORK',formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:['web-content-development-rework:web-worker-result-missing'],webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp}}
-              :{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:reworkInitial?'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP':'WEB_GAMEPLAY_AND_MUSIC_VALIDATION',canonicalState:reworkInitial?'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION':'WAITING_WEB_GAMEPLAY_REVALIDATION',sourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webSourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:reworkInitial,webInitialCyclePassedAt:reworkInitial?(target.webInitialCyclePassedAt||''):'',webInitialCycleEvidencePath:reworkInitial?(target.webInitialCycleEvidencePath||''):'',webInitialCycleSourcePath:reworkInitial?(target.webInitialCycleSourcePath||target.webSourcePath):'',webInitialCycleSourceIndexSha256:reworkInitial?(target.webInitialCycleSourceIndexSha256||''):'',webInitialCycleDesignBaselineSha256:reworkInitial?(target.webInitialCycleDesignBaselineSha256||''):'',webInitialCycleValidationSchemaVersion:reworkInitial?(Number(target.webInitialCycleValidationSchemaVersion||0)||0):0,webInitialCycleStrictScore:reworkInitial?(Number(target.webInitialCycleStrictScore||0)||0):0,webInitialCycleStrictReviewPath:reworkInitial?(target.webInitialCycleStrictReviewPath||''):'',webInitialCycleSourceRevision:reworkInitial?(target.webInitialCycleSourceRevision||''):'',webInitialCycleMusicValidationPassed:reworkInitial&&target.webInitialCycleMusicValidationPassed===true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:reworkInitial?'WAITING_CONTENT_DEVELOPMENT_REWORK':'WAITING_WEB_GAMEPLAY_REVALIDATION',formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:[reworkInitial?'web-content-development-rework:web-worker-result-missing':'web-gameplay-music:web-worker-result-missing'],webValidationLastAttemptAt:stamp,updatedAt:stamp}};
+              ?{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED',sourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webSourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:true,webInitialCyclePassedAt:target.webInitialCyclePassedAt||'',webInitialCycleEvidencePath:target.webInitialCycleEvidencePath||'',webInitialCycleSourcePath:target.webInitialCycleSourcePath||'',webInitialCycleSourceIndexSha256:target.webInitialCycleSourceIndexSha256||'',webInitialCycleDesignBaselineSha256:target.webInitialCycleDesignBaselineSha256||'',webInitialCycleValidationSchemaVersion:Number(target.webInitialCycleValidationSchemaVersion||0)||0,webInitialCycleStrictScore:Number(target.webInitialCycleStrictScore||0)||0,webInitialCycleStrictReviewPath:target.webInitialCycleStrictReviewPath||'',webInitialCycleSourceRevision:target.webInitialCycleSourceRevision||'',webInitialCycleMusicValidationPassed:target.webInitialCycleMusicValidationPassed===true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED',formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:['web-content-development-rework:web-worker-result-missing'],webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp}}
+              :{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:reworkInitial?'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED':'WEB_GAMEPLAY_REPAIR_REQUIRED',sourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webSourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:reworkInitial,webInitialCyclePassedAt:reworkInitial?(target.webInitialCyclePassedAt||''):'',webInitialCycleEvidencePath:reworkInitial?(target.webInitialCycleEvidencePath||''):'',webInitialCycleSourcePath:reworkInitial?(target.webInitialCycleSourcePath||target.webSourcePath):'',webInitialCycleSourceIndexSha256:reworkInitial?(target.webInitialCycleSourceIndexSha256||''):'',webInitialCycleDesignBaselineSha256:reworkInitial?(target.webInitialCycleDesignBaselineSha256||''):'',webInitialCycleValidationSchemaVersion:reworkInitial?(Number(target.webInitialCycleValidationSchemaVersion||0)||0):0,webInitialCycleStrictScore:reworkInitial?(Number(target.webInitialCycleStrictScore||0)||0):0,webInitialCycleStrictReviewPath:reworkInitial?(target.webInitialCycleStrictReviewPath||''):'',webInitialCycleSourceRevision:reworkInitial?(target.webInitialCycleSourceRevision||''):'',webInitialCycleMusicValidationPassed:reworkInitial&&target.webInitialCycleMusicValidationPassed===true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:reworkInitial?'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED':'WEB_GAMEPLAY_REPAIR_REQUIRED',formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:[reworkInitial?'web-content-development-rework:web-worker-result-missing':'web-gameplay-music:web-worker-result-missing'],webValidationLastAttemptAt:stamp,updatedAt:stamp}};
             results.push(missing);
             byId.set(target.gameId,missing);
           }
@@ -907,7 +921,7 @@ jobs:
             const legacyActive=status==='ACTIVE'&&step==='UNITY_ANDROID_TECHNICAL_VALIDATION';
             const pending=status==='PENDING';
             const waiting=status==='ACTIVE'&&step==='TARGET_PLATFORM_TECHNICAL_VALIDATION';
-            const retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'&&state==='WAITING_TARGET_PLATFORM_REVALIDATION';
+            const retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'&&(state==='TARGET_PLATFORM_REPAIR_REQUIRED'||state==='WAITING_TARGET_PLATFORM_REVALIDATION'||state==='WAITING_TARGET_PLATFORM_VALIDATION');
             if(!pending&&!legacyActive&&!waiting&&!retrySourceBind)continue;
             const game=(catalog.games||[]).find(x=>x.id===item.gameId)||{};
             const platform=resolveSelectedPlatform(item,game);
@@ -921,7 +935,7 @@ jobs:
             const blockers=[...precheck.errors];
             if(adapter&&adapter.existingExecutionPath==null)blockers.push('platform-runtime-executor-not-configured');
             if(blockers.length){
-              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'WAITING_TARGET_PLATFORM_VALIDATION',platformAdapter:adapter?.adapterPath||null,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
+              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter?.adapterPath||null,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
               continue;
             }
             platforms.add(platform);
