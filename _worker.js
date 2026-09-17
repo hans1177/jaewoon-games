@@ -60,7 +60,7 @@ async function handleGemini(request,env){
 }
 
 async function handleVibeWorkflowObservation(request,env,url){
-  if(request.method!=='GET')return aiJson({error:'method_not_allowed'},405);
+  if(request.method!!=='GET')return aiJson({error:'method_not_allowed'},405);
   const headSha=clipText(url.searchParams.get('head_sha'),40).toLowerCase();
   if(!/^[0-9a-f]{40}$/.test(headSha))return aiJson({error:'invalid_head_sha'},400);
   const headers={Accept:'application/vnd.github+json','User-Agent':'jaewoon-vibe-maker','X-GitHub-Api-Version':'2022-11-28'};
@@ -118,8 +118,21 @@ function productionCategory(productionClass){
   if(productionClass==='DEVELOPMENT_CONFIRMED')return 'development-confirmed';
   return 'design-only';
 }
+function releaseEvidenceConfirmed(...entities){
+  for(const entity of entities){
+    if(!entity)continue;
+    if(entity.releasePublished===true||entity.platformReleasePublished===true||entity.productionReleased===true)return true;
+    if(entity.robloxReleaseEvidence?.published===true&&entity.robloxReleaseEvidence?.verified!==false)return true;
+    if(entity.robloxPublicationTarget?.published===true&&entity.robloxPublicationTarget?.verified===true)return true;
+    if(entity.unityReleaseEvidence?.published===true&&entity.unityReleaseEvidence?.verified!==false)return true;
+    if(entity.playStoreReleaseEvidence?.published===true&&entity.playStoreReleaseEvidence?.verified!==false)return true;
+    if(entity.uefnReleaseEvidence?.published===true&&entity.uefnReleaseEvidence?.verified!==false)return true;
+    if(entity.fortniteReleaseEvidence?.published===true&&entity.fortniteReleaseEvidence?.verified!==false)return true;
+  }
+  return false;
+}
 function stageFor(project,seed,productionClass,platform){
-  if(productionClass==='RELEASE_CONFIRMED')return `출시확정 · ${platform||'플랫폼 선택 필요'}`;
+  if(productionClass==='RELEASE_CONFIRMED')return `출시 · ${platform||'플랫폼 선택 필요'}`;
   if(productionClass==='DEVELOPMENT_CONFIRMED')return `개발확정 · ${platform||'플랫폼 선택 필요'}`;
   const state=String(seed?.lifecycleState||'').replaceAll('_',' ').trim();
   if(state&&state!=='DESIGN ONLY')return `기획 · ${state}`;
@@ -194,7 +207,9 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
     const project=projectBySlug.get(id)||null;
     const seed=seedById.get(id)||null;
     const queue=queueById.get(id)||null;
-    const productionClass=String(base.productionClass||queue?.productionClass||project?.productionClass||seed?.productionClass||'DESIGN_ONLY').toUpperCase();
+    const rawProductionClass=String(base.productionClass||queue?.productionClass||project?.productionClass||seed?.productionClass||'DESIGN_ONLY').toUpperCase();
+    const releaseVerified=releaseEvidenceConfirmed(base,queue,project,seed);
+    const productionClass=rawProductionClass==='RELEASE_CONFIRMED'&&!releaseVerified?'DEVELOPMENT_CONFIRMED':rawProductionClass;
     const platform=normalizePlatform(base.selectedPlatform||queue?.selectedPlatform||queue?.targetPlatform||project?.selectedPlatform||project?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||base.productionTarget);
     const meta=categoryMeta(seed?.GAME_CATEGORY);
     const sourcePath=String(project?.sourcePath||queue?.sourcePath||'').replace(/^\/+|\/+$/g,'');
@@ -219,7 +234,7 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
       homepageWebPlayable:Boolean(base.homepageWebPlayable||hasProjectWeb),
       homepageCategory:productionCategory(productionClass),
       productionClass,
-      productionClassSource:base.productionClassSource||queue?.productionClassSource||project?.productionClassSource||seed?.productionClassSource||'COMPANY_RUNTIME',
+      productionClassSource:rawProductionClass==='RELEASE_CONFIRMED'&&!releaseVerified?'SERVER_RELEASE_EVIDENCE_REQUIRED_2026-09-17':(base.productionClassSource||queue?.productionClassSource||project?.productionClassSource||seed?.productionClassSource||'COMPANY_RUNTIME'),
       selectedPlatform:platform||null,
       productionTarget:productionClass==='DESIGN_ONLY'?'design-only':targetForPlatform(platform),
       homepageStage:stageFor(project,seed,productionClass,platform),
@@ -244,7 +259,8 @@ function mergeRuntimeCatalog(baseCatalog,portfolio,seedState,developmentQueue){
         latestWork:latestWork(base,queue),
         updatedAt,
         status:String(queue?.canonicalState||queue?.status||seed?.status||base.lifecycleState||'ACTIVE'),
-        productionClass
+        productionClass,
+        releaseEvidenceConfirmed:releaseVerified
       }
     };
   });
