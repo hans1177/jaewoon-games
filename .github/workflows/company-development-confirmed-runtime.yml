@@ -843,7 +843,7 @@ jobs:
 
   route:
     name: route fresh formal 90-point DEVELOPMENT_CONFIRMED selected platforms
-    needs: [web-gate, post-web-artbook]
+    needs: [web-gate]
     if: always() && needs.web-gate.result == 'success'
     concurrency:
       group: company-development-runtime-state-writer
