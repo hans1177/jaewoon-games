@@ -4,6 +4,7 @@ const SYNC_INTERVAL_MS=5000;
 const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';
 const RAW_RUNTIME_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime';
 const TOP_LIMIT=30;
+const NON_RELEASED_GAME_IDS=new Set(['daechung-rpg']);
 const OWNER_RELEASED_GAMES=[{
   id:'seed-roblox-obby-party-minigam-tower-of-hell',
   gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
@@ -12,9 +13,11 @@ const OWNER_RELEASED_GAMES=[{
   productionClass:'RELEASE_CONFIRMED',
   selectedPlatform:'ROBLOX',
   targetPlatform:'ROBLOX',
-  genre:['오비','레이싱'],
-  description:'Skyline Rush · Roblox 출시 게임',
-  homepageRecentWork:'Roblox 출시 배포',
+  genre:['오비','파티 미니게임','레이싱'],
+  description:'짧은 라운드에서 장애물을 피하고 체크포인트를 통과하며 기록을 겨루는 Roblox 오비 파티 게임.',
+  webPath:'/web-games/seed-roblox-obby-party-minigam-tower-of-hell/',
+  homepageArtbookPath:'/artbook-viewer.html?game=seed-roblox-obby-party-minigam-tower-of-hell',
+  homepageRecentWork:'Skyline Rush 이름 반영 및 Roblox 출시 배포',
   updatedAt:'2026-09-17',
   __released:true
 }];
@@ -51,7 +54,7 @@ function latestDevelopment(queue){
 function homepageRows(catalog,queue){
   const games=Array.isArray(catalog?.games)?catalog.games:[];
   const releasedMap=new Map();
-  for(const game of games.filter(game=>String(game?.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED'))releasedMap.set(String(game.id||'').trim(),{...game,gameId:game.id,__released:true});
+  for(const game of games.filter(game=>String(game?.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED'&&!NON_RELEASED_GAME_IDS.has(String(game.id||'').trim())))releasedMap.set(String(game.id||'').trim(),{...game,gameId:game.id,__released:true});
   for(const game of OWNER_RELEASED_GAMES)releasedMap.set(gameIdOf(game),{...releasedMap.get(gameIdOf(game)),...game,__released:true});
   const released=[...releasedMap.values()];
   const releasedIds=new Set(released.map(gameIdOf));
