@@ -323,15 +323,14 @@ jobs:
             .filter(Boolean));
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetDate=resetAt?new Date(resetAt).toISOString().slice(0,10):'';
-          let bound=0;
+          let bound=0,cleared=0;
           for(const seed of state.seeds||[]){
             const gameId=String(seed?.gameId||'').trim();
             if(!canonical.has(gameId)||String(seed?.status||'').toUpperCase()!=='ACTIVE')continue;
             const root=path.join('design',gameId);
-            if(!fs.existsSync(root))continue;
-            const dates=fs.readdirSync(root,{withFileTypes:true})
+            const dates=fs.existsSync(root)?fs.readdirSync(root,{withFileTypes:true})
               .filter(entry=>entry.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(entry.name))
-              .map(entry=>entry.name).sort().reverse();
+              .map(entry=>entry.name).sort().reverse():[];
             let selected=null;
             for(const date of dates){
               const reviewPath=path.join(root,date,'strict-design-review.json');
@@ -347,7 +346,14 @@ jobs:
               selected={review,date,reviewPath,score};
               break;
             }
-            if(!selected)continue;
+            if(!selected){
+              if(seed.strictDesignReview!=null||seed.strictDesignReviewUpdatedAt!=null){
+                seed.strictDesignReview=null;
+                seed.strictDesignReviewUpdatedAt=null;
+                cleared++;
+              }
+              continue;
+            }
             const next={
               verdict:String(selected.review.verdict||'').toUpperCase(),
               totalScore:selected.score,
@@ -360,8 +366,9 @@ jobs:
             seed.strictDesignReviewUpdatedAt=new Date().toISOString();
             bound++;
           }
-          if(bound>0)fs.writeFileSync('game-seed-state.json',JSON.stringify(state,null,2)+'\n');
+          if(bound>0||cleared>0)fs.writeFileSync('game-seed-state.json',JSON.stringify(state,null,2)+'\n');
           console.log(`STRICT_DESIGN_SCORE_BOUND_COUNT=${bound}`);
+          console.log(`STRICT_DESIGN_SCORE_STALE_CLEAR_COUNT=${cleared}`);
           console.log(`STRICT_DESIGN_SCORE_RESET_CUTOFF=${state?.ownerAllGamesDesignReset?.updatedAt||'NONE'}`);
           console.log('STRICT_DESIGN_SCORE_SOURCE=STRICT_REVIEW_DIRECT_EVIDENCE');
           NODE
