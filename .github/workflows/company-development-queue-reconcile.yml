@@ -7,6 +7,9 @@ on:
     paths:
       - 'tools/company-development-queue-reconcile.mjs'
       - 'qa/company-development-queue-reconcile.test.mjs'
+      - 'tools/design-only-promotion-sync.mjs'
+      - '.github/workflows/company-design-only-promotion-sync.yml'
+      - '.github/workflows/company-status-sync.yml'
       - '.github/workflows/company-development-queue-reconcile.yml'
       - 'game-catalog.json'
       - 'COMPANY_FLOW.md'
