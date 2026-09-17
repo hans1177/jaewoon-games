@@ -941,11 +941,11 @@ jobs:
             const status=String(item.status||'').toUpperCase();
             const step=String(item.currentStep||'').toUpperCase();
             const state=String(item.canonicalState||'').toUpperCase();
-            if(state==='WAITING_REVALIDATION'||step==='TARGETED_REVALIDATION')continue;
+            if(state==='DEVELOPMENT_REVALIDATION_REPAIR_REQUIRED'||step==='TARGETED_REVALIDATION')continue;
             const legacyActive=status==='ACTIVE'&&step==='UNITY_ANDROID_TECHNICAL_VALIDATION';
             const pending=status==='PENDING';
             const waiting=status==='ACTIVE'&&step==='TARGET_PLATFORM_TECHNICAL_VALIDATION';
-            const retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'&&(state==='TARGET_PLATFORM_REPAIR_REQUIRED'||state==='WAITING_TARGET_PLATFORM_REVALIDATION'||state==='WAITING_TARGET_PLATFORM_VALIDATION');
+            const retrySourceBind=status==='ACTIVE'&&step==='TARGET_PLATFORM_SOURCE_BIND'&&state==='TARGET_PLATFORM_REPAIR_REQUIRED';
             if(!pending&&!legacyActive&&!waiting&&!retrySourceBind)continue;
             const game=(catalog.games||[]).find(x=>x.id===item.gameId)||{};
             const platform=resolveSelectedPlatform(item,game);
@@ -956,8 +956,12 @@ jobs:
             const baseline=String(item.designBaselineSource||'');
             const baselineRevision=baseline?crypto.createHash('sha256').update(baseline).digest('hex'):'';
             const precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath:targetSourcePath});
+            if(adapter&&adapter.existingExecutionPath==null){
+              updates.push({gameId:item.gameId,status:'BLOCKED',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'DEVELOPMENT_BLOCKED',platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:['platform-runtime-executor-not-configured'],updatedAt:new Date().toISOString()});
+              console.log(`DEVELOPMENT_ROUTE_EXTERNAL_BLOCKED=${item.gameId}:${platform}:platform-runtime-executor-not-configured`);
+              continue;
+            }
             const blockers=[...precheck.errors];
-            if(adapter&&adapter.existingExecutionPath==null)blockers.push('platform-runtime-executor-not-configured');
             if(blockers.length){
               updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter?.adapterPath||null,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
               continue;
