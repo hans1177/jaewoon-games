@@ -6,8 +6,8 @@ const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.ym
 const bootstrap=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 
-test('seed design runtime cancels stale runs and revalidates matrix targets before model setup',()=>{
-  assert.match(workflow,/group: company-seed-design-runtime\s+cancel-in-progress: true/);
+test('seed design runtime preserves the active fanout and revalidates matrix targets before model setup',()=>{
+  assert.match(workflow,/group: company-seed-design-runtime\s+cancel-in-progress: false/);
   const checkoutIndex=workflow.indexOf('- name: Checkout isolated company runtime branch');
   const revalidateIndex=workflow.indexOf('- name: Revalidate current seed target');
   const modelCacheIndex=workflow.indexOf('- name: Restore Ollama model cache');
@@ -21,15 +21,16 @@ test('seed design runtime cancels stale runs and revalidates matrix targets befo
   assert.match(workflow,/if: steps\.target\.outputs\.should_run == 'true'/);
 });
 
-test('seed design runtime runs all six seed categories in parallel and avoids repeated Ollama setup without paid runners',()=>{
-  assert.match(workflow,/max-parallel: 6/);
+test('seed design runtime uses the central WIP cap and avoids repeated Ollama setup without paid runners',()=>{
+  assert.match(workflow,/parallel_max=\$\{designWipMax\}/);
+  assert.match(workflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
   assert.match(workflow,/runs-on: ubuntu-latest/);
   assert.match(workflow,/uses: actions\/cache@v4/);
   assert.match(workflow,/path: ~\/\.ollama\/models/);
   assert.match(workflow,/ollama-seed-design-\$\{\{ runner\.os \}\}-\$\{\{ hashFiles\('company-directive\.json'\) \}\}/);
   assert.match(workflow,/OLLAMA_VERSION: '0\.33\.3'/);
-  assert.match(workflow,/OLLAMA_MAX_LOADED_MODELS: '3'/);
-  assert.match(workflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '3'/);
+  assert.match(workflow,/OLLAMA_MAX_LOADED_MODELS: '1'/);
+  assert.match(workflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '1'/);
   assert.match(workflow,/COMPANY_MODEL_KEEP_ALIVE: '2m'/);
   assert.match(workflow,/uses: \.\/\.github\/actions\/prepare-ollama/);
   assert.match(workflow,/model: \$\{\{ steps\.models\.outputs\.primary_model \}\}/);
@@ -103,7 +104,7 @@ test('independent review generation only emits departments assigned to each mode
 });
 
 test('independent five-way department phases use bounded parallel execution without removing reviews',()=>{
-  assert.match(design,/const modelPhaseConcurrency=Math\.max\(1,Math\.min\(3,Number\(process\.env\.COMPANY_MODEL_PHASE_CONCURRENCY\|\|3\)\)\)/);
+  assert.match(design,/const modelPhaseConcurrency=1;/);
   assert.match(design,/async function parallelObject\(keys,worker\)/);
   assert.match(design,/department_representatives',[\s\S]*parallelObject\(ROLES,async role=>/);
   assert.match(design,/lead_rebuttals',[\s\S]*parallelObject\(ROLES,async role=>/);
