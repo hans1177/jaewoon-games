@@ -173,12 +173,13 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   }
   assert.match(seedWorkflow,/git push origin "HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH"/);
   assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
-  assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=/);
-  assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=/);
-  assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE/);
-  assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION_SCOPE=REPLACE_STALE_HEAD_BATCH/);
+  assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_RUNS=/);
+  assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION=SKIP_ACTIVE_BATCH/);
+  assert.doesNotMatch(seedWorkflow,/ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=/);
+  assert.doesNotMatch(seedWorkflow,/ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=/);
+  assert.doesNotMatch(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION_SCOPE=REPLACE_STALE_HEAD_BATCH/);
   assert.match(seedWorkflow,/cancel-in-progress: true/);
-  assert.match(seedDesignWorkflow,/cancel-in-progress: true/);
+  assert.match(seedDesignWorkflow,/cancel-in-progress: false/);
   assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
   assert.ok((seedDesignWorkflow.match(/ownerAllGamesDesignReset/g)||[]).length>=4);
   assert.ok((seedDesignWorkflow.match(/const evidenceAt=Date\.parse\(review\.reviewedAt\|\|review\.generatedAt\|\|review\.updatedAt\|\|review\.createdAt\|\|''\)\|\|0;/g)||[]).length>=4);
