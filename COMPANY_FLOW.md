@@ -104,6 +104,22 @@ ownerCurrentProductionContract:
       fifthOrLater: RETIRE_REVIEW_REQUIRES_STRUCTURAL_FAILURE_EVIDENCE
     structuralFailureRequiredForRetire: true
     emptyPipelineSlotsMustBeRefilledFromNewDesignPassedSeeds: true
+    bottleneckResolutionPriority:
+      - WEB_SCORE_80_TO_88_WEAK_AXIS_IMPROVEMENT
+      - SINGLE_HARD_GATE_BLOCKER
+      - FIRST_REWORK_ATTEMPT
+      - REBUILD_QUEUE
+      - NEW_DEVELOPMENT
+    webPrePromotionImprovement:
+      rangeMinInclusive: 80
+      rangeMaxInclusive: 88
+      targetScore: 89
+      preserveExisting90PromotionGate: true
+      useLatestDevelopmentValidationStatus: true
+      useLatestWebValidationEvidence: true
+      weakAxisOrBlockerEvidenceRequired: true
+      noBlindScoreInflationTasks: true
+    staleCatalogMissingProjectMustBecomeLifecycleInactive: true
   categoryAndPlatform:
     legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true
     fixedSixCategoryProductionQuotaForbidden: true

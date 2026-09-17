@@ -213,10 +213,11 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
   synchronizePlatformPolicy(portfolio);
   const bySlug=new Map(catalog.games.map(game=>[game.id,game]));
   const rows=portfolio.projects.map(project=>{
+    const catalogPresent=bySlug.has(project.slug);
     const game=bySlug.get(project.slug)||{};
-    const lifecycleState=gameLifecycleState(game);
+    const lifecycleState=catalogPresent?gameLifecycleState(game):'REMOVED';
     const sourceReady=Boolean(clean(project.sourcePath)&&filesystem?.existsSync?.(project.sourcePath));
-    const hold=isHold(project)||!sourceReady||!bySlug.has(project.slug)||!lifecycleAllowsDevelopment(game);
+    const hold=isHold(project)||!sourceReady||!catalogPresent||!lifecycleAllowsDevelopment(game);
     const book=latestBook(artbooks,project.slug);
     const baseline=baselineRank(book);
     const targetPlatform=selectedPlatformOf(project,game);
@@ -226,7 +227,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     const family=gameplayFamily(game);
     const productionClass=productionClassOf(project,game);
     const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(platformReady?6:0)+(playable?3:0)+(game?.hasWebArchive===true?1:0);
-    return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,hold,lifecycleState,evidenceScore,gameplayFamily:family,productionClass};
+    return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,hold,catalogPresent,lifecycleState,evidenceScore,gameplayFamily:family,productionClass};
   });
 
   // 플랫폼 우선순위는 준비된 후보의 기본 집중 순서에만 쓰며 제작 등급 멤버십이나 플랫폼 진입을 제한하지 않는다.
@@ -236,7 +237,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
   for(const row of rows){
     const {project,game,productionClass,targetPlatform,lifecycleState}=row;
     project.lifecycleState=lifecycleState;
-    if(!lifecycleAllowsDevelopment(game)){project.profileStatus=lifecycleState;project.mode=lifecycleState;project.targetEngine='lifecycle-inactive';continue;}
+    if(row.catalogPresent!==true||!lifecycleAllowsDevelopment(game)){project.profileStatus=lifecycleState;project.mode=lifecycleState;project.targetEngine='lifecycle-inactive';continue;}
     project.productionClass=productionClass;
     project.productionClassSource=project.productionClassSource||'CURRENT_EVIDENCE_STATE';
     delete project.productionTier;
