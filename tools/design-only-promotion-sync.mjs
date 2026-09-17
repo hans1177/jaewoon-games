@@ -52,6 +52,55 @@ function bindRequiredWebStage(item,{gameId,stamp}){
   item.postWebArtbookRequired=true;
   item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';
 }
+function reconcileConfirmedSeedQueue({queue,seed,design,stamp}){
+  const gameId=String(seed?.gameId||'').trim();
+  const selectedPlatform=seed?.selectedPlatform||selectedPlatformOf(seed);
+  const targetSourcePath=targetSourcePathOf(gameId,selectedPlatform);
+  const webSourcePath=webSourcePathOf(gameId);
+  const artbookSource=`artbook-submissions/${gameId}/current.json`;
+  let item=queue.items.find(row=>row?.gameId===gameId);
+  if(item){
+    item.productionClass='DEVELOPMENT_CONFIRMED';
+    item.seedId=item.seedId||seed.seedId||null;
+    item.gameName=item.gameName||seed.gameName||gameId;
+    item.selectedPlatform=item.selectedPlatform||selectedPlatform;
+    item.targetPlatform=item.targetPlatform||selectedPlatform;
+    item.targetSourcePath=item.targetSourcePath||targetSourcePath;
+    item.webSourcePath=item.webSourcePath||webSourcePath;
+    item.sourcePath=item.sourcePath||webSourcePath;
+    item.designBaselineSource=item.designBaselineSource||design?.designSource||seed?.promotion?.designBaselineSource||null;
+    item.designDate=item.designDate||design?.date||seed?.promotion?.designDate||null;
+    item.artbookSource=item.artbookSource||artbookSource;
+    item.artbookTiming=item.artbookTiming||'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';
+    if(item.postPromotionArtbookRequired===undefined)item.postPromotionArtbookRequired=false;
+    if(item.postWebArtbookRequired===undefined)item.postWebArtbookRequired=true;
+    if(item.webValidationRequired===undefined)item.webValidationRequired=true;
+    if(item.musicValidationRequired===undefined)item.musicValidationRequired=true;
+    return {item,created:false};
+  }
+  item={
+    gameId,
+    seedId:seed.seedId||null,
+    gameName:seed.gameName||gameId,
+    productionClass:'DEVELOPMENT_CONFIRMED',
+    selectedPlatform,
+    targetPlatform:selectedPlatform,
+    targetSourcePath,
+    webSourcePath,
+    designBaselineSource:design?.designSource||seed?.promotion?.designBaselineSource||null,
+    designDate:design?.date||seed?.promotion?.designDate||null,
+    artbookSource,
+    artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
+    postPromotionArtbookRequired:false,
+    postWebArtbookRequired:true,
+    strictDesignScore:Number(seed?.strictDesignReview?.totalScore||seed?.promotion?.strictDesignScore||0)||null,
+    enqueuedAt:stamp,
+    queueSource:'ACTIVE_DEVELOPMENT_CONFIRMED_SEED'
+  };
+  bindRequiredWebStage(item,{gameId,stamp});
+  queue.items.push(item);
+  return {item,created:true};
+}
 
 export function promoteReadyDesignSeeds({root='.'}={}){
   const p=(...parts)=>path.join(root,...parts);
@@ -70,6 +119,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const promoted=[];
   const skipped=[];
   const reconciledExisting=[];
+  const reconciledPromotedSeeds=[];
   const stamp=nowIso();
 
   for(const seed of state.seeds||[]){
@@ -77,8 +127,15 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     const gameId=String(seed?.gameId||'').trim();
     if(!gameId)continue;
     const currentClass=String(seed?.productionClass||'').toUpperCase();
-    if(currentClass==='DEVELOPMENT_CONFIRMED'||currentClass==='RELEASE_CONFIRMED'){
-      skipped.push({gameId,reason:'ALREADY_PROMOTED',productionClass:currentClass});
+    if(currentClass==='RELEASE_CONFIRMED'){
+      skipped.push({gameId,reason:'ALREADY_RELEASED',productionClass:currentClass});
+      continue;
+    }
+    if(currentClass==='DEVELOPMENT_CONFIRMED'){
+      const design=latestReadyDesign(root,gameId);
+      const reconciled=reconcileConfirmedSeedQueue({queue,seed,design,stamp});
+      if(reconciled.created)reconciledPromotedSeeds.push(gameId);
+      skipped.push({gameId,reason:'ALREADY_PROMOTED',productionClass:currentClass,queueReconciled:reconciled.created});
       continue;
     }
     const design=latestReadyDesign(root,gameId);
@@ -121,8 +178,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     promoted.push(gameId);
   }
 
-  // 이미 존재하는 실제 Web 게임이 owner 지시로 DEVELOPMENT_CONFIRMED가 된 경우도
-  // seed 승격 이력이 없다는 이유로 개발 큐에서 빠지면 안 된다.
+  // Seed 이력이 없는 기존 실제 Web 게임도 보정한다. Seed 기반 DEVELOPMENT_CONFIRMED는 위 루프에서 Web 파일 존재 여부와 무관하게 먼저 보장된다.
   for(const game of catalog.games||[]){
     const gameId=String(game?.id||'').trim();
     const productionClass=String(game?.productionClass||'').toUpperCase();
@@ -169,7 +225,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
 
   state.updatedAt=stamp;queue.updatedAt=stamp;queue.webValidationPolicy='REQUIRED_WEB_STRICT_REVIEW_BEFORE_POST_WEB_ARTBOOK_AND_TARGET_PLATFORM';
   writeJson(seedPath,state);writeJson(portfolioPath,portfolio);writeJson(catalogPath,catalog);writeJson(queuePath,queue);
-  return {promoted,skipped,reconciledExisting,queueCount:queue.items.length,ownerResetSeedsMaterialized:resetResult.changed};
+  return {promoted,skipped,reconciledExisting,reconciledPromotedSeeds,queueCount:queue.items.length,ownerResetSeedsMaterialized:resetResult.changed};
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
@@ -177,7 +233,8 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DESIGN_PROMOTION_COUNT=${result.promoted.length}`);
   console.log(`DESIGN_PROMOTED_GAME_IDS=${result.promoted.join(',')}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
+  console.log(`DEVELOPMENT_CONFIRMED_SEED_RECONCILED=${result.reconciledPromotedSeeds.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_EXISTING_RECONCILED=${result.reconciledExisting.join(',')||'NONE'}`);
-  console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${result.ownerResetSeedsMaterialized.join(',')}`);
+  console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${resetResult.changed?.join(',')||'NONE'}`);
   if(result.skipped.length)console.log(`DESIGN_PROMOTION_SKIPPED=${JSON.stringify(result.skipped)}`);
 }
