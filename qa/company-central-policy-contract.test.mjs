@@ -9,7 +9,7 @@ const repoRoot=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const readText=relative=>fs.readFileSync(path.join(repoRoot,relative),'utf8');
 const readJson=relative=>JSON.parse(readText(relative));
 const flow=readText('COMPANY_FLOW.md');
-const agents=readText('AGENTS.md');
+const obsoleteAgentsPath=path.join(repoRoot,'AGENTS.md');
 const directive=readJson('company-directive.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
@@ -28,7 +28,7 @@ test('COMPANY_FLOW remains the single machine-oriented production policy source'
   assert.match(flow,/preWebArtbookForbidden: true/);
   assert.match(flow,/createOnlyAfterWebStrictReview: true/);
   assert.match(flow,/blockingBudgetMinutes: 10/);
-  assert.match(agents,/제작 정책 원본은 \*\*`COMPANY_FLOW\.md` 하나\*\*/);
+  assert.equal(fs.existsSync(obsoleteAgentsPath),false);
 });
 
 test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and selected-platform policy',()=>{
