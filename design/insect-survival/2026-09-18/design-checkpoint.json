@@ -6,10 +6,16 @@
   "fingerprint": "e947a5b851e2c1270c253b38de4bd515fc508f86982cb07173ad8fa7495e65c3",
   "policyDigest": "5bb8edfcf9f558f65b3d9e97c3939aa085a73644ba9077f7d5a0341fbae4347f",
   "engineDigest": "05d80223e443cbfedec68800da37d99acfc2bb77a390c0f1f17b8562228365b4",
-  "status": "IN_PROGRESS",
+  "status": "PRE_GATE_BLOCKED",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2",
+    "designer_pre_gate_repair_3",
+    "deterministic_pre_gate_after_repair_3"
   ],
   "phases": {
     "designer_draft": {
@@ -61,19 +67,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "초기 출시",
-          "newGameplay": "기본 풀숲 환경과 3종의 곤충 웨이브, 5가지 무기 조합 제공",
-          "systemImpact": "기본 코어 루프 안정성 검증 및 플레이어 피드백 수집"
+          "milestone": "초기 출시 빌드",
+          "newGameplay": "기본 풀숲 환경에서 3종의 곤충 웨이브(개미, 진딧물, 메뚜기)와 맞서 싸우며 5가지 무기 및 팅커링 조합을 해제하는 코어 액션 서바이벌 게임플레이 제공",
+          "systemImpact": "코어 루프와 실시간 곤충 무리 스폰 시스템의 안정성 검증, 플레이어 리텐션 및 첫 세션 경험 피드백 수집"
         },
         {
-          "milestone": "첫 번째 업데이트: 지하의 위협",
-          "newGameplay": "지하 굴 환경 추가 및 거미류 보스 몬스터 도입",
-          "systemImpact": "새로운 생태계 시스템과 원거리 회피 중심의 플레이 스타일 확장"
+          "milestone": "첫 번째 대규모 업데이트: 지하의 위협",
+          "newGameplay": "지하 굴 맵 환경 추가 및 거미류 신규 엘리트/보스 몬스터 도입. 어둠 속 시야 제한과 거미줄 오브젝트를 활용한 원거리 회피 및 영역 제어 전투 플레이 확장",
+          "systemImpact": "환경 기반 시야 차폐 시스템과 신규 생태계 AI 패턴 모듈 연동, 전투 밸런스 확장"
         },
         {
-          "milestone": "두 번째 업데이트: 계절의 변화",
-          "newGameplay": "우천 및 강풍 환경 변수 추가, 신규 제작 도구 4종 도입",
-          "systemImpact": "환경 요인과 상호작용하는 새로운 시스템 연결 추가"
+          "milestone": "두 번째 대규모 업데이트: 계절의 변화",
+          "newGameplay": "우천 및 강풍 등의 날씨 환경 변수 추가, 낙엽 및 이슬 수집을 통한 신규 제작 장비 4종과 생존 도구 도입으로 전략적 아이템 선택 강화",
+          "systemImpact": "날씨 상태 이상 부여 시스템 및 실시간 자원 채집 루프 연결, 세션 내 빌드 다변화 검증"
         }
       ],
       "failureRetryRisk": {
@@ -109,28 +115,30 @@
       "multiplayerMode": "SINGLE",
       "multiplayerExpansionDecision": "싱글 플레이어 경험의 완성도를 최우선으로 검토한 후 향후 협동 모드 가능성 열어둠",
       "technicalAssumptions": [
-        "Unity 엔진의 ECS 또는 최적화된 오브젝트 풀링을 활용한 대량의 곤충 AI 처리",
-        "로컬 데이터 저장을 통한 세션 및 영구 재화 안전한 관리"
+        "Unity 엔진의 ECS 또는 최적화된 오브젝트 풀링을 활용하여 화면 내 300마리 이상의 곤충 AI와 충돌 연산을 안정적인 프레임으로 처리한다.",
+        "로컬 세이브 및 암호화 기법을 적용하여 런타임 진행 데이터와 영구 재화를 안전하게 관리하고 데이터 유실을 방지한다.",
+        "모바일 터치스크린 및 다양한 해상도 비율에 대응하는 가상 조이스틱과 자동 공격 포커싱 시스템을 구현한다."
       ],
       "validationQuestions": [
-        "모바일 터치 환경에서 5분 이상 생존할 때 조작 피로도가 지나치지 않은가?",
-        "아이템 조합 선택지가 플레이어에게 유의미한 빌드 변화를 체감하게 만드는가?"
+        "모바일 터치 환경에서 5분 이상 곤충 무리와 교전할 때 조작 피로도와 시각적 가독성이 적절한가?",
+        "아이템 조합 선택지가 플레이어에게 유의미한 빌드 변화와 전략적 재미를 체감하게 만드는가?",
+        "대량의 적 유닛 스폰 시 모바일 및 저사양 기기에서 목표 프레임 드랍이 방어되는가?"
       ],
       "implementationTraceability": [
         {
           "designElement": "초소형 장비 제작 및 조합",
-          "responsibleSystem": "초소형 장비 제작 및 조합 시스템",
-          "validationEvidence": "재료 수집 후 제작 완료 시 능력치 상승 로그 및 UI 반영 확인"
+          "responsibleSystem": "장비 제작 및 인벤토리 시스템",
+          "validationEvidence": "필드 자원 수집 후 제작 메뉴에서 아이템 조합 완료 시 능력치 상승 로그 및 인벤토리 UI 반영 확인"
         },
         {
-          "designElement": "실시간 웨이브 생존",
-          "responsibleSystem": "코어 웨이브 전투",
-          "validationEvidence": "시간 경과에 따른 적 스폰 주파수 및 난이도 상승 테스트"
+          "designElement": "실시간 웨이브 생존 및 곤충 무리 AI",
+          "responsibleSystem": "코어 웨이브 전투 및 스폰 매니저",
+          "validationEvidence": "게임 시간 경과에 따른 적 스폰 주파수 상승, 플레이어 추적 및 포위 전술 정상 동작 테스트 통과"
         },
         {
-          "designElement": "모바일 최적화 UX",
-          "responsibleSystem": "모바일 UX 및 플랫폼 적합성",
-          "validationEvidence": "저사양 모바일 디바이스에서 프레임 드랍 없는 60fps 유지 검증"
+          "designElement": "모바일 최적화 UX 및 조작계",
+          "responsibleSystem": "모바일 UX 및 플랫폼 적합성 인터페이스",
+          "validationEvidence": "모바일 타겟 디바이스 시뮬레이션 환경에서 가상 패드 입력 지연 없는 반응 속도와 60fps 유지 검증"
         }
       ],
       "openQuestions": [
@@ -279,15 +287,15 @@
       "updatedAt": "2026-09-18T06:22:47.330Z"
     },
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 6,
-      "successes": 2,
+      "calls": 9,
+      "successes": 5,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 4,
-      "totalMs": 49171,
-      "lastMs": 9628,
+      "totalMs": 56222,
+      "lastMs": 1352,
       "lastError": "Expected ',' or '}' after property value in JSON at position 3922 (line 1 column 3923)",
-      "updatedAt": "2026-09-18T06:22:56.460Z"
+      "updatedAt": "2026-09-18T06:23:03.521Z"
     },
     "gemini:gemini-3.1-pro-preview": {
       "calls": 3,
@@ -348,14 +356,14 @@
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T06:19:55.778Z",
-  "updatedAt": "2026-09-18T06:22:56.463Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:22:56.460Z",
+  "updatedAt": "2026-09-18T06:23:03.524Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:23:03.521Z",
   "geminiModelResolution": {
     "gemini-3.8-flash": "gemini-3.5-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.8-flash",
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
-  "lastError": null,
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=78 hard=CRITICAL_AXIS_MINIMUM_FAIL",
   "failedTask": null
 }
