@@ -296,15 +296,15 @@
     ],
     "roleIdentityFixed": true,
     "modelIdentityFixed": false,
-    "departmentMultimodelStartsAtClass": "DESIGN_ONLY",
-    "minDistinctModelsPerDepartment": 3,
-    "departmentReviewModelCount": 3,
+    "departmentMultimodelStartsAtClass": "DEVELOPMENT_CONFIRMED",
+    "minDistinctModelsPerDepartment": 1,
+    "departmentReviewModelCount": 1,
     "minDistinctLeadModelsAcrossDepartments": 5,
     "departmentLeadModelsMustBeDistinct": true,
     "departmentLeadAssignmentRemappable": true,
     "assistantModelsMayOverlapAcrossDepartments": true,
-    "departmentRepresentativeAuthoredByLead": true,
-    "departmentRebuttalAuthoredByLead": true,
+    "departmentRepresentativeAuthoredByLead": false,
+    "departmentRebuttalAuthoredByLead": false,
     "modelPool": [
       "qwen3:0.6b",
       "gemma3:1b",
@@ -322,7 +322,8 @@
     "gameDesigner": {
       "authorsInitialDetailedDesign": true,
       "singleAuthorPerRevisionCycle": true,
-      "sameModelRevisesAfterMeeting": true
+      "sameModelRevisesAfterMeeting": false,
+      "sameModelRevisesAfterLeadReview": true
     },
     "departments": [
       "planning",
@@ -332,21 +333,23 @@
       "balance"
     ],
     "departmentModeByClass": {
-      "DESIGN_ONLY": "DISTINCT_LEAD_MULTIMODEL_DESIGN_REVIEW_AND_MEETING",
+      "DESIGN_ONLY": "FIVE_DISTINCT_LEAD_PARALLEL_REVIEW",
       "DEVELOPMENT_CONFIRMED": "DISTINCT_LEAD_GATED_DIRECT_PLAY_TECH_VALIDATION",
       "RELEASE_CONFIRMED": "DISTINCT_LEAD_GATED_DIRECT_RELEASE_RISK_WATCH"
     },
     "meeting": {
-      "internalDepartmentConsensus": true,
+      "internalDepartmentConsensus": false,
       "internalRepresentativeOwner": "DEPARTMENT_LEAD_MODEL",
-      "crossDepartmentRebuttalRounds": 1,
-      "rebuttalOwner": "DEPARTMENT_LEAD_MODEL",
+      "crossDepartmentRebuttalRounds": 0,
+      "rebuttalOwner": null,
       "issueStates": [
         "CONSENSUS",
         "CONFLICT",
         "HOLD"
       ],
-      "autoRevisionUsesConsensusOnly": true
+      "autoRevisionUsesConsensusOnly": false,
+      "designOnlyMeetingRequired": false,
+      "designOnlyRevisionInput": "FIVE_LEAD_REVIEWS_DIRECT"
     },
     "artbookEditor": {
       "singleEditor": true,
