@@ -3,10 +3,10 @@
   "gameId": "chess-battle",
   "date": "2026-09-18",
   "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
-  "fingerprint": "9b46210133c00c53d0c8bd218bba6604334ffba0d19a74187884d4cacba32fc5",
+  "fingerprint": "956ac3c25f7ff315d5317b1118d6a271e74e4346b63f273b05e04ca22114467f",
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
-  "engineDigest": "4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec",
-  "status": "PRE_GATE_BLOCKED",
+  "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
+  "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
@@ -123,7 +123,7 @@
       "implementationTraceability": [
         {
           "designElement": "직관적인 턴 기반 유닛 이동 및 전투 기능 구현",
-          "responsibleSystem": "전술 격돌 시스템",
+          "responsibleSystem": "책임 시스템: 전술 격돌 시스템",
           "validationEvidence": "유닛 이동 시뮬레이션 자동화 테스트를 통해 이동 가능 범위 내 판정이 99퍼센트 이상 정확하게 작동하는지 실행 로그와 유닛 상태 머신을 통해 검증한다."
         },
         {
@@ -178,7 +178,7 @@
         "PLATFORM_FIT_DESIGN": 80,
         "UX_AND_ACCESSIBILITY_PLAN": 80,
         "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
       },
       "scores": {
         "IDEA_AND_DISTINCTNESS": 9.6,
@@ -191,31 +191,99 @@
         "PLATFORM_FIT_DESIGN": 6.4,
         "UX_AND_ACCESSIBILITY_PLAN": 4.8,
         "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
       },
-      "totalScore": 79,
-      "criticalAxisFailures": [
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "technicalAssumptions": [
+        "서버는 보드 위의 유닛 위치와 이동 경로 데이터만 실시간으로 검증하고 렌더링 및 입력 처리는 클라이언트 엔진에서 전담한다.",
+        "스테이지 데이터는 외부 JSON 포맷으로 관리하여 앱 패키지 업데이트 없이도 신규 퍼즐 스테이지를 유연하게 동적 확장할 수 있다."
       ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
+      "validationQuestions": [
+        "플레이어가 세션 첫 5분 이내에 체스 고유의 공간 이동 규칙과 스테이지별 전투 목표를 직관적으로 이해하고 몰입하는가?",
+        "매 스테이지마다 제공되는 특수 오브젝트 변주가 반복 플레이 시 발생하는 플레이어의 지루함을 충분히 상쇄하는가?"
       ],
-      "rejectionReasons": [
+      "implementationTraceability": [
         {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
+          "designElement": "직관적인 턴 기반 유닛 이동 및 전투 기능 구현",
+          "responsibleSystem": "전술 격돌 시스템",
+          "validationEvidence": "유닛 이동 시뮬레이션 자동화 테스트를 통해 이동 가능 범위 내 판정이 99퍼센트 이상 정확하게 작동하는지 실행 로그와 유닛 상태 머신을 통해 검증한다."
+        },
+        {
+          "designElement": "매판 달라지는 특수 지형과 오브젝트 배치 알고리즘",
+          "responsibleSystem": "전장 오브젝트 변주 시스템",
+          "validationEvidence": "스테이지 로드시 무작위 오브젝트 생성 알고리즘이 중복 없이 정상적으로 배치되는지 단위 테스트 코드와 커버리지 리포트를 통해 엄격하게 확인한다."
+        },
+        {
+          "designElement": "스테이지 클리어 보상 지급 및 영구 유닛 성장 구조",
+          "responsibleSystem": "진행 및 경제 시스템",
+          "validationEvidence": "재화 획득량과 업그레이드 비용 데이터 테이블 간의 밸런스 시뮬레이션을 실행하여 자원 고갈 구간이 없는지 데이터 정합성을 검증한다."
         }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
       ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
@@ -224,37 +292,70 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 15,
-      "successes": 15,
+      "calls": 16,
+      "successes": 16,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 37662,
-      "lastMs": 1531,
+      "totalMs": 39640,
+      "lastMs": 1978,
       "lastError": null,
-      "updatedAt": "2026-09-18T08:35:49.098Z"
+      "updatedAt": "2026-09-18T08:37:14.907Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 106,
+      "lastMs": 106,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 44.989799468s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"44s\" } ] } }",
+      "updatedAt": "2026-09-18T08:37:15.028Z"
+    },
+    "gemini:gemini-3.7-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 208,
+      "lastMs": 208,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 44.886966847s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"44s\" } ] } }",
+      "updatedAt": "2026-09-18T08:37:15.130Z"
+    },
+    "gemini:gemini-2.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 296,
+      "lastMs": 296,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T08:37:15.218Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T08:23:15.030Z",
-  "updatedAt": "2026-09-18T08:35:49.121Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T08:35:49.098Z",
+  "updatedAt": "2026-09-18T08:37:16.342Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:37:14.907Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "balance",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash",
   "checkpointMigration": {
-    "fromContractVersion": 2,
+    "fromContractVersion": 3,
     "toContractVersion": 3,
-    "reason": "PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY",
-    "previousEngineDigest": "6b4a989179ae5bb3de952269a8b6a0ac648783811d8257cefecaeaf797af6a49",
+    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
+    "previousEngineDigest": "4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec",
     "preservedPhaseCount": 2,
     "preservedTaskCount": 0,
-    "migratedAt": "2026-09-18T08:27:58.872Z"
+    "migratedAt": "2026-09-18T08:37:12.887Z"
   }
 }
