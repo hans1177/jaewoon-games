@@ -36,3 +36,30 @@ test('validated playable web is kept and continued',()=>{
   assert.equal(result.preserveExistingSource,true);
   assert.equal(result.fullRewriteAllowed,false);
 });
+
+test('working but incomplete Web is classified as PARTIAL_REPAIR',()=>{
+  const html=`<!doctype html><html><body><button id="play">Play</button><script>
+  let score=0,wave=1;
+  addEventListener('keydown',()=>{score+=1});
+  function update(){requestAnimationFrame(update)} update();
+  const victory='victory', defeat='defeat', upgrade='upgrade';
+  </script></body></html>`;
+  const result=assessExistingWebSource({html,baseline:{},approvedDesign:true,sourceExists:true});
+  assert.equal(result.strategy,'PARTIAL_REPAIR');
+  assert.equal(result.preserveExistingSource,true);
+  assert.equal(result.fullRewriteAllowed,false);
+});
+
+test('limited but reusable Web is classified as MAJOR_REWORK instead of rebuild',()=>{
+  const html=`<!doctype html><html><body><button id="play">Play</button><script>
+  let score=0;
+  addEventListener('keydown',()=>{score+=1});
+  function update(){requestAnimationFrame(update)} update();
+  const victory='victory', defeat='defeat';
+  </script></body></html>`;
+  const result=assessExistingWebSource({html,baseline:{},approvedDesign:true,sourceExists:true});
+  assert.equal(result.strategy,'MAJOR_REWORK');
+  assert.equal(result.preserveExistingSource,true);
+  assert.equal(result.fullRewriteAllowed,false);
+});
+
