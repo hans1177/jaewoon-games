@@ -1,0 +1,352 @@
+{
+  "contractVersion": 3,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-STORY-COMPLETE-RPG-CHRONICLES-OF-ELDORIA-20260917",
+  "fingerprint": "bdaeab03323e79bf44588b9d5594ef6f672677166ecdc46141c2ffc99c7618a5",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "엘도리아 연대기는 클래식 JRPG의 감성을 모바일 환경에 맞춰 재해석한 스토리 완결형 RPG이며, coreLoop의 탐험-전투-성장 사이클과 signatureSystems의 전술적 조합을 통해 플레이어가 직접 세계의 운명을 결정하는 상태 변화를 이끌어냅니다.",
+      "playerFantasy": "플레이어는 고대 왕국의 마지막 수호자가 되어 미지의 던전을 탐험하고 강력한 마물을 물리치며, 동료들과의 유대를 통해 세상에 빛을 되찾아주는 영웅적 판타지를 경험합니다.",
+      "coreFun": "반복되는 턴제 전투와 자원 관리 속에서 플레이어는 스킬 조합과 장비 강화라는 실제 선택을 내리며, 적의 체력 감소와 새로운 지역 해금이라는 관찰 가능한 상태 변화를 즉각적인 보상으로 체감합니다.",
+      "coreLoop": [
+        "마을과 필드를 탐험하며 NPC와 대화하고 메인 스토리 퀘스트를 수락하여 다음 목적지를 결정합니다.",
+        "턴제 전투에 돌입하여 스킬을 선택하고 적을 격파하여 경험치와 전리품을 획득합니다.",
+        "획득한 재화로 캐릭터를 성장시키고 장비를 업그레이드하여 다음 강력한 보스전과 스토리 관문에 도전합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "전술 마법 공명 시스템",
+          "purpose": "플레이어가 전투 중 속성 마법을 연계하여 추가 피해와 상태 이상을 유발하도록 설계된 핵심 전투 시스템입니다.",
+          "playerChoice": "매 턴마다 어떤 속성의 마법을 먼저 시전하고 파티원의 행동 순서를 어떻게 조율할지 결정하여 전투의 양상을 완전히 바꿉니다."
+        },
+        {
+          "name": "인연 및 선택지 서사 시스템",
+          "purpose": "스토리 진행 중 플레이어의 선택이 동료들의 신뢰도와 세계의 성향에 영구적인 영향을 미치도록 만드는 서사 시스템입니다.",
+          "playerChoice": "주요 대화 이벤트에서 특정 동료의 손을 들어주거나 도덕적 갈등 상황에서 결정을 내려 스토리의 분기와 해제를 유도합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "전술 마법 공명 시스템",
+          "toSystem": "코어 루프 전투 페이즈",
+          "trigger": "플레이어가 상위 속성 마법 조합을 성공적으로 발동할 때",
+          "stateChange": "적의 방어력이 일시적으로 급감하고 파티원의 궁극기 게이지가 빠르게 충전됩니다."
+        },
+        {
+          "fromSystem": "인연 및 선택지 서사 시스템",
+          "toSystem": "캐릭터 성장 경제 시스템",
+          "trigger": "특정 동료와의 신뢰도가 최고 단계에 도달할 때",
+          "stateChange": "해당 동료의 전용 고유 스킬이 해금되고 상점 구매 할인 혜택이 적용됩니다."
+        },
+        {
+          "fromSystem": "코어 루프 전투 페이즈",
+          "toSystem": "콘텐츠 확장 및 지역 해금",
+          "trigger": "지역의 최종 보스를 격파하고 메인 퀘스트를 완료할 때",
+          "stateChange": "미지의 다음 필드와 고난도 던전 콘텐츠가 지도상에 새롭게 열립니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 30분 단위의 세션 동안 탐험과 전투를 반복하며 자연스럽게 캐릭터의 레벨과 장비 등급을 높여가고, 스토리의 장(Chapter)을 클리어함에 따라 새로운 시스템과 대륙이 열리는 점진적 확장 구조를 따릅니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "전투 승리 -> 골드 및 소재 획득 -> 장비 강화 및 스킬 레벨업 -> 더 강력한 적 도전",
+        "resourceFlow": "일반 전투를 통해 안정적으로 소모품과 기본 재화가 수급되며, 보스전과 특수 퀘스트를 통해 최상급 장비 제작 재료가 공급됩니다.",
+        "balanceRules": "플레이어가 특정 구역에서 막히지 않도록 반복 파밍을 통한 레벨업 효율을 보장하며, 과도한 노가다를 방지하기 위해 퀘스트 보상을 통한 성장 곡선을 설계합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "제1막 왕국 탈환 및 비행선 해금 완료",
+          "newGameplay": "비행선 이동 시스템이 도입되어 대륙 전역을 자유롭게 오가며 숨겨진 공중 섬과 보물을 찾을 수 있는 탐험 플레이가 제공됩니다.",
+          "systemImpact": "기존의 선형적인 도보 이동 중심의 월드맵 루프가 확장되어 전역 이벤트와 실시간 날씨 시스템이 추가되며 경제 시스템에 영향을 줍니다."
+        },
+        {
+          "milestone": "제2막 고대 지하 미궁 심층부 진입",
+          "newGameplay": "제한된 턴 내에 탈출해야 하는 로그라이크형 던전 탐험 모드가 새롭게 해금되어 무작위 생성되는 방과 함정을 돌파합니다.",
+          "systemImpact": "기존 파티 성장 및 장비 파밍 시스템에 자원 관리와 캐릭터 피로도 개념이 더해져 전투 외적인 전술적 깊이가 크게 확장됩니다."
+        },
+        {
+          "milestone": "최종장 세계수의 심장 결전 및 진엔딩",
+          "newGameplay": "멀티 페이즈로 진행되는 거대 보스 레이드와 플레이어의 누적 선택에 따른 진엔딩 분기 선택지가 열려 최종 결전을 수행합니다.",
+          "systemImpact": "모든 마법 공명 시스템, 서브 퀘스트 달성도, 인연 시스템의 총합 결과를 바탕으로 최종 엔딩 연출과 보상 구조가 완전히 결정됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "파티원 전멸로 인한 전투 패배",
+          "던전 내 제한 시간 초과",
+          "주요 NPC 호위 실패"
+        ],
+        "retryFlow": "전투 패배 시 가장 최근의 세이브 포인트나 던전 입구로 즉시 부활하며, 소모된 아이템의 일부를 유지한 채 재도전할 수 있습니다.",
+        "riskPressure": "보스전에서는 강력한 광역 패턴으로 인해 방심하면 전멸할 수 있는 긴장감을 제공합니다.",
+        "recoveryRules": "패배 후 마을의 여관에서 무료로 체력을 회복하거나 간단한 버프 포션을 구매하여 쉽게 난이도를 낮출 수 있습니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치스크린에 최적화된 직관적인 원탭 스킬 선택 및 드래그 앤 드롭 형태의 이동 인터페이스를 제공합니다.",
+        "performanceBudget": "저사양 모바일 기기에서도 60프레임을 유지할 수 있도록 가벼운 2.5D 그래픽 리소스와 최적화된 텍스처 메모리 예산을 사용합니다.",
+        "sessionConstraints": "한 번의 던전 탐험이나 퀘스트 진행이 5~10분 내외로 끝나도록 설계하여 모바일 환경의 짧은 세션 요구를 충족합니다."
+      },
+      "visualDirection": "따뜻하고 아늑한 동화풍의 2D 일러스트와 깔끔한 3D 배경을 결합하여 클래식 RPG의 향수를 현대적인 모바일 감성으로 시각화합니다.",
+      "mobileUx": "엄지손가락이 닿기 쉬운 화면 하단에 주요 전투 스킬 버튼을 배치하고, 가독성이 높은 대화창과 직관적인 퀘스트 마커를 제공합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "체력바, 마나 게이지, 현재 퀘스트 목표를 화면 상단과 하단에 명확하게 분리하여 배치합니다.",
+        "touchAndInput": "정밀한 조작 대신 터치 반응 영역을 넓게 설계하여 오작동을 최소화합니다.",
+        "readability": "모바일 화면에서도 글자가 선명하게 보이도록 충분히 큰 폰트 크기와 고대비 UI 색상을 적용합니다.",
+        "accessibility": "색약 플레이어를 위해 속성 아이콘에 고유 모양 패턴을 함께 표시합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "부드러운 파스텔톤 컬러 팔레트와 역동적인 스킬 이펙트로 전투의 타격감을 극대화합니다.",
+        "audioIdentity": "오케스트라 기반의 웅장하면서도 서정적인 멜로디로 판타지 세계의 몰입감을 높입니다.",
+        "gameplayFeedbackSync": "스킬 적중 순간과 마법 공명 발동 시 즉각적인 사운드 효과와 화면 진동 피드백을 동기화합니다."
+      },
+      "marketTargetDirection": "스토리 중심의 싱글플레이어 경험과 깊이 있는 턴제 전투를 선호하는 글로벌 모바일 RPG 유저층을 타겟으로 합니다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 후, 고해상도 그래픽과 키보드/마우스 조작을 지원하는 PC(Steam) 플랫폼으로 확장하여 코어 유저층을 공략합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "초기 빌드는 완벽한 몰입을 위해 싱글플레이어로 집중하고, 향후 업데이트를 통해 협동 레이드 모드 도입을 검토합니다.",
+      "technicalAssumptions": [
+        "유니티 엔진의 최신 어드레서블 시스템을 활용하여 모바일 기기에서 에셋을 효율적으로 로드하고 메모리 사용량을 최적화합니다.",
+        "클라이언트 단독 저장 시스템과 서버 동기화 세이브를 병행하여 오프라인 환경에서도 원활한 플레이가 가능하도록 구현합니다."
+      ],
+      "validationQuestions": [
+        "모바일 환경에서 30분 동안 플레이할 때 핵심 루프의 반복이 지루하지 않고 충분한 성취감을 제공하는가?",
+        "전술 마법 공명 시스템과 인연 시스템이 플레이어의 선택에 따라 유의미한 상태 변화를 만들어내는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "전술 마법 공명 시스템 구현",
+          "responsibleSystem": "전투 로직 관리 모듈",
+          "validationEvidence": "두 가지 속성 마법을 연속 시전했을 때 추가 피해 연산이 정확히 이루어지는지 유닛 테스트로 검증합니다."
+        },
+        {
+          "designElement": "인연 및 선택지 서사 시스템",
+          "responsibleSystem": "대화 및 퀘스트 상태 머신",
+          "validationEvidence": "대화 선택에 따라 동료 신뢰도 수치가 정상적으로 증감하고 분기 이벤트가 해금되는지 시나리오 테스트로 확인합니다."
+        },
+        {
+          "designElement": "모바일 터치 UI 최적화",
+          "responsibleSystem": "UI 매니저 및 입력 처리기",
+          "validationEvidence": "다양한 화면 비율의 모바일 기기에서 터치 영역 오작동 없이 모든 버튼이 반응하는지 실기 테스트를 진행합니다."
+        }
+      ],
+      "openQuestions": [
+        "포스트 게임 콘텐츠에서 무작위 생성 던전의 비중을 어느 정도까지 늘릴 것인가?",
+        "유료화 모델을 프리미엄 구매 방식으로 할 것인지, 에피소드 분할 방식으로 할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 78,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "제1막 왕국 탈환 및 비행선 해금 완료",
+          "newGameplay": "비행선 이동 시스템이 도입되어 대륙 전역을 자유롭게 오가며 숨겨진 공중 섬과 보물을 찾을 수 있는 탐험 플레이가 제공됩니다.",
+          "systemImpact": "기존의 선형적인 도보 이동 중심의 월드맵 루프가 확장되어 전역 이벤트와 실시간 날씨 시스템이 추가되며 경제 시스템에 영향을 줍니다."
+        },
+        {
+          "milestone": "제2막 고대 지하 미궁 심층부 진입",
+          "newGameplay": "제한된 턴 내에 탈출해야 하는 로그라이크형 던전 탐험 모드가 새롭게 해금되어 무작위 생성되는 방과 함정을 돌파합니다.",
+          "systemImpact": "기존 파티 성장 및 장비 파밍 시스템에 자원 관리와 캐릭터 피로도 개념이 더해져 전투 외적인 전술적 깊이가 크게 확장됩니다."
+        },
+        {
+          "milestone": "최종장 세계수의 심장 결전 및 진엔딩",
+          "newGameplay": "멀티 페이즈로 진행되는 거대 보스 레이드와 플레이어의 누적 선택에 따른 진엔딩 분기 선택지가 열려 최종 결전을 수행합니다.",
+          "systemImpact": "모든 마법 공명 시스템, 서브 퀘스트 달성도, 인연 시스템의 총합 결과를 바탕으로 최종 엔딩 연출과 보상 구조가 완전히 결정됩니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 2,
+      "successes": 2,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 13915,
+      "lastMs": 1873,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:10:28.822Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 89,
+      "lastMs": 89,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 31.082506319s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"31s\" } ] } }",
+      "updatedAt": "2026-09-18T15:10:28.935Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 149,
+      "lastMs": 149,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 31.023722391s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"31s\" } ] } }",
+      "updatedAt": "2026-09-18T15:10:28.995Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T15:10:14.901Z",
+  "updatedAt": "2026-09-18T15:10:28.996Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:10:28.822Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 31.023722391s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"31s\" } ] } }"
+}
