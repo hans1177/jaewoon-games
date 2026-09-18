@@ -217,3 +217,25 @@ test('verified distilled practice knowledge is advisory retrieval only',()=>{
   assert.equal(ctx.practiceDistilled[0].domain,'SAVE');
   assert.ok(ctx.priority.includes('VERIFIED_PRACTICE_DISTILLED_ADVISORY'));
 });
+
+
+test('idle practice advances beyond the first five represented mastery gaps',()=>{
+  const idle=buildIdlePracticeQueue({});
+  assert.ok(idle.drills.length>5);
+  const represented=idle.drills.slice(0,5).map(drill=>({
+    id:`LEARNING-PRACTICE-${drill.id}`,
+    status:'done',
+    retries:0,
+    maxRetries:1,
+    target:'web',
+    type:'research',
+    sourceRoot:`learning-practice:${drill.id}`,
+    evidence:['learning-practice-only','production-pass:NO','learning-practice-complete']
+  }));
+  const result=injectIdlePracticeTask({tasks:represented},idle);
+  assert.equal(result.added,true);
+  assert.equal(result.reason,'IDLE_PRACTICE_ENQUEUED');
+  assert.equal(result.task.id,`LEARNING-PRACTICE-${idle.drills[5].id}`);
+  assert.equal(result.task.type,'research');
+  assert.ok(result.task.evidence.includes('production-pass:NO'));
+});
