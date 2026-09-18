@@ -15,17 +15,24 @@ function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of arg
 function taskIdsFromPayload(payload={}){return[...new Set((Array.isArray(payload)?payload:payload.results||[]).map(row=>clean(row?.taskId)).filter(Boolean))];}
 function rolePass(evidence,role){return evidence.has(`role-result:${role}:PASS`);}
 function reviewReady(task={}){return clean(task.status)==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*fan-in|awaiting.*qa/i.test(clean(task.blocker));}
+function releaseCandidateFromEvidence(evidence=new Set()){
+  const branches=[...evidence].map(clean).filter(value=>value.startsWith('vibe2/candidate/'));
+  return branches.at(-1)||null;
+}
 
 export function finalizeVibe2FanInReview({queue={},taskIds=[]}={}){
   const ids=new Set((taskIds||[]).map(clean).filter(Boolean));
   const reviewed=[];
   const skipped=[];
+  const releaseCandidates=[];
   const tasks=(Array.isArray(queue.tasks)?queue.tasks:[]).map(task=>{
     if(!ids.has(clean(task.id)))return task;
     if(!reviewReady(task)){skipped.push({taskId:task.id,status:clean(task.status),blocker:clean(task.blocker)||null});return task;}
     const evidence=new Set((task.evidence||[]).map(clean).filter(Boolean));
     evidence.add('role-result:regression:PASS');
     const missing=REQUIRED_ROLES.filter(role=>!rolePass(evidence,role));
+    const candidateBranch=releaseCandidateFromEvidence(evidence);
+    if(!candidateBranch)missing.push('candidate-branch');
     if(missing.length){
       evidence.add('role-result:review:BLOCKED');
       evidence.add(`package-review-missing:${missing.join('|')}`);
@@ -34,10 +41,11 @@ export function finalizeVibe2FanInReview({queue={},taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       reviewed.push({taskId:task.id,pass:true,missing:[]});
+      releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
   });
-  return{queue:{...queue,tasks},reviewed,skipped,pass:reviewed.every(row=>row.pass)};
+  return{queue:{...queue,tasks},reviewed,skipped,releaseCandidates,pass:reviewed.every(row=>row.pass)};
 }
 
 export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',outputFile=''}={}){
@@ -46,8 +54,8 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
   const payload=readJson(inputFile,{results:[]});
   const result=finalizeVibe2FanInReview({queue,taskIds:taskIdsFromPayload(payload)});
   writeJson(queueFile,result.queue);
-  if(clean(outputFile))writeJson(outputFile,{version:1,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,pass:result.pass});
+  if(clean(outputFile))writeJson(outputFile,{version:2,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,pass:result.pass});
   return result;
 }
 
-if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=parseArgs();const result=runVibe2FanInReview({queueFile:clean(args.queue)||'.vibe2/queue.json',inputFile:clean(args.input),outputFile:clean(args.output)});console.log(`VIBE2_FAN_IN_REVIEW=${result.pass?'PASS':'BLOCKED'}`);console.log(`VIBE2_FAN_IN_REVIEW_COUNT=${result.reviewed.length}`);console.log(`VIBE2_FAN_IN_REVIEW_SKIPPED=${result.skipped.length}`);console.log('VIBE2_FAN_IN_REVIEW_SOURCE_WRITE=NO');if(!result.pass)process.exitCode=1;}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=parseArgs();const result=runVibe2FanInReview({queueFile:clean(args.queue)||'.vibe2/queue.json',inputFile:clean(args.input),outputFile:clean(args.output)});console.log(`VIBE2_FAN_IN_REVIEW=${result.pass?'PASS':'BLOCKED'}`);console.log(`VIBE2_FAN_IN_REVIEW_COUNT=${result.reviewed.length}`);console.log(`VIBE2_FAN_IN_REVIEW_SKIPPED=${result.skipped.length}`);console.log(`VIBE2_FAN_IN_RELEASE_CANDIDATES=${result.releaseCandidates.length}`);console.log('VIBE2_FAN_IN_REVIEW_SOURCE_WRITE=NO');if(!result.pass)process.exitCode=1;}
