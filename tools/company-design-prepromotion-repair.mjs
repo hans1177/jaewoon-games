@@ -147,7 +147,7 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   }
   if(!mode&&MODES.has(clean(out.multiplayerMode).toUpperCase()))mode=clean(out.multiplayerMode).toUpperCase();
   setMissing(out,'multiplayerExpansionDecision',mode&&firstText(expansion,`${mode} 코어루프를 보존하며 확장은 별도 검증 후 결정한다`),500,repairs,'GAME_SEED_OR_LEGACY_MULTIPLAYER_MODE_AND_CROSS_PLATFORM_VALUE');
-  const requireRobloxBuildProfile=['PRE_REVIEW','REVIEW_FEEDBACK'].includes(clean(phase).toUpperCase());
+  const requireRobloxBuildProfile=clean(targetPlatform).toUpperCase()==='ROBLOX'&&['PRE_REVIEW','REVIEW_FEEDBACK'].includes(clean(phase).toUpperCase());
   if(requireRobloxBuildProfile&&MODES.has(mode)){
     const profile=robloxBuildProfile(out,seed,mode);
     if(JSON.stringify(out.robloxBuildProfile||null)!==JSON.stringify(profile)){out.robloxBuildProfile=profile;repairs.push({field:'robloxBuildProfile',source:'GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY'});}
