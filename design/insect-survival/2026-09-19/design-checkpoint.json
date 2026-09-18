@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -61,19 +63,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "생태계 확장 업데이트",
-          "newGameplay": "새로운 환경인 '연못가'와 '나무 위' 맵을 추가하여 수중 전투 및 고공 비행 전투 메커니즘을 도입합니다.",
-          "systemImpact": "기존 지형 상호작용 시스템에 수중 저항 및 비행 고도 개념이 추가되어 기존 빌드 전략의 재구성이 필요해집니다."
+          "milestone": "생태계 확장: 연못가 및 나무 위 수직적 환경 업데이트",
+          "newGameplay": "수중 환경에서의 부력 기반 이동과 나무 위 고공 비행 전투 메커니즘을 도입합니다. 플레이어는 수중에서 산소 게이지를 관리하며 적을 유인하거나, 나무 위에서 낙하 공격을 통해 지상 적을 제압하는 입체적인 전술을 구사해야 합니다.",
+          "systemImpact": "기존 지형 상호작용 시스템에 수중 저항 및 비행 고도 변수가 추가됩니다. 이는 기존의 평면적 이동 속도 중심 빌드에서 탈피하여, 환경 적응형 이동 속도와 고도 제어 스탯이 빌드 구성의 핵심 요소로 작용하게 만듭니다."
         },
         {
-          "milestone": "곤충 종 다양화",
-          "newGameplay": "플레이 가능한 곤충 캐릭터 3종(개미, 사마귀, 딱정벌레)을 추가하여 각기 다른 고유 스킬과 기본 스탯을 제공합니다.",
-          "systemImpact": "생태 적응 진화 시스템에 캐릭터별 고유 진화 트리가 추가되어 빌드 조합의 경우의 수가 대폭 확장됩니다."
+          "milestone": "곤충 종 다양화 및 고유 진화 트리 시스템 도입",
+          "newGameplay": "개미, 사마귀, 딱정벌레 등 3종의 플레이어 캐릭터를 추가합니다. 각 캐릭터는 고유한 공격 방식과 생존 스킬을 가지며, 레벨업 시 캐릭터별로 특화된 진화 트리를 선택하여 플레이 스타일을 완전히 다르게 가져갈 수 있습니다.",
+          "systemImpact": "기존의 범용적 업그레이드 시스템이 캐릭터별 고유 진화 트리로 세분화됩니다. 이로 인해 캐릭터 선택이 단순한 외형 변경을 넘어, 게임의 핵심 메타와 빌드 조합의 경우의 수를 기하급수적으로 확장하는 시스템적 변화를 가져옵니다."
         },
         {
-          "milestone": "군집 방어 모드",
-          "newGameplay": "개인 생존을 넘어 자신의 둥지를 지키는 웨이브 방어 모드를 추가하여 전략적 배치 요소를 강화합니다.",
-          "systemImpact": "환경 상호작용 시스템에 방어 타워 설치 및 자원 보급로 관리 기능이 통합되어 게임의 장르적 깊이가 심화됩니다."
+          "milestone": "군집 방어 및 둥지 자원 관리 모드 추가",
+          "newGameplay": "개인 생존을 넘어 자신의 둥지를 지키는 웨이브 방어 모드를 추가합니다. 플레이어는 맵 곳곳에서 자원을 수집하여 둥지 주변에 방어 구조물을 설치하고, 몰려오는 포식자 군집을 효율적으로 방어하는 전략적 배치 플레이를 수행해야 합니다.",
+          "systemImpact": "기존의 실시간 생존 루프에 타워 디펜스 요소와 자원 보급로 관리 기능이 통합됩니다. 이는 게임의 장르적 깊이를 심화시키며, 기존의 공격 중심 빌드 외에도 방어 및 자원 효율 중심의 새로운 빌드 메타를 창출합니다."
         }
       ],
       "failureRetryRisk": {
@@ -217,6 +219,85 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "생태계 확장: 연못가 및 나무 위 수직적 환경 업데이트",
+          "newGameplay": "수중 환경에서의 부력 기반 이동과 나무 위 고공 비행 전투 메커니즘을 도입합니다. 플레이어는 수중에서 산소 게이지를 관리하며 적을 유인하거나, 나무 위에서 낙하 공격을 통해 지상 적을 제압하는 입체적인 전술을 구사해야 합니다.",
+          "systemImpact": "기존 지형 상호작용 시스템에 수중 저항 및 비행 고도 변수가 추가됩니다. 이는 기존의 평면적 이동 속도 중심 빌드에서 탈피하여, 환경 적응형 이동 속도와 고도 제어 스탯이 빌드 구성의 핵심 요소로 작용하게 만듭니다."
+        },
+        {
+          "milestone": "곤충 종 다양화 및 고유 진화 트리 시스템 도입",
+          "newGameplay": "개미, 사마귀, 딱정벌레 등 3종의 플레이어 캐릭터를 추가합니다. 각 캐릭터는 고유한 공격 방식과 생존 스킬을 가지며, 레벨업 시 캐릭터별로 특화된 진화 트리를 선택하여 플레이 스타일을 완전히 다르게 가져갈 수 있습니다.",
+          "systemImpact": "기존의 범용적 업그레이드 시스템이 캐릭터별 고유 진화 트리로 세분화됩니다. 이로 인해 캐릭터 선택이 단순한 외형 변경을 넘어, 게임의 핵심 메타와 빌드 조합의 경우의 수를 기하급수적으로 확장하는 시스템적 변화를 가져옵니다."
+        },
+        {
+          "milestone": "군집 방어 및 둥지 자원 관리 모드 추가",
+          "newGameplay": "개인 생존을 넘어 자신의 둥지를 지키는 웨이브 방어 모드를 추가합니다. 플레이어는 맵 곳곳에서 자원을 수집하여 둥지 주변에 방어 구조물을 설치하고, 몰려오는 포식자 군집을 효율적으로 방어하는 전략적 배치 플레이를 수행해야 합니다.",
+          "systemImpact": "기존의 실시간 생존 루프에 타워 디펜스 요소와 자원 보급로 관리 기능이 통합됩니다. 이는 게임의 장르적 깊이를 심화시키며, 기존의 공격 중심 빌드 외에도 방어 및 자원 효율 중심의 새로운 빌드 메타를 창출합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
   "tasks": {},
@@ -321,28 +402,28 @@
       "updatedAt": "2026-09-18T18:55:03.046Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 31564,
-      "lastMs": 31564,
+      "totalMs": 36377,
+      "lastMs": 4813,
       "lastError": null,
-      "updatedAt": "2026-09-18T18:55:17.529Z"
+      "updatedAt": "2026-09-18T18:55:22.347Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T18:54:45.963Z",
-  "updatedAt": "2026-09-18T18:55:17.534Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T18:55:17.529Z",
+  "updatedAt": "2026-09-18T18:55:22.513Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T18:55:22.347Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }

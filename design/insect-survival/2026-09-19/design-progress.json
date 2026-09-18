@@ -4,18 +4,20 @@
   "date": "2026-09-19",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "currentStage": "PRE_GATE_REPAIR",
-  "percent": 50,
+  "currentStage": "DEPARTMENT_REVIEWS",
+  "percent": 67,
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
-  "completedPhaseCount": 2,
+  "completedPhaseCount": 4,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T18:55:17.529Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-09-18T18:55:22.347Z",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 1,
@@ -117,17 +119,17 @@
       "updatedAt": "2026-09-18T18:55:03.046Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 31564,
-      "lastMs": 31564,
+      "totalMs": 36377,
+      "lastMs": 4813,
       "lastError": null,
-      "updatedAt": "2026-09-18T18:55:17.529Z"
+      "updatedAt": "2026-09-18T18:55:22.347Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T18:55:17.534Z"
+  "updatedAt": "2026-09-18T18:55:22.513Z"
 }
