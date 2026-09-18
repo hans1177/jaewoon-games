@@ -29,7 +29,8 @@ env:
   # Model identity is remappable by central policy. Prefer models with remaining free-tier quota before exhausted daily lanes.
   COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3.5-flash-lite'
   COMPANY_GEMINI_LEAD_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash'
-  COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-2.5-pro,gemini-3.8-flash,gemini-3.7-flash'
+  COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash,gemini-3.8-flash,gemini-3.7-flash,gemini-2.5-flash'
+  COMPANY_GEMINI_LEAD_FALLBACK_LANES: 'qa:gemini-3.8-flash;balance:gemini-3.7-flash|gemini-2.5-flash'
 
 jobs:
   resolve-seed-targets:
@@ -248,9 +249,14 @@ jobs:
           const fallback=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS).split(','));
           if(leads.length<roles.length)throw new Error(`GEMINI_QUOTA_GOVERNOR_LEAD_COUNT=${leads.length}/${roles.length}`);
           const primary=leads.slice(0,roles.length);
-          const primarySet=new Set(primary);
-          const extras=fallback.filter(model=>!primarySet.has(model));
-          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([primary[index],...extras.filter((_,fallbackIndex)=>fallbackIndex%roles.length===index)])]));
+          const laneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES);
+          const configuredLanes=Object.fromEntries(roles.map(role=>[role,[]]));
+          for(const entry of laneSpec.split(';').map(clean).filter(Boolean)){
+            const at=entry.indexOf(':');if(at<1)continue;
+            const role=clean(entry.slice(0,at));if(!roles.includes(role))continue;
+            configuredLanes[role]=uniq(entry.slice(at+1).split('|'));
+          }
+          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([primary[index],...configuredLanes[role]])]));
           const checkpointPath=path.join('design',clean(process.env.ARTBOOK_GAME_ID),clean(process.env.ARTBOOK_DATE),'design-checkpoint.json');
           let checkpoint={};
           try{checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));}catch{}
@@ -686,9 +692,14 @@ jobs:
           const roles=['planning','graphics','development','qa','balance'];
           const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(',')).slice(0,roles.length);
           const fallback=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS).split(','));
-          const primarySet=new Set(leads);
-          const extras=fallback.filter(model=>!primarySet.has(model));
-          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([leads[index],...extras.filter((_,fallbackIndex)=>fallbackIndex%roles.length===index)])]));
+          const laneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES);
+          const configuredLanes=Object.fromEntries(roles.map(role=>[role,[]]));
+          for(const entry of laneSpec.split(';').map(clean).filter(Boolean)){
+            const at=entry.indexOf(':');if(at<1)continue;
+            const role=clean(entry.slice(0,at));if(!roles.includes(role))continue;
+            configuredLanes[role]=uniq(entry.slice(at+1).split('|'));
+          }
+          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([leads[index],...configuredLanes[role]])]));
           const branch=process.env.COMPANY_RUNTIME_BRANCH;
           const show=file=>execFileSync('git',['show',`origin/${branch}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
           const exists=file=>{try{execFileSync('git',['cat-file','-e',`origin/${branch}:${file}`],{stdio:'ignore'});return true;}catch{return false;}};
