@@ -3802,12 +3802,13 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
         "practice-kind:MINI_GAME_SYSTEM_DRILL",
-        "practice-domain:UI_STATE"
+        "practice-domain:UI_STATE",
+        "slot-dispatch:35375836636:1"
       ],
       "lastOutcome": null,
       "reservationId": "35375461323:1",
