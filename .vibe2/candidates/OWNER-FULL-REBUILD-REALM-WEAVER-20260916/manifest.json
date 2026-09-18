@@ -1,0 +1,168 @@
+{
+  "version": 5,
+  "taskId": "OWNER-FULL-REBUILD-REALM-WEAVER-20260916",
+  "gameId": "seed-casual-realm-weaver",
+  "target": "web",
+  "sourceRoot": "web-games/seed-casual-realm-weaver",
+  "releaseState": "development-confirmed",
+  "priority": "critical",
+  "baseMainSha": "5a0c690d8084faa3606bbcf035ff235794dcc857",
+  "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 세계의 직조자의 세계 창조 정체성을 유지하면서 숲·물길·마을 배치가 실제 맵과 상호작용하고 서로 영향을 주는 게임으로 전면 재구현한다. 배치 비용 또는 제한, 지형·주민·자원 피드백, 목표·진행·실패 또는 장기 성장, 되돌리기·재시작, 모바일 직접 조작과 명확한 시각 피드백을 갖춘다. 단순 버튼으로 수치만 증가하는 형태로 끝내지 않는다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.\n\n[GAME STUDY KNOWLEDGE - verified advisory context only]\n외부 게임에서 반복 검증된 일반화 패턴이다. 현재 제작 작업의 기능 선택·구현 방향을 정할 때 실제 planning input으로 사용하되 현재 소스/요구와 맞을 때만 적용한다.\n원본 코드·게임 고유 수치·보상값을 복사하지 말고, 보호된 gameplay/save/economy/progression 규칙과 작업 권한을 바꾸지 않는다.\n관련 시스템=progression, ui, restart\n- pattern=architecture:progression; games=3; confirmations=121; relevance=20\n- pattern=architecture:ui; games=3; confirmations=121; relevance=20\n- pattern=mechanic:progression; games=3; confirmations=121; relevance=20\n- pattern=mechanic:ui; games=3; confirmations=121; relevance=20\n- pattern=observed-flow:input->progression; games=3; confirmations=121; relevance=20\n- pattern=observed-flow:ai->progression; games=2; confirmations=120; relevance=19\n- pattern=observed-flow:progression->input; games=2; confirmations=120; relevance=19\n- pattern=observed-loop:progression>input; games=2; confirmations=120; relevance=19\nnearest=INSUFFICIENT_TARGET_DNA\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.\n\n[VERIFIED EXPERIENCE MEMORY - advisory only]\n다음 기록은 검증된 과거 경험이다. 관련될 때만 패치 전략/회피 패턴으로 참고하고 승인 권한, 보호 규칙, 게임 수치를 자동 변경하지 않는다.\n- 경험 exp_4odofx; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | verified-play-observation:restart | study-tag:external-reference | study-tag:turn-based | study-ta; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:verified-play-observation:restart | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:turn\n- 경험 exp_1oonbi8; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:memory-game | study-tag:board-size-selection | study-tag:; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:memory-game | GAME_STUDY:study-tag:board-size-selec\n- 경험 exp_pg739o; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:difficulty-selection | study-tag:turn-feedback | study-tag:player-action | study-tag:ai-respon; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:difficulty-selection | GAME_STUDY:study-tag:turn-feedback | GAME_STUDY:study-tag:player-action | GA\n- 경험 exp_i00mwv; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:economy | verified-play-observation:progression | verified-play-observation:ui | authorized-source-pattern:frame-loop | study-intelligence:mechanic:economy | study-intelligence:mec; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:economy | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:authorized-source-pattern:frame-loop | GAME_STUDY:study-intelligence:mechanic:economy | GAME_STUDY:study\n- 경험 exp_rg6lvy; 결과=PASS; 문제=Reuse verified implementation knowledge from an authorized Block Blast source-derived learning pack.; 검증변경=package=fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c; domains=board-grid-placement,score-combo-reward,input-drag-touch,progression-difficulty,save-state-persistence,ads-monetization,session-retry-gameover,tutorial-onboar; 재사용=AUTHORIZED_SOURCE:board-grid-placement | AUTHORIZED_SOURCE:score-combo-reward | AUTHORIZED_SOURCE:input-drag-touch | AUTHORIZED_SOURCE:progression-difficulty | AUTHORIZED_SOURCE:save-state-persistence | AUTHORIZED_SOURCE:ads-monetization | AUTHORIZED_SOURCE:session-retry-gameover | AUTHORIZED_SOURCE; 회피=do-not-treat-static-analysis-as-runtime-pass | do-not-bypass-current-project-qa | do-not-expand-authority-beyond-owner-authorized-scope",
+  "generatedAt": "2026-09-18T10:03:01.920Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/OWNER-FULL-REBUILD-REALM-WEAVER-20260916-primary-35332227979-1",
+  "model": "qwen3:1.7b",
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "Rebuild index.html with full game mechanics and UI",
+  "expectedEffect": "Complete playable HTML with game mechanics, UI, and progression system",
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": true,
+    "taskId": "OWNER-FULL-REBUILD-REALM-WEAVER-20260916",
+    "packageId": null,
+    "target": "web",
+    "sourceRoot": "web-games/seed-casual-realm-weaver",
+    "baseMainSha": "308b8aab6ed7d2f4f67e014a10419a9f8fcacb98",
+    "responsibleFiles": [
+      "index.html"
+    ],
+    "impactFiles": [
+      "index.html"
+    ],
+    "contextFiles": [
+      "index.html"
+    ],
+    "relatedFiles": [],
+    "testTargets": [],
+    "protectedScopeSignals": [],
+    "diagnosticEvidence": [],
+    "fileDigests": [
+      {
+        "path": "index.html",
+        "hash": "29b92c57a8bdea39",
+        "bytes": 548
+      }
+    ],
+    "reuseKey": "e65eab32c924b6ffa9546792",
+    "generatedAt": "2026-09-18T09:58:19.628Z",
+    "reusedFrom": ".vibe2/exploration.json"
+  },
+  "codeIntelligence": {
+    "version": 1,
+    "smartContext": {
+      "strategy": "dependency-symbol-test-ranked",
+      "files": [
+        "index.html"
+      ],
+      "reasons": {
+        "index.html": [
+          "responsible-file"
+        ]
+      },
+      "references": [],
+      "seedSymbols": [],
+      "readOnlyOutsideResponsible": true
+    },
+    "changeImpact": {
+      "categories": [
+        "persistence",
+        "combat",
+        "economy",
+        "progression",
+        "ui-input"
+      ],
+      "impactedFiles": [
+        "index.html"
+      ],
+      "evidence": [],
+      "risk": "medium",
+      "invented": false
+    },
+    "symbolPatching": {
+      "enabled": true,
+      "verifiedEdits": []
+    },
+    "repairLoop": {
+      "enabled": true,
+      "maxAttempts": 3,
+      "attemptsUsed": 1,
+      "repaired": false,
+      "history": []
+    },
+    "failureRouter": {
+      "enabled": true,
+      "routes": []
+    }
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "required": true,
+    "version": 1,
+    "pipeline": [
+      "DESIGNER",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "evidenceRequirements": {
+      "autoPlayer": "verified-runtime-play-evidence-required",
+      "telemetry": "verified-observed-metrics-required",
+      "designReview": "verified-pass-required-before-experience-memory",
+      "qa": "verified-qa-evidence-required"
+    },
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "fullFileRewriteAllowed": true,
+  "sourceRootBootstrapped": false,
+  "sourceRootBootstrapOwnerAuthorized": false,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}
