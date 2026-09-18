@@ -14,7 +14,6 @@ const SHA256=/^[a-f0-9]{64}$/i;
 function safeId(value=''){return clean(value).replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,96)||'external-ai';}
 function parseArgs(argv=process.argv.slice(2)){return Object.fromEntries(argv.filter(x=>x.startsWith('--')&&x.includes('=')).map(x=>{const [k,...v]=x.slice(2).split('=');return[k,v.join('=')]}));}
 function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
-function writeJson(file,value){fs.mkdirSync(new URL('.',`file://${fs.realpathSync.native?process.cwd():process.cwd()}/`).pathname,{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
 function generalized(values=[]){return unique(values).map(value=>value.length<=240?value:'').filter(Boolean).slice(0,12);}
 
 export function validateExternalAiCandidate(row={}){
