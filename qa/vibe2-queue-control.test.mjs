@@ -11,7 +11,6 @@ import {
   releaseVibeTaskExecutionSlot,
   settleVibeTask,
   applyVibeFanInResults,
-  mergeVibeWorkerResults,
   recoverFixedFullWebTransportFailures
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
@@ -294,7 +293,7 @@ test('practice-only PASS settles done without candidate QA promotion', () => {
     id:'practice',target:'web',department:'development',type:'research',goal:'[VIBE_LEARNING_PRACTICE] save',
     status:'running',priority:'low',releaseState:'other',evidence:['learning-practice-only','production-pass:NO']
   }]});
-  const merged=mergeVibeWorkerResults(queue,[{
+  const merged=applyVibeFanInResults(queue,[{
     taskId:'practice',variant:'primary',outcome:'PASS',blocker:'learning-practice-complete',
     evidence:['learning-practice-only','production-pass:NO','source-write:NO']
   }]);
