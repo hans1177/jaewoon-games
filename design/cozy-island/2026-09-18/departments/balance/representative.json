@@ -1,0 +1,33 @@
+{
+  "version": 5,
+  "gameId": "cozy-island",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "gemini-3.5-flash",
+  "leadModel": "gemini-3.5-flash",
+  "actualLeadModel": "gemini-3.5-flash",
+  "assistantModels": [],
+  "representativeAuthoredByLead": true,
+  "syntheticCompatibilityRecord": true,
+  "representative": {
+    "keep": [
+      "낚시와 채집을 통한 기본 재화 획득 및 공방 제작으로 이어지는 순환 구조와 패널티 없는 즉시 복귀 실패 흐름을 유지한다."
+    ],
+    "fix": [
+      "제한 시간 내 목표 미달성 실패 상태를 삭제하고, 대신 행동력 소모 대비 자원 획득 효율이 점진적으로 감소하는 방식으로 수정한다."
+    ],
+    "add": [
+      "자원 고갈 상태를 방지하기 위해 광고 시청이나 대기 시간 없이 즉시 기본 자원을 수급할 수 있는 일일 무료 채집 도구를 추가한다."
+    ],
+    "risks": [
+      "자원 소모량 대비 획득량 밸런스가 붕괴될 경우, 공방 제작 정체로 인해 플레이어가 초반 이탈할 위험이 존재한다."
+    ],
+    "evidence": [
+      "글로벌 캐주얼 세션 데이터에 따르면 평균 세션 시간은 4분 내외이므로, 초반 공방 제작 루프는 3분 이내에 완료되어야 한다."
+    ],
+    "questions": [
+      "섬 생태 변환에 필요한 누적 채집 횟수와 구역 해금에 필요한 재화의 요구량 상승 곡선은 구체적으로 어떻게 설계되어 있는가?"
+    ]
+  }
+}

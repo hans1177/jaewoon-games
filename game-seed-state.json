@@ -4446,7 +4446,16 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T07:37:26.720Z"
     },
     {
       "version": 1,
@@ -14003,6 +14012,47 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-18T07:36:39.852Z"
+      },
+      {
+        "gameId": "cozy-island",
+        "seedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "previousScore": 91,
+        "scoreDelta": 0.8000000000000114,
+        "hardFailures": [],
+        "resolvedHardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "addedHardFailures": [],
+        "rejectionReasons": [],
+        "improvementTargets": [
+          {
+            "dimension": "CORE_LOOP_DESIGN",
+            "current": 11.2,
+            "maxScore": 14,
+            "gap": 2.8000000000000007
+          },
+          {
+            "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          },
+          {
+            "dimension": "CONTENT_EXPANSION_PLAN",
+            "current": 8,
+            "maxScore": 10,
+            "gap": 2
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-18T07:37:26.720Z"
       }
     ],
     "causeCounts": {
@@ -14028,7 +14078,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-18T07:36:39.853Z"
+    "updatedAt": "2026-09-18T07:37:26.721Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,

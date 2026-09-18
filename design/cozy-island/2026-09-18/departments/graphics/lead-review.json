@@ -1,0 +1,30 @@
+{
+  "version": 5,
+  "gameId": "cozy-island",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemini-3.1-flash-lite",
+  "actualLeadModel": "gemini-3.1-flash-lite",
+  "reviewMode": "DIRECT_LEAD_ONLY",
+  "review": {
+    "keep": [
+      "따뜻한 파스텔톤의 로블록스 스타일 3D 그래픽과 부드러운 환경 애니메이션(바람, 파도) 방향성을 유지한다."
+    ],
+    "fix": [
+      "저사양 모바일 기기 최적화를 위해 폴리곤 수 제한 및 텍스처 아틀라스 최적화 가이드라인을 구체화하라."
+    ],
+    "add": [
+      "섬의 생태 변화를 시각적으로 명확히 구분할 수 있는 구역별 컬러 팔레트와 셰이더 효과 시스템을 추가하라."
+    ],
+    "risks": [
+      "다양한 섬 변화 상태를 구현할 때 발생하는 드로우 콜 증가와 모바일 프레임 드랍 가능성이 존재한다."
+    ],
+    "evidence": [
+      "로블록스 모바일 최적화 가이드라인 및 저사양 기기 렌더링 성능 벤치마크 데이터를 참조한다."
+    ],
+    "questions": [
+      "섬의 지형 변화 시 기존 오브젝트와의 충돌 및 렌더링 팝인 현상을 방지할 최적화 전략이 수립되었는가?"
+    ]
+  }
+}

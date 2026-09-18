@@ -1,0 +1,33 @@
+{
+  "version": 5,
+  "gameId": "cozy-island",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "representativeModel": "gemini-3-flash-preview",
+  "leadModel": "gemini-3-flash-preview",
+  "actualLeadModel": "gemini-3-flash-preview",
+  "assistantModels": [],
+  "representativeAuthoredByLead": true,
+  "syntheticCompatibilityRecord": true,
+  "representative": {
+    "keep": [
+      "모바일 터치와 PC 클릭을 단일 매니저로 통합하여 멀티플랫폼 환경에서 동일한 원탭 조작감을 제공하는 입력 설계"
+    ],
+    "fix": [
+      "섬 생태 변환 시 실시간 지형 모델 변경 대신, 로블록스 성능을 고려하여 사전 제작된 단계별 메시 교체 방식으로 수정"
+    ],
+    "add": [
+      "DataStoreService의 쓰기 제한을 고려하여 채집 데이터의 배치(Batch) 처리 및 로컬 캐싱 동기화 로직 추가"
+    ],
+    "risks": [
+      "실시간 지형 및 식생 변화 누적 시 인스턴스 급증으로 인한 저사양 모바일 기기의 메모리 부족 및 프레임 드랍 위험"
+    ],
+    "evidence": [
+      "로블록스 기술 가이드에 따르면 잦은 DataStore 호출은 6초 이상의 쿨다운을 유발하며, 과도한 파트 생성은 렌더링 부하를 초래함"
+    ],
+    "questions": [
+      "섬의 지형 변화가 물리적 충돌 영역(Collision)을 포함하는가, 아니면 시각적 장식 요소의 변경에 국한되는가?"
+    ]
+  }
+}

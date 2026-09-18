@@ -1,0 +1,33 @@
+{
+  "version": 5,
+  "gameId": "cozy-island",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "representativeModel": "gemini-3.5-flash-lite",
+  "leadModel": "gemini-3.5-flash-lite",
+  "actualLeadModel": "gemini-3.5-flash-lite",
+  "assistantModels": [],
+  "representativeAuthoredByLead": true,
+  "syntheticCompatibilityRecord": true,
+  "representative": {
+    "keep": [
+      "간단한 터치와 스와이프 조작을 활용한 힐링 생활 및 채집 코어 루프 유지"
+    ],
+    "fix": [
+      "실패 상태 정의에서 시간 제한 요소를 완전히 제거하고 순수 탐색 중심의 세션으로 수정하라"
+    ],
+    "add": [
+      "세션 종료 후 즉시 다음 채집 활동으로 이어지는 빠른 재도전 인터페이스 추가"
+    ],
+    "risks": [
+      "자원 수집 및 섬 생태 변환 시스템의 피드백이 지연될 경우 플레이어 동기부여 약화 우려"
+    ],
+    "evidence": [
+      "글로벌 캐주얼 세션 시간 벤치마크 및 크로시 로드 기반 빠른 재도전 구조 활용"
+    ],
+    "questions": [
+      "계절 변화 주기를 게임 내 플레이 세션 시간에 비례하게 설정할 것인가?"
+    ]
+  }
+}

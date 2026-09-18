@@ -1,0 +1,372 @@
+{
+  "version": 6,
+  "date": "2026-09-18",
+  "gameId": "cozy-island",
+  "gameName": "포근섬",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
+    "category": "CASUAL",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "gemini:gemini-3.5-flash-lite",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "gemini-3.5-flash-lite",
+      "graphics": "gemini-3.1-flash-lite",
+      "development": "gemini-3-flash-preview",
+      "qa": "gemini-3.6-flash",
+      "balance": "gemini-3.5-flash"
+    },
+    "resolvedLeadModels": {
+      "planning": "gemini-3.5-flash-lite",
+      "graphics": "gemini-3.1-flash-lite",
+      "development": "gemini-3-flash-preview",
+      "qa": "gemini-3.6-flash",
+      "balance": "gemini-3.5-flash"
+    },
+    "distinctLeadModels": [
+      "gemini-3.5-flash-lite",
+      "gemini-3.1-flash-lite",
+      "gemini-3-flash-preview",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash"
+    ],
+    "distinctLeadModelCount": 5,
+    "leadModelsDistinct": true,
+    "reviewModelCount": 1,
+    "modelAudit": {
+      "planning": {
+        "leadModel": "gemini-3.5-flash-lite",
+        "actualLeadModel": "gemini-3.5-flash-lite",
+        "assistantModels": [],
+        "models": [
+          "gemini-3.5-flash-lite"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      },
+      "graphics": {
+        "leadModel": "gemini-3.1-flash-lite",
+        "actualLeadModel": "gemini-3.1-flash-lite",
+        "assistantModels": [],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      },
+      "development": {
+        "leadModel": "gemini-3-flash-preview",
+        "actualLeadModel": "gemini-3-flash-preview",
+        "assistantModels": [],
+        "models": [
+          "gemini-3-flash-preview"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      },
+      "qa": {
+        "leadModel": "gemini-3.6-flash",
+        "actualLeadModel": "gemini-3.6-flash",
+        "assistantModels": [],
+        "models": [
+          "gemini-3.6-flash"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      },
+      "balance": {
+        "leadModel": "gemini-3.5-flash",
+        "actualLeadModel": "gemini-3.5-flash",
+        "assistantModels": [],
+        "models": [
+          "gemini-3.5-flash"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      }
+    },
+    "rebuttalRounds": 0,
+    "repeatedFatalReview": false,
+    "reviewMode": "FIVE_DISTINCT_LEAD_PARALLEL_REVIEW"
+  },
+  "meeting": {
+    "required": false,
+    "crossDepartmentMeeting": false,
+    "rebuttalRounds": 0
+  },
+  "disposition": {
+    "version": 2,
+    "gameId": "cozy-island",
+    "date": "2026-09-18",
+    "state": "ACTIVE",
+    "sameDesignerRevisionAttempted": true,
+    "fiveDepartmentLeadReviewCompleted": true,
+    "repeatedFiveDepartmentReview": false,
+    "meetingRequired": false,
+    "rebuttalRounds": 0,
+    "automaticDiscardAllowed": false,
+    "discardVotes": 0,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "strictGateStillAuthoritative": true,
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 11046,
+      "deterministic_pre_gate": 2,
+      "five_lead_reviews": 10869,
+      "designer_revision": 7425
+    },
+    "phaseBudgetMs": {
+      "designer_draft": 180000,
+      "designer_draft_base": 180000,
+      "designer_draft_gate": 180000,
+      "deterministic_pre_gate": 30000,
+      "designer_pre_gate_repair_1": 180000,
+      "designer_pre_gate_repair_2": 180000,
+      "independent_department_reviews": 240000,
+      "designer_revision": 180000,
+      "designer_revision_base": 180000,
+      "designer_revision_gate": 180000,
+      "five_lead_reviews": 180000
+    },
+    "totalModelCalls": 7,
+    "totalModelCallMs": 37668,
+    "modelPhaseConcurrency": 2,
+    "phaseConcurrency": {
+      "five_lead_reviews": 2
+    },
+    "maxLoadedModelLanes": 5,
+    "modelKeepAlive": "GEMINI_API",
+    "modelHealth": {
+      "gemini:gemini-3.5-flash-lite": {
+        "calls": 3,
+        "successes": 3,
+        "failures": 0,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 19973,
+        "lastMs": 7424,
+        "lastError": null,
+        "updatedAt": "2026-09-18T07:37:24.468Z"
+      },
+      "gemini:gemini-3-flash-preview": {
+        "calls": 1,
+        "successes": 1,
+        "failures": 0,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 2538,
+        "lastMs": 2538,
+        "lastError": null,
+        "updatedAt": "2026-09-18T07:37:08.715Z"
+      },
+      "gemini:gemini-3.5-flash": {
+        "calls": 1,
+        "successes": 1,
+        "failures": 0,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 6407,
+        "lastMs": 6407,
+        "lastError": null,
+        "updatedAt": "2026-09-18T07:37:12.582Z"
+      },
+      "gemini:gemini-3.1-flash-lite": {
+        "calls": 1,
+        "successes": 1,
+        "failures": 0,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 5799,
+        "lastMs": 5799,
+        "lastError": null,
+        "updatedAt": "2026-09-18T07:37:14.515Z"
+      },
+      "gemini:gemini-3.6-flash": {
+        "calls": 1,
+        "successes": 1,
+        "failures": 0,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 2951,
+        "lastMs": 2951,
+        "lastError": null,
+        "updatedAt": "2026-09-18T07:37:17.040Z"
+      }
+    },
+    "preGate": {
+      "attempts": 0,
+      "totalScore": 80,
+      "hardFailures": [],
+      "postRevisionScore": 80,
+      "postRevisionHardFailures": []
+    },
+    "checkpoint": {
+      "contractVersion": 2,
+      "engineDigest": "fb57cc31b517538b876d9f42ad117d843c7ec529d6d7f806549a1614a65ee57a",
+      "reused": false,
+      "completedPhases": 4,
+      "cachedTasks": 5
+    },
+    "simplifiedLeadOnlyReview": true,
+    "aiMeetingCalls": 0,
+    "rebuttalCalls": 0,
+    "representativeSynthesisCalls": 0,
+    "leadReviewCalls": 5,
+    "departmentScopedContext": true
+  },
+  "designLearning": {
+    "candidateCount": 1,
+    "usedAsDesignContext": true,
+    "positiveTrainingEligible": false,
+    "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
+    "strictGateHardFailures": [
+      "CORE_FUN_WEAK"
+    ],
+    "strictGateBypassAllowed": false
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": false,
+  "vibe2LearningContextUsed": true,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "ready": false,
+    "blockers": [
+      "game-seed-field-required:REFERENCE_GAMES"
+    ],
+    "advisoryDisposition": "ACTIVE",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
+        "source": "game-seed-state.json"
+      },
+      "designMultiplayer": {
+        "required": true,
+        "mode": "SINGLE",
+        "valid": true,
+        "decisionStage": "GAME_DESIGN",
+        "allowedModes": [
+          "SINGLE",
+          "COOP",
+          "COMPETITIVE",
+          "HYBRID"
+        ]
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": false,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": null
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "ROBLOX",
+        "present": false,
+        "path": null,
+        "projectField": "robloxProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "ROBLOX",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "roblox-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "multiplayerModeRequiredAtGameDesign": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresFullApprovedWebScope": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-18T07:37:26.643Z"
+  },
+  "artbookUi": {
+    "status": "WAITING",
+    "label": "대기중",
+    "path": "artbook-submissions/cozy-island/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "reason": "baseline-not-ready"
+  }
+}
