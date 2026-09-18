@@ -1,11 +1,12 @@
 {
-  "version": 8,
+  "version": 9,
   "policyDocument": "COMPANY_FLOW.md",
   "officialCardRegistrationRequiresPromotionPass": true,
+  "canonicalLifecycleRequired": true,
   "homepageTestShelf": {
     "limit": 30,
     "minimumScore": 80,
-    "minimumValidationSchema": 14,
+    "minimumValidationSchema": 15,
     "order": "STRICT_IMPLEMENTATION_SCORE_DESC",
     "requiresScore": true,
     "requiresWebGame": true,
@@ -20,6 +21,10 @@
     "hardGatesRequired": true,
     "officialCard": false,
     "promotionRequiredForOfficialCard": true,
+    "allowedLifecycleStates": [
+      "ACTIVE",
+      "REBUILD"
+    ],
     "cutlineScore": null,
     "replacementPolicy": "STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE;TIE_PRESERVES_VALID_INCUMBENT",
     "tieBreak": [
@@ -30,5 +35,5 @@
     ]
   },
   "candidates": [],
-  "updatedAt": "2026-09-15T07:33:17.477Z"
+  "updatedAt": "2026-09-18T14:49:22.670Z"
 }
