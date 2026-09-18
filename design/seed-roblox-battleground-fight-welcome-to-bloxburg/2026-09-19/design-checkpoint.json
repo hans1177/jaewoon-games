@@ -7,8 +7,300 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "Vector Clash is a fast-paced, physics-based arena combat game where players manipulate vector-based movement to outmaneuver opponents in short, high-intensity sessions. The core loop forces players to balance aggressive positioning with defensive cooldown management, while signature systems like 'Vector Dash' and 'Arena Hazard' ensure that every movement choice directly alters the battlefield state, creating a high-stakes tactical environment that rewards precision and quick decision-making.",
+      "playerFantasy": "You are a kinetic warrior in a neon arena, mastering the flow of motion to strike down rivals. You feel the rush of perfectly timed dashes and the satisfaction of turning an opponent's momentum against them to secure victory in a dynamic, ever-changing combat space.",
+      "coreFun": "Players engage in rapid, short-burst combat where every input—dash, strike, or shield—triggers immediate, observable physics changes. The fun lies in predicting opponent movement, executing precise vector maneuvers, and witnessing the instant impact of successful hits or environmental traps that shift the tide of battle.",
+      "coreLoop": [
+        "Enter Arena: Player selects a loadout and spawns into a dynamic arena with a specific objective.",
+        "Tactical Engagement: Player uses movement and combat inputs to position themselves and attack opponents.",
+        "State Resolution: Successful hits or environmental interactions change the arena state or player health.",
+        "Reward & Reset: Player earns currency based on performance, unlocks upgrades, and queues for the next rapid match."
+      ],
+      "signatureSystems": [
+        {
+          "name": "Vector Dash",
+          "purpose": "Provides high-speed, directional mobility that can be used for evasion or initiating attacks.",
+          "playerChoice": "Players must decide whether to use their limited dash charges to aggressively close the distance or to save them for escaping dangerous environmental hazards."
+        },
+        {
+          "name": "Arena Hazard",
+          "purpose": "Introduces dynamic environmental threats that shift the battlefield layout during combat.",
+          "playerChoice": "Players must choose between fighting in the center for high-risk rewards or navigating the edges to trigger traps against their opponents."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "Vector Dash",
+          "toSystem": "Arena Hazard",
+          "trigger": "Player dashes into a hazard zone",
+          "stateChange": "Hazard triggers immediately, dealing damage or knocking back the player based on velocity."
+        },
+        {
+          "fromSystem": "Combat System",
+          "toSystem": "Progression System",
+          "trigger": "Match ends with a victory or defeat",
+          "stateChange": "Player receives experience points and currency, updating their rank and unlocking new gear."
+        },
+        {
+          "fromSystem": "Arena Hazard",
+          "toSystem": "Combat System",
+          "trigger": "Hazard successfully hits an opponent",
+          "stateChange": "Opponent is stunned, creating a vulnerability window for the player to execute a combo."
+        }
+      ],
+      "progressionDirection": "Players progress through a linear rank system, earning currency to unlock cosmetic skins and ability-modifying gear that enhances their playstyle without breaking competitive balance.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "Players earn match currency based on performance, which is then spent on permanent stat boosts or cosmetic items to customize their warrior.",
+        "resourceFlow": "Currency flows from match completion rewards into the shop system, ensuring a steady cycle of earning and spending.",
+        "balanceRules": "Stat boosts are capped to prevent power creep, ensuring that skill remains the primary factor in competitive matches."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Phase 1: Dynamic Vector Arena Expansion and Environmental Hazard Integration",
+          "newGameplay": "Players encounter shifting arena geometry that changes in real-time based on player movement vectors, requiring precise timing to navigate collapsing platforms and avoid new environmental traps that push players off the map.",
+          "systemImpact": "Requires a complete overhaul of the Arena Hazard system to support dynamic mesh deformation and real-time physics triggers, necessitating a new event-driven architecture for map state synchronization across all clients."
+        },
+        {
+          "milestone": "Phase 2: Advanced Kinetic Ability Mastery and Tactical Dash Customization",
+          "newGameplay": "Introduction of a modular dash system where players can equip different kinetic modifiers, such as 'Vector Rebound' for wall-bouncing or 'Momentum Siphon' to steal speed from nearby opponents during high-speed chases.",
+          "systemImpact": "Extends the existing Vector Dash system by adding a new parameter-based modifier layer, requiring the core physics engine to calculate collision interactions for multiple new dash types simultaneously without frame drops."
+        },
+        {
+          "milestone": "Phase 3: Competitive Seasonal Ladder and Skill-Based Matchmaking Infrastructure",
+          "newGameplay": "Implementation of a seasonal ranked mode where players compete in high-stakes 'Vector Duels' to climb the global leaderboard, earning exclusive cosmetic trails and unique visual effects for their character's movement.",
+          "systemImpact": "Integrates a new MMR (Matchmaking Rating) service with the existing Progression System, requiring a persistent database schema update to track seasonal performance metrics and handle secure reward distribution at the end of each season."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Health reaches zero",
+          "Time limit expires",
+          "Falling out of bounds"
+        ],
+        "retryFlow": "Instant respawn in casual mode or return to lobby for ranked matchmaking with minimal friction.",
+        "riskPressure": "Losing match streak or rank points creates tension and encourages careful play.",
+        "recoveryRules": "Earning comeback bonuses for consecutive losses helps players stay motivated and return to the action."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "Optimized for touch and controller, using simple one-thumb swipe for movement and tap for combat actions.",
+        "performanceBudget": "Maintains 60 FPS by limiting concurrent physics objects and optimizing shader complexity for mobile devices.",
+        "sessionConstraints": "Designed for 3-5 minute sessions, perfect for quick play on mobile devices."
+      },
+      "visualDirection": "A vibrant, neon-aesthetic art style with high-contrast colors to ensure readability on small screens.",
+      "mobileUx": "Minimalist HUD with large, intuitive touch targets for combat and movement, ensuring accessibility for all screen sizes.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "Health bars and cooldown timers are prominently displayed and color-coded for quick recognition.",
+        "touchAndInput": "Supports customizable touch controls to accommodate different hand sizes and play styles.",
+        "readability": "High-contrast UI elements and clear visual cues for hazards ensure gameplay is always understandable.",
+        "accessibility": "Includes colorblind modes and adjustable text sizes to support a wider range of players."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "Neon-cyberpunk aesthetic with sharp, clean lines and dynamic lighting effects.",
+        "audioIdentity": "High-energy electronic soundtrack with punchy sound effects for combat impacts.",
+        "gameplayFeedbackSync": "Audio cues are perfectly synced with visual impacts to provide immediate, satisfying feedback."
+      },
+      "marketTargetDirection": "Targeting competitive mobile gamers who enjoy fast-paced, skill-based action games.",
+      "steamExpansionDecision": "Considered for future release if mobile performance and player retention metrics meet internal benchmarks.",
+      "multiplayerMode": "COMPETITIVE",
+      "multiplayerExpansionDecision": "Focusing on 1v1 and 2v2 modes to ensure balanced and fair competitive play.",
+      "technicalAssumptions": [
+        "Physics engine can handle high-velocity collisions without jittering.",
+        "Network latency is minimized through client-side prediction for movement."
+      ],
+      "validationQuestions": [
+        "Does the movement feel responsive and satisfying on mobile devices?",
+        "Are the hazard mechanics intuitive and fair for all skill levels?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "Vector Dash Mobility",
+          "responsibleSystem": "Vector Dash System",
+          "validationEvidence": "Playtesting confirms dash responsiveness and impact on evasion tactics."
+        },
+        {
+          "designElement": "Arena Hazard Interaction",
+          "responsibleSystem": "Arena Hazard System",
+          "validationEvidence": "Stress testing ensures hazard triggers work consistently across all devices."
+        },
+        {
+          "designElement": "Progression Rewards",
+          "responsibleSystem": "Progression System",
+          "validationEvidence": "Data analysis shows player retention correlates with reward frequency."
+        }
+      ],
+      "openQuestions": [
+        "How to balance dash cooldowns for different skill levels?",
+        "What are the most effective ways to monetize without affecting balance?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 78,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "Phase 1: Dynamic Vector Arena Expansion and Environmental Hazard Integration",
+          "newGameplay": "Players encounter shifting arena geometry that changes in real-time based on player movement vectors, requiring precise timing to navigate collapsing platforms and avoid new environmental traps that push players off the map.",
+          "systemImpact": "Requires a complete overhaul of the Arena Hazard system to support dynamic mesh deformation and real-time physics triggers, necessitating a new event-driven architecture for map state synchronization across all clients."
+        },
+        {
+          "milestone": "Phase 2: Advanced Kinetic Ability Mastery and Tactical Dash Customization",
+          "newGameplay": "Introduction of a modular dash system where players can equip different kinetic modifiers, such as 'Vector Rebound' for wall-bouncing or 'Momentum Siphon' to steal speed from nearby opponents during high-speed chases.",
+          "systemImpact": "Extends the existing Vector Dash system by adding a new parameter-based modifier layer, requiring the core physics engine to calculate collision interactions for multiple new dash types simultaneously without frame drops."
+        },
+        {
+          "milestone": "Phase 3: Competitive Seasonal Ladder and Skill-Based Matchmaking Infrastructure",
+          "newGameplay": "Implementation of a seasonal ranked mode where players compete in high-stakes 'Vector Duels' to climb the global leaderboard, earning exclusive cosmetic trails and unique visual effects for their character's movement.",
+          "systemImpact": "Integrates a new MMR (Matchmaking Rating) service with the existing Progression System, requiring a persistent database schema update to track seasonal performance metrics and handle secure reward distribution at the end of each season."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
@@ -109,10 +401,30 @@
       "lastMs": 84603,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
       "updatedAt": "2026-09-18T18:41:01.396Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 2,
+      "successes": 2,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 101687,
+      "lastMs": 3364,
+      "lastError": null,
+      "updatedAt": "2026-09-18T18:41:18.486Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T18:39:36.790Z",
-  "updatedAt": "2026-09-18T18:41:01.396Z"
+  "updatedAt": "2026-09-18T18:41:18.706Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T18:41:18.486Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }
