@@ -195,16 +195,81 @@ const FATAL_CRITERIA=directive.discardPolicy?.DESIGN_ONLY?.fatalCriteria||[];
 const FATAL_REVIEW={type:'object',required:['recommendedState','fatalCriteria','evidence','reason'],properties:{recommendedState:{type:'string',enum:['ACTIVE','REDESIGN','DISCARD']},fatalCriteria:{type:'array',maxItems:4,items:{type:'string',enum:FATAL_CRITERIA}},evidence:{type:'array',maxItems:4,items:SHORT_TEXT},reason:{type:'string',maxLength:700}},additionalProperties:false};
 const phaseMs={};
 const modelCallStats=[];
+const phaseBudgetMs={
+  designer_draft:180000,
+  designer_draft_base:180000,
+  designer_draft_gate:180000,
+  deterministic_pre_gate:30000,
+  designer_pre_gate_repair_1:180000,
+  designer_pre_gate_repair_2:180000,
+  independent_department_reviews:240000,
+  department_representatives:180000,
+  lead_rebuttals:180000,
+  cross_department_meeting:180000,
+  designer_revision:180000,
+  designer_revision_base:180000,
+  designer_revision_gate:180000,
+  five_lead_fatal_review:180000
+};
+function stageForPhase(name){
+  if(name.startsWith('designer_draft'))return'DESIGNER_DRAFT';
+  if(name==='deterministic_pre_gate')return'PRE_GATE';
+  if(name.startsWith('designer_pre_gate_repair'))return'PRE_GATE_REPAIR';
+  if(name==='independent_department_reviews')return'DEPARTMENT_REVIEWS';
+  if(name==='department_representatives')return'LEAD_CONSENSUS';
+  if(name==='lead_rebuttals'||name==='cross_department_meeting')return'CROSS_DEPARTMENT_MEETING';
+  if(name.startsWith('designer_revision'))return'DESIGNER_REVISION';
+  if(name==='five_lead_fatal_review')return'FINAL_LEAD_REVIEW';
+  return designCheckpoint.currentPhase||'BOOTSTRAP';
+}
+function modelHealthEntry(model){
+  const current=designCheckpoint.modelHealth?.[model]||{};
+  return {
+    calls:Number(current.calls||0),successes:Number(current.successes||0),failures:Number(current.failures||0),
+    timeouts:Number(current.timeouts||0),jsonFailures:Number(current.jsonFailures||0),
+    totalMs:Number(current.totalMs||0),lastMs:Number(current.lastMs||0),lastError:current.lastError||null,
+    updatedAt:current.updatedAt||null
+  };
+}
+function recordModelHealth(model,{success,elapsedMs,error=null}){
+  const row=modelHealthEntry(model);
+  row.calls+=1;row.totalMs+=Math.max(0,Number(elapsedMs||0));row.lastMs=Math.max(0,Number(elapsedMs||0));
+  if(success)row.successes+=1;
+  else{
+    row.failures+=1;
+    const message=clean(error?.message||error);
+    row.lastError=message||null;
+    if(/timeout|timed out|aborted/i.test(message))row.timeouts+=1;
+    if(/json|schema|empty model response/i.test(message))row.jsonFailures+=1;
+  }
+  row.updatedAt=new Date().toISOString();
+  designCheckpoint.modelHealth[model]=row;
+}
+function modelHealthPenalty(model){
+  const row=modelHealthEntry(model);
+  if(!row.calls)return 0;
+  const avg=row.totalMs/Math.max(1,row.calls);
+  return avg+(row.failures*45000)+(row.timeouts*60000)+(row.jsonFailures*25000);
+}
 async function runPhase(name,work){
   if(Object.prototype.hasOwnProperty.call(designCheckpoint.phases,name)){
     phaseMs[name]=0;
+    designCheckpoint.currentPhase=stageForPhase(name);
+    persistDesignCheckpoint();
     console.log(`DESIGN_CHECKPOINT_HIT=${name}`);
     return designCheckpoint.phases[name];
   }
   const started=Date.now();
+  designCheckpoint.currentPhase=stageForPhase(name);
+  persistDesignCheckpoint();
   try{
     const result=await work();
     phaseMs[name]=Date.now()-started;
+    const budget=Number(phaseBudgetMs[name]||0);
+    if(budget>0&&phaseMs[name]>budget){
+      designCheckpoint.slowPhases[name]={elapsedMs:phaseMs[name],budgetMs:budget,recordedAt:new Date().toISOString()};
+      console.log(`DESIGN_PHASE_BUDGET_EXCEEDED=${name}|${phaseMs[name]}/${budget}`);
+    }
     designCheckpoint.phases[name]=result;
     if(!designCheckpoint.completedPhases.includes(name))designCheckpoint.completedPhases.push(name);
     designCheckpoint.failedPhase=null;designCheckpoint.failedTask=null;designCheckpoint.lastError=null;
@@ -408,11 +473,16 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
       if(repairs.length)console.log(`MODEL_SCHEMA_NORMALIZED=${model}|attempt=${attempt}|${repairs.join(',')}`);
       assertSchemaValue(normalized,schema);
       const elapsedMs=Date.now()-callStarted;
+      recordModelHealth(model,{success:true,elapsedMs});
+      designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
       modelCallStats.push({model,attempt,elapsedMs,predict,mode,numCtx:effectiveCtx,timeoutMs:effectiveTimeoutMs,schemaRepairs:repairs.length});
+      persistDesignCheckpoint();
       console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}|ctx=${effectiveCtx}|timeout=${effectiveTimeoutMs}|mode=${mode}`);
       return normalized;
     }catch(error){
       lastError=error;
+      recordModelHealth(model,{success:false,elapsedMs:Date.now()-callStarted,error});
+      persistDesignCheckpoint();
       if(attempt<3){
         const nextMode='json';
         console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${nextMode}|reason=${clean(error?.message)}`);
