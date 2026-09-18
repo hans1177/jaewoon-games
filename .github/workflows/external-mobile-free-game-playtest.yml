@@ -52,20 +52,33 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
             "${api}")"
-          running_other="$(jq --arg current "${CURRENT_RUN_ID}" '[.workflow_runs[] | select((.status=="in_progress" or .status=="waiting") and ((.id|tostring)!=$current))] | length' <<<"${runs_json}")"
-          newer_pending="$(jq --argjson current "${CURRENT_RUN_ID}" '[.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id > $current))] | length' <<<"${runs_json}")"
-          older_pending_ids="$(jq -r --argjson current "${CURRENT_RUN_ID}" '.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id < $current)) | .id' <<<"${runs_json}")"
-          echo "EXTERNAL_MOBILE_RUNNING_OTHER=${running_other}"
-          echo "EXTERNAL_MOBILE_NEWER_PENDING=${newer_pending}"
+          stale_revision_ids="$(jq -r --arg current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '.workflow_runs[] | select((.status=="queued" or .status=="pending" or .status=="in_progress" or .status=="waiting") and ((.id|tostring)!=$current) and (.head_sha!=$head)) | .id' <<<"${runs_json}")"
+          if [ -n "${stale_revision_ids}" ]; then
+            while IFS= read -r stale_id; do
+              [ -n "${stale_id}" ] || continue
+              echo "EXTERNAL_MOBILE_CANCEL_STALE_REVISION=${stale_id}"
+              curl --fail --silent --show-error \
+                -X POST \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/${REPOSITORY}/actions/runs/${stale_id}/cancel" || true
+            done <<<"${stale_revision_ids}"
+          fi
+          running_other="$(jq --arg current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '[.workflow_runs[] | select((.status=="in_progress" or .status=="waiting") and ((.id|tostring)!=$current) and (.head_sha==$head))] | length' <<<"${runs_json}")"
+          newer_pending="$(jq --argjson current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '[.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id > $current) and (.head_sha==$head))] | length' <<<"${runs_json}")"
+          older_pending_ids="$(jq -r --argjson current "${CURRENT_RUN_ID}" --arg head "${GITHUB_SHA}" '.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id < $current) and (.head_sha==$head)) | .id' <<<"${runs_json}")"
+          echo "EXTERNAL_MOBILE_RUNNING_SAME_REVISION=${running_other}"
+          echo "EXTERNAL_MOBILE_NEWER_PENDING_SAME_REVISION=${newer_pending}"
           if [ "${running_other}" -gt 0 ] || [ "${newer_pending}" -gt 0 ]; then
             echo 'should_run=NO' >> "$GITHUB_OUTPUT"
-            echo 'EXTERNAL_MOBILE_GATE=DEFER_TO_EXISTING_ACTIVE_RUN'
+            echo 'EXTERNAL_MOBILE_GATE=DEFER_TO_SAME_REVISION_ACTIVE_RUN'
             exit 0
           fi
           if [ -n "${older_pending_ids}" ]; then
             while IFS= read -r stale_id; do
               [ -n "${stale_id}" ] || continue
-              echo "EXTERNAL_MOBILE_CANCEL_OLDER_PENDING=${stale_id}"
+              echo "EXTERNAL_MOBILE_CANCEL_OLDER_SAME_REVISION=${stale_id}"
               curl --fail --silent --show-error \
                 -X POST \
                 -H "Authorization: Bearer ${GH_TOKEN}" \
