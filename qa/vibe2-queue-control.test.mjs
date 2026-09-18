@@ -49,6 +49,42 @@ test('historical deployment recovery flag survives queue normalization', () => {
   assert.equal(queue.tasks[0].historicalDeploymentRecovery,true);
 });
 
+test('registered historical maintenance shares the protected post-release slot', () => {
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {
+      id:'general-release',gameId:'general-release',target:'web',department:'development',type:'implementation',
+      goal:'general release work',releaseState:'release-confirmed',status:'queued',priority:'critical'
+    },
+    {
+      id:'historical-focus',gameId:'historical-focus',target:'roblox',department:'development',type:'implementation',
+      goal:'historical maintenance',releaseState:'development-confirmed',status:'queued',priority:'critical',
+      postReleaseFocused:true,historicalDeploymentRecovery:true,packageLongWorkProtected:true,packageRole:'implementation-owner'
+    }
+  ]});
+  const selected=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(selected.postReleaseFocusedSlotUsed,true);
+  assert.equal(selected.postReleaseFocusedTaskId,'historical-focus');
+  assert.equal(selected.selected[0].id,'historical-focus');
+});
+
+test('ordinary development-confirmed Roblox task cannot claim the post-release protected slot', () => {
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {
+      id:'general-release',gameId:'general-release',target:'web',department:'development',type:'implementation',
+      goal:'general release work',releaseState:'release-confirmed',status:'queued',priority:'critical'
+    },
+    {
+      id:'ordinary-dev-focus',gameId:'ordinary-dev-focus',target:'roblox',department:'development',type:'implementation',
+      goal:'ordinary development',releaseState:'development-confirmed',status:'queued',priority:'critical',
+      postReleaseFocused:true
+    }
+  ]});
+  const selected=selectVibeQueueBatch(queue,{maxConcurrentTasks:1});
+  assert.equal(selected.postReleaseFocusedSlotUsed,false);
+  assert.equal(selected.postReleaseFocusedTaskId,null);
+  assert.equal(selected.selected[0].id,'general-release');
+});
+
 test('owner directive preempts release and development work', () => {
   let queue=createVibeContinuousQueue();
   queue=add(queue,'dev','dev','unity',{releaseState:'development-confirmed'});
