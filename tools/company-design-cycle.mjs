@@ -660,7 +660,7 @@ async function generateDesignerDraft(){
   const system='너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용한다. 유명 성공작의 구조는 오마주/재해석할 수 있지만 보호되는 표현과 소스코드는 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.';
   const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,10500)}`;
   try{
-    const full=await callDesignerModel(system,user,DESIGN,{predict:2200,temperature:0.28,numCtx:8192,timeoutMs:90000,maxAttempts:1,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
+    const full=await callDesignerModel(system,user,DESIGN,{predict:4096,temperature:0.28,numCtx:8192,timeoutMs:90000,maxAttempts:2,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
     console.log('DESIGNER_DRAFT_GENERATION=ONE_CALL');
     return full;
   }catch(error){
@@ -780,7 +780,7 @@ async function generateDesignerRevision(){
   const system='너는 초안을 작성한 동일 Game Designer AI다. 5개 부서 Lead의 직접 검토를 받아 실제 설계를 한 번 수정한다. 회의 합의 절차는 없으며 서로 충돌하는 조언은 GAME_SEED와 strict 기준을 기준으로 판단한다.';
   const user=`수정된 전체 상세 설계를 한 번에 반환하라. 이전 하드관문 실패를 삭제·재명명·무시하지 말고 실제 설계 변경으로 해결한다.\nGAME_SEED=${clip(seed,4500)}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4000)}\nCURRENT_DESIGN=${clip(designDraft,11000)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,9000)}`;
   try{
-    const full=await callDesignerModel(system,user,DESIGN,{predict:2200,temperature:0.14,numCtx:8192,timeoutMs:90000,maxAttempts:1,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})});
+    const full=await callDesignerModel(system,user,DESIGN,{predict:4096,temperature:0.14,numCtx:8192,timeoutMs:90000,maxAttempts:2,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})});
     console.log('DESIGNER_REVISION_GENERATION=ONE_CALL');
     return full;
   }catch(error){
