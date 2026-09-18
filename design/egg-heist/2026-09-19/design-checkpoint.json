@@ -1,0 +1,351 @@
+{
+  "contractVersion": 3,
+  "gameId": "egg-heist",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
+  "fingerprint": "3929381d54c73c2226000abfaa40d93a5483200883264107ef299632b4697409",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입 탈출 게임으로, coreLoop와 signatureSystems가 플레이어의 매 순간 선택과 월드 상태의 즉각적인 변화를 만들어냅니다.",
+      "playerFantasy": "위험천만한 둥지에서 희귀한 알을 훔쳐 경비병의 눈을 피해 무사히 탈출하는 익살스럽고 스릴 넘치는 도둑이 되는 판타지입니다.",
+      "coreFun": "간단한 터치와 스와이프로 둥지에 잠입해 알을 훔치고, 경비병의 시선을 피해 도망치며 즉각적인 점수와 탈출 성공 여부를 확인하는 재미를 줍니다.",
+      "coreLoop": [
+        "한 손가락 탭 또는 스와이프 입력으로 잠입 경로를 선택하고 이동을 시작합니다.",
+        "경비 생태계의 반응을 관찰하고 알을 획득한 뒤 탈출 루트로 이동합니다.",
+        "탈출 성공 또는 실패에 따른 보상을 받고 즉시 다음 도전에 나섭니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "경비 생태계 시스템",
+          "purpose": "다양한 패턴을 가진 경비병들이 플레이어의 잠입 경로를 위협하여 긴장감을 유발합니다.",
+          "playerChoice": "경비병의 시야를 피하기 위해 은폐 도구를 사용하거나 우회 경로를 선택합니다."
+        },
+        {
+          "name": "알 운반 무게 시스템",
+          "purpose": "훔친 알의 무게와 크기에 따라 이동 속도와 소음이 달라져 리스크를 조절합니다.",
+          "playerChoice": "속도가 느려지더라도 고가치의 무거운 알을 들고 도망칠지 가벼운 알을 훔칠지 결정합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "경비 생태계 시스템",
+          "toSystem": "알 운반 무게 시스템",
+          "trigger": "플레이어가 무거운 알을 훔쳐 이동 소음이 증가할 때",
+          "stateChange": "근처 경비병들의 경계 단계가 상승하고 추적 범위가 넓어집니다."
+        },
+        {
+          "fromSystem": "알 운반 무게 시스템",
+          "toSystem": "진행 및 경제 시스템",
+          "trigger": "성공적으로 알을 들고 탈출 지점에 도달했을 때",
+          "stateChange": "획득한 알의 가치에 따라 재화가 지급되고 다음 단계가 해금됩니다."
+        },
+        {
+          "fromSystem": "진행 및 경제 시스템",
+          "toSystem": "경비 생태계 시스템",
+          "trigger": "플레이어가 새로운 잠입 장비나 스킬을 구매했을 때",
+          "stateChange": "다음 스테이지에서 특정 경비병의 시야를 교란할 수 있게 됩니다."
+        }
+      ],
+      "progressionDirection": "스테이지를 클리어할수록 더 까다로운 경비 패턴과 무거운 알들이 등장하며, 새로운 은폐 장비를 해금하여 난이도를 극복하는 방향으로 진행됩니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "잠입 및 알 탈출 성공 -> 재화 획득 -> 장비 해금 및 업그레이드 -> 더 어려운 스테이지 도전",
+        "resourceFlow": "스테이지 클리어 시 알 가치에 비례한 골드 획득, 실패 시 최소한의 보상으로 빠른 재도전 지원",
+        "balanceRules": "고가치 알은 리스크가 높지만 빠른 성장을 제공하고, 안전한 루트는 성장 속도를 조절하는 밸런스 유지"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "정글 테마 둥지 추가 및 수직 이동 패치",
+          "newGameplay": "새로운 식물 장애물과 나무 위를 순찰하는 신규 경비 생태계가 도입되어 플레이어가 나뭇가지를 타는 등의 새로운 조작을 수행합니다.",
+          "systemImpact": "기존 지상 중심의 잠입 경로 선택에 입체적인 수직 이동 변수가 추가되며 충돌 판정 및 이동 속도 시스템에 직접 영향을 줍니다."
+        },
+        {
+          "milestone": "야간 모드 둥지 추가 및 시야 제한 업데이트",
+          "newGameplay": "시야가 제한되는 어둠 속에서 랜턴을 든 경비병들을 상대하며 조명을 피해 알을 훔치는 은밀한 잠입 플레이가 강화됩니다.",
+          "systemImpact": "경비 생태계 시스템의 시야각 로직에 조명 범위 변수가 추가로 연동되어 렌더링 및 인공지능 탐지 시스템에 확장성을 부여합니다."
+        },
+        {
+          "milestone": "보스 경비병 조우 및 구역 방어 시스템 도입",
+          "newGameplay": "특정 구역을 고정 방어하는 강력한 보스 경비병의 패턴을 파악하고 특수 장비를 활용해 회피하며 알을 훔쳐야 합니다.",
+          "systemImpact": "플레이어의 탈출 루트 선택지가 제한되며 고유 장비 활용도가 높아져 기존 장비 및 인벤토리 시스템의 밸런스에 직접적인 영향을 미칩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "경비병의 시야에 완전히 노출되어 붙잡힘",
+          "제한 시간 내에 탈출 지점에 도달하지 못함",
+          "너무 무거운 알을 들다 소음으로 발각됨"
+        ],
+        "retryFlow": "실패 즉시 코믹한 연출과 함께 결과 화면이 출력되고 탭 한 번으로 로비나 스테이지 시작점으로 즉시 복귀합니다.",
+        "riskPressure": "보유한 알을 잃을 수 있는 위험이 있지만 빠른 재시도 기능으로 좌절감을 최소화합니다.",
+        "recoveryRules": "실패 보상으로 소량의 재화를 제공하여 플레이어가 연속 실패 시에도 장비를 업그레이드할 수 있게 보정합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 및 PC 환경을 고려하여 한 손가락 터치 드래그 또는 마우스 클릭 기반의 직관적인 이동 조작을 제공합니다.",
+        "performanceBudget": "로우엔드 모바일 기기에서도 30fps 이상을 유지하도록 폴리곤 수를 최적화하고 가벼운 파티클 효과를 사용합니다.",
+        "sessionConstraints": "한 판의 플레이 타임을 3~5분 이내로 유지하여 언제 어디서나 가볍게 즐길 수 있도록 설계합니다."
+      },
+      "visualDirection": "귀여운 카툰 렌더링 스타일과 코믹한 애니메이션을 사용하여 긴장감 넘치는 잠입 상황을 유쾌하게 표현합니다.",
+      "mobileUx": "화면 하단에 가상 조이스틱이나 원터치 드래그 영역을 배치하고, 긴급 탈출 버튼을 눈에 띄게 배치하여 모바일 조작 편의성을 극대화합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 남은 시간, 경계 게이지, 보유한 알의 무게 정보를 화면 상단에 직관적으로 배치합니다.",
+        "touchAndInput": "넓은 터치 인식 영역을 제공하고 조작 피드백을 진동과 시각 효과로 즉시 전달합니다.",
+        "readability": "경비병의 시야 범위는 색상과 바닥 표시로 명확하게 구분하여 가독성을 높입니다.",
+        "accessibility": "색약 모드를 지원하여 시야 표시 영역을 색상 외에 패턴이나 명암으로도 구별할 수 있게 합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "아기자기한 동물 캐릭터와 코믹한 표정 변화를 중심으로 한 밝고 경쾌한 비주얼 아이덴티티를 구축합니다.",
+        "audioIdentity": "살살 걸을 때는 부드러운 발소리가 나고, 경비병에게 들렸을 때는 코믹한 경보음이 울리도록 사운드를 구성합니다.",
+        "gameplayFeedbackSync": "플레이어의 입력과 동시에 사운드와 진동 피드백이 일치하도록 동기화하여 조작감을 향상시킵니다."
+      },
+      "marketTargetDirection": "짧은 시간 동안 가볍게 즐기는 캐주얼 퍼즐 및 잠입 장르를 선호하는 글로벌 모바일 게이머를 타겟으로 합니다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후 멀티플레이어 협동 모드와 정밀한 조작을 강화하여 PC 플랫폼 확장을 검토합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "추후 친구들과 함께 알을 훔치는 코옵 모드나 누가 더 많은 알을 훔치는지 겨루는 경쟁 모드 추가를 검토합니다.",
+      "technicalAssumptions": [
+        "클라이언트 측에서 경비병의 이동 경로와 시야각 연산을 최적화하여 렉을 방지합니다.",
+        "서버는 스테이지 시작과 종료 시의 보상 데이터만 검증하여 빠른 응답 속도를 보장합니다."
+      ],
+      "validationQuestions": [
+        "한 손가락 조작만으로도 경비병의 시야를 피하는 전략적 재미가 충분히 전달되는가?",
+        "알의 무게에 따른 이동 속도 변화가 플레이어에게 의미 있는 리스크 선택을 제공하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "한 손가락 드래그 이동 조작",
+          "responsibleSystem": "플레이어 입력 및 이동 제어 시스템",
+          "validationEvidence": "모바일 테스트 환경에서 10초 이내에 조작법을 이해하고 경로를 이동하는지 확인합니다."
+        },
+        {
+          "designElement": "경비 생태계 시야각 판정",
+          "responsibleSystem": "경비 생태계 시스템",
+          "validationEvidence": "시야 범위 내 진입 시 0.1초 이내에 경계 상태로 전환되는지 로그로 검증합니다."
+        },
+        {
+          "designElement": "알 운반 무게에 따른 속도 저하",
+          "responsibleSystem": "알 운반 무게 시스템",
+          "validationEvidence": "무거운 알 획득 시 이동 속도가 정확히 30% 감소하고 소음 반경이 넓어지는지 테스트합니다."
+        }
+      ],
+      "openQuestions": [
+        "멀티플레이어 확장 시 동기화 지연을 줄이기 위해 어떤 서버 권한 모델을 사용할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 78,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "정글 테마 둥지 추가 및 수직 이동 패치",
+          "newGameplay": "새로운 식물 장애물과 나무 위를 순찰하는 신규 경비 생태계가 도입되어 플레이어가 나뭇가지를 타는 등의 새로운 조작을 수행합니다.",
+          "systemImpact": "기존 지상 중심의 잠입 경로 선택에 입체적인 수직 이동 변수가 추가되며 충돌 판정 및 이동 속도 시스템에 직접 영향을 줍니다."
+        },
+        {
+          "milestone": "야간 모드 둥지 추가 및 시야 제한 업데이트",
+          "newGameplay": "시야가 제한되는 어둠 속에서 랜턴을 든 경비병들을 상대하며 조명을 피해 알을 훔치는 은밀한 잠입 플레이가 강화됩니다.",
+          "systemImpact": "경비 생태계 시스템의 시야각 로직에 조명 범위 변수가 추가로 연동되어 렌더링 및 인공지능 탐지 시스템에 확장성을 부여합니다."
+        },
+        {
+          "milestone": "보스 경비병 조우 및 구역 방어 시스템 도입",
+          "newGameplay": "특정 구역을 고정 방어하는 강력한 보스 경비병의 패턴을 파악하고 특수 장비를 활용해 회피하며 알을 훔쳐야 합니다.",
+          "systemImpact": "플레이어의 탈출 루트 선택지가 제한되며 고유 장비 활용도가 높아져 기존 장비 및 인벤토리 시스템의 밸런스에 직접적인 영향을 미칩니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 2,
+      "successes": 2,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 12423,
+      "lastMs": 1914,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:06:51.024Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 142,
+      "lastMs": 142,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 8.839883413s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"8s\" } ] } }",
+      "updatedAt": "2026-09-18T15:06:51.187Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 164,
+      "lastMs": 164,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 8.818174919s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"8s\" } ] } }",
+      "updatedAt": "2026-09-18T15:06:51.210Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T15:06:38.593Z",
+  "updatedAt": "2026-09-18T15:06:51.211Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:06:51.024Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 8.818174919s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"8s\" } ] } }"
+}
