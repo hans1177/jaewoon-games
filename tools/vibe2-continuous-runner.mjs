@@ -10,6 +10,7 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
+import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
@@ -175,6 +176,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const releaseState = clean(task.releaseState) || 'other';
   const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState) && ['roblox','web','unity'].includes(plan.target) && task.requiresOwnerDecision !== true && task.protectedChange !== true;
   const learningGuidance = buildLearningGuidance(plan.learning);
+  const assetProduction = buildVibeAssetProductionPlan({ task, target:plan.target, repoRoot:process.cwd() });
+  const assetGuidance = assetProductionGuidance(assetProduction);
   const reusedContexts = reusableContextsForTask(handoff || {}, task);
   const reusedGuidance = buildReusableHandoffGuidance(reusedContexts);
   const workPackage=freeze({
@@ -205,11 +208,13 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     `역할 분리=${Object.entries(workPackage.rolePlan).map(([k,v])=>`${k}:${v}`).join(' | ')}`,
     workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
   ].filter(Boolean).join('\n'):'';
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, designIntelligence.guidance, learningGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, designIntelligence.guidance, learningGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const qa = freezeList([
     ...(plan.qa || []),
     'design-intelligence-contract',
+    'asset-production-plan-contract',
+    'asset-runtime-visual-qa-required',
     'exploration-handoff-required-before-implementation',
     'auto-player-evidence-after-implementation',
     'telemetry-evidence-after-implementation',
@@ -232,6 +237,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
+    assetProduction,
     learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance), motion:plan.motion, executionGate:plan.executionGate,
     deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
@@ -239,6 +245,11 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
       paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
       binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
+      vibeOwnsAssetProductionDecision:true,
+      webDirectAssetAuthoringAllowed:plan.target==='web',
+      companyAssetReuseCandidateOnly:true,
+      authoringGeneratorRequestAllowed:true,
+      authoringGeneratorRequestIsNotCompletion:true,
       explorationRequired:true, explorationWorker:'tools/vibe2-exploration-worker.mjs', explorationSourceWrite:false,
       roleSeparation:true, sameFileParallelWrite:false,
       speculativeParallelism:task.speculativeEligible && task.estimatedRisk==='high', speculativeVariants:task.speculativeEligible && task.estimatedRisk==='high'?2:1
