@@ -397,6 +397,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_QUEUE_EFFECTIVE_MAX=${result.summary?.effectiveMaxConcurrentTasks ?? result.summary?.maxConcurrentTasks ?? DEFAULT_MAX_CONCURRENT_TASKS}`);
   console.log(`VIBE2_QUEUE_ACTIVE_WORKERS=${(result.summary?.capacityRunningTaskIds || []).length}`);
   console.log(`VIBE2_QUEUE_AWAITING_QA=${(result.summary?.awaitingQaTaskIds || []).length}`);
+  console.log(`VIBE2_QUEUE_QUOTA_WAITING=${(result.summary?.quotaWaitingTaskIds || []).length}`);
   console.log(`VIBE2_QUEUE_FREE_SLOTS=${result.summary?.freeSlots ?? 0}`);
   console.log(`VIBE2_QUEUE_LONG_WORK_SLOT=${result.summary?.longWorkProtectedSlotUsed ? 'USED' : 'NOT_USED'}`);
   console.log(`VIBE2_QUEUE_CONTINUE=${result.summary?.continueRequired ? 'YES' : 'NO'}`);
