@@ -55,19 +55,26 @@ test('verified runtime status and catalog join the same supervised publication c
   assert.ok(manage.includes('HOMEPAGE_PUBLIC_STATUS_SYNC=YES'));
 });
 
-test('homepage renders canonical server runtime data from one current enhancement entry',()=>{
+test('homepage renders canonical verified server shelves from one current enhancement entry',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=5000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
   assert.match(homepage,/getJson\('\/company-status\.json'\)/);
+  assert.match(homepage,/getJson\('\/test-game-candidates\.json'\)/);
   assert.match(homepage,/runtimeInfoAuthority!=='company-runtime'/);
   assert.match(homepage,/runtimeAuthority!=='company-runtime'/);
-  assert.match(homepage,/function homepageRows\(catalog,status\)/);
-  assert.match(homepage,/\.filter\(activeLifecycle\)/);
-  assert.match(homepage,/function classRank\(row\)/);
+  assert.match(homepage,/const displayEligible=row=>\['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'\]/);
+  assert.match(homepage,/function releaseRows\(catalog,status\)/);
+  assert.match(homepage,/function developmentRows\(catalog,status\)/);
+  assert.match(homepage,/function homepageRows\(catalog,status,testManifest=\{\}\)/);
+  assert.match(homepage,/testManifest\?\.candidates/);
+  assert.match(homepage,/TOP30_STRICT_IMPLEMENTATION_SCORE/);
   assert.match(homepage,/const scoreState=row=>/);
-  assert.match(homepage,/function buildFocus\(catalog,status\)/);
-  assert.match(homepage,/function buildGameCenter\(catalog,status\)/);
+  assert.match(homepage,/function buildFocus\(catalog,status,testManifest=\{\}\)/);
+  assert.match(homepage,/function buildGameCenter\(catalog,status,testManifest=\{\}\)/);
+  assert.match(homepage,/buildShelf\(hub,'homeReleaseGameCenter'/);
+  assert.match(homepage,/buildShelf\(hub,'homeTop30GameCenter'/);
+  assert.match(homepage,/buildShelf\(hub,'homeDevelopmentGameCenter'/);
   assert.match(homepage,/const TOP_LIMIT=30/);
   assert.match(homepage,/homeServerAuthority/);
   assert.match(homepage,/homeSupportedPlatforms/);
