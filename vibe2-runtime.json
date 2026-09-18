@@ -70,7 +70,7 @@
     "maxWorkMinutes": 22,
     "maxModelCallsPerWorker": 1,
     "dispatchNextWhenCapacityOpens": true,
-    "refillMode": "per-worker-push-callback-with-fan-in-fallback",
+    "refillMode": "per-worker-repository-dispatch-with-fan-in-fallback",
     "refillRef": "vibe2-unreal-core",
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,
@@ -104,18 +104,20 @@
     "speculativeParallelism": {
       "enabled": true,
       "variants": 3,
-      "highRiskOptInOnly": true,
-      "unityBuildCandidatesExcluded": true
+      "highRiskOptInOnly": false,
+      "unityBuildCandidatesExcluded": true,
+      "criticalHighRiskAutomatic": true
     },
     "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
-    "slotRefillTrigger": "push-callback-branch",
+    "slotRefillTrigger": "repository-dispatch",
     "slotRefillBranchPrefix": "vibe2/refill/",
     "slotRefillSingleVariantOnly": true,
     "slotRefillWorkerDirectControlWrite": false,
     "slotRefillSourceLocksHeldUntilFanIn": true,
     "postReleaseFocusedRunnerSlots": 1,
-    "postReleaseFocusedRefill": true
+    "postReleaseFocusedRefill": true,
+    "legacySlotRefillBranchCompatibility": true
   },
   "adaptiveBackpressure": {
     "enabled": true,
