@@ -50,6 +50,20 @@ test('cache misses and failures are visible even when concurrency is healthy',()
   assert.equal(t.bottleneck,'OLLAMA_CACHE_MISS_RATE');
 });
 
+test('practice-only failures remain observable but cannot create production pressure',()=>{
+  const results=[row(1,{start:1000,end:5000,runId:'practice-only',outcome:'FAIL',evidence:['learning-practice-only','production-pass:NO','source-write:NO']})];
+  const tasks=[{id:'t1',sourceRoot:'learning-practice:performance',goal:'[VIBE_LEARNING_PRACTICE] performance drill',status:'running'}];
+  const t=computeParallelismTelemetry({results,tasks,requestedMax:20,effectiveMax:4,taskCount:1});
+  assert.equal(t.workerCount,1);
+  assert.equal(t.practiceWorkerCount,1);
+  assert.equal(t.adaptiveWorkerCount,0);
+  assert.equal(t.failureRatePct,100);
+  assert.equal(t.adaptiveFailureRatePct,0);
+  assert.equal(t.adaptivePressureLevel,'LOW');
+  assert.equal(t.adaptiveBottleneck,'NONE');
+  assert.equal(t.pass,true);
+});
+
 test('mixed actions runs are not treated as one adaptive sample',()=>{
   const results=[row(1,{runId:'101'}),row(2,{runId:'102'})];
   const t=computeParallelismTelemetry({results,requestedMax:20,effectiveMax:20,taskCount:2});
