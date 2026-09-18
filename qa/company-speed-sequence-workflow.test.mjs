@@ -134,12 +134,13 @@ test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate 
   assert.match(policy,/adaptiveBackpressureSteps: \[20, 16, 12, 8, 4\]/);
   assert.ok(designRuntime.includes("const maxMatch=policy.match(/concurrentGameWipMax:\\s*(\\d+)/);"));
   assert.match(designRuntime,/slice\(0,designWipMax\)/);
-  assert.match(designRuntime,/const parallelMax=Math\.max\(1,designWipMax-1\)/);
+  assert.match(designRuntime,/const selected=canaryVerified\?pending:pending\.slice\(0,2\)/);
+  assert.match(designRuntime,/const parallelMax=Math\.max\(1,Math\.min\(canaryVerified\?5:2,targets\.length\|\|1\)\)/);
   assert.match(designRuntime,/parallel_max=\$\{parallelMax\}/);
-  assert.match(designRuntime,/GAME_DESIGN_CONTROL_RUNNER_RESERVE=\$\{designWipMax-parallelMax\}/);
+  assert.match(designRuntime,/GAME_DESIGN_EXECUTION_LANES=\$\{parallelMax\}/);
   assert.match(designRuntime,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
   assert.match(designRuntime,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
-  assert.match(designRuntime,/concurrency:[\s\S]{0,160}group:\s*company-seed-design-runtime[\s\S]{0,160}cancel-in-progress:\s*\$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(designRuntime,/concurrency:[\s\S]{0,220}group:\s*company-seed-design-runtime[\s\S]{0,220}cancel-in-progress:\s*false/);
   assert.match(designRuntime,/push:[\s\S]{0,500}tools\/company-design-cycle\.mjs/);
   assert.doesNotMatch(designRuntime,/slice\(0,6\)/);
   assert.doesNotMatch(designRuntime,/max-parallel:\s*6/);
