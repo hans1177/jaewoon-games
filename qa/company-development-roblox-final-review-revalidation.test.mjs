@@ -14,13 +14,13 @@ test('final-review revalidation reuses prior Studio QA and dispatches only canon
   assert.match(workflow, /gh workflow run company-development-roblox-multiplayer-qa\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
   assert.match(workflow, /gh workflow run company-development-roblox-release-promotion\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f game_id="\$id"/);
   assert.match(workflow, /steps\.evaluate\.outputs\.release_pending_count != '0'/);
-  assert.match(workflow, /company-learning\\/platform-release-roadmap\\.json/);
+  assert.match(workflow, /company-learning\/platform-release-roadmap\.json/);
   assert.match(workflow, /automaticPublishPaused/);
   assert.match(workflow, /automaticReleaseDispatchAllowed/);
   assert.match(workflow, /ROBLOX_AUTOMATIC_PUBLISH_PAUSED=YES/);
   assert.match(workflow, /ROBLOX_AUTOMATIC_RELEASE_DISPATCH_ALLOWED=NO/);
   assert.match(workflow, /ROBLOX_RELEASE_PROMOTION_DISPATCHED=NO/);
-  assert.match(workflow, /'company-learning\\/platform-release-roadmap\\.json'/);
+  assert.match(workflow, /'company-learning\/platform-release-roadmap\.json'/);
   assert.match(workflow, /ROBLOX_RUNTIME_RERUN=NO/);
   assert.match(workflow, /ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO/);
   assert.match(workflow, /ROBLOX_REGRESSION_RERUN=NO/);
