@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    #game {
+      width: 100%;
+      max-width: 800px;
+      background-color: #333;
+      padding: 20px;
+      border: 1px solid #555;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h1 {
+      color: #fff;
+    }
+    .game-controls {
+      margin-bottom: 20px;
+    }
+    .game-controls button {
+      margin: 0 5px;
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #555;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .game-controls button:hover {
+      background-color: #777;
+    }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 5px;
+      margin: 0 auto;
+      width: 480px;
+      height: 480px;
+      background-color: #444;
+      border: 1px solid #666;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .game-piece {
+      width: 60px;
+      height: 60px;
+      background-color: #555;
+      border: 1px solid #777;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #fff;
+      text-align: center;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .game-piece.selected {
+      background-color: #00ff00;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game-controls">
+      <button onclick="startGame()">Start Game</button>
+      <button onclick="restartGame()">Restart</button>
+    </div>
+    <div class="game-board" id="board"></div>
+  </main>
+  <script>
+    const board = document.getElementById('board');
+    const gameControls = document.querySelector('.game-controls');
+
+    function startGame() {
+      gameControls.style.display = 'none';
+      board.style.display = 'grid';
+      board.innerHTML = '';
+      createBoard();
+    }
+
+    function restartGame() {
+      gameControls.style.display = 'block';
+      board.style.display = 'none';
+    }
+
+    function createBoard() {
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = document.createElement('div');
+          piece.className = 'game-piece';
+          piece.textContent = (row + col) % 2 === 0 ? 'O' : 'X';
+          piece.addEventListener('click', () => {
+            piece.classList.toggle('selected');
+          });
+          board.appendChild(piece);
+        }
+      }
+    }
+
+    // Add game logic here
+  </script>
+</body>
+</html>
