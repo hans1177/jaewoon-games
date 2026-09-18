@@ -64,3 +64,39 @@ test('changed owner full-rebuild directive refreshes stale task and resets faile
   assert.equal(task.retries,1);
   assert.equal(task.blocker,'worker-active');
 });
+
+
+test('existing Web directive refreshes stale full rebuild into exploration assessment',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-owner-assess-'));
+  const catalogFile=path.join(root,'game-catalog.json');
+  const queueFile=path.join(root,'.vibe2','queue.json');
+  const directivesFile=path.join(root,'.vibe2','owner-directives.json');
+  write(catalogFile,{version:1,games:[]});
+  write(queueFile,{version:5,maxConcurrentTasks:20,tasks:[{
+    id:'OWNER-FULL-REBUILD-CELESTIAL-BASTION-20260916',gameId:'seed-single-defense-strat-celestial-bastion',
+    target:'web',department:'development',type:'implementation',goal:'FULL_WEB_GAME_REBUILD old',
+    responsibleFiles:['web-games/seed-single-defense-strat-celestial-bastion/index.html'],dependencies:[],
+    priority:'critical',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,ownerDirective:true,
+    requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,sourceRoot:'web-games/seed-single-defense-strat-celestial-bastion',
+    estimatedRisk:'high',speculativeEligible:false,fullRebuild:true,rebuildMode:'FULL_REBUILD',workUnits:5,taskWorkUnits:5,
+    evidence:['central-policy:COMPANY_FLOW.md','owner-directive:full-web-game-rebuild','source-root:web-games/seed-single-defense-strat-celestial-bastion']
+  }]});
+  write(directivesFile,{version:1,directives:[{
+    id:'OWNER-FULL-REBUILD-CELESTIAL-BASTION-20260916',gameId:'seed-single-defense-strat-celestial-bastion',
+    sourceRoot:'web-games/seed-single-defense-strat-celestial-bastion',
+    responsibleFiles:['web-games/seed-single-defense-strat-celestial-bastion/index.html'],
+    priority:'critical',workUnits:5,status:'pending',mode:'ASSESS_EXISTING_WEB',
+    goal:'[EXISTING_WEB_ASSESS_AND_IMPLEMENT] read existing source first',
+    evidence:['source-existing:web-companion','assessment-strategy:VIBE_EXPLORATION']
+  }]});
+  const result=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot:root,ownerDirectivesFile:directivesFile});
+  assert.deepEqual(result.ownerRefreshed.map(x=>x.id),['OWNER-FULL-REBUILD-CELESTIAL-BASTION-20260916']);
+  const task=read(queueFile).tasks.find(x=>x.id==='OWNER-FULL-REBUILD-CELESTIAL-BASTION-20260916');
+  assert.equal(task.status,'queued');
+  assert.equal(task.fullRebuild,false);
+  assert.equal(task.rebuildMode,'ASSESS_EXISTING_WEB');
+  assert.ok(task.evidence.includes('owner-directive:existing-web-assessment'));
+  assert.ok(task.evidence.includes('strategy-decision:EXPLORATION'));
+  assert.ok(task.evidence.includes('central-policy:company-learning/platform-release-roadmap.json'));
+  assert.equal(task.evidence.includes('owner-directive:full-web-game-rebuild'),false);
+});
