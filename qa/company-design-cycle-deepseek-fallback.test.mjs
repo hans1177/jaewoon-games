@@ -49,6 +49,8 @@ test('strict hard-gate feedback returns to the same game designer without bypass
   assert.match(design,/관문 이름을 숨기거나 완화하지 말고 실제 설계 내용으로 원인을 해결하라/);
   assert.match(design,/하드관문 실패는 삭제·재명명·무시하지 말고/);
   assert.match(design,/strictGateBypassAllowed:false/);
+  assert.match(design,/rejectionReasons:Array\.isArray\(event\?\.rejectionReasons\)\?event\.rejectionReasons:\[\]/);
+  assert.match(design,/rejectionReasons:designLearningEvents\.flatMap/);
 });
 
 test('game designer schema supplies every stage gate v2 evidence axis',()=>{
