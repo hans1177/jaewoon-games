@@ -49,8 +49,12 @@ test('speed sequence changes execution only and cannot weaken quality gates',()=
   assert.match(flow,/cronMustNotBePrimaryProgressionEngine: true/);
 });
 
-test('runtime roadmap mirrors central execution contract without creating policy',()=>{
-  assert.equal(roadmap.policySource,'COMPANY_FLOW.md');
+test('canonical machine roadmap owns the execution contract',()=>{
+  assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.humanDocumentRequired,false);
+  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
   assert.equal(roadmap.runtimeContractCannotCreatePolicy,true);
   assert.equal(roadmap.commonExecutionContract.router,'tools/company-selected-platform-router.mjs');
   assert.equal(roadmap.commonExecutionContract.singleRoutingDecisionPoint,true);
