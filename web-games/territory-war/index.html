@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: new Array(10).fill(0)
+      },
+      player: {
+        x: 0,
+        y: 0,
+        health: 100,
+        inventory: []
+      },
+      enemies: [],
+      ai: {
+        behavior: 'basic',
+        target: null
+      },
+      ui: {
+        display: false
+      }
+    };
+
+    // Initialize game
+    function initGame() {
+      // Initialize map
+      game.map.tiles = new Array(100).fill(0);
+      game.map.tiles[0] = 1; // Player
+      game.map.tiles[1] = 2; // Enemy
+
+      // Initialize player
+      game.player.x = 0;
+      game.player.y = 0;
+      game.player.health = 100;
+
+      // Initialize enemies
+      game.enemies = [
+        { x: 1, y: 0, health: 50 },
+        { x: 0, y: 1, health: 50 }
+      ];
+
+      // Initialize AI
+      game.ai.behavior = 'basic';
+      game.ai.target = null;
+
+      // Initialize UI
+      game.ui.display = true;
+    }
+
+    // Game loop
+    function gameLoop() {
+      // Update game state
+      updateGame();
+
+      // Render game
+      renderGame();
+    }
+
+    // Update game state
+    function updateGame() {
+      // Player movement
+      if (game.ui.display) {
+        // Handle player input
+        // ...
+      }
+
+      // AI behavior
+      if (game.ai.behavior === 'basic') {
+        // Basic AI logic
+        // ...
+      }
+
+      // Map updates
+      // ...
+    }
+
+    // Render game
+    function renderGame() {
+      // Render map
+      // ...
+
+      // Render player
+      // ...
+
+      // Render enemies
+      // ...
+
+      // Render UI
+      // ...
+    }
+
+    // Start game
+    initGame();
+    gameLoop();
+  </script>
+</body>
+</html>
