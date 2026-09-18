@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#101a21">
+<title>마을 던전 RPG</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101a21;color:#fff;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;touch-action:none}
+button{font:inherit}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block;background:#101a21}
+#hud{position:fixed;left:8px;right:8px;top:max(7px,env(safe-area-inset-top));z-index:20;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;pointer-events:none}
+.panel{background:#081219dc;border:1px solid #ffffff2f;border-radius:13px;box-shadow:0 8px 22px #0006;backdrop-filter:blur(5px)}
+#stats{padding:8px 9px;min-width:0}
+#statsTop{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:11px;font-weight:900}
+.pill{padding:3px 6px;border-radius:999px;background:#ffffff15;border:1px solid #ffffff1e}
+#combatPill{background:#8e2020;border-color:#ef7e7e;display:none}
+.bar{height:7px;margin-top:6px;border-radius:999px;background:#ffffff1c;overflow:hidden}
+.fill{height:100%;width:50%;border-radius:999px}
+#hpFill{background:#e74f56}
+#xpFill{background:#50a8ff}
+#zoneBox{min-width:103px;padding:8px 9px;text-align:right}
+#zoneBox b{display:block;font-size:12px;color:#ffe28c}
+#zoneBox span{display:block;margin-top:2px;font-size:9px;color:#d7e4ea}
+#questMini{position:fixed;z-index:20;left:8px;top:91px;width:min(64vw,310px);padding:7px 9px;font-size:9px;line-height:1.45;pointer-events:none}
+#questMini b{color:#ffe28c}
+#prompt{position:fixed;z-index:30;left:50%;bottom:168px;transform:translateX(-50%);max-width:75vw;padding:7px 10px;border-radius:999px;background:#071017dc;border:1px solid #ffffff42;font-size:10px;font-weight:900;text-align:center;opacity:0;transition:.15s;pointer-events:none}
+#prompt.on{opacity:1}
+#joystick{position:fixed;z-index:25;left:max(16px,env(safe-area-inset-left));bottom:max(18px,calc(env(safe-area-inset-bottom) + 10px));width:126px;height:126px;border-radius:50%;border:2px solid #ffffff69;background:#07101c70;box-shadow:0 7px 22px #0006;touch-action:none}
+#joyKnob{position:absolute;left:34px;top:34px;width:56px;height:56px;border-radius:50%;background:#ffffffb8;border:2px solid #fff;box-shadow:0 4px 12px #0006;pointer-events:none}
+#actions{position:fixed;z-index:25;right:max(11px,env(safe-area-inset-right));bottom:max(15px,calc(env(safe-area-inset-bottom) + 8px));display:grid;grid-template-columns:74px 74px;gap:8px}
+.act{min-height:55px;border:1px solid #ffffff55;border-radius:16px;background:#173347e8;color:#fff;font-size:11px;font-weight:1000;box-shadow:0 6px 16px #0005}
+.act.primary{background:#9d3b2f}
+.act.gold{background:#7f6421}
+.act:disabled{opacity:.42}
+#questBtn,#soundBtn{min-height:37px}
+#toast{position:fixed;z-index:80;left:50%;top:23%;transform:translate(-50%,-10px);max-width:84vw;padding:9px 12px;border-radius:12px;background:#05090ded;border:1px solid #ffffff40;font-size:11px;font-weight:900;opacity:0;pointer-events:none;transition:.2s;text-align:center}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+.overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;background:#050a0dd8}
+.overlay[hidden]{display:none}
+.card{width:min(94vw,520px);max-height:88dvh;overflow:auto;border:1px solid #ffffff2c;border-radius:20px;background:#101d26;box-shadow:0 20px 60px #0009}
+.cardHead{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:8px;padding:13px 14px;background:#101d26eF;border-bottom:1px solid #ffffff1f}
+.cardHead h2{margin:0;font-size:18px;color:#ffe28c}
+.close{width:36px;height:36px;border:0;border-radius:50%;background:#ffffff16;color:#fff;font-size:22px}
+.cardBody{padding:12px 14px 15px;font-size:12px;line-height:1.55}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:7px 0;padding:9px;border-radius:12px;background:#ffffff0c;border:1px solid #ffffff14}
+.row b{display:block}
+.row small{display:block;margin-top:2px;color:#b8c9d4}
+.row button,.modalBtn{min-height:37px;padding:0 10px;border:0;border-radius:10px;background:#2a80c8;color:#fff;font-weight:900}
+.row button.buy{background:#a8751f}
+.modalBtn{width:100%;margin-top:8px}
+.modalBtn.warn{background:#8e3b2e}
+.questDone{color:#71dfa1}
+.questActive{color:#ffda74}
+#startCard{text-align:center;padding:22px 18px}
+#startCard h1{margin:0 0 8px;font-size:28px;color:#ffe28c}
+#startCard p{margin:6px 0;color:#c9d8df;font-size:12px;line-height:1.55}
+#startBtn{width:100%;min-height:50px;margin-top:15px;border:0;border-radius:14px;background:#2c8bd2;color:#fff;font-size:15px;font-weight:1000}
+.note{margin-top:9px;padding:8px 9px;border-radius:10px;background:#ffffff0b;color:#aebfc8;font-size:10px}
+@media(max-width:390px){
+  #joystick{width:112px;height:112px}
+  #joyKnob{left:30px;top:30px;width:50px;height:50px}
+  #actions{grid-template-columns:68px 68px}
+  .act{min-height:50px;font-size:10px}
+  #prompt{bottom:148px}
+  #questMini{top:87px}
+}
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+
+<div id="hud">
+  <div id="stats" class="panel">
+    <div id="statsTop">
+      <span class="pill" id="levelText">Lv.1</span>
+      <span class="pill" id="hpText">HP 100/100</span>
+      <span class="pill" id="atkText">공격 10</span>
+      <span class="pill" id="defText">방어 0</span>
+      <span class="pill" id="goldText">0G</span>
+      <span class="pill" id="combatPill">전투중</span>
+    </div>
+    <div class="bar"><div class="fill" id="hpFill"></div></div>
+    <div class="bar"><div class="fill" id="xpFill"></div></div>
+  </div>
+  <div id="zoneBox" class="panel"><b id="zoneName">마을</b><span id="musicName">마을 BGM</span></div>
+</div>
+
+<div id="questMini" class="panel">진행 중 퀘스트 없음</div>
+<div id="prompt"></div>
+
+<div id="joystick"><div id="joyKnob"></div></div>
+
+<div id="actions">
+  <button class="act primary" id="attackBtn">공격</button>
+  <button class="act gold" id="interactBtn">상호작용</button>
+  <button class="act" id="returnBtn">지역</button>
+  <button class="act" id="questBtn">퀘스트</button>
+  <button class="act" id="soundBtn">BGM 켬</button>
+</div>
+
+<div id="toast"></div>
+
+<div id="modal" class="overlay" hidden>
+  <div class="card">
+    <div class="cardHead"><h2 id="modalTitle">메뉴</h2><button class="close" id="modalClose">×</button></div>
+    <div class="cardBody" id="modalBody"></div>
+  </div>
+</div>
+
+<div id="start" class="overlay">
+  <div class="card" id="startCard">
+    <h1>마을 던전 RPG</h1>
+    <p>마을에서 퀘스트를 받고 5개 사냥터를 탐험해.<br>3번째 사냥터 중앙에는 보스가 있어.</p>
+    <p>레벨업마다 최대체력과 공격력이 10씩 증가해.</p>
+    <button id="startBtn">게임 시작</button>
+    <div class="note">모바일: 왼쪽 조이스틱 이동 · 오른쪽 공격/상호작용<br>PC: WASD 이동 · J 공격 · E 상호작용</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+if(!window.THREE){
+  document.getElementById("startCard").innerHTML="<h1>로딩 실패</h1><p>3D 엔진을 불러오지 못했어. 인터넷 연결 후 다시 열어.</p>";
+  return;
+}
+
+var SAVE_KEY="village-dungeons-v1";
+var ZONES=[
+  {name:"마을",music:"town"},
+  {name:"1. 초원 던전",music:"hunt1"},
+  {name:"2. 늑대 숲",music:"hunt2"},
+  {name:"3. 고대 유적",music:"hunt1"},
+  {name:"4. 망자의 묘지",music:"hunt2"},
+  {name:"5. 바위 협곡",music:"hunt1"}
+];
+
+var WEAPONS=[
+  {id:"wood",name:"목검",price:50,power:5},
+  {id:"iron",name:"철검",price:150,power:12},
+  {id:"silver",name:"은검",price:350,power:20},
+  {id:"knight",name:"기사의 검",price:700,power:32},
+  {id:"dragon",name:"용의 검",price:1200,power:50}
+];
+
+var ARMORS=[
+  {id:"cloth",name:"천 갑옷",price:50,def:2},
+  {id:"leather",name:"가죽 갑옷",price:150,def:4},
+  {id:"iron",name:"철 갑옷",price:350,def:7},
+  {id:"knight",name:"기사 갑옷",price:700,def:11},
+  {id:"dragon",name:"용비늘 갑옷",price:1200,def:16}
+];
+
+var QUESTS=[
+  {id:"mayor_slime",giver:"mayor",title:"초원 정리",desc:"1번째 사냥터의 슬라임 3마리 처치",kind:"kill",target:"slime",need:3,gold:50,xp:50},
+  {id:"healer_help",giver:"healer",title:"부상자 치료",desc:"마을의 부상 주민 3명 치료",kind:"heal",target:"wounded",need:3,gold:100,xp:100},
+  {id:"hunter_wolf",giver:"hunter",title:"늑대 사냥",desc:"2번째 사냥터의 늑대 5마리 처치",kind:"kill",target:"wolf",need:5,gold:150,xp:150},
+  {id:"mayor_boss",giver:"mayor",title:"유적의 수호자",desc:"3번째 사냥터 중앙의 고대 수호자 처치",kind:"kill",target:"boss",need:1,gold:200,xp:200},
+  {id:"resident_skeleton",giver:"resident",title:"묘지 정화",desc:"4번째 사냥터의 해골 6마리 처치",kind:"kill",target:"skeleton",need:6,gold:250,xp:250},
+  {id:"guard_golem",giver:"guard",title:"협곡 돌파",desc:"5번째 사냥터의 골렘 8마리 처치",kind:"kill",target:"golem",need:8,gold:300,xp:300}
+];
+
+var defaultState={
+  level:1,xp:0,gold:0,maxHp:100,hp:100,baseAttack:10,
+  weapon:null,armor:null,ownedWeapons:[],ownedArmors:[],
+  quests:{},zone:0
+};
+
+function loadState(){
+  var data=null;
+  try{data=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch(e){}
+  var s=Object.assign({},defaultState,data||{});
+  if(!s.quests||typeof s.quests!=="object")s.quests={};
+  if(!Array.isArray(s.ownedWeapons))s.ownedWeapons=[];
+  if(!Array.isArray(s.ownedArmors))s.ownedArmors=[];
+  QUESTS.forEach(function(q){
+    if(!s.quests[q.id])s.quests[q.id]={status:"new",progress:0};
+  });
+  s.zone=0;
+  s.hp=Math.max(1,Math.min(Number(s.hp)||s.maxHp,s.maxHp));
+  return s;
+}
+var state=loadState();
+
+function save(){
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify(state));}catch(e){}
+}
+function weaponPower(){
+  var item=WEAPONS.find(function(x){return x.id===state.weapon;});
+  return item?item.power:0;
+}
+function armorDef(){
+  var item=ARMORS.find(function(x){return x.id===state.armor;});
+  return item?item.def:0;
+}
+function totalAttack(){return state.baseAttack+weaponPower();}
+function nextXp(){return state.level*100;}
+
+var renderer=new THREE.WebGLRenderer({canvas:document.getElementById("game"),antialias:false,alpha:false,powerPreference:"high-performance"});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));
+renderer.setSize(innerWidth,innerHeight,false);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+
+var scene=new THREE.Scene();
+scene.background=new THREE.Color(0x78acd1);
+scene.fog=new THREE.Fog(0x78acd1,28,72);
+
+var camera=new THREE.PerspectiveCamera(58,innerWidth/innerHeight,.1,160);
+camera.position.set(0,14,18);
+
+scene.add(new THREE.HemisphereLight(0xddeeff,0x4c4d3b,2.2));
+var sun=new THREE.DirectionalLight(0xfff1c7,2.4);
+sun.position.set(10,20,8);
+scene.add(sun);
+
+var player=new THREE.Group();
+var body=new THREE.Mesh(new THREE.CylinderGeometry(.58,.72,1.4,7),new THREE.MeshLambertMaterial({color:0x327ac5}));
+body.position.y=.9;
+var head=new THREE.Mesh(new THREE.SphereGeometry(.45,8,6),new THREE.MeshLambertMaterial({color:0xf0c59c}));
+head.position.y=1.85;
+var sword=new THREE.Mesh(new THREE.BoxGeometry(.12,.12,1.5),new THREE.MeshLambertMaterial({color:0xdde8ef}));
+sword.position.set(.72,1.05,-.35);
+sword.rotation.x=.2;
+player.add(body,head,sword);
+scene.add(player);
+
+var world=new THREE.Group();
+scene.add(world);
+var enemies=[];
+var interactables=[];
+var keys={};
+var joy={x:0,y:0};
+var lastFrame=performance.now();
+var inCombat=false;
+var bossCombat=false;
+var attackReady=0;
+var attackAnim=0;
+var currentInteract=null;
+var modalOpen=false;
+var toastTimer=0;
+
+var hpFill=document.getElementById("hpFill");
+var xpFill=document.getElementById("xpFill");
+var hpText=document.getElementById("hpText");
+var levelText=document.getElementById("levelText");
+var atkText=document.getElementById("atkText");
+var defText=document.getElementById("defText");
+var goldText=document.getElementById("goldText");
+var combatPill=document.getElementById("combatPill");
+var zoneName=document.getElementById("zoneName");
+var musicName=document.getElementById("musicName");
+var questMini=document.getElementById("questMini");
+var prompt=document.getElementById("prompt");
+var attackBtn=document.getElementById("attackBtn");
+var interactBtn=document.getElementById("interactBtn");
+var returnBtn=document.getElementById("returnBtn");
+var questBtn=document.getElementById("questBtn");
+var soundBtn=document.getElementById("soundBtn");
+var modal=document.getElementById("modal");
+var modalTitle=document.getElementById("modalTitle");
+var modalBody=document.getElementById("modalBody");
+
+function mat(color){return new THREE.MeshLambertMaterial({color:color,flatShading:true});}
+function addBox(x,y,z,sx,sy,sz,color){
+  var m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat(color));
+  m.position.set(x,y,z);world.add(m);return m;
+}
+function addGround(color){
+  var g=new THREE.Mesh(new THREE.PlaneGeometry(76,76,1,1),mat(color));
+  g.rotation.x=-Math.PI/2;g.position.y=-.01;world.add(g);
+}
+function addTree(x,z,scale){
+  var trunk=new THREE.Mesh(new THREE.CylinderGeometry(.25*scale,.34*scale,2.6*scale,6),mat(0x664429));
+  trunk.position.set(x,1.3*scale,z);world.add(trunk);
+  var crown=new THREE.Mesh(new THREE.ConeGeometry(1.35*scale,3.2*scale,7),mat(0x2f6f3d));
+  crown.position.set(x,3.1*scale,z);world.add(crown);
+}
+function addRock(x,z,scale,color){
+  var r=new THREE.Mesh(new THREE.DodecahedronGeometry(scale,0),mat(color||0x777b7d));
+  r.position.set(x,scale*.65,z);r.scale.y=.7;world.add(r);
+}
+function addHouse(x,z,color){
+  addBox(x,1.35,z,5,2.7,4,color);
+  var roof=new THREE.Mesh(new THREE.ConeGeometry(3.6,2.1,4),mat(0x673b2d));
+  roof.position.set(x,3.65,z);roof.rotation.y=Math.PI/4;world.add(roof);
+  addBox(x,1,-2+z,.9,1.9,.12,0x4d2d20);
+}
+function humanoid(x,z,color,scale){
+  var g=new THREE.Group();
+  var b=new THREE.Mesh(new THREE.CylinderGeometry(.42*scale,.52*scale,1.2*scale,7),mat(color));
+  b.position.y=.75*scale;
+  var h=new THREE.Mesh(new THREE.SphereGeometry(.36*scale,8,6),mat(0xf0c59c));
+  h.position.y=1.55*scale;
+  g.add(b,h);g.position.set(x,0,z);world.add(g);return g;
+}
+function addNpc(id,name,x,z,color,type){
+  var g=humanoid(x,z,color,1);
+  interactables.push({id:id,name:name,type:type,mesh:g,x:x,z:z});
+}
+function clearWorld(){
+  while(world.children.length)world.remove(world.children[0]);
+  enemies.length=0;
+  interactables.length=0;
+  currentInteract=null;
+}
+
+function buildTown(){
+  clearWorld();
+  scene.background.set(0x8fc8e4);scene.fog.color.set(0x8fc8e4);
+  addGround(0x6c9849);
+  addHouse(-13,-10,0xd2b66d);addHouse(13,-10,0xbfc8d6);addHouse(-14,11,0xc79b72);addHouse(14,11,0xa4c7a4);
+  for(var i=0;i<14;i++){
+    var a=i/14*Math.PI*2;
+    addTree(Math.cos(a)*31,Math.sin(a)*31,1.05);
+  }
+  addNpc("mayor","이장",-4,-3,0xc9a326,"quest");
+  addNpc("healer","치료사",4,-3,0xcf6f8d,"quest");
+  addNpc("hunter","사냥꾼",-7,8,0x4e7f45,"quest");
+  addNpc("resident","주민 대표",0,9,0x8c7152,"quest");
+  addNpc("guard","경비대장",7,8,0x6d778e,"quest");
+  addNpc("weapon","무기 상인",-8,-9,0x3f6fa8,"weapon");
+  addNpc("armor","방어구 상인",8,-9,0x7d5899,"armor");
+  var gate=addBox(0,1.5,-17,7,3,.8,0x665b4e);
+  addBox(-3.1,3,-17,.8,6,.8,0x665b4e);addBox(3.1,3,-17,.8,6,.8,0x665b4e);
+  interactables.push({id:"travel",name:"사냥터 입구",type:"travel",mesh:gate,x:0,z:-17});
+  var healQuest=state.quests.healer_help;
+  if(healQuest.status==="active"&&healQuest.progress<QUESTS.find(function(q){return q.id==="healer_help";}).need){
+    var positions=[[-11,3],[11,3],[0,15]];
+    var remain=3-healQuest.progress;
+    for(var j=0;j<remain;j++){
+      var p=positions[j];
+      var wounded=humanoid(p[0],p[1],0xd8a044,.92);
+      interactables.push({id:"wounded_"+j,name:"부상 주민",type:"wounded",mesh:wounded,x:p[0],z:p[1]});
+    }
+  }
+  player.position.set(0,0,5);
+  state.zone=0;
+  state.hp=state.maxHp;
+  save();
+  setBGM(audioStarted?"town":"none");
+  updateHUD();
+}
+
+var AREA_DATA={
+  1:{ground:0x668f45,sky:0x84b7d2,type:"slime",count:8,hp:42,atk:6,speed:2.1,color:0x71c97b,name:"슬라임"},
+  2:{ground:0x42643e,sky:0x688e8d,type:"wolf",count:9,hp:72,atk:10,speed:3.1,color:0x666d74,name:"늑대"},
+  3:{ground:0x776f59,sky:0x9a8d72,type:"shade",count:5,hp:95,atk:14,speed:2.4,color:0x534f66,name:"유적 망령"},
+  4:{ground:0x454849,sky:0x626b73,type:"skeleton",count:10,hp:132,atk:20,speed:2.5,color:0xd8d1bd,name:"해골"},
+  5:{ground:0x786f62,sky:0xa38469,type:"golem",count:11,hp:185,atk:28,speed:1.65,color:0x7f756b,name:"골렘"}
+};
+
+function createEnemy(type,name,x,z,hp,atk,speed,color,boss){
+  var g=new THREE.Group();
+  if(boss){
+    var torso=new THREE.Mesh(new THREE.BoxGeometry(2.2,2.7,1.7),mat(color));
+    torso.position.y=1.5;
+    var headB=new THREE.Mesh(new THREE.BoxGeometry(1.4,1.1,1.2),mat(0x8f7c61));
+    headB.position.y=3.4;
+    g.add(torso,headB);
+    g.scale.set(1.15,1.15,1.15);
+  }else{
+    var torso2=new THREE.Mesh(new THREE.BoxGeometry(1.15,1.15,1.15),mat(color));
+    torso2.position.y=.75;
+    var head2=new THREE.Mesh(new THREE.BoxGeometry(.82,.72,.82),mat(color));
+    head2.position.y=1.62;
+    g.add(torso2,head2);
+  }
+  g.position.set(x,0,z);world.add(g);
+  var e={type:type,name:name,mesh:g,hp:hp,maxHp:hp,atk:atk,speed:speed,boss:!!boss,dead:false,nextAttack:0,aggroUntil:0};
+  enemies.push(e);return e;
+}
+
+function buildArea(idx){
+  clearWorld();
+  var d=AREA_DATA[idx];
+  scene.background.set(d.sky);scene.fog.color.set(d.sky);
+  addGround(d.ground);
+  if(idx===1){
+    for(var i=0;i<16;i++)addTree(-31+(i%8)*9,-30+Math.floor(i/8)*58,.8);
+  }else if(idx===2){
+    for(var j=0;j<22;j++){var x=-31+(j%6)*12;var z=-30+Math.floor(j/6)*18;addTree(x,z,1.15);}
+  }else if(idx===3){
+    for(var r=0;r<14;r++){var ang=r/14*Math.PI*2;addBox(Math.cos(ang)*17,1.3,Math.sin(ang)*17,1.1,2.6,1.1,0x857a66);}
+    addBox(0,.5,0,9,1,9,0x8f846e);
+  }else if(idx===4){
+    for(var k=0;k<16;k++){var gx=-27+(k%4)*18;var gz=-26+Math.floor(k/4)*17;addBox(gx,.65,gz,.9,1.3,.35,0x9b9c91);}
+  }else{
+    for(var m=0;m<24;m++){var rx=-30+(m%6)*12;var rz=-30+Math.floor(m/6)*19;addRock(rx,rz,.8+(m%3)*.35,0x766e65);}
+  }
+
+  var ring=Math.max(8,d.count);
+  for(var n=0;n<d.count;n++){
+    var an=n/ring*Math.PI*2;
+    var rad=10+(n%3)*6;
+    createEnemy(d.type,d.name,Math.cos(an)*rad,Math.sin(an)*rad,d.hp,d.atk,d.speed,d.color,false);
+  }
+  if(idx===3){
+    createEnemy("boss","고대 수호자",0,0,420,24,1.9,0x9b632f,true);
+  }
+  player.position.set(0,0,27);
+  state.zone=idx;
+  save();
+  setBGM(ZONES[idx].music);
+  updateHUD();
+}
+
+function desiredMusic(){
+  if(!audioStarted)return "none";
+  if(state.zone===0)return "town";
+  if(bossCombat)return "boss";
+  if(inCombat)return state.zone%2===1?"battle1":"battle2";
+  return ZONES[state.zone].music;
+}
+
+var audioCtx=null;
+var musicGain=null;
+var audioStarted=false;
+var muted=false;
+var musicTimer=0;
+var musicBeat=0;
+var currentMusic="none";
+var TRACKS={
+  general:{label:"일반 BGM",tempo:520,wave:"sine",notes:[261.6,329.6,392,329.6,293.7,349.2,440,349.2]},
+  town:{label:"마을 BGM",tempo:610,wave:"triangle",notes:[261.6,329.6,392,523.3,392,329.6,293.7,349.2]},
+  hunt1:{label:"사냥터 BGM 1",tempo:430,wave:"triangle",notes:[196,246.9,293.7,246.9,220,261.6,329.6,261.6]},
+  hunt2:{label:"사냥터 BGM 2",tempo:390,wave:"sawtooth",notes:[174.6,220,261.6,220,196,246.9,293.7,246.9]},
+  battle1:{label:"전투 BGM 1",tempo:220,wave:"square",notes:[196,196,246.9,293.7,196,329.6,293.7,246.9]},
+  battle2:{label:"전투 BGM 2",tempo:205,wave:"sawtooth",notes:[164.8,220,164.8,246.9,185,277.2,220,329.6]},
+  boss:{label:"보스 BGM",tempo:180,wave:"square",notes:[130.8,155.6,196,130.8,174.6,207.7,246.9,155.6]}
+};
+function initAudio(){
+  if(audioStarted)return;
+  audioStarted=true;
+  audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  musicGain=audioCtx.createGain();
+  musicGain.gain.value=.045;
+  musicGain.connect(audioCtx.destination);
+}
+function note(freq,duration,wave){
+  if(!audioCtx||muted||!freq)return;
+  var o=audioCtx.createOscillator();
+  var g=audioCtx.createGain();
+  o.type=wave||"triangle";
+  o.frequency.value=freq;
+  g.gain.setValueAtTime(.0001,audioCtx.currentTime);
+  g.gain.exponentialRampToValueAtTime(.26,audioCtx.currentTime+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+duration);
+  o.connect(g);g.connect(musicGain);o.start();o.stop(audioCtx.currentTime+duration+.04);
+}
+function setBGM(name){
+  if(name===currentMusic)return;
+  currentMusic=name;
+  clearInterval(musicTimer);musicTimer=0;musicBeat=0;
+  if(name==="none"){musicName.textContent="BGM 준비";return;}
+  var t=TRACKS[name];if(!t)return;
+  musicName.textContent=t.label;
+  if(audioCtx&&audioCtx.state==="suspended")audioCtx.resume().catch(function(){});
+  function beat(){
+    var f=t.notes[musicBeat%t.notes.length];
+    note(f,Math.max(.11,t.tempo/1000*.72),t.wave);
+    if(name==="town"||name==="general")note(f/2,Math.max(.12,t.tempo/1000*.9),"sine");
+    musicBeat++;
+  }
+  beat();
+  musicTimer=setInterval(beat,t.tempo);
+}
+function toggleSound(){
+  if(!audioStarted)initAudio();
+  muted=!muted;
+  if(musicGain)musicGain.gain.value=muted?0:.045;
+  soundBtn.textContent=muted?"BGM 끔":"BGM 켬";
+  toastMsg(muted?"BGM을 껐어.":"BGM을 켰어.");
+}
+
+function toastMsg(text){
+  var el=document.getElementById("toast");
+  el.textContent=text;el.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){el.classList.remove("on");},1800);
+}
+function addXP(amount){
+  state.xp+=amount;
+  var leveled=0;
+  while(state.xp>=nextXp()){
+    state.xp-=nextXp();
+    state.level++;
+    state.maxHp+=10;
+    state.baseAttack+=10;
+    state.hp=state.maxHp;
+    leveled++;
+  }
+  if(leveled)toastMsg("레벨 업! 최대체력 +10, 공격력 +10");
+}
+function qState(id){return state.quests[id];}
+function questDone(q){return qState(q.id).progress>=q.need;}
+function progressTarget(kind,target){
+  QUESTS.forEach(function(q){
+    var s=qState(q.id);
+    if(s.status==="active"&&q.kind===kind&&q.target===target&&s.progress<q.need){
+      s.progress++;
+      if(s.progress>q.need)s.progress=q.need;
+      toastMsg(q.title+" "+s.progress+"/"+q.need);
+    }
+  });
+  save();updateHUD();
+}
+function killEnemy(e){
+  if(e.dead)return;
+  e.dead=true;
+  world.remove(e.mesh);
+  progressTarget("kill",e.type);
+  if(e.boss)toastMsg("고대 수호자를 처치했어!");
+}
+function attack(){
+  if(modalOpen)return;
+  var now=performance.now();
+  if(now<attackReady)return;
+  attackReady=now+520;
+  attackAnim=1;
+  var best=null,bestD=999;
+  enemies.forEach(function(e){
+    if(e.dead)return;
+    var dx=e.mesh.position.x-player.position.x,dz=e.mesh.position.z-player.position.z;
+    var d=Math.hypot(dx,dz);
+    if(d<bestD){bestD=d;best=e;}
+  });
+  if(!best||bestD>3.25){toastMsg("공격 범위에 적이 없어.");return;}
+  best.aggroUntil=now+5500;
+  best.hp-=totalAttack();
+  best.mesh.scale.y=.78;
+  setTimeout(function(){if(!best.dead)best.mesh.scale.y=1;},90);
+  if(best.hp<=0)killEnemy(best);
+}
+function takeDamage(raw){
+  var dmg=Math.max(1,raw-armorDef());
+  state.hp-=dmg;
+  if(state.hp<=0){
+    state.hp=0;updateHUD();save();
+    toastMsg("쓰러졌어. 마을에서 회복해.");
+    setTimeout(function(){buildTown();},550);
+  }else{save();updateHUD();}
+}
+
+function updateCombat(now){
+  var fighting=false,bossFight=false;
+  if(state.zone!==0){
+    enemies.forEach(function(e){
+      if(e.dead)return;
+      var dx=player.position.x-e.mesh.position.x,dz=player.position.z-e.mesh.position.z;
+      var dist=Math.hypot(dx,dz);
+      if(dist<7.5||e.aggroUntil>now)fighting=true;
+      if(e.boss&&(dist<13||e.aggroUntil>now))bossFight=true;
+    });
+  }
+  if(fighting!==inCombat||bossFight!==bossCombat){
+    inCombat=fighting;bossCombat=bossFight;
+    setBGM(desiredMusic());
+    updateHUD();
+  }
+}
+
+function enemyAI(dt,now){
+  if(state.zone===0)return;
+  enemies.forEach(function(e){
+    if(e.dead)return;
+    var dx=player.position.x-e.mesh.position.x,dz=player.position.z-e.mesh.position.z;
+    var dist=Math.hypot(dx,dz);
+    var aggro=e.boss?16:12;
+    if(dist<aggro||e.aggroUntil>now){
+      e.aggroUntil=now+1800;
+      if(dist>1.7){
+        var inv=1/Math.max(.001,dist);
+        e.mesh.position.x+=dx*inv*e.speed*dt;
+        e.mesh.position.z+=dz*inv*e.speed*dt;
+        e.mesh.rotation.y=Math.atan2(dx,dz);
+      }else if(now>=e.nextAttack){
+        e.nextAttack=now+(e.boss?900:1150);
+        takeDamage(e.atk);
+      }
+    }else{
+      e.mesh.rotation.y+=dt*.35;
+    }
+  });
+}
+
+function activeQuests(){
+  return QUESTS.filter(function(q){return qState(q.id).status==="active";});
+}
+function updateHUD(){
+  levelText.textContent="Lv."+state.level;
+  hpText.textContent="HP "+Math.max(0,Math.ceil(state.hp))+"/"+state.maxHp;
+  atkText.textContent="공격 "+totalAttack();
+  defText.textContent="방어 "+armorDef();
+  goldText.textContent=state.gold+"G";
+  hpFill.style.width=Math.max(0,state.hp/state.maxHp*100)+"%";
+  xpFill.style.width=Math.max(0,state.xp/nextXp()*100)+"%";
+  zoneName.textContent=ZONES[state.zone].name;
+  combatPill.style.display=inCombat?"inline-block":"none";
+  returnBtn.textContent=state.zone===0?"지역":"마을";
+  returnBtn.disabled=state.zone!==0&&inCombat;
+  var list=activeQuests();
+  if(!list.length)questMini.innerHTML="진행 중 퀘스트 없음";
+  else{
+    questMini.innerHTML=list.slice(0,3).map(function(q){
+      var s=qState(q.id);return "<b>"+q.title+"</b> "+s.progress+"/"+q.need;
+    }).join("<br>");
+  }
+}
+
+function nearestInteractable(){
+  var best=null,bestD=999;
+  interactables.forEach(function(it){
+    if(!it.mesh||!it.mesh.parent)return;
+    var d=Math.hypot(player.position.x-it.mesh.position.x,player.position.z-it.mesh.position.z);
+    if(d<bestD){bestD=d;best=it;}
+  });
+  if(bestD<=3.1)return best;
+  return null;
+}
+function updatePrompt(){
+  currentInteract=nearestInteractable();
+  if(currentInteract){
+    var label=currentInteract.type==="weapon"||currentInteract.type==="armor"?"상점":currentInteract.type==="travel"?"지역 선택":currentInteract.type==="wounded"?"치료":"대화";
+    prompt.textContent=currentInteract.name+" · "+label;
+    prompt.classList.add("on");
+    interactBtn.textContent=label;
+  }else{
+    prompt.classList.remove("on");
+    interactBtn.textContent="상호작용";
+  }
+}
+function openModal(title,body){
+  modalTitle.textContent=title;modalBody.innerHTML=body;modal.hidden=false;modalOpen=true;
+}
+function closeModal(){
+  modal.hidden=true;modalOpen=false;
+}
+document.getElementById("modalClose").onclick=closeModal;
+modal.addEventListener("click",function(e){if(e.target===modal)closeModal();});
+
+function questsForGiver(giver){
+  return QUESTS.filter(function(q){return q.giver===giver;});
+}
+function nextGiverQuest(giver){
+  var qs=questsForGiver(giver);
+  for(var i=0;i<qs.length;i++)if(qState(qs[i].id).status!=="done")return qs[i];
+  return null;
+}
+function openQuestGiver(giver,name){
+  var q=nextGiverQuest(giver);
+  if(!q){
+    openModal(name,"<p>부탁한 일은 전부 끝났어. 고마워.</p>");
+    return;
+  }
+  var s=qState(q.id);
+  var body="<b>"+q.title+"</b><p>"+q.desc+"</p><p>보상: <b>"+q.gold+"골드 · "+q.xp+"경험치</b></p>";
+  if(s.status==="new"){
+    body+="<button class='modalBtn' data-accept='"+q.id+"'>퀘스트 받기</button>";
+  }else if(s.status==="active"&&questDone(q)){
+    body+="<p class='questDone'>목표 완료!</p><button class='modalBtn' data-claim='"+q.id+"'>보상 받기</button>";
+  }else{
+    body+="<p class='questActive'>진행 "+s.progress+" / "+q.need+"</p>";
+  }
+  openModal(name,body);
+}
+function acceptQuest(id){
+  var s=qState(id);if(s.status!=="new")return;
+  s.status="active";s.progress=0;save();closeModal();toastMsg("퀘스트를 받았어.");if(state.zone===0)buildTown();updateHUD();
+}
+function claimQuest(id){
+  var q=QUESTS.find(function(x){return x.id===id;});
+  var s=qState(id);if(!q||s.status!=="active"||!questDone(q))return;
+  s.status="done";state.gold+=q.gold;addXP(q.xp);save();closeModal();toastMsg(q.gold+"골드, "+q.xp+"경험치 획득");if(state.zone===0)buildTown();updateHUD();
+}
+
+function renderShop(kind){
+  var items=kind==="weapon"?WEAPONS:ARMORS;
+  var owned=kind==="weapon"?state.ownedWeapons:state.ownedArmors;
+  var equipped=kind==="weapon"?state.weapon:state.armor;
+  var rows=items.map(function(it){
+    var has=owned.indexOf(it.id)>=0;
+    var stat=kind==="weapon"?"공격 +"+it.power:"방어 +"+it.def;
+    var btn="";
+    if(has){
+      btn=equipped===it.id?"<button disabled>장착중</button>":"<button data-equip='"+kind+":"+it.id+"'>장착</button>";
+    }else{
+      btn="<button class='buy' data-buy='"+kind+":"+it.id+"'>"+it.price+"G</button>";
+    }
+    return "<div class='row'><div><b>"+it.name+"</b><small>"+stat+" · 가격 "+it.price+"G</small></div>"+btn+"</div>";
+  }).join("");
+  openModal(kind==="weapon"?"무기 상인":"방어구 상인","<p>뒤쪽 장비일수록 더 비싸고 강해.</p>"+rows);
+}
+function buyItem(kind,id){
+  var items=kind==="weapon"?WEAPONS:ARMORS;
+  var item=items.find(function(x){return x.id===id;});if(!item)return;
+  var owned=kind==="weapon"?state.ownedWeapons:state.ownedArmors;
+  if(owned.indexOf(id)>=0)return;
+  if(state.gold<item.price){toastMsg("골드가 부족해.");return;}
+  state.gold-=item.price;owned.push(id);
+  if(kind==="weapon")state.weapon=id;else state.armor=id;
+  save();updateHUD();renderShop(kind);toastMsg(item.name+" 구매·장착 완료");
+}
+function equipItem(kind,id){
+  var owned=kind==="weapon"?state.ownedWeapons:state.ownedArmors;
+  if(owned.indexOf(id)<0)return;
+  if(kind==="weapon")state.weapon=id;else state.armor=id;
+  save();updateHUD();renderShop(kind);
+}
+
+function openTravel(){
+  var body="<p>사냥터 5개 중 이동할 곳을 골라.</p>";
+  for(var i=1;i<=5;i++){
+    var rec=[1,2,3,4,5][i-1];
+    body+="<div class='row'><div><b>"+ZONES[i].name+"</b><small>권장 레벨 "+rec+(i===3?" · 중앙 보스":"")+"</small></div><button data-zone='"+i+"'>이동</button></div>";
+  }
+  openModal("사냥터 선택",body);
+}
+function goZone(idx){
+  closeModal();buildArea(idx);toastMsg(ZONES[idx].name+" 입장");
+}
+function returnTown(){
+  if(state.zone===0){openTravel();return;}
+  if(inCombat){toastMsg("전투 중에는 마을로 돌아갈 수 없어.");return;}
+  buildTown();toastMsg("마을 귀환 · 체력 완전 회복");
+}
+
+function openQuestList(){
+  var rows=QUESTS.map(function(q){
+    var s=qState(q.id);
+    var cls=s.status==="done"?"questDone":s.status==="active"?"questActive":"";
+    var status=s.status==="done"?"완료":s.status==="active"?"진행 "+s.progress+"/"+q.need:"미수락";
+    return "<div class='row'><div><b class='"+cls+"'>"+q.title+"</b><small>"+q.desc+"<br>"+q.gold+"G · "+q.xp+"EXP</small></div><b class='"+cls+"'>"+status+"</b></div>";
+  }).join("");
+  openModal("퀘스트",rows);
+}
+function interact(){
+  if(modalOpen)return;
+  var it=nearestInteractable();
+  if(!it){toastMsg("상호작용할 대상이 가까이 없어.");return;}
+  if(it.type==="quest")openQuestGiver(it.id,it.name);
+  else if(it.type==="weapon")renderShop("weapon");
+  else if(it.type==="armor")renderShop("armor");
+  else if(it.type==="travel")openTravel();
+  else if(it.type==="wounded"){
+    var s=qState("healer_help");
+    if(s.status!=="active"){toastMsg("치료사의 부탁을 먼저 받아.");return;}
+    if(it.mesh&&it.mesh.parent)world.remove(it.mesh);
+    progressTarget("heal","wounded");
+    toastMsg("부상 주민을 치료했어.");
+  }
+}
+
+modalBody.addEventListener("click",function(e){
+  var el=e.target;
+  if(el.dataset.accept)acceptQuest(el.dataset.accept);
+  else if(el.dataset.claim)claimQuest(el.dataset.claim);
+  else if(el.dataset.zone)goZone(Number(el.dataset.zone));
+  else if(el.dataset.buy){var a=el.dataset.buy.split(":");buyItem(a[0],a[1]);}
+  else if(el.dataset.equip){var b=el.dataset.equip.split(":");equipItem(b[0],b[1]);}
+});
+
+attackBtn.onclick=function(){initAudio();attack();};
+interactBtn.onclick=function(){initAudio();interact();};
+returnBtn.onclick=function(){initAudio();returnTown();};
+questBtn.onclick=openQuestList;
+soundBtn.onclick=toggleSound;
+
+addEventListener("keydown",function(e){
+  keys[e.code]=true;
+  if(e.code==="KeyJ"){e.preventDefault();attack();}
+  if(e.code==="KeyE"){e.preventDefault();interact();}
+  if(e.code==="Escape"&&modalOpen)closeModal();
+});
+addEventListener("keyup",function(e){keys[e.code]=false;});
+
+var stick=document.getElementById("joystick"),knob=document.getElementById("joyKnob"),joyPointer=null;
+function setJoy(e){
+  var r=stick.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,rad=r.width*.34;
+  var dx=e.clientX-cx,dy=e.clientY-cy,len=Math.hypot(dx,dy);
+  if(len>rad){dx=dx/len*rad;dy=dy/len*rad;}
+  joy.x=dx/rad;joy.y=dy/rad;knob.style.transform="translate("+dx+"px,"+dy+"px)";
+}
+function endJoy(){joyPointer=null;joy.x=0;joy.y=0;knob.style.transform="translate(0,0)";}
+stick.addEventListener("pointerdown",function(e){e.preventDefault();joyPointer=e.pointerId;stick.setPointerCapture(joyPointer);setJoy(e);});
+stick.addEventListener("pointermove",function(e){if(e.pointerId===joyPointer){e.preventDefault();setJoy(e);}});
+stick.addEventListener("pointerup",function(e){if(e.pointerId===joyPointer){e.preventDefault();endJoy();}});
+stick.addEventListener("pointercancel",endJoy);
+
+function movePlayer(dt){
+  if(modalOpen)return;
+  var mx=0,mz=0;
+  if(keys.KeyA||keys.ArrowLeft)mx-=1;
+  if(keys.KeyD||keys.ArrowRight)mx+=1;
+  if(keys.KeyW||keys.ArrowUp)mz-=1;
+  if(keys.KeyS||keys.ArrowDown)mz+=1;
+  mx+=joy.x;mz+=joy.y;
+  var len=Math.hypot(mx,mz);
+  if(len>.08){
+    mx/=Math.max(1,len);mz/=Math.max(1,len);
+    var speed=7.6;
+    player.position.x+=mx*speed*dt;
+    player.position.z+=mz*speed*dt;
+    player.position.x=Math.max(-33,Math.min(33,player.position.x));
+    player.position.z=Math.max(-33,Math.min(33,player.position.z));
+    player.rotation.y=Math.atan2(mx,mz);
+  }
+}
+function cameraFollow(){
+  var tx=player.position.x,tz=player.position.z;
+  camera.position.x+=(tx-camera.position.x)*.09;
+  camera.position.z+=(tz+16-camera.position.z)*.09;
+  camera.position.y+=(13.5-camera.position.y)*.08;
+  camera.lookAt(tx,1.1,tz-3.4);
+}
+function animate(now){
+  requestAnimationFrame(animate);
+  var dt=Math.min(.035,(now-lastFrame)/1000||.016);lastFrame=now;
+  movePlayer(dt);
+  enemyAI(dt,now);
+  updateCombat(now);
+  updatePrompt();
+  cameraFollow();
+  if(attackAnim>0){
+    attackAnim=Math.max(0,attackAnim-dt*4.5);
+    sword.rotation.x=-1.4*Math.sin(attackAnim*Math.PI);
+  }else sword.rotation.x=.2;
+  renderer.render(scene,camera);
+}
+addEventListener("resize",function(){
+  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);
+});
+
+document.getElementById("startBtn").onclick=function(){
+  initAudio();
+  setBGM("general");
+  document.getElementById("start").hidden=true;
+  setTimeout(function(){setBGM("town");},900);
+};
+document.body.addEventListener("pointerdown",function(){if(audioCtx&&audioCtx.state==="suspended")audioCtx.resume().catch(function(){});},{passive:true});
+
+buildTown();
+updateHUD();
+requestAnimationFrame(animate);
+
+})();
+</script>
+</body>
+</html>
