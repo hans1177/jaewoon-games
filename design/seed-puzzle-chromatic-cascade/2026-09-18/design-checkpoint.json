@@ -1,0 +1,262 @@
+{
+  "contractVersion": 3,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-18",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-PUZZLE-CHROMATIC-CASCADE-20260917",
+  "fingerprint": "ac6ce3f3f2e0d32ecfaddfb2fc6aa269fd626629e80892cd93d90183246b9ed3",
+  "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
+  "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "색채의 연쇄는 플레이어가 다양한 색상의 블록을 조합하고 연쇄 반응을 일으켜 보드를 정화하는 퍼즐 게임으로, coreLoop와 signatureSystems가 유기적으로 결합되어 매 순간 플레이어의 전략적 선택과 즉각적인 보드 상태 변화를 유도합니다.",
+      "playerFantasy": "플레이어는 신비로운 색채 에너지의 마스터가 되어 흐트러진 색상을 조화롭게 맞추고 화려한 연쇄 폭발을 일으키며 스테이지를 돌파하는 짜릿한 판타지를 경험합니다.",
+      "coreFun": "플레이어는 매턴 색상 블록을 이동시키고 매칭하는 반복적인 선택을 내리며, 보드가 지워지고 연쇄 폭발이 일어나는 관찰 가능한 상태 변화를 통해 즉각적인 시청각적 쾌감을 얻습니다.",
+      "coreLoop": [
+        "제한된 이동 횟수와 목표 색상이 주어지는 퍼즐 보드 레벨을 시작합니다.",
+        "블록을 드래그하여 매칭을 만들고 연쇄 반응을 유도하여 보드의 상태를 변화시킵니다.",
+        "레벨 목표를 달성하여 보상을 획득하고 다음 스테이지의 새로운 장애물 조합에 직면합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "프리즘 연쇄 시스템",
+          "purpose": "일반 매칭을 넘어 특수 블록 간의 상호작용을 통해 대규모 연쇄 폭발을 유발하고 극대화된 점수와 보상을 제공합니다.",
+          "playerChoice": "플레이어는 특수 블록을 즉시 사용할지, 아니면 더 큰 연쇄를 위해 아껴둘지 전략적인 선택을 해야 합니다."
+        },
+        {
+          "name": "색채 정화 시스템",
+          "purpose": "스테이지마다 등장하는 오염된 타일을 정화하여 퍼즐의 가용 공간을 넓히고 추가적인 진행 자원을 획득하게 합니다.",
+          "playerChoice": "플레이어는 오염된 영역을 우선적으로 제거할지, 아니면 고득점 매칭에 집중할지 우선순위를 결정합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "프리즘 연쇄 시스템",
+          "toSystem": "색채 정화 시스템",
+          "trigger": "대규모 연쇄 폭발이 발생할 때",
+          "stateChange": "주변의 오염된 타일이 자동으로 정화되며 보드 공간이 확장됩니다."
+        },
+        {
+          "fromSystem": "색채 정화 시스템",
+          "toSystem": "진행 및 경제 시스템",
+          "trigger": "스테이지 내 모든 오염 타일이 정화 완료되었을 때",
+          "stateChange": "추가 보너스 재화가 지급되어 다음 단계 업그레이드에 반영됩니다."
+        },
+        {
+          "fromSystem": "진행 및 경제 시스템",
+          "toSystem": "프리즘 연쇄 시스템",
+          "trigger": "플레이어가 획득한 재화로 특수 블록 성능을 업그레이드할 때",
+          "stateChange": "다음 레벨에서 생성되는 특수 블록의 위력과 출현 빈도가 증가합니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 기초적인 3매칭 규칙에서 출발하여 점진적으로 복잡해지는 특수 블록과 오염 타일 기믹을 마스터하며, 장기적인 스테이지 돌파와 보드 커스터마이징을 향해 나아갑니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "스테이지 클리어 -> 재화 획득 -> 유틸리티 및 특수 블록 강화 -> 고난도 스테이지 도전으로 이어지는 선순환 구조를 형성합니다.",
+        "resourceFlow": "퍼즐 플레이를 통해 기본 골드와 정화 에너지를 획득하며, 이는 시스템 업그레이드와 재시도 비용으로 소모됩니다.",
+        "balanceRules": "난이도 곡선이 완만하게 상승하도록 설계하여 플레이어가 과도한 벽에 막히지 않고 자연스럽게 성장을 체감하도록 조정합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "시즌 1: 얼어붙은 색채",
+          "newGameplay": "얼음 장애물 타일이 추가되어 특정 방향으로만 매칭이 가능한 새로운 퍼즐 규칙이 도입됩니다.",
+          "systemImpact": "기존 프리즘 연쇄 시스템의 경로 계산 방식에 제약을 주어 플레이어의 자리 선정 전략을 심화시킵니다."
+        },
+        {
+          "milestone": "시즌 2: 무한의 타임라인",
+          "newGameplay": "제한 시간 내에 최대한 많은 연쇄를 달성하는 타임어택 모드가 추가됩니다.",
+          "systemImpact": "진행 및 경제 시스템에 속도 보너스 리워드가 연동되어 재화 수급 루프가 다변화됩니다."
+        },
+        {
+          "milestone": "시즌 3: 길드 색채 연구소",
+          "newGameplay": "다른 플레이어들과 협력하여 거대한 오염 보스를 정화하는 협동 레이드 콘텐츠가 열립니다.",
+          "systemImpact": "멀티플레이어 확장 판정에 발판을 마련하며 커뮤니티 기반의 경제 보상이 추가됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "제한된 이동 횟수 소진 전 목표 미달성",
+          "보드가 완전히 막혀 더 이상 유효한 매칭을 만들 수 없는 교착 상태"
+        ],
+        "retryFlow": "실패 시 즉시 재시도 화면이 노출되며, 소모된 에너지를 지불하거나 광고 시청을 통해 해당 스테이지를 곧바로 다시 시작할 수 있습니다.",
+        "riskPressure": "이동 횟수가 줄어들수록 시각적 경고 효과가 강화되어 플레이어에게 긴장감을 부여하고 신중한 한 수를 유도합니다.",
+        "recoveryRules": "연속 실패 시 보조 아이템이나 추가 이동 횟수를 제공하는 구제 규칙이 작동하여 이탈률을 방어합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치스크린 환경에 최적화된 드래그 앤 드롭 직관적 입력 방식을 지원하며 PC 마우스 드래그도 완벽 호환합니다.",
+        "performanceBudget": "60fps 유지 및 드로우 콜 최소화를 위해 파티클 이펙트와 2D UI 최적화 프로파일링을 적용합니다.",
+        "sessionConstraints": "한 판당 3~5분의 플레이 타임을 보장하여 짧은 휴식 시간에도 가볍게 즐길 수 있도록 세션을 설계했습니다."
+      },
+      "visualDirection": "생동감 넘치는 파스텔톤 컬러와 부드러운 글래스모피즘 UI를 적용하여 시각적 피로도를 낮추고 블록 매칭의 쾌감을 극대화합니다.",
+      "mobileUx": "한 손 조작이 용이하도록 주요 인터랙션 버튼을 하단 영역에 집중시키고, 터치 피드백을 즉각적인 애니메이션으로 제공합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "남은 이동 횟수, 현재 점수, 클리어 목표를 화면 최상단에 직관적으로 배치하여 한눈에 파악할 수 있게 합니다.",
+        "touchAndInput": "넉넉한 터치 히트박스를 적용하고 오조작 방지를 위한 드래그 취소 영역을 제공합니다.",
+        "readability": "색맹 플레이어를 위한 패턴 오버레이 모드를 지원하여 색상 구분 없이도 플레이가 가능합니다.",
+        "accessibility": "텍스트 크기 조절 옵션과 사운드 볼륨 세부 분리 설정을 통해 다양한 플레이어 환경을 지원합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "부드럽고 반짝이는 보석 및 물감 방울 콘셉트의 블록 디자인과 화려한 파티클 연쇄 이펙트",
+        "audioIdentity": "청량하고 경쾌한 타격음과 연쇄가 이어질수록 고음역대로 올라가는 오르골 기반의 멜로디",
+        "gameplayFeedbackSync": "블록 매칭과 동시에 사운드와 진동이 밀리초 단위로 동기화되어 타격감을 극대화합니다."
+      },
+      "marketTargetDirection": "글로벌 캐주얼 퍼즐 장르 이용자를 타겟으로 하며, 직관적인 규칙과 깊이 있는 연쇄 시스템으로 장기 체류를 유도합니다.",
+      "steamExpansionDecision": "모바일 성공 검증 이후 와이드 스크린 UI와 키보드/마우스 단축키를 지원하는 PC 스팀 버전으로 확장 검토합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "향후 시즌 업데이트를 통해 비동기식 점수 경쟁 및 협동 레이드 형태의 멀티플레이어 요소를 도입할 수 있습니다.",
+      "technicalAssumptions": [
+        "유니티 엔진의 2D 그리드 시스템을 활용하여 고성능의 블록 좌표 계산과 매칭 알고리즘을 구현할 수 있다.",
+        "오프라인 상태에서도 싱글플레이 진행 상황이 로컬 저장소에 안전하게 캐싱되고 온라인 시 동기화된다."
+      ],
+      "validationQuestions": [
+        "플레이어가 매번 블록을 이동할 때 연쇄 반응의 예측 가능성과 의외의 쾌감이 적절한 비율로 조화되는가?",
+        "3분에서 5분 사이의 단일 세션 동안 플레이어가 명확한 성취감과 다음 판에 대한 몰입을 느끼는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "직관적인 블록 드래그 앤 매칭",
+          "responsibleSystem": "프리즘 연쇄 시스템",
+          "validationEvidence": "터치 입력 시 실시간으로 매칭 유효성을 검사하고 유효한 경우 즉시 애니메이션과 상태 변화를 출력하는지 테스트로 검증합니다."
+        },
+        {
+          "designElement": "오염 타일 정화 및 확장",
+          "responsibleSystem": "책임 시스템: 색채 정화 시스템",
+          "validationEvidence": "연쇄 폭발 반경 내의 오염 타일 상태 값이 정상적으로 갱신되며 보드 그리드가 확장되는지 유닛 테스트를 통해 확인합니다."
+        },
+        {
+          "designElement": "스테이지 클리어 및 재화 보상",
+          "responsibleSystem": "진행 및 경제 시스템",
+          "validationEvidence": "목표 달성 시 레벨 클리어 이벤트가 발생하고 데이터베이스에 재화가 정확히 누적되는지 로그를 통해 검증합니다."
+        }
+      ],
+      "openQuestions": [
+        "특수 블록 조합의 가가 가치와 밸런스를 어떻게 조정해야 플레이어가 다양한 전략을 시도할까?",
+        "향후 멀티플레이 확장 시 비동기 경쟁과 실시간 협동 중 어떤 방식을 우선 적용하는 것이 시장 반응에 유리할까?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 10984,
+      "lastMs": 10984,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:44:09.555Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 121,
+      "lastMs": 121,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 50.213665055s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"50s\" } ] } }",
+      "updatedAt": "2026-09-18T08:44:09.813Z"
+    },
+    "gemini:gemini-3.7-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 239,
+      "lastMs": 239,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 50.096185373s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.7-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"50s\" } ] } }",
+      "updatedAt": "2026-09-18T08:44:09.931Z"
+    },
+    "gemini:gemini-2.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 335,
+      "lastMs": 335,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T08:44:10.027Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T08:43:58.569Z",
+  "updatedAt": "2026-09-18T08:44:11.415Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:44:09.555Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "balance",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash"
+}
