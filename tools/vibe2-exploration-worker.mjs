@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -73,7 +74,8 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const diagnosticEvidence=unique(order?.workPackage?.sharedContext?.diagnosticEvidence||[]);
   const fileDigests=[...responsibilityRows,...related.slice(0,6)].map(compactFile);
   const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
-  const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence})).slice(0,24);
+  const existingWebAssessment=target==='web'?assessExistingWebRepository({cwd,gameId:order.gameId,sourceRoot:rootRelative,order}):null;
+  const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence,existingWebAssessment})).slice(0,24);
   const handoff={
     version:1,
     role:'exploration',
@@ -91,6 +93,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     testTargets,
     protectedScopeSignals,
     diagnosticEvidence,
+    existingWebAssessment,
     fileDigests,
     reuseKey,
     generatedAt:new Date().toISOString()
@@ -107,6 +110,7 @@ export function explorationGuidance(handoff={}){
     `읽기 전용 영향 파일=${(handoff.impactFiles||[]).filter(x=>!(handoff.responsibleFiles||[]).includes(x)).join(', ')||'NONE'}`,
     `검증 후보=${(handoff.testTargets||[]).join(', ')||'NONE'}`,
     `보호 신호=${(handoff.protectedScopeSignals||[]).join(', ')||'NONE'}`,
+    ...(handoff.existingWebAssessment?[`[EXISTING WEB STRATEGY] ${handoff.existingWebAssessment.strategy}`,`판단 근거=${(handoff.existingWebAssessment.reasons||[]).join(', ')||'NONE'}`,`설계 scope coverage=${handoff.existingWebAssessment.evidence?.approvedScopeCoveragePct??0}% · gameplay signals=${handoff.existingWebAssessment.evidence?.gameplaySignalCount??0}`,handoff.existingWebAssessment.strategy==='KEEP_AND_CONTINUE'?'기존 구조·세이브·작동 시스템을 보존하고 필요한 개발만 이어간다.':handoff.existingWebAssessment.strategy==='PARTIAL_REPAIR'?'기존 구조를 보존하고 확인된 결함 책임 영역만 수정한다.':handoff.existingWebAssessment.strategy==='MAJOR_REWORK'?'사용 가능한 시스템과 세이브 의미는 보존하고 큰 결함 영역을 재구성한다.':'전체 재구축은 허용되지만 승인 설계·게임 정체성·보존 가능한 세이브 의미는 유지한다.']:[]),
     '영향 파일은 참고용이다. Allowed edit paths 밖 파일은 수정하지 않는다.'
   ].join('\n');
 }
