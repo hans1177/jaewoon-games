@@ -50,7 +50,7 @@ permissions:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  OWNER_WEB_DEVELOPMENT_PAUSED: 'true'
+  OWNER_WEB_DEVELOPMENT_PAUSED: 'false'
 
 jobs:
   web-plan:
@@ -98,7 +98,14 @@ jobs:
           set -euo pipefail
           runtime_sha="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
           printf 'runtime_sha=%s\n' "$runtime_sha" >> "$GITHUB_OUTPUT"
-          if [ "$OWNER_WEB_DEVELOPMENT_PAUSED" = 'true' ]; then
+          policy_pause="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+          const p=d?.executionPause||{};
+          process.stdout.write(p.webDevelopmentPaused===true||p.developmentRuntimeDispatchAllowed!==true?'true':'false');
+          NODE
+          )"
+          if [ "$policy_pause" = 'true' ]; then
             printf 'target_count=0\n' >> "$GITHUB_OUTPUT"
             printf 'matrix=%s\n' '{"include":[]}' >> "$GITHUB_OUTPUT"
             printf 'targets_json=[]\n' >> "$GITHUB_OUTPUT"
@@ -106,6 +113,8 @@ jobs:
             echo 'WEB_DEVELOPMENT_TARGET_COUNT=0'
             exit 0
           fi
+          echo 'OWNER_WEB_DEVELOPMENT_PAUSED=NO'
+          echo 'DEVELOPMENT_RUNTIME_DISPATCH_ALLOWED=YES'
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
           git show "origin/$COMPANY_RUNTIME_BRANCH:game-catalog.json" > /tmp/game-catalog.json
           git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/game-seed-state.json
@@ -147,6 +156,7 @@ jobs:
           };
           const pilotMatch=String(process.env.PUSH_HEAD_MESSAGE||'').match(/\[web-pilot:([a-zA-Z0-9._-]+)\]/);
           const requestedGameId=String(pilotMatch?.[1]||'').trim();
+          const platformPriority=item=>String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='ROBLOX'?0:String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()==='UNITY'?1:2;
           const stale=(q.items||[]).filter(item=>{
             if(!canonicalGameIds.has(String(item.gameId||'').trim()))return false;
             if(String(item.productionClass||'').toUpperCase()!=='DEVELOPMENT_CONFIRMED')return false;
@@ -154,6 +164,12 @@ jobs:
             if(state==='DEVELOPMENT_BLOCKED')return false;
             if(state.endsWith('_REPAIR_REQUIRED'))return true;
             return !freshWeb80(item);
+          }).sort((a,b)=>{
+            const ap=platformPriority(a),bp=platformPriority(b);
+            if(ap!==bp)return ap-bp;
+            const at=Date.parse(a.enqueuedAt||'')||0,bt=Date.parse(b.enqueuedAt||'')||0;
+            if(at!==bt)return at-bt;
+            return String(a.gameId||'').localeCompare(String(b.gameId||''));
           });
           const requestedItem=requestedGameId?(q.items||[]).find(item=>item.gameId===requestedGameId&&canonicalGameIds.has(String(item.gameId||'').trim())):null;
           const selected=requestedGameId?stale.filter(item=>item.gameId===requestedGameId):stale;
@@ -205,6 +221,8 @@ jobs:
           console.log('WEB_VALIDATION_TIERS=MICRO_FAST_INITIAL_FULL_FINAL');
           console.log('WEB_PARALLEL_TARGET=20');
           console.log('WEB_PARALLEL_MAX=20');
+          console.log('WEB_GATE_PLATFORM_PRIORITY=ROBLOX>UNITY>FORTNITE_UEFN');
+          console.log('UNITY_DEVELOPMENT_DISABLED=NO');
           NODE
 
   web-worker:
