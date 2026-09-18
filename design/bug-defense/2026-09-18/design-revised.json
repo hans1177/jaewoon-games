@@ -9,14 +9,14 @@
   "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "llama3.2:1b",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 1,
+  "appliedConsensusCount": 5,
   "unresolvedConflictCount": 0,
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
-    "identity": "bug-defense",
+    "identity": "Bug-Defense",
     "playerFantasy": "strategic",
-    "coreFun": "wave defense",
+    "coreFun": "readability",
     "coreLoop": [
       "Read the incoming insect wave and its threat pattern",
       "Place or adjust defenders and spend limited resources on the highest-value counter",
@@ -25,63 +25,34 @@
     "signatureSystems": [
       {
         "name": "strategic",
-        "purpose": "strategic gameplay",
-        "playerChoice": "strategic gameplay"
+        "purpose": "gameplay",
+        "playerChoice": "player"
       }
     ],
-    "progressionDirection": "strategic gameplay",
-    "visualDirection": "strategic gameplay",
-    "mobileUx": "strategic gameplay",
-    "marketTargetDirection": "strategic gameplay",
-    "steamExpansionDecision": "strategic gameplay",
-    "multiplayerMode": "SINGLE",
-    "multiplayerExpansionDecision": "SINGLE",
+    "progressionDirection": "single",
+    "visualDirection": "single",
+    "mobileUx": "single",
+    "marketTargetDirection": "single",
+    "steamExpansionDecision": "single",
+    "multiplayerMode": "COOP",
+    "multiplayerExpansionDecision": "COOP",
     "technicalAssumptions": [
       "Unity",
       "C#",
-      "Wave defense gameplay"
+      "3D graphics",
+      "strategic gameplay",
+      "wave defense",
+      "strategic placement"
     ],
     "validationQuestions": [
-      "What is the main gameplay mechanic of bug-defense?",
-      "What is the core gameplay loop of bug-defense?",
-      "What is the purpose of strategic gameplay in bug-defense?"
+      "how to make the game more engagin",
+      "how to make the game more challanging",
+      "how to make the game more replayabl"
     ],
     "openQuestions": [
-      "What is the target audience for bug-defense?",
-      "What is the core concept of bug-defense?",
-      "What is the purpose of strategic gameplay in bug-defense?"
-    ],
-    "robloxBuildProfile": {
-      "version": 1,
-      "targetPlatform": "ROBLOX",
-      "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "declaredGameCategory": "SINGLE_DEFENSE_STRATEGY",
-      "genre": "Obby & platformer",
-      "genreLabelKo": "오비·플랫포머",
-      "subgenre": "Tower Obby",
-      "subgenreLabelKo": "타워 오비",
-      "playMode": "SINGLE",
-      "playModeLabelKo": "싱글",
-      "multiplayerRequired": false,
-      "coopImplementationRequired": false,
-      "competitiveImplementationRequired": false,
-      "networkingRequired": false,
-      "multiplayerQaRequired": false,
-      "minimumParticipantsForRequiredQa": 1,
-      "displayLabelKo": "오비·플랫포머 · 타워 오비 · 싱글"
-    }
-  },
-  "prePromotionRepair": {
-    "phase": "REVIEW_FEEDBACK",
-    "repairs": [
-      {
-        "field": "robloxBuildProfile",
-        "source": "GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY"
-      }
-    ],
-    "groundedOnly": true,
-    "legacyMultiplayerNormalization": false,
-    "strictScoreOrVerdictModified": false,
-    "repairedAt": "2026-09-17T21:27:03.745Z"
+      "how to make the game more open to player choice",
+      "how to make the game more open to player interaction",
+      "how to make the game more open to player creativity"
+    ]
   }
 }

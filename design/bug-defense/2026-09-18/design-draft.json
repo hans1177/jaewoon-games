@@ -11,9 +11,9 @@
   "authorModel": "llama3.2:1b",
   "singleAuthor": true,
   "content": {
-    "identity": "bug-defense",
+    "identity": "Bug-Defense",
     "playerFantasy": "strategic",
-    "coreFun": "wave defense",
+    "coreFun": "readability",
     "coreLoop": [
       "Read the incoming insect wave and its threat pattern",
       "Place or adjust defenders and spend limited resources on the highest-value counter",
@@ -22,36 +22,39 @@
     "signatureSystems": [
       {
         "name": "strategic",
-        "purpose": "strategic gameplay",
-        "playerChoice": "strategic gameplay"
+        "purpose": "gameplay",
+        "playerChoice": "player"
       },
       {
-        "name": "wave defense",
-        "purpose": "wave defense gameplay",
-        "playerChoice": "wave defense gameplay"
+        "name": "strategic",
+        "purpose": "gameplay",
+        "playerChoice": "player"
       }
     ],
-    "progressionDirection": "strategic gameplay",
-    "visualDirection": "strategic gameplay",
-    "mobileUx": "strategic gameplay",
-    "marketTargetDirection": "strategic gameplay",
-    "steamExpansionDecision": "strategic gameplay",
-    "multiplayerMode": "SINGLE",
-    "multiplayerExpansionDecision": "SINGLE",
+    "progressionDirection": "single",
+    "visualDirection": "single",
+    "mobileUx": "single",
+    "marketTargetDirection": "single",
+    "steamExpansionDecision": "single",
+    "multiplayerMode": "COOP",
+    "multiplayerExpansionDecision": "COOP",
     "technicalAssumptions": [
       "Unity",
       "C#",
-      "Wave defense gameplay"
+      "3D graphics",
+      "strategic gameplay",
+      "wave defense",
+      "strategic placement"
     ],
     "validationQuestions": [
-      "What is the main gameplay mechanic of bug-defense?",
-      "What is the core gameplay loop of bug-defense?",
-      "What is the purpose of strategic gameplay in bug-defense?"
+      "how to make the game more engagin",
+      "how to make the game more challanging",
+      "how to make the game more replayabl"
     ],
     "openQuestions": [
-      "What is the target audience for bug-defense?",
-      "What is the core concept of bug-defense?",
-      "What is the purpose of strategic gameplay in bug-defense?"
+      "how to make the game more open to player choice",
+      "how to make the game more open to player interaction",
+      "how to make the game more open to player creativity"
     ]
   }
 }

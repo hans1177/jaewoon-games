@@ -44,23 +44,15 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "What is the main gameplay mechanic of bug-defense?\n\nBug-defense is a strategic game where you must defend your colony from waves\n\n"
+          "지정된 qa 부서만 검토하라. 다른 부서 출력은 만들지 마라. 각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
         ],
         "fix": [
-          "What is the core gameplay loop of bug-defense?\n\nThe core gameplay loop of bug-defense is to read the incoming insect wave and its\n"
+          "GAME_SEED={"
         ],
-        "add": [
-          "What is the purpose of strategic gameplay in bug-defense?\n\nThe purpose of strategic gameplay in bug-defense is to make strategic\n"
-        ],
-        "risks": [
-          "What is the target audience for bug-defense?\n\nThe target audience for bug-defense is players who enjoy strategic gameplay\n"
-        ],
-        "evidence": [
-          "What is the target design reference for bug-defense?\n\nThe target design reference for bug-defense is a single-defense tower-def-e-"
-        ],
-        "questions": [
-          "What is the target audience for bug-defense?\n\nThe target audience for bug-defense is players who enjoy strategic gameplay\n"
-        ]
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
       }
     },
     {
@@ -68,22 +60,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "ASSIGNED_DEPARTMENT=qa"
+          "assigned_department: qa"
         ],
         "fix": [
-          "GAME_SEED={...}"
+          "game_seeds: owner_full_rebuild_20260916"
         ],
         "add": [
-          "CORE_FUN_TO_LEARN=[...]"
+          "game_name: bug-defense"
         ],
         "risks": [
-          "GAME_SEED={...}"
+          "game_status: active"
         ],
         "evidence": [
-          "REFERENCE_GAMES=[...]"
+          "game_id: bug-defense"
         ],
         "questions": [
-          "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+          "core_fun_to_learn: wave defense readability"
         ]
       }
     }

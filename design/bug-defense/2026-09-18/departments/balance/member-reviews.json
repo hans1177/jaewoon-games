@@ -20,23 +20,15 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "The game's core gameplay loop is a strategic wave defense gameplay loop."
+          "Read the incoming insect wave and its threat pattern. Place or adjust defenders and spend limited resources on the highest-value\n "
         ],
         "fix": [
-          "The game's multiplayer mode is a SINGLE multiplayer mode."
+          "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
         ],
-        "add": [
-          "The game's technical requirements are Unity and C#."
-        ],
-        "risks": [
-          "The game's market target direction is strategic gameplay."
-        ],
-        "evidence": [
-          "The game's signature systems are strategic gameplay and wave defense gameplay."
-        ],
-        "questions": [
-          "What is the main gameplay mechanic of bug-defense?"
-        ]
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
       }
     },
     {
@@ -53,13 +45,13 @@
           "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
         ],
         "risks": [
-          "Ensure that the core gameplay loop is well-defined and logically structured."
+          "Ensure the game remains a single strategy."
         ],
         "evidence": [
           "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
         ],
         "questions": [
-          "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+          "How to make the game more engaging?"
         ]
       }
     },
@@ -68,22 +60,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "game_status_active"
+          "Bug-Defense 게임의 핵심적인 곤충 디펜스 게임의 디자인을 기반으로, 곤충의 생태적 상성을 핵심 선택으로 삼는 독자적인 게임입니다."
         ],
         "fix": [
-          "bug_defense_ACTIVE"
+          "게임의 밸런스 조정을 위해, 곤충의 생태적 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계합니다."
         ],
         "add": [
-          "곤충 디펜스_NEW"
+          "게임의 밸런스를 개선하기 위해, 곤충의 생태적 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계합니다."
         ],
         "risks": [
-          "bug_defense_risk_high"
+          "게임의 밸런스를 개선하기 위해, 곤충의 생태적 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계합니다."
         ],
         "evidence": [
-          "game_seed_market_evidence.json"
+          "게임의 밸런스를 개선하기 위해, 곤충의 생태적 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계합니다."
         ],
         "questions": [
-          "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다."
+          "게임의 밸런스를 개선하기 위해, 곤충의 생태적 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계합니다."
         ]
       }
     }

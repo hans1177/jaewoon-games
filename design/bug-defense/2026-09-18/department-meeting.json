@@ -22,62 +22,62 @@
   "representatives": {
     "planning": {
       "keep": [
-        "Ensure that the bug-defense game is designed with a strong focus on wave defense and strategic gameplay as its core mechanics."
+        "Ensure that the design is focused on the core functionality of the bug-defense strategy, such as wave reading, counter placement, "
       ],
       "fix": [
-        "Improve the clarity of the core gameplay loop and progression direction to better align with the intended strategy."
+        "Clarify the specific requirements for the core fun, such as readability and counterplay, and ensure that the core loop is well-"
       ],
       "add": [
-        "Enhance the visual direction and mobile UX to better support the strategic gameplay experience."
+        "Include details about the visual direction, progression, and market target, as well as the technical assumptions and validation"
       ],
       "risks": [
-        "Address the validation questions to ensure the core gameplay mechanics are well understood and validated."
+        "Address the potential issues with the core fun, such as readability and counterplay, and ensure that the core loop is well-"
       ],
       "evidence": [
-        "Use the market evidence to support the strategic gameplay direction and core mechanics."
+        "Provide evidence that supports the design, such as the reference games and market data, to demonstrate the design's validity"
       ],
       "questions": [
-        "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+        "Address the potential issues with the core fun, such as readability and counterplay, and ensure that the core loop is well-"
       ]
     },
     "graphics": {
       "keep": [
-        "core_fun_to_learn"
+        "game_quality"
       ],
       "fix": [
-        "market_evidence_summary"
+        "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라. 각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
       ],
       "add": [
-        "design"
+        "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
       ],
       "risks": [
-        "market_data_alone_cannot_discard"
+        "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
       ],
       "evidence": [
-        "kingdom_rush"
+        "game_replayability"
       ],
       "questions": [
-        "what is the main gameplay mechanic of bug-defense?"
+        "game_design_quality"
       ]
     },
     "development": {
       "keep": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "fix": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "add": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "risks": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "evidence": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "questions": [
-        "game-seed"
+        "GAME_SEED"
       ]
     },
     "qa": {
@@ -85,39 +85,39 @@
         "ASSIGNED_DEPARTMENT=qa"
       ],
       "fix": [
-        "GAME_SEED={...}"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "add": [
-        "CORE_FUN_TO_LEARN=[...]"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "risks": [
-        "GAME_SEED={...}"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "evidence": [
-        "REFERENCE_GAMES=[...]"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "questions": [
-        "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic gameplay in bug-defense?"
+        "ASSIGNED_DEPARTMENT=qa"
       ]
     },
     "balance": {
       "keep": [
-        "The game's core gameplay loop is a strategic wave defense gameplay loop."
+        "Read the incoming insect wave and its threat pattern. Place or adjust defenders and spend limited resources on the highest-value\n "
       ],
       "fix": [
-        "The game's multiplayer mode is a SINGLE multiplayer mode."
+        "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
       ],
       "add": [
-        "The game's technical requirements are Unity and C#."
+        "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
       ],
       "risks": [
-        "The game's market target direction is strategic gameplay."
+        "Ensure the game remains a single strategy."
       ],
       "evidence": [
-        "The game's signature systems are strategic gameplay and wave defense gameplay."
+        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
       ],
       "questions": [
-        "What is the main gameplay mechanic of bug-defense? What is the core gameplay loop of bug-defense? What is the purpose of strategic"
+        "How to make the game more engaging?"
       ]
     }
   },
@@ -128,17 +128,62 @@
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "The bug-defense game is designed with a strong focus on wave defense and strategic gameplay as its core mechanics. The core gameplay loop and progression direction are improved to better align with the intended strategy. Visual direction and mobile UX are enhanced to support the strategic gameplay experience. The risks are addressed by validating the core mechanics and using market evidence. The evidence is supported by market data. The questions are resolved by clarifying the main gameplay mechanic and purpose of strategic gameplay in bug-defe",
+      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하고, 필요시 수정하여 정확한 스키마를 유지합니다.",
       "departments": [
         "planning",
+        "fix",
+        "add",
+        "risks",
+        "evidence"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "game_design_quality",
+      "departments": [
         "graphics",
+        "add",
+        "risks",
+        "evidence"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "",
+      "departments": [
         "development",
-        "qa"
+        "fix",
+        "add",
+        "risks"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "",
+      "departments": [
+        "qa",
+        "add",
+        "risks"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "OWN",
+      "departments": [
+        "balance",
+        "keep",
+        "fix",
+        "add",
+        "risks"
       ]
     }
   ],
   "counts": {
-    "consensus": 1,
+    "consensus": 5,
     "conflict": 0,
     "hold": 0
   }

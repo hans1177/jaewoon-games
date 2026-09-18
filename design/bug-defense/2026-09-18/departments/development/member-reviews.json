@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "fix": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "add": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "risks": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "evidence": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "questions": [
-          "game-seed"
+          "GAME_SEED"
         ]
       }
     },
@@ -47,19 +47,19 @@
           "ASSIGNED_DEPARTMENT=development"
         ],
         "fix": [
-          "GAME_SEED=bug-defense"
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-BUG-DEFENSE-20260916\",\"gameId\":\"bug-defense\",\"gameName\":\"곤충 디펜스\",\"status\":\"IN-"
         ],
         "add": [
-          "GAME_SEED=bug-defense"
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-BUG-DEFENSE-20260916\",\"gameId\":\"bug-defense\",\"gameName\":\"곤충 디펜스\",\"status\":\"IN-"
         ],
         "risks": [
           "ASSIGNED_DEPARTMENT=development"
         ],
         "evidence": [
-          "GAME_SEED=bug-defense"
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-BUG-DEFENSE-20260916\",\"gameId\":\"bug-defense\",\"gameName\":\"곤충 디펜스\",\"status\":\"IN-"
         ],
         "questions": [
-          "What is the main gameplay mechanic of bug-defense?"
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-BUG-DEFENSE-20260916\",\"gameId\":\"bug-defense\",\"gameName\":\"곤충 디펜스\",\"status\":\"IN-"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "The game's core loop is designed to be intuitive and easy to understand."
+          "keep the core gameplay intact"
         ],
         "fix": [
-          "The game's multiplayer mode is a SINGLE-PLAYER mode, where players can play against AI opponents."
+          "fix the technical issues that are causing bugs in the game"
         ],
         "add": [
-          "The game's multiplayer mode is a SINGLE-PLAYER mode, where players can play against AI opponents."
+          "add new features to the game"
         ],
         "risks": [
-          "The game's multiplayer mode is a SINGLE-PLAYER mode, where players can play against AI opponents."
+          "risk of losing players due to bugs"
         ],
         "evidence": [
-          "The game's multiplayer mode is a SINGLE-PLAYER mode, where players can play against AI opponents."
+          "evidence of player feedback and suggestions"
         ],
         "questions": [
-          "What is the game's multiplayer mode?"
+          "how to make the game more open to player choice"
         ]
       }
     }

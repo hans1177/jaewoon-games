@@ -15,78 +15,63 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "Ensure that the bug-defense game is designed with a strong focus on wave defense and strategic gameplay as its core mechanics.",
-        "Improve the clarity of the core gameplay loop and progression direction to better align with the intended strategy.",
-        "Enhance the visual direction and mobile UX to better support the strategic gameplay experience."
+        "OWN",
+        "OTHERS"
       ],
       "challenge": [
-        "Address the validation questions to ensure the core gameplay mechanics are well understood and validated.",
-        "Use the market evidence to support the strategic gameplay direction and core mechanics."
+        "OWN",
+        "OTHERS"
       ],
       "revision": [
-        "The game's core gameplay loop is a strategic wave defense gameplay loop.",
-        "The game's main gameplay mechanic is wave defense and strategic gameplay.",
-        "The purpose of strategic gameplay in bug-defense is to enhance the player's ability to defend against waves."
+        "OWN",
+        "OTHERS"
       ],
-      "reason": "The main gameplay mechanic is wave defense and strategic gameplay, and the purpose is to enhance the player's ability to defend against waves."
+      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하고, 필요시 수정하여 정확한 스키마를 유지합니다."
     },
     "graphics": {
       "accept": [
-        "OTHERS",
-        "add",
-        "design"
+        "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
       ],
       "challenge": [
-        "risks",
-        "market_data_alone_cannot_discard"
+        "game_design_quality"
       ],
       "revision": [
-        "evidence",
-        "kingdom_rush"
+        "add"
       ],
-      "reason": "core_fun_to_learn"
+      "reason": "game_design_quality"
     },
     "development": {
-      "accept": [
-        "own",
-        "others"
-      ],
-      "challenge": [
-        "own",
-        "others"
-      ],
-      "revision": [
-        "own",
-        "others"
-      ],
-      "reason": "own"
+      "accept": [],
+      "challenge": [],
+      "revision": [],
+      "reason": ""
     },
     "qa": {
       "accept": [
-        "OWN",
-        "OTHERS"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "challenge": [
-        "OWN",
-        "OTHERS"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "revision": [
-        "OWN",
-        "OTHERS"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
-      "reason": "Both the 'OWN' and 'OTHERS' sections contain identical suggestions and evidence, making it difficult to determine which should be accepted, fixed, or revised. The 'OWN' section includes a risk and evidence that are not present in the 'OTHERS' section, and vice versa. This indicates a potential conflict of interest or overlapping priorities. As a Lead AI, I must ensure that the QA department's interests are aligned with the overall strategic goals of the company. Given this, I will not accept, fix, or revise any suggestions from either section, "
+      "reason": "QA 부서의 요구사항을 충족시키기 위해 ASSIGNED_DEPARTMENT를 'qa'로 설정합니다."
     },
     "balance": {
       "accept": [
-        "The game's multiplayer mode is a SINGLE multiplayer mode."
+        "OWN",
+        "OTHERS"
       ],
       "challenge": [
-        "The game's technical requirements are Unity and C#."
+        "OWN",
+        "OTHERS"
       ],
       "revision": [
-        "The game's market target direction is strategic gameplay."
+        "OWN",
+        "OTHERS"
       ],
-      "reason": "The game's signature systems are strategic gameplay and wave defense gameplay."
+      "reason": "OWN"
     }
   }
 }
