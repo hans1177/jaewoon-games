@@ -1,0 +1,18 @@
+{
+  "summary": "세계의 직조자 게임의 캐릭터, 몬스터, 배경, 아이템, 효과, UI 및 애니메이션 재사용",
+  "expectedEffect": "기존 에셋 재사용",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm'",
+      "replace": "id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'",
+      "symbol": "GAME_CONFIG"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "game-config-check",
+    "asset-reuse-check"
+  ]
+}
