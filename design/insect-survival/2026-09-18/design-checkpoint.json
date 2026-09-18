@@ -12,21 +12,21 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
-      "calls": 4,
+      "calls": 6,
       "successes": 0,
-      "failures": 4,
+      "failures": 6,
       "timeouts": 0,
       "jsonFailures": 2,
-      "totalMs": 32761,
-      "lastMs": 9533,
+      "totalMs": 46047,
+      "lastMs": 7804,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T05:37:20.939Z"
+      "updatedAt": "2026-09-18T05:39:32.650Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-09-18T05:36:46.935Z",
-  "updatedAt": "2026-09-18T05:37:20.939Z",
+  "updatedAt": "2026-09-18T05:39:32.650Z",
   "failedPhase": "designer_draft",
   "lastError": "DESIGNER_EXTERNAL_CALL_FAILED gemini:gemini-3.8-flash: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }"
 }
