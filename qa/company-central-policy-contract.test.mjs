@@ -274,11 +274,15 @@ test('Roblox-first design stabilization changes scheduling only and resumes cano
   assert.match(flow,/developmentRuntimeDispatchAllowed: true/);
 });
 
-test('platform priority is default focus only and creates no development entry gate',()=>{
+test('Unity and Roblox share the first development priority tier without creating a platform lock',()=>{
   const strategy=directive.platformStrategy;
-  assert.equal(strategy.primaryPlatform,'ROBLOX');
-  assert.deepEqual(strategy.priority,['ROBLOX','UNITY','FORTNITE_UEFN']);
-  assert.equal(strategy.priorityMeaning,'DEFAULT_FOCUS_AND_EXPERIENCE_ACCUMULATION_ORDER_ONLY');
+  assert.deepEqual(strategy.primaryPlatforms,['UNITY','ROBLOX']);
+  assert.equal(strategy.primaryPlatformLegacyCompatibilityOnly,true);
+  assert.deepEqual(strategy.priority,['UNITY','ROBLOX','FORTNITE_UEFN']);
+  assert.deepEqual(strategy.priorityTiers,[['UNITY','ROBLOX'],['FORTNITE_UEFN']]);
+  assert.equal(strategy.priorityMeaning,'UNITY_ROBLOX_EQUAL_FIRST_TIER_READINESS_AND_EXECUTION_EFFICIENCY_TIEBREAK');
+  assert.equal(strategy.designStabilizationScheduling.unityRobloxEqualPriority,true);
+  assert.equal(strategy.designStabilizationScheduling.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,true);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
   assert.equal(strategy.roadmapPhaseEntryGatesForbidden,true);
@@ -287,8 +291,20 @@ test('platform priority is default focus only and creates no development entry g
   assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'ALWAYS_ALLOWED'});
   assert.equal(strategy.UNITY.existingPathPreserved,true);
   assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
+  assert.equal(roadmap.platformPriorityInvariant.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
+  assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX'],['FORTNITE_UEFN']]);
+  assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligibleDevelopmentSlot,false);
   assert.match(flow,/allThreePlatformsMayBeDevelopedConcurrently: true/);
   assert.match(flow,/roadmapPhaseEntryGatesForbidden: true/);
+});
+
+test('owner permanent removal is machine-enforced and cannot auto-recover',()=>{
+  const ids=['seed-roblox-battleground-fight-welcome-to-bloxburg','seed-roblox-obby-party-minigam-tower-of-hell'];
+  assert.deepEqual(roadmap.permanentProjectRemoval.ids,ids);
+  assert.equal(roadmap.permanentProjectRemoval.reentryAllowed,false);
+  assert.equal(roadmap.permanentProjectRemoval.automaticRecoveryAllowed,false);
+  assert.equal(roadmap.permanentProjectRemoval.automaticMaintenanceAllowed,false);
+  assert.deepEqual(directive.platformStrategy.permanentRemovedGameIds,ids);
 });
 
 test('paid execution remains forbidden',()=>{
