@@ -339,12 +339,23 @@
       "lastMs": 117596,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
       "updatedAt": "2026-09-18T08:27:01.030Z"
+    },
+    "gemini:gemini-3.8-flash": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 39040,
+      "lastMs": 22457,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T08:28:44.592Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T08:23:44.237Z",
-  "updatedAt": "2026-09-18T08:28:22.083Z",
+  "updatedAt": "2026-09-18T08:28:44.592Z",
   "lastSuccessfulModelCallAt": "2026-09-18T08:24:02.479Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
