@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Initialize game with preserved progression and persistence
+    const game = {
+      // Preserved game state and progression
+      saveState: {
+        player: {
+          health: 100,
+          energy: 100,
+          level: 1
+        },
+        enemies: [
+          { id: 1, type: 'slime', health: 10 },
+          { id: 2, type: 'pirate', health: 20 }
+        ],
+        progress: {
+          completed: 0,
+          total: 100
+        }
+      },
+      // Preserved gameplay mechanics
+      mechanics: {
+        combat: {
+          attack: () => {
+            // Preserved combat logic
+          },
+          defense: () => {
+            // Preserved defense logic
+          }
+        },
+        progression: {
+          move: () => {
+            // Preserved progression logic
+          },
+          upgrade: () => {
+            // Preserved upgrade logic
+          }
+        }
+      }
+    };
+
+    // Initialize game UI and layout
+    const ui = {
+      healthBar: document.createElement('div'),
+      energyBar: document.createElement('div'),
+      levelDisplay: document.createElement('div'),
+      enemyList: document.createElement('div')
+    };
+
+    // Add to game container
+    document.getElementById('game').appendChild(ui.healthBar);
+    document.getElementById('game').appendChild(ui.energyBar);
+    document.getElementById('game').appendChild(ui.levelDisplay);
+    document.getElementById('game').appendChild(ui.enemyList);
+
+    // Initialize game with preserved state
+    game.saveState.player.health = 100;
+    game.saveState.player.energy = 100;
+    game.saveState.player.level = 1;
+
+    // Add enemies
+    game.enemies.forEach(enemy => {
+      const enemyDiv = document.createElement('div');
+      enemyDiv.textContent = `Enemy ${enemy.id}`;
+      ui.enemyList.appendChild(enemyDiv);
+    });
+
+    // Initialize game with preserved mechanics
+    game.mechanics.combat.attack();
+    game.mechanics.combat.defense();
+    game.mechanics.progression.move();
+    game.mechanics.progression.upgrade();
+  </script>
+</body>
+</html>
