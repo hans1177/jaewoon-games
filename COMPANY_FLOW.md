@@ -1349,6 +1349,17 @@ aiOrganization:
   leadModelAssignmentRemappable: true
   paidAiAllowed: false
   paidRunnerAllowed: false
+  providerMode: GEMINI_ONLY
+  providerSecret: GEMINI_API_KEY
+  openAiProviderAllowed: false
+  ollamaProviderAllowed: false
+  localModelFallbackAllowed: false
+  geminiModels:
+    - gemini-3.8-flash
+    - gemini-3.7-flash
+    - gemini-3.6-flash
+    - gemini-3.5-flash
+    - gemini-3.5-flash-lite
 
 assetPolicy:
   centralSourceOnly: true
