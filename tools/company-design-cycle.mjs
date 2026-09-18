@@ -34,6 +34,17 @@ function persistentGeminiUnavailableStatus(error){
   if(/PERMISSION_DENIED|\b403\b/i.test(message))return 403;
   return 0;
 }
+function geminiProviderRetryWindowMs(error){
+  const message=clean(error?.message||error);
+  if(!isDailyGeminiQuotaError(message))return 0;
+  const seconds=Number(message.match(/Please retry in\s+(\d+(?:\.\d+)?)s/i)?.[1]||message.match(/retryDelay[^0-9]*(\d+(?:\.\d+)?)s/i)?.[1]);
+  return Number.isFinite(seconds)&&seconds>0?Math.ceil(seconds*1000):60*60*1000;
+}
+function geminiQuotaRetryWindowActive(row){
+  const updated=Date.parse(clean(row?.updatedAt));
+  if(!Number.isFinite(updated))return true;
+  return Date.now()<updated+geminiProviderRetryWindowMs(row?.lastError);
+}
 function kstDateForTimestamp(value){
   const time=Date.parse(clean(value));if(!Number.isFinite(time))return '';
   const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(time));
@@ -219,9 +230,13 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
   console.log(`DESIGN_CHECKPOINT_RESUME=YES|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}`);
 }
 for(const [rawModel,row] of Object.entries(designCheckpoint.modelHealth||{})){
-  if(kstDateForTimestamp(row?.updatedAt)!==date)continue;
   const status=persistentGeminiUnavailableStatus(row?.lastError);
   if(!status)continue;
+  if(status===429&&!geminiQuotaRetryWindowActive(row)){
+    const model=clean(rawModel).replace(/^gemini:/,'');
+    if(model)console.log(`GEMINI_MODEL_QUARANTINE_EXPIRED=${model}|status=429|scope=PROVIDER_RETRY_WINDOW`);
+    continue;
+  }
   const model=clean(rawModel).replace(/^gemini:/,'');
   if(!model)continue;
   geminiUnavailableModels.set(model,status);
