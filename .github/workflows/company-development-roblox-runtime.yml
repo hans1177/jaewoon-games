@@ -812,8 +812,8 @@ jobs:
                 preflightReady++;
               }else if(item.robloxRuntimePassed!==true||String(item.robloxRuntimeHarnessVersion||'')!==harnessVersion){
                 const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
-                const authBlocked=sameHarness&&item.robloxRuntimeEvidence?.failure==='roblox-studio-authentication-required';
-                if(authBlocked)externalBlocked++;
+                const securityBlocked=item.robloxRuntimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(item.robloxRuntimeEvidence?.failure);
+                if(securityBlocked)externalBlocked++;
                 else runtimeReady++;
               }
               continue;
@@ -831,7 +831,9 @@ jobs:
           echo "ROBLOX_RUNTIME_READY_COUNT=$runtime_ready"
           echo "ROBLOX_EXTERNAL_BLOCKED_COUNT=$external_blocked"
           echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
-          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED'
+          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=2'
+          echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
+          echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
           echo 'ROBLOX_STUDIO_RUNTIME_PARALLEL_MAX=1'
           active_continuations="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-development-roblox-runtime-continuation.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>['queued','in_progress','pending'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "ROBLOX_ACTIVE_CONTINUATIONS=$active_continuations"
