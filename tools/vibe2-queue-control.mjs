@@ -23,6 +23,7 @@ const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
 const DEFAULT_STALE_RUNNING_MS = 45 * 60 * 1000;
+const DEFAULT_PRACTICE_STALE_FANIN_MS = 12 * 60 * 1000;
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
 function parseArgs(argv = process.argv.slice(2)) {
@@ -105,6 +106,10 @@ function isWorkerCapacityReleasedBlocker(value = '') {
   const blocker = clean(value);
   return /awaiting.*qa|qa.*awaiting|slot-released.*fan-in|WAITING_FOR_GEMINI_QUOTA|gemini.*quota|external.*model.*quota/i.test(blocker);
 }
+function isLearningPracticeTask(task = {}) {
+  return /^LEARNING-PRACTICE-/.test(clean(task.id))
+    || (task.evidence || []).some((value) => clean(value) === 'learning-practice-only');
+}
 
 function clearedReservation() {
   return { reservationId:null, reservationRunId:null, reservationRunAttempt:0, reservedAt:null };
@@ -115,11 +120,18 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
   let recovered = 0;
   const tasks = queue.tasks.map((task) => {
     if (task.status !== 'running') return task;
-    if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
-    if (isWorkerCapacityReleasedBlocker(task.blocker)) return task;
+    const practiceTask = isLearningPracticeTask(task);
+    const implementationTask = clean(task.department).toLowerCase() === 'development' && clean(task.type).toLowerCase() === 'implementation';
+    if (!implementationTask && !practiceTask) return task;
+    const releasedBlocker = isWorkerCapacityReleasedBlocker(task.blocker);
+    if (releasedBlocker && !practiceTask) return task;
+    if (practiceTask && releasedBlocker && !/slot-released.*fan-in/i.test(clean(task.blocker))) return task;
     const reservedAtMs = Date.parse(clean(task.reservedAt));
     const leaseMissing = !Number.isFinite(reservedAtMs);
-    const expired = !leaseMissing && (Number(nowMs) - reservedAtMs) > Math.max(60_000, Number(staleMs) || DEFAULT_STALE_RUNNING_MS);
+    const expiryMs = practiceTask && releasedBlocker
+      ? DEFAULT_PRACTICE_STALE_FANIN_MS
+      : Math.max(60_000, Number(staleMs) || DEFAULT_STALE_RUNNING_MS);
+    const expired = !leaseMissing && (Number(nowMs) - reservedAtMs) > expiryMs;
     if (!leaseMissing && !expired) return task;
     recovered += 1;
     return {
