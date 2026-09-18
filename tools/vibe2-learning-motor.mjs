@@ -200,6 +200,21 @@ export function buildBenchmarkLadder(masteryInput={}){
   return {version:1,kind:'vibe2-benchmark-ladder',cases,authority:'practice-and-measurement-only'};
 }
 
+export function enrichQueueForCandidateTournaments(queueInput={},masteryInput={}){
+  const state=createMasteryState(masteryInput);
+  let changed=0;
+  const tasks=(queueInput?.tasks||[]).map(task=>{
+    if(lower(task?.status)!=='queued'||lower(task?.type)!=='implementation') return task;
+    const policy=candidateTournamentPolicy({task,masteryInput:state});
+    if(policy.candidateCount<=1) return task;
+    const evidence=uniq([...(task.evidence||[]),`learning-motor-candidate-tournament:${policy.reason}`]);
+    const next={...task,speculativeEligible:true,estimatedRisk:'high',evidence};
+    if(task.speculativeEligible!==true||lower(task.estimatedRisk)!=='high'||evidence.length!==(task.evidence||[]).length) changed++;
+    return next;
+  });
+  return {queue:{...queueInput,tasks},changed};
+}
+
 export function buildIdlePracticeQueue(masteryInput={}){
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0])).slice(0,5);
@@ -246,14 +261,17 @@ export function buildWebRobloxHandoffs(companyQueueInput={}){
   return {version:1,kind:'vibe2-web-roblox-handoffs',handoffs,gateBypass:false,authority:'verified-handoff-context-only'};
 }
 
-export function refreshLearningMotor({stateInput={},experienceInput={},companyQueueInput={}}={}){
+export function refreshLearningMotor({stateInput={},experienceInput={},companyQueueInput={},queueInput={}}={}){
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
+  const tournament=enrichQueueForCandidateTournaments(queueInput,applied.state);
   return {
     state:applied.state,
     addedExperience:applied.added,
     benchmark:buildBenchmarkLadder(applied.state),
     idlePractice:buildIdlePracticeQueue(applied.state),
-    handoffs:buildWebRobloxHandoffs(companyQueueInput)
+    handoffs:buildWebRobloxHandoffs(companyQueueInput),
+    queue:tournament.queue,
+    tournamentTasksChanged:tournament.changed
   };
 }
 
@@ -264,8 +282,10 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const stateFile=clean(a.state)||'.vibe2/learning-motor-state.json';
   const experienceFile=clean(a.experience)||'.vibe2/experience.json';
   const companyQueueFile=clean(a['company-queue'])||'development-queue.json';
-  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]})});
+  const queueFile=clean(a.queue);
+  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]}});
   writeJson(stateFile,result.state);
+  if(queueFile&&result.tournamentTasksChanged>0) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);
   if(clean(a.practice)) writeJson(a.practice,result.idlePractice);
   if(clean(a.handoff)) writeJson(a.handoff,result.handoffs);
@@ -274,5 +294,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
+  console.log(`VIBE2_CANDIDATE_TOURNAMENT_TASKS=${result.tournamentTasksChanged}`);
   console.log('VIBE2_GATE_WEAKENED=NO');
 }
