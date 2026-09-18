@@ -216,7 +216,8 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq 'activeRuntimeLayoutManager' tools/homepage-manager.mjs
-          grep -Fq 'HOMEPAGE_LAYOUT_MANAGEMENT=ENABLED' tools/homepage-manager.mjs
+          grep -Fq 'HOMEPAGE_MANAGEMENT=' tools/homepage-manager.mjs
+          grep -Fq 'HOMEPAGE_RUNTIME_SYNC=DEVELOPMENT_QUEUE_PLUS_SEPARATE_TOP30' tools/homepage-manager.mjs
           grep -Fq 'HOMEPAGE_MANAGER_COUNT=1' tools/homepage-manager.mjs
           grep -Fq 'HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1' tools/homepage-manager.mjs
           grep -Fq 'workflow_run:' .github/workflows/homepage-manager.yml
