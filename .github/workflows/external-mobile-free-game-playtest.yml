@@ -290,6 +290,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
+      - name: Dispatch canonical learning ingest for completed playtest
+        if: needs.playtest.result == 'success'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          body="$(jq -nc --arg run_id "${CURRENT_RUN_ID}" '{ref:"main",inputs:{external_playtest_run_id:$run_id}}')"
+          curl --fail --silent --show-error             -X POST             -H "Authorization: Bearer ${GH_TOKEN}"             -H "Accept: application/vnd.github+json"             -H "X-GitHub-Api-Version: 2022-11-28"             "https://api.github.com/repos/${REPOSITORY}/actions/workflows/vibe2-distillation-ingest.yml/dispatches"             -d "${body}"
+          echo "COMMERCIAL_RUNTIME_CANONICAL_INGEST_DISPATCHED=${CURRENT_RUN_ID}"
+
       - name: Dispatch next Google Play study batch when idle
         shell: bash
         env:
