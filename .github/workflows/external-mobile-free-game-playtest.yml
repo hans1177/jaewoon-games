@@ -23,7 +23,7 @@ on:
 
 permissions:
   contents: read
-  actions: read
+  actions: write
 
 concurrency:
   group: vibe2-external-mobile-free-playtest
@@ -207,3 +207,41 @@ jobs:
           Write-Host "EXTERNAL_MOBILE_ROTATION_START=$env:PLAYTEST_START_INDEX"
           Write-Host "EXTERNAL_MOBILE_ROTATION_BATCH=$env:PLAYTEST_MAX_GAMES"
           Write-Host 'TRANSFORMATIVE_RECOMBINATION_INPUT=DERIVED_RUNTIME_FEATURES_ONLY'
+
+  refill:
+    name: continuous refill
+    needs: playtest
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Dispatch next Google Play study batch when idle
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CURRENT_RUN_ID: ${{ github.run_id }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          api="https://api.github.com/repos/${REPOSITORY}/actions/workflows/external-mobile-free-game-playtest.yml/runs?per_page=30"
+          active_other="$(curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "${api}" | jq --arg current "${CURRENT_RUN_ID}" \
+            '[.workflow_runs[] | select((.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending") and ((.id|tostring)!=$current))] | length')"
+          echo "EXTERNAL_MOBILE_ACTIVE_OTHER=${active_other}"
+          if [ "${active_other}" -gt 0 ]; then
+            echo 'EXTERNAL_MOBILE_CONTINUOUS_REFILL=ALREADY_ACTIVE'
+            exit 0
+          fi
+          body='{"ref":"main","inputs":{"max_games":"3","start_index":"auto"}}'
+          curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${REPOSITORY}/actions/workflows/external-mobile-free-game-playtest.yml/dispatches" \
+            -d "${body}"
+          echo 'EXTERNAL_MOBILE_CONTINUOUS_REFILL=DISPATCHED'
+          echo 'EXTERNAL_MOBILE_24H_CHAIN=ON'
