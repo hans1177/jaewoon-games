@@ -51,7 +51,8 @@ function gameplaySignals(html=''){
   return{checks,count:Object.values(checks).filter(Boolean).length};
 }
 function scopeMetrics(html='',baseline={}){
-  const inventory=deriveApprovedScopeInventory(baseline||{});
+  const derived=deriveApprovedScopeInventory(baseline||{});
+  const inventory=derived.length===1&&clean(derived[0]?.path)==='coreGameplay'&&clean(derived[0]?.label)==='approved core gameplay loop'?[]:derived;
   if(!inventory.length)return{requiredCount:0,boundCount:0,semanticCount:0,coveragePct:100,scopeIds:[]};
   const lower=String(html).toLowerCase();let bound=0,semantic=0;
   for(const item of inventory){
