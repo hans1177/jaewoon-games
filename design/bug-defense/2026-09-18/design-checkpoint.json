@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -366,20 +368,346 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "identity": "STRICT_GATE_FEEDBACK",
+      "playerFantasy": "REBUILD",
+      "coreFun": "CORE_FUN_WEAK",
+      "coreLoop": [
+        "CORE_FUN_WEAK",
+        "CRITICAL_AXIS_MINIMUM_FAIL",
+        "CRITICAL_AXIS_MINIMUM_FAIL",
+        "CRITICAL_AXIS_MINIMUM_FAIL",
+        "CRITICAL_AXIS_MINIMUM_FAIL",
+        "CRITICAL_AXIS_MINIMUM_FAIL",
+        "CRITICAL_AXIS_MINIMUM_FAIL",
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "signatureSystems": [
+        {
+          "name": "CORE_LOOP_DESIGN",
+          "purpose": "core loop design",
+          "playerChoice": "core loop design"
+        },
+        {
+          "name": "IDEA_AND_DISTINCTNESS",
+          "purpose": "idea and distinctness",
+          "playerChoice": "idea and distinctness"
+        },
+        {
+          "name": "PROGRESSION_ECONOMY_BALANCE_DESIGN",
+          "purpose": "progression economy balance design",
+          "playerChoice": "progression economy balance design"
+        }
+      ],
+      "progressionDirection": "PROGRESSION_ECONOMY_BALANCE_DESIGN",
+      "progressionEconomyBalance": {
+        "progressionLoop": "PROGRESSION_ECONOMY_BALANCE_DESIGN",
+        "resourceFlow": "CORE_FUN_TO_LEARN",
+        "balanceRules": "CORE_LOOP_DESIGN"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "CONTENT_EXPANSION_PLAN",
+          "newGameplay": "NEW_GAMEPLAY",
+          "systemImpact": "GAME_SEED"
+        },
+        {
+          "milestone": "CONTENT_EXPANSION_PLAN",
+          "newGameplay": "NEW_GAMEPLAY",
+          "systemImpact": "GAME_SEED"
+        },
+        {
+          "milestone": "CONTENT_EXPANSION_PLAN",
+          "newGameplay": "NEW_GAMEPLAY",
+          "systemImpact": "GAME_SEED"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "GAME_SEED",
+          "BASE_DESIGN"
+        ],
+        "retryFlow": "GAME_SEED",
+        "riskPressure": "GAME_SEED",
+        "recoveryRules": "GAME_SEED"
+      },
+      "platformFitPlan": {
+        "targetPlatform": "FORTNITE_UEFN",
+        "inputModel": "GAME_SEED",
+        "performanceBudget": "GAME_SEED",
+        "sessionConstraints": "GAME_SEED"
+      },
+      "mobileUx": "MOBILE UX",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "GAME_SEED",
+        "touchAndInput": "GAME_SEED",
+        "readability": "GAME_SEED",
+        "accessibility": "GAME_SEED"
+      },
+      "visualDirection": "PROGRESSION_ECONOMY_BALANCE_DESIGN",
+      "artAudioDirection": {
+        "visualIdentity": "GAME_SEED",
+        "audioIdentity": "GAME_SEED",
+        "gameplayFeedbackSync": "GAME_SEED"
+      },
+      "technicalAssumptions": [
+        "Core loop design",
+        "Idea and distinctness",
+        "Progression economy balance design"
+      ],
+      "validationQuestions": [
+        "What is the purpose of the core loop design?",
+        "What is the purpose of the idea and distinctness?",
+        "What is the purpose of the progression economy balance design?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "GAME_SEED",
+          "responsibleSystem": "BASE_DESIGN",
+          "validationEvidence": "GAME_SEED"
+        },
+        {
+          "designElement": "BASE_DESIGN",
+          "responsibleSystem": "GAME_SEED",
+          "validationEvidence": "GAME_SEED"
+        },
+        {
+          "designElement": "GAME_SEED",
+          "responsibleSystem": "BASE_DESIGN",
+          "validationEvidence": "GAME_SEED"
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 0,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 0,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 60,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 60,
+        "PLATFORM_FIT_DESIGN": 0,
+        "UX_AND_ACCESSIBILITY_PLAN": 0,
+        "ART_AUDIO_DIRECTION": 60,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 0,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 0,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 6,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 4.8,
+        "PLATFORM_FIT_DESIGN": 0,
+        "UX_AND_ACCESSIBILITY_PLAN": 0,
+        "ART_AUDIO_DIRECTION": 3,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 40.4,
+      "criticalAxisFailures": [
+        "IDEA_AND_DISTINCTNESS",
+        "CORE_LOOP_DESIGN",
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN",
+        "CONTENT_EXPANSION_PLAN",
+        "FAILURE_RETRY_RISK_DESIGN",
+        "PLATFORM_FIT_DESIGN",
+        "UX_AND_ACCESSIBILITY_PLAN",
+        "ART_AUDIO_DIRECTION",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CORE_FUN_WEAK",
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CORE_FUN_WEAK",
+          "kind": "HARD_GATE",
+          "axis": "CORE_LOOP_DESIGN",
+          "evidenceLevel": 0,
+          "minimumRequired": 60,
+          "evidence": {
+            "ideaAndDistinctness": 0,
+            "coreLoopDesign": 0,
+            "coreLoopCount": 2,
+            "signatureSystemCount": 3
+          },
+          "requiredAction": "핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IDEA_AND_DISTINCTNESS",
+          "evidenceLevel": 0,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 0,
+            "axisWeight": 12
+          },
+          "requiredAction": "정체성·플레이어 판타지·coreFun을 구체화하고 coreLoop와 최소 2개 signature system에 직접 연결한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CORE_LOOP_DESIGN",
+          "evidenceLevel": 0,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 0,
+            "axisWeight": 14
+          },
+          "requiredAction": "3단계 이상 core loop를 실제 선택·상태변화로 구체화하고 signature system과 상호작용을 연결한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "PROGRESSION_ECONOMY_BALANCE_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "진행·자원 흐름·밸런스 규칙을 하나의 반복 가능한 경제/성장 구조로 연결한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "FAILURE_RETRY_RISK_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 4.8,
+            "axisWeight": 8
+          },
+          "requiredAction": "실패상태·재시도 흐름·위험 압력·회복 규칙을 구체적으로 설계한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "PLATFORM_FIT_DESIGN",
+          "evidenceLevel": 0,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 0,
+            "axisWeight": 8
+          },
+          "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "UX_AND_ACCESSIBILITY_PLAN",
+          "evidenceLevel": 0,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 0,
+            "axisWeight": 6
+          },
+          "requiredAction": "HUD 우선순위·터치/입력·가독성·접근성 계획을 구체적으로 설계한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "ART_AUDIO_DIRECTION",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "시각 정체성·오디오 정체성·게임플레이 피드백 동기화를 연결한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
   "tasks": {},
   "modelHealth": {
     "llama3.2:1b": {
-      "calls": 5,
-      "successes": 2,
+      "calls": 6,
+      "successes": 3,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 1222074,
-      "lastMs": 61523,
+      "totalMs": 1320583,
+      "lastMs": 98509,
       "lastError": "The operation was aborted due to timeout",
-      "updatedAt": "2026-09-18T05:32:15.058Z"
+      "updatedAt": "2026-09-18T05:33:53.585Z"
     }
   },
   "slowPhases": {
@@ -391,8 +719,8 @@
   },
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T05:20:53.681Z",
-  "updatedAt": "2026-09-18T05:32:15.076Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T05:32:15.058Z",
+  "updatedAt": "2026-09-18T05:33:53.587Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T05:33:53.585Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null

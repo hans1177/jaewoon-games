@@ -8,25 +8,27 @@
   "percent": 50,
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
-  "completedPhaseCount": 2,
+  "completedPhaseCount": 4,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T05:32:15.058Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T05:33:53.585Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "llama3.2:1b": {
-      "calls": 5,
-      "successes": 2,
+      "calls": 6,
+      "successes": 3,
       "failures": 3,
       "timeouts": 3,
       "jsonFailures": 0,
-      "totalMs": 1222074,
-      "lastMs": 61523,
+      "totalMs": 1320583,
+      "lastMs": 98509,
       "lastError": "The operation was aborted due to timeout",
-      "updatedAt": "2026-09-18T05:32:15.058Z"
+      "updatedAt": "2026-09-18T05:33:53.585Z"
     }
   },
   "slowPhases": {
@@ -36,5 +38,5 @@
       "recordedAt": "2026-09-18T05:32:15.059Z"
     }
   },
-  "updatedAt": "2026-09-18T05:32:15.076Z"
+  "updatedAt": "2026-09-18T05:33:53.587Z"
 }
