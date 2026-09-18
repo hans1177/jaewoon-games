@@ -111,6 +111,10 @@ function normalizeTask(input = {}, index = 0) {
     blocker: clean(input.blocker) || null,
     evidence: freezeList(normalizeEvidence(input.evidence || [])),
     lastOutcome: clean(input.lastOutcome) || null,
+    reservationId: clean(input.reservationId) || null,
+    reservationRunId: clean(input.reservationRunId) || null,
+    reservationRunAttempt: clampInt(input.reservationRunAttempt || 0, 0, 1000000),
+    reservedAt: clean(input.reservedAt) || null,
     companyContext: normalizeCompanyContext(input.companyContext),
     sourceRoot: inferSourceRoot(input),
     speculativeEligible: input.speculativeEligible === true,
@@ -393,24 +397,42 @@ export function selectNextVibeQueueTask(queueInput) {
   });
 }
 
-export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = null } = {}) {
+function reservationFields(reservation = {}) {
+  return {
+    reservationId: clean(reservation?.id || reservation?.reservationId) || null,
+    reservationRunId: clean(reservation?.runId || reservation?.reservationRunId) || null,
+    reservationRunAttempt: clampInt(reservation?.runAttempt || reservation?.reservationRunAttempt || 0, 0, 1000000),
+    reservedAt: clean(reservation?.reservedAt) || null
+  };
+}
+
+const CLEARED_RESERVATION = Object.freeze({
+  reservationId: null,
+  reservationRunId: null,
+  reservationRunAttempt: 0,
+  reservedAt: null
+});
+
+export function beginVibeQueueTask(queueInput, taskId, { maxConcurrentTasks = null, reservation = {} } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskId);
   const existing = queue.tasks.find((task) => task.id === id);
   if (existing?.status === 'running') return freeze({ started: true, task: existing, queue, resumed: true });
   const batch = selectVibeQueueBatch(queue, { maxConcurrentTasks });
   if (!batch.selected.some((task) => task.id === id)) return freeze({ started: false, reason: 'task-not-currently-eligible-or-conflicts', queue, selection: batch });
-  const tasks = queue.tasks.map((task) => task.id === id ? freeze({ ...task, status: 'running', blocker: null }) : task);
+  const reservationMeta = reservationFields(reservation);
+  const tasks = queue.tasks.map((task) => task.id === id ? freeze({ ...task, ...reservationMeta, status: 'running', blocker: null }) : task);
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
   return freeze({ started: true, task: nextQueue.tasks.find((task) => task.id === id), queue: nextQueue, resumed: false });
 }
 
-export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null } = {}) {
+export function beginVibeQueueBatch(queueInput, { maxConcurrentTasks = null, reservation = {} } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks });
   if (!selection.selected.length) return freeze({ started: false, tasks: freeze([]), queue, selection });
   const ids = new Set(selection.selected.map((task) => task.id));
-  const tasks = queue.tasks.map((task) => ids.has(task.id) ? freeze({ ...task, status: 'running', blocker: null }) : task);
+  const reservationMeta = reservationFields(reservation);
+  const tasks = queue.tasks.map((task) => ids.has(task.id) ? freeze({ ...task, ...reservationMeta, status: 'running', blocker: null }) : task);
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
   return freeze({ started: true, tasks: freeze(nextQueue.tasks.filter((task) => ids.has(task.id))), queue: nextQueue, selection });
 }
@@ -424,12 +446,12 @@ export function finishVibeQueueTask(queueInput, { taskId = '', outcome = 'PASS',
     if (task.id !== id) return task;
     found = true;
     const mergedEvidence = freezeList([...(task.evidence || []), ...(evidence || [])]);
-    if (normalizedOutcome === 'PASS') return freeze({ ...task, status: 'done', evidence: mergedEvidence, lastOutcome: 'PASS', blocker: null });
-    if (normalizedOutcome === 'BLOCKED') return freeze({ ...task, status: 'blocked', evidence: mergedEvidence, lastOutcome: 'BLOCKED', blocker: clean(blocker) || 'blocked' });
-    if (normalizedOutcome === 'CANCELLED') return freeze({ ...task, status: 'cancelled', evidence: mergedEvidence, lastOutcome: 'CANCELLED', blocker: clean(blocker) || null });
+    if (normalizedOutcome === 'PASS') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'done', evidence: mergedEvidence, lastOutcome: 'PASS', blocker: null });
+    if (normalizedOutcome === 'BLOCKED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'blocked', evidence: mergedEvidence, lastOutcome: 'BLOCKED', blocker: clean(blocker) || 'blocked' });
+    if (normalizedOutcome === 'CANCELLED') return freeze({ ...task, ...CLEARED_RESERVATION, status: 'cancelled', evidence: mergedEvidence, lastOutcome: 'CANCELLED', blocker: clean(blocker) || null });
     const nextRetries = task.retries + 1;
     const canRetry = Boolean(retryable && nextRetries <= task.maxRetries);
-    return freeze({ ...task, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: mergedEvidence, lastOutcome: 'FAIL', blocker: canRetry ? null : (clean(blocker) || 'retry-limit-exceeded') });
+    return freeze({ ...task, ...CLEARED_RESERVATION, status: canRetry ? 'queued' : 'failed', retries: nextRetries, evidence: mergedEvidence, lastOutcome: 'FAIL', blocker: canRetry ? null : (clean(blocker) || 'retry-limit-exceeded') });
   });
   const nextQueue = createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks });
   const next = selectVibeQueueBatch(nextQueue);
