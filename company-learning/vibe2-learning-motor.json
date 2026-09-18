@@ -74,7 +74,8 @@
       "SAME_ENGINE_VERIFIED",
       "SAME_GENRE_OR_SYSTEM_VERIFIED",
       "CROSS_GAME_VERIFIED",
-      "GENERAL_PLAYBOOK"
+      "GENERAL_PLAYBOOK",
+      "EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY"
     ],
     "sameGameMustBeHighestWeight": true,
     "sources": [
@@ -89,7 +90,9 @@
       ".vibe2/external-ai-distilled-knowledge.json"
     ],
     "rawUnauthorizedSourceReuseForbidden": true,
-    "verifiedInternalCodePatternReuseAllowed": true
+    "verifiedInternalCodePatternReuseAllowed": true,
+    "rawExternalAiOutputReuseForbidden": true,
+    "externalAiDistilledAdvisoryRanksAfterInternalVerified": true
   },
   "webPracticeMotor": {
     "implementationIsPractice": true,
@@ -230,5 +233,23 @@
     "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
     "minimumTraceableVerificationEvidenceItems": 2,
     "externalAiAdvisoryAlwaysRanksAfterInternalVerified": true
+  },
+  "externalAiDistillation": {
+    "enabled": true,
+    "policy": "company-learning/external-ai-distillation-policy.json",
+    "distiller": "tools/vibe2-external-ai-distillation.mjs",
+    "knowledgeStore": ".vibe2/external-ai-distilled-knowledge.json",
+    "rawExternalAiOutputDirectDevelopment": false,
+    "rawExternalAiOutputPersistentRetrieval": false,
+    "independentVerificationRequired": true,
+    "minimumTraceableVerificationEvidenceItems": 2,
+    "advisoryOnly": true,
+    "directSourceWrite": false,
+    "directProductionPass": false,
+    "directReleaseEvidence": false,
+    "directMasteryCredit": false,
+    "directCanonicalTrainingSample": false,
+    "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
+    "authorityExpanded": false
   }
 }
