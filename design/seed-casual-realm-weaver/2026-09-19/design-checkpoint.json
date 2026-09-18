@@ -1,0 +1,251 @@
+{
+  "contractVersion": 3,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-CASUAL-REALM-WEAVER-20260917",
+  "fingerprint": "280d71b3738fa046ec8fc3d9568d86d95fe27bbbe703e26eaae8200cbfb8c530",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "세계의 직조자는 플레이어가 실시간으로 지형과 자원을 엮어 새로운 생태계를 창조하고 유지하는 캐주얼 전략 시뮬레이션 게임이다. coreLoop와 signatureSystems는 단순한 터치와 드래그 입력으로 지형 블록을 교차 배치하며 상태변화를 일으키고, 이로 인해 자원 순환과 생태계 안정도가 실시간으로 변하는 고유한 선택의 재미를 제공한다.",
+      "playerFantasy": "플레이어는 부서진 세계의 파편을 이어 붙여 생명이 숨 쉬는 거대한 태싯 레름(Tacit Realm)을 복원하는 전설의 직조자가 되어, 자연과 문명의 조화를 이루어내는 판타지를 경험한다.",
+      "coreFun": "자원 블록을 드래그하여 인접한 지형과 결합하는 반복적인 선택을 통해, 화면 전체의 생태계 번영도와 자원 생산량이 즉각적으로 변화하는 과정을 관찰하고 최적의 조합을 찾아내는 재미를 느낀다.",
+      "coreLoop": [
+        "플레이어는 화면 하단에서 생성되는 무작위 자원 및 지형 실오라기 블록을 선택하여 게임판 위에 드래그하여 배치한다.",
+        "배치된 블록은 인접한 기존 블록과 반응하여 자원 생산량 증가 혹은 불안정성 증가라는 관측 가능한 상태 변화를 유발한다.",
+        "세션 종료 시 누적된 점수와 보상을 획득하여 새로운 직조 도구를 해금하고 다음 도전에 활용한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "실오라기 결합 시스템",
+          "purpose": "서로 다른 속성의 지형 블록을 교차 배치하여 새로운 시너지 효과와 자원 생산 경로를 개척하는 핵심 목적을 수행한다.",
+          "playerChoice": "플레이어는 제한된 자원 실오라기 중에서 어떤 속성을 먼저 결합할지 선택하여 즉각적인 생태계 변화와 보상을 유도한다."
+        },
+        {
+          "name": "불안정성 정화 시스템",
+          "purpose": "지형 결합 과정에서 발생하는 혼란과 리스크를 관리하고 균형을 유지하여 게임 오버를 방지하는 역할을 한다.",
+          "playerChoice": "플레이어는 위험 수치가 임계점에 도달하기 전에 특수 정화 도구를 사용할지, 아니면 더 큰 리스크를 감수하고 확장을 계속할지 선택한다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "실오라기 결합 시스템",
+          "toSystem": "불안정성 정화 시스템",
+          "trigger": "플레이어가 상이한 속성의 블록을 연속으로 3회 이상 결합할 때",
+          "stateChange": "불안정성 게이지가 상승하며 화면 주변부의 시각적 경고 효과가 활성화된다."
+        },
+        {
+          "fromSystem": "불안정성 정화 시스템",
+          "toSystem": "진행 및 경제 균형",
+          "trigger": "불안정성이 안전 범위 내로 성공적으로 정화되었을 때",
+          "stateChange": "추가 자원 보너스 재화가 지급되며 다음 스테이지 해금 속도가 빨라진다."
+        },
+        {
+          "fromSystem": "진행 및 경제 균형",
+          "toSystem": "실오라기 결합 시스템",
+          "trigger": "새로운 직조 도구가 해금되고 플레이어가 이를 장착할 때",
+          "stateChange": "기본 블록 외에 특수 속성 실오라기가 생성 풀에 추가되어 선택지가 확장된다."
+        }
+      ],
+      "progressionDirection": "플레이어는 초기 단순한 평원 지형 결합에서 출발하여 점차 복잡한 다차원 생태계와 상호작용하며, 세션이 진행될수록 새로운 직조 패턴과 강력한 정화 능력을 습득하여 더 높은 차원의 세계를 창조하는 방향으로 성장한다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "세션 내 지형 결합과 정화 미션을 완료하여 자원을 획득하고, 이를 통해 영구적인 직조 능력치와 신규 블록 종류를 해금하는 루프를 반복한다.",
+        "resourceFlow": "플레이어는 인게임 플레이를 통해 에센스 자원을 획득하며, 이는 정화 도구 구매와 특수 실오라기 해금에 소모되는 순환 구조를 가진다.",
+        "balanceRules": "난이도 상승에 따른 불안정성 증가율을 플레이어의 해금된 정화 능력치 상승 곡선과 일치시켜 과도한 난이도 스파이크를 방지한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "시즌 1: 얼어붙은 황야의 복원",
+          "newGameplay": "저온 환경에서 얼어붙는 지형 블록을 녹이기 위한 화염 속성 실오라기 결합 메커니즘이 추가된다.",
+          "systemImpact": "기존 실오라기 결합 시스템에 온도 상태 값이 추가되며 새로운 연계 반응 패턴이 확장된다."
+        },
+        {
+          "milestone": "시즌 2: 공중 섬의 직조",
+          "newGameplay": "중력을 무시하고 공중에 부유하는 섬 구조물에 블록을 배치하는 입체적 드래그 플레이가 도입된다.",
+          "systemImpact": "지형 배치 판정 로직이 2차원에서 3차원 투영 방식으로 확장되어 공간적 선택의 깊이가 깊어진다."
+        },
+        {
+          "milestone": "시즌 3: 심해 태싯 레름",
+          "newGameplay": "시간 제한 내에 수압을 견디며 해양 생태계 자원을 연결하는 타임어택형 특수 미션이 해금된다.",
+          "systemImpact": "불안정성 정화 시스템에 시간 압박 요소가 결합되어 긴장감 있는 리스크 관리 플레이를 유도한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "불안정성 게이지가 100퍼센트를 초과하여 세계가 붕괴하는 상태",
+          "제한 시간 내에 목표 생태계 번영도에 도달하지 못한 상태"
+        ],
+        "retryFlow": "실패 즉시 결과 화면에서 원인 분석 리포트가 표시되며, 원탭으로 자원 손실 없이 즉시 메인 화면이나 직전 체크포인트로 재시작할 수 있다.",
+        "riskPressure": "블록을 무리하게 결합할수록 불안정성이 급증하여 한 번의 실수로도 세션이 종료될 수 있는 지속적인 긴장감을 제공한다.",
+        "recoveryRules": "실패 시 획득한 기본 에센스의 일정 비율을 보존하여 다음 도전 시 기초 정화 도구를 바로 업그레이드할 수 있게 보장한다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치스크린 환경에 최적화된 원 엄지 드래그 앤 드롭 입력 및 탭 기반 정화 도구 활성화 모델을 채택한다.",
+        "performanceBudget": "모바일 저사양 기기에서도 60프레임을 유지하기 위해 파티클 효과와 2D/3D 하이브리드 렌더링 부하를 최적화한다.",
+        "sessionConstraints": "한 번의 플레이 세션을 평균 5분 내외로 설계하여 언제 어디서나 가볍게 즐길 수 있는 모바일 세션 환경을 보장한다."
+      },
+      "visualDirection": "따뜻하고 감성적인 파스텔톤 컬러 팔레트와 부드럽게 빛나는 네온 실오라기 효과를 사용하여 신비롭고 아늑한 세계 창조의 시각적 판타지를 극대화한다.",
+      "mobileUx": "엄지손가락의 이동 반경 내에 핵심 결합 슬롯과 정화 버튼을 배치하여 한 손 조작만으로도 모든 플레이가 원활하게 이루어지도록 구성한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 자원 보유량, 불안정성 게이지, 남은 세션 시간을 화면 상단에 직관적으로 고정 배치한다.",
+        "touchAndInput": "모바일 터치 영역을 넉넉하게 확장하여 오작동을 방지하고 시각적 터치 피드백을 즉시 제공한다.",
+        "readability": "색맹 및 저시력 플레이어도 블록 속성을 쉽게 구분할 수 있도록 명확한 아이콘 심볼과 패턴을 함께 표시한다.",
+        "accessibility": "화면 밝기 조절, 진동 피드백 온오프, UI 크기 조절 옵션을 기본 제공하여 접근성을 높인다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "부드러운 곡선과 생동감 있는 파스텔 색조를 기반으로 하여 평화롭고 창의적인 세계관의 미적 정체성을 구축한다.",
+        "audioIdentity": "맑고 영롱한 마림바와 하프 선율의 사운드를 사용하여 블록이 결합할 때마다 기분 좋은 청각적 보상을 제공한다.",
+        "gameplayFeedbackSync": "블록 결합과 정화 성공 시 즉각적인 타격감 있는 효과음과 화면 진동을 동기화하여 플레이어의 조작감을 강화한다."
+      },
+      "marketTargetDirection": "전 세계 모바일 캐주얼 퍼즐 및 전략 게임 이용자층을 타겟으로 하여, 짧은 시간 동안 깊이 있는 선택의 재미와 성장 카타르시스를 제공한다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후, 넓은 화면을 활용한 UI 개편과 정밀한 마우스 드래그 조작을 지원하는 스팀 플랫폼 확장 버전을 검토한다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "추후 협동 모드 도입을 통해 두 플레이어가 서로 다른 속성의 실오라기를 교환하며 거대한 태싯 레름을 공동 창조하는 확장 가능성을 열어둔다.",
+      "technicalAssumptions": [
+        "유니티 엔진의 2D/3D 하이브리드 그리드 좌표계 기반으로 블록 스냅 및 충돌 판정을 고속 처리할 수 있다.",
+        "모바일 가비지 컬렉션 최적화를 위해 오브젝트 풀링 기법을 적용하여 실오라기 파티클과 블록 오브젝트를 관리한다."
+      ],
+      "validationQuestions": [
+        "원 엄지 드래그 조작만으로 복잡한 지형 결합 선택을 직관적으로 수행할 수 있는가?",
+        "세션당 평균 플레이 시간이 모바일 유저 벤치마크에 부합하며 지루함 없이 유지되는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "원 엄지 드래그 블록 결합",
+          "responsibleSystem": "실오라기 결합 시스템",
+          "validationEvidence": "터치 입력 좌표와 그리드 스냅 로직의 정확도를 테스트하여 95퍼센트 이상의 성공적인 결합 반응률을 검증한다."
+        },
+        {
+          "designElement": "불안정성 게이지 및 경고 연출",
+          "responsibleSystem": "불안정성 정화 시스템",
+          "validationEvidence": "임계점 도달 시 화면 진동과 UI 변화가 0.1초 이내에 플레이어에게 시각적으로 전달되는지 프레임 단위로 검증한다."
+        },
+        {
+          "designElement": "재화 순환 및 영구 해금",
+          "responsibleSystem": "진행 및 경제 균형",
+          "validationEvidence": "세션 종료 후 보상 지급과 다음 업그레이드 가격 곡선이 이탈률을 최소화하는지 시뮬레이션 데이터를 통해 확인한다."
+        }
+      ],
+      "openQuestions": [
+        "향후 멀티플레이어 확장 시 동시 편집에 따른 충돌을 어떤 방식으로 우아하게 동기화할 것인가?",
+        "플레이어가 지루함을 느끼지 않도록 새로운 지형 속성을 추가하는 최적의 업데이트 주기는 어느 정도가 적합한가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 12822,
+      "lastMs": 12822,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:09:26.987Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 105,
+      "lastMs": 105,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 32.90103984s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"32s\" } ] } }",
+      "updatedAt": "2026-09-18T15:09:27.116Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 117,
+      "lastMs": 117,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 32.887508436s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"32s\" } ] } }",
+      "updatedAt": "2026-09-18T15:09:27.128Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T15:09:14.163Z",
+  "updatedAt": "2026-09-18T15:09:27.129Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:09:26.987Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 32.887508436s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"32s\" } ] } }"
+}
