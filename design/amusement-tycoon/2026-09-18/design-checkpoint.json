@@ -199,7 +199,28 @@
       "materialContractOk": true
     }
   },
-  "tasks": {},
+  "tasks": {
+    "five_lead_reviews::balance": {
+      "keep": [
+        "손님 만족도에 비례하여 유동적으로 변하는 현금 자원 획득 구조 및 기본 입장료/이용료 이중 수급 루프 유지"
+      ],
+      "fix": [
+        "고급 시설의 유지비 급증 폭을 완화하고, 손님 동선 병목 현상 발생 시 만족도 감소 패널티의 한계치를 설정하여 급격한 파산 방지"
+      ],
+      "add": [
+        "초기 자금 고갈 시 보유한 놀이기구를 즉시 매각하여 최소 건설 비용의 50%를 회수할 수 있는 긴급 자금 환급 시스템 추가"
+      ],
+      "risks": [
+        "길 건설 실패로 인한 손님 갇힘 현상 발생 시, 만족도가 0으로 수렴하여 회생 불가능한 대거 이탈 상태가 지속될 위험"
+      ],
+      "evidence": [
+        "타이쿤 장르에서 동선 단절로 인한 AI 고립은 시스템 붕괴를 초래하므로, 최소한의 탈출 경로 보장이나 자동 워프 장치 필요"
+      ],
+      "questions": [
+        "손님이 길을 잃거나 갇혔을 때, 시스템이 이를 감지하고 입구로 강제 이동시키는 구제책의 쿨타임과 비용은 어떻게 설정할 것인가?"
+      ]
+    }
+  },
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 1,
@@ -211,15 +232,38 @@
       "lastMs": 11476,
       "lastError": null,
       "updatedAt": "2026-09-18T14:09:14.200Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 9922,
+      "lastMs": 9922,
+      "lastError": null,
+      "updatedAt": "2026-09-18T14:09:24.143Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 4970,
+      "lastMs": 4970,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=31",
+      "updatedAt": "2026-09-18T14:09:29.255Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T14:09:02.722Z",
-  "updatedAt": "2026-09-18T14:09:14.220Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T14:09:14.200Z",
+  "updatedAt": "2026-09-18T14:09:29.255Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T14:09:24.143Z",
   "geminiModelResolution": {
-    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
+    "gemini-3.5-flash": "gemini-3.5-flash"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
