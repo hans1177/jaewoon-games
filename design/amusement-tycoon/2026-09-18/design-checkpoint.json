@@ -219,19 +219,59 @@
       "questions": [
         "손님이 길을 잃거나 갇혔을 때, 시스템이 이를 감지하고 입구로 강제 이동시키는 구제책의 쿨타임과 비용은 어떻게 설정할 것인가?"
       ]
+    },
+    "five_lead_reviews::development": {
+      "keep": [
+        "그리드 기반의 길 건설 및 시설 배치 시스템과 A* 알고리즘을 활용한 손님 경로 탐색 로직을 핵심 구조로 유지함."
+      ],
+      "fix": [
+        "손님 AI 연산 부하를 줄이기 위해 매 프레임 경로 갱신 대신 목적지 도달 또는 길 변경 시에만 재계산하도록 수정함."
+      ],
+      "add": [
+        "시설 밀집도에 따른 병목 현상을 감지하고 성능 저하를 방지하기 위한 공간 분할(Spatial Partitioning) 최적화 레이어를 추가함."
+      ],
+      "risks": [
+        "수십 명의 손님 개체 동시 렌더링 시 모바일 환경에서 드로우 콜(Draw Call) 급증으로 인한 프레임 드랍 위험이 있음."
+      ],
+      "evidence": [
+        "유사 장르의 모바일 타이쿤 게임들은 GPU 인스턴싱을 통해 동일 에셋의 다수 개체 출력 성능을 확보함."
+      ],
+      "questions": [
+        "손님 개체별로 고유한 상태(만족도, 소지금 등)를 유지하면서 대규모 군중 시뮬레이션을 수행할 때의 메모리 한계치는 얼마인가?"
+      ]
+    },
+    "five_lead_reviews::planning": {
+      "keep": [
+        "놀이공원 타이쿤의 길 건설 및 시설 배치 중심의 핵심 루프와 자원 관리 구조를 유지한다."
+      ],
+      "fix": [
+        "파산 및 손님 이탈 시의 구체적인 자금 환급 및 복구 수단을 명확한 수치 규칙으로 보완하라."
+      ],
+      "add": [
+        "초기 세션에서 플레이어가 즉각적으로 동선 비효율을 인지할 수 있는 시각적 피드백 시스템을 추가한다."
+      ],
+      "risks": [
+        "유지비 증가와 손님 요구 조건이 복잡해질 때 모바일 플랫폼에서의 조작 피로도가 급증할 위험이 있다."
+      ],
+      "evidence": [
+        "경영 시뮬레이션 장르에서 명확한 동선 설계와 즉각적 경제 피드백은 플레이어 몰입도를 높인다."
+      ],
+      "questions": [
+        "특수 이벤트 발생 시 모바일 화면에서 UI 혼잡도를 어떻게 최소화할 것인가?"
+      ]
     }
   },
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 11476,
-      "lastMs": 11476,
+      "totalMs": 15969,
+      "lastMs": 4493,
       "lastError": null,
-      "updatedAt": "2026-09-18T14:09:14.200Z"
+      "updatedAt": "2026-09-18T14:09:49.345Z"
     },
     "gemini:gemini-3.5-flash": {
       "calls": 1,
@@ -245,25 +285,37 @@
       "updatedAt": "2026-09-18T14:09:24.143Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 1,
+      "calls": 4,
       "successes": 0,
-      "failures": 1,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 4970,
-      "lastMs": 4970,
-      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=31",
-      "updatedAt": "2026-09-18T14:09:29.255Z"
+      "totalMs": 44803,
+      "lastMs": 7666,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T14:09:52.484Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 28338,
+      "lastMs": 28338,
+      "lastError": null,
+      "updatedAt": "2026-09-18T14:09:42.560Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T14:09:02.722Z",
-  "updatedAt": "2026-09-18T14:09:29.255Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T14:09:24.143Z",
+  "updatedAt": "2026-09-18T14:09:52.484Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T14:09:49.345Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
-    "gemini-3.5-flash": "gemini-3.5-flash"
+    "gemini-3.5-flash": "gemini-3.5-flash",
+    "gemini-3-flash-preview": "gemini-3-flash-preview"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
