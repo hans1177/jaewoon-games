@@ -15,6 +15,10 @@ on:
       - 'qa/main-write-guard.test.mjs'
   workflow_dispatch:
 
+concurrency:
+  group: main-write-guard-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
