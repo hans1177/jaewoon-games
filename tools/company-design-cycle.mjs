@@ -57,9 +57,25 @@ const catalog=readJson('game-catalog.json',{games:[]});
 const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||null;
 if(catalogGame&&clean(catalogGame.productionClass)&&clean(catalogGame.productionClass)!=='DESIGN_ONLY')throw new Error(`DESIGN_ONLY_CLASS_REQUIRED: ${catalogGame.productionClass}`);
 const game={id:gameId,name:clean(catalogGame?.name||seed.gameName||gameId),description:clean(catalogGame?.description||seed.DISTINCT_IDENTITY),genre:clean(catalogGame?.genre||seed.GAME_CATEGORY),productionClass:'DESIGN_ONLY',productionTier:3,productionTarget:'DESIGN_BASELINE',webPath:catalogGame?.webPath||null,unityProjectPath:catalogGame?.unityProjectPath||null};
-const designerPool=pool.filter(model=>!model.startsWith('deepseek-r1'));
-if(!designerPool.length)throw new Error('GAME_DESIGNER_MODEL_POOL_EMPTY');
-const designerModel=designerPool[hash(`${gameId}:designer`)%designerPool.length];
+const designerPolicy=ai.gameDesigner||{};
+const designerBannedModels=new Set(uniq([...(Array.isArray(ai.bannedModels)?ai.bannedModels:[]),...(Array.isArray(ai.designerBannedModels)?ai.designerBannedModels:[])]));
+const localDesignerPool=uniq([...(Array.isArray(designerPolicy.localFallbackModels)?designerPolicy.localFallbackModels:[]),...pool]).filter(model=>!designerBannedModels.has(model)&&!model.startsWith('deepseek-r1'));
+if(!localDesignerPool.length)throw new Error('GAME_DESIGNER_MODEL_POOL_EMPTY');
+const openaiApiKey=clean(process.env.OPENAI_API_KEY);
+const geminiApiKey=clean(process.env.GEMINI_API_KEY);
+const openaiDesignerModel=clean(process.env.COMPANY_DESIGNER_OPENAI_MODEL||designerPolicy.openaiModel||'gpt-5');
+const geminiDesignerModel=clean(process.env.COMPANY_DESIGNER_GEMINI_MODEL||designerPolicy.geminiModel||'gemini-3.8-flash');
+const cloudDesignerRoutes=[];
+if(designerPolicy.externalProvidersAllowed===true&&openaiApiKey)cloudDesignerRoutes.push({provider:'OPENAI',model:openaiDesignerModel,id:`openai:${openaiDesignerModel}`});
+if(designerPolicy.externalProvidersAllowed===true&&geminiApiKey)cloudDesignerRoutes.push({provider:'GEMINI',model:geminiDesignerModel,id:`gemini:${geminiDesignerModel}`});
+const localDesignerModel=localDesignerPool[hash(`${gameId}:designer-local`)%localDesignerPool.length];
+const localDesignerRoute={provider:'OLLAMA',model:localDesignerModel,id:`ollama:${localDesignerModel}`};
+const designerRoute=cloudDesignerRoutes.length?cloudDesignerRoutes[hash(`${gameId}:designer-cloud`)%cloudDesignerRoutes.length]:localDesignerRoute;
+const designerModel=designerRoute.id;
+console.log(`GAME_DESIGNER_PROVIDER=${designerRoute.provider}`);
+console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
+console.log(`GAME_DESIGNER_BANNED_MODELS=${[...designerBannedModels].join(',')||'NONE'}`);
+console.log(`GAME_DESIGNER_CLOUD_CONFIGURED=${cloudDesignerRoutes.length?'YES':'NO'}`);
 const coordinatorModel=pool[hash(`${gameId}:coordinator`)%pool.length];
 const base=path.join('design',gameId,date);fs.mkdirSync(base,{recursive:true});
 const submissionBase=path.join('artbook-submissions',gameId,date);
@@ -568,17 +584,90 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
 
+async function callExternalDesignerModel(route,system,user,schema,{predict=1100,temperature=0.2,repairRequired=null,timeoutMs=90000}={}){
+  const callStarted=Date.now();
+  const timeout=Math.min(120000,Math.max(45000,Number(timeoutMs||90000)));
+  try{
+    let response;
+    if(route.provider==='OPENAI'){
+      response=await fetch('https://api.openai.com/v1/responses',{
+        method:'POST',
+        headers:{'content-type':'application/json','authorization':`Bearer ${openaiApiKey}`},
+        body:JSON.stringify({
+          model:route.model,
+          input:[
+            {role:'system',content:[{type:'input_text',text:system}]},
+            {role:'user',content:[{type:'input_text',text:user+'\n출력은 JSON 객체만 반환한다.'}]}
+          ],
+          max_output_tokens:Math.min(8192,Math.max(512,Number(predict||1100))),
+          text:{format:{type:'json_schema',name:'design_output',schema,strict:true}}
+        }),
+        signal:AbortSignal.timeout(timeout)
+      });
+    }else if(route.provider==='GEMINI'){
+      response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(route.model)}:generateContent?key=${encodeURIComponent(geminiApiKey)}`,{
+        method:'POST',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({
+          systemInstruction:{parts:[{text:system}]},
+          contents:[{role:'user',parts:[{text:user+'\n출력은 JSON 객체만 반환한다.'}]}],
+          generationConfig:{
+            temperature,
+            maxOutputTokens:Math.min(8192,Math.max(512,Number(predict||1100))),
+            responseMimeType:'application/json',
+            responseJsonSchema:schema
+          }
+        }),
+        signal:AbortSignal.timeout(timeout)
+      });
+    }else{
+      throw new Error(`UNSUPPORTED_DESIGNER_PROVIDER ${route.provider}`);
+    }
+    if(!response.ok)throw new Error(`${route.provider.toLowerCase()} ${response.status}: ${clip(await response.text(),1200)}`);
+    const body=await response.json();
+    const raw=route.provider==='OPENAI'
+      ? clean(body.output_text)||clean((body.output||[]).flatMap(item=>item?.content||[]).map(part=>part?.text||part?.output_text||'').join(''))
+      : clean((body.candidates||[]).flatMap(candidate=>candidate?.content?.parts||[]).map(part=>part?.text||'').join(''));
+    if(!raw)throw new Error(`${route.provider}_EMPTY_DESIGNER_RESPONSE`);
+    const parsed=parseJsonObject(raw);
+    const repairs=[];
+    let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
+    if(typeof repairRequired==='function'){
+      const grounded=repairRequired(normalized);
+      if(grounded?.value)normalized=grounded.value;
+      if(Array.isArray(grounded?.repairs)&&grounded.repairs.length)for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
+    }
+    assertSchemaValue(normalized,schema);
+    const elapsedMs=Date.now()-callStarted;
+    recordModelHealth(route.id,{success:true,elapsedMs});
+    designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
+    modelCallStats.push({model:route.id,provider:route.provider,attempt:1,elapsedMs,predict,mode:'external-json-schema',timeoutMs:timeout,schemaRepairs:repairs.length});
+    persistDesignCheckpoint();
+    console.log(`DESIGNER_EXTERNAL_CALL_MS=${route.id}|${elapsedMs}|timeout=${timeout}`);
+    return normalized;
+  }catch(error){
+    const elapsedMs=Date.now()-callStarted;
+    recordModelHealth(route.id,{success:false,elapsedMs,error});
+    persistDesignCheckpoint();
+    throw new Error(`DESIGNER_EXTERNAL_CALL_FAILED ${route.id}: ${clean(error?.message||error)}`);
+  }
+}
+async function callDesignerModel(system,user,schema,options={}){
+  if(designerRoute.provider==='OLLAMA')return callModel(designerRoute.model,system,user,schema,options);
+  return callExternalDesignerModel(designerRoute,system,user,schema,options);
+}
+
 async function generateDesignerDraft(){
   const system='너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용한다. 유명 성공작의 구조는 오마주/재해석할 수 있지만 보호되는 표현과 소스코드는 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.';
   const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,10500)}`;
   try{
-    const full=await callModel(designerModel,system,user,DESIGN,{predict:2200,temperature:0.28,numCtx:8192,timeoutMs:90000,maxAttempts:1,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
+    const full=await callDesignerModel(system,user,DESIGN,{predict:2200,temperature:0.28,numCtx:8192,timeoutMs:90000,maxAttempts:1,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
     console.log('DESIGNER_DRAFT_GENERATION=ONE_CALL');
     return full;
   }catch(error){
     console.log(`DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT|reason=${clean(error?.message||error)}`);
-    const basePart=await callModel(designerModel,system,`기본 설계 필드만 작성하라.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,8500)}`,DESIGN_BASE,{predict:1000,temperature:0.3,numCtx:8192,timeoutMs:90000,maxAttempts:2});
-    const gatePart=await callModel(designerModel,'너는 같은 Game Designer AI다. 기본 설계를 하드관문이 검증 가능한 상세 설계로 확장한다.',`관문 상세 필드만 작성하라.\nGAME_SEED=${clip(seed,4500)}\nBASE_DESIGN=${clip(basePart,8000)}`,DESIGN_GATE,{predict:1000,temperature:0.2,numCtx:8192,timeoutMs:90000,maxAttempts:2});
+    const basePart=await callDesignerModel(system,`기본 설계 필드만 작성하라.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,8500)}`,DESIGN_BASE,{predict:1000,temperature:0.3,numCtx:8192,timeoutMs:90000,maxAttempts:2});
+    const gatePart=await callDesignerModel('너는 같은 Game Designer AI다. 기본 설계를 하드관문이 검증 가능한 상세 설계로 확장한다.',`관문 상세 필드만 작성하라.\nGAME_SEED=${clip(seed,4500)}\nBASE_DESIGN=${clip(basePart,8000)}`,DESIGN_GATE,{predict:1000,temperature:0.2,numCtx:8192,timeoutMs:90000,maxAttempts:2});
     return mergeDesignerDesign(basePart,gatePart,'DRAFT');
   }
 }
@@ -590,8 +679,7 @@ for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++)
   const fields=repairFields(preGate);
   const schema=designSliceSchema(fields);
   const packet=repairPacket(preGate);
-  const patch=await runPhase(`designer_pre_gate_repair_${repairAttempt}`,()=>callModel(
-    designerModel,
+  const patch=await runPhase(`designer_pre_gate_repair_${repairAttempt}`,()=>callDesignerModel(
     '너는 최초 설계를 작성한 동일 Game Designer AI다. 실패한 deterministic 설계축만 실제 설계 변경으로 수리한다. 통과를 가장하거나 실패코드를 삭제하지 않는다.',
     `현재 실패축만 수정하라. 지정 필드 외 내용은 반환하지 않는다.\nREPAIR_FIELDS=${JSON.stringify(fields)}\nREPAIR_PACKET=${clip(packet,6500)}\nGAME_SEED=${clip(seed,4500)}\nCURRENT_DESIGN=${clip(Object.fromEntries(fields.map(field=>[field,designDraft[field]])),8000)}`,
     schema,
@@ -668,22 +756,20 @@ async function generateDesignerRevision(){
   const system='너는 초안을 작성한 동일 Game Designer AI다. 5개 부서 Lead의 직접 검토를 받아 실제 설계를 한 번 수정한다. 회의 합의 절차는 없으며 서로 충돌하는 조언은 GAME_SEED와 strict 기준을 기준으로 판단한다.';
   const user=`수정된 전체 상세 설계를 한 번에 반환하라. 이전 하드관문 실패를 삭제·재명명·무시하지 말고 실제 설계 변경으로 해결한다.\nGAME_SEED=${clip(seed,4500)}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4000)}\nCURRENT_DESIGN=${clip(designDraft,11000)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,9000)}`;
   try{
-    const full=await callModel(designerModel,system,user,DESIGN,{predict:2200,temperature:0.14,numCtx:8192,timeoutMs:90000,maxAttempts:1,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})});
+    const full=await callDesignerModel(system,user,DESIGN,{predict:2200,temperature:0.14,numCtx:8192,timeoutMs:90000,maxAttempts:1,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})});
     console.log('DESIGNER_REVISION_GENERATION=ONE_CALL');
     return full;
   }catch(error){
     console.log(`DESIGNER_REVISION_ONE_CALL_FALLBACK=SPLIT|reason=${clean(error?.message||error)}`);
     const baseSeed=Object.fromEntries(DESIGN_BASE_FIELDS.map(field=>[field,designDraft[field]]));
     const gateSeed=Object.fromEntries(DESIGN_GATE_FIELDS.map(field=>[field,designDraft[field]]));
-    const basePart=await callModel(
-      designerModel,
+    const basePart=await callDesignerModel(
       system,
       `기본 설계 필드만 수정하라.\nBASE_DRAFT=${clip(baseSeed,8200)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,7000)}`,
       DESIGN_BASE,
       {predict:1000,temperature:0.16,numCtx:7168,timeoutMs:90000,maxAttempts:2}
     );
-    const gatePart=await callModel(
-      designerModel,
+    const gatePart=await callDesignerModel(
       '너는 같은 Game Designer AI다. 수정된 기본 설계에 맞춰 하드관문 상세 필드만 수정한다.',
       `REVISED_BASE=${clip(basePart,8200)}\nPREVIOUS_GATE_DETAIL=${clip(gateSeed,7000)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,6000)}`,
       DESIGN_GATE,
