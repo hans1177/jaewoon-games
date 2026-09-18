@@ -117,6 +117,7 @@ jobs:
             node --check /tmp/vibe2-main/tools/vibe2-learning-motor.mjs
             node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
               --experience=.vibe2/experience.json \
+              --queue=.vibe2/queue.json \
               --company-queue=/tmp/vibe2-company-runtime-queue.json \
               --state=.vibe2/learning-motor-state.json \
               --benchmark=.vibe2/benchmark-ladder.json \
