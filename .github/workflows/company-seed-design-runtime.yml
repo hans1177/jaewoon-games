@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'tools/company-design-cycle.mjs'
+      - 'tools/company-design-seed-normalize.mjs'
       - 'tools/company-design-gate-scoring-v2.mjs'
       - 'tools/company-strict-production-review.mjs'
       - '.github/actions/prepare-ollama/action.yml'
@@ -18,8 +19,8 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-seed-design-runtime
-  cancel-in-progress: ${{ github.event_name == 'push' }}
+  group: company-seed-design-runtime-${{ github.sha }}
+  cancel-in-progress: false
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
@@ -38,6 +39,9 @@ jobs:
       run: ${{ steps.targets.outputs.run }}
       targets: ${{ steps.targets.outputs.targets }}
       parallel_max: ${{ steps.targets.outputs.parallel_max }}
+      canary_mode: ${{ steps.targets.outputs.canary_mode }}
+      engine_digest: ${{ steps.targets.outputs.engine_digest }}
+      pending_total: ${{ steps.targets.outputs.pending_total }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,7 +56,7 @@ jobs:
             exit 0
           fi
           git fetch origin "$COMPANY_RUNTIME_BRANCH"
-          for runtime_path in game-seed-state.json design; do
+          for runtime_path in game-seed-state.json design design-engine-canary.json; do
             if git cat-file -e "origin/$COMPANY_RUNTIME_BRANCH:$runtime_path" 2>/dev/null; then
               git checkout "origin/$COMPANY_RUNTIME_BRANCH" -- "$runtime_path"
             fi
@@ -69,7 +73,12 @@ jobs:
           node --input-type=module <<'NODE' >> "$GITHUB_OUTPUT"
           import fs from 'node:fs';
           import path from 'node:path';
+          import {createHash} from 'node:crypto';
           const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
+          const engineFiles=['tools/company-design-cycle.mjs','tools/company-design-gate-scoring-v2.mjs','tools/company-strict-production-review.mjs','tools/company-design-prepromotion-repair.mjs','tools/company-baseline-gate.mjs'];
+          const engineDigest=createHash('sha256').update(engineFiles.map(file=>`${file}\n${fs.readFileSync(file,'utf8')}`).join('\n---\n')).digest('hex');
+          const canaryMarker=(()=>{try{return JSON.parse(fs.readFileSync('design-engine-canary.json','utf8'));}catch{return null;}})();
+          const canaryVerified=canaryMarker?.engineDigest===engineDigest;
           const maxMatch=policy.match(/concurrentGameWipMax:\s*(\d+)/);
           const designWipMax=Number(maxMatch?.[1]||0);
           if(!Number.isInteger(designWipMax)||designWipMax<1)throw new Error('CENTRAL_GAME_WIP_MAX_REQUIRED');
@@ -101,16 +110,23 @@ jobs:
             return false;
           };
           const pending=active.filter(seed=>!strictPassFor(seed)).sort((a,b)=>String(a.createdAt||'').localeCompare(String(b.createdAt||''))).slice(0,designWipMax);
+          const selected=canaryVerified?pending:pending.slice(0,2);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=pending.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
-          const parallelMax=Math.max(1,designWipMax-1);
+          const targets=selected.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
+          const parallelMax=Math.max(1,Math.min(canaryVerified?5:2,targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.log(`parallel_max=${parallelMax}`);
+          console.log(`canary_mode=${canaryVerified?'false':'true'}`);
+          console.log(`engine_digest=${engineDigest}`);
+          console.log(`pending_total=${pending.length}`);
           console.error(`GAME_SEED_DESIGN_TARGET_COUNT=${targets.length}`);
+          console.error(`GAME_SEED_DESIGN_PENDING_TOTAL=${pending.length}`);
+          console.error(`GAME_DESIGN_ENGINE_CANARY=${canaryVerified?'VERIFIED':'REQUIRED'}`);
+          console.error(`GAME_DESIGN_ENGINE_DIGEST=${engineDigest}`);
           console.error(`GAME_DESIGN_WIP_MAX=${designWipMax}`);
-          console.error(`GAME_DESIGN_CONTROL_RUNNER_RESERVE=${designWipMax-parallelMax}`);
+          console.error(`GAME_DESIGN_EXECUTION_LANES=${parallelMax}`);
           console.error('GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW');
           console.error('STRICT_DESIGN_PASS_THRESHOLD=80');
           console.error('STRICT_DESIGN_EXCELLENT_THRESHOLD=90');
@@ -147,6 +163,15 @@ jobs:
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=TARGET_ONLY'
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
+      - name: Normalize target GAME_SEED contract
+        env:
+          GAME_ID: ${{ matrix.target.game_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-design-seed-normalize.mjs --game-id="$GAME_ID"
+          echo 'DESIGN_SEED_NORMALIZATION_STAGE=PRE_DESIGN'
+
       - name: Revalidate current seed target
         id: target
         env:
@@ -377,6 +402,50 @@ jobs:
           echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
+  mark-design-engine-canary:
+    needs: [resolve-seed-targets, design-cycle]
+    if: always() && needs.resolve-seed-targets.outputs.run == 'true' && needs.resolve-seed-targets.outputs.canary_mode == 'true' && needs.design-cycle.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - name: Persist verified design engine canary
+        env:
+          ENGINE_DIGEST: ${{ needs.resolve-seed-targets.outputs.engine_digest }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-design-canary'
+          git config user.email 'design-canary@users.noreply.github.com'
+          cat > /tmp/design-engine-canary.json <<JSON
+          {
+            "version": 1,
+            "engineDigest": "$ENGINE_DIGEST",
+            "engineSha": "$GITHUB_SHA",
+            "verifiedGameCount": 2,
+            "verifiedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "policy": "CANARY_TWO_GAMES_BEFORE_FIVE_LANE_BATCH"
+          }
+          JSON
+          pushed=0
+          for attempt in 1 2 3 4; do
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git checkout -B design-canary-runtime "origin/$COMPANY_RUNTIME_BRANCH"
+            cp /tmp/design-engine-canary.json design-engine-canary.json
+            git add -- design-engine-canary.json
+            if git diff --cached --quiet; then pushed=1; break; fi
+            git commit -m "runtime: verify DESIGN_ONLY engine canary"
+            if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo 'DESIGN_ENGINE_CANARY=VERIFIED'
+          echo "DESIGN_ENGINE_DIGEST=$ENGINE_DIGEST"
+          echo 'PUBLIC_MAIN_WRITE=NO'
+
   sync-strict-design-scores:
     needs: [resolve-seed-targets, design-cycle]
     if: always() && needs.resolve-seed-targets.outputs.run == 'true'
@@ -466,7 +535,7 @@ jobs:
           test "$pushed" = 1
 
   continue-seed-supply:
-    needs: [resolve-seed-targets, design-cycle, sync-strict-design-scores]
+    needs: [resolve-seed-targets, design-cycle, mark-design-engine-canary, sync-strict-design-scores]
     if: always() && needs.resolve-seed-targets.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
