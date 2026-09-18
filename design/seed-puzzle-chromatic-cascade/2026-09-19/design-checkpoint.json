@@ -1,0 +1,464 @@
+{
+  "contractVersion": 3,
+  "gameId": "seed-puzzle-chromatic-cascade",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-PUZZLE-CHROMATIC-CASCADE-20260917",
+  "fingerprint": "151930d2ff3f857c498005009af19201743b301748cd891683ecb0715c971d0e",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "PRE_GATE_BLOCKED",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "색채의 연쇄는 플레이어가 다양한 색상의 타일을 조합하고 연쇄 반응을 일으켜 보드를 정화하는 퍼즐 게임 정체성을 가진다. coreLoop의 타일 매칭과 signatureSystems의 연쇄 증폭 시스템이 결합하여 매 순간 최적의 수와 전략적 선택을 유도하며, 보드 상태의 극적인 변화를 만들어낸다.",
+      "playerFantasy": "플레이어는 신비로운 색채의 연금술사가 되어 흐트러진 보드의 색상을 정렬하고 화려한 연쇄 반응을 일으키며 거대한 마력을 해방하는 성취감을 느낀다.",
+      "coreFun": "매칭 방향을 결정하고 타일을 이동시키는 반복적인 플레이 속에서 연쇄 반응으로 보드가 한 번에 터지는 관찰 가능한 상태 변화를 경험하며, 높은 점수와 자원을 획득하는 즉각적인 결과를 얻는다.",
+      "coreLoop": [
+        "제한된 이동 횟수와 목표 색상 조건이 주어진 퍼즐 보드에서 플레이할 레벨과 스테이지를 선택한다.",
+        "인접한 타일을 슬라이드하여 3개 이상 일치시키고 연쇄 반응을 유도하여 보드 상태를 변화시킨다.",
+        "스테이지 클리어 목표를 달성하여 재화와 보상을 획득하고 다음 고난도 보드로 진입한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "연쇄 폭발 시스템",
+          "purpose": "플레이어가 특정 패턴으로 타일을 맞출 때 주변 타일을 함께 제거하여 연속적인 폭발과 대규모 점수 획득을 유도한다.",
+          "playerChoice": "어떤 타일을 먼저 이동시켜 연쇄 폭발의 기폭제를 만들 것인지 전략적으로 결정한다."
+        },
+        {
+          "name": "색채 정화 게이지",
+          "purpose": "매칭을 성공할 때마다 게이지가 충전되며, 가득 찼을 때 특수 능력을 발동해 판을 유리하게 뒤집을 수 있다.",
+          "playerChoice": "게이지를 즉시 소모해 위기를 모면할지, 아껴서 더 큰 보너스를 노릴지 선택한다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "연쇄 폭발 시스템",
+          "toSystem": "색채 정화 게이지",
+          "trigger": "연쇄 폭발이 3회 이상 연속으로 발생할 때",
+          "stateChange": "색채 정화 게이지가 추가로 충전되어 특수 능력 사용 시기가 앞당겨진다."
+        },
+        {
+          "fromSystem": "색채 정화 게이지",
+          "toSystem": "코어 루프 스테이지",
+          "trigger": "특수 능력을 사용하여 보드의 장애물을 제거할 때",
+          "stateChange": "보드판의 제약이 해소되면서 레벨 클리어 확률이 급격히 상승한다."
+        },
+        {
+          "fromSystem": "코어 루프 스테이지",
+          "toSystem": "연쇄 폭발 시스템",
+          "trigger": "새로운 스테이지에 진입하여 특수 패턴 타일이 배치될 때",
+          "stateChange": "연쇄 폭발의 효율성이 변경되어 새로운 전략적 접근이 강제된다."
+        }
+      ],
+      "progressionDirection": "플레이어는 초기 단순한 3목 매칭에서 시작해 점진적으로 복잡해지는 장애물과 특수 규칙을 마주하며, 스테이지 클리어를 통해 새로운 연쇄 스킬을 해금하고 더 깊은 전략적 재미로 진입한다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "스테이지 클리어 -> 재화 획득 -> 스킬 및 부스터 업그레이드 -> 고난도 스테이지 도전의 순환 구조를 가진다.",
+        "resourceFlow": "퍼즐 플레이를 통해 골드와 에너지를 획득하며, 이는 보조 도구 구매와 도전 권한 유지에 사용된다.",
+        "balanceRules": "이동 횟수 대비 목표 달성 난이도를 조절하여 플레이어가 실패의 아쉬움을 느끼되 재도전 의욕을 잃지 않도록 설계한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "시즌 1: 얼어붙은 빙하 월드 추가",
+          "newGameplay": "일정 턴마다 얼어붙어 움직이지 않는 빙하 타일과 이를 녹여야 하는 신규 규칙이 도입된다.",
+          "systemImpact": "연쇄 폭발 시스템의 경로 계산에 제약을 주어 플레이어의 기존 패턴을 변화시킨다."
+        },
+        {
+          "milestone": "시즌 2: 무한의 탑 챌린지 모드",
+          "newGameplay": "라운드가 지날수록 제한 시간이 줄어들고 보드가 확장되는 고난도 생존 퍼즐 모드이다.",
+          "systemImpact": "색채 정화 게이지의 회전율을 높여 빠른 의사결정과 손끝 조작을 유도한다."
+        },
+        {
+          "milestone": "시즌 3: 길드 협동 색채 정화",
+          "newGameplay": "서로 다른 플레이어들이 힘을 합쳐 거대한 보스의 체력을 색채 매칭으로 깎는 협동 콘텐츠이다.",
+          "systemImpact": "개인 중심의 루프에서 벗어나 멀티플레이어 연계 보상 시스템과 연동된다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "제한된 이동 횟수 소진 전 목표 미달성",
+          "막다른 골목에 도달하여 더 이상 매칭 불가능"
+        ],
+        "retryFlow": "실패 시 남은 에너지를 소모하여 즉시 재도전하거나 부스터를 장착하고 다시 보드로 진입할 수 있다.",
+        "riskPressure": "연속 실패 시 에너지가 고갈되어 잠시 대기해야 하므로 한 수 한 수를 신중하게 두도록 압박을 준다.",
+        "recoveryRules": "일일 접속 보상 및 광고 시청을 통해 에너지를 회복하고 성장에 필요한 기본 재화를 보충한다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치스크린 및 데스크톱 마우스 클릭을 모두 지원하는 직관적인 드래그 앤 드롭 입력 모델을 사용한다.",
+        "performanceBudget": "2D 그래픽 기반으로 60프레임을 안정적으로 유지하며 메모리 사용량을 최소화하여 저사양 기기에서도 원활하다.",
+        "sessionConstraints": "한 판당 3분 내외의 짧은 플레이 타임을 보장하여 언제 어디서나 가볍게 즐길 수 있도록 설계한다."
+      },
+      "visualDirection": "화사하고 선명한 파스텔톤 색상을 사용하여 타일의 시인성을 높이고, 연쇄 폭발 시 화려한 파티클 효과와 시각적 만족감을 극대화한다.",
+      "mobileUx": "한 손으로도 편하게 플레이할 수 있도록 주요 조작 버튼을 하단에 배치하고, 터치 피드백을 즉각적으로 제공한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "남은 이동 횟수, 현재 점수, 그리고 레벨 목표를 화면 최상단에 직관적으로 상시 배치한다.",
+        "touchAndInput": "민감한 드래그 판정과 오작동 방지 영역 설정을 통해 모바일 환경에서 정확한 입력 보정을 제공한다.",
+        "readability": "색각 이상 플레이어를 위해 색상 구분이 어려운 유저를 위한 패턴 기호 동시 표기 옵션을 제공한다.",
+        "accessibility": "폰트 크기 조절 및 사운드 볼륨 분리 설정을 통해 다양한 플레이어 환경을 지원한다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "생동감 넘치는 보석과 물감 방울 모티브의 타일 디자인으로 캐주얼하고 친근한 분위기를 연출한다.",
+        "audioIdentity": "경쾌하고 리듬감 있는 배경음악과 타일이 터질 때마다 청각적 쾌감을 주는 영롱한 타격음을 사용한다.",
+        "gameplayFeedbackSync": "연쇄 폭발의 규모에 따라 사운드의 피치가 높아지며 시각적 이펙트와 완벽히 동기화된다."
+      },
+      "marketTargetDirection": "글로벌 캐주얼 퍼즐 게임 시장을 타겟으로 하여, 남녀노소 누구나 쉽게 이해하고 몰입할 수 있는 대중적인 게임성을 지향한다.",
+      "steamExpansionDecision": "모바일 시장 검증 완료 후 인터페이스를 PC 환경에 맞춰 최적화하여 스팀 플랫폼에 패키지 또는 무료 플레이 형태로 확장 출시를 검토한다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "초기 싱글플레이 중심으로 핵심 루프와 경제 시스템을 안정화한 뒤 향후 시즌 업데이트를 통해 협동 모드를 도입한다.",
+      "technicalAssumptions": [
+        "클라이언트 단독으로 퍼즐 보드 매칭 알고리즘과 상태를 실시간 연산하여 랙 없는 즉각적인 피드백을 보장한다.",
+        "스테이지 데이터와 유저 프로그레션을 JSON 형태로 구조화하여 원격 서버와 안정적으로 동기화한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 3분 안에 타일 매칭과 연쇄 반응의 재미를 직관적으로 이해하고 몰입하는가?",
+        "스테이지 실패 후 재도전으로 이어지는 흐름이 유저에게 과도한 스트레스 대신 도전 의욕을 주는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "연쇄 폭발 시스템",
+          "responsibleSystem": "PuzzleMatchEngine",
+          "validationEvidence": "단위 테스트를 통해 3개 이상 매칭 시 인접 타일 제거 및 연쇄 트리거가 정상 작동하는지 자동화 테스트를 통해 엄격히 검증한다."
+        },
+        {
+          "designElement": "색채 정화 게이지",
+          "responsibleSystem": "PlayerProgressionManager",
+          "validationEvidence": "시뮬레이션 로그를 통해 연쇄 횟수에 비례하여 게이지가 올바르게 충전되고 소모되는지 수치 분석 툴을 통해 철저하게 확인한다."
+        },
+        {
+          "designElement": "코어 루프 스테이지",
+          "responsibleSystem": "LevelFlowController",
+          "validationEvidence": "스테이지 클리어 조건 달성 시 보상 지급과 다음 레벨 해금 처리가 정상적으로 이루어지는지 통합 시나리오 테스트로 검증한다."
+        }
+      ],
+      "openQuestions": [
+        "향후 멀티플레이 확장 시 경쟁 모드와 협동 모드 중 어떤 방식을 우선적으로 검증해야 하는가?",
+        "유저 리텐션을 높이기 위해 일일 퀘스트 외에 어떤 서브 콘텐츠를 추가하는 것이 효과적인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 79,
+      "criticalAxisFailures": [
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "technicalAssumptions": [
+        "클라이언트 단독으로 퍼즐 보드 매칭 알고리즘과 상태를 실시간 연산하여 랙 없는 즉각적인 피드백을 보장한다.",
+        "스테이지 데이터와 유저 프로그레션을 JSON 형태로 구조화하여 원격 서버와 안정적으로 동기화한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 3분 안에 타일 매칭과 연쇄 반응의 재미를 직관적으로 이해하고 몰입하는가?",
+        "스테이지 실패 후 재도전으로 이어지는 흐름이 유저에게 과도한 스트레스 대신 도전 의욕을 주는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "연쇄 폭발 시스템",
+          "responsibleSystem": "PuzzleMatchEngine",
+          "validationEvidence": "단위 테스트를 통해 3개 이상 매칭 시 인접 타일 제거 및 연쇄 트리거가 정상 작동하는지 검증한다."
+        },
+        {
+          "designElement": "색채 정화 게이지",
+          "responsibleSystem": "PlayerProgressionManager",
+          "validationEvidence": "시뮬레이션 로그를 통해 연쇄 횟수에 비례하여 게이지가 올바르게 충전되고 소모되는지 확인한다."
+        },
+        {
+          "designElement": "코어 루프 스테이지",
+          "responsibleSystem": "LevelFlowController",
+          "validationEvidence": "스테이지 클리어 조건 달성 시 보상 지급과 다음 레벨 해금 처리가 정상적으로 이루어지는지 테스트한다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 79,
+      "criticalAxisFailures": [
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_2": {
+      "technicalAssumptions": [
+        "클라이언트 단독으로 퍼즐 보드 매칭 알고리즘과 상태를 실시간 연산하여 랙 없는 즉각적인 피드백을 보장한다.",
+        "스테이지 데이터와 유저 프로그레션을 JSON 형태로 구조화하여 원격 서버와 안정적으로 동기화한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 3분 안에 타일 매칭과 연쇄 반응의 재미를 직관적으로 이해하고 몰입하는가?",
+        "스테이지 실패 후 재도전으로 이어지는 흐름이 유저에게 과도한 스트레스 대신 도전 의욕을 주는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "연쇄 폭발 시스템",
+          "responsibleSystem": "PuzzleMatchEngine",
+          "validationEvidence": "단위 테스트를 통해 3개 이상 매칭 시 인접 타일 제거 및 연쇄 트리거가 정상 작동하는지 자동화 테스트를 통해 엄격히 검증한다."
+        },
+        {
+          "designElement": "색채 정화 게이지",
+          "responsibleSystem": "PlayerProgressionManager",
+          "validationEvidence": "시뮬레이션 로그를 통해 연쇄 횟수에 비례하여 게이지가 올바르게 충전되고 소모되는지 수치 분석 툴을 통해 철저하게 확인한다."
+        },
+        {
+          "designElement": "코어 루프 스테이지",
+          "responsibleSystem": "LevelFlowController",
+          "validationEvidence": "스테이지 클리어 조건 달성 시 보상 지급과 다음 레벨 해금 처리가 정상적으로 이루어지는지 통합 시나리오 테스트로 검증한다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_2": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 79,
+      "criticalAxisFailures": [
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 3,
+      "successes": 3,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 15240,
+      "lastMs": 1873,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:10:00.711Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "PRE_GATE_REPAIR",
+  "createdAt": "2026-09-18T15:09:45.460Z",
+  "updatedAt": "2026-09-18T15:10:00.716Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:10:00.711Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL"
+}
