@@ -641,6 +641,22 @@
     },
     "allThreePlatformsMayBeDevelopedConcurrently": true,
     "priorityDoesNotCreatePlatformLock": true,
+    "designStabilizationScheduling": {
+      "mode": "ROBLOX_FIRST_THEN_OTHER_PLATFORMS",
+      "activeWhileMilestone": "ROBLOX_FAST_RELEASE_STABILIZATION",
+      "sortKeys": [
+        "ROBLOX_TARGET_FIRST",
+        "OLDEST_PENDING_FIRST"
+      ],
+      "perGameIndependentCompletion": true,
+      "portfolioBarrierForbidden": true,
+      "dispatchPromotionImmediatelyAfterOwnEvidencePass": true,
+      "strictDesignPassThreshold": 80,
+      "hardFailuresMustBeEmpty": true,
+      "forcePromotionForbidden": true,
+      "qualityGateWeakeningForbidden": true,
+      "robloxPriorityAffectsSchedulingOnly": true
+    },
     "roadmapPhaseEntryGatesForbidden": true,
     "platformDevelopmentMayStartWithoutPriorPlatformCompletion": true,
     "platformReleaseMayProceedWhenItsOwnEvidenceGatesPass": true,
@@ -727,6 +743,9 @@
     "production-class-counts-are-not-fixed-quotas",
     "game-seed-precedes-game-designer-draft",
     "game-seed-default-platform-is-roblox-but-project-may-select-any-allowed-platform",
+    "design-stabilization-schedules-roblox-first-without-gate-weakening",
+    "design-promotion-is-per-game-and-never-waits-for-portfolio-wide-pass",
+    "forced-design-promotion-is-forbidden",
     "every-game-requires-a-full-web-companion",
     "approved-design-scope-must-be-fully-implemented",
     "prototype-does-not-satisfy-completion-or-release",
