@@ -74,7 +74,8 @@
       "SAME_ENGINE_VERIFIED",
       "SAME_GENRE_OR_SYSTEM_VERIFIED",
       "CROSS_GAME_VERIFIED",
-      "GENERAL_PLAYBOOK"
+      "GENERAL_PLAYBOOK",
+      "EXTERNAL_AI_DISTILLED_VERIFIED_ADVISORY"
     ],
     "sameGameMustBeHighestWeight": true,
     "sources": [
@@ -85,10 +86,13 @@
       "company-learning/vibe3-task-playbooks.json",
       "company-learning/vibe2-code-pattern-library.json",
       "assets/asset-manifest.json",
-      "assets/prototype-asset-presets.json"
+      "assets/prototype-asset-presets.json",
+      ".vibe2/external-ai-distilled-knowledge.json"
     ],
     "rawUnauthorizedSourceReuseForbidden": true,
-    "verifiedInternalCodePatternReuseAllowed": true
+    "verifiedInternalCodePatternReuseAllowed": true,
+    "rawExternalAiOutputReuseForbidden": true,
+    "externalAiDistilledAdvisoryRanksAfterInternalVerified": true
   },
   "webPracticeMotor": {
     "implementationIsPractice": true,
@@ -203,5 +207,23 @@
     "practiceAdapterMayNotAutoPromote": true,
     "promotion": "FIXED_HOLDOUT_AB_THEN_CANARY",
     "target": "Increase verified multi-project sample production rather than lower thresholds."
+  },
+  "externalAiDistillation": {
+    "enabled": true,
+    "policy": "company-learning/external-ai-distillation-policy.json",
+    "distiller": "tools/vibe2-external-ai-distillation.mjs",
+    "knowledgeStore": ".vibe2/external-ai-distilled-knowledge.json",
+    "rawExternalAiOutputDirectDevelopment": false,
+    "rawExternalAiOutputPersistentRetrieval": false,
+    "independentVerificationRequired": true,
+    "minimumTraceableVerificationEvidenceItems": 2,
+    "advisoryOnly": true,
+    "directSourceWrite": false,
+    "directProductionPass": false,
+    "directReleaseEvidence": false,
+    "directMasteryCredit": false,
+    "directCanonicalTrainingSample": false,
+    "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
+    "authorityExpanded": false
   }
 }
