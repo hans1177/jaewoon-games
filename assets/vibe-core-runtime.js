@@ -144,6 +144,7 @@ export function planVibeCoreTask({
   const resolvedDepartments = freezeList(inferDepartments(workbench, departments));
   const memory = createVibeExperienceMemory(experienceMemory || {});
   const learning = createVibeLearningContext(memory, {
+    gameId: workbench.gameId,
     engine: workbench.target,
     taskType: motionRequested(workbench) ? 'motion' : workbench.mode,
     departments: resolvedDepartments,
