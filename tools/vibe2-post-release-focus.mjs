@@ -9,6 +9,8 @@ const posix=v=>clean(v).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,
 const readJson=(file,fallback={})=>file&&fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');};
 const safeId=v=>clean(v).replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90)||'game';
+function permanentRemovalIds(roadmap={}){return new Set((Array.isArray(roadmap?.permanentProjectRemoval?.ids)?roadmap.permanentProjectRemoval.ids:[]).map(clean).filter(Boolean));}
+function permanentlyRemoved(roadmap={},gameId=''){return permanentRemovalIds(roadmap).has(clean(gameId));}
 
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');out[at<0?body:body.slice(0,at)]=at<0?true:body.slice(at+1);}return out;}
 function listSourceFiles(root){const rows=[];const walk=current=>{for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(['.git','node_modules','dist','build','.rbxcloud'].includes(entry.name))continue;const full=path.join(current,entry.name);if(entry.isDirectory()){walk(full);continue;}if(!/\.(?:luau|lua|json)$/i.test(entry.name))continue;rows.push({full,relative:posix(path.relative(root,full))});}};if(fs.existsSync(root))walk(root);return rows;}
@@ -19,7 +21,7 @@ function selectRecipe(recombination={},gameId='',treeSha=''){const recipes=Array
 function activeProtectedFocus(queue={}){return (queue.tasks||[]).some(t=>t.postReleaseFocused===true&&['queued','running'].includes(clean(t.status).toLowerCase()));}
 function historicalMaintenanceItem(entry={}){const e=entry.evidence||{};return entry.maintenanceEligible===true&&entry.currentReleaseClaim===false&&clean(entry.gameId)&&posix(entry.sourceRoot)==='roblox-games/'+clean(entry.gameId)&&e.actualStudioRuntime===true&&e.postRuntimeIndependentQa===true&&e.regression===true&&e.publicationTargetObserved===true&&clean(e.universeId)&&clean(e.placeId);}
 export function buildHistoricalPostReleaseFocusTask({entry,repoRoot='.',roadmap={},recombination={},existingTasks=[]}={}){
-  if(!historicalMaintenanceItem(entry))return null;
+  if(!historicalMaintenanceItem(entry)||permanentlyRemoved(roadmap,entry?.gameId))return null;
   const policy=roadmap?.developmentLifecycleMachine?.postReleaseFocusedDevelopment||{};if(policy.enabled!==true)return null;
   const gameId=clean(entry.gameId),sourceRoot=posix(entry.sourceRoot),root=path.join(repoRoot,...sourceRoot.split('/'));
   if(!fs.existsSync(root)||!fs.statSync(root).isDirectory())return null;
@@ -33,7 +35,7 @@ export function buildHistoricalPostReleaseFocusTask({entry,repoRoot='.',roadmap=
   return{id,gameId,target:'roblox',department:'development',type:'implementation',goal,responsibleFiles:files,dependencies:[],priority:'critical',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,sourceRoot,estimatedRisk:'medium',speculativeEligible:false,evidence,postReleaseFocused:true,historicalDeploymentRecovery:true,packageLongWorkProtected:true,packageRole:'implementation-owner',taskWorkUnits:6,packageWorkUnits:6,packageGoal:'HISTORICAL_ROBLOX_SUSTAINED_MAINTENANCE',authority:'MACHINE_EXECUTION_CONTRACT'};
 }
 export function buildPostReleaseFocusTask({item,repoRoot='.',roadmap={},recombination={},existingTasks=[]}={}){
-  if(!releasedRobloxItem(item))return null;
+  if(!releasedRobloxItem(item)||permanentlyRemoved(roadmap,item?.gameId))return null;
   const policy=roadmap?.developmentLifecycleMachine?.postReleaseFocusedDevelopment||{};if(policy.enabled!==true)return null;
   const gameId=clean(item.gameId);if(!gameId)return null;
   const sourceRoot=posix(item.robloxProjectPath||item.targetSourcePath||('roblox-games/'+gameId));if(sourceRoot!=='roblox-games/'+gameId)return null;
@@ -49,11 +51,11 @@ export function buildPostReleaseFocusTask({item,repoRoot='.',roadmap={},recombin
 export function feedPostReleaseFocus({roadmapFile='company-learning/platform-release-roadmap.json',companyRuntimeQueueFile='',historicalRegistryFile='',queueFile='.vibe2/queue.json',recombinationFile='',repoRoot='.'}={}){
   const roadmap=readJson(roadmapFile,{}),runtimeQueue=readJson(companyRuntimeQueueFile,{items:[]}),historicalRegistry=readJson(historicalRegistryFile,{assets:[]}),queue=readJson(queueFile,{tasks:[]}),recombination=readJson(recombinationFile,{recipes:[]});
   if(activeProtectedFocus(queue))return{added:false,reason:'PROTECTED_SLOT_OCCUPIED',queue};
-  const candidates=(runtimeQueue.items||[]).filter(releasedRobloxItem).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
+  const candidates=(runtimeQueue.items||[]).filter(item=>releasedRobloxItem(item)&&!permanentlyRemoved(roadmap,item.gameId)).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
   let task=null;
   for(const item of candidates){task=buildPostReleaseFocusTask({item,repoRoot,roadmap,recombination,existingTasks:queue.tasks||[]});if(task)break;}
   if(!task){
-    const historical=(historicalRegistry.assets||[]).filter(historicalMaintenanceItem).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
+    const historical=(historicalRegistry.assets||[]).filter(entry=>historicalMaintenanceItem(entry)&&!permanentlyRemoved(roadmap,entry.gameId)).sort((a,b)=>clean(a.gameId).localeCompare(clean(b.gameId)));
     for(const entry of historical){task=buildHistoricalPostReleaseFocusTask({entry,repoRoot,roadmap,recombination,existingTasks:queue.tasks||[]});if(task)break;}
     if(!task)return{added:false,reason:candidates.length?'NO_NEW_SOURCE_CYCLE':historical.length?'NO_NEW_HISTORICAL_SOURCE_CYCLE':'NO_RELEASED_OR_HISTORICAL_ROBLOX',queue};
     const next={...queue,tasks:[...(queue.tasks||[]),task]};writeJson(queueFile,next);return{added:true,reason:'HISTORICAL_ROBLOX_MAINTENANCE_QUEUED',task,queue:next};
