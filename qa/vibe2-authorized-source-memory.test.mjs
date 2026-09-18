@@ -11,7 +11,8 @@ const summary=()=>({
   generatedAt:'2026-09-18T00:00:00.000Z',
   learningDomains:['board-grid-placement','input-drag-touch'],
   reusablePatterns:['AUTHORIZED_SOURCE:board-grid-placement','AUTHORIZED_SOURCE:input-drag-touch'],
-  sourceCorpus:{documents:42,totalChars:12345}
+  sourceCorpus:{documents:42,totalChars:12345},
+  runtimeEvidenceRequiredForPositiveRuntimeClaims:true
 });
 
 test('authorized Block Blast summary becomes one reusable Vibe2 experience',()=>{
@@ -35,4 +36,5 @@ test('authorized Block Blast summary becomes one reusable Vibe2 experience',()=>
 test('authorized source memory rejects missing owner authority and invalid fingerprints',()=>{
   assert.throws(()=>validateAuthorizedSummary({...summary(),authority:'PRACTICE_ONLY_MIXED_EVIDENCE'}),/AUTHORITY_MISSING/);
   assert.throws(()=>validateAuthorizedSummary({...summary(),packageFingerprint:'bad'}),/FINGERPRINT_INVALID/);
+  assert.throws(()=>validateAuthorizedSummary({...summary(),runtimeEvidenceRequiredForPositiveRuntimeClaims:false}),/RUNTIME_BOUNDARY_MISSING/);
 });
