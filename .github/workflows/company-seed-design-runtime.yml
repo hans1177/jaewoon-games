@@ -254,32 +254,40 @@ jobs:
         run: |
           set -euo pipefail
           checkpoint_path="design/${{ matrix.target.game_id }}/${{ matrix.target.date }}/design-checkpoint.json"
+          progress_path="design/${{ matrix.target.game_id }}/${{ matrix.target.date }}/design-progress.json"
           worktree="/tmp/design-checkpoint-${{ matrix.target.game_id }}"
-          checkpoint_persisted=0
+          last_checkpoint_sync_key=''
+          checkpoint_sync_key() {
+            node -e "const fs=require('fs');const cp=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));let p={};try{p=JSON.parse(fs.readFileSync(process.argv[2],'utf8'))}catch{};process.stdout.write([cp.status||'',cp.currentPhase||'',(cp.completedPhases||[]).length,p.percent??''].join('|'))" "$checkpoint_path" "$progress_path"
+          }
           persist_design_checkpoint() {
-            if [ "$checkpoint_persisted" = 1 ]; then return 0; fi
             if [ ! -f "$checkpoint_path" ]; then
               echo 'DESIGN_CHECKPOINT_RUNTIME_PERSIST=NO_CHECKPOINT'
               return 0
             fi
+            local sync_key
+            sync_key="$(checkpoint_sync_key)"
+            if [ "$sync_key" = "$last_checkpoint_sync_key" ]; then return 0; fi
             cp "$checkpoint_path" /tmp/design-checkpoint.json
+            [ -f "$progress_path" ] && cp "$progress_path" /tmp/design-progress.json || true
             local pushed=0
-            for attempt in 1 2 3; do
+            for attempt in 1 2 3 4; do
               git fetch origin "$COMPANY_RUNTIME_BRANCH"
               git worktree remove -f "$worktree" >/dev/null 2>&1 || true
               rm -rf "$worktree"
               git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH" >/dev/null
               mkdir -p "$worktree/$(dirname "$checkpoint_path")"
               cp /tmp/design-checkpoint.json "$worktree/$checkpoint_path"
+              if [ -f /tmp/design-progress.json ]; then cp /tmp/design-progress.json "$worktree/$progress_path"; fi
               git -C "$worktree" config user.name 'jaewoon-seed-design-checkpoint'
               git -C "$worktree" config user.email 'seed-design-checkpoint@users.noreply.github.com'
-              git -C "$worktree" add -- "$checkpoint_path"
+              git -C "$worktree" add -- "$checkpoint_path" "$progress_path"
               if git -C "$worktree" diff --cached --quiet; then
                 pushed=1
                 git worktree remove -f "$worktree" >/dev/null 2>&1 || true
                 break
               fi
-              git -C "$worktree" commit -m "runtime: DESIGN_ONLY checkpoint ${{ matrix.target.game_id }} ${{ matrix.target.date }}" >/dev/null
+              git -C "$worktree" commit -m "runtime: DESIGN_ONLY progress ${{ matrix.target.game_id }} ${{ matrix.target.date }}" >/dev/null
               if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
                 pushed=1
                 git worktree remove -f "$worktree" >/dev/null 2>&1 || true
@@ -289,13 +297,41 @@ jobs:
               sleep "$attempt"
             done
             test "$pushed" = 1
-            checkpoint_persisted=1
-            echo 'DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES'
+            last_checkpoint_sync_key="$sync_key"
+            echo "DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES|$sync_key"
+            echo 'DESIGN_PROGRESS_RUNTIME_PERSIST=YES'
             echo 'PUBLIC_MAIN_WRITE=NO'
           }
+          pipeline_pid=0
+          sync_pid=0
+          cleanup_design_runtime() {
+            rc=$?
+            trap - EXIT TERM INT
+            [ "$sync_pid" -gt 0 ] && kill "$sync_pid" >/dev/null 2>&1 || true
+            [ "$pipeline_pid" -gt 0 ] && kill "$pipeline_pid" >/dev/null 2>&1 || true
+            persist_design_checkpoint || true
+            exit "$rc"
+          }
           trap 'exit 143' TERM INT
-          trap 'rc=$?; trap - EXIT TERM INT; persist_design_checkpoint || true; exit "$rc"' EXIT
-          node tools/artbook-production-pipeline.mjs
+          trap cleanup_design_runtime EXIT
+          node tools/artbook-production-pipeline.mjs &
+          pipeline_pid=$!
+          (
+            while kill -0 "$pipeline_pid" >/dev/null 2>&1; do
+              sleep 15
+              persist_design_checkpoint || true
+            done
+          ) &
+          sync_pid=$!
+          set +e
+          wait "$pipeline_pid"
+          rc=$?
+          set -e
+          kill "$sync_pid" >/dev/null 2>&1 || true
+          wait "$sync_pid" >/dev/null 2>&1 || true
+          sync_pid=0
+          persist_design_checkpoint || true
+          exit "$rc"
       - name: Verify design learning context consumption
         if: steps.target.outputs.should_run == 'true'
         env:
