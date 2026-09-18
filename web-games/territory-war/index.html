@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #2c3e50;
+    }
+    h1 {
+      color: #ecf0f1;
+    }
+    #game {
+      width: 80%;
+      max-width: 800px;
+      background-color: #34495e;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+    .territory {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .territory span {
+      font-size: 16px;
+      color: #ecf0f1;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .controls button {
+      padding: 5px 10px;
+      font-size: 14px;
+      border: 1px solid #ecf0f1;
+      border-radius: 4px;
+      background-color: #34495e;
+      color: #ecf0f1;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #2c3e50;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #ecf0f1;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="territory">
+      <span>Territory</span>
+      <span id="territory"></span>
+    </div>
+    <div class="controls">
+      <button id="expand">Expand</button>
+      <button id="attack">Attack</button>
+      <button id="defend">Defend</button>
+    </div>
+    <div class="status" id="status">Status: <span id="statusText">Ready</span></div>
+  </main>
+  <script>
+    // Simulated territory war logic
+    const territory = document.getElementById('territory');
+    const statusText = document.getElementById('statusText');
+    const expandButton = document.getElementById('expand');
+    const attackButton = document.getElementById('attack');
+    const defendButton = document.getElementById('defend');
+
+    // Simulated territory expansion
+    function expandTerritory() {
+      territory.textContent = 'Expanded Territory';
+      statusText.textContent = 'Status: Expanded';
+    }
+
+    // Simulated attack
+    function attackTerritory() {
+      territory.textContent = 'Attacked Territory';
+      statusText.textContent = 'Status: Attacked';
+    }
+
+    // Simulated defend
+    function defendTerritory() {
+      territory.textContent = 'Defended Territory';
+      statusText.textContent = 'Status: Defended';
+    }
+
+    // Simulated game loop
+    function gameLoop() {
+      const now = new Date().getTime();
+      const elapsed = now - lastUpdate;
+      lastUpdate = now;
+
+      if (elapsed > 1000) {
+        statusText.textContent = 'Status: Updated';
+      }
+
+      // Simulated game logic
+      if (Math.random() < 0.5) {
+        attackButton.disabled = false;
+        defendButton.disabled = true;
+      } else {
+        defendButton.disabled = false;
+        attackButton.disabled = true;
+      }
+    }
+
+    // Initialize game
+    function initGame() {
+      lastUpdate = new Date().getTime();
+      expandButton.disabled = true;
+      attackButton.disabled = true;
+      defendButton.disabled = true;
+      statusText.textContent = 'Status: Ready';
+    }
+
+    // Start game loop
+    function startGameLoop() {
+      setInterval(gameLoop, 1000);
+    }
+
+    // Initialize and start game
+    initGame();
+    startGameLoop();
+  </script>
+</body>
+</html>
