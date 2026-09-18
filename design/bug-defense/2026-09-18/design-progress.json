@@ -4,16 +4,37 @@
   "date": "2026-09-18",
   "engineDigest": "301a7c5b4c9cc35ed5baa807954a4614f0914b371e70bc5892852615de6cdd2b",
   "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "completedPhaseCount": 2,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "lastSuccessfulModelCallAt": "2026-09-18T05:32:15.058Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "modelHealth": {},
-  "slowPhases": {},
-  "updatedAt": "2026-09-18T05:20:53.793Z"
+  "modelHealth": {
+    "llama3.2:1b": {
+      "calls": 5,
+      "successes": 2,
+      "failures": 3,
+      "timeouts": 3,
+      "jsonFailures": 0,
+      "totalMs": 1222074,
+      "lastMs": 61523,
+      "lastError": "The operation was aborted due to timeout",
+      "updatedAt": "2026-09-18T05:32:15.058Z"
+    }
+  },
+  "slowPhases": {
+    "designer_draft": {
+      "elapsedMs": 681316,
+      "budgetMs": 180000,
+      "recordedAt": "2026-09-18T05:32:15.059Z"
+    }
+  },
+  "updatedAt": "2026-09-18T05:32:15.076Z"
 }
