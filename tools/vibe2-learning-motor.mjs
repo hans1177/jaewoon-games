@@ -391,7 +391,7 @@ function projectGenre(item={}){
 function buildWebBaselineState(item={},verifiedSemantic={}){
   const semantic=verifiedSemantic.values||{};
   const passed=webBaselinePassed(item);
-  const numberOrNull=value=>Number.isFinite(Number(value))?Number(value):null;
+  const numberOrNull=value=>value===null||value===undefined||value===''?null:(Number.isFinite(Number(value))?Number(value):null);
   return {
     required:true,
     state:passed?'VERIFIED':'PENDING',
