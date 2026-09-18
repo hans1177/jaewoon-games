@@ -830,5 +830,15 @@
     },
     "releaseScoreImmutableAfterRelease": true,
     "continuousContentExpansionAfterRelease": true
+  },
+  "executionPause": {
+    "ownerDirectiveRecordedAt": "2026-09-18",
+    "stopAfterStage": "DEVELOPMENT_CONFIRMED_QUEUE",
+    "webDevelopmentPaused": true,
+    "developmentConfirmedQueueAllowed": true,
+    "developmentRuntimeDispatchAllowed": false,
+    "webImplementationStartForbiddenUntilOwnerResume": true,
+    "designPromotionMayContinueWhileWebPaused": true,
+    "strictDesignGateMustRemainUnchanged": true
   }
 }
