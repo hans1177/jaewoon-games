@@ -240,3 +240,37 @@ test('completed Unity package is never recreated after completion and tiny seed 
     assert.equal(['NO_SAFE_AUTONOMOUS_TASK','NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK'].includes(second.reason),true);
   }
 });
+
+
+test('creative rebuild receives verified multi-project transformative recombination context',()=>{
+  const root=tempRepo();
+  const webRoot=path.join(root,'web-games','dev-web');
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body>STATUS: 준비<button data-action="start">검증 루프</button></body></html>','utf8');
+  const recombinationMemory={
+    version:1,
+    recipes:[{
+      id:'recombine-demo',
+      sourceProjects:['block-blast','commercial-game'],
+      featureBlend:['board-grid-placement','short-session','touch-input'],
+      transformationOperator:'change-core-goal',
+      authority:'transformative-recombination-context-only',
+      assetStrategy:{newAssetRequired:true,outputMustBeNewExpression:true,rawPixelReuseAllowed:false},
+      codeStrategy:{newImplementationRequired:true,verbatimSourceReuseAllowed:false}
+    }]
+  };
+  const result=planVibe2AutonomousTask({
+    status:{projects:[]},
+    catalog:{games:[{id:'dev-web',name:'Dev Web',webPath:'/web-games/dev-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]},
+    queue:{tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:4,
+    recombinationMemory
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.task.gameId,'dev-web');
+  assert.match(result.task.goal,/TRANSFORMATIVE_RECOMBINATION_CONTEXT/);
+  assert.match(result.task.goal,/새 코드\/새 에셋 표현/);
+  assert.equal(result.task.evidence.includes('recombination-recipe:recombine-demo'),true);
+  assert.equal(result.task.evidence.includes('recombination-copy-mode:NO'),true);
+  assert.equal(result.task.evidence.includes('recombination-original-modifier-required:YES'),true);
+});
