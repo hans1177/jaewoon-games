@@ -285,10 +285,8 @@ jobs:
             fi
             if [ "$SECONDS" -ge "$deadline" ]; then
               printf 'deferred=true\n' >> "$GITHUB_OUTPUT"
-              echo 'ROBLOX_RELEASE_OPEN_CLOUD_PUBLISH=BUSY_CONTINUATION_QUEUED'
-              gh workflow run '.github/workflows/company-development-roblox-release-promotion.yml' \
-                --repo "$GITHUB_REPOSITORY" \
-                -f "game_id=$GAME_ID"
+              echo 'ROBLOX_RELEASE_OPEN_CLOUD_PUBLISH=BUSY_MANUAL_RETRY_REQUIRED'
+              echo 'ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=NO'
               exit 75
             fi
             echo "ROBLOX_PUBLISH_SERVER_BUSY_ATTEMPT=$attempt;RETRY_IN_SECONDS=$retry_seconds"
@@ -431,7 +429,7 @@ jobs:
             exit 0
           fi
           if [ "$RETRY_DEFERRED" = 'true' ]; then
-            echo 'ROBLOX_RELEASE_PROMOTION=RETRY_QUEUED:ROBLOX_409_SERVER_BUSY'
+            echo 'ROBLOX_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY'
             echo 'ROBLOX_RELEASE_RETRY_INTERVAL_SECONDS=60'
             echo 'ROBLOX_RUNTIME_RERUN=NO'
             echo 'ROBLOX_MOBILE_INDEPENDENT_QA_RERUN=NO'
