@@ -237,11 +237,11 @@
       "slug": "bug-defense",
       "name": "곤충 디펜스",
       "sourcePath": "web-games/bug-defense",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "CURRENT_EVIDENCE_STATE",
-      "profileStatus": "DESIGN_ONLY",
-      "mode": "REDESIGN",
-      "targetEngine": "design-only",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "profileStatus": "DEVELOPMENT_CONFIRMED",
+      "mode": "WEB_VALIDATION_THEN_POST_WEB_ARTBOOK_THEN_SELECTED_PLATFORM_IMPLEMENTATION",
+      "targetEngine": "UNITY",
       "targetPlatformReady": false,
       "webPurpose": "OPTIONAL_GAMEPLAY_VALIDATION_TESTBED",
       "developmentFocus": {
@@ -259,7 +259,19 @@
         "save-meaning",
         "core-loop"
       ],
-      "lifecycleState": "ACTIVE"
+      "lifecycleState": "ACTIVE",
+      "productionTier": 2,
+      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS",
+      "selectedPlatform": "UNITY",
+      "targetPlatform": "UNITY",
+      "targetSourcePath": "unity-games/bug-defense",
+      "webArchivePath": "web-games/bug-defense",
+      "webValidationRequired": true,
+      "musicValidationRequired": true,
+      "strictDesignScore": 89.4,
+      "designBaselineSource": "design/bug-defense/2026-09-18/design-revised.json",
+      "designArtbookSource": "artbook-submissions/bug-defense/current.json",
+      "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER"
     },
     {
       "id": "P0005",
