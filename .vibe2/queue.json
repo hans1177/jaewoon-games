@@ -2393,7 +2393,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "slot-released-awaiting-fan-in",
+      "blocker": null,
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
@@ -2415,13 +2415,14 @@
         "workload:prep-ms:1390",
         "workload:cycle-ms:12212",
         "failure-cause:learning-practice-worker-failed",
-        "slot-dispatch:35356597440:1"
+        "slot-dispatch:35356597440:1",
+        "recovery:stale-running-reservation-v1"
       ],
-      "lastOutcome": "FAIL",
-      "reservationId": "35356483231:1",
-      "reservationRunId": "35356483231",
+      "lastOutcome": "STALE_RESERVATION_RECOVERED",
+      "reservationId": "35358119185:1",
+      "reservationRunId": "35358119185",
       "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-18T14:29:20Z",
+      "reservedAt": "2026-09-18T14:49:03Z",
       "companyContext": null,
       "sourceRoot": "learning-practice:gap-asset_production-l1",
       "speculativeEligible": false,
