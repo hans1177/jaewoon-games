@@ -1883,6 +1883,16 @@ flows:
       - CORE_DESIGN_LOCK_NOT_VIOLATED
     finalArtbookOnlyAfterReleaseReady: true
 
+executionPause:
+  ownerDirectiveRecordedAt: 2026-09-18
+  stopAfterStage: DEVELOPMENT_CONFIRMED_QUEUE
+  webDevelopmentPaused: true
+  developmentConfirmedQueueAllowed: true
+  developmentRuntimeDispatchAllowed: false
+  webImplementationStartForbiddenUntilOwnerResume: true
+  designPromotionMayContinueWhileWebPaused: true
+  strictDesignGateMustRemainUnchanged: true
+
 promotion:
   DESIGN_ONLY_TO_DEVELOPMENT_CONFIRMED:
     requires:
