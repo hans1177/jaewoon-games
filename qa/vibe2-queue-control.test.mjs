@@ -31,6 +31,24 @@ test('legacy central policy evidence is migrated to the roadmap authority during
   assert.equal(queue.tasks[0].evidence.includes('owner-directive:existing'),true);
 });
 
+test('historical deployment recovery flag survives queue normalization', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'historical-flag-contract',
+    gameId:'historical-game',
+    target:'roblox',
+    department:'development',
+    type:'implementation',
+    goal:'maintain historical deployment',
+    releaseState:'development-confirmed',
+    status:'queued',
+    postReleaseFocused:true,
+    historicalDeploymentRecovery:true,
+    packageLongWorkProtected:true,
+    packageRole:'implementation-owner'
+  }]});
+  assert.equal(queue.tasks[0].historicalDeploymentRecovery,true);
+});
+
 test('owner directive preempts release and development work', () => {
   let queue=createVibeContinuousQueue();
   queue=add(queue,'dev','dev','unity',{releaseState:'development-confirmed'});
