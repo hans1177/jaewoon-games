@@ -1,5 +1,5 @@
 {
-  "version": 18,
+  "version": 19,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1221,6 +1221,65 @@
         "UNITY": 1,
         "FORTNITE_UEFN": 2,
         "UNSELECTED": 3
+      }
+    },
+    "autoClassification": {
+      "version": 1,
+      "authority": "MACHINE_EXECUTION_CONTRACT",
+      "enabled": true,
+      "humanDocumentRequired": false,
+      "executionOwner": "VIBE2",
+      "trigger": "WEB_GAME_HOMEPAGE_REGISTRATION_OR_STATUS_SYNC",
+      "eligibleWhen": "WEB_SOURCE_PRESENT_AND_PLATFORM_OR_GENRE_MISSING",
+      "explicitOwnerOrCatalogValueWins": true,
+      "overwriteExplicitValue": false,
+      "newPipelineForbidden": true,
+      "executionPath": "tools/game-catalog-normalization.mjs inside existing company-status-sync",
+      "platform": {
+        "allowed": [
+          "ROBLOX",
+          "UNITY",
+          "FORTNITE_UEFN"
+        ],
+        "evidenceOrder": [
+          "EXPLICIT_OWNER_OR_CATALOG_VALUE",
+          "EXISTING_NATIVE_PROJECT_OR_PUBLICATION_EVIDENCE",
+          "WEB_SOURCE_AND_GAME_METADATA_SEMANTIC_CLASSIFICATION",
+          "CENTRAL_DEFAULT"
+        ],
+        "centralDefault": "ROBLOX",
+        "writeCompatibilityFields": [
+          "selectedPlatform",
+          "homepageInfo.platform",
+          "homepageInfo.platformLabel"
+        ],
+        "canonicalFields": [
+          "canonical.production.selectedPlatform",
+          "canonical.homepage.runtime.platform"
+        ]
+      },
+      "genre": {
+        "evidenceOrder": [
+          "EXPLICIT_CATALOG_GENRE",
+          "EXPLICIT_HOMEPAGE_RUNTIME_GENRE",
+          "GAME_NAME_AND_DESCRIPTION",
+          "WEB_SOURCE_TEXT"
+        ],
+        "minimumLabels": 1,
+        "maximumLabels": 4,
+        "fallback": [
+          "기타"
+        ],
+        "writeCompatibilityFields": [
+          "genre",
+          "homepageInfo.genre",
+          "homepageInfo.genreLabel"
+        ],
+        "canonicalFields": [
+          "canonical.identity.genres",
+          "canonical.homepage.runtime.genre",
+          "canonical.homepage.runtime.genreLabel"
+        ]
       }
     }
   },
