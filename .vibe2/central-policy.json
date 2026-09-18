@@ -34,7 +34,9 @@
       "runtime-qa",
       "repair",
       "retest",
-      "verified-learning"
+      "verified-learning",
+      "bottleneck-relief",
+      "continuous-refill"
     ]
   },
   "engineEditor": {
@@ -87,5 +89,41 @@
       "preemptsOrdinaryAutonomousDevelopment": true,
       "ownerDirectiveStillPreempts": true
     }
+  },
+  "selfRecoveryAndBottleneckRelief": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "humanDocumentRequired": false,
+    "canonicalPolicy": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief",
+    "enabled": true,
+    "mode": "existing-pipeline-recovery-no-shadow-pipeline",
+    "recoveryOwners": {
+      "queue": "tools/vibe2-queue-control.mjs",
+      "backpressure": "tools/vibe2-adaptive-backpressure.mjs",
+      "telemetry": "tools/vibe2-parallelism-telemetry.mjs",
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "worker": ".github/workflows/vibe2-continuous-core.yml",
+      "robloxRunner": ".github/workflows/roblox-runner-self-heal.yml"
+    },
+    "automaticActions": [
+      "recover-stale-running-reservations",
+      "retry-or-requeue-retryable-worker-failures",
+      "requeue-after-fan-in-regression-failure",
+      "step-down-parallelism-on-pressure",
+      "step-up-parallelism-after-healthy-saturated-streak",
+      "event-driven-refill-when-capacity-opens",
+      "continue-disjoint-work-while-one-route-is-blocked",
+      "preserve-one-post-release-focused-runner-slot",
+      "continue-verified-sample-collection-while-model-training-waits"
+    ],
+    "invariants": {
+      "gateBypass": false,
+      "lowerTrainingThresholds": false,
+      "deleteVerifiedLearning": false,
+      "restartFromBlankWithValidCheckpoint": false,
+      "fabricateRuntimePass": false,
+      "automaticPublicRepublish": false
+    },
+    "waitingForVerifiedSamples": "NORMAL_COLLECTION_STATE_CONTINUE_24H"
   }
 }
