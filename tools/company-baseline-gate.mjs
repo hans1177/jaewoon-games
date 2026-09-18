@@ -63,7 +63,9 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
   if(!clean(revised?.multiplayerExpansionDecision))blockers.push('multiplayer-expansion-decision-required');
   if(Number(status.departments?.distinctLeadModelCount||0)<5)blockers.push('five-distinct-lead-models-required');
   const audits=Object.values(status.departments?.modelAudit||{});if(audits.length!==5||audits.some(a=>a?.pass!==true))blockers.push('per-department-multimodel-review-pass-required');
-  if(status.departments?.repeatedFatalReview!==true||status.disposition?.repeatedFiveDepartmentReview!==true)blockers.push('post-revision-five-department-review-required');
+  const directFiveLeadReviewComplete=status.disposition?.fiveDepartmentLeadReviewCompleted===true&&status.meeting?.required===false;
+  const legacyRepeatedFiveLeadReviewComplete=status.departments?.repeatedFatalReview===true&&status.disposition?.repeatedFiveDepartmentReview===true;
+  if(!directFiveLeadReviewComplete&&!legacyRepeatedFiveLeadReviewComplete)blockers.push('post-revision-five-department-review-required');
   if(meetingConflicts>0)blockers.push(`meeting-conflicts:${meetingConflicts}`);if(meetingHolds>0)blockers.push(`meeting-holds:${meetingHolds}`);
   if(state==='NOT_APPLICABLE'&&blockers.length===0){state='DESIGN_BASELINE_READY';ready=true;}
   else if(state==='NOT_APPLICABLE')state=meetingConflicts>0?'DESIGN_BASELINE_PENDING_CONFLICT_RESOLUTION':meetingHolds>0?'DESIGN_BASELINE_PENDING_MEETING_HOLD':'DESIGN_BASELINE_REDESIGN_REQUIRED';
