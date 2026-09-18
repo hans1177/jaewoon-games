@@ -185,7 +185,9 @@ jobs:
           NODE
 
       - name: Validate Google Play rotation workflow structure
-        run: node qa/external-mobile-free-game-playtest-workflow.test.mjs
+        run: |
+          node qa/external-mobile-free-game-playtest-workflow.test.mjs
+          node qa/vibe2-google-play-catalog-coverage.test.mjs
       - name: Run integrated regression
         run: node qa/vibe-regression.mjs
 
