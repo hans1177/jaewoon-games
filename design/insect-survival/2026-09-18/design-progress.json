@@ -4,12 +4,15 @@
   "date": "2026-09-18",
   "engineDigest": "46ea84c1af753f87a382297b3b1395c376f7aebd3e87781ec1dd732bf179429e",
   "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "completedPhaseCount": 2,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "lastSuccessfulModelCallAt": "2026-09-18T06:05:55.155Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -26,17 +29,50 @@
       "updatedAt": "2026-09-18T06:04:23.112Z"
     },
     "gemini:gemini-3.7-flash": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 16049,
+      "lastMs": 7948,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T06:06:03.109Z"
+    },
+    "gemini:gemini-3.6-flash": {
       "calls": 1,
       "successes": 0,
       "failures": 1,
       "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 23672,
+      "lastMs": 23672,
+      "lastError": "Expected ',' or '}' after property value in JSON at position 3702 (line 1 column 3703)",
+      "updatedAt": "2026-09-18T06:04:46.595Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 39964,
+      "lastMs": 39964,
+      "lastError": "Expected ',' or '}' after property value in JSON at position 3822 (line 1 column 3823)",
+      "updatedAt": "2026-09-18T06:05:02.887Z"
+    },
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8101,
-      "lastMs": 8101,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T06:04:31.024Z"
+      "totalMs": 92232,
+      "lastMs": 92232,
+      "lastError": null,
+      "updatedAt": "2026-09-18T06:05:55.155Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T06:04:31.024Z"
+  "updatedAt": "2026-09-18T06:06:03.109Z"
 }

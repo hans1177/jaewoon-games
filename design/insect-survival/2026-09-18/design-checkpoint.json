@@ -7,8 +7,247 @@
   "policyDigest": "5bb8edfcf9f558f65b3d9e97c3939aa085a73644ba9077f7d5a0341fbae4347f",
   "engineDigest": "46ea84c1af753f87a382297b3b1395c376f7aebd3e87781ec1dd732bf179429e",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 액션 생존 게임입니다.",
+      "playerFantasy": "거대한 자연 속 미지의 초원 한복판에서 곤충들의 위협을 헤쳐나가며 생태계를 지배하는 최상위 포식자이자 생존자가 되는 환상을 제공합니다.",
+      "coreFun": "몰려드는 곤충 무리를 실시간으로 돌파하며 무기와 특성을 조합해 자신만의 강력한 생존 빌드를 완성하는 재미입니다.",
+      "coreLoop": [
+        "밀려드는 곤충 무리와 전투를 벌이며 맵 위에서 위치를 선정하고 자원을 수집합니다.",
+        "적을 처치하고 얻은 경험치와 보상으로 공격 방식이나 특성을 선택해 빌드를 확장합니다.",
+        "획득한 업그레이드를 조합해 더욱 강력한 빌드를 만들고 다음 웨이브나 보스전에서 생존합니다.",
+        "생존 결과로 얻은 재화를 영구 성장 및 다음 탐험 준비에 투자하여 지속적인 성장을 이룹니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "생태 적응 빌드 시스템",
+          "purpose": "플레이어가 런 중 다양한 곤충 특성을 흡수하여 전투 스타일을 자유롭게 변화시키도록 유도합니다.",
+          "playerChoice": "근접 공격력 강화, 독성 범위 피해, 이동 속도 중심의 회피 중 하나를 전략적으로 선택합니다."
+        },
+        {
+          "name": "환경 위협 및 웨이브 압박",
+          "purpose": "제한된 시간과 좁은 공간에서 몰려오는 곤충 무리를 통해 긴장감을 극대화합니다.",
+          "playerChoice": "위험 지역을 빠르게 돌파하거나 안전한 거점을 확보하기 위한 이동 경로를 결정합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "생태 적응 빌드 시스템",
+          "toSystem": "환경 위협 및 웨이브 압박",
+          "trigger": "레벨 업 및 특성 선택 완료 시",
+          "stateChange": "플레이어의 공격 범위와 이동 속도가 증가하여 웨이브 대응 능력이 강화됩니다."
+        },
+        {
+          "fromSystem": "환경 위협 및 웨이브 압박",
+          "toSystem": "생태 적응 빌드 시스템",
+          "trigger": "웨이브 클리어 또는 엘리트 적 처치 시",
+          "stateChange": "희귀 재료 및 상위 특성 선택지가 해제되어 다음 빌드 구성에 영향을 줍니다."
+        },
+        {
+          "fromSystem": "영구 성장 시스템",
+          "toSystem": "생태 적응 빌드 시스템",
+          "trigger": "런 종료 후 재화 정산 시",
+          "stateChange": "기본 체력 및 초기 자원 획득량이 증가하여 다음 런의 시작 빌드 선택 폭이 넓어집니다."
+        }
+      ],
+      "progressionDirection": "세션 단위의 빠른 런을 반복하며 수집한 재화로 기본 능력을 강화하고, 더 높은 난이도의 곤충 생태계 지역을 해금하는 방향으로 진행됩니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "런 진입 -> 생존 및 자원 획득 -> 런 종료 및 정산 -> 영구 능력치 강화 및 다음 런 준비",
+        "resourceFlow": "적 처치 시 경험치(런 내 성장)와 생태 파편(영구 성장 재화)이 드랍되며, 상점에서 소모됩니다.",
+        "balanceRules": "웨이브가 진행될수록 적의 체력과 공격력이 비선형적으로 증가하여 빌드의 시너지 없이는 생존이 불가능하도록 설계합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "초원 생태계 확장",
+          "newGameplay": "새로운 거대 곤충 보스 및 독성 식물 장애물 추가",
+          "systemImpact": "특성 조합의 다양성 및 회피 기동의 중요성 증가"
+        },
+        {
+          "milestone": "지하 굴 생태계 업데이트",
+          "newGameplay": "어두운 시야와 좁은 통로를 활용한 생존 미션 추가",
+          "systemImpact": "조명 관련 특성 및 광역 공격 빌드의 효용성 변화"
+        },
+        {
+          "milestone": "최상위 포식자 모드",
+          "newGameplay": "무한 웨이브와 극한의 난이도를 제공하는 챌린지 모드 개방",
+          "systemImpact": "숙련된 플레이어를 위한 극한의 빌드 최적화 시험대 제공"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어 체력이 0이 되어 사망",
+          "제한 시간 내에 탈출 지점에 도달 실패"
+        ],
+        "retryFlow": "사망 시 즉시 결과 화면으로 이동하며, 획득한 재화의 일부를 정산받고 메인 화면으로 복귀하여 재도전합니다.",
+        "riskPressure": "웨이브가 거듭될수록 적으로 화면이 가득 차며 플레이어의 퇴로를 차단하는 압박을 가합니다.",
+        "recoveryRules": "영구 성장을 통해 초기 체력, 회복 아이템 드랍률을 높여 반복 플레이 시 실패 피로도를 완화합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치 패드 및 가상 조이스틱을 통한 이동, 자동 공격 및 수동 스킬 발동 지원",
+        "performanceBudget": "수백 마리의 곤충 개체를 2D 스프라이트 인스턴싱으로 최적화하여 60프레임 유지",
+        "sessionConstraints": "한 판의 플레이 타임을 5분 내외의 웨이브로 구성하고, 총 30분 세션 내에서 여러 번의 런을 즐길 수 있도록 설계"
+      },
+      "visualDirection": "탑뷰 시점에서 아기자기하면서도 생동감 넘치는 곤충들의 애니메이션과 화려한 탄막 및 파티클 효과를 결합한 스타일리시한 비주얼",
+      "mobileUx": "한 손으로도 조작 가능한 가상 조이스틱과 직관적인 팝업형 업그레이드 선택 인터페이스 제공",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "남은 체력, 웨이브 타이머, 경험치 게이지를 화면 상단에 직관적으로 배치",
+        "touchAndInput": "화면 어디서나 드래그하여 조이스틱을 활성화할 수 있는 프리 플로팅 패드 적용",
+        "readability": "복잡한 탄막 속에서도 플레이어 캐릭터와 적의 공격 범위를 색상 대비로 명확히 구분",
+        "accessibility": "플래시 효과 감소 옵션 및 텍스트 크기 조절 기능 지원"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "풀잎과 흙바닥이 살아있는 세밀한 탑뷰 2D 그래픽",
+        "audioIdentity": "풀벌레 소리와 긴장감 넘치는 타악기 중심의 배경음악",
+        "gameplayFeedbackSync": "적 타격 시 명확한 타격음과 화면 쉐이크 효과 동기화"
+      },
+      "marketTargetDirection": "모바일 액션 로그라이트 및 생존 게임을 선호하는 글로벌 유저층을 타겟으로 함",
+      "steamExpansionDecision": "모바일 버전 안정화 이후 PC 및 콘솔 플랫폼으로의 확장 검토",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "싱글 플레이 완성도 확보 후 협동(COOP) 모드 추후 검토",
+      "technicalAssumptions": [
+        "Object Pooling을 활용한 대량의 적 오브젝트 성능 최적화",
+        "Deterministic한 웨이브 스폰 데이터 관리"
+      ],
+      "validationQuestions": [
+        "핵심 루프가 5분 이내의 짧은 세션에서도 충분한 재미를 제공하는가?",
+        "모바일 터치 환경에서 시각적 가독성과 조작감이 원활한가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "생태 적응 빌드 시스템",
+          "responsibleSystem": "UpgradeManager",
+          "validationEvidence": "레벨 업 시 3개의 무작위 특성이 정상적으로 팝업되고 선택 시 능력치에 반영됨"
+        },
+        {
+          "designElement": "환경 위협 및 웨이브 압박",
+          "responsibleSystem": "WaveDirector",
+          "validationEvidence": "시간 경과에 따라 적 스폰 주기가 빨라지고 종류가 다양해짐"
+        },
+        {
+          "designElement": "영구 성장 시스템",
+          "responsibleSystem": "PlayerProgressionData",
+          "validationEvidence": "런 종료 후 획득한 재화가 세이브 파일에 정확히 저장되고 다음 시작 시 적용됨"
+        }
+      ],
+      "openQuestions": [
+        "향후 멀티플레이 도입 시 동기화 방식에 대한 기술적 검토 필요 여부"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 60,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 4.8,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 75.4,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN",
+        "PLATFORM_FIT_DESIGN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "PLATFORM_FIT_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 4.8,
+            "axisWeight": 8
+          },
+          "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
@@ -23,19 +262,61 @@
       "updatedAt": "2026-09-18T06:04:23.112Z"
     },
     "gemini:gemini-3.7-flash": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 16049,
+      "lastMs": 7948,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T06:06:03.109Z"
+    },
+    "gemini:gemini-3.6-flash": {
       "calls": 1,
       "successes": 0,
       "failures": 1,
       "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 23672,
+      "lastMs": 23672,
+      "lastError": "Expected ',' or '}' after property value in JSON at position 3702 (line 1 column 3703)",
+      "updatedAt": "2026-09-18T06:04:46.595Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 39964,
+      "lastMs": 39964,
+      "lastError": "Expected ',' or '}' after property value in JSON at position 3822 (line 1 column 3823)",
+      "updatedAt": "2026-09-18T06:05:02.887Z"
+    },
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8101,
-      "lastMs": 8101,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T06:04:31.024Z"
+      "totalMs": 92232,
+      "lastMs": 92232,
+      "lastError": null,
+      "updatedAt": "2026-09-18T06:05:55.155Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T06:04:22.921Z",
-  "updatedAt": "2026-09-18T06:04:31.024Z"
+  "updatedAt": "2026-09-18T06:06:03.109Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:05:55.155Z",
+  "geminiModelResolution": {
+    "gemini-3.8-flash": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.8-flash",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
