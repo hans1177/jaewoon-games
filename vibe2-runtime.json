@@ -2,16 +2,13 @@
   "version": 8,
   "mode": "continuous-core",
   "documentation": {
-    "humanDocuments": [
-      "VIBE2.md"
-    ],
-    "humanDocumentLimit": 1,
+    "humanDocuments": [],
+    "humanDocumentLimit": 0,
     "machineSourceOfTruth": "vibe2-runtime.json",
     "runtimeState": {
       "queue": ".vibe2/queue.json",
       "parallelism": ".vibe2/parallelism-control.json",
-      "experience": ".vibe2/experience.json",
-      "gameStudyKnowledge": ".vibe2/game-study-knowledge.json"
+      "experience": ".vibe2/experience.json"
     },
     "generatedHandoffTool": "tools/vibe2-handoff.mjs",
     "manualHandoffDocumentsAllowed": false,
@@ -19,18 +16,19 @@
       "VIBE2_CORE.md",
       "VIBE2_CONTINUOUS_OPERATIONS.md",
       "VIBE2_MOTION_CORE.md",
-      "VIBE2_VISUAL_AUTONOMY_PLAN.md"
+      "VIBE2_VISUAL_AUTONOMY_PLAN.md",
+      "VIBE2.md"
     ],
     "machineStateVersions": {
       "runtime": 8,
       "queue": 5,
       "parallelism": 2,
-      "experience": 3,
-      "gameStudyKnowledge": 1,
-      "handoff": 3
+      "experience": 1,
+      "handoff": 2
     },
     "disallowUnlistedVibe2Markdown": true,
-    "generatedHandoffArtifact": "vibe2-machine-handoff"
+    "generatedHandoffArtifact": "vibe2-machine-handoff",
+    "humanDocumentRequired": false
   },
   "branches": {
     "control": "vibe2-unreal-core",
@@ -48,8 +46,7 @@
       "vibe2-runtime.json",
       ".vibe2/queue.json",
       ".vibe2/parallelism-control.json",
-      ".vibe2/experience.json",
-      ".vibe2/game-study-knowledge.json"
+      ".vibe2/experience.json"
     ],
     "humanMaintainedHandoff": false,
     "machineContextRequired": true,
@@ -59,7 +56,8 @@
       "reserve",
       "worker",
       "fan-in"
-    ]
+    ],
+    "postReleaseFocusedDevelopment": "machine-policy-driven-single-protected-slot"
   },
   "continuous": {
     "enabled": true,
@@ -105,7 +103,7 @@
     "dynamicBackpressure": true,
     "speculativeParallelism": {
       "enabled": true,
-      "variants": 2,
+      "variants": 3,
       "highRiskOptInOnly": true,
       "unityBuildCandidatesExcluded": true
     },
@@ -115,7 +113,9 @@
     "slotRefillBranchPrefix": "vibe2/refill/",
     "slotRefillSingleVariantOnly": true,
     "slotRefillWorkerDirectControlWrite": false,
-    "slotRefillSourceLocksHeldUntilFanIn": true
+    "slotRefillSourceLocksHeldUntilFanIn": true,
+    "postReleaseFocusedRunnerSlots": 1,
+    "postReleaseFocusedRefill": true
   },
   "adaptiveBackpressure": {
     "enabled": true,
@@ -144,112 +144,18 @@
     "missingStateFallbackMax": 20,
     "corruptStateFallbackMax": 20
   },
-  "gameStudy": {
-    "enabled": true,
-    "mode": "server-hourly-24h-parallel-study",
-    "workflow": ".github/workflows/vibe2-game-study-continuous.yml",
-    "targets": ".vibe2/game-study-targets.json",
-    "knowledgeState": ".vibe2/game-study-knowledge.json",
-    "experienceState": ".vibe2/experience.json",
-    "worker": "tools/vibe2-game-study-worker.mjs",
-    "intelligence": "tools/vibe2-game-study-intelligence.mjs",
-    "robloxStudioCliRunner": "tools/vibe2-roblox-studio-cli-runner.mjs",
-    "robloxStudioLiveSmoke": ".github/workflows/vibe2-roblox-studio-live-smoke.yml",
-    "robloxRunnerBootstrap": "tools/vibe2-roblox-runner-bootstrap.ps1",
-    "robloxRunnerReadinessVariable": "VIBE2_ROBLOX_STUDIO_RUNNER_READY",
-    "robloxRunnerRequiredLabels": [
-      "self-hosted",
-      "Windows",
-      "vibe2-roblox"
-    ],
-    "robloxRunnerDefaultMode": "interactive-user-session",
-    "robloxRunnerReadinessRequires": [
-      "roblox-studio-found",
-      "github-runner-online",
-      "vibe2-roblox-label-present"
-    ],
-    "robloxProductionTargetActivationRequiresRealStudioSmoke": true,
-    "featureCount": 25,
-    "features": [
-      "mechanic-mining",
-      "system-graph-learning",
-      "progression-curve-learning",
-      "economy-simulation-learning",
-      "difficulty-curve-learning",
-      "ui-interaction-mining",
-      "onboarding-learning",
-      "retention-loop-mining",
-      "state-machine-extraction",
-      "event-flow-extraction",
-      "save-schema-learning",
-      "architecture-distillation",
-      "dependency-learning",
-      "change-impact-learning",
-      "bug-reproduction-learning",
-      "exploit-resistance-pattern-learning",
-      "performance-profiling-learning",
-      "game-dna",
-      "nearest-game-retrieval",
-      "novelty-detection",
-      "knowledge-merge",
-      "knowledge-conflict",
-      "automatic-hypothesis-testing",
-      "synthetic-mini-game-training",
-      "continual-distillation"
-    ],
-    "engines": [
-      "web",
-      "roblox"
-    ],
-    "sharedMaxConcurrentTasks": 20,
-    "sharesAdaptiveBackpressure": true,
-    "backpressureSteps": [
-      20,
-      16,
-      12,
-      8,
-      4
-    ],
-    "workerWritesLongTermState": false,
-    "fanInWrites": [
-      ".vibe2/queue.json",
-      ".vibe2/experience.json",
-      ".vibe2/game-study-knowledge.json"
-    ],
-    "evidencePolicy": {
-      "realInputRequired": true,
-      "requiredCheckpointsMustPass": true,
-      "runtimeErrorsMustBeZeroForVerifiedPromotion": true,
-      "quantitativeSeriesRequiredForCurves": true,
-      "insufficientEvidenceIsNotFact": true,
-      "noInventedCausality": true,
-      "rawSourceCopiedIntoKnowledge": false,
-      "rawGameplayValuesAutoCopied": false,
-      "learningMayExpandAuthority": false
-    },
-    "externalSourcePolicy": {
-      "webPublicObservation": "observation-only",
-      "sourceAnalysisRequires": "owned-or-authorized-server-workspace",
-      "robloxPublicObservation": "observation-only",
-      "robloxGenericExternalAutomation": false,
-      "robloxExplicitCopyEnabledAutomation": true,
-      "robloxCopyEnabledDownload": "creator-enabled-place-copying",
-      "robloxCopyEnabledStudioRuntime": "official-studio-cli-copy-enabled-session",
-      "robloxCopyEnabledStudioPermission": "creator-enabled-place-copying",
-      "robloxCopyLockedDownload": false,
-      "authorizedDownloadFormat": "rbxlx",
-      "authorizedDownloadRawPlacePersisted": false,
-      "authorizedDownloadRawSourcePersisted": false,
-      "authorizedStudioRawPlacePersisted": false,
-      "authorizedStudioRawSourcePersisted": false
-    }
-  },
   "sources": {
     "queue": ".vibe2/queue.json",
     "experience": ".vibe2/experience.json",
-    "gameStudyKnowledge": ".vibe2/game-study-knowledge.json",
     "workOrder": ".vibe2/work-order.json",
-    "parallelism": ".vibe2/parallelism-control.json"
+    "parallelism": ".vibe2/parallelism-control.json",
+    "developmentLifecyclePolicy": "company-learning/platform-release-roadmap.json",
+    "learningMotorPolicy": "company-learning/vibe2-learning-motor.json",
+    "learningMotorState": ".vibe2/learning-motor-state.json",
+    "benchmarkLadder": ".vibe2/benchmark-ladder.json",
+    "idlePracticeQueue": ".vibe2/idle-practice-queue.json",
+    "webRobloxHandoffs": ".vibe2/web-roblox-handoffs.json",
+    "verifiedCodePatterns": ".vibe2/code-pattern-library.json"
   },
   "workers": {
     "exploration": {
@@ -282,8 +188,12 @@
       "sourceWrite": false
     },
     "analysis": {
-      "configured": false,
-      "reason": "general-analysis-worker-not-connected-yet"
+      "configured": true,
+      "tool": "tools/vibe2-learning-practice-worker.mjs",
+      "sourceWrite": false,
+      "practiceOnly": true,
+      "productionPass": false,
+      "productionWorkPreempts": true
     }
   },
   "coordination": {
@@ -358,7 +268,6 @@
         "preserve-protected-game-and-save-semantics",
         "short-verified-work-loop",
         "reuse-verified-success-and-failure-experience",
-        "cross-game-verified-study-distillation",
         "motion-as-core-quality-axis"
       ],
       "authority": {
@@ -605,19 +514,26 @@
       "cross-game-reuse-success"
     ],
     "verifiedEvidenceRequired": true,
-    "learningMayOverrideFixedRules": false
+    "learningMayOverrideFixedRules": false,
+    "vibeImplementationOwner": true,
+    "webDirectAuthoring": [
+      "SVG",
+      "CSS",
+      "CANVAS",
+      "PROCEDURAL_JS",
+      "WEB_AUDIO",
+      "MOTION_ENGINE"
+    ],
+    "binaryAuthoringRoute": "AUTHORING_GENERATOR_REQUEST",
+    "existingAssetReuseIsCandidateNotMandatory": true,
+    "generatorRequestIsCompletion": false
   },
   "engineEditors": {
     "roblox": {
       "authoringWorkerConfigured": false,
       "editorRuntime": "roblox-studio-or-cloud-runtime",
       "workflow": null,
-      "runnerLabel": "vibe2-roblox",
-      "studioVerificationConfigured": true,
-      "studioVerificationWorkflow": ".github/workflows/vibe2-roblox-studio-live-smoke.yml",
-      "runnerBootstrapTool": "tools/vibe2-roblox-runner-bootstrap.ps1",
-      "runnerReadinessVariable": "VIBE2_ROBLOX_STUDIO_RUNNER_READY",
-      "productionStudyActivationRequiresRealStudioSmoke": true
+      "runnerLabel": null
     },
     "unity": {
       "authoringWorkerConfigured": false,
@@ -641,8 +557,7 @@
     "automaticMainPromotion": false,
     "automaticExperiencePromotion": true,
     "automaticExperiencePromotionRequiresVerifiedRevote": true,
-    "reviewedExperienceRequired": true,
-    "gameStudyKnowledgePromotionRequiresVerifiedStudy": true
+    "reviewedExperienceRequired": true
   },
   "safety": {
     "existingWebMaintenanceAllowed": true,
@@ -663,10 +578,7 @@
     "binaryAssetsDirectTextEditForbidden": true,
     "sharedWorkLockRequired": false,
     "queueSourceRootLeaseRequired": true,
-    "homepagePublicationAutomatic": false,
-    "gameStudyNoInventedCausality": true,
-    "externalRobloxCopyLockedDownloadAllowed": false,
-    "gameStudyRawSourcePersistenceAllowed": false
+    "homepagePublicationAutomatic": false
   },
   "workPackages": {
     "enabled": true,
@@ -744,5 +656,27 @@
       "maxMinWorkUnitsPerPackage": 6,
       "neverReduceSafetyOrQa": true
     }
+  },
+  "learningMotor": {
+    "enabled": true,
+    "tool": "tools/vibe2-learning-motor.mjs",
+    "positiveMasteryEvidence": "VERIFIED_ONLY",
+    "legacyLevelReplacement": false,
+    "productionPreemptsPractice": true,
+    "sameGameHighestRetrievalWeight": true,
+    "webPracticeFeedsCrossPlatformMastery": true,
+    "robloxNativeDomainsRequireRobloxEvidence": true,
+    "candidateTournament": {
+      "normal": 1,
+      "highRisk": 3,
+      "repeatedFailure": 3,
+      "max": 5
+    },
+    "repeatedFailure": {
+      "second": "FORCE_RETRIEVAL",
+      "third": "ADD_REPRO_DRILL"
+    },
+    "modelTrainingThresholdsUnchanged": true,
+    "gateBypass": false
   }
 }

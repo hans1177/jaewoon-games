@@ -17,7 +17,6 @@ import {
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
-import { enrichQueueWithGameStudyKnowledge } from './vibe2-game-study-planner-context.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
@@ -37,7 +36,6 @@ function parseArgs(argv = process.argv.slice(2)) {
 }
 function queueFileFrom(args) { return clean(args.queue) || '.vibe2/queue.json'; }
 function controlFileFrom(args) { return clean(args.control) || '.vibe2/parallelism-control.json'; }
-function knowledgeFileFrom(args) { return clean(args.knowledge) || '.vibe2/game-study-knowledge.json'; }
 function readParallelismControl(args) {
   try {
     return createParallelismControl(readJson(controlFileFrom(args), {}));
@@ -50,23 +48,6 @@ function bool(value) { return value === true || ['1','true','yes','y'].includes(
 function list(value) { return clean(value).split(',').map(clean).filter(Boolean); }
 function maxConcurrent(value) { return Math.max(1, Math.min(20, Math.floor(Number(value) || DEFAULT_MAX_CONCURRENT_TASKS))); }
 function optionalMaxConcurrent(value) { return clean(value) ? maxConcurrent(value) : null; }
-
-export function applyGameStudyPlannerBeforeReservation(queueInput = {}, knowledgeInput = {}) {
-  const result = enrichQueueWithGameStudyKnowledge({ queueInput, knowledgeInput });
-  return Object.freeze({
-    queue: createVibeContinuousQueue(result.queue),
-    changed: result.changed === true,
-    enrichedCount: Number(result.enrichedCount || 0),
-    authorityExpanded: false
-  });
-}
-
-function plannerContextForReservation(queue, args = {}) {
-  return applyGameStudyPlannerBeforeReservation(
-    queue,
-    readJson(knowledgeFileFrom(args), { version: 1, entries: [] })
-  );
-}
 
 function isRecoverableFullWebTransportFailure(task = {}) {
   const evidence = Array.isArray(task.evidence) ? task.evidence : [];
@@ -161,7 +142,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } =
       packageId: task.packageId || null,
       packageRole: task.packageRole || null,
       longWorkProtected: task.packageLongWorkProtected === true,
-      speculativeVariants: task.target !== 'unity' && task.speculativeEligible && task.estimatedRisk === 'high' ? 2 : 1
+      speculativeVariants: task.target !== 'unity' && task.speculativeEligible && task.estimatedRisk === 'high' ? 3 : 1
     }))
   };
 }
@@ -249,6 +230,22 @@ export function applyVibeFanInResults(queueInput, results = []) {
       ...reusableWorkerEvidence(row)
     ]).map(clean).filter(Boolean))];
     if (passes.length) {
+      const practiceWinner=passes.find(row=>{
+        const ev=(Array.isArray(row.evidence)?row.evidence:[]).map(clean);
+        return ev.includes('learning-practice-only')&&ev.includes('production-pass:NO');
+      });
+      if(practiceWinner){
+        const practiceEvidence=[...new Set([
+          ...allEvidence,
+          'learning-practice-complete',
+          'production-pass:NO',
+          'source-write:NO'
+        ])];
+        const settled=settleVibeTask(queue,{taskId,outcome:'PASS',evidence:practiceEvidence,blocker:'',retryable:false});
+        queue=settled.queue;
+        applied.push({taskId,outcome:'DONE_PRACTICE',winner:clean(practiceWinner.variant)||'primary'});
+        continue;
+      }
       const winnerEvidence = [
         ...(Array.isArray(winner.evidence) ? winner.evidence.map(clean).filter(Boolean) : []),
         ...workloadEvidence(winner),
@@ -295,22 +292,18 @@ export function runQueueCommand(args = {}) {
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), summary: summarizeVibeContinuousQueue(queue) };
   } else if (command === 'reserve') {
-    const gameStudyPlanner = plannerContextForReservation(queue, args);
-    queue = gameStudyPlanner.queue;
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks });
-    if (gameStudyPlanner.changed || reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
-    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, gameStudyPlanner, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
+    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
-    const gameStudyPlanner = plannerContextForReservation(queue, args);
-    queue = gameStudyPlanner.queue;
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
     const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks });
-    if (gameStudyPlanner.changed || reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
+    if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
       const requestedMaxConcurrentTasks=reserved.selection?.requestedMaxConcurrentTasks ?? adaptiveMaxConcurrentTasks;
@@ -334,13 +327,11 @@ export function runQueueCommand(args = {}) {
           longWorkProtectedSlotUsed:reserved.selection?.longWorkProtectedSlotUsed === true,
           longWorkOwnerTaskId:reserved.selection?.longWorkOwnerTaskId || null,
           shardUse:reserved.selection?.shardUse || {},
-          stopReason:reserved.selection?.stopReason || null,
-          gameStudyPlannerEnrichedCount:gameStudyPlanner.enrichedCount,
-          gameStudyPlannerAuthorityExpanded:false
+          stopReason:reserved.selection?.stopReason || null
         }
       });
     }
-    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, gameStudyPlanner, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
@@ -403,11 +394,6 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_QUEUE_CONTINUE=${result.summary?.continueRequired ? 'YES' : 'NO'}`);
   console.log(`VIBE2_QUEUE_RELEASED_WORKER_SLOTS=${(result.summary?.releasedWorkerSlotTaskIds || []).length}`);
   if (result.command === 'release-slot') console.log(`VIBE2_SLOT_RELEASED=${result.released ? 'YES' : 'NO'}`);
-  if (result.gameStudyPlanner) {
-    console.log(`VIBE2_GAME_STUDY_PLANNER_CONTEXT=${result.gameStudyPlanner.changed ? 'APPLIED' : 'NO_CHANGE'}`);
-    console.log(`VIBE2_GAME_STUDY_PLANNER_ENRICHED=${result.gameStudyPlanner.enrichedCount}`);
-    console.log('VIBE2_GAME_STUDY_PLANNER_AUTHORITY_EXPANDED=NO');
-  }
   if (result.adaptiveControl) {
     console.log(`VIBE2_ADAPTIVE_MAX=${result.adaptiveControl.currentMax}`);
     console.log(`VIBE2_ADAPTIVE_DECISION=${result.adaptiveControl.lastDecision}`);
