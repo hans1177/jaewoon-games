@@ -1,4 +1,5 @@
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {
   createMasteryState,
@@ -158,4 +159,24 @@ test('idle-practice dedupe never merges unrelated production tasks',()=>{
   assert.equal(result.removed,1);
   assert.equal(result.tasks.filter(t=>t.id==='prod-a').length,2);
   assert.equal(result.tasks.filter(t=>t.id==='LEARNING-PRACTICE-gap-save-l1').length,1);
+});
+
+
+test('external AI learning policy is distillation-only and cannot directly train or develop',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe2-learning-motor.json',import.meta.url),'utf8'));
+  assert.equal(policy.externalAiKnowledgePolicy?.mode,'DISTILLATION_ONLY');
+  assert.equal(policy.externalAiKnowledgePolicy?.rawExternalAiOutputMayEnterDevelopment,false);
+  assert.equal(policy.externalAiKnowledgePolicy?.rawExternalAiOutputMayEnterRetrieval,false);
+  assert.equal(policy.externalAiKnowledgePolicy?.externalAiMayWriteGameSource,false);
+  assert.equal(policy.externalAiKnowledgePolicy?.externalAiMayDirectlyIncreaseMastery,false);
+  assert.equal(policy.externalAiKnowledgePolicy?.externalAiMayDirectlyCreateCanonicalTrainingSample,false);
+  assert.equal(policy.externalAiKnowledgePolicy?.minimumTraceableVerificationEvidenceItems,2);
+  assert.equal(policy.modelTraining?.externalAiRawOutputDirectTraining,false);
+  assert.equal(policy.modelTraining?.externalAiDistilledKnowledgeDirectTraining,false);
+  assert.equal(policy.modelTraining?.verifiedProjectOutcomeStillRequired,true);
+  assert.equal(policy.externalAiDistillation?.advisoryOnly,true);
+  assert.equal(policy.externalAiDistillation?.directSourceWrite,false);
+  assert.equal(policy.externalAiDistillation?.directProductionPass,false);
+  assert.equal(policy.externalAiDistillation?.directMasteryCredit,false);
+  assert.equal(policy.externalAiDistillation?.directCanonicalTrainingSample,false);
 });
