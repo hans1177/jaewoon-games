@@ -118,11 +118,10 @@ test('PR creation failure remains a blocking publication failure',()=>{
 });
 
 test('current development score policy requires Web schema15 and rejects schema13',()=>{
-  const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
-  assert.match(flow,/developmentScoreRequiresSchema15: true/);
-  assert.doesNotMatch(flow,/developmentScoreRequiresSchema13: true/);
-  assert.match(manager,/developmentScoreRequiresSchema15: true/);
-  assert.doesNotMatch(manager,/developmentScoreRequiresSchema13: true/);
+  const display=directive.homepageOperations?.developmentProgressDisplay||{};
+  assert.equal(display.scoreRequiresSchema15,true);
+  assert.equal(Object.hasOwn(display,'scoreRequiresSchema13'),false);
+  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
 });
 
 test('homepage manager keeps machine self-QA and one post-work Director supervisor',()=>{
