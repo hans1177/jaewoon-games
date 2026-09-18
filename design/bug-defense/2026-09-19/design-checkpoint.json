@@ -471,23 +471,23 @@
       "updatedAt": "2026-09-18T19:30:00.999Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 44,
+      "calls": 46,
       "successes": 2,
-      "failures": 42,
+      "failures": 44,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2472835,
-      "lastMs": 9688,
-      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=47",
-      "updatedAt": "2026-09-18T21:16:40.659Z"
+      "totalMs": 2698677,
+      "lastMs": 115212,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=1366",
+      "updatedAt": "2026-09-18T21:22:22.565Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T19:28:23.413Z",
-  "updatedAt": "2026-09-18T21:22:00.474Z",
-  "failedPhase": null,
-  "lastError": null,
+  "updatedAt": "2026-09-18T21:22:22.565Z",
+  "failedPhase": "designer_pre_gate_repair_2",
+  "lastError": "GEMINI_CALL_FAILED gemini-3.5-flash-lite: GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=1366",
   "lastSuccessfulModelCallAt": "2026-09-18T21:13:06.614Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
