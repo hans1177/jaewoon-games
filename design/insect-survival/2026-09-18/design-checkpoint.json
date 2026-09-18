@@ -13,7 +13,9 @@
     "designer_pre_gate_repair_1",
     "deterministic_pre_gate_after_repair_1",
     "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
+    "deterministic_pre_gate_after_repair_2",
+    "designer_pre_gate_repair_3",
+    "deterministic_pre_gate_after_repair_3"
   ],
   "phases": {
     "designer_draft": {
@@ -91,12 +93,12 @@
       },
       "platformFitPlan": {
         "targetPlatform": "UNITY",
-        "inputModel": "가상 조이스틱과 자동 공격 기반의 원터치 모바일 최적화 입력으로 이동과 타겟팅의 직관성을 보장하며, 화면 하단 영역에 UI 터치 핫존을 배치하여 엄지손가락 한 손으로 모든 조작이 가능하도록 구현",
-        "performanceBudget": "모바일 저사양 기기 기준 60fps 유지, 드로우 콜 100회 이하, 메모리 사용량 500MB 제한, 폴리곤 수 최적화 및 텍스처 아틀라스 적용",
-        "sessionConstraints": "1회 세션 평균 4분 내외로 구성하여 단시간 몰입과 모바일 플레이 타임 제약 충족, 웨이브 당 60초 제한을 두어 빠른 호흡 유지"
+        "inputModel": "Virtual joystick with auto-attack for one-thumb mobile control, featuring bottom-screen hot zones for seamless directional movement and quick upgrades.",
+        "performanceBudget": "Target 60 FPS on mid-range mobile devices, under 100 draw calls, memory usage strictly capped below 500MB, utilizing texture atlases and dynamic batching.",
+        "sessionConstraints": "Average session length limited to 4 minutes per run to match mobile player retention patterns, with distinct wave durations of 60 seconds."
       },
       "visualDirection": "로우 폴리곤 기반의 아기자기하면서도 생동감 있는 곤충 모델링과 미크로 세계관의 풀잎, 이슬 텍스처 강조",
-      "mobileUx": "한 손 조작이 가능한 가상 패드와 직관적인 아이콘 크기로 터치 실수를 방지하고, 세션 이탈 없는 빠른 업그레이드 선택 UI 제공. 레벨업 시 게임 일시 정지와 함께 화면 중앙에 3가지 선택지를 카드 형태로 배치하여 엄지손가락으로 쉽게 탭할 수 있도록 설계",
+      "mobileUx": "One-thumb virtual pad layout with oversized touch targets to prevent misclicks, presenting 3 upgrade cards instantly on level-up for rapid decision making without breaking flow.",
       "uxAccessibilityPlan": {
         "hudPriorities": "잔여 체력, 현재 웨이브 타이머, 주요 자원 수량을 최상단에 배치",
         "touchAndInput": "화면 어디서나 드래그하여 조작 가능한 플로팅 조이스틱 지원",
@@ -113,37 +115,30 @@
       "multiplayerMode": "SINGLE",
       "multiplayerExpansionDecision": "싱글플레이 완성도 검증 후 향후 업데이트에서 최대 4인 협동(COOP) 모드 확장 가능성 열어둠",
       "technicalAssumptions": [
-        "유니티 엔진의 2D/3D 하이브리드 파이프라인 활용",
-        "오브젝트 풀링을 통한 대량의 곤충 적군 최적화",
-        "로컬 세이브 데이터 암호화 및 비동기 클라우드 저장 지원",
-        "이벤트 기반 데미지 및 스탯 연산 모듈 분리",
-        "모바일 터치 입력을 위한 멀티 터치 및 제스처 인식 최적화 적용"
+        "Unity 2D/3D hybrid pipeline utilization for efficient rendering",
+        "Object pooling implementation for managing hundreds of active insect entities",
+        "Event-driven architecture separating combat calculations from rendering",
+        "Asynchronous local save state encryption for progression persistence"
       ],
       "validationQuestions": [
-        "4분 세션 동안 플레이어가 피로감을 느끼지 않고 몰입할 수 있는가?",
-        "모바일 터치 환경에서 복잡한 회피와 제작 선택이 직관적으로 이루어지는가?",
-        "저사양 모바일 기기에서 100마리 이상의 적이 등장할 때 60fps가 안정적으로 유지되는가?"
+        "Does the 4-minute session maintain high engagement without inducing rapid hand fatigue on mobile screens?",
+        "Can low-end mobile devices sustain a stable 60 FPS when rendering over 100 insect entities simultaneously?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "실시간 군집 전투",
-          "responsibleSystem": "코어 전투 루프",
-          "validationEvidence": "프레임 드랍 없이 100마리 이상의 적 처치 및 웨이브 전환 테스트 통과"
+          "designElement": "Real-time Horde Combat",
+          "responsibleSystem": "Core Combat Loop",
+          "validationEvidence": "Performance profiler logs confirming 60 FPS maintained with 150 active AI agents."
         },
         {
-          "designElement": "생태 먹이사슬 시스템",
-          "responsibleSystem": "생태계 AI 제어 시스템",
-          "validationEvidence": "곤충 간 어그로 분산 및 포식 관계 시뮬레이션 로그 확인"
+          "designElement": "Ecosystem Predator-Prey Logic",
+          "responsibleSystem": "Ecosystem AI Controller",
+          "validationEvidence": "Debug visualization confirming dynamic target swapping and threat prioritization among insect groups."
         },
         {
-          "designElement": "미크로 제작 모듈",
-          "responsibleSystem": "인벤토리 및 제작 시스템",
-          "validationEvidence": "자원 수집부터 장비 장착 및 스탯 반영까지의 데이터 흐름 검증"
-        },
-        {
-          "designElement": "모바일 터치 UX",
-          "responsibleSystem": "입력 및 UI 관리 시스템",
-          "validationEvidence": "가상 조이스틱 응답 속도 16ms 이하 및 터치 오인식률 1% 미만 달성 테스트 검증"
+          "designElement": "Mobile Touch UX Integration",
+          "responsibleSystem": "Input and UI Management System",
+          "validationEvidence": "Latency test results showing virtual joystick input response under 16ms with zero unhandled touch events."
         }
       ],
       "openQuestions": [
@@ -187,7 +182,7 @@
         "PLATFORM_FIT_DESIGN": 60,
         "UX_AND_ACCESSIBILITY_PLAN": 80,
         "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
       },
       "scores": {
         "IDEA_AND_DISTINCTNESS": 9.6,
@@ -200,12 +195,11 @@
         "PLATFORM_FIT_DESIGN": 4.8,
         "UX_AND_ACCESSIBILITY_PLAN": 4.8,
         "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
       },
-      "totalScore": 77.4,
+      "totalScore": 78.4,
       "criticalAxisFailures": [
-        "PLATFORM_FIT_DESIGN",
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+        "PLATFORM_FIT_DESIGN"
       ],
       "hardFailures": [
         "CRITICAL_AXIS_MINIMUM_FAIL"
@@ -224,20 +218,6 @@
           "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
           "bypassAllowed": false,
           "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
         }
       ],
       "revalidated": false,
@@ -247,38 +227,11 @@
     "designer_pre_gate_repair_1": {
       "platformFitPlan": {
         "targetPlatform": "UNITY",
-        "inputModel": "가상 조이스틱과 자동 공격 기반의 원터치 모바일 최적화 입력으로 이동과 타겟팅의 직관성을 보장",
-        "performanceBudget": "모바일 저사양 기기 기준 60fps 유지, 드로우 콜 100회 이하, 메모리 사용량 500MB 제한",
-        "sessionConstraints": "1회 세션 평균 4분 내외로 구성하여 단시간 몰입과 모바일 플레이 타임 제약 충족"
+        "inputModel": "Virtual joystick with auto-attack for one-thumb mobile control, featuring bottom-screen hot zones for seamless directional movement and quick upgrades.",
+        "performanceBudget": "Target 60 FPS on mid-range mobile devices, under 100 draw calls, memory usage strictly capped below 500MB, utilizing texture atlases and dynamic batching.",
+        "sessionConstraints": "Average session length limited to 4 minutes per run to match mobile player retention patterns, with distinct wave durations of 60 seconds."
       },
-      "mobileUx": "한 손 조작이 가능한 가상 패드와 직관적인 아이콘 크기로 터치 실수를 방지하고, 세션 이탈 없는 빠른 업그레이드 선택 UI 제공",
-      "technicalAssumptions": [
-        "유니티 엔진의 2D/3D 하이브리드 파이프라인 활용",
-        "오브젝트 풀링을 통한 대량의 곤충 적군 최적화",
-        "로컬 세이브 데이터 암호화 및 비동기 클라우드 저장 지원",
-        "이벤트 기반 데미지 및 스탯 연산 모듈 분리"
-      ],
-      "validationQuestions": [
-        "4분 세션 동안 플레이어가 피로감을 느끼지 않고 몰입할 수 있는가?",
-        "모바일 터치 환경에서 복잡한 회피와 제작 선택이 직관적으로 이루어지는가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "실시간 군집 전투",
-          "responsibleSystem": "코어 전투 루프",
-          "validationEvidence": "프레임 드랍 없이 100마리 이상의 적 처치 및 웨이브 전환 테스트 통과"
-        },
-        {
-          "designElement": "생태 먹이사슬 시스템",
-          "responsibleSystem": "생태계 AI 제어 시스템",
-          "validationEvidence": "곤충 간 어그로 분산 및 포식 관계 시뮬레이션 로그 확인"
-        },
-        {
-          "designElement": "미크로 제작 모듈",
-          "responsibleSystem": "인벤토리 및 제작 시스템",
-          "validationEvidence": "자원 수집부터 장비 장착 및 스탯 반영까지의 데이터 흐름 검증"
-        }
-      ]
+      "mobileUx": "One-thumb virtual pad layout with oversized touch targets to prevent misclicks, presenting 3 upgrade cards instantly on level-up for rapid decision making without breaking flow."
     },
     "deterministic_pre_gate_after_repair_1": {
       "scoreSystem": "STAGE_GATE_SCORING_V2",
@@ -317,7 +270,7 @@
         "PLATFORM_FIT_DESIGN": 60,
         "UX_AND_ACCESSIBILITY_PLAN": 80,
         "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
       },
       "scores": {
         "IDEA_AND_DISTINCTNESS": 9.6,
@@ -330,12 +283,11 @@
         "PLATFORM_FIT_DESIGN": 4.8,
         "UX_AND_ACCESSIBILITY_PLAN": 4.8,
         "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
       },
-      "totalScore": 77.4,
+      "totalScore": 78.4,
       "criticalAxisFailures": [
-        "PLATFORM_FIT_DESIGN",
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+        "PLATFORM_FIT_DESIGN"
       ],
       "hardFailures": [
         "CRITICAL_AXIS_MINIMUM_FAIL"
@@ -354,20 +306,6 @@
           "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
           "bypassAllowed": false,
           "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
         }
       ],
       "revalidated": false,
@@ -377,45 +315,11 @@
     "designer_pre_gate_repair_2": {
       "platformFitPlan": {
         "targetPlatform": "UNITY",
-        "inputModel": "가상 조이스틱과 자동 공격 기반의 원터치 모바일 최적화 입력으로 이동과 타겟팅의 직관성을 보장하며, 화면 하단 영역에 UI 터치 핫존을 배치하여 엄지손가락 한 손으로 모든 조작이 가능하도록 구현",
-        "performanceBudget": "모바일 저사양 기기 기준 60fps 유지, 드로우 콜 100회 이하, 메모리 사용량 500MB 제한, 폴리곤 수 최적화 및 텍스처 아틀라스 적용",
-        "sessionConstraints": "1회 세션 평균 4분 내외로 구성하여 단시간 몰입과 모바일 플레이 타임 제약 충족, 웨이브 당 60초 제한을 두어 빠른 호흡 유지"
+        "inputModel": "Virtual joystick with auto-attack for one-thumb mobile control, featuring bottom-screen hot zones for seamless directional movement and quick upgrades.",
+        "performanceBudget": "Target 60 FPS on mid-range mobile devices, under 100 draw calls, memory usage strictly capped below 500MB, utilizing texture atlases and dynamic batching.",
+        "sessionConstraints": "Average session length limited to 4 minutes per run to match mobile player retention patterns, with distinct wave durations of 60 seconds."
       },
-      "mobileUx": "한 손 조작이 가능한 가상 패드와 직관적인 아이콘 크기로 터치 실수를 방지하고, 세션 이탈 없는 빠른 업그레이드 선택 UI 제공. 레벨업 시 게임 일시 정지와 함께 화면 중앙에 3가지 선택지를 카드 형태로 배치하여 엄지손가락으로 쉽게 탭할 수 있도록 설계",
-      "technicalAssumptions": [
-        "유니티 엔진의 2D/3D 하이브리드 파이프라인 활용",
-        "오브젝트 풀링을 통한 대량의 곤충 적군 최적화",
-        "로컬 세이브 데이터 암호화 및 비동기 클라우드 저장 지원",
-        "이벤트 기반 데미지 및 스탯 연산 모듈 분리",
-        "모바일 터치 입력을 위한 멀티 터치 및 제스처 인식 최적화 적용"
-      ],
-      "validationQuestions": [
-        "4분 세션 동안 플레이어가 피로감을 느끼지 않고 몰입할 수 있는가?",
-        "모바일 터치 환경에서 복잡한 회피와 제작 선택이 직관적으로 이루어지는가?",
-        "저사양 모바일 기기에서 100마리 이상의 적이 등장할 때 60fps가 안정적으로 유지되는가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "실시간 군집 전투",
-          "responsibleSystem": "코어 전투 루프",
-          "validationEvidence": "프레임 드랍 없이 100마리 이상의 적 처치 및 웨이브 전환 테스트 통과"
-        },
-        {
-          "designElement": "생태 먹이사슬 시스템",
-          "responsibleSystem": "생태계 AI 제어 시스템",
-          "validationEvidence": "곤충 간 어그로 분산 및 포식 관계 시뮬레이션 로그 확인"
-        },
-        {
-          "designElement": "미크로 제작 모듈",
-          "responsibleSystem": "인벤토리 및 제작 시스템",
-          "validationEvidence": "자원 수집부터 장비 장착 및 스탯 반영까지의 데이터 흐름 검증"
-        },
-        {
-          "designElement": "모바일 터치 UX",
-          "responsibleSystem": "입력 및 UI 관리 시스템",
-          "validationEvidence": "가상 조이스틱 응답 속도 16ms 이하 및 터치 오인식률 1% 미만 달성 테스트 검증"
-        }
-      ]
+      "mobileUx": "One-thumb virtual pad layout with oversized touch targets to prevent misclicks, presenting 3 upgrade cards instantly on level-up for rapid decision making without breaking flow."
     },
     "deterministic_pre_gate_after_repair_2": {
       "scoreSystem": "STAGE_GATE_SCORING_V2",
@@ -454,7 +358,7 @@
         "PLATFORM_FIT_DESIGN": 60,
         "UX_AND_ACCESSIBILITY_PLAN": 80,
         "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
       },
       "scores": {
         "IDEA_AND_DISTINCTNESS": 9.6,
@@ -467,12 +371,11 @@
         "PLATFORM_FIT_DESIGN": 4.8,
         "UX_AND_ACCESSIBILITY_PLAN": 4.8,
         "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
       },
-      "totalScore": 77.4,
+      "totalScore": 78.4,
       "criticalAxisFailures": [
-        "PLATFORM_FIT_DESIGN",
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+        "PLATFORM_FIT_DESIGN"
       ],
       "hardFailures": [
         "CRITICAL_AXIS_MINIMUM_FAIL"
@@ -491,20 +394,6 @@
           "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
           "bypassAllowed": false,
           "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
         }
       ],
       "revalidated": false,
@@ -515,66 +404,66 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
-      "calls": 2,
+      "calls": 4,
       "successes": 0,
-      "failures": 2,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3213,
-      "lastMs": 59,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 31.944298054s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"31s\" } ] } }",
-      "updatedAt": "2026-09-18T06:09:28.069Z"
+      "totalMs": 3490,
+      "lastMs": 125,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 16.087085584s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"16s\" } ] } }",
+      "updatedAt": "2026-09-18T06:09:43.933Z"
     },
     "gemini:gemini-3.7-flash": {
-      "calls": 2,
+      "calls": 4,
       "successes": 0,
-      "failures": 2,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 3678,
-      "lastMs": 136,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 31.866716388s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.7-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"31s\" } ] } }",
-      "updatedAt": "2026-09-18T06:09:28.145Z"
+      "totalMs": 4144,
+      "lastMs": 220,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 15.988178327s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"15s\" } ] } }",
+      "updatedAt": "2026-09-18T06:09:44.028Z"
     },
     "gemini:gemini-3.6-flash": {
-      "calls": 2,
+      "calls": 4,
       "successes": 0,
-      "failures": 2,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 18489,
-      "lastMs": 198,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 31.804026172s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"31s\" } ] } }",
-      "updatedAt": "2026-09-18T06:09:28.207Z"
+      "totalMs": 19125,
+      "lastMs": 303,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 15.904076144s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.6-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"15s\" } ] } }",
+      "updatedAt": "2026-09-18T06:09:44.111Z"
     },
     "gemini:gemini-3.5-flash": {
-      "calls": 2,
+      "calls": 4,
       "successes": 0,
-      "failures": 2,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 31145,
-      "lastMs": 256,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 31.746033265s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"31s\" } ] } }",
-      "updatedAt": "2026-09-18T06:09:28.265Z"
+      "totalMs": 31972,
+      "lastMs": 381,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 15.825174405s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"15s\" } ] } }",
+      "updatedAt": "2026-09-18T06:09:44.190Z"
     },
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 45245,
-      "lastMs": 2772,
+      "totalMs": 55133,
+      "lastMs": 1023,
       "lastError": null,
-      "updatedAt": "2026-09-18T06:09:33.140Z"
+      "updatedAt": "2026-09-18T06:09:46.139Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T06:08:47.886Z",
-  "updatedAt": "2026-09-18T06:09:33.142Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:09:33.140Z",
+  "updatedAt": "2026-09-18T06:09:46.141Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:09:46.139Z",
   "geminiModelResolution": {
     "gemini-3.8-flash": "gemini-3.5-flash-lite"
   },
