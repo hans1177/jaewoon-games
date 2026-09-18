@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      margin: 20px 0;
+    }
+    .chess-board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 5px;
+      margin: 20px;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .square {
+      width: 60px;
+      height: 60px;
+      background-color: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #333;
+      border: 1px solid #999;
+      cursor: pointer;
+    }
+    .square.selected {
+      background-color: #007bff;
+      color: white;
+    }
+    .square.occupied {
+      background-color: #007bff;
+      color: white;
+    }
+    .square.empty {
+      background-color: #fff;
+      color: #999;
+    }
+    .controls {
+      margin: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: 2px solid #007bff;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #005f99;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2 Chess Battle</h1>
+    <div class="chess-board" id="chessBoard"></div>
+    <div class="controls">
+      <button onclick="makeMove()">Make Move</button>
+      <button onclick="restartGame()">Restart Game</button>
+    </div>
+  </main>
+  <script>
+    const board = document.getElementById('chessBoard');
+    const game = {
+      board: [],
+      currentPlayer: 'white',
+      currentMove: null,
+      isGameOver: false,
+      ai: {
+        name: 'AI',
+        color: 'black',
+        moves: []
+      },
+      pieces: {
+        white: ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'],
+        black: ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']
+      }
+    };
+
+    function createBoard() {
+      for (let row = 0; row < 8; row++) {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'row';
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.className = 'square';
+          square.dataset.row = row;
+          square.dataset.col = col;
+          square.addEventListener('click', () => selectSquare(square));
+          rowDiv.appendChild(square);
+        }
+        board.appendChild(rowDiv);
+      }
+    }
+
+    function selectSquare(square) {
+      if (square.classList.contains('selected') || square.classList.contains('occupied')) return;
+
+      const row = parseInt(square.dataset.row);
+      const col = parseInt(square.dataset.col);
+
+      if (game.currentMove) {
+        square.classList.add('selected');
+        square.style.backgroundColor = '#007bff';
+        square.style.color = 'white';
+        game.currentMove = null;
+      } else {
+        square.classList.add('selected');
+        square.style.backgroundColor = '#007bff';
+        square.style.color = 'white';
+      }
+    }
+
+    function makeMove() {
+      if (!game.currentMove) {
+        alert('Make a move first!');
+        return;
+      }
+
+      const row = parseInt(game.currentMove.square.dataset.row);
+      const col = parseInt(game.currentMove.square.dataset.col);
+
+      const piece = game.board[row][col];
+      const targetRow = parseInt(game.currentMove.targetRow);
+      const targetCol = parseInt(game.currentMove.targetCol);
+
+      if (piece === 'K' && targetRow === row + 1 && targetCol === col) {
+        // Pawn promotion
+        const promotionPiece = prompt('Promote to (R/N/B/Q):');
+        if (promotionPiece) {
+          game.board[row][col] = promotionPiece;
+          game.currentMove = null;
+          return;
+        }
+      } else if (piece === 'R' && targetRow === row - 1 && targetCol === col) {
+        // Rook move
+        game.board[row][col] = 'R';
+        game.board[targetRow][targetCol] = 'R';
+        game.currentMove = null;
+        return;
+      } else if (piece === 'N' && targetRow === row + 1 && targetCol === col) {
+        // Knight move
+        game.board[row][col] = 'N';
+        game.board[targetRow][targetCol] = 'N';
+        game.currentMove = null;
+        return;
+      } else if (piece === 'B' && targetRow === row + 1 && targetCol === col) {
+        // Bishop move
+        game.board[row][col] = 'B';
+        game.board[targetRow][targetCol] = 'B';
+        game.currentMove = null;
+        return;
+      } else if (piece === 'Q' && targetRow === row + 1 && targetCol === col) {
+        // Queen move
+        game.board[row][col] = 'Q';
+        game.board[targetRow][targetCol] = 'Q';
+        game.currentMove = null;
+        return;
+      } else if (piece === 'K' && targetRow === row - 1 && targetCol === col) {
+        // King move
+        game.board[row][col] = 'K';
+        game.board[targetRow][targetCol] = 'K';
+        game.currentMove = null;
+        return;
+      } else {
+        alert('Invalid move!');
+        return;
+      }
+    }
+
+    function restartGame() {
+      game.board = [];
+      game.currentMove = null;
+      game.isGameOver = false;
+      game.ai.moves = [];
+      createBoard();
+    }
+
+    // Initialize game
+    createBoard();
+  </script>
+</body>
+</html>
