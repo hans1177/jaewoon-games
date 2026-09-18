@@ -9,6 +9,8 @@ const unity={sampleId:'s-unity',instruction:'fix Android build',output:'verified
 const roblox={sampleId:'s-roblox',instruction:'fix Roblox save and rejoin',output:'verified roblox patch',taskType:'roblox',lifecycle:'active',project:'game-r',sourceRevision:'abc9876',provenance:{sourceKind:'vibe2',sourceRevision:'abc9876'},qa:{independentQa:'PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}};
 const webPortable={sampleId:'s-web-portable',instruction:'verified webgame touch input mobile ui save load resume performance responsive regression core loop',output:'verified web companion patch',taskType:'qa',lifecycle:'active',project:'web-game',sourceRevision:'fedcba9',sourcePaths:['web-games/web-game/index.html'],tags:['webgame','touch-input','mobile-ui','save-load','performance','responsive','regression','core-loop'],provenance:{sourceKind:'vibe3-trajectory',sourceRevision:'fedcba9',portableContextMayCrossPlatforms:true,platformPassEvidenceTransferAllowed:false},qa:{independentQa:'PASS',browserQa:'PASS',runtime:'PASS'}};
 const external={sampleId:'s-blackbox',instruction:'verify black box input',output:'bounded observation',taskType:'qa',lifecycle:'active',project:'block-blast',sourceRevision:'sha256:abc',provenance:{sourceKind:'external-black-box',sourceRevision:'sha256:abc'},qa:{independentQa:'BLACK_BOX_EVIDENCE_PASS',browserQa:'NOT_APPLICABLE',runtime:'PASS'}};
+const authorized={sampleId:'s-authorized',candidateId:'s-authorized',instruction:'authorized source study',input:JSON.stringify({learningDomains:['board-grid-placement','input-drag-touch'],counts:{sourceDocuments:10,assets:5}}),output:'- AUTHORIZED_SOURCE:board-grid-placement\n- AUTHORIZED_SOURCE:input-drag-touch',taskType:'coding',lifecycle:'active',project:'authorized-game',gameId:'authorized-game',sourceRevision:'sha256:auth',sourceKind:'authorized-source',provenance:{sourceKind:'authorized-source',sourceRevision:'sha256:auth',authority:'OWNER_ASSERTED_REUSE_REINTERPRETATION'},verification:{independentQa:'AUTHORIZED_SOURCE_EVIDENCE_PASS',browserQa:'NOT_APPLICABLE',runtime:'STATIC_VERIFIED',authorizedSourceEvidence:'PASS',runtimePassClaimed:false}};
+const commercial={sampleId:'s-commercial',instruction:'commercial runtime reference',output:'runtime architecture lesson',taskType:'unity',lifecycle:'active',project:'commercial-game',gameId:'commercial-game',sourceRevision:'commercial-run-1',sourceKind:'commercial-runtime-reference',practiceOnly:true,runtimePromotionAllowed:false,topic:'commercial-puzzle-runtime-architecture',provenance:{sourceKind:'commercial-runtime-reference',sourceRevision:'commercial-run-1',observationKind:'BLACK_BOX_RUNTIME_ONLY',codeExtracted:false,binaryRedistributed:false},qa:{runtime:'PASS',independentQa:'NOT_APPLICABLE',browserQa:'NOT_APPLICABLE'}};
 const unverified={sampleId:'bad',instruction:'guess',output:'bad',taskType:'coding',lifecycle:'active',project:'x',sourceRevision:'z',provenance:{sourceKind:'vibe2',sourceRevision:'z'},qa:{independentQa:'PASS',browserQa:'FAIL',runtime:'PASS'}};
 const trajectory={trajectoryId:'traj-ok',request:'repair inventory save runtime',outcome:'VERIFIED_WINNER',metadata:{taskType:'bugfix',project:'game-a'},finalEvidence:{runtimePass:true,qaPassed:true,regressionPassed:true,exactRevision:true,protectedStatePreserved:true,sourceRevision:'fff1111'},candidates:[{id:'c1',eligible:false,failure:'runtime crash'},{id:'c2',eligible:true,score:.9}]};
 
@@ -48,7 +50,7 @@ assert.equal(candidatePlan.teachers.length,2);
 assert(candidatePlan.teachers.every(x=>x.authoritative===false&&x.completionAuthority===false));
 assert.equal(candidatePlan.paidFallback,false);
 
-const artifacts=buildPumpArtifacts({trainingSamples:[ordinary,unity,roblox,webPortable,external,unverified],trajectories:[trajectory]});
+const artifacts=buildPumpArtifacts({trainingSamples:[ordinary,unity,roblox,webPortable,external,authorized,commercial,unverified],trajectories:[trajectory]});
 assert.equal(Object.keys(artifacts.playbooks.taskTypes).length,8);
 assert.equal(artifacts.playbooks.taskTypes.roblox.taskType,'roblox');
 assert(artifacts.playbooks.taskTypes.roblox.reuse.some(item=>item.id==='s-web-portable'));
@@ -57,6 +59,16 @@ assert.equal(artifacts.playbooks.policy.platformEvidenceTransferAllowed,false);
 assert(artifacts.benchmark.cases.length>0);
 assert(artifacts.benchmark.cases.every(x=>x.countsAsTrainingSample===false));
 assert(artifacts.benchmark.cases.every(x=>x.candidateCount===5&&x.maxRepairAttempts===3));
+assert.equal(artifacts.recombination.policy.copyMode,false);
+assert.equal(artifacts.recombination.policy.transformativeReinterpretation,true);
+assert(artifacts.recombination.materials.some(x=>x.id==='s-authorized'&&x.capabilities.assetStructure===true));
+assert(artifacts.recombination.materials.some(x=>x.id==='s-commercial'&&x.evidenceMode==='BLACK_BOX_RUNTIME'));
+assert(artifacts.recombination.recipes.length>0);
+assert(artifacts.recombination.recipes.every(x=>new Set(x.sourceProjects).size>=2));
+assert(artifacts.recombination.recipes.every(x=>x.assetStrategy.newAssetRequired===true&&x.assetStrategy.rawPixelReuseAllowed===false));
+assert(artifacts.recombination.recipes.every(x=>x.codeStrategy.newImplementationRequired===true&&x.codeStrategy.verbatimSourceReuseAllowed===false));
+assert.equal(artifacts.playbooks.transformativeRecombination.enabled,true);
+assert.equal(artifacts.playbooks.transformativeRecombination.rawSourceOutputAllowed,false);
 
 const ingestWorkflow=fs.readFileSync('.github/workflows/vibe2-distillation-ingest.yml','utf8');
 const localTrainingWorkflow=fs.readFileSync('.github/workflows/vibe2-local-distillation-train.yml','utf8');
