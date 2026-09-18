@@ -7,12 +7,257 @@
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 coreLoop와 signatureSystems가 플레이어의 자원 분배와 주민 배치 선택에 따라 마을의 시각적 형태와 생존 상태를 실시간으로 변화시킵니다.",
+      "playerFantasy": "플레이어는 무인도의 유일한 지도자가 되어 황폐한 대지를 개척하고, 각기 다른 특성을 가진 주민들을 적재적소에 배치하여 활기차고 번영하는 자립형 마을을 건설하는 성취감을 느낀다.",
+      "coreFun": "자원을 수집하고 건물을 배치하는 반복적인 선택을 통해 마을의 인구와 생산력이 눈에 띄게 증가하는 상태 변화를 관찰하며, 즉각적인 수확과 성장 보상을 획득하는 재미를 제공한다.",
+      "coreLoop": [
+        "플레이어는 터치 입력을 통해 섬의 특정 구역을 탐색하고 자원 수집 도구나 건물을 선택한다.",
+        "선택한 작업에 따라 자원이 소모되고 건물이 건설되거나 주민의 생존 상태가 변화한다.",
+        "완료된 생산품을 회수하고 새로운 해제 조건이 열리며 다음 확장 목표를 선택한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "주민 인력 배치 시스템",
+          "purpose": "각 주민의 고유 성향과 능력에 맞춰 농업, 채집, 건설 등의 업무를 배정하여 마을의 생산 효율과 자원 수급 속도를 최적화한다.",
+          "playerChoice": "어떤 주민을 어떤 생산 시설에 배치할지 선택하고, 피로도와 효율을 고려하여 휴식과 노동의 균형을 조절하는 전략적 결정을 내린다."
+        },
+        {
+          "name": "환경 개척 및 구역 확장 시스템",
+          "purpose": "섬 내부의 미지의 숲과 해안가를 개척하여 가용 영토를 넓히고 새로운 건물 건설 부지와 숨겨진 자원을 확보한다.",
+          "playerChoice": "어느 방향으로 먼저 길을 뚫고 영토를 확장할지 우선순위를 정해 자원을 투자하고 지형적 이점을 선점한다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "주민 인력 배치 시스템",
+          "toSystem": "환경 개척 및 구역 확장 시스템",
+          "trigger": "주민 생산 활동 완료로 자원 획득",
+          "stateChange": "확장 가능한 영토의 비용 자원이 충족되어 다음 구역 개척이 활성화됨"
+        },
+        {
+          "fromSystem": "환경 개척 및 구역 확장 시스템",
+          "toSystem": "주민 인력 배치 시스템",
+          "trigger": "새로운 구역 개척 완료",
+          "stateChange": "추가 주거 시설 건설 가능해지며 새로운 주민을 맞이할 수 있는 공간이 확장됨"
+        },
+        {
+          "fromSystem": "주민 인력 배치 시스템",
+          "toSystem": "자원 관리 및 경제 시스템",
+          "trigger": "주민 피로도 임계치 도달",
+          "stateChange": "생산 효율이 일시적으로 감소하고 식량 소비량이 증가하여 자원 균형에 영향 발생"
+        }
+      ],
+      "progressionDirection": "초기에는 간단한 도구 제작과 단일 자원 수집으로 시작하여, 중반부에는 다수의 주민 관리와 생산 체인 연결, 후반부에는 섬 전체의 자립과 대규모 축제 개최를 통한 완성 단계로 발전합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "자원 수집 및 생산 -> 시설 업그레이드 -> 신규 주민 영입 -> 영토 확장 및 고티어 자원 해제",
+        "resourceFlow": "플레이어의 능동적 터치와 주민 노동으로 기초 자원이 생산되며, 건물의 유지보수와 확장 비용으로 소모되는 순환 구조를 가집니다.",
+        "balanceRules": "자원 수급량과 소비량의 격차가 급격히 벌어지지 않도록 관리하며, 플레이어의 세션 플레이 타임에 맞춰 적절한 보상 주기를 유지합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "해양 무역항 건설 및 선박 거래",
+          "newGameplay": "외부 섬과의 무역선이 주기적으로 방문하며 남는 자원을 희귀한 장식품이나 특수 기술 청사진으로 교환하는 무역 미니게임이 추가됩니다.",
+          "systemImpact": "기존의 자원 소모처가 다양해지고 내수 경제 중심에서 외부 교류를 통한 성장 축이 추가됩니다."
+        },
+        {
+          "milestone": "계절별 날씨 변화와 재해 대응",
+          "newGameplay": "태풍이나 가뭄 같은 계절별 기상 이벤트가 발생하여 특정 작물 생산이 제한되고 임시 방어 시설을 구축해야 합니다.",
+          "systemImpact": "단순한 자원 축적을 넘어 리스크 관리와 사전 대비라는 새로운 플레이 선택지를 시스템에 도입합니다."
+        },
+        {
+          "milestone": "주민 관계망과 축제 시스템",
+          "newGameplay": "주민 간의 친밀도와 마을 만족도가 수치화되어 높을 경우 특별한 생산 버프나 전설적인 제작법을 해제할 수 있습니다.",
+          "systemImpact": "효율 중심의 배치에서 주민 복지와 행복도를 고려하는 다각적 관리 시스템으로 확장됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "모든 주민의 식량 고갈 및 기아 상태 도달",
+          "핵심 생산 시설의 내구도 완전 파괴",
+          "마을 만족도의 극단적 하락으로 인한 주민 이탈"
+        ],
+        "retryFlow": "실패 시 현재 보유한 일부 자원과 주요 건물이 유지된 상태로 가장 가까운 체크포인트 세션으로 즉시 복귀하여 재도전할 수 있습니다.",
+        "riskPressure": "자원 관리를 소홀히 하면 생산성이 급감하여 연쇄적인 위기로 이어질 수 있는 적당한 긴장감을 유발합니다.",
+        "recoveryRules": "비상 식량 창고나 긴급 복구 자원을 미리 비축해 두었다면 위기 상황에서 빠르게 회복할 수 있는 안전장치를 제공합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 및 PC 환경에서 직관적인 원터치 드래그 앤 드롭 방식을 지원하여 누구나 쉽게 조작할 수 있습니다.",
+        "performanceBudget": "로블록스 클라이언트 최적화를 위해 동시 렌더링되는 오브젝트 수와 파티클 효과를 엄격히 제한합니다.",
+        "sessionConstraints": "한 번의 플레이 세션을 5분에서 10분 단위로 끊어 즐길 수 있도록 짧고 명확한 목표를 제시합니다."
+      },
+      "visualDirection": "아기자기하고 따뜻한 로우폴리곤 그래픽 스타일을 채택하여 편안하고 친근한 무인도 분위기를 시각적으로 전달합니다.",
+      "mobileUx": "엄지손가락 하나로 모든 주요 메뉴와 건설 배치를 조작할 수 있도록 인터페이스를 하단에 집중 배치합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 보유 자원량, 주민 생존 상태, 다음 목표 알림을 화면 상단에 명확하게 고정합니다.",
+        "touchAndInput": "모바일 터치 미스를 방지하기 위해 버튼과 상호작용 오브젝트의 터치 영역을 충분히 넓게 확보합니다.",
+        "readability": "작은 모바일 화면에서도 텍스트와 아이콘이 한눈에 들어오도록 고대비 색상과 직관적인 심볼을 사용합니다.",
+        "accessibility": "색약 플레이어를 위한 패턴 구분 옵션과 UI 크기 조절 기능을 기본 제공합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "햇살이 비치는 푸른 바다와 초록빛 섬의 조화를 살린 밝고 채도가 높은 파스텔 톤 비주얼을 유지합니다.",
+        "audioIdentity": "잔잔한 파도 소리와 새소리, 경쾌한 목재 타격 효과음을 조합하여 힐링되는 청각적 경험을 제공합니다.",
+        "gameplayFeedbackSync": "건설 완료나 자원 획득 시 즉각적인 사운드 피드백과 시각적 파티클을 동시 출력하여 조작 만족도를 높입니다."
+      },
+      "marketTargetDirection": "캐주얼하고 잔잔한 성장의 재미를 추구하는 글로벌 모바일 게이머 및 힐링 시뮬레이션 장르 선호층을 타겟으로 합니다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후 더 넓은 월드와 디테일한 커스텀 기능을 추가하여 스팀 플랫폼으로 확장할 수 있습니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "친구의 섬을 방문하여 자원을 선물하거나 협동 미션을 수행하는 소셜 확장 기능을 추후 검토할 수 있습니다.",
+      "technicalAssumptions": [
+        "클라이언트 측에서 자원 생산 및 시간 경과를 로컬로 처리하고 서버와 주기적으로 동기화합니다.",
+        "오브젝트 풀링 기법을 적용하여 다수의 주민과 건물이 생성될 때 프레임 저하를 방지합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 이내에 핵심 루프와 자원 수집의 재미를 온전히 이해하고 몰입하는가?",
+        "주민 인력 배치와 영토 확장 시스템이 서로 유기적으로 맞물려 지속적인 동기를 부여하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "주민 인력 배치 시스템",
+          "responsibleSystem": "주민 관리 및 작업 할당 매니저",
+          "validationEvidence": "유저가 주민을 시설에 드래그했을 때 즉시 생산 효율 수치가 변동하는지 로그와 UI로 검증합니다."
+        },
+        {
+          "designElement": "환경 개척 및 구역 확장 시스템",
+          "responsibleSystem": "영토 잠금 해제 및 자원 소비 컨트롤러",
+          "validationEvidence": "필요 자원이 충족된 상태에서 개척 버튼을 누를 때 맵 타일이 즉시 열리는지 테스트합니다."
+        },
+        {
+          "designElement": "시스템 간 상호연결",
+          "responsibleSystem": "글로벌 게임 스테이트 이벤트 버스",
+          "validationEvidence": "생산 완료 이벤트가 발생했을 때 자원 UI와 확장 버튼의 활성화 상태가 동기화되는지 확인합니다."
+        }
+      ],
+      "openQuestions": [
+        "오프라인 상태일 때의 자원 생산량을 어느 정도까지 허용할 것인가?",
+        "주민들의 개성과 외형을 무작위로 생성할 것인가, 고정 캐릭터로 제공할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {
+    "five_lead_reviews::development": {
+      "keep": [
+        "주민 배치와 구역 확장을 연계한 핵심 루프는 로블록스 플랫폼의 직관적인 성장 피드백 제공에 적합함"
+      ],
+      "fix": [
+        "클라이언트 로컬 처리 후 서버 동기화 방식은 데이터 변조 위험이 크므로, 모든 자원 검증 로직을 서버 권한으로 수정"
+      ],
+      "add": [
+        "오브젝트 풀링 외에도 로블록스 StreamingEnabled 설정을 활성화하여 대규모 마을 확장 시 메모리 부하를 방지"
+      ],
+      "risks": [
+        "주민 피로도와 식량 고갈이 연쇄적으로 발생할 경우 신규 유저의 이탈을 초래하는 데드락 상태에 빠질 위험이 있음"
+      ],
+      "evidence": [
+        "로블록스 내 타이쿤 및 시뮬레이션 장르의 평균 세션 시간과 서버 부하 데이터를 기반으로 10분 단위 목표 설계 타당함"
+      ],
+      "questions": [
+        "주민의 고유 성향 데이터가 늘어날 경우 서버-클라이언트 간 패킷 오버헤드를 줄이기 위한 데이터 압축 계획이 있는가?"
+      ]
+    }
+  },
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 17695,
+      "lastMs": 17695,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:41:13.792Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 10613,
+      "lastMs": 10613,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:41:24.532Z"
+    }
+  },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T08:40:56.095Z",
-  "updatedAt": "2026-09-18T08:40:56.096Z"
+  "updatedAt": "2026-09-18T08:41:24.533Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:41:24.532Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
+    "gemini-3-flash-preview": "gemini-3-flash-preview"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
