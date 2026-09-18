@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    #controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #333;
+      color: #fff;
+    }
+    #controls button:hover {
+      background-color: #555;
+    }
+    #status {
+      margin-bottom: 20px;
+    }
+    #status p {
+      margin: 5px 0;
+    }
+    #map {
+      width: 100%;
+      height: 400px;
+      background-color: #444;
+      border: 1px solid #666;
+      margin-bottom: 20px;
+    }
+    #info {
+      width: 100%;
+      max-width: 600px;
+      background-color: #555;
+      padding: 15px;
+      border: 1px solid #777;
+      border-radius: 5px;
+    }
+    #info h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    #info p {
+      margin: 5px 0;
+    }
+    #score {
+      margin-top: 20px;
+    }
+    #score h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    #score p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div id="controls">
+      <button id="start">Start</button>
+      <button id="restart">Restart</button>
+    </div>
+    <div id="status">
+      <p id="status-text">Status: <span id="status-player">Player</span></p>
+    </div>
+    <div id="map"></div>
+    <div id="info">
+      <h2>Info</h2>
+      <p>Gameplay loop, restart, progression, UI, and mobile responsiveness</p>
+    </div>
+    <div id="score">
+      <h3>Score</h3>
+      <p id="score-text">Score: <span id="score-player">0</span></p>
+    </div>
+  </main>
+  <script>
+    const game = document.getElementById('game');
+    const controls = document.getElementById('controls');
+    const status = document.getElementById('status');
+    const statusText = document.getElementById('status-text');
+    const score = document.getElementById('score');
+    const scoreText = document.getElementById('score-text');
+
+    let player = 'Player';
+    let scoreValue = 0;
+
+    function updateStatus() {
+      statusText.textContent = `Status: ${player}`;
+    }
+
+    function updateScore() {
+      scoreText.textContent = `Score: ${scoreValue}`;
+    }
+
+    function startGame() {
+      player = 'Player';
+      scoreValue = 0;
+      updateStatus();
+      updateScore();
+      game.innerHTML = `
+        <h1>Vibe2</h1>
+        <div id="controls">
+          <button id="start">Start</button>
+          <button id="restart">Restart</button>
+        </div>
+        <div id="status">
+          <p id="status-text">Status: <span id="status-player">Player</span></p>
+        </div>
+        <div id="map"></div>
+        <div id="info">
+          <h2>Info</h2>
+          <p>Gameplay loop, restart, progression, UI, and mobile responsiveness</p>
+        </div>
+        <div id="score">
+          <h3>Score</h3>
+          <p id="score-text">Score: <span id="score-player">0</span></p>
+        </div>
+      `;
+    }
+
+    function restartGame() {
+      player = 'Player';
+      scoreValue = 0;
+      updateStatus();
+      updateScore();
+      game.innerHTML = `
+        <h1>Vibe2</h1>
+        <div id="controls">
+          <button id="start">Start</button>
+          <button id="restart">Restart</button>
+        </div>
+        <div id="status">
+          <p id="status-text">Status: <span id="status-player">Player</span></p>
+        </div>
+        <div id="map"></div>
+        <div id="info">
+          <h2>Info</h2>
+          <p>Gameplay loop, restart, progression, UI, and mobile responsiveness</p>
+        </div>
+        <div id="score">
+          <h3>Score</h3>
+          <p id="score-text">Score: <span id="score-player">0</span></p>
+        </div>
+      `;
+    }
+
+    controls.addEventListener('click', (e) => {
+      if (e.target.id === 'start') {
+        startGame();
+      } else if (e.target.id === 'restart') {
+        restartGame();
+      }
+    });
+  </script>
+</body>
+</html>
