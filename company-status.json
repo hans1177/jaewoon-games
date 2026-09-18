@@ -6,7 +6,7 @@
     "existingWebMaintenance": true,
     "newWebGameProduction": true,
     "webGamesRemainPlayable": true,
-    "policyAuthority": "COMPANY_FLOW.md",
+    "policyAuthority": "MACHINE_EXECUTION_CONTRACT",
     "aiDirector": {
       "mode": "rotating-local",
       "providers": [
@@ -52,7 +52,7 @@
       "runtimeGameHealthBadgeVisible": false,
       "gameCardsRequireUniqueTitleImages": true
     },
-    "sourceOfTruth": "COMPANY_FLOW.md",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "primaryPlatform": "ROBLOX",
     "allowedTargetPlatforms": [
       "ROBLOX",
@@ -796,5 +796,6 @@
       "resultPath": "company-revotes/daechung-rpg/daechung-rpg-cloud-license-20260908-002/director.json",
       "completedAt": "2026-09-08T06:02:46.100951+00:00"
     }
-  ]
+  ],
+  "runtimeAuthority": "company-runtime"
 }
