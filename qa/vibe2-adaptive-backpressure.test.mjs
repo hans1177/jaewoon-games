@@ -127,6 +127,36 @@ test('low-load runs never reduce persistent concurrency or count as recovery', (
   assert.equal(healthyLowLoad.lastReason, 'LOW_LOAD');
 });
 
+test('practice-only pressure never changes production concurrency', () => {
+  const next = decideAdaptiveBackpressure(
+    createParallelismControl({ currentMax: 16 }),
+    {
+      runId: 'practice-only-run',
+      workerCount: 16,
+      adaptiveWorkerCount: 0,
+      effectiveMax: 16,
+      actualPeakConcurrency: 16,
+      adaptivePeakConcurrency: 0,
+      effectivePeakUtilizationPct: 100,
+      adaptiveEffectivePeakUtilizationPct: 0,
+      failureRatePct: 100,
+      adaptiveFailureRatePct: 0,
+      pressureLevel: 'SEVERE',
+      adaptivePressureLevel: 'LOW',
+      bottleneck: 'NONE',
+      adaptiveBottleneck: 'NONE',
+      queueWait: { p95Ms: 1000 },
+      checkout: { p95Ms: 1000 }
+    }
+  );
+  assert.equal(next.currentMax, 16);
+  assert.equal(next.lastDecision, 'HOLD');
+  assert.equal(next.lastReason, 'NON_PRODUCTION_ONLY');
+  assert.equal(next.lastTelemetry.workerCount, 0);
+  assert.equal(next.lastTelemetry.totalWorkerCount, 16);
+  assert.equal(next.lastTelemetry.failureRatePct, 0);
+});
+
 test('two consecutive healthy saturated runs recover one step', () => {
   const first = decideAdaptiveBackpressure(
     createParallelismControl({ currentMax: 16 }),
