@@ -119,7 +119,9 @@ test('independent review generation keeps one department-model task per required
   assert.match(design,/const departmentReviewModels=Object\.fromEntries/);
   assert.match(design,/const independentReviewTasks=Object\.fromEntries/);
   assert.match(design,/const reviewsSchemaFor=roles=>/);
-  assert.match(design,/parallelObjectByLane\(Object\.keys\(independentReviewTasks\),key=>independentReviewTasks\[key\]\.model/);
+  assert.match(design,/const independentReviewOrder=Object\.keys\(independentReviewTasks\)\.sort/);
+  assert.match(design,/independentReviewTasks\[a\]\.model\.localeCompare\(independentReviewTasks\[b\]\.model\)/);
+  assert.match(design,/parallelObjectByLane\(independentReviewOrder,key=>independentReviewTasks\[key\]\.model/);
   assert.match(design,/ASSIGNED_DEPARTMENT=\$\{role\}/);
   assert.match(design,/DEPARTMENT_REVIEW_MISSING/);
 });
@@ -133,6 +135,33 @@ test('independent five-way department phases use bounded parallel execution with
   assert.match(design,/repeatedFatalReview:true/);
   assert.match(design,/rebuttalRounds:1/);
   assert.match(design,/sameModelRevised:true/);
+});
+
+test('design cycle resumes from fingerprinted phase and per-model checkpoints without weakening review counts',()=>{
+  assert.match(design,/DESIGN_CHECKPOINT_CONTRACT_VERSION=1/);
+  assert.match(design,/design-checkpoint\.json/);
+  assert.match(design,/checkpointFingerprint=createHash\('sha256'\)/);
+  assert.match(design,/DESIGN_CHECKPOINT_HIT=/);
+  assert.match(design,/DESIGN_TASK_CHECKPOINT_HIT=/);
+  assert.match(design,/runCheckpointTask\('independent_department_reviews'/);
+  assert.match(design,/runCheckpointTask\('department_representatives'/);
+  assert.match(design,/runCheckpointTask\('lead_rebuttals'/);
+  assert.match(design,/runCheckpointTask\('five_lead_fatal_review'/);
+  assert.match(design,/strictDesignerFeedback/);
+  assert.match(design,/policyDigest/);
+  assert.match(design,/checkpointReusable/);
+  assert.match(design,/MODEL_CENTERED_REVIEW_ORDER=YES/);
+  assert.match(design,/independentReviewOutputs:ROLES\.reduce/);
+});
+
+test('seed design workflow persists checkpoints on the runtime branch without switching the live workspace',()=>{
+  assert.match(workflow,/Persist DESIGN_ONLY checkpoint immediately/);
+  assert.match(workflow,/if: always\(\) && steps\.target\.outputs\.should_run == 'true'/);
+  assert.match(workflow,/design-checkpoint\.json/);
+  assert.match(workflow,/git worktree add --detach/);
+  assert.match(workflow,/runtime: DESIGN_ONLY checkpoint/);
+  assert.match(workflow,/DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES/);
+  assert.doesNotMatch(workflow,/git checkout -B seed-design-checkpoint-persist/);
 });
 
 test('design runtime emits persistent phase timing evidence for the next bottleneck',()=>{
