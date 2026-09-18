@@ -3,143 +3,140 @@
   "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
   "date": "2026-09-19",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ROBLOX-BATTLEGROUND-FIGHT-WELCOME-TO-BLOXBURG-20260917",
-  "fingerprint": "f0eb8c5344560a4aa9dc269e303bc6e78f47e77c3238f7ae29d635cea1b1907f",
+  "fingerprint": "b54abf1e3483ce2324d45a2b1cee225eed2d5c5d93a597e5222ebd5b9f3ab953",
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1"
+    "deterministic_pre_gate"
   ],
   "phases": {
     "designer_draft": {
-      "identity": "Vector Clash is a fast-paced, physics-based arena combat game where players manipulate vector-based movement to outmaneuver opponents in short, high-intensity sessions. The core loop forces players to balance aggressive positioning with defensive cooldown management, while signature systems like 'Vector Dash' and 'Arena Hazard' ensure that every movement choice directly alters the battlefield state, creating a high-stakes tactical environment that rewards precision and quick decision-making.",
-      "playerFantasy": "You are a kinetic warrior in a neon arena, mastering the flow of motion to strike down rivals. You feel the rush of perfectly timed dashes and the satisfaction of turning an opponent's momentum against them to secure victory in a dynamic, ever-changing combat space.",
-      "coreFun": "Players engage in rapid, short-burst combat where every input—dash, strike, or shield—triggers immediate, observable physics changes. The fun lies in predicting opponent movement, executing precise vector maneuvers, and witnessing the instant impact of successful hits or environmental traps that shift the tide of battle.",
+      "identity": "Vector Clash은 기하학적 전장에서 벡터 기반의 이동과 스킬 충돌을 통해 승패를 결정하는 초고속 대전 액션 게임입니다. 플레이어는 매 순간 자신의 위치와 스킬 쿨다운을 전략적으로 선택해야 하며, 이 선택은 전장의 지형과 적의 위치를 즉각적으로 변화시켜 승패를 결정짓는 고유한 역학을 생성합니다. signatureSystems인 '벡터 모멘텀'과 '전술적 쿨다운' 시스템은 단순한 공격을 넘어 위치 선정과 자원 관리라는 깊이 있는 선택지를 제공합니다.",
+      "playerFantasy": "플레이어는 기하학적 전장의 지배자가 되어, 정밀한 벡터 이동과 강력한 스킬 연계로 적을 전장에서 밀어내거나 무력화하며 자신의 실력을 증명하는 전술적 전투의 주인공이 됩니다.",
+      "coreFun": "플레이어는 짧은 시간 동안 이동 방향과 스킬 사용 타이밍을 끊임없이 선택합니다. 이 선택은 적의 위치를 밀어내거나 자신의 위치를 방어하는 즉각적인 상태 변화를 일으키며, 결과적으로 승리라는 보상을 얻거나 패배라는 위험을 감수하게 됩니다.",
       "coreLoop": [
-        "Enter Arena: Player selects a loadout and spawns into a dynamic arena with a specific objective.",
-        "Tactical Engagement: Player uses movement and combat inputs to position themselves and attack opponents.",
-        "State Resolution: Successful hits or environmental interactions change the arena state or player health.",
-        "Reward & Reset: Player earns currency based on performance, unlocks upgrades, and queues for the next rapid match."
+        "전장에 진입하여 적의 위치를 파악하고 이동 벡터를 설정하여 유리한 위치를 선점합니다.",
+        "적의 움직임을 예측하여 스킬을 발동하고, 적을 전장 밖으로 밀어내거나 체력을 감소시키는 상태 변화를 유도합니다.",
+        "전투 결과에 따라 보상 자원을 획득하고, 다음 전투를 위해 스킬을 업그레이드하거나 새로운 전술을 선택하여 재도전합니다."
       ],
       "signatureSystems": [
         {
-          "name": "Vector Dash",
-          "purpose": "Provides high-speed, directional mobility that can be used for evasion or initiating attacks.",
-          "playerChoice": "Players must decide whether to use their limited dash charges to aggressively close the distance or to save them for escaping dangerous environmental hazards."
+          "name": "벡터 모멘텀 시스템",
+          "purpose": "플레이어의 이동과 공격에 물리적 방향성을 부여하여 단순한 위치 이동 이상의 전술적 깊이를 제공합니다.",
+          "playerChoice": "플레이어는 이동 방향과 속도를 조절하여 적의 공격을 회피하거나, 적을 전장 밖으로 밀어내기 위한 최적의 각도를 선택해야 합니다."
         },
         {
-          "name": "Arena Hazard",
-          "purpose": "Introduces dynamic environmental threats that shift the battlefield layout during combat.",
-          "playerChoice": "Players must choose between fighting in the center for high-risk rewards or navigating the edges to trigger traps against their opponents."
+          "name": "전술적 쿨다운 시스템",
+          "purpose": "모든 강력한 스킬에 쿨다운을 적용하여 무분별한 공격을 방지하고 스킬 사용의 전략적 가치를 극대화합니다.",
+          "playerChoice": "플레이어는 스킬을 즉시 사용하여 위기를 모면할지, 아니면 결정적인 순간을 위해 아껴둘지 판단하는 선택을 내려야 합니다."
         }
       ],
       "systemInterconnections": [
         {
-          "fromSystem": "Vector Dash",
-          "toSystem": "Arena Hazard",
-          "trigger": "Player dashes into a hazard zone",
-          "stateChange": "Hazard triggers immediately, dealing damage or knocking back the player based on velocity."
+          "fromSystem": "벡터 모멘텀 시스템",
+          "toSystem": "전술적 쿨다운 시스템",
+          "trigger": "플레이어가 고속 이동 스킬을 사용할 때",
+          "stateChange": "이동 스킬의 쿨다운이 즉시 시작되며, 해당 스킬을 다시 사용하기 전까지 플레이어의 기동성이 일시적으로 제한됩니다."
         },
         {
-          "fromSystem": "Combat System",
-          "toSystem": "Progression System",
-          "trigger": "Match ends with a victory or defeat",
-          "stateChange": "Player receives experience points and currency, updating their rank and unlocking new gear."
+          "fromSystem": "전술적 쿨다운 시스템",
+          "toSystem": "전투 결과 시스템",
+          "trigger": "플레이어가 모든 스킬을 쿨다운 상태로 소진했을 때",
+          "stateChange": "플레이어는 방어 수단이 없는 취약 상태가 되어 적의 공격에 노출될 확률이 급격히 증가합니다."
         },
         {
-          "fromSystem": "Arena Hazard",
-          "toSystem": "Combat System",
-          "trigger": "Hazard successfully hits an opponent",
-          "stateChange": "Opponent is stunned, creating a vulnerability window for the player to execute a combo."
+          "fromSystem": "전투 결과 시스템",
+          "toSystem": "벡터 모멘텀 시스템",
+          "trigger": "전투에서 승리하여 보상을 획득했을 때",
+          "stateChange": "획득한 보상으로 이동 속도나 벡터 제어력을 강화하여 다음 전투에서 더 정밀한 기동이 가능해집니다."
         }
       ],
-      "progressionDirection": "Players progress through a linear rank system, earning currency to unlock cosmetic skins and ability-modifying gear that enhances their playstyle without breaking competitive balance.",
+      "progressionDirection": "플레이어는 전투를 반복하며 획득한 자원으로 캐릭터의 벡터 제어 능력과 스킬 쿨다운 효율을 점진적으로 강화합니다. 성장은 단순히 수치만 오르는 것이 아니라, 더 복잡한 전장 환경에서 생존하고 승리할 수 있는 전술적 선택지를 넓히는 방향으로 설계됩니다.",
       "progressionEconomyBalance": {
-        "progressionLoop": "Players earn match currency based on performance, which is then spent on permanent stat boosts or cosmetic items to customize their warrior.",
-        "resourceFlow": "Currency flows from match completion rewards into the shop system, ensuring a steady cycle of earning and spending.",
-        "balanceRules": "Stat boosts are capped to prevent power creep, ensuring that skill remains the primary factor in competitive matches."
+        "progressionLoop": "전투 승리 -> 보상 자원 획득 -> 능력치 강화 -> 더 높은 난이도의 전장 진입 -> 더 큰 보상 획득의 선순환 구조를 유지합니다.",
+        "resourceFlow": "전투 보상은 승리 시 즉시 지급되며, 이는 캐릭터 강화에만 사용되어 인플레이션을 방지하고 성장의 체감을 명확히 합니다.",
+        "balanceRules": "강화 효율은 레벨이 오를수록 점진적으로 감소하여, 후반부에는 수치적 우위보다 플레이어의 컨트롤과 전략적 판단이 승패를 결정하도록 설계합니다."
       },
       "contentExpansionPlan": [
         {
-          "milestone": "Phase 1: Dynamic Vector Arena Expansion and Environmental Hazard Integration",
-          "newGameplay": "Players encounter shifting arena geometry that changes in real-time based on player movement vectors, requiring precise timing to navigate collapsing platforms and avoid new environmental traps that push players off the map.",
-          "systemImpact": "Requires a complete overhaul of the Arena Hazard system to support dynamic mesh deformation and real-time physics triggers, necessitating a new event-driven architecture for map state synchronization across all clients."
+          "milestone": "전장 환경의 다양화",
+          "newGameplay": "움직이는 발판이나 좁아지는 전장 등 동적인 지형 요소를 추가하여 벡터 이동의 난이도를 높입니다.",
+          "systemImpact": "기존의 벡터 모멘텀 시스템에 지형지물과의 상호작용 로직이 추가되어 플레이어의 공간 지각 능력이 중요해집니다."
         },
         {
-          "milestone": "Phase 2: Advanced Kinetic Ability Mastery and Tactical Dash Customization",
-          "newGameplay": "Introduction of a modular dash system where players can equip different kinetic modifiers, such as 'Vector Rebound' for wall-bouncing or 'Momentum Siphon' to steal speed from nearby opponents during high-speed chases.",
-          "systemImpact": "Extends the existing Vector Dash system by adding a new parameter-based modifier layer, requiring the core physics engine to calculate collision interactions for multiple new dash types simultaneously without frame drops."
+          "milestone": "스킬 커스터마이징",
+          "newGameplay": "플레이어가 스킬의 효과를 직접 변경할 수 있는 모듈 시스템을 도입하여 다양한 전투 스타일을 지원합니다.",
+          "systemImpact": "전술적 쿨다운 시스템과 연동되어 스킬 조합에 따른 쿨다운 관리 전략이 더욱 복잡하고 깊이 있게 변화합니다."
         },
         {
-          "milestone": "Phase 3: Competitive Seasonal Ladder and Skill-Based Matchmaking Infrastructure",
-          "newGameplay": "Implementation of a seasonal ranked mode where players compete in high-stakes 'Vector Duels' to climb the global leaderboard, earning exclusive cosmetic trails and unique visual effects for their character's movement.",
-          "systemImpact": "Integrates a new MMR (Matchmaking Rating) service with the existing Progression System, requiring a persistent database schema update to track seasonal performance metrics and handle secure reward distribution at the end of each season."
+          "milestone": "랭킹 대전 모드",
+          "newGameplay": "실시간으로 비슷한 실력의 플레이어와 매칭되어 승점을 겨루는 경쟁 모드를 추가합니다.",
+          "systemImpact": "전투 결과 시스템이 랭킹 포인트 계산 로직과 통합되어 플레이어에게 지속적인 경쟁 동기를 부여합니다."
         }
       ],
       "failureRetryRisk": {
         "failureStates": [
-          "Health reaches zero",
-          "Time limit expires",
-          "Falling out of bounds"
+          "전장 밖으로 밀려나 추락함",
+          "체력이 0이 되어 무력화됨",
+          "제한 시간 내에 목표를 달성하지 못함"
         ],
-        "retryFlow": "Instant respawn in casual mode or return to lobby for ranked matchmaking with minimal friction.",
-        "riskPressure": "Losing match streak or rank points creates tension and encourages careful play.",
-        "recoveryRules": "Earning comeback bonuses for consecutive losses helps players stay motivated and return to the action."
+        "retryFlow": "실패 시 즉시 결과 화면이 나타나며, '재도전' 버튼을 통해 로딩 없이 즉시 동일한 전장으로 복귀하여 흐름을 유지합니다.",
+        "riskPressure": "실패 시 획득한 보상의 일부를 잃거나 재도전 횟수에 제한을 두어, 매 전투마다 신중한 플레이를 유도합니다.",
+        "recoveryRules": "연속 실패 시 보너스 버프를 제공하여 플레이어의 좌절감을 완화하고 다시 도전할 수 있는 동기를 부여합니다."
       },
       "platformFitPlan": {
         "targetPlatform": "ROBLOX",
-        "inputModel": "Optimized for touch and controller, using simple one-thumb swipe for movement and tap for combat actions.",
-        "performanceBudget": "Maintains 60 FPS by limiting concurrent physics objects and optimizing shader complexity for mobile devices.",
-        "sessionConstraints": "Designed for 3-5 minute sessions, perfect for quick play on mobile devices."
+        "inputModel": "모바일 환경을 고려하여 화면 왼쪽 가상 조이스틱으로 이동, 오른쪽 탭으로 스킬 발동하는 직관적인 2버튼 조작 체계를 사용합니다.",
+        "performanceBudget": "Roblox의 최적화 가이드라인을 준수하여 동시 접속자 수와 오브젝트 수를 제한하고, 텍스처 최적화를 통해 모바일 기기에서의 프레임 드랍을 방지합니다.",
+        "sessionConstraints": "한 세션은 3분 이내로 제한하여 모바일 플레이어의 짧은 집중 시간을 고려하고, 언제 어디서든 가볍게 즐길 수 있도록 설계합니다."
       },
-      "visualDirection": "A vibrant, neon-aesthetic art style with high-contrast colors to ensure readability on small screens.",
-      "mobileUx": "Minimalist HUD with large, intuitive touch targets for combat and movement, ensuring accessibility for all screen sizes.",
+      "visualDirection": "미니멀한 벡터 아트 스타일을 채택하여 복잡한 전장에서도 플레이어와 적의 위치가 명확히 구분되도록 합니다. 강렬한 색상 대비를 통해 스킬 효과와 충돌 피드백을 직관적으로 전달합니다.",
+      "mobileUx": "모바일 화면의 가독성을 위해 UI 요소를 화면 가장자리로 배치하고, 조작 버튼의 크기를 충분히 확보하여 오작동을 최소화합니다. 중요한 정보는 중앙 집중식으로 배치하여 시선 분산을 방지합니다.",
       "uxAccessibilityPlan": {
-        "hudPriorities": "Health bars and cooldown timers are prominently displayed and color-coded for quick recognition.",
-        "touchAndInput": "Supports customizable touch controls to accommodate different hand sizes and play styles.",
-        "readability": "High-contrast UI elements and clear visual cues for hazards ensure gameplay is always understandable.",
-        "accessibility": "Includes colorblind modes and adjustable text sizes to support a wider range of players."
+        "hudPriorities": "체력, 쿨다운 상태, 현재 점수를 화면 상단에 배치하여 전투 중에도 즉시 확인할 수 있도록 합니다.",
+        "touchAndInput": "터치 피드백을 위해 버튼 클릭 시 미세한 진동과 시각적 효과를 추가하여 입력의 확실성을 높입니다.",
+        "readability": "고대비 색상을 사용하여 배경과 캐릭터를 명확히 구분하고, 텍스트 크기를 조정하여 작은 화면에서도 가독성을 확보합니다.",
+        "accessibility": "색약 모드를 지원하여 색상 정보에 의존하지 않고도 게임 상태를 파악할 수 있도록 시각적 패턴을 추가합니다."
       },
       "artAudioDirection": {
-        "visualIdentity": "Neon-cyberpunk aesthetic with sharp, clean lines and dynamic lighting effects.",
-        "audioIdentity": "High-energy electronic soundtrack with punchy sound effects for combat impacts.",
-        "gameplayFeedbackSync": "Audio cues are perfectly synced with visual impacts to provide immediate, satisfying feedback."
+        "visualIdentity": "기하학적 도형과 네온 컬러를 사용하여 미래지향적이고 깔끔한 비주얼을 구축합니다.",
+        "audioIdentity": "빠른 템포의 일렉트로닉 음악을 사용하여 긴장감을 유지하고, 스킬 사용 시 명확한 타격음을 배치합니다.",
+        "gameplayFeedbackSync": "모든 액션에 시각적 이펙트와 사운드를 동기화하여 플레이어가 자신의 행동 결과를 즉각적으로 체감할 수 있게 합니다."
       },
-      "marketTargetDirection": "Targeting competitive mobile gamers who enjoy fast-paced, skill-based action games.",
-      "steamExpansionDecision": "Considered for future release if mobile performance and player retention metrics meet internal benchmarks.",
+      "marketTargetDirection": "빠른 템포의 대전 게임을 선호하는 10대~20대 모바일 게이머를 주 타겟으로 하며, 짧은 세션 시간으로 틈새 시간을 공략합니다.",
+      "steamExpansionDecision": "현재는 모바일 최적화에 집중하며, 추후 PC 환경에서의 조작감과 그래픽 품질을 개선할 수 있는 충분한 데이터가 확보되면 고려합니다.",
       "multiplayerMode": "COMPETITIVE",
-      "multiplayerExpansionDecision": "Focusing on 1v1 and 2v2 modes to ensure balanced and fair competitive play.",
+      "multiplayerExpansionDecision": "경쟁 모드의 성공 여부에 따라 협동 모드나 대규모 난투 모드 추가를 검토할 예정입니다.",
       "technicalAssumptions": [
-        "Physics engine can handle high-velocity collisions without jittering.",
-        "Network latency is minimized through client-side prediction for movement."
+        "Roblox의 물리 엔진이 벡터 기반의 충돌 계산을 충분히 처리할 수 있다고 가정합니다.",
+        "네트워크 지연을 최소화하기 위해 클라이언트 측에서 예측 이동 로직을 구현해야 합니다."
       ],
       "validationQuestions": [
-        "Does the movement feel responsive and satisfying on mobile devices?",
-        "Are the hazard mechanics intuitive and fair for all skill levels?"
+        "플레이어가 3분 이내의 세션에서 충분한 성취감을 느끼는가?",
+        "모바일 환경에서 벡터 기반의 조작이 직관적이고 반응성이 좋은가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "Vector Dash Mobility",
-          "responsibleSystem": "Vector Dash System",
-          "validationEvidence": "Playtesting confirms dash responsiveness and impact on evasion tactics."
+          "designElement": "벡터 모멘텀 시스템",
+          "responsibleSystem": "물리 엔진 제어 모듈",
+          "validationEvidence": "테스트 환경에서 다양한 각도의 충돌을 시뮬레이션하여 의도한 물리 법칙이 정확히 적용되는지 확인합니다."
         },
         {
-          "designElement": "Arena Hazard Interaction",
-          "responsibleSystem": "Arena Hazard System",
-          "validationEvidence": "Stress testing ensures hazard triggers work consistently across all devices."
+          "designElement": "전술적 쿨다운 시스템",
+          "responsibleSystem": "스킬 관리자 클래스",
+          "validationEvidence": "스킬 사용 로그를 분석하여 쿨다운 시간이 전투 밸런스에 미치는 영향을 데이터로 검증합니다."
         },
         {
-          "designElement": "Progression Rewards",
-          "responsibleSystem": "Progression System",
-          "validationEvidence": "Data analysis shows player retention correlates with reward frequency."
+          "designElement": "모바일 조작 체계",
+          "responsibleSystem": "책임 시스템: 입력 처리 시스템",
+          "validationEvidence": "사용자 테스트를 통해 조작 버튼의 배치와 반응 속도가 플레이어의 의도와 일치하는지 확인합니다."
         }
       ],
       "openQuestions": [
-        "How to balance dash cooldowns for different skill levels?",
-        "What are the most effective ways to monetize without affecting balance?"
+        "어떤 종류의 스킬이 가장 높은 전략적 재미를 제공하는가?",
+        "플레이어의 실력 차이를 어떻게 보정하여 공정한 매칭을 구현할 것인가?"
       ]
     },
     "deterministic_pre_gate": {
@@ -179,7 +176,7 @@
         "PLATFORM_FIT_DESIGN": 80,
         "UX_AND_ACCESSIBILITY_PLAN": 80,
         "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
       },
       "scores": {
         "IDEA_AND_DISTINCTNESS": 9.6,
@@ -192,11 +189,12 @@
         "PLATFORM_FIT_DESIGN": 6.4,
         "UX_AND_ACCESSIBILITY_PLAN": 4.8,
         "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
       },
-      "totalScore": 78,
+      "totalScore": 77,
       "criticalAxisFailures": [
-        "CONTENT_EXPANSION_PLAN"
+        "CONTENT_EXPANSION_PLAN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
       ],
       "hardFailures": [
         "CRITICAL_AXIS_MINIMUM_FAIL"
@@ -215,87 +213,22 @@
           "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
           "bypassAllowed": false,
           "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    },
-    "designer_pre_gate_repair_1": {
-      "contentExpansionPlan": [
-        {
-          "milestone": "Phase 1: Dynamic Vector Arena Expansion and Environmental Hazard Integration",
-          "newGameplay": "Players encounter shifting arena geometry that changes in real-time based on player movement vectors, requiring precise timing to navigate collapsing platforms and avoid new environmental traps that push players off the map.",
-          "systemImpact": "Requires a complete overhaul of the Arena Hazard system to support dynamic mesh deformation and real-time physics triggers, necessitating a new event-driven architecture for map state synchronization across all clients."
         },
         {
-          "milestone": "Phase 2: Advanced Kinetic Ability Mastery and Tactical Dash Customization",
-          "newGameplay": "Introduction of a modular dash system where players can equip different kinetic modifiers, such as 'Vector Rebound' for wall-bouncing or 'Momentum Siphon' to steal speed from nearby opponents during high-speed chases.",
-          "systemImpact": "Extends the existing Vector Dash system by adding a new parameter-based modifier layer, requiring the core physics engine to calculate collision interactions for multiple new dash types simultaneously without frame drops."
-        },
-        {
-          "milestone": "Phase 3: Competitive Seasonal Ladder and Skill-Based Matchmaking Infrastructure",
-          "newGameplay": "Implementation of a seasonal ranked mode where players compete in high-stakes 'Vector Duels' to climb the global leaderboard, earning exclusive cosmetic trails and unique visual effects for their character's movement.",
-          "systemImpact": "Integrates a new MMR (Matchmaking Rating) service with the existing Progression System, requiring a persistent database schema update to track seasonal performance metrics and handle secure reward distribution at the end of each season."
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
         }
-      ]
-    },
-    "deterministic_pre_gate_after_repair_1": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
       ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 80,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 8,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
-      },
-      "totalScore": 80,
-      "criticalAxisFailures": [],
-      "hardFailures": [],
-      "rejectionReasons": [],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
@@ -309,10 +242,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 453,
-      "lastMs": 453,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\nPlease retry in 22.785799073s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash-lite\", \"location\": \"global\" }, \"quotaValue\": \"500\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"22s\" } ] } }",
-      "updatedAt": "2026-09-18T18:39:37.246Z"
+      "totalMs": 473,
+      "lastMs": 473,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\nPlease retry in 21.251755655s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash-lite\", \"location\": \"global\" }, \"quotaValue\": \"500\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"21s\" } ] } }",
+      "updatedAt": "2026-09-18T18:51:38.780Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -320,10 +253,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 543,
-      "lastMs": 543,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 22.681514275s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"22s\" } ] } }",
-      "updatedAt": "2026-09-18T18:39:37.336Z"
+      "totalMs": 597,
+      "lastMs": 597,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 21.117317121s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"21s\" } ] } }",
+      "updatedAt": "2026-09-18T18:51:38.903Z"
     },
     "gemini:gemini-3.7-flash": {
       "calls": 1,
@@ -331,10 +264,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 681,
-      "lastMs": 681,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 22.544583055s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"22s\" } ] } }",
-      "updatedAt": "2026-09-18T18:39:37.474Z"
+      "totalMs": 712,
+      "lastMs": 712,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 21.000627386s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"21s\" } ] } }",
+      "updatedAt": "2026-09-18T18:51:39.018Z"
     },
     "gemini:gemini-3.6-flash": {
       "calls": 1,
@@ -342,10 +275,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 790,
-      "lastMs": 790,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 22.435898966s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"22s\" } ] } }",
-      "updatedAt": "2026-09-18T18:39:37.583Z"
+      "totalMs": 807,
+      "lastMs": 807,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 20.903649885s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"20s\" } ] } }",
+      "updatedAt": "2026-09-18T18:51:39.114Z"
     },
     "gemini:gemini-3.5-flash": {
       "calls": 1,
@@ -353,21 +286,21 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 875,
-      "lastMs": 875,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 22.348634613s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"22s\" } ] } }",
-      "updatedAt": "2026-09-18T18:39:37.668Z"
+      "totalMs": 925,
+      "lastMs": 925,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 20.785851479s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"20s\" } ] } }",
+      "updatedAt": "2026-09-18T18:51:39.231Z"
     },
     "gemini:gemini-3.1-pro-preview": {
-      "calls": 3,
+      "calls": 1,
       "successes": 0,
-      "failures": 3,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 109452,
-      "lastMs": 84328,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 58.898387992s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerMinute-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.1-pro\", \"location\": \"global\"",
-      "updatedAt": "2026-09-18T18:41:01.121Z"
+      "totalMs": 1026,
+      "lastMs": 1026,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 20.685450807s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\" }",
+      "updatedAt": "2026-09-18T18:51:39.332Z"
     },
     "gemini:gemini-2.5-pro": {
       "calls": 1,
@@ -375,10 +308,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 84436,
-      "lastMs": 84436,
+      "totalMs": 1146,
+      "lastMs": 1146,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T18:41:01.229Z"
+      "updatedAt": "2026-09-18T18:51:39.452Z"
     },
     "gemini:gemini-2.5-flash": {
       "calls": 1,
@@ -386,10 +319,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 84507,
-      "lastMs": 84507,
+      "totalMs": 1242,
+      "lastMs": 1242,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T18:41:01.300Z"
+      "updatedAt": "2026-09-18T18:51:39.548Z"
     },
     "gemini:gemini-2.5-flash-lite": {
       "calls": 1,
@@ -397,34 +330,34 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 84603,
-      "lastMs": 84603,
+      "totalMs": 1339,
+      "lastMs": 1339,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T18:41:01.396Z"
+      "updatedAt": "2026-09-18T18:51:39.645Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 1,
+      "successes": 1,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 101687,
-      "lastMs": 3364,
+      "totalMs": 13916,
+      "lastMs": 13916,
       "lastError": null,
-      "updatedAt": "2026-09-18T18:41:18.486Z"
+      "updatedAt": "2026-09-18T18:51:52.222Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DEPARTMENT_REVIEWS",
-  "createdAt": "2026-09-18T18:39:36.790Z",
-  "updatedAt": "2026-09-18T18:41:18.706Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T18:41:18.486Z",
+  "currentPhase": "PRE_GATE_REPAIR",
+  "createdAt": "2026-09-18T18:51:38.304Z",
+  "updatedAt": "2026-09-18T18:51:52.227Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T18:51:52.222Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": "five_lead_reviews",
-  "failedTask": "development",
-  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
