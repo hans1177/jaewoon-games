@@ -20,6 +20,15 @@ test('practice result can pass structurally but never becomes production pass',a
   assert.equal(result.practiceOnly,true);
   assert.equal(result.productionPass,false);
   assert.equal(result.sourceWrite,false);
+  assert.equal(result.knowledgeState,'UNTRUSTED_PRACTICE_OUTPUT');
+  assert.match(result.rawModelOutputSha256,/^[a-f0-9]{64}$/);
+  assert.equal(result.rawModelOutputStored,false);
+  assert.equal(result.candidateLessonsVerified,false);
+  assert.equal(result.retrievalEligible,false);
+  assert.equal(result.masteryCreditEligible,false);
+  assert.equal(result.canonicalTrainingEligible,false);
+  assert.equal(result.independentVerificationRequired,true);
+  assert.equal(result.distillationRequiredBeforeReuse,true);
 });
 
 test('weak practice answer fails evaluation',()=>{

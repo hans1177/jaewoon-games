@@ -162,6 +162,24 @@ test('idle-practice dedupe never merges unrelated production tasks',()=>{
 });
 
 
+test('idle practice model answers require verification and distillation before reuse',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe2-learning-motor.json',import.meta.url),'utf8'));
+  const boundary=policy.idleTraining?.knowledgeBoundary||{};
+  assert.equal(boundary.rawPracticeModelAnswerAuthority,'UNTRUSTED_PRACTICE_OUTPUT');
+  assert.equal(boundary.rawPracticeModelAnswerMayEnterRetrieval,false);
+  assert.equal(boundary.rawPracticeModelAnswerMayBecomeExperience,false);
+  assert.equal(boundary.rawPracticeModelAnswerMayIncreaseMastery,false);
+  assert.equal(boundary.rawPracticeModelAnswerMayEnterCanonicalTraining,false);
+  assert.equal(boundary.independentVerificationRequiredBeforeReuse,true);
+  assert.equal(boundary.distillationRequiredBeforeReuse,true);
+  assert.equal(boundary.verifiedDistilledLessonAuthority,'VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE');
+  assert.equal(boundary.verifiedDistilledLessonMayEnterRetrieval,true);
+  assert.equal(boundary.verifiedProjectOutcomeStillRequiredForPositiveMasteryOrTraining,true);
+  assert.equal(boundary.authorityExpanded,false);
+  assert.equal(policy.modelTraining?.practiceRawModelOutputDirectTraining,false);
+  assert.equal(policy.modelTraining?.practiceDistilledKnowledgeDirectTraining,false);
+});
+
 test('external AI learning policy is distillation-only and cannot directly train or develop',()=>{
   const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe2-learning-motor.json',import.meta.url),'utf8'));
   assert.equal(policy.externalAiKnowledgePolicy?.mode,'DISTILLATION_ONLY');

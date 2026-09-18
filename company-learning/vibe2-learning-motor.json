@@ -173,7 +173,20 @@
       "ROBLOX_PATTERN_REVIEW",
       "SAVE_AND_RETRY_DRILL"
     ],
-    "practiceNeverClaimsProductionPass": true
+    "practiceNeverClaimsProductionPass": true,
+    "knowledgeBoundary": {
+      "rawPracticeModelAnswerAuthority": "UNTRUSTED_PRACTICE_OUTPUT",
+      "rawPracticeModelAnswerMayEnterRetrieval": false,
+      "rawPracticeModelAnswerMayBecomeExperience": false,
+      "rawPracticeModelAnswerMayIncreaseMastery": false,
+      "rawPracticeModelAnswerMayEnterCanonicalTraining": false,
+      "independentVerificationRequiredBeforeReuse": true,
+      "distillationRequiredBeforeReuse": true,
+      "verifiedDistilledLessonAuthority": "VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE",
+      "verifiedDistilledLessonMayEnterRetrieval": true,
+      "verifiedProjectOutcomeStillRequiredForPositiveMasteryOrTraining": true,
+      "authorityExpanded": false
+    }
   },
   "webToRobloxHandoff": {
     "requiredWhenSelectedPlatform": "ROBLOX",
@@ -205,6 +218,8 @@
     "canonicalPipelineOnly": true,
     "thresholdsUnchanged": true,
     "practiceAdapterMayNotAutoPromote": true,
+    "practiceRawModelOutputDirectTraining": false,
+    "practiceDistilledKnowledgeDirectTraining": false,
     "promotion": "FIXED_HOLDOUT_AB_THEN_CANARY",
     "target": "Increase verified multi-project sample production rather than lower thresholds.",
     "externalAiRawOutputDirectTraining": false,
