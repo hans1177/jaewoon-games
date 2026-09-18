@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .progression {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #888;
+    }
+    .ui {
+      margin-top: 20px;
+      font-size: 0.8em;
+      color: #aaa;
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      font-size: 0.9em;
+      border: none;
+      border-radius: 4px;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Protected state preservation
+    const protectedState = {
+      player: {
+        health: 100,
+        energy: 100,
+        level: 1,
+        score: 0
+      },
+      game: {
+        isRunning: true,
+        isPaused: false,
+        isGameOver: false
+      }
+    };
+
+    // Game logic
+    const gameContainer = document.getElementById('game');
+    const player = protectedState.player;
+    const game = protectedState.game;
+
+    // Game loop
+    function gameLoop() {
+      if (!game.isRunning) return;
+
+      // Update game state
+      player.health -= 1;
+      player.energy -= 1;
+      player.score += 1;
+
+      // Check for game over
+      if (player.health <= 0) {
+        game.isGameOver = true;
+        game.isRunning = false;
+      }
+
+      // Update UI
+      document.getElementById('game').innerHTML = `
+        <h1>Vibe2</h1>
+        <div class="progression">Progression: ${player.level}</div>
+        <div class="ui">Score: ${player.score}</div>
+        <div class="ui">Health: ${player.health}</div>
+        <div class="ui">Energy: ${player.energy}</div>
+        <div class="controls">
+          <button onclick="restartGame()">Restart</button>
+        </div>
+      `;
+    }
+
+    // Start game
+    function startGame() {
+      game.isRunning = true;
+      game.isPaused = false;
+      gameContainer.innerHTML = `
+        <h1>Vibe2</h1>
+        <div class="progression">Progression: ${protectedState.player.level}</div>
+        <div class="ui">Score: ${protectedState.player.score}</div>
+        <div class="ui">Health: ${protectedState.player.health}</div>
+        <div class="ui">Energy: ${protectedState.player.energy}</div>
+        <div class="controls">
+          <button onclick="pauseGame()">Pause</button>
+          <button onclick="restartGame()">Restart</button>
+        </div>
+      `;
+    }
+
+    // Pause game
+    function pauseGame() {
+      game.isPaused = true;
+      game.isRunning = false;
+    }
+
+    // Restart game
+    function restartGame() {
+      protectedState.player = {
+        health: 100,
+        energy: 100,
+        level: 1,
+        score: 0
+      };
+      protectedState.game = {
+        isRunning: true,
+        isPaused: false,
+        isGameOver: false
+      };
+      startGame();
+    }
+
+    // Game loop
+    setInterval(gameLoop, 1000);
+  </script>
+</body>
+</html>
