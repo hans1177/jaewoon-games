@@ -69,12 +69,14 @@ export function assessExistingWebSource({html='',baseline={},approvedDesign=fals
   let strategy='MAJOR_REWORK',confidence='MEDIUM',reasons=[];
   const structurallyEmpty=bytes<120&&signals.count===0&&!/<(?:button|canvas|script|main|section)\b/i.test(text);
   if(!sourceExists||structurallyEmpty){strategy='FULL_REBUILD';confidence='HIGH';reasons.push('SOURCE_MISSING_OR_EMPTY');}
-  else if(score!=null&&score>=80&&signals.count>=4){strategy='KEEP_AND_CONTINUE';confidence='HIGH';reasons.push('CURRENT_WEB_VALIDATION_AT_LEAST_80','REAL_GAMEPLAY_SIGNALS_PRESENT');}
+  else if(score!=null&&score>=80&&signals.count>=4&&(!scope.requiredCount||scope.coveragePct>=55)){strategy='KEEP_AND_CONTINUE';confidence='HIGH';reasons.push('CURRENT_WEB_VALIDATION_AT_LEAST_80','REAL_GAMEPLAY_SIGNALS_PRESENT','APPROVED_SCOPE_MOSTLY_REPRESENTED');}
+  else if(score!=null&&score>=80&&signals.count>=4&&scope.requiredCount&&scope.coveragePct<55){strategy='PARTIAL_REPAIR';confidence='HIGH';reasons.push('CURRENT_WEB_VALIDATION_AT_LEAST_80','REAL_GAMEPLAY_SIGNALS_PRESENT','CURRENT_APPROVED_SCOPE_GAPS_REMAIN');}
   else if(signals.count>=7&&scope.coveragePct>=55&&prototypeMarkers===0){strategy='KEEP_AND_CONTINUE';confidence='HIGH';reasons.push('STRONG_EXISTING_GAMEPLAY','APPROVED_SCOPE_MOSTLY_REPRESENTED');}
   else if(signals.count>=5){strategy='PARTIAL_REPAIR';confidence='HIGH';reasons.push('WORKING_GAMEPLAY_REUSABLE');if(scope.coveragePct<35)reasons.push('APPROVED_SCOPE_GAPS_REMAIN');}
   else if(signals.count>=4||scope.coveragePct>=20){strategy='MAJOR_REWORK';confidence='MEDIUM';reasons.push('REUSABLE_SOURCE_EXISTS','SUBSTANTIAL_GAMEPLAY_OR_SCOPE_GAPS');}
-  else if(prototypeMarkers>0&&signals.count<=2&&scope.coveragePct<20){strategy='FULL_REBUILD';confidence='HIGH';reasons.push('PROTOTYPE_DOMINANT','REAL_GAMEPLAY_SIGNAL_TOO_LOW','APPROVED_SCOPE_COVERAGE_TOO_LOW');}
+  else if(prototypeMarkers>0&&signals.count<=2&&scope.coveragePct<20&&approvedDesign){strategy='FULL_REBUILD';confidence='HIGH';reasons.push('PROTOTYPE_DOMINANT','REAL_GAMEPLAY_SIGNAL_TOO_LOW','APPROVED_SCOPE_COVERAGE_TOO_LOW','APPROVED_DESIGN_BASELINE_CONFIRMED');}
   else{strategy='MAJOR_REWORK';confidence='LOW';reasons.push('INSUFFICIENT_EVIDENCE_FOR_SAFE_FULL_REBUILD');}
+  if(strategy==='FULL_REBUILD'&&sourceExists&&!approvedDesign){strategy='MAJOR_REWORK';confidence='LOW';reasons.push('FULL_REBUILD_BLOCKED_WITHOUT_APPROVED_DESIGN');}
   if(prototypeMarkers>0&&strategy!=='FULL_REBUILD')reasons.push('PROTOTYPE_MARKER_PRESENT_BUT_NOT_DECISIVE');
   if(!approvedDesign)reasons.push('APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE');
   return{version:1,strategy,confidence,reasons:unique(reasons),preserveExistingSource:strategy!=='FULL_REBUILD',fullRewriteAllowed:strategy==='FULL_REBUILD',evidence:{sourceBytes:bytes,sourceSha256:sha(text),validationScore:score,approvedDesign:Boolean(approvedDesign),gameplaySignalCount:signals.count,gameplaySignals:signals.checks,prototypeMarkerCount:prototypeMarkers,approvedScopeRequiredCount:scope.requiredCount,approvedScopeBoundCount:scope.boundCount,approvedScopeSemanticCount:scope.semanticCount,approvedScopeCoveragePct:scope.coveragePct}};
