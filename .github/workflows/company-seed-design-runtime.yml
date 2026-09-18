@@ -260,10 +260,24 @@ jobs:
           const checkpointPath=path.join('design',clean(process.env.ARTBOOK_GAME_ID),clean(process.env.ARTBOOK_DATE),'design-checkpoint.json');
           let checkpoint={};
           try{checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));}catch{}
-          const unavailableModel=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
+          const permanentUnavailable=/no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
+          const retryableQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|RESOURCE_EXHAUSTED|Quota exceeded/i;
+          const providerRetryMs=row=>{
+            const error=clean(row?.lastError);
+            const seconds=Number(error.match(/Please retry in\s+([0-9.]+)s/i)?.[1]||error.match(/"retryDelay"\s*:\s*"([0-9.]+)s"/i)?.[1]);
+            return Number.isFinite(seconds)&&seconds>0?Math.ceil(seconds*1000):60*60*1000;
+          };
+          const modelUnavailable=row=>{
+            const error=clean(row?.lastError);
+            if(permanentUnavailable.test(error))return true;
+            if(!retryableQuota.test(error))return false;
+            const updated=Date.parse(row?.updatedAt||'');
+            if(!Number.isFinite(updated))return true;
+            return Date.now()<updated+providerRetryMs(row);
+          };
           const exhausted=new Set();
           for(const [rawModel,row] of Object.entries(checkpoint.modelHealth||{})){
-            if(!unavailableModel.test(clean(row?.lastError)))continue;
+            if(!modelUnavailable(row))continue;
             exhausted.add(clean(rawModel).replace(/^gemini:/,''));
           }
           const completedTasks=checkpoint.tasks&&typeof checkpoint.tasks==='object'?checkpoint.tasks:{};
@@ -400,8 +414,22 @@ jobs:
           }
           const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([leads[index],...configured[role]])]));
           const cp=JSON.parse(fs.readFileSync(process.env.CHECKPOINT,'utf8'));
-          const unavailable=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|RESOURCE_EXHAUSTED|Quota exceeded|no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
-          const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>unavailable.test(clean(row?.lastError))).map(([model])=>clean(model).replace(/^gemini:/,'')));
+          const permanentUnavailable=/no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
+          const retryableQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|RESOURCE_EXHAUSTED|Quota exceeded/i;
+          const providerRetryMs=row=>{
+            const error=clean(row?.lastError);
+            const seconds=Number(error.match(/Please retry in\s+([0-9.]+)s/i)?.[1]||error.match(/"retryDelay"\s*:\s*"([0-9.]+)s"/i)?.[1]);
+            return Number.isFinite(seconds)&&seconds>0?Math.ceil(seconds*1000):60*60*1000;
+          };
+          const modelUnavailable=row=>{
+            const error=clean(row?.lastError);
+            if(permanentUnavailable.test(error))return true;
+            if(!retryableQuota.test(error))return false;
+            const updated=Date.parse(row?.updatedAt||'');
+            if(!Number.isFinite(updated))return true;
+            return Date.now()<updated+providerRetryMs(row);
+          };
+          const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>modelUnavailable(row)).map(([model])=>clean(model).replace(/^gemini:/,'')));
           const tasks=cp.tasks&&typeof cp.tasks==='object'?cp.tasks:{};
           const phases=cp.phases&&typeof cp.phases==='object'?cp.phases:{};
           const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(tasks,`five_lead_reviews::${role}`));
@@ -765,14 +793,28 @@ jobs:
           const state=JSON.parse(show('game-seed-state.json'));
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const unavailableModel=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
+          const permanentUnavailable=/no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
+          const retryableQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|RESOURCE_EXHAUSTED|Quota exceeded/i;
+          const providerRetryMs=row=>{
+            const error=clean(row?.lastError);
+            const seconds=Number(error.match(/Please retry in\s+([0-9.]+)s/i)?.[1]||error.match(/"retryDelay"\s*:\s*"([0-9.]+)s"/i)?.[1]);
+            return Number.isFinite(seconds)&&seconds>0?Math.ceil(seconds*1000):60*60*1000;
+          };
+          const modelUnavailable=row=>{
+            const error=clean(row?.lastError);
+            if(permanentUnavailable.test(error))return true;
+            if(!retryableQuota.test(error))return false;
+            const updated=Date.parse(row?.updatedAt||'');
+            if(!Number.isFinite(updated))return true;
+            return Date.now()<updated+providerRetryMs(row);
+          };
           let blocked=0;
           for(const seed of state.seeds||[]){
             if(clean(seed.status).toUpperCase()!=='ACTIVE')continue;
             const cpPath=`design/${seed.gameId}/${date}/design-checkpoint.json`;
             if(!exists(cpPath))continue;
             let cp={};try{cp=JSON.parse(show(cpPath));}catch{continue;}
-            const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>unavailableModel.test(clean(row?.lastError))).map(([model])=>clean(model).replace(/^gemini:/,'')));
+            const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>modelUnavailable(row)).map(([model])=>clean(model).replace(/^gemini:/,'')));
             if(!exhausted.size)continue;
             const tasks=cp.tasks&&typeof cp.tasks==='object'?cp.tasks:{};
             const phases=cp.phases&&typeof cp.phases==='object'?cp.phases:{};
