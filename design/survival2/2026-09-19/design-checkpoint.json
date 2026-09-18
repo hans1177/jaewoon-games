@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -61,19 +63,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "새로운 계절 지역 추가",
-          "newGameplay": "기존의 봄, 여름, 가을, 겨울 외에 혹독한 '황무지' 계절을 추가하여 새로운 환경 위험과 적 패턴을 도입합니다.",
-          "systemImpact": "계절 생태계 시스템에 새로운 환경 변수와 적 데이터가 추가되어 기존 빌드의 유효성을 재검토하게 만듭니다."
+          "milestone": "계절별 생태계 확장: 혹독한 황무지 시즌 도입",
+          "newGameplay": "기존 4계절 외에 '황무지' 시즌을 추가하여, 환경 데미지(산성비, 모래폭풍)가 실시간으로 변화하는 필드에서 적의 이동 속도와 공격 패턴이 환경에 따라 동적으로 변하는 생존 전투를 구현합니다.",
+          "systemImpact": "기존 환경 관리 시스템에 '환경 변수 동기화' 모듈을 추가하여, 계절별 적 스폰 데이터와 환경 위험 요소가 실시간으로 갱신되도록 하여 기존 빌드의 유효성을 재검토하게 만듭니다."
         },
         {
-          "milestone": "동료 클래스 확장",
-          "newGameplay": "기존의 공격, 방어, 채집 외에 '지원' 및 '기술' 특화 동료 클래스를 추가하여 전략의 폭을 넓힙니다.",
-          "systemImpact": "동료 역할 분담 시스템에 새로운 스킬 트리와 시너지 효과가 추가되어 전투 전략의 다양성이 크게 증가합니다."
+          "milestone": "동료 클래스 세분화: 지원 및 기술 특화",
+          "newGameplay": "기존 공격/방어/채집 역할군에 '지원(버퍼)' 및 '기술(디버퍼)' 클래스를 추가합니다. 플레이어는 전투 중 동료의 스킬을 조합하여 적의 방어력을 낮추거나 아군의 공격력을 증폭시키는 협력 전술을 수행합니다.",
+          "systemImpact": "동료 역할 분담 시스템에 '스킬 시너지 엔진'을 통합하여, 클래스 간 조합에 따른 전투 효율 보너스를 계산하고 이를 전투 로그 시스템에 반영하도록 확장합니다."
         },
         {
-          "milestone": "거점 특수 시설 도입",
-          "newGameplay": "거점에 자동 포탑, 자원 자동 채집기, 순간 이동 장치 등 특수 시설을 건설할 수 있는 기능을 추가합니다.",
-          "systemImpact": "거점 강화 시스템의 깊이가 더해지며, 전투 중 거점의 위치와 시설 활용이 승패에 결정적인 영향을 미치게 됩니다."
+          "milestone": "거점 특수 시설 및 자동화 시스템",
+          "newGameplay": "거점에 자동 포탑, 자원 자동 채집기, 순간 이동 장치 등 특수 시설을 건설합니다. 플레이어는 전투 중 거점의 위치를 방어하거나 시설을 업그레이드하여 웨이브를 효율적으로 막아내는 타워 디펜스 요소를 결합합니다.",
+          "systemImpact": "경제 및 빌딩 시스템에 '시설 상태 관리자'를 추가하여, 자원 소비와 시설의 능력치 상승이 데이터베이스에 실시간으로 동기화되고 전투 성능에 직접적인 영향을 주도록 설계합니다."
         }
       ],
       "failureRetryRisk": {
@@ -109,28 +111,28 @@
       "multiplayerMode": "COOP",
       "multiplayerExpansionDecision": "초기에는 싱글 플레이와 협력 플레이를 중심으로 개발하고, 이후 플레이어들의 반응에 따라 경쟁 모드나 대규모 레이드 콘텐츠를 추가할 계획입니다.",
       "technicalAssumptions": [
-        "로블록스 서버의 동기화 성능을 고려하여 적의 AI 연산을 클라이언트와 서버에 적절히 분배하여 처리합니다.",
-        "데이터 저장 시스템을 사용하여 플레이어의 거점 상태와 성장 정보를 안전하게 보존하고 세션 간 연결성을 유지합니다."
+        "로블록스 서버의 동기화 성능을 최적화하기 위해 적의 AI 연산을 클라이언트와 서버에 분산 처리하며, 중요 데이터는 서버 권한으로 검증하여 부정 행위를 방지합니다.",
+        "데이터 저장 시스템은 플레이어의 거점 상태와 성장 정보를 세션 간 안전하게 보존하기 위해 비동기 데이터 저장소(DataStore)를 활용하여 세션 연결성을 유지합니다."
       ],
       "validationQuestions": [
-        "플레이어가 계절 변화에 따른 전략적 선택을 실제로 수행하고 그 결과를 체감하는가?",
-        "협력 플레이 시 동료와의 역할 분담이 전투 효율에 유의미한 차이를 만드는가?"
+        "플레이어가 계절 변화에 따른 환경 위험을 인지하고, 그에 맞는 전략적 장비나 동료를 선택하여 생존율을 높이는지 테스트합니다.",
+        "협력 플레이 시 지원 및 기술 클래스의 스킬 조합이 전투 효율에 유의미한 수치적 차이를 만드는지 로그 데이터를 통해 검증합니다."
       ],
       "implementationTraceability": [
         {
-          "designElement": "계절 생태계 시스템",
-          "responsibleSystem": "책임 시스템: 환경 관리 시스템",
-          "validationEvidence": "계절 변경 시 적의 스폰 데이터와 환경 위험 요소가 실시간으로 교체되는지 로그를 통해 검증합니다."
+          "designElement": "계절 생태계 시스템의 환경 변수 동기화",
+          "responsibleSystem": "환경 관리 시스템 및 서버 동기화 모듈",
+          "validationEvidence": "계절 변경 시 적의 스폰 데이터와 환경 위험 요소가 모든 클라이언트에서 동일하게 실시간으로 교체되는지 서버 로그와 클라이언트 동기화 패킷을 통해 검증합니다."
         },
         {
-          "designElement": "동료 역할 분담",
+          "designElement": "동료 클래스 간 스킬 시너지 엔진",
           "responsibleSystem": "AI 및 상태 관리 시스템",
-          "validationEvidence": "플레이어의 역할 변경 입력에 따라 동료의 행동 트리(Behavior Tree)가 즉각적으로 전환되는지 테스트합니다."
+          "validationEvidence": "플레이어의 역할 변경 입력에 따라 동료의 행동 트리(Behavior Tree)가 즉각적으로 전환되고, 조합에 따른 공격력 보너스가 전투 로그에 정확히 기록되는지 테스트합니다."
         },
         {
-          "designElement": "거점 강화",
+          "designElement": "거점 특수 시설 및 경제 연동",
           "responsibleSystem": "경제 및 빌딩 시스템",
-          "validationEvidence": "자원 소비와 거점 시설의 능력치 상승이 데이터베이스에 정확히 반영되고 게임 내 성능에 영향을 주는지 확인합니다."
+          "validationEvidence": "자원 소비와 거점 시설의 능력치 상승이 데이터베이스에 정확히 반영되고, 시설이 파괴되거나 업그레이드될 때 게임 내 전투 성능에 즉각적인 영향을 주는지 확인합니다."
         }
       ],
       "openQuestions": [
@@ -228,6 +230,110 @@
           "source": "STAGE_GATE_SCORING_V2"
         }
       ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "계절별 생태계 확장: 혹독한 황무지 시즌 도입",
+          "newGameplay": "기존 4계절 외에 '황무지' 시즌을 추가하여, 환경 데미지(산성비, 모래폭풍)가 실시간으로 변화하는 필드에서 적의 이동 속도와 공격 패턴이 환경에 따라 동적으로 변하는 생존 전투를 구현합니다.",
+          "systemImpact": "기존 환경 관리 시스템에 '환경 변수 동기화' 모듈을 추가하여, 계절별 적 스폰 데이터와 환경 위험 요소가 실시간으로 갱신되도록 하여 기존 빌드의 유효성을 재검토하게 만듭니다."
+        },
+        {
+          "milestone": "동료 클래스 세분화: 지원 및 기술 특화",
+          "newGameplay": "기존 공격/방어/채집 역할군에 '지원(버퍼)' 및 '기술(디버퍼)' 클래스를 추가합니다. 플레이어는 전투 중 동료의 스킬을 조합하여 적의 방어력을 낮추거나 아군의 공격력을 증폭시키는 협력 전술을 수행합니다.",
+          "systemImpact": "동료 역할 분담 시스템에 '스킬 시너지 엔진'을 통합하여, 클래스 간 조합에 따른 전투 효율 보너스를 계산하고 이를 전투 로그 시스템에 반영하도록 확장합니다."
+        },
+        {
+          "milestone": "거점 특수 시설 및 자동화 시스템",
+          "newGameplay": "거점에 자동 포탑, 자원 자동 채집기, 순간 이동 장치 등 특수 시설을 건설합니다. 플레이어는 전투 중 거점의 위치를 방어하거나 시설을 업그레이드하여 웨이브를 효율적으로 막아내는 타워 디펜스 요소를 결합합니다.",
+          "systemImpact": "경제 및 빌딩 시스템에 '시설 상태 관리자'를 추가하여, 자원 소비와 시설의 능력치 상승이 데이터베이스에 실시간으로 동기화되고 전투 성능에 직접적인 영향을 주도록 설계합니다."
+        }
+      ],
+      "technicalAssumptions": [
+        "로블록스 서버의 동기화 성능을 최적화하기 위해 적의 AI 연산을 클라이언트와 서버에 분산 처리하며, 중요 데이터는 서버 권한으로 검증하여 부정 행위를 방지합니다.",
+        "데이터 저장 시스템은 플레이어의 거점 상태와 성장 정보를 세션 간 안전하게 보존하기 위해 비동기 데이터 저장소(DataStore)를 활용하여 세션 연결성을 유지합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 계절 변화에 따른 환경 위험을 인지하고, 그에 맞는 전략적 장비나 동료를 선택하여 생존율을 높이는지 테스트합니다.",
+        "협력 플레이 시 지원 및 기술 클래스의 스킬 조합이 전투 효율에 유의미한 수치적 차이를 만드는지 로그 데이터를 통해 검증합니다."
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "계절 생태계 시스템의 환경 변수 동기화",
+          "responsibleSystem": "환경 관리 시스템 및 서버 동기화 모듈",
+          "validationEvidence": "계절 변경 시 적의 스폰 데이터와 환경 위험 요소가 모든 클라이언트에서 동일하게 실시간으로 교체되는지 서버 로그와 클라이언트 동기화 패킷을 통해 검증합니다."
+        },
+        {
+          "designElement": "동료 클래스 간 스킬 시너지 엔진",
+          "responsibleSystem": "AI 및 상태 관리 시스템",
+          "validationEvidence": "플레이어의 역할 변경 입력에 따라 동료의 행동 트리(Behavior Tree)가 즉각적으로 전환되고, 조합에 따른 공격력 보너스가 전투 로그에 정확히 기록되는지 테스트합니다."
+        },
+        {
+          "designElement": "거점 특수 시설 및 경제 연동",
+          "responsibleSystem": "경제 및 빌딩 시스템",
+          "validationEvidence": "자원 소비와 거점 시설의 능력치 상승이 데이터베이스에 정확히 반영되고, 시설이 파괴되거나 업그레이드될 때 게임 내 전투 성능에 즉각적인 영향을 주는지 확인합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
@@ -335,28 +441,28 @@
       "updatedAt": "2026-09-18T19:20:04.456Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 77016,
-      "lastMs": 7843,
+      "totalMs": 94276,
+      "lastMs": 17260,
       "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=2002",
-      "updatedAt": "2026-09-18T19:20:24.944Z"
+      "updatedAt": "2026-09-18T19:20:34.361Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T19:19:07.921Z",
-  "updatedAt": "2026-09-18T19:20:24.944Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T19:20:17.096Z",
+  "updatedAt": "2026-09-18T19:20:34.586Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T19:20:34.361Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }
