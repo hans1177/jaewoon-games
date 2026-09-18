@@ -16,8 +16,9 @@ const summary=()=>({
 });
 
 test('authorized Block Blast summary becomes one reusable Vibe2 experience',()=>{
-  const first=mergeAuthorizedSummary({version:2,records:[]},summary());
+  const first=mergeAuthorizedSummary({version:3,records:[]},summary());
   assert.equal(first.added,true);
+  assert.equal(first.memory.version,3);
   assert.equal(first.memory.records.length,1);
   const row=first.memory.records[0];
   assert.equal(row.gameId,'block-blast');
@@ -29,7 +30,7 @@ test('authorized Block Blast summary becomes one reusable Vibe2 experience',()=>
 
   const second=mergeAuthorizedSummary(first.memory,summary());
   assert.equal(second.added,false);
-  assert.equal(second.reason,'duplicate-experience');
+  assert.equal(second.reason,'authorized-source-snapshot-current');
   assert.equal(second.memory.records.length,1);
 });
 
