@@ -102,8 +102,8 @@ function sourceContract(target, slug) {
     textWritablePatterns: freezeList([`web-games/${gameSlug}/**/*.html`, `web-games/${gameSlug}/**/*.css`, `web-games/${gameSlug}/**/*.js`, `web-games/${gameSlug}/**/*.mjs`, `web-games/${gameSlug}/**/*.json`, `web-games/${gameSlug}/**/*.svg`]),
     editorRequiredPatterns: freezeList([]),
     ignoredPaths: freezeList([`web-games/${gameSlug}/node_modules/**`, `web-games/${gameSlug}/dist/**`]),
-    maintenanceOnly: true,
-    newGameAutomatic: false
+    maintenanceOnly: false,
+    newGameAutomatic: true
   });
 }
 
@@ -138,7 +138,7 @@ function executionContract(target, source) {
   if (target === 'unreal') return freeze({textWorkerAllowed:true, editorWorkerRequiredForBinaryAssets:true, editorRuntime:'unreal-editor-or-commandlet', editorRequiredCapabilities:freezeList(['Blueprint','Animation Blueprint','Montage','Blend Space','IK Rig','IK Retargeter','Control Rig','Level/Map binary asset']), binaryAssetsDirectTextEditForbidden:true, localEditorPreferred:true, textWritablePatterns:source.textWritablePatterns, editorRequiredPatterns:source.editorRequiredPatterns});
   if (target === 'unity') return freeze({textWorkerAllowed:true, editorWorkerRequiredForBinaryAssets:false, editorRuntime:'unity-editor-for-runtime-and-build-verification', editorRequiredCapabilities:freezeList(['Animator graph authoring when serialization is unsafe','runtime scene verification','Android build']), binaryAssetsDirectTextEditForbidden:true, localEditorPreferred:true, textWritablePatterns:source.textWritablePatterns, editorRequiredPatterns:source.editorRequiredPatterns});
   if (target === 'godot') return freeze({textWorkerAllowed:true, editorWorkerRequiredForBinaryAssets:false, editorRuntime:'godot-editor-or-headless-runtime', editorRequiredCapabilities:freezeList(['runtime verification']), binaryAssetsDirectTextEditForbidden:true, localEditorPreferred:false, textWritablePatterns:source.textWritablePatterns, editorRequiredPatterns:source.editorRequiredPatterns});
-  return freeze({textWorkerAllowed:true, editorWorkerRequiredForBinaryAssets:false, editorRuntime:'browser-runtime', editorRequiredCapabilities:freezeList(['browser runtime','mobile layout','touch input']), binaryAssetsDirectTextEditForbidden:true, localEditorPreferred:false, textWritablePatterns:source.textWritablePatterns, editorRequiredPatterns:source.editorRequiredPatterns, maintenanceOnly:true, newGameAutomatic:false});
+  return freeze({textWorkerAllowed:true, editorWorkerRequiredForBinaryAssets:false, editorRuntime:'browser-runtime', editorRequiredCapabilities:freezeList(['browser runtime','mobile layout','touch input']), binaryAssetsDirectTextEditForbidden:true, localEditorPreferred:false, textWritablePatterns:source.textWritablePatterns, editorRequiredPatterns:source.editorRequiredPatterns, maintenanceOnly:false, newGameAutomatic:true});
 }
 
 export function createVibeEngineAdapter({ request = '', target = 'auto', gameSlug = '' } = {}) {
@@ -154,7 +154,7 @@ export function createVibeEngineAdapter({ request = '', target = 'auto', gameSlu
     gameplayAuthority:'engine-resolves-authoritative-gameplay-results',
     commonModel:'engine-neutral-game-model',
     webArchiveReadOnly:false,
-    webMaintenanceOnly:resolvedTarget === 'web',
+    webMaintenanceOnly:false,
     mayWriteSource:source.writable === true,
     requiresBuildEvidence:['roblox','unity','unreal'].includes(resolvedTarget),
     requiresMotionRuntimeEvidence:['roblox','unity','unreal','godot'].includes(resolvedTarget)
@@ -169,7 +169,8 @@ export function validateVibeEngineAdapter(adapter) {
   if (!Array.isArray(adapter?.source?.textWritablePatterns)) issues.push('text-writable-patterns-required');
   if (!Array.isArray(adapter?.source?.editorRequiredPatterns)) issues.push('editor-required-patterns-required');
   if (adapter?.target === 'web' && adapter?.mayWriteSource !== true) issues.push('existing-web-maintenance-must-be-writable');
-  if (adapter?.target === 'web' && adapter?.source?.maintenanceOnly !== true) issues.push('web-maintenance-only-required');
+  if (adapter?.target === 'web' && adapter?.source?.maintenanceOnly === true) issues.push('web-first-implementation-must-not-be-maintenance-only');
+  if (adapter?.target === 'web' && adapter?.source?.newGameAutomatic !== true) issues.push('web-first-implementation-must-be-automatic-after-company-gate');
   if (adapter?.target === 'roblox' && adapter?.source?.root?.startsWith('roblox-games/') !== true) issues.push('roblox-source-root-required');
   if (adapter?.target === 'roblox' && adapter?.execution?.binaryAssetsDirectTextEditForbidden !== true) issues.push('roblox-place-assets-must-not-be-text-edited');
   if (adapter?.target === 'unreal' && !adapter.source.candidateFiles.some((value) => value.endsWith('*.uproject'))) issues.push('unreal-uproject-required');
