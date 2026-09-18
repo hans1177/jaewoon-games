@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 Bootstrap</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      board: [
+        ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
+        ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        [' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '],
+        ['bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP', 'bP'],
+        ['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR']
+      ],
+      currentPlayer: 'w',
+      gameOver: false
+    };
+
+    function drawBoard() {
+      const gameContainer = document.getElementById('game');
+      gameContainer.innerHTML = '';
+      for (let row = 0; row < 8; row++) {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'board-row';
+        for (let col = 0; col < 8; col++) {
+          const cell = document.createElement('div');
+          cell.className = 'cell';
+          if (row < 8 && col < 8) {
+            cell.textContent = game.board[row][col];
+          }
+          rowDiv.appendChild(cell);
+        }
+        gameContainer.appendChild(rowDiv);
+      }
+    }
+
+    function handleMove(from, to) {
+      if (game.gameOver) return;
+      if (from[0] === to[0] && from[1] === to[1]) {
+        game.gameOver = true;
+        alert('Invalid move');
+        return;
+      }
+      // Simple move logic
+      game.board[from[0]][from[1]] = '';
+      game.board[to[0]][to[1]] = game.currentPlayer;
+      game.currentPlayer = game.currentPlayer === 'w' ? 'b' : 'w';
+      drawBoard();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      drawBoard();
+    });
+  </script>
+</body>
+</html>
