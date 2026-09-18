@@ -46,7 +46,7 @@ assert.match(robloxRuntime,/WEB_HANDOFF_JSON:/);
 assert.match(robloxRuntime,/--web-handoff="\$web_handoff"/);
 assert.match(robloxRuntime,/--roadmap=company-learning\/platform-release-roadmap\.json/);
 assert.match(bootstrap,/validateWebPlatformHandoff/);
-assert.match(bootstrap,/PolicySource = \"company-learning\\/platform-release-roadmap\\.json\"/);
+assert.ok(bootstrap.includes('PolicySource = "company-learning/platform-release-roadmap.json"'));
 assert.match(bootstrap,/ROBLOX_WEB_HANDOFF_FAILED/);
 assert.match(bootstrap,/WebBaseline = \{/);
 assert.match(bootstrap,/NativeRuntimePassTransferred = false/);
