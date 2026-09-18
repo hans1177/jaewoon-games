@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {Script} from 'node:vm';
 import {pathToFileURL} from 'node:url';
-import {execFileSync,spawn} from 'node:child_process';
+import {execFileSync} from 'node:child_process';
 import {deriveApprovedScopeInventory,staticApprovedScopeCoverage} from './company-approved-scope-contract.mjs';
 import {buildVibeDevelopmentContext,clipPreservedSourceForModel} from './company-vibe2-gameplay-intelligence.mjs';
 
@@ -16,7 +16,7 @@ const MIN_REAL_SCRIPT_BYTES=6000;
 const SHARED_REAL_ENGINE='web-games/_shared/vibe2-final.js';
 const POCKET_FOUNDRY_TEMPLATE='web-games/seed-roblox-simulator-tycoon-i-adopt-me/index.html';
 const VECTOR_CLASH_TEMPLATE='web-games/seed-roblox-battleground-fight-welcome-to-bloxburg/index.html';
-const DEFAULT_MODEL='qwen3:1.7b';
+const DEFAULT_MODEL='gemini-3.5-flash-lite';
 const MODEL_TIMEOUT_MS=75000;
 const MODEL_ATTEMPTS=2;
 const PRESERVED_PATCH_MAX_EDITS=8;
@@ -99,29 +99,11 @@ export function validatePreservedSourceHtml(html,{scopeInventory=[]}={}){
   return{pass:r.blockers.length===0,...r,approvedScopeRequiredCount:scopeInventory.length,artifactType:REAL_ARTIFACT_TYPE,preservedSource:true,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM};
 }
 
-const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-async function ollamaReady(){
-  try{
-    const response=await fetch('http://127.0.0.1:11434/api/tags',{signal:AbortSignal.timeout(3000)});
-    return response.ok;
-  }catch{return false;}
-}
-async function ensureLocalVibeRuntime(model){
-  if(!clean(model)||clean(model).toLowerCase()==='none')throw new Error('VIBE2_LOCAL_MODEL_REQUIRED');
-  if(!await ollamaReady()){
-    try{execFileSync('ollama',['--version'],{stdio:'ignore'});
-    }catch{
-      execFileSync('bash',['-lc','set -euo pipefail; curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh'],{stdio:'inherit',timeout:180000});
-    }
-    const child=spawn('ollama',['serve'],{detached:true,stdio:'ignore'});
-    child.unref();
-    for(let i=0;i<30&&!await ollamaReady();i++)await sleep(2000);
-    if(!await ollamaReady())throw new Error('VIBE2_OLLAMA_SERVER_START_FAILED');
-  }
-  const tags=await (await fetch('http://127.0.0.1:11434/api/tags',{signal:AbortSignal.timeout(5000)})).json();
-  const available=new Set((tags?.models||[]).flatMap(x=>[clean(x?.name),clean(x?.model)]));
-  if(!available.has(model))execFileSync('ollama',['pull',model],{stdio:'inherit',timeout:240000});
-  console.log(`VIBE2_LOCAL_MODEL_READY=${model}`);
+function ensureGeminiRuntime(model){
+  const selected=clean(model);
+  if(!selected||selected.toLowerCase()==='none'||!selected.startsWith('gemini-'))throw new Error('VIBE2_GEMINI_MODEL_REQUIRED');
+  if(!clean(process.env.GEMINI_API_KEY))throw new Error('GEMINI_API_KEY_REQUIRED');
+  console.log(`VIBE2_GEMINI_MODEL_READY=${selected}`);
 }
 
 const OUTPUT_SCHEMA={
@@ -159,30 +141,34 @@ export function applyPreservedSourceEdits(source,edits=[]){
   return out;
 }
 async function callModel({model,prompt,repair='',patchMode=false}){
-  if(!clean(model)||clean(model).toLowerCase()==='none')throw new Error('VIBE2_LOCAL_MODEL_REQUIRED');
+  const selected=clean(model);
+  if(!selected||selected.toLowerCase()==='none'||!selected.startsWith('gemini-'))throw new Error('VIBE2_GEMINI_MODEL_REQUIRED');
+  const apiKey=clean(process.env.GEMINI_API_KEY);
+  if(!apiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
   const patchContract=patchMode?'\n\nPRESERVE_PATCH_OUTPUT_CONTRACT: 기존 전체 HTML을 다시 출력하지 말고 현재 소스에 직접 적용할 최소 exact search/replacement edits만 반환한다. 이미 동작하는 기능, 저장 키, 저장 의미, 게임 규칙은 보존한다. wrapper, 전역 override, 함수 덮어쓰기 체인을 추가하지 말고 PATCH_PLAN의 책임 시스템을 직접 수정한다. search는 현재 제공된 소스에 정확히 1회 존재하는 문자열이어야 한다.':'';
   const repairInstruction=repair?(patchMode?`\n\n이전 exact patch 후보가 strict contract에서 실패했다. 아래 실패만 책임 시스템에서 수정하는 최소 edits를 다시 생성하라:\n${repair}`:`\n\n이전 후보가 strict contract에서 실패했다. 아래 실패를 전부 실제 구현으로 수정하고 전체 HTML을 다시 생성하라:\n${repair}`):'';
   const controller=new AbortController();
   const timer=setTimeout(()=>controller.abort(),MODEL_TIMEOUT_MS);
   try{
-    const response=await fetch('http://127.0.0.1:11434/api/chat',{
+    const system='너는 재운컴퍼니 Vibe2 PRIMARY DEVELOPER다. 잠긴 DESIGN_BASELINE을 재기획하거나 축소하지 말고 승인된 분량을 실제 플레이 가능한 모바일 Web 게임으로 구현한다. 기존 실제 게임 소스가 주어지면 새 게임으로 갈아엎지 말고 기존 저장 키·저장 구조·규칙·진행을 보존하면서 검증에서 빠진 기능만 기존 책임 코드에 직접 구현한다. 코딩 전에 제공된 VIBE_DEVELOPMENT_CONTEXT의 GAMEPLAY_SKETCH, SOURCE_ANALYSIS, PATCH_PLAN을 읽고 현재 구조와 의존성을 파악한다. PATCH_PLAN 순서대로 기존 책임 시스템을 수정하고 작업 범위 밖의 정상 기능은 재작성하지 않는다. 초기 제작 최소단위는 ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE이며 고정 시간분량을 요구하지 않는다. 시작/월드진입, 실제 입력, 핵심 행동, 실제 상태변화, 성장·보상·의미있는 선택, 위험·실패·자원압박, 목표달성 또는 사이클 종료·재도전을 실제 게임 규칙으로 연결한다. 타워 배치 설계가 있으면 버튼 클릭만으로 설치하지 말고 실제 위치 선택 입력과 그 위치의 배치 결과를 구현한다. 맵·월드·구역·경로가 설계에 있으면 배경 이미지나 화면 이름만으로 구현했다고 보지 않는다. 실제 플레이 가능한 공간과 복수 위치·구역 또는 경로 노드를 상태로 구현하고, 이동·충돌·배치·사거리·경로 선택 중 해당 장르의 공간 규칙이 실제 게임 결과에 영향을 주게 한다. 캐릭터·NPC·사물이 있으면 장식물로 두지 말고 실제 상호작용으로 게임 결과가 변해야 한다. 전략 선택 설계가 있으면 서로 다른 선택이 실제 전투 결과 차이를 만들어야 한다. 테스트 하네스, 시간 stage 버튼, 검증 패널, 체크리스트, 가짜 진행도는 금지한다. 외부 네트워크/외부 에셋/iframe은 사용하지 않는다. 신규 생성에서 영구저장은 사용하지 않지만 기존 소스 보완에서는 기존 저장키와 저장 구조를 반드시 유지한다. 모바일 조작, 실제 게임 화면과 Web Audio를 구현한다. 30분 분량은 콘텐츠 확장 뒤 별도 최종 검증 단계에서만 다룬다. '+WEB_PREPLATFORM_IMPLEMENTATION_POLICY;
+    const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(selected)}:generateContent?key=${encodeURIComponent(apiKey)}`,{
       method:'POST',
       signal:controller.signal,
       headers:{'content-type':'application/json'},
       body:JSON.stringify({
-        model,
-        stream:false,
-        think:false,
-        format:patchMode?PATCH_OUTPUT_SCHEMA:OUTPUT_SCHEMA,
-        messages:[
-          {role:'system',content:'너는 재운컴퍼니 Vibe2 PRIMARY DEVELOPER다. 잠긴 DESIGN_BASELINE을 재기획하거나 축소하지 말고 승인된 분량을 실제 플레이 가능한 모바일 Web 게임으로 구현한다. 기존 실제 게임 소스가 주어지면 새 게임으로 갈아엎지 말고 기존 저장 키·저장 구조·규칙·진행을 보존하면서 검증에서 빠진 기능만 기존 책임 코드에 직접 구현한다. 코딩 전에 제공된 VIBE_DEVELOPMENT_CONTEXT의 GAMEPLAY_SKETCH, SOURCE_ANALYSIS, PATCH_PLAN을 읽고 현재 구조와 의존성을 파악한다. PATCH_PLAN 순서대로 기존 책임 시스템을 수정하고 작업 범위 밖의 정상 기능은 재작성하지 않는다. 초기 제작 최소단위는 ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE이며 고정 시간분량을 요구하지 않는다. 시작/월드진입, 실제 입력, 핵심 행동, 실제 상태변화, 성장·보상·의미있는 선택, 위험·실패·자원압박, 목표달성 또는 사이클 종료·재도전을 실제 게임 규칙으로 연결한다. 타워 배치 설계가 있으면 버튼 클릭만으로 설치하지 말고 실제 위치 선택 입력과 그 위치의 배치 결과를 구현한다. 맵·월드·구역·경로가 설계에 있으면 배경 이미지나 화면 이름만으로 구현했다고 보지 않는다. 실제 플레이 가능한 공간과 복수 위치·구역 또는 경로 노드를 상태로 구현하고, 이동·충돌·배치·사거리·경로 선택 중 해당 장르의 공간 규칙이 실제 게임 결과에 영향을 주게 한다. DOM이면 data-area/data-zone/data-route/data-build-slot/data-grid-x/data-grid-y 등 실제 공간 표식을 사용하고 Canvas면 실제 좌표·충돌·경로 상태를 유지한다. 3D 게임이면 실제 X/Y/Z 이동, 카메라 방향, 충돌, 레이캐스트 또는 경로 탐색을 구현하고 이 공간 선택이 전투·생존·목표 결과를 바꾸게 한다. 캐릭터·NPC·사물이 있으면 장식물로 두지 말고 접근 또는 대상 선택 후 실제 상호작용 입력으로 대상 상태가 바뀌고 대화·아이템·문·장치·자원·퀘스트·전투 중 관련 게임 결과가 변해야 한다. 상호작용 문구나 버튼만 띄우는 구현은 금지한다. 전략 선택 설계가 있으면 서로 다른 선택이 실제 전투 결과 차이를 만들어야 한다. 테스트 하네스, 시간 stage 버튼, 검증 패널, 체크리스트, 가짜 진행도는 금지한다. 외부 네트워크/외부 에셋/iframe은 사용하지 않는다. 신규 생성에서 영구저장은 사용하지 않지만 기존 소스 보완에서는 기존 저장키와 저장 구조를 반드시 유지한다. 모바일 조작, 실제 게임 화면과 Web Audio를 구현한다. 30분 분량은 콘텐츠 확장 뒤 별도 최종 검증 단계에서만 다룬다. '+WEB_PREPLATFORM_IMPLEMENTATION_POLICY},
-          {role:'user',content:`${prompt}${repairInstruction}${patchContract}`}
-        ],
-        options:{temperature:repair?0.05:0.18,num_ctx:32768,num_predict:patchMode?2400:8500}
+        systemInstruction:{parts:[{text:system}]},
+        contents:[{role:'user',parts:[{text:`${prompt}${repairInstruction}${patchContract}`}]}],
+        generationConfig:{
+          temperature:repair?0.05:0.18,
+          maxOutputTokens:patchMode?2400:8500,
+          responseMimeType:'application/json',
+          responseJsonSchema:patchMode?PATCH_OUTPUT_SCHEMA:OUTPUT_SCHEMA
+        }
       })
     });
-    if(!response.ok)throw new Error(`OLLAMA_${response.status}:${(await response.text()).slice(0,300)}`);
-    const body=await response.json(),raw=clean(body?.message?.content);
+    if(!response.ok)throw new Error(`GEMINI_${response.status}:${(await response.text()).slice(0,500)}`);
+    const body=await response.json();
+    const raw=clean((body.candidates||[]).flatMap(candidate=>candidate?.content?.parts||[]).map(part=>part?.text||'').join(''));
     if(!raw)throw new Error('EMPTY_MODEL_RESPONSE');
     return JSON.parse(raw);
   }finally{clearTimeout(timer);}
@@ -371,7 +357,7 @@ export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,ca
       }
     }
     if(!result){
-      await ensureLocalVibeRuntime(model);
+      ensureGeminiRuntime(model);
       const vibe=await buildVibePlayable({gameId,gameName,baseline,inventory,model,existingHtml:preserved?.html||'',preservationBlockers,developmentContext});
       ({result,review,generation}=vibe);
       generation={...generation,forcedRepair:Boolean(forceRepair),deterministicFirst:true,deterministicFailure:deterministicFailure||null};
@@ -389,7 +375,7 @@ export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,ca
 }
 
 async function main(){
-  const gameId=clean(arg('game-id')),gameName=clean(arg('game-name',gameId)),baselineFile=arg('baseline'),sourcePath=clean(arg('source-path')),candidateId=safeId(arg('candidate-id')),candidatePath=clean(arg('candidate-path')),sourceCommit=clean(arg('source-commit')),model=clean(arg('model',process.env.AUTONOMOUS_LOCAL_MODEL||DEFAULT_MODEL)),evidenceFile=clean(arg('evidence')),forceRepair=clean(arg('force-repair')).toLowerCase()==='true',repairReason=clean(arg('repair-reason'));
+  const gameId=clean(arg('game-id')),gameName=clean(arg('game-name',gameId)),baselineFile=arg('baseline'),sourcePath=clean(arg('source-path')),candidateId=safeId(arg('candidate-id')),candidatePath=clean(arg('candidate-path')),sourceCommit=clean(arg('source-commit')),model=clean(arg('model',process.env.COMPANY_GEMINI_WEB_MODEL||DEFAULT_MODEL)),evidenceFile=clean(arg('evidence')),forceRepair=clean(arg('force-repair')).toLowerCase()==='true',repairReason=clean(arg('repair-reason'));
   if(!gameId||!baselineFile||!sourcePath||!candidateId||!candidatePath||!sourceCommit||!evidenceFile)throw new Error('required bootstrap argument missing');
   const baseline=readJson(baselineFile),{result,review,generation,approvedScopeInventory}=await buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,model,forceRepair,repairReason});
   const sourceRepaired=generation.mode==='VIBE2_PRESERVED_SOURCE_REPAIR'&&generation.modelUsed===true;
