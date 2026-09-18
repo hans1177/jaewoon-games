@@ -17,7 +17,7 @@ import {
 import { createVibeExperienceMemory, addVibeExperience, searchVibeExperience } from '../assets/vibe-experience-memory.js';
 import { createVibeContinuousQueue, selectNextVibeQueueTask, selectVibeQueueBatch, beginVibeQueueTask, finishVibeQueueTask } from '../assets/vibe-continuous-queue.js';
 
-test('engine adapters expose Unreal and existing web maintenance contracts', () => {
+test('engine adapters expose Unreal and gated Vibe Web first-implementation contracts', () => {
   assert.equal(detectVibeEngineTarget('언리얼 UE5 블루프린트'), 'unreal');
   const unreal = createVibeEngineAdapter({ target: 'unreal', gameSlug: 'motion-test' });
   assert.equal(unreal.mayWriteSource, true);
@@ -27,8 +27,9 @@ test('engine adapters expose Unreal and existing web maintenance contracts', () 
   const web = createVibeEngineAdapter({ target: 'web', gameSlug: 'legacy' });
   assert.equal(web.mayWriteSource, true);
   assert.equal(web.webArchiveReadOnly, false);
-  assert.equal(web.webMaintenanceOnly, true);
-  assert.equal(web.source.newGameAutomatic, false);
+  assert.equal(web.webMaintenanceOnly, false);
+  assert.equal(web.source.maintenanceOnly, false);
+  assert.equal(web.source.newGameAutomatic, true);
   assert.equal(validateVibeEngineAdapter(web).valid, true);
 });
 
