@@ -217,7 +217,7 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'/);
   assert.match(seedDesignWorkflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
   assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=GEMINI_ONLY/);
-  assert.match(seedDesignWorkflow,/COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3\.8-flash'/);
+  assert.match(seedDesignWorkflow,/COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3\.5-flash-lite'/);
   assert.match(seedDesignWorkflow,/gemini-3\.5-flash-lite/);
   assert.doesNotMatch(seedDesignWorkflow,/prepare-ollama|OLLAMA_HOST|OLLAMA_VERSION/);
 
@@ -235,7 +235,7 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(design,/deterministic_pre_gate/);
   assert.match(design,/DETERMINISTIC_PRE_GATE_V2/);
   assert.match(design,/designer_pre_gate_repair_/);
-  assert.match(design,/repairAttempt<=3/);
+  assert.match(design,/repairAttempt<=2/);
   assert.match(design,/function scoreCurrentDesign/);
   assert.match(design,/Deterministic scoring is intentionally never served from checkpoint cache/);
   assert.match(design,/DESIGN_PRE_GATE_BLOCKED/);
