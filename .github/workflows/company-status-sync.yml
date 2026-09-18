@@ -19,10 +19,13 @@ on:
     branches: [main]
     paths:
       - 'tools/company-status-sync.mjs'
+      - 'tools/game-catalog-normalization.mjs'
       - 'tools/production-classification.mjs'
       - 'tools/autonomous-24h-work-planner.mjs'
       - 'qa/production-diversity.test.mjs'
+      - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/autonomous-24h-work-planner.test.mjs'
+      - 'company-learning/platform-release-roadmap.json'
       - '.github/workflows/company-status-sync.yml'
       - 'company-directive.json'
       - 'director-supervision-status.json'
@@ -85,11 +88,13 @@ jobs:
       - name: Sync company status and semantic production classes
         run: |
           node --check tools/production-classification.mjs
+          node --check tools/game-catalog-normalization.mjs
           node --check tools/company-status-sync.mjs
           node --check tools/autonomous-24h-work-planner.mjs
           node --test qa/production-diversity.test.mjs
           node --test qa/autonomous-24h-work-planner.test.mjs
           node tools/company-status-sync.mjs
+          node qa/game-catalog-normalization.test.mjs
 
       - name: Validate synchronized state
         run: |
