@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-handoff.test.mjs
-// 역할: Vibe2 인간 문서 1개 정책과 기계 상태 기반 자동 인수인계 생성을 검증한다.
+// 역할: Vibe2 인간 문서 0개 정책과 기계 상태 기반 자동 인수인계 생성을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -60,12 +60,13 @@ test('machine handoff summarizes queue and adaptive state deterministically', ()
   assert.equal(first.experience.recordCount, 1);
 });
 
-test('repository uses exactly one Vibe2 human document and legacy Vibe2 docs are removed', () => {
+test('repository uses no Vibe2 human documents and legacy Vibe2 docs are removed', () => {
   const runtime = JSON.parse(fs.readFileSync('vibe2-runtime.json', 'utf8'));
-  assert.deepEqual(runtime.documentation?.humanDocuments, ['VIBE2.md']);
-  assert.equal(runtime.documentation?.humanDocumentLimit, 1);
+  assert.equal(runtime.documentation?.humanDocumentRequired, false);
+  assert.deepEqual(runtime.documentation?.humanDocuments, []);
+  assert.equal(runtime.documentation?.humanDocumentLimit, 0);
   assert.equal(runtime.documentation?.manualHandoffDocumentsAllowed, false);
-  assert.equal(fs.existsSync('VIBE2.md'), true);
+  assert.equal(fs.existsSync('VIBE2.md'), false);
 
   for (const file of runtime.documentation?.legacyHumanDocumentsRemoved || []) {
     assert.equal(fs.existsSync(file), false, `${file} must stay removed`);
@@ -75,7 +76,7 @@ test('repository uses exactly one Vibe2 human document and legacy Vibe2 docs are
 test('repository handoff is generated entirely from machine state', () => {
   const snapshot = generateVibe2Handoff();
   assert.equal(snapshot.kind, 'vibe2-machine-handoff');
-  assert.equal(snapshot.generatedFrom.runtimeVersion, 7);
+  assert.equal(snapshot.generatedFrom.runtimeVersion, 8);
   assert.equal(snapshot.generatedFrom.queueVersion, 5);
   assert.equal(snapshot.generatedFrom.parallelismVersion, 2);
   assert.equal(snapshot.generatedFrom.experienceVersion, 1);
@@ -92,7 +93,7 @@ test('repository machine state is internally consistent and no extra Vibe2 human
   assert.equal(snapshot.consistency.ok, true, snapshot.consistency.errors.join(','));
   assert.deepEqual(snapshot.consistency.errors, []);
   const actual = fs.readdirSync('.').filter((file) => /^VIBE2.*\.md$/i.test(file)).sort();
-  assert.deepEqual(actual, ['VIBE2.md']);
+  assert.deepEqual(actual, []);
 });
 
 test('consistency gate rejects an unlisted Vibe2 markdown file and divergent adaptive state', () => {
