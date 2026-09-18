@@ -241,10 +241,17 @@ function releasesWorkerCapacity(task) {
 function isProtectedLongOwner(task) {
   return task?.packageLongWorkProtected === true && clean(task?.packageRole) === 'implementation-owner';
 }
+function isHistoricalPostReleaseMaintenance(task) {
+  return task?.historicalDeploymentRecovery === true
+    && clean(task?.releaseState).toLowerCase() === 'development-confirmed'
+    && task?.packageLongWorkProtected === true
+    && clean(task?.packageRole) === 'implementation-owner';
+}
 function isPostReleaseFocused(task) {
+  const releaseState=clean(task?.releaseState).toLowerCase();
   return task?.postReleaseFocused === true
     && clean(task?.target).toLowerCase() === 'roblox'
-    && clean(task?.releaseState).toLowerCase() === 'release-confirmed'
+    && (releaseState === 'release-confirmed' || isHistoricalPostReleaseMaintenance(task))
     && !['inspect','research','qa'].includes(clean(task?.type).toLowerCase());
 }
 function dynamicConcurrency(queue, requested = null) {
