@@ -63,3 +63,26 @@ test('limited but reusable Web is classified as MAJOR_REWORK instead of rebuild'
   assert.equal(result.fullRewriteAllowed,false);
 });
 
+
+test('existing source cannot full rebuild until approved design baseline is proven',()=>{
+  const html='<!doctype html><html><body><h1>검증 패널</h1><button data-session-stage="1">다음</button></body></html>';
+  const result=assessExistingWebSource({html,baseline,approvedDesign:false,sourceExists:true});
+  assert.equal(result.strategy,'MAJOR_REWORK');
+  assert.equal(result.fullRewriteAllowed,false);
+  assert.ok(result.reasons.includes('FULL_REBUILD_BLOCKED_WITHOUT_APPROVED_DESIGN')||result.reasons.includes('INSUFFICIENT_EVIDENCE_FOR_SAFE_FULL_REBUILD'));
+});
+
+test('stale high validation does not hide current approved scope gaps',()=>{
+  const scopedBaseline={content:{coreFun:'방어 유닛 배치',coreLoop:['배치','전투','보상'],progression:{early:'초기 방어',mid:'상성 강화',late:'다중 경로 방어'},mobileUx:{primaryControls:['위치 선택','유닛 배치']}}};
+  const html=`<!doctype html><html><body><canvas></canvas><script>
+  let hp=10,wave=2,gold=30,playerX=1,playerY=1,enemy={hp:3};
+  addEventListener('touchstart',()=>{enemy.hp-=1}); function update(){requestAnimationFrame(update)}update();
+  function restart(){wave=1} const victory='victory',defeat='defeat'; localStorage.setItem('save','1'); new AudioContext();
+  </script></body></html>`;
+  const result=assessExistingWebSource({html,baseline:scopedBaseline,approvedDesign:true,validationScore:84,sourceExists:true});
+  assert.notEqual(result.strategy,'FULL_REBUILD');
+  if(result.evidence.approvedScopeRequiredCount>0&&result.evidence.approvedScopeCoveragePct<55){
+    assert.equal(result.strategy,'PARTIAL_REPAIR');
+    assert.ok(result.reasons.includes('CURRENT_APPROVED_SCOPE_GAPS_REMAIN'));
+  }
+});
