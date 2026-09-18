@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #333;
+      color: #fff;
+    }
+    .controls button:hover {
+      background-color: #555;
+    }
+    .status {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #aaa;
+    }
+    .progress {
+      width: 100%;
+      background: #444;
+      border-radius: 4px;
+      overflow: hidden;
+      height: 20px;
+      margin-bottom: 20px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(to right, #ff4081, #00ccff);
+      width: 0%;
+      transition: width 0.2s ease;
+    }
+    .progress-bar-full {
+      width: 100%;
+    }
+    .message {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="controls">
+      <button class="start-button" onclick="startGame()">Start</button>
+      <button class="restart-button" onclick="restartGame()">Restart</button>
+    </div>
+    <div class="status">
+      <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+      <div class="message" id="gameMessage"></div>
+    </div>
+    <div class="game">
+      <h1>Vibe2</h1>
+      <p class="message" id="gameDescription">잠입→알 획득→위험 증가→추격→탈출의 실제 플레이 루프</p>
+      <div class="progress">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+    <div class="footer">
+      <p>모바일 직접 조작과 명확한 피드백을 갖춘 다이내믹한 게임</p>
+    </div>
+  </main>
+  <script>
+    let game = null;
+    let progress = 0;
+    let message = null;
+
+    function startGame() {
+      game = {
+        progress: 0,
+        message: null,
+        gameDescription: "잠입→알 획득→위험 증가→추격→탈출의 실제 플레이 루프",
+        controls: {
+          startButton: document.querySelector('.start-button'),
+          restartButton: document.querySelector('.restart-button'),
+          progressBar: document.getElementById('progressBar'),
+          gameMessage: document.getElementById('gameMessage')
+        }
+      };
+      game.controls.startButton.disabled = false;
+      game.controls.startButton.style.backgroundColor = '#00ccff';
+      game.controls.startButton.style.color = '#fff';
+      game.controls.startButton.textContent = 'Start';
+      game.controls.startButton.onclick = () => {
+        game.message = game.gameDescription;
+        game.controls.startButton.disabled = true;
+        game.controls.startButton.style.backgroundColor = '#555';
+        game.controls.startButton.style.color = '#fff';
+        game.controls.startButton.textContent = 'Starting...';
+        game.controls.startButton.onclick = () => {
+          game.progress = 0;
+          game.message = game.gameDescription;
+          game.controls.progressBar.style.width = '0%';
+          game.controls.gameMessage.textContent = game.message;
+        };
+      };
+    }
+
+    function restartGame() {
+      game = {
+        progress: 0,
+        message: null,
+        gameDescription: "잠입→알 획득→위험 증가→추격→탈출의 실제 플레이 루프",
+        controls: {
+          startButton: document.querySelector('.start-button'),
+          restartButton: document.querySelector('.restart-button'),
+          progressBar: document.getElementById('progressBar'),
+          gameMessage: document.getElementById('gameMessage')
+        }
+      };
+      game.controls.startButton.disabled = false;
+      game.controls.startButton.style.backgroundColor = '#00ccff';
+      game.controls.startButton.style.color = '#fff';
+      game.controls.startButton.textContent = 'Start';
+      game.controls.startButton.onclick = () => {
+        game.message = game.gameDescription;
+        game.controls.startButton.disabled = true;
+        game.controls.startButton.style.backgroundColor = '#555';
+        game.controls.startButton.style.color = '#fff';
+        game.controls.startButton.textContent = 'Starting...';
+        game.controls.startButton.onclick = () => {
+          game.progress = 0;
+          game.message = game.gameDescription;
+          game.controls.progressBar.style.width = '0%';
+          game.controls.gameMessage.textContent = game.message;
+        };
+      };
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      game = {
+        progress: 0,
+        message: null,
+        gameDescription: "잠입→알 획득→위험 증가→추격→탈출의 실제 플레이 루프",
+        controls: {
+          startButton: document.querySelector('.start-button'),
+          restartButton: document.querySelector('.restart-button'),
+          progressBar: document.getElementById('progressBar'),
+          gameMessage: document.getElementById('gameMessage')
+        }
+      };
+      game.controls.startButton.disabled = false;
+      game.controls.startButton.style.backgroundColor = '#00ccff';
+      game.controls.startButton.style.color = '#fff';
+      game.controls.startButton.textContent = 'Start';
+      game.controls.startButton.onclick = () => {
+        game.message = game.gameDescription;
+        game.controls.startButton.disabled = true;
+        game.controls.startButton.style.backgroundColor = '#555';
+        game.controls.startButton.style.color = '#fff';
+        game.controls.startButton.textContent = 'Starting...';
+        game.controls.startButton.onclick = () => {
+          game.progress = 0;
+          game.message = game.gameDescription;
+          game.controls.progressBar.style.width = '0%';
+          game.controls.gameMessage.textContent = game.message;
+        };
+      };
+    });
+  </script>
+</body>
+</html>
