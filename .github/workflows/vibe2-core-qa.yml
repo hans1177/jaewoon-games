@@ -20,6 +20,8 @@ on:
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
       - 'tools/vibe2-existing-web-assessment.mjs'
+      - 'tools/company-approved-scope-contract.mjs'
+      - 'tools/company-vibe2-expert-development.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-code-intelligence.mjs'
       - 'tools/vibe2-auto-player-contract.mjs'
@@ -135,6 +137,8 @@ jobs:
           node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-exploration-worker.mjs
           node --check tools/vibe2-existing-web-assessment.mjs
+          node --check tools/company-approved-scope-contract.mjs
+          node --check tools/company-vibe2-expert-development.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-code-intelligence.mjs
           node --check tools/vibe2-auto-player-contract.mjs
