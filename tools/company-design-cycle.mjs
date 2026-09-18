@@ -21,6 +21,8 @@ const geminiApiKey=clean(process.env.GEMINI_API_KEY);
 if(!geminiApiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
 const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||'gemini-3.8-flash');
 const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite').split(','));
+const geminiFallbackModelList=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-pro-preview,gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-3.1-flash-lite').split(','));
+const geminiCandidatesFor=primary=>uniq([primary,...geminiFallbackModelList]);
 if(geminiLeadModelList.length<ROLES.length)throw new Error(`GEMINI_LEAD_MODEL_GATE: ${geminiLeadModelList.length}/${ROLES.length}`);
 const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadModelList[index]]));
 const distinctLeadModels=uniq(Object.values(leadModels));
@@ -512,55 +514,77 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
 
 async function callModel(model,system,user,schema,{predict=1100,temperature=0.25,repairRequired=null,numCtx=8192,timeoutMs=null,maxAttempts=3}={}){
   const callStarted=Date.now();
+  const requestedModel=model;
+  const candidates=geminiCandidatesFor(requestedModel);
   const effectiveTimeoutMs=Math.min(120000,Math.max(30000,Number(timeoutMs||modelCallTimeoutMs)));
-  let lastError=null;
   const attemptLimit=Math.min(3,Math.max(1,Number(maxAttempts||3)));
-  for(let attempt=1;attempt<=attemptLimit;attempt++){
-    try{
-      const prompt=user+(attempt>1&&lastError?`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message)}\n오류를 수정하고 JSON 객체만 반환한다.`:'')+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.';
-      const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(geminiApiKey)}`,{
-        method:'POST',
-        headers:{'content-type':'application/json'},
-        body:JSON.stringify({
-          systemInstruction:{parts:[{text:system}]},
-          contents:[{role:'user',parts:[{text:prompt}]}],
-          generationConfig:{
-            temperature:attempt===1?temperature:0,
-            maxOutputTokens:Math.min(8192,Math.max(512,Number(predict||1100))),
-            responseMimeType:'application/json',
-            responseJsonSchema:schema
-          }
-        }),
-        signal:AbortSignal.timeout(effectiveTimeoutMs)
-      });
-      if(!response.ok)throw new Error(`gemini ${response.status}: ${clip(await response.text(),1200)}`);
-      const body=await response.json();
-      const raw=clean((body.candidates||[]).flatMap(candidate=>candidate?.content?.parts||[]).map(part=>part?.text||'').join(''));
-      if(!raw)throw new Error('GEMINI_EMPTY_RESPONSE');
-      const parsed=parseJsonObject(raw);
-      const repairs=[];
-      let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
-      if(typeof repairRequired==='function'){
-        const grounded=repairRequired(normalized);
-        if(grounded?.value)normalized=grounded.value;
-        if(Array.isArray(grounded?.repairs)&&grounded.repairs.length)for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
+  let lastError=null;
+  for(const candidateModel of candidates){
+    for(let attempt=1;attempt<=attemptLimit;attempt++){
+      try{
+        const prompt=user+(attempt>1&&lastError?`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message)}\n오류를 수정하고 JSON 객체만 반환한다.`:'')+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.';
+        const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(candidateModel)}:generateContent?key=${encodeURIComponent(geminiApiKey)}`,{
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          body:JSON.stringify({
+            systemInstruction:{parts:[{text:system}]},
+            contents:[{role:'user',parts:[{text:prompt}]}],
+            generationConfig:{
+              temperature:attempt===1?temperature:0,
+              maxOutputTokens:Math.min(8192,Math.max(512,Number(predict||1100))),
+              responseMimeType:'application/json',
+              responseJsonSchema:schema
+            }
+          }),
+          signal:AbortSignal.timeout(effectiveTimeoutMs)
+        });
+        if(!response.ok){
+          const bodyText=clip(await response.text(),1600);
+          const error=new Error(`gemini ${response.status}: ${bodyText}`);
+          error.geminiStatus=response.status;
+          throw error;
+        }
+        const body=await response.json();
+        const raw=clean((body.candidates||[]).flatMap(candidate=>candidate?.content?.parts||[]).map(part=>part?.text||'').join(''));
+        if(!raw)throw new Error('GEMINI_EMPTY_RESPONSE');
+        const parsed=parseJsonObject(raw);
+        const repairs=[];
+        let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
+        if(typeof repairRequired==='function'){
+          const grounded=repairRequired(normalized);
+          if(grounded?.value)normalized=grounded.value;
+          if(Array.isArray(grounded?.repairs)&&grounded.repairs.length)for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
+        }
+        assertSchemaValue(normalized,schema);
+        const elapsedMs=Date.now()-callStarted;
+        recordModelHealth(`gemini:${candidateModel}`,{success:true,elapsedMs});
+        designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
+        designCheckpoint.geminiModelResolution=designCheckpoint.geminiModelResolution&&typeof designCheckpoint.geminiModelResolution==='object'?designCheckpoint.geminiModelResolution:{};
+        designCheckpoint.geminiModelResolution[requestedModel]=candidateModel;
+        modelCallStats.push({model:`gemini:${candidateModel}`,requestedModel:`gemini:${requestedModel}`,provider:'GEMINI',attempt,elapsedMs,predict,mode:'gemini-json-schema',timeoutMs:effectiveTimeoutMs,schemaRepairs:repairs.length});
+        persistDesignCheckpoint();
+        if(candidateModel!==requestedModel)console.log(`GEMINI_MODEL_FAILOVER_RESOLVED=${requestedModel}->${candidateModel}`);
+        console.log(`GEMINI_CALL_MS=${candidateModel}|${elapsedMs}|attempt=${attempt}|timeout=${effectiveTimeoutMs}`);
+        return normalized;
+      }catch(error){
+        lastError=error;
+        recordModelHealth(`gemini:${candidateModel}`,{success:false,elapsedMs:Date.now()-callStarted,error});
+        persistDesignCheckpoint();
+        const status=Number(error?.geminiStatus||0);
+        if(status===429||status===404||status===403){
+          const nextCandidate=candidates[candidates.indexOf(candidateModel)+1]||null;
+          console.log(`GEMINI_MODEL_FAILOVER=${requestedModel}|${candidateModel}->${nextCandidate||'NONE'}|status=${status}`);
+          break;
+        }
+        if(attempt<attemptLimit){
+          await new Promise(r=>setTimeout(r,600*attempt));
+          continue;
+        }
+        break;
       }
-      assertSchemaValue(normalized,schema);
-      const elapsedMs=Date.now()-callStarted;
-      recordModelHealth(`gemini:${model}`,{success:true,elapsedMs});
-      designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
-      modelCallStats.push({model:`gemini:${model}`,provider:'GEMINI',attempt,elapsedMs,predict,mode:'gemini-json-schema',timeoutMs:effectiveTimeoutMs,schemaRepairs:repairs.length});
-      persistDesignCheckpoint();
-      console.log(`GEMINI_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|timeout=${effectiveTimeoutMs}`);
-      return normalized;
-    }catch(error){
-      lastError=error;
-      recordModelHealth(`gemini:${model}`,{success:false,elapsedMs:Date.now()-callStarted,error});
-      persistDesignCheckpoint();
-      if(attempt<attemptLimit)await new Promise(r=>setTimeout(r,600*attempt));
     }
   }
-  throw new Error(`GEMINI_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
+  throw new Error(`GEMINI_CALL_FAILED ${requestedModel}: ${clean(lastError?.message)}`);
 }
 
 async function callExternalDesignerModel(route,system,user,schema,options={}){
