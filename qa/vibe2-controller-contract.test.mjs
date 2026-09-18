@@ -202,10 +202,10 @@ test('explicit work-order output path overrides runtime default path',()=>{
   fixtureRuntime.continuous={...fixtureRuntime.continuous,enabled:false,entryWorkflow:'.github/workflows/vibe2-24h-runner.yml',workerWorkflow:'.github/workflows/vibe2-continuous-core.yml'};
   fixtureRuntime.documentation={
     ...fixtureRuntime.documentation,
-    runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json'},
+    runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',gameStudyKnowledge:'game-study-knowledge.json'},
     generatedHandoffTool:'tools/vibe2-handoff.mjs'
   };
-  fixtureRuntime.sources={queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',workOrder:runtimeDefault};
+  fixtureRuntime.sources={queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',gameStudyKnowledge:'game-study-knowledge.json',workOrder:runtimeDefault};
   fixtureRuntime.adaptiveBackpressure={...fixtureRuntime.adaptiveBackpressure,stateFile:'parallelism.json'};
 
   fs.mkdirSync(path.join(root,'tools'),{recursive:true});
@@ -215,7 +215,8 @@ test('explicit work-order output path overrides runtime default path',()=>{
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
   fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:20,tasks:[]}), 'utf8');
   fs.writeFileSync(controlFile,JSON.stringify({version:2,currentMax:20}), 'utf8');
-  fs.writeFileSync(experienceFile,JSON.stringify({version:1,records:[]}), 'utf8');
+  fs.writeFileSync(experienceFile,JSON.stringify({version:3,records:[]}), 'utf8');
+  fs.writeFileSync(path.join(root,'game-study-knowledge.json'),JSON.stringify({version:1,entries:[],derived:{mergedKnowledge:[],conflicts:[],hypotheses:[]}}), 'utf8');
   fs.writeFileSync(runtimeFile,JSON.stringify(fixtureRuntime), 'utf8');
 
   const order=runVibeContinuousRunner({runtimeFile,outputFile:explicitOutput});
