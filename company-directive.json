@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 45,
+  "revision": 46,
   "updatedAt": "2026-09-18",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -406,7 +406,23 @@
       "implementationOwner": true,
       "ownsWebFirstImplementation": true,
       "ownsSelectedPlatformImplementation": true,
-      "ownsPostReleaseGameSourceDevelopment": true
+      "ownsPostReleaseGameSourceDevelopment": true,
+      "learningMotor": {
+        "enabled": true,
+        "policy": "company-learning/vibe2-learning-motor.json",
+        "legacyDevelopmentLevelRemainsOverallExperience": true,
+        "masteryLayerEnabled": true,
+        "sameGameVerifiedExperienceHighestPriority": true,
+        "webImplementationCountsAsPractice": true,
+        "verifiedWebOutcomeFeedsMastery": true,
+        "webToRobloxVerifiedHandoffRequired": true,
+        "robloxNativeEvidencePriorityAfterTargetImplementationBegins": true,
+        "repeatedFailureSecondOccurrence": "FORCE_RETRIEVAL",
+        "repeatedFailureThirdOccurrence": "ADD_REPRO_DRILL",
+        "highRiskCandidateTournament": 3,
+        "idleTrainingPreemptibleByProduction": true,
+        "noGateWeakening": true
+      }
     },
     "designerBannedModels": [],
     "providerMode": "GEMINI_ONLY",
@@ -783,7 +799,12 @@
     "paid-ai-paid-overage-and-paid-runners-remain-forbidden",
     "vibe2-vibe3-are-the-game-implementation-owner-from-web-first-through-selected-platform-and-post-release-development",
     "non-vibe-ai-is-teacher-reviewer-diagnostician-unblocker-not-game-development-owner",
-    "non-vibe-ai-must-not-write-game-source-or-gameplay-feature-commits-without-explicit-owner-instruction"
+    "non-vibe-ai-must-not-write-game-source-or-gameplay-feature-commits-without-explicit-owner-instruction",
+    "web-development-is-vibe-practice-and-executable-blueprint-but-web-pass-never-substitutes-target-platform-pass",
+    "verified-learning-motor-prioritizes-same-game-then-same-engine-then-cross-game-context",
+    "vibe-mastery-never-expands-authority-or-weakens-validation-gates",
+    "idle-practice-must-yield-to-production-work-and-never-count-as-production-pass",
+    "web-to-roblox-handoff-must-preserve-gameplay-semantics-and-reimplement-platform-native-code"
   ],
   "homepageTesting": {
     "minimumWebStrictScore": 80,
