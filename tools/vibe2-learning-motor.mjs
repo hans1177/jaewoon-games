@@ -226,6 +226,36 @@ export function buildIdlePracticeQueue(masteryInput={}){
   return {version:1,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:true,drills:drills.slice(0,8)};
 }
 
+export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
+  const tasks=Array.isArray(queueInput?.tasks)?queueInput.tasks:[];
+  const active=tasks.filter(task=>['queued','running'].includes(lower(task?.status)));
+  const practiceTask=task=>(task?.evidence||[]).some(x=>clean(x)==='learning-practice-only')||/^LEARNING-PRACTICE-/.test(clean(task?.id));
+  const productionActive=active.some(task=>!practiceTask(task));
+  const existingPractice=active.find(practiceTask);
+  if(productionActive||existingPractice)return {queue:queueInput,added:false,reason:productionActive?'PRODUCTION_WORK_PRESENT':'PRACTICE_ALREADY_ACTIVE'};
+  const drill=(idlePracticeInput?.drills||[])[0];
+  if(!drill)return {queue:queueInput,added:false,reason:'NO_PRACTICE_DRILL'};
+  const id=`LEARNING-PRACTICE-${clean(drill.id).replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,80)}`;
+  const goal=[
+    '[VIBE_LEARNING_PRACTICE]',
+    `kind=${clean(drill.kind)}`,
+    `domains=${(drill.domains||[]).join(',')||'GENERAL'}`,
+    clean(drill.sourceFailure)?`sourceFailure=${clean(drill.sourceFailure)}`:'',
+    '소스 파일을 수정하지 않는다. 문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.',
+    '이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.'
+  ].filter(Boolean).join('\n');
+  const task={
+    id,gameId:null,target:'web',department:'development',type:'research',goal,
+    responsibleFiles:[],dependencies:[],priority:'low',releaseState:'other',status:'queued',
+    retries:0,maxRetries:1,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
+    paidResourceRequired:false,sourceRoot:`learning-practice:${clean(drill.id)}`,
+    speculativeEligible:false,estimatedRisk:'low',
+    evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`)],
+    completionCriteria:['PRACTICE_ANALYSIS_COMPLETED','SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO']
+  };
+  return {queue:{...queueInput,tasks:[...tasks,task]},added:true,reason:'IDLE_PRACTICE_ENQUEUED',task};
+}
+
 function get(item,...keys){for(const k of keys){const v=item?.[k];if(v!==undefined&&v!==null&&v!=='')return v;}return null;}
 export function buildWebRobloxHandoffs(companyQueueInput={}){
   const items=companyQueueInput?.items||companyQueueInput?.projects||[];
@@ -263,15 +293,20 @@ export function buildWebRobloxHandoffs(companyQueueInput={}){
 
 export function refreshLearningMotor({stateInput={},experienceInput={},companyQueueInput={},queueInput={}}={}){
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
+  const benchmark=buildBenchmarkLadder(applied.state);
+  const idlePractice=buildIdlePracticeQueue(applied.state);
   const tournament=enrichQueueForCandidateTournaments(queueInput,applied.state);
+  const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
     state:applied.state,
     addedExperience:applied.added,
-    benchmark:buildBenchmarkLadder(applied.state),
-    idlePractice:buildIdlePracticeQueue(applied.state),
+    benchmark,
+    idlePractice,
     handoffs:buildWebRobloxHandoffs(companyQueueInput),
-    queue:tournament.queue,
-    tournamentTasksChanged:tournament.changed
+    queue:practice.queue,
+    tournamentTasksChanged:tournament.changed,
+    idlePracticeTaskAdded:practice.added,
+    idlePracticeReason:practice.reason
   };
 }
 
@@ -285,7 +320,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const queueFile=clean(a.queue);
   const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]}});
   writeJson(stateFile,result.state);
-  if(queueFile&&result.tournamentTasksChanged>0) writeJson(queueFile,result.queue);
+  if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeTaskAdded)) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);
   if(clean(a.practice)) writeJson(a.practice,result.idlePractice);
   if(clean(a.handoff)) writeJson(a.handoff,result.handoffs);
@@ -295,5 +330,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
   console.log(`VIBE2_CANDIDATE_TOURNAMENT_TASKS=${result.tournamentTasksChanged}`);
+  console.log(`VIBE2_IDLE_PRACTICE_TASK_ADDED=${result.idlePracticeTaskAdded?'YES':'NO'}`);
+  console.log(`VIBE2_IDLE_PRACTICE_REASON=${result.idlePracticeReason}`);
   console.log('VIBE2_GATE_WEAKENED=NO');
 }
