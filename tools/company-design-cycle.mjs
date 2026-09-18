@@ -527,6 +527,17 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
   return value;
 }
 
+function geminiMinuteRetryDelayMs(error,candidateModel){
+  const message=clean(error?.message||error);
+  if(Number(error?.geminiStatus||0)!==429)return 0;
+  if(/PerDayPerProjectPerModel/i.test(message))return 0;
+  if(!/PerMinutePerProjectPerModel|retryDelay|Please retry in/i.test(message))return 0;
+  const explicit=message.match(/retryDelay[^0-9]*(\d+(?:\.\d+)?)s/i)?.[1]||message.match(/Please retry in\s+(\d+(?:\.\d+)?)s/i)?.[1];
+  const seconds=Math.min(60,Math.max(5,Math.ceil(Number(explicit||15))));
+  const stagger=(hash(`${gameId}:${candidateModel}`)%5)*1000;
+  return seconds*1000+stagger;
+}
+
 async function callModel(model,system,user,schema,{predict=1100,temperature=0.25,repairRequired=null,numCtx=8192,timeoutMs=null,maxAttempts=3}={}){
   const callStarted=Date.now();
   const requestedModel=model;
@@ -535,6 +546,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
   const attemptLimit=Math.min(3,Math.max(1,Number(maxAttempts||3)));
   let lastError=null;
   for(const candidateModel of candidates){
+    let minuteRateRetries=0;
     for(let attempt=1;attempt<=attemptLimit;attempt++){
       try{
         const prompt=user+(attempt>1&&lastError?`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message)}\n오류를 수정하고 JSON 객체만 반환한다.`:'')+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.';
@@ -587,6 +599,14 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
         recordModelHealth(`gemini:${candidateModel}`,{success:false,elapsedMs:Date.now()-callStarted,error});
         persistDesignCheckpoint();
         const status=Number(error?.geminiStatus||0);
+        const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel);
+        if(status===429&&minuteRetryMs>0&&minuteRateRetries<2){
+          minuteRateRetries+=1;
+          console.log(`GEMINI_RATE_LIMIT_WAIT=${candidateModel}|${minuteRetryMs}|retry=${minuteRateRetries}`);
+          await new Promise(r=>setTimeout(r,minuteRetryMs));
+          attempt-=1;
+          continue;
+        }
         if(status===429||status===404||status===403){
           quarantineGeminiModel(candidateModel,status);
           const nextCandidate=candidates.slice(candidates.indexOf(candidateModel)+1).find(model=>!geminiUnavailableModels.has(model))||null;
