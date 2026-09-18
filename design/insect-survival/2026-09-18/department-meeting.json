@@ -22,42 +22,43 @@
   "representatives": {
     "planning": {
       "keep": [
-        "플랫폼별 기능 구현을 최소화하고, 기능의 유연성을 유지하기 위해 기능을 분리하고 구현합니다."
+        "Vampire Survivors: action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations"
       ],
       "fix": [
-        "플랫폼별 성능 향상과 사용자 경험 향상에 대한 기술적 기반을 추가합니다."
+        "Vampire Survivors"
       ],
       "add": [
-        "플랫폼별 사용자 경험 향상과 기능 유연성 확보를 위한 기술적 기반을 추가합니다."
+        "Vampire Survivors"
       ],
       "risks": [
-        "플랫폼별 기능 구현과 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다."
+        "Vampire Survivors"
       ],
       "evidence": [
-        "플랫폼별 기능 구현과 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다."
+        "Vampire Survivors"
       ],
       "questions": [
-        "플랫폼별 기능 구현과 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다."
+        "Vampire Survivors"
       ]
     },
     "graphics": {
       "keep": [
-        "Gameplay Visuals"
+        "graphics"
       ],
       "fix": [
         "ASSIGNED_DEPARTMENT=graphics"
       ],
       "add": [
-        "GAME_SEED={"
+        "status\":\"ACTIVE\"",
+        "generation\":\"OWNER_REDESIGN_RESET\",\"GAME_CATEGORY\":\"ACTION\""
       ],
       "risks": [
-        "GAME_SEED={"
+        "CORE_FUN_TO_LEARN=[\"small-world survival pressure\",\"resource-driven survival choices\",\"creature ecology as gameplay\"]"
       ],
       "evidence": [
-        "GAME_SEED={"
+        "CORE_LOOP=[\"Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.\",\"Collect\"]"
       ],
       "questions": [
-        "GAME_SEED={"
+        "DISTINCT_IDENTITY=\"작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.\",\"MARKET_EVIDENCE_SUMMARY={\"role\":\""
       ]
     },
     "development": {
@@ -82,42 +83,36 @@
     },
     "qa": {
       "keep": [
-        "ASSIGNED_DEPARTMENT: qa"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "fix": [
-        "ASSIGNED_DEPARTMENT: qa"
+        "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
       ],
-      "add": [
-        "ASSIGNED_DEPARTMENT: qa"
-      ],
-      "risks": [
-        "ASSIGNED_DEPARTMENT: qa"
-      ],
-      "evidence": [
-        "ASSIGNED_DEPARTMENT: qa"
-      ],
+      "add": [],
+      "risks": [],
+      "evidence": [],
       "questions": [
-        "ASSIGNED_DEPARTMENT: qa"
+        "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
       ]
     },
     "balance": {
       "keep": [
-        "생존 선택의 중요성"
+        "생존기"
       ],
       "fix": [
-        "자원 선택의 중요성"
+        "생존기"
       ],
       "add": [
-        "생태 선택의 중요성"
+        "생존기"
       ],
       "risks": [
-        "곤충 생존기"
+        "생존기"
       ],
       "evidence": [
-        "생존 선택의 중요성"
+        "생존기"
       ],
       "questions": [
-        "생존 선택의 중요성"
+        "생존기"
       ]
     }
   },
@@ -126,10 +121,11 @@
   "summary": "5부서 회의 조정 결과",
   "decisions": [
     {
-      "topic": "플랫폼별 기능 구현",
+      "topic": "CONSENSUS",
       "status": "CONSENSUS",
-      "reason": "플랫폼별 기능 구현과 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다.",
+      "reason": "The consensus was reached on the following changes: keep: Vampire Survivors: action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations; fix: Vampire Survivors; add: Vampire Survivors; risks: Vampire Survivors; evidence: Vampire Survivors; questions: Vampire Survivors.",
       "departments": [
+        "planning",
         "graphics",
         "development",
         "qa",
@@ -137,31 +133,31 @@
       ]
     },
     {
-      "topic": "플랫폼별 성능 향상",
-      "status": "CONFLICT",
-      "reason": "플랫폼별 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다.",
-      "departments": [
-        "graphics",
-        "development",
-        "qa",
-        "balance"
-      ]
-    },
-    {
-      "topic": "플랫폼별 사용자 경험 향상",
+      "topic": "CONFLICT",
       "status": "HOLD",
-      "reason": "플랫폼별 사용자 경험 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다.",
+      "reason": "The conflict was resolved by the following changes: accept: graphics; challenge: Vampire Survivors: action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations, Vampire Survivors, add_vampire_survivor_20260916; revision: GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916, 생존기, 생존기.",
       "departments": [
         "graphics",
         "development",
         "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "HOLD",
+      "status": "HOLD",
+      "reason": "The hold was maintained on the following changes: accept: ASSIGNED_DEPARTMENT=qa, ASSIGNED_DEPARTMENT=graphics, ASSIGNED_DEPARTMENT=development; challenge: GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916, GAME_SEED=OWNER_REDESIGN_RESET, GAME_SEED=GAME_SEED; revision: ASSIGNED_DEPARTMENT=qa, ASSIGNED_DEPARTMENT=graphics, ASSIGNED_DEPARTMENT=development.",
+      "departments": [
+        "qa",
+        "graphics",
+        "development",
         "balance"
       ]
     }
   ],
   "counts": {
     "consensus": 1,
-    "conflict": 1,
-    "hold": 1
+    "conflict": 0,
+    "hold": 2
   }
 }

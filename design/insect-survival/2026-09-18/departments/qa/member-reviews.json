@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "ASSIGNED_DEPARTMENT: qa"
+          "ASSIGNED_DEPARTMENT=qa"
         ],
         "fix": [
-          "ASSIGNED_DEPARTMENT: qa"
+          "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
         ],
         "add": [
-          "ASSIGNED_DEPARTMENT: qa"
+          "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
         ],
         "risks": [
-          "ASSIGNED_DEPARTMENT: qa"
+          "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
         ],
         "evidence": [
-          "ASSIGNED_DEPARTMENT: qa"
+          "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
         ],
         "questions": [
-          "ASSIGNED_DEPARTMENT: qa"
+          "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
         ]
       }
     },
@@ -44,23 +44,13 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "생존 선택의 중요성을 명확히 설명하자."
+          "생존기 이래요? 생존기는 어떠한 근거를 이용하여 정해진 것인지? 어떠한 설계를 통해 정해진 것인지? 이러한 것들을 이해하고 있습니다. 이러한 것들은 생존기의 성격과 성장과정을 나타내는 것입니다. 이러한 것들은 생존기의 이론적 성격과 "
         ],
-        "fix": [
-          "생존 선택의 중요성을 명확히 설명하자."
-        ],
-        "add": [
-          "생존 선택의 중요성을 명확히 설명하자."
-        ],
-        "risks": [
-          "생존 선택의 중요성을 명확히 설명하자."
-        ],
-        "evidence": [
-          "생존 선택의 중요성을 명확히 설명하자."
-        ],
-        "questions": [
-          "생존 선택의 중요성을 명확히 설명하자."
-        ]
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
       }
     },
     {
@@ -68,22 +58,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "지정된 qa 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "지정된 QA 부서만 검토하라. 다른 부서는 제외하라."
         ],
         "fix": [
-          "각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
+          "게임 SEED에 없는 유명 게임 표현 복제를 제외하라."
         ],
         "add": [
-          "ASSIGNED_DEPARTMENT=qa"
+          "각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
         ],
         "risks": [
-          "GAME_SEED={...}"
+          "게임 SEED에 없는 유명 게임 표현 복제를 제외하라."
         ],
         "evidence": [
-          "Vampire Survivors - horde pressure, simple attacks, upgrade choices and build combinations"
+          "Vampire Survivors, Brotato, Survivor.io, ESA Power of Play 2025 Global Report, Newzoo 2025 Full-Year Games Market Review, Sensor-T"
         ],
         "questions": [
-          "Brotato - compact arena survival benchmark for short runs, item choices and build synergy"
+          "게임 SEED에 없는 유명 게임 표현 복제를 제외하라."
         ]
       }
     }

@@ -52,12 +52,14 @@
         "add": [
           "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
         ],
-        "risks": [],
+        "risks": [
+          "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
+        ],
         "evidence": [
           "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
         ],
         "questions": [
-          "生存 선택의 중요성"
+          "GAME_SEED=OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916"
         ]
       }
     },
@@ -66,23 +68,13 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "생존 선택의 중요성"
+          "생존기"
         ],
-        "fix": [
-          "자원 선택의 중요성"
-        ],
-        "add": [
-          "생태 선택의 중요성"
-        ],
-        "risks": [
-          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다"
-        ],
-        "evidence": [
-          "생존 선택의 중요성"
-        ],
-        "questions": [
-          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다"
-        ]
+        "fix": [],
+        "add": [],
+        "risks": [],
+        "evidence": [],
+        "questions": []
       }
     }
   ]
