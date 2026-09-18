@@ -42,6 +42,13 @@ function actionRunIds(rows){
   return [...ids].sort();
 }
 function evidenceValues(row,prefix){return(Array.isArray(row?.evidence)?row.evidence:[]).map(clean).filter(value=>value.startsWith(prefix)).map(value=>value.slice(prefix.length)).filter(Boolean);}
+function isPracticeOnlyResult(row={},taskById=new Map()){
+  const task=taskById.get(clean(row?.taskId))||{};
+  const evidence=(Array.isArray(row?.evidence)?row.evidence:[]).map(clean);
+  return evidence.includes('learning-practice-only')
+    || clean(task?.sourceRoot).startsWith('learning-practice:')
+    || /\[VIBE_LEARNING_PRACTICE\]/.test(clean(task?.goal));
+}
 function computeWorkload(rows,tasks=[]){
   const taskById=new Map((Array.isArray(tasks)?tasks:[]).map(task=>[clean(task?.id),task]));
   const uniqueTaskIds=[...new Set(rows.map(row=>clean(row?.taskId)).filter(Boolean))];
@@ -104,33 +111,54 @@ function computeWorkload(rows,tasks=[]){
 
 export function computeParallelismTelemetry(input={}){
   const rows=Array.isArray(input.results)?input.results:[];
+  const tasks=Array.isArray(input.tasks)?input.tasks:[];
+  const taskById=new Map(tasks.map(task=>[clean(task?.id),task]));
+  const adaptiveRows=rows.filter(row=>!isPracticeOnlyResult(row,taskById));
   const requestedMax=clamp(Math.floor(num(input.requestedMax||rows[0]?.metrics?.requestedMax||20)||20),1,20);
   const effectiveMax=clamp(Math.floor(num(input.effectiveMax||rows[0]?.metrics?.effectiveMax||requestedMax)||requestedMax),1,requestedMax);
   const taskCount=Math.max(0,Math.floor(num(input.taskCount||0)));
   const workerCount=rows.length;
+  const adaptiveWorkerCount=adaptiveRows.length;
+  const practiceWorkerCount=workerCount-adaptiveWorkerCount;
   const runIds=actionRunIds(rows);
   const runId=runIds.length===1?runIds[0]:null;
   const starts=rows.map(row=>parseTime(row?.metrics?.workerStartedAt)).filter(Boolean);
   const queueWait=rows.map(row=>{const s=parseTime(row?.metrics?.workerStartedAt),r=parseTime(row?.metrics?.reservedAt);return s&&r&&s>=r?s-r:0;}).filter(v=>v>=0);
   const peak=peakConcurrency(rows);
+  const adaptivePeak=peakConcurrency(adaptiveRows);
   const cacheKnown=rows.filter(row=>typeof row?.metrics?.ollamaCacheHit==='boolean');
   const cacheHits=cacheKnown.filter(row=>row.metrics.ollamaCacheHit===true).length;
+  const adaptiveCacheKnown=adaptiveRows.filter(row=>typeof row?.metrics?.ollamaCacheHit==='boolean');
+  const adaptiveCacheHits=adaptiveCacheKnown.filter(row=>row.metrics.ollamaCacheHit===true).length;
   const outcomes={PASS:0,FAIL:0,BLOCKED:0,OTHER:0};
+  const adaptiveOutcomes={PASS:0,FAIL:0,BLOCKED:0,OTHER:0};
   for(const row of rows){const key=clean(row?.outcome).toUpperCase();if(key in outcomes)outcomes[key]++;else outcomes.OTHER++;}
+  for(const row of adaptiveRows){const key=clean(row?.outcome).toUpperCase();if(key in adaptiveOutcomes)adaptiveOutcomes[key]++;else adaptiveOutcomes.OTHER++;}
   const targetPeak=Math.min(workerCount,effectiveMax);
+  const adaptiveTargetPeak=Math.min(adaptiveWorkerCount,effectiveMax);
   const checkout=durationStats(rows,'checkoutMs');
   const candidate=durationStats(rows,'candidateMs');
   const qa=durationStats(rows,'qaMs');
   const workerTotal=durationStats(rows,'workerTotalMs');
-  const workload=computeWorkload(rows,input.tasks||[]);
+  const adaptiveCheckout=durationStats(adaptiveRows,'checkoutMs');
+  const adaptiveCandidate=durationStats(adaptiveRows,'candidateMs');
+  const adaptiveQa=durationStats(adaptiveRows,'qaMs');
+  const workload=computeWorkload(rows,tasks);
   let bottleneck='NONE';
   if(workerCount&&peak<targetPeak)bottleneck='RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION';
   else if(cacheKnown.length&&cacheHits/cacheKnown.length<.8)bottleneck='OLLAMA_CACHE_MISS_RATE';
   else if(qa.p95Ms>0&&qa.p95Ms>candidate.p95Ms*1.25)bottleneck='INCREMENTAL_QA';
   else if(checkout.p95Ms>30000)bottleneck='CHECKOUT_NETWORK';
   else if(workload.preparationRatioPct>45)bottleneck='PREPARATION_OVERHEAD';
+  let adaptiveBottleneck='NONE';
+  if(adaptiveWorkerCount&&adaptivePeak<adaptiveTargetPeak)adaptiveBottleneck='RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION';
+  else if(adaptiveCacheKnown.length&&adaptiveCacheHits/adaptiveCacheKnown.length<.8)adaptiveBottleneck='OLLAMA_CACHE_MISS_RATE';
+  else if(adaptiveQa.p95Ms>0&&adaptiveQa.p95Ms>adaptiveCandidate.p95Ms*1.25)adaptiveBottleneck='INCREMENTAL_QA';
+  else if(adaptiveCheckout.p95Ms>30000)adaptiveBottleneck='CHECKOUT_NETWORK';
   const failureRate=workerCount?(outcomes.FAIL+outcomes.BLOCKED)/workerCount:0;
+  const adaptiveFailureRate=adaptiveWorkerCount?(adaptiveOutcomes.FAIL+adaptiveOutcomes.BLOCKED)/adaptiveWorkerCount:0;
   const pressureLevel=failureRate>=.4?'SEVERE':failureRate>=.2?'HIGH':failureRate>=.1?'MEDIUM':'LOW';
+  const adaptivePressureLevel=adaptiveFailureRate>=.4?'SEVERE':adaptiveFailureRate>=.2?'HIGH':adaptiveFailureRate>=.1?'MEDIUM':'LOW';
   return{
     version:3,
     runId,
@@ -139,7 +167,10 @@ export function computeParallelismTelemetry(input={}){
     effectiveMax,
     taskCount,
     workerCount,
+    adaptiveWorkerCount,
+    practiceWorkerCount,
     actualPeakConcurrency:peak,
+    adaptivePeakConcurrency:adaptivePeak,
     scheduledSlotUtilizationPct:round(requestedMax?workerCount/requestedMax*100:0),
     observedPeakUtilizationPct:round(requestedMax?peak/requestedMax*100:0),
     effectivePeakUtilizationPct:round(effectiveMax?peak/effectiveMax*100:0),
@@ -153,9 +184,14 @@ export function computeParallelismTelemetry(input={}){
     outcomes,
     failureRatePct:round(failureRate*100),
     pressureLevel,
+    adaptiveOutcomes,
+    adaptiveFailureRatePct:round(adaptiveFailureRate*100),
+    adaptivePressureLevel,
+    adaptiveEffectivePeakUtilizationPct:round(effectiveMax?adaptivePeak/effectiveMax*100:0),
+    adaptiveBottleneck,
     workload,
     bottleneck,
-    pass:workerCount===0?true:(peak>=targetPeak&&failureRate<.2)
+    pass:adaptiveWorkerCount===0?true:(adaptivePeak>=adaptiveTargetPeak&&adaptiveFailureRate<.2)
   };
 }
 
