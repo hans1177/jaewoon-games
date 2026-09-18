@@ -25,10 +25,10 @@ const WORLD={w:12000,h:8000},START={x:6000,y:4000},SAVE_KEY='jaewoon_fantasy_sur
 const CANYON_POLY=[{x:9150,y:3100},{x:11500,y:4000},{x:11500,y:6500},{x:9850,y:6500},{x:8750,y:5000}];
 const WORLD_TREE_POLY=[{x:3180,y:7150},{x:8820,y:7150},{x:8820,y:8000},{x:3180,y:8000}],WORLD_TREE={x:6000,y:7650},MAP_CELL=400;
 const VOLCANO_POLY=[{x:0,y:0},{x:12000,y:0},{x:12000,y:3200},{x:0,y:3200}];
-const COLOSSEUM={x:0,y:0,w:3428,h:3200},CONSTRUCTION={x:3428,y:0,w:1714,h:3200},WASTELAND={x:5142,y:0,w:3429,h:3200},VOLCANO_CORE={x:7714,y:0,w:4286,h:3200};
-const OASIS={x:6800,y:1650,r:430},LAB={x:1714,y:2940},LAB_RECORDER={x:1714,y:2840},CONSTRUCTION_DIARY={x:4285,y:1660};
+const COLOSSEUM={x:4400,y:120,w:3600,h:900},CONSTRUCTION={x:4400,y:2380,w:3600,h:700},WASTELAND={x:180,y:180,w:3800,h:2820},VOLCANO_CORE={x:4800,y:1120,w:2800,h:1100};
+const OASIS={x:1900,y:1650,r:470},LAB={x:6200,y:900},LAB_RECORDER={x:6200,y:845},CONSTRUCTION_DIARY={x:6200,y:2710};
 const ROOT_NODE={x:10100,y:4750},TREE_HOLE={x:6000,y:7890},CAVE_ENTRY={x:3000,y:3200},CAVE_EXIT={x:3000,y:3380},BOSS_ALTAR={x:3000,y:1900};
-const LAVA_POOLS=[{x:8350,y:650,r:150},{x:9100,y:1850,r:180},{x:10050,y:900,r:130},{x:10800,y:2300,r:190},{x:11600,y:1250,r:145},{x:8650,y:2700,r:120},{x:9900,y:2800,r:135},{x:11200,y:450,r:110}];
+const LAVA_POOLS=[{x:5000,y:1450,r:120},{x:5550,y:2050,r:140},{x:6250,y:1320,r:105},{x:6900,y:1950,r:145},{x:7450,y:1500,r:115},{x:8250,y:2350,r:135},{x:9000,y:1650,r:125},{x:10300,y:2350,r:150}];
 const recipes=[
 {id:'bench',name:'제작대',where:'hand',cost:{wood:10,stone:6,fiber:4},desc:'상위 제작을 위한 기본 제작대',kind:'structure'},
 {id:'wood-spear',name:'나무창',where:'hand',cost:{wood:6,fiber:3},desc:'공격력 10 · 긴 사거리',kind:'weapon',power:10,range:96,cooldown:480},
@@ -77,7 +77,7 @@ function randomInRect(r,margin=70){return{x:rand(r.x+margin,r.x+r.w-margin),y:ra
 function randomWorldTreePoint(){return{x:rand(3260,8740),y:rand(7230,7940)}}
 function randomVolcanoPoint(zone='volcano'){
  let r=zone==='colosseum'?COLOSSEUM:zone==='wasteland'?WASTELAND:zone==='core'?VOLCANO_CORE:{x:0,y:0,w:12000,h:3200};
- let p,guard=0;do{p=randomInRect(r,90);guard++}while((inLava(p.x,p.y)||dist(p.x,p.y,OASIS.x,OASIS.y)<OASIS.r*.35)&&guard<100);return p
+ let p,guard=0;do{p=randomInRect(r,90);guard++}while((inLava(p.x,p.y)||dist(p.x,p.y,OASIS.x,OASIS.y)<OASIS.r*.35||(zone==='volcano'&&(pointInRect(p.x,p.y,COLOSSEUM)||pointInRect(p.x,p.y,CONSTRUCTION)||pointInRect(p.x,p.y,WASTELAND)||pointInRect(p.x,p.y,VOLCANO_CORE))))&&guard<300);return p
 }
 function regionAt(x,y){if(pointInWorldTree(x,y))return'worldtree';if(pointInPoly(x,y,CANYON_POLY))return'canyon';if(pointInVolcano(x,y))return'volcano';return'forest'}
 function markExplored(){
@@ -133,7 +133,7 @@ function initWorld(){
       state.enemies.push(spawnAt(creatures.ironspirit,x,y,pack));
     }
   });
-  const wolfSpots=[{x:520,y:650},{x:1714,y:1450},{x:2940,y:620}];
+  const wolfSpots=[{x:4700,y:420},{x:6200,y:520},{x:7700,y:430}];
   for(const p of wolfSpots)state.enemies.push(spawnAt(creatures.firewolf,p.x,p.y));
   const burrowCount=2+Math.floor(Math.random()*3);
   for(let i=0;i<burrowCount;i++){const p=randomVolcanoPoint('wasteland');state.enemies.push(spawnAt(creatures.giantburrower,p.x,p.y))}
@@ -526,22 +526,26 @@ function drawBackground(cx,cy,w,h){
  ctx.save();ctx.translate(-cx,-cy);
  // 화산 전체 2/5
  ctx.fillStyle='#51231f';ctx.fillRect(0,0,12000,3200);
- // 부서진 콜로세움
+ // 서쪽: 오래된 황무지와 오아시스
+ ctx.fillStyle='#8a6239';ctx.fillRect(WASTELAND.x,WASTELAND.y,WASTELAND.w,WASTELAND.h);
+ ctx.fillStyle='#d5aa65';ctx.font='bold 22px system-ui';ctx.textAlign='center';ctx.fillText('오래된 황무지',WASTELAND.x+WASTELAND.w/2,420);
+ ctx.fillStyle='#2f7a73';ctx.beginPath();ctx.arc(OASIS.x,OASIS.y,OASIS.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#cbb56a';ctx.lineWidth=45;ctx.stroke();ctx.fillStyle='#d7f5e8';ctx.font='bold 15px system-ui';ctx.fillText('오아시스 · 서쪽',OASIS.x,OASIS.y);
+ // 북쪽: 부서진 콜로세움
  ctx.fillStyle='#6c3527';ctx.fillRect(COLOSSEUM.x,COLOSSEUM.y,COLOSSEUM.w,COLOSSEUM.h);
- ctx.strokeStyle='#a66e56';ctx.lineWidth=34;ctx.strokeRect(95,100,COLOSSEUM.w-190,COLOSSEUM.h-250);
- ctx.strokeStyle='#52372d';ctx.lineWidth=18;ctx.setLineDash([120,65]);ctx.strokeRect(270,300,COLOSSEUM.w-540,COLOSSEUM.h-650);ctx.setLineDash([]);
- ctx.fillStyle='#e2b59a';ctx.font='bold 24px system-ui';ctx.textAlign='center';ctx.fillText('부서진 콜로세움',COLOSSEUM.w/2,260);
- // 연구소
- ctx.fillStyle='#343437';ctx.fillRect(LAB.x-260,LAB.y-180,520,260);ctx.fillStyle='#6b7478';ctx.fillRect(LAB.x-210,LAB.y-135,420,170);ctx.fillStyle='#b9d3cf';ctx.font='bold 14px system-ui';ctx.fillText('연구소',LAB.x,LAB.y-70);ctx.fillStyle='#9ee6d0';ctx.beginPath();ctx.arc(LAB_RECORDER.x,LAB_RECORDER.y,22,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 10px system-ui';ctx.fillText('녹음기 · 두 번 누르기',LAB_RECORDER.x,LAB_RECORDER.y+45);
- // 공사장
- ctx.fillStyle='#4b4038';ctx.fillRect(CONSTRUCTION.x,0,CONSTRUCTION.w,3200);ctx.fillStyle='#86715d';ctx.font='bold 22px system-ui';ctx.fillText('부서진 공사장',CONSTRUCTION.x+CONSTRUCTION.w/2,260);
- for(let i=0;i<16;i++){const x=CONSTRUCTION.x+110+(i*97)%1450,y=520+(i*173)%2200;ctx.fillStyle=i%4===0?'#3a2724':'#75675e';ctx.fillRect(x,y,55+(i%3)*20,18+(i%2)*15)}for(let i=0;i<5;i++){const x=CONSTRUCTION.x+220+i*260,y=900+(i%3)*620;ctx.strokeStyle='#4b2020';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(x-18,y);ctx.lineTo(x+18,y+12);ctx.stroke();ctx.fillStyle='#5a332b';ctx.beginPath();ctx.arc(x-24,y-5,9,0,Math.PI*2);ctx.fill()}
+ ctx.strokeStyle='#a66e56';ctx.lineWidth=28;ctx.strokeRect(COLOSSEUM.x+70,COLOSSEUM.y+55,COLOSSEUM.w-140,COLOSSEUM.h-110);
+ ctx.strokeStyle='#52372d';ctx.lineWidth=15;ctx.setLineDash([100,55]);ctx.strokeRect(COLOSSEUM.x+220,COLOSSEUM.y+180,COLOSSEUM.w-440,COLOSSEUM.h-330);ctx.setLineDash([]);
+ ctx.fillStyle='#e2b59a';ctx.font='bold 23px system-ui';ctx.fillText('부서진 콜로세움 · 북쪽',COLOSSEUM.x+COLOSSEUM.w/2,COLOSSEUM.y+105);
+ // 콜로세움 남쪽 끝 연구소
+ ctx.fillStyle='#343437';ctx.fillRect(LAB.x-260,LAB.y-150,520,210);ctx.fillStyle='#6b7478';ctx.fillRect(LAB.x-210,LAB.y-110,420,135);ctx.fillStyle='#b9d3cf';ctx.font='bold 14px system-ui';ctx.fillText('연구소',LAB.x,LAB.y-55);ctx.fillStyle='#9ee6d0';ctx.beginPath();ctx.arc(LAB_RECORDER.x,LAB_RECORDER.y,22,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 10px system-ui';ctx.fillText('녹음기 · 두 번 누르기',LAB_RECORDER.x,LAB_RECORDER.y+45);
+ // 가운데: 거대한 화산
+ ctx.fillStyle='#6a251d';ctx.fillRect(VOLCANO_CORE.x,VOLCANO_CORE.y,VOLCANO_CORE.w,VOLCANO_CORE.h);
+ ctx.fillStyle='#2c1715';ctx.beginPath();ctx.moveTo(4850,2220);ctx.lineTo(6200,1160);ctx.lineTo(7550,2220);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#ff6d32';ctx.beginPath();ctx.ellipse(6200,1280,360,115,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffb04d';ctx.font='bold 24px system-ui';ctx.fillText('거대한 화산 · 가운데',6200,1600);
+ // 남쪽: 부서진 공사장
+ ctx.fillStyle='#4b4038';ctx.fillRect(CONSTRUCTION.x,CONSTRUCTION.y,CONSTRUCTION.w,CONSTRUCTION.h);ctx.fillStyle='#86715d';ctx.font='bold 22px system-ui';ctx.fillText('부서진 공사장 · 남쪽',CONSTRUCTION.x+CONSTRUCTION.w/2,CONSTRUCTION.y+90);
+ for(let i=0;i<16;i++){const x=CONSTRUCTION.x+140+(i*193)%3200,y=CONSTRUCTION.y+150+(i*113)%430;ctx.fillStyle=i%4===0?'#3a2724':'#75675e';ctx.fillRect(x,y,55+(i%3)*20,18+(i%2)*15)}
+ for(let i=0;i<5;i++){const x=CONSTRUCTION.x+380+i*610,y=CONSTRUCTION.y+330+(i%2)*150;ctx.strokeStyle='#4b2020';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(x-18,y);ctx.lineTo(x+18,y+12);ctx.stroke();ctx.fillStyle='#5a332b';ctx.beginPath();ctx.arc(x-24,y-5,9,0,Math.PI*2);ctx.fill()}
  ctx.fillStyle='#d8c99a';ctx.beginPath();ctx.arc(CONSTRUCTION_DIARY.x,CONSTRUCTION_DIARY.y,20,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff4c0';ctx.font='bold 10px system-ui';ctx.fillText('일기 · 두 번 누르기',CONSTRUCTION_DIARY.x,CONSTRUCTION_DIARY.y+42);
- // 황무지 + 오아시스
- ctx.fillStyle='#8a6239';ctx.fillRect(WASTELAND.x,0,WASTELAND.w,3200);ctx.fillStyle='#d5aa65';ctx.font='bold 22px system-ui';ctx.fillText('오래된 황무지',WASTELAND.x+WASTELAND.w/2,260);
- ctx.fillStyle='#2f7a73';ctx.beginPath();ctx.arc(OASIS.x,OASIS.y,OASIS.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#cbb56a';ctx.lineWidth=45;ctx.stroke();ctx.fillStyle='#d7f5e8';ctx.font='bold 15px system-ui';ctx.fillText('오아시스',OASIS.x,OASIS.y);
- // 화산 본체
- ctx.fillStyle='#6a251d';ctx.fillRect(VOLCANO_CORE.x,0,VOLCANO_CORE.w,3200);ctx.fillStyle='#2c1715';ctx.beginPath();ctx.moveTo(8050,3000);ctx.lineTo(10000,260);ctx.lineTo(11900,3000);ctx.closePath();ctx.fill();ctx.fillStyle='#ff6d32';ctx.beginPath();ctx.ellipse(10000,530,470,150,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffb04d';ctx.font='bold 24px system-ui';ctx.fillText('거대한 화산',10000,900);
  // 용암 웅덩이
  for(const l of LAVA_POOLS){ctx.fillStyle='#ff5229';ctx.beginPath();ctx.arc(l.x,l.y,l.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ffb03f';ctx.lineWidth=13;ctx.stroke()}
  // 협곡
