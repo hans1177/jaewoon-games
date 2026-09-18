@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .game-container h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      color: #333;
+    }
+    .game-container p {
+      font-size: 16px;
+      color: #555;
+    }
+    .game-container button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+    .game-container button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <main class="game-container">
+    <h1>Vibe2</h1>
+    <p>잠입 → 알 획득 → 위험 증가 → 추격 → 탈출의 실제 플레이 루프</p>
+    <button onclick="startGame()">시작</button>
+  </main>
+
+  <script>
+    function startGame() {
+      const gameContainer = document.getElementById('game');
+      gameContainer.innerHTML = `
+        <div class="game-step">
+          <h2>잠입</h2>
+          <p>잠입을 위해 위치를 선택하세요.</p>
+          <button onclick="selectLocation('잠입')">잠입</button>
+        </div>
+        <div class="game-step">
+          <h2>알 획득</h2>
+          <p>알을 획득하세요.</p>
+          <button onclick="gainItem('알')">알 획득</button>
+        </div>
+        <div class="game-step">
+          <h2>위험 증가</h2>
+          <p>위험을 증가시켜야 합니다.</p>
+          <button onclick="increaseRisk()">위험 증가</button>
+        </div>
+        <div class="game-step">
+          <h2>추격</h2>
+          <p>추격을 시작하세요.</p>
+          <button onclick="startChase()">추격</button>
+        </div>
+        <div class="game-step">
+          <h2>탈출</h2>
+          <p>탈출을 성공적으로 수행하세요.</p>
+          <button onclick="escape()">탈출</button>
+        </div>
+      `;
+    }
+
+    function selectLocation(location) {
+      document.getElementById('game').innerHTML = `
+        <div class="game-step">
+          <h2>잠입</h2>
+          <p>선택된 위치: ${location}</p>
+          <button onclick="startGame()">시작</button>
+        </div>
+      `;
+    }
+
+    function gainItem(item) {
+      document.getElementById('game').innerHTML = `
+        <div class="game-step">
+          <h2>알 획득</h2>
+          <p>획득된 알: ${item}</p>
+          <button onclick="startGame()">시작</button>
+        </div>
+      `;
+    }
+
+    function increaseRisk() {
+      document.getElementById('game').innerHTML = `
+        <div class="game-step">
+          <h2>위험 증가</h2>
+          <p>위험을 증가시켰습니다.</p>
+          <button onclick="startGame()">시작</button>
+        </div>
+      `;
+    }
+
+    function startChase() {
+      document.getElementById('game').innerHTML = `
+        <div class="game-step">
+          <h2>추격</h2>
+          <p>추격을 시작했습니다.</p>
+          <button onclick="startGame()">시작</button>
+        </div>
+      `;
+    }
+
+    function escape() {
+      document.getElementById('game').innerHTML = `
+        <div class="game-step">
+          <h2>탈출</h2>
+          <p>탈출을 성공적으로 수행했습니다.</p>
+          <button onclick="startGame()">시작</button>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
