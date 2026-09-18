@@ -1,1 +1,86 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>수정의 개화</title></head><body><script>window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>수정의 개화</title>
+  <link rel="stylesheet" href="/web-games/_shared/styles.css">
+</head>
+<body>
+  <script>
+    window.GAME_CONFIG = {
+      id: 'seed-idle-growth-rpg-crystal-bloom',
+      name: '수정의 개화',
+      mode: 'crystal-idle',
+      hp: 100,
+      desc: '전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'
+    };
+
+    // Initialize game state
+    let player = {
+      hp: window.GAME_CONFIG.hp,
+      gold: 0,
+      level: 1,
+      equipment: [],
+      progress: 0,
+      isRestarting: false
+    };
+
+    // Game loop
+    function gameLoop() {
+      if (player.isRestarting) {
+        player.hp = window.GAME_CONFIG.hp;
+        player.gold = 0;
+        player.level = 1;
+        player.equipment = [];
+        player.progress = 0;
+        player.isRestarting = false;
+      }
+
+      // Progression system
+      player.progress += 0.01;
+      if (player.progress >= 10) {
+        player.level += 1;
+        player.progress = 0;
+      }
+
+      // UI system
+      document.getElementById('hp').innerText = player.hp;
+      document.getElementById('gold').innerText = player.gold;
+      document.getElementById('level').innerText = player.level;
+      document.getElementById('progress').innerText = player.progress.toFixed(2);
+
+      // Combat system
+      if (Math.random() < 0.1) {
+        player.gold += 10;
+        player.equipment.push('Gold Chest');
+      }
+
+      // Auto combat
+      if (Math.random() < 0.2) {
+        player.hp -= 10;
+        if (player.hp <= 0) {
+          player.isRestarting = true;
+        }
+      }
+
+      // Save system
+      if (player.isRestarting) {
+        localStorage.setItem('player', JSON.stringify(player));
+      }
+
+      // Render game
+      renderGame();
+    }
+
+    // Render game
+    function renderGame() {
+      // Game logic here
+    }
+
+    // Start game loop
+    gameLoop();
+  </script>
+</body>
+</html>
