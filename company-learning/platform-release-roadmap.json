@@ -1,5 +1,5 @@
 {
-  "version": 16,
+  "version": 17,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1015,5 +1015,44 @@
     "lowerPriorityPlatformMayNotPreemptEligibleRobloxWork": true,
     "qualityOrEvidenceGateWeakeningAllowed": false,
     "ownerExplicitOverrideAllowed": true
+  },
+  "homepagePortfolioVisibility": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "humanDocumentRequired": false,
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "renderer": "assets/homepage-enhancements.js",
+    "catalog": "game-catalog.json",
+    "objective": "SHOW_PLAYABLE_WEB_GAMES_AND_VERIFIED_ROBLOX_DEPLOYMENT_HISTORY_WITHOUT_FALSE_RELEASE_PROMOTION",
+    "webGames": {
+      "includeWhen": [
+        "lifecycle-active-or-rebuild",
+        "homepageWebPlayable=true",
+        "hasWebArchive=true",
+        "webPath-present"
+      ],
+      "productionClassPromotionRequired": false,
+      "shelf": "homeWebGameCenter",
+      "label": "웹게임",
+      "directPlayRequired": true
+    },
+    "robloxDeploymentHistory": {
+      "includeWhen": [
+        "platform=ROBLOX",
+        "robloxPublicationTarget.placeId-present",
+        "robloxPublicationTarget.verified=true",
+        "robloxPublicationTarget.historical=true",
+        "robloxReleaseEvidence.historicalPublicationTargetVerified=true"
+      ],
+      "currentReleaseClaimRequired": false,
+      "mustNotConvertHistoricalEvidenceIntoCurrentReleaseClaim": true,
+      "shelf": "homeRobloxDeploymentCenter",
+      "label": "Roblox 배포 기록",
+      "platformButtonUsesVerifiedPlaceId": true
+    },
+    "releaseShelfUnchanged": true,
+    "top30ShelfUnchanged": true,
+    "developmentShelfUnchanged": true,
+    "designOnlyMayAppearInWebOrHistoricalDeploymentShelvesWithoutPromotion": true
   }
 }
