@@ -77,6 +77,8 @@
     "target": "vibe2-unreal-core:.vibe2/experience.json",
     "mode": "verified-retrieval-context-only",
     "triggerWorkflow": ".github/workflows/vibe2-24h-runner.yml",
-    "staticAnalysisIsRuntimePass": false
+    "staticAnalysisIsRuntimePass": false,
+    "eventChain": "AUTHORIZED_SOURCE_UPDATE -> Vibe2 Distillation Sample Ingest(success) -> Vibe2 24H Runner",
+    "distillationCompletionTriggers24h": true
   }
 }
