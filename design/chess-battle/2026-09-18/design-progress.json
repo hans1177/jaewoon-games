@@ -3,21 +3,25 @@
   "gameId": "chess-battle",
   "date": "2026-09-18",
   "engineDigest": "05b2a9d594155708ebf27797b249a78c3cdfbee815c1ddae3923df631ae3fe37",
-  "status": "IN_PROGRESS",
+  "status": "PRE_GATE_BLOCKED",
   "currentStage": "PRE_GATE_REPAIR",
   "percent": 50,
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
     "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1"
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2",
+    "designer_pre_gate_repair_3",
+    "deterministic_pre_gate_after_repair_3"
   ],
-  "completedPhaseCount": 4,
+  "completedPhaseCount": 8,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T06:28:32.466Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:28:38.799Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null,
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=77 hard=CRITICAL_AXIS_MINIMUM_FAIL",
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -64,17 +68,61 @@
       "updatedAt": "2026-09-18T06:28:20.120Z"
     },
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 4,
+      "successes": 4,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 13314,
-      "lastMs": 2862,
+      "totalMs": 19633,
+      "lastMs": 3260,
       "lastError": null,
-      "updatedAt": "2026-09-18T06:28:32.466Z"
+      "updatedAt": "2026-09-18T06:28:38.799Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T06:28:32.471Z"
+  "updatedAt": "2026-09-18T06:28:38.906Z",
+  "blocked": true,
+  "preGateScore": 77,
+  "hardFailures": [
+    "CRITICAL_AXIS_MINIMUM_FAIL"
+  ],
+  "repairPacket": {
+    "source": "DETERMINISTIC_PRE_GATE_V2",
+    "bypassAllowed": false,
+    "totalScore": 77,
+    "passMinimum": 80,
+    "hardFailures": [
+      "CRITICAL_AXIS_MINIMUM_FAIL"
+    ],
+    "failedAxes": [
+      "CONTENT_EXPANSION_PLAN",
+      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+    ],
+    "reasons": [
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "CONTENT_EXPANSION_PLAN",
+        "evidenceLevel": 60,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 6,
+          "axisWeight": 10
+        },
+        "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+        "bypassAllowed": false
+      },
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": 60,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 3,
+          "axisWeight": 5
+        },
+        "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+        "bypassAllowed": false
+      }
+    ]
+  }
 }
