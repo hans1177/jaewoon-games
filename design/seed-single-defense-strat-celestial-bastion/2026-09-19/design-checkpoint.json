@@ -3,9 +3,9 @@
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "date": "2026-09-19",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-SINGLE-DEFENSE-STRAT-CELESTIAL-BASTION-20260917",
-  "fingerprint": "dace50291c7fecce26f8ad19b9b8f4dbc0995c9efba5797d4eb8b3e5ba7cd3d7",
+  "fingerprint": "123bf11c99676ceede66466513cc328fa5b6f5e2e0d3500dea382d204a2ef72d",
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
-  "engineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
+  "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "PRE_GATE_BLOCKED",
   "completedPhases": [
     "designer_draft",
@@ -421,22 +421,22 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 19200,
-      "lastMs": 1216,
+      "totalMs": 22489,
+      "lastMs": 1438,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:43:18.109Z"
+      "updatedAt": "2026-09-18T15:57:27.733Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T15:09:56.042Z",
-  "updatedAt": "2026-09-18T15:43:18.112Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T15:43:18.109Z",
+  "updatedAt": "2026-09-18T15:57:27.783Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:57:27.733Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
@@ -449,10 +449,10 @@
     "fromContractVersion": 3,
     "toContractVersion": 3,
     "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
-    "previousEngineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+    "previousEngineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
     "preservedPhaseCount": 6,
     "preservedTaskCount": 0,
-    "migratedAt": "2026-09-18T15:43:15.528Z"
+    "migratedAt": "2026-09-18T15:57:24.425Z"
   },
-  "preGateRepairGeneration": 1
+  "preGateRepairGeneration": 2
 }

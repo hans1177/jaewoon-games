@@ -2,7 +2,7 @@
   "version": 2,
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "date": "2026-09-19",
-  "engineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
+  "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "PRE_GATE_BLOCKED",
   "currentStage": "PRE_GATE_REPAIR",
   "percent": 50,
@@ -16,25 +16,25 @@
   ],
   "completedPhaseCount": 6,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T15:43:18.109Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:57:27.733Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": "DESIGN_PRE_GATE_BLOCKED score=78 hard=CRITICAL_AXIS_MINIMUM_FAIL",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 19200,
-      "lastMs": 1216,
+      "totalMs": 22489,
+      "lastMs": 1438,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:43:18.109Z"
+      "updatedAt": "2026-09-18T15:57:27.733Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T15:43:18.112Z",
+  "updatedAt": "2026-09-18T15:57:27.783Z",
   "blocked": true,
   "preGateScore": 78,
   "hardFailures": [
