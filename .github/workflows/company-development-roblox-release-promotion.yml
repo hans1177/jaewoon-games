@@ -56,6 +56,8 @@ jobs:
         working-directory: main
         env:
           REQUESTED_GAME_ID: ${{ inputs.game_id }}
+          OWNER_SECRET_UNIVERSE_ID: ${{ secrets.ROBLOX_UNIVERSE_ID }}
+          OWNER_SECRET_PLACE_ID: ${{ secrets.ROBLOX_PLACE_ID }}
         shell: bash
         run: |
           set -euo pipefail
@@ -117,10 +119,26 @@ jobs:
             &&Number(row.artifactRunId)===artifactRunId
           );
           const evidenceTarget=targetEvidence?.publicationTarget||{};
-          const candidates=[
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+          const ownerPinned=roadmap?.roblox?.deploymentControl?.ownerPinnedPublicationTarget||{};
+          const exactCandidates=[
             {source:'company-runtime-publication-target',target:persistedTarget,valid:validIds(persistedTarget)&&persistedTarget.verified===true},
             {source:'company-runtime-prior-release',target:priorPublishedTarget,valid:validIds(priorPublishedTarget)},
             {source:'known-good-runtime-evidence',target:evidenceTarget,valid:validIds(evidenceTarget)},
+          ].filter(row=>row.valid);
+          const pinnedValid=ownerPinned.enabled===true
+            &&ownerPinned.fallbackOnlyWhenNoGameSpecificVerifiedTarget===true
+            &&validIds(ownerPinned);
+          if(exactCandidates.length===0&&pinnedValid){
+            const secretUniverse=String(process.env.OWNER_SECRET_UNIVERSE_ID||'').trim();
+            const secretPlace=String(process.env.OWNER_SECRET_PLACE_ID||'').trim();
+            if(ownerPinned.requireGitHubSecretIdMatch===true
+              &&(secretUniverse!==String(ownerPinned.universeId).trim()||secretPlace!==String(ownerPinned.placeId).trim())){
+              throw new Error(`ROBLOX_RELEASE_OWNER_PINNED_SECRET_ID_MISMATCH:${gameId}`);
+            }
+          }
+          const candidates=exactCandidates.length?exactCandidates:[
+            {source:'owner-pinned-open-cloud-target',target:ownerPinned,valid:pinnedValid},
           ].filter(row=>row.valid);
           if(candidates.length===0)throw new Error(`ROBLOX_RELEASE_PUBLICATION_TARGET_MISSING_OR_MISMATCH:${gameId}`);
           const selected=candidates[0];
