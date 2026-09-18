@@ -9,6 +9,7 @@ import { pathToFileURL } from 'node:url';
 const clean=v=>String(v??'').trim();
 const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
 const DEFAULT_TIMEOUT=Math.max(10000,Math.min(300000,Number(process.env.VIBE2_MODEL_TIMEOUT_MS||240000)));
+const MAX_ATTEMPTS=2;
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');
 
@@ -25,8 +26,12 @@ export function buildPracticePrompt(order={}){
   return [
     'You are the Vibe learning practice worker. This is PRACTICE_ONLY.',
     'Do not edit files. Do not claim production pass. Do not invent runtime evidence.',
-    'Solve the drill by returning JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns.',
-    'tests must contain at least 3 concrete verification checks; avoidPatterns/reusablePatterns are short generalized lessons.',
+    'Return one strict JSON object only. No markdown and no prose outside JSON.',
+    'Required keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns.',
+    'diagnosis and strategy must each be specific enough to exceed 12 characters.',
+    'tests must contain at least 3 concrete verification checks.',
+    'At least one generalized lesson must exist across avoidPatterns or reusablePatterns.',
+    'All array items must be non-empty strings. Do not fabricate runtime observations.',
     'WORK ORDER:',
     clean(order.goal).slice(0,12000)
   ].join('\n');
@@ -35,7 +40,7 @@ export function buildPracticePrompt(order={}){
 async function requestModel(prompt,{model=DEFAULT_MODEL,responseFile='',timeoutMs=DEFAULT_TIMEOUT}={}){
   const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);
   if(fake)return fs.readFileSync(fake,'utf8');
-  const body=JSON.stringify({model,prompt,stream:false,think:false,options:{num_predict:1200,temperature:.12}});
+  const body=JSON.stringify({model,prompt,stream:false,think:false,format:'json',options:{num_predict:1200,temperature:.08}});
   return await new Promise((resolve,reject)=>{
     const req=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},res=>{
       let data='';res.setEncoding('utf8');res.on('data',x=>data+=x);res.on('end',()=>{
@@ -52,22 +57,54 @@ export function evaluatePracticeAnswer(value={}){
   const reusable=Array.isArray(value.reusablePatterns)?value.reusablePatterns.map(clean).filter(Boolean):[];
   const avoid=Array.isArray(value.avoidPatterns)?value.avoidPatterns.map(clean).filter(Boolean):[];
   const diagnosis=clean(value.diagnosis),strategy=clean(value.strategy);
-  const pass=diagnosis.length>=12&&strategy.length>=12&&tests.length>=3&&(reusable.length+avoid.length)>=1;
-  return {pass,diagnosis,strategy,tests:tests.slice(0,8),reusablePatterns:reusable.slice(0,8),avoidPatterns:avoid.slice(0,8)};
+  const reasons=[];
+  if(diagnosis.length<12)reasons.push('DIAGNOSIS_TOO_SHORT');
+  if(strategy.length<12)reasons.push('STRATEGY_TOO_SHORT');
+  if(tests.length<3)reasons.push('TESTS_MINIMUM_NOT_MET');
+  if((reusable.length+avoid.length)<1)reasons.push('GENERALIZED_LESSON_REQUIRED');
+  const pass=reasons.length===0;
+  return {pass,reasons,diagnosis,strategy,tests:tests.slice(0,8),reusablePatterns:reusable.slice(0,8),avoidPatterns:avoid.slice(0,8)};
+}
+
+export function buildPracticeRetryPrompt(prompt,evaluation={}){
+  const reasons=Array.isArray(evaluation.reasons)&&evaluation.reasons.length?evaluation.reasons.join(','):'STRUCTURAL_GATE_FAILED';
+  return [
+    prompt,
+    '',
+    'CORRECTION RETRY: the previous answer failed the unchanged practice structure gate.',
+    `Failure reasons: ${reasons}`,
+    'Regenerate the complete JSON object from scratch. Keep the same drill meaning.',
+    'Do not weaken verification checks, invent evidence, edit source, or claim any production/QA/release pass.'
+  ].join('\n');
 }
 
 export async function runLearningPractice({workOrderFile='.vibe2/work-order.json',outputFile='/tmp/vibe2-learning-practice-result.json',model=DEFAULT_MODEL,responseFile=''}={}){
   const order=readJson(workOrderFile);
-  const raw=await requestModel(buildPracticePrompt(order),{model,responseFile});
-  const evaluation=evaluatePracticeAnswer(parseJson(raw));
+  const basePrompt=buildPracticePrompt(order);
+  let evaluation=null,attempts=0,lastError=null;
+  for(let attempt=1;attempt<=MAX_ATTEMPTS;attempt++){
+    attempts=attempt;
+    const prompt=attempt===1?basePrompt:buildPracticeRetryPrompt(basePrompt,evaluation||{});
+    try{
+      const raw=await requestModel(prompt,{model,responseFile});
+      evaluation=evaluatePracticeAnswer(parseJson(raw));
+      if(evaluation.pass)break;
+      lastError=new Error(`practice evaluation failed: ${evaluation.reasons.join(',')}`);
+    }catch(error){
+      lastError=error;
+      if(responseFile)break;
+    }
+  }
+  evaluation=evaluation||evaluatePracticeAnswer({});
   const result={
-    version:1,kind:'vibe2-learning-practice-result',taskId:clean(order.taskId)||null,
+    version:2,kind:'vibe2-learning-practice-result',taskId:clean(order.taskId)||null,
     practiceOnly:true,productionPass:false,sourceWrite:false,model,
+    attempts,recoveryUsed:attempts>1,
     evaluation:evaluation.pass?'PASS':'FAIL',...evaluation,
     authority:'practice-only-no-production-promotion'
   };
   writeJson(outputFile,result);
-  if(!evaluation.pass)throw new Error('practice evaluation failed');
+  if(!evaluation.pass)throw lastError||new Error(`practice evaluation failed: ${evaluation.reasons.join(',')}`);
   return result;
 }
 
