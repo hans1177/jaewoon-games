@@ -99,8 +99,11 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(workflow.includes('ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'));
   assert.ok(workflow.includes('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'));
   assert.ok(workflow.includes('max-parallel: 3'));
-  assert.ok(workflow.includes("const retryableStudioBusy=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'"));
-  assert.ok(workflow.includes("const retryableStudioStateMigration=!sameHarness&&item.robloxRuntimePassed!==true&&['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable','roblox-studio-busy'].includes(item.robloxRuntimeEvidence?.failure)"));
+  assert.ok(workflow.includes("const maxRetryableFailures=2"));
+  assert.ok(workflow.includes("const retryBudgetAvailable=retryCount<maxRetryableFailures"));
+  assert.ok(workflow.includes("const securityHold=item.robloxRuntimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(item.robloxRuntimeEvidence?.failure)"));
+  assert.ok(workflow.includes("const retryableStudioBusy=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'")||workflow.includes("const retryableStudioBusy=!securityHold&&retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'"));
+  assert.ok(workflow.includes("const retryableStudioStateMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'")||workflow.includes("const retryableStudioStateMigration=!securityHold&&!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy'"));
   assert.ok(workflow.includes('development-roblox-package-$env:GAME_ID'));
   assert.ok(workflow.includes('No retained package matches'));
   assert.ok(workflow.includes('Resolve authenticated local Roblox Studio'));
@@ -131,6 +134,8 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(workflow.includes('ROBLOX_STUDIO_AUTHENTICATION_REQUIRED'));
   assert.ok(workflow.includes("$unauthenticated = $nativeText -match 'Authenticated\\s*:\\s*NO'"));
   assert.ok(workflow.includes("$loginBlocked = $nativeText -match 'Cookie list not found|https://www\\.roblox\\.com/login|LoginDialog'"));
+  assert.ok(workflow.includes("$securityChallenge = $nativeText -match '(?i)captcha|arkose|funcaptcha|browser authentication|verification required|verify you are human|security challenge'"));
+  assert.ok(workflow.includes('ROBLOX_STUDIO_SECURITY_CHALLENGE_REQUIRED'));
   assert.ok(workflow.includes("'roblox-studio-runtime-timeout'"));
   assert.ok(workflow.includes('--task RunScript'));
   assert.ok(workflow.includes('--localPlaceFile'));
@@ -146,14 +151,20 @@ test('runtime uses authenticated self-hosted Windows runner pool and the origina
   assert.ok(workflow.includes('company-development-roblox-runtime-persist.mjs'));
 });
 
-test('runtime gate failure remains in repair/revalidation with no retry-count ceiling',()=>{
-  assert.ok(workflow.includes('ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED'));
-  assert.ok(workflow.includes('const retryBudgetAvailable=true;'));
-  assert.ok(!workflow.includes('maxRetryableFailures'));
-  assert.ok(!workflow.includes('retryCount<'));
+test('runtime gate retries are bounded and authentication challenges enter a security hold',()=>{
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_RETRY_LIMIT=2'));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'));
+  assert.ok(workflow.includes('ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'));
+  assert.ok(workflow.includes('const maxRetryableFailures=2'));
+  assert.ok(workflow.includes('retryCount<maxRetryableFailures'));
+  assert.ok(!workflow.includes('ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED'));
+  assert.ok(persistHelper.includes('robloxRuntimeSecurityHold:securityHold'));
+  assert.ok(persistHelper.includes('roblox-runtime-security-hold:'));
 });
 
-test('Studio busy persistence remains retryable without converting interactive Studio into an automatic kill target',()=>{
+test('Studio busy remains bounded-retry while authentication and local-profile failures are held',()=>{
+  assert.ok(persistHelper.includes("['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(failure)"));
+  assert.ok(persistHelper.includes('robloxRuntimeSecurityHoldAt:securityHold?stamp:null'));
   assert.ok(persistHelper.includes("'roblox-studio-busy'"));
   assert.ok(workflow.includes("$automation = @($running | Where-Object { [string]$_.CommandLine -match '--task\\s+RunScript' })"));
   assert.ok(workflow.includes('Stop-Process -Id $proc.ProcessId -Force'));
