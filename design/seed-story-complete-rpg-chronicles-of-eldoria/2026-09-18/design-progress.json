@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "date": "2026-09-18",
+  "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
+  "status": "PRE_GATE_BLOCKED",
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
+  ],
+  "completedPhaseCount": 6,
+  "cachedTaskCount": 0,
+  "lastSuccessfulModelCallAt": "2026-09-18T08:44:42.736Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=78 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 3,
+      "successes": 3,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 13961,
+      "lastMs": 1264,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:44:42.736Z"
+    }
+  },
+  "slowPhases": {},
+  "updatedAt": "2026-09-18T08:44:42.775Z",
+  "blocked": true,
+  "preGateScore": 78,
+  "hardFailures": [
+    "CRITICAL_AXIS_MINIMUM_FAIL"
+  ],
+  "repairPacket": {
+    "source": "DETERMINISTIC_PRE_GATE_V2",
+    "bypassAllowed": false,
+    "totalScore": 78,
+    "passMinimum": 80,
+    "hardFailures": [
+      "CRITICAL_AXIS_MINIMUM_FAIL"
+    ],
+    "failedAxes": [
+      "CONTENT_EXPANSION_PLAN"
+    ],
+    "reasons": [
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "CONTENT_EXPANSION_PLAN",
+        "evidenceLevel": 60,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 6,
+          "axisWeight": 10
+        },
+        "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+        "bypassAllowed": false
+      }
+    ]
+  }
+}
