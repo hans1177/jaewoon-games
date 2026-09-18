@@ -17,13 +17,18 @@ const centralWorkflows=[
   '.github/workflows/company-development-unity-runtime.yml',
 ];
 
-test('COMPANY_FLOW is the only production policy document with authority',()=>{
+test('platform-release-roadmap is the only production machine policy with authority',()=>{
   assert.equal(exists('AUTONOMOUS_DEVELOPMENT_POLICY.md'),false);
   assert.equal(exists('AGENTS.md'),false);
   const directive=JSON.parse(read('company-directive.json'));
-  assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
+  const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'));
+  assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
+  assert.equal(directive.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(roadmap.humanDocumentRequired,false);
+  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
 });
-
 test('legacy autonomous top-level workflow namespace is removed',()=>{
   const files=fs.readdirSync(path.join(repoRoot,'.github/workflows'));
   const legacy=files.filter(name=>/^autonomous-.*\.ya?ml$/i.test(name));
