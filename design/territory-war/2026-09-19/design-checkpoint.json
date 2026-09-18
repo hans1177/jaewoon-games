@@ -7,8 +7,232 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "영토전쟁은 짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임입니다. 플레이어는 실시간으로 변화하는 적의 침공 경로를 읽고, 제한된 자원을 활용해 방어 타워를 배치하거나 지형을 변형하여 영토를 수호합니다. 핵심 루프인 '전략적 배치-자원 획득-성장 선택'은 매 순간 플레이어에게 즉각적인 상태 변화를 제공하며, 시그니처 시스템인 '지형 변형 시스템'과 '전선 압박 게이지'를 통해 단순한 타워 디펜스를 넘어선 능동적인 영토 관리 경험을 선사합니다.",
+      "playerFantasy": "플레이어는 위기에 처한 영토의 사령관이 되어, 몰려오는 적군을 상대로 전술적 요충지를 선점하고 지형을 재구성하여 불가능해 보이는 방어선을 끝까지 사수하는 영웅적 전략가로서의 판타지를 경험합니다.",
+      "coreFun": "적의 웨이브를 관찰하고 최적의 방어 위치를 선택하는 전략적 판단, 타워 배치와 지형 변형을 통한 즉각적인 전선 변화 확인, 그리고 승리 후 획득한 자원으로 방어 체계를 강화하는 성장의 즐거움을 반복적으로 경험합니다.",
+      "coreLoop": [
+        "적의 침공 경로와 웨이브 구성을 분석하고, 가용 자원을 사용하여 전술적 요충지에 방어 타워를 배치하거나 지형을 수정하여 적의 이동을 제어합니다.",
+        "배치된 타워와 지형 효과를 통해 적을 격퇴하고, 적 처치 시 획득하는 자원을 실시간으로 수집하여 다음 웨이브에 대비한 추가 배치나 타워 업그레이드를 결정합니다.",
+        "전선 압박 게이지의 변화를 확인하고, 보상으로 얻은 기술 포인트나 자원을 사용하여 영구적인 방어 능력치를 강화하거나 새로운 전술 카드를 해금하여 다음 난이도에 도전합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "지형 변형 시스템",
+          "purpose": "고정된 맵 구조에서 벗어나 플레이어가 직접 전장의 지형을 수정하여 적의 이동 경로를 강제로 변경하고 전략적 이점을 창출하기 위함입니다.",
+          "playerChoice": "플레이어는 특정 구역의 지형을 평지에서 장애물로 바꾸거나, 좁은 길을 넓혀 적을 분산시키는 등 전술적 필요에 따라 실시간으로 지형을 재구성하는 선택을 합니다."
+        },
+        {
+          "name": "전선 압박 게이지",
+          "purpose": "현재 방어선의 한계치를 시각화하여 플레이어에게 긴장감을 부여하고, 자원 투자 우선순위를 결정하게 만드는 핵심 지표입니다.",
+          "playerChoice": "플레이어는 게이지가 위험 수준에 도달했을 때 방어 타워를 집중 배치할지, 아니면 자원을 아껴 다음 웨이브를 위한 강력한 광역 스킬을 준비할지 선택해야 합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "적 웨이브 생성 시스템",
+          "toSystem": "전선 압박 게이지",
+          "trigger": "적 유닛이 방어선에 근접하거나 타워를 통과할 때",
+          "stateChange": "전선 압박 게이지가 상승하며, 특정 임계점 도달 시 경고 효과와 함께 적의 이동 속도가 일시적으로 증가합니다."
+        },
+        {
+          "fromSystem": "지형 변형 시스템",
+          "toSystem": "적 웨이브 생성 시스템",
+          "trigger": "플레이어가 지형을 변경하여 새로운 경로를 생성할 때",
+          "stateChange": "적 유닛의 이동 경로 알고리즘이 실시간으로 재계산되어 변경된 지형을 따라 우회하거나 새로운 경로로 진입하게 됩니다."
+        },
+        {
+          "fromSystem": "자원 관리 시스템",
+          "toSystem": "지형 변형 시스템",
+          "trigger": "플레이어가 자원을 소모하여 지형 변형 스킬을 사용할 때",
+          "stateChange": "보유 자원이 감소하고, 해당 지형 타일의 속성이 변경되어 방어 효율과 적의 이동 경로가 즉각적으로 업데이트됩니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 초기 스테이지에서 기본적인 방어 타워와 지형 조작을 익히고, 점차 복잡해지는 적의 조합에 대응하기 위해 새로운 타워와 지형 특성을 해금합니다. 성장은 단순히 수치적인 강화를 넘어, 더 창의적인 전술적 조합을 가능하게 하는 방향으로 설계되어 플레이어의 숙련도가 곧 게임의 진행 속도가 됩니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "스테이지 클리어 시 획득하는 자원과 기술 포인트를 사용하여 타워의 공격력, 사거리, 지형 변형 효율을 영구적으로 업그레이드합니다.",
+        "resourceFlow": "전투 중 획득하는 골드는 즉각적인 전술 배치에 사용되고, 스테이지 완료 후 획득하는 기술 포인트는 장기적인 성장 트리를 해금하는 데 사용됩니다.",
+        "balanceRules": "적의 웨이브 난이도 상승 곡선과 플레이어의 타워 업그레이드 효율을 1:1.2 비율로 조정하여, 적절한 도전 의식과 성취감을 동시에 제공합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "신규 지형 테마 추가",
+          "newGameplay": "얼음, 용암 등 특수 속성을 가진 지형 타일을 도입하여 적의 이동 속도나 방어력에 영향을 주는 전략적 변수를 추가합니다.",
+          "systemImpact": "기존 지형 변형 시스템에 속성 상성 로직이 추가되어, 플레이어는 지형 선택 시 단순 경로 차단 외에 속성 시너지를 고려해야 합니다."
+        },
+        {
+          "milestone": "엘리트 적 유닛 도입",
+          "newGameplay": "특정 지형을 무시하거나 파괴하는 능력을 가진 엘리트 적 유닛을 추가하여 방어 전략의 다변화를 유도합니다.",
+          "systemImpact": "전선 압박 게이지 시스템에 '방어선 돌파' 위험도가 추가되어, 특정 유닛에 대한 카운터 타워 배치가 필수적으로 요구됩니다."
+        },
+        {
+          "milestone": "전술 카드 시스템 확장",
+          "newGameplay": "전투 중 일회성으로 사용할 수 있는 강력한 전술 카드를 도입하여 위기 상황을 반전시킬 수 있는 기회를 제공합니다.",
+          "systemImpact": "자원 관리 시스템에 카드 드로우 및 쿨타임 로직이 추가되어, 자원 운용의 폭이 넓어지고 전략적 깊이가 심화됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "방어선이 완전히 돌파되어 기지 체력이 0이 되는 경우",
+          "제한 시간 내에 특정 목표 지점을 방어하지 못한 경우"
+        ],
+        "retryFlow": "실패 시 즉시 해당 웨이브의 시작 지점으로 돌아가거나, 현재 스테이지를 처음부터 다시 시작할 수 있는 선택지를 제공합니다.",
+        "riskPressure": "실패는 단순한 시간 손실이 아니라, 해당 스테이지에서 획득한 자원의 일부를 잃게 하여 플레이어에게 신중한 전략 수립을 압박합니다.",
+        "recoveryRules": "연속 실패 시 난이도를 일시적으로 낮춰주는 보정 시스템을 가동하여 플레이어의 이탈을 방지하고 학습을 유도합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "터치 및 마우스 클릭을 통한 직관적인 타워 배치와 드래그 앤 드롭 방식의 지형 변형 조작을 지원합니다.",
+        "performanceBudget": "모바일 환경을 고려하여 동시 활성 유닛 수를 제한하고, 지형 변형 시 최적화된 메쉬 업데이트 방식을 사용하여 프레임 드랍을 방지합니다.",
+        "sessionConstraints": "한 세션당 5~10분 내외의 짧은 웨이브 단위로 구성하여 모바일 환경에서의 짧은 플레이 타임에 최적화합니다."
+      },
+      "visualDirection": "깔끔하고 가독성이 높은 로우 폴리곤 스타일을 채택하여, 복잡한 전장 상황에서도 적의 경로와 타워의 사거리를 명확하게 식별할 수 있도록 합니다.",
+      "mobileUx": "모든 UI 요소는 엄지손가락이 닿기 쉬운 화면 하단에 배치하고, 타워 배치나 지형 변형 시 시각적인 피드백을 강조하여 조작의 명확성을 높입니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "전선 압박 게이지, 현재 보유 자원, 다음 웨이브 예고를 화면 상단에 배치하여 항상 인지 가능하게 합니다.",
+        "touchAndInput": "드래그 앤 드롭 조작 시 오입력을 방지하기 위해 타일 그리드 스냅 기능을 적용하고, 시각적 가이드를 제공합니다.",
+        "readability": "색약 모드를 지원하여 적의 속성과 지형의 특성을 색상 외에 패턴이나 아이콘으로도 구분할 수 있게 합니다.",
+        "accessibility": "게임 속도 조절 기능을 제공하여 반응 속도가 느린 플레이어도 충분히 전략을 고민할 시간을 확보할 수 있도록 합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "밝고 명랑한 색감을 사용하되, 위험 상황에서는 붉은색 계열의 경고 효과를 사용하여 시각적 대비를 극대화합니다.",
+        "audioIdentity": "전투 상황에 따라 긴박감이 고조되는 배경음악과 타워 공격, 적 처치 시의 경쾌한 타격음을 사용하여 피드백을 강화합니다.",
+        "gameplayFeedbackSync": "지형 변형 시 발생하는 효과음과 시각적 파티클을 동기화하여 플레이어의 조작이 게임 월드에 즉각적인 영향을 미치고 있음을 체감하게 합니다."
+      },
+      "marketTargetDirection": "전략 게임을 선호하지만 복잡한 조작보다는 직관적인 판단과 성장을 즐기는 글로벌 모바일 게이머를 타겟으로 합니다.",
+      "steamExpansionDecision": "ROBLOX 플랫폼에서의 성공을 기반으로, 더 정교한 그래픽과 확장된 콘텐츠를 포함하여 PC/콘솔 버전으로의 이식을 고려합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "현재는 싱글 플레이 중심의 전략 경험에 집중하며, 향후 협동 방어 모드나 비동기식 영토 경쟁 모드 도입을 검토합니다.",
+      "technicalAssumptions": [
+        "지형 변형 시스템은 실시간 내비게이션 메시(NavMesh) 업데이트를 통해 적의 경로를 실시간으로 재계산할 수 있어야 합니다.",
+        "모바일 기기의 성능을 고려하여 타워와 적 유닛의 오브젝트 풀링을 구현하여 메모리 사용량을 최소화해야 합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 지형 변형을 통해 적의 경로를 성공적으로 변경했을 때, 그 결과가 시각적으로 명확하게 전달되는가?",
+        "전선 압박 게이지가 플레이어의 전략적 선택에 실질적인 긴장감을 부여하고 있는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "지형 변형 시스템",
+          "responsibleSystem": "책임 시스템: 지형 변형 엔진",
+          "validationEvidence": "플레이어가 지형을 변경한 직후 적 유닛이 즉시 새로운 경로로 이동하는지 테스트하여 경로 탐색 알고리즘의 정확성을 검증합니다."
+        },
+        {
+          "designElement": "전선 압박 게이지",
+          "responsibleSystem": "UI/UX 관리 시스템",
+          "validationEvidence": "게이지 상승 속도와 적의 밀집도를 비교하여 플레이어가 위기감을 적절히 느끼는지 사용자 테스트를 통해 확인합니다."
+        },
+        {
+          "designElement": "자원 관리 시스템",
+          "responsibleSystem": "책임 시스템: 경제 밸런싱 모듈",
+          "validationEvidence": "스테이지별 획득 자원과 타워 업그레이드 비용을 시뮬레이션하여 성장의 정체 구간이 발생하지 않는지 데이터를 분석합니다."
+        }
+      ],
+      "openQuestions": [
+        "지형 변형이 너무 강력하여 특정 전략만 반복되는 현상을 어떻게 방지할 것인가?",
+        "모바일 환경에서 너무 많은 유닛이 동시에 등장할 때 프레임 드랍을 어떻게 최적화할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 77,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
@@ -109,10 +333,30 @@
       "lastMs": 116421,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
       "updatedAt": "2026-09-18T19:21:03.319Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 2,
+      "successes": 1,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 143356,
+      "lastMs": 9568,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=1946",
+      "updatedAt": "2026-09-18T19:21:30.259Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T19:19:06.896Z",
-  "updatedAt": "2026-09-18T19:21:03.319Z"
+  "updatedAt": "2026-09-18T19:21:30.259Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T19:21:20.686Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
