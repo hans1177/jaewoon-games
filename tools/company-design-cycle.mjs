@@ -273,6 +273,11 @@ function repairFields(scored){
 }
 function repairStructureContract(fields){
   const rules=[];
+  if(fields.includes('identity'))rules.push('identity: 공백 포함 최소 60자 이상의 구체적 게임 정체성. coreLoop와 signatureSystems가 왜 이 게임만의 선택/상태변화를 만드는지 직접 설명.');
+  if(fields.includes('playerFantasy'))rules.push('playerFantasy: 공백 포함 최소 40자 이상의 구체적 플레이어 역할·행동·결과 판타지.');
+  if(fields.includes('coreFun'))rules.push('coreFun: 공백 포함 최소 40자 이상. 반복되는 실제 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시.');
+  if(fields.includes('coreLoop'))rules.push('coreLoop: 서로 다른 실제 플레이 단계 최소 3개. 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함.');
+  if(fields.includes('signatureSystems'))rules.push('signatureSystems: 최소 2개 서로 다른 시스템. 각 name은 최소 2자, purpose와 playerChoice는 각각 최소 20자 이상의 구체적 내용.');
   if(fields.includes('contentExpansionPlan'))rules.push('contentExpansionPlan: 최소 3개 서로 다른 객체. 각 milestone/newGameplay/systemImpact 문자열은 공백 제외 의미 있는 내용으로 각각 최소 12자 이상.');
   if(fields.includes('implementationTraceability'))rules.push('implementationTraceability: 최소 3개 서로 다른 객체. 각 designElement/responsibleSystem/validationEvidence 문자열은 각각 최소 10자 이상.');
   if(fields.includes('technicalAssumptions'))rules.push('technicalAssumptions: 서로 다른 구현 가정 최소 2개.');
