@@ -132,7 +132,7 @@ jobs:
 
             # Re-run the canonical promotion calculation against the newest runtime state.
             # Only runtime JSON files are staged; engine files remain main-owned and are never persisted here.
-            git checkout origin/main -- tools/design-only-promotion-sync.mjs tools/company-selected-platform-router.mjs tools/owner-design-reset.mjs
+            git checkout origin/main -- tools/design-only-promotion-sync.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs
             git reset -- tools/design-only-promotion-sync.mjs tools/company-selected-platform-router.mjs tools/owner-design-reset.mjs >/dev/null 2>&1 || true
             node tools/design-only-promotion-sync.mjs
 
