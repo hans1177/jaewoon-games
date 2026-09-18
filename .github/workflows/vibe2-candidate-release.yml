@@ -57,12 +57,25 @@ jobs:
           echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
           echo "candidate_branch=$SUBMITTED_CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
           mapfile -t manifests < <(find .vibe2/candidates -type f -name manifest.json 2>/dev/null | sort)
-          if [ "${#manifests[@]}" -ne 1 ]; then
+          matching_manifests=()
+          for candidate_manifest in "${manifests[@]}"; do
+            manifest_branch="$(MANIFEST="$candidate_manifest" node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.env.MANIFEST,'utf8'));process.stdout.write(String(m.branch||''))")"
+            if [ "$manifest_branch" = "$SUBMITTED_CANDIDATE_BRANCH" ]; then
+              matching_manifests+=("$candidate_manifest")
+            fi
+          done
+          if [ "${#matching_manifests[@]}" -eq 1 ]; then
+            manifest="${matching_manifests[0]}"
+            echo "VIBE2_CANDIDATE_MANIFEST_MATCH=$manifest"
+          elif [ "${#manifests[@]}" -eq 1 ]; then
+            manifest="${manifests[0]}"
+            echo "VIBE2_CANDIDATE_MANIFEST_LEGACY_SINGLE=$manifest"
+          else
             echo 'decision=reject' >> "$GITHUB_OUTPUT"
-            echo 'reason=manifest-count-invalid' >> "$GITHUB_OUTPUT"
+            echo 'reason=candidate-manifest-not-unique-for-branch' >> "$GITHUB_OUTPUT"
+            echo "VIBE2_CANDIDATE_MANIFEST_MATCH_COUNT=${#matching_manifests[@]}"
             exit 0
           fi
-          manifest="${manifests[0]}"
           git show origin/main:game-catalog.json > /tmp/main-game-catalog.json
           MANIFEST="$manifest" node <<'NODE'
           const fs=require('fs');
