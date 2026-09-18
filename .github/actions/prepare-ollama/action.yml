@@ -176,5 +176,24 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        ollama pull "${{ inputs.model }}"
+        model="${{ inputs.model }}"
+        if ollama list | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
+          echo "OLLAMA_MODEL_CACHE_HIT=$model"
+          echo 'OLLAMA_MODEL_PULL_SKIPPED=YES'
+          echo 'PAID_API=NO'
+          exit 0
+        fi
+        echo "OLLAMA_MODEL_CACHE_MISS=$model"
+        pulled=0
+        for attempt in 1 2 3 4 5; do
+          echo "OLLAMA_MODEL_PULL_ATTEMPT=$attempt/5"
+          if ollama pull "$model"; then
+            pulled=1
+            break
+          fi
+          sleep $((attempt * 5))
+        done
+        test "$pulled" = 1
+        ollama list | awk 'NR>1 {print $1}' | grep -Fxq "$model"
+        echo 'OLLAMA_MODEL_PULL_RETRY_TRANSIENT=YES'
         echo 'PAID_API=NO'
