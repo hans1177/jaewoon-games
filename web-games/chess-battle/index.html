@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      background-color: #fff;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 5px;
+      margin: 20px;
+      background-color: #e0e0e0;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+    .piece {
+      width: 60px;
+      height: 60px;
+      background-color: #fff;
+      border: 2px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #333;
+      box-shadow: 0 0 5px #000;
+    }
+    .piece.selected {
+      background-color: #007bff;
+      color: white;
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: 2px solid #007bff;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #005f99;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div class="game-board" id="board"></div>
+    <div class="controls">
+      <button id="newGame">새 게임</button>
+      <button id="restartGame">재시작</button>
+      <button id="aiPlay">AI 턴</button>
+    </div>
+  </main>
+
+  <script>
+    const board = document.getElementById('board');
+    const controls = document.getElementById('controls');
+    const newGameBtn = document.getElementById('newGame');
+    const restartGameBtn = document.getElementById('restartGame');
+    const aiPlayBtn = document.getElementById('aiPlay');
+
+    // 게임 상태 관리
+    let game = null;
+    let turn = 'player';
+    let gameOver = false;
+
+    // 게임 초기화
+    function initGame() {
+      game = {
+        board: createBoard(),
+        turn: 'player',
+        selectedPiece: null,
+        ai: {
+          board: createBoard(),
+          moves: []
+        },
+        gameOver: false
+      };
+      updateBoard();
+      updateControls();
+    }
+
+    // 게임 브레드보드 생성
+    function createBoard() {
+      const board = [];
+      for (let i = 0; i < 8; i++) {
+        board[i] = [];
+        for (let j = 0; j < 8; j++) {
+          board[i][j] = { color: (i + j) % 2 === 0 ? 'light' : 'dark', piece: null };
+        }
+      }
+      return board;
+    }
+
+    // 게임 브레드보드 업데이트
+    function updateBoard() {
+      for (let i = 0; i < 8; i++) {
+        for (let j = 0; j < 8; j++) {
+          const piece = game.board[i][j];
+          const pieceElement = document.createElement('div');
+          pieceElement.className = 'piece';
+          pieceElement.textContent = piece.color === 'light' ? '•' : '•';
+          pieceElement.style.backgroundColor = piece.color === 'light' ? '#fff' : '#e0e0e0';
+          pieceElement.style.border = piece.color === 'light' ? '2px solid #ccc' : '2px solid #ccc';
+          pieceElement.style.display = 'flex';
+          pieceElement.style.alignItems = 'center';
+          pieceElement.style.justifyContent = 'center';
+          pieceElement.style.fontSize = '24px';
+          pieceElement.style.color = piece.color === 'light' ? '#333' : '#000';
+          pieceElement.style.boxShadow = '0 0 5px #000';
+          boardElement.appendChild(pieceElement);
+        }
+      }
+    }
+
+    // 턴 전환
+    function switchTurn() {
+      if (turn === 'player') {
+        turn = 'ai';
+        aiPlayBtn.disabled = false;
+      } else {
+        turn = 'player';
+        aiPlayBtn.disabled = true;
+      }
+    }
+
+    // AI 턴 실행
+    function aiPlay() {
+      if (!game.ai.board || !game.ai.board.length) return;
+      const aiBoard = game.ai.board;
+      const selectedPiece = game.selectedPiece;
+      const board = game.board;
+
+      // AI 이동 로직 (기본 구현)
+      const move = {
+        from: { row: selectedPiece.row, col: selectedPiece.col },
+        to: { row: 0, col: 0 }
+      };
+
+      // 이동 후 턴 전환
+      game.selectedPiece = move.to;
+      switchTurn();
+    }
+
+    // 게임 재시작
+    function restartGame() {
+      initGame();
+    }
+
+    // 게임 새로 시작
+    newGameBtn.addEventListener('click', () => {
+      initGame();
+    });
+
+    // 턴 전환
+    controls.addEventListener('click', (e) => {
+      if (e.target.id === 'aiPlay') {
+        aiPlay();
+      }
+    });
+
+    // 게임 상태 업데이트
+    function updateControls() {
+      if (game && game.turn) {
+        controls.innerHTML = `
+          <button id="newGame">새 게임</button>
+          <button id="restartGame">재시작</button>
+          <button id="aiPlay">AI 턴</button>
+        `;
+      } else {
+        controls.innerHTML = `
+          <button id="newGame">새 게임</button>
+          <button id="restartGame">재시작</button>
+        `;
+      }
+    }
+
+    // 게임 시작
+    initGame();
+  </script>
+</body>
+</html>
