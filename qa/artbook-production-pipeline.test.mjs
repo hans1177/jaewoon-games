@@ -17,7 +17,8 @@ test('DESIGN_ONLY pipeline is GAME_SEED-backed design -> baseline and stops befo
   assert.match(source,/DESIGN_BASELINE_READY/);
   assert.match(source,/DESIGN_ONLY_ARTBOOK_SKIPPED=WAIT_FOR_PROMOTION/);
   assert.match(source,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
-  assert.match(source,/attempts=2/);
+  assert.match(source,/attempts='UNLIMITED'/);
+  assert.match(source,/const unlimited=String\(attempts\)\.toUpperCase\(\)==='UNLIMITED'/);
   assert.match(source,/function designSchemaRetryable/);
   assert.match(source,/const schemaOrJsonFailure=/);
   assert.match(source,/const transientModelFailure=/);
