@@ -22,9 +22,17 @@ if(!geminiApiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
 const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||'gemini-3.8-flash');
 const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite').split(','));
 const geminiFallbackModelList=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview').split(','));
+const geminiLeadFallbackLaneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES||'');
 const geminiUnavailableModels=new Map();
 function isDailyGeminiQuotaError(error){
   return /GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i.test(clean(error?.message||error));
+}
+function persistentGeminiUnavailableStatus(error){
+  const message=clean(error?.message||error);
+  if(isDailyGeminiQuotaError(message))return 429;
+  if(/no longer available to new users|NOT_FOUND|\b404\b/i.test(message))return 404;
+  if(/PERMISSION_DENIED|\b403\b/i.test(message))return 403;
+  return 0;
 }
 function kstDateForTimestamp(value){
   const time=Date.parse(clean(value));if(!Number.isFinite(time))return '';
@@ -51,8 +59,15 @@ const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadMode
 const distinctLeadModels=uniq(Object.values(leadModels));
 if(distinctLeadModels.length<ROLES.length)throw new Error(`GEMINI_DISTINCT_LEAD_GATE: ${distinctLeadModels.length}/${ROLES.length}`);
 const primaryLeadModelSet=new Set(distinctLeadModels);
-const extraLeadFallbackModels=geminiFallbackModelList.filter(model=>!primaryLeadModelSet.has(model));
-const leadCandidateModels=Object.fromEntries(ROLES.map((role,index)=>[role,uniq([leadModels[role],...extraLeadFallbackModels.filter((_,fallbackIndex)=>fallbackIndex%ROLES.length===index)])]));
+const configuredLeadFallbackModels=Object.fromEntries(ROLES.map(role=>[role,[]]));
+for(const entry of geminiLeadFallbackLaneSpec.split(';').map(clean).filter(Boolean)){
+  const at=entry.indexOf(':');
+  if(at<1)continue;
+  const role=clean(entry.slice(0,at));
+  if(!ROLES.includes(role))continue;
+  configuredLeadFallbackModels[role]=uniq(entry.slice(at+1).split('|')).filter(model=>geminiFallbackModelList.includes(model)&&!primaryLeadModelSet.has(model));
+}
+const leadCandidateModels=Object.fromEntries(ROLES.map(role=>[role,uniq([leadModels[role],...configuredLeadFallbackModels[role]])]));
 const leadCandidateOwner=new Map();
 for(const role of ROLES)for(const model of leadCandidateModels[role]){const owner=leadCandidateOwner.get(model);if(owner&&owner!==role)throw new Error(`GEMINI_LEAD_FAILOVER_COLLISION: ${model}:${owner}:${role}`);leadCandidateOwner.set(model,role);}
 console.log(`GEMINI_DISTINCT_LEAD_FAILOVER_LANES=${ROLES.map(role=>`${role}:${leadCandidateModels[role].join('>')}`).join(',')}`);
@@ -149,7 +164,18 @@ const checkpointV2MigrationEligible=designCheckpoint?.contractVersion===2
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
   &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
-if(!checkpointReusable&&checkpointV2MigrationEligible){
+const checkpointCompatibleEngineDigests=new Set(['4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec']);
+const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
+  &&clean(designCheckpoint?.gameId)===gameId
+  &&clean(designCheckpoint?.date)===date
+  &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
+  &&clean(designCheckpoint?.policyDigest)===policyDigest
+  &&checkpointCompatibleEngineDigests.has(clean(designCheckpoint?.engineDigest))
+  &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
+  &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
+  &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
+if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEngineMigrationEligible)){
+  const previousContractVersion=Number(designCheckpoint.contractVersion||0);
   const previousEngineDigest=clean(designCheckpoint.engineDigest);
   designCheckpoint={
     ...designCheckpoint,
@@ -164,9 +190,9 @@ if(!checkpointReusable&&checkpointV2MigrationEligible){
     slowPhases:designCheckpoint.slowPhases&&typeof designCheckpoint.slowPhases==='object'?designCheckpoint.slowPhases:{},
     completedPhases:Array.isArray(designCheckpoint.completedPhases)?designCheckpoint.completedPhases:[],
     checkpointMigration:{
-      fromContractVersion:2,
+      fromContractVersion:previousContractVersion,
       toContractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
-      reason:'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY',
+      reason:checkpointV2MigrationEligible?'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY':'QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY',
       previousEngineDigest,
       preservedPhaseCount:Object.keys(designCheckpoint.phases).length,
       preservedTaskCount:Object.keys(designCheckpoint.tasks).length,
@@ -175,7 +201,7 @@ if(!checkpointReusable&&checkpointV2MigrationEligible){
     updatedAt:new Date().toISOString()
   };
   writeJson(checkpointPath,designCheckpoint);
-  console.log(`DESIGN_CHECKPOINT_MIGRATED=V2_TO_V3|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}|replay=NO`);
+  console.log(`DESIGN_CHECKPOINT_MIGRATED=${previousContractVersion===2?'V2_TO_V3':'V3_COMPATIBLE_ENGINE'}|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}|replay=NO`);
 }else if(!checkpointReusable){
   designCheckpoint={contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,gameId,date,seedId:seed.seedId,fingerprint:checkpointFingerprint,policyDigest,engineDigest,status:'IN_PROGRESS',completedPhases:[],phases:{},tasks:{},modelHealth:{},slowPhases:{},currentPhase:'BOOTSTRAP',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   writeJson(checkpointPath,designCheckpoint);
@@ -193,11 +219,13 @@ if(!checkpointReusable&&checkpointV2MigrationEligible){
   console.log(`DESIGN_CHECKPOINT_RESUME=YES|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}`);
 }
 for(const [rawModel,row] of Object.entries(designCheckpoint.modelHealth||{})){
-  if(kstDateForTimestamp(row?.updatedAt)!==date||!isDailyGeminiQuotaError(row?.lastError))continue;
+  if(kstDateForTimestamp(row?.updatedAt)!==date)continue;
+  const status=persistentGeminiUnavailableStatus(row?.lastError);
+  if(!status)continue;
   const model=clean(rawModel).replace(/^gemini:/,'');
   if(!model)continue;
-  geminiUnavailableModels.set(model,429);
-  console.log(`GEMINI_MODEL_QUARANTINE_RESTORED=${model}|status=429|scope=DAILY|${date}`);
+  geminiUnavailableModels.set(model,status);
+  console.log(`GEMINI_MODEL_QUARANTINE_RESTORED=${model}|status=${status}|scope=CHECKPOINT|${date}`);
 }
 const PROGRESS_STAGE_ORDER=['BOOTSTRAP','DESIGNER_DRAFT','PRE_GATE','PRE_GATE_REPAIR','DEPARTMENT_REVIEWS','DESIGNER_REVISION','COMPLETE'];
 function writeProgress(stage=designCheckpoint.currentPhase||'BOOTSTRAP',extra={}){
@@ -772,7 +800,7 @@ writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionC
 if(!preGatePass(preGate)){
   designCheckpoint.status='PRE_GATE_BLOCKED';
   designCheckpoint.lastError=`DESIGN_PRE_GATE_BLOCKED score=${preGate.totalScore} hard=${(preGate.hardFailures||[]).join(',')||'NONE'}`;
-  for(const key of Object.keys(designCheckpoint.phases))if(key.startsWith('designer_pre_gate_repair_')||key.startsWith('deterministic_pre_gate_after_repair_'))delete designCheckpoint.phases[key];
+  console.log('DESIGN_PRE_GATE_REPAIR_CHECKPOINTS_PRESERVED=YES');
   persistDesignCheckpoint();
   writeProgress('PRE_GATE_REPAIR',{blocked:true,preGateScore:preGate.totalScore,hardFailures:preGate.hardFailures,repairPacket:repairPacket(preGate)});
   throw new Error(designCheckpoint.lastError);

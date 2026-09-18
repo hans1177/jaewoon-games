@@ -78,6 +78,20 @@ function setMissingArray(out,key,value,repairs,source,{min=0,max=8}={}){
   if(items.length<min)return;
   out[key]=items;repairs.push({field:key,source});
 }
+function normalizeTraceabilityReferences(out,repairs){
+  if(!Array.isArray(out?.implementationTraceability))return;
+  let changed=false;
+  const rows=out.implementationTraceability.map(row=>{
+    if(!row||Array.isArray(row)||typeof row!=='object')return row;
+    const responsibleSystem=clean(row.responsibleSystem);
+    if(!responsibleSystem||responsibleSystem.length>=10)return row;
+    changed=true;
+    return {...row,responsibleSystem:`책임 시스템: ${responsibleSystem}`};
+  });
+  if(!changed)return;
+  out.implementationTraceability=rows;
+  repairs.push({field:'implementationTraceability',source:'EXISTING_DESIGN.RESPONSIBLE_SYSTEM_REFERENCE_NORMALIZATION'});
+}
 function robloxBuildProfile(out,seed,mode){
   if(!MODES.has(mode))return null;
   const classified=classifyRobloxGenre({
@@ -161,6 +175,7 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   setMissingArray(out,'technicalAssumptions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'validationQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'openQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
+  normalizeTraceabilityReferences(out,repairs);
 
   const required=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','visualDirection','mobileUx','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','technicalAssumptions','validationQuestions','openQuestions'];
   const unresolved=required.filter(key=>{

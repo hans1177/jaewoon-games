@@ -45,6 +45,24 @@ test('missing required design fields are repaired only from grounded seed/fact e
   assert.ok(result.repairs.some(row=>row.field==='progressionDirection'&&row.source==='GAME_SEED.TARGET_SESSION_DIRECTION'));
 });
 
+test('existing implementation traceability references are normalized without inventing new systems',()=>{
+  const original={
+    identity:'기존 설계',coreFun:'기존 재미',coreLoop:['a','b','c'],
+    implementationTraceability:[
+      {designElement:'이동 판정',responsibleSystem:'이동 시스템',validationEvidence:'이동 입력과 상태 전이를 실행 로그로 검증한다'},
+      {designElement:'전투 판정',responsibleSystem:'전투 시스템',validationEvidence:'공격 판정과 결과 상태를 실행 로그로 검증한다'},
+      {designElement:'진행 저장',responsibleSystem:'저장 시스템',validationEvidence:'저장 전후 진행 상태가 같은 의미인지 검증한다'}
+    ]
+  };
+  const result=repairDesignRequiredFields(original,{seed,phase:'PRE_GATE_REPAIR_1'});
+  assert.equal(result.value.implementationTraceability.length,3);
+  for(const row of result.value.implementationTraceability){
+    assert.ok(row.responsibleSystem.length>=10);
+    assert.match(row.responsibleSystem,/책임 시스템:/);
+  }
+  assert.ok(result.repairs.some(row=>row.field==='implementationTraceability'&&row.source==='EXISTING_DESIGN.RESPONSIBLE_SYSTEM_REFERENCE_NORMALIZATION'));
+});
+
 test('Roblox pre-review generated build profile satisfies the exact required schema',()=>{
   const result=repairDesignRequiredFields({identity:'기존 설계',coreFun:'기존 재미',coreLoop:['a','b','c']},{seed,phase:'PRE_REVIEW'});
   assert.ok(result.value.robloxBuildProfile);

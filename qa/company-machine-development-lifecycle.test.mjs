@@ -103,8 +103,14 @@ assert.match(queue,/WAITING_FOR_GEMINI_QUOTA/);
 assert.match(queue,/isExternalQuotaWaitingTask/);
 assert.match(designCycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=3/);
 assert.match(designCycle,/checkpointV2MigrationEligible/);
+assert.match(designCycle,/checkpointV3CompatibleEngineMigrationEligible/);
+assert.match(designCycle,/4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec/);
+assert.match(designCycle,/QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY/);
 assert.match(designCycle,/PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY/);
 assert.match(designCycle,/GEMINI_MODEL_QUARANTINE_RESTORED=/);
+assert.match(designCycle,/persistentGeminiUnavailableStatus/);
+assert.match(designCycle,/DESIGN_PRE_GATE_REPAIR_CHECKPOINTS_PRESERVED=YES/);
+assert.doesNotMatch(designCycle,/delete designCheckpoint\.phases\[key\]/);
 assert.match(designCycle,/GEMINI_DAILY_QUOTA_EXHAUSTED=/);
 assert.ok(designCycle.indexOf('if(status===429&&isDailyGeminiQuotaError(error))')<designCycle.indexOf('const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel)'));
 
