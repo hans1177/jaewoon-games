@@ -801,5 +801,57 @@
       "saveMeaningMutationByLifecycleState": false,
       "qaGateBypass": false
     }
+  },
+  "selfRecovery": {
+    "enabled": true,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "policySource": "company-learning/platform-release-roadmap.json#developmentLifecycleMachine.selfRecoveryAndBottleneckRelief",
+    "centralPolicy": ".vibe2/central-policy.json#selfRecoveryAndBottleneckRelief",
+    "queueState": ".vibe2/queue.json",
+    "parallelismState": ".vibe2/parallelism-control.json",
+    "recoveryLoop": [
+      "detect",
+      "classify",
+      "preserve-state",
+      "recover-or-reroute",
+      "bottleneck-relief",
+      "refill",
+      "reverify",
+      "persist-learning",
+      "continue"
+    ],
+    "mechanisms": {
+      "staleReservationRecovery": true,
+      "retryableFailureRequeue": true,
+      "fanInRegressionRequeue": true,
+      "adaptiveBackpressure": true,
+      "eventDrivenRefill": true,
+      "workStealing": true,
+      "postReleaseProtectedSlot": true,
+      "robloxRunnerSelfHeal": true,
+      "externalQuotaCheckpointResume": true
+    },
+    "bottleneckRelief": {
+      "adaptiveSteps": [
+        20,
+        16,
+        12,
+        8,
+        4
+      ],
+      "singleStepPerRun": true,
+      "healthyRecoveryRequiresConsecutiveSaturatedRuns": 2,
+      "disjointWorkContinuesWhenOneRouteBlocked": true,
+      "learningCollectionContinuesWhenDevelopmentRouteBlocked": true,
+      "waitingForVerifiedSamplesIsFailure": false
+    },
+    "hardInvariants": {
+      "gateBypass": false,
+      "trainingThresholdReduction": false,
+      "verifiedLearningDeletion": false,
+      "validCheckpointDiscard": false,
+      "runtimePassFabrication": false,
+      "automaticRepublish": false
+    }
   }
 }
