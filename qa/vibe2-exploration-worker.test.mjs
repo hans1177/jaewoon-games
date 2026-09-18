@@ -179,13 +179,15 @@ test('fan in review passes only after exploration implementation test and perfor
   const complete={
     version:5,maxConcurrentTasks:20,tasks:[{
       id:'ready',gameId:'demo',target:'web',goal:'ready',status:'running',blocker:'candidate-awaiting-qa-and-deployment',sourceRoot:'web-games/demo',responsibleFiles:['index.js'],
-      evidence:['role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS']
+      evidence:['role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS','vibe2/candidate/ready/verified']
     }]
   };
   const pass=finalizeVibe2FanInReview({queue:complete,taskIds:['ready']});
   assert.equal(pass.pass,true);
   assert.ok(pass.queue.tasks[0].evidence.includes('role-result:regression:PASS'));
   assert.ok(pass.queue.tasks[0].evidence.includes('role-result:review:PASS'));
+  assert.equal(pass.releaseCandidates.length,1);
+  assert.equal(pass.releaseCandidates[0].candidateBranch,'vibe2/candidate/ready/verified');
 
   const missing=structuredClone(complete);
   missing.tasks[0].id='missing';
