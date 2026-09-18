@@ -29,8 +29,10 @@ const MAX_REPAIR_ATTEMPTS=3;
 const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
 const DEFAULT_TIMEOUT_MS=Math.max(10000,Math.min(300000,Number(process.env.VIBE2_MODEL_TIMEOUT_MS||240000)));
 const DEFAULT_MAX_PREDICT=Math.max(256,Math.min(2048,Number(process.env.VIBE2_MODEL_MAX_PREDICT||1536)));
-const FULL_REWRITE_TIMEOUT_MS=900000;
+const FULL_REWRITE_TIMEOUT_MS=540000;
 const FULL_REWRITE_MAX_PREDICT=8192;
+const FULL_REWRITE_RETRY_TIMEOUT_MS=360000;
+const FULL_REWRITE_RETRY_MAX_PREDICT=6144;
 const FULL_REWRITE_CONTEXT_WINDOW=32768;
 const FULL_FILE_PREFIX='VIBE2_FULL_FILE';
 const FULL_FILE_CONTENT_MARKER='---VIBE2_FILE_CONTENT---';
@@ -248,17 +250,18 @@ export async function runVibe2SourceWorker({
   for(let attempt=1;attempt<=MAX_REPAIR_ATTEMPTS;attempt+=1){
     attemptsUsed=attempt;
     const repairText=lastFailure?repairGuidance(lastFailure,attempt,MAX_REPAIR_ATTEMPTS):'';
-    const raw=await requestLocalModel(
-      buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,smartContext,repairText}),
-      {
-        model,
-        responseFile:responseForAttempt(responseFile,repairResponseFiles,attempt),
-        maxPredict:allowFullRewrite?FULL_REWRITE_MAX_PREDICT:DEFAULT_MAX_PREDICT,
-        timeoutMs:allowFullRewrite?FULL_REWRITE_TIMEOUT_MS:DEFAULT_TIMEOUT_MS,
-        contextWindow:allowFullRewrite?FULL_REWRITE_CONTEXT_WINDOW:0
-      }
-    );
+    const retrying=attempt>1;
     try{
+      const raw=await requestLocalModel(
+        buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,smartContext,repairText}),
+        {
+          model,
+          responseFile:responseForAttempt(responseFile,repairResponseFiles,attempt),
+          maxPredict:allowFullRewrite?(retrying?FULL_REWRITE_RETRY_MAX_PREDICT:FULL_REWRITE_MAX_PREDICT):DEFAULT_MAX_PREDICT,
+          timeoutMs:allowFullRewrite?(retrying?FULL_REWRITE_RETRY_TIMEOUT_MS:FULL_REWRITE_TIMEOUT_MS):DEFAULT_TIMEOUT_MS,
+          contextWindow:allowFullRewrite?FULL_REWRITE_CONTEXT_WINDOW:0
+        }
+      );
       candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite});
       preview=validateCandidatePreview({sourceRoot,candidate});
       lastFailure=null;
@@ -266,7 +269,9 @@ export async function runVibe2SourceWorker({
     }catch(error){
       lastFailure=classifyVibe2Failure({error,goal:order.goal,target});
       repairHistory.push({attempt,route:lastFailure.route,error:lastFailure.message});
-      if(attempt===MAX_REPAIR_ATTEMPTS)throw error;
+      const retryable=/시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|preview|검증/i.test(clean(error?.message||error));
+      if(attempt===MAX_REPAIR_ATTEMPTS||!retryable)throw error;
+      console.warn(`VIBE2_GENERATION_RECOVERY_RETRY=${attempt}/${MAX_REPAIR_ATTEMPTS} ${clean(error?.message||error).slice(0,500)}`);
     }
   }
   if(!candidate||!preview?.valid)throw new Error('Vibe2 source candidate preview verification failed');
