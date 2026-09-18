@@ -202,7 +202,12 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.ok((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length>=5);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
   assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
-  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '150000'/);
+  assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'/);
+  assert.match(seedDesignWorkflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
+  assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=GEMINI_ONLY/);
+  assert.match(seedDesignWorkflow,/COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3\.8-flash'/);
+  assert.match(seedDesignWorkflow,/gemini-3\.5-flash-lite/);
+  assert.doesNotMatch(seedDesignWorkflow,/prepare-ollama|OLLAMA_HOST|OLLAMA_VERSION/);
 
   assert.match(designSeedNormalize,/DESIGN_SEED_REFERENCE_GAMES_OPTIONAL_EMPTY=/);
   assert.match(designSeedNormalize,/ENSURE_REFERENCE_INPUTS_WITHOUT_INVENTING_REFERENCE_GAME/);
@@ -231,9 +236,21 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(design,/adaptiveParallel\(\s*'five_lead_reviews'/);
   assert.match(design,/MODEL_PHASE_CONCURRENCY_FALLBACK=/);
   assert.match(design,/departmentDesignContext\(role,designDraft\)/);
-  assert.match(design,/const fastAssistantPool=/);
   assert.match(design,/reviewsSchemaFor\(\[role\]\)/);
   assert.match(design,/AbortSignal\.timeout\(effectiveTimeoutMs\)/);
+  assert.match(design,/GEMINI_API_KEY_REQUIRED/);
+  assert.match(design,/AI_PROVIDER=GEMINI_ONLY/);
+  assert.match(design,/generativelanguage\.googleapis\.com/);
+  assert.match(design,/responseJsonSchema:schema/);
+  assert.doesNotMatch(design,/OPENAI|openai|OLLAMA|ollama/);
+  assert.equal(directive.ai.providerMode,'GEMINI_ONLY');
+  assert.equal(directive.ai.providerSecret,'GEMINI_API_KEY');
+  assert.equal(directive.ai.openAiProviderAllowed,false);
+  assert.equal(directive.ai.ollamaProviderAllowed,false);
+  assert.equal(directive.ai.localModelFallbackAllowed,false);
+  assert.deepEqual(directive.ai.gameDesigner.providerPriority,['GEMINI']);
+  assert.equal(directive.ai.gameDesigner.cloudFailureFallsBackToLocal,false);
+  assert.deepEqual(directive.ai.gameDesigner.localFallbackModels,[]);
   assert.match(design,/fiveDepartmentLeadReviewCompleted/);
   assert.doesNotMatch(design,/Math\.max\(900,Math\.ceil\(1400\*roles\.length\/ROLES\.length\)\)/);
 });
