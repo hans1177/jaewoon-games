@@ -104,3 +104,14 @@ assert.doesNotMatch(designReviewBlock,/hard\.push\('30MIN_CONTENT_FAIL'\)/);
 assert.doesNotMatch(designReviewBlock,/identity\.length>=80/);
 
 console.log('COMPANY_DESIGN_GATE_SCORING_V2_TEST=PASS');
+
+
+test('platform fit accepts canonical platform identifiers with detailed implementation constraints',()=>{
+  for(const platform of ['UNITY','ROBLOX','FORTNITE_UEFN']){
+    const seed={...baseSeed,INITIAL_TARGET_PLATFORM:platform};
+    const designRecord=structuredDesignRecord({platform});
+    const result=scoreDesignGateV2({seed,designRecord,cycleStatus:completeCycle,robloxGenreProfile:{genre:'Action'}});
+    assert.ok(result.evidenceLevels.PLATFORM_FIT_DESIGN>=80,`${platform} platform fit should be connected`);
+    assert.ok(!result.criticalAxisFailures.includes('PLATFORM_FIT_DESIGN'),`${platform} must not fail solely because identifier is shorter than prose fields`);
+  }
+});
