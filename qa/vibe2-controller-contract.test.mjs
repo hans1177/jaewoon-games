@@ -186,6 +186,14 @@ test('worker never writes queue or parallelism state directly during early refil
   assert(workerPart.includes("event_type:'vibe2-slot-refill'"));
 });
 
+test('worker Ollama cache includes the runtime sidecar and rejects binary-only cache hits',()=>{
+  assert(workflow.includes('~/.cache/vibe2-ollama/lib/ollama'));
+  assert(workflow.includes('vibe2-ollama-v3-Linux-qwen3-1.7b'));
+  assert(workflow.includes("find \"$cached_lib\" -type f -name 'llama-server'"));
+  assert(workflow.includes('sudo cp -a "$cached_lib/." /usr/local/lib/ollama/'));
+  assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
+});
+
 test('worker result keeps throughput and actual workload telemetry inputs in the immutable result step',()=>{
   const start=workflow.indexOf('- name: Build immutable worker result');
   const end=workflow.indexOf('- name: Upload worker result for fan-in');
