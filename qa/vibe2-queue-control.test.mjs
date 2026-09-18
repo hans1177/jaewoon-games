@@ -85,6 +85,26 @@ test('ordinary development-confirmed Roblox task cannot claim the post-release p
   assert.equal(selected.selected[0].id,'general-release');
 });
 
+test('Roblox selected-platform development gets the first eligible slot while lower platforms keep remaining capacity', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[]});
+  queue=add(queue,'unity-web','unity-game','web',{selectedPlatform:'UNITY',releaseState:'development-confirmed',priority:'critical'});
+  queue=add(queue,'roblox-web','roblox-game','web',{selectedPlatform:'ROBLOX',releaseState:'development-confirmed',priority:'normal'});
+  const first=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1});
+  assert.deepEqual(first.tasks.map(task=>task.id),['roblox-web']);
+  assert.equal(first.selection.robloxFirstEligibleSlotUsed,true);
+  assert.equal(first.selection.robloxFirstEligibleTaskId,'roblox-web');
+
+  const parallel=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2});
+  assert.deepEqual(new Set(parallel.tasks.map(task=>task.id)),new Set(['roblox-web','unity-web']));
+});
+
+test('owner directive remains above Roblox-first autonomous scheduling', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[]});
+  queue=add(queue,'roblox-work','roblox-game','web',{selectedPlatform:'ROBLOX',releaseState:'development-confirmed'});
+  queue=add(queue,'owner-unity','unity-game','web',{selectedPlatform:'UNITY',ownerDirective:true,releaseState:'development-confirmed'});
+  assert.equal(reserveNextVibeTask(queue).task.id,'owner-unity');
+});
+
 test('owner directive preempts release and development work', () => {
   let queue=createVibeContinuousQueue();
   queue=add(queue,'dev','dev','unity',{releaseState:'development-confirmed'});

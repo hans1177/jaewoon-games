@@ -15,6 +15,7 @@ const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace
 const stableHash=value=>{let h=2166136261;for(const ch of String(value??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return(h>>>0).toString(36);};
 const RELEASE_RANK=Object.freeze({'release-confirmed':0,'development-confirmed':1,reviewing:2,other:3});
 const ENGINE_RANK=Object.freeze({web:0,roblox:1,unity:1,unreal:3,godot:4});
+const PLATFORM_RANK=Object.freeze({ROBLOX:0,UNITY:1,FORTNITE_UEFN:2});
 const SEVERITY_PRIORITY=Object.freeze({critical:'critical',high:'high',medium:'normal',low:'low'});
 
 function readJson(file,fallback={}){if(!file||!fs.existsSync(file))return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
@@ -62,8 +63,10 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
       return{...item,status:'cancelled',blocker:'lifecycle-inactive:REMOVED_PERMANENTLY',reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'CANCELLED_BY_OWNER_PERMANENT_REMOVAL',postReleaseFocused:false,historicalDeploymentRecovery:false,evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:REMOVED_PERMANENTLY','owner-permanent-removal:yes'])]};
     }
     const game=byId.get(gameId);
-    if(!game&&registeredHistoricalMaintenanceTask(item,historicalById)){
-      const recovered={...item,historicalDeploymentRecovery:true};
+    const selectedPlatform=clean(item.selectedPlatform||game?.selectedPlatform||game?.targetPlatform||(clean(item.target).toLowerCase()==='roblox'?'ROBLOX':clean(item.target).toLowerCase()==='unity'?'UNITY':'')).toUpperCase();
+    const aligned=selectedPlatform?{...item,selectedPlatform}:item;
+    if(!game&&registeredHistoricalMaintenanceTask(aligned,historicalById)){
+      const recovered={...aligned,historicalDeploymentRecovery:true};
       if(clean(item.status).toLowerCase()==='cancelled'&&clean(item.blocker)==='lifecycle-inactive:MISSING_FROM_CATALOG'){
         return{...recovered,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE','self-recovery:HISTORICAL_DEPLOYMENT_FLAG_RESTORED'])]};
       }
@@ -71,15 +74,15 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
     }
     if(!game||!lifecycleAllowsDevelopment(game)){
       const state=game?gameLifecycleState(game):'MISSING_FROM_CATALOG';
-      if(item.status==='queued')return{...item,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-sync:${state}`])]};
-      if(item.status==='running')return{...item,blocker:`lifecycle-stop-requested:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-stop-requested:${state}`])]};
-      return item;
+      if(item.status==='queued')return{...aligned,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...new Set([...(aligned.evidence||[]),`lifecycle-sync:${state}`])]};
+      if(item.status==='running')return{...aligned,blocker:`lifecycle-stop-requested:${state}`,evidence:[...new Set([...(aligned.evidence||[]),`lifecycle-stop-requested:${state}`])]};
+      return aligned;
     }
     const currentReleaseState=stateFromCatalog(game);
     if(!['release-confirmed','development-confirmed'].includes(currentReleaseState)&&['queued','running','blocked'].includes(clean(item.status).toLowerCase())){
       const authority=clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase()||'OTHER';
       return{
-        ...item,
+        ...aligned,
         status:'cancelled',
         blocker:`production-authority-inactive:${authority}`,
         reservationId:null,
@@ -87,10 +90,10 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
         reservationRunAttempt:0,
         reservedAt:null,
         lastOutcome:'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY',
-        evidence:[...new Set([...(item.evidence||[]),`production-authority-sync:${authority}`])]
+        evidence:[...new Set([...(aligned.evidence||[]),`production-authority-sync:${authority}`])]
       };
     }
-    return item;
+    return aligned;
   });
   return{...(queueInput||{}),tasks};
 }
@@ -99,9 +102,9 @@ export function latestDevelopmentBaselineEvidence(gameId,repoRoot=process.cwd())
 function latestDevelopmentValidationStatus(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={state:'MISSING',score:null,blockers:[],path:null,evidence:null};if(!id||!fs.existsSync(root))return missing;let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){for(const name of ['development-validation-status.json','cycle-status.json']){const file=path.join(root,date,name);if(!fs.existsSync(file))continue;const data=readJson(file,null);if(!data||clean(data.gameId)!==id)continue;const score=Number(data.webStrictScore??data?.evidence?.web?.webStrictScore);return{state:clean(data.state).toUpperCase()||'MISSING',score:Number.isFinite(score)?score:null,blockers:Array.isArray(data.blockers)?data.blockers.map(clean).filter(Boolean):[],path:posix(path.relative(repoRoot,file)),evidence:data?.evidence||null,nextAction:clean(data.nextAction)};}}return missing;}
 function bottleneckRank(project={}){const v=project.developmentValidation||{},score=Number(v.score),state=clean(v.state).toUpperCase(),blockers=Array.isArray(v.blockers)?v.blockers:[];if(project.engine==='web'&&score>=80&&score<=88)return 0;if(blockers.length===1)return 1;if(project.engine==='web'&&project.releaseState==='development-confirmed'&&state==='MISSING')return 2;if(/REVALIDATION|RETURN_TO_WEB_DEVELOPMENT/.test(state))return 3;if(clean(project.lifecycleState).toUpperCase()==='REBUILD')return 4;return 5;}
 
-function collectProjects(status={},catalog={},repoRoot=process.cwd()){const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
-for(const game of Array.isArray(catalog.games)?catalog.games:[]){const id=clean(game.id);if(removed.has(id)||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),robloxRoot=robloxRootFromCatalog(game);if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox'))rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',projectPath:robloxRoot,existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;const exists=fs.existsSync(path.join(repoRoot,root));rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});}return rows;}
-function projectSort(a,b){const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);}
+function collectProjects(status={},catalog={},repoRoot=process.cwd()){const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,selectedPlatform:clean(project.selectedPlatform||project.targetPlatform||game.selectedPlatform||game.targetPlatform||(engine==='roblox'?'ROBLOX':engine==='unity'?'UNITY':'')).toUpperCase(),projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
+for(const game of Array.isArray(catalog.games)?catalog.games:[]){const id=clean(game.id);if(removed.has(id)||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),selectedPlatform=clean(game.selectedPlatform||game.targetPlatform).toUpperCase(),robloxRoot=robloxRootFromCatalog(game);if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox'))rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',selectedPlatform:selectedPlatform||'ROBLOX',projectPath:robloxRoot,existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;const exists=fs.existsSync(path.join(repoRoot,root));rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',selectedPlatform,projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});}return rows;}
+function projectSort(a,b){const platform=(PLATFORM_RANK[clean(a.selectedPlatform).toUpperCase()]??9)-(PLATFORM_RANK[clean(b.selectedPlatform).toUpperCase()]??9);if(platform)return platform;const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);}
 function isAutonomousProductionTarget(project={}){if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);if(project.releaseState==='release-confirmed')return project.engine==='unity'&&project.developmentBaseline?.ready===true;if(project.releaseState==='development-confirmed')return project.engine==='web';return false;}
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
 function readText(file){try{return fs.readFileSync(file,'utf8');}catch{return'';}}
@@ -109,7 +112,7 @@ function hasTask(queue,id){return queue.tasks.some(item=>item.id===id);}
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
 function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoot),bRoot=posix(b.sourceRoot);if(!aRoot||!bRoot||aRoot!==bRoot)return false;const aFiles=new Set((a.responsibleFiles||[]).map(posix).filter(Boolean)),bFiles=new Set((b.responsibleFiles||[]).map(posix).filter(Boolean));if(!aFiles.size||!bFiles.size)return true;for(const file of aFiles)if(bFiles.has(file))return true;return false;}
 function plannerConflict(queue,task){return activeTasks(queue).some(item=>sameRootResponsibilityConflict(item,task));}
-function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];return{id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal,responsibleFiles,dependencies:[],priority,releaseState:project.releaseState,status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence]};}
+function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];return{id,gameId:project.gameId,target:project.engine,selectedPlatform:clean(project.selectedPlatform).toUpperCase()||null,department:'development',type:'implementation',goal,responsibleFiles,dependencies:[],priority,releaseState:project.releaseState,status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence]};}
 
 function transformativeTaskEligible(taskInput={}){
   const evidence=new Set((taskInput.evidence||[]).map(clean));

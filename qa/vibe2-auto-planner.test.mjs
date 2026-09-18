@@ -106,6 +106,25 @@ test('development-confirmed Web enters Vibe planning before homepage publication
   assert.doesNotMatch(result.task.goal,/FULL_WEB_GAME_REBUILD/);
 });
 
+test('planner migrates selected platform from catalog onto existing Web development tasks',()=>{
+  const root=tempRepo();
+  const existing={
+    id:'legacy-web-task',gameId:'roblox-priority-game',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/roblox-priority-game',goal:'continue existing Web base',releaseState:'development-confirmed',status:'queued'
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:'roblox-priority-game',name:'Roblox Priority Game',selectedPlatform:'ROBLOX',
+      productionClass:'DEVELOPMENT_CONFIRMED',homepageCategory:'development-confirmed',lifecycleState:'ACTIVE',
+      webPath:'/web-games/roblox-priority-game/',hasWebArchive:true,homepageWebPlayable:true
+    }]},
+    queue:{tasks:[existing]},repoRoot:root,maxConcurrentTasks:4
+  });
+  const migrated=result.queue.tasks.find(task=>task.id==='legacy-web-task');
+  assert.equal(migrated.selectedPlatform,'ROBLOX');
+});
+
 test('central DESIGN_ONLY authority cancels stale production implementation without touching study work',()=>{
   const root=tempRepo();
   const stale={id:'stale-dev',gameId:'crystal-defense',target:'web',department:'development',type:'implementation',sourceRoot:'web-games/crystal-defense',goal:'old development work',releaseState:'development-confirmed',status:'running',reservationId:'run-1',reservationRunId:'run-1',reservationRunAttempt:1,reservedAt:'2026-09-18T10:00:00Z'};
