@@ -48,6 +48,22 @@ function bool(value) { return value === true || ['1','true','yes','y'].includes(
 function list(value) { return clean(value).split(',').map(clean).filter(Boolean); }
 function maxConcurrent(value) { return Math.max(1, Math.min(20, Math.floor(Number(value) || DEFAULT_MAX_CONCURRENT_TASKS))); }
 function optionalMaxConcurrent(value) { return clean(value) ? maxConcurrent(value) : null; }
+function reservationFromArgs(args = {}) {
+  const id=clean(args['reservation-id']);
+  return id ? {
+    id,
+    runId:clean(args['reservation-run']),
+    runAttempt:Math.max(0,Math.floor(Number(args['reservation-attempt'])||0)),
+    reservedAt:clean(args['reserved-at'])
+  } : {};
+}
+function resultReservationId(row = {}) {
+  const direct=clean(row?.reservationId||row?.metrics?.reservationId);
+  if(direct)return direct;
+  const evidence=Array.isArray(row?.evidence)?row.evidence:[];
+  const marker=evidence.map(clean).find(value=>value.startsWith('reservation-id:'));
+  return marker?clean(marker.slice('reservation-id:'.length)):'';
+}
 
 function isRecoverableFullWebTransportFailure(task = {}) {
   const evidence = Array.isArray(task.evidence) ? task.evidence : [];
@@ -116,20 +132,20 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
   });
 }
 
-export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null } = {}) {
+export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {} } = {}) {
   const recovered = recoverFixedFullWebTransportFailures(queueInput);
   const queue = recovered.queue;
   const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks });
   const selected = selection.selected[0];
   if (!selected) return { reserved: false, queue, selection, recovered: recovered.recovered };
-  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks });
+  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservation });
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
-export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } = {}) {
+export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {} } = {}) {
   const recovered = recoverFixedFullWebTransportFailures(queueInput);
   const queue = recovered.queue;
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks });
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation });
   return {
     reserved: started.started,
     tasks: started.tasks || [],
@@ -142,6 +158,10 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } =
       packageId: task.packageId || null,
       packageRole: task.packageRole || null,
       longWorkProtected: task.packageLongWorkProtected === true,
+      reservationId: task.reservationId || null,
+      reservationRunId: task.reservationRunId || null,
+      reservationRunAttempt: task.reservationRunAttempt || 0,
+      reservedAt: task.reservedAt || null,
       speculativeVariants: task.target !== 'unity' && task.estimatedRisk === 'high' && (task.speculativeEligible || task.priority === 'critical') ? 3 : 1
     }))
   };
