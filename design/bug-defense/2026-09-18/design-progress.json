@@ -4,12 +4,15 @@
   "date": "2026-09-18",
   "engineDigest": "46ea84c1af753f87a382297b3b1395c376f7aebd3e87781ec1dd732bf179429e",
   "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "completedPhaseCount": 2,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "lastSuccessfulModelCallAt": "2026-09-18T06:04:50.429Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -26,15 +29,15 @@
       "updatedAt": "2026-09-18T06:04:23.261Z"
     },
     "gemini:gemini-3.7-flash": {
-      "calls": 1,
+      "calls": 2,
       "successes": 0,
-      "failures": 1,
+      "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8770,
-      "lastMs": 8770,
+      "totalMs": 16094,
+      "lastMs": 7324,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T06:04:31.798Z"
+      "updatedAt": "2026-09-18T06:04:57.758Z"
     },
     "gemini:gemini-3.6-flash": {
       "calls": 1,
@@ -46,8 +49,30 @@
       "lastMs": 9469,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
       "updatedAt": "2026-09-18T06:04:32.497Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 18441,
+      "lastMs": 18441,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T06:04:41.469Z"
+    },
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 27401,
+      "lastMs": 27401,
+      "lastError": null,
+      "updatedAt": "2026-09-18T06:04:50.429Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T06:04:32.497Z"
+  "updatedAt": "2026-09-18T06:04:57.758Z"
 }

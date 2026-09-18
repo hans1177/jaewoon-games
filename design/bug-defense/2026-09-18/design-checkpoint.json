@@ -7,8 +7,236 @@
   "policyDigest": "5bb8edfcf9f558f65b3d9e97c3939aa085a73644ba9077f7d5a0341fbae4347f",
   "engineDigest": "46ea84c1af753f87a382297b3b1395c376f7aebd3e87781ec1dd732bf179429e",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계된 전략 디펜스.",
+      "playerFantasy": "플레이어는 정원을 지키는 식물의 수호자가 되어, 다양한 특성을 가진 곤충 군단으로부터 기지를 방어하고 상성 중심의 전략적 배치를 완수하는 쾌감을 느낀다.",
+      "coreFun": "웨이브마다 밀려오는 곤충의 이동 경로와 특성을 분석하여 최적의 방어 유닛을 배치하고, 상성 카운터와 업그레이드를 통해 몰려오는 적을 효율적으로 섬멸하는 전략적 재미.",
+      "coreLoop": [
+        "Read the incoming insect wave and its threat pattern.",
+        "Place or adjust defenders and spend limited resources on the highest-value counter.",
+        "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+      ],
+      "signatureSystems": [
+        {
+          "name": "상성 기반 타원 배치 시스템",
+          "purpose": "곤충의 속성과 방어 유닛의 공격 타입 간 상성을 극대화하여 깊이 있는 전술적 선택을 제공",
+          "playerChoice": "어떤 곤충의 진형에 맞춰 어떤 유닛을 배치할 것인지 실시간 결정"
+        },
+        {
+          "name": "자원 순환 및 수확 시스템",
+          "purpose": "전투 중 획득하는 자원을 통해 추가 유닛을 건설하거나 기존 유닛을 강화",
+          "playerChoice": "즉시 방어력 강화를 위한 소모와 미래 경제 성장을 위한 투자 간의 선택"
+        },
+        {
+          "name": "웨이브 변주 및 지형 활용 시스템",
+          "purpose": "스테이지마다 변화하는 지형과 특수 웨이브 패턴으로 반복 플레이의 지루함 방지",
+          "playerChoice": "지형 제약을 극복하기 위한 유닛 조합 및 배치 위치 변경"
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "상성 기반 타원 배치 시스템",
+          "toSystem": "자원 순환 및 수확 시스템",
+          "trigger": "적 곤충 격파 성공",
+          "stateChange": "재화 자원이 증가하여 다음 유닛 배치 또는 업그레이드 가능 상태로 전환"
+        },
+        {
+          "fromSystem": "웨이브 변주 및 지형 활용 시스템",
+          "toSystem": "상성 기반 타원 배치 시스템",
+          "trigger": "새로운 웨이브 시작 및 적 스폰",
+          "stateChange": "특정 적의 이동 속도 및 방어력에 맞춰 유닛 공격 타입 변경 필요성 발생"
+        },
+        {
+          "fromSystem": "자원 순환 및 수확 시스템",
+          "toSystem": "웨이브 변주 및 지형 활용 시스템",
+          "trigger": "유닛 업그레이드 완료",
+          "stateChange": "기지의 방어력이 상승하여 고난도 웨이브 생존 확률 증가"
+        }
+      ],
+      "progressionDirection": "스테이지 클리어에 따라 새로운 방어 유닛과 패시브 능력이 해금되며, 점진적으로 복잡해지는 웨이브 패턴에 대응하는 수직/수평적 확장 구조.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "웨이브 방어 성공 -> 보상 획득 -> 유닛 해금 및 강화 -> 고난도 웨이브 진입",
+        "resourceFlow": "적 격파 및 시간 경과에 따른 기본 재화 수급 후, 유닛 배치와 업그레이드에 소모",
+        "balanceRules": "초반에는 단순 배치로 클리어 가능하나 중후반부터는 상성 유닛 조합이 필수적이도록 비용과 체력 밸런스 조정"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "초급 정원 방어",
+          "newGameplay": "기본 곤충 웨이브 및 3종의 방어 유닛 활용",
+          "systemImpact": "기본 상성 및 자원 순환 시스템 학습 완료"
+        },
+        {
+          "milestone": "중급 지하 미로",
+          "newGameplay": "이동 경로가 변하는 지형 기믹과 비행형 곤충 추가",
+          "systemImpact": "지형 활용 및 대공 방어 유닛 배치 선택권 확장"
+        },
+        {
+          "milestone": "상급 여왕벌의 최종 공습",
+          "newGameplay": "보스 패턴 웨이브 및 특수 버프/디버프 존 도입",
+          "systemImpact": "최적의 자원 투자와 실시간 타일 재배치 전략 검증"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "기지 체력이 0에 도달하여 방어 실패",
+          "특정 핵심 웨이브에서 적 유닛의 과도한 누출 발생"
+        ],
+        "retryFlow": "패배 시 해당 웨이브 시작점으로 즉시 돌아가거나 유닛 조합을 재구성하여 재도전",
+        "riskPressure": "웨이브가 진행될수록 적의 체력과 이동 속도가 급증하여 실시간 압박감 제공",
+        "recoveryRules": "패배 보상으로 일부 재화를 환급받아 다음 시도 시 특정 유닛 업그레이드 선행 가능"
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치 및 마우스 클릭 기반의 직관적인 드래그 앤 드롭 유닛 배치",
+        "performanceBudget": "모바일 저사양 기기에서도 60프레임을 유지하도록 곤충 스프라이트 최적화 및 파티클 제한",
+        "sessionConstraints": "한 세션당 30분 이내로 설계하여 모바일 환경에서 피로도 최소화"
+      },
+      "visualDirection": "아기자기하면서도 디테일한 2D 탑뷰 그래픽으로, 곤충과 식물 유닛의 특징을 직관적으로 알아볼 수 있는 명확한 가독성 제공",
+      "mobileUx": "한손 조작이 용이하도록 주요 UI 버튼을 하단에 배치하고, 텍스트 크기와 아이콘을 터치하기 쉽게 최적화",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "기지 체력, 보유 재화, 현재 웨이브 진행도를 상단 및 하단에 상시 고정 노출",
+        "touchAndInput": "오터치 방지를 위한 유닛 선택 및 배치 확인 2단계 인터페이스 적용",
+        "readability": "적 곤충의 속성과 상성 관계를 색상과 아이콘으로 직관적으로 시각화",
+        "accessibility": "색약 플레이어를 위한 상성 판별 패턴 기호 동시 표기"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "풀잎과 흙을 모티브로 한 친근한 자연 팔레트와 명확한 유닛 실루엣",
+        "audioIdentity": "경쾌하고 긴장감 넘치는 타격 효과음과 몰입감을 높이는 자연 배경음악",
+        "gameplayFeedbackSync": "유닛 공격 및 적 피격 시 즉각적인 시각 파티클과 사운드 동시 출력"
+      },
+      "marketTargetDirection": "글로벌 전략 디펜스 및 캐주얼 전략 게임 팬층을 대상으로 하며, 직관적인 규칙과 깊이 있는 상성 플레이를 선사",
+      "steamExpansionDecision": "모바일 성공 후 PC 플랫폼 확장을 고려하여 단축키 및 고해상도 UI 대응 검토",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "추후 협동(COOP) 모드 추가 가능성을 열어두고 기본 싱글플레이 완성도에 집중",
+      "technicalAssumptions": [
+        "Unity 엔진의 2D 렌더링 및 타일맵 시스템 활용",
+        "오브젝트 풀링을 통한 다수의 곤충 적 유닛 최적화 관리"
+      ],
+      "validationQuestions": [
+        "3단계 코어 루프가 플레이어에게 명확한 선택의 재미를 주는가?",
+        "상성 시스템이 전투 결과에 실질적인 영향을 미치는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "상성 기반 타원 배치 시스템",
+          "responsibleSystem": "PlacementSystem",
+          "validationEvidence": "적 타입별 피격 데미지 로그 및 유닛 배치 검증 테스트"
+        },
+        {
+          "designElement": "자원 순환 및 수확 시스템",
+          "responsibleSystem": "EconomyManager",
+          "validationEvidence": "웨이브별 재화 획득량 및 소모 내역 실시간 추적"
+        },
+        {
+          "designElement": "웨이브 변주 및 지형 활용 시스템",
+          "responsibleSystem": "WaveManager",
+          "validationEvidence": "스폰 타이머 및 적 이동 경로 유효성 검사"
+        }
+      ],
+      "openQuestions": [
+        "보스 웨이브 등장 시 플레이어에게 추가적인 전략적 선택지를 어떻게 직관적으로 전달할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 60,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 4.8,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 76.4,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN",
+        "PLATFORM_FIT_DESIGN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "PLATFORM_FIT_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 4.8,
+            "axisWeight": 8
+          },
+          "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
@@ -23,15 +251,15 @@
       "updatedAt": "2026-09-18T06:04:23.261Z"
     },
     "gemini:gemini-3.7-flash": {
-      "calls": 1,
+      "calls": 2,
       "successes": 0,
-      "failures": 1,
+      "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8770,
-      "lastMs": 8770,
+      "totalMs": 16094,
+      "lastMs": 7324,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T06:04:31.798Z"
+      "updatedAt": "2026-09-18T06:04:57.758Z"
     },
     "gemini:gemini-3.6-flash": {
       "calls": 1,
@@ -43,10 +271,41 @@
       "lastMs": 9469,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
       "updatedAt": "2026-09-18T06:04:32.497Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 18441,
+      "lastMs": 18441,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T06:04:41.469Z"
+    },
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 27401,
+      "lastMs": 27401,
+      "lastError": null,
+      "updatedAt": "2026-09-18T06:04:50.429Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T06:04:23.026Z",
-  "updatedAt": "2026-09-18T06:04:32.497Z"
+  "updatedAt": "2026-09-18T06:04:57.758Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:04:50.429Z",
+  "geminiModelResolution": {
+    "gemini-3.8-flash": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.8-flash",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
