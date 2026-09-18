@@ -57,8 +57,13 @@ test('central mirror preserves historical bootstrap while latest owner productio
   assert.match(flow,/designSchemaAttemptsMax: 2/);
   assert.equal(directive.productionThroughput.concurrentGameWipMax,20);
   assert.equal(directive.productionThroughput.webValidationParallelismControlledSeparately,true);
-  assert.equal(directive.strictReview.designPassMinimum,80);
-  assert.equal(directive.strictReview.implementationPassMinimum,90);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.webPlatformPromotion,90);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.targetPlatformCompletion,90);
+  assert.equal(directive.stageGateScoringV2.currentThresholds.release,90);
+  assert.equal(directive.stageGateScoringV2.liveVersionUpdate.passMinimum,80);
+  assert.equal(directive.stageGateScoringV2.expansionPack.passMinimum,85);
   assert.equal(directive.productionThroughput.modelExecutionBudget.designWorkflowTimeoutMinutes,45);
 });
 
