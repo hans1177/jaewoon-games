@@ -14,13 +14,13 @@ jobs:
   cancel:
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel pre-Gemini DESIGN_ONLY run 1014
+      - name: Cancel superseded Gemini DESIGN_ONLY run 1021
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
-          run_id=35311593456
+          run_id=35312988820
           state="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status')"
           echo "PRE_GEMINI_RUN_STATUS=$state"
           if [[ "$state" =~ ^(queued|in_progress|pending|waiting|requested)$ ]]; then
@@ -29,4 +29,4 @@ jobs:
           else
             echo 'PRE_GEMINI_RUN_CANCEL_REQUESTED=NO_ALREADY_TERMINAL'
           fi
-          echo 'KEEP_GEMINI_RUN_ID=35312557559'
+          echo 'KEEP_GEMINI_RUN_ID=35313263863'
