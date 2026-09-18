@@ -42,14 +42,14 @@ function historicalMaintenanceById(registry={}){
 function registeredHistoricalMaintenanceTask(item={},registryById=new Map()){
   const entry=registryById.get(clean(item.gameId));if(!entry)return false;
   const evidence=new Set((Array.isArray(item.evidence)?item.evidence:[]).map(clean));
-  return item.historicalDeploymentRecovery===true
-    &&item.postReleaseFocused===true
+  return item.postReleaseFocused===true
     &&item.packageLongWorkProtected===true
     &&clean(item.packageRole)==='implementation-owner'
     &&clean(item.target).toLowerCase()==='roblox'
     &&clean(item.releaseState).toLowerCase()==='development-confirmed'
     &&posix(item.sourceRoot)===posix(entry.sourceRoot)
     &&evidence.has('historical-deployment-recovery:yes')
+    &&evidence.has('historical-current-release-claim:NO')
     &&evidence.has('maintenance-registry:'+HISTORICAL_MAINTENANCE_REGISTRY_PATH);
 }
 function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={}){
@@ -58,10 +58,11 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
     if(!isProductionImplementationTask(item))return item;
     const game=byId.get(clean(item.gameId));
     if(!game&&registeredHistoricalMaintenanceTask(item,historicalById)){
+      const recovered={...item,historicalDeploymentRecovery:true};
       if(clean(item.status).toLowerCase()==='cancelled'&&clean(item.blocker)==='lifecycle-inactive:MISSING_FROM_CATALOG'){
-        return{...item,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE'])]};
+        return{...recovered,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE','self-recovery:HISTORICAL_DEPLOYMENT_FLAG_RESTORED'])]};
       }
-      return item;
+      return recovered;
     }
     if(!game||!lifecycleAllowsDevelopment(game)){
       const state=game?gameLifecycleState(game):'MISSING_FROM_CATALOG';
