@@ -184,6 +184,11 @@ jobs:
           console.log('PASS game kit/session restore');
           NODE
 
+      - name: Validate canonical game catalog and homepage normalization
+        run: |
+          node --check tools/game-catalog-normalization.mjs
+          node qa/game-catalog-normalization.test.mjs
+
       - name: Validate Google Play rotation workflow structure
         run: |
           node qa/external-mobile-free-game-playtest-workflow.test.mjs
