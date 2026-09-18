@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "Survival needs are the basic requirements for survival in the game world. Player can choose to focus on survival needs or craft an"
+          "resource-to-crafting decisions"
         ],
         "fix": [
-          "Upgrades are items that can be used to improve the player's chances of survival. Player can choose to upgrade their equipment, "
+          "readable survival needs"
         ],
         "add": [
-          "Player can choose to upgrade their equipment, skills, or other items to improve their chances of survival. "
+          "exploration risk and recovery"
         ],
         "risks": [
-          "Survival needs → Upgrade System"
+          "exploration risk and recovery"
         ],
         "evidence": [
-          "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+          "exploration risk and recovery"
         ],
         "questions": [
-          "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their "
+          "Is the game world realistic and immersive?"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "Survival needs are the basic requirements for survival in the game world. Players can choose to focus on survival needs or craft a"
+          "Survival needs are the basic needs required for survival in the game world. Players must choose their survival needs to determine"
         ],
         "fix": [
-          "Player can choose to focus on survival needs or craft items to improve their chances of survival."
+          "Players must gather resources to craft new equipment and improve their survival skills."
         ],
         "add": [
-          "Survival needs → Upgrade System"
+          "Players must balance exploration and recovery to survive in the game world."
         ],
         "risks": [
-          "Player can use items to survive in the game world."
+          "The game world and mechanics must be realistic and immersive."
         ],
         "evidence": [
-          "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
+          "Global action/session signal: 4 minutes of action session per day."
         ],
         "questions": [
-          "Is the player's survival needs the primary goal of the game?"
+          "What are the core gameplay mechanics and systems of the game?"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "game_seed_market_evidence.json"
+          "design_reference_level_1"
         ],
         "fix": [
-          "game-seed-market-evidence.json"
+          "market_data_analysis_level_1"
         ],
         "add": [
-          "game-seed-platform-profiles.json"
+          "market_data_analysis_level_2"
         ],
         "risks": [
-          "game-seed-market-evidence.json"
+          "market_data_analysis_level_2"
         ],
         "evidence": [
-          "game-seed-market-evidence.json"
+          "market_data_analysis_level_2"
         ],
         "questions": [
-          "game-seed-market-evidence.json"
+          "market_data_analysis_level_2"
         ]
       }
     }

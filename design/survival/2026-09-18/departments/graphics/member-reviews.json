@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "game_design_reference"
+          "visual fidelity"
         ],
         "fix": [
-          "action-survival-benchmark"
+          "gameplay visuals"
         ],
         "add": [
-          "mobile-gaming-benchmarks"
+          "character art"
         ],
         "risks": [
-          "action-survival-benchmark"
+          "visual style"
         ],
         "evidence": [
-          "vampire-survivors"
+          "visual style"
         ],
         "questions": [
-          "owner full rebuild"
+          "visual style"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "Survival Needs are the basic requirements for survival in the game world. Player can choose to focus on survival needs or craft it"
+          "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
         ],
         "fix": [
-          "Player can choose to focus on survival needs or craft items to improve their chances of survival."
+          "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
         ],
         "add": [
-          "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
+          "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
         ],
         "risks": [
-          "Player can use items to survive in the game world."
+          "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
         ],
         "evidence": [
-          "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+          "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
         ],
         "questions": [
-          "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their"
+          "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "ASSIGNED_DEPARTMENT = graphics"
+          "$ASSIGNED_DEPARTMENT$"
         ],
         "fix": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "$GAME_SEED$"
         ],
         "add": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "$GAME_CATEGORY$"
         ],
         "risks": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "$CORE_FUN_TO_LEARN$"
         ],
         "evidence": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "$MARKET_EVIDENCE_SUMMARY$"
         ],
         "questions": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "$validationQuestions$"
         ]
       }
     }

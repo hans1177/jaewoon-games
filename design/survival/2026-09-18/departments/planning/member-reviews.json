@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "Survival needs are the basic requirements for survival in the game world. Players can choose to focus on survival needs or craft a"
+          "Survival needs are the basic needs required for survival in the game world."
         ],
         "fix": [
-          "Player can choose to focus on survival needs or craft items to improve their chances of survival."
+          "Players must decide how to allocate their resources to craft new equipment and improve their survival skills."
         ],
         "add": [
-          "Survival needs → Upgrade System"
+          "Players must balance exploration and recovery to survive in the game world."
         ],
         "risks": [
-          "Player can use items to survive in the game world."
+          "Exploration and recovery are crucial aspects of survival in the game world."
         ],
         "evidence": [
-          "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
+          "The game world and mechanics must be realistic and immersive."
         ],
         "questions": [
-          "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their"
+          "What are the core gameplay mechanics and systems of the game?"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다.”，“MARKET_EVIDENCE_SUMMARY”: [“TARGET_DESIGN_REFERENCE”, “targetMarket_2"
+          "GAME_SEED_version=2"
         ],
         "fix": [
-          "GAME_SEED”}}  } 2026-08-24 14:30 UTC. 12/26. 17:30 UTC. 18:30 UTC. 20:30 UTC. 22:30 UTC. 23:30 UTC. 24:30 UTC. 25:30 UTC. 26:30UTC"
+          "GAME_CATEGORY=ACTION_SURVIVAL_ROGUELITE"
         ],
         "add": [
-          "game-seed-market-evidence.json"
+          "MARKET_EVIDENCE_SUMMARY"
         ],
         "risks": [
-          "1. 2026-09-16"
+          "missingDataDoesNotRejectSeed"
         ],
         "evidence": [
           "Vampire Survivors"
         ],
         "questions": [
-          "1. 2026-09-16"
+          "Is the game world realistic and immersive?"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "game_id"
+          "ASSIGNED_DEPARTMENT=planning"
         ],
         "fix": [
-          "game_id"
+          "GAME_SEED={"
         ],
         "add": [
-          "game_id"
+          "ASSIGNED_DEPARTMENT=planning"
         ],
         "risks": [
-          "game_id"
+          "GAME_SEED={"
         ],
         "evidence": [
-          "game_id"
+          "ASSIGNED_DEPARTMENT=planning"
         ],
         "questions": [
-          "game_id"
+          "ASSIGNED_DEPARTMENT=planning"
         ]
       }
     }

@@ -6,7 +6,7 @@
   "sameDesignerRevisionAttempted": true,
   "repeatedFiveDepartmentReview": true,
   "allFiveLeadModelsReviewed": true,
-  "discardVotes": 1,
+  "discardVotes": 2,
   "commonFatalCriteria": [],
   "unanimousFatalDiscard": false,
   "fatalReviews": {
@@ -14,10 +14,10 @@
       "recommendedState": "ACTIVE",
       "fatalCriteria": [],
       "evidence": [
-        "The current design is already aligned with the requirements and evidence is consistent with the original input.",
-        "The key points are well-organized and the evidence and questions are consistent with the original input."
+        "The core gameplay mechanics and systems are well-defined, with clear objectives and realistic mechanics. The evidence provided supports the implementation, and the questions are well-posed and relevant to the development process.",
+        "The JSON structure is not related to the QA department's responsibilities and should not be accepted or modified."
       ],
-      "reason": "The current structure is already aligned with the requirements. The key points are well-organized and the evidence and questions are consistent with the original input."
+      "reason": "The core gameplay mechanics and systems are well-defined, with clear objectives and realistic mechanics. The evidence provided supports the implementation, and the questions are well-posed and relevant to the development process."
     },
     "graphics": {
       "recommendedState": "DISCARD",
@@ -27,14 +27,15 @@
         "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
       ],
       "evidence": [
-        "The core loop focuses on a simple survival experience, which is a standard genre.  The 'upgrade system' is a logical progression, but it doesn't introduce significant new mechanics beyond the core gameplay loop.",
-        "The 'core loop' is relatively straightforward and doesn't require substantial changes to the fundamental gameplay.  The 'IP/Expression Dependency' is a significant concern, as it limits the potential for expansion and diversification.",
-        "The 'core loop' is already well-defined and doesn't present a compelling reason to deviate from the established gameplay."
+        "GAME_SEED",
+        "VALID_FATAL_CRITERIA",
+        "visualDirection",
+        "coreFun"
       ],
-      "reason": "The current design prioritizes a core survival experience, which is a solid foundation.  The proposed changes introduce significant structural and gameplay-related changes that are not essential to the core loop.  The existing design is well-balanced and doesn't require a major overhaul."
+      "reason": "The provided JSON structure is not directly related to the QA department's responsibilities. It's a detailed design specification, and the DISCARD decision requires a focus on ensuring the core gameplay loop remains functional and doesn't introduce unintended consequences or dependencies. The current structure is more suitable for planning and design than for a quality assurance review."
     },
     "development": {
-      "recommendedState": "REDESIGN",
+      "recommendedState": "DISCARD",
       "fatalCriteria": [
         "CORE_FUN_CANNOT_BE_RECOVERED",
         "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
@@ -42,10 +43,10 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "Evidence from the game's market evidence summary",
-        "Evidence from the game's platform profile file"
+        "Evidence supporting the DISCARD of the current design: https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
+        "Evidence supporting the DISCARD of the current design: https://www.theesa.com/resources/the-global-power-of-play-report/"
       ],
-      "reason": "The current structure is already aligned with the requirements. The key points are well-organized and the evidence and questions are consistent with the original input."
+      "reason": "The current design does not meet the requirements of the game, and the evidence provided does not support the implementation. The core gameplay mechanics and systems are not well-defined, and the evidence does not support the implementation of the required features."
     },
     "qa": {
       "recommendedState": "REDESIGN",
@@ -56,12 +57,12 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "The current structure is already aligned with the requirements.",
-        "The key points are well-organized and the evidence and questions are consistent with the original input.",
-        "The evidence and questions are consistent with the original input.",
-        "The evidence and questions are consistent with the original input."
+        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base.",
+        "Survivor.io: simple attacks, upgrade choices and build combinations.",
+        "Survivor.io: touch readability, wave pressure and upgrade selection.",
+        "Survivor.io: mobile survival-roguelite benchmark for touch readability, wave pressure and upgrade selection."
       ],
-      "reason": "The current structure is already aligned with the requirements, and the key points are well-organized and consistent with the original input. Therefore, no changes are needed."
+      "reason": "The provided JSON structure is not related to the QA department's responsibilities and should not be accepted or modified."
     },
     "balance": {
       "recommendedState": "ACTIVE",
@@ -72,7 +73,7 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [],
-      "reason": "The current structure is already aligned with the requirements. The key points are well-organized and the evidence and questions are consistent with the original input."
+      "reason": "The core gameplay mechanics and systems are well-defined, with clear objectives and realistic mechanics. The evidence provided supports the implementation, and the questions are well-posed and relevant to the development process."
     }
   },
   "marketMetricAloneUsedForDiscard": false

@@ -22,65 +22,62 @@
   "representatives": {
     "planning": {
       "keep": [
-        "Survival needs are the basic requirements for survival in the game world. Players can choose to focus on survival needs or craft items to improve their chances of survival.",
-        "Survival needs → Upgrade System"
+        "Survival needs are the basic needs required for survival in the game world."
       ],
       "fix": [
-        "Player can choose to focus on survival needs or craft items to improve their chances of survival."
+        "Players must decide how to allocate their resources to craft new equipment and improve their survival skills."
       ],
       "add": [
-        "game-seed-market-evidence.json"
+        "Players must balance exploration and recovery to survive in the game world."
       ],
       "risks": [
-        "Player can use items to survive in the game world."
+        "Exploration and recovery are crucial aspects of survival in the game world."
       ],
       "evidence": [
-        "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
+        "The game world and mechanics must be realistic and immersive."
       ],
       "questions": [
-        "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their"
+        "What are the core gameplay mechanics and systems of the game?"
       ]
     },
     "graphics": {
       "keep": [
-        "game_design_reference",
-        "action-survival-benchmark"
+        "visual fidelity"
       ],
       "fix": [
-        "Player can choose to focus on survival needs or craft it",
-        "Player can choose to focus on survival needs or craft items to improve their chances of survival."
+        "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
       ],
       "add": [
-        "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
+        "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
       ],
       "risks": [
-        "action-survival-benchmark"
+        "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
       ],
       "evidence": [
-        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
       ],
       "questions": [
-        "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their?"
+        "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
       ]
     },
     "development": {
       "keep": [
-        "GAME_SEED"
+        "game-seed"
       ],
       "fix": [
-        "GAME_SEED"
+        "game-seed"
       ],
       "add": [
-        "GAME_SEED"
+        "game-seed"
       ],
       "risks": [
-        "GAME_SEED"
+        "game-seed"
       ],
       "evidence": [
-        "GAME_SEED"
+        "game-seed"
       ],
       "questions": [
-        "GAME_SEED"
+        "game-seed"
       ]
     },
     "qa": {
@@ -88,44 +85,39 @@
         "ASSIGNED_DEPARTMENT=qa"
       ],
       "fix": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
       ],
       "add": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
       ],
       "risks": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
       ],
       "evidence": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
       ],
       "questions": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
       ]
     },
     "balance": {
       "keep": [
-        "Survival needs are the basic requirements for survival in the game world. Player can choose to focus on survival needs or craft an item to improve their chances of survival.",
-        "Upgrades are items that can be used to improve the player's chances of survival. Player can choose to upgrade their equipment, skills, or other items to improve their chances of survival."
+        "resource-to-crafting decisions"
       ],
       "fix": [
-        "Player can choose to focus on survival needs or craft an item to improve their chances of survival.",
-        "Player can choose to upgrade their equipment, skills, or other items to improve their chances of survival."
+        "readable survival needs"
       ],
       "add": [
-        "Survival needs → Upgrade System",
-        "Survival needs → Upgrade System"
+        "exploration risk and recovery"
       ],
       "risks": [
-        "Survival needs → Upgrade System",
-        "Survival needs → Upgrade System"
+        "exploration risk and recovery"
       ],
       "evidence": [
-        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base.",
-        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        "exploration risk and recovery"
       ],
       "questions": [
-        "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their chances of survival?"
+        "Is the game world realistic and immersive?"
       ]
     }
   },
@@ -136,18 +128,46 @@
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "The current structure is already aligned with the requirements. The key points are well-organized and the evidence and questions are consistent with the original input.",
+      "reason": "The core gameplay mechanics and systems are well-defined, with clear objectives and realistic mechanics. The evidence provided supports the implementation, and the questions are well-posed and relevant to the development process.",
       "departments": [
-        "planning",
-        "graphics",
-        "development",
-        "qa",
+        "planning"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "The 'fix' and 'add' options are prioritized. The 'risks' and 'evidence' are also important to address.",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "The provided JSON structure is not related to the QA department's responsibilities and should not be accepted or modified.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "The provided JSON structure is not related to the QA department's responsibilities and should not be accepted or modified.",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "The provided JSON structure is not related to the QA department's responsibilities and should not be accepted or modified.",
+      "departments": [
         "balance"
       ]
     }
   ],
   "counts": {
-    "consensus": 1,
+    "consensus": 5,
     "conflict": 0,
     "hold": 0
   }

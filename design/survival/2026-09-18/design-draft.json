@@ -21,34 +21,44 @@
     ],
     "signatureSystems": [
       {
-        "name": "Survival Needs",
-        "purpose": "Survival needs are the basic requirements for survival in the game world.",
-        "playerChoice": "Player can choose to focus on survival needs or craft items to improve their chances of survival."
+        "name": "readable survival needs",
+        "purpose": "Survival needs are the basic needs required for survival in the game world.",
+        "playerChoice": "Player chooses their survival needs to determine their starting equipment and resources."
       },
       {
-        "name": "Upgrade System",
-        "purpose": "Upgrades are items that can be used to improve the player's chances of survival.",
-        "playerChoice": "Player can choose to upgrade their equipment, skills, or other items to improve their chances of survival."
+        "name": "resource-to-crafting decisions",
+        "purpose": "Players must gather resources to craft new equipment and improve their survival skills.",
+        "playerChoice": "Players must decide how to allocate their resources to craft new equipment and improve their survival skills."
+      },
+      {
+        "name": "exploration risk and recovery",
+        "purpose": "Exploration and recovery are crucial aspects of survival in the game world.",
+        "playerChoice": "Players must balance exploration and recovery to survive in the game world."
       }
     ],
-    "progressionDirection": "Survival Needs → Upgrade System",
-    "visualDirection": "Survival Needs → Upgrade System",
-    "mobileUx": "Mobile UX",
-    "marketTargetDirection": "Survival Needs → Upgrade System",
-    "steamExpansionDecision": "Survival Needs → Upgrade System",
+    "progressionDirection": "Survival",
+    "visualDirection": "Real-time survival run",
+    "mobileUx": "Mobile",
+    "marketTargetDirection": "Global",
+    "steamExpansionDecision": "Review in Design Cycle",
     "multiplayerMode": "SINGLE",
-    "multiplayerExpansionDecision": "Survival Needs → Upgrade System",
+    "multiplayerExpansionDecision": "Review in Design Cycle",
     "technicalAssumptions": [
-      "Player can use items to survive in the game world.",
-      "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
+      "Players must have a device with a screen and a keyboard to play the game.",
+      "Players must have an internet connection to play the game online.",
+      "Players must have a stable internet connection to download and update the game."
     ],
     "validationQuestions": [
-      "Is the player's survival needs the primary goal of the game?",
-      "Is the player's upgrade system the primary way to improve their chances of survival?"
+      "Is the game world realistic and immersive?",
+      "Is the game mechanics and systems logical and intuitive?",
+      "Is the game challenging and rewarding?",
+      "Is the game's story and narrative engaging and coherent?"
     ],
     "openQuestions": [
-      "Is the player's survival needs the primary goal of the game?",
-      "Is the player's upgrade system the primary way to improve their chances of survival?"
+      "What are the core gameplay mechanics and systems of the game?",
+      "How does the game's world and mechanics change over time?",
+      "What are the player's goals and objectives in the game?",
+      "How does the game's story and narrative evolve over time?"
     ]
   }
 }

@@ -20,74 +20,69 @@
         "add"
       ],
       "challenge": [
-        "risks",
-        "evidence",
-        "questions"
+        "keep",
+        "fix",
+        "add"
       ],
       "revision": [
         "keep",
         "fix",
         "add"
       ],
-      "reason": "The current structure is already aligned with the requirements. The key points are well-organized and the evidence and questions are consistent with the original input."
+      "reason": "The core gameplay mechanics and systems of the game are well-defined, with clear objectives and realistic mechanics. The evidence provided supports the implementation, and the questions are well-posed and relevant to the development process."
     },
     "graphics": {
       "accept": [
         "fix",
-        "Player can choose to focus on survival needs or craft it",
-        "Player can choose to focus on survival needs or craft items to improve their chances of survival."
+        "add",
+        "risks"
       ],
       "challenge": [
-        "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
+        "game-seed"
       ],
       "revision": [
-        "GAME_SEED"
-      ],
-      "reason": "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
-    },
-    "development": {
-      "accept": [
-        "keep",
-        "fix",
-        "add"
-      ],
-      "challenge": [
-        "risks",
         "evidence",
         "questions"
       ],
-      "revision": [
-        "keep",
-        "fix",
-        "add"
-      ],
-      "reason": "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+      "reason": "Based on the provided data, the 'fix' and 'add' options are prioritized. The 'risks' and 'evidence' are also important to address."
+    },
+    "development": {
+      "accept": [],
+      "challenge": [],
+      "revision": [],
+      "reason": "이러한 부서의 대표 의견은 development 부서의 책임 범위 내에서 한 번만 수용/반박/수정해야 합니다."
     },
     "qa": {
       "accept": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "OWN",
+        "OTHERS",
+        "planning"
       ],
       "challenge": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "fix",
+        "add",
+        "risks"
       ],
       "revision": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "fix",
+        "add",
+        "risks"
       ],
-      "reason": "QA 부서의 책임범위를 수용합니다."
+      "reason": "The provided JSON structure is not related to the QA department's responsibilities and is instead related to the game's mechanics, graphics, and balance. The provided JSON should not be accepted or modified as it does not align with the QA Lead AI's responsibilities."
     },
     "balance": {
       "accept": [
-        "Survival needs are the basic requirements for survival in the game world. Players can choose to focus on survival needs or craft items to improve their chances of survival.",
-        "Survival needs → Upgrade System"
+        "balance 부서 Lead AI다. 다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정한다.",
+        "readable survival needs",
+        "exploration risk and recovery"
       ],
       "challenge": [
-        "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their chances of survival?"
+        "Is the game world realistic and immersive?"
       ],
       "revision": [
-        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base.",
-        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
       ],
-      "reason": "Survival needs → Upgrade System"
+      "reason": "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
     }
   }
 }
