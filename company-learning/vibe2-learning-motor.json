@@ -206,7 +206,11 @@
     "thresholdsUnchanged": true,
     "practiceAdapterMayNotAutoPromote": true,
     "promotion": "FIXED_HOLDOUT_AB_THEN_CANARY",
-    "target": "Increase verified multi-project sample production rather than lower thresholds."
+    "target": "Increase verified multi-project sample production rather than lower thresholds.",
+    "externalAiRawOutputDirectTraining": false,
+    "externalAiDistilledKnowledgeDirectTraining": false,
+    "externalAiDistilledKnowledgeMayInfluenceVerifiedProjectWork": true,
+    "verifiedProjectOutcomeStillRequired": true
   },
   "externalAiDistillation": {
     "enabled": true,
@@ -225,5 +229,27 @@
     "directCanonicalTrainingSample": false,
     "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
     "authorityExpanded": false
+  },
+  "externalAiKnowledgePolicy": {
+    "mode": "DISTILLATION_ONLY",
+    "rawExternalAiOutputMayEnterDevelopment": false,
+    "rawExternalAiOutputMayEnterRetrieval": false,
+    "externalAiMayWriteGameSource": false,
+    "externalAiMayClaimProductionPass": false,
+    "externalAiMayExpandAuthority": false,
+    "externalAiMayDirectlyIncreaseMastery": false,
+    "externalAiMayDirectlyCreateCanonicalTrainingSample": false,
+    "independentVerificationRequired": true,
+    "acceptedVerificationMethods": [
+      "runtime",
+      "independent-qa",
+      "source-backed-review",
+      "multi-source-consistency"
+    ],
+    "distilledStore": ".vibe2/external-ai-distilled-knowledge.json",
+    "distilledKnowledgeUse": "VERIFIED_ADVISORY_RETRIEVAL_ONLY",
+    "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
+    "minimumTraceableVerificationEvidenceItems": 2,
+    "externalAiAdvisoryAlwaysRanksAfterInternalVerified": true
   }
 }
