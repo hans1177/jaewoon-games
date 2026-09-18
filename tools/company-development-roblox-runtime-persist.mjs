@@ -31,6 +31,7 @@ for(const target of expected){
     Object.assign(item,{
       robloxRuntimePassed:true,robloxRuntimePassedAt:stamp,robloxRuntimeFailedAt:null,robloxRuntimeEvidence:r,
       robloxRuntimeRetryCount:0,robloxRuntimeHarnessVersion:resultHarness,robloxServerClientBoundaryPassed:true,
+      robloxRuntimeSecurityHold:false,robloxRuntimeSecurityHoldAt:null,
       robloxDatastoreRejoinPassed:r.datastoreRejoinPassed===true,robloxMobileControlUiPassed:r.mobileControlUiPassed===true,
       robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
       robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxPostRuntimeQaEvidence:null,
@@ -40,17 +41,19 @@ for(const target of expected){
     pass++;
   }else{
     const failure=r?.failure||(!harnessExact?'ROBLOX_RUNTIME_HARNESS_MISMATCH':'ROBLOX_RUNTIME_RESULT_MISSING');
-    const retryableFailure=['roblox-studio-install-failed','roblox-studio-busy','roblox-studio-runtime-failed','roblox-studio-runtime-timeout','ROBLOX_RUNTIME_RESULT_MISSING'].includes(failure);
+    const securityHold=['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(failure);
+    const retryableFailure=!securityHold&&['roblox-studio-install-failed','roblox-studio-busy','roblox-studio-runtime-failed','roblox-studio-runtime-timeout','ROBLOX_RUNTIME_RESULT_MISSING'].includes(failure);
     const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===resultHarness;
     const baseRetryCount=sameHarness?Number(item.robloxRuntimeRetryCount||0):0;
     const retryCount=retryableFailure?baseRetryCount+1:0;
     Object.assign(item,{
       robloxRuntimePassed:false,robloxRuntimeFailedAt:stamp,robloxRuntimeEvidence:r||null,robloxRuntimeRetryCount:retryCount,
       robloxRuntimeHarnessVersion:resultHarness||expectedHarness,robloxServerClientBoundaryPassed:false,
+      robloxRuntimeSecurityHold:securityHold,robloxRuntimeSecurityHoldAt:securityHold?stamp:null,
       robloxIndependentQaPassed:false,robloxIndependentQaPassedAt:null,robloxRegressionPassed:false,robloxRegressionPassedAt:null,
       robloxFinalReviewPassed:false,robloxFinalReviewPassedAt:null,robloxPostRuntimeQaEvidence:null,
       robloxFailureStage:'TARGET_PLATFORM_RUNTIME',robloxFailureSignature:failure,
-      routingBlockers:[`roblox-runtime:${failure}`],updatedAt:stamp,
+      routingBlockers:[securityHold?`roblox-runtime-security-hold:${failure}`:`roblox-runtime:${failure}`],updatedAt:stamp,
     });
     fail++;
   }
@@ -64,3 +67,4 @@ console.log('ROBLOX_INDEPENDENT_QA_PASS=NO');
 console.log('ROBLOX_REGRESSION_PASS=NO');
 console.log('ROBLOX_FINAL_REVIEW_PASS=NO');
 console.log('ROBLOX_RELEASE_CLAIM=NO');
+console.log('ROBLOX_RUNTIME_SECURITY_HOLD_POLICY=AUTH_OR_LOCAL_PROFILE');
