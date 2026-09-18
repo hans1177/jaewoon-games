@@ -1,0 +1,17 @@
+{
+  "summary": "...",
+  "expectedEffect": "기존 소유/진행 의미를 보존하면서 최소한의 수정만 수행",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle'",
+      "replace": "id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',expectedEffect:'기존 소유/진행 의미를 보존하면서 최소한의 수정만 수행'",
+      "symbol": "GAME_CONFIG"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "..."
+  ]
+}
