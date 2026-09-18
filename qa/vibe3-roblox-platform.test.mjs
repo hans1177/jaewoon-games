@@ -227,7 +227,7 @@ await assert.rejects(
 console.log('PASS Roblox V3 platform adapter, technical evidence assembly, canonical runtime gate, root guard, transient busy retry and secret-safe publishing plan');
 
 
-const ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS=[
+const ROBLOX_PORTFOLIO_ALL_GAME_IDS=[
   'seed-roblox-battleground-fight-welcome-to-bloxburg',
   'seed-roblox-obby-party-minigam-tower-of-hell',
   'seed-roblox-roleplay-life-avat-brookhaven-rp',
@@ -235,6 +235,16 @@ const ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS=[
   'seed-roblox-story-rpg-adventur-blox-fruits',
   'seed-roblox-survival-horror-es-doors',
 ];
+const ROBLOX_ROADMAP=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+const ROBLOX_PERMANENTLY_REMOVED=new Set(ROBLOX_ROADMAP.permanentProjectRemoval?.ids||[]);
+const ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS=ROBLOX_PORTFOLIO_ALL_GAME_IDS.filter(gameId=>!ROBLOX_PERMANENTLY_REMOVED.has(gameId));
+
+assert.equal(ROBLOX_ROADMAP.permanentProjectRemoval.reentryAllowed,false);
+assert.equal(ROBLOX_ROADMAP.permanentProjectRemoval.automaticRecoveryAllowed,false);
+assert.equal(ROBLOX_ROADMAP.permanentProjectRemoval.automaticMaintenanceAllowed,false);
+for(const gameId of ROBLOX_PERMANENTLY_REMOVED){
+  assert.equal(fs.existsSync(path.join('roblox-games',gameId)),false,`${gameId} Roblox source must remain deleted`);
+}
 
 for(const gameId of ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS){
   const root=path.join('roblox-games',gameId);
@@ -273,4 +283,4 @@ for(const gameId of ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS){
   }
 }
 
-console.log(`PASS Roblox six-game source regression: ${ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS.length}/6`);
+console.log(`PASS active Roblox source regression: ${ROBLOX_PORTFOLIO_REGRESSION_GAME_IDS.length}/${ROBLOX_PORTFOLIO_ALL_GAME_IDS.length-ROBLOX_PERMANENTLY_REMOVED.size}`);
