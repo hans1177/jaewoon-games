@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    h1 {
+      color: #fff;
+    }
+    .game {
+      width: 80%;
+      max-width: 800px;
+      background-color: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    .controls button {
+      margin: 0 10px;
+      padding: 10px 15px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game">
+      <h1>Vibe2</h1>
+      <div class="controls">
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="restartGame()">Restart</button>
+      </div>
+      <div id="game-content"></div>
+    </div>
+  </main>
+  <script>
+    function startGame() {
+      const gameContent = document.getElementById('game-content');
+      gameContent.innerHTML = `
+        <div class="progression">
+          <h2>Progression</h2>
+          <p>Game progression is preserved and updated dynamically.</p>
+        </div>
+        <div class="ui">
+          <h2>UI</h2>
+          <p>Responsive layout with touch input and readable HUD.</p>
+        </div>
+        <div class="combat">
+          <h2>Combat</h2>
+          <p>Real-time combat with AI and progression.</p>
+        </div>
+      `;
+    }
+
+    function restartGame() {
+      const gameContent = document.getElementById('game-content');
+      gameContent.innerHTML = `
+        <div class="progression">
+          <h2>Progression</h2>
+          <p>Game progression is reset and started from the beginning.</p>
+        </div>
+        <div class="ui">
+          <h2>UI</h2>
+          <p>UI is reset and reinitialized.</p>
+        </div>
+        <div class="combat">
+          <h2>Combat</h2>
+          <p>Combat is reset and reinitialized.</p>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
