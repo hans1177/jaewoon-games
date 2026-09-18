@@ -130,9 +130,9 @@ test('Pocket Foundry deterministic template fails closed when semantic spatial s
   assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline}),/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/);
 });
 
-test('Vector Clash deterministic template fails closed when semantic interaction or spatial scope is missing',()=>{
-  const baseline={gameSeedId:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001',content:{identity:'Vector Clash',coreFun:'combat, opponent, skill, cooldown',coreLoop:['read opponent movement and create an attack opening','damage opponents and reposition around cooldowns','finish rounds and re-enter with a changed tactical choice'],mobileUx:'touch controls'}};
-  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',baseline}),/(?:APPROVED_SCOPE_REAL_(?:ENTITY_INTERACTION|SPATIAL_STATE)_REQUIRED|CANONICAL_REAL_GAME_TEMPLATE_MISSING)/);
+test('battleground genre has no deleted-project template fallback and stays Vibe-owned',()=>{
+  const baseline={gameSeedId:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001',content:{identity:'New Battleground',coreFun:'combat, opponent, skill, cooldown',coreLoop:['read opponent movement and create an attack opening','damage opponents and reposition around cooldowns','finish rounds and re-enter with a changed tactical choice'],mobileUx:'touch controls'}};
+  assert.throws(()=>buildContractSafePlayable({gameId:'new-battleground-game',gameName:'New Battleground',baseline}),/GENRE_REAL_IMPLEMENTATION_NOT_READY:BATTLEGROUND_FIGHTING_SHOOTER/);
 });
 
 test('Celestial Bastion shallow tower button is rejected and returns to Vibe instead of being preserved',async()=>{
