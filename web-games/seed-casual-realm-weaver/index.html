@@ -1,1 +1,155 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>세계의 직조자</title></head><body><script>window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>세계의 직조자</title>
+  <link rel="stylesheet" href="/web-games/_shared/styles.css">
+</head>
+<body>
+  <script>
+    window.GAME_CONFIG = {
+      id: 'seed-casual-realm-weaver',
+      name: '세계의 직조자',
+      mode: 'realm',
+      desc: '마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'
+    };
+
+    // Progression system initialization
+    const progressionSystem = {
+      currentProgression: 0,
+      maxProgression: 100,
+      progressionSteps: [
+        { name: '초기', value: 0 },
+        { name: '숲의 창조', value: 20 },
+        { name: '물길의 흐름', value: 40 },
+        { name: '마을의 집단', value: 60 },
+        { name: '세계의 안정', value: 80 },
+        { name: '마나의 균형', value: 100 }
+      ],
+      getProgressionStep() {
+        const step = Math.floor((this.currentProgression / this.maxProgression) * this.progressionSteps.length);
+        return this.progressionSteps[step];
+      },
+      updateProgression(delta) {
+        this.currentProgression += delta;
+        if (this.currentProgression >= this.maxProgression) {
+          this.currentProgression = this.maxProgression;
+        }
+      }
+    };
+
+    // UI system initialization
+    const uiSystem = {
+      currentView: 'start',
+      showStartScreen: true,
+      showProgressionScreen: false,
+      showRestartButton: true,
+      showTutorial: true,
+      tutorialSteps: [
+        { step: 1, message: '마나로 숲·물길·마을을 창조하세요.' },
+        { step: 2, message: '세계 안정도와 인구 목표를 달성하세요.' }
+      ],
+      updateTutorialStep() {
+        if (this.currentView === 'tutorial') {
+          this.currentView = this.tutorialSteps[Math.floor((this.currentProgression / this.maxProgression) * this.tutorialSteps.length)];
+        }
+      }
+    };
+
+    // Terrain and settlement interaction system
+    const terrainSystem = {
+      currentTerrain: 'forest',
+      currentSettlement: 'village',
+      terrainTypes: {
+        forest: {
+          name: '숲',
+          resource: 'wood',
+          production: 5,
+          cost: 1
+        },
+        village: {
+          name: '마을',
+          resource: 'food',
+          production: 3,
+          cost: 1
+        }
+      },
+      settlementTypes: {
+        village: {
+          name: '마을',
+          resource: 'food',
+          production: 3,
+          cost: 1
+        }
+      },
+      updateTerrain() {
+        this.currentTerrain = this.terrainTypes[this.currentTerrain === 'forest' ? 'village' : 'forest'];
+      },
+      updateSettlement() {
+        this.currentSettlement = this.settlementTypes[this.currentSettlement === 'village' ? 'village' : 'village'];
+      }
+    };
+
+    // Game loop
+    function gameLoop() {
+      // Update progression
+      progressionSystem.updateProgression(1);
+
+      // Update UI
+      uiSystem.updateTutorialStep();
+
+      // Update terrain and settlement
+      terrainSystem.updateTerrain();
+      terrainSystem.updateSettlement();
+
+      // Check for game over or success
+      if (progressionSystem.currentProgression >= progressionSystem.maxProgression) {
+        alert('세계가 안정되었습니다!');
+      }
+
+      // Check for restart
+      if (uiSystem.showRestartButton && progressionSystem.currentProgression < progressionSystem.maxProgression) {
+        uiSystem.showRestartButton = false;
+        alert('게임을 재시작합니다.');
+      }
+
+      // Render game
+      renderGame();
+    }
+
+    // Render game
+    function renderGame() {
+      // Render terrain and settlement
+      const terrainDiv = document.getElementById('terrain');
+      terrainDiv.innerHTML = `<div class="terrain">${terrainSystem.currentTerrain}</div>`;
+      terrainDiv.innerHTML += `<div class="settlement">${terrainSystem.currentSettlement}</div>`;
+
+      // Render progression
+      const progressionDiv = document.getElementById('progression');
+      progressionDiv.innerHTML = `<div class="progression">${progressionSystem.getProgressionStep().name}</div>`;
+      progressionDiv.innerHTML += `<div class="progression-value">${progressionSystem.getProgressionStep().value}</div>`;
+    }
+
+    // Start game
+    function startGame() {
+      uiSystem.showStartScreen = false;
+      uiSystem.showProgressionScreen = true;
+      renderGame();
+    }
+
+    // Restart game
+    function restartGame() {
+      uiSystem.showRestartButton = true;
+      uiSystem.showStartScreen = true;
+      renderGame();
+    }
+
+    // Initialize game
+    window.onload = function() {
+      startGame();
+    };
+  </script>
+</body>
+</html>
