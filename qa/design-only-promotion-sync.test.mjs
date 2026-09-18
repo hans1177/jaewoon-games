@@ -91,6 +91,10 @@ test('active DEVELOPMENT_CONFIRMED seed self-heals a missing queue entry before 
   assert.equal(queue.items[0].canonicalState,'WAITING_WEB_GAMEPLAY_VALIDATION');
   assert.equal(queue.items[0].webValidationRequired,true);
   assert.equal(queue.items[0].musicValidationRequired,true);
+  const portfolio=read(root,'autonomous-portfolio.json');
+  const catalog=read(root,'game-catalog.json');
+  assert.equal(portfolio.projects.find(x=>x.slug==='g6')?.productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(catalog.games.find(x=>x.id==='g6')?.productionClass,'DEVELOPMENT_CONFIRMED');
   promoteReadyDesignSeeds({root});
   assert.equal(read(root,'development-queue.json').items.filter(x=>x.gameId==='g6').length,1);
 });

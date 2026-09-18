@@ -68,6 +68,28 @@ function bindRequiredWebStage(item,{gameId,stamp}){
   item.postWebArtbookRequired=true;
   item.artbookTiming='AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER';
 }
+function reconcileConfirmedMirrors({portfolio,catalog,seed,design}){
+  const gameId=String(seed?.gameId||'').trim();
+  const selectedPlatform=seed?.selectedPlatform||selectedPlatformOf(seed);
+  const targetSourcePath=targetSourcePathOf(gameId,selectedPlatform);
+  const webSourcePath=webSourcePathOf(gameId);
+  const artbookSource=`artbook-submissions/${gameId}/current.json`;
+  const strictScore=Number(design?.review?.totalScore||seed?.strictDesignReview?.totalScore||seed?.promotion?.strictDesignScore||0)||null;
+  let project=portfolio.projects.find(row=>row?.slug===gameId);
+  if(!project){
+    project={id:`SEED-${seed.seedId||gameId}`,slug:gameId,name:seed.gameName||gameId,sourcePath:webSourcePath,webArchivePath:webSourcePath,protectedValues:['core-loop','design-baseline','save-meaning']};
+    portfolio.projects.push(project);
+  }
+  Object.assign(project,{productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY_STRICT_PASS',profileStatus:'DEVELOPMENT_CONFIRMED',mode:'WEB_VALIDATION_THEN_POST_WEB_ARTBOOK_THEN_SELECTED_PLATFORM_IMPLEMENTATION',productionTier:2,productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',targetEngine:selectedPlatform,selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,sourcePath:webSourcePath,webArchivePath:project.webArchivePath||webSourcePath,webValidationRequired:true,musicValidationRequired:true,strictDesignScore:strictScore,designBaselineSource:design?.designSource||seed?.promotion?.designBaselineSource||project.designBaselineSource||null,designArtbookSource:artbookSource,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER'});
+  let game=catalog.games.find(row=>row?.id===gameId);
+  if(!game){
+    game={id:gameId,name:seed.gameName||gameId,description:'개발확정 · Strict Design PASS',genre:[String(seed.GAME_CATEGORY||'').replaceAll('_',' ')],image:'',webPath:`/${webSourcePath}/`,hasWebArchive:false,featured:false};
+    catalog.games.push(game);
+  }
+  Object.assign(game,{homepageCategory:'development-confirmed',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY_STRICT_PASS',productionTier:2,productionTierSource:'DISPLAY_ALIAS_FROM_PRODUCTION_CLASS',selectedPlatform,targetPlatform:selectedPlatform,targetSourcePath,productionTarget:selectedPlatform,strictDesignScore:strictScore,excellentDesign:Number(strictScore||0)>=EXCELLENT_THRESHOLD,homepageOfficialCard:false,homepageTestCandidate:false,homepageTestScore:null,homepageReviewState:'WAITING_WEB_STRICT_REVIEW',homepageStage:'개발확정 · Web 제작/강심사 준비',homepageWebPlayable:false});
+  return {project,game};
+}
+
 function reconcileConfirmedSeedQueue({queue,seed,design,stamp,forceFreshBaseline=false}){
   const gameId=String(seed?.gameId||'').trim();
   const selectedPlatform=seed?.selectedPlatform||selectedPlatformOf(seed);
@@ -163,6 +185,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
     }
     if(currentClass==='DEVELOPMENT_CONFIRMED'){
       const design=latestReadyDesign(root,gameId);
+      if(seed.productionClassSource==='DESIGN_BASELINE_READY_STRICT_PASS'&&design)reconcileConfirmedMirrors({portfolio,catalog,seed,design});
       if(ownerResetIds.has(gameId)){
         const strict=strictDesignPass(design);
         const fresh=designEvidenceAfterReset(design,{resetAt:ownerResetAt,resetDate:ownerResetDate});
