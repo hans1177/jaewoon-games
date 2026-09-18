@@ -8,6 +8,7 @@ const robloxRuntime=read('.github/workflows/company-development-roblox-runtime.y
 const bootstrap=read('tools/company-development-roblox-bootstrap.mjs');
 const reconcile=read('tools/company-development-roblox-source-reconcile.mjs');
 const feeder=read('tools/vibe2-post-release-focus.mjs');
+const planner=read('tools/vibe2-auto-planner.mjs');
 const runner=read('.github/workflows/vibe2-24h-runner.yml');
 const queue=read('assets/vibe-continuous-queue.js');
 const seedDesignRuntime=read('.github/workflows/company-seed-design-runtime.yml');
@@ -107,6 +108,10 @@ assert.equal(focus.feeder,'tools/vibe2-post-release-focus.mjs');
 assert.equal(focus.generatedTaskContract.postReleaseFocused,true);
 assert.equal(focus.generatedTaskContract.packageLongWorkProtected,true);
 assert.equal(focus.generatedTaskContract.packageRole,'implementation-owner');
+assert.equal(focus.historicalDeploymentRecovery.registry,'company-learning/roblox-sustained-maintenance.json');
+assert.equal(focus.historicalDeploymentRecovery.currentReleaseClaimRequired,false);
+assert.match(planner,/company-learning\/roblox-sustained-maintenance\.json/);
+assert.match(planner,/lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE/);
 
 assert.match(feeder,/robloxReleaseClaim===true/);
 assert.match(feeder,/evidence\.published===true/);
