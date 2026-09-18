@@ -114,17 +114,17 @@
       "updatedAt": "2026-09-18T19:33:01.858Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 4,
+      "calls": 5,
       "successes": 0,
-      "failures": 4,
+      "failures": 5,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 333523,
-      "lastMs": 73254,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T19:34:47.901Z"
+      "totalMs": 351604,
+      "lastMs": 18081,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=3343",
+      "updatedAt": "2026-09-18T19:51:40.007Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T19:51:22.663Z"
+  "updatedAt": "2026-09-18T19:51:40.008Z"
 }
