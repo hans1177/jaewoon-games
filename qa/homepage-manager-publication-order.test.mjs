@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const workflow=fs.readFileSync('.github/workflows/homepage-manager.yml','utf8');
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const manager=fs.readFileSync('tools/homepage-manager.mjs','utf8');
 const testSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
 const artbookTool=fs.readFileSync('tools/company-design-artbook.mjs','utf8');
@@ -19,9 +20,11 @@ const section=(from,to)=>{
   return workflow.slice(start,end);
 };
 
-test('legacy homepage policy mirror stays removed and COMPANY_FLOW remains authoritative',()=>{
+test('legacy homepage policy mirror stays removed and machine roadmap remains authoritative',()=>{
   assert.equal(fs.existsSync(legacyHomepagePolicyMirror),false);
-  assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
+  assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
 });
 
 test('Director supervises the exact Homepage Manager candidate before publication',()=>{
