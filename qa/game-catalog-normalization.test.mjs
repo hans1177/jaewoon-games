@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { validateNormalizedCatalog } from '../tools/game-catalog-normalization.mjs';
+import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, validateNormalizedCatalog } from '../tools/game-catalog-normalization.mjs';
 
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -61,6 +61,68 @@ assert.equal(policy?.homepageBinding?.shelves?.DEVELOPMENT_CONFIRMED,'CURRENT_SC
 assert.equal(policy?.homepageBinding?.shelves?.TOP30,'STRICT_IMPLEMENTATION_SCORE_DESC');
 assert.equal(policy?.execution?.newPipelineForbidden,true);
 assert.equal(policy?.execution?.shadowCatalogForbidden,true);
+
+const auto=policy?.autoClassification||{};
+assert.equal(auto.authority,'MACHINE_EXECUTION_CONTRACT');
+assert.equal(auto.enabled,true);
+assert.equal(auto.humanDocumentRequired,false);
+assert.equal(auto.explicitOwnerOrCatalogValueWins,true);
+assert.equal(auto.overwriteExplicitValue,false);
+assert.equal(auto.executionPath,'tools/game-catalog-normalization.mjs inside existing company-status-sync');
+assert.equal(auto.platform?.centralDefault,'ROBLOX');
+assert.equal(auto.genre?.minimumLabels,1);
+
+const inferredRpg={
+  id:'auto-rpg',
+  name:'3D 던전 퀘스트',
+  description:'모바일 3D RPG에서 던전을 탐험하고 보스와 전투한다.',
+  webPath:'/web-games/auto-rpg/',
+  hasWebArchive:true,
+  homepageWebPlayable:true,
+  homepageInfo:{}
+};
+assert.equal(inferHomepagePlatform(inferredRpg),'UNITY');
+assert(inferHomepageGenres(inferredRpg).includes('RPG'));
+applyHomepageAutoClassification(inferredRpg);
+assert.equal(inferredRpg.selectedPlatform,'UNITY');
+assert.equal(inferredRpg.homepageInfo.platform,'UNITY');
+assert(inferredRpg.genre.includes('RPG'));
+assert.equal(inferredRpg.homepageInfo.genreLabel,inferredRpg.genre.join(' · '));
+
+const inferredSocial={
+  id:'auto-social',
+  name:'친구들과 파티 타이쿤',
+  description:'소셜 파티와 타이쿤 경영을 함께 즐기는 웹게임',
+  hasWebArchive:true,
+  homepageWebPlayable:true,
+  homepageInfo:{}
+};
+assert.equal(inferHomepagePlatform(inferredSocial),'ROBLOX');
+
+const inferredUefn={
+  id:'auto-uefn',
+  name:'배틀 로얄 아일랜드',
+  description:'battle royale island combat',
+  hasWebArchive:true,
+  homepageWebPlayable:true,
+  homepageInfo:{}
+};
+assert.equal(inferHomepagePlatform(inferredUefn),'FORTNITE_UEFN');
+
+const explicit={
+  id:'explicit-owner',
+  name:'사용자 지정',
+  description:'3D 모바일 RPG',
+  webPath:'/web-games/explicit-owner/',
+  hasWebArchive:true,
+  selectedPlatform:'ROBLOX',
+  genre:['경영'],
+  homepageInfo:{platform:'ROBLOX',genre:['경영'],genreLabel:'경영'}
+};
+applyHomepageAutoClassification(explicit);
+assert.equal(explicit.selectedPlatform,'ROBLOX');
+assert.deepEqual(explicit.genre,['경영']);
+assert.deepEqual(explicit.homepageInfo.genre,['경영']);
 
 assert.match(sync,/normalizeCatalog\(catalog\)/);
 assert.match(sync,/validateNormalizedCatalog\(catalog\)/);
