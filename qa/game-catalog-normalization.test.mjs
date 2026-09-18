@@ -14,15 +14,21 @@ assert.equal(catalog.catalogSchemaVersion,2);
 assert.equal(catalog.normalization?.canonicalRecordPath,'games[].canonical');
 assert.equal(catalog.normalization?.canonicalFirst,true);
 assert.equal(catalog.normalization?.homepageReadsCanonicalFirst,true);
+assert.equal(catalog.normalization?.ordering,'CANONICAL_STABLE');
+assert.equal(catalog.normalization?.orderField,'catalogOrder');
+assert.equal(catalog.normalization?.orderContiguous,true);
 assert.equal(catalog.runtimeCounts?.normalizedGames,catalog.games.length);
 
-for(const game of catalog.games){
+for(const [index,game] of catalog.games.entries()){
   const c=game.canonical;
   assert(c,'canonical record missing: '+game.id);
   assert.equal(c.identity.gameId,game.id);
   assert.equal(c.production.class,String(game.productionClass||'DESIGN_ONLY').toUpperCase());
   assert.equal(c.lifecycle.state,String(game.lifecycleState||'ACTIVE').toUpperCase());
   assert.equal(c.homepage.runtime.authority,'company-runtime');
+  assert.equal(game.catalogOrder,index+1);
+  assert.equal(c.catalogOrder,index+1);
+  assert.equal(c.homepage.category,game.homepageCategory);
 }
 
 const skyline=catalog.games.find(game=>game.id==='seed-roblox-obby-party-minigam-tower-of-hell');
@@ -43,6 +49,15 @@ assert.equal(policy?.rules?.legacyFlatFields,'COMPATIBILITY_MIRROR_ONLY');
 assert.equal(policy?.rules?.duplicateGameIdsForbidden,true);
 assert.equal(policy?.rules?.duplicateVerifiedRobloxPlaceIdsForbidden,true);
 assert.equal(policy?.homepageBinding?.presentationFrom,'canonical.homepage');
+assert.equal(policy?.ordering?.mode,'CANONICAL_STABLE');
+assert.equal(policy?.ordering?.outputField,'catalogOrder');
+assert.equal(policy?.homepageBinding?.canonicalOrderField,'catalogOrder');
+assert.equal(policy?.homepageBinding?.independentManualOrderingForbidden,true);
+assert.equal(policy?.homepageBinding?.shelves?.RELEASE_CONFIRMED,'CATALOG_ORDER_ASC');
+assert.equal(policy?.homepageBinding?.shelves?.WEB_PUBLISHED,'CATALOG_ORDER_ASC');
+assert.equal(policy?.homepageBinding?.shelves?.ROBLOX_HISTORICAL_DEPLOYMENT,'CATALOG_ORDER_ASC');
+assert.equal(policy?.homepageBinding?.shelves?.DEVELOPMENT_CONFIRMED,'CURRENT_SCORE_DESC_THEN_CATALOG_ORDER_ASC');
+assert.equal(policy?.homepageBinding?.shelves?.TOP30,'STRICT_IMPLEMENTATION_SCORE_DESC');
 assert.equal(policy?.execution?.newPipelineForbidden,true);
 assert.equal(policy?.execution?.shadowCatalogForbidden,true);
 
@@ -53,7 +68,12 @@ assert.match(homepage,/const identityOf=row=>/);
 assert.match(homepage,/const publicationOf=row=>/);
 assert.match(homepage,/const homepageOf=row=>/);
 assert.match(homepage,/homepageOf\(row\)\.runtime/);
+assert.match(homepage,/const catalogOrderCompare=/);
+assert.match(homepage,/\.sort\(catalogOrderCompare\)/);
+assert.match(manager,/canonicalOrderValid/);
 assert.match(manager,/normalizedCatalogContract/);
 assert.match(manager,/homepageCanonicalRenderer/);
+assert.equal(fs.existsSync('tools/game-catalog-normalize.mjs'),false);
+assert.equal(fs.existsSync('company-learning/catalog-homepage-normalization.json'),false);
 
-console.log('PASS canonical catalog normalization: games='+catalog.games.length);
+console.log('PASS canonical catalog normalization + stable homepage order: games='+catalog.games.length);
