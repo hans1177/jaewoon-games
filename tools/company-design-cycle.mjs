@@ -178,7 +178,8 @@ const checkpointV2MigrationEligible=designCheckpoint?.contractVersion===2
   &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
 const checkpointCompatibleEngineDigests=new Set([
   '4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec',
-  '24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03'
+  '24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03',
+  '2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f'
 ]);
 const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
   &&clean(designCheckpoint?.gameId)===gameId
