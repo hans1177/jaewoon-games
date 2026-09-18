@@ -17,9 +17,9 @@
   "completedPhaseCount": 6,
   "cachedTaskCount": 3,
   "lastSuccessfulModelCallAt": "2026-09-18T07:44:13.272Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "qa",
+  "lastError": "GEMINI_CALL_FAILED gemini-3.6-flash: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 7,
@@ -66,17 +66,17 @@
       "updatedAt": "2026-09-18T07:44:11.893Z"
     },
     "gemini:gemini-3.6-flash": {
-      "calls": 2,
+      "calls": 4,
       "successes": 0,
-      "failures": 2,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 68712,
-      "lastMs": 34706,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 12.045143975s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"12s\" } ] } }",
-      "updatedAt": "2026-09-18T07:44:47.979Z"
+      "totalMs": 196153,
+      "lastMs": 70265,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T07:45:23.538Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T07:45:01.473Z"
+  "updatedAt": "2026-09-18T07:45:23.539Z"
 }
