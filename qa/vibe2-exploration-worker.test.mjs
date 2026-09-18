@@ -79,9 +79,10 @@ test('existing Web exploration emits a preservation strategy before implementati
   };
   const result=exploreVibe2WorkOrder({cwd,order});
   assert.equal(result.sourceWrite,false);
-  assert.equal(result.existingWebAssessment.strategy,'KEEP_AND_CONTINUE');
+  assert.equal(result.existingWebAssessment.strategy,'PARTIAL_REPAIR');
   assert.equal(result.existingWebAssessment.fullRewriteAllowed,false);
   assert.equal(result.existingWebAssessment.evidence.validationScore,84);
+  assert.ok(result.existingWebAssessment.reasons.includes('CURRENT_APPROVED_SCOPE_GAPS_REMAIN'));
   assert.equal(fs.readFileSync(web,'utf8'),before);
 });
 
