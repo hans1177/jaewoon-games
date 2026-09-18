@@ -13,6 +13,7 @@ on:
       - 'tools/vibe2-authorized-source-memory.mjs'
       - 'tools/vibe2-web-experience-ingest.mjs'
       - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/vibe2-release-dispatch-recovery.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'company-learning/platform-release-roadmap.json'
       - 'company-learning/authorized-source/block-blast/authorized-learning-summary.json'
@@ -223,6 +224,69 @@ jobs:
           esac
           echo "continue_required=${continue_required:-NO}" >> "$GITHUB_OUTPUT"
           echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
+
+      - name: Recover reviewed winners stranded before release dispatch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-vibe2-release-recovery'
+          git config user.email 'vibe2-release-recovery@users.noreply.github.com'
+          git fetch origin vibe2-unreal-core --quiet
+          git reset --hard origin/vibe2-unreal-core
+
+          node --check /tmp/vibe2-main/tools/vibe2-release-dispatch-recovery.mjs
+          node /tmp/vibe2-main/tools/vibe2-release-dispatch-recovery.mjs \
+            --queue=.vibe2/queue.json \
+            --format=tsv > /tmp/vibe2-release-recovery-candidates.tsv
+
+          : > /tmp/vibe2-release-recovery-verified.tsv
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            [ -n "$task_id" ] || continue
+            [ -n "$candidate_branch" ] || continue
+            [ -n "$candidate_sha" ] || continue
+            remote_sha="$(git ls-remote origin "refs/heads/$candidate_branch" | awk 'NR==1 {print $1}')"
+            if [ "$remote_sha" != "$candidate_sha" ]; then
+              echo "VIBE2_RELEASE_RECOVERY_SHA_MISMATCH=$task_id:$candidate_branch:${remote_sha:-MISSING}:$candidate_sha"
+              continue
+            fi
+            printf '%s\t%s\t%s\n' "$task_id" "$candidate_branch" "$candidate_sha" >> /tmp/vibe2-release-recovery-verified.tsv
+          done < /tmp/vibe2-release-recovery-candidates.tsv
+
+          count="$(wc -l < /tmp/vibe2-release-recovery-verified.tsv | tr -d ' ')"
+          echo "VIBE2_RELEASE_RECOVERY_COUNT=${count:-0}"
+          [ "${count:-0}" -gt 0 ] || exit 0
+
+          stamp="$(date +%s%3N)"
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            node tools/vibe2-queue-control.mjs await \
+              --id="$task_id" \
+              --blocker=candidate-awaiting-qa-and-deployment \
+              --evidence="release-dispatch-recovery-requested:$candidate_branch,release-dispatch-recovery-at:$stamp,release-dispatch-recovery-candidate-sha:$candidate_sha"
+          done < /tmp/vibe2-release-recovery-verified.tsv
+
+          git add .vibe2/queue.json
+          git commit -m 'vibe2: mark reviewed winner release recovery [skip ci]'
+          pushed=0
+          for attempt in 1 2 3; do
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+
+          while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
+            body="$(jq -nc --arg branch "$candidate_branch" '{ref:"main",inputs:{candidate_branch:$branch}}')"
+            curl --fail-with-body --silent --show-error \
+              --request POST \
+              --header 'Accept: application/vnd.github+json' \
+              --header "Authorization: Bearer $GITHUB_TOKEN" \
+              --header 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-candidate-release.yml/dispatches" \
+              --data "$body"
+            echo "VIBE2_RELEASE_RECOVERY_DISPATCHED=$task_id:$candidate_branch:$candidate_sha"
+          done < /tmp/vibe2-release-recovery-verified.tsv
 
       - name: Upload generated machine handoff
         if: always()
