@@ -105,7 +105,9 @@ test('release workflow publishes only retained exact artifact and keeps transien
   assert.match(workflow,/retry_seconds=60/);
   assert.match(workflow,/retry_window_seconds=900/);
   assert.match(workflow,/Roblox publish failed HTTP 409/);
-  assert.match(workflow,/gh workflow run '\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
+  assert.doesNotMatch(workflow,/gh workflow run '\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
+  assert.match(workflow,/ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=NO/);
+  assert.match(workflow,/BUSY_MANUAL_RETRY_REQUIRED/);
   assert.match(workflow,/deferred=true/);
   assert.match(workflow,/steps\.publish\.outputs\.deferred != 'true'/);
   assert.match(workflow,/ROBLOX_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY/);
