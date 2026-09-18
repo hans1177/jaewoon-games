@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -14,7 +14,7 @@
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
     "UNITY": "ALWAYS_ALLOWED",
-    "FORTNITE_UEFN": "ALWAYS_ALLOWED"
+    "FORTNITE_UEFN": "OWNER_HOLD"
   },
   "crossPlatformDevelopmentLockedByPhase": false,
   "platformEntryGateAllowed": false,
@@ -144,8 +144,11 @@
     {
       "id": "FORTNITE_UEFN_EXPANSION",
       "priority": 3,
-      "entryGate": false,
-      "objective": "ADD_UEFN_RELEASE_EXPERIENCE_WITHOUT_REPLACING_OTHER_TRACKS"
+      "entryGate": true,
+      "objective": "ADD_UEFN_RELEASE_EXPERIENCE_WITHOUT_REPLACING_OTHER_TRACKS",
+      "status": "OWNER_HOLD",
+      "ownerStartRequired": true,
+      "developmentExecutionAllowed": false
     }
   ],
   "roblox": {
@@ -168,9 +171,16 @@
   },
   "fortniteUefn": {
     "platformAdapter": "tools/company-development-uefn-platform.mjs",
-    "developmentAlwaysAllowed": true,
+    "developmentAlwaysAllowed": false,
     "existingPlatformsRemainActive": true,
-    "runtimeExecutionConfigured": false
+    "runtimeExecutionConfigured": false,
+    "developmentState": "OWNER_HOLD",
+    "developmentExecutionAllowed": false,
+    "releaseExecutionAllowed": false,
+    "learningAllowed": true,
+    "designReferenceAllowed": true,
+    "ownerStartRequired": true,
+    "holdReason": "OWNER_DEFERRED_FORTNITE_DEVELOPMENT"
   },
   "canonicalLearningChain": [
     "VALIDATED_EVIDENCE",
@@ -747,6 +757,17 @@
         "POST_RELEASE_FOCUSED_DEVELOPMENT"
       ],
       "learningRunsInParallel": true
+    },
+    "platformExecutionHolds": {
+      "FORTNITE_UEFN": {
+        "state": "OWNER_HOLD",
+        "developmentExecutionAllowed": false,
+        "releaseExecutionAllowed": false,
+        "learningAllowed": true,
+        "verifiedLearningCollectionContinues": true,
+        "ownerExplicitReleaseRequired": true,
+        "doesNotBlockRobloxOrUnity": true
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
