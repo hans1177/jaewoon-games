@@ -7,8 +7,338 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "수정의 개화는 방치형 RPG의 문법을 재해석하여, 플레이어가 단순히 수치를 올리는 것을 넘어 '수정 정원'이라는 생태계를 가꾸고 그 안에서 영웅들이 자라나는 과정을 시각화한 게임입니다. 핵심 루프인 '수정 채집-영웅 강화-정원 확장'은 플레이어의 선택에 따라 정원의 상태를 변화시키며, 각 영웅의 성장 경로가 정원의 환경에 직접적인 영향을 미치는 시스템적 연결을 통해 단순 반복을 넘어선 전략적 성취감을 제공합니다.",
+      "playerFantasy": "플레이어는 황폐해진 세계를 정화하는 '수정 정원사'가 되어, 신비로운 수정 에너지를 활용해 영웅들을 소환하고 그들이 성장할 수 있는 최적의 환경을 조성하며, 정원이 만개할 때마다 새로운 세계의 비밀을 밝혀내는 경이로운 경험을 수행합니다.",
+      "coreFun": "플레이어는 영웅의 스킬 트리와 정원의 수정 배치라는 두 가지 축에서 끊임없이 선택을 내립니다. 이 선택은 즉각적으로 영웅의 전투 효율과 자원 생산 속도라는 상태 변화로 이어지며, 플레이어는 자신의 결정이 정원의 화려한 개화와 영웅의 강력한 스킬 발동으로 시각화되는 즉각적인 피드백을 관찰하게 됩니다.",
+      "coreLoop": [
+        "정원 내 수정에서 생성된 에너지를 수확하여 영웅의 레벨을 올리거나 새로운 스킬을 해금하는 성장 단계",
+        "강화된 영웅을 활용하여 더 높은 난이도의 던전을 공략하고, 정원 확장에 필요한 희귀 수정 자원을 획득하는 도전 단계",
+        "획득한 자원으로 정원의 환경을 재배치하여 자원 생산 효율을 극대화하고, 다음 성장을 위한 최적의 조합을 고민하는 전략 단계"
+      ],
+      "signatureSystems": [
+        {
+          "name": "수정 공명 시스템",
+          "purpose": "정원에 배치된 수정들의 조합에 따라 영웅들에게 고유한 버프를 부여하고 자원 생산량을 증폭시켜 전략적 배치를 유도합니다.",
+          "playerChoice": "플레이어는 수십 가지의 수정 중 어떤 것을 정원에 배치할지, 그리고 어떤 영웅과 공명시킬지 결정하며, 이 선택은 정원의 전체적인 생산 효율과 전투 스타일을 완전히 바꿉니다."
+        },
+        {
+          "name": "영웅 개화 시스템",
+          "purpose": "영웅이 특정 레벨에 도달하면 외형과 스킬이 진화하며, 정원의 특정 구역을 개방하여 더 높은 등급의 자원을 생산할 수 있게 합니다.",
+          "playerChoice": "플레이어는 제한된 자원을 어떤 영웅의 개화에 우선 투자할지 선택해야 하며, 이는 단기적인 전투력 상승과 장기적인 자원 수급 능력 사이의 중요한 전략적 갈림길이 됩니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "수정 공명 시스템",
+          "toSystem": "영웅 개화 시스템",
+          "trigger": "특정 수정 조합으로 인한 생산량 증폭 달성",
+          "stateChange": "영웅 개화에 필요한 희귀 자원 수급 속도가 가속화되어 개화 시점이 앞당겨짐"
+        },
+        {
+          "fromSystem": "영웅 개화 시스템",
+          "toSystem": "정원 확장 시스템",
+          "trigger": "영웅의 개화 완료 및 정원 내 특정 구역 정화",
+          "stateChange": "정원의 최대 배치 슬롯이 증가하고 새로운 수정 종류를 배치할 수 있는 공간이 확보됨"
+        },
+        {
+          "fromSystem": "정원 확장 시스템",
+          "toSystem": "수정 공명 시스템",
+          "trigger": "새로운 수정 슬롯 확보 및 희귀 수정 획득",
+          "stateChange": "더 복잡하고 강력한 수정 공명 조합이 가능해져 영웅의 전투 능력치가 비약적으로 상승함"
+        }
+      ],
+      "progressionDirection": "초반에는 단순한 자원 수확과 영웅 레벨업을 통해 게임의 기본 메커니즘을 익히고, 중반부터는 수정 공명과 영웅 개화의 조합을 통해 자신만의 최적화된 정원 빌드를 구축하는 방향으로 진행됩니다. 후반부에는 정원의 모든 구역을 개방하고 전설적인 수정 조합을 완성하여 무한한 성장의 루프를 경험하게 됩니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "자원 수확(수정) -> 영웅 강화 -> 던전 공략 -> 희귀 자원 획득 -> 정원 확장 -> 자원 수확 효율 증대",
+        "resourceFlow": "기본 수정은 영웅 레벨업에 사용되며, 던전에서 얻는 희귀 수정은 정원 확장과 공명 시스템의 핵심 재료로 사용되어 선순환 구조를 형성합니다.",
+        "balanceRules": "영웅의 레벨업 비용은 지수적으로 증가하지만, 정원 확장을 통한 생산 효율 증대 속도를 그에 맞춰 설계하여 플레이어가 정체감을 느끼지 않도록 조정합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "정원 2구역 개방 및 속성 수정 시스템 도입",
+          "newGameplay": "새로운 속성을 가진 수정들이 등장하며, 플레이어는 기존 수정과 새로운 수정을 배치하여 상호작용을 통한 복합적인 버프 효과를 창출하는 전략적 배치 시스템을 경험하게 됩니다.",
+          "systemImpact": "기존의 단순한 선형적 공명 시스템이 다중 속성 조합 기반의 네트워크 시스템으로 확장되어, 플레이어의 자원 생산 효율 최적화에 대한 전략적 선택지가 대폭 늘어납니다."
+        },
+        {
+          "milestone": "영웅 각성 및 궁극기 시스템 통합",
+          "newGameplay": "개화된 영웅이 특정 성장 조건을 만족하면 각성하여 고유한 궁극기를 해금하며, 이는 전투 중 수동으로 발동하여 전황을 뒤집는 핵심 변수로 작용합니다.",
+          "systemImpact": "전투 시스템의 깊이가 심화되며, 각성 재료 파밍을 위한 새로운 도전 콘텐츠가 기존의 idle 루프에 통합되어 플레이어의 장기적인 목표 의식을 강화합니다."
+        },
+        {
+          "milestone": "정원 생태계 동적 이벤트 시스템",
+          "newGameplay": "정기적으로 정원에 이상 현상이 발생하여 특정 수정의 생산 효율이 변동되는 이벤트가 발생하며, 플레이어는 이에 대응하여 수정을 재배치해야 합니다.",
+          "systemImpact": "플레이어는 고정된 최적 빌드에서 벗어나 이벤트 상황에 맞춰 수정을 유동적으로 재배치해야 하므로, 게임의 반복적인 루프에 긴장감과 전략적 유연성을 부여합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "던전 공략 실패로 인한 자원 획득 지연",
+          "잘못된 수정 배치로 인한 생산 효율 저하"
+        ],
+        "retryFlow": "던전 실패 시 즉시 재도전하거나, 정원으로 돌아와 영웅을 강화한 후 다시 도전할 수 있는 선택권을 제공합니다.",
+        "riskPressure": "실패는 영웅의 사망이 아닌 자원 획득의 일시적 중단으로 설계하여, 플레이어의 좌절감을 최소화하고 재도전의 동기를 부여합니다.",
+        "recoveryRules": "실패 시 소모된 자원은 일부 환급되거나, 다음 도전 시 보너스 버프를 제공하여 실패가 성장의 밑거름이 되도록 합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "터치 기반의 드래그 앤 드롭 방식을 사용하여 정원 내 수정 배치와 영웅 강화를 직관적으로 수행할 수 있도록 설계합니다.",
+        "performanceBudget": "모바일 기기에서의 원활한 구동을 위해 정원의 오브젝트 수를 최적화하고, 셰이더 기반의 시각 효과를 사용하여 리소스를 절감합니다.",
+        "sessionConstraints": "30분 세션 내에서 핵심 루프를 최소 3회 이상 반복할 수 있도록 자원 생성 속도와 전투 시간을 최적화합니다."
+      },
+      "visualDirection": "몽환적이고 따뜻한 파스텔 톤의 색감을 사용하여 정원의 신비로움을 강조하고, 영웅이 성장할 때마다 화려한 이펙트와 함께 정원이 변화하는 모습을 시각적으로 극대화합니다.",
+      "mobileUx": "한 손으로도 모든 조작이 가능하도록 UI를 하단에 집중 배치하고, 중요한 알림은 직관적인 아이콘과 햅틱 피드백을 통해 전달합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 자원 보유량, 영웅 성장 상태, 정원 효율 지표를 최우선으로 표시합니다.",
+        "touchAndInput": "모든 버튼은 최소 44x44 픽셀 이상의 터치 영역을 확보하여 오작동을 방지합니다.",
+        "readability": "고대비 텍스트와 명확한 폰트 크기를 사용하여 다양한 환경에서도 가독성을 유지합니다.",
+        "accessibility": "색약 모드를 지원하여 수정의 속성을 색상뿐만 아니라 문양으로도 구분할 수 있게 합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "수정의 투명함과 영웅의 생동감을 강조하는 2D 아트 스타일을 채택합니다.",
+        "audioIdentity": "정원의 평화로움을 나타내는 잔잔한 배경음악과, 영웅의 스킬 발동 시 경쾌한 효과음을 사용하여 몰입감을 높입니다.",
+        "gameplayFeedbackSync": "자원 수확 시 발생하는 청각적 피드백과 시각적 파티클 효과를 동기화하여 수확의 쾌감을 극대화합니다."
+      },
+      "marketTargetDirection": "방치형 RPG를 선호하는 글로벌 유저층을 타겟으로 하며, 특히 짧은 세션 내에서 성취감을 느끼고 싶은 직장인과 학생층을 공략합니다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 후, 더 넓은 화면과 정밀한 조작이 필요한 PC 환경에 맞춰 UI를 확장하고 고해상도 그래픽을 지원하는 방향으로 검토합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "현재는 싱글 플레이 중심의 성장에 집중하며, 향후 유저 간의 정원 꾸미기 공유나 비동기식 협력 콘텐츠 도입을 고려합니다.",
+      "technicalAssumptions": [
+        "모바일 기기의 메모리 제한을 고려하여 정원 내 오브젝트의 동적 로딩 및 오브젝트 풀링 시스템을 구현하여 렌더링 부하를 최소화해야 합니다.",
+        "오프라인 상태에서도 자원 생산이 정상적으로 계산되도록 서버와 클라이언트 간의 시간 동기화 로직을 구현하여 데이터 무결성을 보장해야 합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 30분 세션 내에서 자신의 선택이 정원의 성장에 직접적인 영향을 미친다는 피드백을 명확하게 인지하고 있는가?",
+        "수정 공명 시스템의 복잡도가 초보자에게는 직관적이면서도 숙련자에게는 충분한 전략적 깊이를 제공하는지 테스트를 통해 확인하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "수정 공명 및 속성 조합 시스템",
+          "responsibleSystem": "데이터 기반 버프 계산 엔진",
+          "validationEvidence": "다양한 수정 조합을 시뮬레이션하여 기대값과 실제 생산량의 일치 여부를 테스트하고, 밸런스 시뮬레이터로 데이터의 편차를 검증합니다."
+        },
+        {
+          "designElement": "영웅 각성 및 궁극기 트리",
+          "responsibleSystem": "상태 관리 및 진화 트리 시스템",
+          "validationEvidence": "영웅 레벨업 및 각성 단계에 따른 능력치 상승 곡선이 의도한 밸런스 범위 내에 있는지 단위 테스트와 플레이 테스트를 통해 검증합니다."
+        },
+        {
+          "designElement": "정원 확장 및 동적 이벤트 관리",
+          "responsibleSystem": "오브젝트 배치 및 이벤트 트리거 시스템",
+          "validationEvidence": "정원 확장 시 새로운 슬롯이 정상적으로 활성화되고, 이벤트 발생 시 자원 생산 효율이 실시간으로 반영되는지 로그 분석을 통해 확인합니다."
+        }
+      ],
+      "openQuestions": [
+        "어떤 종류의 수정이 플레이어에게 가장 큰 시각적 만족감을 줄 것인가?",
+        "영웅의 개화 단계에서 플레이어에게 어떤 감정적 보상을 제공할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 77,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "정원 2구역 개방 및 속성 수정 시스템 도입",
+          "newGameplay": "새로운 속성을 가진 수정들이 등장하며, 플레이어는 기존 수정과 새로운 수정을 배치하여 상호작용을 통한 복합적인 버프 효과를 창출하는 전략적 배치 시스템을 경험하게 됩니다.",
+          "systemImpact": "기존의 단순한 선형적 공명 시스템이 다중 속성 조합 기반의 네트워크 시스템으로 확장되어, 플레이어의 자원 생산 효율 최적화에 대한 전략적 선택지가 대폭 늘어납니다."
+        },
+        {
+          "milestone": "영웅 각성 및 궁극기 시스템 통합",
+          "newGameplay": "개화된 영웅이 특정 성장 조건을 만족하면 각성하여 고유한 궁극기를 해금하며, 이는 전투 중 수동으로 발동하여 전황을 뒤집는 핵심 변수로 작용합니다.",
+          "systemImpact": "전투 시스템의 깊이가 심화되며, 각성 재료 파밍을 위한 새로운 도전 콘텐츠가 기존의 idle 루프에 통합되어 플레이어의 장기적인 목표 의식을 강화합니다."
+        },
+        {
+          "milestone": "정원 생태계 동적 이벤트 시스템",
+          "newGameplay": "정기적으로 정원에 이상 현상이 발생하여 특정 수정의 생산 효율이 변동되는 이벤트가 발생하며, 플레이어는 이에 대응하여 수정을 재배치해야 합니다.",
+          "systemImpact": "플레이어는 고정된 최적 빌드에서 벗어나 이벤트 상황에 맞춰 수정을 유동적으로 재배치해야 하므로, 게임의 반복적인 루프에 긴장감과 전략적 유연성을 부여합니다."
+        }
+      ],
+      "technicalAssumptions": [
+        "모바일 기기의 메모리 제한을 고려하여 정원 내 오브젝트의 동적 로딩 및 오브젝트 풀링 시스템을 구현하여 렌더링 부하를 최소화해야 합니다.",
+        "오프라인 상태에서도 자원 생산이 정상적으로 계산되도록 서버와 클라이언트 간의 시간 동기화 로직을 구현하여 데이터 무결성을 보장해야 합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 30분 세션 내에서 자신의 선택이 정원의 성장에 직접적인 영향을 미친다는 피드백을 명확하게 인지하고 있는가?",
+        "수정 공명 시스템의 복잡도가 초보자에게는 직관적이면서도 숙련자에게는 충분한 전략적 깊이를 제공하는지 테스트를 통해 확인하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "수정 공명 및 속성 조합 시스템",
+          "responsibleSystem": "데이터 기반 버프 계산 엔진",
+          "validationEvidence": "다양한 수정 조합을 시뮬레이션하여 기대값과 실제 생산량의 일치 여부를 테스트하고, 밸런스 시뮬레이터로 데이터의 편차를 검증합니다."
+        },
+        {
+          "designElement": "영웅 각성 및 궁극기 트리",
+          "responsibleSystem": "상태 관리 및 진화 트리 시스템",
+          "validationEvidence": "영웅 레벨업 및 각성 단계에 따른 능력치 상승 곡선이 의도한 밸런스 범위 내에 있는지 단위 테스트와 플레이 테스트를 통해 검증합니다."
+        },
+        {
+          "designElement": "정원 확장 및 동적 이벤트 관리",
+          "responsibleSystem": "오브젝트 배치 및 이벤트 트리거 시스템",
+          "validationEvidence": "정원 확장 시 새로운 슬롯이 정상적으로 활성화되고, 이벤트 발생 시 자원 생산 효율이 실시간으로 반영되는지 로그 분석을 통해 확인합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
@@ -111,19 +441,28 @@
       "updatedAt": "2026-09-18T19:40:03.220Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 132874,
-      "lastMs": 132874,
+      "totalMs": 282913,
+      "lastMs": 4915,
       "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=4584",
-      "updatedAt": "2026-09-18T19:40:19.600Z"
+      "updatedAt": "2026-09-18T19:40:36.771Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T19:38:06.724Z",
-  "updatedAt": "2026-09-18T19:40:19.600Z"
+  "updatedAt": "2026-09-18T19:40:36.792Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T19:40:36.771Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }
