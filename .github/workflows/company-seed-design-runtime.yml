@@ -225,6 +225,46 @@ jobs:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
         run: node tools/artbook-production-pipeline.mjs
+      - name: Persist DESIGN_ONLY checkpoint immediately
+        if: always() && steps.target.outputs.should_run == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          checkpoint_path="design/${{ matrix.target.game_id }}/${{ matrix.target.date }}/design-checkpoint.json"
+          if [ ! -f "$checkpoint_path" ]; then
+            echo 'DESIGN_CHECKPOINT_RUNTIME_PERSIST=NO_CHECKPOINT'
+            exit 0
+          fi
+          cp "$checkpoint_path" /tmp/design-checkpoint.json
+          worktree="/tmp/design-checkpoint-${{ matrix.target.game_id }}"
+          pushed=0
+          for attempt in 1 2 3 4; do
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git worktree remove -f "$worktree" >/dev/null 2>&1 || true
+            rm -rf "$worktree"
+            git worktree add --detach "$worktree" "origin/$COMPANY_RUNTIME_BRANCH" >/dev/null
+            mkdir -p "$worktree/$(dirname "$checkpoint_path")"
+            cp /tmp/design-checkpoint.json "$worktree/$checkpoint_path"
+            git -C "$worktree" config user.name 'jaewoon-seed-design-checkpoint'
+            git -C "$worktree" config user.email 'seed-design-checkpoint@users.noreply.github.com'
+            git -C "$worktree" add -- "$checkpoint_path"
+            if git -C "$worktree" diff --cached --quiet; then
+              pushed=1
+              git worktree remove -f "$worktree" >/dev/null 2>&1 || true
+              break
+            fi
+            git -C "$worktree" commit -m "runtime: DESIGN_ONLY checkpoint ${{ matrix.target.game_id }} ${{ matrix.target.date }}" >/dev/null
+            if git -C "$worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then
+              pushed=1
+              git worktree remove -f "$worktree" >/dev/null 2>&1 || true
+              break
+            fi
+            git worktree remove -f "$worktree" >/dev/null 2>&1 || true
+            sleep $((attempt * 2))
+          done
+          test "$pushed" = 1
+          echo 'DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES'
+          echo 'PUBLIC_MAIN_WRITE=NO'
       - name: Verify design learning context consumption
         if: steps.target.outputs.should_run == 'true'
         env:
