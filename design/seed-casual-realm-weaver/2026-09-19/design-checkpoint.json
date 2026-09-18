@@ -7,8 +7,232 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "세계의 직조자는 플레이어가 흩어진 우주의 파편을 이어 붙여 자신만의 작은 행성을 완성해 나가는 캐주얼 퍼즐 시뮬레이션 게임입니다. 단순히 점수를 얻는 것이 아니라, 플레이어의 조작(스와이프 및 탭)이 실시간으로 지형의 형태와 생태계의 색상을 변화시키는 '직조 시스템'을 중심으로 합니다. 이 시스템은 플레이어에게 매 순간 어떤 파편을 먼저 배치할지 선택하게 하며, 그 결과로 나타나는 행성의 고유한 모습이 곧 플레이어의 성취가 되는 독창적인 루프를 제공합니다.",
+      "playerFantasy": "플레이어는 우주의 질서를 바로잡는 '직조자'가 되어, 황폐해진 공간에 생명과 색채를 불어넣는 창조주로서의 경험을 합니다. 자신의 손끝에서 행성이 아름답게 변화하는 시각적 쾌감을 느끼며, 우주를 복구해 나가는 성취감을 얻습니다.",
+      "coreFun": "핵심 재미는 '연결'에 있습니다. 플레이어는 화면 하단의 파편을 드래그하여 중앙의 행성 위에 배치합니다. 파편을 배치할 때마다 주변 타일과 속성이 결합되어 새로운 지형(숲, 바다, 산)으로 변하며, 이 즉각적인 시각적 변화와 점수 획득이 플레이어에게 지속적인 도파민을 제공합니다.",
+      "coreLoop": [
+        "파편 선택: 하단 슬롯에서 무작위로 생성되는 지형 파편 중 하나를 선택하여 드래그합니다.",
+        "직조 배치: 행성 표면의 빈 공간에 파편을 배치하여 인접한 타일과 속성을 결합하고 지형을 진화시킵니다.",
+        "보상 및 확장: 완성된 지형 구역에 따라 에너지를 획득하고, 이를 사용하여 다음 행성으로 이동하거나 새로운 파편 테마를 해금합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "직조 시스템",
+          "purpose": "플레이어의 배치 행동을 통해 단순한 타일 나열이 아닌, 유기적인 지형의 진화와 결합을 유도하여 창조의 재미를 극대화합니다.",
+          "playerChoice": "어떤 파편을 어디에 배치할지 결정함으로써 지형의 형태를 직접 설계하고, 특정 조합을 통해 희귀한 지형을 만들어낼지 고민하게 합니다."
+        },
+        {
+          "name": "에너지 흐름 시스템",
+          "purpose": "지형을 완성할 때마다 발생하는 에너지를 관리하여, 플레이어가 무분별한 배치가 아닌 전략적인 자원 활용을 하도록 유도합니다.",
+          "playerChoice": "획득한 에너지를 즉시 사용하여 새로운 파편을 뽑을지, 아니면 모아서 행성의 전체적인 테마를 업그레이드할지 선택합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "직조 시스템",
+          "toSystem": "에너지 흐름 시스템",
+          "trigger": "플레이어가 지형 파편을 성공적으로 결합하여 새로운 구역을 완성할 때",
+          "stateChange": "완성된 지형의 복잡도에 비례하여 에너지가 생성되고 플레이어의 자원 잔액이 증가합니다."
+        },
+        {
+          "fromSystem": "에너지 흐름 시스템",
+          "toSystem": "직조 시스템",
+          "trigger": "플레이어가 에너지를 소비하여 새로운 파편 슬롯을 확장하거나 특수 파편을 구매할 때",
+          "stateChange": "사용 가능한 파편의 종류가 다양해지거나 슬롯이 늘어나 더 복잡한 지형 설계가 가능해집니다."
+        },
+        {
+          "fromSystem": "직조 시스템",
+          "toSystem": "진행도 시스템",
+          "trigger": "행성 표면의 일정 비율 이상이 완성된 지형으로 채워질 때",
+          "stateChange": "현재 행성이 완전히 복구된 것으로 간주되어 다음 레벨의 행성으로 이동하는 관문이 열립니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 작은 위성에서 시작하여 점차 거대한 행성, 나아가 은하계 전체를 복구하는 방향으로 성장합니다. 각 단계마다 새로운 지형 속성과 파편 종류가 추가되어 난이도와 시각적 다양성이 점진적으로 상승합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "지형 완성 -> 에너지 획득 -> 파편 업그레이드 -> 더 복잡한 지형 완성의 선순환 구조를 유지합니다.",
+        "resourceFlow": "에너지는 게임 플레이를 통해서만 획득 가능하며, 파편 구매와 행성 테마 해금에만 사용되어 인플레이션을 방지합니다.",
+        "balanceRules": "초반에는 에너지를 쉽게 얻어 성취감을 주고, 후반으로 갈수록 희귀 파편 조합을 요구하여 전략적 깊이를 더합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "시즌 1: 숲의 행성",
+          "newGameplay": "식물 기반의 파편이 추가되어 인접한 타일을 녹색으로 물들이는 확산형 퍼즐 요소가 도입됩니다.",
+          "systemImpact": "기존 직조 시스템에 '확산'이라는 속성이 추가되어 파편 배치 시 주변 타일의 상태 변화 로직이 확장됩니다."
+        },
+        {
+          "milestone": "시즌 2: 얼음의 행성",
+          "newGameplay": "온도 시스템이 도입되어 특정 파편은 주변을 얼려 배치를 제한하거나 강화하는 전략적 요소가 추가됩니다.",
+          "systemImpact": "에너지 흐름 시스템에 '온도 관리' 자원이 추가되어 플레이어가 자원 소비 우선순위를 재설정해야 합니다."
+        },
+        {
+          "milestone": "시즌 3: 기계의 행성",
+          "newGameplay": "자동화 파편이 등장하여 일정 시간마다 자동으로 주변 타일을 변화시키는 기믹이 추가됩니다.",
+          "systemImpact": "직조 시스템의 실시간 연산 부하가 증가하며, 이를 최적화하기 위한 새로운 데이터 구조가 시스템에 통합됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "행성 표면이 잘못된 파편 배치로 인해 더 이상 지형을 연결할 수 없는 상태가 됨",
+          "제한된 시간 내에 목표 에너지를 달성하지 못하고 행성이 붕괴함"
+        ],
+        "retryFlow": "실패 시 즉시 '직조 초기화' 버튼이 활성화되며, 짧은 로딩 후 동일한 행성 테마에서 다시 시작할 수 있습니다.",
+        "riskPressure": "파편을 배치할 때마다 행성의 안정도가 조금씩 감소하며, 너무 많은 실수는 행성 붕괴를 가속화합니다.",
+        "recoveryRules": "특수 파편을 사용하여 행성의 안정도를 회복하거나, 광고 시청을 통해 마지막 배치 단계로 되돌리는 기회를 제공합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 환경에 최적화된 원터치 드래그 앤 드롭 방식을 채택하여 한 손으로도 모든 조작이 가능하게 설계합니다.",
+        "performanceBudget": "모바일 기기의 발열을 최소화하기 위해 셰이더 기반의 시각 효과를 사용하고, 오브젝트 풀링을 통해 메모리 사용량을 최적화합니다.",
+        "sessionConstraints": "한 세션당 3~5분 내외로 플레이가 종료되도록 설계하여 짧은 이동 시간에도 부담 없이 즐길 수 있도록 합니다."
+      },
+      "visualDirection": "파스텔 톤의 부드러운 색감과 미니멀한 폴리곤 스타일을 사용하여 시각적 피로도를 낮추고, 지형이 완성될 때마다 반짝이는 파티클 효과로 성취감을 강조합니다.",
+      "mobileUx": "UI는 화면 하단에 집중 배치하여 엄지손가락의 이동 범위를 최소화하고, 중요한 정보(에너지, 남은 시간)는 상단에 직관적으로 표시합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "에너지 잔량과 현재 행성 완성도를 가장 크게 표시하여 플레이어가 목표를 항상 인지하게 합니다.",
+        "touchAndInput": "드래그 시 파편이 손가락을 따라오는 반응성을 극대화하고, 배치 가능한 위치를 하이라이트로 명확히 표시합니다.",
+        "readability": "색약 플레이어를 위해 지형 속성을 색상뿐만 아니라 고유한 패턴과 아이콘으로 구분하여 시각적 정보를 보완합니다.",
+        "accessibility": "게임 속도 조절 옵션을 제공하여 반응 속도가 느린 플레이어도 충분히 즐길 수 있도록 배려합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "부드러운 그라데이션과 빛나는 효과를 활용한 몽환적인 우주 분위기를 연출합니다.",
+        "audioIdentity": "지형이 완성될 때마다 맑은 종소리나 물소리 같은 자연의 소리가 화음으로 쌓이는 앰비언트 사운드를 사용합니다.",
+        "gameplayFeedbackSync": "배치 성공 시의 시각적 파티클과 사운드 이펙트를 0.1초 이내로 동기화하여 즉각적인 타격감을 제공합니다."
+      },
+      "marketTargetDirection": "캐주얼 퍼즐을 선호하는 전 연령층을 타겟으로 하며, 특히 짧은 시간에 성취감을 느끼고 싶은 직장인과 학생층을 주요 공략 대상으로 합니다.",
+      "steamExpansionDecision": "모바일에서의 성공적인 안착 후, 더 큰 화면과 정밀한 마우스 조작을 활용한 PC 버전으로의 확장을 고려합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "향후 업데이트를 통해 친구와 함께 행성을 공동으로 창조하는 협동 모드(COOP) 추가를 검토할 예정입니다.",
+      "technicalAssumptions": [
+        "유니티의 2D/3D 하이브리드 렌더링 파이프라인을 사용하여 모바일 기기에서의 최적화된 성능을 보장합니다.",
+        "데이터 직렬화 방식을 사용하여 플레이어의 행성 데이터를 가볍게 저장하고 클라우드 동기화를 지원합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 3분 이내에 핵심 루프인 '배치-결합-보상'을 최소 3회 이상 경험하는가?",
+        "모바일 환경에서 한 손 조작만으로 모든 게임 기능을 불편함 없이 수행할 수 있는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "직조 시스템의 배치 로직",
+          "responsibleSystem": "책임 시스템: 직조 시스템",
+          "validationEvidence": "배치 시 인접 타일과의 속성 결합 알고리즘이 의도한 지형 변화를 100% 정확하게 생성하는지 유닛 테스트로 검증합니다."
+        },
+        {
+          "designElement": "에너지 획득 및 소비",
+          "responsibleSystem": "에너지 흐름 시스템",
+          "validationEvidence": "게임 플레이 중 에너지 획득량과 소비량이 경제 밸런스 시뮬레이션 결과와 일치하는지 데이터 로그를 통해 확인합니다."
+        },
+        {
+          "designElement": "모바일 터치 반응성",
+          "responsibleSystem": "책임 시스템: 모바일 UX",
+          "validationEvidence": "다양한 해상도의 모바일 기기에서 터치 입력 지연 시간이 50ms 이하로 유지되는지 성능 프로파일링을 통해 측정합니다."
+        }
+      ],
+      "openQuestions": [
+        "플레이어가 행성을 완성한 후 느끼는 '허무함'을 방지하기 위해 어떤 보상 체계를 추가할 것인가?",
+        "더 높은 난이도를 원하는 숙련자를 위해 어떤 도전 모드를 도입할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 60,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 7.2,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 75.6,
+      "criticalAxisFailures": [
+        "SYSTEM_INTERCONNECTION_DESIGN",
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 7.2,
+            "axisWeight": 12
+          },
+          "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
@@ -109,10 +333,30 @@
       "lastMs": 11413,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
       "updatedAt": "2026-09-18T18:37:04.169Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 24142,
+      "lastMs": 24142,
+      "lastError": null,
+      "updatedAt": "2026-09-18T18:37:16.899Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T18:36:52.755Z",
-  "updatedAt": "2026-09-18T18:37:04.169Z"
+  "updatedAt": "2026-09-18T18:37:16.903Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T18:37:16.899Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
