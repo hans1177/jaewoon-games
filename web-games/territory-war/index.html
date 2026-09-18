@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+      },
+      player: {
+        x: 0,
+        y: 0,
+        direction: 'right'
+      },
+      ai: {
+        enemies: [
+          { x: 1, y: 0 },
+          { x: 0, y: 1 }
+        ]
+      }
+    };
+
+    // Game loop
+    function gameLoop() {
+      // Update game state
+      updateGame();
+
+      // Render game
+      renderGame();
+
+      // Request next frame
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Update game state
+    function updateGame() {
+      // Player movement
+      if (game.player.direction === 'right') {
+        game.player.x++;
+      } else if (game.player.direction === 'left') {
+        game.player.x--;
+      }
+
+      // AI movement
+      game.ai.enemies.forEach(enemy => {
+        // Simple AI for demonstration
+        if (game.player.x === enemy.x && game.player.y === enemy.y) {
+          game.player.direction = 'left';
+        }
+      });
+    }
+
+    // Render game
+    function renderGame() {
+      // Render map
+      const map = game.map;
+      const player = game.player;
+      const ai = game.ai;
+
+      // Create game container
+      const gameContainer = document.getElementById('game');
+      gameContainer.innerHTML = '';
+
+      // Draw map
+      for (let y = 0; y < map.height; y++) {
+        for (let x = 0; x < map.width; x++) {
+          const tile = map.tiles[y][x];
+          const tileElement = document.createElement('div');
+          tileElement.classList.add('tile');
+          if (tile === 1) {
+            tileElement.classList.add('player');
+          } else if (tile === 2) {
+            tileElement.classList.add('enemy');
+          }
+          gameContainer.appendChild(tileElement);
+        }
+      }
+
+      // Draw player
+      const playerElement = document.createElement('div');
+      playerElement.classList.add('player');
+      playerElement.style.left = `${player.x * 20}px`;
+      playerElement.style.top = `${player.y * 20}px`;
+      gameContainer.appendChild(playerElement);
+
+      // Draw AI enemies
+      game.ai.enemies.forEach(enemy => {
+        const enemyElement = document.createElement('div');
+        enemyElement.classList.add('enemy');
+        enemyElement.style.left = `${enemy.x * 20}px`;
+        enemyElement.style.top = `${enemy.y * 20}px`;
+        gameContainer.appendChild(enemyElement);
+      });
+    }
+
+    // Handle touch input
+    document.addEventListener('touchstart', function(e) {
+      const touch = e.touches[0];
+      const x = touch.clientX;
+      const y = touch.clientY;
+
+      // Simple touch input for demonstration
+      if (x > 10 && x < 30 && y > 10 && y < 30) {
+        game.player.direction = 'right';
+      }
+    });
+
+    // Game restart
+    document.getElementById('restart').addEventListener('click', function() {
+      game.player.x = 0;
+      game.player.y = 0;
+      game.player.direction = 'right';
+      renderGame();
+    });
+
+    // Start game loop
+    gameLoop();
+  </script>
+</body>
+</html>
