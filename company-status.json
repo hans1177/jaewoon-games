@@ -6,7 +6,7 @@
     "existingWebMaintenance": true,
     "newWebGameProduction": true,
     "webGamesRemainPlayable": true,
-    "policyAuthority": "COMPANY_FLOW.md",
+    "policyAuthority": "MACHINE_EXECUTION_CONTRACT",
     "aiDirector": {
       "mode": "rotating-local",
       "providers": [
@@ -52,7 +52,7 @@
       "runtimeGameHealthBadgeVisible": false,
       "gameCardsRequireUniqueTitleImages": true
     },
-    "sourceOfTruth": "COMPANY_FLOW.md",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
     "primaryPlatform": "ROBLOX",
     "allowedTargetPlatforms": [
       "ROBLOX",
@@ -116,26 +116,10 @@
     "autonomousFocus": {
       "enabled": true,
       "targetSlots": 2,
-      "filledSlots": 1,
+      "filledSlots": 0,
       "preferredGameIds": [],
-      "focusedGameIds": [
-        "P0006"
-      ],
-      "games": [
-        {
-          "slot": 1,
-          "gameId": "P0006",
-          "slug": "daechung-rpg",
-          "name": "대충 RPG",
-          "score": 8,
-          "slotRole": "auto-ranked",
-          "lane": "selected-platform",
-          "selectedPlatform": "UNITY",
-          "targetPlatformReady": true,
-          "homepageCategory": "release-confirmed",
-          "webPath": "/web-games/daechung-rpg/"
-        }
-      ],
+      "focusedGameIds": [],
+      "games": [],
       "nextFocusGameIds": [],
       "nextDevelopmentGameIds": [],
       "selection": "AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
@@ -169,39 +153,62 @@
         "source": "CATALOG_GENRE",
         "membershipInfluence": false,
         "adjusted": false,
-        "distinctFamilies": [
-          "RPG"
-        ]
+        "distinctFamilies": []
       },
       "counts": {
-        "releaseConfirmed": 1,
-        "developmentConfirmed": 1,
-        "designOnly": 10
+        "releaseConfirmed": 0,
+        "developmentConfirmed": 0,
+        "designOnly": 12
       },
-      "releaseConfirmedGameIds": [
-        "P0006"
-      ],
-      "developmentConfirmedGameIds": [
-        "P0009"
-      ],
+      "releaseConfirmedGameIds": [],
+      "developmentConfirmedGameIds": [],
       "designOnlyGameIds": [
         "P0001",
         "P0002",
         "P0003",
         "P0004",
         "P0005",
+        "P0006",
         "P0007",
         "P0008",
+        "P0009",
         "P0101",
         "P0102",
         "P0103"
       ],
+      "lifecycle": {
+        "active": [
+          "P0001",
+          "P0002",
+          "P0003",
+          "P0004",
+          "P0005",
+          "P0006",
+          "P0007",
+          "P0008",
+          "P0009",
+          "P0101",
+          "P0102",
+          "P0103"
+        ],
+        "paused": [],
+        "rebuild": [],
+        "retired": [],
+        "removed": []
+      },
+      "pipeline": {
+        "target": 60,
+        "count": 12,
+        "activeDevelopmentWipMax": 20,
+        "deficit": 48
+      },
       "ranking": [
         {
           "rank": 1,
           "rawEvidenceRank": 1,
           "gameId": "P0001",
           "slug": "survival",
+          "lifecycleState": "ACTIVE",
           "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "SURVIVAL",
           "evidenceScore": 904,
@@ -216,7 +223,8 @@
           "rawEvidenceRank": 2,
           "gameId": "P0006",
           "slug": "daechung-rpg",
-          "productionClass": "RELEASE_CONFIRMED",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "RPG",
           "evidenceScore": 815,
           "developmentFocus": 8,
@@ -230,12 +238,13 @@
           "rawEvidenceRank": 3,
           "gameId": "P0002",
           "slug": "insect-survival",
+          "lifecycleState": "ACTIVE",
           "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "SURVIVAL",
           "evidenceScore": 804,
           "developmentFocus": 8,
           "artbookBaselineRank": 0,
-          "targetPlatform": null,
+          "targetPlatform": "UNITY",
           "targetPlatformReady": false,
           "sourceReady": true
         },
@@ -244,6 +253,7 @@
           "rawEvidenceRank": 4,
           "gameId": "P0004",
           "slug": "bug-defense",
+          "lifecycleState": "ACTIVE",
           "productionClass": "DESIGN_ONLY",
           "gameplayFamily": "DEFENSE",
           "evidenceScore": 704,
@@ -786,5 +796,6 @@
       "resultPath": "company-revotes/daechung-rpg/daechung-rpg-cloud-license-20260908-002/director.json",
       "completedAt": "2026-09-08T06:02:46.100951+00:00"
     }
-  ]
+  ],
+  "runtimeAuthority": "company-runtime"
 }
