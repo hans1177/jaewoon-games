@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      background-color: #fff;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .game-container {
+      width: 80%;
+      max-width: 800px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(8, 50px);
+      grid-template-rows: repeat(8, 50px);
+      gap: 5px;
+      margin: 20px 0;
+    }
+    .game-piece {
+      width: 50px;
+      height: 50px;
+      background-color: #ccc;
+      border: 2px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #333;
+      border-radius: 4px;
+    }
+    .game-piece.selected {
+      background-color: #007bff;
+      color: white;
+    }
+    .game-piece.ai {
+      background-color: #007bff;
+      color: white;
+    }
+    .game-piece.enemy {
+      background-color: #ff4081;
+      color: white;
+    }
+    .game-piece.empty {
+      background-color: #eee;
+    }
+    .game-actions {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .game-actions button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 2px solid #999;
+      border-radius: 4px;
+      background-color: #f0f0f0;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .game-actions button:hover {
+      background-color: #e0e0e0;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+
+  <script>
+    // Game logic and implementation would go here
+    // This is a placeholder for the actual game code
+    // It should include movement, combat, progression, UI, AI, restart, and touch input
+    // The game should be playable with direct player input, real game-state progression,
+    // failure/success or escalating progression, restart, responsive layout, and no external network dependency.
+
+    // Placeholder for game initialization
+    function initGame() {
+      // Initialize game board, pieces, AI, and game state
+      // Set up event listeners for touch input, movement, combat, and progression
+      // Implement AI for opponent
+      // Handle restart and progression
+    }
+
+    // Start the game
+    initGame();
+  </script>
+</body>
+</html>
