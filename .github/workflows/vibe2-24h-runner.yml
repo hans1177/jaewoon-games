@@ -20,6 +20,10 @@ on:
       - 'unity-games/**'
       - 'roblox-games/**'
       - 'unreal-games/**'
+  workflow_run:
+    workflows:
+      - Vibe2 Distillation Sample Ingest
+    types: [completed]
   schedule:
     # Canonical hourly safety-net. The workflow-dispatch refill below handles continuous chaining.
     - cron: '17 * * * *'
@@ -37,6 +41,7 @@ env:
 
 jobs:
   plan:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 8
     outputs:
