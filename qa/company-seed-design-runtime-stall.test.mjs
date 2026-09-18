@@ -8,6 +8,7 @@ const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 
 test('seed design runtime preserves the active fanout and revalidates matrix targets before model setup',()=>{
   assert.match(workflow,/group: company-seed-design-runtime\s+cancel-in-progress: false/);
+  assert.equal((workflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,4);
   const checkoutIndex=workflow.indexOf('- name: Checkout isolated company runtime branch');
   const revalidateIndex=workflow.indexOf('- name: Revalidate current seed target');
   const modelCacheIndex=workflow.indexOf('- name: Restore Ollama model cache');
@@ -22,7 +23,9 @@ test('seed design runtime preserves the active fanout and revalidates matrix tar
 });
 
 test('seed design runtime uses the central WIP cap and avoids repeated Ollama setup without paid runners',()=>{
-  assert.match(workflow,/parallel_max=\$\{designWipMax\}/);
+  assert.match(workflow,/const parallelMax=Math\.max\(1,designWipMax-1\)/);
+  assert.match(workflow,/parallel_max=\$\{parallelMax\}/);
+  assert.match(workflow,/GAME_DESIGN_CONTROL_RUNNER_RESERVE=\$\{designWipMax-parallelMax\}/);
   assert.match(workflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
   assert.match(workflow,/runs-on: ubuntu-latest/);
   assert.match(workflow,/uses: actions\/cache@v4/);
@@ -60,10 +63,12 @@ test('main engine changes are serialized through bootstrap before one DESIGN_ONL
     'tools/company-design-artbook.mjs',
     'company-directive.json',
   ]) assert.ok(bootstrap.includes(`- '${path}'`),`bootstrap missing design engine path: ${path}`);
-  assert.match(bootstrap,/Continue active DESIGN_ONLY work without cancelling active batch/);
+  assert.match(bootstrap,/Continue active DESIGN_ONLY work from latest main/);
   assert.match(bootstrap,/if: always\(\)/);
-  assert.match(bootstrap,/ACTIVE_DESIGN_ONLY_RUNS=/);
-  assert.match(bootstrap,/GAME_SEED_DESIGN_CONTINUATION=SKIP_ACTIVE_BATCH/);
+  assert.match(bootstrap,/ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=/);
+  assert.match(bootstrap,/ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=/);
+  assert.match(bootstrap,/GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE/);
+  assert.match(bootstrap,/GAME_SEED_STALE_DESIGN_RUN_CANCEL_REQUESTED=/);
   assert.match(bootstrap,/gh workflow run company-seed-design-runtime\.yml --ref main/);
 });
 
