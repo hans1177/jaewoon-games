@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        ]
+      },
+      player: {
+        x: 0,
+        y: 0,
+        direction: 'right'
+      },
+      ai: {
+        enemies: [
+          { x: 1, y: 0, direction: 'left' },
+          { x: 0, y: 1, direction: 'down' }
+        ]
+      },
+      save: {
+        progress: 0,
+        economy: 0,
+        difficulty: 1
+      }
+    };
+
+    // Game loop
+    function gameLoop() {
+      // Update game state
+      updateGame();
+
+      // Render game
+      renderGame();
+
+      // Check for game over
+      if (game.save.progress >= 100) {
+        alert("You win!");
+        resetGame();
+      }
+
+      // Check for game over due to AI
+      if (game.ai.enemies.length === 0) {
+        alert("You lose!");
+        resetGame();
+      }
+
+      // Request next frame
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Update game state
+    function updateGame() {
+      // Player movement
+      if (game.player.direction === 'right') {
+        game.player.y++;
+      } else if (game.player.direction === 'left') {
+        game.player.y--;
+      } else if (game.player.direction === 'up') {
+        game.player.x--;
+      } else if (game.player.direction === 'down') {
+        game.player.x++;
+      }
+
+      // AI movement
+      for (let enemy of game.ai.enemies) {
+        if (game.player.x === enemy.x && game.player.y === enemy.y) {
+          enemy.direction = 'left';
+        } else if (game.player.x === enemy.x && game.player.y === enemy.y + 1) {
+          enemy.direction = 'up';
+        } else if (game.player.x === enemy.x && game.player.y === enemy.y - 1) {
+          enemy.direction = 'down';
+        } else if (game.player.x === enemy.x + 1 && game.player.y === enemy.y) {
+          enemy.direction = 'right';
+        } else if (game.player.x === enemy.x - 1 && game.player.y === enemy.y) {
+          enemy.direction = 'left';
+        }
+      }
+
+      // Check for collision
+      for (let enemy of game.ai.enemies) {
+        if (game.player.x === enemy.x && game.player.y === enemy.y) {
+          alert("You lose!");
+          resetGame();
+        }
+      }
+
+      // Progression
+      game.save.progress++;
+    }
+
+    // Render game
+    function renderGame() {
+      // Render map
+      const map = document.getElementById('map');
+      for (let y = 0; y < game.map.height; y++) {
+        for (let x = 0; x < game.map.width; x++) {
+          const tile = game.map.tiles[y][x];
+          if (tile === 1) {
+            const div = document.createElement('div');
+            div.className = 'tile';
+            div.style.backgroundColor = 'red';
+            map.appendChild(div);
+          }
+        }
+      }
+
+      // Render player
+      const player = document.getElementById('player');
+      player.style.backgroundColor = 'blue';
+
+      // Render AI enemies
+      for (let enemy of game.ai.enemies) {
+        const div = document.createElement('div');
+        div.className = 'enemy';
+        div.style.backgroundColor = 'green';
+        div.style.left = `${enemy.x * 20}px`;
+        div.style.top = `${enemy.y * 20}px`;
+        map.appendChild(div);
+      }
+    }
+
+    // Reset game
+    function resetGame() {
+      game.player.x = 0;
+      game.player.y = 0;
+      game.save.progress = 0;
+      game.save.economy = 0;
+      game.save.difficulty = 1;
+      game.ai.enemies = [
+        { x: 1, y: 0, direction: 'left' },
+        { x: 0, y: 1, direction: 'down' }
+      ];
+      renderGame();
+    }
+
+    // Start game
+    gameLoop();
+  </script>
+</body>
+</html>
