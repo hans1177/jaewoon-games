@@ -63,27 +63,75 @@ function fullWebRewriteAllowed(order,target,exploration={}){
   if(strategy)return strategy==='FULL_REBUILD';
   return order?.workerPolicy?.fullFileRewriteAllowed===true||/FULL_WEB_GAME_REBUILD|실제 웹게임|프로토타입.*웹게임/i.test(clean(order?.goal));
 }
+function fullSourceRewriteAllowed(order,target,responsibleFiles=[],exploration={}){
+  if(target==='web')return fullWebRewriteAllowed(order,target,exploration);
+  if(target!=='roblox')return false;
+  const task=order?.selectedTask&&typeof order.selectedTask==='object'?order.selectedTask:{};
+  const ownerAuthorized=task.ownerDirective===true||order?.ownerDirective===true;
+  const rebuildMode=clean(task.rebuildMode||order?.rebuildMode).toUpperCase();
+  const evidence=unique([...(Array.isArray(task.evidence)?task.evidence:[]),...(Array.isArray(order?.evidence)?order.evidence:[])]);
+  const directiveEvidence=evidence.includes('owner-directive:full-roblox-game-rebuild');
+  const goalAuthorized=/FULL_ROBLOX_GAME_REBUILD|FULL_REBUILD/i.test(clean(order?.goal));
+  const policyAllowed=order?.workerPolicy?.fullFileRewriteAllowed===true;
+  if(!ownerAuthorized||!(rebuildMode==='FULL_REBUILD'||directiveEvidence||goalAuthorized||policyAllowed))return false;
+  if(!responsibleFiles.length||responsibleFiles.length>MAX_CHANGED_FILES)return false;
+  return responsibleFiles.every(file=>targetExtensions('roblox').has(path.extname(file).toLowerCase()));
+}
 function parseDirectFullHtml(raw,{responsibleFiles=[]}={}){let text=String(raw??'').replaceAll('\r\n','\n').trim();if(/^\`\`\`(?:html)?\s*/i.test(text))text=text.replace(/^\`\`\`(?:html)?\s*/i,'').replace(/\s*\`\`\`$/,'').trim();if(responsibleFiles.length!==1)return null;if(!/^(?:<!doctype\s+html\b|<html\b)/i.test(text))return null;const htmlEnd=text.toLowerCase().lastIndexOf('</html>');if(htmlEnd<0||text.slice(htmlEnd+7).trim())return null;const content=text.slice(0,htmlEnd+7).trim();if(!content)return null;return{summary:'Vibe2 recovered direct full HTML candidate',expectedEffect:'playable Web source replacement',edits:[],newFiles:[],replaceFiles:[{path:responsibleFiles[0],content}],tests:[]};}
 function parseFullFileEnvelope(raw){const text=String(raw??'').replaceAll('\r\n','\n'),trimmed=text.trimStart();if(!trimmed.startsWith(FULL_FILE_PREFIX))return null;const prefixOffset=text.indexOf(FULL_FILE_PREFIX),contentAt=text.indexOf(FULL_FILE_CONTENT_MARKER,prefixOffset+FULL_FILE_PREFIX.length);let endAt=text.indexOf(FULL_FILE_END_MARKER,contentAt+FULL_FILE_CONTENT_MARKER.length),recoveredHtmlEnd=false;if(contentAt>=0&&endAt<0){const htmlEnd=text.toLowerCase().lastIndexOf('</html>');if(htmlEnd>=contentAt&&!text.slice(htmlEnd+7).trim()){endAt=htmlEnd+7;recoveredHtmlEnd=true;}}if(contentAt<0||endAt<0)throw new Error('전체 파일 응답이 잘렸거나 종료 마커가 없음');const trailing=recoveredHtmlEnd?'':text.slice(endAt+FULL_FILE_END_MARKER.length).trim();if(trailing)throw new Error('전체 파일 종료 마커 뒤에 허용되지 않은 출력이 있음');const header=text.slice(prefixOffset,contentAt).trim().split('\n').map(line=>line.trim()).filter(Boolean);if(header.shift()!==FULL_FILE_PREFIX)throw new Error('전체 파일 응답 헤더 오류');const valueOf=key=>{const line=header.find(row=>row.startsWith(`${key}:`));return line?line.slice(key.length+1).trim():'';};const tests=header.filter(row=>row.startsWith('TEST:')).map(row=>row.slice(5).trim()).filter(Boolean);let content=text.slice(contentAt+FULL_FILE_CONTENT_MARKER.length,endAt);if(content.startsWith('\n'))content=content.slice(1);if(content.endsWith('\n'))content=content.slice(0,-1);if(!content.trim())throw new Error('전체 파일 응답 내용이 비어 있음');return{summary:valueOf('SUMMARY')||'Vibe2 full web source candidate',expectedEffect:valueOf('EXPECTED_EFFECT'),edits:[],newFiles:[],replaceFiles:[{path:valueOf('PATH'),content}],tests};}
-function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length)throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')<1800||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}`);return{path:relative,content};});const touched=[...edits.map(x=>x.path),...newFiles.map(x=>x.path),...replaceFiles.map(x=>x.path)];if(!touched.length||new Set(touched).size>MAX_CHANGED_FILES)throw new Error(`변경 파일 수는 1~${MAX_CHANGED_FILES}개여야 함`);if(new Set(touched).size!==touched.length)throw new Error('같은 파일에 edit/new/replace 중복 작업 금지');return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,8)};}
-function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');return[
-allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON. Do not use markdown fences.':'You are the Vibe2 game source worker. Return JSON only.',
-`Engine: ${order.target}`,
-`Goal: ${order.goal}`,
-`Department: ${order.department||'development'}`,
-explorationGuidance(exploration),
-`Allowed edit paths: ${allowed}`,
-allowFullRewrite?'OWNER AUTHORIZATION: this existing Web prototype must be rebuilt into a real playable game. Replace the responsible existing file completely. Do not return a validation dashboard, fake state buttons, or a thin prototype. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, and no external network dependency.':'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
-allowFullRewrite?'The PATH line MUST be one exact path from Allowed edit paths. Everything between the content and end markers is written verbatim as the replacement file. The end marker is mandatory; never omit it.':'Every edits[].path and replaceFiles[].path MUST be one exact path from Allowed edit paths.',
-allowFullRewrite?'Keep the complete replacement concise and finish it comfortably before the output limit. Prefer compact CSS and JavaScript, preserve the actual gameplay loop, and reserve the final output for </html> followed by VIBE2_FILE_END.':'Do not expand unrelated code.',
-allowFullRewrite?'Required output format:\nVIBE2_FULL_FILE\nPATH:index.html\nSUMMARY:short summary\nEXPECTED_EFFECT:short expected effect\nTEST:mobile gameplay\nTEST:restart\nTEST:runtime\n---VIBE2_FILE_CONTENT---\n<!doctype html>\n...complete playable HTML...\n</html>\n---VIBE2_FILE_END---':'Every edits[].find MUST be copied character-for-character from the matching FILE block and occur exactly once.',
-'Do not output binary assets. Do not use wrapper/monkey patches. Do not change homepage/company files.',
-'For web target, stay inside the existing web-games/<game> root.',
-'Read-only impact context may explain dependencies but MUST NOT be edited unless it is also listed in Allowed edit paths.',
-allowFullRewrite?'The replacement must be self-contained enough to run from the existing game root and must finish before the VIBE2_FILE_END marker.':'JSON schema: {"summary":"...","expectedEffect":"...","edits":[{"path":"exact allowed path","find":"exact unique old text","replace":"new text"}],"newFiles":[],"replaceFiles":[],"tests":["..."]}',
-`Required QA: ${(order.qa||[]).join(', ')}`,
-sourceText
-].filter(Boolean).join('\n');}
+function minimumReplacementBytes(target,relative){if(target!=='roblox')return 1800;return path.extname(relative).toLowerCase()==='.json'?120:600;}
+function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false}){
+  const rawFullFile=allowFullRewrite&&(target==='web'||(target==='roblox'&&responsibleFiles.length===1));
+  const envelope=typeof raw==='string'&&rawFullFile?parseFullFileEnvelope(raw):null;
+  const directHtml=typeof raw==='string'&&target==='web'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;
+  const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);
+  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');
+  const promotedReplaceFiles=[];
+  const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>{
+    const edit={path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')};
+    const fullContent=String(item?.replace??item?.content??'');
+    if(target==='roblox'&&allowFullRewrite&&!edit.find&&fullContent){
+      promotedReplaceFiles.push({path:edit.path,content:fullContent});
+      return null;
+    }
+    return edit;
+  }).filter(Boolean);
+  for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}
+  const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length)throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});
+  if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);
+  const replaceFiles=[...(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]),...promotedReplaceFiles].map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시적으로 승인된 FULL_REBUILD 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<minimumReplacementBytes(target,relative)||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}`);return{path:relative,content};});
+  const touched=[...edits.map(x=>x.path),...newFiles.map(x=>x.path),...replaceFiles.map(x=>x.path)];
+  if(!touched.length||new Set(touched).size>MAX_CHANGED_FILES)throw new Error(`변경 파일 수는 1~${MAX_CHANGED_FILES}개여야 함`);
+  if(new Set(touched).size!==touched.length)throw new Error('같은 파일에 edit/new/replace 중복 작업 금지');
+  return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,8)};
+}
+function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null}={}){
+  const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');
+  const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');
+  const target=clean(order.target).toLowerCase();
+  const fullWeb=allowFullRewrite&&target==='web';
+  const fullRoblox=allowFullRewrite&&target==='roblox';
+  const rawRoblox=fullRoblox&&responsibleFiles.length===1;
+  const rawFullFile=fullWeb||rawRoblox;
+  const rawPath=rawRoblox?responsibleFiles[0]:'index.html';
+  return[
+    rawFullFile?'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON. Do not use markdown fences.':'You are the Vibe2 game source worker. Return JSON only.',
+    `Engine: ${order.target}`,
+    `Goal: ${order.goal}`,
+    `Department: ${order.department||'development'}`,
+    explorationGuidance(exploration),
+    `Allowed edit paths: ${allowed}`,
+    fullWeb?'OWNER AUTHORIZATION: this existing Web prototype must be rebuilt into a real playable game. Replace the responsible existing file completely. Do not return a validation dashboard, fake state buttons, or a thin prototype. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, and no external network dependency.':fullRoblox?'OWNER AUTHORIZATION: this existing Roblox prototype is in FULL_REBUILD. Replace only the responsible Lua/Luau/JSON source files required by the goal. Preserve the owner-authorized source boundary and server-authoritative gameplay contract.':'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
+    rawFullFile?'The PATH line MUST be one exact path from Allowed edit paths. Everything between the content and end markers is written verbatim as the replacement file. The end marker is mandatory; never omit it.':'Every edits[].path and replaceFiles[].path MUST be one exact path from Allowed edit paths.',
+    rawFullFile?`Required output format:\nVIBE2_FULL_FILE\nPATH:${rawPath}\nSUMMARY:short summary\nEXPECTED_EFFECT:short expected effect\nTEST:runtime\n---VIBE2_FILE_CONTENT---\n...complete replacement file...\n---VIBE2_FILE_END---`:'Every edits[].find MUST be copied character-for-character from the matching FILE block and occur exactly once. For an owner-authorized Roblox FULL_REBUILD, replaceFiles[] may contain complete responsible Lua/Luau/JSON replacements.',
+    'Do not output binary assets. Do not use wrapper/monkey patches. Do not change homepage/company files.',
+    'For web target, stay inside the existing web-games/<game> root.',
+    'Read-only impact context may explain dependencies but MUST NOT be edited unless it is also listed in Allowed edit paths.',
+    rawFullFile?'The replacement must be self-contained enough to run from the existing game root and must finish before the VIBE2_FILE_END marker.':'JSON schema: {"summary":"...","expectedEffect":"...","edits":[{"path":"exact allowed path","find":"exact unique old text","replace":"new text"}],"newFiles":[],"replaceFiles":[],"tests":["..."]}',
+    `Required QA: ${(order.qa||[]).join(', ')}`,
+    sourceText
+  ].filter(Boolean).join('\n');
+}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지/i.test(message);
@@ -156,7 +204,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const exploration=exploreVibe2WorkOrder({cwd,order});
   const context=readContext(sourceRoot,target,responsibleFiles,order?.source?.ignoredPaths||[],exploration.contextFiles||[]);
   if(!context.files.length)throw new Error('worker context 파일 없음');
-  const allowFullRewrite=fullWebRewriteAllowed(order,target,exploration);
+  const allowFullRewrite=fullSourceRewriteAllowed(order,target,responsibleFiles,exploration);
   const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration});
   const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative});
   const candidate=generated.candidate;
