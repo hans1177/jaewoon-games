@@ -117,8 +117,14 @@ jobs:
           fi
 
           node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
+          reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
+          reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
           node tools/vibe2-queue-control.mjs reserve-batch \
             --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" \
+            --reservation-id="$reservation_id" \
+            --reservation-run="$GITHUB_RUN_ID" \
+            --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
+            --reserved-at="$reserved_at" \
             --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
           node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-reserve.json >/tmp/vibe2-handoff-after-reserve.log
 
@@ -155,7 +161,7 @@ jobs:
             exploration.push({taskId:row.taskId,safeTask});
             const variantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
             const earlyRefill=variantCount===1;
-            const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)};
+            const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)};
             workers.push({...shared,variant:'primary',earlyRefill});
             for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`,earlyRefill:false});
           }
@@ -580,6 +586,7 @@ jobs:
           PERFORMANCE_OUTCOME: ${{ steps.performance.outcome }}
           PRACTICE_OUTCOME: ${{ steps.practice.outcome }}
           SAFE_TASK: ${{ matrix.safeTask }}
+          RESERVATION_ID: ${{ matrix.reservationId }}
           RESERVED_AT: ${{ matrix.reservedAt }}
           REQUESTED_MAX: ${{ matrix.requestedMax }}
           EFFECTIVE_MAX: ${{ matrix.effectiveMax }}
@@ -636,6 +643,7 @@ jobs:
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             `actions-run:${process.env.GITHUB_RUN_ID}`,
+            clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`,
             ...(route==='analysis-only'?['learning-practice-only','production-pass:NO','source-write:NO']:[ ])
           ].filter(Boolean);
@@ -643,13 +651,13 @@ jobs:
           const workerFinishedAt=Date.now();
           const cacheRaw=clean(process.env.OLLAMA_CACHE_HIT).toLowerCase();
           const metrics={
-            requestedMax:Number(process.env.REQUESTED_MAX||20),effectiveMax:Number(process.env.EFFECTIVE_MAX||20),reservedAt:clean(process.env.RESERVED_AT),
+            requestedMax:Number(process.env.REQUESTED_MAX||20),effectiveMax:Number(process.env.EFFECTIVE_MAX||20),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
             workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
             candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
             changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
             ollamaCacheHit:cacheRaw==='true'?true:cacheRaw==='false'?false:null,ollamaRuntimeSource:clean(process.env.OLLAMA_RUNTIME_SOURCE)||null
           };
-          const result={version:4,taskId:clean(process.env.TASK_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,evidence,exploration,roleResults,durationMs:metrics.workerTotalMs,metrics};
+          const result={version:5,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,evidence,exploration,roleResults,durationMs:metrics.workerTotalMs,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
