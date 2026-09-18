@@ -186,9 +186,9 @@ assert.notEqual(sha256Text('same'),sha256Text('changed'));
 
 const bootstrap=read('tools/company-development-web-bootstrap.mjs');
 assert.match(bootstrap,/ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE/);
-assert.match(bootstrap,/VIBE2_PRESERVED_SOURCE_REPAIR/,'missing behavior in a preserved source must route into Vibe repair');
-assert.match(bootstrap,/기존 저장 키·저장 구조·규칙·진행을 보존/,'Vibe repair must preserve existing source/save semantics');
-assert.match(bootstrap,/VIBE_DEVELOPMENT_CONTEXT/,'Vibe must inspect gameplay sketch, source structure and patch plan before coding');
+assert.match(bootstrap,/VIBE_WEB_IMPLEMENTATION_REQUIRED/,'missing behavior in preserved source must route to Vibe implementation owner');
+assert.match(bootstrap,/SOURCE_PRESERVED_VALIDATION_ONLY/,'company bootstrap must preserve valid source and avoid implementing gameplay');
+assert.doesNotMatch(bootstrap,/generativelanguage\.googleapis|GEMINI_API_KEY|VIBE2_GEMINI_MODEL_REQUIRED/,'company bootstrap must not invoke Gemini for Web source development');
 assert.doesNotMatch(bootstrap,/const\s+SESSION_MINUTES\s*=\s*30/,'initial bootstrap must not restore a 30-minute requirement');
 assert.doesNotMatch(bootstrap,/data-session-minutes=\\?"30\\?"/,'initial generation prompt must not require session-minute metadata');
 
