@@ -67,6 +67,18 @@ jobs:
           echo 'COMPANY_ENGINE_SOURCE=main'
           echo 'COMPANY_RUNTIME_HISTORY_MERGE=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
+          if git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > development-queue.json 2>/dev/null; then
+            echo 'COMPANY_RUNTIME_DEVELOPMENT_QUEUE_OVERLAY=YES'
+          else
+            rm -f development-queue.json
+            echo 'COMPANY_RUNTIME_DEVELOPMENT_QUEUE_OVERLAY=NO'
+          fi
+          if git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > game-seed-state.json 2>/dev/null; then
+            echo 'COMPANY_RUNTIME_SEED_STATE_OVERLAY=YES'
+          else
+            rm -f game-seed-state.json
+            echo 'COMPANY_RUNTIME_SEED_STATE_OVERLAY=NO'
+          fi
 
       - name: Sync company status and semantic production classes
         run: |
@@ -86,6 +98,10 @@ jobs:
           const supervision=JSON.parse(fs.readFileSync('director-supervision-status.json','utf8'));
           const portfolio=JSON.parse(fs.readFileSync('autonomous-portfolio.json','utf8'));
           const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          if(company.runtimeAuthority!=='company-runtime')throw new Error('company runtime authority missing');
+          if(catalog.runtimeAuthority!=='company-runtime'||catalog.runtimeInfoAuthority!=='company-runtime')throw new Error('homepage runtime authority missing');
+          if(!Array.isArray(catalog.runtimeSupportedPlatforms)||!['UNITY','ROBLOX','FORTNITE_UEFN'].every(value=>catalog.runtimeSupportedPlatforms.includes(value)))throw new Error('homepage runtime platform coverage missing');
+          if((catalog.games||[]).some(game=>game.homepageInfo?.authority!=='company-runtime'))throw new Error('homepage runtime info missing from catalog game');
           if(company.supervision?.dateKst!==supervision.dateKst)throw new Error('supervision date not synchronized');
           const classes=['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED','DESIGN_ONLY'];
           const valid=new Set(classes);
