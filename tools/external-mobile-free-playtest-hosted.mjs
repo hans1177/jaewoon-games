@@ -124,7 +124,7 @@ function installPackage(packageId,files,gameId){
   }
   const app=files.filter(f=>f.type!=='lib').map(f=>remote+'/'+f.name);
   if(!app.length)throw new Error('no app APKs to install');
-  const cmd=app.length===1?'pm install -r '+shellQuote(app[0]):'pm install-multiple -r '+app.map(shellQuote).join(' ');
+  const cmd='pm install -r '+app.map(shellQuote).join(' ');
   const r=remoteShell(cmd,{allowFailure:true});
   if(r.status!==0)throw new Error('app install failed: '+String(r.stdout||r.stderr).slice(-3000));
   const pathResult=remoteShell('pm path '+shellQuote(packageId),{allowFailure:true});
