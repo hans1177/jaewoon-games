@@ -79,9 +79,10 @@ test('existing Web exploration emits a preservation strategy before implementati
   };
   const result=exploreVibe2WorkOrder({cwd,order});
   assert.equal(result.sourceWrite,false);
-  assert.equal(result.existingWebAssessment.strategy,'KEEP_AND_CONTINUE');
+  assert.equal(result.existingWebAssessment.strategy,'PARTIAL_REPAIR');
   assert.equal(result.existingWebAssessment.fullRewriteAllowed,false);
   assert.equal(result.existingWebAssessment.evidence.validationScore,84);
+  assert.ok(result.existingWebAssessment.reasons.includes('CURRENT_APPROVED_SCOPE_GAPS_REMAIN'));
   assert.equal(fs.readFileSync(web,'utf8'),before);
 });
 
@@ -221,7 +222,7 @@ test('central runtime keeps exploration reuse long slot and six separated roles 
 test('continuous workflow executes exploration before implementation and review after regression',()=>{
   assert.match(workflow,/\n  exploration:\n/);
   assert(workflow.includes('Upload reusable exploration handoff'));
-  assert(workflow.includes('needs: [reserve, exploration]'));
+  assert(workflow.includes('needs: [reserve, model_cache, exploration]'));
   assert(workflow.includes('VIBE2_EXPLORATION_FILE=.vibe2/exploration.json'));
   assert(workflow.includes('Run impact-first incremental QA role'));
   assert(workflow.includes('Run read-only performance sanity role'));
