@@ -286,3 +286,20 @@ test('work package metadata survives queue normalization and larger functional p
   assert.equal(selection.selected[0].packageContext.sharedPreparation,true);
   assert.deepEqual([...selection.selected[0].completionCriteria],['functional-scope-implemented']);
 });
+
+
+test('practice-only PASS settles done without candidate QA promotion', () => {
+  let queue=createVibeContinuousQueue({tasks:[{
+    id:'practice',target:'web',department:'development',type:'research',goal:'[VIBE_LEARNING_PRACTICE] save',
+    status:'running',priority:'low',releaseState:'other',evidence:['learning-practice-only','production-pass:NO']
+  }]});
+  const merged=mergeVibeWorkerResults(queue,[{
+    taskId:'practice',variant:'primary',outcome:'PASS',blocker:'learning-practice-complete',
+    evidence:['learning-practice-only','production-pass:NO','source-write:NO']
+  }]);
+  const task=merged.queue.tasks.find(t=>t.id==='practice');
+  assert.equal(task.status,'done');
+  assert.equal(task.lastOutcome,'PASS');
+  assert.ok(task.evidence.includes('production-pass:NO'));
+  assert.equal(merged.applied[0].outcome,'DONE_PRACTICE');
+});
