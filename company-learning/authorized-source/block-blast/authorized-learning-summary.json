@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "gameId": "block-blast",
+  "packageId": "com.block.juggle",
+  "authority": "OWNER_ASSERTED_REUSE_REINTERPRETATION",
+  "packageFingerprint": "fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c",
+  "generatedAt": "2026-09-18T00:16:50.454Z",
+  "learningDomains": [
+    "board-grid-placement",
+    "score-combo-reward",
+    "input-drag-touch",
+    "progression-difficulty",
+    "save-state-persistence",
+    "ads-monetization",
+    "session-retry-gameover",
+    "tutorial-onboarding"
+  ],
+  "reusablePatterns": [
+    "AUTHORIZED_SOURCE:board-grid-placement",
+    "AUTHORIZED_SOURCE:score-combo-reward",
+    "AUTHORIZED_SOURCE:input-drag-touch",
+    "AUTHORIZED_SOURCE:progression-difficulty",
+    "AUTHORIZED_SOURCE:save-state-persistence",
+    "AUTHORIZED_SOURCE:ads-monetization",
+    "AUTHORIZED_SOURCE:session-retry-gameover",
+    "AUTHORIZED_SOURCE:tutorial-onboarding"
+  ],
+  "sourceCorpus": {
+    "documents": 52301,
+    "totalChars": 355550086
+  },
+  "assets": {
+    "count": 10903
+  },
+  "nativeLibraries": {
+    "count": 30
+  },
+  "provenance": {
+    "authorizationFile": "server-playtest/block-blast-authorized-learning.json",
+    "apkSha256": [
+      {
+        "file": "base.apk",
+        "bytes": 172505060,
+        "sha256": "38e27a596e019b0574c8cac577eef0d2d3bf39c0c3f155f275e3e16bb57104e3"
+      },
+      {
+        "file": "split_config.arm64_v8a.apk",
+        "bytes": 62622341,
+        "sha256": "97efd72cc61275fab5d01433d123be3f0b4aead99b9862e466c8cd0778f52df1"
+      },
+      {
+        "file": "split_config.ko.apk",
+        "bytes": 57753,
+        "sha256": "e7e45fa34a6fbb85ad288b4322097bcc07aaf2fd0c9fb6258fae58bff77f9f4b"
+      },
+      {
+        "file": "split_config.xxhdpi.apk",
+        "bytes": 328287,
+        "sha256": "739a95a5a64a0ff252dd5da0f8aef5aba9d273220bc9e6ceb4d77fd4bf75a2e9"
+      },
+      {
+        "file": "split_gamedatalib.apk",
+        "bytes": 16794,
+        "sha256": "6b5574b578cc4253659deaae221eb3f8e73659e7d624ce88a9752b1031b50945"
+      }
+    ],
+    "packageFingerprint": "fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c"
+  },
+  "runtimeEvidenceRequiredForPositiveRuntimeClaims": true,
+  "sourceRepository": "hans1177/jaewoon-ai-company",
+  "sourceBranch": "vibe2-authorized-learning-runtime",
+  "sourceCommit": "47de4cf35cf7e1a059d74eb1acc94b0a765e824f",
+  "sourceSummaryBlobSha": "c9440c655db4fbb2e69e04bf677ad5c0166224e4",
+  "publicSnapshotKind": "DERIVED_LEARNING_SUMMARY_NO_RAW_APK_OR_ASSET_BYTES"
+}
