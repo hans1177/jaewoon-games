@@ -86,6 +86,22 @@ test('fresh persistent lease evidence survives a later queue normalization cycle
   assert.equal(task.evidence.includes('game-study-stale-running-recovered'), false);
 });
 
+test('expired persistent GAME STUDY lease is reclaimed even without fan-in failure evidence', () => {
+  const nowMs = Date.parse('2026-09-16T09:30:00Z');
+  const lease = Date.parse('2026-09-16T09:00:00Z');
+  const task = runningTask({ evidence: [
+    `game-study-target:${targetId}`,
+    'game-study-engine:roblox',
+    `game-study-reservation-at:${new Date(lease).toISOString()}`
+  ] });
+  const prepared = prepareGameStudyQueue({ maxConcurrentTasks: 20, tasks: [task] }, targets, { nowMs });
+  const recovered = prepared.queue.tasks.find((row) => row.id === taskId);
+  assert.equal(recovered.status, 'queued');
+  assert.equal(recovered.retries, 1);
+  assert.equal(leaseEvidence(recovered), null);
+  assert(recovered.evidence.includes('game-study-stale-running-recovered'));
+});
+
 test('normal running GAME STUDY task without fan-in failure evidence is never reclaimed', () => {
   const nowMs = Date.parse('2026-09-16T09:00:00Z');
   const task = runningTask({ evidence: [`game-study-target:${targetId}`, 'game-study-engine:roblox'] });

@@ -9,6 +9,7 @@ import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../asse
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { diagnoseGame, microTaskFromIssue } from './autonomous-diagnostics.mjs';
 import { buildWorkPackage, computeWorkloadTelemetry, estimateTaskWorkUnits, resolveWorkPackagePolicy } from './vibe2-work-package.mjs';
+import { runGameStudyPlannerContext } from './vibe2-game-study-planner-context.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -299,15 +300,17 @@ export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput=
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}
 export function runVibe2AutoPlanner({
   statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', queueFile='', runtimeFile='vibe2-runtime.json',
-  controlFile='', experienceFile='', recombinationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
+  controlFile='', experienceFile='', knowledgeFile='', runtimeEvidenceRoot='', recombinationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
 }={}) {
   const runtime=readJson(runtimeFile,{});
   const resolvedQueueFile=clean(queueFile)||clean(runtime.sources?.queue)||'.vibe2/queue.json';
   const resolvedControlFile=clean(controlFile)||clean(runtime.sources?.parallelism)||clean(runtime.adaptiveBackpressure?.stateFile)||'.vibe2/parallelism-control.json';
   const resolvedExperienceFile=clean(experienceFile)||clean(runtime.sources?.experience)||'.vibe2/experience.json';
+  const resolvedKnowledgeFile=clean(knowledgeFile)||clean(runtime.sources?.gameStudyKnowledge)||clean(runtime.gameStudy?.knowledgeState)||'.vibe2/game-study-knowledge.json';
+  const resolvedRuntimeEvidenceRoot=clean(runtimeEvidenceRoot)||clean(runtime.gameStudy?.runtimeEvidenceRoot)||'.vibe2/runtime-evidence';
   const handoff=generateVibe2Handoff({runtimeFile,queueFile:resolvedQueueFile,controlFile:resolvedControlFile,experienceFile:resolvedExperienceFile});
   const machineHandoff={used:true,kind:handoff.kind,sourceOfTruth:handoff.sourceOfTruth,consistency:handoff.consistency,currentPersistentMax:handoff.parallelism.currentPersistentMax,lastDecision:handoff.parallelism.lastDecision};
-  if(handoff.consistency?.ok!==true)return{planned:false,reason:'MACHINE_STATE_INCONSISTENT',machineHandoff,effectivePlannerMax:0};
+  if(handoff.consistency?.ok!==true)return{planned:false,reason:'MACHINE_STATE_INCONSISTENT',machineHandoff,effectivePlannerMax:0,learningContext:null};
   const effectivePlannerMax=Math.min(parallelLimit(maxConcurrentTasks),parallelLimit(handoff.parallelism.currentPersistentMax));
   const resolvedRecombinationFile=clean(recombinationFile)||path.join(repoRoot,'company-learning','vibe3-recombination-memory.json');
   const recombinationMemory=readJson(resolvedRecombinationFile,{version:1,recipes:[]});
@@ -315,11 +318,24 @@ export function runVibe2AutoPlanner({
   const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{},recombinationMemory});
   const normalizedBefore=createVibeContinuousQueue(queueBefore);
   const queueSynchronized=JSON.stringify(normalizedBefore.tasks)!==JSON.stringify(result.queue?.tasks||[]);
-  if(result.planned||queueSynchronized)writeJson(resolvedQueueFile,result.queue);
-  return{...result,queueSynchronized,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length}};
+  if(result.planned)writeJson(resolvedQueueFile,result.queue);
+  else if(queueSynchronized)writeJson(resolvedQueueFile,result.queue);
+  const learningContext=runGameStudyPlannerContext({
+    queueFile:resolvedQueueFile,
+    knowledgeFile:resolvedKnowledgeFile,
+    experienceFile:resolvedExperienceFile,
+    runtimeEvidenceRoot:resolvedRuntimeEvidenceRoot
+  });
+  return{...result,queueSynchronized,machineHandoff,effectivePlannerMax,learningContext:Object.freeze({
+    changed:learningContext.changed===true,
+    enrichedCount:Number(learningContext.enrichedCount||0),
+    materialCollectedCount:Number(learningContext.materialCollectedCount||0),
+    multiSourceCollectedCount:Number(learningContext.multiSourceCollectedCount||0),
+    authorityExpanded:false
+  }),recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
+  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),knowledgeFile:clean(args.knowledge),runtimeEvidenceRoot:clean(args['runtime-evidence-root']),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
   console.log(`VIBE2_MACHINE_HANDOFF=${result.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
@@ -345,6 +361,10 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_WORK_PACKAGE_REWORK_RATE=${result.workloadTelemetry?.historicalReworkRatePct||0}`);
   console.log(`VIBE2_WORK_PACKAGE_QA_DUPLICATE_RATE=${result.workloadTelemetry?.historicalQaDuplicateRatePct||0}`);
   console.log(`VIBE2_WORK_PACKAGE_LOW_EFFICIENCY_STREAK=${result.workloadTelemetry?.lowEfficiencyStreak||0}`);
+  console.log(`VIBE2_PLANNER_LEARNING_CONTEXT=${result.learningContext?.changed?'APPLIED':'NO_CHANGE'}`);
+  console.log(`VIBE2_PLANNER_GAME_STUDY_MATERIALS=${result.learningContext?.materialCollectedCount||0}`);
+  console.log(`VIBE2_PLANNER_MULTI_SOURCE_MATERIALS=${result.learningContext?.multiSourceCollectedCount||0}`);
+  console.log('VIBE2_PLANNER_LEARNING_AUTHORITY_EXPANDED=NO');
   console.log(`VIBE3_RECOMBINATION_RECIPES_AVAILABLE=${result.recombinationContext?.recipes||0}`);
   console.log(`VIBE3_RECOMBINATION_TASKS_APPLIED=${result.recombinationContext?.applied||0}`);
 }

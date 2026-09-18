@@ -90,6 +90,7 @@ function normalizeCompanyContext(input = {}) {
 function normalizeTask(input = {}, index = 0) {
   const status = VIBE_QUEUE_STATUSES.includes(clean(input.status)) ? clean(input.status) : 'queued';
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
+  const normalizedWorkUnits = clampInt(input.workUnits || input.taskWorkUnits || 0, 0, 8);
   const task = {
     id: clean(input.id) || `task-${index + 1}`,
     gameId: clean(input.gameId) || null,
@@ -119,7 +120,10 @@ function normalizeTask(input = {}, index = 0) {
     sourceRoot: inferSourceRoot(input),
     speculativeEligible: input.speculativeEligible === true,
     estimatedRisk: ['low','medium','high'].includes(clean(input.estimatedRisk).toLowerCase()) ? clean(input.estimatedRisk).toLowerCase() : 'low',
-    taskWorkUnits: clampInt(input.taskWorkUnits || input.workUnits || 0, 0, 8),
+    fullRebuild: input.fullRebuild === true,
+    rebuildMode: clean(input.rebuildMode) || null,
+    workUnits: normalizedWorkUnits,
+    taskWorkUnits: normalizedWorkUnits,
     packageId: clean(input.packageId) || null,
     packageGoal: clean(input.packageGoal) || null,
     packageRole: clean(input.packageRole) || null,
@@ -134,7 +138,7 @@ function normalizeTask(input = {}, index = 0) {
     packageContext: normalizePackageContext(input.packageContext),
     completionCriteria: freezeList(input.completionCriteria || [])
   };
-  task.shard = inferShard(task);
+  task.shard = inferShard({ ...input, ...task });
   return freeze(task);
 }
 

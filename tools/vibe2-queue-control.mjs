@@ -17,6 +17,7 @@ import {
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
+import { runGameStudyPlannerContext } from './vibe2-game-study-planner-context.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
@@ -426,13 +427,27 @@ export function runQueueCommand(args = {}) {
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), summary: summarizeVibeContinuousQueue(queue) };
   } else if (command === 'reserve') {
+    const gameStudyPlanner=runGameStudyPlannerContext({
+      queueFile:file,
+      knowledgeFile:clean(args.knowledge)||'.vibe2/game-study-knowledge.json',
+      experienceFile:clean(args.experience)||'.vibe2/experience.json',
+      runtimeEvidenceRoot:clean(args['runtime-evidence-root'])||'.vibe2/runtime-evidence'
+    });
+    queue=createVibeContinuousQueue(gameStudyPlanner.queue);
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks, reservation: reservationFromArgs(args) });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
-    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, gameStudyPlanner, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
+    const gameStudyPlanner=runGameStudyPlannerContext({
+      queueFile:file,
+      knowledgeFile:clean(args.knowledge)||'.vibe2/game-study-knowledge.json',
+      experienceFile:clean(args.experience)||'.vibe2/experience.json',
+      runtimeEvidenceRoot:clean(args['runtime-evidence-root'])||'.vibe2/runtime-evidence'
+    });
+    queue=createVibeContinuousQueue(gameStudyPlanner.queue);
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
@@ -461,11 +476,15 @@ export function runQueueCommand(args = {}) {
           longWorkProtectedSlotUsed:reserved.selection?.longWorkProtectedSlotUsed === true,
           longWorkOwnerTaskId:reserved.selection?.longWorkOwnerTaskId || null,
           shardUse:reserved.selection?.shardUse || {},
-          stopReason:reserved.selection?.stopReason || null
+          stopReason:reserved.selection?.stopReason || null,
+          gameStudyPlannerEnrichedCount:gameStudyPlanner.enrichedCount,
+          gameStudyPlannerMaterialCollectedCount:gameStudyPlanner.materialCollectedCount,
+          gameStudyPlannerMultiSourceCollectedCount:gameStudyPlanner.multiSourceCollectedCount,
+          gameStudyPlannerAuthorityExpanded:gameStudyPlanner.authorityExpanded
         }
       });
     }
-    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, gameStudyPlanner, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
