@@ -468,6 +468,33 @@
       "modelPromotionGate": "FIXED_HOLDOUT_AB_THEN_CANARY",
       "idlePracticeOnlyUsesFreeCapacity": true,
       "productionWorkAlwaysPreemptsPractice": true
+    },
+    "webFirstImplementation": {
+      "authority": "VIBE_IMPLEMENTATION_OWNER",
+      "existingSourceAssessmentRequired": true,
+      "assessmentOwner": "VIBE_EXPLORATION",
+      "assessmentStrategies": [
+        "KEEP_AND_CONTINUE",
+        "PARTIAL_REPAIR",
+        "MAJOR_REWORK",
+        "FULL_REBUILD"
+      ],
+      "fullRebuildRequires": "EXPLORATION_FULL_REBUILD_DECISION",
+      "prototypeMarkerAloneCannotForceRebuild": true,
+      "existingSourceMustBeReadBeforeDecision": true,
+      "approvedDesignComparisonRequired": true,
+      "approvedScopeCoverageRequired": true,
+      "gameplaySignalAssessmentRequired": true,
+      "preserveReusableSystems": true,
+      "preserveSaveMeaningWhenCompatible": true,
+      "preserveGameIdentity": true,
+      "missingSourceAction": "VIBE_NEW_WEB_BASE_IMPLEMENTATION",
+      "existingSourceAction": "ASSESS_THEN_IMPLEMENT",
+      "verifiedLearningReuseRequired": true,
+      "transformativeRecombinationRawCopyForbidden": true,
+      "companyBootstrapMayGenerateGameSource": false,
+      "companyBootstrapMayRepairGameSource": false,
+      "companyRuntimeRole": "ROUTE_VALIDATE_FAN_IN_ONLY"
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
