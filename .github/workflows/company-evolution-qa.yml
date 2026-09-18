@@ -222,12 +222,16 @@ jobs:
           grep -Fq 'HOMEPAGE_LAYOUT_MANAGEMENT=ENABLED' tools/homepage-manager.mjs
           grep -Fq 'HOMEPAGE_MANAGER_COUNT=1' tools/homepage-manager.mjs
           grep -Fq 'HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1' tools/homepage-manager.mjs
+          grep -Fq 'workflow_run:' .github/workflows/homepage-manager.yml
           grep -Fq 'push:' .github/workflows/homepage-manager.yml
           grep -Fq 'pull_request:' .github/workflows/homepage-manager.yml
           grep -Fq 'workflow_dispatch:' .github/workflows/homepage-manager.yml
-          grep -Fq 'contents: read' .github/workflows/homepage-manager.yml
-          if grep -Eq '^[[:space:]]+schedule:|contents: write' .github/workflows/homepage-manager.yml; then
-            echo 'homepage manager must remain event-driven/read-only with one manager and one supervisor' >&2
+          grep -Fq 'contents: write' .github/workflows/homepage-manager.yml
+          grep -Fq 'pull-requests: write' .github/workflows/homepage-manager.yml
+          grep -Fq 'Director Single Post-Work Supervision' .github/workflows/homepage-manager.yml
+          grep -Fq 'DIRECTOR_EXACT_HOMEPAGE_CANDIDATE=BOUND' .github/workflows/homepage-manager.yml
+          if grep -Eq '^[[:space:]]+schedule:' .github/workflows/homepage-manager.yml; then
+            echo 'homepage manager must remain event-driven with one manager and one post-work supervisor' >&2
             exit 1
           fi
           node tools/homepage-manager.mjs
