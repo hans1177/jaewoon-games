@@ -9,7 +9,11 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
   ],
   "phases": {
     "designer_draft": {
@@ -66,19 +70,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "초급 정원 방어",
-          "newGameplay": "기본 곤충 웨이브 및 3종의 방어 유닛 활용",
-          "systemImpact": "기본 상성 및 자원 순환 시스템 학습 완료"
+          "milestone": "마일스톤 1: 습지대 환경 및 침투형 지하 곤충 확장",
+          "newGameplay": "땅속으로 파고들어 방어선 전방 타일을 우회하는 두더지귀뚜라미와 침수 타일 메커니즘을 도입하여, 수중/지하 진입 시점에 맞춘 타이밍형 충격파 스킬 조작을 제공합니다.",
+          "systemImpact": "지상 단일 타겟 방어 유닛 위주의 고착화를 해소하며, 광역 지진 충격 유닛 도입에 따른 전장 배치 비용 밸런스와 타일별 배치 제한 룰을 추가로 재조정합니다."
         },
         {
-          "milestone": "중급 지하 미로",
-          "newGameplay": "이동 경로가 변하는 지형 기믹과 비행형 곤충 추가",
-          "systemImpact": "지형 활용 및 대공 방어 유닛 배치 선택권 확장"
+          "milestone": "마일스톤 2: 고산지 기류 및 공중 편대 공습 확장",
+          "newGameplay": "강풍 방향에 따라 비행 곤충의 이동 속도와 투사체 궤적이 왜곡되는 기류 시스템, 그리고 아군 방어 타워를 마비시키는 말벌 침투 편대 패턴을 추가합니다.",
+          "systemImpact": "대공 전용 투사체 유닛의 명중률 감쇄 공식을 신설하고, 상태 이상 정화 및 바람막이 토템 유닛과의 자원 소모 우선순위 분배를 요구하도록 경제 밸런스를 확장합니다."
         },
         {
-          "milestone": "상급 여왕벌의 최종 공습",
-          "newGameplay": "보스 패턴 웨이브 및 특수 버프/디버프 존 도입",
-          "systemImpact": "최적의 자원 투자와 실시간 타일 재배치 전략 검증"
+          "milestone": "마일스톤 3: 군체 요새 및 돌연변이 여왕벌 군단 레이드",
+          "newGameplay": "다중 페이즈로 부하를 소환하며 방어 타워를 흡수하는 초대형 보스와 경로를 실시간으로 파괴하는 환경 붕괴 기믹을 결합한 웨이브를 구현합니다.",
+          "systemImpact": "단기 방어 위주의 전투를 타워 재배치 및 철거-환급 최적화 루프 중심으로 전환하며, 최대 업그레이드 트리의 분기 선택형 특성 시스템을 연동합니다."
         }
       ],
       "failureRetryRisk": {
@@ -92,12 +96,12 @@
       },
       "platformFitPlan": {
         "targetPlatform": "UNITY",
-        "inputModel": "모바일 터치 및 마우스 클릭 기반의 직관적인 드래그 앤 드롭 유닛 배치",
-        "performanceBudget": "모바일 저사양 기기에서도 60프레임을 유지하도록 곤충 스프라이트 최적화 및 파티클 제한",
-        "sessionConstraints": "한 세션당 30분 이내로 설계하여 모바일 환경에서 피로도 최소화"
+        "inputModel": "단일 탭(타워 선택 및 그리드 스냅 즉시 배치), 드래그 앤 드롭 타워 배치 지원, 터치 오프셋 50px 적용으로 손가락 시야 가림 방지, 타워 탭 시 원형 공격 사거리/업그레이드 HUD 오버레이 호출, 더블 탭 시 즉시 판매/스킬 발동 숏컷 제공, 핀치 투 줌(0.8x~1.5x) 및 드래그 패닝 카메라 제어 구현.",
+        "performanceBudget": "모바일 중저가 타겟 60FPS 방어(프레임 타임 16.6ms 이하), 최대 동시 활성 곤충 300마리 및 투사체 400개에 대해 100% C# 오브젝트 풀링 강제(GC Allocation 0B/frame), Sprite Atlas 일원화로 런타임 드로우콜 90 이하 유지, 텍스처 ASTC 4x4 압축 및 런타임 총 메모리 300MB 미만 통제.",
+        "sessionConstraints": "웨이브 8~10개 기준 1개 스테이지 3.5~5분(2배속 활성화 시 2~2.5분) 내 완결 구조 설계. OS 백그라운드 전환 및 전화 수신 즉시 무손실 자동 일시정지, 웨이브 클리어 시점마다 로컬 PlayerPrefs 상태 자동 저장 및 크래시 복구 체크포인트 보장."
       },
       "visualDirection": "아기자기하면서도 디테일한 2D 탑뷰 그래픽으로, 곤충과 식물 유닛의 특징을 직관적으로 알아볼 수 있는 명확한 가독성 제공",
-      "mobileUx": "한손 조작이 용이하도록 주요 UI 버튼을 하단에 배치하고, 텍스트 크기와 아이콘을 터치하기 쉽게 최적화",
+      "mobileUx": "화면 하단 25% 내외 '엄지 도달 구역(Natural Thumb Zone)'에 타워 선택 카드 덱, 액티브 곤충 페로몬 스킬, 1배속/2배속 토글 버튼을 집중 배치합니다. 모든 터치 가능 컴포넌트의 최소 타깃 히트박스는 48x48dp(물리 9mm 이상)를 강제하고 탭 성공 시 햅틱 피드백(Light Vibration)을 연동합니다. 상단 노치/다이내믹 아일랜드 및 하단 홈 바와 충돌하지 않도록 Unity SafeArea API 기반 반응형 캔버스를 적용하여, 자원 잔여량 및 웨이브 상태 게이지를 상단 안전 마진 내에 고정 렌더링합니다.",
       "uxAccessibilityPlan": {
         "hudPriorities": "기지 체력, 보유 재화, 현재 웨이브 진행도를 상단 및 하단에 상시 고정 노출",
         "touchAndInput": "오터치 방지를 위한 유닛 선택 및 배치 확인 2단계 인터페이스 적용",
@@ -240,26 +244,26 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 233,
-      "lastMs": 233,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 36.766633283s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"36s\" } ] } }",
-      "updatedAt": "2026-09-18T06:04:23.261Z"
-    },
-    "gemini:gemini-3.7-flash": {
       "calls": 2,
       "successes": 0,
       "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 16094,
-      "lastMs": 7324,
+      "totalMs": 410,
+      "lastMs": 177,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 15.156856165s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"15s\" } ] } }",
+      "updatedAt": "2026-09-18T06:05:44.871Z"
+    },
+    "gemini:gemini-3.7-flash": {
+      "calls": 5,
+      "successes": 2,
+      "failures": 3,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 98167,
+      "lastMs": 9046,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T06:04:57.758Z"
+      "updatedAt": "2026-09-18T06:05:43.626Z"
     },
     "gemini:gemini-3.6-flash": {
       "calls": 1,
@@ -298,14 +302,14 @@
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T06:04:23.026Z",
-  "updatedAt": "2026-09-18T06:04:57.758Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:04:50.429Z",
+  "updatedAt": "2026-09-18T06:05:44.871Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:05:43.626Z",
   "geminiModelResolution": {
-    "gemini-3.8-flash": "gemini-3.5-flash-lite"
+    "gemini-3.8-flash": "gemini-3.7-flash"
   },
   "effectiveDesignerModel": "gemini:gemini-3.8-flash",
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=78.4 hard=CRITICAL_AXIS_MINIMUM_FAIL"
 }
