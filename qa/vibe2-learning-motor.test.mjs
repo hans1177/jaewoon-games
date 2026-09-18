@@ -9,6 +9,7 @@ import {
   buildBenchmarkLadder,
   buildIdlePracticeQueue,
   injectIdlePracticeTask,
+  dedupeIdlePracticeTasks,
   buildWebRobloxHandoffs
 } from '../tools/vibe2-learning-motor.mjs';
 
@@ -122,4 +123,39 @@ test('verified internal code patterns raise mastery without raw code',()=>{
     {id:'bad',verified:true,rawCodeStored:true,independentQa:'PASS',system:'SAVE_PERSISTENCE'}
   ]});
   assert.equal(rejected.added,0);
+});
+
+
+test('duplicate terminal idle practice collapses and advances to the next unrepresented drill',()=>{
+  const practice=(id,status='failed',retries=1,evidence=[])=>({
+    id,status,retries,maxRetries:1,target:'web',type:'research',sourceRoot:'learning-practice:test',
+    evidence:['learning-practice-only','production-pass:NO',...evidence]
+  });
+  const queue={tasks:[
+    practice('LEARNING-PRACTICE-gap-asset_production-l1','failed',3,['failure-cause:learning-practice-worker-failed']),
+    practice('LEARNING-PRACTICE-gap-asset_production-l1','failed',2,['learning-practice-complete'])
+  ]};
+  const idle={drills:[
+    {id:'gap-asset_production-l1',kind:'MINI_GAME_SYSTEM_DRILL',domains:['ASSET_PRODUCTION']},
+    {id:'gap-economy-l1',kind:'MINI_GAME_SYSTEM_DRILL',domains:['ECONOMY']}
+  ]};
+  const result=injectIdlePracticeTask(queue,idle);
+  assert.equal(result.added,true);
+  assert.equal(result.deduped,1);
+  assert.equal(result.queue.tasks.filter(t=>t.id==='LEARNING-PRACTICE-gap-asset_production-l1').length,1);
+  assert.equal(result.queue.tasks.some(t=>t.id==='LEARNING-PRACTICE-gap-economy-l1'&&t.status==='queued'),true);
+});
+
+test('idle-practice dedupe never merges unrelated production tasks',()=>{
+  const rows=[
+    {id:'prod-a',status:'queued',evidence:[]},
+    {id:'prod-a',status:'queued',evidence:[]},
+    {id:'LEARNING-PRACTICE-gap-save-l1',status:'failed',retries:1,evidence:['learning-practice-only']},
+    {id:'LEARNING-PRACTICE-gap-save-l1',status:'failed',retries:2,evidence:['learning-practice-only']}
+  ];
+  const result=dedupeIdlePracticeTasks(rows);
+  assert.equal(result.changed,true);
+  assert.equal(result.removed,1);
+  assert.equal(result.tasks.filter(t=>t.id==='prod-a').length,2);
+  assert.equal(result.tasks.filter(t=>t.id==='LEARNING-PRACTICE-gap-save-l1').length,1);
 });
