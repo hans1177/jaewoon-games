@@ -1,6 +1,12 @@
 name: Vibe2 External Mobile Free Game Playtest
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/external-mobile-free-game-playtest.yml'
+      - 'company-learning/external-game-playtest/mobile-free-seed-games.json'
+      - 'tools/external-mobile-free-playtest.ps1'
   schedule:
     - cron: '43 * * * *'
   workflow_dispatch:
