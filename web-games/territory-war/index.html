@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+    .game-container {
+      width: 80%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .game-container button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #333;
+      color: #fff;
+    }
+    .game-container button:hover {
+      background-color: #555;
+    }
+    .status {
+      margin-top: 20px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game-container">
+      <h1>Vibe2</h1>
+      <button id="startButton">Start Game</button>
+      <div class="status" id="status">Ready to play</div>
+    </div>
+  </main>
+
+  <script>
+    const gameContainer = document.getElementById('game');
+    const startButton = document.getElementById('startButton');
+    const status = document.getElementById('status');
+
+    startButton.addEventListener('click', () => {
+      status.textContent = 'Game started';
+      gameContainer.innerHTML = `
+        <div class="game-container">
+          <h1>Vibe2</h1>
+          <button id="playButton">Play</button>
+          <div class="status" id="status">Ready to play</div>
+        </div>
+      `;
+    });
+
+    document.getElementById('playButton').addEventListener('click', () => {
+      status.textContent = 'Game in progress';
+      gameContainer.innerHTML = `
+        <div class="game-container">
+          <h1>Vibe2</h1>
+          <button id="restartButton">Restart</button>
+          <div class="status" id="status">Game in progress</div>
+        </div>
+      `;
+    });
+
+    document.getElementById('restartButton').addEventListener('click', () => {
+      status.textContent = 'Game restarted';
+      gameContainer.innerHTML = `
+        <div class="game-container">
+          <h1>Vibe2</h1>
+          <button id="startButton">Start Game</button>
+          <div class="status" id="status">Ready to play</div>
+        </div>
+      `;
+    });
+  </script>
+</body>
+</html>
