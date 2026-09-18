@@ -29,7 +29,7 @@ env:
   # Model identity is remappable by central policy. Prefer models with remaining free-tier quota before exhausted daily lanes.
   COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3.5-flash-lite'
   COMPANY_GEMINI_LEAD_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash'
-  COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash,gemini-3.8-flash,gemini-3.7-flash,gemini-2.5-flash,gemini-2.5-flash-lite'
+  COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash,gemini-3.8-flash,gemini-3.7-flash,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-2.5-pro'
 
 jobs:
   resolve-seed-targets:
@@ -228,8 +228,54 @@ jobs:
           node --check tools/company-design-cycle.mjs
           test -n "${{ secrets.GEMINI_API_KEY }}" || { echo 'GEMINI_API_KEY_REQUIRED' >&2; exit 1; }
           echo 'DESIGN_AI_PROVIDER=GEMINI_ONLY'
-      - name: Run seed-backed DESIGN_ONLY pipeline without artbook
+      - name: Resolve checkpoint-aware Gemini quota lanes
+        id: gemini_quota
         if: steps.target.outputs.should_run == 'true'
+        env:
+          ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
+          ARTBOOK_DATE: ${{ matrix.target.date }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module <<'NODE' | tee /tmp/gemini-quota-governor.txt
+          import fs from 'node:fs';
+          import path from 'node:path';
+
+          const clean=value=>String(value??'').trim();
+          const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
+          const roles=['planning','graphics','development','qa','balance'];
+          const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(','));
+          const fallback=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS).split(','));
+          if(leads.length<roles.length)throw new Error(`GEMINI_QUOTA_GOVERNOR_LEAD_COUNT=${leads.length}/${roles.length}`);
+          const primary=leads.slice(0,roles.length);
+          const primarySet=new Set(primary);
+          const extras=fallback.filter(model=>!primarySet.has(model));
+          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([primary[index],...extras.filter((_,fallbackIndex)=>fallbackIndex%roles.length===index)])]));
+          const checkpointPath=path.join('design',clean(process.env.ARTBOOK_GAME_ID),clean(process.env.ARTBOOK_DATE),'design-checkpoint.json');
+          let checkpoint={};
+          try{checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));}catch{}
+          const dailyQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i;
+          const exhausted=new Set();
+          for(const [rawModel,row] of Object.entries(checkpoint.modelHealth||{})){
+            if(!dailyQuota.test(clean(row?.lastError)))continue;
+            exhausted.add(clean(rawModel).replace(/^gemini:/,''));
+          }
+          const completedTasks=checkpoint.tasks&&typeof checkpoint.tasks==='object'?checkpoint.tasks:{};
+          const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(completedTasks,`five_lead_reviews::${role}`));
+          const blockedRoles=missingRoles.filter(role=>lanes[role].every(model=>exhausted.has(model)));
+          const allModels=uniq([clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL),...fallback]);
+          const modelCapacityRemaining=allModels.some(model=>!exhausted.has(model));
+          const runModelCycle=blockedRoles.length===0&&modelCapacityRemaining;
+          console.log(`GEMINI_QUOTA_GOVERNOR=${runModelCycle?'READY':'WAITING_FOR_GEMINI_QUOTA'}`);
+          console.log(`GEMINI_DAILY_EXHAUSTED_MODELS=${[...exhausted].join(',')||'NONE'}`);
+          console.log(`GEMINI_INCOMPLETE_LEAD_ROLES=${missingRoles.join(',')||'NONE'}`);
+          console.log(`GEMINI_BLOCKED_LEAD_ROLES=${blockedRoles.join(',')||'NONE'}`);
+          console.log(`GEMINI_QUOTA_CHECKPOINT_PRESERVED=${fs.existsSync(checkpointPath)?'YES':'NO'}`);
+          console.log(`GEMINI_QUOTA_FULL_CYCLE_RESTART=NO`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=${runModelCycle?'true':'false'}\nquota_state=${runModelCycle?'READY':'WAITING_FOR_GEMINI_QUOTA'}\n`);
+          NODE
+      - name: Run seed-backed DESIGN_ONLY pipeline without artbook
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -317,7 +363,7 @@ jobs:
           persist_design_checkpoint || true
           exit "$rc"
       - name: Verify design learning context consumption
-        if: steps.target.outputs.should_run == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -346,7 +392,7 @@ jobs:
           console.log('POSITIVE_TRAINING_FROM_DESIGN_ONLY=NO');
           NODE
       - name: Repair missing pre-promotion design requirements
-        if: steps.target.outputs.should_run == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
         env:
           GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -362,7 +408,7 @@ jobs:
           fi
           echo 'PREPROMOTION_REPAIR_GATE=PASS'
       - name: Apply strict 30-minute design review
-        if: steps.target.outputs.should_run == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
         env:
           GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -375,7 +421,7 @@ jobs:
           if [ "$rc" -eq 0 ]; then echo 'STRICT_DESIGN_GATE=PASS'; else echo 'STRICT_DESIGN_GATE=REVISE_OR_REBUILD'; fi
           exit 0
       - name: Apply review-feedback repair and re-review within this cycle
-        if: steps.target.outputs.should_run == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
         env:
           GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -396,7 +442,7 @@ jobs:
           echo 'REVIEW_FEEDBACK_REPAIR_PER_CYCLE=1'
           echo 'DESIGN_GATE_TOTAL_REPAIR_ATTEMPTS=UNLIMITED'
       - name: Verify baseline and strict review contract
-        if: steps.target.outputs.should_run == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -406,7 +452,7 @@ jobs:
           import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('STRICT_DESIGN_SCORE_SYNTHESIZED=NO');console.log('STRICT_DESIGN_VERDICT_SYNTHESIZED=NO');console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
       - name: Persist validated design evidence to company runtime branch
-        if: steps.target.outputs.should_run == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -423,7 +469,7 @@ jobs:
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Dispatch per-game promotion reconciliation on own strict PASS
-        if: steps.target.outputs.should_run == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.target.game_id }}
@@ -600,9 +646,6 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          gh workflow run company-game-seed-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main
-          echo 'GAME_SEED_CONTINUATION_DISPATCHED=YES'
-          echo 'GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX'
           git fetch --no-tags origin "$COMPANY_RUNTIME_BRANCH"
           pending="$(node --input-type=module <<'NODE'
           import fs from 'node:fs';import path from 'node:path';import {execFileSync} from 'node:child_process';
@@ -636,7 +679,54 @@ jobs:
           echo "DESIGN_GATE_REPAIR_PENDING=$pending"
           active_other="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/company-seed-design-runtime.yml/runs?per_page=20" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),current=Number(process.env.GITHUB_RUN_ID);const n=(j.workflow_runs||[]).filter(r=>r.id!==current&&['queued','in_progress','pending','waiting','requested'].includes(r.status)).length;process.stdout.write(String(n));})")"
           echo "DESIGN_GATE_ACTIVE_OTHER_RUNS=$active_other"
-          if [[ "$pending" =~ ^[1-9][0-9]*$ && "$active_other" == '0' ]]; then
+          quota_blocked="$(node --input-type=module <<'NODE'
+          import {execFileSync} from 'node:child_process';
+          const clean=value=>String(value??'').trim();
+          const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
+          const roles=['planning','graphics','development','qa','balance'];
+          const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(',')).slice(0,roles.length);
+          const fallback=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS).split(','));
+          const primarySet=new Set(leads);
+          const extras=fallback.filter(model=>!primarySet.has(model));
+          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([leads[index],...extras.filter((_,fallbackIndex)=>fallbackIndex%roles.length===index)])]));
+          const branch=process.env.COMPANY_RUNTIME_BRANCH;
+          const show=file=>execFileSync('git',['show',`origin/${branch}:${file}`],{encoding:'utf8',maxBuffer:32*1024*1024});
+          const exists=file=>{try{execFileSync('git',['cat-file','-e',`origin/${branch}:${file}`],{stdio:'ignore'});return true;}catch{return false;}};
+          const state=JSON.parse(show('game-seed-state.json'));
+          const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+          const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
+          const dailyQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i;
+          let blocked=0;
+          for(const seed of state.seeds||[]){
+            if(clean(seed.status).toUpperCase()!=='ACTIVE')continue;
+            const cpPath=`design/${seed.gameId}/${date}/design-checkpoint.json`;
+            if(!exists(cpPath))continue;
+            let cp={};try{cp=JSON.parse(show(cpPath));}catch{continue;}
+            const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>dailyQuota.test(clean(row?.lastError))).map(([model])=>clean(model).replace(/^gemini:/,'')));
+            if(!exhausted.size)continue;
+            const tasks=cp.tasks&&typeof cp.tasks==='object'?cp.tasks:{};
+            const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(tasks,`five_lead_reviews::${role}`));
+            const roleBlocked=missingRoles.some(role=>lanes[role].every(model=>exhausted.has(model)));
+            const allModels=uniq([clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL),...fallback]);
+            if(roleBlocked||allModels.every(model=>exhausted.has(model)))blocked++;
+          }
+          process.stdout.write(String(blocked));
+          NODE
+          )"
+          echo "DESIGN_GATE_QUOTA_BLOCKED=$quota_blocked"
+          all_quota_blocked=0
+          if [[ "$pending" =~ ^[1-9][0-9]*$ && "$quota_blocked" == "$pending" ]]; then all_quota_blocked=1; fi
+          if [ "$all_quota_blocked" = 0 ]; then
+            gh workflow run company-game-seed-bootstrap.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'GAME_SEED_CONTINUATION_DISPATCHED=YES'
+            echo 'GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX'
+          else
+            echo 'GAME_SEED_CONTINUATION_DISPATCHED=NO_GEMINI_QUOTA'
+            echo 'DESIGN_GATE_QUOTA_STATE=WAITING_FOR_GEMINI_QUOTA'
+          fi
+          if [ "$all_quota_blocked" = 1 ]; then
+            echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=WAITING_FOR_GEMINI_QUOTA'
+          elif [[ "$pending" =~ ^[1-9][0-9]*$ && "$active_other" == '0' ]]; then
             gh workflow run company-seed-design-runtime.yml --repo "$GITHUB_REPOSITORY" --ref main
             echo 'DESIGN_GATE_REPAIR_LOOP_DISPATCH=YES'
           elif [[ "$pending" =~ ^[1-9][0-9]*$ ]]; then
