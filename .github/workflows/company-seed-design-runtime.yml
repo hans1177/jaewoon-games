@@ -471,7 +471,9 @@ jobs:
           const roleBlocked=leadPhaseActive&&missingRoles.some(role=>lanes[role].every(model=>exhausted.has(model)));
           const designer=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
           const designerBlocked=!Object.prototype.hasOwnProperty.call(phases,'designer_draft')&&exhausted.has(designer);
-          process.stdout.write(roleBlocked||(!leadPhaseActive&&designerBlocked)?'true':'false');
+          const currentFailureQuota=retryableQuota.test(clean(cp.lastError));
+          if(currentFailureQuota)console.error('DESIGN_CURRENT_FAILURE_CLASS=EXTERNAL_MODEL_CAPACITY');
+          process.stdout.write(currentFailureQuota||roleBlocked||(!leadPhaseActive&&designerBlocked)?'true':'false');
           NODE
             )"
           fi
