@@ -112,6 +112,21 @@
       "secondOccurrence": "FORCE_RETRIEVAL",
       "thirdOccurrence": "ADD_REPRO_DRILL",
       "neverCountsAsPass": true
+    },
+    "formalExperienceFeedback": {
+      "enabled": true,
+      "trigger": "FORMAL_WEB_IMPLEMENTATION_PASS_ONLY",
+      "minimumStrictScore": 90,
+      "realElapsedGameplayMinutes": 30,
+      "independentPromotionRevalidationRequired": true,
+      "deterministicReplayRequired": true,
+      "autoPlayerEvidenceSource": "CANONICAL_WEB_PLAYWRIGHT_VALIDATOR",
+      "telemetryEvidenceRequired": true,
+      "designReviewEvidenceSource": "STRICT_IMPLEMENTATION_REVIEW",
+      "experiencePromotionGate": "tools/vibe2-experience-control.mjs",
+      "sameCycleMasteryAndRetrievalRefresh": true,
+      "candidatePassAloneIsInsufficient": true,
+      "gateWeakening": false
     }
   },
   "benchmarkLadder": {
