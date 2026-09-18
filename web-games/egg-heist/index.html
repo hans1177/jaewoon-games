@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    h1 {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div id="ui">
+      <div id="progression">
+        <div id="progress">0%</div>
+        <div id="progression-bar" style="width: 0%; height: 20px; background-color: #444;"></div>
+      </div>
+      <div id="ui-buttons">
+        <button id="start">Start</button>
+        <button id="restart">Restart</button>
+      </div>
+    </div>
+    <div id="game-area"></div>
+  </main>
+  <script>
+    // Protected state preservation
+    const protectedState = {
+      progress: 0,
+      gameOver: false,
+      restartCount: 0,
+      score: 0
+    };
+
+    // Game loop
+    function gameLoop() {
+      const progress = protectedState.progress;
+      const progressBar = document.getElementById('progression-bar');
+      const progressDisplay = document.getElementById('progress');
+
+      progressBar.style.width = (progress / 100) * 100 + '%';
+      progressDisplay.textContent = progress + '%';
+
+      if (progress >= 100) {
+        protectedState.gameOver = true;
+        document.getElementById('ui-buttons').style.display = 'none';
+        document.getElementById('game-area').innerHTML = '<div class="message">Game Over!</div>';
+        return;
+      }
+
+      // Simulate game progression
+      protectedState.progress += 1;
+      if (protectedState.progress % 10 === 0) {
+        protectedState.score += 10;
+      }
+
+      // Simulate UI feedback
+      if (protectedState.progress % 20 === 0) {
+        document.getElementById('ui-buttons').style.display = 'flex';
+      }
+
+      // Simulate mobile input
+      if (protectedState.progress % 50 === 0) {
+        document.getElementById('game-area').innerHTML = '<div class="item">Item</div>';
+      }
+
+      // Simulate runtime
+      setTimeout(gameLoop, 100);
+    }
+
+    // Initialize game
+    document.getElementById('start').addEventListener('click', () => {
+      protectedState.progress = 0;
+      protectedState.gameOver = false;
+      protectedState.restartCount = 0;
+      protectedState.score = 0;
+      document.getElementById('ui-buttons').style.display = 'flex';
+      document.getElementById('game-area').innerHTML = '';
+      gameLoop();
+    });
+
+    // Restart game
+    document.getElementById('restart').addEventListener('click', () => {
+      protectedState.progress = 0;
+      protectedState.gameOver = false;
+      protectedState.restartCount++;
+      document.getElementById('ui-buttons').style.display = 'flex';
+      document.getElementById('game-area').innerHTML = '';
+      gameLoop();
+    });
+  </script>
+</body>
+</html>
