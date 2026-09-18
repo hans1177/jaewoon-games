@@ -127,6 +127,44 @@ test('central DESIGN_ONLY authority cancels stale production implementation with
   assert.equal(preserved.blocker,null);
 });
 
+test('registered historical Roblox maintenance survives catalog absence and revives stale lifecycle cancellation',()=>{
+  const root=tempRepo();
+  const task={
+    id:'historical-maintenance',gameId:'historical-game',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/historical-game',releaseState:'development-confirmed',status:'cancelled',
+    blocker:'lifecycle-inactive:MISSING_FROM_CATALOG',postReleaseFocused:true,historicalDeploymentRecovery:true,
+    packageLongWorkProtected:true,packageRole:'implementation-owner',evidence:[
+      'post-release-focused:yes','historical-deployment-recovery:yes',
+      'maintenance-registry:company-learning/roblox-sustained-maintenance.json','lifecycle-sync:MISSING_FROM_CATALOG'
+    ]
+  };
+  const historicalRegistry={assets:[{
+    gameId:'historical-game',sourceRoot:'roblox-games/historical-game',maintenanceEligible:true,currentReleaseClaim:false,
+    recoveryState:'HISTORICAL_PUBLICATION_TARGET_VERIFIED'
+  }]};
+  const result=planVibe2AutonomousTasks({status:{projects:[]},catalog:{games:[]},queue:{tasks:[task]},historicalRegistry,repoRoot:root,maxConcurrentTasks:4});
+  const revived=result.queue.tasks.find(row=>row.id==='historical-maintenance');
+  assert.equal(result.planned,false);
+  assert.equal(revived.status,'queued');
+  assert.equal(revived.blocker,null);
+  assert.equal(revived.lastOutcome,null);
+  assert.ok(revived.evidence.includes('lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE'));
+});
+
+test('historical flags alone cannot bypass catalog authority without registry eligibility',()=>{
+  const root=tempRepo();
+  const task={
+    id:'forged-historical',gameId:'missing-game',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/missing-game',releaseState:'development-confirmed',status:'queued',
+    postReleaseFocused:true,historicalDeploymentRecovery:true,packageLongWorkProtected:true,packageRole:'implementation-owner',
+    evidence:['historical-deployment-recovery:yes','maintenance-registry:company-learning/roblox-sustained-maintenance.json']
+  };
+  const result=planVibe2AutonomousTasks({status:{projects:[]},catalog:{games:[]},queue:{tasks:[task]},historicalRegistry:{assets:[]},repoRoot:root,maxConcurrentTasks:4});
+  const cancelled=result.queue.tasks.find(row=>row.id==='forged-historical');
+  assert.equal(cancelled.status,'cancelled');
+  assert.equal(cancelled.blocker,'lifecycle-inactive:MISSING_FROM_CATALOG');
+});
+
 test('historical baseline policy metadata remains reusable under current roadmap authority',()=>{
   const root=tempRepo();
   const evidence=latestDevelopmentBaselineEvidence('demo',root);
