@@ -3600,14 +3600,14 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "cancelled",
+      "status": "queued",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "lifecycle-inactive:MISSING_FROM_CATALOG",
+      "blocker": null,
       "evidence": [
         "post-release-focused:yes",
         "historical-deployment-recovery:yes",
@@ -3622,7 +3622,10 @@
         "maintenance-registry:company-learning/roblox-sustained-maintenance.json",
         "recombination-recipe:recombine_c72756e535b55733",
         "learning-motor-candidate-tournament:high-risk",
-        "lifecycle-sync:MISSING_FROM_CATALOG"
+        "lifecycle-sync:MISSING_FROM_CATALOG",
+        "lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE",
+        "self-recovery:HISTORICAL_DEPLOYMENT_FLAG_RESTORED",
+        "self-recovery:HISTORICAL_MAINTENANCE_REQUEUED"
       ],
       "lastOutcome": null,
       "reservationId": null,
@@ -3650,7 +3653,8 @@
       "focusPolicyRef": null,
       "packageContext": null,
       "completionCriteria": [],
-      "shard": "roblox"
+      "shard": "roblox",
+      "historicalDeploymentRecovery": true
     },
     {
       "id": "LEARNING-PRACTICE-gap-ai-l4",
