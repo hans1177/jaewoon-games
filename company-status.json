@@ -77,7 +77,25 @@
     "webGameplayValidationRequired": true,
     "musicValidationRequired": true,
     "webBeforeTargetPlatformByDefault": true,
-    "targetPlatformMayRunImmediately": false
+    "targetPlatformMayRunImmediately": false,
+    "primaryPlatforms": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "primaryPlatformLegacyCompatibilityOnly": true,
+    "platformPriorityTiers": [
+      [
+        "UNITY",
+        "ROBLOX"
+      ],
+      [
+        "FORTNITE_UEFN"
+      ]
+    ],
+    "permanentRemovedGameIds": [
+      "seed-roblox-battleground-fight-welcome-to-bloxburg",
+      "seed-roblox-obby-party-minigam-tower-of-hell"
+    ]
   },
   "summary": {
     "webArchiveCount": 11,
