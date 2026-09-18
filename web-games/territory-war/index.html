@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 Territory War 20260916</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      territory: {
+        occupied: [],
+        expanding: false,
+        currentExpansion: null,
+        expansionProgress: 0
+      },
+      ai: {
+        enemies: [],
+        currentEnemy: null,
+        enemyProgress: 0
+      },
+      ui: {
+        status: "idle",
+        feedback: "",
+        gameStatus: "start"
+      },
+      economy: {
+        resources: 0,
+        currency: 0
+      },
+      progression: {
+        currentStep: 0,
+        totalSteps: 100
+      },
+      save: {
+        state: {
+          territory: [],
+          economy: 0,
+          progression: 0
+        },
+        lastSaveTime: new Date()
+      }
+    };
+
+    // Game logic
+    function initGame() {
+      // Initialize game state
+      game.territory.occupied = [];
+      game.ai.enemies = [];
+      game.ui.status = "idle";
+      game.ui.feedback = "";
+      game.economy.resources = 0;
+      game.economy.currency = 0;
+      game.progression.currentStep = 0;
+      game.progression.totalSteps = 100;
+      game.save.state = {
+        territory: [],
+        economy: 0,
+        progression: 0
+      };
+      game.save.lastSaveTime = new Date();
+    }
+
+    // Game loop
+    function gameLoop() {
+      // Update game state
+      updateGame();
+      // Render game
+      renderGame();
+      // Check for game over
+      if (game.progression.currentStep >= game.progression.totalSteps) {
+        endGame();
+      }
+    }
+
+    // Update game state
+    function updateGame() {
+      // Update territory expansion
+      if (game.territory.expanding) {
+        game.territory.currentExpansion = incrementExpansion();
+        game.territory.expansionProgress = incrementProgression();
+      }
+
+      // Update AI behavior
+      if (game.ai.currentEnemy) {
+        game.ai.enemyProgress = incrementAIProgression();
+      }
+    }
+
+    // Render game
+    function renderGame() {
+      // Render territory map
+      renderTerritoryMap();
+      // Render UI feedback
+      renderUIFeedback();
+      // Render game status
+      renderGameStatus();
+    }
+
+    // End game
+    function endGame() {
+      // End game logic
+      game.ui.status = "end";
+      game.ui.feedback = "Game over!";
+    }
+
+    // Initialize game
+    initGame();
+    gameLoop();
+  </script>
+</body>
+</html>
