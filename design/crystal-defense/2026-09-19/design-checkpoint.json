@@ -1,0 +1,251 @@
+{
+  "contractVersion": 3,
+  "gameId": "crystal-defense",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
+  "fingerprint": "2734e8acb25d5fe9e6bfa5dc1bb9f4604121f9db81d323fda2d7e25cbaf541a3",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "수정 디펜스는 독창적인 수정 공명 메커니즘과 정밀한 웨이브 예측 시스템을 결합한 전략 디펜스 게임이다. 플레이어는 제한된 자원을 활용하여 전략적 요충지에 타워를 배치하고, 타워 간의 공명 에너지를 연결하여 적의 침략을 저지한다. 핵심 루프와 시그니처 시스템은 단순한 반복 방어가 아닌, 매 웨이브마다 지형과 적의 속성에 따른 최적의 배치와 상호작용 선택을 유도하며, 관찰 가능한 상태 변화를 통해 깊이 있는 전략적 재미를 제공한다.",
+      "playerFantasy": "플레이어는 고대의 신비로운 수정 에너지를 수호하는 최고 전략가로서, 몰려오는 적의 공격 패턴을 사전에 분석하고 완벽한 방어 진지를 구축하여 위기를 극복하는 영웅적 성취감을 경험한다.",
+      "coreFun": "매 웨이브 시작 전 적의 진격 경로와 속성을 분석하여 방어 타워를 배치하고, 전투 중 실시간으로 공명 에너지를 조절하여 적을 섬멸하며, 즉각적으로 변화하는 전황을 관찰하고 보상을 통해 다음 전략을 수립하는 반복적이고 몰입감 있는 선택의 재미를 제공한다.",
+      "coreLoop": [
+        "다음 적의 공격 패턴과 경로를 읽고 수정 방어 타워의 최적 배치 위치를 선택한다.",
+        "제한된 자원을 소모하여 타워를 설치하고 공명 라인을 연결하거나 업그레이드를 수행한다.",
+        "웨이브 전투를 진행하며 적의 파괴와 자원 획득이라는 즉각적인 상태 변화를 관찰한다.",
+        "웨이브 종료 후 획득한 보상으로 다음 위협에 대응할 새로운 전략적 선택을 준비한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "수정 공명 시스템",
+          "purpose": "인접한 타워 간의 에너지를 연결하여 공격력과 특수 효과를 증폭시키며, 단순한 개별 타워 배치를 넘어선 공간적 조합 전략을 제공한다.",
+          "playerChoice": "플레이어는 타워의 배치 간격과 연결 방향을 직접 결정하여 단일 화력을 극대화할 것인지, 아니면 광역 군중 제어 효과를 분산 배치할 것인지 선택한다."
+        },
+        {
+          "name": "웨이브 예측 및 전술 적응 시스템",
+          "purpose": "다가오는 적의 종류와 특성을 미리 파악하고 이에 맞춘 실시간 전술 변경을 유도하여 플레이어의 의사결정 긴장감을 높인다.",
+          "playerChoice": "플레이어는 다가오는 적의 약점에 맞춰 기존 타워를 강화하거나 새로운 원소 속성의 타워를 추가하여 방어선의 취약점을 보완한다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "웨이브 예측 및 전술 적응 시스템",
+          "toSystem": "수정 공명 시스템",
+          "trigger": "새로운 웨이브의 적 속성 정보가 공개될 때",
+          "stateChange": "플레이어가 적의 속성에 맞춰 공명 라인의 결합 방식을 변경하여 방어 효율이 증감한다."
+        },
+        {
+          "fromSystem": "수정 공명 시스템",
+          "toSystem": "자원 및 경제 시스템",
+          "trigger": "적이 공명 에너지를 통해 처치될 때",
+          "stateChange": "추가 자원이 생성되어 다음 타워 건설이나 업그레이드 재화로 즉시 환원된다."
+        },
+        {
+          "fromSystem": "자원 및 경제 시스템",
+          "toSystem": "웨이브 예측 및 전술 적응 시스템",
+          "trigger": "자원이 일정량 이상 축적되거나 고갈될 때",
+          "stateChange": "플레이어가 고비용 특수 타워를 건설할 수 있는 선택지가 활성화되거나 제한된다."
+        }
+      ],
+      "progressionDirection": "플레이어는 초반부의 단순한 단일 라인 방어에서 시작하여, 중반부 이후 다중 분기 경로와 복잡한 공명 네트워크를 활용하는 고급 전략 단계로 진입한다. 각 스테이지 클리어 시 해금되는 새로운 타워 모듈과 패시브 특성은 플레이어의 빌드 다양성을 확장하며, 난이도 상승에 따른 전술적 깊이를 지속적으로 제공한다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "적 처치 및 웨이브 클리어 -> 자원 획득 -> 타워 업그레이드 및 공명 확장 -> 더 강력한 적 웨이브 생존의 선순환 구조를 유지한다.",
+        "resourceFlow": "초기 자원은 제한적으로 주어지며, 효율적인 배치와 공명 보너스를 통해 자원 수급량을 극대화하여 후반 웨이브의 경제적 압박을 극복한다.",
+        "balanceRules": "타워 건설 비용과 업그레이드 비용은 지수 함수적으로 증가하며, 공명 효율을 통한 투자 대비 리턴을 명확히 설계하여 무지성 업그레이드를 방지한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "시즌 1: 얼어붙은 협곡 확장",
+          "newGameplay": "혹한 속성으로 인해 타워의 공격 속도가 주기적으로 동결되는 신규 환경 기믹과 빙결 저항 타워 추가",
+          "systemImpact": "기존 공명 시스템에 온도 관리 개념을 도입하여 기존의 일원화된 배치 공식에 새로운 제약과 변주를 부여한다."
+        },
+        {
+          "milestone": "시즌 2: 공중 침략자 웨이브",
+          "newGameplay": "지상 경로를 무시하고 이동하는 비행 유닛과 이들을 요격하기 위한 대공 전용 공명 포탑 라인 신설",
+          "systemImpact": "지상 중심의 기존 방어 진형을 입체적으로 재구성해야 하며, 자원 배분의 우선순위 재설계를 강제한다."
+        },
+        {
+          "milestone": "시즌 3: 고대 유물 코어 시스템",
+          "newGameplay": "맵 중앙의 메인 수정을 직접 커스텀할 수 있는 유물 장착 슬롯과 액티브 특수 스킬 추가",
+          "systemImpact": "수동적인 방어에서 벗어나 위기 상황을 역전시킬 수 있는 강력한 플레이어 주도형 변수를 제공한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "메인 수정의 내구도가 적들의 공격으로 인해 완전히 파괴될 때",
+          "제한된 시간 내에 웨이브의 핵심 보스 유닛을 저지하지 못했을 때"
+        ],
+        "retryFlow": "실패 시 패배 원인(화력 부족 또는 배치 오류)을 요약하여 보여준 뒤, 즉시 재시도하거나 웨이브 시작점으로 돌아가 전술을 재정비할 수 있는 흐름을 제공한다.",
+        "riskPressure": "웨이브가 진행될수록 적의 이동 속도와 물량이 급증하여 플레이어에게 실시간으로 심리적 압박과 긴장감을 부여한다.",
+        "recoveryRules": "실패한 스테이징에서는 이전 웨이브에서 획득한 영구 재화의 일부를 유지하여 다음 시도시 성장 체감을 느낄 수 있도록 보완한다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 터치 및 PC 마우스 클릭을 모두 지원하는 직관적인 드래그 앤 드롭 타워 배치 및 탭 기반 인터페이스 구조",
+        "performanceBudget": "동시 렌더링되는 유닛과 파티클 효과를 최적화하여 저사양 모바일 기기에서도 30프레임 이상을 안정적으로 유지",
+        "sessionConstraints": "한 판의 플레이 타임을 평균 5분에서 7분 사이의 짧은 웨이브 단위로 구성하여 모바일 환경의 세션 이탈률을 최소화"
+      },
+      "visualDirection": "판타지 세계관을 바탕으로 한 깔끔하고 직관적인 로블록스 스타일의 로우폴리곤 그래픽을 채택하며, 공명 라인과 에너지 방출 시각 효과를 화려하게 대비시켜 전황을 한눈에 파악할 수 있도록 디자인한다.",
+      "mobileUx": "엄지손가락이 닿기 쉬운 화면 하단에 핵심 타워 선택 및 스킬 버튼을 배치하고, 맵 확대/축소 및 드래그 조작을 부드럽게 구현하여 모바일 플레이 편의성을 극대화한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "남은 웨이브 수, 메인 수정 체력, 보유 자원량을 화면 상단에 상시 고정하여 인지 피로도를 최소화한다.",
+        "touchAndInput": "오조작을 방지하기 위해 타워 선택 시 정확한 터치 영역을 확보하고 확인 팝업 단계를 간소화한다.",
+        "readability": "적의 속성과 타워의 공격 범위를 색상 대비와 명확한 아이콘으로 구분하여 시각적 가독성을 높인다.",
+        "accessibility": "색약 플레이어를 위해 속성 구분을 색상뿐만 아니라 고유한 문양과 패턴으로 동시 표기한다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "수정의 영롱한 빛과 어두운 마물들의 대비를 강조하는 신비롭고 선명한 컬러 팔레트 사용",
+        "audioIdentity": "타워 건설 시 청량한 수정음과 적 피격 시 타격감을 살린 명확한 사운드 디자인",
+        "gameplayFeedbackSync": "공명 연결 성공 시 시각적 광채와 함께 상승하는 음의 피치를 동기화하여 즉각적인 쾌감 전달"
+      },
+      "marketTargetDirection": "전략 디펜스 장르의 팬층과 짧은 세션의 모바일 캐주얼 전략 게임을 선호하는 글로벌 플레이어층을 타겟으로 설정",
+      "steamExpansionDecision": "모바일 및 로블록스 플랫폼 검증 완료 후, 정밀한 마우스 조작과 확장된 멀티플레이어 모드를 지원하는 스팀 플랫폼 진출 검토",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "기본 싱글플레이어 경험의 완성도를 높인 후, 추후 협동(COOP) 디펜스 모드 추가 가능성 열어둠",
+      "technicalAssumptions": [
+        "클라이언트와 서버 간의 타워 배치 동기화는 락스텝 방식 대신 검증된 상태 전송 방식을 사용한다.",
+        "다수의 적 유닛 이동 경로 계산은 서버 부하를 줄이기 위해 최적화된 네비메시 경로 알고리즘을 적용한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 이내에 수정 공명 시스템의 핵심 재미와 배치 이점을 직관적으로 이해할 수 있는가?",
+        "웨이브 후반부에서 자원 경제 밸런스가 플레이어에게 과도한 피로감을 주지 않고 적절한 긴장감을 유지하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "수정 공명 시스템의 에너지 증폭",
+          "responsibleSystem": "책임 시스템: 수정 공명 시스템",
+          "validationEvidence": "단위 테스트를 통해 인접 타워 개수에 따른 데미지 증가 수치가 기획서의 공식과 일치하는지 검증한다."
+        },
+        {
+          "designElement": "웨이브 예측 정보의 실시간 갱신",
+          "responsibleSystem": "웨이브 예측 및 전술 적응 시스템",
+          "validationEvidence": "플레이어 테스트를 통해 웨이브 시작 전 적 속성 정보가 UI에 정상적으로 노출되고 전략 수정에 영향을 주는지 관찰한다."
+        },
+        {
+          "designElement": "자원 획득과 타워 건설의 경제 순환",
+          "responsibleSystem": "자원 및 경제 시스템",
+          "validationEvidence": "시뮬레이션 로그를 분석하여 10웨이브 동안 자원 수급량과 지출 균형이 파산 없이 적절한 긴장감을 유지하는지 확인한다."
+        }
+      ],
+      "openQuestions": [
+        "협동 모드 도입 시 플레이어 간의 공명 라인 연결을 허용할 경우 발생할 수 있는 협업 스트레스 해소 방안은 무엇인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 13165,
+      "lastMs": 13165,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:06:44.058Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 114,
+      "lastMs": 114,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 15.825991451s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"15s\" } ] } }",
+      "updatedAt": "2026-09-18T15:06:44.194Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 169,
+      "lastMs": 169,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 15.766693245s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"15s\" } ] } }",
+      "updatedAt": "2026-09-18T15:06:44.250Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T15:06:30.891Z",
+  "updatedAt": "2026-09-18T15:06:44.251Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:06:44.058Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 15.766693245s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"15s\" } ] } }"
+}
