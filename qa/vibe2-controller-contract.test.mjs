@@ -210,7 +210,15 @@ test('owner directive sync preserves running state and derived verified context'
     const queue=JSON.parse(fs.readFileSync(queueFile,'utf8'));
     queue.tasks[0].status='running';
     queue.tasks[0].goal+='\n\n[GAME STUDY KNOWLEDGE - verified advisory context only]\nverified context';
-    queue.tasks[0].evidence.push('game-study-planner-context:v1','exploration-reuse:demo','workload:changed-files:1');
+    queue.tasks[0].evidence.push(
+      'game-study-planner-context:v1',
+      'exploration-reuse:demo',
+      'workload:changed-files:1',
+      'candidate-sha:demo',
+      'base-main:demo',
+      'vibe2/candidate/OWNER-DEMO-primary-test',
+      'package-review:all-required-roles-pass'
+    );
     fs.writeFileSync(queueFile,JSON.stringify(queue), 'utf8');
 
     const synced=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot:root,ownerDirectivesFile:directivesFile});
