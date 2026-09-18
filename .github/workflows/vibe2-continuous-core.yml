@@ -192,7 +192,8 @@ jobs:
           path: |
             ~/.ollama/models
             ~/.cache/vibe2-ollama/bin/ollama
-          key: vibe2-ollama-v2-Linux-qwen3-1.7b
+            ~/.cache/vibe2-ollama/lib/ollama
+          key: vibe2-ollama-v3-Linux-qwen3-1.7b
 
       - name: Warm local coding model once on cache miss
         if: steps.ollama_cache.outputs.cache-hit != 'true'
@@ -205,9 +206,19 @@ jobs:
             sleep $((attempt * 4))
           done
           test "$installed" = 1
-          mkdir -p "$HOME/.cache/vibe2-ollama/bin"
+          mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$HOME/.cache/vibe2-ollama/lib/ollama"
           cp "$(command -v ollama)" "$HOME/.cache/vibe2-ollama/bin/ollama"
           chmod +x "$HOME/.cache/vibe2-ollama/bin/ollama"
+          runtime_lib=''
+          for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
+            if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
+              runtime_lib="$candidate"
+              break
+            fi
+          done
+          test -n "$runtime_lib"
+          cp -a "$runtime_lib/." "$HOME/.cache/vibe2-ollama/lib/ollama/"
+          find "$HOME/.cache/vibe2-ollama/lib/ollama" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .
           nohup ollama serve > /tmp/ollama-prewarm.log 2>&1 &
           for i in $(seq 1 30); do
             curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
@@ -325,7 +336,8 @@ jobs:
           path: |
             ~/.ollama/models
             ~/.cache/vibe2-ollama/bin/ollama
-          key: vibe2-ollama-v2-Linux-qwen3-1.7b
+            ~/.cache/vibe2-ollama/lib/ollama
+          key: vibe2-ollama-v3-Linux-qwen3-1.7b
 
       - name: Prepare cached Ollama runtime
         id: worker_ollama_runtime
@@ -334,7 +346,12 @@ jobs:
           set -euo pipefail
           prep_started="$(date +%s%3N)"
           cached="$HOME/.cache/vibe2-ollama/bin/ollama"
-          if [ -x "$cached" ]; then
+          cached_lib="$HOME/.cache/vibe2-ollama/lib/ollama"
+          runtime_ready=0
+          if [ -x "$cached" ] && [ -d "$cached_lib" ] && find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
+            runtime_ready=1
+          fi
+          if [ "$runtime_ready" = 1 ]; then
             echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
             echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=CACHE'
             echo 'source=CACHE' >> "$GITHUB_OUTPUT"
@@ -345,9 +362,21 @@ jobs:
               sleep $((attempt * 4))
             done
             test "$installed" = 1
-            mkdir -p "$HOME/.cache/vibe2-ollama/bin"
+            mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$cached_lib"
             cp "$(command -v ollama)" "$cached"
             chmod +x "$cached"
+            runtime_lib=''
+            for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
+              if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
+                runtime_lib="$candidate"
+                break
+              fi
+            done
+            test -n "$runtime_lib"
+            rm -rf "$cached_lib"
+            mkdir -p "$cached_lib"
+            cp -a "$runtime_lib/." "$cached_lib/"
+            find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .
             echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
             echo 'VIBE2_OLLAMA_RUNTIME_SOURCE=FALLBACK_INSTALL'
             echo 'source=FALLBACK_INSTALL' >> "$GITHUB_OUTPUT"
