@@ -63,8 +63,10 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
       return{...item,status:'cancelled',blocker:'lifecycle-inactive:REMOVED_PERMANENTLY',reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'CANCELLED_BY_OWNER_PERMANENT_REMOVAL',postReleaseFocused:false,historicalDeploymentRecovery:false,evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:REMOVED_PERMANENTLY','owner-permanent-removal:yes'])]};
     }
     const game=byId.get(gameId);
-    if(!game&&registeredHistoricalMaintenanceTask(item,historicalById)){
-      const recovered={...item,historicalDeploymentRecovery:true};
+    const selectedPlatform=clean(item.selectedPlatform||game?.selectedPlatform||game?.targetPlatform||(clean(item.target).toLowerCase()==='roblox'?'ROBLOX':clean(item.target).toLowerCase()==='unity'?'UNITY':'')).toUpperCase();
+    const aligned=selectedPlatform?{...item,selectedPlatform}:item;
+    if(!game&&registeredHistoricalMaintenanceTask(aligned,historicalById)){
+      const recovered={...aligned,historicalDeploymentRecovery:true};
       if(clean(item.status).toLowerCase()==='cancelled'&&clean(item.blocker)==='lifecycle-inactive:MISSING_FROM_CATALOG'){
         return{...recovered,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE','self-recovery:HISTORICAL_DEPLOYMENT_FLAG_RESTORED'])]};
       }
@@ -72,15 +74,15 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
     }
     if(!game||!lifecycleAllowsDevelopment(game)){
       const state=game?gameLifecycleState(game):'MISSING_FROM_CATALOG';
-      if(item.status==='queued')return{...item,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-sync:${state}`])]};
-      if(item.status==='running')return{...item,blocker:`lifecycle-stop-requested:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-stop-requested:${state}`])]};
-      return item;
+      if(item.status==='queued')return{...aligned,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...new Set([...(aligned.evidence||[]),`lifecycle-sync:${state}`])]};
+      if(item.status==='running')return{...aligned,blocker:`lifecycle-stop-requested:${state}`,evidence:[...new Set([...(aligned.evidence||[]),`lifecycle-stop-requested:${state}`])]};
+      return aligned;
     }
     const currentReleaseState=stateFromCatalog(game);
     if(!['release-confirmed','development-confirmed'].includes(currentReleaseState)&&['queued','running','blocked'].includes(clean(item.status).toLowerCase())){
       const authority=clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase()||'OTHER';
       return{
-        ...item,
+        ...aligned,
         status:'cancelled',
         blocker:`production-authority-inactive:${authority}`,
         reservationId:null,
@@ -88,10 +90,10 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
         reservationRunAttempt:0,
         reservedAt:null,
         lastOutcome:'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY',
-        evidence:[...new Set([...(item.evidence||[]),`production-authority-sync:${authority}`])]
+        evidence:[...new Set([...(aligned.evidence||[]),`production-authority-sync:${authority}`])]
       };
     }
-    return item;
+    return aligned;
   });
   return{...(queueInput||{}),tasks};
 }
@@ -102,7 +104,7 @@ function bottleneckRank(project={}){const v=project.developmentValidation||{},sc
 
 function collectProjects(status={},catalog={},repoRoot=process.cwd()){const byId=catalogById(catalog),removed=permanentRemovalIds(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||removed.has(id)||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,selectedPlatform:clean(project.selectedPlatform||project.targetPlatform||game.selectedPlatform||game.targetPlatform||(engine==='roblox'?'ROBLOX':engine==='unity'?'UNITY':'')).toUpperCase(),projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
 for(const game of Array.isArray(catalog.games)?catalog.games:[]){const id=clean(game.id);if(removed.has(id)||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),selectedPlatform=clean(game.selectedPlatform||game.targetPlatform).toUpperCase(),robloxRoot=robloxRootFromCatalog(game);if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox'))rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',selectedPlatform:selectedPlatform||'ROBLOX',projectPath:robloxRoot,existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;const exists=fs.existsSync(path.join(repoRoot,root));rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',selectedPlatform,projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});}return rows;}
-function projectSort(a,b){const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;const platform=(PLATFORM_RANK[clean(a.selectedPlatform).toUpperCase()]??9)-(PLATFORM_RANK[clean(b.selectedPlatform).toUpperCase()]??9);if(platform)return platform;const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);}
+function projectSort(a,b){const platform=(PLATFORM_RANK[clean(a.selectedPlatform).toUpperCase()]??9)-(PLATFORM_RANK[clean(b.selectedPlatform).toUpperCase()]??9);if(platform)return platform;const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);}
 function isAutonomousProductionTarget(project={}){if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);if(project.releaseState==='release-confirmed')return project.engine==='unity'&&project.developmentBaseline?.ready===true;if(project.releaseState==='development-confirmed')return project.engine==='web';return false;}
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
 function readText(file){try{return fs.readFileSync(file,'utf8');}catch{return'';}}
