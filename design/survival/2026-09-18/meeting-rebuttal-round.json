@@ -15,21 +15,19 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "keep",
-        "fix",
-        "add"
+        "Survival needs are the core requirements for survival in the game world.",
+        "Player can choose to focus on survival needs, crafting, or exploration.",
+        "The player can survive for 30 minutes without any issues."
       ],
       "challenge": [
-        "keep",
-        "fix",
-        "add"
+        "What is the purpose of Survival Needs in the game world?",
+        "Is the player able to survive for 30 minutes without any issues?"
       ],
       "revision": [
-        "keep",
-        "fix",
-        "add"
+        "The player can collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "The purpose of Survival Needs in the game world is to provide a core survival experience."
       ],
-      "reason": "The core gameplay mechanics and systems of the game are well-defined, with clear objectives and realistic mechanics. The evidence provided supports the implementation, and the questions are well-posed and relevant to the development process."
+      "reason": "The original content already covers the key points, so no revision is needed."
     },
     "graphics": {
       "accept": [
@@ -38,51 +36,49 @@
         "risks"
       ],
       "challenge": [
-        "game-seed"
-      ],
-      "revision": [
         "evidence",
         "questions"
       ],
-      "reason": "Based on the provided data, the 'fix' and 'add' options are prioritized. The 'risks' and 'evidence' are also important to address."
+      "revision": [
+        "balance"
+      ],
+      "reason": "The game's core gameplay loop should be prioritized.  The player's survival needs are fundamental to the game's experience, and ensuring they are met is the primary focus.  We need to ensure the player's survival needs are clearly defined and are a core part of the gameplay loop.  The current evidence suggests the player can survive for 30 minutes without issues, so we should maintain that."
     },
     "development": {
-      "accept": [],
-      "challenge": [],
-      "revision": [],
-      "reason": "이러한 부서의 대표 의견은 development 부서의 책임 범위 내에서 한 번만 수용/반박/수정해야 합니다."
+      "accept": [
+        "OWN"
+      ],
+      "challenge": [
+        "OWN"
+      ],
+      "revision": [
+        "OWN"
+      ],
+      "reason": "own의 책임 범위에서 한 번만 수용/반박/수정"
     },
     "qa": {
       "accept": [
-        "OWN",
-        "OTHERS",
-        "planning"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "challenge": [
-        "fix",
-        "add",
-        "risks"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "revision": [
-        "fix",
-        "add",
-        "risks"
+        "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\"}"
       ],
-      "reason": "The provided JSON structure is not related to the QA department's responsibilities and is instead related to the game's mechanics, graphics, and balance. The provided JSON should not be accepted or modified as it does not align with the QA Lead AI's responsibilities."
+      "reason": "The QA department is responsible for ensuring the game's quality and stability, which includes addressing potential risks and maintaining a high level of performance. The evidence provided shows that the player can survive for 30 minutes without any issues, which is a significant concern that the QA team should address."
     },
     "balance": {
       "accept": [
-        "balance 부서 Lead AI다. 다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정한다.",
-        "readable survival needs",
-        "exploration risk and recovery"
+        "Survival Needs"
       ],
       "challenge": [
-        "Is the game world realistic and immersive?"
+        "Survival needs are the core requirements for survival in the game world."
       ],
       "revision": [
-        "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
+        "Survival needs are the core requirements for survival in the game world."
       ],
-      "reason": "gameId:survival, gameName:나의 생존기, status:ACTIVE, generation:OWNER_REDESIGN_RESET, ownerResetRevision:OWNER-FULL-REBUILD-20260916-1"
+      "reason": "Survival needs are the core requirements for survival in the game world."
     }
   }
 }

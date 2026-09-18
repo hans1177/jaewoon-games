@@ -3563,16 +3563,7 @@
         "evidencePath": "design/insect-survival/2026-09-18/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-09-18T01:44:38.451Z",
-      "ROBLOX_GENRE": "Survival",
-      "ROBLOX_SUBGENRE": null,
-      "ROBLOX_GENRE_LABEL_KO": "서바이벌",
-      "ROBLOX_SUBGENRE_LABEL_KO": null,
-      "ROBLOX_PLAY_MODE": "SINGLE",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 싱글",
-      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T02:50:43.402Z"
+      "strictDesignReviewUpdatedAt": "2026-09-18T01:44:38.451Z"
     },
     {
       "version": 2,
@@ -3985,15 +3976,15 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       },
-      "ROBLOX_GENRE": "Obby & platformer",
-      "ROBLOX_SUBGENRE": "Classic Obby",
-      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
-      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_GENRE": "Survival",
+      "ROBLOX_SUBGENRE": null,
+      "ROBLOX_GENRE_LABEL_KO": "서바이벌",
+      "ROBLOX_SUBGENRE_LABEL_KO": null,
       "ROBLOX_PLAY_MODE": "SINGLE",
       "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-17T23:47:19.874Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T02:51:55.876Z",
       "strictDesignReview": {
         "verdict": "REVISE",
         "totalScore": 91,
@@ -13619,30 +13610,23 @@
         "recordedAt": "2026-09-18T02:17:36.821Z"
       },
       {
-        "gameId": "insect-survival",
-        "seedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
+        "gameId": "survival",
+        "seedId": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
         "reviewStage": "DESIGN_STRICT_REVIEW",
         "runtimeTarget": null,
         "verdict": "REBUILD",
-        "totalScore": 8,
-        "previousScore": null,
-        "scoreDelta": null,
+        "totalScore": 18.4,
+        "previousScore": 91,
+        "scoreDelta": -72.6,
         "hardFailures": [
           "CORE_FUN_WEAK",
           "CRITICAL_AXIS_MINIMUM_FAIL"
         ],
         "resolvedHardFailures": [],
         "addedHardFailures": [
-          "CORE_FUN_WEAK",
           "CRITICAL_AXIS_MINIMUM_FAIL"
         ],
         "improvementTargets": [
-          {
-            "dimension": "CORE_LOOP_DESIGN",
-            "current": 0,
-            "maxScore": 14,
-            "gap": 14
-          },
           {
             "dimension": "IDEA_AND_DISTINCTNESS",
             "current": 0,
@@ -13654,13 +13638,19 @@
             "current": 0,
             "maxScore": 12,
             "gap": 12
+          },
+          {
+            "dimension": "CONTENT_EXPANSION_PLAN",
+            "current": 0,
+            "maxScore": 10,
+            "gap": 10
           }
         ],
         "learningSignal": "UNVALIDATED",
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
-        "recordedAt": "2026-09-18T02:50:43.402Z"
+        "recordedAt": "2026-09-18T02:51:55.876Z"
       }
     ],
     "causeCounts": {
@@ -13686,7 +13676,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-18T02:50:43.403Z"
+    "updatedAt": "2026-09-18T02:51:55.877Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,

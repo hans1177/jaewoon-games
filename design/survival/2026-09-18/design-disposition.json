@@ -6,7 +6,7 @@
   "sameDesignerRevisionAttempted": true,
   "repeatedFiveDepartmentReview": true,
   "allFiveLeadModelsReviewed": true,
-  "discardVotes": 2,
+  "discardVotes": 1,
   "commonFatalCriteria": [],
   "unanimousFatalDiscard": false,
   "fatalReviews": {
@@ -14,10 +14,11 @@
       "recommendedState": "ACTIVE",
       "fatalCriteria": [],
       "evidence": [
-        "The core gameplay mechanics and systems are well-defined, with clear objectives and realistic mechanics. The evidence provided supports the implementation, and the questions are well-posed and relevant to the development process.",
-        "The JSON structure is not related to the QA department's responsibilities and should not be accepted or modified."
+        "The player's survival needs are fundamental to the game's core gameplay, and ensuring they are clearly defined and part of the gameplay loop is essential.",
+        "The evidence shows that the player can survive for 30 minutes without issues, which is a significant concern that the QA team should address.",
+        "The game's core gameplay loop prioritizes survival needs, which aligns with the player's focus on survival and progression."
       ],
-      "reason": "The core gameplay mechanics and systems are well-defined, with clear objectives and realistic mechanics. The evidence provided supports the implementation, and the questions are well-posed and relevant to the development process."
+      "reason": "The original content already covers the key points, so no revision is needed."
     },
     "graphics": {
       "recommendedState": "DISCARD",
@@ -27,15 +28,14 @@
         "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
       ],
       "evidence": [
-        "GAME_SEED",
-        "VALID_FATAL_CRITERIA",
-        "visualDirection",
-        "coreFun"
+        "The player can survive for 30 minutes without any issues.",
+        "The game's core gameplay loop should be prioritized.",
+        "The QA department is responsible for ensuring the game's quality and stability."
       ],
-      "reason": "The provided JSON structure is not directly related to the QA department's responsibilities. It's a detailed design specification, and the DISCARD decision requires a focus on ensuring the core gameplay loop remains functional and doesn't introduce unintended consequences or dependencies. The current structure is more suitable for planning and design than for a quality assurance review."
+      "reason": "The original design has several critical issues that require immediate attention. The player's survival time is a significant concern, and the current design risks creating a gameplay loop that is not stable or engaging.  The evidence suggests a potential risk, and a thorough review is necessary to mitigate this risk before proceeding with further development."
     },
     "development": {
-      "recommendedState": "DISCARD",
+      "recommendedState": "ACTIVE",
       "fatalCriteria": [
         "CORE_FUN_CANNOT_BE_RECOVERED",
         "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
@@ -43,10 +43,10 @@
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
       "evidence": [
-        "Evidence supporting the DISCARD of the current design: https://www.gameanalytics.com/cn/reports/2025-mobile-gaming-benchmarks",
-        "Evidence supporting the DISCARD of the current design: https://www.theesa.com/resources/the-global-power-of-play-report/"
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json"
       ],
-      "reason": "The current design does not meet the requirements of the game, and the evidence provided does not support the implementation. The core gameplay mechanics and systems are not well-defined, and the evidence does not support the implementation of the required features."
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
     },
     "qa": {
       "recommendedState": "REDESIGN",
@@ -58,11 +58,10 @@
       ],
       "evidence": [
         "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base.",
-        "Survivor.io: simple attacks, upgrade choices and build combinations.",
-        "Survivor.io: touch readability, wave pressure and upgrade selection.",
-        "Survivor.io: mobile survival-roguelite benchmark for touch readability, wave pressure and upgrade selection."
+        "Player can survive for 30 minutes without any issues.",
+        "Player can collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
       ],
-      "reason": "The provided JSON structure is not related to the QA department's responsibilities and should not be accepted or modified."
+      "reason": "The evidence provided shows that the player can survive for 30 minutes without any issues, which is a significant concern that the QA team should address. Ensuring the game's quality and stability is crucial, and the QA department is responsible for addressing potential risks and maintaining a high level of performance."
     },
     "balance": {
       "recommendedState": "ACTIVE",
@@ -72,8 +71,11 @@
         "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
         "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
       ],
-      "evidence": [],
-      "reason": "The core gameplay mechanics and systems are well-defined, with clear objectives and realistic mechanics. The evidence provided supports the implementation, and the questions are well-posed and relevant to the development process."
+      "evidence": [
+        "CORE_FUN_TO_LEARN",
+        "DISTINCT_IDENTITY"
+      ],
+      "reason": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
     }
   },
   "marketMetricAloneUsedForDiscard": false

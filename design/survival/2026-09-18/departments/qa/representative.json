@@ -13,22 +13,23 @@
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "ASSIGNED_DEPARTMENT=qa"
+      "ASSIGNED_DEPARTMENT"
     ],
     "fix": [
-      "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+      "ASSIGNED_DEPARTMENT=qa"
     ],
     "add": [
-      "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+      "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\"}",
+      "risks:GAME_SEED"
     ],
     "risks": [
-      "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+      "ASSIGNED_DEPARTMENT=qa"
     ],
     "evidence": [
-      "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+      "ASSIGNED_DEPARTMENT=qa"
     ],
     "questions": [
-      "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+      "ASSIGNED_DEPARTMENT=qa"
     ]
   }
 }

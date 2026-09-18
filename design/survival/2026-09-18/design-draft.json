@@ -21,44 +21,29 @@
     ],
     "signatureSystems": [
       {
-        "name": "readable survival needs",
-        "purpose": "Survival needs are the basic needs required for survival in the game world.",
-        "playerChoice": "Player chooses their survival needs to determine their starting equipment and resources."
-      },
-      {
-        "name": "resource-to-crafting decisions",
-        "purpose": "Players must gather resources to craft new equipment and improve their survival skills.",
-        "playerChoice": "Players must decide how to allocate their resources to craft new equipment and improve their survival skills."
-      },
-      {
-        "name": "exploration risk and recovery",
-        "purpose": "Exploration and recovery are crucial aspects of survival in the game world.",
-        "playerChoice": "Players must balance exploration and recovery to survive in the game world."
+        "name": "Survival Needs",
+        "purpose": "Survival needs are the core requirements for survival in the game world.",
+        "playerChoice": "Player can choose to focus on survival needs, crafting, or exploration."
       }
     ],
-    "progressionDirection": "Survival",
-    "visualDirection": "Real-time survival run",
-    "mobileUx": "Mobile",
-    "marketTargetDirection": "Global",
-    "steamExpansionDecision": "Review in Design Cycle",
+    "progressionDirection": "Survival Needs",
+    "visualDirection": "Survival Needs",
+    "mobileUx": "Survival Needs",
+    "marketTargetDirection": "Survival Needs",
+    "steamExpansionDecision": "Survival Needs",
     "multiplayerMode": "SINGLE",
-    "multiplayerExpansionDecision": "Review in Design Cycle",
+    "multiplayerExpansionDecision": "Survival Needs",
     "technicalAssumptions": [
-      "Players must have a device with a screen and a keyboard to play the game.",
-      "Players must have an internet connection to play the game online.",
-      "Players must have a stable internet connection to download and update the game."
+      "Player can survive for 30 minutes without any issues.",
+      "Player can collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
     ],
     "validationQuestions": [
-      "Is the game world realistic and immersive?",
-      "Is the game mechanics and systems logical and intuitive?",
-      "Is the game challenging and rewarding?",
-      "Is the game's story and narrative engaging and coherent?"
+      "Is the player able to survive for 30 minutes without any issues?",
+      "Is the player able to collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build?"
     ],
     "openQuestions": [
-      "What are the core gameplay mechanics and systems of the game?",
-      "How does the game's world and mechanics change over time?",
-      "What are the player's goals and objectives in the game?",
-      "How does the game's story and narrative evolve over time?"
+      "What is the purpose of Survival Needs in the game world?",
+      "What is the purpose of the core loop in the game world?"
     ]
   }
 }
