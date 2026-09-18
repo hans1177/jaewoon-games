@@ -3,12 +3,13 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { buildVerifiedTrainingSample, qaEvidencePasses, TRAINING_SAMPLE_VERSION, EXTERNAL_BLACK_BOX_QA_MARKER } from './vibe2-training-sample.mjs';
+import { buildVerifiedTrainingSample, qaEvidencePasses, TRAINING_SAMPLE_VERSION, EXTERNAL_BLACK_BOX_QA_MARKER, AUTHORIZED_SOURCE_QA_MARKER } from './vibe2-training-sample.mjs';
 
 const SAFE_ID = /^[A-Za-z0-9._-]+$/;
 const SHA = /^[0-9a-f]{7,40}$/i;
 const SHA256_DIGEST = /^sha256:[0-9a-f]{64}$/i;
 const EXTERNAL_DISTILLATION_PATH = /^company-learning\/external-game-playtest\/[A-Za-z0-9._-]+-runtime-distillation\.json$/;
+const AUTHORIZED_SOURCE_SUMMARY_PATH = 'company-learning/authorized-source/block-blast/authorized-learning-summary.json';
 const EXTERNAL_BLACK_BOX_REQUIRED_STAGES = Object.freeze([
   'APP_LAUNCH',
   'GAME_ENTRY',
@@ -303,9 +304,127 @@ export function ingestVerifiedExternalBlackBox({ mainRef = 'origin/main', outDir
   return result;
 }
 
+function authorizedSourceRecord(mainRef, summaryPath = AUTHORIZED_SOURCE_SUMMARY_PATH) {
+  const summary = readJsonAt(mainRef, summaryPath);
+  const gameId = clean(summary?.gameId);
+  const packageId = clean(summary?.packageId);
+  const authority = upper(summary?.authority);
+  const packageFingerprint = clean(summary?.packageFingerprint).toLowerCase();
+  const learningDomains = Array.isArray(summary?.learningDomains) ? summary.learningDomains.map(clean).filter(Boolean) : [];
+  const reusablePatterns = Array.isArray(summary?.reusablePatterns) ? summary.reusablePatterns.map(clean).filter(Boolean) : [];
+  const sourceDocuments = Number(summary?.sourceCorpus?.documents ?? 0);
+  const sourceChars = Number(summary?.sourceCorpus?.totalChars ?? 0);
+  const assetCount = Number(summary?.assets?.count ?? 0);
+  const nativeCount = Number(summary?.nativeLibraries?.count ?? 0);
+  if (!summary) return { pass: false, reason: 'AUTHORIZED_SOURCE_SUMMARY_MISSING', summaryPath };
+  if (gameId !== 'block-blast' || packageId !== 'com.block.juggle') return { pass: false, reason: 'AUTHORIZED_SOURCE_IDENTITY_MISMATCH', summaryPath };
+  if (authority !== 'OWNER_ASSERTED_REUSE_REINTERPRETATION') return { pass: false, reason: 'AUTHORIZED_SOURCE_AUTHORITY_MISSING', gameId, summaryPath };
+  if (!/^[0-9a-f]{64}$/i.test(packageFingerprint)) return { pass: false, reason: 'AUTHORIZED_SOURCE_FINGERPRINT_INVALID', gameId, summaryPath };
+  if (!learningDomains.length || !reusablePatterns.length || sourceDocuments <= 0 || sourceChars <= 0) return { pass: false, reason: 'AUTHORIZED_SOURCE_CONTENT_INCOMPLETE', gameId, summaryPath };
+
+  const sourceRevision = `sha256:${packageFingerprint}`;
+  const candidateId = `authorized-source-${gameId}-${packageFingerprint.slice(0, 16)}`;
+  const sample = {
+    version: TRAINING_SAMPLE_VERSION,
+    instruction: '재사용·재해석 권한이 확인된 Block Blast 소스/에셋/네이티브 구조/알고리즘 분석 결과를 코드 구현 컨텍스트로 학습하되 정적 분석을 런타임 PASS로 오인하지 않는다.',
+    input: JSON.stringify({
+      evidenceMode: 'AUTHORIZED_SOURCE_STATIC',
+      authority: summary.authority,
+      packageId,
+      packageFingerprint,
+      learningDomains,
+      counts: {
+        sourceDocuments,
+        sourceChars,
+        assets: assetCount,
+        nativeLibraries: nativeCount,
+      },
+    }, null, 2),
+    output: [
+      '검증된 재사용 패턴:',
+      ...reusablePatterns.map((pattern) => `- ${pattern}`),
+      '',
+      '검증 경계:',
+      '- 정적 추출 결과는 소스 구조/에셋 구성/네이티브 구조/알고리즘 후보 학습에 사용한다.',
+      '- 정적 분석만으로 현재 프로젝트 런타임 PASS를 주장하지 않는다.',
+      '- 새 프로젝트에 적용할 때 기존 QA/런타임 게이트를 그대로 통과해야 한다.',
+    ].join('\n'),
+    taskType: 'coding',
+    difficulty: 'simple',
+    lifecycle: 'active',
+    sourceKind: 'authorized-source',
+    project: gameId,
+    gameId,
+    candidateId,
+    sourceCommit: null,
+    sourceRevision,
+    independentQa: AUTHORIZED_SOURCE_QA_MARKER,
+    browserQa: 'NOT_APPLICABLE',
+    quality: { codeQuality: 1, noRegression: true, playImprovement: 0, ruleCompliance: 1, evidenceQuality: 1 },
+    provenance: {
+      sourceKind: 'authorized-source',
+      sourceRevision,
+      gameId,
+      candidateId,
+      evidencePath: summaryPath,
+      authority: summary.authority,
+      packageId,
+      packageFingerprint,
+    },
+    verification: {
+      independentQa: AUTHORIZED_SOURCE_QA_MARKER,
+      browserQa: 'NOT_APPLICABLE',
+      runtime: 'STATIC_VERIFIED',
+      authorizedSourceEvidence: 'PASS',
+      runtimePassClaimed: false,
+      packageFingerprint,
+      ownerReuseAuthority: 'PASS',
+    },
+  };
+  if (!qaEvidencePasses({
+    taskType: sample.taskType,
+    independentQa: sample.independentQa,
+    browserQa: sample.browserQa,
+    runtime: sample.verification.runtime,
+    sourceKind: sample.sourceKind,
+  })) return { pass: false, reason: 'AUTHORIZED_SOURCE_QA_GATE_REJECTED', gameId, summaryPath };
+  return { pass: true, gameId, summaryPath, sourceRevision, sample };
+}
+
+export function ingestVerifiedAuthorizedSource({ mainRef = 'origin/main', outDir = 'company-learning/training-samples' } = {}) {
+  fs.mkdirSync(outDir, { recursive: true });
+  const result = { examined: 1, written: [], refreshed: [], skipped: [] };
+  const authorized = authorizedSourceRecord(mainRef, AUTHORIZED_SOURCE_SUMMARY_PATH);
+  if (!authorized.pass) {
+    result.skipped.push({ summaryPath: AUTHORIZED_SOURCE_SUMMARY_PATH, gameId: authorized.gameId ?? null, reason: authorized.reason });
+    return result;
+  }
+  const outFile = path.join(outDir, `${authorized.sample.candidateId}.json`);
+  const existing = fs.existsSync(outFile) ? readJsonFile(outFile) : null;
+  const currentEnough = existing
+    && Number(existing.version ?? 0) >= TRAINING_SAMPLE_VERSION
+    && existing.provenance?.sourceKind === 'authorized-source'
+    && existing.provenance?.sourceRevision === authorized.sourceRevision
+    && qaEvidencePasses({
+      taskType: existing.taskType,
+      independentQa: existing.independentQa,
+      browserQa: existing.browserQa,
+      runtime: existing.verification?.runtime,
+      sourceKind: existing.provenance?.sourceKind,
+    });
+  if (currentEnough) {
+    result.skipped.push({ summaryPath: AUTHORIZED_SOURCE_SUMMARY_PATH, gameId: authorized.gameId, reason: 'ALREADY_CURRENT' });
+    return result;
+  }
+  fs.writeFileSync(outFile, `${JSON.stringify(authorized.sample, null, 2)}\n`);
+  const written = { candidateId: authorized.sample.candidateId, gameId: authorized.gameId, taskType: 'coding', sourceRevision: authorized.sourceRevision, outFile };
+  if (existing) result.refreshed.push(written); else result.written.push(written);
+  return result;
+}
+
 export function ingestVerifiedHistories({ devRef = 'origin/autonomous-dev', mainRef = 'origin/main', outDir = 'company-learning/training-samples' } = {}) {
   fs.mkdirSync(outDir, { recursive: true });
-  const result = { version: 4, trainingSampleVersion: TRAINING_SAMPLE_VERSION, devRef, mainRef, written: [], refreshed: [], skipped: [], examined: 0, unityRelease: null, externalBlackBox: null };
+  const result = { version: 5, trainingSampleVersion: TRAINING_SAMPLE_VERSION, devRef, mainRef, written: [], refreshed: [], skipped: [], examined: 0, unityRelease: null, externalBlackBox: null, authorizedSource: null };
 
   for (const historyPath of listDevHistoryPaths(devRef)) {
     result.examined += 1;
@@ -347,6 +466,12 @@ export function ingestVerifiedHistories({ devRef = 'origin/autonomous-dev', main
   result.written.push(...result.externalBlackBox.written);
   result.refreshed.push(...result.externalBlackBox.refreshed);
   result.skipped.push(...result.externalBlackBox.skipped);
+
+  result.authorizedSource = ingestVerifiedAuthorizedSource({ mainRef, outDir });
+  result.examined += result.authorizedSource.examined;
+  result.written.push(...result.authorizedSource.written);
+  result.refreshed.push(...result.authorizedSource.refreshed);
+  result.skipped.push(...result.authorizedSource.skipped);
   return result;
 }
 
