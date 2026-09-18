@@ -230,6 +230,22 @@ export function applyVibeFanInResults(queueInput, results = []) {
       ...reusableWorkerEvidence(row)
     ]).map(clean).filter(Boolean))];
     if (passes.length) {
+      const practiceWinner=passes.find(row=>{
+        const ev=(Array.isArray(row.evidence)?row.evidence:[]).map(clean);
+        return ev.includes('learning-practice-only')&&ev.includes('production-pass:NO');
+      });
+      if(practiceWinner){
+        const practiceEvidence=[...new Set([
+          ...allEvidence,
+          'learning-practice-complete',
+          'production-pass:NO',
+          'source-write:NO'
+        ])];
+        const settled=settleVibeTask(queue,{taskId,outcome:'PASS',evidence:practiceEvidence,blocker:'',retryable:false});
+        queue=settled.queue;
+        applied.push({taskId,outcome:'DONE_PRACTICE',winner:clean(practiceWinner.variant)||'primary'});
+        continue;
+      }
       const winnerEvidence = [
         ...(Array.isArray(winner.evidence) ? winner.evidence.map(clean).filter(Boolean) : []),
         ...workloadEvidence(winner),
