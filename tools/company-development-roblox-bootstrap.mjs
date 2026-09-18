@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 import {deriveApprovedScopeInventory} from './company-approved-scope-contract.mjs';
+import {createRobloxVibe3LearningContext,decorateRobloxActionsWithLearning} from './vibe3-roblox-learning-context.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -165,7 +166,7 @@ export function classifyRobloxScope(item={},index=0){
   return ['OBJECTIVE','ECONOMY','PROGRESSION','MOVEMENT'][index%4];
 }
 
-function approvedActions(baseline={},profile){
+function approvedActions(baseline={},profile,learning={}){
   const inventory=deriveApprovedScopeInventory(baseline);
   const actions=inventory.length?inventory.map((item,index)=>({
     id:item.id,label:clean(item.label)||`Approved action ${index+1}`,path:clean(item.path),kind:classifyRobloxScope(item,index),
@@ -174,12 +175,15 @@ function approvedActions(baseline={},profile){
   if(!actions.some(action=>action.kind===requiredKind)){
     actions.unshift({id:'genre-core',label:`${profile.genre}${profile.subgenre?` / ${profile.subgenre}`:''} core gameplay`,path:'robloxBuildProfile',kind:requiredKind});
   }
-  return actions;
+  return decorateRobloxActionsWithLearning(actions,learning);
 }
 
-function sharedConfigSource({gameId,gameName,saveRequired,actions,profile}){
-  const actionRows=actions.map((action,index)=>`    { Id = ${luauString(action.id)}, Label = ${luauString(action.label)}, Kind = ${luauString(action.kind)}, Order = ${index+1} },`).join('\n');
-  return `local Config = {\n  PolicySource = "COMPANY_FLOW.md",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n    PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,\n    SharedObjective = 0, RoundScore = 0,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
+function sharedConfigSource({gameId,gameName,saveRequired,actions,profile,learning={}}){
+  const actionRows=actions.map((action,index)=>`    { Id = ${luauString(action.id)}, Label = ${luauString(action.label)}, Kind = ${luauString(action.kind)}, Order = ${index+1}, LearningPattern = ${luauString(action.learningPattern||'')} },`).join('\n');
+  const checklistRows=(learning.checklist||[]).map(value=>`    ${luauString(value)},`).join('\n');
+  const featureRows=(learning.featureBlend||[]).map(value=>`    ${luauString(value)},`).join('\n');
+  const sourceRows=(learning.sourceProjects||[]).map(value=>`    ${luauString(value)},`).join('\n');
+  return `local Config = {\n  PolicySource = "COMPANY_FLOW.md",\n  Platform = "ROBLOX",\n  MobileFirst = true,\n  SaveEnabled = ${saveRequired?'true':'false'},\n  GameId = ${luauString(gameId)},\n  GameName = ${luauString(gameName)},\n  Genre = ${luauString(profile.genre)},\n  Subgenre = ${luauString(profile.subgenre||'')},\n  PlayMode = ${luauString(profile.playMode)},\n  MultiplayerRequired = ${profile.multiplayerRequired?'true':'false'},\n  CoopRequired = ${profile.coopImplementationRequired?'true':'false'},\n  CompetitiveRequired = ${profile.competitiveImplementationRequired?'true':'false'},\n  MinimumParticipants = ${profile.minimumParticipantsForRequiredQa},\n  RemoteName = "GameAction",\n  RateLimitSeconds = 0.10,\n  LearningContext = {\n    Applied = ${learning.applied?'true':'false'},\n    Authority = ${luauString(learning.authority||'roblox-baseline-only')},\n    RecipeId = ${luauString(learning.recipeId||'')},\n    Operator = ${luauString(learning.transformationOperator||'')},\n    OriginalModifierRequired = ${learning.originalModifierRequired?'true':'false'},\n    PlaybookChecklist = {\n${checklistRows}\n    },\n    FeatureBlend = {\n${featureRows}\n    },\n    SourceProjects = {\n${sourceRows}\n    },\n  },\n  InitialState = {\n    Score = 0, Coins = 0, Level = 1, Progress = 0, Health = 100,\n    Wave = 1, Position = 0, Objective = 0, Combo = 0, EnemyHealth = 100,\n    PuzzleChain = 0, Towers = 0, BaseHealth = 100, SocialBond = 0,\n    SharedObjective = 0, RoundScore = 0,\n  },\n  Actions = {\n${actionRows}\n  },\n}\n\nreturn table.freeze(Config)\n`;
 }
 
 function serverHandlerBody(kind,index){
@@ -214,13 +218,13 @@ function clientSource({profile}){
   return `local Players = game:GetService("Players")\nlocal ReplicatedStorage = game:GetService("ReplicatedStorage")\nlocal UserInputService = game:GetService("UserInputService")\n\nlocal player = Players.LocalPlayer\nlocal Shared = ReplicatedStorage:WaitForChild("Shared")\nlocal Config = require(Shared:WaitForChild("GameConfig"))\nlocal remote = ReplicatedStorage:WaitForChild(Config.RemoteName)\n\nlocal gui = Instance.new("ScreenGui")\ngui.Name = "ApprovedScopeHud"\ngui.ResetOnSpawn = false\ngui.Parent = player:WaitForChild("PlayerGui")\nlocal root = Instance.new("Frame")\nroot.Name = "Root"\nroot.AnchorPoint = Vector2.new(0.5, 1)\nroot.Position = UDim2.fromScale(0.5, 0.98)\nroot.Size = UDim2.new(1, -24, 0, 360)\nroot.BackgroundTransparency = 0.15\nroot.BackgroundColor3 = Color3.fromRGB(18, 28, 48)\nroot.Parent = gui\nlocal title = Instance.new("TextLabel")\ntitle.Name = "Title"\ntitle.Size = UDim2.new(1, -20, 0, 44)\ntitle.Position = UDim2.fromOffset(10, 8)\ntitle.BackgroundTransparency = 1\ntitle.TextColor3 = Color3.fromRGB(245, 248, 255)\ntitle.TextScaled = true\ntitle.Text = string.format("%s · %s · %s", Config.GameName, Config.Genre, Config.PlayMode)\ntitle.Parent = root\nlocal status = Instance.new("TextLabel")\nstatus.Name = "Status"\nstatus.Size = UDim2.new(1, -20, 0, 48)\nstatus.Position = UDim2.fromOffset(10, 54)\nstatus.BackgroundColor3 = Color3.fromRGB(10, 17, 30)\nstatus.TextColor3 = Color3.fromRGB(220, 232, 250)\nstatus.TextScaled = true\nstatus.Parent = root\n${multiplayerClient}\nlocal list = Instance.new("ScrollingFrame")\nlist.Name = "ApprovedActions"\nlist.Size = UDim2.new(1, -20, 1, -${profile.multiplayerRequired?150:112})\nlist.Position = UDim2.fromOffset(10, ${profile.multiplayerRequired?142:106})\nlist.BackgroundTransparency = 1\nlist.BorderSizePixel = 0\nlist.AutomaticCanvasSize = Enum.AutomaticSize.Y\nlist.CanvasSize = UDim2.new()\nlist.ScrollBarThickness = 6\nlist.Parent = root\nlocal layout = Instance.new("UIListLayout")\nlayout.Padding = UDim.new(0, 8)\nlayout.SortOrder = Enum.SortOrder.LayoutOrder\nlayout.Parent = list\nfor index, action in ipairs(Config.Actions) do\n  local button = Instance.new("TextButton")\n  button.Name = "ScopeAction" .. index\n  button.LayoutOrder = index\n  button.Size = UDim2.new(1, -4, 0, 56)\n  button.BackgroundColor3 = Color3.fromRGB(235, 242, 255)\n  button.TextColor3 = Color3.fromRGB(16, 24, 40)\n  button.TextWrapped = true\n  button.TextScaled = true\n  button.Text = string.format("%d. %s [%s]", index, action.Label, action.Kind)\n  button.Parent = list\n  button.Activated:Connect(function() remote:FireServer(action.Id) end)\nend\nlocal watched = {"Score","Coins","Level","Progress","Health","Wave","Position","Objective","Combo","EnemyHealth","PuzzleChain","Towers","BaseHealth","SocialBond","SharedObjective","RoundScore","LastApprovedScope"}\nlocal function render()\n  status.Text = string.format("Score %d · Lv %d · Progress %d · HP %d · Wave %d", player:GetAttribute("Score") or 0, player:GetAttribute("Level") or 1, player:GetAttribute("Progress") or 0, player:GetAttribute("Health") or 100, player:GetAttribute("Wave") or 1)\nend\nfor _, name in ipairs(watched) do player:GetAttributeChangedSignal(name):Connect(render) end\nrender()\n`;
 }
 
-export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={}}={}){
-  void artbook;
+export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={},playbooks={},recombination={}}={}){
   const profile=robloxBuildProfileFromBaseline(baseline);
   const saveRequired=requiresPersistentSave(baseline);
-  const actions=approvedActions(baseline,profile);
+  const learning=createRobloxVibe3LearningContext({gameId,profile,artbook,playbooks,recombination});
+  const actions=approvedActions(baseline,profile,learning);
   const result={
-    sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions,profile}),
+    sharedConfig:sharedConfigSource({gameId,gameName,saveRequired,actions,profile,learning}),
     serverCode:serverSource({gameId,saveRequired,actions,profile}),
     clientCode:clientSource({profile}),
     implementationNotes:[
@@ -233,18 +237,20 @@ export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={
       profile.coopImplementationRequired?'co-op source maintains SharedObjective across current participants':null,
       profile.competitiveImplementationRequired?'competitive source maintains per-player RoundScore and broadcasts it':null,
       'mobile-first ScreenGui exposes approved gameplay actions',
+      learning.applied?`Vibe3 Roblox playbook applied: ${learning.checklist.join(', ')}`:'Vibe3 learning context not supplied',
+      learning.applied?`transformative recipe=${learning.recipeId}; operator=${learning.transformationOperator}; features=${learning.featureBlend.join(', ')}`:null,
       saveRequired?'persistent player state uses DataStoreService with safe fallback':'no DataStore added because locked baseline does not require persistence',
       'runtime, independent QA, regression, and release remain unclaimed until later evidence gates pass',
     ].filter(Boolean),
   };
   const validation=validateRobloxBootstrap({...result,baseline,profile});
   if(!validation.pass)throw new Error(`ROBLOX_BOOTSTRAP_COMPILER_FAILED: ${validation.blockers.join('|')}`);
-  return {result,validation,actions,profile,generationMode:'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION',modelUsed:false,attempts:0,failures:[]};
+  return {result,validation,actions,profile,learning,generationMode:learning.applied?'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT':'DETERMINISTIC_PROFILE_BOUND_FULL_SCOPE_IMPLEMENTATION',modelUsed:false,attempts:0,failures:[]};
 }
 
-export async function buildRobloxSource({gameId,gameName,baseline,artbook,model}){
+export async function buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,model}){
   void model;
-  return compileRobloxSource({gameId,gameName,baseline,artbook});
+  return compileRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination});
 }
 function writeSourceTree(root,{sharedConfig,serverCode,clientCode},gameId){
   fs.mkdirSync(path.join(root,'shared'),{recursive:true});
@@ -263,13 +269,18 @@ async function main(){
   const artbookFile=clean(arg('artbook'));
   const outputRoot=posix(arg('output-root'));
   const evidenceFile=clean(arg('evidence'));
+  const playbooksFile=clean(arg('playbooks'));
+  const recombinationFile=clean(arg('recombination'));
   const model=clean(arg('model',process.env.ROBLOX_DEV_MODEL||'none'));
-  if(!gameId||!baselineFile||!artbookFile||!outputRoot||!evidenceFile)throw new Error('required Roblox bootstrap argument missing');
+  if(!gameId||!baselineFile||!artbookFile||!outputRoot||!evidenceFile||!playbooksFile||!recombinationFile)throw new Error('required Roblox bootstrap argument missing');
   if(outputRoot!==`roblox-games/${gameId}`)throw new Error(`invalid Roblox output root: ${outputRoot}`);
   if(fs.existsSync(outputRoot)&&fs.readdirSync(outputRoot).length)throw new Error(`Roblox source root already exists: ${outputRoot}`);
   const baseline=readJson(baselineFile);
   const artbook=readJson(artbookFile);
-  const built=await buildRobloxSource({gameId,gameName,baseline,artbook,model});
+  const playbooks=readJson(playbooksFile);
+  const recombination=readJson(recombinationFile);
+  const built=await buildRobloxSource({gameId,gameName,baseline,artbook,playbooks,recombination,model});
+  if(built.learning.applied!==true)throw new Error('ROBLOX_VIBE3_LEARNING_CONTEXT_REQUIRED');
   writeSourceTree(outputRoot,built.result,gameId);
   const evidence={
     version:3,gameId,gameName,platform:'ROBLOX',policyDocument:'COMPANY_FLOW.md',stage:'TARGET_PLATFORM_SOURCE_BIND',
@@ -278,6 +289,8 @@ async function main(){
     robloxBuildProfile:built.profile,genreImplementationRequired:true,multiplayerImplementationRequired:built.profile.multiplayerRequired,
     generatedFiles:['shared/GameConfig.luau','server/Game.server.luau','client/Game.client.luau','default.project.json'],
     generationMode:built.generationMode,model,modelUsed:built.modelUsed,modelAttempts:built.attempts,modelContractFailures:built.failures,
+    vibe3LearningApplied:built.learning.applied,robloxPlaybookChecklist:built.learning.checklist,recombinationRecipeId:built.learning.recipeId,
+    recombinationOperator:built.learning.transformationOperator,recombinationSourceProjects:built.learning.sourceProjects,learningFeatureBlend:built.learning.featureBlend,
     implementationNotes:built.result.implementationNotes,nextRequiredStage:'TARGET_PLATFORM_RUNTIME',createdAt:new Date().toISOString(),
   };
   fs.mkdirSync(path.dirname(evidenceFile),{recursive:true});
@@ -292,6 +305,9 @@ async function main(){
   console.log(`ROBLOX_APPROVED_SCOPE_COUNT=${built.actions.length}`);
   console.log(`ROBLOX_SAVE_REQUIRED=${evidence.saveRequired?'YES':'NO'}`);
   console.log(`ROBLOX_GENERATION_MODE=${built.generationMode}`);
+  console.log(`ROBLOX_VIBE3_LEARNING_APPLIED=${built.learning.applied?'YES':'NO'}`);
+  console.log(`ROBLOX_VIBE3_RECIPE=${built.learning.recipeId||'NONE'}`);
+  console.log(`ROBLOX_VIBE3_FEATURES=${built.learning.featureBlend.join(',')||'NONE'}`);
   console.log('MODEL_USED=NO');
   console.log('ROBLOX_RUNTIME_PASS=NO');
   console.log('ROBLOX_RELEASE_CLAIM=NO');
