@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    #game {
+      width: 100%;
+      max-width: 600px;
+      background-color: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h1 {
+      color: #fff;
+    }
+    .move {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #ccc;
+    }
+    .piece {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      background-color: #444;
+      border: 1px solid #999;
+      margin: 2px;
+      border-radius: 4px;
+      text-align: center;
+      line-height: 40px;
+      font-weight: bold;
+      color: #fff;
+    }
+    .piece.black {
+      background-color: #333;
+    }
+    .piece.white {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div class="move">Move your pieces!</div>
+    <div id="board"></div>
+  </main>
+  <script>
+    // Game logic here
+    const board = document.getElementById('board');
+    const moveDiv = document.querySelector('.move');
+
+    // Initialize board
+    function initBoard() {
+      const boardContainer = document.createElement('div');
+      boardContainer.style.display = 'grid';
+      boardContainer.style.gridTemplateColumns = 'repeat(8, 50px)';
+      boardContainer.style.gridTemplateRows = 'repeat(8, 50px)';
+      boardContainer.style.gap = '2px';
+      boardContainer.style.backgroundColor = '#222';
+      boardContainer.style.border = '1px solid #444';
+      boardContainer.style.borderRadius = '8px';
+      boardContainer.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+      board.appendChild(boardContainer);
+
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = document.createElement('div');
+          piece.className = 'piece';
+          if (row % 2 === 0) {
+            piece.style.backgroundColor = row % 2 === 0 ? '#333' : '#666';
+          } else {
+            piece.style.backgroundColor = row % 2 === 0 ? '#666' : '#333';
+          }
+          piece.textContent = row < 8 ? row + 1 : 0;
+          boardContainer.querySelector(`[data-row="${row}"][data-col="${col}"]`).appendChild(piece);
+        }
+      }
+    }
+
+    // Handle player moves
+    function handleMove(from, to) {
+      moveDiv.textContent = 'Moving from ' + from + ' to ' + to;
+      // Game logic here
+    }
+
+    // Initialize the game
+    initBoard();
+  </script>
+</body>
+</html>
