@@ -75,37 +75,43 @@ test('DESIGN_ONLY flow and baseline mirror current central requirements',()=>{
     'GAME_SEED_COMPLETE','DISTINCT_GAME_IDENTITY','CORE_FUN_CLEAR',
     'CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD','MARKET_TARGET_DIRECTION_RECORDED',
     'TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED',
-    'FIVE_DISTINCT_LEAD_MODELS','FIVE_DEPARTMENT_SCORES_RECORDED',
-    'PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS','NO_HIDDEN_FATAL_CONFLICT'
+    'MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED',
+    'FIVE_DISTINCT_LEAD_MODELS','FIVE_DEPARTMENT_LEAD_REVIEWS_RECORDED',
+    'STRICT_DESIGN_SCORE_AT_LEAST_80','STRICT_DESIGN_HARD_FAILURES_EMPTY'
   ])assert.ok(design.baselineReadyRequires.includes(token),`missing DESIGN_ONLY requirement: ${token}`);
   assert.equal(design.readyState,'DESIGN_BASELINE_READY');
   assert.match(flow,/TARGET_PLATFORM_UX_DIRECTION_DEFINED/);
-  assert.match(flow,/FIVE_DEPARTMENT_SCORES_RECORDED/);
+  assert.match(flow,/FIVE_DEPARTMENT_LEAD_REVIEWS_RECORDED/);
+  assert.match(flow,/STRICT_DESIGN_SCORE_AT_LEAST_80/);
 });
 
-test('five departments keep distinct lead models and multimodel reviews',()=>{
+test('five departments keep distinct direct lead reviews',()=>{
   assert.equal(directive.ai.departmentLeadModelsMustBeDistinct,true);
   assert.equal(directive.ai.departmentLeadAssignmentRemappable,true);
   const leadModels=roles.map(role=>directive.ai.departmentLeadModels?.[role]);
   assert.equal(new Set(leadModels).size,5);
   assert.ok(leadModels.every(model=>directive.ai.modelPool.includes(model)));
-  assert.ok(directive.ai.minDistinctModelsPerDepartment>=3);
+  assert.equal(directive.ai.minDistinctModelsPerDepartment,1);
+  assert.equal(directive.ai.departmentReviewModelCount,1);
   assert.match(flow,/fiveDistinctLeadModelIdsRequiredPerCycle: true/);
-  assert.match(flow,/allModelsWithinDepartmentMustBeDistinct: true/);
-  assert.match(cycle,/DEPARTMENT_LEAD_GATE/);
+  assert.match(flow,/designOnlyReviewMode: FIVE_DISTINCT_LEAD_PARALLEL_REVIEW/);
+  assert.match(flow,/allModelsWithinDepartmentMustBeDistinct: false/);
+  assert.match(cycle,/five_lead_reviews/);
+  assert.match(cycle,/GEMINI_RESOLVED_DISTINCT_LEAD_GATE/);
   assert.match(devCycle,/DEPARTMENT_LEAD_GATE/);
   assert.match(releaseCycle,/DEPARTMENT_LEAD_GATE/);
 });
 
-test('department lead remains representative and rebuttal owner',()=>{
-  assert.equal(directive.ai.departmentRepresentativeAuthoredByLead,true);
-  assert.equal(directive.ai.departmentRebuttalAuthoredByLead,true);
-  assert.equal(directive.ai.meeting.internalRepresentativeOwner,'DEPARTMENT_LEAD_MODEL');
-  assert.equal(directive.ai.meeting.rebuttalOwner,'DEPARTMENT_LEAD_MODEL');
-  assert.match(flow,/representativeAuthor: DEPARTMENT_LEAD/);
-  assert.match(flow,/rebuttalAuthor: SAME_DEPARTMENT_LEAD/);
-  assert.match(cycle,/representativeAuthoredByLead:true/);
-  assert.match(cycle,/rebuttalAuthoredByDepartmentLeads:true/);
+test('DESIGN_ONLY uses direct lead feedback without meeting or rebuttal layer',()=>{
+  assert.equal(directive.ai.departmentRepresentativeAuthoredByLead,false);
+  assert.equal(directive.ai.departmentRebuttalAuthoredByLead,false);
+  assert.equal(directive.ai.meeting.designOnlyMeetingRequired,false);
+  assert.equal(directive.ai.meeting.crossDepartmentRebuttalRounds,0);
+  assert.equal(directive.ai.meeting.rebuttalOwner,null);
+  assert.equal(directive.ai.meeting.designOnlyRevisionInput,'FIVE_LEAD_REVIEWS_DIRECT');
+  assert.match(flow,/designOnlyReviewMode: FIVE_DISTINCT_LEAD_PARALLEL_REVIEW/);
+  assert.match(cycle,/five_lead_reviews/);
+  assert.doesNotMatch(cycle,/rebuttalAuthoredByDepartmentLeads:true/);
 });
 
 test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary in RELEASE_CONFIRMED',()=>{
