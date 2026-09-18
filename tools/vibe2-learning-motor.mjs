@@ -260,16 +260,63 @@ export function buildIdlePracticeQueue(masteryInput={}){
   return {version:1,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:true,drills:drills.slice(0,8)};
 }
 
+function isIdlePracticeTask(task={}){
+  return (task?.evidence||[]).some(x=>clean(x)==='learning-practice-only')||/^LEARNING-PRACTICE-/.test(clean(task?.id));
+}
+function idlePracticeTaskId(drill={}){
+  return `LEARNING-PRACTICE-${clean(drill.id).replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,80)}`;
+}
+function practiceStatusRank(status=''){
+  return ({running:6,queued:5,done:4,failed:3,blocked:2,cancelled:1})[lower(status)]||0;
+}
+export function dedupeIdlePracticeTasks(tasksInput=[]){
+  const tasks=Array.isArray(tasksInput)?tasksInput:[];
+  const groups=new Map(),firstIndex=new Map();
+  for(let i=0;i<tasks.length;i++){
+    const task=tasks[i];
+    if(!isIdlePracticeTask(task)||!clean(task?.id))continue;
+    const id=clean(task.id);
+    if(!groups.has(id)){groups.set(id,[]);firstIndex.set(id,i);}
+    groups.get(id).push(task);
+  }
+  let removed=0;
+  const canonical=new Map();
+  for(const [id,rows] of groups.entries()){
+    if(rows.length<2){canonical.set(id,rows[0]);continue;}
+    removed+=rows.length-1;
+    const sorted=[...rows].sort((a,b)=>practiceStatusRank(b?.status)-practiceStatusRank(a?.status)||Number(b?.retries||0)-Number(a?.retries||0)||Number((b?.evidence||[]).length)-Number((a?.evidence||[]).length));
+    const winner=sorted[0];
+    canonical.set(id,{
+      ...winner,
+      retries:Math.max(...rows.map(row=>Number(row?.retries||0))),
+      maxRetries:Math.max(...rows.map(row=>Number(row?.maxRetries||0))),
+      evidence:[...new Set(rows.flatMap(row=>Array.isArray(row?.evidence)?row.evidence:[]).map(clean).filter(Boolean))]
+    });
+  }
+  const next=[];
+  for(let i=0;i<tasks.length;i++){
+    const task=tasks[i];
+    if(!isIdlePracticeTask(task)||!clean(task?.id)){next.push(task);continue;}
+    const id=clean(task.id);
+    if(firstIndex.get(id)!==i)continue;
+    next.push(canonical.get(id)||task);
+  }
+  return {tasks:next,changed:removed>0,removed};
+}
+
 export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
-  const tasks=Array.isArray(queueInput?.tasks)?queueInput.tasks:[];
+  const inputTasks=Array.isArray(queueInput?.tasks)?queueInput.tasks:[];
+  const deduped=dedupeIdlePracticeTasks(inputTasks);
+  const tasks=deduped.tasks;
+  const normalizedQueue=deduped.changed?{...queueInput,tasks}:queueInput;
   const active=tasks.filter(task=>['queued','running'].includes(lower(task?.status)));
-  const practiceTask=task=>(task?.evidence||[]).some(x=>clean(x)==='learning-practice-only')||/^LEARNING-PRACTICE-/.test(clean(task?.id));
-  const productionActive=active.some(task=>!practiceTask(task));
-  const existingPractice=active.find(practiceTask);
-  if(productionActive||existingPractice)return {queue:queueInput,added:false,reason:productionActive?'PRODUCTION_WORK_PRESENT':'PRACTICE_ALREADY_ACTIVE'};
-  const drill=(idlePracticeInput?.drills||[])[0];
-  if(!drill)return {queue:queueInput,added:false,reason:'NO_PRACTICE_DRILL'};
-  const id=`LEARNING-PRACTICE-${clean(drill.id).replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,80)}`;
+  const productionActive=active.some(task=>!isIdlePracticeTask(task));
+  const existingPractice=active.find(isIdlePracticeTask);
+  if(productionActive||existingPractice)return {queue:normalizedQueue,added:false,changed:deduped.changed,deduped:deduped.removed,reason:productionActive?'PRODUCTION_WORK_PRESENT':'PRACTICE_ALREADY_ACTIVE'};
+  const represented=new Set(tasks.filter(isIdlePracticeTask).map(task=>clean(task.id)).filter(Boolean));
+  const drill=(idlePracticeInput?.drills||[]).find(row=>!represented.has(idlePracticeTaskId(row)));
+  if(!drill)return {queue:normalizedQueue,added:false,changed:deduped.changed,deduped:deduped.removed,reason:'NO_NEW_PRACTICE_DRILL'};
+  const id=idlePracticeTaskId(drill);
   const goal=[
     '[VIBE_LEARNING_PRACTICE]',
     `kind=${clean(drill.kind)}`,
@@ -287,7 +334,7 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     evidence:['learning-practice-only','production-pass:NO',`practice-kind:${clean(drill.kind)}`,...(drill.domains||[]).map(d=>`practice-domain:${clean(d)}`)],
     completionCriteria:['PRACTICE_ANALYSIS_COMPLETED','SOURCE_WRITE_ZERO','PRODUCTION_PASS_NO']
   };
-  return {queue:{...queueInput,tasks:[...tasks,task]},added:true,reason:'IDLE_PRACTICE_ENQUEUED',task};
+  return {queue:{...queueInput,tasks:[...tasks,task]},added:true,changed:true,deduped:deduped.removed,reason:'IDLE_PRACTICE_ENQUEUED',task};
 }
 
 function get(item,...keys){for(const k of keys){const v=item?.[k];if(v!==undefined&&v!==null&&v!=='')return v;}return null;}
@@ -360,6 +407,8 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     queue:practice.queue,
     tournamentTasksChanged:tournament.changed,
     idlePracticeTaskAdded:practice.added,
+    idlePracticeQueueChanged:practice.changed===true,
+    idlePracticeDeduped:practice.deduped||0,
     idlePracticeReason:practice.reason
   };
 }
@@ -375,7 +424,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
   const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]}});
   writeJson(stateFile,result.state);
-  if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeTaskAdded)) writeJson(queueFile,result.queue);
+  if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeQueueChanged)) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);
   if(clean(a.practice)) writeJson(a.practice,result.idlePractice);
   if(clean(a.handoff)) writeJson(a.handoff,result.handoffs);
@@ -387,6 +436,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
   console.log(`VIBE2_CANDIDATE_TOURNAMENT_TASKS=${result.tournamentTasksChanged}`);
   console.log(`VIBE2_IDLE_PRACTICE_TASK_ADDED=${result.idlePracticeTaskAdded?'YES':'NO'}`);
+  console.log(`VIBE2_IDLE_PRACTICE_QUEUE_CHANGED=${result.idlePracticeQueueChanged?'YES':'NO'}`);
+  console.log(`VIBE2_IDLE_PRACTICE_DEDUPED=${result.idlePracticeDeduped||0}`);
   console.log(`VIBE2_IDLE_PRACTICE_REASON=${result.idlePracticeReason}`);
   console.log('VIBE2_GATE_WEAKENED=NO');
 }
