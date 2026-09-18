@@ -1,1405 +1,343 @@
 {
-  "contractVersion": 1,
+  "contractVersion": 3,
   "gameId": "seed-idle-growth-rpg-crystal-bloom",
   "date": "2026-09-18",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-IDLE-GROWTH-RPG-CRYSTAL-BLOOM-20260917",
-  "fingerprint": "f54c46ebbbdd91644aeab9b2812dde9dc80ed32f6984a6419556ca3be69ddf00",
-  "policyDigest": "57957b1b1ae2662bd6fc5f377031f469b6f581dd0f523dadb26c80ea871e9510",
-  "status": "COMPLETE",
+  "fingerprint": "6c1cc9aa0d66c625b83438b0dad5eb911db7fc386117a1205b47a41a203cca46",
+  "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
+  "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
+  "status": "IN_PROGRESS",
   "completedPhases": [
-    "designer_draft_base",
-    "designer_draft_gate",
-    "independent_department_reviews",
-    "department_representatives",
-    "lead_rebuttals",
-    "cross_department_meeting",
-    "designer_revision_base",
-    "designer_revision_gate",
-    "five_lead_fatal_review"
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
-    "designer_draft_base": {
-      "identity": "수정의 개화",
-      "playerFantasy": "수정의 개화를 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
-      "coreFun": "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의",
+    "designer_draft": {
+      "identity": "수정의 개화는 방치형 성장의 편의성과 능동적인 수정 공명 전술을 결합한 모바일 방치형 RPG로, 코어 루프와 시그니처 시스템을 통해 플레이어에게 지속적인 선택과 상태 변화의 재미를 제공합니다.",
+      "playerFantasy": "플레이어는 고대 수정의 정원을 관리하는 정원사가 되어, 방치된 시간 동안 자라난 수정 에너지를 수확하고 영웅들을 강화하여 미지의 어둠을 정화하는 몰입감 있는 판타지를 경험합니다.",
+      "coreFun": "오프라인 방치 보상을 수확하고, 어떤 영웅과 수정 속성을 먼저 강화할지 선택하며, 즉각적인 전투력 상승과 스테이지 돌파를 관찰하는 명확한 재미를 제공합니다.",
       "coreLoop": [
-        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
-        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+        "영웅들이 자동으로 전투를 수행하여 오프라인 및 방치 자원과 수정 에너지를 축적합니다.",
+        "접속 후 자원을 회수하여 영웅 레벨 업, 장비 장착, 수정 속성 개방 중 최적의 성장을 선택합니다.",
+        "강화된 로스터로 더 높은 난이도의 보스 스테이지에 도전하여 다음 성장을 위한 신규 콘텐츠를 해제합니다."
       ],
       "signatureSystems": [
         {
-          "name": "Idle Rewards",
-          "purpose": "提供持续的奖励机制，使玩家在休息时也能获得进展",
-          "playerChoice": "选择奖励类型和升级等级"
+          "name": "수정 공명 시스템",
+          "purpose": "다양한 속성의 수정을 조합하여 방치 효율과 전투 버프를 극대화하는 핵심 성장 구조를 제공합니다.",
+          "playerChoice": "어떤 속성의 수정을 먼저 활성화하고 배치할지 선택하여 자신만의 방치 및 전투 스타일을 구축합니다."
         },
         {
-          "name": "Roster Growth",
-          "purpose": "通过提升角色等级和技能来解锁新的成长层",
-          "playerChoice": "选择角色和升级等级"
-        },
-        {
-          "name": "Idle Progression",
-          "purpose": "通过在休息时生成有用的进展资源来提供持续的进展",
-          "playerChoice": "选择英雄或角色"
+          "name": "영웅 원정 파견",
+          "purpose": "보유한 영웅들을 실시간 원정에 보내 희귀 재화와 성장 아이템을 획득하는 보조 루프를 제공합니다.",
+          "playerChoice": "원정 지역의 위험도와 보상에 맞춰 영웅 조합을 편성하고 파견 시간을 전략적으로 관리합니다."
         }
       ],
-      "progressionDirection": "从简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "visualDirection": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "mobileUx": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "marketTargetDirection": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "steamExpansionDecision": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "technicalAssumptions": [
-        "使用Unity引擎进行开发",
-        "使用适当的资源和数据结构来实现游戏逻辑和用户界面",
-        "使用适当的测试和调试工具来确保游戏的稳定性和性能"
-      ],
-      "validationQuestions": [
-        "核心系统和机制是否符合预期",
-        "游戏是否能够适应多种平台和设备",
-        "游戏是否能够吸引目标玩家群体",
-        "游戏的可玩性和可扩展性是否满足要求"
-      ],
-      "openQuestions": [
-        "如何提高游戏的可玩性和挑战性",
-        "如何设计新的角色和奖励系统来保持玩家的兴趣",
-        "如何平衡游戏的易玩性和挑战性"
-      ]
-    },
-    "designer_draft_gate": {
       "systemInterconnections": [
         {
-          "fromSystem": "CORE_FUN_TO_LEARN",
-          "toSystem": "CORE_LOOP",
-          "trigger": "CORE_FUN_TO_LEARN",
-          "stateChange": "CORE_LOOP"
+          "fromSystem": "영웅 원정 파견",
+          "toSystem": "수정 공명 시스템",
+          "trigger": "원정 완료 시 희귀 수정 조각 획득",
+          "stateChange": "수정 공명 시스템에서 새로운 상위 단계 속성 개방 가능 상태로 전환"
         },
         {
-          "fromSystem": "CORE_LOOP",
-          "toSystem": "CORE_FUN_TO_LEARN",
-          "trigger": "CORE_LOOP",
-          "stateChange": "CORE_FUN_TO_LEARN"
+          "fromSystem": "수정 공명 시스템",
+          "toSystem": "코어 전투 루프",
+          "trigger": "수정 버프 활성화 및 레벨 업 완료",
+          "stateChange": "영웅들의 공격력과 방어력이 상승하여 상위 스테이지 돌파 가능"
         },
         {
-          "fromSystem": "CORE_FUN_TO_LEARN",
-          "toSystem": "CORE_LOOP",
-          "trigger": "CORE_FUN_TO_LEARN",
-          "stateChange": "CORE_LOOP"
+          "fromSystem": "코어 전투 루프",
+          "toSystem": "영웅 원정 파견",
+          "trigger": "특정 메인 스테이지 클리어 달성",
+          "stateChange": "더 높은 등급의 위험한 원정 지역이 새롭게 해제됨"
         }
       ],
+      "progressionDirection": "플레이어는 초기 30분 동안 기본 방치와 첫 스테이지 클리어를 경험하고, 이후 수십 시간 동안 수정 공명과 원정 파견을 확장하며 깊이 있는 성장의 재미를 느낄 수 있습니다.",
       "progressionEconomyBalance": {
-        "progressionLoop": "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
-        "resourceFlow": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
-        "balanceRules": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
+        "progressionLoop": "방치 자원 수집 -> 전략적 재화 분배 -> 스테이지 돌파 -> 신규 시스템 해제 및 보상 증가의 선순환 구조를 유지합니다.",
+        "resourceFlow": "주요 자원인 수정 에너지는 방치와 전투를 통해 안정적으로 유입되며, 상위 강화 단계로 갈수록 소모량이 증가하여 선택의 중요성이 높아집니다.",
+        "balanceRules": "무과금 플레이어도 꾸준한 접속을 통해 모든 핵심 콘텐츠에 도달할 수 있도록 방치 효율과 활성 플레이 보상의 밸런스를 조절합니다."
       },
       "contentExpansionPlan": [
         {
-          "milestone": "解锁新的成长层",
-          "newGameplay": "通过提升角色等级和技能来解锁新的成长层",
-          "systemImpact": "通过在休息时生成有用的进展资源来提供持续的进展"
+          "milestone": "길드 레이드 시스템 도입과 공동 수정 토벌",
+          "newGameplay": "다른 플레이어들과 협력하여 거대한 수정 보스를 토벌하는 실시간 협동 레이드 콘텐츠를 추가합니다. 플레이어들은 매일 주어지는 레이드 포인트를 소모해 보스에게 도전하며, 길드원간의 누적 피해량에 따라 특별한 재화를 획득합니다.",
+          "systemImpact": "개인 중심의 방치 루프에 소셜 협동 및 길드 전용 보상 시스템이 유기적으로 결합되어 장기적인 커뮤니티 활성화와 리텐션 증대에 기여합니다."
         },
         {
-          "milestone": "解锁新的成长层",
-          "newGameplay": "通过提升角色等级和技能来解锁新的成长层",
-          "systemImpact": "通过在休息时生成有用的进展资源来提供持续的进展"
+          "milestone": "무한의 탑 확장 및 속성 제약 스테이지",
+          "newGameplay": "층별로 특수한 제약 조건이 걸려 있는 전투 스테이지를 등반하며 한계를 시험하는 도전 콘텐츠를 제공합니다. 특정 속성 영웅만 입장 가능하거나 자원 획득량이 제한되는 등의 규칙이 적용됩니다.",
+          "systemImpact": "단순 성장을 넘어 다양한 영웅 조합과 수정 속성 세팅의 전략적 깊이를 크게 강화하며 육성의 다양성을 유도합니다."
         },
         {
-          "milestone": "解锁新的成长层",
-          "newGameplay": "通过提升角色等级和技能来解锁新的成长层",
-          "systemImpact": "通过在休息时生成有用的进展资源来提供持续的进展"
+          "milestone": "초월 승급 시스템과 신규 패시브 해제",
+          "newGameplay": "최고 레벨에 도달한 영웅들을 초월하여 외형 변화와 함께 강력한 패시브 스킬을 해제합니다. 전용 재화를 사용하여 단계별로 능력치를 극한까지 끌어올릴 수 있습니다.",
+          "systemImpact": "장기 플레이어들에게 강력한 후반 성장 동기와 몰입감을 부여하고 재화 소비처를 다변화하여 경제 시스템을 안정화합니다."
         }
       ],
       "failureRetryRisk": {
         "failureStates": [
-          "失败1",
-          "失败2"
+          "보스 스테이지 전투 시간 초과 패배",
+          "원정 파견 중 영웅 부상 및 임무 실패"
         ],
-        "retryFlow": "重新尝试，直到成功",
-        "riskPressure": "失败压力",
-        "recoveryRules": "恢复规则"
+        "retryFlow": "패배 시 즉시 패배 화면을 표시하고, 부족한 전투력이나 상성 문제를 안내한 뒤 즉시 재정비 화면으로 이동합니다.",
+        "riskPressure": "방치 보상 자체는 손실되지 않으나 스테이지 진행이 막혀 일시적으로 성장이 정체되는 압력을 느낍니다.",
+        "recoveryRules": "짧은 방치 보상 수령이나 간단한 영웅 레벨 업만으로도 쉽게 재도전하여 승리할 수 있도록 설계합니다."
       },
       "platformFitPlan": {
         "targetPlatform": "UNITY",
-        "inputModel": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "performanceBudget": "游戏性能预算",
-        "sessionConstraints": "游戏会话约束"
+        "inputModel": "모바일 터치 환경에 최적화된 원터치 인터페이스와 직관적인 드래그 앤 드롭 메뉴 조작을 지원합니다.",
+        "performanceBudget": "저사양 모바일 기기에서도 60프레임을 유지하도록 가벼운 파티클 효과와 최적화된 UI 스프라이트를 사용합니다.",
+        "sessionConstraints": "한 번의 플레이 세션은 3~5분 이내로 가볍게 즐길 수 있으며 하루에 여러 번 접속해도 부담이 없습니다."
       },
+      "visualDirection": "신비로운 판타지 수정의 빛을 강조하는 파스텔톤 컬러와 깔끔하고 가독성 높은 모던 판타지 UI 디자인을 지향합니다.",
+      "mobileUx": "한 손으로 모든 핵심 메뉴에 접근할 수 있도록 하단 탭바 중심의 레이아웃을 구성하고, 중요한 보상 획득 시 명확한 시각 피드백을 제공합니다.",
       "uxAccessibilityPlan": {
-        "hudPriorities": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "touchAndInput": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "readability": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "accessibility": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
+        "hudPriorities": "현재 자원 보유량, 방치 진행도, 다음 목표 스테이지를 화면 상단과 하단에 고정하여 항상 인지할 수 있게 합니다.",
+        "touchAndInput": "모든 터치 영역을 최소 48x48 픽셀 이상으로 설계하여 오타나 오작동을 방지합니다.",
+        "readability": "모바일 화면 크기에서도 텍스트가 선명하게 읽히도록 충분히 큰 폰트 크기와 대비 효과를 적용합니다.",
+        "accessibility": "색약 플레이어를 위해 수정 속성을 색상뿐만 아니라 고유한 심볼 모양으로 함께 구분합니다."
       },
       "artAudioDirection": {
-        "visualIdentity": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "audioIdentity": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "gameplayFeedbackSync": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
+        "visualIdentity": "영롱하게 빛나는 수정과 아기자기하면서도 개성 있는 판타지 영웅들의 일러스트를 결합한 비주얼 정체성",
+        "audioIdentity": "마음이 편안해지는 앰비언트 사운드와 자원 수집, 버튼 터치 시 청량한 수정 타격음을 제공",
+        "gameplayFeedbackSync": "자원 획득과 레벨 업 순간에 시각적 파티클과 청각적 효과를 정확히 동기화하여 성취감을 극대화"
       },
-      "implementationTraceability": [
-        {
-          "designElement": "CORE_FUN_TO_LEARN",
-          "responsibleSystem": "CORE_LOOP",
-          "validationEvidence": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
-        },
-        {
-          "designElement": "CORE_LOOP",
-          "responsibleSystem": "CORE_FUN_TO_LEARN",
-          "validationEvidence": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
-        },
-        {
-          "designElement": "CORE_FUN_TO_LEARN",
-          "responsibleSystem": "CORE_LOOP",
-          "validationEvidence": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
-        }
-      ]
-    },
-    "independent_department_reviews": {
-      "balance::gemma3:1b": {
-        "keep": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-        ],
-        "fix": [
-          "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-        ],
-        "add": [
-          "모바일에서도 즉시 이해되는 입력과 피드백"
-        ],
-        "risks": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-        ],
-        "evidence": [
-          "수정의 개화을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
-        ],
-        "questions": [
-          "MARKET_EVIDENCE_SUMMARY"
-        ]
-      },
-      "development::gemma3:1b": {
-        "keep": [
-          "수정의 개화 핵심 재미와 시스템 연결을 확정"
-        ],
-        "fix": [
-          "수정의 개화 핵심 재미와 시스템 연결을 확정"
-        ],
-        "add": [
-          "수정의 개화 핵심 재미와 시스템 연결을 확정"
-        ],
-        "risks": [
-          "수정의 개화 핵심 재미와 시스템 연결을 확정"
-        ],
-        "evidence": [
-          "수정의 개화 핵심 재미와 시스템 연결을 확정"
-        ],
-        "questions": [
-          "수정의 개화 핵심 재미와 시스템 연결을 확정"
-        ]
-      },
-      "graphics::gemma3:1b": {
-        "keep": [
-          "design_review_progress"
-        ],
-        "fix": [
-          "core_fun_analysis"
-        ],
-        "add": [
-          "visual_analysis_feedback"
-        ],
-        "risks": [
-          "design_quality_check"
-        ],
-        "evidence": [
-          "game_seed_market_evidence"
-        ],
-        "questions": [
-          "core_fun_validation"
-        ]
-      },
-      "planning::gemma3:1b": {
-        "keep": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-        ],
-        "fix": [
-          "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-        ],
-        "add": [
-          "모바일에서도 즉시 이해되는 입력과 피드백"
-        ],
-        "risks": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-        ],
-        "evidence": [
-          "수정의 개화을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
-        ],
-        "questions": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-        ]
-      },
-      "qa::gemma3:1b": {
-        "keep": [
-          "GAME_SEED_version"
-        ],
-        "fix": [
-          "GAME_SEED_seedId"
-        ],
-        "add": [],
-        "risks": [],
-        "evidence": [
-          "DESIGN_coreLoop_validation_evidence"
-        ],
-        "questions": [
-          "核心系统和机制是否符合预期"
-        ]
-      },
-      "development::llama3.2:1b": {
-        "keep": [
-          "coreLoop"
-        ],
-        "fix": [
-          "coreLoop"
-        ],
-        "add": [
-          "coreLoop"
-        ],
-        "risks": [
-          "fail1"
-        ],
-        "evidence": [
-          "fail2"
-        ],
-        "questions": [
-          "fail3"
-        ]
-      },
-      "graphics::llama3.2:1b": {
-        "keep": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-        ],
-        "fix": [
-          "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-        ],
-        "add": [
-          "heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sesss"
-        ],
-        "risks": [
-          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-        ],
-        "evidence": [
-          "Owner ordered all current catalog games back to design. Existing builds are preserved as reference only until a new design passes"
-        ],
-        "questions": [
-          "how to make sure the game's idle rewards are fair and balanced"
-        ]
-      },
-      "planning::llama3.2:1b": {
-        "keep": [
-          "fix"
-        ],
-        "fix": [
-          "add"
-        ],
-        "add": [
-          "risks"
-        ],
-        "risks": [
-          "evidence"
-        ],
-        "evidence": [
-          "questions"
-        ],
-        "questions": []
-      },
-      "qa::qwen2.5:1.5b": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "fix": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "add": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "risks": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "evidence": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "questions": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ]
-      },
-      "balance::qwen3:0.6b": {
-        "keep": [
-          "해당 부서의 기능과 기능의 구현을 검토하고, 부서의 역할과 기능을 명확히 합니다."
-        ],
-        "fix": [
-          "부서의 기능을 명확히 하여, 부서의 역할과 기능을 정확히 이해합니다."
-        ],
-        "add": [
-          "부서의 기능을 추가하고, 부서의 역할과 기능을 확장합니다."
-        ],
-        "risks": [
-          "부서의 기능이 불확실하거나 부족할 경우, 부서의 역할과 기능을 정확히 이해할 수 없습니다."
-        ],
-        "evidence": [
-          "해당 부서의 기능과 기능의 구현을 검토하고, 부서의 역할과 기능을 명확히 합니다."
-        ],
-        "questions": [
-          "해당 부서의 기능과 기능의 구현을 검토하고, 부서의 역할과 기능을 정확히 이해합니다."
-        ]
-      },
-      "development::qwen3:0.6b": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT=development"
-        ],
-        "fix": [
-          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-ALL-DESIGN-RESET-SEED-IDLE-GROWTH-RPG-CRYSTAL-BLOOM-20260917\",\"gameId\":\"seed-idle-growth-rp"
-        ],
-        "add": [
-          "CORE_FUN_TO_LEARN=[\"수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의\",\"진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프\",\"모바일에서도 즉시 이해되는 입력과 피드백\"]"
-        ],
-        "risks": [
-          "MARKET_EVIDENCE_SUMMARY={\"role\":\"TARGET_DESIGN_REFERENCE\",\"targetMarketScope\":\"GLOBAL\",\"hardPassFailGate\":false,\"available\":true,\""
-        ],
-        "evidence": [
-          "AFK Arena - Idle rewards, roster growth and periodic active decisions benchmark - metrics:[]\nLegend of Slime - Mobile idle growth,"
-        ],
-        "questions": [
-          "Global RPG/session signal - metrics: [4.7, 41]"
-        ]
-      },
-      "graphics::qwen3:0.6b": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT=graphics"
-        ],
-        "fix": [
-          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-ALL-DESIGN-RESET-SEED-IDLE-GROWTH-RPG-CRYSTAL-BLOOM-20260917\",\"gameId\":\"seed-idle-growth-rp"
-        ],
-        "add": [
-          "CORE_FUN_TO_LEARN=[\"수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의\",\"진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프\",\"모바일에서도 즉시 이해되는 입력과 피드백\"]"
-        ],
-        "risks": [
-          "CORE_LOOP=[\"Heroes or characters fight automatically and continue generating useful idle or offline progression resources between "
-        ],
-        "evidence": [
-          "REFERENCE_GAMES=[\"AFK Arena\",\"Legend of Slime\",\"Idle Heroes\"]"
-        ],
-        "questions": [
-          "DISTINCT_IDENTITY=[\"수정의 개화을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정\"]"
-        ]
-      },
-      "planning::qwen3:0.6b": {
-        "keep": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-        ],
-        "fix": [
-          "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-        ],
-        "add": [
-          "모바일에서도 즉시 이해되는 입력과 피드백"
-        ],
-        "risks": [
-          "MARKET_EVIDENCE_SUMMARY"
-        ],
-        "evidence": [
-          "AFK Arena - idle rewards, roster growth and periodic active decisions benchmark"
-        ],
-        "questions": [
-          "Legend of Slime - mobile idle growth and layered upgrade benchmark"
-        ]
-      },
-      "qa::qwen3:0.6b": {
-        "keep": [
-          "keep"
-        ],
-        "fix": [],
-        "add": [],
-        "risks": [],
-        "evidence": [],
-        "questions": []
-      },
-      "balance::smollm2:1.7b": {
-        "keep": [
-          "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessi"
-        ],
-        "fix": [
-          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-        ],
-        "add": [
-          "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessi"
-        ],
-        "risks": [
-          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-        ],
-        "evidence": [
-          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-        ],
-        "questions": [
-          "What are the key features of the idle games you want to design?"
-        ]
-      }
-    },
-    "department_representatives": {
-      "planning": {
-        "keep": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-        ],
-        "fix": [
-          "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-        ],
-        "add": [
-          "모바일에서도 즉시 이해되는 입력과 피드백"
-        ],
-        "risks": [
-          "MARKET_EVIDENCE_SUMMARY"
-        ],
-        "evidence": [
-          "AFK Arena - idle rewards, roster growth and periodic active decisions benchmark"
-        ],
-        "questions": [
-          "Legend of Slime - mobile idle growth and layered upgrade benchmark"
-        ]
-      },
-      "graphics": {
-        "keep": [
-          "design_review_progress"
-        ],
-        "fix": [
-          "core_fun_analysis"
-        ],
-        "add": [
-          "visual_analysis_feedback"
-        ],
-        "risks": [
-          "design_quality_check"
-        ],
-        "evidence": [
-          "game_seed_market_evidence"
-        ],
-        "questions": [
-          "core_fun_validation"
-        ]
-      },
-      "development": {
-        "keep": [
-          "coreLoop"
-        ],
-        "fix": [
-          "coreLoop"
-        ],
-        "add": [
-          "coreLoop"
-        ],
-        "risks": [
-          "fail1"
-        ],
-        "evidence": [
-          "fail2"
-        ],
-        "questions": [
-          "fail3"
-        ]
-      },
-      "qa": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "fix": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "add": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "risks": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "evidence": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "questions": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ]
-      },
-      "balance": {
-        "keep": [
-          "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
-          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-        ],
-        "fix": [
-          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-        ],
-        "add": [
-          "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions."
-        ],
-        "risks": [
-          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-        ],
-        "evidence": [
-          "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-        ],
-        "questions": [
-          "What are the key features of the idle games you want to design?"
-        ]
-      }
-    },
-    "lead_rebuttals": {
-      "planning": {
-        "accept": [
-          "OWN",
-          "OTHERS"
-        ],
-        "challenge": [
-          "OWN",
-          "OTHERS"
-        ],
-        "revision": [
-          "OWN",
-          "OTHERS"
-        ],
-        "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박/수정하여 합리적인 접근을 유지합니다."
-      },
-      "graphics": {
-        "accept": [
-          "design_review_progress"
-        ],
-        "challenge": [
-          "core_fun_analysis"
-        ],
-        "revision": [
-          "visual_analysis_feedback"
-        ],
-        "reason": "The design review is crucial for ensuring the core fun of the game remains engaging and satisfying for players.  Addressing the identified concerns will significantly improve the player experience and maintain the game's core appeal."
-      },
-      "development": {
-        "accept": [
-          "own",
-          "others"
-        ],
-        "challenge": [
-          "own",
-          "others"
-        ],
-        "revision": [
-          "own",
-          "others"
-        ],
-        "reason": "own"
-      },
-      "qa": {
-        "accept": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "challenge": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "revision": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "reason": "ASSIGNED_DEPARTMENT=qa"
-      },
-      "balance": {
-        "accept": [
-          "keep",
-          "fix",
-          "add"
-        ],
-        "challenge": [
-          "risks",
-          "evidence",
-          "questions"
-        ],
-        "revision": [
-          "planning",
-          "graphics",
-          "development"
-        ],
-        "reason": "스키마에 맞는 JSON 객체만 반환한다."
-      }
-    },
-    "cross_department_meeting": {
-      "summary": "CONSENSUS",
-      "decisions": [
-        {
-          "topic": "planning",
-          "status": "CONSENSUS",
-          "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박/수정하여 합리적인 접근을 유지합니다.",
-          "departments": [
-            "planning",
-            "graphics",
-            "development",
-            "qa"
-          ]
-        },
-        {
-          "topic": "graphics",
-          "status": "CONSENSUS",
-          "reason": "design_review_progress",
-          "departments": [
-            "graphics",
-            "development",
-            "qa"
-          ]
-        },
-        {
-          "topic": "development",
-          "status": "CONSENSUS",
-          "reason": "own",
-          "departments": [
-            "development",
-            "qa"
-          ]
-        },
-        {
-          "topic": "qa",
-          "status": "CONSENSUS",
-          "reason": "ASSIGNED_DEPARTMENT=qa",
-          "departments": [
-            "qa"
-          ]
-        }
-      ]
-    },
-    "designer_revision_base": {
-      "identity": "수정의 개화",
-      "playerFantasy": "수정의 개화를 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
-      "coreFun": "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의",
-      "coreLoop": [
-        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
-        "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
-      ],
-      "signatureSystems": [
-        {
-          "name": "Idle Rewards",
-          "purpose": "提供持续的奖励机制，使玩家在休息时也能获得进展",
-          "playerChoice": "选择奖励类型和升级等级"
-        },
-        {
-          "name": "Roster Growth",
-          "purpose": "通过提升角色等级和技能来解锁新的成长层",
-          "playerChoice": "选择角色和升级等级"
-        },
-        {
-          "name": "Idle Progression",
-          "purpose": "通过在休息时生成有用的进展资源来提供持续的进展",
-          "playerChoice": "选择英雄或角色"
-        }
-      ],
-      "progressionDirection": "从简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "visualDirection": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "mobileUx": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "marketTargetDirection": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-      "steamExpansionDecision": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
+      "marketTargetDirection": "방치형 RPG 장르를 선호하며 짧은 시간 동안 확실한 성장의 재미를 느끼고 싶어하는 글로벌 모바일 게이머를 타겟으로 합니다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후, 넓은 화면에 맞춘 UI 개편과 함께 스팀 플랫폼 진출을 긍정적으로 검토합니다.",
       "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
+      "multiplayerExpansionDecision": "향후 업데이트를 통해 비동기식 아레나 대전과 길드 협동 콘텐츠를 확장할 계획입니다.",
       "technicalAssumptions": [
-        "使用Unity引擎进行开发",
-        "使用适当的资源和数据结构来实现游戏逻辑和用户界面",
-        "使用适当的测试和调试工具来确保游戏的稳定性和性能"
+        "클라이언트와 서버 간의 안정적인 오프라인 방치 시간 계산 및 데이터 동기화 처리",
+        "모바일 기기의 절전 모드 및 백그라운드 전환 시에도 원활한 자원 누적 로직 보장"
       ],
       "validationQuestions": [
-        "核心系统和机制是否符合预期",
-        "游戏是否能够适应多种平台和设备",
-        "游戏是否能够吸引目标玩家群体",
-        "游戏的可玩性和可扩展性是否满足要求"
+        "플레이어가 첫 접속 후 5분 이내에 게임의 핵심 루프와 방치 보상 시스템을 완벽히 이해할 수 있는가?",
+        "수정 공명 시스템과 영웅 강화 간의 자원 밸런스가 특정 선택지만 강요하지 않고 다양성을 제공하는가?"
       ],
-      "openQuestions": [
-        "如何提高游戏的可玩性和挑战性",
-        "如何设计新的角色和奖励系统来保持玩家的兴趣",
-        "如何平衡游戏的易玩性和挑战性"
-      ]
-    },
-    "designer_revision_gate": {
-      "systemInterconnections": [
-        {
-          "fromSystem": "CORE_FUN_TO_LEARN",
-          "toSystem": "CORE_LOOP",
-          "trigger": "CORE_FUN_TO_LEARN",
-          "stateChange": "CORE_LOOP"
-        },
-        {
-          "fromSystem": "CORE_LOOP",
-          "toSystem": "CORE_FUN_TO_LEARN",
-          "trigger": "CORE_LOOP",
-          "stateChange": "CORE_FUN_TO_LEARN"
-        },
-        {
-          "fromSystem": "CORE_FUN_TO_LEARN",
-          "toSystem": "CORE_LOOP",
-          "trigger": "CORE_FUN_TO_LEARN",
-          "stateChange": "CORE_LOOP"
-        }
-      ],
-      "progressionEconomyBalance": {
-        "progressionLoop": "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
-        "resourceFlow": "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment.",
-        "balanceRules": "Push a harder stage or boss with the improved roster, unlock another growth layer, and return later to collect the next idle reward cycle."
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "解锁新的成长层",
-          "newGameplay": "通过提升角色等级和技能来解锁新的成长层",
-          "systemImpact": "通过在休息时生成有用的进展资源来提供持续的进展"
-        },
-        {
-          "milestone": "解锁新的成长层",
-          "newGameplay": "通过提升角色等级和技能来解锁新的成长层",
-          "systemImpact": "通过在休息时生成有用的进展资源来提供持续的进展"
-        },
-        {
-          "milestone": "解锁新的成长层",
-          "newGameplay": "通过提升角色等级和技能来解锁新的成长层",
-          "systemImpact": "通过在休息时生成有用的进展资源来提供持续的进展"
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "失败1",
-          "失败2"
-        ],
-        "retryFlow": "重新尝试，直到成功",
-        "riskPressure": "失败压力",
-        "recoveryRules": "恢复规则"
-      },
-      "platformFitPlan": {
-        "targetPlatform": "UNITY",
-        "inputModel": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "performanceBudget": "游戏性能预算",
-        "sessionConstraints": "游戏会话约束"
-      },
-      "uxAccessibilityPlan": {
-        "hudPriorities": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "touchAndInput": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "readability": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "accessibility": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
-      },
-      "artAudioDirection": {
-        "visualIdentity": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "audioIdentity": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层",
-        "gameplayFeedbackSync": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
-      },
       "implementationTraceability": [
         {
-          "designElement": "CORE_FUN_TO_LEARN",
-          "responsibleSystem": "CORE_LOOP",
-          "validationEvidence": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
+          "designElement": "오프라인 방치 자원 누적",
+          "responsibleSystem": "책임 시스템: 코어 전투 루프",
+          "validationEvidence": "로그아웃 후 일정 시간 경과 후 재접속 시 정상적으로 자원이 누적 지급되는지 로그 및 수치 검증"
         },
         {
-          "designElement": "CORE_LOOP",
-          "responsibleSystem": "CORE_FUN_TO_LEARN",
-          "validationEvidence": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
+          "designElement": "수정 공명 속성 조합",
+          "responsibleSystem": "책임 시스템: 수정 공명 시스템",
+          "validationEvidence": "서로 다른 수정 속성 조합에 따라 전투력 보너스가 정확하게 계산되고 적용되는지 유닛 테스트 수행"
         },
         {
-          "designElement": "CORE_FUN_TO_LEARN",
-          "responsibleSystem": "CORE_LOOP",
-          "validationEvidence": "通过简单的角色和奖励系统开始，逐步提升到复杂的角色和奖励系统，并最终解锁新的成长层"
+          "designElement": "원정 파견 보상 획득",
+          "responsibleSystem": "책임 시스템: 영웅 원정 파견",
+          "validationEvidence": "원정 완료 시간에 맞춰 올바른 희귀 재화가 인벤토리에 지급되고 UI에 즉시 반영되는지 확인"
+        }
+      ],
+      "openQuestions": [
+        "오프라인 방치 시간에 상한선을 두어 접속 빈도를 유도하는 것이 장기 리텐션에 유리한가?",
+        "초보 플레이어의 이탈을 막기 위해 초반 튜토리얼 구간의 자원 지급량을 어느 수준까지 조절해야 하는가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "길드 레이드 시스템 도입과 공동 수정 토벌",
+          "newGameplay": "다른 플레이어들과 협력하여 거대한 수정 보스를 토벌하는 실시간 협동 레이드 콘텐츠를 추가합니다. 플레이어들은 매일 주어지는 레이드 포인트를 소모해 보스에게 도전하며, 길드원간의 누적 피해량에 따라 특별한 재화를 획득합니다.",
+          "systemImpact": "개인 중심의 방치 루프에 소셜 협동 및 길드 전용 보상 시스템이 유기적으로 결합되어 장기적인 커뮤니티 활성화와 리텐션 증대에 기여합니다."
+        },
+        {
+          "milestone": "무한의 탑 확장 및 속성 제약 스테이지",
+          "newGameplay": "층별로 특수한 제약 조건이 걸려 있는 전투 스테이지를 등반하며 한계를 시험하는 도전 콘텐츠를 제공합니다. 특정 속성 영웅만 입장 가능하거나 자원 획득량이 제한되는 등의 규칙이 적용됩니다.",
+          "systemImpact": "단순 성장을 넘어 다양한 영웅 조합과 수정 속성 세팅의 전략적 깊이를 크게 강화하며 육성의 다양성을 유도합니다."
+        },
+        {
+          "milestone": "초월 승급 시스템과 신규 패시브 해제",
+          "newGameplay": "최고 레벨에 도달한 영웅들을 초월하여 외형 변화와 함께 강력한 패시브 스킬을 해제합니다. 전용 재화를 사용하여 단계별로 능력치를 극한까지 끌어올릴 수 있습니다.",
+          "systemImpact": "장기 플레이어들에게 강력한 후반 성장 동기와 몰입감을 부여하고 재화 소비처를 다변화하여 경제 시스템을 안정화합니다."
         }
       ]
     },
-    "five_lead_fatal_review": {
-      "planning": {
-        "recommendedState": "ACTIVE",
-        "fatalCriteria": [],
-        "evidence": [
-          "OWN의 의견을 수용하고, OTHERS의 의견을 반박/수정하여 합리적인 접근을 유지합니다.",
-          "design_review_progress",
-          "own"
-        ],
-        "reason": "수정의 개화를 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
       },
-      "graphics": {
-        "recommendedState": "ACTIVE",
-        "fatalCriteria": [
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
-        ],
-        "evidence": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의",
-          "수정의 개화을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의",
-          "수정의 개화를 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
-        ],
-        "reason": "수정의 개화는 핵심 재미를 재정의하여 플레이 선택의 다양성을 확보하고, 기존의 디자인을 승계하지 않고 설계 단계부터 다시 검토하여 고유한 핵심 재미와 시스템 연결을 확정해야 합니다. 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 DISCARD를 선택해야 합니다."
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
       },
-      "development": {
-        "recommendedState": "REDESIGN",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME"
-        ],
-        "evidence": [
-          "CHI-MARKET_EVIDENCE_SUMMARY",
-          "CHI-MARKET_EVIDENCE_SUMMARY",
-          "CHI-MARKET_EVIDENCE_SUMMARY",
-          "CHI-MARKET_EVIDENCE_SUMMARY"
-        ],
-        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라. VALID_FATAL_CRITERIA=["
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
       },
-      "qa": {
-        "recommendedState": "REDESIGN",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의",
-          "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
-          "모바일에서도 즉시 이해되는 입력과 피드백"
-        ],
-        "reason": "수정 설계는 초기 검토에서 불충분한 요소로 인해 재검토가 필요함. 이는 CORE_FUN_CANNOT_BE_RECOVERED와 HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY의 치명적 판단에 해당합니다. 선택된 플랫폼은 실제 제품으로서 작동하지 않을 수 있으며, 필요한 생산 범위가 기술적 및 구조적 제약으로 인해 충분하지 않기 때문에 REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN의 치명적 판단에 해당합니다."
-      },
-      "balance": {
-        "recommendedState": "DISCARD",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [],
-        "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박/수정하여 합리적인 접근을 유지합니다."
-      }
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
-  "tasks": {
-    "independent_department_reviews::development::llama3.2:1b": {
-      "keep": [
-        "coreLoop"
-      ],
-      "fix": [
-        "coreLoop"
-      ],
-      "add": [
-        "coreLoop"
-      ],
-      "risks": [
-        "fail1"
-      ],
-      "evidence": [
-        "fail2"
-      ],
-      "questions": [
-        "fail3"
-      ]
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 2,
+      "successes": 2,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 12797,
+      "lastMs": 1887,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:44:10.017Z"
     },
-    "independent_department_reviews::balance::gemma3:1b": {
-      "keep": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-      ],
-      "fix": [
-        "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-      ],
-      "add": [
-        "모바일에서도 즉시 이해되는 입력과 피드백"
-      ],
-      "risks": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-      ],
-      "evidence": [
-        "수정의 개화을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
-      ],
-      "questions": [
-        "MARKET_EVIDENCE_SUMMARY"
-      ]
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 104,
+      "lastMs": 104,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 49.875247752s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"49s\" } ] } }",
+      "updatedAt": "2026-09-18T08:44:10.146Z"
     },
-    "independent_department_reviews::graphics::llama3.2:1b": {
-      "keep": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-      ],
-      "fix": [
-        "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-      ],
-      "add": [
-        "heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sesss"
-      ],
-      "risks": [
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-      ],
-      "evidence": [
-        "Owner ordered all current catalog games back to design. Existing builds are preserved as reference only until a new design passes"
-      ],
-      "questions": [
-        "how to make sure the game's idle rewards are fair and balanced"
-      ]
+    "gemini:gemini-3.7-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 219,
+      "lastMs": 219,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 49.760919259s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"49s\" } ] } }",
+      "updatedAt": "2026-09-18T08:44:10.261Z"
     },
-    "independent_department_reviews::graphics::gemma3:1b": {
-      "keep": [
-        "design_review_progress"
-      ],
-      "fix": [
-        "core_fun_analysis"
-      ],
-      "add": [
-        "visual_analysis_feedback"
-      ],
-      "risks": [
-        "design_quality_check"
-      ],
-      "evidence": [
-        "game_seed_market_evidence"
-      ],
-      "questions": [
-        "core_fun_validation"
-      ]
-    },
-    "independent_department_reviews::planning::gemma3:1b": {
-      "keep": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-      ],
-      "fix": [
-        "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-      ],
-      "add": [
-        "모바일에서도 즉시 이해되는 입력과 피드백"
-      ],
-      "risks": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-      ],
-      "evidence": [
-        "수정의 개화을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
-      ],
-      "questions": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-      ]
-    },
-    "independent_department_reviews::planning::llama3.2:1b": {
-      "keep": [
-        "fix"
-      ],
-      "fix": [
-        "add"
-      ],
-      "add": [
-        "risks"
-      ],
-      "risks": [
-        "evidence"
-      ],
-      "evidence": [
-        "questions"
-      ],
-      "questions": []
-    },
-    "independent_department_reviews::development::gemma3:1b": {
-      "keep": [
-        "수정의 개화 핵심 재미와 시스템 연결을 확정"
-      ],
-      "fix": [
-        "수정의 개화 핵심 재미와 시스템 연결을 확정"
-      ],
-      "add": [
-        "수정의 개화 핵심 재미와 시스템 연결을 확정"
-      ],
-      "risks": [
-        "수정의 개화 핵심 재미와 시스템 연결을 확정"
-      ],
-      "evidence": [
-        "수정의 개화 핵심 재미와 시스템 연결을 확정"
-      ],
-      "questions": [
-        "수정의 개화 핵심 재미와 시스템 연결을 확정"
-      ]
-    },
-    "independent_department_reviews::qa::qwen2.5:1.5b": {
-      "keep": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "fix": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "add": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "risks": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "evidence": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "questions": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ]
-    },
-    "independent_department_reviews::development::qwen3:0.6b": {
-      "keep": [
-        "ASSIGNED_DEPARTMENT=development"
-      ],
-      "fix": [
-        "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-ALL-DESIGN-RESET-SEED-IDLE-GROWTH-RPG-CRYSTAL-BLOOM-20260917\",\"gameId\":\"seed-idle-growth-rp"
-      ],
-      "add": [
-        "CORE_FUN_TO_LEARN=[\"수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의\",\"진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프\",\"모바일에서도 즉시 이해되는 입력과 피드백\"]"
-      ],
-      "risks": [
-        "MARKET_EVIDENCE_SUMMARY={\"role\":\"TARGET_DESIGN_REFERENCE\",\"targetMarketScope\":\"GLOBAL\",\"hardPassFailGate\":false,\"available\":true,\""
-      ],
-      "evidence": [
-        "AFK Arena - Idle rewards, roster growth and periodic active decisions benchmark - metrics:[]\nLegend of Slime - Mobile idle growth,"
-      ],
-      "questions": [
-        "Global RPG/session signal - metrics: [4.7, 41]"
-      ]
-    },
-    "independent_department_reviews::qa::gemma3:1b": {
-      "keep": [
-        "GAME_SEED_version"
-      ],
-      "fix": [
-        "GAME_SEED_seedId"
-      ],
-      "add": [],
-      "risks": [],
-      "evidence": [
-        "DESIGN_coreLoop_validation_evidence"
-      ],
-      "questions": [
-        "核心系统和机制是否符合预期"
-      ]
-    },
-    "independent_department_reviews::graphics::qwen3:0.6b": {
-      "keep": [
-        "ASSIGNED_DEPARTMENT=graphics"
-      ],
-      "fix": [
-        "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-ALL-DESIGN-RESET-SEED-IDLE-GROWTH-RPG-CRYSTAL-BLOOM-20260917\",\"gameId\":\"seed-idle-growth-rp"
-      ],
-      "add": [
-        "CORE_FUN_TO_LEARN=[\"수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의\",\"진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프\",\"모바일에서도 즉시 이해되는 입력과 피드백\"]"
-      ],
-      "risks": [
-        "CORE_LOOP=[\"Heroes or characters fight automatically and continue generating useful idle or offline progression resources between "
-      ],
-      "evidence": [
-        "REFERENCE_GAMES=[\"AFK Arena\",\"Legend of Slime\",\"Idle Heroes\"]"
-      ],
-      "questions": [
-        "DISTINCT_IDENTITY=[\"수정의 개화을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정\"]"
-      ]
-    },
-    "independent_department_reviews::balance::qwen3:0.6b": {
-      "keep": [
-        "해당 부서의 기능과 기능의 구현을 검토하고, 부서의 역할과 기능을 명확히 합니다."
-      ],
-      "fix": [
-        "부서의 기능을 명확히 하여, 부서의 역할과 기능을 정확히 이해합니다."
-      ],
-      "add": [
-        "부서의 기능을 추가하고, 부서의 역할과 기능을 확장합니다."
-      ],
-      "risks": [
-        "부서의 기능이 불확실하거나 부족할 경우, 부서의 역할과 기능을 정확히 이해할 수 없습니다."
-      ],
-      "evidence": [
-        "해당 부서의 기능과 기능의 구현을 검토하고, 부서의 역할과 기능을 명확히 합니다."
-      ],
-      "questions": [
-        "해당 부서의 기능과 기능의 구현을 검토하고, 부서의 역할과 기능을 정확히 이해합니다."
-      ]
-    },
-    "independent_department_reviews::planning::qwen3:0.6b": {
-      "keep": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-      ],
-      "fix": [
-        "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-      ],
-      "add": [
-        "모바일에서도 즉시 이해되는 입력과 피드백"
-      ],
-      "risks": [
-        "MARKET_EVIDENCE_SUMMARY"
-      ],
-      "evidence": [
-        "AFK Arena - idle rewards, roster growth and periodic active decisions benchmark"
-      ],
-      "questions": [
-        "Legend of Slime - mobile idle growth and layered upgrade benchmark"
-      ]
-    },
-    "independent_department_reviews::qa::qwen3:0.6b": {
-      "keep": [
-        "keep"
-      ],
-      "fix": [],
-      "add": [],
-      "risks": [],
-      "evidence": [],
-      "questions": []
-    },
-    "independent_department_reviews::balance::smollm2:1.7b": {
-      "keep": [
-        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessi"
-      ],
-      "fix": [
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-      ],
-      "add": [
-        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessi"
-      ],
-      "risks": [
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-      ],
-      "evidence": [
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-      ],
-      "questions": [
-        "What are the key features of the idle games you want to design?"
-      ]
-    },
-    "department_representatives::planning": {
-      "keep": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의"
-      ],
-      "fix": [
-        "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
-      ],
-      "add": [
-        "모바일에서도 즉시 이해되는 입력과 피드백"
-      ],
-      "risks": [
-        "MARKET_EVIDENCE_SUMMARY"
-      ],
-      "evidence": [
-        "AFK Arena - idle rewards, roster growth and periodic active decisions benchmark"
-      ],
-      "questions": [
-        "Legend of Slime - mobile idle growth and layered upgrade benchmark"
-      ]
-    },
-    "department_representatives::graphics": {
-      "keep": [
-        "design_review_progress"
-      ],
-      "fix": [
-        "core_fun_analysis"
-      ],
-      "add": [
-        "visual_analysis_feedback"
-      ],
-      "risks": [
-        "design_quality_check"
-      ],
-      "evidence": [
-        "game_seed_market_evidence"
-      ],
-      "questions": [
-        "core_fun_validation"
-      ]
-    },
-    "department_representatives::development": {
-      "keep": [
-        "coreLoop"
-      ],
-      "fix": [
-        "coreLoop"
-      ],
-      "add": [
-        "coreLoop"
-      ],
-      "risks": [
-        "fail1"
-      ],
-      "evidence": [
-        "fail2"
-      ],
-      "questions": [
-        "fail3"
-      ]
-    },
-    "department_representatives::qa": {
-      "keep": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "fix": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "add": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "risks": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "evidence": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "questions": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ]
-    },
-    "department_representatives::balance": {
-      "keep": [
-        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions.",
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-      ],
-      "fix": [
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-      ],
-      "add": [
-        "Heroes or characters fight automatically and continue generating useful idle or offline progression resources between active sessions."
-      ],
-      "risks": [
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-      ],
-      "evidence": [
-        "Claim rewards, upgrade levels or skills, equip gear, and choose which hero or stat path receives the next investment."
-      ],
-      "questions": [
-        "What are the key features of the idle games you want to design?"
-      ]
-    },
-    "lead_rebuttals::planning": {
-      "accept": [
-        "OWN",
-        "OTHERS"
-      ],
-      "challenge": [
-        "OWN",
-        "OTHERS"
-      ],
-      "revision": [
-        "OWN",
-        "OTHERS"
-      ],
-      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박/수정하여 합리적인 접근을 유지합니다."
-    },
-    "lead_rebuttals::graphics": {
-      "accept": [
-        "design_review_progress"
-      ],
-      "challenge": [
-        "core_fun_analysis"
-      ],
-      "revision": [
-        "visual_analysis_feedback"
-      ],
-      "reason": "The design review is crucial for ensuring the core fun of the game remains engaging and satisfying for players.  Addressing the identified concerns will significantly improve the player experience and maintain the game's core appeal."
-    },
-    "lead_rebuttals::development": {
-      "accept": [
-        "own",
-        "others"
-      ],
-      "challenge": [
-        "own",
-        "others"
-      ],
-      "revision": [
-        "own",
-        "others"
-      ],
-      "reason": "own"
-    },
-    "lead_rebuttals::qa": {
-      "accept": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "challenge": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "revision": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "reason": "ASSIGNED_DEPARTMENT=qa"
-    },
-    "lead_rebuttals::balance": {
-      "accept": [
-        "keep",
-        "fix",
-        "add"
-      ],
-      "challenge": [
-        "risks",
-        "evidence",
-        "questions"
-      ],
-      "revision": [
-        "planning",
-        "graphics",
-        "development"
-      ],
-      "reason": "스키마에 맞는 JSON 객체만 반환한다."
-    },
-    "five_lead_fatal_review::planning": {
-      "recommendedState": "ACTIVE",
-      "fatalCriteria": [],
-      "evidence": [
-        "OWN의 의견을 수용하고, OTHERS의 의견을 반박/수정하여 합리적인 접근을 유지합니다.",
-        "design_review_progress",
-        "own"
-      ],
-      "reason": "수정의 개화를 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
-    },
-    "five_lead_fatal_review::development": {
-      "recommendedState": "REDESIGN",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME"
-      ],
-      "evidence": [
-        "CHI-MARKET_EVIDENCE_SUMMARY",
-        "CHI-MARKET_EVIDENCE_SUMMARY",
-        "CHI-MARKET_EVIDENCE_SUMMARY",
-        "CHI-MARKET_EVIDENCE_SUMMARY"
-      ],
-      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라. VALID_FATAL_CRITERIA=["
-    },
-    "five_lead_fatal_review::graphics": {
-      "recommendedState": "ACTIVE",
-      "fatalCriteria": [
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
-      ],
-      "evidence": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의",
-        "수정의 개화을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의",
-        "수정의 개화를 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
-      ],
-      "reason": "수정의 개화는 핵심 재미를 재정의하여 플레이 선택의 다양성을 확보하고, 기존의 디자인을 승계하지 않고 설계 단계부터 다시 검토하여 고유한 핵심 재미와 시스템 연결을 확정해야 합니다. 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 DISCARD를 선택해야 합니다."
-    },
-    "five_lead_fatal_review::qa": {
-      "recommendedState": "REDESIGN",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "수정의 개화의 핵심 재미를 실제 플레이 선택으로 재정의",
-        "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
-        "모바일에서도 즉시 이해되는 입력과 피드백"
-      ],
-      "reason": "수정 설계는 초기 검토에서 불충분한 요소로 인해 재검토가 필요함. 이는 CORE_FUN_CANNOT_BE_RECOVERED와 HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY의 치명적 판단에 해당합니다. 선택된 플랫폼은 실제 제품으로서 작동하지 않을 수 있으며, 필요한 생산 범위가 기술적 및 구조적 제약으로 인해 충분하지 않기 때문에 REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN의 치명적 판단에 해당합니다."
-    },
-    "five_lead_fatal_review::balance": {
-      "recommendedState": "DISCARD",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [],
-      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박/수정하여 합리적인 접근을 유지합니다."
+    "gemini:gemini-2.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 326,
+      "lastMs": 326,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T08:44:10.368Z"
     }
   },
-  "createdAt": "2026-09-18T04:21:39.613Z",
-  "updatedAt": "2026-09-18T04:50:34.703Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
-  "completedAt": "2026-09-18T04:50:34.703Z"
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T08:43:57.213Z",
+  "updatedAt": "2026-09-18T08:44:11.815Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:44:10.017Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "balance",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash"
 }
