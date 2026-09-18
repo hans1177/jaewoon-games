@@ -68,7 +68,7 @@ test('development final release evidence fails closed on final review, peer or a
   assert.equal(assembleRobloxDevelopmentReleaseEvidence(artifactMismatch).exactRevision,false);
 });
 
-test('release workflow publishes only retained exact artifact and keeps transient Roblox busy recovery automatic',()=>{
+test('release workflow publishes only retained exact artifact and keeps transient Roblox busy recovery manual while automatic publishing is paused',()=>{
   assert.match(workflow,/robloxFinalReviewPassed===true/);
   assert.match(workflow,/ROBLOX_RELEASE_PROMOTION_PENDING/);
   assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
@@ -105,10 +105,12 @@ test('release workflow publishes only retained exact artifact and keeps transien
   assert.match(workflow,/retry_seconds=60/);
   assert.match(workflow,/retry_window_seconds=900/);
   assert.match(workflow,/Roblox publish failed HTTP 409/);
-  assert.match(workflow,/gh workflow run '\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
+  assert.doesNotMatch(workflow,/gh workflow run '\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
+  assert.match(workflow,/ROBLOX_RELEASE_AUTOMATIC_REDISPATCH=NO/);
+  assert.match(workflow,/BUSY_MANUAL_RETRY_REQUIRED/);
   assert.match(workflow,/deferred=true/);
   assert.match(workflow,/steps\.publish\.outputs\.deferred != 'true'/);
-  assert.match(workflow,/ROBLOX_RELEASE_PROMOTION=RETRY_QUEUED:ROBLOX_409_SERVER_BUSY/);
+  assert.match(workflow,/ROBLOX_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY/);
   assert.match(workflow,/item\.robloxReleaseClaim=true/);
   assert.match(workflow,/steps\.publish\.outcome == 'success'/);
   assert.match(workflow,/ROBLOX_RUNTIME_RERUN=NO/);
