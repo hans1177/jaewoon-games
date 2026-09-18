@@ -1,24 +1,25 @@
 {
-  "version": 1,
-  "mode": "ROBLOX_PRIMARY_UNITY_LOW_INTENSITY",
+  "version": 2,
+  "mode": "UNITY_ROBLOX_EQUAL_FIRST_TIER",
   "enabled": true,
-  "primary": "roblox",
-  "weights": {
-    "roblox": 80,
-    "unity": 20
-  },
-  "unity": {
-    "keepRunning": true,
-    "maintenanceOnlyWhileRobloxAvailable": true,
-    "criticalBypassesBudget": true,
-    "allowWhenRobloxUnavailable": true,
-    "softSlotCap": 4
-  },
+  "primaryPlatforms": [
+    "unity",
+    "roblox"
+  ],
+  "selection": [
+    "readiness",
+    "estimated-execution-cost",
+    "enqueued-at"
+  ],
   "web": {
     "preserveExistingFlow": true
   },
   "policy": {
-    "doNotCancelRunningUnity": true,
+    "restoreLegacyRobloxPrimaryBlocks": true,
+    "deferUnityBecauseRobloxAvailable": false,
+    "unityMaintenanceOnly": false,
+    "platformBudgetSplit": false,
+    "doNotCancelRunningWork": true,
     "doNotBlockOwnerDirectives": true,
     "doNotLowerQa": true,
     "doNotChangeHomepageOrCatalog": true
