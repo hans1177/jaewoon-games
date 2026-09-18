@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival2",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "지정된 qa 부서 관점의 독립 검토 모델이다."
+        ],
+        "fix": [
+          "마지막 설계를 수정하지 않는다."
+        ],
+        "add": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+        ],
+        "risks": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+        ],
+        "evidence": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+        ],
+        "questions": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "survival2"
+        ],
+        "fix": [
+          "survival2"
+        ],
+        "add": [
+          "survival2"
+        ],
+        "risks": [
+          "survival2"
+        ],
+        "evidence": [
+          "survival2"
+        ],
+        "questions": [
+          "survival2"
+        ]
+      }
+    }
+  ]
+}

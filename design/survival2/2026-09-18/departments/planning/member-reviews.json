@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival2",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "survival2"
+        ],
+        "fix": [
+          "survival2"
+        ],
+        "add": [
+          "survival2"
+        ],
+        "risks": [
+          "survival2"
+        ],
+        "evidence": [
+          "survival2"
+        ],
+        "questions": [
+          "survival2"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "생존자 숲의 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계"
+        ],
+        "fix": [
+          "게임의 핵심 기능 정의 및 디자인"
+        ],
+        "add": [
+          "게임의 특징 및 장점을 명확히 하기"
+        ],
+        "risks": [
+          "게임의 성공 가능성 및 시장 경쟁력 분석"
+        ],
+        "evidence": [
+          "게임의 시장 분석 및 사용자 피드백 분석"
+        ],
+        "questions": [
+          "게임의 목표 및 방향 설정"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game id : survival2, game name : 숲의 생존자들, game category : action_survival_rogelite"
+        ],
+        "fix": [
+          "game id : survival2, game name : 숲의 생존자들, game category : action_survival_rogelite"
+        ],
+        "add": [
+          "game id : survival2, game name : 숲의 생존자들, game category : action_survival_rogelite"
+        ],
+        "risks": [
+          "game id : survival2, game name : 숲의 생존자들, game category : action_survival_rogelite"
+        ],
+        "evidence": [
+          "game id : survival2, game name : 숲의 생존자들, game category : action_survival_rogelite"
+        ],
+        "questions": [
+          "game id : survival2, game name : 숲의 생존자들, game category : action_survival_rogelite"
+        ]
+      }
+    }
+  ]
+}

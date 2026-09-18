@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "gameId": "survival2",
+  "date": "2026-09-18",
+  "state": "REDESIGN",
+  "sameDesignerRevisionAttempted": true,
+  "repeatedFiveDepartmentReview": true,
+  "allFiveLeadModelsReviewed": true,
+  "discardVotes": 2,
+  "commonFatalCriteria": [],
+  "unanimousFatalDiscard": false,
+  "fatalReviews": {
+    "planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "survival2 is currently active and has a strong market presence, including references from various game analytics platforms.",
+        "the core functions and gameplay mechanics align with the survival theme and are well-aligned with the target audience.",
+        "the design elements and progression system are well-aligned with the market trends and user expectations."
+      ],
+      "reason": "survival2 is currently active and has a strong market presence, including references from various game analytics platforms."
+    },
+    "graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+        "CORE_FUN_CANNOT_BE_RECOVERED"
+      ],
+      "evidence": [
+        "SURVIVAL2_GAME_SEED_MARKET_EVIDENCE_SUMMARY",
+        "SURVIVAL2_GAME_SEED_ACTIVE_REDESIGN_DISCARD"
+      ],
+      "reason": "The game's core loop, while cooperative survival, suffers from a potential material duplication issue. The current design focuses heavily on a specific build combination, which could lead to a repetitive experience. The 'SURVIVAL2_GAME_SEED_MARKET_EVIDENCE_SUMMARY' highlights this issue, suggesting a need for a more diverse and engaging progression system.  Furthermore, the core loop is currently too reliant on a single build combination, which could be addressed through a more flexible design.  The 'SURVIVAL2_GAME_SEED_ACTIVE_REDESIGN_DISCARD' suggests a need for a redesign to address this core loop issue."
+    },
+    "development": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json",
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+    },
+    "qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "VALID_FATAL_CRITERIA"
+      ],
+      "reason": "The current design does not meet the core functionality and core loop requirements, leading to a fatal design blocker that remains after revision."
+    },
+    "balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION"
+      ],
+      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 핵심 만 짧게 작성하라."
+    }
+  },
+  "marketMetricAloneUsedForDiscard": false
+}

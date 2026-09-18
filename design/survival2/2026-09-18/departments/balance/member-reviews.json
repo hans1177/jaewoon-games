@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival2",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "지원되는 모든 부서"
+        ],
+        "fix": [
+          "지원되는 모든 부서"
+        ],
+        "add": [
+          "지원되는 모든 부서"
+        ],
+        "risks": [
+          "지원되는 모든 부서"
+        ],
+        "evidence": [
+          "지원되는 모든 부서"
+        ],
+        "questions": [
+          "지원되는 모든 부서"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "survival2"
+        ],
+        "fix": [
+          "survival2"
+        ],
+        "add": [
+          "survival2"
+        ],
+        "risks": [
+          "survival2"
+        ],
+        "evidence": [
+          "survival2"
+        ],
+        "questions": [
+          "survival2"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "player data privacy and security"
+        ],
+        "fix": [
+          "bug fixes and performance improvements"
+        ],
+        "add": [
+          "new features and gameplay mechanics"
+        ],
+        "risks": [
+          "security vulnerabilities"
+        ],
+        "evidence": [
+          "player behavior analysis"
+        ],
+        "questions": [
+          "player feedback"
+        ]
+      }
+    }
+  ]
+}

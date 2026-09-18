@@ -1,0 +1,373 @@
+{
+  "version": 5,
+  "date": "2026-09-18",
+  "gameId": "survival2",
+  "gameName": "숲의 생존자들",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
+    "category": "ACTION_SURVIVAL_ROGUELITE",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "qwen2.5:1.5b",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "qwen3:0.6b",
+      "graphics": "gemma3:1b",
+      "development": "llama3.2:1b",
+      "qa": "qwen2.5:1.5b",
+      "balance": "smollm2:1.7b"
+    },
+    "distinctLeadModels": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "distinctLeadModelCount": 5,
+    "leadModelsDistinct": true,
+    "reviewModelCount": 3,
+    "modelAudit": {
+      "planning": {
+        "leadModel": "qwen3:0.6b",
+        "assistantModels": [
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "models": [
+          "qwen3:0.6b",
+          "gemma3:1b",
+          "llama3.2:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen3:0.6b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen3:0.6b",
+        "rebuttalAuthoredByLead": true
+      },
+      "graphics": {
+        "leadModel": "gemma3:1b",
+        "assistantModels": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "models": [
+          "gemma3:1b",
+          "llama3.2:1b",
+          "qwen2.5:1.5b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "gemma3:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "gemma3:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "development": {
+        "leadModel": "llama3.2:1b",
+        "assistantModels": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "models": [
+          "llama3.2:1b",
+          "qwen2.5:1.5b",
+          "smollm2:1.7b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "llama3.2:1b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "llama3.2:1b",
+        "rebuttalAuthoredByLead": true
+      },
+      "qa": {
+        "leadModel": "qwen2.5:1.5b",
+        "assistantModels": [
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "models": [
+          "qwen2.5:1.5b",
+          "smollm2:1.7b",
+          "qwen3:0.6b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "qwen2.5:1.5b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "qwen2.5:1.5b",
+        "rebuttalAuthoredByLead": true
+      },
+      "balance": {
+        "leadModel": "smollm2:1.7b",
+        "assistantModels": [
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "models": [
+          "smollm2:1.7b",
+          "qwen3:0.6b",
+          "gemma3:1b"
+        ],
+        "count": 3,
+        "required": 3,
+        "pass": true,
+        "representativeModel": "smollm2:1.7b",
+        "representativeAuthoredByLead": true,
+        "rebuttalModel": "smollm2:1.7b",
+        "rebuttalAuthoredByLead": true
+      }
+    },
+    "rebuttalRounds": 1,
+    "rebuttalAuthoredByDepartmentLeads": true,
+    "repeatedFatalReview": true
+  },
+  "meeting": {
+    "consensusCount": 2,
+    "conflictCount": 2,
+    "holdCount": 0,
+    "coordinatorModel": "gemma3:1b"
+  },
+  "disposition": {
+    "version": 1,
+    "gameId": "survival2",
+    "date": "2026-09-18",
+    "state": "REDESIGN",
+    "sameDesignerRevisionAttempted": true,
+    "repeatedFiveDepartmentReview": true,
+    "allFiveLeadModelsReviewed": true,
+    "discardVotes": 2,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "fatalReviews": {
+      "planning": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [],
+        "evidence": [
+          "survival2 is currently active and has a strong market presence, including references from various game analytics platforms.",
+          "the core functions and gameplay mechanics align with the survival theme and are well-aligned with the target audience.",
+          "the design elements and progression system are well-aligned with the market trends and user expectations."
+        ],
+        "reason": "survival2 is currently active and has a strong market presence, including references from various game analytics platforms."
+      },
+      "graphics": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+          "CORE_FUN_CANNOT_BE_RECOVERED"
+        ],
+        "evidence": [
+          "SURVIVAL2_GAME_SEED_MARKET_EVIDENCE_SUMMARY",
+          "SURVIVAL2_GAME_SEED_ACTIVE_REDESIGN_DISCARD"
+        ],
+        "reason": "The game's core loop, while cooperative survival, suffers from a potential material duplication issue. The current design focuses heavily on a specific build combination, which could lead to a repetitive experience. The 'SURVIVAL2_GAME_SEED_MARKET_EVIDENCE_SUMMARY' highlights this issue, suggesting a need for a more diverse and engaging progression system.  Furthermore, the core loop is currently too reliant on a single build combination, which could be addressed through a more flexible design.  The 'SURVIVAL2_GAME_SEED_ACTIVE_REDESIGN_DISCARD' suggests a need for a redesign to address this core loop issue."
+      },
+      "development": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json",
+          "game-seed-platform-profiles.json",
+          "game-seed-market-evidence.json",
+          "game-seed-platform-profiles.json"
+        ],
+        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+      },
+      "qa": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "VALID_FATAL_CRITERIA"
+        ],
+        "reason": "The current design does not meet the core functionality and core loop requirements, leading to a fatal design blocker that remains after revision."
+      },
+      "balance": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION"
+        ],
+        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 핵심 만 짧게 작성하라."
+      }
+    },
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 81994,
+      "independent_department_reviews": 831341,
+      "department_representatives": 51342,
+      "lead_rebuttals": 53011,
+      "cross_department_meeting": 27796,
+      "designer_revision": 56213,
+      "five_lead_fatal_review": 260972
+    },
+    "totalModelCalls": 33,
+    "totalModelCallMs": 1362660,
+    "modelPhaseConcurrency": 1,
+    "modelKeepAlive": "2m",
+    "independentReviewOutputs": 15,
+    "fullPoolReviewOutputs": 25
+  },
+  "designLearning": {
+    "candidateCount": 0,
+    "usedAsDesignContext": false,
+    "positiveTrainingEligible": false,
+    "validatedRuntimeRequiredForPositiveTraining": true
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": false,
+  "vibe2LearningContextUsed": false,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_PENDING_CONFLICT_RESOLUTION",
+    "ready": false,
+    "blockers": [
+      "game-seed-field-required:REFERENCE_GAMES",
+      "meeting-conflicts:2"
+    ],
+    "advisoryDisposition": "REDESIGN",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 2,
+      "holdCount": 0,
+      "allResolved": false
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
+        "source": "game-seed-state.json"
+      },
+      "designMultiplayer": {
+        "required": true,
+        "mode": "SINGLE",
+        "valid": true,
+        "decisionStage": "GAME_DESIGN",
+        "allowedModes": [
+          "SINGLE",
+          "COOP",
+          "COMPETITIVE",
+          "HYBRID"
+        ]
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": true,
+        "source": "company-qa-runtime-evidence.json"
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": false,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": null
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "ROBLOX",
+        "present": false,
+        "path": null,
+        "projectField": "robloxProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "ROBLOX",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "roblox-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "multiplayerModeRequiredAtGameDesign": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresFullApprovedWebScope": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-18T01:08:10.517Z"
+  },
+  "artbookUi": {
+    "status": "WAITING",
+    "label": "대기중",
+    "path": "artbook-submissions/survival2/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_PENDING_CONFLICT_RESOLUTION",
+    "reason": "baseline-not-ready"
+  }
+}

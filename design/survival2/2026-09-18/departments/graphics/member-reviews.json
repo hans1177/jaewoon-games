@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival2",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Survival Core"
+        ],
+        "fix": [
+          "Gameplay Enhancements"
+        ],
+        "add": [
+          "Visual Updates"
+        ],
+        "risks": [
+          "Dynamic Difficulty"
+        ],
+        "evidence": [
+          "Gameplay Mechanics"
+        ],
+        "questions": [
+          "Gameplay Balance"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "graphics"
+        ],
+        "fix": [
+          "graphics"
+        ],
+        "add": [
+          "graphics"
+        ],
+        "risks": [
+          "graphics"
+        ],
+        "evidence": [
+          "graphics"
+        ],
+        "questions": [
+          "graphics"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-SURVIVAL2-20260913\",\"gameId\":\"survival2\",\"gameName\":\"숲의 생존자들\",\"status\":\"ACTIVE\",\"GAM"
+        ],
+        "add": [
+          "GAME_SEED=GAME_SEED"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "evidence": [
+          "GAME_SEED=GAME_SEED"
+        ],
+        "questions": [
+          "GAME_SEED=GAME_SEED"
+        ]
+      }
+    }
+  ]
+}

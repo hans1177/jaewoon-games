@@ -1,0 +1,166 @@
+{
+  "version": 4,
+  "gameId": "survival2",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "gemma3:1b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "survival2"
+      ],
+      "fix": [
+        "survival2"
+      ],
+      "add": [
+        "survival2"
+      ],
+      "risks": [
+        "survival2"
+      ],
+      "evidence": [
+        "survival2"
+      ],
+      "questions": [
+        "survival2"
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Graphics"
+      ],
+      "fix": [
+        "Graphics"
+      ],
+      "add": [
+        "Graphics"
+      ],
+      "risks": [
+        "Graphics"
+      ],
+      "evidence": [
+        "Graphics"
+      ],
+      "questions": [
+        "Graphics"
+      ]
+    },
+    "development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "지원되는 모든 부서"
+      ],
+      "fix": [
+        "지원되는 모든 부서"
+      ],
+      "add": [
+        "지원되는 모든 부서"
+      ],
+      "risks": [
+        "지원되는 모든 부서"
+      ],
+      "evidence": [
+        "지원되는 모든 부서"
+      ],
+      "questions": [
+        "지원되는 모든 부서"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "새 기능 창작 없음",
+  "decisions": [
+    {
+      "topic": "planning",
+      "status": "CONSENSUS",
+      "reason": "survival2",
+      "departments": [
+        "survival2"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONFLICT",
+      "reason": "Graphics는 핵심 요소이므로, 다른 부서 의견을 수용합니다. Graphics에 대한 추가적인 검토와 개선이 필요합니다. 추가적인 검토를 통해, Graphics의 품질을 높이고, 사용자 경험을 개선할 수 있습니다. 추가적인 검토를 통해, Graphics의 디자인을 개선하고, 사용자에게 더욱 매력적인 경험을 제공할 수 있습니다. 추가적인 검토를 통해, Graphics의 성능을 최적화하고, 사용자에게 최상의 경험을 제공할 수 있습니다. 추가적인 검토를 통해, Graphics의 안정성을 확보하고, 사용자에게 안전하고 신뢰할 수 있는 서비스를 제공할 수 있습니다. 추가적인 검토를 통해, Graphics의 사용자 인터페이스를 개선하고, 사용성을 높일 수 있습니다. 추가적인 검토를 통해, Graphics의 디자인을 개선하고, 사용자에게 더욱 긍정적인 경험을 제공할 수 있습니다. 추가적인 검토를 통해, Graphics의 기능 개선을 통해, 사용자에게 더욱 편리한 서비스를 제공할 수있",
+      "departments": [
+        "own"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONFLICT",
+      "reason": "own",
+      "departments": [
+        "own"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "ASSIGNED_DEPARTMENT=qa",
+      "departments": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 2,
+    "conflict": 2,
+    "hold": 0
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "survival2",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "leadModel": "llama3.2:1b",
+  "assistantModels": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "models": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "reviews": [
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "fix": [
+          "GAME_SEED: GAME_SEED is not a valid JSON object. Please provide a valid JSON object for GAME_SEED."
+        ],
+        "add": [
+          "DESIGN: Design should be kept as is since it is already in the required format."
+        ],
+        "risks": [
+          "Assuming the development department is responsible for the design, it is not clear what specific changes or improvements are being"
+        ],
+        "evidence": [
+          "GAME_SEED: GAME_SEED is not a valid JSON object. Please provide a valid JSON object for GAME_SEED."
+        ],
+        "questions": [
+          "DESIGN: Open questions should be kept as is since they are already in the required format."
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "지정된 development 부서 관점의 독립 검토 모델이다."
+        ],
+        "fix": [
+          "마지막 설계를 수정하지 않는다."
+        ],
+        "add": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+        ],
+        "risks": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+        ],
+        "evidence": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+        ],
+        "questions": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+        ]
+      }
+    }
+  ]
+}
