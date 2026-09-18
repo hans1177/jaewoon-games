@@ -194,7 +194,8 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.match(seedDesignWorkflow,/STRICT_DESIGN_SCORE_STALE_CLEAR_COUNT=/);
   assert.match(seedDesignWorkflow,/seed\.strictDesignReview=null/);
   assert.match(seedDesignWorkflow,/seed\.strictDesignReviewUpdatedAt=null/);
-  assert.match(seedDesignWorkflow,/continue-seed-supply:[\s\S]{0,800}actions\/checkout@v4[\s\S]{0,300}ref: main/);
+  assert.match(seedDesignWorkflow,/continue-seed-supply:[\s\S]{0,800}actions\/checkout@v4[\s\S]{0,300}ref: \$\{\{ github\.sha \}\}/);
+  assert.equal((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,4);
   assert.match(seedDesignWorkflow,/game-seed-state\.json/);
   assert.match(seedDesignWorkflow,/parallel_max=\$\{designWipMax\}/);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_MAX=\$\{designWipMax\}/);
