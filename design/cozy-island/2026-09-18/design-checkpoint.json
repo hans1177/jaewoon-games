@@ -259,6 +259,26 @@
       "questions": [
         "계절 변화 주기를 실제 시간 기반과 게임 내 시간 기반 중 어느 쪽으로 고정할 것인가?"
       ]
+    },
+    "five_lead_reviews::balance": {
+      "keep": [
+        "실패 시 캐릭터 사망이나 페널티 없이 즉시 제자리에서 재시도할 수 있는 스트레스 없는 복귀 루프"
+      ],
+      "fix": [
+        "낚시 줄 끊김 시 소모되는 미끼의 획득 난이도를 낮추고 주변 채집을 통해 100% 확정 수급되도록 조정"
+      ],
+      "add": [
+        "날씨 및 시간대 변화에 따른 희귀 자원 출현율 보정 테이블 및 세션당 최소 1회 조우 보장 안전장치"
+      ],
+      "risks": [
+        "피로도 감소를 위한 보상 배율 과도 상향 시 콘텐츠 소모 속도가 급증하여 마일스톤 1 도달 전 정체 발생 우려"
+      ],
+      "evidence": [
+        "글로벌 캐주얼 세션 데이터 기준 평균 세션 시간 4분에 맞춘 1회 채집/낚시 사이클 30초 이내 설계 필요"
+      ],
+      "questions": [
+        "수중 잠수 기능 추가 시 기존 지상 도구의 업그레이드 수치가 수중 장비 효율에 직접 전이되는 구조인가?"
+      ]
     }
   },
   "modelHealth": {
@@ -294,17 +314,29 @@
       "lastMs": 4295,
       "lastError": null,
       "updatedAt": "2026-09-18T14:56:10.919Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 19049,
+      "lastMs": 19049,
+      "lastError": null,
+      "updatedAt": "2026-09-18T14:56:22.484Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T14:55:48.146Z",
-  "updatedAt": "2026-09-18T14:56:12.510Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T14:56:12.509Z",
+  "updatedAt": "2026-09-18T14:56:22.485Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T14:56:22.484Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
     "gemini-3-flash-preview": "gemini-3-flash-preview",
-    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite"
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite",
+    "gemini-3.5-flash": "gemini-3.5-flash"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
