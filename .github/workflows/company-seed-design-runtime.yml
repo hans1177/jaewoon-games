@@ -29,8 +29,8 @@ env:
   # Model identity is remappable by central policy. Prefer models with remaining free-tier quota before exhausted daily lanes.
   COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3.5-flash-lite'
   COMPANY_GEMINI_LEAD_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash'
-  COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash,gemini-3.8-flash,gemini-3.7-flash,gemini-2.5-flash'
-  COMPANY_GEMINI_LEAD_FALLBACK_LANES: 'qa:gemini-3.8-flash;balance:gemini-3.7-flash|gemini-2.5-flash'
+  COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash,gemini-3.8-flash,gemini-3.7-flash'
+  COMPANY_GEMINI_LEAD_FALLBACK_LANES: 'qa:gemini-3.8-flash;balance:gemini-3.7-flash'
 
 jobs:
   resolve-seed-targets:
@@ -267,12 +267,18 @@ jobs:
             exhausted.add(clean(rawModel).replace(/^gemini:/,''));
           }
           const completedTasks=checkpoint.tasks&&typeof checkpoint.tasks==='object'?checkpoint.tasks:{};
+          const completedPhases=checkpoint.phases&&typeof checkpoint.phases==='object'?checkpoint.phases:{};
           const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(completedTasks,`five_lead_reviews::${role}`));
-          const blockedRoles=missingRoles.filter(role=>lanes[role].every(model=>exhausted.has(model)));
-          const allModels=uniq([clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL),...fallback]);
-          const modelCapacityRemaining=allModels.some(model=>!exhausted.has(model));
-          const runModelCycle=blockedRoles.length===0&&modelCapacityRemaining;
+          const currentPhase=clean(checkpoint.currentPhase).toUpperCase()||'BOOTSTRAP';
+          const leadPhaseActive=currentPhase==='DEPARTMENT_REVIEWS'||missingRoles.length<roles.length;
+          const blockedRoles=leadPhaseActive?missingRoles.filter(role=>lanes[role].every(model=>exhausted.has(model))):[];
+          const designerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
+          const designerCheckpointPresent=Object.prototype.hasOwnProperty.call(completedPhases,'designer_draft');
+          const designerCapacityReady=designerCheckpointPresent||!exhausted.has(designerModel);
+          const runModelCycle=leadPhaseActive?blockedRoles.length===0:designerCapacityReady;
           console.log(`GEMINI_QUOTA_GOVERNOR=${runModelCycle?'READY':'WAITING_FOR_GEMINI_QUOTA'}`);
+          console.log(`GEMINI_QUOTA_CURRENT_PHASE=${currentPhase}`);
+          console.log(`GEMINI_QUOTA_LEAD_PHASE_ACTIVE=${leadPhaseActive?'YES':'NO'}`);
           console.log(`GEMINI_UNAVAILABLE_MODELS=${[...exhausted].join(',')||'NONE'}`);
           console.log(`GEMINI_INCOMPLETE_LEAD_ROLES=${missingRoles.join(',')||'NONE'}`);
           console.log(`GEMINI_BLOCKED_LEAD_ROLES=${blockedRoles.join(',')||'NONE'}`);
@@ -716,10 +722,14 @@ jobs:
             const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>unavailableModel.test(clean(row?.lastError))).map(([model])=>clean(model).replace(/^gemini:/,'')));
             if(!exhausted.size)continue;
             const tasks=cp.tasks&&typeof cp.tasks==='object'?cp.tasks:{};
+            const phases=cp.phases&&typeof cp.phases==='object'?cp.phases:{};
             const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(tasks,`five_lead_reviews::${role}`));
-            const roleBlocked=missingRoles.some(role=>lanes[role].every(model=>exhausted.has(model)));
-            const allModels=uniq([clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL),...fallback]);
-            if(roleBlocked||allModels.every(model=>exhausted.has(model)))blocked++;
+            const currentPhase=clean(cp.currentPhase).toUpperCase()||'BOOTSTRAP';
+            const leadPhaseActive=currentPhase==='DEPARTMENT_REVIEWS'||missingRoles.length<roles.length;
+            const roleBlocked=leadPhaseActive&&missingRoles.some(role=>lanes[role].every(model=>exhausted.has(model)));
+            const designerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
+            const designerBlocked=!Object.prototype.hasOwnProperty.call(phases,'designer_draft')&&exhausted.has(designerModel);
+            if(roleBlocked||(!leadPhaseActive&&designerBlocked))blocked++;
           }
           process.stdout.write(String(blocked));
           NODE
