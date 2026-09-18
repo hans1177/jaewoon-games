@@ -283,3 +283,65 @@ test('idle practice advances beyond the first five represented mastery gaps',()=
   assert.equal(result.task.type,'research');
   assert.ok(result.task.evidence.includes('production-pass:NO'));
 });
+
+
+test('24H project state includes post-release control queue work without inventing Web evidence',()=>{
+  const pack=buildWebRobloxHandoffs(
+    {items:[]},
+    {records:[{
+      id:'exp-focus',gameId:'focus-game',engine:'web',verified:true,reusable:true,outcome:'PASS',
+      reusablePatterns:['WEB_SEMANTIC:CORE_LOOP:verified-loop']
+    }]},
+    {tasks:[{
+      id:'focus-task',gameId:'focus-game',target:'roblox',department:'development',type:'implementation',
+      releaseState:'release-confirmed',status:'queued',postReleaseFocused:true,
+      packageLongWorkProtected:true,packageRole:'implementation-owner',
+      evidence:['post-release-focused:yes','recombination-recipe:recipe-focus']
+    }]},
+    {permanentProjectRemoval:{ids:[]}}
+  );
+  assert.equal(pack.projects.length,1);
+  assert.equal(pack.handoffs.length,0);
+  const project=pack.projects[0];
+  assert.equal(project.gameId,'focus-game');
+  assert.equal(project.PROJECT_PHASE,'POST_RELEASE_FOCUSED_DEVELOPMENT');
+  assert.equal(project.PLATFORM,'ROBLOX');
+  assert.equal(project.WEB_BASELINE.verified,false);
+  assert.equal(project.WEB_BASELINE.currentCompanyWebBaselineBound,false);
+  assert.equal(project.ROBLOX_HANDOFF.ready,false);
+  assert.equal(project.ROBLOX_HANDOFF.currentWebHandoffClaim,false);
+  assert.equal(project.POST_RELEASE_FOCUS_RUNNER.assigned,true);
+  assert.equal(project.POST_RELEASE_FOCUS_RUNNER.state,'ASSIGNED');
+  assert.equal(project.LEARNING_CONTEXT.verifiedSemanticExperienceIds[0],'exp-focus');
+  assert.equal(project.LEARNING_CONTEXT.recombinationRecipeId,'recipe-focus');
+  assert.equal(project.LEARNING_CONTEXT.gateBypass,false);
+  assert.equal(project.NEXT_MACHINE_ACTION,'EXECUTE_POST_RELEASE_FOCUSED_GAP');
+});
+
+test('permanent project removal excludes stale company and control queue lifecycle projection',()=>{
+  const removed='seed-roblox-battleground-fight-welcome-to-bloxburg';
+  const roadmap={permanentProjectRemoval:{
+    ids:[removed],
+    reentryAllowed:false,
+    automaticRecoveryAllowed:false,
+    automaticMaintenanceAllowed:false
+  }};
+  const pack=buildWebRobloxHandoffs(
+    {items:[{
+      gameId:removed,selectedPlatform:'ROBLOX',genre:'Fighting',webPromotionRevalidationPassed:true,
+      coreLoop:'stale',stateModel:'stale',progressionModel:'stale',uiFlow:'stale',
+      inputIntent:'stale',saveMeaning:'stale',contentStructure:'stale',balanceIntent:'stale'
+    }]},
+    {records:[]},
+    {tasks:[{
+      id:'stale-historical',gameId:removed,target:'roblox',department:'development',type:'implementation',
+      releaseState:'development-confirmed',status:'cancelled',blocker:'lifecycle-inactive:MISSING_FROM_CATALOG',
+      postReleaseFocused:true,historicalDeploymentRecovery:true,packageLongWorkProtected:true,packageRole:'implementation-owner',
+      evidence:['post-release-focused:yes','historical-deployment-recovery:yes','historical-current-release-claim:NO']
+    }]},
+    roadmap
+  );
+  assert.equal(pack.projects.length,0);
+  assert.equal(pack.handoffs.length,0);
+  assert.equal(pack.gateBypass,false);
+});
