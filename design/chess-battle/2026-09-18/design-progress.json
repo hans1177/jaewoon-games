@@ -3,51 +3,179 @@
   "gameId": "chess-battle",
   "date": "2026-09-18",
   "engineDigest": "34a98a789f30289dddb9b5ae2d43337ab9be6bdd569306c12f184743f8f1fd8c",
-  "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
+  "status": "PRE_GATE_BLOCKED",
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
+  ],
+  "completedPhaseCount": 6,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "lastSuccessfulModelCallAt": "2026-09-18T06:58:20.314Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null,
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=77 hard=CRITICAL_AXIS_MINIMUM_FAIL",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
+      "calls": 19,
+      "successes": 7,
+      "failures": 12,
       "timeouts": 0,
-      "jsonFailures": 1,
-      "totalMs": 9748,
-      "lastMs": 9748,
-      "lastError": "Expected ',' or ']' after array element in JSON at position 4492 (line 1 column 4493)",
-      "updatedAt": "2026-09-18T06:53:43.000Z"
+      "jsonFailures": 12,
+      "totalMs": 132992,
+      "lastMs": 2367,
+      "lastError": "Expected ',' or '}' after property value in JSON at position 3732 (line 1 column 3733)",
+      "updatedAt": "2026-09-18T06:58:20.314Z"
     },
     "gemini:gemini-2.5-flash": {
-      "calls": 1,
+      "calls": 4,
       "successes": 0,
-      "failures": 1,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9848,
-      "lastMs": 9848,
+      "totalMs": 40593,
+      "lastMs": 10494,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T06:53:43.100Z"
+      "updatedAt": "2026-09-18T06:57:26.509Z"
     },
     "gemini:gemini-2.5-flash-lite": {
-      "calls": 1,
+      "calls": 4,
       "successes": 0,
-      "failures": 1,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 9975,
-      "lastMs": 9975,
+      "totalMs": 41006,
+      "lastMs": 10623,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T06:53:43.227Z"
+      "updatedAt": "2026-09-18T06:57:26.638Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 12,
+      "successes": 0,
+      "failures": 12,
+      "timeouts": 0,
+      "jsonFailures": 12,
+      "totalMs": 230720,
+      "lastMs": 20648,
+      "lastError": "Expected ',' or '}' after property value in JSON at position 2915 (line 1 column 2916)",
+      "updatedAt": "2026-09-18T06:58:00.271Z"
+    },
+    "gemini:gemini-2.5-pro": {
+      "calls": 4,
+      "successes": 0,
+      "failures": 4,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 82055,
+      "lastMs": 19178,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T06:57:35.194Z"
+    },
+    "gemini:gemini-3.8-flash": {
+      "calls": 4,
+      "successes": 0,
+      "failures": 4,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 82517,
+      "lastMs": 19276,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 24.726830865s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"24s\" } ] } }",
+      "updatedAt": "2026-09-18T06:57:35.291Z"
+    },
+    "gemini:gemini-3.7-flash": {
+      "calls": 4,
+      "successes": 0,
+      "failures": 4,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 82897,
+      "lastMs": 19379,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 24.623726307s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"24s\" } ] } }",
+      "updatedAt": "2026-09-18T06:57:35.394Z"
+    },
+    "gemini:gemini-3.6-flash": {
+      "calls": 4,
+      "successes": 0,
+      "failures": 4,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 83369,
+      "lastMs": 19494,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 24.506793721s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"24s\" } ] } }",
+      "updatedAt": "2026-09-18T06:57:35.509Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 4,
+      "successes": 0,
+      "failures": 4,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 83734,
+      "lastMs": 19586,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 24.415754272s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"24s\" } ] } }",
+      "updatedAt": "2026-09-18T06:57:35.601Z"
+    },
+    "gemini:gemini-3.1-pro-preview": {
+      "calls": 6,
+      "successes": 0,
+      "failures": 6,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 218028,
+      "lastMs": 19727,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 24.277682313s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\" }",
+      "updatedAt": "2026-09-18T06:57:35.742Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T06:53:43.227Z"
+  "updatedAt": "2026-09-18T06:58:20.318Z",
+  "blocked": true,
+  "preGateScore": 77,
+  "hardFailures": [
+    "CRITICAL_AXIS_MINIMUM_FAIL"
+  ],
+  "repairPacket": {
+    "source": "DETERMINISTIC_PRE_GATE_V2",
+    "bypassAllowed": false,
+    "totalScore": 77,
+    "passMinimum": 80,
+    "hardFailures": [
+      "CRITICAL_AXIS_MINIMUM_FAIL"
+    ],
+    "failedAxes": [
+      "CONTENT_EXPANSION_PLAN",
+      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+    ],
+    "reasons": [
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "CONTENT_EXPANSION_PLAN",
+        "evidenceLevel": 60,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 6,
+          "axisWeight": 10
+        },
+        "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+        "bypassAllowed": false
+      },
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": 60,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 3,
+          "axisWeight": 5
+        },
+        "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+        "bypassAllowed": false
+      }
+    ]
+  }
 }
