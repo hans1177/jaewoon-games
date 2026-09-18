@@ -3,31 +3,32 @@
   "gameId": "cozy-island",
   "date": "2026-09-18",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
-  "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_REVISION",
-  "percent": 83,
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
-    "five_lead_reviews"
+    "five_lead_reviews",
+    "designer_revision"
   ],
-  "completedPhaseCount": 3,
+  "completedPhaseCount": 4,
   "cachedTaskCount": 5,
-  "lastSuccessfulModelCallAt": "2026-09-18T14:58:26.661Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T14:58:35.088Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 16850,
-      "lastMs": 1589,
+      "totalMs": 25274,
+      "lastMs": 8424,
       "lastError": null,
-      "updatedAt": "2026-09-18T14:56:12.509Z"
+      "updatedAt": "2026-09-18T14:58:35.088Z"
     },
     "gemini:gemini-3-flash-preview": {
       "calls": 1,
@@ -75,5 +76,7 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T14:58:26.664Z"
+  "updatedAt": "2026-09-18T14:58:35.092Z",
+  "preGateScore": 80,
+  "postRevisionPreGateScore": 80
 }
