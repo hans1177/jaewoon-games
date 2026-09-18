@@ -3,9 +3,9 @@
   "gameId": "chess-battle",
   "date": "2026-09-18",
   "engineDigest": "1678961c9ca98d0c0a1ff143cc5cae0bcbed44bcdefc197e0d16960e75858422",
-  "status": "PRE_GATE_BLOCKED",
-  "currentStage": "PRE_GATE_REPAIR",
-  "percent": 50,
+  "status": "IN_PROGRESS",
+  "currentStage": "DEPARTMENT_REVIEWS",
+  "percent": 67,
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
@@ -16,67 +16,23 @@
   ],
   "completedPhaseCount": 6,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T08:11:16.221Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:12:43.874Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=77 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 22231,
-      "lastMs": 2296,
+      "totalMs": 27299,
+      "lastMs": 1664,
       "lastError": null,
-      "updatedAt": "2026-09-18T08:11:16.221Z"
+      "updatedAt": "2026-09-18T08:12:43.874Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T08:11:16.224Z",
-  "blocked": true,
-  "preGateScore": 77,
-  "hardFailures": [
-    "CRITICAL_AXIS_MINIMUM_FAIL"
-  ],
-  "repairPacket": {
-    "source": "DETERMINISTIC_PRE_GATE_V2",
-    "bypassAllowed": false,
-    "totalScore": 77,
-    "passMinimum": 80,
-    "hardFailures": [
-      "CRITICAL_AXIS_MINIMUM_FAIL"
-    ],
-    "failedAxes": [
-      "CONTENT_EXPANSION_PLAN",
-      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-    ],
-    "reasons": [
-      {
-        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-        "axis": "CONTENT_EXPANSION_PLAN",
-        "evidenceLevel": 60,
-        "minimumRequired": 75,
-        "evidence": {
-          "axisScore": 6,
-          "axisWeight": 10
-        },
-        "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-        "bypassAllowed": false
-      },
-      {
-        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": 60,
-        "minimumRequired": 75,
-        "evidence": {
-          "axisScore": 3,
-          "axisWeight": 5
-        },
-        "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-        "bypassAllowed": false
-      }
-    ]
-  }
+  "updatedAt": "2026-09-18T08:12:44.004Z"
 }
