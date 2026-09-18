@@ -202,6 +202,7 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.ok((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length>=5);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
   assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
+  assert.match(seedDesignWorkflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '2'/);
   assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'/);
   assert.match(seedDesignWorkflow,/GEMINI_API_KEY: \$\{\{ secrets\.GEMINI_API_KEY \}\}/);
   assert.match(seedDesignWorkflow,/DESIGN_AI_PROVIDER=GEMINI_ONLY/);
