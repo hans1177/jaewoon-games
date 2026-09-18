@@ -2,15 +2,20 @@
 
 ```yaml
 policy:
-  sourceOfTruth: COMPANY_FLOW.md
+  sourceOfTruth: company-learning/platform-release-roadmap.json
   format: MACHINE_ORIENTED_POLICY_SPEC
+  authority: LEGACY_POLICY_MIRROR
+  authoritative: false
+  executionRequired: false
+  legacyPolicyMirror: true
+  canonicalMachineAuthority: MACHINE_EXECUTION_CONTRACT
   humanReadableNarrativeRequired: false
   naturalLanguagePolicyReplicationForbidden: true
   ownerDirectiveNaturalLanguageStorageForbidden: true
   ownerDirectiveParaphraseStorageForbidden: true
   ownerDirectiveVerbatimStorageForbidden: true
   nonCanonicalPolicyDocumentMode: MACHINE_POINTER_ONLY
-  nonCanonicalPolicyDocumentCanonicalReference: COMPANY_FLOW.md
+  nonCanonicalPolicyDocumentCanonicalReference: company-learning/platform-release-roadmap.json
   ownerInstructionOverridesPolicy: true
   implementationMustFollowPolicy: true
   evidenceFilesCannotCreatePolicy: true
@@ -20,8 +25,9 @@ policy:
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
-  - COMPANY_FLOW
+  - PLATFORM_RELEASE_ROADMAP_MACHINE_CONTRACT
   - COMPANY_DIRECTIVE
+  - LEGACY_COMPANY_FLOW_MIRROR
   - IMPLEMENTATION_TOOL_CONTRACTS
   - STATUS_AUDIT_BUILD_HEALTH_EVIDENCE
 

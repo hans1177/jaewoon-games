@@ -1,7 +1,7 @@
 {
-  "version": 8,
+  "version": 9,
   "status": "OWNER_DIRECT_LOCKED",
-  "policySource": "COMPANY_FLOW.md",
+  "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-18",
   "priority": [
     "ROBLOX",
@@ -383,5 +383,14 @@
         "resumeFromExactBlockedTask": true
       }
     }
+  },
+  "authority": "MACHINE_EXECUTION_CONTRACT",
+  "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
+  "humanDocumentRequired": false,
+  "legacyPolicyMirror": {
+    "path": "COMPANY_FLOW.md",
+    "authoritative": false,
+    "requiredForExecution": false,
+    "mayCreatePolicy": false
   }
 }

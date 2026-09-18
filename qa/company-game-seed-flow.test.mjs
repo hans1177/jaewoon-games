@@ -13,6 +13,7 @@ import {
 } from '../tools/game-seed-state.mjs';
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
+const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
 const stateTool=fs.readFileSync('tools/game-seed-state.mjs','utf8');
 const platformProfileTool=fs.readFileSync('tools/game-seed-platform-profile.mjs','utf8');
@@ -32,8 +33,11 @@ const devDisposition=fs.readFileSync('tools/company-development-disposition-gate
 const scores=value=>({planning:value,graphics:value,development:value,qa:value,balance:value});
 const ROBLOX_CATEGORIES=['ROLEPLAY_LIFE_AVATAR','SIMULATOR_TYCOON_INCREMENTAL','BATTLEGROUND_FIGHTING_SHOOTER','SURVIVAL_HORROR_ESCAPE','OBBY_PARTY_MINIGAME','STORY_RPG_ADVENTURE_RPG'];
 
-test('central mirror preserves historical bootstrap while latest owner production contract supersedes scheduling',()=>{
-  assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
+test('central machine policy preserves historical bootstrap while latest owner production contract supersedes scheduling',()=>{
+  assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
   assert.equal(directive.portfolioGovernance.mode,'FIVE_DEPARTMENT_SCORE_GUIDED_DYNAMIC_PORTFOLIO');
   assert.equal(directive.portfolioGovernance.fixedGameSlots,false);
   assert.equal(directive.portfolioGovernance.oneForOneReplacementRule,false);
