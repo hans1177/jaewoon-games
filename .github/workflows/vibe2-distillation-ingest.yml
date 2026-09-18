@@ -41,9 +41,14 @@ on:
       - '.github/workflows/vibe2-distillation-ingest.yml'
       - '.github/workflows/vibe2-local-distillation-train.yml'
   workflow_run:
-    workflows: ['Autonomous Candidate Promotion', 'Vibe2 External Mobile Free Game Playtest']
+    workflows: ['Autonomous Candidate Promotion']
     types: [completed]
   workflow_dispatch:
+    inputs:
+      external_playtest_run_id:
+        description: 'Completed external mobile playtest run id to import'
+        required: false
+        default: ''
   schedule:
     - cron: '17 * * * *'
 
@@ -98,24 +103,24 @@ jobs:
 
       - name: Download verified Google Play runtime samples
         id: google_play_samples
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Vibe2 External Mobile Free Game Playtest'
+        if: github.event_name == 'workflow_dispatch' && inputs.external_playtest_run_id != ''
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: external-mobile-gameplay-samples
           path: /tmp/external-mobile-gameplay-samples
           github-token: ${{ github.token }}
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ inputs.external_playtest_run_id }}
 
       - name: Report deferred Google Play learning run
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Vibe2 External Mobile Free Game Playtest' && steps.google_play_samples.outcome != 'success'
+        if: github.event_name == 'workflow_dispatch' && inputs.external_playtest_run_id != '' && steps.google_play_samples.outcome != 'success'
         shell: bash
         run: |
           echo 'COMMERCIAL_RUNTIME_ARTIFACT=ABSENT'
           echo 'COMMERCIAL_RUNTIME_IMPORT=SKIPPED_NO_REAL_PLAYTEST_ARTIFACT'
 
       - name: Import Google Play runtime samples into canonical learning state
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Vibe2 External Mobile Free Game Playtest' && steps.google_play_samples.outcome == 'success'
+        if: github.event_name == 'workflow_dispatch' && inputs.external_playtest_run_id != '' && steps.google_play_samples.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
