@@ -3279,12 +3279,13 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
         "practice-kind:MINI_GAME_SYSTEM_DRILL",
-        "practice-domain:CORE_LOOP"
+        "practice-domain:CORE_LOOP",
+        "slot-dispatch:35372280847:1"
       ],
       "lastOutcome": null,
       "reservationId": "35371993481:1",
