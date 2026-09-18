@@ -116,7 +116,7 @@ jobs:
           const selected=canaryVerified?pending:pending.slice(0,2);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=selected.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
+          const targets=selected.map((seed,index)=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30),designer_provider:index%2===0?'OPENAI':'GEMINI'}));
           const parallelMax=Math.max(1,Math.min(canaryVerified?5:2,targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
@@ -256,6 +256,7 @@ jobs:
           ARTBOOK_DATE: ${{ matrix.target.date }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          COMPANY_DESIGNER_PROVIDER_HINT: ${{ matrix.target.designer_provider }}
         shell: bash
         run: |
           set -euo pipefail
