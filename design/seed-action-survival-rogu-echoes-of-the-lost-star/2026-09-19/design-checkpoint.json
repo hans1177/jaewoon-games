@@ -1,0 +1,251 @@
+{
+  "contractVersion": 3,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR-20260917",
+  "fingerprint": "5bbffa8921669424f70b1dc38cafc01eda210b8e8d3fe0d7fed22e90c465a99e",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "잃어버린 별의 메아리는 황폐한 우주 전장에서 밀려오는 적의 공세를 생존하며 성장의 선택을 누적하는 액션 생존 로그라이트 게임입니다. 플레이어는 실시간으로 이동과 공격 방향을 조작하며 적을 처치하고, 드랍되는 경험치 파편을 수집해 무작위로 제시되는 업그레이드 스킬을 선택합니다. 이 과정에서 coreLoop는 전투-성장-조작의 반복을 만들고, signatureSystems는 빌드의 다양성과 생존 전략의 깊이를 보장하여 매 세션마다 고유한 상태 변화를 이끌어냅니다.",
+      "playerFantasy": "플레이어는 고대 별의 파괴로 혼돈에 빠진 우주 전장 속에서 홀로 살아남는 최후의 생존자이자 전술가 역할을 맡습니다. 사방에서 압박해오는 외계 적들의 무리를 화려한 원거리 투사체와 광역 스킬로 쓸어버리며, 매 순간의 빌드 조합을 통해 불리한 전세를 역전시키는 짜릿한 성장 쾌감을 경험합니다.",
+      "coreFun": "플레이어는 실시간 이동과 회피를 통해 적의 밀도를 조절하고, 적 처치 시 획득하는 재화를 통해 매 웨이브마다 무작위 스킬 업그레이드를 선택합니다. 이 선택은 캐릭터의 공격 속도, 투사체 개수, 이동 속도 등 관찰 가능한 상태 변화를 즉각적으로 유발하며, 다음 웨이브에서 더 많은 적을 처치할 수 있는 즉각적 결과로 이어집니다.",
+      "coreLoop": [
+        "실시간으로 사방에서 몰려오는 적의 밀도를 파악하고 회피 경로를 설정하여 생존 구역을 확보합니다.",
+        "적을 처치하고 드랍된 경험치 자원을 회수하여 레벨업을 달성하고 무작위 업그레이드 선택지 중 하나를 고릅니다.",
+        "선택한 업그레이드로 강화된 전투 능력을 바탕으로 더 강력한 엘리트 적과 웨이브를 돌파하고 다음 세션의 영구 재화를 획득합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "오버클럭 스킬 시너지 시스템",
+          "purpose": "플레이어가 획득한 다양한 무기와 패시브 스킬을 조합하여 고유한 공격 패턴과 강력한 광역 효과를 발동시키고 빌드의 깊이를 더합니다.",
+          "playerChoice": "플레이어는 레벨업 보상으로 등장하는 3가지 무작위 기술 중 자신의 현재 생존 전략에 가장 적합한 속성이나 투사체 강화 옵션을 직접 선택합니다."
+        },
+        {
+          "name": "스타포지 영구 성장 시스템",
+          "purpose": "세션 내에서 획득한 메타 재화를 사용하여 다음 시도부터 캐릭터의 기본 능력치를 향상시키고 새로운 시작 무기를 해제합니다.",
+          "playerChoice": "플레이어는 실패하거나 세션을 마친 후 축적된 별의 조각을 활용하여 공격력, 최대 체력, 자석 범위 등의 기초 스탯 중 우선적으로 성장시킬 항목을 결정합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "전투 및 웨이브 생존 시스템",
+          "toSystem": "오버클럭 스킬 시너지 시스템",
+          "trigger": "플레이어가 적을 처치하고 경험치 파편을 일정량 이상 획득하여 레벨업을 달성할 때",
+          "stateChange": "플레이어에게 3개의 무작위 업그레이드 선택지가 즉시 제시되며 선택 대기 상태로 전환됩니다."
+        },
+        {
+          "fromSystem": "오버클럭 스킬 시너지 시스템",
+          "toSystem": "스타포지 영구 성장 시스템",
+          "trigger": "세션이 종료되거나 플레이어가 사망하여 결과 정산 화면으로 진입할 때",
+          "stateChange": "이번 세션 동안 달성한 웨이브 단계와 처치 수를 기반으로 메타 재화가 정산되어 영구 성장 풀에 합산됩니다."
+        },
+        {
+          "fromSystem": "스타포지 영구 성장 시스템",
+          "toSystem": "전투 및 웨이브 생존 시스템",
+          "trigger": "플레이어가 메로 재화를 소모해 새로운 시작 무기나 기초 스탯 강화 항목을 구매할 때",
+          "stateChange": "다음 세션 시작 시 캐릭터의 기본 체력과 공격력이 상향 조정되거나 새로운 공격 형태가 적용됩니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 초기 세션에서 기본적인 이동과 단순 사격으로 생존의 기본기를 익히며, 반복 플레이를 통해 획득한 메타 재화로 기초 스탯을 확장합니다. 이후 다양한 스킬 조합을 발견하고 고난이도 웨이브와 거대 보스를 돌파하는 성취감을 느끼며, 장기적으로는 모든 무기와 패시브의 마스터리를 달성하는 수직적·수평적 확장을 경험하게 됩니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "세션 플레이를 통한 적 처치 -> 임시 경험치 획득 및 빌드업 -> 세션 종료 후 메타 재화 획득 -> 영구 스탯 및 장비 해제 -> 더 높은 난이도와 웨이브 도달의 선순환 구조를 형성합니다.",
+        "resourceFlow": "인게임 경험치 자원은 세션 내 성장에만 즉시 소모되고 소멸하며, 별의 조각 메타 재화는 오직 세션 종료 후에만 지급되어 허브 화면의 영구 성장 시스템 재화로만 사용됩니다.",
+        "balanceRules": "단일 세션의 플레이 타임은 최대 20분을 넘지 않도록 적의 체력과 공격력을 웨이브 비례로 조절하며, 영구 성장은 게임의 난이도를 완전히 파괴하지 않고 보조적인 완충재 역할만 하도록 설계합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "시즌 1: 신규 성운 지역 및 원거리 플라즈마 무기 추가",
+          "newGameplay": "새로운 맵 환경인 플라즈마 성운에서 전용 원거리 투사체 무기와 적의 투사체를 반사하는 신규 패시브 스킬이 도입됩니다.",
+          "systemImpact": "기존 근접 위주의 빌드 선택지에 원거리 투사체 반사 및 탄막 회피 중심의 새로운 메타 시스템이 추가됩니다."
+        },
+        {
+          "milestone": "시즌 2: 엘리먼탈 속성 시스템 및 조합식 확장",
+          "newGameplay": "화염, 빙결, 전격 속성 간의 상호 작용이 추가되어 특정 속성을 조합할 때 발생하는 광역 상태 이상 폭발 기믹이 도입됩니다.",
+          "systemImpact": "오버클럭 스킬 시너지 시스템의 조합 경우의 수가 대폭 확장되어 플레이어의 빌드 선택 깊이가 심화됩니다."
+        },
+        {
+          "milestone": "시즌 3: 하드코어 보스러시 아레나 모드 도입",
+          "newGameplay": "일반 웨이브 없이 연속으로 강력한 보스들과 전투를 치르는 타임어택 형태의 고난이도 생존 아레나 모드가 열립니다.",
+          "systemImpact": "스타포지 영구 성장 시스템의 상위 티어 재화 획득처가 생겨 고수준 플레이어의 엔드콘텐츠 목표를 제공합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어의 체력이 0이 되어 현재 진행 중인 생존 세션이 강제로 종료되는 사망 상태",
+          "제한 시간 내에 웨이브 관리 실패로 인해 압도적인 적의 밀도에 완전히 포위당하는 고립 상태"
+        ],
+        "retryFlow": "세션 실패 시 즉시 결과 정산 화면으로 이동하여 이번 세션에서 획득한 메타 재화를 확인하고, 곧바로 재도전 버튼을 눌러 로비 단계를 거치지 않고 신속하게 다음 세션으로 진입할 수 있습니다.",
+        "riskPressure": "웨이브가 진행될수록 적의 이동 속도와 공격력이 급격히 상승하여 잠시도 방심할 수 없는 실시간 압박감을 부여하며, 체력 회복 수단이 한정되어 있어 리스크 관리가 필수적입니다.",
+        "recoveryRules": "사망 시 해당 세션에서 얻은 임시 빌드와 경험치는 초기화되지만, 획득한 메타 재화는 100% 보존되어 영구 성장의 밑거름으로 안전하게 누적됩니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치 환경을 고려하여 화면 하단의 가상 조이스틱을 통한 이동과 자동 공격 사격 시스템을 기본으로 채택하고, 특수 스킬 발동 등은 직관적인 원 버튼 터치로 배치합니다.",
+        "performanceBudget": "화면 위에 동시에 표시되는 수백 마리의 적 유닛을 효율적으로 처리하기 위해 객체 풀링(Object Pooling) 기법과 최적화된 2D 스프라이트 렌더링을 적용하여 60fps를 안정적으로 유지합니다.",
+        "sessionConstraints": "한 세션의 기본 플레이 시간을 15~20분 내외로 설정하여 이동 중이나 짧은 휴식 시간에도 언제든 부담 없이 게임을 켜고 즐길 수 있도록 모바일 세션 최적화를 준수합니다."
+      },
+      "visualDirection": "황폐하고 신비로운 우주 공간을 배경으로 한 탑뷰 2D 스타일을 채택하며, 화려한 네온 컬러의 스킬 효과와 어두운 우주 배경의 대비를 통해 수많은 적과 투사체 난무 속에서도 플레이어의 캐릭터와 탄막 식별이 한눈에 가능하도록 가독성을 극대화합니다.",
+      "mobileUx": "한 손 또는 엄지손가락 두 개만으로도 완벽한 조작이 가능하도록 UI 버튼을 하단 영역에 집중 배치하고, 레벨업 시 나타나는 업그레이드 선택 카드는 터치하기 편한 대형 카드로 구성하여 모바일 환경에서의 오조작을 최소화합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "남은 생존 시간, 현재 캐릭터 체력, 경험치 바, 웨이브 단계를 화면 최상단과 가장 눈에 띄는 중앙 영역에 배치하여 상태 파악을 즉시 돕습니다.",
+        "touchAndInput": "가상 조이스틱의 인식 반경을 넓게 설정하고 터치 위치를 유연하게 추적하여 엄지손가락이 미끄러져도 조작이 끊기지 않도록 안정성을 높입니다.",
+        "readability": "복잡한 탄막 속에서 플레이어 캐릭터 주변에 명확한 아웃라인을 적용하고 적의 공격 투사체는 고대비 색상으로 표시해 시각적 혼란을 방지합니다.",
+        "accessibility": "시각적 피드백 외에도 중요한 웨이브 전환이나 체력 부족 상황에서 직관적인 오디오 효과를 동시 제공하여 청각적 인지를 보완합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "사이버틱하면서도 우주 고대의 신비로움을 담은 레트로 미니멀 SF 스타일로, 깔끔한 2D 그래픽과 화려한 입자 효과를 조합합니다.",
+        "audioIdentity": "긴장감을 고조시키는 일렉트로닉 신디사이저 기반의 배경음악과 타격감이 살아있는 사운드 효과를 적용하여 몰입감을 높입니다.",
+        "gameplayFeedbackSync": "적에게 피격당하거나 스킬이 적중하는 순간 진동과 타격 음향이 0.05초 이내에 동기화되어 즉각적인 손맛을 전달합니다."
+      },
+      "marketTargetDirection": "전 세계 캐주얼 액션 및 로그라이트 장르 선호 유저를 타겟으로 하며, 빠른 페이스와 직관적인 조작을 선호하는 글로벌 모바일 게임 시장의 니즈를 정확히 공략합니다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후, PC 플랫폼의 넓은 화면과 키보드·마우스 정밀 조작을 지원하는 스팀(Steam) 확장 버전을 고려하여 정밀한 컨트롤 기반의 하드코어 난이도 옵션을 추가할 계획입니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "초기 출시는 완성도 높은 싱글플레이어 경험에 집중하며, 향후 유저 간 생존 시간을 겨루는 비동기식 랭킹 시스템이나 협동 생존 모드의 도입 가능성을 열어둡니다.",
+      "technicalAssumptions": [
+        "동시에 화면에 등장하는 수백 마리의 적 오브젝트를 부드럽게 렌더링하기 위해 유니티 객체 풀링 시스템을 필수적으로 구현해야 한다.",
+        "모바일 터치 입력의 지연 시간을 최소화하기 위해 입력 처리 루프를 물리 틱과 분리하여 독립적인 메인 스레드에서 처리한다."
+      ],
+      "validationQuestions": [
+        "모바일 터치 조이스틱 조작 시 플레이어가 의도한 방향으로 캐릭터가 지연 없이 정확하게 이동하는가?",
+        "웨이브가 진행됨에 따라 적의 밀도 증가로 인한 프레임 드랍 없이 60fps가 안정적으로 유지되는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "실시간 웨이브 생존 및 적 무리 이동",
+          "responsibleSystem": "전투 및 웨이브 생존 시스템",
+          "validationEvidence": "유니티 성능 프로파일러를 통해 수백 마리의 적 유닛이 이동할 때 CPU 점유율이 안정 범위 내에 머무는지 검증한다."
+        },
+        {
+          "designElement": "무작위 업그레이드 선택 및 상태 반영",
+          "responsibleSystem": "오버클럭 스킬 시너지 시스템",
+          "validationEvidence": "레벨업 발생 시 3가지 선택지가 정상 출력되며 선택 즉시 캐릭터의 공격력과 투사체 개수 변수가 올바르게 적용되는지 유닛 테스트를 통해 검증한다."
+        },
+        {
+          "designElement": "세션 종료 후 메타 재화 정산 및 영구 성장",
+          "responsibleSystem": "스타포지 영구 성장 시스템",
+          "validationEvidence": "세션 오버 시 획득한 별의 조각이 로비 데이터에 정상 저장되고 다음 시작 시 영구 스탯 보너스가 올바르게 반영되는지 세이브 데이터 검증을 수행한다."
+        }
+      ],
+      "openQuestions": [
+        "향후 멀티플레이어 협동 모드를 도입할 때 세션당 플레이 타임의 길이를 어느 정도로 조절하는 것이 적합할까?",
+        "모바일 화면의 가독성을 해치지 않으면서 더 다양한 속성 조합 시각 효과를 어떻게 구현할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 15430,
+      "lastMs": 15430,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:09:16.840Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 87,
+      "lastMs": 87,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 43.06755112s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"43s\" } ] } }",
+      "updatedAt": "2026-09-18T15:09:16.955Z"
+    },
+    "gemini:gemini-3.7-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 174,
+      "lastMs": 174,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 42.975575966s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"42s\" } ] } }",
+      "updatedAt": "2026-09-18T15:09:17.041Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T15:09:01.408Z",
+  "updatedAt": "2026-09-18T15:09:17.042Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:09:16.840Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "balance",
+  "lastError": "GEMINI_CALL_FAILED gemini-3.5-flash: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 42.975575966s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"42s\" } ] } }"
+}
