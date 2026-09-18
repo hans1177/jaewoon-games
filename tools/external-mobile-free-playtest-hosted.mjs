@@ -48,7 +48,30 @@ async function fetchJson(url){
   }
   throw last;
 }
-async function download(url,file,expectedSha256=''){
+function normalizeBase64(value){
+  return clean(value).replace(/-/g,'+').replace(/_/g,'/').replace(/=+$/,'');
+}
+function digestMatches(bytes,expectedSha256='',expectedSha1=''){
+  const sha256Hex=crypto.createHash('sha256').update(bytes).digest('hex');
+  const sha256B64=crypto.createHash('sha256').update(bytes).digest('base64');
+  const sha1Hex=crypto.createHash('sha1').update(bytes).digest('hex');
+  const sha1B64=crypto.createHash('sha1').update(bytes).digest('base64');
+  let checked=false,pass=false;
+  if(clean(expectedSha256)){
+    checked=true;
+    const expected=clean(expectedSha256);
+    pass=pass||(/^[a-f0-9]{64}$/i.test(expected)&&sha256Hex.toLowerCase()===expected.toLowerCase());
+    pass=pass||(normalizeBase64(expected)===normalizeBase64(sha256B64));
+  }
+  if(clean(expectedSha1)){
+    checked=true;
+    const expected=clean(expectedSha1);
+    pass=pass||(/^[a-f0-9]{40}$/i.test(expected)&&sha1Hex.toLowerCase()===expected.toLowerCase());
+    pass=pass||(normalizeBase64(expected)===normalizeBase64(sha1B64));
+  }
+  return{pass:!checked||pass,sha256:sha256Hex,sha1:sha1Hex};
+}
+async function download(url,file,expectedSha256='',expectedSha1=''){
   let last;
   for(let attempt=1;attempt<=3;attempt++){
     try{
@@ -56,10 +79,10 @@ async function download(url,file,expectedSha256=''){
       if(!res.ok)throw new Error('HTTP '+res.status);
       const bytes=Buffer.from(await res.arrayBuffer());
       if(bytes.length<1024)throw new Error('download too small');
-      const digest=sha256Buffer(bytes);
-      if(expectedSha256&&digest.toLowerCase()!==expectedSha256.toLowerCase())throw new Error('sha256 mismatch');
+      const verified=digestMatches(bytes,expectedSha256,expectedSha1);
+      if(!verified.pass)throw new Error('delivery digest mismatch');
       fs.writeFileSync(file,bytes);
-      return{bytes:bytes.length,sha256:digest};
+      return{bytes:bytes.length,sha256:verified.sha256,sha1:verified.sha1};
     }catch(e){last=e;if(attempt<3)await sleep(2000*attempt);}
   }
   throw last;
@@ -75,8 +98,8 @@ async function acquirePackage(packageId,dir){
   const downloaded=[];
   for(const f of apkFiles){
     const local=path.join(dir,safeName(f.name));
-    const info=await download(f.url,local,clean(f.sha256));
-    downloaded.push({local,name:path.basename(local),type:clean(f.type),sha256:info.sha256,bytes:info.bytes});
+    const info=await download(f.url,local,clean(f.sha256),clean(f.sha1));
+    downloaded.push({local,name:path.basename(local),type:clean(f.type),sha256:info.sha256,sha1:info.sha1,bytes:info.bytes});
   }
   writeJson(path.join(dir,'delivery-manifest.json'),{
     packageName:manifest.packageName,
@@ -85,7 +108,7 @@ async function acquirePackage(packageId,dir){
     versionName:manifest.versionName,
     deliveryAuthority:'GOOGLE_PLAY_NATIVE_FDFE',
     deliveryBroker:DELIVERY_BASE,
-    files:downloaded.map(({name,type,sha256,bytes})=>({name,type,sha256,bytes}))
+    files:downloaded.map(({name,type,sha256,sha1,bytes})=>({name,type,sha256,sha1,bytes}))
   });
   return downloaded;
 }
