@@ -1,1447 +1,530 @@
 {
-  "contractVersion": 1,
+  "contractVersion": 2,
   "gameId": "chess-battle",
   "date": "2026-09-18",
   "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
-  "fingerprint": "a3f5a20d2decf3eab185e97daf134220d8e301044b821d3d964796c1ac5f9ed6",
-  "policyDigest": "57957b1b1ae2662bd6fc5f377031f469b6f581dd0f523dadb26c80ea871e9510",
-  "status": "COMPLETE",
+  "fingerprint": "721f885f57825296efc540cca81e6c4ac76400a694e448e9e4f52996bb90ac32",
+  "policyDigest": "4ba5cefda9bb72060f4934114c91ba83051c6624d5449a2e30cab94221bf4321",
+  "engineDigest": "05b2a9d594155708ebf27797b249a78c3cdfbee815c1ddae3923df631ae3fe37",
+  "status": "IN_PROGRESS",
   "completedPhases": [
-    "designer_draft_base",
-    "designer_draft_gate",
-    "independent_department_reviews",
-    "department_representatives",
-    "lead_rebuttals",
-    "cross_department_meeting",
-    "designer_revision_base",
-    "designer_revision_gate",
-    "five_lead_fatal_review"
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
-    "designer_draft_base": {
-      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다",
-      "playerFantasy": "체스 배틀",
-      "coreFun": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+    "designer_draft": {
+      "identity": "체스의 공간 읽기 전술을 바탕으로 제한된 턴과 전장 목표를 풀어내는 전략 퍼즐 게임",
+      "playerFantasy": "체스의 기물들을 지휘하여 복잡한 전장의 장애물과 적의 위협을 전술적 한 수로 돌파하는 지휘관 판타지",
+      "coreFun": "예측 가능한 정보 속에서 최적의 이동 경로와 공격 수순을 찾아내어 퍼즐과 전투를 동시에 해결하는 쾌감",
       "coreLoop": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle",
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Create a new board pattern or obstacle combination, and face the challenge of adapting to the new situation.",
-        "Earn rewards or unlock the next stage by clearing the level goal. Use the new board pattern or obstacle combination to create a new puzzle to solve, and then face the challenge of adapting to the new situation."
+        "제한된 턴과 목표가 주어진 전장 격판에 진입하여 적의 배치와 지형을 분석한다.",
+        "기물의 이동 범위와 특수 능력을 활용해 퍼즐 목표를 해결하거나 적을 처치하며 상태 변화를 이끌어낸다.",
+        "스테이지 클리어 보상을 획득하고 새로운 기물이나 상위 전장 패턴을 해제한다."
       ],
       "signatureSystems": [
         {
-          "name": "체스 배틀",
-          "purpose": "체스 배틀 게임",
-          "playerChoice": "체스 배틀 게임"
+          "name": "기물 특화 전술 이동",
+          "purpose": "체스 기물의 고유 이동 방식을 퍼즐 규칙에 맞게 재해석하여 매턴 깊이 있는 배치 선택 제공",
+          "playerChoice": "어떤 기물을 먼저 움직여 적의 공격을 회피하고 유리한 위치를 선점할지 선택"
         },
         {
-          "name": "체스 배틀",
-          "purpose": "체스 배틀 게임",
-          "playerChoice": "체스 배틀 게임"
+          "name": "전장 오브젝트 상호작용",
+          "purpose": "단순한 이동을 넘어 지형과 장애물을 활용한 전략적 변수 창출",
+          "playerChoice": "장애물을 파괴하거나 방어선으로 활용하여 적의 진격을 차단할 경로 결정"
         }
       ],
-      "progressionDirection": "MULTIPLAYER",
-      "visualDirection": "COOP",
-      "mobileUx": "COMPETITIVE",
-      "marketTargetDirection": "HYPERTHEME",
-      "steamExpansionDecision": "MULTIPLAYER",
-      "multiplayerMode": "COOP",
-      "multiplayerExpansionDecision": "MULTIPLAYER",
-      "technicalAssumptions": [
-        "체스의 공간 reading",
-        "전술 배틀 게임",
-        "체스 배틀 게임"
-      ],
-      "validationQuestions": [
-        "What is the primary goal of the game?",
-        "What is the purpose of the game?",
-        "What is the playeR's fantasy?"
-      ],
-      "openQuestions": [
-        "What is the core fun of the game?",
-        "What is the core loop of the game?",
-        "What is the signature system of the game?"
-      ]
-    },
-    "designer_draft_gate": {
       "systemInterconnections": [
         {
-          "fromSystem": "GAME_SEED",
-          "toSystem": "STRICT_GATE_FEEDBACK",
-          "trigger": "GAME_SEED",
-          "stateChange": "TRUE"
+          "fromSystem": "기물 특화 전술 이동",
+          "toSystem": "전장 오브젝트 상호작용",
+          "trigger": "기물이 특정 지형이나 오브젝트에 도달할 때",
+          "stateChange": "지형이 파괴되거나 새로운 버프/디버프 영역이 활성화됨"
         },
         {
-          "fromSystem": "GAME_SEED",
-          "toSystem": "BASE_DESIGN",
-          "trigger": "GAME_SEED",
-          "stateChange": "TRUE"
+          "fromSystem": "전장 오브젝트 상호작용",
+          "toSystem": "Core Loop",
+          "trigger": "스테이지 내 모든 핵심 목표가 달성될 때",
+          "stateChange": "스테이지 클리어 상태로 전환되며 보상 지급 화면으로 이동"
         },
         {
-          "fromSystem": "BASE_DESIGN",
-          "toSystem": "STRICT_GATE_FEEDBACK",
-          "trigger": "BASE_DESIGN",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "BASE_DESIGN",
-          "toSystem": "BASE_DESIGN",
-          "trigger": "BASE_DESIGN",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "BASE_DESIGN",
-          "toSystem": "GAME_SEED",
-          "trigger": "BASE_DESIGN",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "GAME_SEED",
-          "toSystem": "GAME_CATEGORY",
-          "trigger": "GAME_SEED",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "GAME_SEED",
-          "toSystem": "MARKET_EVIDENCE_SUMMARY",
-          "trigger": "GAME_SEED",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "GAME_SEED",
-          "toSystem": "MARKET_DATA",
-          "trigger": "GAME_SEED",
-          "stateChange": "TRUE"
+          "fromSystem": "Core Loop",
+          "toSystem": "진행 및 경제 시스템",
+          "trigger": "보상 획득 및 다음 스테이지 해제 시",
+          "stateChange": "플레이어의 재화가 증가하고 상위 난이도 전장이 열림"
         }
       ],
+      "progressionDirection": "초반부 기본 기물 조작 학습에서 시작해 복합적인 지형과 특수 능력을 가진 적이 등장하는 상위 스테이지로 확장",
       "progressionEconomyBalance": {
-        "progressionLoop": "MULTIPLAYER",
-        "resourceFlow": "MULTIPLAYER",
-        "balanceRules": "MULTIPLAYER"
+        "progressionLoop": "스테이지 클리어 -> 재화 획득 -> 기물 강화 및 유틸리티 해제 -> 고난도 스테이지 도전",
+        "resourceFlow": "플레이어는 승리 보상으로 전술 포인트를 얻고, 이를 통해 기물의 이동 능력을 일시적으로 강화하거나 특수 아이템 구매에 사용",
+        "balanceRules": "턴 제한과 적의 공격력을 조절하여 무지성 플레이를 방지하고 매판 명확한 수순 계산을 유도"
       },
       "contentExpansionPlan": [
         {
-          "milestone": "CHALLENGE_1",
-          "newGameplay": "NEW_GAMEPLAY",
-          "systemImpact": "NEW_GAMEPLAY"
+          "milestone": "초보자 전장 패치",
+          "newGameplay": "기본 룩과 나이트의 이동 방식을 배우는 기초 퍼즐 스테이지 20개 추가",
+          "systemImpact": "신규 플레이어의 진입 장벽 완화 및 기본 조작 숙달"
         },
         {
-          "milestone": "CHALLENGE_2",
-          "newGameplay": "NEW_GAMEPLAY",
-          "systemImpact": "NEW_GAMEPLAY"
+          "milestone": "엘리트 기물 확장팩",
+          "newGameplay": "특수 능력을 가진 비숍과 퀸 기반의 고난도 전장 스테이지 추가",
+          "systemImpact": "후반부 플레이어에게 더 높은 수준의 전략적 선택지 제공"
         },
         {
-          "milestone": "CHALLENGE_3",
-          "newGameplay": "NEW_GAMEPLAY",
-          "systemImpact": "NEW_GAMEPLAY"
+          "milestone": "보스 방어전 모드",
+          "newGameplay": "강력한 보스 기물의 공격을 막아내는 생존형 퍼즐 규칙 도입",
+          "systemImpact": "반복 플레이의 지루함 해소 및 엔드게임 콘텐츠 강화"
         }
       ],
       "failureRetryRisk": {
         "failureStates": [
-          "FAILURE_1",
-          "FAILURE_2",
-          "FAILURE_3"
+          "제한 턴 내에 스테이지 클리어 목표 달성 실패",
+          "핵심 지휘관 기물의 파괴"
         ],
-        "retryFlow": "RETRY_FLOW",
-        "riskPressure": "HIGH",
-        "recoveryRules": "RECOVERY_RULES"
+        "retryFlow": "실패 시 즉시 재시도 버튼을 통해 페널티 없이 해당 스테이지를 다시 시작할 수 있도록 유도",
+        "riskPressure": "턴 제한으로 인한 압박감과 기물 배치 실수 시 즉각적인 손실 발생",
+        "recoveryRules": "스테이지 실패 시 소모된 에너지를 일부 환급하거나 힌트 시스템을 제공하여 좌절감 최소화"
       },
       "platformFitPlan": {
-        "targetPlatform": "UNITY",
-        "inputModel": "INPUt MODEl",
-        "performanceBudget": "PERFORMancE BUDget",
-        "sessionConstraints": "SESSioN CONstrains"
+        "targetPlatform": "ROBLOX",
+        "inputModel": "터치 및 마우스 클릭 기반의 직관적인 기물 드래그 앤 드롭 또는 타일 선택 방식",
+        "performanceBudget": "로우폴리곤 3D 환경과 가벼운 UI 리소스를 사용하여 모바일 저사양 기기에서도 60프레임 유지",
+        "sessionConstraints": "한 판당 3~5분 이내로 구성하여 로블록스 플랫폼 특유의 빠른 이탈 및 재접속 유도"
       },
+      "visualDirection": "클래식 체스판의 모던한 재해석, 깔끔한 3D 격자 전장과 직관적인 이동 범위 가이드 라인 제공",
+      "mobileUx": "한 손 조작이 가능하도록 하단에 주요 액션 버튼을 배치하고, 작은 화면에서도 기물의 이동 반경이 한눈에 보이도록 카메라 뷰 최적화",
       "uxAccessibilityPlan": {
-        "hudPriorities": "HIGH",
-        "touchAndInput": "HIGH",
-        "readability": "HIGH",
-        "accessibility": "HIGH"
+        "hudPriorities": "남은 턴 수, 현재 목표, 보유 재화 정보를 화면 상단에 고정하여 가독성 확보",
+        "touchAndInput": "오동작을 방지하기 위해 터치 시 이동 가능한 타일을 명확한 색상으로 하이라이트",
+        "readability": "색약 모드를 지원하여 아군과 적군, 이동 가능 지역의 색상 구분 용이화",
+        "accessibility": "복잡한 텍스트를 줄이고 아이콘 중심의 직관적인 피드백 제공"
       },
       "artAudioDirection": {
-        "visualIdentity": "VISUAL IDenitiy",
-        "audioIdentity": "AUDIO IDenitiy",
-        "gameplayFeedbackSync": "GAMEPLAY FEEDBACK SYnc"
+        "visualIdentity": "미니멀하면서도 세련된 체스 기물 디자인과 타격감 있는 이펙트",
+        "audioIdentity": "차분한 클래식 기반의 배경음악과 기물 이동, 공격 시 명확한 타격 효과음",
+        "gameplayFeedbackSync": "기물을 이동하거나 목표를 달성할 때 사운드와 진동을 동기화하여 조작감 극대화"
       },
+      "marketTargetDirection": "전략 퍼즐과 캐주얼 보드 게임을 선호하는 글로벌 유저층을 타겟으로 하며, 직관적인 룰로 진입 장벽을 낮춤",
+      "steamExpansionDecision": "모바일 및 로블록스 플랫폼 검증 후 정밀한 조작과 도전 과제를 강화하여 스팀 플랫폼으로 확장 검토",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "싱글 플레이어 퍼즐의 완성도를 우선 확보한 후, 비동기 1:1 대전 모드 확장 고려",
+      "technicalAssumptions": [
+        "클라이언트 중심의 턴 로직 처리로 네트워크 지연 없는 쾌적한 퍼즐 경험 제공",
+        "모듈화된 기물 이동 규칙 컴포넌트를 통해 새로운 기물 추가 용이"
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 안에 기물의 이동 규칙을 직관적으로 이해할 수 있는가?",
+        "턴 제한과 전장 목표가 적절한 긴장감을 유발하는가?"
+      ],
       "implementationTraceability": [
         {
-          "designElement": "STARTER GAME",
-          "responsibleSystem": "GAME_SEED",
-          "validationEvidence": "VALIDATION Evidence"
+          "designElement": "기물 특화 전술 이동",
+          "responsibleSystem": "기물 특화 전술 이동",
+          "validationEvidence": "플레이 테스트를 통해 각 기물의 이동 범위가 퍼즐 규칙에 올바르게 적용되는지 확인"
         },
         {
-          "designElement": "GAMEPLAY LOOP",
-          "responsibleSystem": "GAME_SEED",
-          "validationEvidence": "VALIDATION Evidence"
+          "designElement": "전장 오브젝트 상호작용",
+          "responsibleSystem": "전장 오브젝트 상호작용",
+          "validationEvidence": "오브젝트 파괴 및 상태 변화가 턴 종료 시 정확히 반영되는지 로그 검증"
         },
         {
-          "designElement": "PLAYER CHOICE",
-          "responsibleSystem": "GAME_SEED",
-          "validationEvidence": "VALIDATION Evidence"
+          "designElement": "Core Loop",
+          "responsibleSystem": "Core Loop",
+          "validationEvidence": "스테이지 클리어 시 보상 지급과 다음 스테이지 해제가 끊김 없이 이어지는지 확인"
         }
+      ],
+      "openQuestions": [
+        "향후 멀티플레이 도입 시 동기식과 비동기식 중 어떤 방식이 게임 루프에 더 적합할 것인가?"
       ]
     },
-    "independent_department_reviews": {
-      "balance::gemma3:1b": {
-        "keep": [
-          "GAME_SEED"
-        ],
-        "fix": [
-          "MARKET_EVIDENCE_SUMMARY"
-        ],
-        "add": [
-          "DESIGN"
-        ],
-        "risks": [
-          "failureRetryRisk"
-        ],
-        "evidence": [
-          "reference"
-        ],
-        "questions": [
-          "ASSIGNED_DEPARTMENT"
-        ]
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
       },
-      "development::gemma3:1b": {
-        "keep": [],
-        "fix": [],
-        "add": [],
-        "risks": [],
-        "evidence": [],
-        "questions": []
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 0,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
       },
-      "graphics::gemma3:1b": {
-        "keep": [
-          "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다"
-        ],
-        "fix": [
-          "체스 배틀 게임"
-        ],
-        "add": [
-          "COOP"
-        ],
-        "risks": [
-          "playerFantasy: 체스 배틀"
-        ],
-        "evidence": [
-          "Royal Match (globalTopGrossingDecember2025Rank): 3, Candy Crush Saga (globalTopGrossingDecember2025Rank): 5, Block Blast! (global)"
-        ],
-        "questions": [
-          "puzzleSessionMinutesLate2024: 5.7, actionAndPuzzleTopTwoGenresCountryCount: 20, surveyedPlayersAge16Plus: 24216, surveyedCountries"
-        ]
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 0,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
       },
-      "planning::gemma3:1b": {
-        "keep": [
-          "PLAYER_FEEDBACK"
-        ],
-        "fix": [
-          "GAME_SEED_DATA"
-        ],
-        "add": [
-          "GAME_SEED_DATA"
-        ],
-        "risks": [
-          "GAME_SEED_DATA"
-        ],
-        "evidence": [
-          "Royal Match"
-        ],
-        "questions": [
-          "What is the core fun of the game?"
-        ]
-      },
-      "qa::gemma3:1b": {
-        "keep": [
-          "GAME_SEED"
-        ],
-        "fix": [],
-        "add": [],
-        "risks": [],
-        "evidence": [],
-        "questions": []
-      },
-      "development::llama3.2:1b": {
-        "keep": [
-          "GAME_SEED"
-        ],
-        "fix": [
-          "GAME_SEED"
-        ],
-        "add": [
-          "GAME_SEED"
-        ],
-        "risks": [
-          "GAME_SEED"
-        ],
-        "evidence": [
-          "GAME_SEED"
-        ],
-        "questions": [
-          "GAME_SEED"
-        ]
-      },
-      "graphics::llama3.2:1b": {
-        "keep": [
-          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or Del"
-        ],
-        "fix": [
-          "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the"
-        ],
-        "add": [
-          "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
-        ],
-        "risks": [
-          "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the"
-        ],
-        "evidence": [
-          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or Del"
-        ],
-        "questions": [
-          "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the"
-        ]
-      },
-      "planning::llama3.2:1b": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT=planning"
-        ],
-        "fix": [
-          "ASSIGNED_DEPARTMENT=planning"
-        ],
-        "add": [
-          "GAME_SEED=chess-battle"
-        ],
-        "risks": [
-          "GAME_SEED=chess-battle"
-        ],
-        "evidence": [
-          "GAME_SEED=chess-battle"
-        ],
-        "questions": [
-          "ASSIGNED_DEPARTMENT=planning"
-        ]
-      },
-      "qa::qwen2.5:1.5b": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT: qa"
-        ],
-        "fix": [
-          "GAME_SEED: {"
-        ],
-        "add": [
-          "GAME_SEED: {"
-        ],
-        "risks": [
-          "failureRetryRisk: {"
-        ],
-        "evidence": [
-          "validationQuestions: {"
-        ],
-        "questions": [
-          "implementationTraceability: {"
-        ]
-      },
-      "balance::qwen3:0.6b": {
-        "keep": [
-          "predictable tactical information, meaningful board positioning, short tactical resolution"
-        ],
-        "fix": [
-          "market evidence summary, core loop, progression direction, content expansion plan, failure retry risk"
-        ],
-        "add": [
-          "signature systems, progression economy balance, content expansion plan, failure retry risk"
-        ],
-        "risks": [
-          "market evidence summary, core loop, progression direction, content expansion plan, failure retry risk"
-        ],
-        "evidence": [
-          "Royal Match, Candy Crush Saga, Block Blast!"
-        ],
-        "questions": [
-          "how to design the core loop, progression direction, content expansion plan, and failure retry risk"
-        ]
-      },
-      "development::qwen3:0.6b": {
-        "keep": [
-          "체스 배틀 게임의 공간 읽기를 유지하면서 전술 배틀 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다."
-        ],
-        "fix": [
-          "MARKET_EVIDENCE_SUMMARY의 역할을 유지하면서 코인화폐 수익을 강화하고, 콘텐츠의 유연성을 높이는 방향으로 접근한다."
-        ],
-        "add": [
-          "CORE_FUN_TO_LEARN의 내용을 더 구체적으로 설명하고, 게임의 혼합성과 플레이어 선택성을 강화하는 요소를 추가한다."
-        ],
-        "risks": [
-          "CORE_LOOP의 구조를 개선하여 플레이어의 혼합적 경험을 향상시키는 방향으로 접근한다."
-        ],
-        "evidence": [
-          "CORE_FUN_TO_LEARN의 내용을 구체적으로 설명하고, 게임의 혼합성과 플레이어 선택성을 강화하는 요소를 추가한다."
-        ],
-        "questions": [
-          "CORE_LOOP의 구조를 개선하여 플레이어의 혼합적 경험을 향상시키는 방향으로 접근한다."
-        ]
-      },
-      "graphics::qwen3:0.6b": {
-        "keep": [
-          "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다."
-        ],
-        "fix": [
-          "MARKET_EVIDENCE_SUMMARY"
-        ],
-        "add": [
-          "CORE_FUN_TO_LEARN"
-        ],
-        "risks": [
-          "CORE_LOOP"
-        ],
-        "evidence": [
-          "REFERENCE_GAMES"
-        ],
-        "questions": [
-          "DISTINCT_IDENTITY"
-        ]
-      },
-      "planning::qwen3:0.6b": {
-        "keep": [
-          "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다"
-        ],
-        "fix": [
-          "MARKET_EVIDENCE_SUMMARY"
-        ],
-        "add": [
-          "CORE_FUN_TO_LEARN"
-        ],
-        "risks": [
-          "CORE_LOOP"
-        ],
-        "evidence": [
-          "REFERENCE_GAMES"
-        ],
-        "questions": [
-          "DISTINCT_IDENTITY"
-        ]
-      },
-      "qa::qwen3:0.6b": {
-        "keep": [
-          "지정된 QA 부서의 기능을 명확히 설명하고, 게임 설계의 핵심 요소를 구체적으로 제시합니다."
-        ],
-        "fix": [
-          "게임의 주요 목표를 명확히 정의하고, 게임의 구성 요소를 구체적으로 설명합니다."
-        ],
-        "add": [
-          "게임의 플레이어의 역할과 전략적 전략을 명확히 설명합니다."
-        ],
-        "risks": [
-          "게임의 성공적인 설계를 위한 위험 요소를 제시합니다."
-        ],
-        "evidence": [
-          "게임의 성공적인 기반을 명확히 설명합니다."
-        ],
-        "questions": [
-          "게임의 플레이어의 역할과 전략적 전략을 명확히 설명합니다."
-        ]
-      },
-      "balance::smollm2:1.7b": {
-        "keep": [
-          "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or 필드에"
-        ],
-        "fix": [
-          "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Create a"
-        ],
-        "add": [
-          "Add a new board pattern or obstacle combination, and face the challenge of adapting to the new situation."
-        ],
-        "risks": [
-          "Earn rewards or unlock the next stage by clearing the level goal. Use the new board pattern or obstacle combination to create a"
-        ],
-        "evidence": [
-          "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다."
-        ],
-        "questions": [
-          "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다."
-        ]
-      }
-    },
-    "department_representatives": {
-      "planning": {
-        "keep": [
-          "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다"
-        ],
-        "fix": [
-          "MARKET_EVIDENCE_SUMMARY"
-        ],
-        "add": [
-          "CORE_FUN_TO_LEARN"
-        ],
-        "risks": [
-          "CORE_LOOP"
-        ],
-        "evidence": [
-          "REFERENCE_GAMES"
-        ],
-        "questions": [
-          "DISTINCT_IDENTITY"
-        ]
-      },
-      "graphics": {
-        "keep": [
-          "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다",
-          "체스 배틀 게임을 재설계한다"
-        ],
-        "fix": [
-          "MARKET_EVIDENCE_SUMMARY",
-          "CORE_FUN_TO_LEARN"
-        ],
-        "add": [
-          "COOP",
-          "risks=["
-        ],
-        "risks": [
-          "playerFantasy: 체스 배틀"
-        ],
-        "evidence": [
-          "Royal Match (globalTopGrossingDecember2025Rank): 3, Candy Crush Saga (globalTopGrossingDecember2025Rank): 5, Block Blast! (global)"
-        ],
-        "questions": [
-          "puzzleSessionMinutesLate2024: 5.7, actionAndPuzzleTopTwoGenresCountryCount: 20, surveyedPlayersAge16Plus: 24216, surveyedCountries"
-        ]
-      },
-      "development": {
-        "keep": [
-          "GAME_SEED"
-        ],
-        "fix": [
-          "GAME_SEED"
-        ],
-        "add": [
-          "GAME_SEED"
-        ],
-        "risks": [
-          "GAME_SEED"
-        ],
-        "evidence": [
-          "GAME_SEED"
-        ],
-        "questions": [
-          "GAME_SEED"
-        ]
-      },
-      "qa": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT: qa"
-        ],
-        "fix": [
-          "GAME_SEED: {"
-        ],
-        "add": [
-          "GAME_SEED: {"
-        ],
-        "risks": [
-          "failureRetryRisk: {"
-        ],
-        "evidence": [
-          "validationQuestions: {"
-        ],
-        "questions": [
-          "implementationTraceability: {"
-        ]
-      },
-      "balance": {
-        "keep": [
-          "GAME_SEED",
-          "GAME_SEED"
-        ],
-        "fix": [
-          "MARKET_EVIDENCE_SUMMARY"
-        ],
-        "add": [
-          "DESIGN"
-        ],
-        "risks": [
-          "failureRetryRisk"
-        ],
-        "evidence": [
-          "reference"
-        ],
-        "questions": [
-          "ASSIGNED_DEPARTMENT"
-        ]
-      }
-    },
-    "lead_rebuttals": {
-      "planning": {
-        "accept": [
-          "keep",
-          "add",
-          "fix"
-        ],
-        "challenge": [
-          "risks",
-          "evidence",
-          "questions"
-        ],
-        "revision": [
-          "add",
-          "fix",
-          "keep"
-        ],
-        "reason": "리스크, 증거, 질문을 수정하여 책임 범위 내에서 수용/반박/수정함"
-      },
-      "graphics": {
-        "accept": [
-          "COOP",
-          "risks=[",
-          "risks=["
-        ],
-        "challenge": [
-          "puzzleSessionMinutesLate2024: 5.7, actionAndPuzzleTopTwoGenresCountryCount: 20, surveyedPlayersAge16Plus: 24216, surveyedCountries"
-        ],
-        "revision": [
-          "MARKET_EVIDENCE_SUMMARY",
-          "CORE_FUN_TO_LEARN",
-          "add_COOP_challenge"
-        ],
-        "reason": "The proposed game concept aligns with the market evidence and highlights the core fun to learn. It also addresses the risks and evidence needed for further development."
-      },
-      "development": {
-        "accept": [
-          "own",
-          "OTHERS"
-        ],
-        "challenge": [
-          "own",
-          "OTHERS"
-        ],
-        "revision": [
-          "own",
-          "OTHERS"
-        ],
-        "reason": "own"
-      },
-      "qa": {
-        "accept": [
-          "OWN"
-        ],
-        "challenge": [
-          "OTHERS"
-        ],
-        "revision": [
-          "OTHERS"
-        ],
-        "reason": "..."
-      },
-      "balance": {
-        "accept": [
-          "GAME_SEED"
-        ],
-        "challenge": [
-          "GAME_SEED"
-        ],
-        "revision": [
-          "GAME_SEED"
-        ],
-        "reason": "GAME_SEED"
-      }
-    },
-    "cross_department_meeting": {
-      "summary": "CONSENSUS",
-      "decisions": [
+      "totalScore": 67.4,
+      "criticalAxisFailures": [
+        "IDEA_AND_DISTINCTNESS",
+        "CONTENT_EXPANSION_PLAN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CORE_FUN_WEAK",
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
         {
-          "topic": "planning",
-          "status": "CONSENSUS",
-          "reason": "The proposed game concept aligns with the market evidence and highlights the core fun to learn. It also addresses the risks and evidence needed for further development.",
-          "departments": [
-            "planning",
-            "graphics",
-            "development",
-            "qa"
-          ]
+          "code": "CORE_FUN_WEAK",
+          "kind": "HARD_GATE",
+          "axis": "CORE_LOOP_DESIGN",
+          "evidenceLevel": 0,
+          "minimumRequired": 60,
+          "evidence": {
+            "ideaAndDistinctness": 0,
+            "coreLoopDesign": 80,
+            "coreLoopCount": 3,
+            "signatureSystemCount": 2
+          },
+          "requiredAction": "핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
         },
         {
-          "topic": "graphics",
-          "status": "CONSENSUS",
-          "reason": "The proposed game concept aligns with the market evidence and highlights the core fun to learn. It also addresses the risks and evidence needed for further development.",
-          "departments": [
-            "planning",
-            "graphics",
-            "development",
-            "qa"
-          ]
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IDEA_AND_DISTINCTNESS",
+          "evidenceLevel": 0,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 0,
+            "axisWeight": 12
+          },
+          "requiredAction": "정체성·플레이어 판타지·coreFun을 구체화하고 coreLoop와 최소 2개 signature system에 직접 연결한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
         },
         {
-          "topic": "development",
-          "status": "CONSENSUS",
-          "reason": "The proposed game concept aligns with the market evidence and highlights the core fun to learn. It also addresses the risks and evidence needed for further development.",
-          "departments": [
-            "planning",
-            "graphics",
-            "development",
-            "qa"
-          ]
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
         },
         {
-          "topic": "qa",
-          "status": "CONSENSUS",
-          "reason": "The proposed game concept aligns with the market evidence and highlights the core fun to learn. It also addresses the risks and evidence needed for further development.",
-          "departments": [
-            "planning",
-            "graphics",
-            "development",
-            "qa"
-          ]
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
         }
-      ]
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     },
-    "designer_revision_base": {
-      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다",
-      "playerFantasy": "체스 배틀",
-      "coreFun": "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination.",
+    "designer_pre_gate_repair_1": {
+      "identity": "체스의 공간 읽기 전술을 바탕으로 제한된 턴과 전장 목표를 풀어내는 전략 퍼즐 게임",
+      "playerFantasy": "체스의 기물들을 지휘하여 복잡한 전장의 장애물과 적의 위협을 전술적 한 수로 돌파하는 지휘관 판타지",
+      "coreFun": "예측 가능한 정보 속에서 최적의 이동 경로와 공격 수순을 찾아내어 퍼즐과 전투를 동시에 해결하는 쾌감",
       "coreLoop": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle",
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Create a new board pattern or obstacle combination, and face the challenge of adapting to the new situation.",
-        "Earn rewards or unlock the next stage by clearing the level goal. Use the new board pattern or obstacle combination to create a new puzzle to solve, and then face the challenge of adapting to the new situation."
+        "제한된 턴과 목표가 주어진 전장 격판에 진입하여 적의 배치와 지형을 분석한다.",
+        "기물의 이동 범위와 특수 능력을 활용해 퍼즐 목표를 해결하거나 적을 처치하며 상태 변화를 이끌어낸다.",
+        "스테이지 클리어 보상을 획득하고 새로운 기물이나 상위 전장 패턴을 해제한다."
       ],
       "signatureSystems": [
         {
-          "name": "체스 배틀",
-          "purpose": "체스 배틀 게임",
-          "playerChoice": "체스 배틀 게임"
+          "name": "기물 특화 전술 이동",
+          "purpose": "체스 기물의 고유 이동 방식을 퍼즐 규칙에 맞게 재해석하여 매턴 깊이 있는 배치 선택 제공",
+          "playerChoice": "어떤 기물을 먼저 움직여 적의 공격을 회피하고 유리한 위치를 선점할지 선택"
         },
         {
-          "name": "체스 배틀",
-          "purpose": "체스 배틀 게임",
-          "playerChoice": "체스 배틀 게임"
+          "name": "전장 오브젝트 상호작용",
+          "purpose": "단순한 이동을 넘어 지형과 장애물을 활용한 전략적 변수 창출",
+          "playerChoice": "장애물을 파괴하거나 방어선으로 활용하여 적의 진격을 차단할 경로 결정"
         }
       ],
-      "progressionDirection": "MULTIPLAYER",
-      "visualDirection": "COOP",
-      "mobileUx": "COMPETITIVE",
-      "marketTargetDirection": "HYPERTHEME",
-      "steamExpansionDecision": "MULTIPLAYER",
-      "multiplayerMode": "COOP",
-      "multiplayerExpansionDecision": "MULTIPLAYER",
-      "technicalAssumptions": [
-        "체스의 공간 reading",
-        "전술 배틀 게임",
-        "체스 배틀 게임"
-      ],
-      "validationQuestions": [
-        "What is the primary goal of the game?",
-        "What is the purpose of the game?",
-        "What is the playR's fantasy?"
-      ],
-      "openQuestions": [
-        "What is the core fun of the game?",
-        "What is the core loop of the game?",
-        "What is the signature system of the game?"
-      ]
-    },
-    "designer_revision_gate": {
-      "systemInterconnections": [
-        {
-          "fromSystem": "GAME_SEED",
-          "toSystem": "STRICT_GATE_FEEDBACK",
-          "trigger": "GAME_SEED",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "BASE_DESIGN",
-          "toSystem": "STRICT_GATE_FEEDBACK",
-          "trigger": "BASE_DESIGN",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "BASE_DESIGN",
-          "toSystem": "BASE_DESIGN",
-          "trigger": "BASE_DESIGN",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "BASE_DESIGN",
-          "toSystem": "GAME_SEED",
-          "trigger": "BASE_DESIGN",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "GAME_SEED",
-          "toSystem": "GAME_CATEGORY",
-          "trigger": "GAME_SEED",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "GAME_SEED",
-          "toSystem": "MARKET_EVIDENCE_SUMMARY",
-          "trigger": "GAME_SEED",
-          "stateChange": "TRUE"
-        },
-        {
-          "fromSystem": "GAME_SEED",
-          "toSystem": "MARKET_DATA",
-          "trigger": "GAME_SEED",
-          "stateChange": "TRUE"
-        }
-      ],
-      "progressionEconomyBalance": {
-        "progressionLoop": "MULTIPLAYER",
-        "resourceFlow": "MULTIPLAYER",
-        "balanceRules": "MULTIPLAYER"
-      },
       "contentExpansionPlan": [
         {
-          "milestone": "CHALLENGE_1",
-          "newGameplay": "NEW_GAMEPLAY",
-          "systemImpact": "NEW_GAMEPLAY"
+          "milestone": "초보자 전장 패치",
+          "newGameplay": "기본 룩과 나이트의 이동 방식을 배우는 기초 퍼즐 스테이지 20개 추가",
+          "systemImpact": "신규 플레이어의 진입 장벽 완화 및 기본 조작 숙달"
         },
         {
-          "milestone": "CHALLENGE_2",
-          "newGameplay": "NEW_GAMEPLAY",
-          "systemImpact": "NEW_GAMEPLAY"
+          "milestone": "엘리트 기물 확장팩",
+          "newGameplay": "특수 능력을 가진 비숍과 퀸 기반의 고난도 전장 스테이지 추가",
+          "systemImpact": "후반부 플레이어에게 더 높은 수준의 전략적 선택지 제공"
         },
         {
-          "milestone": "CHALLENGE_3",
-          "newGameplay": "NEW_GAMEPLAY",
-          "systemImpact": "NEW_GAMEPLAY"
+          "milestone": "보스 방어전 모드",
+          "newGameplay": "강력한 보스 기물의 공격을 막아내는 생존형 퍼즐 규칙 도입",
+          "systemImpact": "반복 플레이의 지루함 해소 및 엔드게임 콘텐츠 강화"
         }
       ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "FAILURE_1",
-          "FAILURE_2",
-          "FAILURE_3"
-        ],
-        "retryFlow": "RETRY_FLOW",
-        "riskPressure": "HIGH",
-        "recoveryRules": "RECOVERY_RULES"
-      },
-      "platformFitPlan": {
-        "targetPlatform": "UNITY",
-        "inputModel": "INPUt MODEl",
-        "performanceBudget": "PERFORMancE BUDget",
-        "sessionConstraints": "SESSioN CONstrains"
-      },
-      "uxAccessibilityPlan": {
-        "hudPriorities": "HIGH",
-        "touchAndInput": "HIGH",
-        "readability": "HIGH",
-        "accessibility": "HIGH"
-      },
-      "artAudioDirection": {
-        "visualIdentity": "VISUAL IDenitiy",
-        "audioIdentity": "AUDIO IDenitiy",
-        "gameplayFeedbackSync": "GAMEPLAY FEEDBACK SYnc"
-      },
+      "technicalAssumptions": [
+        "클라이언트 중심의 턴 로직 처리로 네트워크 지연 없는 쾌적한 퍼즐 경험 제공",
+        "모듈화된 기물 이동 규칙 컴포넌트를 통해 새로운 기물 추가 용이"
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 안에 기물의 이동 규칙을 직관적으로 이해할 수 있는가?",
+        "턴 제한과 전장 목표가 적절한 긴장감을 유발하는가?"
+      ],
       "implementationTraceability": [
         {
-          "designElement": "STARTER GAME",
-          "responsibleSystem": "GAME_SEED",
-          "validationEvidence": "VALIDATION Evidence"
+          "designElement": "기물 특화 전술 이동",
+          "responsibleSystem": "기물 특화 전술 이동",
+          "validationEvidence": "플레이 테스트를 통해 각 기물의 이동 범위가 퍼즐 규칙에 올바르게 적용되는지 확인"
         },
         {
-          "designElement": "GAMEPLAY LOOP",
-          "responsibleSystem": "GAME_SEED",
-          "validationEvidence": "VALIDATION Evidence"
+          "designElement": "전장 오브젝트 상호작용",
+          "responsibleSystem": "전장 오브젝트 상호작용",
+          "validationEvidence": "오브젝트 파괴 및 상태 변화가 턴 종료 시 정확히 반영되는지 로그 검증"
         },
         {
-          "designElement": "PLAYER CHOICE",
-          "responsibleSystem": "GAME_SEED",
-          "validationEvidence": "VALIDATION Evidence"
+          "designElement": "Core Loop",
+          "responsibleSystem": "Core Loop",
+          "validationEvidence": "스테이지 클리어 시 보상 지급과 다음 스테이지 해제가 끊김 없이 이어지는지 확인"
         }
       ]
     },
-    "five_lead_fatal_review": {
-      "planning": {
-        "recommendedState": "ACTIVE",
-        "fatalCriteria": [],
-        "evidence": [
-          "The proposed game concept aligns with the market evidence and highlights the core fun to learn.",
-          "It also addresses the risks and evidence needed for further development."
-        ],
-        "reason": "The proposed game concept is well-aligned with the market evidence and addresses the necessary risks and evidence for further development."
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
       },
-      "graphics": {
-        "recommendedState": "DISCARD",
-        "fatalCriteria": [
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
-        ],
-        "evidence": [
-          "GAME_SEED={"
-        ],
-        "reason": "수정설계의 핵심적인 문제점"
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 0,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
       },
-      "development": {
-        "recommendedState": "REDESIGN",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "체스 배틀 게임",
-          "체스 배틀 게임",
-          "체스 배틀 게임",
-          "체스 배틀 게임"
-        ],
-        "reason": "The proposed game concept aligns with the market evidence and highlights the core fun to learn. It also addresses the risks and evidence needed for further development."
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 0,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
       },
-      "qa": {
-        "recommendedState": "REDESIGN",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "The proposed game concept aligns with the market evidence and highlights the core fun to learn.",
-          "It addresses the risks and evidence needed for further development.",
-          "The game is designed to be a puzzle game, which is a popular genre with high market demand."
-        ],
-        "reason": "The proposed game concept is not fully aligned with the market evidence and does not address the risks and evidence needed for further development. The game's core fun to learn is not fully covered, and it does not address the risks and evidence needed for further development."
-      },
-      "balance": {
-        "recommendedState": "ACTIVE",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION"
-        ],
-        "reason": "체스 배틀의 설계를 다시 검토하였으며, 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
-      }
+      "totalScore": 67.4,
+      "criticalAxisFailures": [
+        "IDEA_AND_DISTINCTNESS",
+        "CONTENT_EXPANSION_PLAN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CORE_FUN_WEAK",
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CORE_FUN_WEAK",
+          "kind": "HARD_GATE",
+          "axis": "CORE_LOOP_DESIGN",
+          "evidenceLevel": 0,
+          "minimumRequired": 60,
+          "evidence": {
+            "ideaAndDistinctness": 0,
+            "coreLoopDesign": 80,
+            "coreLoopCount": 3,
+            "signatureSystemCount": 2
+          },
+          "requiredAction": "핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IDEA_AND_DISTINCTNESS",
+          "evidenceLevel": 0,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 0,
+            "axisWeight": 12
+          },
+          "requiredAction": "정체성·플레이어 판타지·coreFun을 구체화하고 coreLoop와 최소 2개 signature system에 직접 연결한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
-  "tasks": {
-    "independent_department_reviews::development::llama3.2:1b": {
-      "keep": [
-        "GAME_SEED"
-      ],
-      "fix": [
-        "GAME_SEED"
-      ],
-      "add": [
-        "GAME_SEED"
-      ],
-      "risks": [
-        "GAME_SEED"
-      ],
-      "evidence": [
-        "GAME_SEED"
-      ],
-      "questions": [
-        "GAME_SEED"
-      ]
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.8-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 799,
+      "lastMs": 799,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 40.241275758s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"40s\" } ] } }",
+      "updatedAt": "2026-09-18T06:28:19.790Z"
     },
-    "independent_department_reviews::balance::gemma3:1b": {
-      "keep": [
-        "GAME_SEED"
-      ],
-      "fix": [
-        "MARKET_EVIDENCE_SUMMARY"
-      ],
-      "add": [
-        "DESIGN"
-      ],
-      "risks": [
-        "failureRetryRisk"
-      ],
-      "evidence": [
-        "reference"
-      ],
-      "questions": [
-        "ASSIGNED_DEPARTMENT"
-      ]
+    "gemini:gemini-3.7-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 909,
+      "lastMs": 909,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 40.118613837s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"40s\" } ] } }",
+      "updatedAt": "2026-09-18T06:28:19.900Z"
     },
-    "independent_department_reviews::graphics::llama3.2:1b": {
-      "keep": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or Del"
-      ],
-      "fix": [
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the"
-      ],
-      "add": [
-        "Clear the level goal to earn rewards or unlock the next stage, then face a new board pattern or obstacle combination."
-      ],
-      "risks": [
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the"
-      ],
-      "evidence": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or Del"
-      ],
-      "questions": [
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Clear the"
-      ]
+    "gemini:gemini-3.6-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 1031,
+      "lastMs": 1031,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 39.99795194s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"39s\" } ] } }",
+      "updatedAt": "2026-09-18T06:28:20.022Z"
     },
-    "independent_department_reviews::graphics::gemma3:1b": {
-      "keep": [
-        "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다"
-      ],
-      "fix": [
-        "체스 배틀 게임"
-      ],
-      "add": [
-        "COOP"
-      ],
-      "risks": [
-        "playerFantasy: 체스 배틀"
-      ],
-      "evidence": [
-        "Royal Match (globalTopGrossingDecember2025Rank): 3, Candy Crush Saga (globalTopGrossingDecember2025Rank): 5, Block Blast! (global)"
-      ],
-      "questions": [
-        "puzzleSessionMinutesLate2024: 5.7, actionAndPuzzleTopTwoGenresCountryCount: 20, surveyedPlayersAge16Plus: 24216, surveyedCountries"
-      ]
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 1129,
+      "lastMs": 1129,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 39.89762228s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"39s\" } ] } }",
+      "updatedAt": "2026-09-18T06:28:20.120Z"
     },
-    "independent_department_reviews::planning::gemma3:1b": {
-      "keep": [
-        "PLAYER_FEEDBACK"
-      ],
-      "fix": [
-        "GAME_SEED_DATA"
-      ],
-      "add": [
-        "GAME_SEED_DATA"
-      ],
-      "risks": [
-        "GAME_SEED_DATA"
-      ],
-      "evidence": [
-        "Royal Match"
-      ],
-      "questions": [
-        "What is the core fun of the game?"
-      ]
-    },
-    "independent_department_reviews::development::gemma3:1b": {
-      "keep": [],
-      "fix": [],
-      "add": [],
-      "risks": [],
-      "evidence": [],
-      "questions": []
-    },
-    "independent_department_reviews::qa::gemma3:1b": {
-      "keep": [
-        "GAME_SEED"
-      ],
-      "fix": [],
-      "add": [],
-      "risks": [],
-      "evidence": [],
-      "questions": []
-    },
-    "independent_department_reviews::planning::llama3.2:1b": {
-      "keep": [
-        "ASSIGNED_DEPARTMENT=planning"
-      ],
-      "fix": [
-        "ASSIGNED_DEPARTMENT=planning"
-      ],
-      "add": [
-        "GAME_SEED=chess-battle"
-      ],
-      "risks": [
-        "GAME_SEED=chess-battle"
-      ],
-      "evidence": [
-        "GAME_SEED=chess-battle"
-      ],
-      "questions": [
-        "ASSIGNED_DEPARTMENT=planning"
-      ]
-    },
-    "independent_department_reviews::balance::qwen3:0.6b": {
-      "keep": [
-        "predictable tactical information, meaningful board positioning, short tactical resolution"
-      ],
-      "fix": [
-        "market evidence summary, core loop, progression direction, content expansion plan, failure retry risk"
-      ],
-      "add": [
-        "signature systems, progression economy balance, content expansion plan, failure retry risk"
-      ],
-      "risks": [
-        "market evidence summary, core loop, progression direction, content expansion plan, failure retry risk"
-      ],
-      "evidence": [
-        "Royal Match, Candy Crush Saga, Block Blast!"
-      ],
-      "questions": [
-        "how to design the core loop, progression direction, content expansion plan, and failure retry risk"
-      ]
-    },
-    "independent_department_reviews::qa::qwen2.5:1.5b": {
-      "keep": [
-        "ASSIGNED_DEPARTMENT: qa"
-      ],
-      "fix": [
-        "GAME_SEED: {"
-      ],
-      "add": [
-        "GAME_SEED: {"
-      ],
-      "risks": [
-        "failureRetryRisk: {"
-      ],
-      "evidence": [
-        "validationQuestions: {"
-      ],
-      "questions": [
-        "implementationTraceability: {"
-      ]
-    },
-    "independent_department_reviews::development::qwen3:0.6b": {
-      "keep": [
-        "체스 배틀 게임의 공간 읽기를 유지하면서 전술 배틀 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다."
-      ],
-      "fix": [
-        "MARKET_EVIDENCE_SUMMARY의 역할을 유지하면서 코인화폐 수익을 강화하고, 콘텐츠의 유연성을 높이는 방향으로 접근한다."
-      ],
-      "add": [
-        "CORE_FUN_TO_LEARN의 내용을 더 구체적으로 설명하고, 게임의 혼합성과 플레이어 선택성을 강화하는 요소를 추가한다."
-      ],
-      "risks": [
-        "CORE_LOOP의 구조를 개선하여 플레이어의 혼합적 경험을 향상시키는 방향으로 접근한다."
-      ],
-      "evidence": [
-        "CORE_FUN_TO_LEARN의 내용을 구체적으로 설명하고, 게임의 혼합성과 플레이어 선택성을 강화하는 요소를 추가한다."
-      ],
-      "questions": [
-        "CORE_LOOP의 구조를 개선하여 플레이어의 혼합적 경험을 향상시키는 방향으로 접근한다."
-      ]
-    },
-    "independent_department_reviews::graphics::qwen3:0.6b": {
-      "keep": [
-        "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다."
-      ],
-      "fix": [
-        "MARKET_EVIDENCE_SUMMARY"
-      ],
-      "add": [
-        "CORE_FUN_TO_LEARN"
-      ],
-      "risks": [
-        "CORE_LOOP"
-      ],
-      "evidence": [
-        "REFERENCE_GAMES"
-      ],
-      "questions": [
-        "DISTINCT_IDENTITY"
-      ]
-    },
-    "independent_department_reviews::planning::qwen3:0.6b": {
-      "keep": [
-        "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다"
-      ],
-      "fix": [
-        "MARKET_EVIDENCE_SUMMARY"
-      ],
-      "add": [
-        "CORE_FUN_TO_LEARN"
-      ],
-      "risks": [
-        "CORE_LOOP"
-      ],
-      "evidence": [
-        "REFERENCE_GAMES"
-      ],
-      "questions": [
-        "DISTINCT_IDENTITY"
-      ]
-    },
-    "independent_department_reviews::qa::qwen3:0.6b": {
-      "keep": [
-        "지정된 QA 부서의 기능을 명확히 설명하고, 게임 설계의 핵심 요소를 구체적으로 제시합니다."
-      ],
-      "fix": [
-        "게임의 주요 목표를 명확히 정의하고, 게임의 구성 요소를 구체적으로 설명합니다."
-      ],
-      "add": [
-        "게임의 플레이어의 역할과 전략적 전략을 명확히 설명합니다."
-      ],
-      "risks": [
-        "게임의 성공적인 설계를 위한 위험 요소를 제시합니다."
-      ],
-      "evidence": [
-        "게임의 성공적인 기반을 명확히 설명합니다."
-      ],
-      "questions": [
-        "게임의 플레이어의 역할과 전략적 전략을 명확히 설명합니다."
-      ]
-    },
-    "independent_department_reviews::balance::smollm2:1.7b": {
-      "keep": [
-        "Start a board or grid level with a clear goal, limited moves, obstacles, or another visible puzzle constraint. Make matches or 필드에"
-      ],
-      "fix": [
-        "Make matches or deliberate puzzle moves, create combos, and use immediate board feedback to solve the current objective. Create a"
-      ],
-      "add": [
-        "Add a new board pattern or obstacle combination, and face the challenge of adapting to the new situation."
-      ],
-      "risks": [
-        "Earn rewards or unlock the next stage by clearing the level goal. Use the new board pattern or obstacle combination to create a"
-      ],
-      "evidence": [
-        "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다."
-      ],
-      "questions": [
-        "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다."
-      ]
-    },
-    "department_representatives::planning": {
-      "keep": [
-        "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다"
-      ],
-      "fix": [
-        "MARKET_EVIDENCE_SUMMARY"
-      ],
-      "add": [
-        "CORE_FUN_TO_LEARN"
-      ],
-      "risks": [
-        "CORE_LOOP"
-      ],
-      "evidence": [
-        "REFERENCE_GAMES"
-      ],
-      "questions": [
-        "DISTINCT_IDENTITY"
-      ]
-    },
-    "department_representatives::graphics": {
-      "keep": [
-        "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다",
-        "체스 배틀 게임을 재설계한다"
-      ],
-      "fix": [
-        "MARKET_EVIDENCE_SUMMARY",
-        "CORE_FUN_TO_LEARN"
-      ],
-      "add": [
-        "COOP",
-        "risks=["
-      ],
-      "risks": [
-        "playerFantasy: 체스 배틀"
-      ],
-      "evidence": [
-        "Royal Match (globalTopGrossingDecember2025Rank): 3, Candy Crush Saga (globalTopGrossingDecember2025Rank): 5, Block Blast! (global)"
-      ],
-      "questions": [
-        "puzzleSessionMinutesLate2024: 5.7, actionAndPuzzleTopTwoGenresCountryCount: 20, surveyedPlayersAge16Plus: 24216, surveyedCountries"
-      ]
-    },
-    "department_representatives::development": {
-      "keep": [
-        "GAME_SEED"
-      ],
-      "fix": [
-        "GAME_SEED"
-      ],
-      "add": [
-        "GAME_SEED"
-      ],
-      "risks": [
-        "GAME_SEED"
-      ],
-      "evidence": [
-        "GAME_SEED"
-      ],
-      "questions": [
-        "GAME_SEED"
-      ]
-    },
-    "department_representatives::qa": {
-      "keep": [
-        "ASSIGNED_DEPARTMENT: qa"
-      ],
-      "fix": [
-        "GAME_SEED: {"
-      ],
-      "add": [
-        "GAME_SEED: {"
-      ],
-      "risks": [
-        "failureRetryRisk: {"
-      ],
-      "evidence": [
-        "validationQuestions: {"
-      ],
-      "questions": [
-        "implementationTraceability: {"
-      ]
-    },
-    "department_representatives::balance": {
-      "keep": [
-        "GAME_SEED",
-        "GAME_SEED"
-      ],
-      "fix": [
-        "MARKET_EVIDENCE_SUMMARY"
-      ],
-      "add": [
-        "DESIGN"
-      ],
-      "risks": [
-        "failureRetryRisk"
-      ],
-      "evidence": [
-        "reference"
-      ],
-      "questions": [
-        "ASSIGNED_DEPARTMENT"
-      ]
-    },
-    "lead_rebuttals::development": {
-      "accept": [
-        "own",
-        "OTHERS"
-      ],
-      "challenge": [
-        "own",
-        "OTHERS"
-      ],
-      "revision": [
-        "own",
-        "OTHERS"
-      ],
-      "reason": "own"
-    },
-    "lead_rebuttals::graphics": {
-      "accept": [
-        "COOP",
-        "risks=[",
-        "risks=["
-      ],
-      "challenge": [
-        "puzzleSessionMinutesLate2024: 5.7, actionAndPuzzleTopTwoGenresCountryCount: 20, surveyedPlayersAge16Plus: 24216, surveyedCountries"
-      ],
-      "revision": [
-        "MARKET_EVIDENCE_SUMMARY",
-        "CORE_FUN_TO_LEARN",
-        "add_COOP_challenge"
-      ],
-      "reason": "The proposed game concept aligns with the market evidence and highlights the core fun to learn. It also addresses the risks and evidence needed for further development."
-    },
-    "lead_rebuttals::planning": {
-      "accept": [
-        "keep",
-        "add",
-        "fix"
-      ],
-      "challenge": [
-        "risks",
-        "evidence",
-        "questions"
-      ],
-      "revision": [
-        "add",
-        "fix",
-        "keep"
-      ],
-      "reason": "리스크, 증거, 질문을 수정하여 책임 범위 내에서 수용/반박/수정함"
-    },
-    "lead_rebuttals::qa": {
-      "accept": [
-        "OWN"
-      ],
-      "challenge": [
-        "OTHERS"
-      ],
-      "revision": [
-        "OTHERS"
-      ],
-      "reason": "..."
-    },
-    "lead_rebuttals::balance": {
-      "accept": [
-        "GAME_SEED"
-      ],
-      "challenge": [
-        "GAME_SEED"
-      ],
-      "revision": [
-        "GAME_SEED"
-      ],
-      "reason": "GAME_SEED"
-    },
-    "five_lead_fatal_review::planning": {
-      "recommendedState": "ACTIVE",
-      "fatalCriteria": [],
-      "evidence": [
-        "The proposed game concept aligns with the market evidence and highlights the core fun to learn.",
-        "It also addresses the risks and evidence needed for further development."
-      ],
-      "reason": "The proposed game concept is well-aligned with the market evidence and addresses the necessary risks and evidence for further development."
-    },
-    "five_lead_fatal_review::graphics": {
-      "recommendedState": "DISCARD",
-      "fatalCriteria": [
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
-      ],
-      "evidence": [
-        "GAME_SEED={"
-      ],
-      "reason": "수정설계의 핵심적인 문제점"
-    },
-    "five_lead_fatal_review::qa": {
-      "recommendedState": "REDESIGN",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "The proposed game concept aligns with the market evidence and highlights the core fun to learn.",
-        "It addresses the risks and evidence needed for further development.",
-        "The game is designed to be a puzzle game, which is a popular genre with high market demand."
-      ],
-      "reason": "The proposed game concept is not fully aligned with the market evidence and does not address the risks and evidence needed for further development. The game's core fun to learn is not fully covered, and it does not address the risks and evidence needed for further development."
-    },
-    "five_lead_fatal_review::development": {
-      "recommendedState": "REDESIGN",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "체스 배틀 게임",
-        "체스 배틀 게임",
-        "체스 배틀 게임",
-        "체스 배틀 게임"
-      ],
-      "reason": "The proposed game concept aligns with the market evidence and highlights the core fun to learn. It also addresses the risks and evidence needed for further development."
-    },
-    "five_lead_fatal_review::balance": {
-      "recommendedState": "ACTIVE",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION"
-      ],
-      "reason": "체스 배틀의 설계를 다시 검토하였으며, 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 2,
+      "successes": 2,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 13314,
+      "lastMs": 2862,
+      "lastError": null,
+      "updatedAt": "2026-09-18T06:28:32.466Z"
     }
   },
-  "createdAt": "2026-09-18T04:21:52.317Z",
-  "updatedAt": "2026-09-18T04:51:15.508Z",
+  "slowPhases": {},
+  "currentPhase": "PRE_GATE_REPAIR",
+  "createdAt": "2026-09-18T06:28:18.893Z",
+  "updatedAt": "2026-09-18T06:28:32.470Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:28:32.466Z",
+  "geminiModelResolution": {
+    "gemini-3.8-flash": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.8-flash",
+  "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null,
-  "completedAt": "2026-09-18T04:51:15.508Z"
+  "lastError": null
 }
