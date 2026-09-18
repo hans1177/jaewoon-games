@@ -206,10 +206,13 @@ async function runCheckpointTask(phase,key,work){
     throw error;
   }
 }
-async function parallelObject(keys,worker){
+function isParallelPressure(error){
+  return /(?:timeout|timed out|aborted|out of memory|memory|503|busy|loading model|runner process|connection reset|socket hang up|fetch failed|resource temporarily unavailable)/i.test(clean(error?.message||error));
+}
+async function parallelObject(keys,worker,concurrency=modelPhaseConcurrency){
   const entries=new Array(keys.length);
   let nextIndex=0;
-  const workerCount=Math.min(modelPhaseConcurrency,keys.length);
+  const workerCount=Math.min(Math.max(1,concurrency),keys.length);
   await Promise.all(Array.from({length:workerCount},async()=>{
     while(true){
       const index=nextIndex++;
@@ -220,24 +223,58 @@ async function parallelObject(keys,worker){
   }));
   return Object.fromEntries(entries);
 }
-async function parallelObjectByLane(keys,laneForKey,worker){
+async function parallelObjectByLane(keys,laneForKey,worker,concurrency=modelPhaseConcurrency,{maxLanes=maxLoadedModelLanes,perLane=2}={}){
   const entries=new Array(keys.length);
   const pending=keys.map((key,index)=>({key,index,lane:clean(laneForKey(key))||key}));
   const active=new Map();
+  const laneCounts=new Map();
+  let token=0;
   while(pending.length||active.size){
-    while(active.size<modelPhaseConcurrency){
-      const pendingIndex=pending.findIndex(item=>!active.has(item.lane));
+    while(active.size<Math.max(1,concurrency)){
+      const activeLanes=[...laneCounts.entries()].filter(([,count])=>count>0).map(([lane])=>lane);
+      const pendingIndex=pending.findIndex(item=>{
+        const laneCount=laneCounts.get(item.lane)||0;
+        if(laneCount>0)return laneCount<perLane;
+        return activeLanes.length<Math.max(1,maxLanes);
+      });
       if(pendingIndex<0)break;
       const [item]=pending.splice(pendingIndex,1);
-      const promise=(async()=>[item,await worker(item.key)])();
-      active.set(item.lane,promise);
+      const taskToken=++token;
+      laneCounts.set(item.lane,(laneCounts.get(item.lane)||0)+1);
+      const promise=(async()=>({taskToken,item,value:await worker(item.key)}))();
+      active.set(taskToken,promise);
     }
     if(!active.size)throw new Error('MODEL_LANE_SCHEDULER_STALLED');
-    const [item,value]=await Promise.race(active.values());
-    active.delete(item.lane);
+    const {taskToken,item,value}=await Promise.race(active.values());
+    active.delete(taskToken);
+    laneCounts.set(item.lane,Math.max(0,(laneCounts.get(item.lane)||1)-1));
     entries[item.index]=[item.key,value];
   }
   return Object.fromEntries(entries);
+}
+async function adaptiveParallel(label,initialConcurrency,work){
+  let concurrency=Math.max(1,initialConcurrency);
+  while(true){
+    try{
+      console.log(`MODEL_PHASE_CONCURRENCY_START=${label}|${concurrency}`);
+      return await work(concurrency);
+    }catch(error){
+      if(concurrency<=1||!isParallelPressure(error))throw error;
+      const next=Math.max(1,concurrency-1);
+      console.log(`MODEL_PHASE_CONCURRENCY_FALLBACK=${label}|${concurrency}->${next}|reason=${clean(error?.message||error)}`);
+      concurrency=next;
+    }
+  }
+}
+function departmentDesignContext(role,design){
+  const fields={
+    planning:['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','contentExpansionPlan','failureRetryRisk','marketTargetDirection','multiplayerMode','multiplayerExpansionDecision','openQuestions'],
+    graphics:['identity','playerFantasy','coreFun','signatureSystems','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','platformFitPlan'],
+    development:['coreLoop','signatureSystems','systemInterconnections','platformFitPlan','technicalAssumptions','implementationTraceability','failureRetryRisk','multiplayerMode'],
+    qa:['coreLoop','systemInterconnections','failureRetryRisk','platformFitPlan','uxAccessibilityPlan','validationQuestions','implementationTraceability','multiplayerMode'],
+    balance:['coreLoop','signatureSystems','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','multiplayerMode']
+  }[role]||Object.keys(design||{});
+  return Object.fromEntries(fields.filter(key=>Object.prototype.hasOwnProperty.call(design||{},key)).map(key=>[key,design[key]]));
 }
 function parseJsonObject(text){
   const raw=String(text??'').trim();
