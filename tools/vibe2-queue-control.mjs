@@ -20,6 +20,8 @@ import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpress
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
+const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
+const DEFAULT_STALE_RUNNING_MS = 45 * 60 * 1000;
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
 function parseArgs(argv = process.argv.slice(2)) {
@@ -82,6 +84,74 @@ export function recoverFixedFullWebTransportFailures(queueInput) {
   };
 }
 
+function isWorkerCapacityReleasedBlocker(value = '') {
+  const blocker = clean(value);
+  return /awaiting.*qa|qa.*awaiting|slot-released.*fan-in|WAITING_FOR_GEMINI_QUOTA|gemini.*quota|external.*model.*quota/i.test(blocker);
+}
+
+export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now(), staleMs = DEFAULT_STALE_RUNNING_MS } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  let recovered = 0;
+  const tasks = queue.tasks.map((task) => {
+    if (task.status !== 'running') return task;
+    if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
+    if (isWorkerCapacityReleasedBlocker(task.blocker)) return task;
+    const reservedAtMs = Date.parse(clean(task.reservedAt));
+    const legacyLeaseMissing = !Number.isFinite(reservedAtMs);
+    const expired = !legacyLeaseMissing && (Number(nowMs) - reservedAtMs) > Math.max(60_000, Number(staleMs) || DEFAULT_STALE_RUNNING_MS);
+    if (!legacyLeaseMissing && !expired) return task;
+    recovered += 1;
+    return {
+      ...task,
+      status: 'queued',
+      blocker: null,
+      reservationId: null,
+      reservedAt: null,
+      lastOutcome: 'STALE_RESERVATION_RECOVERED',
+      evidence: [...new Set([...(task.evidence || []), STALE_RUNNING_RECOVERY_EVIDENCE])]
+    };
+  });
+  return {
+    recovered,
+    queue: recovered ? createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks }) : queue
+  };
+}
+
+function recoverRunnableInfrastructureState(queueInput) {
+  const transport = recoverFixedFullWebTransportFailures(queueInput);
+  const stale = recoverStaleRunningReservations(transport.queue);
+  return {
+    queue: stale.queue,
+    recovered: transport.recovered + stale.recovered,
+    transportRecovered: transport.recovered,
+    staleRecovered: stale.recovered
+  };
+}
+
+export function recoverFanInRegressionFailure(queueInput, results = [], { blocker = 'fan-in-regression-failed' } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  const passIds = new Set((results || []).filter((row) => clean(row?.outcome).toUpperCase() === 'PASS').map((row) => clean(row?.taskId)).filter(Boolean));
+  let recovered = 0;
+  const tasks = queue.tasks.map((task) => {
+    if (!passIds.has(task.id) || task.status !== 'running') return task;
+    if (!/awaiting.*qa|qa.*awaiting|candidate-awaiting-qa-and-deployment|slot-released.*fan-in/i.test(clean(task.blocker))) return task;
+    recovered += 1;
+    return {
+      ...task,
+      status: 'queued',
+      blocker: null,
+      reservationId: null,
+      reservedAt: null,
+      lastOutcome: 'RETRY_AFTER_FAN_IN_REGRESSION_FAILURE',
+      evidence: [...new Set([...(task.evidence || []), `failure-cause:${clean(blocker) || 'fan-in-regression-failed'}`, 'recovery:fan-in-regression-requeue-v1'])]
+    };
+  });
+  return {
+    recovered,
+    queue: recovered ? createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks }) : queue
+  };
+}
+
 export function enqueueVibeTask(queueInput, taskInput = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskInput.id);
@@ -117,19 +187,19 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
 }
 
 export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null } = {}) {
-  const recovered = recoverFixedFullWebTransportFailures(queueInput);
+  const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
   const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks });
   const selected = selection.selected[0];
   if (!selected) return { reserved: false, queue, selection, recovered: recovered.recovered };
-  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks });
+  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservationId: clean(arguments[1]?.reservationId), reservedAt: clean(arguments[1]?.reservedAt) || new Date().toISOString() });
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
 export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } = {}) {
-  const recovered = recoverFixedFullWebTransportFailures(queueInput);
+  const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks });
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservationId: clean(arguments[1]?.reservationId), reservedAt: clean(arguments[1]?.reservedAt) || new Date().toISOString() });
   return {
     reserved: started.started,
     tasks: started.tasks || [],
@@ -279,14 +349,14 @@ export function runQueueCommand(args = {}) {
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
-    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks });
+    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks, reservationId: clean(args['reservation-id']) || clean(process.env.GITHUB_RUN_ID), reservedAt: new Date().toISOString() });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
-    const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks });
+    const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks, reservationId: clean(args['reservation-id']) || clean(process.env.GITHUB_RUN_ID), reservedAt: new Date().toISOString() });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
@@ -325,6 +395,15 @@ export function runQueueCommand(args = {}) {
     queue = markVibeTaskAwaiting(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), queue, summary: summarizeVibeContinuousQueue(queue) };
+  } else if (command === 'fan-in-regression-fail') {
+    const input = clean(args.input);
+    if (!input) throw new Error('--input result json required');
+    const payload = readJson(input, []);
+    const rows = Array.isArray(payload) ? payload : Array.isArray(payload.results) ? payload.results : [];
+    const recovered = recoverFanInRegressionFailure(queue, rows, { blocker: clean(args.blocker) || 'fan-in-regression-failed' });
+    queue = recovered.queue;
+    if (recovered.recovered) writeJson(file, queue);
+    result = { command, updated: recovered.recovered > 0, ...recovered, summary: summarizeVibeContinuousQueue(queue) };
   } else if (command === 'fan-in') {
     const input = clean(args.input);
     if (!input) throw new Error('--input result json required');
