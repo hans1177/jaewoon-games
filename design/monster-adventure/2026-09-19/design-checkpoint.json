@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -61,19 +63,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "신규 지역 업데이트",
-          "newGameplay": "새로운 환경과 속성을 가진 몬스터가 등장하는 신규 지역을 추가하여 탐험의 다양성을 확장합니다.",
-          "systemImpact": "기존 몬스터 속성 시너지 시스템에 새로운 속성 상성을 추가하여 팀 구성의 전략적 선택지를 넓힙니다."
+          "milestone": "탐험 지역 확장 및 환경 상호작용 시스템 도입",
+          "newGameplay": "플레이어가 맵을 이동할 때 지형지물과 상호작용하여 몬스터의 이동 경로를 변경하거나 숨겨진 보상을 획득하는 퍼즐 요소를 추가합니다. 단순히 달리는 것이 아니라, 특정 지형에서 탭 타이밍에 맞춰 점프하거나 슬라이딩하여 지름길을 개척하는 능동적인 조작 경험을 제공합니다.",
+          "systemImpact": "기존의 단순한 러닝 메커니즘에 지형 상호작용 데이터가 추가되어, 몬스터의 속도와 민첩성 스탯이 실제 주행 결과에 미치는 영향력이 커집니다. 이는 기존의 단순 점수 경쟁 시스템을 전략적 경로 선택 시스템으로 확장시킵니다."
         },
         {
-          "milestone": "몬스터 진화 시스템 도입",
-          "newGameplay": "특정 조건을 만족한 몬스터를 더 강력한 형태로 진화시킬 수 있는 시스템을 추가합니다.",
-          "systemImpact": "몬스터 성장 시스템에 진화라는 새로운 단계를 추가하여 플레이어의 장기적인 목표 의식을 강화합니다."
+          "milestone": "몬스터 속성 시너지 및 진화 트리 구현",
+          "newGameplay": "수집한 몬스터들을 조합하여 특정 속성 시너지를 발동시키는 팀 빌딩 시스템을 도입합니다. 몬스터가 특정 레벨에 도달하면 플레이어는 두 가지 진화 경로 중 하나를 선택할 수 있으며, 선택에 따라 몬스터의 외형과 고유 스킬이 완전히 변화하여 플레이 스타일이 달라집니다.",
+          "systemImpact": "기존의 단일 몬스터 성장 시스템을 다변화하여, 플레이어가 자신의 플레이 스타일에 맞는 몬스터를 육성하도록 유도합니다. 이는 데이터베이스의 몬스터 성장 테이블을 확장하고, 전투 밸런스 로직에 속성 보너스 계산식을 추가하는 시스템적 변화를 동반합니다."
         },
         {
-          "milestone": "도전 모드 추가",
-          "newGameplay": "제한된 턴 내에 강력한 보스를 처치해야 하는 고난도 도전 모드를 추가합니다.",
-          "systemImpact": "전투 시스템의 전략적 깊이를 테스트할 수 있는 환경을 제공하며, 기존 성장 시스템의 결과물을 검증하는 장이 됩니다."
+          "milestone": "글로벌 랭킹 기반의 시즌제 도전 모드",
+          "newGameplay": "매주 변경되는 규칙과 제약 조건이 적용된 '시즌 도전 모드'를 추가합니다. 플레이어는 제한된 몬스터 조합으로 고난도 코스를 완주해야 하며, 기록에 따라 시즌 전용 보상과 랭킹 점수를 획득하여 글로벌 순위 경쟁에 참여하게 됩니다.",
+          "systemImpact": "기존의 개인 기록 중심 시스템을 실시간 서버 연동 랭킹 시스템으로 확장합니다. 시즌별 규칙 적용을 위해 게임 로직에 동적 변수 제어 시스템을 도입하며, 보상 지급 로직을 시즌 종료 시점에 맞춰 자동화하는 백엔드 인프라의 고도화가 필요합니다."
         }
       ],
       "failureRetryRisk": {
@@ -216,6 +218,85 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "탐험 지역 확장 및 환경 상호작용 시스템 도입",
+          "newGameplay": "플레이어가 맵을 이동할 때 지형지물과 상호작용하여 몬스터의 이동 경로를 변경하거나 숨겨진 보상을 획득하는 퍼즐 요소를 추가합니다. 단순히 달리는 것이 아니라, 특정 지형에서 탭 타이밍에 맞춰 점프하거나 슬라이딩하여 지름길을 개척하는 능동적인 조작 경험을 제공합니다.",
+          "systemImpact": "기존의 단순한 러닝 메커니즘에 지형 상호작용 데이터가 추가되어, 몬스터의 속도와 민첩성 스탯이 실제 주행 결과에 미치는 영향력이 커집니다. 이는 기존의 단순 점수 경쟁 시스템을 전략적 경로 선택 시스템으로 확장시킵니다."
+        },
+        {
+          "milestone": "몬스터 속성 시너지 및 진화 트리 구현",
+          "newGameplay": "수집한 몬스터들을 조합하여 특정 속성 시너지를 발동시키는 팀 빌딩 시스템을 도입합니다. 몬스터가 특정 레벨에 도달하면 플레이어는 두 가지 진화 경로 중 하나를 선택할 수 있으며, 선택에 따라 몬스터의 외형과 고유 스킬이 완전히 변화하여 플레이 스타일이 달라집니다.",
+          "systemImpact": "기존의 단일 몬스터 성장 시스템을 다변화하여, 플레이어가 자신의 플레이 스타일에 맞는 몬스터를 육성하도록 유도합니다. 이는 데이터베이스의 몬스터 성장 테이블을 확장하고, 전투 밸런스 로직에 속성 보너스 계산식을 추가하는 시스템적 변화를 동반합니다."
+        },
+        {
+          "milestone": "글로벌 랭킹 기반의 시즌제 도전 모드",
+          "newGameplay": "매주 변경되는 규칙과 제약 조건이 적용된 '시즌 도전 모드'를 추가합니다. 플레이어는 제한된 몬스터 조합으로 고난도 코스를 완주해야 하며, 기록에 따라 시즌 전용 보상과 랭킹 점수를 획득하여 글로벌 순위 경쟁에 참여하게 됩니다.",
+          "systemImpact": "기존의 개인 기록 중심 시스템을 실시간 서버 연동 랭킹 시스템으로 확장합니다. 시즌별 규칙 적용을 위해 게임 로직에 동적 변수 제어 시스템을 도입하며, 보상 지급 로직을 시즌 종료 시점에 맞춰 자동화하는 백엔드 인프라의 고도화가 필요합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
   "tasks": {},
@@ -320,28 +401,28 @@
       "updatedAt": "2026-09-18T19:33:00.961Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 203697,
-      "lastMs": 109644,
+      "totalMs": 210037,
+      "lastMs": 6340,
       "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=3119",
-      "updatedAt": "2026-09-18T19:33:33.201Z"
+      "updatedAt": "2026-09-18T19:33:39.544Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T19:31:43.539Z",
-  "updatedAt": "2026-09-18T19:33:33.204Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T19:33:33.201Z",
+  "updatedAt": "2026-09-18T19:33:39.563Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T19:33:39.544Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }
