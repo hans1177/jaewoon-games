@@ -95,7 +95,7 @@ function reusableContext(task = {}) {
 const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const resolveFrom = (root, file) => path.isAbsolute(clean(file)) ? clean(file) : path.join(root, clean(file));
 
-export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelism = {}, experience = {}, repoRoot = process.cwd() } = {}) {
+export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelism = {}, experience = {}, projectLifecycle = {}, repoRoot = process.cwd() } = {}) {
   const errors = [];
   const docs = runtime.documentation || {};
   const expected = docs.machineStateVersions || {};
@@ -128,6 +128,19 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   add(clean(state.queue) !== clean(sources.queue), 'QUEUE_SOURCE_DIVERGED');
   add(clean(state.parallelism) !== clean(sources.parallelism || adaptive.stateFile), 'PARALLELISM_SOURCE_DIVERGED');
   add(clean(state.experience) !== clean(sources.experience), 'EXPERIENCE_SOURCE_DIVERGED');
+  const lifecycleStatePath=clean(state.projectLifecycle);
+  const lifecycleSourcePath=clean(sources.projectLifecycleState||sources.webRobloxHandoffs);
+  if(lifecycleStatePath||lifecycleSourcePath)add(lifecycleStatePath!==lifecycleSourcePath,'PROJECT_LIFECYCLE_SOURCE_DIVERGED');
+  const projectContract=runtime.projectLifecycle||{};
+  const requiredProjectFields=Array.isArray(projectContract.requiredFields)?projectContract.requiredFields.map(clean).filter(Boolean):[];
+  const projectRows=Array.isArray(projectLifecycle.projects)?projectLifecycle.projects:[];
+  if(Number(projectLifecycle.projectStateVersion||0)>0||projectRows.length){
+    for(const row of projectRows){
+      for(const field of requiredProjectFields)add(!Object.hasOwn(row,field),`PROJECT_LIFECYCLE_FIELD_MISSING:${clean(row.gameId)||'UNKNOWN'}:${field}`);
+    }
+    const declared=Array.isArray(projectLifecycle.requiredProjectFields)?projectLifecycle.requiredProjectFields.map(clean):[];
+    add(requiredProjectFields.length>0&&!sameJson(declared,requiredProjectFields),'PROJECT_LIFECYCLE_SCHEMA_DIVERGED');
+  }
   add(clean(adaptive.stateFile) !== clean(state.parallelism), 'ADAPTIVE_STATE_FILE_DIVERGED');
 
   const steps = Array.isArray(adaptive.steps) ? adaptive.steps.map(Number) : [];
@@ -164,6 +177,7 @@ export function buildVibe2Handoff({
   queue = {},
   parallelism = {},
   experience = {},
+  projectLifecycle = {},
   consistency = { ok: true, errors: [] }
 } = {}) {
   const tasks = Array.isArray(queue.tasks) ? queue.tasks : [];
@@ -174,6 +188,7 @@ export function buildVibe2Handoff({
   const failed = tasks.filter((task) => clean(task.status).toLowerCase() === 'failed');
   const blocked = tasks.filter((task) => clean(task.status).toLowerCase() === 'blocked');
   const records = Array.isArray(experience.records) ? experience.records : [];
+  const projectRows = Array.isArray(projectLifecycle.projects) ? projectLifecycle.projects : [];
   const docs = runtime.documentation || {};
   const work = runtime.workManagement || {};
   const adaptive = runtime.adaptiveBackpressure || {};
@@ -227,6 +242,13 @@ export function buildVibe2Handoff({
     experience: {
       recordCount: records.length
     },
+    projectLifecycle: {
+      stateFile: clean(runtime.projectLifecycle?.stateFile || runtime.sources?.projectLifecycleState || runtime.sources?.webRobloxHandoffs) || null,
+      stateVersion: Number(projectLifecycle.projectStateVersion || 0),
+      projectCount: projectRows.length,
+      requiredFields: Array.isArray(runtime.projectLifecycle?.requiredFields) ? [...runtime.projectLifecycle.requiredFields] : [],
+      projects: projectRows
+    },
     readOrder: Array.isArray(work.handoffReadOrder) ? work.handoffReadOrder : [
       'vibe2-runtime.json',
       '.vibe2/queue.json',
@@ -245,7 +267,8 @@ export function generateVibe2Handoff({
   runtimeFile = 'vibe2-runtime.json',
   queueFile = '',
   controlFile = '',
-  experienceFile = ''
+  experienceFile = '',
+  projectLifecycleFile = ''
 } = {}) {
   const runtimePath = path.resolve(runtimeFile);
   const repoRoot = path.dirname(runtimePath);
@@ -254,11 +277,13 @@ export function generateVibe2Handoff({
   const queuePath = resolveFrom(repoRoot, clean(queueFile) || state.queue || runtime.sources?.queue || '.vibe2/queue.json');
   const controlPath = resolveFrom(repoRoot, clean(controlFile) || state.parallelism || runtime.sources?.parallelism || runtime.adaptiveBackpressure?.stateFile || '.vibe2/parallelism-control.json');
   const experiencePath = resolveFrom(repoRoot, clean(experienceFile) || state.experience || runtime.sources?.experience || '.vibe2/experience.json');
+  const projectLifecyclePath = resolveFrom(repoRoot, clean(projectLifecycleFile) || state.projectLifecycle || runtime.sources?.projectLifecycleState || runtime.sources?.webRobloxHandoffs || '.vibe2/web-roblox-handoffs.json');
   const queue = readJson(queuePath, { version: 0, tasks: [] });
   const parallelism = readJson(controlPath, { version: 0 });
   const experience = readJson(experiencePath, { version: 0, records: [] });
-  const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, repoRoot });
-  return buildVibe2Handoff({ runtime, queue, parallelism, experience, consistency });
+  const projectLifecycle = readJson(projectLifecyclePath, { version: 1, projectStateVersion: 0, projects: [] });
+  const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, projectLifecycle, repoRoot });
+  return buildVibe2Handoff({ runtime, queue, parallelism, experience, projectLifecycle, consistency });
 }
 
 export function writeVibe2Handoff(file, snapshot) {
@@ -274,7 +299,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     runtimeFile: clean(args.runtime) || 'vibe2-runtime.json',
     queueFile: clean(args.queue),
     controlFile: clean(args.control),
-    experienceFile: clean(args.experience)
+    experienceFile: clean(args.experience),
+    projectLifecycleFile: clean(args['project-lifecycle'])
   });
   if (clean(args.output)) writeVibe2Handoff(args.output, snapshot);
   console.log(JSON.stringify(snapshot, null, 2));

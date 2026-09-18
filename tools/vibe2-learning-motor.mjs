@@ -359,15 +359,138 @@ function verifiedWebSemanticContext(experienceInput={},gameId=''){
   }
   return{values,sourceExperienceIds:uniq(sourceExperienceIds),runtimeEvidence};
 }
+const PROJECT_MACHINE_FIELDS=Object.freeze(["PROJECT_PHASE","PLATFORM","GENRE","WEB_BASELINE","ROBLOX_HANDOFF","POST_RELEASE_FOCUS_RUNNER","LEARNING_CONTEXT","NEXT_MACHINE_ACTION"]);
+const PROJECT_MACHINE_STAGES=Object.freeze(new Set([
+  'PLATFORM_AND_GENRE_LOCKED','WEB_BASE_IMPLEMENTATION','WEB_RUNTIME_VALIDATION','WEB_DEVELOPMENT_BASELINE_READY',
+  'TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA',
+  'TARGET_PLATFORM_REGRESSION','RELEASE_PROMOTION','POST_RELEASE_FOCUSED_DEVELOPMENT'
+]));
+function webBaselinePassed(item={}){
+  return Boolean(item.webValidationPassedAt||item.webPromotionRevalidationPassed===true||item.formalImplementationPassed===true);
+}
+function releasedRobloxProject(item={}){
+  const platform=upper(get(item,'selectedPlatform','targetPlatform','INITIAL_TARGET_PLATFORM'));
+  const evidence=item.robloxReleaseEvidence||{};
+  const sourceRevision=clean(item.robloxSourceCommit);
+  const artifactIdentity=clean(item.robloxBuildArtifactIdentity);
+  return platform==='ROBLOX'
+    &&item.robloxReleaseClaim===true
+    &&evidence.published===true
+    &&clean(evidence.sourceRevision)===sourceRevision
+    &&clean(evidence.artifactIdentity)===artifactIdentity
+    &&Number(evidence.versionNumber||0)>0
+    &&item.robloxFinalReviewPassed===true
+    &&item.robloxRegressionPassed===true
+    &&item.robloxExactRevisionPassed===true
+    &&/^[a-f0-9]{40}$/i.test(sourceRevision)
+    &&/^sha256:[a-f0-9]{64}$/i.test(artifactIdentity);
+}
+function projectGenre(item={}){
+  return clean(get(item,'genre','selectedGenre','gameGenre')||item?.robloxBuildProfile?.genre||item?.designBaseline?.robloxBuildProfile?.genre)||null;
+}
+function buildWebBaselineState(item={},verifiedSemantic={}){
+  const semantic=verifiedSemantic.values||{};
+  const passed=webBaselinePassed(item);
+  const numberOrNull=value=>value===null||value===undefined||value===''?null:(Number.isFinite(Number(value))?Number(value):null);
+  return {
+    required:true,
+    state:passed?'VERIFIED':'PENDING',
+    sourcePath:clean(get(item,'webSourcePath','webPath','sourcePath'))||null,
+    evidencePath:clean(get(item,'webValidationEvidencePath','webRuntimeEvidence'))||verifiedSemantic.runtimeEvidence||null,
+    sourceIndexSha256:clean(get(item,'webSourceIndexSha256'))||null,
+    designBaselineSha256:clean(get(item,'webDesignBaselineSha256'))||null,
+    validationSchemaVersion:numberOrNull(get(item,'webValidationSchemaVersion')),
+    strictScore:numberOrNull(get(item,'webStrictScore')),
+    promotionRevalidationPassed:item.webPromotionRevalidationPassed===true,
+    CORE_LOOP:get(item,'coreLoop','webCoreLoop','gameplayLoop')||semantic.CORE_LOOP||null,
+    STATE_MODEL:get(item,'stateModel','webStateModel')||semantic.STATE_MODEL||null,
+    PROGRESSION_MODEL:get(item,'progressionModel')||semantic.PROGRESSION_MODEL||null,
+    UI_FLOW:get(item,'uiFlow')||semantic.UI_FLOW||null,
+    INPUT_INTENT:get(item,'inputIntent')||semantic.INPUT_INTENT||null,
+    SAVE_MEANING:get(item,'saveMeaning','saveModel')||semantic.SAVE_MEANING||null,
+    CONTENT_STRUCTURE:get(item,'contentStructure')||semantic.CONTENT_STRUCTURE||null,
+    BALANCE_INTENT:get(item,'balanceIntent')||semantic.BALANCE_INTENT||null
+  };
+}
+function derivedProjectPhase(item={},platform='',genre=null){
+  if(releasedRobloxProject(item))return'POST_RELEASE_FOCUSED_DEVELOPMENT';
+  const explicit=upper(get(item,'PROJECT_PHASE','projectPhase','developmentStage'));
+  if(PROJECT_MACHINE_STAGES.has(explicit))return explicit;
+  if(!platform||!genre)return'AWAITING_PLATFORM_AND_GENRE_LOCK';
+  if(!webBaselinePassed(item)){
+    if(item.webRuntimeValidationStartedAt||item.webValidationStartedAt)return'WEB_RUNTIME_VALIDATION';
+    return'WEB_BASE_IMPLEMENTATION';
+  }
+  if(platform!=='ROBLOX')return'TARGET_PLATFORM_SOURCE_BIND';
+  if(!clean(item.robloxSourceCommit))return'TARGET_PLATFORM_SOURCE_BIND';
+  if(item.robloxRuntimePassed!==true)return'TARGET_PLATFORM_RUNTIME';
+  if(item.robloxIndependentQaPassed!==true)return'TARGET_PLATFORM_INDEPENDENT_QA';
+  if(item.robloxRegressionPassed!==true||item.robloxExactRevisionPassed!==true)return'TARGET_PLATFORM_REGRESSION';
+  return'RELEASE_PROMOTION';
+}
+function nextMachineAction(item={},phase='',handoff=null){
+  if(phase==='AWAITING_PLATFORM_AND_GENRE_LOCK')return'LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION';
+  if(phase==='WEB_BASE_IMPLEMENTATION')return'IMPLEMENT_WEB_CORE_LOOP_AND_BASE_SYSTEMS';
+  if(phase==='WEB_RUNTIME_VALIDATION')return'VALIDATE_WEB_BASELINE';
+  if(phase==='WEB_DEVELOPMENT_BASELINE_READY')return'BIND_WEB_BASELINE_TO_TARGET_PLATFORM';
+  if(phase==='TARGET_PLATFORM_SOURCE_BIND'){
+    if(upper(get(item,'selectedPlatform','targetPlatform','INITIAL_TARGET_PLATFORM'))==='ROBLOX'&&handoff?.complete!==true)return'COMPLETE_VERIFIED_WEB_TO_ROBLOX_HANDOFF_CONTEXT';
+    return'BUILD_TARGET_PLATFORM_FROM_WEB_AND_LEARNING_CONTEXT';
+  }
+  if(phase==='TARGET_PLATFORM_RUNTIME')return'RUN_TARGET_PLATFORM_RUNTIME';
+  if(phase==='TARGET_PLATFORM_INDEPENDENT_QA')return'RUN_TARGET_PLATFORM_INDEPENDENT_QA';
+  if(phase==='TARGET_PLATFORM_REGRESSION')return'RUN_TARGET_PLATFORM_REGRESSION';
+  if(phase==='RELEASE_PROMOTION')return'PROMOTE_EXACT_VERIFIED_RELEASE';
+  if(phase==='POST_RELEASE_FOCUSED_DEVELOPMENT')return'CONTINUE_ONE_FOCUSED_VERIFIED_DEVELOPMENT_CYCLE';
+  return'REEVALUATE_CANONICAL_PROJECT_PHASE';
+}
+function projectMachineState(item={},experienceInput={},handoff=null){
+  const gameId=clean(get(item,'gameId','id'));
+  const platform=upper(get(item,'selectedPlatform','targetPlatform','INITIAL_TARGET_PLATFORM'))||null;
+  const genre=projectGenre(item);
+  const verifiedSemantic=verifiedWebSemanticContext(experienceInput,gameId);
+  const phase=derivedProjectPhase(item,platform,genre);
+  const released=releasedRobloxProject(item);
+  return {
+    gameId,
+    PROJECT_PHASE:phase,
+    PLATFORM:platform,
+    GENRE:genre,
+    WEB_BASELINE:buildWebBaselineState(item,verifiedSemantic),
+    ROBLOX_HANDOFF:platform==='ROBLOX'?(handoff||{required:true,ready:false,reason:webBaselinePassed(item)?'VERIFIED_SEMANTIC_CONTEXT_INCOMPLETE':'WEB_BASELINE_NOT_VERIFIED'}):null,
+    POST_RELEASE_FOCUS_RUNNER:{
+      eligibleAfterRelease:platform==='ROBLOX',
+      assigned:released,
+      state:released?'ASSIGNED':'WAITING_FOR_VERIFIED_RELEASE',
+      logicalRunnerPerProject:1,
+      activeTaskMaxPerProject:1,
+      sharedProtectedRunnerSlots:1,
+      scheduler:'vibe2-24h-runner',
+      worker:'vibe2-continuous-core',
+      continuousRefill:true
+    },
+    LEARNING_CONTEXT:{
+      authority:'VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT',
+      verifiedSemanticExperienceIds:verifiedSemantic.sourceExperienceIds,
+      canonicalDistillation:'vibe2-learning-runtime:company-learning/distillation-status.json',
+      transformativeRecombination:'vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json',
+      webBaselinePortableToRoblox:true,
+      rawSourceCopyAllowed:false,
+      rawAssetCopyAllowed:false,
+      gateBypass:false,
+      continuousLearning:true
+    },
+    NEXT_MACHINE_ACTION:nextMachineAction(item,phase,handoff)
+  };
+}
 export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={}){
   const items=companyQueueInput?.items||companyQueueInput?.projects||[];
   const handoffs=[];
+  const handoffByGameId=new Map();
   for(const item of items){
     const platform=upper(get(item,'selectedPlatform','targetPlatform','INITIAL_TARGET_PLATFORM'));
-    if(platform!=='ROBLOX') continue;
-    const webPassed=Boolean(get(item,'webValidationPassedAt','webPromotionRevalidationPassed','formalImplementationPassed'));
-    if(!webPassed) continue;
-    const gameId=clean(get(item,'gameId','id')); if(!gameId) continue;
+    if(platform!=='ROBLOX'||!webBaselinePassed(item))continue;
+    const gameId=clean(get(item,'gameId','id'));if(!gameId)continue;
     const verifiedSemantic=verifiedWebSemanticContext(experienceInput,gameId);
     const semantic=verifiedSemantic.values;
     const handoff={
@@ -392,8 +515,22 @@ export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={}){
     };
     handoff.complete=['CORE_LOOP','STATE_MODEL','PROGRESSION_MODEL','UI_FLOW','INPUT_INTENT','SAVE_MEANING','CONTENT_STRUCTURE','BALANCE_INTENT','WEB_RUNTIME_EVIDENCE'].every(k=>handoff[k]!=null);
     handoffs.push(handoff);
+    handoffByGameId.set(gameId,handoff);
   }
-  return {version:1,kind:'vibe2-web-roblox-handoffs',handoffs,gateBypass:false,authority:'verified-handoff-context-only'};
+  const projects=items.map(item=>{
+    const gameId=clean(get(item,'gameId','id'));
+    return projectMachineState(item,experienceInput,handoffByGameId.get(gameId)||null);
+  }).filter(project=>project.gameId);
+  return {
+    version:1,
+    projectStateVersion:1,
+    kind:'vibe2-web-roblox-handoffs',
+    requiredProjectFields:[...PROJECT_MACHINE_FIELDS],
+    projects,
+    handoffs,
+    gateBypass:false,
+    authority:'verified-handoff-context-only'
+  };
 }
 
 export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={}}={}){
