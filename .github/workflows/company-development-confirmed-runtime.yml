@@ -50,6 +50,7 @@ permissions:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
+  OWNER_WEB_DEVELOPMENT_PAUSED: 'true'
 
 jobs:
   web-plan:
@@ -97,6 +98,14 @@ jobs:
           set -euo pipefail
           runtime_sha="$(git rev-parse "origin/$COMPANY_RUNTIME_BRANCH")"
           printf 'runtime_sha=%s\n' "$runtime_sha" >> "$GITHUB_OUTPUT"
+          if [ "$OWNER_WEB_DEVELOPMENT_PAUSED" = 'true' ]; then
+            printf 'target_count=0\n' >> "$GITHUB_OUTPUT"
+            printf 'matrix=%s\n' '{"include":[]}' >> "$GITHUB_OUTPUT"
+            printf 'targets_json=[]\n' >> "$GITHUB_OUTPUT"
+            echo 'OWNER_WEB_DEVELOPMENT_PAUSED=YES'
+            echo 'WEB_DEVELOPMENT_TARGET_COUNT=0'
+            exit 0
+          fi
           git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue.json
           git show "origin/$COMPANY_RUNTIME_BRANCH:game-catalog.json" > /tmp/game-catalog.json
           git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/game-seed-state.json
