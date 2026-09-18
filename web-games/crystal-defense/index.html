@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    h1 {
+      color: #fff;
+    }
+    .game {
+      width: 80%;
+      max-width: 800px;
+      background-color: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .controls {
+      margin-bottom: 20px;
+    }
+    .controls button {
+      margin: 0 10px;
+      padding: 10px 15px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #555;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game">
+      <h1>Vibe2</h1>
+      <div class="controls">
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="restartGame()">Restart</button>
+      </div>
+      <div class="status">Status: <span id="status">Initializing...</span></div>
+      <div class="progression">
+        <div class="progress">Progress: <span id="progress">0%</span></div>
+        <div class="difficulty">Difficulty: <span id="difficulty">Easy</span></div>
+      </div>
+      <div class="ui">
+        <div class="ui-element">Player</div>
+        <div class="ui-element">Enemy</div>
+        <div class="ui-element">Boss</div>
+        <div class="ui-element">Item</div>
+        <div class="ui-element">Prop</div>
+        <div class="ui-element">Effect</div>
+        <div class="ui-element">UI</div>
+        <div class="ui-element">Animation</div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
