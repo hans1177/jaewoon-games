@@ -197,3 +197,14 @@ test('design runtime emits persistent phase timing evidence for the next bottlen
   assert.match(design,/modelPhaseConcurrency,modelKeepAlive/);
   assert.match(design,/INDEPENDENT_REVIEW_OUTPUTS=/);
 });
+
+
+test('Gemini quota governor retries transient quota failures after provider retry window while keeping permanent model failures blocked',()=>{
+  assert.match(workflow,/const permanentUnavailable=\/no longer available to new users\|NOT_FOUND\|PERMISSION_DENIED\/i/);
+  assert.match(workflow,/const retryableQuota=\/GenerateRequestsPerDayPerProjectPerModel-FreeTier\|requests per day\|daily quota\|RESOURCE_EXHAUSTED\|Quota exceeded\/i/);
+  assert.match(workflow,/const providerRetryMs=row=>/);
+  assert.match(workflow,/Please retry in\\s\+\(\[0-9\.\]\+\)s/);
+  assert.match(workflow,/Date\.now\(\)<updated\+providerRetryMs\(row\)/);
+  assert.ok((workflow.match(/modelUnavailable\(row\)/g)||[]).length>=3);
+  assert.doesNotMatch(workflow,/const unavailableModel=\/GenerateRequestsPerDayPerProjectPerModel-FreeTier/);
+});
