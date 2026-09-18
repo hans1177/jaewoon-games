@@ -578,7 +578,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
             contents:[{role:'user',parts:[{text:prompt}]}],
             generationConfig:{
               temperature:attempt===1?temperature:0,
-              maxOutputTokens:Math.min(8192,Math.max(512,Number(predict||1100))),
+              maxOutputTokens:Math.min(8192,Math.max(schema===DESIGN?4096:(schema===DESIGN_BASE||schema===DESIGN_GATE?2200:768),Number(predict||1100))),
               responseMimeType:'application/json',
               responseJsonSchema:schema,
               thinkingConfig:geminiThinkingConfigFor(candidateModel)
@@ -593,8 +593,11 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
           throw error;
         }
         const body=await response.json();
-        const raw=clean((body.candidates||[]).flatMap(candidate=>candidate?.content?.parts||[]).map(part=>part?.text||'').join(''));
-        if(!raw)throw new Error('GEMINI_EMPTY_RESPONSE');
+        const candidate=Array.isArray(body.candidates)?body.candidates[0]:null;
+        const finishReason=clean(candidate?.finishReason);
+        const raw=clean((body.candidates||[]).flatMap(item=>item?.content?.parts||[]).map(part=>part?.text||'').join(''));
+        if(!raw)throw new Error(`GEMINI_EMPTY_RESPONSE finishReason=${finishReason||'UNKNOWN'}`);
+        if(finishReason==='MAX_TOKENS')throw new Error(`GEMINI_OUTPUT_TRUNCATED model=${candidateModel} chars=${raw.length}`);
         const parsed=parseJsonObject(raw);
         const repairs=[];
         let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
