@@ -57,6 +57,35 @@ test('benchmark ladder measures eight tracks and never counts directly as traini
   assert.ok(ladder.cases.every(x=>x.countsAsTrainingSample===false));
 });
 
+test('Roblox handoff reuses only verified same-game Web semantic experience',()=>{
+  const pack=buildWebRobloxHandoffs({items:[{
+    gameId:'g-sem',selectedPlatform:'ROBLOX',formalImplementationPassed:true
+  }]},{records:[{
+    id:'web-sem-1',gameId:'g-sem',engine:'web',outcome:'PASS',verified:true,reusable:true,lastVerifiedAt:'2026-09-18T00:00:00Z',
+    evidence:['web-runtime-evidence:design/g-sem/web-gameplay-validation.json'],
+    reusablePatterns:[
+      'WEB_SEMANTIC:CORE_LOOP:place → defend → reward',
+      'WEB_SEMANTIC:STATE_MODEL:meaningful-state-transitions=20',
+      'WEB_SEMANTIC:PROGRESSION_MODEL:wave-by-wave',
+      'WEB_SEMANTIC:UI_FLOW:배치 → 강화 → 웨이브 시작',
+      'WEB_SEMANTIC:INPUT_INTENT:touch-first / action-primary',
+      'WEB_SEMANTIC:SAVE_MEANING:verified runtime save/restore of current gameplay state',
+      'WEB_SEMANTIC:CONTENT_STRUCTURE:lane-defense / wave-events',
+      'WEB_SEMANTIC:BALANCE_INTENT:wave pressure and counter balance'
+    ]
+  },{
+    id:'unverified',gameId:'g-sem',engine:'web',outcome:'PASS',verified:false,reusable:true,
+    reusablePatterns:['WEB_SEMANTIC:CORE_LOOP:must-not-win']
+  }]});
+  assert.equal(pack.handoffs.length,1);
+  const handoff=pack.handoffs[0];
+  assert.equal(handoff.CORE_LOOP,'place → defend → reward');
+  assert.equal(handoff.WEB_RUNTIME_EVIDENCE,'design/g-sem/web-gameplay-validation.json');
+  assert.deepEqual(handoff.verifiedSemanticExperienceIds,['web-sem-1']);
+  assert.equal(handoff.complete,true);
+  assert.equal(handoff.webEvidenceSubstitutesRobloxQa,false);
+});
+
 test('Web to Roblox handoff cannot replace Roblox QA',()=>{
   const pack=buildWebRobloxHandoffs({items:[{
     gameId:'g1',selectedPlatform:'ROBLOX',webValidationPassedAt:'2026-09-18T00:00:00Z',
