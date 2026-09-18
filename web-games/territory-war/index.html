@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    #game {
+      width: 100%;
+      max-width: 800px;
+      padding: 20px;
+      background-color: #111;
+      border: 1px solid #333;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .game-header {
+      text-align: center;
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .game-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .game-controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .game-controls button:hover {
+      background-color: #555;
+    }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+      gap: 10px;
+      width: 100%;
+      max-width: 600px;
+      background-color: #222;
+      padding: 10px;
+      border: 1px solid #555;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+    .game-board .cell {
+      width: 100px;
+      height: 100px;
+      background-color: #444;
+      border: 1px solid #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .game-board .cell:hover {
+      background-color: #666;
+    }
+    .game-board .cell.selected {
+      background-color: #00ff00;
+    }
+    .game-board .cell.enemy {
+      background-color: #ff0000;
+    }
+    .game-board .cell.empty {
+      background-color: #333;
+    }
+    .game-footer {
+      text-align: center;
+      color: #aaa;
+      font-size: 14px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game-header">Vibe2</div>
+    <div class="game-controls">
+      <button onclick="startGame()">Start Game</button>
+      <button onclick="restartGame()">Restart</button>
+    </div>
+    <div class="game-board" id="gameBoard"></div>
+    <div class="game-footer">© 2025 Vibe2</div>
+  </main>
+  <script>
+    const gameBoard = document.getElementById('gameBoard');
+    const gameContainer = document.getElementById('game');
+
+    let game = null;
+    let isGameOver = false;
+
+    function startGame() {
+      game = {
+        board: createBoard(),
+        currentPlayer: 'player',
+        turn: 0,
+        winner: null,
+        isRestart: false
+      };
+      isGameOver = false;
+      gameContainer.innerHTML = '';
+      gameBoard.innerHTML = '';
+      renderGame();
+    }
+
+    function restartGame() {
+      game = {
+        board: createBoard(),
+        currentPlayer: 'player',
+        turn: 0,
+        winner: null,
+        isRestart: true
+      };
+      isGameOver = false;
+      gameContainer.innerHTML = '';
+      gameBoard.innerHTML = '';
+      renderGame();
+    }
+
+    function createBoard() {
+      const board = [];
+      for (let row = 0; row < 5; row++) {
+        board[row] = [];
+        for (let col = 0; col < 5; col++) {
+          board[row][col] = { player: null, enemy: null, empty: true };
+        }
+      }
+      return board;
+    }
+
+    function renderGame() {
+      gameContainer.innerHTML = '';
+      gameBoard.innerHTML = '';
+      for (let row = 0; row < 5; row++) {
+        for (let col = 0; col < 5; col++) {
+          const cell = document.createElement('div');
+          cell.classList.add('cell');
+          if (game.board[row][col].empty) {
+            cell.classList.add('empty');
+          } else if (game.board[row][col].player) {
+            cell.classList.add('player');
+            cell.style.backgroundColor = '#00ff00';
+          } else if (game.board[row][col].enemy) {
+            cell.classList.add('enemy');
+            cell.style.backgroundColor = '#ff0000';
+          }
+          gameBoard.appendChild(cell);
+        }
+      }
+    }
+
+    function handleCellClick(e) {
+      const cell = e.target;
+      const row = cell.dataset.row;
+      const col = cell.dataset.col;
+
+      if (isGameOver) return;
+
+      if (game.board[row][col].empty) {
+        game.board[row][col].player = game.currentPlayer;
+        game.board[row][col].empty = false;
+        game.currentPlayer = game.currentPlayer === 'player' ? 'enemy' : 'player';
+        game.turn++;
+        renderGame();
+      } else if (game.board[row][col].player === game.currentPlayer) {
+        game.board[row][col].player = null;
+        game.board[row][col].empty = true;
+        game.currentPlayer = game.currentPlayer === 'player' ? 'enemy' : 'player';
+        game.turn++;
+        renderGame();
+      } else if (game.board[row][col].enemy === game.currentPlayer) {
+        game.board[row][col].enemy = null;
+        game.board[row][col].empty = true;
+        game.currentPlayer = game.currentPlayer === 'player' ? 'enemy' : 'player';
+        game.turn++;
+        renderGame();
+      } else {
+        game.isGameOver = true;
+        game.winner = game.currentPlayer;
+        renderGame();
+      }
+    }
+
+    gameBoard.addEventListener('click', handleCellClick);
+  </script>
+</body>
+</html>
