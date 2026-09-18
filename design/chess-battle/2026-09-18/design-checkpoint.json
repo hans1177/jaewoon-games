@@ -113,28 +113,28 @@
       "multiplayerMode": "SINGLE",
       "multiplayerExpansionDecision": "싱글 플레이의 완성도를 우선 확보한 뒤 추후 비동기식 1대1 대전 PvP 모드 확장 가능성을 열어둔다.",
       "technicalAssumptions": [
-        "서버는 보드 위의 유닛 위치와 이동 경로 데이터만 검증하고 렌더링은 클라이언트에서 처리한다.",
-        "스테이지 데이터는 JSON 포맷으로 외부 관리되어 앱 업데이트 없이 신규 스테이지를 확장할 수 있다."
+        "서버는 보드 위의 유닛 위치와 이동 경로 데이터만 실시간으로 검증하고 렌더링 및 입력 처리는 클라이언트 엔진에서 전담한다.",
+        "스테이지 데이터는 외부 JSON 포맷으로 관리하여 앱 패키지 업데이트 없이도 신규 퍼즐 스테이지를 유연하게 동적 확장할 수 있다."
       ],
       "validationQuestions": [
-        "플레이어가 첫 5분 이내에 체스 이동 규칙과 전투 목표를 직관적으로 이해할 수 있는가?",
-        "매 스테이지마다 제공되는 오브젝트 변주가 반복 플레이의 지루함을 충분히 상쇄하는가?"
+        "플레이어가 세션 첫 5분 이내에 체스 고유의 공간 이동 규칙과 스테이지별 전투 목표를 직관적으로 이해하고 몰입하는가?",
+        "매 스테이지마다 제공되는 특수 오브젝트 변주가 반복 플레이 시 발생하는 플레이어의 지루함을 충분히 상쇄하는가?"
       ],
       "implementationTraceability": [
         {
           "designElement": "직관적인 턴 기반 유닛 이동 및 전투 기능 구현",
           "responsibleSystem": "전술 격돌 시스템",
-          "validationEvidence": "유닛 이동 시뮬레이션 자동화 테스트를 통해 이동 가능 범위 내 판정이 99% 이상 정확하게 작동하는지 실행 로그로 검증한다."
+          "validationEvidence": "유닛 이동 시뮬레이션 자동화 테스트를 통해 이동 가능 범위 내 판정이 99퍼센트 이상 정확하게 작동하는지 실행 로그와 유닛 상태 머신을 통해 검증한다."
         },
         {
           "designElement": "매판 달라지는 특수 지형과 오브젝트 배치 알고리즘",
           "responsibleSystem": "전장 오브젝트 변주 시스템",
-          "validationEvidence": "스테이지 로드시 무작위 오브젝트 생성 알고리즘이 중복 없이 정상적으로 배치되는지 단위 테스트 코드로 확인한다."
+          "validationEvidence": "스테이지 로드시 무작위 오브젝트 생성 알고리즘이 중복 없이 정상적으로 배치되는지 단위 테스트 코드와 커버리지 리포트를 통해 엄격하게 확인한다."
         },
         {
           "designElement": "스테이지 클리어 보상 지급 및 영구 유닛 성장 구조",
           "responsibleSystem": "진행 및 경제 시스템",
-          "validationEvidence": "재화 획득량과 업그레이드 비용 데이터 테이블 간의 밸런스 시뮬레이션을 통해 자원 고갈 구간이 없는지 검증한다."
+          "validationEvidence": "재화 획득량과 업그레이드 비용 데이터 테이블 간의 밸런스 시뮬레이션을 실행하여 자원 고갈 구간이 없는지 데이터 정합성을 검증한다."
         }
       ],
       "openQuestions": [
@@ -224,22 +224,22 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 19308,
-      "lastMs": 1632,
+      "totalMs": 22854,
+      "lastMs": 1500,
       "lastError": null,
-      "updatedAt": "2026-09-18T08:28:02.983Z"
+      "updatedAt": "2026-09-18T08:30:17.372Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T08:23:15.030Z",
-  "updatedAt": "2026-09-18T08:28:02.986Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T08:28:02.983Z",
+  "updatedAt": "2026-09-18T08:30:17.374Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:30:17.372Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
