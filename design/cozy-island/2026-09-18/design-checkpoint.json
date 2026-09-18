@@ -3,313 +3,50 @@
   "gameId": "cozy-island",
   "date": "2026-09-18",
   "seedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
-  "fingerprint": "0f61fb3f64000ee61b65b2ae64eb4f711452f7df3b0d773ae892f84d6ce10748",
-  "policyDigest": "4ba5cefda9bb72060f4934114c91ba83051c6624d5449a2e30cab94221bf4321",
-  "engineDigest": "05b2a9d594155708ebf27797b249a78c3cdfbee815c1ddae3923df631ae3fe37",
-  "status": "PRE_GATE_BLOCKED",
-  "completedPhases": [
-    "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1",
-    "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2",
-    "designer_pre_gate_repair_3",
-    "deterministic_pre_gate_after_repair_3"
-  ],
-  "phases": {
-    "designer_draft": {
-      "identity": "포근한 작은 섬에서 낚시와 채집을 수행하며, 플레이어의 누적된 생활 흔적이 섬의 지형과 새로운 생태계를 변화시키는 독창적인 힐링 생활 시뮬레이션 게임",
-      "playerFantasy": "복잡한 도시를 떠나 나만의 작은 섬을 가꾸고, 잔잔한 파도 소리를 들으며 평화로운 자연 속에서 소소한 발견과 성취감을 느끼는 몰입형 판타지",
-      "coreFun": "직관적인 원터치/스와이프 조작으로 낚시와 채집을 반복하고, 얻은 재화로 섬의 풍경을 바꾸며 새로운 활동을 해금하는 반복의 즐거움",
-      "coreLoop": [
-        "간단한 터치 조작으로 섬 주변에서 물고기를 낚거나 자원을 채집합니다.",
-        "획득한 자원을 활용해 섬의 시설을 업그레이드하거나 새로운 구역을 개방합니다.",
-        "변화된 섬의 환경에서 더 희귀한 자원을 발견하고 다음 성장 목표를 설정합니다."
-      ],
-      "signatureSystems": [
-        {
-          "name": "흔적 기반 섬 변형 시스템",
-          "purpose": "플레이어의 채집과 낚시 활동이 누적됨에 따라 섬의 지형과 비주얼이 시각적으로 변화하여 성취감을 부여",
-          "playerChoice": "어떤 활동(낚시 중심 또는 채집 중심)에 집중할지 선택하여 섬의 발전 방향을 결정"
-        },
-        {
-          "name": "리듬형 낚시 및 채집 인터랙션",
-          "purpose": "단순 반복의 지루함을 없애고 손맛과 몰입감을 높이기 위한 미니게임 형태의 인터랙션",
-          "playerChoice": "타이밍에 맞춰 입력하여 보상의 품질을 높이고 특수 아이템 획득 시도"
-        }
-      ],
-      "systemInterconnections": [
-        {
-          "fromSystem": "리듬형 낚시 및 채집 인터랙션",
-          "toSystem": "흔적 기반 섬 변형 시스템",
-          "trigger": "자원 채집 성공 횟수 도달",
-          "stateChange": "섬의 특정 구역에 새로운 식생이 자라거나 건물 건립 가능 상태로 변경"
-        },
-        {
-          "fromSystem": "흔적 기반 섬 변형 시스템",
-          "toSystem": "경제 및 자원 순환 시스템",
-          "trigger": "신규 구역 개방",
-          "stateChange": "더 높은 가치의 자원 채집 루프가 해금되어 플레이어의 수입 구조 확장"
-        },
-        {
-          "fromSystem": "경제 및 자원 순환 시스템",
-          "toSystem": "리듬형 낚시 및 채집 인터랙션",
-          "trigger": "도구 업그레이드 구매",
-          "stateChange": "인터랙션 난이도가 완화되거나 성공 시 보상 배수 증가"
-        }
-      ],
-      "progressionDirection": "초반 0~5분간은 기본적인 낚시와 채집 조작을 익히고, 5~15분 구간에서 첫 번째 섬 확장과 새로운 도구를 해금하며, 25~30분 구간에서 다음 세션으로 이어지는 장기 목표를 확립하는 구조",
-      "progressionEconomyBalance": {
-        "progressionLoop": "채집->재화 획득->섬 업그레이드->신규 콘텐츠 해금으로 이어지는 선순환 구조 유지",
-        "resourceFlow": "일반 재화는 소모품과 기본 도구에 사용되며, 특수 자원은 섬의 영구적 확장과 명예 보상에 활용",
-        "balanceRules": "단순 대기 시간을 강제하는 요소를 배제하고 플레이어의 적극적인 세션 참여가 곧바로 성취로 이어지도록 경제 밸런스 설계"
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "1단계: 해안가 확장",
-          "newGameplay": "심해 낚시 및 통발 설치 시스템 추가를 통해 원터치 인터랙션 기반의 새로운 수집 루프를 제공합니다.",
-          "systemImpact": "새로운 물고기 도감 수집 및 특수 재화 획득 경로를 확보하며 기존 자원 순환 시스템에 부하를 주지 않도록 설계됩니다."
-        },
-        {
-          "milestone": "2단계: 숲속 비밀 지역 개방",
-          "newGameplay": "곤충 채집 및 나무 가꾸기 미니게임 도입을 통해 단기 세션 내에서 시각적 성취와 수집 재미를 확장합니다.",
-          "systemImpact": "채집 시스템의 다양화 및 섬 비주얼 커스터마이제이션 확장 엔진과 연동되어 렌더링 부하를 최적화합니다."
-        },
-        {
-          "milestone": "3단계: 방문객 상인 시스템",
-          "newGameplay": "무작위 방문객과의 물품 교환 및 스토리 이벤트를 발생시켜 플레이어의 능동적인 목표 의식을 자극합니다.",
-          "systemImpact": "단순 반복 루프에 서사적 변주와 추가 보상 기회를 제공하여 리텐션 지표에 긍정적인 영향을 줍니다."
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "낚시 중 타이밍 실패로 물고기 도망",
-          "체력 소모로 인한 채집 중단"
-        ],
-        "retryFlow": "실패 시 패널티를 최소화하고 즉시 동일 지점 혹은 인근에서 다시 시도 가능",
-        "riskPressure": "시간 제한이나 자원 소모에 대한 압박을 낮추어 힐링 장르의 정체성 유지",
-        "recoveryRules": "짧은 휴식 시간이나 기본 아이템 지급을 통해 즉각적인 리플레이 유도"
-      },
-      "platformFitPlan": {
-        "targetPlatform": "ROBLOX",
-        "inputModel": "모바일 및 PC 환경을 모두 지원하는 원터치/클릭 기반의 직관적인 입력 모델",
-        "performanceBudget": "로블록스 플랫폼 내 최적화를 위해 폴리곤 수를 제한하고 텍스처 메모리 압축 적용",
-        "sessionConstraints": "평균 5~10분의 단기 세션과 장기 체류 모두 대응 가능한 세이브 시스템 구축"
-      },
-      "visualDirection": "따뜻하고 파스텔톤의 로우폴리 3D 그래픽을 바탕으로 아기자기하고 편안한 시각적 분위기 조성",
-      "mobileUx": "한 손으로 엄지손가락만 사용하여 모든 주요 활동을 수행할 수 있는 UI/UX 배치",
-      "uxAccessibilityPlan": {
-        "hudPriorities": "현재 보유 재화, 체력, 활성화된 목표를 화면 상단에 직관적으로 배치",
-        "touchAndInput": "터치 영역을 넓게 설정하여 모바일 기기에서의 조작 오류 방지",
-        "readability": "가독성이 높은 폰트와 명확한 색상 대비 사용",
-        "accessibility": "시각적 피드백 외에 직관적인 사운드 피드백 동시 제공"
-      },
-      "artAudioDirection": {
-        "visualIdentity": "부드러운 조명과 자연 친화적인 파스텔 색감의 섬 풍경",
-        "audioIdentity": "잔잔한 파도 소리와 어쿠스틱 기타 선율 중심의 힐링 사운드트랙",
-        "gameplayFeedbackSync": "채집 성공 시 청각적 만족감을 주는 타격음 및 효과음 동기화"
-      },
-      "marketTargetDirection": "글로벌 모바일 캐주얼 및 힐링 장르 유저를 타겟으로 하여 스트레스 없는 플레이 제공",
-      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후 PC 플랫폼 확장을 검토",
-      "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "추후 친구의 섬에 놀러가거나 자원을 선물하는 소셜 기능 확장 검토",
-      "technicalAssumptions": [
-        "클라이언트 단독 상태 머신을 활용하여 네트워크 지연 없이 쾌적한 원터치 인터랙션을 보장한다.",
-        "모바일 웹 및 하이브리드 환경에서 60fps 유지를 위한 가벼운 2D/3D 렌더링 파이프라인을 적용한다.",
-        "데이터 유실 방지를 위한 로컬 스토리지 자동 백업 및 비동기 서버 싱크를 구현한다."
-      ],
-      "validationQuestions": [
-        "플레이어가 첫 5분 이내에 게임의 핵심 힐링 루프를 온전히 이해하는가?",
-        "섬의 변화가 시각적으로 충분한 성취감을 주는가?",
-        "장시간 플레이 시 메모리 누수나 프레임 드랍이 발생하지 않는가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "원터치 낚시 미니게임",
-          "responsibleSystem": "리듬형 낚시 및 채집 인터랙션",
-          "validationEvidence": "터치 반응 속도 0.1초 이내 및 성공/실패 피드백 명확성 검증 완료"
-        },
-        {
-          "designElement": "섬 지형 변화",
-          "responsibleSystem": "흔적 기반 섬 변형 시스템",
-          "validationEvidence": "자원 채집량에 따른 3단계 에셋 변경 적용 여부 확인 테스트 통과"
-        },
-        {
-          "designElement": "세션 유지 보상",
-          "responsibleSystem": "경제 및 자원 순환 시스템",
-          "validationEvidence": "30분 플레이 타임 내 적정 재화 획득량 데이터 밸런싱 검증 완료"
-        }
-      ],
-      "openQuestions": [
-        "멀티플레이어 확장 시 서버 동기화 부하를 어떻게 최소화할 것인가?",
-        "추가적인 미니게임 도입이 기존 힐링 감성을 해치지 않을 방안은 무엇인가?"
-      ]
-    },
-    "deterministic_pre_gate": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 60,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 6,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
-      },
-      "totalScore": 77,
-      "criticalAxisFailures": [
-        "CONTENT_EXPANSION_PLAN",
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-      ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "CONTENT_EXPANSION_PLAN",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 6,
-            "axisWeight": 10
-          },
-          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    }
-  },
+  "fingerprint": "823231030afb3d3118223451ba577081603186f052ff9bc976d494c3c583d840",
+  "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
+  "engineDigest": "1c3000b0a164e7967aa5932101e2c5e084b7843872d55583d7946ef289f85031",
+  "status": "IN_PROGRESS",
+  "completedPhases": [],
+  "phases": {},
   "tasks": {},
   "modelHealth": {
-    "gemini:gemini-3.8-flash": {
-      "calls": 3,
-      "successes": 0,
-      "failures": 3,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 15015,
-      "lastMs": 1058,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 35.134526128s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"35s\" } ] } }",
-      "updatedAt": "2026-09-18T06:31:24.890Z"
-    },
-    "gemini:gemini-3.7-flash": {
-      "calls": 3,
-      "successes": 0,
-      "failures": 3,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 41344,
-      "lastMs": 1163,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 35.021406722s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"35s\" } ] } }",
-      "updatedAt": "2026-09-18T06:31:24.995Z"
-    },
-    "gemini:gemini-3.6-flash": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 41350,
-      "lastMs": 1262,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 34.921102443s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"34s\" } ] } }",
-      "updatedAt": "2026-09-18T06:31:25.094Z"
-    },
-    "gemini:gemini-3.5-flash": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 41790,
-      "lastMs": 1370,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 34.815354939s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"34s\" } ] } }",
-      "updatedAt": "2026-09-18T06:31:25.202Z"
-    },
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 7,
-      "successes": 7,
-      "failures": 0,
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 9772,
+      "lastMs": 9772,
+      "lastError": "Expected ',' or ']' after array element in JSON at position 4117 (line 1 column 4118)",
+      "updatedAt": "2026-09-18T06:44:29.683Z"
+    },
+    "gemini:gemini-2.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 64712,
-      "lastMs": 2584,
-      "lastError": null,
-      "updatedAt": "2026-09-18T06:31:33.947Z"
+      "totalMs": 9831,
+      "lastMs": 9831,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T06:44:29.742Z"
+    },
+    "gemini:gemini-2.5-flash-lite": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 9897,
+      "lastMs": 9897,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T06:44:29.808Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
-  "createdAt": "2026-09-18T06:28:56.924Z",
-  "updatedAt": "2026-09-18T06:31:34.168Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:31:33.947Z",
-  "geminiModelResolution": {
-    "gemini-3.8-flash": "gemini-3.5-flash-lite"
-  },
-  "effectiveDesignerModel": "gemini:gemini-3.8-flash",
-  "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=77 hard=CRITICAL_AXIS_MINIMUM_FAIL"
+  "currentPhase": "DESIGNER_DRAFT",
+  "createdAt": "2026-09-18T06:44:19.909Z",
+  "updatedAt": "2026-09-18T06:44:29.808Z"
 }
