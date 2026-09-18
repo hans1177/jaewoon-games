@@ -4,15 +4,18 @@
   "date": "2026-09-19",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "completedPhaseCount": 2,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
-  "failedPhase": null,
+  "lastSuccessfulModelCallAt": "2026-09-18T18:32:27.148Z",
+  "failedPhase": "designer_pre_gate_repair_1",
   "failedTask": null,
-  "lastError": null,
+  "lastError": "GEMINI_CALL_FAILED gemini-3.5-flash-lite: GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=2284",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 1,
@@ -114,17 +117,17 @@
       "updatedAt": "2026-09-18T18:32:00.650Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
+      "calls": 4,
+      "successes": 1,
+      "failures": 3,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 74530,
-      "lastMs": 74530,
-      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=3388",
-      "updatedAt": "2026-09-18T18:32:14.880Z"
+      "totalMs": 177780,
+      "lastMs": 11245,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=2284",
+      "updatedAt": "2026-09-18T18:32:38.398Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T18:32:14.880Z"
+  "updatedAt": "2026-09-18T18:32:38.399Z"
 }
