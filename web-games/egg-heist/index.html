@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      background-color: #fff;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 600px;
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 20px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    .game-container button {
+      margin: 10px 0;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+    .game-container button:hover {
+      background-color: #0056b3;
+    }
+    .game-container p {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Protected state preservation
+    const protectedState = {
+      player: {
+        name: "Player",
+        health: 100,
+        inventory: [],
+        progress: 0
+      },
+      game: {
+        stage: "START",
+        difficulty: 1,
+        economy: {
+          gold: 0,
+          coins: 0
+        }
+      }
+    };
+
+    // Game loop
+    function gameLoop() {
+      const game = protectedState.game;
+      const player = protectedState.player;
+
+      if (game.stage === "START") {
+        player.progress += 1;
+        if (player.progress >= 10) {
+          game.stage = "ALERT";
+        }
+      } else if (game.stage === "ALERT") {
+        player.progress += 1;
+        if (player.progress >= 20) {
+          game.stage = "CHASE";
+        }
+      } else if (game.stage === "CHASE") {
+        player.progress += 1;
+        if (player.progress >= 30) {
+          game.stage = "EXILE";
+        }
+      } else if (game.stage === "EXILE") {
+        player.progress += 1;
+        if (player.progress >= 40) {
+          game.stage = "END";
+        }
+      }
+
+      // Mobile input handling
+      document.querySelector("button").addEventListener("click", () => {
+        const action = document.querySelector("button").textContent;
+        if (action === "Escape") {
+          game.stage = "END";
+        } else if (action === "Attack") {
+          player.health -= 10;
+          if (player.health <= 0) {
+            game.stage = "END";
+          }
+        }
+      });
+
+      // Save state preservation
+      if (game.stage === "END") {
+        protectedState.player = {
+          name: "Player",
+          health: 100,
+          inventory: [],
+          progress: 0
+        };
+        protectedState.game = {
+          stage: "END",
+          difficulty: 1,
+          economy: {
+            gold: 0,
+            coins: 0
+          }
+        };
+      }
+
+      // Responsive layout
+      if (window.innerWidth < 600) {
+        document.querySelector(".game-container").style.width = "100%";
+        document.querySelector(".game-container").style.maxWidth = "100%";
+      }
+
+      // Mobile input
+      document.querySelector("button").addEventListener("touchstart", () => {
+        const action = document.querySelector("button").textContent;
+        if (action === "Escape") {
+          game.stage = "END";
+        } else if (action === "Attack") {
+          player.health -= 10;
+          if (player.health <= 0) {
+            game.stage = "END";
+          }
+        }
+      });
+
+      // Game state progression
+      if (game.stage === "END") {
+        protectedState.player.progress = 100;
+        protectedState.game.stage = "END";
+      }
+
+      // Auto-player evidence
+      if (game.stage === "END") {
+        console.log("Game ended with player progress: " + protectedState.player.progress);
+      }
+    }
+
+    // Initialize game
+    gameLoop();
+  </script>
+</body>
+</html>
