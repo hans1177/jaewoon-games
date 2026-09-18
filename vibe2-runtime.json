@@ -62,7 +62,7 @@
       "worker",
       "fan-in"
     ],
-    "postReleaseFocusedDevelopment": "machine-policy-driven-single-protected-slot"
+    "postReleaseFocusedDevelopment": "owner-directive-next-priority-single-protected-slot"
   },
   "continuous": {
     "enabled": true,
@@ -85,6 +85,7 @@
     "longWorkProtectedSlots": 1,
     "priorityOrder": [
       "owner-directive",
+      "post-release-focused-development",
       "release-confirmed",
       "development-confirmed",
       "reviewing",
