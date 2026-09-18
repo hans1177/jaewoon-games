@@ -344,6 +344,44 @@
       "postReleaseQueue": ".vibe2/queue.json",
       "companyRuntimeQueue": "development-queue.json",
       "centralPolicyFile": "company-learning/platform-release-roadmap.json"
+    },
+    "modelQuotaContinuity": {
+      "enabled": true,
+      "designProviderPolicy": "GEMINI_ONLY",
+      "quotaFailureClassification": "EXTERNAL_MODEL_CAPACITY",
+      "quotaFailureIsDesignGateFailure": false,
+      "quotaBlockedState": "WAITING_FOR_GEMINI_QUOTA",
+      "runnerStopOnQuotaExhaustion": false,
+      "continuousRefillRequired": true,
+      "blockedModelTaskConsumesDevelopmentSlot": false,
+      "checkpointResumeRequired": true,
+      "completedPhaseReplayForbidden": true,
+      "fullCycleRestartForbidden": true,
+      "vibeSubstitution": {
+        "enabled": true,
+        "allowedStages": [
+          "WEB_BASE_IMPLEMENTATION",
+          "WEB_RUNTIME_VALIDATION",
+          "TARGET_PLATFORM_SOURCE_BIND",
+          "TARGET_PLATFORM_RUNTIME",
+          "TARGET_PLATFORM_INDEPENDENT_QA",
+          "TARGET_PLATFORM_REGRESSION",
+          "POST_RELEASE_FOCUSED_DEVELOPMENT"
+        ],
+        "forbiddenResponsibilities": [
+          "DESIGN_INDEPENDENT_LEAD_REVIEW",
+          "STAGE_GATE_SCORE_OR_VERDICT_SYNTHESIS"
+        ],
+        "preserveApprovedGameIdentity": true,
+        "verifiedLearningReuseRequired": true
+      },
+      "geminiFallback": {
+        "authorizedModelsOnly": true,
+        "paidApiAdditionForbidden": true,
+        "checkpointBeforeFallback": true,
+        "quarantineExhaustedModelRequired": true,
+        "resumeFromExactBlockedTask": true
+      }
     }
   }
 }
