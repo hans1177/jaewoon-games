@@ -1054,5 +1054,56 @@
     "top30ShelfUnchanged": true,
     "developmentShelfUnchanged": true,
     "designOnlyMayAppearInWebOrHistoricalDeploymentShelvesWithoutPromotion": true
-  }
+  },
+  "catalogNormalization": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "humanDocumentRequired": false,
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "catalog": "game-catalog.json",
+    "normalizer": "tools/game-catalog-normalization.mjs",
+    "canonicalRecordPath": "games[].canonical",
+    "catalogSchemaVersion": 2,
+    "canonicalGameSchemaVersion": 1,
+    "sections": [
+      "identity",
+      "lifecycle",
+      "production",
+      "sources",
+      "publication",
+      "homepage"
+    ],
+    "rules": {
+      "canonicalFirst": true,
+      "legacyFlatFields": "COMPATIBILITY_MIRROR_ONLY",
+      "companyStatusSyncRegeneratesCanonical": true,
+      "homepageReadsCanonicalFirst": true,
+      "duplicateGameIdsForbidden": true,
+      "duplicateVerifiedRobloxPlaceIdsForbidden": true,
+      "duplicateVerifiedRobloxUniverseIdsForbidden": true,
+      "publicationIdentityMustStayBoundToGameId": true,
+      "historicalDeploymentMustNotBecomeCurrentReleaseClaim": true,
+      "gameRemovalRequiresExplicitLifecycleChange": true
+    },
+    "homepageBinding": {
+      "renderer": "assets/homepage-enhancements.js",
+      "manager": "tools/homepage-manager.mjs",
+      "identityFrom": "canonical.identity",
+      "lifecycleFrom": "canonical.lifecycle",
+      "productionFrom": "canonical.production",
+      "webFrom": "canonical.sources.web",
+      "robloxPublicationFrom": "canonical.publication.roblox",
+      "presentationFrom": "canonical.homepage",
+      "legacyFallbackAllowed": true,
+      "publicationRequiresNormalizedCatalog": true
+    },
+    "execution": {
+      "normalizerRunsInsideExistingCompanyStatusSync": true,
+      "newPipelineForbidden": true,
+      "shadowCatalogForbidden": true,
+      "runtimeMirror": "company-runtime:game-catalog.json",
+      "homepagePublicationUsesExistingHomepageManager": true
+    }
+  },
+  "updatedAt": "2026-09-19"
 }
