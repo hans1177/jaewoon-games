@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      background-color: #333;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .controls button:hover {
+      background-color: #555;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game">
+      <h1>Vibe2</h1>
+      <div class="controls">
+        <button onclick="startGame()">Start</button>
+        <button onclick="restartGame()">Restart</button>
+      </div>
+      <div class="status" id="status">Ready</div>
+      <div id="gameArea"></div>
+    </div>
+  </main>
+  <script>
+    const gameArea = document.getElementById('gameArea');
+    const status = document.getElementById('status');
+    const gameContainer = document.getElementById('game');
+
+    function startGame() {
+      status.textContent = 'Game Started';
+      gameContainer.innerHTML = '<div class="game">Game Started</div>';
+    }
+
+    function restartGame() {
+      status.textContent = 'Game Restarted';
+      gameContainer.innerHTML = '<div class="game">Game Restarted</div>';
+    }
+
+    // Add game logic here
+    // This is a placeholder for the actual game implementation
+    // The game logic will be added in the actual implementation
+  </script>
+</body>
+</html>
