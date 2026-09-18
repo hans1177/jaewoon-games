@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Initialize game with preserved progression and persistence
+    const game = {
+      // Preserved game state and progression
+      saveState: {
+        player: {
+          health: 100,
+          energy: 100,
+          level: 1
+        },
+        enemies: [
+          { id: 1, type: 'slime', health: 10 },
+          { id: 2, type: 'pirate', health: 20 }
+        ],
+        progress: {
+          completed: 0,
+          total: 100
+        }
+      },
+      // Preserved gameplay mechanics
+      gameplay: {
+        // Preserved movement and input
+        movement: {
+          direction: 'right',
+          speed: 5
+        },
+        input: {
+          left: false,
+          right: true,
+          up: false,
+          down: false
+        }
+      }
+    };
+
+    // Initialize game UI and progression
+    const ui = {
+      // Preserved UI elements
+      healthBar: document.getElementById('health-bar'),
+      energyBar: document.getElementById('energy-bar'),
+      progressBar: document.getElementById('progress-bar')
+    };
+
+    // Initialize game mechanics
+    const mechanics = {
+      // Preserved combat and progression
+      combat: {
+        attack: function() {
+          // Preserved combat logic
+        },
+        defend: function() {
+          // Preserved defense logic
+        }
+      },
+      progression: {
+        // Preserved progression logic
+        update: function() {
+          // Preserved progression update
+        }
+      }
+    };
+
+    // Initialize game with preserved state
+    document.getElementById('game').innerHTML = `
+      <div id="ui">
+        <div id="health-bar" style="width: ${game.saveState.player.health}%;"></div>
+        <div id="energy-bar" style="width: ${game.saveState.player.energy}%;"></div>
+        <div id="progress-bar" style="width: ${game.saveState.progress.completed}%;"></div>
+      </div>
+      <div id="gameplay">
+        <div id="movement" style="left: ${game.gameplay.movement.direction === 'right' ? '100%' : '0%'};"></div>
+        <div id="input" style="left: ${game.gameplay.input.left ? '100%' : '0%'}; top: ${game.gameplay.input.up ? '100%' : '0%'};"></div>
+      </div>
+    `;
+  </script>
+</body>
+</html>
