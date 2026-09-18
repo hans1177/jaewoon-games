@@ -333,6 +333,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
   let postReleaseFocusedTaskId = null;
   if (selected.length < freeSlots && !capacityRunning.some(isPostReleaseFocused)) {
     for (const focusedRow of candidates.filter((row) => isPostReleaseFocused(row.task))) {
+      if (selected.some((task) => task.id === focusedRow.task.id)) continue;
       const conflict = conflictsWith(focusedRow.task, active);
       if (conflict) {
         if (!deferredConflicts.some((item) => item.task.id === focusedRow.task.id)) deferredConflicts.push(freeze({ task: focusedRow.task, reason: conflict }));
@@ -343,24 +344,6 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
       shardUse[focusedRow.task.shard] = (shardUse[focusedRow.task.shard] || 0) + 1;
       postReleaseFocusedSlotUsed = true;
       postReleaseFocusedTaskId = focusedRow.task.id;
-      break;
-    }
-  }
-
-  let longWorkProtectedSlotUsed = false;
-  let longWorkOwnerTaskId = null;
-  if (selected.length < freeSlots && !capacityRunning.some(isProtectedLongOwner)) {
-    for (const protectedRow of candidates.filter((row) => isProtectedLongOwner(row.task))) {
-      const conflict = conflictsWith(protectedRow.task, active);
-      if (conflict) {
-        if (!deferredConflicts.some((item) => item.task.id === protectedRow.task.id)) deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict }));
-        continue;
-      }
-      selected.push(protectedRow.task);
-      active.push(protectedRow.task);
-      shardUse[protectedRow.task.shard] = (shardUse[protectedRow.task.shard] || 0) + 1;
-      longWorkProtectedSlotUsed = true;
-      longWorkOwnerTaskId = protectedRow.task.id;
       break;
     }
   }
@@ -380,6 +363,25 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
       shardUse[robloxRow.task.shard] = (shardUse[robloxRow.task.shard] || 0) + 1;
       robloxFirstEligibleSlotUsed = true;
       robloxFirstEligibleTaskId = robloxRow.task.id;
+      break;
+    }
+  }
+
+  let longWorkProtectedSlotUsed = false;
+  let longWorkOwnerTaskId = null;
+  if (selected.length < freeSlots && !capacityRunning.some(isProtectedLongOwner)) {
+    for (const protectedRow of candidates.filter((row) => isProtectedLongOwner(row.task))) {
+      if (selected.some((task) => task.id === protectedRow.task.id)) continue;
+      const conflict = conflictsWith(protectedRow.task, active);
+      if (conflict) {
+        if (!deferredConflicts.some((item) => item.task.id === protectedRow.task.id)) deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict }));
+        continue;
+      }
+      selected.push(protectedRow.task);
+      active.push(protectedRow.task);
+      shardUse[protectedRow.task.shard] = (shardUse[protectedRow.task.shard] || 0) + 1;
+      longWorkProtectedSlotUsed = true;
+      longWorkOwnerTaskId = protectedRow.task.id;
       break;
     }
   }
