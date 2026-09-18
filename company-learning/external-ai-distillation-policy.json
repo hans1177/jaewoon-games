@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "kind": "vibe2-external-ai-distillation-policy",
+  "authority": "MACHINE_EXECUTION_CONTRACT",
+  "purpose": "Use external AI only as a knowledge source. Raw external model output never becomes game source, production evidence, Mastery credit, or canonical training data directly.",
+  "ingestion": {
+    "rawExternalAiOutputDirectDevelopment": false,
+    "rawExternalAiOutputPersistentRetrieval": false,
+    "rawOutputPersistence": "HASH_ONLY",
+    "candidateSourceKind": "external-ai",
+    "requiredMetadata": [
+      "provider",
+      "model",
+      "rawOutputSha256"
+    ],
+    "distilledPatternMaxChars": 240,
+    "independentVerificationRequired": true,
+    "minimumTraceableVerificationEvidenceItems": 2,
+    "allowedVerificationMethods": [
+      "runtime",
+      "independent-qa",
+      "source-backed-review",
+      "multi-source-consistency"
+    ]
+  },
+  "promotion": {
+    "outputKind": "vibe2-external-ai-distilled-knowledge",
+    "advisoryOnly": true,
+    "reusableOnlyAfterIndependentVerification": true,
+    "ranksAfterInternalVerifiedKnowledge": true,
+    "directDevelopmentUse": false,
+    "directSourceWrite": false,
+    "directProductionPass": false,
+    "directReleaseEvidence": false,
+    "directMasteryCredit": false,
+    "directCanonicalTrainingSample": false,
+    "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
+    "authorityExpanded": false
+  },
+  "retrieval": {
+    "distilledKnowledgePath": ".vibe2/external-ai-distilled-knowledge.json",
+    "distiller": "tools/vibe2-external-ai-distillation.mjs",
+    "collector": "tools/vibe2-multisource-learning-collector.mjs",
+    "rawExternalAiAvailableToPlanner": false,
+    "rawGameplayValuesAvailableToPlanner": false,
+    "externalAiAdvisoryLast": true
+  },
+  "gateWeakening": false
+}
