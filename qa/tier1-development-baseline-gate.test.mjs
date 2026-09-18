@@ -7,7 +7,7 @@ import { buildAutonomousWorkOrder } from '../tools/autonomous-work-planner.mjs';
 import { latestDevelopmentBaselineEvidence } from '../tools/development-baseline-evidence.mjs';
 
 const filesystem={existsSync:()=>true};
-const catalog={games:[{id:'demo',productionClass:'RELEASE_CONFIRMED',homepageCategory:'release-confirmed'}]};
+const catalog={games:[{id:'demo',productionClass:'RELEASE_CONFIRMED',homepageCategory:'release-confirmed',releasePublished:true}]};
 const diagnostics={demo:{filesScanned:1,counts:{high:1},topIssue:{type:'DOM_NULL_EVENT_BIND',severity:'high',file:'app.js',message:'x',microTask:'app.js 문제 1개만 수정',repairMode:'MODEL'},issues:[]}};
 const portfolio={status:'ACTIVE',paidApi:false,maxAutonomousWorkItemsPerDay:8,maxModelCallsPerRun:2,maxRunnerMinutesPerRun:20,projects:[{id:'P1',slug:'demo',name:'Demo',sourcePath:'web-games/demo',productionClass:'RELEASE_CONFIRMED',profileStatus:'RELEASE_CONFIRMED',mode:'UNITY_NEXT',targetEngine:'unity-android',protectedValues:[]}]};
 
