@@ -13,9 +13,9 @@
   "completedPhaseCount": 2,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": "2026-09-18T19:31:18.801Z",
-  "failedPhase": null,
+  "failedPhase": "designer_pre_gate_repair_1",
   "failedTask": null,
-  "lastError": null,
+  "lastError": "GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 2,
@@ -117,17 +117,17 @@
       "updatedAt": "2026-09-18T19:31:03.120Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 4,
+      "calls": 5,
       "successes": 1,
-      "failures": 3,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 140910,
-      "lastMs": 106201,
+      "totalMs": 267425,
+      "lastMs": 126515,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T19:52:36.319Z"
+      "updatedAt": "2026-09-18T19:52:56.634Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T19:52:36.320Z"
+  "updatedAt": "2026-09-18T19:52:56.634Z"
 }
