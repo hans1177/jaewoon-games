@@ -68,7 +68,9 @@ test('central production runtime keeps one full-scope Web-first selected-platfor
   assert.match(development,/CRON_ROLE=WATCHDOG_AND_RECOVERY_ONLY/);
   assert.match(development,/company-development-unity-runtime\.yml/);
   assert.match(development,/company-development-roblox-runtime\.yml/);
-  assert.doesNotMatch(development,/gh workflow run vibe2-24h-runner\.yml/);
+  assert.match(development,/gh workflow run vibe2-24h-runner\.yml/);
+  assert.match(development,/WEB_VIBE_24H_DISPATCH=YES/);
+  assert.match(development,/COMPANY_WEB_ROLE=VALIDATE_ROUTE_FAN_IN/);
   assert.match(roblox,/company-development-roblox-bootstrap\.mjs/);
   assert.match(roblox,/ROBLOX_RUNTIME_PASS=NO/);
   assert.match(roblox,/ROBLOX_RELEASE_CLAIM=NO/);
