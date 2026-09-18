@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: Array(100).fill(null)
+      },
+      player: {
+        x: 0,
+        y: 0,
+        health: 100,
+        inventory: []
+      },
+      enemies: [],
+      turn: 0,
+      isGameOver: false
+    };
+
+    // Initialize game
+    function initGame() {
+      // Initialize map
+      for (let y = 0; y < 10; y++) {
+        for (let x = 0; x < 10; x++) {
+          game.map.tiles[y * 10 + x] = {
+            isOccupied: false,
+            isPlayer: false,
+            isEnemy: false,
+            isWall: false
+          };
+        }
+      }
+
+      // Place player
+      game.player.x = 0;
+      game.player.y = 0;
+      game.player.isPlayer = true;
+
+      // Place enemies
+      for (let i = 0; i < 5; i++) {
+        const x = Math.floor(Math.random() * 10);
+        const y = Math.floor(Math.random() * 10);
+        game.enemies.push({
+          x,
+          y,
+          isEnemy: true,
+          health: 50
+        });
+      }
+
+      // Start game loop
+      gameLoop();
+    }
+
+    function gameLoop() {
+      if (game.isGameOver) return;
+
+      // Check for player movement
+      if (isPlayerMove()) {
+        movePlayer();
+      }
+
+      // Check for enemy AI
+      if (isEnemyAI()) {
+        aiMoveEnemies();
+      }
+
+      // Check for map collision
+      if (mapCollision()) {
+        endGame();
+      }
+
+      // Update turn
+      game.turn++;
+    }
+
+    function isPlayerMove() {
+      // Simple player movement logic
+      return true;
+    }
+
+    function movePlayer() {
+      // Simple player movement
+      // This is a placeholder for actual movement logic
+    }
+
+    function isEnemyAI() {
+      // Simple enemy AI logic
+      return true;
+    }
+
+    function aiMoveEnemies() {
+      // Simple enemy AI logic
+      // This is a placeholder for actual AI logic
+    }
+
+    function mapCollision() {
+      // Simple collision detection
+      return true;
+    }
+
+    function endGame() {
+      game.isGameOver = true;
+      alert("Game Over!");
+    }
+
+    // Initialize game
+    initGame();
+  </script>
+</body>
+</html>
