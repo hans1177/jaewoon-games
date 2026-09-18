@@ -99,6 +99,7 @@ jobs:
               gameName:item.gameName||item.gameId,
               baseline:item.designBaselineSource,
               artbook:item.artbookSource||`artbook-submissions/${item.gameId}/current.json`,
+              webHandoff:item.webPlatformHandoff||null,
               target,
             });
           }
@@ -150,6 +151,7 @@ jobs:
           GAME_NAME: ${{ matrix.gameName }}
           BASELINE_SOURCE: ${{ matrix.baseline }}
           ARTBOOK_SOURCE: ${{ matrix.artbook }}
+          WEB_HANDOFF_JSON: ${{ toJSON(matrix.webHandoff) }}
           TARGET_SOURCE: ${{ matrix.target }}
         shell: bash
         run: |
@@ -159,8 +161,11 @@ jobs:
           mkdir -p "$root" /tmp/roblox-worker/results
           baseline="$root/baseline.json"
           artbook="$root/artbook.json"
+          web_handoff="$root/web-platform-handoff.json"
           git show "origin/$COMPANY_RUNTIME_BRANCH:$BASELINE_SOURCE" > "$baseline"
           git show "origin/$COMPANY_RUNTIME_BRANCH:$ARTBOOK_SOURCE" > "$artbook"
+          printf '%s\n' "$WEB_HANDOFF_JSON" > "$web_handoff"
+          node -e "const fs=require('fs');const h=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));if(!h||h.stage!=='WEB_DEVELOPMENT_BASELINE_READY'||h.promotionRevalidationPassed!==true)process.exit(2);console.log('ROBLOX_WEB_HANDOFF_INPUT=READY')" "$web_handoff"
           branch="development/roblox-${safe}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           evidence="/tmp/roblox-source-bootstrap-${safe}.json"
           git config user.name 'jaewoon-roblox-development'
@@ -173,6 +178,8 @@ jobs:
             --artbook="$artbook" \
             --playbooks=/tmp/vibe3-task-playbooks.json \
             --recombination=/tmp/vibe3-recombination-memory.json \
+            --web-handoff="$web_handoff" \
+            --roadmap=company-learning/platform-release-roadmap.json \
             --output-root="$TARGET_SOURCE" \
             --evidence="$evidence"
           node --test qa/company-development-roblox-runtime.test.mjs qa/company-development-roblox-source-reconcile.test.mjs qa/company-development-roblox-package.test.mjs qa/company-development-roblox-independent-promotion.test.mjs
