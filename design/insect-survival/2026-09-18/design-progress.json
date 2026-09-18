@@ -10,10 +10,22 @@
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": null,
+  "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": null,
-  "modelHealth": {},
+  "lastError": "DESIGNER_EXTERNAL_CALL_FAILED gemini:gemini-3.8-flash: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+  "modelHealth": {
+    "gemini:gemini-3.8-flash": {
+      "calls": 4,
+      "successes": 0,
+      "failures": 4,
+      "timeouts": 0,
+      "jsonFailures": 2,
+      "totalMs": 32761,
+      "lastMs": 9533,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T05:37:20.939Z"
+    }
+  },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T05:36:47.021Z"
+  "updatedAt": "2026-09-18T05:37:20.939Z"
 }
