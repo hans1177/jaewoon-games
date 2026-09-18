@@ -1,5 +1,5 @@
 {
-  "version": 20,
+  "version": 21,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -199,7 +199,21 @@
         "exactFinalReviewedArtifactRequired": true,
         "transient409RetryWithinRun": true,
         "automaticRedispatchAfter409": false,
-        "rateLimitBackoffRequired": true
+        "rateLimitBackoffRequired": true,
+        "credentialSmoke": {
+          "version": 1,
+          "passed": true,
+          "universeId": "10766974456",
+          "placeId": "112507741861842",
+          "publishedVersionNumber": 5,
+          "workflowRunId": 35402137526,
+          "validatedAt": "2026-09-19T07:38:03+09:00",
+          "transient409Observed": true,
+          "transient409RecoveredWithinRun": true,
+          "runtimeStateMutation": false,
+          "releaseClaim": false,
+          "authority": "ROBLOX_OPEN_CLOUD_ONE_TIME_SMOKE"
+        }
       },
       "ownerPinnedPublicationTarget": {
         "version": 1,
