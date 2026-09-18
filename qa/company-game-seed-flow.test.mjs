@@ -215,7 +215,10 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.match(design,/async function parallelObjectByLane/);
   assert.match(design,/pending\.findIndex\(item=>!active\.has\(item\.lane\)\)/);
   assert.match(design,/Promise\.race\(active\.values\(\)\)/);
-  assert.match(design,/parallelObjectByLane\(Object\.keys\(independentReviewTasks\),key=>independentReviewTasks\[key\]\.model/);
+  assert.match(design,/const independentReviewOrder=Object\.keys\(independentReviewTasks\)\.sort/);
+  assert.match(design,/parallelObjectByLane\(independentReviewOrder,key=>independentReviewTasks\[key\]\.model/);
+  assert.match(design,/DESIGN_CHECKPOINT_CONTRACT_VERSION=1/);
+  assert.match(design,/runCheckpointTask\('independent_department_reviews'/);
   assert.match(design,/reviewsSchemaFor\(\[role\]\)/);
   assert.match(design,/\{predict:420\}/);
   assert.match(design,/DESIGN_BASE,\{predict:1000/);
