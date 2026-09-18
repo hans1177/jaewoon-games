@@ -53,7 +53,7 @@ env:
 
 concurrency:
   group: vibe2-distillation-ingest-pr
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   ingest:
