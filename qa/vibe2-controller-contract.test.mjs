@@ -153,6 +153,11 @@ test('worker completion uses repository dispatch to refill slots before batch fa
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
 });
 
+test('24H cycle serialization does not reuse the control-state lock',()=>{
+  assert(safetyNetWorkflow.includes('concurrency:\n  group: vibe2-24h-cycle-main\n  cancel-in-progress: false'));
+  assert(!safetyNetWorkflow.includes('concurrency:\n  group: vibe2-control-state-vibe2-unreal-core\n  cancel-in-progress: false\n\njobs:'));
+});
+
 test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
   assert(workflow.includes('Event-driven fan-in refill fallback'));
   assert(workflow.includes("event_type:'vibe2-fanin-refill'"));
