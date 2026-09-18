@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [
@@ -56,7 +56,8 @@
       "reserve",
       "worker",
       "fan-in"
-    ]
+    ],
+    "postReleaseFocusedDevelopment": "machine-policy-driven-single-protected-slot"
   },
   "continuous": {
     "enabled": true,
@@ -112,7 +113,9 @@
     "slotRefillBranchPrefix": "vibe2/refill/",
     "slotRefillSingleVariantOnly": true,
     "slotRefillWorkerDirectControlWrite": false,
-    "slotRefillSourceLocksHeldUntilFanIn": true
+    "slotRefillSourceLocksHeldUntilFanIn": true,
+    "postReleaseFocusedRunnerSlots": 1,
+    "postReleaseFocusedRefill": true
   },
   "adaptiveBackpressure": {
     "enabled": true,
@@ -145,7 +148,8 @@
     "queue": ".vibe2/queue.json",
     "experience": ".vibe2/experience.json",
     "workOrder": ".vibe2/work-order.json",
-    "parallelism": ".vibe2/parallelism-control.json"
+    "parallelism": ".vibe2/parallelism-control.json",
+    "developmentLifecyclePolicy": "company-learning/platform-release-roadmap.json"
   },
   "workers": {
     "exploration": {
