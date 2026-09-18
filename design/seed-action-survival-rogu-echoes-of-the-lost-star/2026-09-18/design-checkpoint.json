@@ -1,0 +1,263 @@
+{
+  "contractVersion": 3,
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "date": "2026-09-18",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR-20260917",
+  "fingerprint": "9521170b49a29d929f3b56971fa9ca127760fd359f55126a91bb1cc0318a2458",
+  "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
+  "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "잃어버린 별의 메아리는 몰려드는 적들의 압박 속에서 이동과 자동 공격을 조율하며, 실시간으로 무기와 패시브를 조합해 자신만의 빌드를 완성하는 액션 생존 로그라이트 게임입니다. coreLoop와 signatureSystems는 플레이어의 실시간 위치 선정과 전략적 업그레이드 선택을 통해 전장의 상태를 역동적으로 변화시키며, 매번 색다른 생존 경험을 제공합니다.",
+      "playerFantasy": "황폐화된 우주 공간에서 홀로 살아남은 전사가 되어, 사방에서 조여오는 외계 군단을 화려한 광자 무기와 특수 스킬로 쓸어버리며 끝까지 생존하는 짜릿한 영웅적 판타지를 체험합니다.",
+      "coreFun": "적의 공격을 아슬아슬하게 회피하며 경험치 보석을 수집하고, 레벨업 순간마다 주어지는 무작위 선택지 중 하나를 골라 캐릭터의 공격 방식과 능력을 극적으로 진화시키는 반복적이고 즉각적인 성장의 즐거움을 제공합니다.",
+      "coreLoop": [
+        "실시간으로 몰려오는 적의 무리 속에서 이동하며 적을 처치하고 드랍되는 경험치 아이템을 수집한다.",
+        "경험치 바가 가득 차면 레벨업이 발생하고, 일시정지된 화면에서 세 가지 무작위 업그레이드 중 하나를 선택한다.",
+        "선택한 업그레이드로 무기 성능과 캐릭터 능력이 즉시 강화되어 더 강한 적과 보스 웨이브를 상대할 수 있게 된다.",
+        "웨이브 클리어 및 사망 시 획득한 재화를 바탕으로 영구적인 특성을 해제하고 다음 탐험을 준비한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "실시간 무기 조합 시스템",
+          "purpose": "플레이어가 획득한 다양한 무기와 보조 장비를 융합하여 상위 등급의 강력한 전용 무기로 진화시키고 화력의 한계를 극복하도록 유도합니다.",
+          "playerChoice": "어떤 기본 무기를 먼저 강화할지, 그리고 어떤 보조 아이템과 결합하여 시너지를 낼 것인지 매 판마다 전략적인 조합을 선택합니다."
+        },
+        {
+          "name": "웨이브 압박 및 적 진형 제어 시스템",
+          "purpose": "시간이 지날수록 적의 밀도와 이동 속도를 증가시켜 플레이어에게 지속적인 생존 위협을 가하고 안전지대를 압박합니다.",
+          "playerChoice": "몰려드는 적의 포위망을 뚫고 돌파할 것인지, 아니면 좁은 공간에서 광역기를 활용해 적을 섬멸할 것인지 이동 경로를 선택합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "웨이브 압박 및 적 진형 제어 시스템",
+          "toSystem": "실시간 무기 조합 시스템",
+          "trigger": "플레이어가 적을 처치하고 경험치를 획득하여 레벨업할 때",
+          "stateChange": "더 강력한 적의 압박에 대응하기 위해 무기 조합 선택 화면이 호출되고 빌드가 확장됩니다."
+        },
+        {
+          "fromSystem": "실시간 무기 조합 시스템",
+          "toSystem": "웨이브 압박 및 적 진형 제어 시스템",
+          "trigger": "상위 무기 진화를 완료하여 광역 공격력이 급증할 때",
+          "stateChange": "주변 적들의 체력이 대량으로 감소하며 포위망이 해제되고 생존 유지 시간이 연장됩니다."
+        },
+        {
+          "fromSystem": "웨이브 압박 및 적 진형 제어 시스템",
+          "toSystem": "영구 성장 및 보상 시스템",
+          "trigger": "플레이어가 생존에 실패하여 게임 오버 상태에 도달할 때",
+          "stateChange": "런에서 획득한 재화가 정산되어 다음 플레이를 위한 영구 능력치 해제 및 경제 시스템에 반영됩니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 짧은 세션 단위의 전투를 반복하며 재화를 모으고, 이를 통해 기본 체력, 공격력, 재화 획득량 등의 영구 능력을 단계적으로 성장시켜 더 깊은 스테이지와 강력한 보스를 공략할 수 있게 됩니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "전투 참여 -> 경험치 획득 및 레벨업 -> 런 내 빌드 완성 -> 런 종료 및 재화 획득 -> 영구 특성 해제 및 다음 도전으로 이어지는 순환 구조입니다.",
+        "resourceFlow": "적 처치를 통해 임시 경험치와 런 전용 재화를 얻으며, 클리어 실패 또는 성공 시 영구 재화로 전환되어 캐릭터의 기본 능력치 향상에 소모됩니다.",
+        "balanceRules": "초반 5분 동안은 기본적인 조작과 회피에 집중하도록 난이도를 낮추고, 10분 이후부터는 적의 체력과 공격력을 급격히 상승시켜 빌드 완성도를 엄격하게 검증합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "스테이지 2 및 신규 엘리트 적 추가",
+          "newGameplay": "기존 사막 환경을 벗어나 얼어붙은 우주 기지 스테이지를 도입하고, 주기적으로 돌진하는 특수 엘리트 적 패턴을 추가하여 회피의 중요성을 높입니다.",
+          "systemImpact": "웨이브 압박 시스템의 난이도 곡선이 확장되며 새로운 속성 저항 및 이동 제어 스킬 조합이 필수가 됩니다."
+        },
+        {
+          "milestone": "신규 캐릭터 및 액티브 스킬 슬롯 확장",
+          "newGameplay": "고유 패시브를 가진 3종의 신규 캐릭터와 전투 중 수동으로 발동할 수 있는 궁극기 액티브 스킬 시스템을 새롭게 도입합니다.",
+          "systemImpact": "실시간 무기 조합 시스템과 연계되어 플레이어의 빌드 선택 폭이 넓어지고 조작의 깊이가 향상됩니다."
+        },
+        {
+          "milestone": "무한 생존 챌린지 모드 구현",
+          "newGameplay": "제한 시간 내에 보스를 처치하는 기존 방식에서 벗어나, 끝없이 밀려오는 적을 상대로 버틴 시간을 경쟁하는 랭킹 기반 무한 모드를 제공합니다.",
+          "systemImpact": "영구 성장 및 경제 시스템의 소모처가 다양화되며 고득점 유저들을 위한 엔드콘텐츠 역할을 수행합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "플레이어의 체력이 0이 되어 적의 공격에 완전히 제압당하고 런이 강제로 종료되는 사망 상태",
+          "제한 시간 내에 스테이지 보스의 광역 패턴을 피하지 못해 섬멸당하는 실패 상태"
+        ],
+        "retryFlow": "사망 시 즉시 결과 화면으로 이동하여 이번 런에서 달성한 레벨과 처치 수, 획득한 재화를 확인한 후 메인 로비로 복귀하여 즉시 재도전을 시작할 수 있습니다.",
+        "riskPressure": "런이 진행될수록 적의 이동 속도와 공격력이 비선형적으로 증가하여 잠시라도 방심하면 순식간에 포위당하는 높은 긴장감을 제공합니다.",
+        "recoveryRules": "실패하더라도 획득한 재화의 일정 비율을 보존하여 영구 능력치 강화에 사용할 수 있게 함으로써 반복 플레이 시 체감 난이도를 점진적으로 낮춰줍니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치 환경을 고려하여 화면 하단의 가상 조이스틱을 통한 이동과 무기의 자동 공격 발사를 기본으로 하며, 복잡한 버튼 입력 없이 직관적인 생존 플레이를 지원합니다.",
+        "performanceBudget": "수백 마리의 적 개체가 동시에 화면에 등장하더라도 60프레임을 유지할 수 있도록 적 오브젝트 풀링과 간소화된 충돌 판정 알고리즘을 적용합니다.",
+        "sessionConstraints": "한 판의 플레이 타임을 최대 15분 이내로 제한하여 모바일 기기에서의 배터리 소모와 피로도를 최소화하고 언제든 가볍게 즐길 수 있도록 설계합니다."
+      },
+      "visualDirection": "네온 컬러와 우주 배경을 대조시켜 다채로운 탄막과 적의 형태를 시각적으로 쉽게 구별할 수 있도록 하고, 화려한 스킬 이펙트로 타격감을 극대화합니다.",
+      "mobileUx": "한 손 또는 두 손가락만으로 모든 조작이 가능하도록 UI를 엄지손가락 동선에 배치하고, 레벨업 선택지와 체력 상태를 한눈에 파악할 수 있는 직관적인 레이아웃을 구성합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "남은 생존 시간, 현재 체력, 경험치 바, 그리고 현재 장착된 무기 목록을 화면 상단과 하단에 고정하여 핵심 정보를 즉시 인지할 수 있게 합니다.",
+        "touchAndInput": "가상 조이스틱의 터치 인식 범위를 넓게 설정하여 엄지손가락 위치가 조금 어긋나더라도 원활한 이동 조작이 가능하도록 지원합니다.",
+        "readability": "복잡한 탄막 속에서도 플레이어 캐릭터와 적의 공격 판정선을 선명한 색상 대비로 구분하여 시인성을 높입니다.",
+        "accessibility": "플래시 효과나 화면 흔들림 강도를 조절할 수 있는 옵션을 제공하여 시각적 피로감을 느끼는 플레이어도 편안하게 즐길 수 있도록 합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "사이버펑크와 우주 SF 요소를 결합한 다크 레트로 스타일로, 어두운 우주 배경 위에서 빛나는 네온 빛 공격 이펙트가 강조되는 비주얼을 구축합니다.",
+        "audioIdentity": "긴장감을 유발하는 일렉트로닉 신디사이저 기반의 배경음악과, 적이 처치되거나 무기가 발사될 때 타격감을 살려주는 경쾌하고 묵직한 효과음을 매칭합니다.",
+        "gameplayFeedbackSync": "치명적인 피해를 입거나 무기가 진화하는 순간 화면의 미세한 진동과 특수 오디오 사운드를 동시 출력하여 플레이어의 즉각적인 몰입을 유도합니다."
+      },
+      "marketTargetDirection": "짧은 세션 동안 강렬한 액션과 성장의 재미를 추구하는 전 세계 모바일 및 캐주얼 액션 게임 유저층을 타겟으로 합니다.",
+      "steamExpansionDecision": "모바일 버전의 안정적인 빌드 검증 이후, PC 환경에 맞춘 키보드/마우스 조작 최적화와 와이드스크린 UI를 적용하여 스팀 플랫폼으로 확장 출시를 검토합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "싱글플레이어 생존의 완성도를 최우선으로 확보한 뒤, 향후 협동 생존 모드나 실시간 기록 경쟁 콘텐츠 도입 가능성을 열어둡니다.",
+      "technicalAssumptions": [
+        "수백 마리의 적 유닛을 효율적으로 처리하기 위해 오브젝트 풀링 패턴과 공간 분할 최적화를 반드시 적용해야 합니다.",
+        "모바일 웹 및 유니티 빌드 환경에서 메모리 사용량을 최소화하기 위해 리소스 압축과 에셋 관리 체계를 철저히 구축해야 합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 모바일 터치 조작만으로 10분 이상 피로감 없이 적의 포위망을 돌파하며 몰입감을 유지할 수 있는가?",
+        "레벨업 시 제공되는 무기 선택지가 매번 유의미한 빌드 변화를 만들어내어 반복 플레이 동기를 충분히 부여하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "실시간 무기 조합 시스템의 무기 진화 로직",
+          "responsibleSystem": "실시간 무기 조합 시스템",
+          "validationEvidence": "특정 무기 레벨이 최대치에 도달했을 때 보조 아이템과 결합하여 상위 무기로 정상적으로 전환되는지 유닛 테스트를 통해 검증합니다."
+        },
+        {
+          "designElement": "웨이브 압박 및 적 진형 제어 시스템의 밀도 조절",
+          "responsibleSystem": "웨이브 압박 및 적 진형 제어 시스템",
+          "validationEvidence": "게임 진행 시간에 비례하여 적의 스폰 주기와 이동 속도가 정확하게 증가하는지 시뮬레이션 로그를 통해 확인합니다."
+        },
+        {
+          "designElement": "영구 성장 및 보상 시스템의 재화 정산",
+          "responsibleSystem": "영구 성장 및 보상 시스템",
+          "validationEvidence": "런 종료 후 획득한 재화가 데이터베이스에 정확히 저장되고 영구 특성 해제 시 차감되는지 트랜잭션 테스트를 수행합니다."
+        }
+      ],
+      "openQuestions": [
+        "추후 멀티플레이어 협동 모드 도입 시 화면 내 적 개체 수와 네트워크 동기화 부하를 어떻게 최적화할 것인가?",
+        "다양한 플레이어 성향을 만족시키기 위해 액티브 스킬의 쿨타임과 수동 조작 요소를 어느 정도 비중으로 늘릴 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 14094,
+      "lastMs": 14094,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:43:04.782Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 109,
+      "lastMs": 109,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 55.118358574s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"55s\" } ] } }",
+      "updatedAt": "2026-09-18T08:43:04.916Z"
+    },
+    "gemini:gemini-3.7-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 208,
+      "lastMs": 208,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 55.019233253s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"55s\" } ] } }",
+      "updatedAt": "2026-09-18T08:43:05.015Z"
+    },
+    "gemini:gemini-2.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 296,
+      "lastMs": 296,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T08:43:05.103Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T08:42:50.686Z",
+  "updatedAt": "2026-09-18T08:43:06.487Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:43:04.782Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "balance",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash"
+}
