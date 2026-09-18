@@ -131,6 +131,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          automatic_publish_paused="$(node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8'));process.stdout.write(p?.roblox?.deploymentControl?.automaticPublishPaused===false?'false':'true')")"
+          if [ "$automatic_publish_paused" = 'true' ]; then
+            echo 'ROBLOX_AUTOMATIC_PUBLISH_PAUSED=YES'
+            echo 'ROBLOX_RELEASE_PROMOTION_DISPATCHED=NO'
+            exit 0
+          fi
           mapfile -t ids < <(node -e "for (const id of JSON.parse(process.env.RELEASE_IDS_JSON || '[]')) console.log(id)")
           for id in "${ids[@]}"; do
             test -n "$id"
