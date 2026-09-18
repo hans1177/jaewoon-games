@@ -25,7 +25,7 @@ const baseline={content:{
   robloxBuildProfile:buildProfile('Simulation','Tycoon','SINGLE'),
 }};
 const shared=`local Config = {
-  PolicySource = "COMPANY_FLOW.md",
+  PolicySource = "company-learning/platform-release-roadmap.json",
   Platform = "ROBLOX",
   MobileFirst = true,
   SaveEnabled = true,
