@@ -282,23 +282,18 @@ const phaseBudgetMs={
   designer_pre_gate_repair_1:180000,
   designer_pre_gate_repair_2:180000,
   independent_department_reviews:240000,
-  department_representatives:180000,
-  lead_rebuttals:180000,
-  cross_department_meeting:180000,
   designer_revision:180000,
   designer_revision_base:180000,
   designer_revision_gate:180000,
-  five_lead_fatal_review:180000
+  five_lead_reviews:180000
 };
 function stageForPhase(name){
   if(name.startsWith('designer_draft'))return'DESIGNER_DRAFT';
   if(name==='deterministic_pre_gate')return'PRE_GATE';
   if(name.startsWith('designer_pre_gate_repair'))return'PRE_GATE_REPAIR';
   if(name==='independent_department_reviews')return'DEPARTMENT_REVIEWS';
-  if(name==='department_representatives')return'LEAD_CONSENSUS';
-  if(name==='lead_rebuttals'||name==='cross_department_meeting')return'CROSS_DEPARTMENT_MEETING';
   if(name.startsWith('designer_revision'))return'DESIGNER_REVISION';
-  if(name==='five_lead_fatal_review')return'FINAL_LEAD_REVIEW';
+  if(name==='five_lead_reviews')return'DEPARTMENT_REVIEWS';
   return designCheckpoint.currentPhase||'BOOTSTRAP';
 }
 function modelHealthEntry(model){
