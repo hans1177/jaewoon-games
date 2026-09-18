@@ -7,6 +7,7 @@ on:
       - '.github/workflows/external-mobile-free-game-playtest.yml'
       - 'company-learning/external-game-playtest/mobile-free-seed-games.json'
       - 'tools/external-mobile-free-playtest.ps1'
+      - 'tools/vibe2-external-gameplay-distill.mjs'
   schedule:
     - cron: '43 * * * *'
   workflow_dispatch:
@@ -58,25 +59,9 @@ jobs:
           $catalogCount = @($manifest.games).Count
           if ($catalogCount -lt 1) { throw 'Google Play reference catalog is empty' }
 
-          $maxText = '${{ github.event.inputs.max_games }}'
-          if ([string]::IsNullOrWhiteSpace($maxText)) { $maxText = '3' }
-          $max = 0
-          if (-not [int]::TryParse($maxText, [ref]$max) -or $max -lt 1 -or $max -gt 12) { throw 'max_games must be 1..12' }
-
-          $requestedStart = '${{ github.event.inputs.start_index }}'
-          if ([string]::IsNullOrWhiteSpace($requestedStart) -or $requestedStart -eq 'auto') {
-            $startIndex = [int]$env:GITHUB_RUN_NUMBER % $catalogCount
-          } else {
-            $startIndex = 0
-            if (-not [int]::TryParse($requestedStart, [ref]$startIndex) -or $startIndex -lt 0) { throw 'start_index must be auto or a non-negative integer' }
-            $startIndex = $startIndex % $catalogCount
-          }
-
-          "PLAYTEST_MAX_GAMES=$max" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "PLAYTEST_START_INDEX=$startIndex" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          Write-Host "GOOGLE_PLAY_REFERENCE_CATALOG_COUNT=$catalogCount"
-          Write-Host "GOOGLE_PLAY_REFERENCE_BATCH_SIZE=$max"
-          Write-Host "GOOGLE_PLAY_REFERENCE_START_INDEX=$startIndex"
+          $max = '${{ github.event.inputs.max_games }}'
+          if ([string]::IsNullOrWhiteSpace($max)) { $max = '3' }
+          if ($max -notmatch '^\d+
       - name: Verify seed-derived commercial reference policy
         run: |
           $ErrorActionPreference = 'Stop'
