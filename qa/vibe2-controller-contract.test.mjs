@@ -9,6 +9,7 @@ import path from 'node:path';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
+import { queueReleaseBaselineGap } from '../tools/vibe2-release-baseline-queue.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
@@ -187,6 +188,40 @@ test('worker result keeps throughput and actual workload telemetry inputs in the
   }
   assert(workflow.includes('git diff --cached --numstat -- "$SOURCE_ROOT"'));
   assert(workflow.includes('JSON.stringify({version:3,results,tasks:queue.tasks||[]}'));
+});
+
+test('owner directive sync preserves running state and derived verified context',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-owner-sync-'));
+  try{
+    const queueFile=path.join(root,'queue.json');
+    const catalogFile=path.join(root,'game-catalog.json');
+    const directivesFile=path.join(root,'owner-directives.json');
+    fs.writeFileSync(catalogFile,JSON.stringify({games:[]}), 'utf8');
+    fs.writeFileSync(directivesFile,JSON.stringify({directives:[{
+      id:'OWNER-DEMO',gameId:'demo',status:'pending',mode:'FULL_REBUILD',priority:'critical',
+      sourceRoot:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],workUnits:5,
+      goal:'[OWNER_IMMEDIATE_WEB_FIRST] demo rebuild',evidence:['owner-selected:test']
+    }]}), 'utf8');
+    fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:20,tasks:[]}), 'utf8');
+
+    const imported=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot:root,ownerDirectivesFile:directivesFile});
+    assert.equal(imported.ownerImported.length,1);
+
+    const queue=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+    queue.tasks[0].status='running';
+    queue.tasks[0].goal+='\n\n[GAME STUDY KNOWLEDGE - verified advisory context only]\nverified context';
+    queue.tasks[0].evidence.push('game-study-planner-context:v1','exploration-reuse:demo','workload:changed-files:1');
+    fs.writeFileSync(queueFile,JSON.stringify(queue), 'utf8');
+
+    const synced=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot:root,ownerDirectivesFile:directivesFile});
+    const persisted=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+    assert.equal(synced.ownerRefreshed.length,0);
+    assert.equal(persisted.tasks[0].status,'running');
+    assert.match(persisted.tasks[0].goal,/GAME STUDY KNOWLEDGE/);
+    assert.equal(persisted.tasks[0].evidence.includes('game-study-planner-context:v1'),true);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
 });
 
 test('explicit work-order output path overrides runtime default path',()=>{
