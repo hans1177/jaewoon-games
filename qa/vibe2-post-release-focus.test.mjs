@@ -56,14 +56,10 @@ function setup(){
 {
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
   assert.equal((runner.match(/VIBE2_24H_REFILL=WORKFLOW_DISPATCH/g)||[]).length,1);
-  const post=runner.indexOf("if grep -q '^VIBE2_POST_RELEASE_FOCUS_ADDED=YES
-");
-  const memory=runner.indexOf("elif grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES
-");
-  const baseline=runner.indexOf("elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES
-");
-  const planner=runner.indexOf("elif grep -q '^VIBE2_AUTO_PLAN=YES
-");
+  const post=runner.indexOf(`VIBE2_POST_RELEASE_FOCUS_ADDED=YES$`);
+  const memory=runner.indexOf(`VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$`);
+  const baseline=runner.indexOf(`VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$`);
+  const planner=runner.indexOf(`VIBE2_AUTO_PLAN=YES$`);
   assert.ok(post>=0&&memory>post&&baseline>memory&&planner>baseline);
   assert.match(runner,/commit_message='vibe2: queue post-release focused development \[skip ci\]'/);
   assert.match(runner,/commit_message='vibe2: ingest authorized Block Blast learning memory \[skip ci\]'/);
