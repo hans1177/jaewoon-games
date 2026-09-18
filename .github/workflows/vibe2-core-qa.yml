@@ -33,6 +33,7 @@ on:
       - 'tools/vibe2-experience-control.mjs'
       - 'tools/vibe2-handoff.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
+      - 'tools/vibe2-release-dispatch-recovery.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/vibe2-auto-planner.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
@@ -50,6 +51,8 @@ on:
       - 'qa/vibe2-experience-control.test.mjs'
       - 'qa/vibe2-handoff.test.mjs'
       - 'qa/vibe2-post-release-focus.test.mjs'
+      - 'qa/vibe2-release-dispatch-recovery.test.mjs'
+      - 'qa/vibe2-continuous-release-dispatch.test.mjs'
       - 'qa/vibe2-learning-motor.test.mjs'
       - 'qa/vibe2-code-pattern-ingest.test.mjs'
       - 'qa/vibe2-learning-practice-worker.test.mjs'
@@ -135,7 +138,10 @@ jobs:
           node --check tools/vibe2-experience-control.mjs
           node --check tools/vibe2-handoff.mjs
           node --check tools/vibe2-post-release-focus.mjs
+          node --check tools/vibe2-release-dispatch-recovery.mjs
           node --check qa/vibe2-post-release-focus.test.mjs
+          node --check qa/vibe2-release-dispatch-recovery.test.mjs
+          node --check qa/vibe2-continuous-release-dispatch.test.mjs
           node --check qa/vibe2-learning-motor.test.mjs
           node --check qa/vibe2-code-pattern-ingest.test.mjs
           node --check qa/vibe2-learning-practice-worker.test.mjs
@@ -176,6 +182,8 @@ jobs:
           node --test qa/vibe2-experience-control.test.mjs
           node --test qa/vibe2-handoff.test.mjs
           node --test qa/vibe2-post-release-focus.test.mjs
+          node --test qa/vibe2-release-dispatch-recovery.test.mjs
+          node --test qa/vibe2-continuous-release-dispatch.test.mjs
           node --test qa/vibe2-learning-motor.test.mjs
           node --test qa/vibe2-code-pattern-ingest.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
