@@ -7,7 +7,11 @@ import {buildFirstPlayable} from '../tools/company-development-web-bootstrap.mjs
 import {deriveApprovedScopeInventory,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
 
 const ROADMAP=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-const PERMANENTLY_REMOVED=new Set(ROADMAP.permanentProjectRemoval?.ids||[]);
+const PERMANENTLY_REMOVED_IDS=[
+  'seed-roblox-battleground-fight-welcome-to-bloxburg',
+  'seed-roblox-obby-party-minigam-tower-of-hell',
+];
+const PERMANENTLY_REMOVED=new Set(PERMANENTLY_REMOVED_IDS);
 const HISTORICAL_REAL_GAMES=[
   {gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',seed:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001'},
 ].filter(row=>!PERMANENTLY_REMOVED.has(row.gameId));
@@ -17,14 +21,10 @@ const HARNESS_GAMES=[
   ['seed-roblox-survival-horror-es-doors','Last Lantern','SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001'],
 ].filter(([gameId])=>!PERMANENTLY_REMOVED.has(gameId));
 
-const PERMANENTLY_REMOVED=[
-  'seed-roblox-battleground-fight-welcome-to-bloxburg',
-  'seed-roblox-obby-party-minigam-tower-of-hell',
-];
 
 test('permanently removed projects stay outside Web production regression',()=>{
   const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.deepEqual([...roadmap.permanentProjectRemoval.ids].sort(),[...PERMANENTLY_REMOVED].sort());
+  assert.deepEqual([...roadmap.permanentProjectRemoval.ids].sort(),[...PERMANENTLY_REMOVED_IDS].sort());
   for(const gameId of PERMANENTLY_REMOVED){
     assert.equal(fs.existsSync(path.join('web-games',gameId,'index.html')),false,gameId);
     assert.equal(HISTORICAL_REAL_GAMES.some(row=>row.gameId===gameId),false,gameId);
@@ -39,7 +39,7 @@ test('permanently removed historical projects stay deleted and outside regressio
     'seed-roblox-battleground-fight-welcome-to-bloxburg',
     'seed-roblox-obby-party-minigam-tower-of-hell'
   ];
-  assert.deepEqual([...PERMANENTLY_REMOVED],removed);
+  assert.deepEqual([...PERMANENTLY_REMOVED_IDS],removed);
   assert.equal(ROADMAP.permanentProjectRemoval.reentryAllowed,false);
   assert.equal(ROADMAP.permanentProjectRemoval.automaticRecoveryAllowed,false);
   assert.equal(ROADMAP.permanentProjectRemoval.automaticMaintenanceAllowed,false);
