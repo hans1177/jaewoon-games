@@ -228,7 +228,7 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(design,/AI_MEETING_CALLS=0/);
   assert.match(design,/AI_REBUTTAL_CALLS=0/);
   assert.match(design,/runCheckpointTask\('five_lead_reviews'/);
-  assert.match(design,/adaptiveParallel\('five_lead_reviews'/);
+  assert.match(design,/adaptiveParallel\(\s*'five_lead_reviews'/);
   assert.match(design,/MODEL_PHASE_CONCURRENCY_FALLBACK=/);
   assert.match(design,/departmentDesignContext\(role,designDraft\)/);
   assert.match(design,/const fastAssistantPool=/);
