@@ -257,6 +257,11 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(design,/function quarantineGeminiModel/);
   assert.match(design,/GEMINI_MODEL_QUARANTINED=/);
   assert.match(design,/filter\(model=>!geminiUnavailableModels\.has\(model\)\)/);
+  assert.match(design,/GEMINI_DISTINCT_LEAD_FAILOVER_LANES=/);
+  assert.match(design,/leadCandidateModels/);
+  assert.match(design,/GEMINI_LEAD_FAILOVER_COLLISION/);
+  assert.match(design,/candidateModels:leadCandidateModels\[role\]/);
+  assert.match(design,/GEMINI_RESOLVED_DISTINCT_LEAD_GATE/);
   assert.match(design,/AI_PROVIDER=GEMINI_ONLY/);
   assert.match(design,/generativelanguage\.googleapis\.com/);
   assert.match(design,/responseJsonSchema:schema/);
