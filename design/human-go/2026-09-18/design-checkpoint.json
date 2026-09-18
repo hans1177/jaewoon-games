@@ -1,0 +1,272 @@
+{
+  "contractVersion": 3,
+  "gameId": "human-go",
+  "date": "2026-09-18",
+  "seedId": "OWNER-FULL-REBUILD-HUMAN-GO-20260916",
+  "fingerprint": "56219402e8a6bf834def655013e5c9da656ca0fbbeb5c22ff32bebb5c4203d98",
+  "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
+  "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "사람들의 행동과 관계를 수집하고 발견하는 가벼운 생활 탐험 게임으로, 플레이어는 한 손 터치 및 스와이프 조작을 통해 다양한 캐릭터를 만나고 관계를 발전시키며, coreLoop의 탐험과 signatureSystems의 특성 조합을 통해 마을의 생태계와 상호작용 상태를 눈에 띄게 변화시킨다.",
+      "playerFantasy": "다양한 사람들의 숨겨진 이야기와 독특한 행동 패턴을 발견하고 수집하며, 마을의 중심 인물로 성장해 나가는 따뜻하고 유쾌한 탐험가 판타지.",
+      "coreFun": "간단한 터치와 스와이프로 새로운 인물을 발견하고 수집하는 반복 속에서, 호감도 상승과 마을 분위기 변화라는 관찰 가능한 상태 변화를 거쳐 즉각적인 보상과 다음 탐험 루트 선택의 재미를 느낀다.",
+      "coreLoop": [
+        "한 손 터치 또는 스와이프 조작으로 마을 골목을 탐험하며 새로운 캐릭터를 발견한다.",
+        "캐릭터와 간단한 대화나 상호작용을 수행하고 즉각적인 수집 보상과 호감도 변화를 획득한다.",
+        "획득한 재화와 정보를 바탕으로 다음 탐험 지역을 선택하거나 캐릭터 성장 업그레이드를 진행한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "인물 수집 및 도감 시스템",
+          "purpose": "마을 주민들을 발견하고 기록하여 수집욕을 자극하고 장기적인 게임 목표를 제공한다.",
+          "playerChoice": "어떤 골목을 먼저 탐험할지 선택하여 특정 타입의 캐릭터를 우선적으로 발견하고 도감을 완성해 나간다."
+        },
+        {
+          "name": "관계 및 분위기 변화 시스템",
+          "purpose": "주민들과의 상호작용을 통해 마을 전체의 활기찬 분위기와 상호작용 이벤트 변화를 유도한다.",
+          "playerChoice": "주민들에게 어떤 선물을 주거나 상호작용할지 선택하여 마을의 경제 및 이벤트 흐름을 직접 조절한다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "인물 수집 및 도감 시스템",
+          "toSystem": "관계 및 분위기 변화 시스템",
+          "trigger": "플레이어가 새로운 캐릭터를 도감에 등록할 때",
+          "stateChange": "마을의 전체 활기 수치가 상승하고 새로운 대화 이벤트가 해금된다."
+        },
+        {
+          "fromSystem": "관계 및 분위기 변화 시스템",
+          "toSystem": "인물 수집 및 도감 시스템",
+          "trigger": "마을 분위기 수치가 특정 단계에 도달할 때",
+          "stateChange": "희귀 캐릭터가 등장하는 새로운 탐험 골목이 개방된다."
+        },
+        {
+          "fromSystem": "인물 수집 및 도감 시스템",
+          "toSystem": "진행 및 경제 시스템",
+          "trigger": "도감 완성도가 일정 수준 이상 달성될 때",
+          "stateChange": "탐험 보상 재화 획득량이 영구적으로 증가한다."
+        }
+      ],
+      "progressionDirection": "초반에는 단순한 캐릭터 발견과 기본 조작에 집중하고, 중반 이후에는 마을 분위기 변화와 확장된 탐험 구역을 통해 전략적 선택의 폭을 넓히며 장기적인 수집 재미를 유지한다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "탐험을 통해 재화와 인물을 획득하고, 이를 활용해 도감과 마을 시설을 성장시켜 더 깊은 지역으로 진입하는 순환 구조",
+        "resourceFlow": "주민 상호작용과 탐험 완료 시 기본 재화가 유입되며, 도감 완성 및 이벤트 달성을 통해 고급 재화로 전환된다.",
+        "balanceRules": "세션당 획득 재화량은 플레이 타임에 비례하되 과도한 반복 피로도를 방지하기 위해 짧은 세션 단위로 보상이 집중되도록 설계한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "시즌 1: 해안가 마을 확장",
+          "newGameplay": "해안가 지역을 탐험하며 새로운 어부 캐릭터와 해양 수집 요소를 추가한다.",
+          "systemImpact": "기존 도감 시스템에 해양 카테고리가 추가되고 새로운 호감도 상호작용 규칙이 도입된다."
+        },
+        {
+          "milestone": "시즌 2: 야시장 축제 이벤트",
+          "newGameplay": "시간 제한 동안 열리는 야시장에서 특별한 미니게임을 플레이하고 한정 캐릭터를 수집한다.",
+          "systemImpact": "관계 및 분위기 변화 시스템에 임시 축제 버프와 특수 재화 흐름이 연동된다."
+        },
+        {
+          "milestone": "시즌 3: 산악 지역 탐험 개방",
+          "newGameplay": "등반 요소를 결합한 새로운 스와이프 조작 방식의 산악 탐험 스테이지를 제공한다.",
+          "systemImpact": "이동 거리와 스태미나 관리가 추가되어 기존 탐험 루프에 새로운 자원 제약을 부여한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "탐험 중 제한 시간 종료로 인한 귀환",
+          "스태미나 소모로 인한 탐험 중단"
+        ],
+        "retryFlow": "실패 시 획득한 기본 재화의 일부를 유지한 채 마을로 즉시 복귀하며, 대기 시간 없이 곧바로 다음 탐험을 시작할 수 있다.",
+        "riskPressure": "무리한 장거리 탐험은 자원 고갈 위험을 높이지만, 짧고 안전한 탐험은 보상이 적어 플레이어의 선택에 긴장감을 부여한다.",
+        "recoveryRules": "짧은 광고 시청이나 간단한 일일 미션 완료를 통해 즉시 스태미나를 회복하고 탐험을 재개할 수 있다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 터치 및 PC 마우스 클릭을 모두 지원하는 직관적인 원탭 및 스와이프 입력 모델",
+        "performanceBudget": "저사양 모바일 기기에서도 30fps 이상을 유지하도록 폴리곤 수를 최적화하고 에셋 로딩을 분산한다.",
+        "sessionConstraints": "한 세션당 4분에서 6분 내외로 플레이가 가능하도록 짧고 명확한 목표 구간을 설정한다."
+      },
+      "visualDirection": "따뜻하고 아기자기한 로우폴리 스타일의 3D 그래픽을 바탕으로, 밝고 친근한 색감과 부드러운 애니메이션을 적용하여 누구나 편안하게 즐길 수 있도록 디자인한다.",
+      "mobileUx": "엄지손가락 한 손으로 모든 조작이 가능하도록 UI를 하단에 집중시키고, 터치 피드백을 시각과 청각으로 즉각적으로 전달한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 보유 재화, 탐험 진행도, 활기 수치를 화면 상단과 하단에 직관적으로 배치한다.",
+        "touchAndInput": "모바일 환경에서 오작동을 줄이기 위해 충분한 터치 영역과 명확한 버튼 간격을 확보한다.",
+        "readability": "작은 화면에서도 텍스트와 아이콘이 잘 보이도록 고대비 색상과 넉넉한 폰트 크기를 사용한다.",
+        "accessibility": "색각 이상 플레이어를 위한 패턴 구분 옵션과 사운드 시각화 보조 기능을 제공한다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "파스텔톤의 따뜻한 마을 배경과 개성 넘치는 주민들의 캐주얼한 캐릭터 디자인",
+        "audioIdentity": "편안하고 경쾌한 어쿠스틱 기타 및 타악기 중심의 배경음악과 아기자기한 상호작용 효과음",
+        "gameplayFeedbackSync": "캐릭터 터치 시 즉각적인 팝업 애니메이션과 청각적 효과음이 동시에 일치하여 만족감을 높임"
+      },
+      "marketTargetDirection": "글로벌 캐주얼 게이머와 가벼운 수집형 게임을 선호하는 유저층을 타겟으로 하여, 접근성이 높고 부담 없는 플레이 경험을 제공한다.",
+      "steamExpansionDecision": "모바일 및 로블록스 플랫폼에서 충분한 데이터 검증과 팬층을 확보한 후 PC 스팀 플랫폼으로의 확장 가능성을 검토한다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "싱글 플레이어 경험을 먼저 완벽하게 구축한 후, 추후 친구의 마을을 방문하는 비동기식 소셜 확장 기능을 검토한다.",
+      "technicalAssumptions": [
+        "클라이언트 측에서 로컬 저장소를 활용해 오프라인 상태에서도 수집 데이터가 안전하게 유지되도록 구현한다.",
+        "서버 통신 부하를 줄이기 위해 핵심 탐험 및 수집 로직은 클라이언트에서 처리하고 결과만 동기화한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 이내에 게임의 핵심 수집 루프를 온전히 이해하고 흥미를 느끼는가?",
+        "모바일 환경에서 한 손 조작 시 터치 반응 속도와 UI 가독성이 원활하게 유지되는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "한 손 터치 기반의 캐릭터 발견 및 수집 기능",
+          "responsibleSystem": "인물 수집 및 도감 시스템",
+          "validationEvidence": "플레이 테스트를 통해 탭 입력 후 0.1초 이내에 수집 연출이 재생되는지 확인한다."
+        },
+        {
+          "designElement": "주민 상호작용에 따른 마을 분위기 변화 연출",
+          "responsibleSystem": "관계 및 분위기 변화 시스템",
+          "validationEvidence": "호감도 상승 시 배경 시각 효과와 음악 변동이 정상적으로 트리거되는지 검증한다."
+        },
+        {
+          "designElement": "실패 후 즉시 재시도가 가능한 자원 회복 흐름",
+          "responsibleSystem": "진행 및 경제 시스템",
+          "validationEvidence": "탐험 종료 후 대기 시간 없이 곧바로 다음 탐험 시작 버튼이 활성화되는지 테스트한다."
+        }
+      ],
+      "openQuestions": [
+        "비동기식 소셜 기능을 도입할 때 서버 부하를 최소화하면서 친구 마을 방문의 재미를 극대화할 수 있는 구체적인 방법은 무엇인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {
+    "five_lead_reviews::development": {
+      "keep": [
+        "원탭/스와이프 기반의 직관적인 입력 모델과 4~6분 단위의 짧은 세션 구조를 유지하여 플랫폼 적합성을 확보함."
+      ],
+      "fix": [
+        "오프라인 로컬 저장소 우선 구현 방식을 지양하고, 데이터 무결성을 위해 서버 권한 기반의 동기화 로직으로 수정함."
+      ],
+      "add": [
+        "마을 분위기 수치 변화에 따른 배경 에셋(머티리얼, 라이팅)의 동적 로딩 및 최적화된 전환 시스템을 추가함."
+      ],
+      "risks": [
+        "클라이언트 중심의 수집 로직 처리는 메모리 변조를 통한 도감 데이터 조작 및 재화 부정 획득 위험이 매우 높음."
+      ],
+      "evidence": [
+        "Roblox 및 모바일 캐주얼 게임의 평균 세션 시간(4분)과 저사양 기기 점유율을 고려한 30fps 유지 목표 설정."
+      ],
+      "questions": [
+        "마을 분위기 단계별로 교체되는 에셋의 총 용량이 저사양 기기의 메모리 가용 범위 내에 있는지 확인이 필요함."
+      ]
+    }
+  },
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 10673,
+      "lastMs": 10673,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:40:44.995Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 120,
+      "lastMs": 120,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 14.878051278s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"14s\" } ] } }",
+      "updatedAt": "2026-09-18T08:40:45.141Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 2637,
+      "lastMs": 2637,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:40:47.660Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T08:40:34.320Z",
+  "updatedAt": "2026-09-18T08:40:47.660Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:40:47.660Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
+    "gemini-3-flash-preview": "gemini-3-flash-preview"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
+}
