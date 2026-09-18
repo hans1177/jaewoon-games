@@ -1,5 +1,5 @@
 {
-  "version": 10,
+  "version": 11,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-18",
@@ -407,6 +407,34 @@
       "ownerExplicitInstructionRequiredForAnyException": true,
       "designAuthorityUnaffected": true,
       "designProviderPolicyUnaffected": true
+    },
+    "learningMotor": {
+      "authority": "VERIFIED_LEARNING_MOTOR",
+      "implementationOwner": "VIBE2_VIBE3",
+      "machineContract": "company-learning/vibe2-learning-motor.json",
+      "webImplementationIsPracticeAndBlueprint": true,
+      "positiveMasteryRequiresVerifiedEvidence": true,
+      "verifiedFailureMayBecomeAvoidLesson": true,
+      "sameGameRetrievalPriority": true,
+      "unifiedRetrieverSources": [
+        ".vibe2/experience.json",
+        ".vibe2/game-study-knowledge.json",
+        "company-learning/vibe3-memory-index.json",
+        "company-learning/vibe3-recombination-memory.json",
+        "company-learning/vibe3-task-playbooks.json",
+        "company-learning/vibe2-code-pattern-library.json",
+        "assets/asset-manifest.json",
+        "assets/prototype-asset-presets.json"
+      ],
+      "webToRobloxHandoffRequired": true,
+      "webEvidenceCannotSubstituteRobloxRuntimeQa": true,
+      "masteryDoesNotExpandAuthority": true,
+      "benchmarkDoesNotCountAsTrainingSample": true,
+      "practiceNeverCountsAsProductionPass": true,
+      "modelTrainingThresholdsUnchanged": true,
+      "modelPromotionGate": "FIXED_HOLDOUT_AB_THEN_CANARY",
+      "idlePracticeOnlyUsesFreeCapacity": true,
+      "productionWorkAlwaysPreemptsPractice": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
