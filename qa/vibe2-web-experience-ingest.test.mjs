@@ -76,9 +76,12 @@ test('ingest promotes once and duplicate evidence does not create a second recor
   const first=ingestFormalWebExperiences({queueInput:queue,memoryInput:{version:1,records:[]},evidenceLoader:()=>validReport()});
   assert.equal(first.promotedCount,1);
   assert.equal(first.memory.records.length,1);
+  const confirmations=first.memory.records[0].confirmations;
   const second=ingestFormalWebExperiences({queueInput:queue,memoryInput:first.memory,evidenceLoader:()=>validReport()});
   assert.equal(second.promotedCount,0);
+  assert.equal(second.results[0].reason,'formal-web-experience-already-ingested');
   assert.equal(second.memory.records.length,1);
+  assert.equal(second.memory.records[0].confirmations,confirmations);
 });
 
 test('non-formal Web item is ignored and cannot become positive learning',()=>{
