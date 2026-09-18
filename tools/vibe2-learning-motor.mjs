@@ -79,9 +79,43 @@ export function createMasteryState(seed={}){
     authorityExpanded:false,
     domains,
     seenExperienceIds:uniq(seed.seenExperienceIds||[]),
+    seenCodePatternIds:uniq(seed.seenCodePatternIds||[]),
     failureSignatures:{...(seed.failureSignatures||{})},
     updatedAt:clean(seed.updatedAt)||null
   };
+}
+
+const CODE_PATTERN_MASTERY=Object.freeze({
+  SAVE_PERSISTENCE:['SAVE'],
+  INPUT_EVENT_BINDING:['MOBILE_INPUT','UI_STATE'],
+  STATE_MACHINE:['STATE_MACHINE','CORE_LOOP'],
+  AI_INTENT:['AI'],
+  COMBAT_RESOLUTION:['COMBAT'],
+  ECONOMY_TRANSACTION:['ECONOMY'],
+  FRAME_LOOP_PERFORMANCE:['PERFORMANCE'],
+  MOBILE_UI_FLOW:['MOBILE_INPUT','UI_STATE'],
+  REGRESSION_REPAIR:['DEBUGGING']
+});
+
+export function applyVerifiedCodePatternsToMastery(stateInput={},libraryInput={}){
+  const state=createMasteryState(stateInput);
+  const seen=new Set(state.seenCodePatternIds||[]);
+  let added=0;
+  for(const pattern of libraryInput?.patterns||[]){
+    if(pattern?.verified!==true||pattern?.rawCodeStored===true)continue;
+    if(upper(pattern.independentQa)!=='PASS')continue;
+    const id=clean(pattern.id);if(!id||seen.has(id))continue;
+    const domains=CODE_PATTERN_MASTERY[upper(pattern.system)]||inferDomains([pattern.system,pattern.pattern,...(pattern.tags||[])].join(' '),pattern.engine);
+    for(const d of domains){
+      if(!state.domains[d])continue;
+      const row=state.domains[d];
+      row.xp+=8;row.level=masteryLevel(row.xp);row.verifiedSuccesses+=1;row.lastEvidence=id;
+    }
+    seen.add(id);added++;
+  }
+  state.seenCodePatternIds=[...seen].slice(-5000);
+  state.updatedAt=new Date().toISOString();
+  return {state,added};
 }
 
 function failureSignature(record={}){
@@ -291,15 +325,17 @@ export function buildWebRobloxHandoffs(companyQueueInput={}){
   return {version:1,kind:'vibe2-web-roblox-handoffs',handoffs,gateBypass:false,authority:'verified-handoff-context-only'};
 }
 
-export function refreshLearningMotor({stateInput={},experienceInput={},companyQueueInput={},queueInput={}}={}){
+export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={}}={}){
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
-  const benchmark=buildBenchmarkLadder(applied.state);
-  const idlePractice=buildIdlePracticeQueue(applied.state);
-  const tournament=enrichQueueForCandidateTournaments(queueInput,applied.state);
+  const patternApplied=applyVerifiedCodePatternsToMastery(applied.state,codePatternsInput);
+  const benchmark=buildBenchmarkLadder(patternApplied.state);
+  const idlePractice=buildIdlePracticeQueue(patternApplied.state);
+  const tournament=enrichQueueForCandidateTournaments(queueInput,patternApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
-    state:applied.state,
+    state:patternApplied.state,
     addedExperience:applied.added,
+    addedCodePatterns:patternApplied.added,
     benchmark,
     idlePractice,
     handoffs:buildWebRobloxHandoffs(companyQueueInput),
@@ -318,7 +354,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const experienceFile=clean(a.experience)||'.vibe2/experience.json';
   const companyQueueFile=clean(a['company-queue'])||'development-queue.json';
   const queueFile=clean(a.queue);
-  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]}});
+  const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
+  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]}});
   writeJson(stateFile,result.state);
   if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeTaskAdded)) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);
@@ -326,6 +363,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   if(clean(a.handoff)) writeJson(a.handoff,result.handoffs);
   console.log(`VIBE2_LEARNING_MOTOR=PASS`);
   console.log(`VIBE2_MASTERY_NEW_EXPERIENCE=${result.addedExperience}`);
+  console.log(`VIBE2_MASTERY_NEW_CODE_PATTERNS=${result.addedCodePatterns}`);
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
