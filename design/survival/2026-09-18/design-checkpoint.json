@@ -7,12 +7,244 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다. coreLoop와 signatureSystems는 플레이어에게 매 순간 생존 자원의 압박 속에서 명확한 양자택일의 기회를 제공하며, 이는 게임 세계 전체의 상태 변화를 유도한다.",
+      "playerFantasy": "황폐화된 미지의 자연 속에서 고립된 생존자가 되어, 매일의 채집과 제작을 통해 자신만의 거점을 구축하고 다가오는 위협을 극복해 나가는 몰입감 넘치는 생존 판타지입니다.",
+      "coreFun": "자원을 채집하여 도구를 제작하고 생존 위협을 관리하는 반복 속에서, 매 순간 가시적인 상태 변화와 즉각적인 보상을 통해 플레이어가 생존의 성취감을 느끼도록 합니다.",
+      "coreLoop": [
+        "미지의 필드에 진입하여 생존 자원을 탐색하고 채집하는 실시간 선택 단계",
+        "채집한 재료를 활용하여 거점을 업그레이드하고 장비를 제작하는 전략적 상태변화 단계",
+        "강화된 장비와 도구를 바탕으로 더 위험한 지역을 탐험하고 다음 생존을 준비하는 보상 획득 단계"
+      ],
+      "signatureSystems": [
+        {
+          "name": "동적 자원 순환 시스템",
+          "purpose": "필드의 자원 밀도와 재생 속도를 조절하여 플레이어의 채집 동선과 전략적 선택에 지속적인 변화를 유도합니다.",
+          "playerChoice": "어떤 자원을 우선적으로 채집하고 보존할지 결정하여 장기적인 생존 효율을 극대화할 수 있습니다."
+        },
+        {
+          "name": "거점 발전 및 제작 시스템",
+          "purpose": "획득한 자원을 바탕으로 생존 거점을 확장하고 고급 장비를 해제하여 플레이어의 능력치를 단계적으로 성장시킵니다.",
+          "playerChoice": "방어력 강화와 탐험 효율 중 어떤 부분에 먼저 자원을 투자할지 선택하여 자신만의 생존 빌드를 완성합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "동적 자원 순환 시스템",
+          "toSystem": "거점 발전 및 제작 시스템",
+          "trigger": "필드에서 희귀 자원을 성공적으로 채집하고 복귀할 때",
+          "stateChange": "거점 내 새로운 제작 건물이 해제되고 상위 단계의 장비 제작이 가능해집니다."
+        },
+        {
+          "fromSystem": "거점 발전 및 제작 시스템",
+          "toSystem": "동적 자원 순환 시스템",
+          "trigger": "새로운 탐험 장비를 제작하여 장착하고 필드에 진입할 때",
+          "stateChange": "이전에는 접근할 수 없었던 고위험 지역의 자원 채집이 가능해지며 새로운 생존 경로가 열립니다."
+        },
+        {
+          "fromSystem": "동적 자원 순환 시스템",
+          "toSystem": "생존 위협 관리 시스템",
+          "trigger": "채집 활동으로 인해 시간 경과 및 환경 변화가 누적될 때",
+          "stateChange": "플레이어의 체온과 허기 감소 속도가 빨라지며 긴급한 복귀나 휴식이 강제됩니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 초기 거점 주변의 안전한 구역에서 시작하여 점차 원거리 탐험을 통해 희귀 자원을 확보하고, 거점을 요충지로 발전시키며 더 높은 난이도의 생존 환경에 적응해 나갑니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "채집 - 제작 - 탐험 확장 - 거점 업그레이드의 루프를 반복하며 게임의 전체적인 생존 난이도와 가능 영역이 확장됩니다.",
+        "resourceFlow": "기본 자원은 필드에서 상시 수집 가능하며, 희귀 자원은 고위험 지역에서 제한적으로 획득하여 상위 제작에 소모됩니다.",
+        "balanceRules": "자원의 소모량과 제작 보상의 가치를 균형 있게 조정하여 플레이어가 항상 다음 탐험과 성장에 대한 명확한 동기를 가지도록 설계합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "1단계: 계절 변화 시스템 도입",
+          "newGameplay": "봄 여름 가을 겨울에 따른 기온 변화와 자원 생성 공식의 변동을 추가하여 매일의 생존 전략에 변화를 줍니다.",
+          "systemImpact": "동적 자원 순환 시스템과 생존 위협 관리 시스템이 직접 연동되어 계절별 맞춤형 장비 제작이 필수적이게 됩니다."
+        },
+        {
+          "milestone": "2단계: 심층 동굴 탐험 추가",
+          "newGameplay": "지하 동굴이라는 새로운 공간에서 어둠과 산소 부족이라는 특수 제약을 극복하며 특수 광물을 채집하는 탐험 콘텐츠를 확장합니다.",
+          "systemImpact": "거점 발전 시스템에 조명 및 산소 공급 시설이라는 새로운 건물 트리가 추가됩니다."
+        },
+        {
+          "milestone": "3단계: 자동화 생산 시설 도입",
+          "newGameplay": "후반부 플레이어를 위해 기초 자원 채집을 보조하는 자동화 시설을 건설하고 관리하는 경영 요소를 결합합니다.",
+          "systemImpact": "자원 수급의 병목 현상을 해소하고 플레이어가 고난이도 탐험과 전투에 더 집중할 수 있도록 유도합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "탐험 중 체력 및 허기 소진으로 인한 기절",
+          "적의 공격을 견디지 못하고 거점 방어 실패"
+        ],
+        "retryFlow": "기절 시 현재 소지하고 있던 일부 일반 자원을 현장에 남긴 채 안전 거점으로 강제 귀환하며, 즉시 재정비 후 재도전이 가능합니다.",
+        "riskPressure": "원거리 탐험 실패 시 이동 시간과 일부 자원의 손실이라는 페널티를 부여하여 신중한 사전 준비를 유도합니다.",
+        "recoveryRules": "거점에 비축해 둔 예비 식량과 기본 도구를 활용하여 빠르게 손실을 복구하고 다음 탐험을 준비할 수 있습니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치 환경에 최적화된 가상 조이스틱과 단일 액션 버튼 조합을 사용하여 직관적인 이동과 채집이 가능합니다.",
+        "performanceBudget": "모바일 기기에서 60프레임을 유지하기 위해 폴리곤 수를 최적화하고 오브젝트 풀링을 적극 활용합니다.",
+        "sessionConstraints": "한 세션당 평균 5분에서 10분 내외로 구성하여 언제 어디서나 가볍게 접속해 의미 있는 성장을 이루도록 합니다."
+      },
+      "visualDirection": "따뜻하면서도 거친 질감을 살린 로우폴리곤 스타일을 채택하여 모바일 화면에서도 명확한 시인성과 몰입감을 제공합니다.",
+      "mobileUx": "엄지손가락 영역 내에 주요 조작 버튼을 배치하고, 자원 획득과 위협 경고를 시각 및 청각 효과로 즉시 전달합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "체력, 허기, 현재 보유 자원 수량을 화면 상단에 고정하여 플레이어가 상태를 한눈에 파악할 수 있도록 합니다.",
+        "touchAndInput": "민감한 터치 영역 보정과 드래그 앤 드롭의 직관성을 높여 조작 실수를 최소화합니다.",
+        "readability": "배경과 상호작용 가능한 오브젝트의 색상 대비를 명확히 하여 시각적 피로도를 줄입니다.",
+        "accessibility": "중요한 경고 상황 발생 시 진동 및 시각적 플래시 효과를 동시에 제공하여 인지 용이성을 높입니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "자연의 아름다움과 생존의 긴장감이 공존하는 채도 높은 아웃도어 스타일을 지향합니다.",
+        "audioIdentity": "바람 소리, 풀잎 소리 등 잔잔한 자연음을 바탕으로 위협 상황에서 고조되는 타악기 중심의 사운드를 구성합니다.",
+        "gameplayFeedbackSync": "자원 채집 완료 시 경쾌한 타격음과 함께 화면에 즉각적인 파티클 효과를 동기화하여 성취감을 극대화합니다."
+      },
+      "marketTargetDirection": "혼자서 깊이 있는 채집과 생존 전략을 즐기며 짧은 세션 속에서도 성취감을 느끼고자 하는 모바일 게이머들을 타겟으로 합니다.",
+      "steamExpansionDecision": "모바일 버전의 안정적인 안착 이후, 넓어진 화면과 세밀한 조작계를 지원하는 PC 플랫폼 확장을 긍정적으로 검토합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "추후 협동 생존을 원하는 유저들을 위해 비동기식 거점 공유 또는 소규모 협동 모드 추가 가능성을 열어둡니다.",
+      "technicalAssumptions": [
+        "유니티 엔진의 컴포넌트 기반 아키텍처를 활용하여 각 생존 시스템 간의 의존성을 최소화합니다.",
+        "JSON 기반의 데이터 테이블을 사용하여 아이템 및 자원 밸런스를 유연하게 조정할 수 있습니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 매 탐험 세션마다 명확한 자원 부족과 선택의 갈등을 느끼고 있는가?",
+        "모바일 환경에서 조작감과 UI 시인성이 장시간 플레이에도 피로감을 주지 않는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "동적 자원 순환 시스템",
+          "responsibleSystem": "ResourceManagementController",
+          "validationEvidence": "필드 자원 채집 시 실시간으로 노드 수량이 감소하고 시간이 지남에 따라 재생성되는지 로그로 확인"
+        },
+        {
+          "designElement": "거점 발전 및 제작 시스템",
+          "responsibleSystem": "CraftingAndBuildingSystem",
+          "validationEvidence": "필요 자원을 소모하여 건물이 건설되고 이후 상위 장비 제작 버튼이 활성화되는지 유닛 테스트로 검증"
+        },
+        {
+          "designElement": "실패 및 재시도 플로우",
+          "responsibleSystem": "PlayerDeathManager",
+          "validationEvidence": "체력 소진 시 안전 거점으로 이동하고 자원 일부가 손실되는 상태 전이가 정확히 발생하는지 시나리오 검증"
+        }
+      ],
+      "openQuestions": [
+        "자동화 생산 시설이 도입되었을 때 기존 수동 채집의 재미를 해치지 않고 어떻게 균형을 잡을 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
-  "modelHealth": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 34112,
+      "lastMs": 34112,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:03:13.179Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 284,
+      "lastMs": 166,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 44.249386191s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"44s\" } ] } }",
+      "updatedAt": "2026-09-18T15:03:15.775Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 393,
+      "lastMs": 216,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 44.260665114s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"44s\" } ] } }",
+      "updatedAt": "2026-09-18T15:03:15.841Z"
+    }
+  },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T15:02:39.066Z",
-  "updatedAt": "2026-09-18T15:02:39.067Z"
+  "updatedAt": "2026-09-18T15:03:15.940Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:03:13.179Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 44.260665114s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"44s\" } ] } }"
 }
