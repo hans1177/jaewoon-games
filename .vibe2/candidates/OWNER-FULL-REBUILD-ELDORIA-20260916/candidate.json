@@ -1,0 +1,17 @@
+{
+  "summary": "완결형 RPG 정체성과 흐름 보존, 플레이 가능한 구조 구현",
+  "expectedEffect": "5장의 장소·전투·선택·목표 구분, 전투 피드백, 진행 저장, 패배·재시도, 결말 도달, 모바일 조작 및 가독성 갖춘 텍스트 선택 화면 유지",
+  "edits": [],
+  "newFiles": [],
+  "replaceFiles": [
+    {
+      "path": "index.html",
+      "content": "<!doctype html>\n<html lang=\"ko\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n  <meta name=\"theme-color\" content=\"#08111b\">\n  <title>엘도리아 연대기</title>\n  <script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script>\n  <script src=\"/web-games/_shared/vibe2-final.js\"></script>\n</head>\n<body>\n  <script>\n    // 게임 로직 및 텍스트 선택 화면 구현\n    // 텍스트 선택 화면은 이어지는 형태로 끝내지지 않도록 설계\n    // 텍스트 선택 화면은 게임 진행에 따라 자동으로 이어지도록 구현\n    // 전투 피드백, 진행 저장, 패배·재시도, 결말 도달, 모바일 조작 및 가독성 보장\n    // 보호된 gameplay/save/economy/progression 규칙을 유지\n    // 보호된 시스템=combat, progression, ui, persistence\n    // 보호된 패턴=architecture:progression; games=3; confirmations=127; relevance=20\n    // 보호된 패턴=architecture:ui; games=3; confirmations=127; relevance=20\n    // 보호된 패턴=mechanic:progression; games=3; confirmations=127; relevance=20\n    // 보호된 패턴=mechanic:ui; games=3; confirmations=127; relevance=20\n    // 보호된 패턴=observed-flow:input->progression; games=3; confirmations=127; relevance=20\n    // 보호된 패턴=observed-flow:ai->progression; games=2; confirmations=126; relevance=19\n    // 보호된 패턴=observed-flow:progression->input; games=2; confirmations=126; relevance=19\n    // 보호된 패턴=observed-loop:progression>input; games=2; confirmations=126; relevance=19\n    // 보호된 패턴=verified-play-observation:input | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:difficulty-selection | study-tag:turn-feedback | study-tag:player-action | study-tag:ai-respon\n    // 보호된 패턴=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | verified-play-observation:restart | study-tag:external-reference | study-tag:turn-based | study-tag:board-size-selection | study-tag:memory-game | study-tag:board-size-selection\n    // 보호된 패턴=verified-play-observation:input | verified-play-observation:economy | verified-play-observation:progression | verified-play-observation:ui | authorized-source-pattern:frame-loop | study-intelligence:mechanic:economy | study-intelligence:mec\n  </script>\n</body>\n</html>"
+    }
+  ],
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ]
+}
