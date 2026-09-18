@@ -1,0 +1,1412 @@
+{
+  "contractVersion": 1,
+  "gameId": "egg-heist",
+  "date": "2026-09-18",
+  "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
+  "fingerprint": "b258e0eac7c53f049b922e04222fa4867f2c53d0d49e970e7a6741ac40f411d9",
+  "policyDigest": "57957b1b1ae2662bd6fc5f377031f469b6f581dd0f523dadb26c80ea871e9510",
+  "status": "COMPLETE",
+  "completedPhases": [
+    "designer_draft_base",
+    "designer_draft_gate",
+    "independent_department_reviews",
+    "department_representatives",
+    "lead_rebuttals",
+    "cross_department_meeting",
+    "designer_revision_base",
+    "designer_revision_gate",
+    "five_lead_fatal_review"
+  ],
+  "phases": {
+    "designer_draft_base": {
+      "identity": "AL DAMBANG DEWORKS",
+      "playerFantasy": "AL DAMBANG DEWORKS",
+      "coreFun": "readable stealth comedy",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "name": "AL DAMBANG DEWORKS",
+          "purpose": "AL DAMBANG DEWORKS",
+          "playerChoice": "AL DAMBANG DEWORKS"
+        },
+        {
+          "name": "AL DAMBANG DEWORKS",
+          "purpose": "AL DAMBANG DEWORKS",
+          "playerChoice": "AL DAMBANG DEWORKS"
+        }
+      ],
+      "progressionDirection": "AL DAMBANG DEWORKS",
+      "visualDirection": "AL DAMBANG DEWORKS",
+      "mobileUx": "AL DAMBANG DEWORKS",
+      "marketTargetDirection": "AL DAMBANG DEWORKS",
+      "steamExpansionDecision": "MULTIPLAYER",
+      "multiplayerMode": "COOP",
+      "multiplayerExpansionDecision": "MULTIPLAYER",
+      "technicalAssumptions": [
+        "Unity3D",
+        "C#",
+        "C#"
+      ],
+      "validationQuestions": [
+        "What is the purpose of the core loop?",
+        "What is the difference between the playeR choice and the purpose of the signature systems?",
+        "What is the direction of the progression in AL DAMBANG DEWORKS?"
+      ],
+      "openQuestions": [
+        "What is the difference between the playeR choice and the purpose of the signature systems?",
+        "What is the direction of the progression in AL DAMBANG DEWORKS?"
+      ]
+    },
+    "designer_draft_gate": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "game-seed",
+          "toSystem": "STRICT_GATE_FEEDBACK",
+          "trigger": "game-seed.status",
+          "stateChange": "game-seed.status"
+        },
+        {
+          "fromSystem": "game-seed",
+          "toSystem": "BASE_DESIGN",
+          "trigger": "game-seed.status",
+          "stateChange": "game-seed.status"
+        },
+        {
+          "fromSystem": "game-seed",
+          "toSystem": "MARKET_EVIDENCE_SUMMARY",
+          "trigger": "game-seed.status",
+          "stateChange": "game-seed.status"
+        }
+      ],
+      "progressionEconomyBalance": {
+        "progressionLoop": "AL DAMBANG DEWORKS",
+        "resourceFlow": "AL DAMBANG DEWORKS",
+        "balanceRules": "AL DAMBANG DEWORKS"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "AL DAMBANG DEWORKS",
+          "newGameplay": "AL DAMBANG DEWORKS",
+          "systemImpact": "AL DAMBANG DEWORKS"
+        },
+        {
+          "milestone": "AL DAMBANG DEWORKS",
+          "newGameplay": "AL DAMBANG DEWORKS",
+          "systemImpact": "AL DAMBANG DEWORKS"
+        },
+        {
+          "milestone": "AL DAMBANG DEWORKS",
+          "newGameplay": "AL DAMBANG DEWORKS",
+          "systemImpact": "AL DAMBANG DEWORKS"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "game-seed.status.fail",
+          "game-seed.status.retry"
+        ],
+        "retryFlow": "AL DAMBANG DEWORKS",
+        "riskPressure": "This game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying",
+        "recoveryRules": "AL DAMBANG DEWORKS"
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "AL DAMBANG DEWORKS",
+        "performanceBudget": "This game will run smoothly on the target platform with a 100% performance budget",
+        "sessionConstraints": "AL DAMBANG DEWORKS"
+      },
+      "uxAccessibilityPlan": {
+        "hudPriorities": "AL DAMBANG DEWORKS",
+        "touchAndInput": "AL DAMBANG DEWORKS",
+        "readability": "AL DAMBANG DEWORKS",
+        "accessibility": "AL DAMBANG DEWORKS"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "AL DAMBANG DEWORKS",
+        "audioIdentity": "AL DAMBANG DEWORKS",
+        "gameplayFeedbackSync": "AL DAMBANG DEWORKS"
+      },
+      "implementationTraceability": [
+        {
+          "designElement": "AL DAMBANG DEWORKS",
+          "responsibleSystem": "STRICT_GATE_FEEDBACK",
+          "validationEvidence": "AL DAMBANG DEWORKS"
+        },
+        {
+          "designElement": "AL DAMBANG DEWORKS",
+          "responsibleSystem": "BASE_DESIGN",
+          "validationEvidence": "AL DAMBANG DEWORKS"
+        },
+        {
+          "designElement": "AL DAMBANG DEWORKS",
+          "responsibleSystem": "MARKET_EVIDENCE_SUMMARY",
+          "validationEvidence": "AL DAMBANG DEWORKS"
+        }
+      ]
+    },
+    "independent_department_reviews": {
+      "balance::gemma3:1b": {
+        "keep": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "fix": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "add": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "risks": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "evidence": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ],
+        "questions": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+        ]
+      },
+      "development::gemma3:1b": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "add": [
+          "technicalAssumptions"
+        ],
+        "risks": [
+          "failureRetryRisk"
+        ],
+        "evidence": [
+          "designElement:AL DAMBANG DEWORKS, responsibleSystem:STRICT_GATE_FEEDBACK, validationEvidence:AL DAMBANG DEWORKS"
+        ],
+        "questions": [
+          "AL DAMBANG DEWORKS의 핵심 루프는 무엇인가요?"
+        ]
+      },
+      "graphics::gemma3:1b": {
+        "keep": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "fix": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "add": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "risks": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "evidence": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "questions": [
+          "AL DAMBANG DEWORKS"
+        ]
+      },
+      "planning::gemma3:1b": {
+        "keep": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "fix": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "add": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "risks": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "evidence": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "questions": [
+          "What is the difference between the playeR choice and the purpose of the signature systems?"
+        ]
+      },
+      "qa::gemma3:1b": {
+        "keep": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ],
+        "fix": [
+          "플레이는 간단한 한두 번 누르기 또는 스위프 입력과 명확한 점수, 거리 또는 짧은 세션 목표를 플레이합니다."
+        ],
+        "add": [
+          "시작을 간단한 한두 번 누르기 또는 스위프 입력으로 시작합니다. 간단한 실행을 통해 긍정적인 피드백을 얻고, 보상을 수집하고, 작은 위험 또는 경로 선택을 합니다. 그런 다음 실행을 멈추거나 실패합니다. 점수 또는 보상을 받고, 점수"
+        ],
+        "risks": [
+          "플레이어의 긍정적인 피드백을 받지 않고 게임을 멈추는 것을 방지하기 위해 플레이어는 게임을 멈추거나 실패할 수 있습니다."
+        ],
+        "evidence": [
+          "플레이어의 긍정적인 피드백을 받지 않고 게임을 멈추는 것을 방지하기 위해 플레이어는 게임을 멈추거나 실패할 수 있습니다."
+        ],
+        "questions": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계합니다."
+        ]
+      },
+      "development::llama3.2:1b": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      },
+      "graphics::llama3.2:1b": {
+        "keep": [
+          "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "evidence": [
+          "Subway Surfers"
+        ],
+        "questions": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ]
+      },
+      "planning::llama3.2:1b": {
+        "keep": [
+          "fix"
+        ],
+        "fix": [
+          "add"
+        ],
+        "add": [
+          "risks"
+        ],
+        "risks": [
+          "evidence"
+        ],
+        "evidence": [
+          "questions"
+        ],
+        "questions": []
+      },
+      "qa::qwen2.5:1.5b": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      },
+      "balance::qwen3:0.6b": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "This game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying."
+        ],
+        "evidence": [
+          "Reference games: Subway Surfers, Crossy Road, and MONOPOLY GO!"
+        ],
+        "questions": [
+          "What is the core gameplay loop for this game?"
+        ]
+      },
+      "development::qwen3:0.6b": {
+        "keep": [
+          "AL DAMBANG DEWORKS is a core system that defines the game's core mechanics and player choices, ensuring consistency and player-fac"
+        ],
+        "fix": [
+          "The MARKET_EVIDENCE_SUMMARY reference is not explicitly linked to the game, which could affect its marketability and design."
+        ],
+        "add": [
+          "The platformFitPlan is aligned with the target platform (UNITY) and the implementation systems (Unity3D, C#), ensuring a seamless,"
+        ],
+        "risks": [
+          "The failureRetryRisk indicates a high risk of failure, which could impact the game's success and player engagement."
+        ],
+        "evidence": [
+          "The reference games (Subway Surfers, Crossy Road, MONOPOLY GO!) provide market data that supports the game's potential."
+        ],
+        "questions": [
+          "The design elements (AL DAMBANG DEWORKS) and their connections to other systems (STRICT_GATE_FEEDBACK, BASE_DESIGN) need further"
+        ]
+      },
+      "graphics::qwen3:0.6b": {
+        "keep": [
+          "AL DAMBANG DEWORKS is a casual game with a focus on readable stealth comedy and short objective chains, designed to be simple and "
+        ],
+        "fix": [
+          "AL DAMBANG DEWORKS has a distinct identity and is a creative game design concept that aligns with the target market and audience."
+        ],
+        "add": [
+          "AL DAMBANG DEWORKS has a strong focus on player choice and a clear narrative, making it an engaging and memorable experience."
+        ],
+        "risks": [
+          "AL DAMBANG DEWORKS has a unique visual identity and is designed to be accessible and user-friendly on mobile platforms."
+        ],
+        "evidence": [
+          "AL DAMBANG DEWORKS has a strong foundation in the core fun elements and a clear structure that aligns with the game's objectives."
+        ],
+        "questions": [
+          "AL DAMBANG DEWORKS has a distinct identity and is a creative game design concept that aligns with the target market and audience."
+        ]
+      },
+      "planning::qwen3:0.6b": {
+        "keep": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "fix": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "add": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "risks": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "evidence": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "questions": [
+          "What is the difference between the playeR choice and the purpose of the signature systems?"
+        ]
+      },
+      "qa::qwen3:0.6b": {
+        "keep": [
+          "What is the purpose of the core loop in AL DAMBANG DEWORKS?"
+        ],
+        "fix": [
+          "What is the difference between the playeR choice and the purpose of the signature systems?"
+        ],
+        "add": [
+          "What is the direction of the progression in AL DAMBANG DEWORKS?"
+        ],
+        "risks": [
+          "This game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "What is the purpose of the core loop in AL DAMBANG DEWORKS?"
+        ]
+      },
+      "balance::smollm2:1.7b": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "evidence": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ],
+        "questions": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ]
+      }
+    },
+    "department_representatives": {
+      "planning": {
+        "keep": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "fix": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "add": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "risks": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "evidence": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "questions": []
+      },
+      "graphics": {
+        "keep": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "fix": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "add": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "risks": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "evidence": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "questions": [
+          "AL DAMBANG DEWORKS"
+        ]
+      },
+      "development": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      },
+      "qa": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      },
+      "balance": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "This game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying."
+        ],
+        "evidence": [
+          "Reference games: Subway Surfers, Crossy Road, and MONOPOLY GO!"
+        ],
+        "questions": [
+          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+        ]
+      }
+    },
+    "lead_rebuttals": {
+      "planning": {
+        "accept": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "challenge": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "revision": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "reason": "AL DAMBANG DEWORKS"
+      },
+      "graphics": {
+        "accept": [
+          "AL DAMBANG DEWORKS",
+          "fix",
+          "add"
+        ],
+        "challenge": [
+          "AL DAMBANG DEWORKS",
+          "game-seed"
+        ],
+        "revision": [
+          "AL DAMBANG DEWORKS",
+          "play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "reason": "The current design lacks sufficient feedback and risk management, leading to a potentially frustrating experience for the player.  We need to prioritize a more engaging and responsive gameplay loop."
+      },
+      "development": {
+        "accept": [
+          "own",
+          "others"
+        ],
+        "challenge": [
+          "own",
+          "others"
+        ],
+        "revision": [
+          "own",
+          "others"
+        ],
+        "reason": "own"
+      },
+      "qa": {
+        "accept": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "challenge": [
+          "AL DAMBANG DEWORKS"
+        ],
+        "revision": [
+          "game-seed"
+        ],
+        "reason": "QA 부서의 책임범위는 모든 작업을 포함하여 모든 개발 과정에서의 품질 관리와 테스트를 포함합니다. 이는 QA 부서의 역할을 완벽하게 수행하기 위한 것입니다."
+      },
+      "balance": {
+        "accept": [
+          "keep",
+          "fix",
+          "add"
+        ],
+        "challenge": [
+          "risks"
+        ],
+        "revision": [
+          "evidence",
+          "questions"
+        ],
+        "reason": "OWN"
+      }
+    },
+    "cross_department_meeting": {
+      "summary": "CONSENSUS: 새 기능을 창작하지 않고 대표의견을 정리한다. 새 기능은 CONSENSUS를 사용하지 않고 대표의견을 정리한다.",
+      "decisions": [
+        {
+          "topic": "planning",
+          "status": "CONSENSUS",
+          "reason": "AL DAMBANG DEWORKS",
+          "departments": [
+            "planning"
+          ]
+        },
+        {
+          "topic": "graphics",
+          "status": "CONSENSUS",
+          "reason": "AL DAMBANG DEWORKS",
+          "departments": [
+            "graphics"
+          ]
+        },
+        {
+          "topic": "development",
+          "status": "CONSENSUS",
+          "reason": "AL DAMBANG DEWORKS",
+          "departments": [
+            "development"
+          ]
+        },
+        {
+          "topic": "qa",
+          "status": "CONSENSUS",
+          "reason": "AL DAMBANG DEWORKS",
+          "departments": [
+            "qa"
+          ]
+        },
+        {
+          "topic": "balance",
+          "status": "CONSENSUS",
+          "reason": "AL DAMBANG DEWORKS",
+          "departments": [
+            "balance"
+          ]
+        }
+      ]
+    },
+    "designer_revision_base": {
+      "identity": "AL DAMBANG DEWORKS",
+      "playerFantasy": "AL DAMBANG DEWORKS",
+      "coreFun": "readable stealth comedy",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "name": "AL DAMBANG DEWORKS",
+          "purpose": "AL DAMBANG DEWORKS",
+          "playerChoice": "AL DAMBANG DEWORKS"
+        },
+        {
+          "name": "AL DAMBANG DEWORKS",
+          "purpose": "AL DAMBANG DEWORKS",
+          "playerChoice": "AL DAMBANG DEWORKS"
+        }
+      ],
+      "progressionDirection": "AL DAMBANG DEWORKS",
+      "visualDirection": "AL DAMBANG DEWORKS",
+      "mobileUx": "AL DAMBANG DEWORKS",
+      "marketTargetDirection": "AL DAMBANG DEWORKS",
+      "steamExpansionDecision": "MULTIPLAYER",
+      "multiplayerMode": "COOP",
+      "multiplayerExpansionDecision": "MULTIPLAYER",
+      "technicalAssumptions": [
+        "Unity3D",
+        "C#"
+      ],
+      "validationQuestions": [
+        "What is the purpose of the core loop?",
+        "What is the difference between the playR choice and the purpose of the signature systems?",
+        "What is the direction of the progression in AL DAMBANG DEWORKS?"
+      ],
+      "openQuestions": [
+        "What is the difference between the playR choice and the purpose of the signature systems?",
+        "What is the direction of the progression in AL DAMBANG DEWORKS?"
+      ]
+    },
+    "designer_revision_gate": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "game-seed",
+          "toSystem": "STRICT_GATE_FEEDBACK",
+          "trigger": "game-seed.status",
+          "stateChange": "game-seed.status"
+        },
+        {
+          "fromSystem": "game-seed",
+          "toSystem": "BASE_DESIGN",
+          "trigger": "game-seed.status",
+          "stateChange": "game-seed.status"
+        },
+        {
+          "fromSystem": "game-seed",
+          "toSystem": "MARKET_EVIDENCE_SUMMARY",
+          "trigger": "game-seed.status",
+          "stateChange": "game-seed.status"
+        }
+      ],
+      "progressionEconomyBalance": {
+        "progressionLoop": "AL DAMBANG DEWORKS",
+        "resourceFlow": "AL DAMBANG DEWORKS",
+        "balanceRules": "AL DAMBANG DEWORKS"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "AL DAMBANG DEWORKS",
+          "newGameplay": "AL DAMBANG DEWORKS",
+          "systemImpact": "AL DAMBANG DEWORKS"
+        },
+        {
+          "milestone": "AL DAMBANG DEWORKS",
+          "newGameplay": "AL DAMBANG DEWORKS",
+          "systemImpact": "AL DAMBANG DEWORKS"
+        },
+        {
+          "milestone": "AL DAMBANG DEWORKS",
+          "newGameplay": "AL DAMBANG DEWORKS",
+          "systemImpact": "AL DAMBANG DEWORKS"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "game-seed.status.fail",
+          "game-seed.status.retry"
+        ],
+        "retryFlow": "AL DAMBANG DEWORKS",
+        "riskPressure": "This game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying",
+        "recoveryRules": "AL DAMBANG DEWORKS"
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "AL DAMBANG DEWORKS",
+        "performanceBudget": "This game will run smoothly on the target platform with a 100% performance budget",
+        "sessionConstraints": "AL DAMBANG DEWORKS"
+      },
+      "uxAccessibilityPlan": {
+        "hudPriorities": "AL DAMBANG DEWORKS",
+        "touchAndInput": "AL DAMBANG DEWORKS",
+        "readability": "AL DAMBANG DEWORKS",
+        "accessibility": "AL DAMBANG DEWORKS"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "AL DAMBANG DEWORKS",
+        "audioIdentity": "AL DAMBANG DEWORKS",
+        "gameplayFeedbackSync": "AL DAMBANG DEWORKS"
+      },
+      "implementationTraceability": [
+        {
+          "designElement": "AL DAMBANG DEWORKS",
+          "responsibleSystem": "STRICT_GATE_FEEDBACK",
+          "validationEvidence": "AL DAMBANG DEWORKS"
+        },
+        {
+          "designElement": "AL DAMBANG DEWORKS",
+          "responsibleSystem": "BASE_DESIGN",
+          "validationEvidence": "AL DAMBANG DEWORKS"
+        },
+        {
+          "designElement": "AL DAMBANG DEWORKS",
+          "responsibleSystem": "MARKET_EVIDENCE_SUMMARY",
+          "validationEvidence": "AL DAMBANG DEWORKS"
+        }
+      ]
+    },
+    "five_lead_fatal_review": {
+      "planning": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [],
+        "evidence": [
+          "The market evidence shows that the target market is global and the game has a strong potential for growth, as evidenced by the global top downloads and revenue figures.",
+          "The game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying, which indicates a need for careful planning and design."
+        ],
+        "reason": "The game has a strong market presence and potential for growth, with a high risk of failure, which indicates a need for careful planning and design."
+      },
+      "graphics": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+        ],
+        "evidence": [
+          "AL DAMBANG DEWORKS의 핵심 게임 플레이는 짧고, 텍스트 기반의 간단한 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 텍"
+        ],
+        "reason": "수정 후에도 핵심 게임 플레이가 재현 불가능하며, IP/표현 의존성으로 인해 재설계가 어렵습니다. 핵심 게임 플레이의 핵심적인 부분은 수정 후에도 남은 치명 조건으로 인해 재설계가 불가능합니다."
+      },
+      "development": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "SUBWAY SURFERS",
+          "CROSSY ROAD",
+          "MONOPOLY GO!",
+          "GLOBAL CASUAL SESSION SIGNAL"
+        ],
+        "reason": "사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다."
+      },
+      "qa": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "The current design fails to meet the core learning objectives of 'readable stealth comedy', 'short objective chains', and 'risk-reward escape'.",
+          "The target platform Unity is not suitable for the game's intended gameplay mechanics.",
+          "The current scope of the game exceeds the production capability and scope, leading to a loss of core functionality.",
+          "The failure rate of the game is high, with a 50% chance of failure and a 30% chance of retrying, indicating significant risk and unreliability."
+        ],
+        "reason": "The current design fails to meet the core learning objectives, is not suitable for the target platform, exceeds the production capability and scope, and has a high risk of failure, making it unsuitable for active state."
+      },
+      "balance": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "CORE_FUN_TO_LEARN",
+          "READABLE_STEALTH_COMEDY",
+          "SHORT_OBJECTIVE_CHAINS",
+          "RISK-REWARD_ESCAPE"
+        ],
+        "reason": "CONSENSUS: 새 기능을 창작하지 않고 대표의견을 정리한다. 새 기능은 CONSENSUS를 사용하지 않고 대표의견을 정리한다."
+      }
+    }
+  },
+  "tasks": {
+    "independent_department_reviews::development::llama3.2:1b": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "independent_department_reviews::graphics::llama3.2:1b": {
+      "keep": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "evidence": [
+        "Subway Surfers"
+      ],
+      "questions": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ]
+    },
+    "independent_department_reviews::balance::gemma3:1b": {
+      "keep": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+      ],
+      "fix": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+      ],
+      "add": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+      ],
+      "risks": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+      ],
+      "evidence": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+      ],
+      "questions": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계"
+      ]
+    },
+    "independent_department_reviews::graphics::gemma3:1b": {
+      "keep": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "fix": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "add": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "risks": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "evidence": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "questions": [
+        "AL DAMBANG DEWORKS"
+      ]
+    },
+    "independent_department_reviews::planning::llama3.2:1b": {
+      "keep": [
+        "fix"
+      ],
+      "fix": [
+        "add"
+      ],
+      "add": [
+        "risks"
+      ],
+      "risks": [
+        "evidence"
+      ],
+      "evidence": [
+        "questions"
+      ],
+      "questions": []
+    },
+    "independent_department_reviews::planning::gemma3:1b": {
+      "keep": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "fix": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "add": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "risks": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "evidence": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "questions": [
+        "What is the difference between the playeR choice and the purpose of the signature systems?"
+      ]
+    },
+    "independent_department_reviews::qa::qwen2.5:1.5b": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ]
+    },
+    "independent_department_reviews::balance::qwen3:0.6b": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "This game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying."
+      ],
+      "evidence": [
+        "Reference games: Subway Surfers, Crossy Road, and MONOPOLY GO!"
+      ],
+      "questions": [
+        "What is the core gameplay loop for this game?"
+      ]
+    },
+    "independent_department_reviews::qa::gemma3:1b": {
+      "keep": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+      ],
+      "fix": [
+        "플레이는 간단한 한두 번 누르기 또는 스위프 입력과 명확한 점수, 거리 또는 짧은 세션 목표를 플레이합니다."
+      ],
+      "add": [
+        "시작을 간단한 한두 번 누르기 또는 스위프 입력으로 시작합니다. 간단한 실행을 통해 긍정적인 피드백을 얻고, 보상을 수집하고, 작은 위험 또는 경로 선택을 합니다. 그런 다음 실행을 멈추거나 실패합니다. 점수 또는 보상을 받고, 점수"
+      ],
+      "risks": [
+        "플레이어의 긍정적인 피드백을 받지 않고 게임을 멈추는 것을 방지하기 위해 플레이어는 게임을 멈추거나 실패할 수 있습니다."
+      ],
+      "evidence": [
+        "플레이어의 긍정적인 피드백을 받지 않고 게임을 멈추는 것을 방지하기 위해 플레이어는 게임을 멈추거나 실패할 수 있습니다."
+      ],
+      "questions": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계합니다."
+      ]
+    },
+    "independent_department_reviews::development::qwen3:0.6b": {
+      "keep": [
+        "AL DAMBANG DEWORKS is a core system that defines the game's core mechanics and player choices, ensuring consistency and player-fac"
+      ],
+      "fix": [
+        "The MARKET_EVIDENCE_SUMMARY reference is not explicitly linked to the game, which could affect its marketability and design."
+      ],
+      "add": [
+        "The platformFitPlan is aligned with the target platform (UNITY) and the implementation systems (Unity3D, C#), ensuring a seamless,"
+      ],
+      "risks": [
+        "The failureRetryRisk indicates a high risk of failure, which could impact the game's success and player engagement."
+      ],
+      "evidence": [
+        "The reference games (Subway Surfers, Crossy Road, MONOPOLY GO!) provide market data that supports the game's potential."
+      ],
+      "questions": [
+        "The design elements (AL DAMBANG DEWORKS) and their connections to other systems (STRICT_GATE_FEEDBACK, BASE_DESIGN) need further"
+      ]
+    },
+    "independent_department_reviews::graphics::qwen3:0.6b": {
+      "keep": [
+        "AL DAMBANG DEWORKS is a casual game with a focus on readable stealth comedy and short objective chains, designed to be simple and "
+      ],
+      "fix": [
+        "AL DAMBANG DEWORKS has a distinct identity and is a creative game design concept that aligns with the target market and audience."
+      ],
+      "add": [
+        "AL DAMBANG DEWORKS has a strong focus on player choice and a clear narrative, making it an engaging and memorable experience."
+      ],
+      "risks": [
+        "AL DAMBANG DEWORKS has a unique visual identity and is designed to be accessible and user-friendly on mobile platforms."
+      ],
+      "evidence": [
+        "AL DAMBANG DEWORKS has a strong foundation in the core fun elements and a clear structure that aligns with the game's objectives."
+      ],
+      "questions": [
+        "AL DAMBANG DEWORKS has a distinct identity and is a creative game design concept that aligns with the target market and audience."
+      ]
+    },
+    "independent_department_reviews::development::gemma3:1b": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "MARKET_EVIDENCE_SUMMARY"
+      ],
+      "add": [
+        "technicalAssumptions"
+      ],
+      "risks": [
+        "failureRetryRisk"
+      ],
+      "evidence": [
+        "designElement:AL DAMBANG DEWORKS, responsibleSystem:STRICT_GATE_FEEDBACK, validationEvidence:AL DAMBANG DEWORKS"
+      ],
+      "questions": [
+        "AL DAMBANG DEWORKS의 핵심 루프는 무엇인가요?"
+      ]
+    },
+    "independent_department_reviews::qa::qwen3:0.6b": {
+      "keep": [
+        "What is the purpose of the core loop in AL DAMBANG DEWORKS?"
+      ],
+      "fix": [
+        "What is the difference between the playeR choice and the purpose of the signature systems?"
+      ],
+      "add": [
+        "What is the direction of the progression in AL DAMBANG DEWORKS?"
+      ],
+      "risks": [
+        "This game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "What is the purpose of the core loop in AL DAMBANG DEWORKS?"
+      ]
+    },
+    "independent_department_reviews::planning::qwen3:0.6b": {
+      "keep": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "fix": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "add": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "risks": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "evidence": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "questions": [
+        "What is the difference between the playeR choice and the purpose of the signature systems?"
+      ]
+    },
+    "independent_department_reviews::balance::smollm2:1.7b": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "evidence": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+      ],
+      "questions": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+      ]
+    },
+    "department_representatives::planning": {
+      "keep": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "fix": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "add": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "risks": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "evidence": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "questions": []
+    },
+    "department_representatives::graphics": {
+      "keep": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "fix": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "add": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "risks": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "evidence": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "questions": [
+        "AL DAMBANG DEWORKS"
+      ]
+    },
+    "department_representatives::development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "department_representatives::qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ]
+    },
+    "department_representatives::balance": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "This game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying."
+      ],
+      "evidence": [
+        "Reference games: Subway Surfers, Crossy Road, and MONOPOLY GO!"
+      ],
+      "questions": [
+        "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+      ]
+    },
+    "lead_rebuttals::planning": {
+      "accept": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "challenge": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "revision": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "reason": "AL DAMBANG DEWORKS"
+    },
+    "lead_rebuttals::graphics": {
+      "accept": [
+        "AL DAMBANG DEWORKS",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "AL DAMBANG DEWORKS",
+        "game-seed"
+      ],
+      "revision": [
+        "AL DAMBANG DEWORKS",
+        "play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "reason": "The current design lacks sufficient feedback and risk management, leading to a potentially frustrating experience for the player.  We need to prioritize a more engaging and responsive gameplay loop."
+    },
+    "lead_rebuttals::development": {
+      "accept": [
+        "own",
+        "others"
+      ],
+      "challenge": [
+        "own",
+        "others"
+      ],
+      "revision": [
+        "own",
+        "others"
+      ],
+      "reason": "own"
+    },
+    "lead_rebuttals::qa": {
+      "accept": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "challenge": [
+        "AL DAMBANG DEWORKS"
+      ],
+      "revision": [
+        "game-seed"
+      ],
+      "reason": "QA 부서의 책임범위는 모든 작업을 포함하여 모든 개발 과정에서의 품질 관리와 테스트를 포함합니다. 이는 QA 부서의 역할을 완벽하게 수행하기 위한 것입니다."
+    },
+    "lead_rebuttals::balance": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks"
+      ],
+      "revision": [
+        "evidence",
+        "questions"
+      ],
+      "reason": "OWN"
+    },
+    "five_lead_fatal_review::planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The market evidence shows that the target market is global and the game has a strong potential for growth, as evidenced by the global top downloads and revenue figures.",
+        "The game has a high risk of failure, with a 50% chance of failure and a 30% chance of retrying, which indicates a need for careful planning and design."
+      ],
+      "reason": "The game has a strong market presence and potential for growth, with a high risk of failure, which indicates a need for careful planning and design."
+    },
+    "five_lead_fatal_review::graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+      ],
+      "evidence": [
+        "AL DAMBANG DEWORKS의 핵심 게임 플레이는 짧고, 텍스트 기반의 간단한 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 기반의 텍스트 텍"
+      ],
+      "reason": "수정 후에도 핵심 게임 플레이가 재현 불가능하며, IP/표현 의존성으로 인해 재설계가 어렵습니다. 핵심 게임 플레이의 핵심적인 부분은 수정 후에도 남은 치명 조건으로 인해 재설계가 불가능합니다."
+    },
+    "five_lead_fatal_review::development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "SUBWAY SURFERS",
+        "CROSSY ROAD",
+        "MONOPOLY GO!",
+        "GLOBAL CASUAL SESSION SIGNAL"
+      ],
+      "reason": "사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다."
+    },
+    "five_lead_fatal_review::qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "The current design fails to meet the core learning objectives of 'readable stealth comedy', 'short objective chains', and 'risk-reward escape'.",
+        "The target platform Unity is not suitable for the game's intended gameplay mechanics.",
+        "The current scope of the game exceeds the production capability and scope, leading to a loss of core functionality.",
+        "The failure rate of the game is high, with a 50% chance of failure and a 30% chance of retrying, indicating significant risk and unreliability."
+      ],
+      "reason": "The current design fails to meet the core learning objectives, is not suitable for the target platform, exceeds the production capability and scope, and has a high risk of failure, making it unsuitable for active state."
+    },
+    "five_lead_fatal_review::balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "CORE_FUN_TO_LEARN",
+        "READABLE_STEALTH_COMEDY",
+        "SHORT_OBJECTIVE_CHAINS",
+        "RISK-REWARD_ESCAPE"
+      ],
+      "reason": "CONSENSUS: 새 기능을 창작하지 않고 대표의견을 정리한다. 새 기능은 CONSENSUS를 사용하지 않고 대표의견을 정리한다."
+    }
+  },
+  "createdAt": "2026-09-18T04:21:33.854Z",
+  "updatedAt": "2026-09-18T04:49:41.183Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "completedAt": "2026-09-18T04:49:41.183Z"
+}
