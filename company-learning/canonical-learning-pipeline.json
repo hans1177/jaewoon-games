@@ -139,5 +139,54 @@
     "experienceIngestTool": "tools/vibe2-authorized-source-memory.mjs",
     "trainingIngestTool": "tools/vibe2-distillation-ingest.mjs",
     "modelTrainingPromotion": "WAITING_FOR_GLOBAL_VERIFIED_SAMPLE_THRESHOLDS"
+  },
+  "transformativeRecombinationPolicy": {
+    "enabled": true,
+    "copyMode": false,
+    "transformativeReinterpretation": true,
+    "minimumDistinctSourceProjects": 2,
+    "originalProjectModifierRequired": true,
+    "rawSourceOutputAllowed": false,
+    "rawAssetOutputAllowed": false,
+    "verbatimCodeReuseAllowed": false,
+    "sourceSpecificIdentifiersAllowed": false,
+    "sourceIdentityLogoTradeDressOutputAllowed": false,
+    "commercialRuntimeReference": {
+      "inputAuthority": "OBSERVED_RUNTIME_FEATURES_ONLY",
+      "sourceCodeExtraction": false,
+      "rawAssetExtraction": false,
+      "internalAlgorithmExtraction": false,
+      "mayContribute": [
+        "gameplay-flow",
+        "input-pattern",
+        "ui-ux-structure",
+        "progression-pattern",
+        "session-loop",
+        "visual-role-observation",
+        "runtime-performance-and-stability"
+      ]
+    },
+    "authorizedSourceReference": {
+      "inputAuthority": "AUTHORIZED_SOURCE_EVIDENCE_PASS",
+      "mayContribute": [
+        "source-architecture",
+        "asset-role-structure",
+        "native-library-structure",
+        "algorithm-structure",
+        "runtime-observation"
+      ],
+      "rawOutputStillForbidden": true
+    },
+    "generatedOutputRequirements": [
+      "NEW_IMPLEMENTATION",
+      "NEW_ASSET_EXPRESSION",
+      "MULTI_PROJECT_BLEND",
+      "ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "INDEPENDENT_QA",
+      "RUNTIME_AND_REGRESSION_GATES"
+    ],
+    "canonicalPumpOutput": "company-learning/vibe3-recombination-memory.json",
+    "separatePipelineAllowed": false,
+    "countsAsTrainingSample": false
   }
 }
