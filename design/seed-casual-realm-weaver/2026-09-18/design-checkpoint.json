@@ -1,0 +1,1375 @@
+{
+  "contractVersion": 1,
+  "gameId": "seed-casual-realm-weaver",
+  "date": "2026-09-18",
+  "seedId": "OWNER-ALL-DESIGN-RESET-SEED-CASUAL-REALM-WEAVER-20260917",
+  "fingerprint": "cedeaa0e514c82d091839d2808f47cad4d0b86fbadf6e5687cbea2439d454125",
+  "policyDigest": "57957b1b1ae2662bd6fc5f377031f469b6f581dd0f523dadb26c80ea871e9510",
+  "status": "COMPLETE",
+  "completedPhases": [
+    "designer_draft_base",
+    "designer_draft_gate",
+    "independent_department_reviews",
+    "department_representatives",
+    "lead_rebuttals",
+    "cross_department_meeting",
+    "designer_revision_base",
+    "designer_revision_gate",
+    "five_lead_fatal_review"
+  ],
+  "phases": {
+    "designer_draft_base": {
+      "identity": "세계의 직조자",
+      "playerFantasy": "세계의 직조자",
+      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "name": "세계의 직조자",
+          "purpose": "Core system for the game",
+          "playerChoice": "Player choice for the game"
+        },
+        {
+          "name": "세계의 직조자",
+          "purpose": "Core system for the game",
+          "playerChoice": "Player choice for the game"
+        }
+      ],
+      "progressionDirection": "Player progress is tracked and rewarded through a series of challenges and rewards.",
+      "visualDirection": "The game features a colorful and vibrant art style, with a focus on exploration and discovery.",
+      "mobileUx": "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay.",
+      "marketTargetDirection": "The game is designed for a global audience, with a focus on casual gamers and players who enjoy mobile games.",
+      "steamExpansionDecision": "The game will feature a new 'Expansion' mode, which will allow players to access new content and gameplay mechanics.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "The game will feature a new 'Multiplayer' mode, which will allow players to compete against each other in a variety of game modes.",
+      "technicalAssumptions": [
+        "Unity 3D",
+        "C# programming language"
+      ],
+      "validationQuestions": [
+        "What is the primary purpose of the game?",
+        "What is the core feature of the game?",
+        "What is the main gameplay mechanic of the game?"
+      ],
+      "openQuestions": [
+        "What is the target audience for the game?",
+        "What is the expected player retention rate?",
+        "What is the expected revenue growth rate?"
+      ]
+    },
+    "designer_draft_gate": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "GAME_SEED",
+          "toSystem": "STRICT_GATE_FEEDBACK",
+          "trigger": "game-seed-strict-gate-feedback",
+          "stateChange": "true"
+        },
+        {
+          "fromSystem": "GAME_SEED",
+          "toSystem": "BASE_DESIGN",
+          "trigger": "game-seed-base-design",
+          "stateChange": "true"
+        },
+        {
+          "fromSystem": "STRICT_GATE_FEEDBACK",
+          "toSystem": "BASE_DESIGN",
+          "trigger": "strict-gate-feedback-base-design",
+          "stateChange": "true"
+        }
+      ],
+      "progressionEconomyBalance": {
+        "progressionLoop": "true",
+        "resourceFlow": "true",
+        "balanceRules": "true"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "game-seed-1.0",
+          "newGameplay": "true",
+          "systemImpact": "true"
+        },
+        {
+          "milestone": "game-seed-2.0",
+          "newGameplay": "true",
+          "systemImpact": "true"
+        },
+        {
+          "milestone": "game-seed-3.0",
+          "newGameplay": "true",
+          "systemImpact": "true"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "game-seed-1.0-failure",
+          "game-seed-2.0-failure",
+          "game-seed-3.0-failure"
+        ],
+        "retryFlow": "true",
+        "riskPressure": "true",
+        "recoveryRules": "true"
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "C#",
+        "performanceBudget": "true",
+        "sessionConstraints": "true"
+      },
+      "uxAccessibilityPlan": {
+        "hudPriorities": "true",
+        "touchAndInput": "true",
+        "readability": "true",
+        "accessibility": "true"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "세계의 직조자",
+        "audioIdentity": "세계의 직조자",
+        "gameplayFeedbackSync": "true"
+      },
+      "implementationTraceability": [
+        {
+          "designElement": "game-seed-1.0",
+          "responsibleSystem": "STRICT_GATE_FEEDBACK",
+          "validationEvidence": "true"
+        },
+        {
+          "designElement": "game-seed-2.0",
+          "responsibleSystem": "STRICT_GATE_FEEDBACK",
+          "validationEvidence": "true"
+        },
+        {
+          "designElement": "game-seed-3.0",
+          "responsibleSystem": "STRICT_GATE_FEEDBACK",
+          "validationEvidence": "true"
+        }
+      ]
+    },
+    "independent_department_reviews": {
+      "balance::gemma3:1b": {
+        "keep": [
+          "Core System Design Review - Game Seed"
+        ],
+        "fix": [
+          "Market Evidence Summary - Target Design Reference"
+        ],
+        "add": [
+          "Core Loop - Game Seed"
+        ],
+        "risks": [
+          "Failure Retry Risk"
+        ],
+        "evidence": [
+          "Game Seed Market Evidence"
+        ],
+        "questions": [
+          "Game Seed Design Review"
+        ]
+      },
+      "development::gemma3:1b": {
+        "keep": [
+          "Core Loop Review - Gameplay Design Consistency Check"
+        ],
+        "fix": [
+          "Game Seed Review - Core Loop and System Integration Verification"
+        ],
+        "add": [
+          "Market Evidence Review - Target Market Relevance and Competitive Analysis"
+        ],
+        "risks": [
+          "Technical Assumptions Review - Unity Engine Compatibility"
+        ],
+        "evidence": [
+          "Game Seed Data Review - Core Loop, System Integration, and Platform Fit Plan"
+        ],
+        "questions": [
+          "Core Loop - Is it a truly engaging and repeatable experience?"
+        ]
+      },
+      "graphics::gemma3:1b": {
+        "keep": [
+          "Core system for the game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. Mobile UX"
+        ],
+        "fix": [
+          "The game features a colorful and vibrant art style, with a focus on exploration and discovery. Art Audio Identity"
+        ],
+        "add": [
+          "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. Platform Fit Plan"
+        ],
+        "risks": [
+          "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay.  The game is designed to"
+        ],
+        "evidence": [
+          "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay.  The game is designed to"
+        ],
+        "questions": [
+          "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay.  The game is designed to"
+        ]
+      },
+      "planning::gemma3:1b": {
+        "keep": [
+          "核心设计"
+        ],
+        "fix": [
+          "市场证据总结"
+        ],
+        "add": [
+          "游戏设计"
+        ],
+        "risks": [
+          "失败重现"
+        ],
+        "evidence": [
+          "市场证据总结"
+        ],
+        "questions": [
+          "目标受众"
+        ]
+      },
+      "qa::gemma3:1b": {
+        "keep": [
+          "GAME_SEED_version"
+        ],
+        "fix": [
+          "GAME_SEED_seedId"
+        ],
+        "add": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "risks": [
+          "failureRetryRisk"
+        ],
+        "evidence": [
+          "validationQuestions"
+        ],
+        "questions": [
+          "What is the primary purpose of the game?"
+        ]
+      },
+      "development::llama3.2:1b": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed"
+        ]
+      },
+      "graphics::llama3.2:1b": {
+        "keep": [
+          "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "Use a more complex input system to reduce the number of taps and swipes required to progress."
+        ],
+        "evidence": [
+          "Owner ordered all current catalog games back to design. Existing builds are preserved as reference only until a new design passes"
+        ],
+        "questions": [
+          "What is the primary goal of the game? (Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or"
+        ]
+      },
+      "planning::llama3.2:1b": {
+        "keep": [
+          "fix"
+        ],
+        "fix": [
+          "add"
+        ],
+        "add": [
+          "risks"
+        ],
+        "risks": [
+          "evidence"
+        ],
+        "evidence": [
+          "questions"
+        ],
+        "questions": []
+      },
+      "qa::qwen2.5:1.5b": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      },
+      "balance::qwen3:0.6b": {
+        "keep": [
+          "세계의 직조자의 핵심 재미를 실제 플레이 선택으로 재정의"
+        ],
+        "fix": [
+          "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
+        ],
+        "add": [
+          "모바일에서도 즉시 이해되는 입력과 피드백"
+        ],
+        "risks": [
+          "모바일에서도 즉시 이해되는 입력과 피드백"
+        ],
+        "evidence": [
+          "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
+        ],
+        "questions": [
+          "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
+        ]
+      },
+      "development::qwen3:0.6b": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "game-seed-1.0-failure, game-seed-2.0-failure, game-seed-3.0-failure"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-1.0-failure, game-seed-2.0-failure, game-seed-3.0-failure"
+        ]
+      },
+      "graphics::qwen3:0.6b": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "Ensure that the core fun is clearly defined and tied to the core systems."
+        ],
+        "evidence": [
+          "Market evidence shows that the game has a strong global presence and is well-positioned for mobile play."
+        ],
+        "questions": [
+          "How to ensure that the core systems are integrated and the core fun is clearly defined?"
+        ]
+      },
+      "planning::qwen3:0.6b": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "Player progress is tracked and rewarded through a series of challenges and rewards."
+        ],
+        "evidence": [
+          "The game is designed for a global audience, with a focus on casual gamers and players who enjoy mobile games."
+        ],
+        "questions": [
+          "What is the target audience for the game? What is the expected player retention rate? What is the expected revenue growth rate?"
+        ]
+      },
+      "qa::qwen3:0.6b": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "game-seed-1.0-failure, game-seed-2.0-failure, game-seed-3.0-failure"
+        ],
+        "evidence": [
+          "globalTopDownloadsDecember2025Rank, globalTopGrossingDecember2025Rank, globalMedianSessionsPerDayApprox"
+        ],
+        "questions": [
+          "What is the primary purpose of the game? What is the core feature of the game? What is the main gameplay mechanic of the game?"
+        ]
+      },
+      "balance::smollm2:1.7b": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [],
+        "evidence": [],
+        "questions": []
+      }
+    },
+    "department_representatives": {
+      "planning": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+        ],
+        "fix": [
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [
+          "Player progress is tracked and rewarded through a series of challenges and rewards."
+        ],
+        "evidence": [
+          "The game is designed for a global audience, with a focus on casual gamers and players who enjoy mobile games."
+        ],
+        "questions": []
+      },
+      "graphics": {
+        "keep": [
+          "Core system for the game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. Mobile UX",
+          "The game features a colorful and vibrant art style, with a focus on exploration and discovery. Art Audio Identity"
+        ],
+        "fix": [
+          "The game features a colorful and vibrant art style, with a focus on exploration and discovery. Art Audio Identity"
+        ],
+        "add": [
+          "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. Platform Fit Plan"
+        ],
+        "risks": [
+          "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. The game is designed to"
+        ],
+        "evidence": [
+          "Market evidence shows that the game has a strong global presence and is well-positioned for mobile play."
+        ],
+        "questions": [
+          "How to ensure that the core systems are integrated and the core fun is clearly defined?"
+        ]
+      },
+      "development": {
+        "keep": [
+          "game-seed"
+        ],
+        "fix": [
+          "game-seed"
+        ],
+        "add": [
+          "game-seed"
+        ],
+        "risks": [
+          "game-seed"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "game-seed-1.0-failure",
+          "game-seed-2.0-failure"
+        ]
+      },
+      "qa": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      },
+      "balance": {
+        "keep": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "fix": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "add": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "risks": [],
+        "evidence": [],
+        "questions": [
+          "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
+          "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
+        ]
+      }
+    },
+    "lead_rebuttals": {
+      "planning": {
+        "accept": [
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+          "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+        ],
+        "challenge": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "revision": [
+          "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        ],
+        "reason": "The core systems are designed to be integrated and the core fun is clearly defined, ensuring a seamless user experience."
+      },
+      "graphics": {
+        "accept": [
+          "fix",
+          "add",
+          "risks"
+        ],
+        "challenge": [
+          "plan",
+          "evidence",
+          "questions"
+        ],
+        "revision": [
+          "keep",
+          "fix",
+          "add"
+        ],
+        "reason": "based on the provided feedback"
+      },
+      "development": {
+        "accept": [
+          "keep",
+          "fix",
+          "add"
+        ],
+        "challenge": [
+          "risks",
+          "evidence",
+          "questions"
+        ],
+        "revision": [
+          "balance"
+        ],
+        "reason": "이러한 부서의 대표 의견은 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정해야 합니다. 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정하는 것은 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정하는 것을 의미합니다. 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정하는 것은 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정하는 것을 의미합니다."
+      },
+      "qa": {
+        "accept": [
+          "OWN"
+        ],
+        "challenge": [
+          "OTHERS"
+        ],
+        "revision": [
+          "development"
+        ],
+        "reason": "자기 책임범위에서 수용합니다."
+      },
+      "balance": {
+        "accept": [
+          "OWN",
+          "OTHERS"
+        ],
+        "challenge": [
+          "planning",
+          "graphics",
+          "development"
+        ],
+        "revision": [
+          "keep",
+          "fix",
+          "add"
+        ],
+        "reason": "너는 balance 부서 Lead AI다. 다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정한다."
+      }
+    },
+    "cross_department_meeting": {
+      "summary": "서로 다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정한다.",
+      "decisions": [
+        {
+          "topic": "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
+          "status": "CONFLICT",
+          "reason": "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
+          "departments": [
+            "development",
+            "qa",
+            "balance"
+          ]
+        }
+      ]
+    },
+    "designer_revision_base": {
+      "identity": "세계의 직조자",
+      "playerFantasy": "세계의 직조자",
+      "coreFun": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "coreLoop": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "signatureSystems": [
+        {
+          "name": "세계의 직조자",
+          "purpose": "Core system for the game",
+          "playerChoice": "Player choice for the game"
+        },
+        {
+          "name": "세계의 직조자",
+          "purpose": "Core system for the game",
+          "playerChoice": "Player choice for the game"
+        }
+      ],
+      "progressionDirection": "Player progress is tracked and rewarded through a series of challenges and rewards.",
+      "visualDirection": "The game features a colorful and vibrant art style, with a focus on exploration and discovery.",
+      "mobileUx": "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay.",
+      "marketTargetDirection": "The game is designed for a global audience, with a focus on casual gamers and players who enjoy mobile games.",
+      "steamExpansionDecision": "The game will feature a new 'Expansion' mode, which will allow players to access new content and gameplay mechanics.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "The game will feature a new 'Multiplayer' mode, which will allow players to compete against each other in a variety of game modes.",
+      "technicalAssumptions": [
+        "Unity 3D",
+        "C# programming language"
+      ],
+      "validationQuestions": [
+        "What is the primary purpose of the game?",
+        "What is the core feature of the game?",
+        "What is the main gameplay mechanic of the game?"
+      ],
+      "openQuestions": [
+        "What is the target audience for the game?",
+        "What is the expected player retention rate?",
+        "What is the expected revenue growth rate?"
+      ]
+    },
+    "designer_revision_gate": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "GAME_SEED",
+          "toSystem": "STRICT_GATE_FEEDBACK",
+          "trigger": "game-seed-strict-gate-feedback",
+          "stateChange": "true"
+        },
+        {
+          "fromSystem": "STRICT_GATE_FEEDBACK",
+          "toSystem": "BASE_DESIGN",
+          "trigger": "strict-gate-feedback-base-design",
+          "stateChange": "true"
+        },
+        {
+          "fromSystem": "STRICT_GATE_FEEDBACK",
+          "toSystem": "BASE_DESIGN",
+          "trigger": "strict-gate-feedback-base-design",
+          "stateChange": "true"
+        }
+      ],
+      "progressionEconomyBalance": {
+        "progressionLoop": "true",
+        "resourceFlow": "true",
+        "balanceRules": "true"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "game-seed-1.0",
+          "newGameplay": "true",
+          "systemImpact": "true"
+        },
+        {
+          "milestone": "game-seed-2.0",
+          "newGameplay": "true",
+          "systemImpact": "true"
+        },
+        {
+          "milestone": "game-seed-3.0",
+          "newGameplay": "true",
+          "systemImpact": "true"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "game-seed-1.0-failure",
+          "game-seed-2.0-failure",
+          "game-seed-3.0-failure"
+        ],
+        "retryFlow": "true",
+        "riskPressure": "true",
+        "recoveryRules": "true"
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "C#",
+        "performanceBudget": "true",
+        "sessionConstraints": "true"
+      },
+      "uxAccessibilityPlan": {
+        "hudPriorities": "true",
+        "touchAndInput": "true",
+        "readability": "true",
+        "accessibility": "true"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "세계의 직조자",
+        "audioIdentity": "세계의 직조자",
+        "gameplayFeedbackSync": "true"
+      },
+      "implementationTraceability": [
+        {
+          "designElement": "game-seed-1.0",
+          "responsibleSystem": "STRICT_GATE_FEEDBACK",
+          "validationEvidence": "true"
+        },
+        {
+          "designElement": "game-seed-2.0",
+          "responsibleSystem": "STRICT_GATE_FEEDBACK",
+          "validationEvidence": "true"
+        },
+        {
+          "designElement": "game-seed-3.0",
+          "responsibleSystem": "STRICT_GATE_FEEDBACK",
+          "validationEvidence": "true"
+        }
+      ]
+    },
+    "five_lead_fatal_review": {
+      "planning": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [],
+        "evidence": [
+          "The game's core fun is redefined through a new system that prioritizes player engagement and progression, aligning with global casual gaming trends.",
+          "The market evidence supports the game's global target audience and casual player base, with strong references to top mobile game rankings.",
+          "The design is flexible and adaptable, with a clear progression path and system impact plan."
+        ],
+        "reason": "The game's design is aligned with current market trends, and there is no indication of a fatal design barrier that would prevent further development."
+      },
+      "graphics": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+        ],
+        "evidence": [],
+        "reason": "수정 설계를 다시 검토해야 합니다. 핵심 재미의 재정의, 시장의 지지, 수정 가능성 문제로 인해 DISCARD를 선택해야 합니다. 기존 구현의 점수 승계는 핵심 재미와 시스템 연결을 확정하는 데 필요한 핵심 조건이 아니므로, 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 DISCARD를 선택해야 합니다."
+      },
+      "development": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다",
+          "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+          "모바일에서도 즉시 이해되는 입력과 피드백",
+          "세계의 직조자을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다"
+        ],
+        "reason": "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다"
+      },
+      "qa": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "The current design of 'World's Weavers' is based on the existing implementation's score and barriers, which cannot be easily replaced without redesigning the entire system.",
+          "The selected target platform (Unity) cannot be used as a product due to performance budget constraints.",
+          "The required production scope exceeds the capability and scope of the design, leading to the destruction of core fun."
+        ],
+        "reason": "The above fatal criteria indicate that the current design cannot be easily modified without redesigning the entire system, which is essential for maintaining core fun and ensuring the platform's capability."
+      },
+      "balance": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [],
+        "reason": "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
+      }
+    }
+  },
+  "tasks": {
+    "independent_department_reviews::graphics::llama3.2:1b": {
+      "keep": [
+        "start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "Use a more complex input system to reduce the number of taps and swipes required to progress."
+      ],
+      "evidence": [
+        "Owner ordered all current catalog games back to design. Existing builds are preserved as reference only until a new design passes"
+      ],
+      "questions": [
+        "What is the primary goal of the game? (Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or"
+      ]
+    },
+    "independent_department_reviews::balance::gemma3:1b": {
+      "keep": [
+        "Core System Design Review - Game Seed"
+      ],
+      "fix": [
+        "Market Evidence Summary - Target Design Reference"
+      ],
+      "add": [
+        "Core Loop - Game Seed"
+      ],
+      "risks": [
+        "Failure Retry Risk"
+      ],
+      "evidence": [
+        "Game Seed Market Evidence"
+      ],
+      "questions": [
+        "Game Seed Design Review"
+      ]
+    },
+    "independent_department_reviews::development::llama3.2:1b": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "game-seed"
+      ]
+    },
+    "independent_department_reviews::planning::llama3.2:1b": {
+      "keep": [
+        "fix"
+      ],
+      "fix": [
+        "add"
+      ],
+      "add": [
+        "risks"
+      ],
+      "risks": [
+        "evidence"
+      ],
+      "evidence": [
+        "questions"
+      ],
+      "questions": []
+    },
+    "independent_department_reviews::graphics::gemma3:1b": {
+      "keep": [
+        "Core system for the game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. Mobile UX"
+      ],
+      "fix": [
+        "The game features a colorful and vibrant art style, with a focus on exploration and discovery. Art Audio Identity"
+      ],
+      "add": [
+        "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. Platform Fit Plan"
+      ],
+      "risks": [
+        "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay.  The game is designed to"
+      ],
+      "evidence": [
+        "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay.  The game is designed to"
+      ],
+      "questions": [
+        "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay.  The game is designed to"
+      ]
+    },
+    "independent_department_reviews::qa::qwen2.5:1.5b": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ]
+    },
+    "independent_department_reviews::planning::gemma3:1b": {
+      "keep": [
+        "核心设计"
+      ],
+      "fix": [
+        "市场证据总结"
+      ],
+      "add": [
+        "游戏设计"
+      ],
+      "risks": [
+        "失败重现"
+      ],
+      "evidence": [
+        "市场证据总结"
+      ],
+      "questions": [
+        "目标受众"
+      ]
+    },
+    "independent_department_reviews::balance::qwen3:0.6b": {
+      "keep": [
+        "세계의 직조자의 핵심 재미를 실제 플레이 선택으로 재정의"
+      ],
+      "fix": [
+        "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프"
+      ],
+      "add": [
+        "모바일에서도 즉시 이해되는 입력과 피드백"
+      ],
+      "risks": [
+        "모바일에서도 즉시 이해되는 입력과 피드백"
+      ],
+      "evidence": [
+        "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
+      ],
+      "questions": [
+        "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
+      ]
+    },
+    "independent_department_reviews::development::qwen3:0.6b": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "game-seed-1.0-failure, game-seed-2.0-failure, game-seed-3.0-failure"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "game-seed-1.0-failure, game-seed-2.0-failure, game-seed-3.0-failure"
+      ]
+    },
+    "independent_department_reviews::development::gemma3:1b": {
+      "keep": [
+        "Core Loop Review - Gameplay Design Consistency Check"
+      ],
+      "fix": [
+        "Game Seed Review - Core Loop and System Integration Verification"
+      ],
+      "add": [
+        "Market Evidence Review - Target Market Relevance and Competitive Analysis"
+      ],
+      "risks": [
+        "Technical Assumptions Review - Unity Engine Compatibility"
+      ],
+      "evidence": [
+        "Game Seed Data Review - Core Loop, System Integration, and Platform Fit Plan"
+      ],
+      "questions": [
+        "Core Loop - Is it a truly engaging and repeatable experience?"
+      ]
+    },
+    "independent_department_reviews::graphics::qwen3:0.6b": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "Ensure that the core fun is clearly defined and tied to the core systems."
+      ],
+      "evidence": [
+        "Market evidence shows that the game has a strong global presence and is well-positioned for mobile play."
+      ],
+      "questions": [
+        "How to ensure that the core systems are integrated and the core fun is clearly defined?"
+      ]
+    },
+    "independent_department_reviews::qa::gemma3:1b": {
+      "keep": [
+        "GAME_SEED_version"
+      ],
+      "fix": [
+        "GAME_SEED_seedId"
+      ],
+      "add": [
+        "MARKET_EVIDENCE_SUMMARY"
+      ],
+      "risks": [
+        "failureRetryRisk"
+      ],
+      "evidence": [
+        "validationQuestions"
+      ],
+      "questions": [
+        "What is the primary purpose of the game?"
+      ]
+    },
+    "independent_department_reviews::planning::qwen3:0.6b": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "Player progress is tracked and rewarded through a series of challenges and rewards."
+      ],
+      "evidence": [
+        "The game is designed for a global audience, with a focus on casual gamers and players who enjoy mobile games."
+      ],
+      "questions": [
+        "What is the target audience for the game? What is the expected player retention rate? What is the expected revenue growth rate?"
+      ]
+    },
+    "independent_department_reviews::qa::qwen3:0.6b": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "game-seed-1.0-failure, game-seed-2.0-failure, game-seed-3.0-failure"
+      ],
+      "evidence": [
+        "globalTopDownloadsDecember2025Rank, globalTopGrossingDecember2025Rank, globalMedianSessionsPerDayApprox"
+      ],
+      "questions": [
+        "What is the primary purpose of the game? What is the core feature of the game? What is the main gameplay mechanic of the game?"
+      ]
+    },
+    "independent_department_reviews::balance::smollm2:1.7b": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [],
+      "evidence": [],
+      "questions": []
+    },
+    "department_representatives::planning": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
+      ],
+      "fix": [
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [
+        "Player progress is tracked and rewarded through a series of challenges and rewards."
+      ],
+      "evidence": [
+        "The game is designed for a global audience, with a focus on casual gamers and players who enjoy mobile games."
+      ],
+      "questions": []
+    },
+    "department_representatives::graphics": {
+      "keep": [
+        "Core system for the game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. Mobile UX",
+        "The game features a colorful and vibrant art style, with a focus on exploration and discovery. Art Audio Identity"
+      ],
+      "fix": [
+        "The game features a colorful and vibrant art style, with a focus on exploration and discovery. Art Audio Identity"
+      ],
+      "add": [
+        "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. Platform Fit Plan"
+      ],
+      "risks": [
+        "The game is designed to be played on mobile devices, with a focus on touch input and intuitive gameplay. The game is designed to"
+      ],
+      "evidence": [
+        "Market evidence shows that the game has a strong global presence and is well-positioned for mobile play."
+      ],
+      "questions": [
+        "How to ensure that the core systems are integrated and the core fun is clearly defined?"
+      ]
+    },
+    "department_representatives::development": {
+      "keep": [
+        "game-seed"
+      ],
+      "fix": [
+        "game-seed"
+      ],
+      "add": [
+        "game-seed"
+      ],
+      "risks": [
+        "game-seed"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "game-seed-1.0-failure",
+        "game-seed-2.0-failure"
+      ]
+    },
+    "department_representatives::qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ]
+    },
+    "department_representatives::balance": {
+      "keep": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "fix": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "risks": [],
+      "evidence": [],
+      "questions": [
+        "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다.",
+        "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
+      ]
+    },
+    "lead_rebuttals::planning": {
+      "accept": [
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
+      ],
+      "challenge": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "revision": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+      ],
+      "reason": "The core systems are designed to be integrated and the core fun is clearly defined, ensuring a seamless user experience."
+    },
+    "lead_rebuttals::development": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "balance"
+      ],
+      "reason": "이러한 부서의 대표 의견은 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정해야 합니다. 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정하는 것은 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정하는 것을 의미합니다. 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정하는 것은 개발 부서의 책임 범위 내에서 한 번만 수용/반박/수정하는 것을 의미합니다."
+    },
+    "lead_rebuttals::graphics": {
+      "accept": [
+        "fix",
+        "add",
+        "risks"
+      ],
+      "challenge": [
+        "plan",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "based on the provided feedback"
+    },
+    "lead_rebuttals::qa": {
+      "accept": [
+        "OWN"
+      ],
+      "challenge": [
+        "OTHERS"
+      ],
+      "revision": [
+        "development"
+      ],
+      "reason": "자기 책임범위에서 수용합니다."
+    },
+    "lead_rebuttals::balance": {
+      "accept": [
+        "OWN",
+        "OTHERS"
+      ],
+      "challenge": [
+        "planning",
+        "graphics",
+        "development"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "너는 balance 부서 Lead AI다. 다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정한다."
+    },
+    "five_lead_fatal_review::planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The game's core fun is redefined through a new system that prioritizes player engagement and progression, aligning with global casual gaming trends.",
+        "The market evidence supports the game's global target audience and casual player base, with strong references to top mobile game rankings.",
+        "The design is flexible and adaptable, with a clear progression path and system impact plan."
+      ],
+      "reason": "The game's design is aligned with current market trends, and there is no indication of a fatal design barrier that would prevent further development."
+    },
+    "five_lead_fatal_review::graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+      ],
+      "evidence": [],
+      "reason": "수정 설계를 다시 검토해야 합니다. 핵심 재미의 재정의, 시장의 지지, 수정 가능성 문제로 인해 DISCARD를 선택해야 합니다. 기존 구현의 점수 승계는 핵심 재미와 시스템 연결을 확정하는 데 필요한 핵심 조건이 아니므로, 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 DISCARD를 선택해야 합니다."
+    },
+    "five_lead_fatal_review::qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "The current design of 'World's Weavers' is based on the existing implementation's score and barriers, which cannot be easily replaced without redesigning the entire system.",
+        "The selected target platform (Unity) cannot be used as a product due to performance budget constraints.",
+        "The required production scope exceeds the capability and scope of the design, leading to the destruction of core fun."
+      ],
+      "reason": "The above fatal criteria indicate that the current design cannot be easily modified without redesigning the entire system, which is essential for maintaining core fun and ensuring the platform's capability."
+    },
+    "five_lead_fatal_review::development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다",
+        "진행·위험·보상이 서로 연결되는 반복 가능한 핵심 루프",
+        "모바일에서도 즉시 이해되는 입력과 피드백",
+        "세계의 직조자을 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다"
+      ],
+      "reason": "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다"
+    },
+    "five_lead_fatal_review::balance": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [],
+      "reason": "세계의 직조자 기존 구현의 점수나 관문을 승계하지 않고 설계 단계부터 다시 검토해 고유한 핵심 재미와 시스템 연결을 확정한다."
+    }
+  },
+  "createdAt": "2026-09-18T04:21:54.572Z",
+  "updatedAt": "2026-09-18T04:49:28.775Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "completedAt": "2026-09-18T04:49:28.775Z"
+}
