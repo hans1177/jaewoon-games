@@ -123,10 +123,12 @@ function hasStaleFaninEvidence(task = {}) {
   return (task.evidence || []).some((item) => STALE_FANIN_EVIDENCE.has(clean(item)));
 }
 function staleReservation(task = {}, target = {}, nowMs = Date.now()) {
-  if (task.status !== 'running' || !hasStaleFaninEvidence(task)) return false;
+  if (task.status !== 'running') return false;
   const reservedAt = Date.parse(studyReservationAt(task));
-  if (!Number.isFinite(reservedAt)) return true;
-  return nowMs - reservedAt > Number(target.timeoutMs || 180000) + STUDY_RESERVATION_GRACE_MS;
+  if (Number.isFinite(reservedAt)) {
+    return nowMs - reservedAt > Number(target.timeoutMs || 180000) + STUDY_RESERVATION_GRACE_MS;
+  }
+  return hasStaleFaninEvidence(task);
 }
 function taskForTarget(target) {
   const sourceRoot = target.sourceRoot || target.root || `game-study:${target.id}`;
