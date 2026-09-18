@@ -43,3 +43,11 @@ test('guarantees active confirmed games, preserves progress, removes inactive an
     assert.ok(result.removed.includes('missing-from-catalog'));
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
+
+test('empty canonical queue does not redispatch development runtime',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-development-queue-reconcile.yml','utf8');
+  assert.match(workflow,/id:\s*queue_state/);
+  assert.match(workflow,/queue_count=.*development-queue\.json/);
+  assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
+  assert.doesNotMatch(workflow,/name: Dispatch development runtime\n\s*if:\s*\$\{\{\s*always\(\) && !cancelled\(\)\s*\}\}/);
+});
