@@ -11,6 +11,7 @@ import {
   productionClassOf,
 } from './production-classification.mjs';
 import { WEB_VALIDATION_SCHEMA_VERSION } from './company-web-validation-evidence-contract.mjs';
+import { normalizeCatalog, validateNormalizedCatalog } from './game-catalog-normalization.mjs';
 
 const companyPath='company-status.json';
 const supervisionPath='director-supervision-status.json';
@@ -131,6 +132,9 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
     };
   }
   catalog.runtimeCounts={...(catalog.runtimeCounts||{}),canonicalGames:catalog.games.length,homepageInfo:catalog.games.filter(game=>game.homepageInfo?.authority==='company-runtime').length};
+  normalizeCatalog(catalog);
+  const normalized=validateNormalizedCatalog(catalog);
+  if(!normalized.pass)throw new Error('GAME_CATALOG_NORMALIZATION_FAILED:'+normalized.errors.join(','));
   return catalog;
 }
 
@@ -485,6 +489,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   console.log(`COMPANY_POLICY_SOURCE=${company.policy?.sourceOfTruth||'unknown'}`);
   console.log(`COMPANY_HOMEPAGE_RUNTIME_INFO=${catalog.runtimeCounts?.homepageInfo||0}/${catalog.games?.length||0}`);
   console.log(`COMPANY_HOMEPAGE_RUNTIME_AUTHORITY=${catalog.runtimeInfoAuthority||'none'}`);
+  console.log(`COMPANY_CATALOG_NORMALIZED=${catalog.runtimeCounts?.normalizedGames||0}/${catalog.games?.length||0}`);
   console.log(`COMPANY_PRIMARY_PLATFORM=${company.policy?.primaryPlatform||'unknown'}`);
   console.log(`PRODUCTION_CLASS_RELEASE_CONFIRMED=${classResult.state.releaseConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DEVELOPMENT_CONFIRMED=${classResult.state.developmentConfirmedGameIds.join(',')||'none'}`);
