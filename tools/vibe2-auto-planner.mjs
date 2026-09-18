@@ -57,7 +57,8 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
   const tasks=(Array.isArray(queueInput?.tasks)?queueInput.tasks:[]).map(item=>{
     if(!isProductionImplementationTask(item))return item;
     const game=byId.get(clean(item.gameId));
-    if(!game&&registeredHistoricalMaintenanceTask(item,historicalById)){
+    const historicalRegistered=registeredHistoricalMaintenanceTask(item,historicalById);
+    if(!game&&historicalRegistered){
       const recovered={...item,historicalDeploymentRecovery:true};
       if(clean(item.status).toLowerCase()==='cancelled'&&clean(item.blocker)==='lifecycle-inactive:MISSING_FROM_CATALOG'){
         return{...recovered,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE','self-recovery:HISTORICAL_DEPLOYMENT_FLAG_RESTORED'])]};
@@ -69,6 +70,13 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
       if(item.status==='queued')return{...item,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-sync:${state}`])]};
       if(item.status==='running')return{...item,blocker:`lifecycle-stop-requested:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-stop-requested:${state}`])]};
       return item;
+    }
+    if(historicalRegistered){
+      const recovered={...item,historicalDeploymentRecovery:true};
+      if(clean(item.status).toLowerCase()==='cancelled'&&clean(item.blocker)==='production-authority-inactive:DESIGN_ONLY'){
+        return{...recovered,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(item.evidence||[]),'production-authority-sync:HISTORICAL_REGISTRY_ACTIVE','self-recovery:HISTORICAL_MAINTENANCE_AUTHORITY_RESTORED'])]};
+      }
+      return recovered;
     }
     const currentReleaseState=stateFromCatalog(game);
     if(!['release-confirmed','development-confirmed'].includes(currentReleaseState)&&['queued','running','blocked'].includes(clean(item.status).toLowerCase())){
