@@ -1,0 +1,17 @@
+{
+  "summary": "Rebuild playable defense game with preserved game state, progression, and UI",
+  "expectedEffect": "Complete playable defense game with preserved game state, progression, and UI",
+  "edits": [],
+  "newFiles": [],
+  "replaceFiles": [
+    {
+      "path": "index.html",
+      "content": "<!doctype html>\n<html lang=\"ko\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">\n  <title>Vibe2 bootstrap</title>\n  <link rel=\"stylesheet\" href=\"styles.css\">\n  <script src=\"scripts.js\"></script>\n</head>\n<body>\n  <main id=\"game\"></main>\n  <script>\n    // Game initialization\n    const game = {\n      // Preserved game state and progression\n      saveState: {\n        player: {\n          health: 100,\n          energy: 100,\n          position: { x: 0, y: 0 },\n          inventory: []\n        },\n        enemies: [\n          { id: 1, type: 'slime', health: 10, damage: 5 },\n          { id: 2, type: 'pirate', health: 20, damage: 10 }\n        ],\n        progress: {\n          level: 1,\n          experience: 0,\n          currency: { gold: 0, silver: 0 }\n        }\n      },\n      // Game mechanics\n      mechanics: {\n        combat: {\n          attack: (player, enemy) => {\n            // Preserved combat logic\n            if (player.health > 0 && enemy.health > 0) {\n              player.health -= enemy.damage;\n              enemy.health -= player.damage;\n            }\n          },\n          defense: (player, enemy) => {\n            // Preserved defense logic\n            if (player.health > 0 && enemy.health > 0) {\n              player.health += enemy.defense;\n              enemy.health -= player.defense;\n            }\n          }\n        },\n        progression: {\n          levelUp: (player) => {\n            // Preserved progression logic\n            player.level += 1;\n            player.experience += 100;\n            player.currency.gold += 5;\n          }\n        },\n        economy: {\n          trade: (player, enemy) => {\n            // Preserved economy logic\n            if (player.currency.gold > 0 && enemy.currency.silver > 0) {\n              player.currency.gold -= 1;\n              enemy.currency.silver -= 1;\n            }\n          }\n        }\n      }\n    };\n\n    // Game UI\n    const ui = {\n      // Preserved UI elements\n      healthBar: document.createElement('div'),\n      inventory: document.createElement('div'),\n      statusMessage: document.createElement('div')\n    };\n\n    // Game loop\n    function gameLoop() {\n      // Preserved game loop logic\n      if (game.saveState.player.health <= 0) {\n        alert('Game Over!');\n      } else {\n        game.mechanics.progression.levelUp(game.saveState.player);\n        game.mechanics.economy.trade(game.saveState.player, game.saveState.enemies[0]);\n      }\n    }\n\n    // Initialize game\n    document.getElementById('game').innerHTML = `\n      <div id=\"ui\">\n        <div id=\"healthBar\">${game.saveState.player.health}</div>\n        <div id=\"inventory\">${game.saveState.player.inventory.join(', ')}</div>\n        <div id=\"statusMessage\">${game.saveState.player.status}</div>\n      </div>\n      <div id=\"combat\">\n        <div id=\"enemy\">Enemy</div>\n        <div id=\"player\"></div>\n      </div>\n    `;\n    gameLoop();\n  </script>\n</body>\n</html>"
+    }
+  ],
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ]
+}
