@@ -191,6 +191,15 @@ test('mid-cycle Gemini quota exhaustion becomes checkpointed waiting instead of 
   assert.equal(roadmap.developmentLifecycleMachine?.modelQuotaContinuity?.checkpointResumeRequired,true);
 });
 
+test('aggregate Gemini candidate exhaustion is capacity wait only when checkpoint has quota evidence',()=>{
+  assert.match(workflow,/const aggregateCapacityFailure=\/GEMINI_NO_AVAILABLE_\(\?:CANDIDATES\|MODELS\)\\b\/i\.test\(clean\(cp\.lastError\)\)/);
+  assert.match(workflow,/const checkpointHasQuotaEvidence=Object\.values\(cp\.modelHealth\|\|\{\}\)\.some\(row=>retryableQuota\.test\(clean\(row\?\.lastError\)\)\)/);
+  assert.match(workflow,/const currentFailureAggregateCapacity=aggregateCapacityFailure&&checkpointHasQuotaEvidence/);
+  assert.match(workflow,/currentFailureQuota\|\|currentFailureAggregateCapacity\|\|roleBlocked/);
+  assert.doesNotMatch(workflow,/process\.stdout\.write\(aggregateCapacityFailure\|\|/);
+});
+
+
 test('design runtime emits persistent phase timing evidence for the next bottleneck',()=>{
   assert.match(design,/DESIGN_PHASE_MS=/);
   assert.match(design,/MODEL_CALL_MS=/);
