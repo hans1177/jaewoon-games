@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { isTrustedDistilledExternalAiEntry } from './vibe2-external-ai-distillation.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
@@ -183,13 +184,9 @@ function collectCrossGameHypotheses(map, knowledgeInput = {}, goalSystems = []) 
 
 function collectExternalAiDistilled(map, externalAiInput = {}, goalSystems = []) {
   for (const row of externalAiInput?.entries || []) {
-    if (row?.sourceKind !== 'external-ai-distilled') continue;
-    if (row?.verified !== true || row?.independentlyVerified !== true || row?.distilled !== true || row?.advisoryOnly !== true) continue;
-    if (row?.rawOutputStored === true || row?.directDevelopmentUse === true || row?.directSourceWrite === true || row?.directProductionPass === true || row?.directMasteryCredit === true || row?.directTrainingSample === true || row?.authorityExpanded === true) continue;
+    if (!isTrustedDistilledExternalAiEntry(row)) continue;
     const engine = clean(row.engine).toLowerCase() || 'cross-engine';
     const gameId = clean(row.gameId) || 'cross-game';
-    const evidence = unique(row?.verification?.evidence || []);
-    if (clean(row?.verification?.status).toUpperCase() !== 'PASS' || row?.verification?.independent !== true || !evidence.length) continue;
     for (const raw of row.patterns || []) {
       const pattern = normalizeReusablePattern(raw);
       if (!pattern) continue;
