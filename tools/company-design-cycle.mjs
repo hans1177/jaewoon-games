@@ -41,6 +41,12 @@ if(geminiLeadModelList.length<ROLES.length)throw new Error(`GEMINI_LEAD_MODEL_GA
 const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadModelList[index]]));
 const distinctLeadModels=uniq(Object.values(leadModels));
 if(distinctLeadModels.length<ROLES.length)throw new Error(`GEMINI_DISTINCT_LEAD_GATE: ${distinctLeadModels.length}/${ROLES.length}`);
+const primaryLeadModelSet=new Set(distinctLeadModels);
+const extraLeadFallbackModels=geminiFallbackModelList.filter(model=>!primaryLeadModelSet.has(model));
+const leadCandidateModels=Object.fromEntries(ROLES.map((role,index)=>[role,uniq([leadModels[role],...extraLeadFallbackModels.filter((_,fallbackIndex)=>fallbackIndex%ROLES.length===index)])]));
+const leadCandidateOwner=new Map();
+for(const role of ROLES)for(const model of leadCandidateModels[role]){const owner=leadCandidateOwner.get(model);if(owner&&owner!==role)throw new Error(`GEMINI_LEAD_FAILOVER_COLLISION: ${model}:${owner}:${role}`);leadCandidateOwner.set(model,role);}
+console.log(`GEMINI_DISTINCT_LEAD_FAILOVER_LANES=${ROLES.map(role=>`${role}:${leadCandidateModels[role].join('>')}`).join(',')}`);
 const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,[leadModels[role]]]));
 const independentReviewTasks={};
 const independentReviewOrder=[];
@@ -547,10 +553,11 @@ function geminiMinuteRetryDelayMs(error,candidateModel){
   return seconds*1000+stagger;
 }
 
-async function callModel(model,system,user,schema,{predict=1100,temperature=0.25,repairRequired=null,numCtx=8192,timeoutMs=null,maxAttempts=3}={}){
+async function callModel(model,system,user,schema,{predict=1100,temperature=0.25,repairRequired=null,numCtx=8192,timeoutMs=null,maxAttempts=3,candidateModels=null}={}){
   const callStarted=Date.now();
   const requestedModel=model;
-  const candidates=geminiCandidatesFor(requestedModel);
+  const candidates=Array.isArray(candidateModels)&&candidateModels.length?uniq(candidateModels).filter(candidate=>!geminiUnavailableModels.has(candidate)):geminiCandidatesFor(requestedModel);
+  if(!candidates.length)throw new Error(`GEMINI_NO_AVAILABLE_CANDIDATES ${requestedModel}`);
   const effectiveTimeoutMs=Math.min(120000,Math.max(30000,Number(timeoutMs||modelCallTimeoutMs)));
   const attemptLimit=Math.min(3,Math.max(1,Number(maxAttempts||3)));
   let lastError=null;
@@ -728,7 +735,7 @@ const leadReviews=await runPhase('five_lead_reviews',()=>adaptiveParallel(
         `너는 ${role} 부서 Lead AI다. DESIGN_ONLY 설계를 자기 전문영역에서 직접 검토한다. 회의·반박·다른 부서 대리 판단은 하지 않는다.`,
         `가장 중요한 KEEP/FIX/ADD/RISK/EVIDENCE만 짧고 구체적으로 작성하라. 수정 가능한 문제는 실제 수정 지시로 표현하고 점수나 관문을 조작하지 마라.\nASSIGNED_DEPARTMENT=${role}\nGAME_SEED=${clip(seed,3000)}\nDESIGN=${clip(departmentDesignContext(role,designDraft),6500)}`,
         reviewsSchemaFor([role]),
-        {predict:420,numCtx:5120,timeoutMs:90000}
+        {predict:420,numCtx:5120,timeoutMs:90000,candidateModels:leadCandidateModels[role]}
       );
       return result[role];
     }),
@@ -744,6 +751,7 @@ const resolvedLeadModels=Object.fromEntries(ROLES.map(role=>[
 const distinctResolvedLeadModels=uniq(Object.values(resolvedLeadModels));
 console.log(`GEMINI_RESOLVED_LEAD_MODELS=${Object.entries(resolvedLeadModels).map(([role,model])=>`${role}:${model}`).join(',')}`);
 console.log(`GEMINI_RESOLVED_DISTINCT_LEAD_COUNT=${distinctResolvedLeadModels.length}`);
+if(distinctResolvedLeadModels.length!==ROLES.length)throw new Error(`GEMINI_RESOLVED_DISTINCT_LEAD_GATE: ${distinctResolvedLeadModels.length}/${ROLES.length}`);
 
 for(const role of ROLES){
   const lead=leadModels[role];
