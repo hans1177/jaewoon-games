@@ -7,12 +7,245 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "포근한 작은 섬에서 낚시와 채집, 자원 수집을 통해 섬의 풍경을 바꾸고 고유의 생활 루프를 완성하는 힐링 시뮬레이션 게임입니다. 핵심 루프와 시그니처 시스템은 플레이어의 반복적인 채집 선택이 섬의 지형과 외형을 가시적으로 변화시키며 다음 활동의 방향성을 완전히 새롭게 유도합니다.",
+      "playerFantasy": "플레이어는 번잡한 일상을 벗어나 아늑한 섬의 유일한 주민이 되어, 자연 속에서 조용히 낚시와 채집을 즐기고 섬을 아름답게 꾸미며 마음의 평안과 성취감을 얻는 힐링 판타지를 경험합니다.",
+      "coreFun": "반복되는 채집과 낚시 조작을 통해 즉각적인 자원을 획득하고, 이 자원으로 섬의 건물을 세우거나 지형을 꾸미며 실시간으로 변화하는 섬의 모습을 관찰하는 직관적이고 편안한 재미를 제공합니다.",
+      "coreLoop": [
+        "섬의 특정 장소로 이동하여 터치 및 스와이프 입력으로 낚시나 채집을 시작합니다.",
+        "미니게임 혹은 타이밍 조작을 통해 물고기나 재화 같은 보상을 획득하고 피로도나 시간 상태가 변화합니다.",
+        "획득한 재화를 사용하여 섬의 새로운 시설을 해제하거나 지형을 꾸며 다음 플레이 경로를 선택합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "포근한 섬 생태 및 채집 시스템",
+          "purpose": "플레이어가 섬 곳곳에서 다양한 자원을 채집하고 생태계를 관리하며 지속적인 자원 수급과 성장의 재미를 느낄 수 있도록 유도합니다.",
+          "playerChoice": "어떤 장소에서 어떤 도구를 사용하여 자원을 채집할지 선택하고, 채집 결과에 따라 섬의 생태 환경과 다음 자원 생성 위치가 달라집니다."
+        },
+        {
+          "name": "실시간 섬 커스텀 및 지형 변화 시스템",
+          "purpose": "수집한 재화를 활용해 건물을 짓고 지형을 꾸밈으로써 플레이어만의 개성 있는 섬을 만들고 시각적 성취감을 극대화합니다.",
+          "playerChoice": "확보한 재화로 어떤 시설을 건설하고 배치를 바꿀지 결정하여 섬의 전체적인 분위기와 방문하는 NPC의 종류를 직접 바꿉니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "포근한 섬 생태 및 채집 시스템",
+          "toSystem": "실시간 섬 커스텀 및 지형 변화 시스템",
+          "trigger": "플레이어가 채집 활동을 완료하여 자원 화폐를 획득할 때",
+          "stateChange": "사용 가능한 건설 재화 수량이 증가하고 새로운 시설 건설 옵션이 해제됩니다."
+        },
+        {
+          "fromSystem": "실시간 섬 커스텀 및 지형 변화 시스템",
+          "toSystem": "포근한 섬 생태 및 채집 시스템",
+          "trigger": "새로운 건물이나 장식물이 섬에 설치 완료될 때",
+          "stateChange": "특정 채집물의 리스폰 주기 단축 및 희귀 아이템 등장 확률이 상승합니다."
+        },
+        {
+          "fromSystem": "포근한 섬 생태 및 채집 시스템",
+          "toSystem": "진행 및 경제 밸런스 시스템",
+          "trigger": "연속적인 낚시와 채집으로 피로도 게이지가 한계에 도달할 때",
+          "stateChange": "활동 효율이 일시적으로 감소하며 휴식 또는 소비 아이템 사용을 유도합니다."
+        }
+      ],
+      "progressionDirection": "초기에는 간단한 낚시와 채집으로 기본 자원을 모으고, 중반부에는 섬 전체의 시설을 확장하며, 후반부에는 희귀 생물 수집과 테마별 섬 꾸미기를 통해 플레이어의 자유도를 극대화하는 방향으로 전개됩니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "채집 수행 -> 재화 획득 -> 시설 건설 및 섬 확장 -> 새로운 채집 지역 해제 및 효율 증가로 이어지는 유기적 성장 구조를 유지합니다.",
+        "resourceFlow": "일일 채집을 통해 기초 재화가 유입되며, 시설 투자를 통해 자원 생산량이 증가하고 꾸미기 아이템이나 희귀 수집품으로 소비됩니다.",
+        "balanceRules": "세션당 피로도 제한을 두어 지나친 반복 노동을 방지하고, 적절한 휴식과 전략적 자원 분배가 항상 유리하도록 설계합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "계절별 자연 환경 및 날씨 시스템 도입",
+          "newGameplay": "봄, 여름, 가을, 겨울에 따라 등장하는 특수 물고기와 채집물이 달라지며 계절 한정 퀘스트를 수행할 수 있습니다.",
+          "systemImpact": "기존 채집 시스템에 날씨 가변성이 추가되어 플레이어의 일일 동선 선택에 전략적 다양성을 부여합니다."
+        },
+        {
+          "milestone": "방문객 NPC 및 무역 거래 시스템 확장",
+          "newGameplay": "특정 조건을 만족하면 섬에 찾아오는 여행자 NPC와 거래하고 그들의 숨겨진 이야기나 도감 미션을 진행합니다.",
+          "systemImpact": "단순 자원 수집을 넘어 NPC 관계도 시스템과 연계되어 추가적인 보상과 특별 꾸미기 해제를 이끌어냅니다."
+        },
+        {
+          "milestone": "멀티플레이어 이웃 섬 방문 기능 추가",
+          "newGameplay": "다른 플레이어의 섬으로 놀러가 서로의 수확물을 구경하고 협동 이벤트나 선물을 주고받을 수 있습니다.",
+          "systemImpact": "싱글 중심의 힐링 경험이 소셜 확장 모드로 연결되며 커뮤니티 활성화와 리텐션 상승을 유도합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "낚시 미니게임 중 입력 타이밍 실패로 대상 물고기를 놓치는 상황",
+          "피로도 관리 소홀로 인해 채집 효율이 급격히 저하되는 상황"
+        ],
+        "retryFlow": "실패 시 패널티로 자원이 소모되는 대신 소소한 대화나 즉시 재시도 버튼을 제공하여 좌절감을 최소화하고 곧바로 다음 행동으로 진입합니다.",
+        "riskPressure": "시간 제한이나 경쟁적 압박 대신 편안한 분위기를 유지하며, 자원의 효율적 분배를 고민하게 만드는 가벼운 긴장감을 제공합니다.",
+        "recoveryRules": "휴식용 벤치에 앉거나 간단한 요리 아이템을 섭취하면 피로도가 빠르게 회복되어 즉시 정상적인 채집 활동으로 복귀할 수 있습니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 터치 및 PC 마우스 클릭을 모두 지원하는 직관적인 원버튼 중심 조작계로 설계하여 누구나 쉽게 플레이할 수 있습니다.",
+        "performanceBudget": "저사양 모바일 기기에서도 60프레임을 유지할 수 있도록 섬의 폴리곤 수를 최적화하고 에셋 로딩을 경량화합니다.",
+        "sessionConstraints": "한 번의 플레이 세션을 5분에서 15분 내외로 구성하여 언제 어디서나 부담 없이 접속하여 즐길 수 있도록 합니다."
+      },
+      "visualDirection": "따뜻하고 부드러운 파스텔톤 컬러와 아기자기한 로우폴리곤 스타일을 적용하여 시각적 피로감을 낮추고 포근한 감성을 전달합니다.",
+      "mobileUx": "엄지손가락 한 손으로 조작하기 편하도록 주요 인터랙션 버튼을 하단 영역에 배치하고 시인성을 높인 UI를 제공합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 피로도, 소지 재화, 보유 도구 상태를 화면 상단에 직관적으로 배치하여 한눈에 파악할 수 있게 합니다.",
+        "touchAndInput": "모바일 터치 영역을 넉넉하게 설계하고 제스처 오류를 방지하는 입력 보정 시스템을 적용합니다.",
+        "readability": "가독성이 높은 둥근 서체를 사용하고 배경과 UI의 명암 대비를 확실하게 주어 시인성을 확보합니다.",
+        "accessibility": "색약 모드 지원 및 시각/청각 피드백을 동시에 제공하여 모든 플레이어가 편안하게 즐길 수 있도록 합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "햇살이 비치는 아늑한 바다와 흔들리는 야자수, 파스텔 감성의 아기자기한 건물들로 시각적 정체성을 구축합니다.",
+        "audioIdentity": "잔잔한 파도 소리와 부드러운 어쿠스틱 기타 선율, 채집 시 들리는 청량한 효과음으로 힐링 분위기를 극대화합니다.",
+        "gameplayFeedbackSync": "낚시 입질이나 채집 성공 시 시각적 파티클 효과와 부드러운 햅틱 피드백을 동시에 동기화하여 몰입감을 높입니다."
+      },
+      "marketTargetDirection": "바쁜 일상 속에서 힐링과 가벼운 성취를 원하는 글로벌 캐주얼 게이머층을 타겟으로 하며, 특히 모바일 플랫폼에서의 높은 접근성을 활용합니다.",
+      "steamExpansionDecision": "모바일 및 로블록스 플랫폼에서 충분한 유저 반응과 밸런스 검증을 거친 후, 향후 스팀 플랫폼으로의 확장 가능성을 긍정적으로 검토합니다.",
+      "multiplayerMode": "HYBRID",
+      "multiplayerExpansionDecision": "기본적인 섬 생활은 싱글 플레이로 깊이 있게 즐기되, 원할 때 이웃 섬을 방문하고 자원을 교환하는 하이브리드 확장 방식을 채택합니다.",
+      "technicalAssumptions": [
+        "클라이언트와 서버 간의 자원 상태 동기화는 주기적인 세이브 포인트를 통해 데이터 손실을 방지한다.",
+        "모바일 웹 및 로블록스 환경에서 원활한 렌더링을 위해 동적 로드 및 컬링 최적화 기법을 적용한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 이내에 낚시와 채집 루프를 자연스럽게 이해하고 첫 번째 보상을 획득하는가?",
+        "섬 꾸미기 시스템이 플레이어의 장기적인 리텐션과 자원 소비에 충분한 동기 부여를 제공하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "포근한 섬 생태 및 채집 시스템",
+          "responsibleSystem": "ResourceCollectionManager",
+          "validationEvidence": "유저가 채집 행동을 수행할 때마다 인벤토리에 자원이 정확히 추가되고 생태계 카운터가 올바르게 갱신되는지 테스트 코드로 검증합니다."
+        },
+        {
+          "designElement": "실시간 섬 커스텀 및 지형 변화 시스템",
+          "responsibleSystem": "IslandCustomizationGrid",
+          "validationEvidence": "건설 재화 소모 후 오브젝트가 지정된 그리드 위치에 정상적으로 생성되고 시각적 외형이 즉시 반영되는지 확인합니다."
+        },
+        {
+          "designElement": "계절별 자연 환경 및 날씨 시스템",
+          "responsibleSystem": "EnvironmentManager",
+          "validationEvidence": "날씨 상태 변경 시 전체 화면의 라이팅과 특정 채집물의 드랍 테이블이 조건에 맞게 올바르게 전환되는지 검증합니다."
+        }
+      ],
+      "openQuestions": [
+        "멀티플레이 방문 시 호스트의 섬 상태를 다른 클라이언트에게 어느 수준까지 실시간 동기화할 것인가?",
+        "플레이어가 오프라인 상태일 때도 자원이 수급되는 방치형 요소를 어느 정도까지 허용할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
-  "modelHealth": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 23051,
+      "lastMs": 23051,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:05:12.897Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 98,
+      "lastMs": 98,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 46.995615752s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"46s\" } ] } }",
+      "updatedAt": "2026-09-18T15:05:13.022Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 143,
+      "lastMs": 143,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 46.949243324s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"46s\" } ] } }",
+      "updatedAt": "2026-09-18T15:05:13.069Z"
+    }
+  },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T15:04:49.843Z",
-  "updatedAt": "2026-09-18T15:04:49.844Z"
+  "updatedAt": "2026-09-18T15:05:14.183Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:05:12.897Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3-flash-preview"
 }
