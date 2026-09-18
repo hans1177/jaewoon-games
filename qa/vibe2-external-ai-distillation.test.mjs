@@ -139,7 +139,7 @@ test('development workers stay on local Vibe runtime and external advisory AI ca
   assert.equal(policy.modelRoleBoundary?.localVibeRuntimeEndpoint,'127.0.0.1:11434');
   for(const relative of ['../tools/vibe2-source-worker.mjs','../tools/vibe2-learning-practice-worker.mjs']){
     const source=fs.readFileSync(new URL(relative,import.meta.url),'utf8');
-    assert.match(source,/hostname:'127\\.0\\.0\\.1'/);
+    assert.match(source,/hostname:'127\.0\.0\.1'/);
     assert.match(source,/port:11434/);
     assert.doesNotMatch(source,/api\\.openai\\.com|api\\.anthropic\\.com|generativelanguage\\.googleapis\\.com|OPENAI_API_KEY|ANTHROPIC_API_KEY|GEMINI_API_KEY/i);
   }
