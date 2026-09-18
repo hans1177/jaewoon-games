@@ -322,8 +322,10 @@
           ]
         },
         "web": {
-          "automaticNewGame": false,
-          "existingMaintenanceAllowed": true
+          "automaticNewGame": true,
+          "existingMaintenanceAllowed": true,
+          "implementationAuthority": "DEVELOPMENT_CONFIRMED_MACHINE_GATE",
+          "sourceWriteMode": "ISOLATED_CANDIDATE_BRANCH_ONLY"
         }
       }
     },
@@ -537,7 +539,7 @@
   },
   "safety": {
     "existingWebMaintenanceAllowed": true,
-    "newWebGameAutomatic": false,
+    "newWebGameAutomatic": true,
     "allowedWritableTargets": [
       "web",
       "unity",
