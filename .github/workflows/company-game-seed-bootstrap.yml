@@ -196,7 +196,7 @@ jobs:
           echo 'persisted=true' >> "$GITHUB_OUTPUT"
           echo 'PUBLIC_MAIN_WRITE=NO'
 
-      - name: Continue active DESIGN_ONLY work without cancelling active batch
+      - name: Continue active DESIGN_ONLY work from latest main
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
@@ -211,16 +211,30 @@ jobs:
             exit 0
           fi
           runs_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?branch=main&per_page=100")"
-          active_runs="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s);const n=(j.workflow_runs||[]).filter(r=>r.path==='.github/workflows/company-seed-design-runtime.yml'&&['queued','in_progress','pending','requested','waiting'].includes(r.status)).length;process.stdout.write(String(n));})")"
-          echo "ACTIVE_DESIGN_ONLY_RUNS=$active_runs"
-          if [ "$active_runs" -gt 0 ]; then
+          current_active="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.GITHUB_SHA;const n=(j.workflow_runs||[]).filter(r=>r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha===sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status)).length;process.stdout.write(String(n));})")"
+          stale_ids="$(printf '%s' "$runs_json" | node -e "let s='';process.stdin.on('data',c=>s+=c).on('end',()=>{const j=JSON.parse(s),sha=process.env.GITHUB_SHA;for(const r of (j.workflow_runs||[]))if(r.path==='.github/workflows/company-seed-design-runtime.yml'&&r.head_sha!==sha&&['queued','in_progress','pending','requested','waiting'].includes(r.status))console.log(r.id);})")"
+          stale_active="$(printf '%s\n' "$stale_ids" | sed '/^$/d' | wc -l | tr -d ' ')"
+          echo "ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=$current_active"
+          echo "ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=$stale_active"
+          if [ "$current_active" -gt 0 ]; then
             echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=NO'
-            echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_ACTIVE_BATCH'
+            echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE'
             exit 0
+          fi
+          if [ "$stale_active" -gt 0 ]; then
+            while IFS= read -r run_id; do
+              [ -n "$run_id" ] || continue
+              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null || true
+              echo "GAME_SEED_STALE_DESIGN_RUN_CANCEL_REQUESTED=$run_id"
+            done <<< "$stale_ids"
           fi
           gh workflow run company-seed-design-runtime.yml --ref main
           echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'
-          echo 'GAME_SEED_DESIGN_CONTINUATION_SCOPE=START_LATEST_HEAD_BATCH'
+          if [ "$stale_active" -gt 0 ]; then
+            echo 'GAME_SEED_DESIGN_CONTINUATION_SCOPE=REPLACE_STALE_HEAD_BATCH'
+          else
+            echo 'GAME_SEED_DESIGN_CONTINUATION_SCOPE=START_LATEST_HEAD_BATCH'
+          fi
 
       - name: Summary
         if: always()
