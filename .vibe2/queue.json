@@ -2653,12 +2653,13 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
         "practice-kind:MINI_GAME_SYSTEM_DRILL",
-        "practice-domain:ROBLOX_DATASTORE"
+        "practice-domain:ROBLOX_DATASTORE",
+        "slot-dispatch:35362869665:1"
       ],
       "lastOutcome": null,
       "reservationId": "35362463439:1",
