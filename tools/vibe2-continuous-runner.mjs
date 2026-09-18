@@ -113,6 +113,43 @@ function resolveTask(queue, taskId = '') {
   const selection = selectVibeQueueBatch(queue);
   return { task:selection.selected[0] || null, reason:selection.stopReason || 'NO_ELIGIBLE_WORK' };
 }
+export function deriveVibeCompletionCriteria(task = {}, target = '') {
+  const explicit = freezeList(task?.completionCriteria || []);
+  if (explicit.length) return explicit;
+  if (clean(task?.type).toLowerCase() !== 'implementation') return explicit;
+  const goal = clean(task?.goal);
+  if (!goal) return explicit;
+  const criteria = [];
+  const add = (value) => { if (value && !criteria.includes(value)) criteria.push(value); };
+  if (clean(target || task.target).toLowerCase() === 'web') {
+    add('PLAYER_FACING_RUNTIME_CHANGE_REQUIRED');
+    add('METADATA_CONFIG_COMMENT_ONLY_CHANGE_NOT_COMPLETION');
+  }
+  if (/FULL_WEB_GAME_REBUILD|전면\s*재구현|실제\s*플레이\s*가능|playable/i.test(goal)) add('PLAYABLE_LOOP_END_TO_END');
+  if (/모바일|터치|touch|mobile|직접\s*조작|player\s*input/i.test(goal)) add('DIRECT_PLAYER_INPUT_WORKS');
+  if (/승패|승리|패배|성공|실패|win|lose|victory|defeat|restart|재시작/i.test(goal)) add('TERMINAL_OUTCOME_AND_RESTART_WORK');
+  if (/\bAI\b|적\s*진영|적\s*시야|추격|상대\s*AI|enemy|opponent|chase/i.test(goal)) add('AI_OR_ENEMY_BEHAVIOR_IS_PLAYABLE');
+  if (/저장|세이브|save|persist|migration|마이그레이션/i.test(goal)) add('SAVE_MEANING_PRESERVED_OR_EXPLICITLY_MIGRATED');
+  if (/런타임|성능|performance|runtime|안정/i.test(goal)) add('RUNTIME_STABILITY_AND_PERFORMANCE_SANITY');
+  if (/웨이브|배치|방어|투사체|업그레이드|wave|placement|defen[cs]e|projectile|upgrade/i.test(goal)) add('DEFENSE_WAVE_PLACEMENT_OR_UPGRADE_LOOP_WORKS');
+  if (/영토|점령|확장|거점|전황|territory|capture|base\s*conflict/i.test(goal)) add('TERRITORY_CAPTURE_AND_CONFLICT_LOOP_WORKS');
+  if (/잠입|알\s*획득|훔치|탈출|시야|stealth|heist|escape/i.test(goal)) add('STEALTH_ACQUIRE_RISK_ESCAPE_LOOP_WORKS');
+  if (/체스|합법\s*수|턴\s*진행|말과\s*이동|chess|legal\s*move|turn/i.test(goal)) add('TURN_OR_LEGAL_MOVE_GAMEPLAY_WORKS');
+  if (/진행|성장|자원|보상|경제|progress|progression|resource|reward|economy/i.test(goal)) add('PROGRESSION_OR_RESOURCE_LOOP_ADVANCES');
+  return freezeList(criteria);
+}
+
+function completionCriteriaGuidance(criteria = []) {
+  const rows = freezeList(criteria);
+  if (!rows.length) return '';
+  return [
+    '[EXECUTION COMPLETION CRITERIA - implementation target, not a release-gate bypass]',
+    '이번 후보는 아래 구현 목표 중 실제 소스와 명시 작업 범위에 해당하는 항목을 플레이어가 체감 가능한 런타임 동작으로 진전시켜야 한다.',
+    '메타데이터, 설명 필드, 주석, 설정 문자열만 바꾸는 수정은 PLAYER_FACING_RUNTIME_CHANGE_REQUIRED를 충족하지 않는다.',
+    ...rows.map((row) => `- ${row}`)
+  ].join('\n');
+}
+
 function incrementalQaPlan(task, target, responsibleFiles, speculativeVariants = 1) {
   const files = freezeList(responsibleFiles || []);
   return freeze({
@@ -190,6 +227,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
   const reusedContexts = reusableContextsForTask(handoff || {}, task);
   const reusedGuidance = buildReusableHandoffGuidance(reusedContexts);
+  const derivedCompletionCriteria = deriveVibeCompletionCriteria(task, plan.target);
   const workPackage=freeze({
     id:clean(task.packageId)||null,
     goal:clean(task.packageGoal)||null,
@@ -200,7 +238,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     packageSize:Number(task.packageSize||0),
     longWorkProtected:task.packageLongWorkProtected===true,
     sharedContext:task.packageContext||null,
-    completionCriteria:freezeList(task.completionCriteria||[]),
+    completionCriteria:derivedCompletionCriteria,
     rolePlan:freeze({
       exploration:'read-only-exploration-worker',
       implementation:'source-worker-exclusive-write',
@@ -218,7 +256,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     `역할 분리=${Object.entries(workPackage.rolePlan).map(([k,v])=>`${k}:${v}`).join(' | ')}`,
     workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
   ].filter(Boolean).join('\n'):'';
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const completionGuidance = completionCriteriaGuidance(derivedCompletionCriteria);
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, completionGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const qa = freezeList([
     ...(plan.qa || []),
@@ -246,6 +285,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     }),
     qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles, tournament.candidateCount),
     workPackage,
+    completionCriteria:derivedCompletionCriteria,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
     unifiedLearning,
@@ -315,6 +355,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
     console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
     console.log(`VIBE2_ASSET_DECISION_COUNT=${order.assetProduction?.decisions?.length||0}`);
+    console.log(`VIBE2_COMPLETION_CRITERIA_COUNT=${order.completionCriteria?.length||0}`);
     console.log(`VIBE2_EXPERIENCE_CONTEXT_APPLIED=${order.learningAppliedToWorkerGoal?'YES':'NO'}`);
     console.log(`VIBE2_REUSABLE_HANDOFF_CONTEXT=${order.reusedMachineContext?.used?'YES':'NO'}`);
     console.log(`VIBE2_ROLE_SEPARATION=${order.workerPolicy?.roleSeparation?'YES':'NO'}`);
