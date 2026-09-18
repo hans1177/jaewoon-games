@@ -38,7 +38,24 @@
     "cannotReplaceNativeRuntimeEvidence": true,
     "learningRole": "AUXILIARY_PORTABLE_LEARNING_EVIDENCE",
     "canonicalDistillationOnly": true,
-    "newTrainerOrCronForbidden": true
+    "newTrainerOrCronForbidden": true,
+    "continuouslyEditableDuringDevelopment": true,
+    "validationMayRepeatAfterEachMeaningfulRevision": true,
+    "runtimePassIsReleaseSignal": false,
+    "competitiveQualityParityWithNative": true,
+    "competitiveQualityContract": "tools/company-common-development-quality-contract.mjs",
+    "competitiveQualityAxes": [
+      "core-loop-quality",
+      "implementation-completeness",
+      "content-depth",
+      "category-fit",
+      "ux-readability",
+      "progression-and-balance",
+      "performance-and-stability",
+      "distinctiveness"
+    ],
+    "releaseRequiresFreshCompetitiveRevalidation": true,
+    "singleWebPassCannotTriggerRelease": true
   },
   "platformRepresentativeSets": {
     "representativeSetSizePerPlatform": 6,
@@ -573,7 +590,10 @@
         "recombinationMemoryAllowed": true,
         "rawCopyForbidden": true,
         "outputContract": "webPlatformHandoff",
-        "disposablePrototype": false
+        "disposablePrototype": false,
+        "continuouslyEditable": true,
+        "competitiveQualityParityRequired": true,
+        "webPassIsReleaseSignal": false
       },
       "nativePlatformContinuation": {
         "selectedPlatformSource": "approved-platform-and-genre-lock",
@@ -847,7 +867,9 @@
         ],
         "existingValidSystemsMustBePreserved": true,
         "restartFromBlankForbiddenWithoutEvidence": true,
-        "output": "webPlatformHandoff"
+        "output": "webPlatformHandoff",
+        "continuouslyEditable": true,
+        "competitiveQualityParityRequired": true
       },
       "selectedPlatformWorker": {
         "owner": "VIBE2_VIBE3",
@@ -855,7 +877,9 @@
         "webPortableMeaningMustCarryForward": true,
         "nativeCodeMustRemainPlatformSpecific": true,
         "webEvidenceCannotSubstituteNativePass": true,
-        "selectedPlatformRuntimeQaRegressionRequired": true
+        "selectedPlatformRuntimeQaRegressionRequired": true,
+        "competitiveQualityParityRequired": true,
+        "commonQualityContract": "tools/company-common-development-quality-contract.mjs"
       },
       "robloxWorker": {
         "bootstrap": "tools/company-development-roblox-bootstrap.mjs",
@@ -988,6 +1012,26 @@
         "required-secret-or-human-authentication-missing",
         "platform-policy-block-that-cannot-be-routed-around"
       ]
+    },
+    "webIterationPolicy": {
+      "continuouslyEditable": true,
+      "ownerMayRequestFurtherRevisionAfterPass": true,
+      "passedEvidenceInvalidatedByRelevantSourceChangeOnly": true,
+      "revalidateAfterRelevantRevision": true,
+      "competitiveQualityParityWithTargetPlatform": true,
+      "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
+      "webPassDoesNotMeanReleaseReadyByItself": true
+    },
+    "releaseMaturityGate": {
+      "prematureReleaseForbidden": true,
+      "singleRuntimePassInsufficient": true,
+      "singleStrictScorePassInsufficient": true,
+      "requiresFreshPlatformRuntime": true,
+      "requiresFreshIndependentQa": true,
+      "requiresFreshRegression": true,
+      "requiresCompetitiveQualityParity": true,
+      "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
+      "relevantSourceChangeRequiresRevalidation": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
