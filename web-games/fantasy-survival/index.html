@@ -535,7 +535,7 @@ function drawBackground(cx,cy,w,h){
  ctx.fillStyle='#343437';ctx.fillRect(LAB.x-260,LAB.y-180,520,260);ctx.fillStyle='#6b7478';ctx.fillRect(LAB.x-210,LAB.y-135,420,170);ctx.fillStyle='#b9d3cf';ctx.font='bold 14px system-ui';ctx.fillText('연구소',LAB.x,LAB.y-70);ctx.fillStyle='#9ee6d0';ctx.beginPath();ctx.arc(LAB_RECORDER.x,LAB_RECORDER.y,22,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 10px system-ui';ctx.fillText('녹음기 · 두 번 누르기',LAB_RECORDER.x,LAB_RECORDER.y+45);
  // 공사장
  ctx.fillStyle='#4b4038';ctx.fillRect(CONSTRUCTION.x,0,CONSTRUCTION.w,3200);ctx.fillStyle='#86715d';ctx.font='bold 22px system-ui';ctx.fillText('부서진 공사장',CONSTRUCTION.x+CONSTRUCTION.w/2,260);
- for(let i=0;i<16;i++){const x=CONSTRUCTION.x+110+(i*97)%1450,y=520+(i*173)%2200;ctx.fillStyle=i%4===0?'#3a2724':'#75675e';ctx.fillRect(x,y,55+(i%3)*20,18+(i%2)*15)}
+ for(let i=0;i<16;i++){const x=CONSTRUCTION.x+110+(i*97)%1450,y=520+(i*173)%2200;ctx.fillStyle=i%4===0?'#3a2724':'#75675e';ctx.fillRect(x,y,55+(i%3)*20,18+(i%2)*15)}for(let i=0;i<5;i++){const x=CONSTRUCTION.x+220+i*260,y=900+(i%3)*620;ctx.strokeStyle='#4b2020';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(x-18,y);ctx.lineTo(x+18,y+12);ctx.stroke();ctx.fillStyle='#5a332b';ctx.beginPath();ctx.arc(x-24,y-5,9,0,Math.PI*2);ctx.fill()}
  ctx.fillStyle='#d8c99a';ctx.beginPath();ctx.arc(CONSTRUCTION_DIARY.x,CONSTRUCTION_DIARY.y,20,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff4c0';ctx.font='bold 10px system-ui';ctx.fillText('일기 · 두 번 누르기',CONSTRUCTION_DIARY.x,CONSTRUCTION_DIARY.y+42);
  // 황무지 + 오아시스
  ctx.fillStyle='#8a6239';ctx.fillRect(WASTELAND.x,0,WASTELAND.w,3200);ctx.fillStyle='#d5aa65';ctx.font='bold 22px system-ui';ctx.fillText('오래된 황무지',WASTELAND.x+WASTELAND.w/2,260);
