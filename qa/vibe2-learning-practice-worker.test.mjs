@@ -15,6 +15,8 @@ test('practice prompt keeps strict JSON and no-promotion boundary',()=>{
   assert.match(prompt,/strict JSON object only/);
   assert.match(prompt,/Do not edit files/);
   assert.match(prompt,/Do not claim production pass/);
+  assert.match(prompt,/untrusted practice knowledge/);
+  assert.match(prompt,/independently verified and distilled/);
   assert.match(prompt,/at least 3 concrete verification checks/);
 });
 
@@ -34,6 +36,15 @@ test('practice result can pass structurally but never becomes production pass',a
   assert.equal(result.practiceOnly,true);
   assert.equal(result.productionPass,false);
   assert.equal(result.sourceWrite,false);
+  assert.equal(result.knowledgeState,'UNTRUSTED_PRACTICE_OUTPUT');
+  assert.match(result.rawModelOutputSha256,/^[a-f0-9]{64}$/);
+  assert.equal(result.rawModelOutputStored,false);
+  assert.equal(result.candidateLessonsVerified,false);
+  assert.equal(result.retrievalEligible,false);
+  assert.equal(result.masteryCreditEligible,false);
+  assert.equal(result.canonicalTrainingEligible,false);
+  assert.equal(result.independentVerificationRequired,true);
+  assert.equal(result.distillationRequiredBeforeReuse,true);
   assert.equal(result.attempts,1);
   assert.equal(result.recoveryUsed,false);
 });
