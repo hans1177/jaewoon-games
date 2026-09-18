@@ -9,7 +9,11 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
   ],
   "phases": {
     "designer_draft": {
@@ -35,21 +39,21 @@
       ],
       "systemInterconnections": [
         {
-          "fromSystem": "전투 시스템",
-          "toSystem": "생태 적응형 돌연변이",
-          "trigger": "전투 중 적 처치 시 자원 드롭",
+          "fromSystem": "전투 시스템 모듈",
+          "toSystem": "생태 적응형 돌연변이 엔진",
+          "trigger": "전투 중 적 처치 시 획득한 생체 자원 데이터가 시스템에 전송될 때",
           "stateChange": "플레이어가 획득한 자원량에 따라 돌연변이 선택지 활성화 및 캐릭터 능력치 즉시 반영"
         },
         {
-          "fromSystem": "미시 환경 상호작용",
-          "toSystem": "전투 시스템",
-          "trigger": "환경 오브젝트 파괴 또는 활용",
-          "stateChange": "주변 적의 상태 이상 유발 또는 플레이어에게 유리한 지형적 이점 생성"
+          "fromSystem": "미시 환경 상호작용 시스템",
+          "toSystem": "전투 시스템 모듈",
+          "trigger": "환경 오브젝트 파괴 또는 특정 지형지물 활용 시 발생하는 물리 이벤트",
+          "stateChange": "주변 적의 상태 이상 유발 또는 플레이어에게 유리한 지형적 이점 생성 및 전투 흐름 변경"
         },
         {
-          "fromSystem": "생태 적응형 돌연변이",
-          "toSystem": "미시 환경 상호작용",
-          "trigger": "특정 돌연변이 획득(예: 강력한 턱)",
+          "fromSystem": "생태 적응형 돌연변이 엔진",
+          "toSystem": "미시 환경 상호작용 시스템",
+          "trigger": "특정 돌연변이(예: 강력한 턱, 날개) 획득 시 캐릭터 상태값 변경",
           "stateChange": "이전에는 파괴 불가능했던 환경 오브젝트를 파괴하거나 새로운 경로를 개척할 수 있게 됨"
         }
       ],
@@ -61,19 +65,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "초기 생태계 정복",
-          "newGameplay": "개미, 딱정벌레 등 기초 곤충과의 전투를 통해 기본적인 돌연변이 시스템을 학습하고 첫 보스를 처치합니다.",
-          "systemImpact": "기본적인 이동 및 공격 시스템이 확립되며, 첫 번째 돌연변이 트리인 '기초 신체 강화'가 해금됩니다."
+          "milestone": "초기 생태계 정복 및 기초 돌연변이 적응 단계",
+          "newGameplay": "개미 군단과 딱정벌레 등 기초 곤충들과의 전투를 통해 기본적인 돌연변이 시스템을 학습하고, 첫 번째 보스인 '거대 장수풍뎅이'를 처치하며 생존의 기초를 다지는 튜토리얼 겸 핵심 루프를 경험합니다.",
+          "systemImpact": "기본적인 이동 및 공격 시스템이 확립되며, 첫 번째 돌연변이 트리인 '기초 신체 강화'가 해금되어 캐릭터 성장의 기틀을 마련하고, 이후 진행될 복잡한 빌드 구성의 기초 데이터를 수집합니다."
         },
         {
-          "milestone": "습지대 탐험",
-          "newGameplay": "물과 늪지대가 포함된 새로운 환경에서 수중 호흡이나 미끄럼 방지 등의 특수 돌연변이가 필요해집니다.",
-          "systemImpact": "환경 상호작용 시스템에 '액체 물리'와 '수중 전투' 요소가 추가되어 기존 지상 전투와 차별화됩니다."
+          "milestone": "습지대 탐험 및 환경 극복을 위한 특수 적응",
+          "newGameplay": "물과 늪지대가 포함된 새로운 환경에서 수중 호흡이나 미끄럼 방지, 끈적한 발바닥 등의 특수 돌연변이가 필수적으로 요구되며, 환경 자체가 플레이어에게 지속적인 위협으로 작용하는 지형지물 전투를 도입합니다.",
+          "systemImpact": "환경 상호작용 시스템에 '액체 물리'와 '수중 전투' 요소가 추가되어 기존 지상 전투와는 완전히 차별화된 전략적 선택지를 제공하며, 환경 저항 수치라는 새로운 스탯 시스템이 도입됩니다."
         },
         {
-          "milestone": "포식자의 둥지",
-          "newGameplay": "말벌이나 사마귀와 같은 상위 포식자와의 전투가 중심이 되며, 고도의 회피와 반격 기술이 요구됩니다.",
-          "systemImpact": "최상위 돌연변이 단계가 해금되며, 플레이어는 자신의 빌드를 극단적으로 특화할 수 있게 됩니다."
+          "milestone": "포식자의 둥지 침투 및 생태계 최상위 등극",
+          "newGameplay": "말벌이나 사마귀와 같은 상위 포식자와의 전투가 중심이 되며, 고도의 회피와 반격 기술이 요구되는 고난도 전투가 진행됩니다. 플레이어는 적의 공격 패턴을 파악하고 자신의 돌연변이 능력을 실시간으로 조합하여 대응해야 합니다.",
+          "systemImpact": "최상위 돌연변이 단계가 해금되며, 플레이어는 자신의 빌드를 극단적으로 특화하여 생태계 최상위 포식자로 거듭나게 됩니다. 또한, 보스 처치 시 얻는 고유 유전자를 통해 영구적인 능력치 상승 시스템이 활성화됩니다."
         }
       ],
       "failureRetryRisk": {
@@ -110,28 +114,28 @@
       "multiplayerMode": "SINGLE",
       "multiplayerExpansionDecision": "초기에는 싱글 플레이의 완성도에 집중하고, 향후 업데이트를 통해 비동기식 경쟁 요소나 협동 생존 모드 도입을 검토합니다.",
       "technicalAssumptions": [
-        "유니티 엔진의 ECS(Entity Component System)를 사용하여 수백 마리의 곤충 개체를 동시에 처리할 수 있어야 합니다.",
-        "모바일 기기의 발열을 고려하여 셰이더 최적화 및 텍스처 압축을 통해 메모리 사용량을 500MB 이하로 유지해야 합니다."
+        "유니티 엔진의 ECS(Entity Component System)를 사용하여 수백 마리의 곤충 개체를 동시에 처리할 수 있는 고성능 아키텍처를 구축합니다.",
+        "모바일 기기의 발열을 고려하여 셰이더 최적화 및 텍스처 압축을 통해 메모리 사용량을 500MB 이하로 유지하는 최적화 전략을 수립합니다."
       ],
       "validationQuestions": [
-        "플레이어가 매 세션마다 돌연변이 선택을 통해 자신의 빌드가 성장하고 있음을 명확하게 체감하는가?",
-        "모바일 환경에서 30분 동안의 플레이가 피로감 없이 몰입감을 유지할 수 있는가?"
+        "플레이어가 매 세션마다 돌연변이 선택을 통해 자신의 빌드가 성장하고 있음을 명확하게 체감하고 전략적 재미를 느끼는가?",
+        "모바일 환경에서 30분 동안의 플레이가 피로감 없이 몰입감을 유지할 수 있도록 밸런싱과 조작 편의성이 확보되었는가?"
       ],
       "implementationTraceability": [
         {
           "designElement": "생태 적응형 돌연변이 시스템",
-          "responsibleSystem": "캐릭터 성장 시스템",
-          "validationEvidence": "플레이어의 선택에 따른 능력치 변화가 전투 로그와 실제 게임 내 수치에 즉각 반영되는지 테스트합니다."
+          "responsibleSystem": "캐릭터 성장 및 능력치 관리 시스템",
+          "validationEvidence": "플레이어의 선택에 따른 능력치 변화가 전투 로그와 실제 게임 내 수치에 즉각 반영되는지 유닛 테스트를 통해 검증합니다."
         },
         {
           "designElement": "미시 환경 상호작용",
-          "responsibleSystem": "책임 시스템: 환경 물리 시스템",
-          "validationEvidence": "환경 오브젝트 파괴 시 주변 적에게 상태 이상이 적용되는지 물리 엔진 연동을 통해 검증합니다."
+          "responsibleSystem": "환경 물리 및 오브젝트 상호작용 시스템",
+          "validationEvidence": "환경 오브젝트 파괴 시 주변 적에게 상태 이상이 적용되는지 물리 엔진 연동을 통해 시뮬레이션하고 검증합니다."
         },
         {
-          "designElement": "모바일 최적화",
-          "responsibleSystem": "렌더링 및 성능 최적화",
-          "validationEvidence": "다수의 적이 등장하는 상황에서도 프레임 드랍이 30fps 이상 유지되는지 실기기 테스트를 수행합니다."
+          "designElement": "모바일 최적화 및 성능",
+          "responsibleSystem": "렌더링 및 성능 최적화 엔진 모듈",
+          "validationEvidence": "다수의 적이 등장하는 상황에서도 프레임 드랍이 30fps 이상 유지되는지 실기기 프로파일링 테스트를 수행하여 검증합니다."
         }
       ],
       "openQuestions": [
@@ -247,6 +251,228 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "전투 시스템 모듈",
+          "toSystem": "생태 적응형 돌연변이 엔진",
+          "trigger": "전투 중 적 처치 시 획득한 생체 자원 데이터가 시스템에 전송될 때",
+          "stateChange": "플레이어가 획득한 자원량에 따라 돌연변이 선택지 활성화 및 캐릭터 능력치 즉시 반영"
+        },
+        {
+          "fromSystem": "미시 환경 상호작용 시스템",
+          "toSystem": "전투 시스템 모듈",
+          "trigger": "환경 오브젝트 파괴 또는 특정 지형지물 활용 시 발생하는 물리 이벤트",
+          "stateChange": "주변 적의 상태 이상 유발 또는 플레이어에게 유리한 지형적 이점 생성 및 전투 흐름 변경"
+        },
+        {
+          "fromSystem": "생태 적응형 돌연변이 엔진",
+          "toSystem": "미시 환경 상호작용 시스템",
+          "trigger": "특정 돌연변이(예: 강력한 턱, 날개) 획득 시 캐릭터 상태값 변경",
+          "stateChange": "이전에는 파괴 불가능했던 환경 오브젝트를 파괴하거나 새로운 경로를 개척할 수 있게 됨"
+        }
+      ],
+      "contentExpansionPlan": [
+        {
+          "milestone": "초기 생태계 정복 및 적응",
+          "newGameplay": "개미, 딱정벌레 등 기초 곤충과의 전투를 통해 기본적인 돌연변이 시스템을 학습하고 첫 보스를 처치하며 생존의 기초를 다집니다.",
+          "systemImpact": "기본적인 이동 및 공격 시스템이 확립되며, 첫 번째 돌연변이 트리인 '기초 신체 강화'가 해금되어 캐릭터 성장의 기틀을 마련합니다."
+        },
+        {
+          "milestone": "습지대 탐험 및 환경 극복",
+          "newGameplay": "물과 늪지대가 포함된 새로운 환경에서 수중 호흡이나 미끄럼 방지 등의 특수 돌연변이가 필요해지며, 환경 자체가 위협으로 작용합니다.",
+          "systemImpact": "환경 상호작용 시스템에 '액체 물리'와 '수중 전투' 요소가 추가되어 기존 지상 전투와 차별화된 전략적 선택지를 제공합니다."
+        },
+        {
+          "milestone": "포식자의 둥지 침투",
+          "newGameplay": "말벌이나 사마귀와 같은 상위 포식자와의 전투가 중심이 되며, 고도의 회피와 반격 기술이 요구되는 고난도 전투가 진행됩니다.",
+          "systemImpact": "최상위 돌연변이 단계가 해금되며, 플레이어는 자신의 빌드를 극단적으로 특화하여 생태계 최상위 포식자로 거듭나게 됩니다."
+        }
+      ],
+      "technicalAssumptions": [
+        "유니티 엔진의 ECS(Entity Component System)를 사용하여 수백 마리의 곤충 개체를 동시에 처리할 수 있는 고성능 아키텍처를 구축합니다.",
+        "모바일 기기의 발열을 고려하여 셰이더 최적화 및 텍스처 압축을 통해 메모리 사용량을 500MB 이하로 유지하는 최적화 전략을 수립합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 매 세션마다 돌연변이 선택을 통해 자신의 빌드가 성장하고 있음을 명확하게 체감하고 전략적 재미를 느끼는가?",
+        "모바일 환경에서 30분 동안의 플레이가 피로감 없이 몰입감을 유지할 수 있도록 밸런싱과 조작 편의성이 확보되었는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "생태 적응형 돌연변이 시스템",
+          "responsibleSystem": "캐릭터 성장 및 능력치 관리 시스템",
+          "validationEvidence": "플레이어의 선택에 따른 능력치 변화가 전투 로그와 실제 게임 내 수치에 즉각 반영되는지 유닛 테스트를 통해 검증합니다."
+        },
+        {
+          "designElement": "미시 환경 상호작용",
+          "responsibleSystem": "환경 물리 및 오브젝트 상호작용 시스템",
+          "validationEvidence": "환경 오브젝트 파괴 시 주변 적에게 상태 이상이 적용되는지 물리 엔진 연동을 통해 시뮬레이션하고 검증합니다."
+        },
+        {
+          "designElement": "모바일 최적화 및 성능",
+          "responsibleSystem": "렌더링 및 성능 최적화 엔진 모듈",
+          "validationEvidence": "다수의 적이 등장하는 상황에서도 프레임 드랍이 30fps 이상 유지되는지 실기기 프로파일링 테스트를 수행하여 검증합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 78,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_2": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "초기 생태계 정복 및 기초 돌연변이 적응 단계",
+          "newGameplay": "개미 군단과 딱정벌레 등 기초 곤충들과의 전투를 통해 기본적인 돌연변이 시스템을 학습하고, 첫 번째 보스인 '거대 장수풍뎅이'를 처치하며 생존의 기초를 다지는 튜토리얼 겸 핵심 루프를 경험합니다.",
+          "systemImpact": "기본적인 이동 및 공격 시스템이 확립되며, 첫 번째 돌연변이 트리인 '기초 신체 강화'가 해금되어 캐릭터 성장의 기틀을 마련하고, 이후 진행될 복잡한 빌드 구성의 기초 데이터를 수집합니다."
+        },
+        {
+          "milestone": "습지대 탐험 및 환경 극복을 위한 특수 적응",
+          "newGameplay": "물과 늪지대가 포함된 새로운 환경에서 수중 호흡이나 미끄럼 방지, 끈적한 발바닥 등의 특수 돌연변이가 필수적으로 요구되며, 환경 자체가 플레이어에게 지속적인 위협으로 작용하는 지형지물 전투를 도입합니다.",
+          "systemImpact": "환경 상호작용 시스템에 '액체 물리'와 '수중 전투' 요소가 추가되어 기존 지상 전투와는 완전히 차별화된 전략적 선택지를 제공하며, 환경 저항 수치라는 새로운 스탯 시스템이 도입됩니다."
+        },
+        {
+          "milestone": "포식자의 둥지 침투 및 생태계 최상위 등극",
+          "newGameplay": "말벌이나 사마귀와 같은 상위 포식자와의 전투가 중심이 되며, 고도의 회피와 반격 기술이 요구되는 고난도 전투가 진행됩니다. 플레이어는 적의 공격 패턴을 파악하고 자신의 돌연변이 능력을 실시간으로 조합하여 대응해야 합니다.",
+          "systemImpact": "최상위 돌연변이 단계가 해금되며, 플레이어는 자신의 빌드를 극단적으로 특화하여 생태계 최상위 포식자로 거듭나게 됩니다. 또한, 보스 처치 시 얻는 고유 유전자를 통해 영구적인 능력치 상승 시스템이 활성화됩니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_2": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
   "tasks": {},
@@ -351,28 +577,28 @@
       "updatedAt": "2026-09-18T19:31:03.120Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 5,
-      "successes": 1,
-      "failures": 4,
+      "calls": 9,
+      "successes": 3,
+      "failures": 6,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 267425,
-      "lastMs": 126515,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T19:52:56.634Z"
+      "totalMs": 445946,
+      "lastMs": 9768,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=44",
+      "updatedAt": "2026-09-18T20:03:24.528Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T19:31:01.040Z",
-  "updatedAt": "2026-09-18T20:03:02.323Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T19:31:18.801Z",
+  "updatedAt": "2026-09-18T20:03:24.559Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T20:03:24.528Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }
