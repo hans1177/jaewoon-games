@@ -17,6 +17,7 @@ export function validateAuthorizedSummary(summary){
   if(!Array.isArray(summary.reusablePatterns)||summary.reusablePatterns.length===0)throw new Error('AUTHORIZED_SUMMARY_PATTERNS_MISSING');
   if(!Array.isArray(summary.learningDomains)||summary.learningDomains.length===0)throw new Error('AUTHORIZED_SUMMARY_DOMAINS_MISSING');
   if(Number(summary?.sourceCorpus?.documents||0)<=0)throw new Error('AUTHORIZED_SUMMARY_SOURCE_CORPUS_MISSING');
+  if(summary.runtimeEvidenceRequiredForPositiveRuntimeClaims!==true)throw new Error('AUTHORIZED_SUMMARY_RUNTIME_BOUNDARY_MISSING');
   return summary;
 }
 
