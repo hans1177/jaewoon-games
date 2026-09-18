@@ -3,6 +3,7 @@
 // 안전: 게임 소스 write 0, production PASS 0, 배포/승격 증거로 사용할 수 없다.
 
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 
@@ -25,6 +26,7 @@ export function buildPracticePrompt(order={}){
   return [
     'You are the Vibe learning practice worker. This is PRACTICE_ONLY.',
     'Do not edit files. Do not claim production pass. Do not invent runtime evidence.',
+    'Your answer is untrusted practice knowledge until independently verified and distilled; do not claim it is reusable canonical knowledge.',
     'Solve the drill by returning JSON only with keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns.',
     'tests must contain at least 3 concrete verification checks; avoidPatterns/reusablePatterns are short generalized lessons.',
     'WORK ORDER:',
@@ -60,9 +62,13 @@ export async function runLearningPractice({workOrderFile='.vibe2/work-order.json
   const order=readJson(workOrderFile);
   const raw=await requestModel(buildPracticePrompt(order),{model,responseFile});
   const evaluation=evaluatePracticeAnswer(parseJson(raw));
+  const rawModelOutputSha256=crypto.createHash('sha256').update(String(raw)).digest('hex');
   const result={
-    version:1,kind:'vibe2-learning-practice-result',taskId:clean(order.taskId)||null,
+    version:2,kind:'vibe2-learning-practice-result',taskId:clean(order.taskId)||null,
     practiceOnly:true,productionPass:false,sourceWrite:false,model,
+    knowledgeState:'UNTRUSTED_PRACTICE_OUTPUT',rawModelOutputSha256,rawModelOutputStored:false,
+    candidateLessonsVerified:false,retrievalEligible:false,masteryCreditEligible:false,canonicalTrainingEligible:false,
+    independentVerificationRequired:true,distillationRequiredBeforeReuse:true,
     evaluation:evaluation.pass?'PASS':'FAIL',...evaluation,
     authority:'practice-only-no-production-promotion'
   };
