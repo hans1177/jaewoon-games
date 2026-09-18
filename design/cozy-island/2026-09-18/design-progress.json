@@ -2,81 +2,52 @@
   "version": 2,
   "gameId": "cozy-island",
   "date": "2026-09-18",
-  "engineDigest": "04ec2d689e64257552cffe932ba6dbc7846c0d649fcaafe4d2363650f8b5290b",
-  "status": "PRE_GATE_BLOCKED",
-  "currentStage": "PRE_GATE_REPAIR",
-  "percent": 50,
-  "completedPhases": [
-    "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1",
-    "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
-  ],
-  "completedPhaseCount": 6,
+  "engineDigest": "34a98a789f30289dddb9b5ae2d43337ab9be6bdd569306c12f184743f8f1fd8c",
+  "status": "IN_PROGRESS",
+  "currentStage": "DESIGNER_DRAFT",
+  "percent": 17,
+  "completedPhases": [],
+  "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T06:52:33.923Z",
+  "lastSuccessfulModelCallAt": null,
   "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=76.6 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
-      "failures": 0,
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 9757,
+      "lastMs": 9757,
+      "lastError": "Expected ',' or ']' after array element in JSON at position 4084 (line 1 column 4085)",
+      "updatedAt": "2026-09-18T06:58:41.590Z"
+    },
+    "gemini:gemini-2.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 14452,
-      "lastMs": 2187,
-      "lastError": null,
-      "updatedAt": "2026-09-18T06:52:33.923Z"
+      "totalMs": 9850,
+      "lastMs": 9850,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T06:58:41.683Z"
+    },
+    "gemini:gemini-2.5-flash-lite": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 9957,
+      "lastMs": 9957,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T06:58:41.790Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T06:52:33.927Z",
-  "blocked": true,
-  "preGateScore": 76.6,
-  "hardFailures": [
-    "CRITICAL_AXIS_MINIMUM_FAIL"
-  ],
-  "repairPacket": {
-    "source": "DETERMINISTIC_PRE_GATE_V2",
-    "bypassAllowed": false,
-    "totalScore": 76.6,
-    "passMinimum": 80,
-    "hardFailures": [
-      "CRITICAL_AXIS_MINIMUM_FAIL"
-    ],
-    "failedAxes": [
-      "SYSTEM_INTERCONNECTION_DESIGN",
-      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-    ],
-    "reasons": [
-      {
-        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
-        "evidenceLevel": 60,
-        "minimumRequired": 75,
-        "evidence": {
-          "axisScore": 7.2,
-          "axisWeight": 12
-        },
-        "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
-        "bypassAllowed": false
-      },
-      {
-        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": 60,
-        "minimumRequired": 75,
-        "evidence": {
-          "axisScore": 3,
-          "axisWeight": 5
-        },
-        "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-        "bypassAllowed": false
-      }
-    ]
-  }
+  "updatedAt": "2026-09-18T06:58:41.790Z"
 }
