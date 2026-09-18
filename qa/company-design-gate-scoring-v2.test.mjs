@@ -79,6 +79,20 @@ assert.ok(weakResult.criticalAxisFailures.includes('UX_AND_ACCESSIBILITY_PLAN'))
 assert.ok(weakResult.hardFailures.includes('CRITICAL_AXIS_MINIMUM_FAIL'));
 assert.ok(weakResult.totalScore<=79||weakResult.hardFailures.length>0);
 
+assert.ok(Array.isArray(weakResult.rejectionReasons));
+assert.ok(weakResult.rejectionReasons.length>=1);
+for(const reason of weakResult.rejectionReasons){
+  assert.equal(reason.kind,'HARD_GATE');
+  assert.equal(reason.bypassAllowed,false);
+  assert.equal(reason.source,'STAGE_GATE_SCORING_V2');
+  assert.equal(typeof reason.code,'string');
+  assert.equal(typeof reason.requiredAction,'string');
+}
+const uxReject=weakResult.rejectionReasons.find(reason=>reason.code==='CRITICAL_AXIS_MINIMUM_FAIL'&&reason.axis==='UX_AND_ACCESSIBILITY_PLAN');
+assert.ok(uxReject);
+assert.equal(uxReject.evidenceLevel,0);
+assert.equal(uxReject.minimumRequired,75);
+
 
 const strictReviewSource=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
 assert.match(strictReviewSource,/scoreDesignGateV2/);
