@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <button id="startButton">시작</button>
+    <div id="gameArea"></div>
+    <div id="status"></div>
+  </main>
+
+  <script>
+    const gameArea = document.getElementById('gameArea');
+    const status = document.getElementById('status');
+    const startButton = document.getElementById('startButton');
+
+    startButton.addEventListener('click', () => {
+      gameArea.innerHTML = '<div>게임 시작 중...</div>';
+      status.innerHTML = '게임 시작';
+    });
+
+    // Progression logic
+    let gameProgress = 0;
+    const progression = document.createElement('div');
+    progression.style.marginTop = '20px';
+    progression.style.fontSize = '18px';
+    progression.style.color = '#fff';
+    progression.style.backgroundColor = '#333';
+    progression.style.padding = '10px 15px';
+    progression.style.borderRadius = '5px';
+    progression.style.border = '1px solid #555';
+    gameArea.appendChild(progression);
+
+    // Restart logic
+    const restartButton = document.createElement('button');
+    restartButton.textContent = '재시작';
+    restartButton.style.marginTop = '20px';
+    restartButton.style.padding = '10px 20px';
+    restartButton.style.fontSize = '16px';
+    restartButton.style.backgroundColor = '#555';
+    restartButton.style.color = '#fff';
+    restartButton.style.borderRadius = '4px';
+    restartButton.style.border = '1px solid #666';
+    restartButton.style.cursor = 'pointer';
+    restartButton.addEventListener('click', () => {
+      gameArea.innerHTML = '<div>게임 재시작 중...</div>';
+      status.innerHTML = '게임 재시작';
+    });
+    gameArea.appendChild(restartButton);
+
+    // Protection logic
+    const protectedState = document.createElement('div');
+    protectedState.style.marginTop = '20px';
+    protectedState.style.fontSize = '16px';
+    protectedState.style.color = '#fff';
+    protectedState.style.backgroundColor = '#333';
+    protectedState.style.padding = '10px 15px';
+    protectedState.style.borderRadius = '5px';
+    protectedState.style.border = '1px solid #555';
+    protectedState.style.display = 'none';
+    gameArea.appendChild(protectedState);
+
+    // Game loop
+    function gameLoop() {
+      gameProgress++;
+      progression.textContent = `Progress: ${gameProgress} / 100`;
+      if (gameProgress >= 100) {
+        gameArea.innerHTML = '<div>게임 종료</div>';
+        status.innerHTML = '게임 종료';
+      }
+    }
+
+    setInterval(gameLoop, 1000);
+  </script>
+</body>
+</html>
