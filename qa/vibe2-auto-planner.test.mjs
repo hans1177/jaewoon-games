@@ -132,9 +132,9 @@ test('registered historical Roblox maintenance survives catalog absence and revi
   const task={
     id:'historical-maintenance',gameId:'historical-game',target:'roblox',department:'development',type:'implementation',
     sourceRoot:'roblox-games/historical-game',releaseState:'development-confirmed',status:'cancelled',
-    blocker:'lifecycle-inactive:MISSING_FROM_CATALOG',postReleaseFocused:true,historicalDeploymentRecovery:true,
+    blocker:'lifecycle-inactive:MISSING_FROM_CATALOG',postReleaseFocused:true,
     packageLongWorkProtected:true,packageRole:'implementation-owner',evidence:[
-      'post-release-focused:yes','historical-deployment-recovery:yes',
+      'post-release-focused:yes','historical-deployment-recovery:yes','historical-current-release-claim:NO',
       'maintenance-registry:company-learning/roblox-sustained-maintenance.json','lifecycle-sync:MISSING_FROM_CATALOG'
     ]
   };
@@ -148,7 +148,9 @@ test('registered historical Roblox maintenance survives catalog absence and revi
   assert.equal(revived.status,'queued');
   assert.equal(revived.blocker,null);
   assert.equal(revived.lastOutcome,null);
+  assert.equal(revived.historicalDeploymentRecovery,true);
   assert.ok(revived.evidence.includes('lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE'));
+  assert.ok(revived.evidence.includes('self-recovery:HISTORICAL_DEPLOYMENT_FLAG_RESTORED'));
 });
 
 test('historical flags alone cannot bypass catalog authority without registry eligibility',()=>{
