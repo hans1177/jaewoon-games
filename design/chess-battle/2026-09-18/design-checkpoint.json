@@ -3,296 +3,50 @@
   "gameId": "chess-battle",
   "date": "2026-09-18",
   "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
-  "fingerprint": "c3f99c50fb3031904f6a83c1590e2771411751d7222fa15354ea04f677ce05a3",
+  "fingerprint": "80fffa679ede0484b966c278817c9e6072f5c17ed6fddab8afa1cd6de4df22f4",
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
-  "engineDigest": "04ec2d689e64257552cffe932ba6dbc7846c0d649fcaafe4d2363650f8b5290b",
-  "status": "PRE_GATE_BLOCKED",
-  "completedPhases": [
-    "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1",
-    "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
-  ],
-  "phases": {
-    "designer_draft": {
-      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계된 체스 배틀",
-      "playerFantasy": "제한된 턴과 전술적 위치 선정 속에서 체스의 기물을 조작해 적의 진형을 무너뜨리고 전장을 지배하는 사령관의 판타지",
-      "coreFun": "예측 가능한 전술 정보를 바탕으로 한 수의 의미 있는 이동과 기물 상태 변화를 통해 즉각적인 보드 장악과 승리의 쾌감을 얻는 재미",
-      "coreLoop": [
-        "제한된 이동 횟수와 목표가 주어진 전장 보드에 진입하여 초기 적과 장애물의 배치를 파악합니다.",
-        "기물의 특성과 장애물을 고려해 전략적인 이동 및 매치/공격 액션을 수행하고 상태 변화를 즉시 확인합니다.",
-        "전장 목표를 달성하여 보상을 획득하고 다음 단계의 새로운 변주가 있는 보드로 진입하여 성장을 이어갑니다."
-      ],
-      "signatureSystems": [
-        {
-          "name": "전술 기물 전투 시스템",
-          "purpose": "체스 기반의 이동 규칙에 고유 전투 능력과 상태 변화를 부여하여 매 턴의 선택에 깊이를 더합니다.",
-          "playerChoice": "어떤 기물을 먼저 전진시키고 적의 공격을 방어하며 상태를 변화시킬지 결정합니다."
-        },
-        {
-          "name": "전장 목표 및 장애물 제어",
-          "purpose": "순수한 적 섬멸 외에 다양한 지형 조건을 클리어하도록 강제하여 퍼즐적 재미를 극대화합니다.",
-          "playerChoice": "장애물을 우회할지 기물의 특수 능력으로 파괴하여 새로운 경로를 열지 선택합니다."
-        }
-      ],
-      "systemInterconnections": [
-        {
-          "fromSystem": "전술 기물 전투 시스템",
-          "toSystem": "전장 목표 및 장애물 제어",
-          "trigger": "기물의 공격 또는 이동",
-          "stateChange": "보드 상의 장애물이 파괴되거나 목표 게이지가 상승"
-        },
-        {
-          "fromSystem": "전장 목표 및 장애물 제어",
-          "toSystem": "진행/경제 시스템",
-          "trigger": "스테이지 클리어 조건 달성",
-          "stateChange": "골드 및 다음 스테이지 해제 권한 획득"
-        },
-        {
-          "fromSystem": "진행/경제 시스템",
-          "toSystem": "전술 기물 전투 시스템",
-          "trigger": "획득한 재화로 기물 강화",
-          "stateChange": "기물의 공격력 및 이동 범위 확장"
-        }
-      ],
-      "progressionDirection": "초반부에는 기본 기물의 이동을 익히고, 중후반부로 갈수록 특수 능력을 가진 기물과 복잡한 지형 장애물이 결합된 고난도 전장으로 확장",
-      "progressionEconomyBalance": {
-        "progressionLoop": "스테이지 클리어 -> 재화 획득 -> 기물 업그레이드 -> 상위 스테이지 도전의 선순환 구조 유지",
-        "resourceFlow": "플레이어는 승리를 통해 골드를 얻고, 이를 소모하여 유닛 성장에 투자",
-        "balanceRules": "과도한 파밍을 방지하고 매 스테이지마다 클리어 가능한 최소 스펙 기준을 엄격하게 관리"
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "챕터 1 확장 업데이트",
-          "newGameplay": "새로운 이동 패턴을 가진 신규 기물 도입과 특수 지형 추가",
-          "systemImpact": "전술 조합의 경우의 수가 증가하고 기물 전투 시스템의 활용도가 확장됨"
-        },
-        {
-          "milestone": "챕터 2 확장 업데이트",
-          "newGameplay": "일회성 전술 아이템 시스템 오픈 및 실시간 방어 기믹 추가",
-          "systemImpact": "위기 상황 탈출을 위한 선택지가 다양해지고 전장 목표 제어 시스템에 영향 부여"
-        },
-        {
-          "milestone": "챕터 3 확장 업데이트",
-          "newGameplay": "시간 제한형 특수 미션 전장 추가 및 하드코어 보스전 도입",
-          "systemImpact": "빠른 판단력을 요구하는 압박 요소가 도입되어 전체 코어 루프의 난이도 곡선 재조정"
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "제한 턴 소진",
-          "핵심 기물 파괴"
-        ],
-        "retryFlow": "실패 시 즉시 재도전 버튼을 제공하며, 소모된 행동력 일부를 보존하거나 바로 재배치 가능",
-        "riskPressure": "턴 제한으로 인해 플레이어가 신중하면서도 과감한 한 수를 두도록 심리적 압박 부여",
-        "recoveryRules": "동일 스테이지 3회 실패 시 일시적인 능력치 버프 아이템 제공으로 정체 구간 해소"
-      },
-      "platformFitPlan": {
-        "targetPlatform": "ROBLOX",
-        "inputModel": "터치 및 마우스 클릭 기반의 드래그 앤 드롭 이동 방식",
-        "performanceBudget": "로블록스 클라이언트 최적화를 위해 저폴리곤 모델과 가벼운 파티클 효과 사용",
-        "sessionConstraints": "한 판당 3~5분 이내로 구성하여 모바일 환경에서도 부담 없이 플레이 가능"
-      },
-      "visualDirection": "직관적인 체스판 그리드 위에 판타지 풍의 아기자기한 3D 기물 디자인을 적용하여 가독성과 시각적 재미를 동시 확보",
-      "mobileUx": "엄지손가락 한 손으로도 쉽게 기물을 선택하고 이동할 수 있는 UI 배치와 명확한 터치 피드백 제공",
-      "uxAccessibilityPlan": {
-        "hudPriorities": "남은 턴 수, 현재 목표, 보유 재화를 최상단에 고정 표시",
-        "touchAndInput": "오동작 방지를 위해 기물 선택 후 이동 가능 경로를 명확한 하이라이트로 안내",
-        "readability": "색맹 사용자도 구분 가능한 기물 테두리 및 패턴 표시 지원",
-        "accessibility": "텍스트 크기 조절 및 사운드 온오프 직관적 배치"
-      },
-      "artAudioDirection": {
-        "visualIdentity": "깔끔하고 정돈된 보드 게임 감성과 판타지 전투의 역동성 결합",
-        "audioIdentity": "기물 이동 시 묵직한 목재/금속 마찰음과 승리 시 경쾌한 효과음 적용",
-        "gameplayFeedbackSync": "타격 및 이동 시 화면 진동과 사운드를 0.1초 이내로 동기화"
-      },
-      "marketTargetDirection": "글로벌 퍼즐 및 전략 게임 유저를 대상으로 하며, 남녀노소 누구나 쉽게 이해할 수 있는 룰 설계",
-      "steamExpansionDecision": "모바일 및 로블록스 플랫폼 안정화 이후 PC 환경에 맞춘 확장팩 및 도전 과제 시스템 도입 검토",
-      "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "향후 유저 간 1대1 턴제 대전(PVP) 모드 업데이트를 위한 기초 네트워크 구조 설계 고려",
-      "technicalAssumptions": [
-        "서버 권한 기반의 턴 및 이동 검증 로직 처리",
-        "클라이언트 측 예측 이동 및 매끄러운 애니메이션 보간 구현"
-      ],
-      "validationQuestions": [
-        "플레이어가 첫 3분 안에 게임의 핵심 룰을 완벽히 이해하는가?",
-        "제한 턴 시스템이 지루함 없이 적절한 긴장감을 유발하는가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "기물 이동 및 공격 처리 로직",
-          "responsibleSystem": "전술 기물 전투 시스템",
-          "validationEvidence": "유저 테스트를 통한 조작 만족도 및 오류율 측정 지표 확인"
-        },
-        {
-          "designElement": "스테이지 클리어 보상 지급 및 재화 관리",
-          "responsibleSystem": "진행 및 경제 시스템",
-          "validationEvidence": "재화 수급량과 업그레이드 주기 밸런스 로그 분석 완료"
-        },
-        {
-          "designElement": "지형 장애물 파괴 및 우회 규칙 적용",
-          "responsibleSystem": "전장 목표 및 장애물 제어",
-          "validationEvidence": "퍼즐 풀이 시간 및 스테이지 실패율 통계 수집 검증"
-        }
-      ],
-      "openQuestions": [
-        "향후 멀티플레이 도입 시 턴 제한 시간을 몇 초로 설정하는 것이 가장 적절한가?"
-      ]
-    },
-    "deterministic_pre_gate": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 0,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 60,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 0,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 6,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
-      },
-      "totalScore": 67.4,
-      "criticalAxisFailures": [
-        "IDEA_AND_DISTINCTNESS",
-        "CONTENT_EXPANSION_PLAN",
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-      ],
-      "hardFailures": [
-        "CORE_FUN_WEAK",
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CORE_FUN_WEAK",
-          "kind": "HARD_GATE",
-          "axis": "CORE_LOOP_DESIGN",
-          "evidenceLevel": 0,
-          "minimumRequired": 60,
-          "evidence": {
-            "ideaAndDistinctness": 0,
-            "coreLoopDesign": 80,
-            "coreLoopCount": 3,
-            "signatureSystemCount": 2
-          },
-          "requiredAction": "핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IDEA_AND_DISTINCTNESS",
-          "evidenceLevel": 0,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 0,
-            "axisWeight": 12
-          },
-          "requiredAction": "정체성·플레이어 판타지·coreFun을 구체화하고 coreLoop와 최소 2개 signature system에 직접 연결한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "CONTENT_EXPANSION_PLAN",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 6,
-            "axisWeight": 10
-          },
-          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    }
-  },
+  "engineDigest": "34a98a789f30289dddb9b5ae2d43337ab9be6bdd569306c12f184743f8f1fd8c",
+  "status": "IN_PROGRESS",
+  "completedPhases": [],
+  "phases": {},
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
-      "failures": 0,
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 9748,
+      "lastMs": 9748,
+      "lastError": "Expected ',' or ']' after array element in JSON at position 4492 (line 1 column 4493)",
+      "updatedAt": "2026-09-18T06:53:43.000Z"
+    },
+    "gemini:gemini-2.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 13368,
-      "lastMs": 1811,
-      "lastError": null,
-      "updatedAt": "2026-09-18T06:52:02.493Z"
+      "totalMs": 9848,
+      "lastMs": 9848,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T06:53:43.100Z"
+    },
+    "gemini:gemini-2.5-flash-lite": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 9975,
+      "lastMs": 9975,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T06:53:43.227Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
-  "createdAt": "2026-09-18T06:51:49.115Z",
-  "updatedAt": "2026-09-18T06:52:02.497Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:52:02.493Z",
-  "geminiModelResolution": {
-    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
-  },
-  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
-  "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=70.4 hard=CORE_FUN_WEAK,CRITICAL_AXIS_MINIMUM_FAIL"
+  "currentPhase": "DESIGNER_DRAFT",
+  "createdAt": "2026-09-18T06:53:33.250Z",
+  "updatedAt": "2026-09-18T06:53:43.227Z"
 }
