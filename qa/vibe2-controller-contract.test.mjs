@@ -78,6 +78,8 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
   assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_IN=PASS'));
+  assert(workflow.includes('for(let i=1;i<variantCount;i++)workers.push'));
+  assert(workflow.includes("variant:\`speculative-\${i}\`"));
 });
 
 test('controller starts isolated candidates from fresh main and never writes main directly',()=>{
@@ -132,49 +134,35 @@ test('controller allows approved source root but enforces candidate boundary',()
   assert(workflow.includes('candidate escaped approved boundary'));
 });
 
-test('worker completion uses push callbacks to refill slots before batch fan-in',()=>{
+test('worker completion uses repository dispatch to refill slots before batch fan-in',()=>{
+  assert(workflow.includes('repository_dispatch:'));
+  assert(workflow.includes('types: [vibe2-slot-refill, vibe2-fanin-refill]'));
   assert(workflow.includes("- 'vibe2/refill/**'"));
   assert(workflow.includes('release-slot'));
   assert(workflow.includes('slot-released-awaiting-fan-in'));
   assert(workflow.includes('Signal immediate slot refill after single-variant worker completion'));
-  assert.match(workflow,/- name: Signal immediate slot refill after single-variant worker completion[\s\S]*?continue-on-error: true/);
-  assert(workflow.includes('vibe2/refill/task/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/${encoded}'));
+  assert(workflow.includes("event_type:'vibe2-slot-refill'"));
+  assert(workflow.includes('VIBE2_EARLY_SLOT_REFILL_SIGNAL=REPOSITORY_DISPATCH'));
   assert(workflow.includes('earlyRefill'));
   assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
-  assert.equal(runtime.continuous.refillMode,'per-worker-push-callback-with-fan-in-fallback');
-  assert.equal(runtime.continuous.slotRefillTrigger,'push-callback-branch');
+  assert.equal(runtime.continuous.refillMode,'per-worker-repository-dispatch-with-fan-in-fallback');
+  assert.equal(runtime.continuous.slotRefillTrigger,'repository-dispatch');
+  assert.equal(runtime.continuous.legacySlotRefillBranchCompatibility,true);
   assert.equal(runtime.continuous.slotRefillSingleVariantOnly,true);
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
 });
 
-test('fan-in keeps a push-callback fallback and does not depend on default-branch workflow dispatch',()=>{
+test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
   assert(workflow.includes('Event-driven fan-in refill fallback'));
-  assert.match(workflow,/- name: Event-driven fan-in refill fallback[\s\S]*?continue-on-error: true/);
-  assert(workflow.includes('vibe2/refill/fanin/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}'));
+  assert(workflow.includes("event_type:'vibe2-fanin-refill'"));
+  assert(workflow.includes('VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'));
   assert(!workflow.includes('gh workflow run vibe2-continuous-core.yml'));
   assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'));
   assert(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs'));
   assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
-});
-
-test('fan-in explicitly dispatches only the persisted Roblox winner to Candidate Runtime',()=>{
-  const persist=workflow.indexOf('VIBE2_HIERARCHICAL_FAN_IN=PASS');
-  const start=workflow.indexOf('- name: Dispatch Roblox candidate Studio QA');
-  const end=workflow.indexOf('- name: Upload generated machine handoff and role review',start);
-  assert(persist>=0 && start>persist && end>start);
-  const dispatch=workflow.slice(start,end);
-  assert(dispatch.includes("if: steps.persist.outcome == 'success'"));
-  assert(dispatch.includes("const prefix='vibe2/candidate/OWNER-ROBLOX-OBBY-';"));
-  assert(dispatch.includes("String(task.target||'').toLowerCase()!=='roblox'"));
-  assert(dispatch.includes("task.blocker!=='candidate-awaiting-qa-and-deployment'"));
-  assert(dispatch.includes('actions-run:${process.env.GITHUB_RUN_ID}'));
-  assert(dispatch.includes("ref:'main',inputs:{candidate_ref:process.argv[1]}"));
-  assert(dispatch.includes('vibe2-roblox-candidate-runtime.yml/dispatches'));
-  assert(dispatch.includes("if [ \"$code\" != '204' ]"));
-  assert(!dispatch.includes('git push origin'));
 });
 
 test('worker never writes queue or parallelism state directly during early refill signaling',()=>{
@@ -184,7 +172,9 @@ test('worker never writes queue or parallelism state directly during early refil
   const workerPart=workflow.slice(start,end);
   assert(!workerPart.includes('vibe2-queue-control.mjs release-slot'));
   assert(!workerPart.includes('git push origin HEAD:vibe2-unreal-core'));
-  assert(workerPart.includes('git push origin "HEAD:refs/heads/${callback}"'));
+  assert(!workerPart.includes('HEAD:refs/heads/vibe2/refill/'));
+  assert(workerPart.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"'));
+  assert(workerPart.includes("event_type:'vibe2-slot-refill'"));
 });
 
 test('worker result keeps throughput and actual workload telemetry inputs in the immutable result step',()=>{
@@ -204,7 +194,6 @@ test('explicit work-order output path overrides runtime default path',()=>{
   const queueFile=path.join(root,'queue.json');
   const controlFile=path.join(root,'parallelism.json');
   const experienceFile=path.join(root,'experience.json');
-  const knowledgeFile=path.join(root,'game-study-knowledge.json');
   const runtimeDefault=path.join(root,'runtime-default.json');
   const explicitOutput=path.join(root,'explicit-output.json');
   const runtimeFile=path.join(root,'runtime.json');
@@ -213,22 +202,20 @@ test('explicit work-order output path overrides runtime default path',()=>{
   fixtureRuntime.continuous={...fixtureRuntime.continuous,enabled:false,entryWorkflow:'.github/workflows/vibe2-24h-runner.yml',workerWorkflow:'.github/workflows/vibe2-continuous-core.yml'};
   fixtureRuntime.documentation={
     ...fixtureRuntime.documentation,
-    runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',gameStudyKnowledge:'game-study-knowledge.json'},
+    runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json'},
     generatedHandoffTool:'tools/vibe2-handoff.mjs'
   };
-  fixtureRuntime.sources={queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',gameStudyKnowledge:'game-study-knowledge.json',workOrder:runtimeDefault};
+  fixtureRuntime.sources={queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',workOrder:runtimeDefault};
   fixtureRuntime.adaptiveBackpressure={...fixtureRuntime.adaptiveBackpressure,stateFile:'parallelism.json'};
 
   fs.mkdirSync(path.join(root,'tools'),{recursive:true});
   fs.mkdirSync(path.join(root,'.github','workflows'),{recursive:true});
-  fs.writeFileSync(path.join(root,'VIBE2.md'),'# Vibe2\n','utf8');
   fs.writeFileSync(path.join(root,'tools','vibe2-handoff.mjs'),'// fixture\n','utf8');
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'name: fixture\n','utf8');
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
   fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:20,tasks:[]}), 'utf8');
   fs.writeFileSync(controlFile,JSON.stringify({version:2,currentMax:20}), 'utf8');
-  fs.writeFileSync(experienceFile,JSON.stringify({version:3,records:[]}), 'utf8');
-  fs.writeFileSync(knowledgeFile,JSON.stringify({version:1,kind:'vibe2-game-study-knowledge',entries:[],derived:{},authorityExpanded:false}), 'utf8');
+  fs.writeFileSync(experienceFile,JSON.stringify({version:1,records:[]}), 'utf8');
   fs.writeFileSync(runtimeFile,JSON.stringify(fixtureRuntime), 'utf8');
 
   const order=runVibeContinuousRunner({runtimeFile,outputFile:explicitOutput});

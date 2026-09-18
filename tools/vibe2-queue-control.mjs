@@ -142,7 +142,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } =
       packageId: task.packageId || null,
       packageRole: task.packageRole || null,
       longWorkProtected: task.packageLongWorkProtected === true,
-      speculativeVariants: task.target !== 'unity' && task.speculativeEligible && task.estimatedRisk === 'high' ? 3 : 1
+      speculativeVariants: task.target !== 'unity' && task.estimatedRisk === 'high' && (task.speculativeEligible || task.priority === 'critical') ? 3 : 1
     }))
   };
 }

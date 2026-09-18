@@ -141,6 +141,13 @@ test('adaptive backpressure steps 20 down through 16 12 8 4 as pressure rises', 
   }
 });
 
+test('critical high-risk task creates three variants even if legacy opt-in flag is absent', () => {
+  let queue=createVibeContinuousQueue({tasks:[],maxConcurrentTasks:4});
+  queue=add(queue,'critical-risk','critical-risk','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:false});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  assert.equal(reserved.matrix[0].speculativeVariants,3);
+});
+
 test('high-risk opt-in task creates three speculative worker variants', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risky','risky','web',{estimatedRisk:'high',speculativeEligible:true});

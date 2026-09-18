@@ -8,8 +8,7 @@
     "runtimeState": {
       "queue": ".vibe2/queue.json",
       "parallelism": ".vibe2/parallelism-control.json",
-      "experience": ".vibe2/experience.json",
-      "gameStudyKnowledge": ".vibe2/game-study-knowledge.json"
+      "experience": ".vibe2/experience.json"
     },
     "generatedHandoffTool": "tools/vibe2-handoff.mjs",
     "manualHandoffDocumentsAllowed": false,
@@ -24,9 +23,8 @@
       "runtime": 8,
       "queue": 5,
       "parallelism": 2,
-      "experience": 3,
-      "handoff": 3,
-      "gameStudyKnowledge": 1
+      "experience": 1,
+      "handoff": 2
     },
     "disallowUnlistedVibe2Markdown": true,
     "generatedHandoffArtifact": "vibe2-machine-handoff",
@@ -48,8 +46,7 @@
       "vibe2-runtime.json",
       ".vibe2/queue.json",
       ".vibe2/parallelism-control.json",
-      ".vibe2/experience.json",
-      ".vibe2/game-study-knowledge.json"
+      ".vibe2/experience.json"
     ],
     "humanMaintainedHandoff": false,
     "machineContextRequired": true,
@@ -73,7 +70,7 @@
     "maxWorkMinutes": 22,
     "maxModelCallsPerWorker": 1,
     "dispatchNextWhenCapacityOpens": true,
-    "refillMode": "per-worker-push-callback-with-fan-in-fallback",
+    "refillMode": "per-worker-repository-dispatch-with-fan-in-fallback",
     "refillRef": "vibe2-unreal-core",
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,
@@ -107,18 +104,20 @@
     "speculativeParallelism": {
       "enabled": true,
       "variants": 3,
-      "highRiskOptInOnly": true,
-      "unityBuildCandidatesExcluded": true
+      "highRiskOptInOnly": false,
+      "unityBuildCandidatesExcluded": true,
+      "criticalHighRiskAutomatic": true
     },
     "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
-    "slotRefillTrigger": "push-callback-branch",
+    "slotRefillTrigger": "repository-dispatch",
     "slotRefillBranchPrefix": "vibe2/refill/",
     "slotRefillSingleVariantOnly": true,
     "slotRefillWorkerDirectControlWrite": false,
     "slotRefillSourceLocksHeldUntilFanIn": true,
     "postReleaseFocusedRunnerSlots": 1,
-    "postReleaseFocusedRefill": true
+    "postReleaseFocusedRefill": true,
+    "legacySlotRefillBranchCompatibility": true
   },
   "adaptiveBackpressure": {
     "enabled": true,
@@ -158,8 +157,7 @@
     "benchmarkLadder": ".vibe2/benchmark-ladder.json",
     "idlePracticeQueue": ".vibe2/idle-practice-queue.json",
     "webRobloxHandoffs": ".vibe2/web-roblox-handoffs.json",
-    "verifiedCodePatterns": ".vibe2/code-pattern-library.json",
-    "gameStudyKnowledge": ".vibe2/game-study-knowledge.json"
+    "verifiedCodePatterns": ".vibe2/code-pattern-library.json"
   },
   "workers": {
     "exploration": {

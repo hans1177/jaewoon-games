@@ -113,7 +113,7 @@ function resolveTask(queue, taskId = '') {
   const selection = selectVibeQueueBatch(queue);
   return { task:selection.selected[0] || null, reason:selection.stopReason || 'NO_ELIGIBLE_WORK' };
 }
-function incrementalQaPlan(task, target, responsibleFiles) {
+function incrementalQaPlan(task, target, responsibleFiles, speculativeVariants = 1) {
   const files = freezeList(responsibleFiles || []);
   return freeze({
     mode:'impact-first-content-hash',
@@ -122,7 +122,7 @@ function incrementalQaPlan(task, target, responsibleFiles) {
     deterministicChecks:freezeList(['git-diff-check','conflict-marker-scan','text-sanity','js-syntax-when-applicable','json-parse-when-applicable']),
     fullRegressionAtFanIn:true,
     contentHashCache:true,
-    speculativeVariants:task.speculativeEligible && task.estimatedRisk === 'high' ? 2 : 1
+    speculativeVariants:Math.max(1,Math.min(5,Number(speculativeVariants)||1))
   });
 }
 
@@ -244,7 +244,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       candidateFiles:freezeList(adapter.source.candidateFiles), textWritablePatterns:freezeList(adapter.source.textWritablePatterns || []),
       editorRequiredPatterns:freezeList(adapter.source.editorRequiredPatterns || []), ignoredPaths:freezeList(adapter.source.ignoredPaths), responsibleFiles
     }),
-    qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles),
+    qa, incrementalQa:incrementalQaPlan(task, plan.target, responsibleFiles, tournament.candidateCount),
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
@@ -310,6 +310,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_SOURCE_ROOT=${order.source.root}`);
     console.log(`VIBE2_INCREMENTAL_QA=YES`);
     console.log(`VIBE2_SPECULATIVE_VARIANTS=${order.incrementalQa.speculativeVariants}`);
+    console.log(`VIBE2_CANDIDATE_TOURNAMENT_VARIANTS=${order.candidateTournament?.candidateCount||1}`);
+    console.log(`VIBE2_UNIFIED_EXPERIENCE_COUNT=${order.unifiedLearning?.experience?.length||0}`);
+    console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
+    console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
+    console.log(`VIBE2_ASSET_DECISION_COUNT=${order.assetProduction?.decisions?.length||0}`);
     console.log(`VIBE2_EXPERIENCE_CONTEXT_APPLIED=${order.learningAppliedToWorkerGoal?'YES':'NO'}`);
     console.log(`VIBE2_REUSABLE_HANDOFF_CONTEXT=${order.reusedMachineContext?.used?'YES':'NO'}`);
     console.log(`VIBE2_ROLE_SEPARATION=${order.workerPolicy?.roleSeparation?'YES':'NO'}`);
