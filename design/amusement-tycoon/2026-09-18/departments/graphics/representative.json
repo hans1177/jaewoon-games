@@ -1,0 +1,33 @@
+{
+  "version": 5,
+  "gameId": "amusement-tycoon",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "representativeModel": "gemini-3.1-flash-lite",
+  "leadModel": "gemini-3.1-flash-lite",
+  "actualLeadModel": "gemini-3.1-flash-lite",
+  "assistantModels": [],
+  "representativeAuthoredByLead": true,
+  "syntheticCompatibilityRecord": true,
+  "representative": {
+    "keep": [
+      "깔끔하고 시인성이 높은 3D 로우폴리곤 스타일을 유지하여 모바일 환경에서의 가독성과 최적화 효율을 확보함."
+    ],
+    "fix": [
+      "로우폴리곤 스타일의 시각적 단조로움을 피하기 위해 시설별 고유 컬러 팔레트와 실루엣 차별화 가이드를 구체화할 것."
+    ],
+    "add": [
+      "손님 밀집도에 따른 시각적 피드백(예: 대기열 애니메이션, 감정 표현 아이콘)을 추가하여 경영 상태를 직관적으로 시각화함."
+    ],
+    "risks": [
+      "다수의 손님과 시설이 화면에 동시 출력될 때 발생하는 드로우 콜 부하로 인한 모바일 프레임 드랍 가능성."
+    ],
+    "evidence": [
+      "로우폴리곤 스타일은 모바일 타이쿤 장르에서 최적화와 가독성을 동시에 잡은 검증된 아트 방향성임."
+    ],
+    "questions": [
+      "손님들의 이동 경로와 병목 현상을 시각적으로 즉시 파악할 수 있는 히트맵 모드나 오버레이 UI 지원 여부."
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "version": 5,
+  "gameId": "amusement-tycoon",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "representativeModel": "gemini-3-flash-preview",
+  "leadModel": "gemini-3-flash-preview",
+  "actualLeadModel": "gemini-3-flash-preview",
+  "assistantModels": [],
+  "representativeAuthoredByLead": true,
+  "syntheticCompatibilityRecord": true,
+  "representative": {
+    "keep": [
+      "그리드 기반의 길 건설 및 시설 배치 시스템과 A* 알고리즘을 활용한 손님 경로 탐색 로직을 핵심 구조로 유지함."
+    ],
+    "fix": [
+      "손님 AI 연산 부하를 줄이기 위해 매 프레임 경로 갱신 대신 목적지 도달 또는 길 변경 시에만 재계산하도록 수정함."
+    ],
+    "add": [
+      "시설 밀집도에 따른 병목 현상을 감지하고 성능 저하를 방지하기 위한 공간 분할(Spatial Partitioning) 최적화 레이어를 추가함."
+    ],
+    "risks": [
+      "수십 명의 손님 개체 동시 렌더링 시 모바일 환경에서 드로우 콜(Draw Call) 급증으로 인한 프레임 드랍 위험이 있음."
+    ],
+    "evidence": [
+      "유사 장르의 모바일 타이쿤 게임들은 GPU 인스턴싱을 통해 동일 에셋의 다수 개체 출력 성능을 확보함."
+    ],
+    "questions": [
+      "손님 개체별로 고유한 상태(만족도, 소지금 등)를 유지하면서 대규모 군중 시뮬레이션을 수행할 때의 메모리 한계치는 얼마인가?"
+    ]
+  }
+}

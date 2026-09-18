@@ -10783,7 +10783,69 @@
       "productionClass": "DESIGN_ONLY",
       "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
       "lifecycleState": "ACTIVE",
-      "updatedAt": "2026-09-18T14:07:45.438Z"
+      "updatedAt": "2026-09-18T14:07:45.438Z",
+      "REFERENCE_INPUTS": [
+        {
+          "type": "ORIGINAL_MATERIAL",
+          "value": "original non-game seed material composition"
+        }
+      ],
+      "MULTIPLAYER_DESIGN_MODE": "SINGLE",
+      "TARGET_SESSION_MINUTES": 30,
+      "MULTIPLAYER_DESIGN_REQUIRED_AT_DESIGN": true,
+      "MULTIPLAYER_QA_REQUIRED": false,
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "LEGACY_SEED_COMPATIBILITY_SKETCH",
+        "worldModel": "CASUAL의 핵심 행동과 목표가 실제 월드/시스템 상태 변화로 연결되는 플레이 공간",
+        "actors": [
+          "플레이어: 현재 상황과 목표를 읽고 의미 있는 다음 행동을 선택한다.",
+          "상대·위협·NPC 또는 월드 엔티티: 플레이어 행동에 실제 상태로 반응"
+        ],
+        "interactionChains": [
+          "대상/공간 선택 -> 실제 입력 -> 대상 또는 월드 상태 변화 -> 보상·위험·목표 결과 변화"
+        ],
+        "stateMachine": [
+          "START_OR_WORLD_ENTRY",
+          "REAL_PLAYER_INPUT",
+          "CORE_GAMEPLAY_ACTION",
+          "OBSERVABLE_WORLD_OR_TARGET_STATE_CHANGE",
+          "PROGRESSION_REWARD_OR_MEANINGFUL_CHOICE",
+          "RISK_FAILURE_OR_RESOURCE_PRESSURE",
+          "GOAL_OR_RETRY"
+        ],
+        "firstPlayableCycle": [
+          "월드/세션 진입",
+          "현재 상황과 목표를 읽고 의미 있는 다음 행동을 선택한다.",
+          "행동 결과로 게임 상태·자원·위험·진행도가 실제로 변한다.",
+          "보상 또는 의미 있는 선택 적용",
+          "위험·실패·자원 압박 경험",
+          "변화된 상태를 바탕으로 새로운 목표와 선택을 갱신하며 다음 사이클로 이어간다."
+        ],
+        "expansionPlan": [
+          "새 적·위협 또는 행동 패턴",
+          "새 공간·경로 또는 목표",
+          "새 상호작용 또는 전략 결과"
+        ],
+        "longGoalScenario": [
+          "초기 핵심 루프 완료",
+          "성장·보상으로 새 선택 개방",
+          "새 위협·공간·목표를 거쳐 중간 목표 달성"
+        ],
+        "validationRisks": [
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
+          "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+        ]
+      },
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T14:11:15.762Z"
     }
   ],
   "seedMaterials": [
@@ -14210,6 +14272,45 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-18T08:08:22.016Z"
+      },
+      {
+        "gameId": "amusement-tycoon",
+        "seedId": "OWNER-ALL-DESIGN-RESET-AMUSEMENT-TYCOON-20260917",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [],
+        "rejectionReasons": [],
+        "improvementTargets": [
+          {
+            "dimension": "CORE_LOOP_DESIGN",
+            "current": 11.2,
+            "maxScore": 14,
+            "gap": 2.8000000000000007
+          },
+          {
+            "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          },
+          {
+            "dimension": "CONTENT_EXPANSION_PLAN",
+            "current": 8,
+            "maxScore": 10,
+            "gap": 2
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-18T14:11:15.762Z"
       }
     ],
     "causeCounts": {
@@ -14235,7 +14336,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-18T08:08:22.017Z"
+    "updatedAt": "2026-09-18T14:11:15.763Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
