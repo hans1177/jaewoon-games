@@ -31,6 +31,8 @@ on:
       - 'tools/vibe2-candidate-reconcile.mjs'
       - 'tools/vibe2-experience-control.mjs'
       - 'tools/vibe2-handoff.mjs'
+      - 'tools/vibe2-post-release-focus.mjs'
+      - 'company-learning/platform-release-roadmap.json'
       - 'qa/vibe2-auto-planner.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
@@ -45,6 +47,8 @@ on:
       - 'qa/vibe2-candidate-reconcile.test.mjs'
       - 'qa/vibe2-experience-control.test.mjs'
       - 'qa/vibe2-handoff.test.mjs'
+      - 'qa/vibe2-post-release-focus.test.mjs'
+      - 'qa/company-machine-development-lifecycle.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
       - '.github/workflows/vibe2-core-qa.yml'
@@ -72,6 +76,8 @@ on:
       - 'tools/vibe2-candidate-reconcile.mjs'
       - 'tools/vibe2-experience-control.mjs'
       - 'tools/vibe2-handoff.mjs'
+      - 'tools/vibe2-post-release-focus.mjs'
+      - 'company-learning/platform-release-roadmap.json'
       - 'qa/vibe2-*.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
@@ -121,6 +127,9 @@ jobs:
           node --check tools/vibe2-candidate-reconcile.mjs
           node --check tools/vibe2-experience-control.mjs
           node --check tools/vibe2-handoff.mjs
+          node --check tools/vibe2-post-release-focus.mjs
+          node --check qa/vibe2-post-release-focus.test.mjs
+          node --check qa/company-machine-development-lifecycle.test.mjs
           node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
@@ -153,6 +162,8 @@ jobs:
           node --test qa/vibe2-candidate-reconcile.test.mjs
           node --test qa/vibe2-experience-control.test.mjs
           node --test qa/vibe2-handoff.test.mjs
+          node --test qa/vibe2-post-release-focus.test.mjs
+          node --test qa/company-machine-development-lifecycle.test.mjs
 
       - name: Generate machine handoff
         run: |
