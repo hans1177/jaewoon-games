@@ -24,12 +24,15 @@ test('preserved source repair applies bounded exact edits without whole-document
   assert.throws(()=>applyPreservedSourceEdits('<b>x</b><b>x</b>',[{search:'<b>x</b>',replacement:'<b>y</b>'}]),/VIBE2_PATCH_TARGET_AMBIGUOUS/);
 });
 
-test('Vibe2 model call timeout mirrors the central 75 second budget and stops duplicate timeout retries',()=>{
+test('Vibe2 fallback uses Gemini only with the central 75 second budget',()=>{
   const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
   assert.match(source,/const MODEL_TIMEOUT_MS=75000;/);
-  assert.match(source,/if\(failure==='VIBE2_MODEL_TIMEOUT'\)break;/);
-  assert.match(source,/patchMode\?PATCH_OUTPUT_SCHEMA:OUTPUT_SCHEMA/);
-  assert.match(source,/num_predict:patchMode\?2400:8500/);
+  assert.match(source,/VIBE2_GEMINI_MODEL_REQUIRED/);
+  assert.match(source,/GEMINI_API_KEY_REQUIRED/);
+  assert.match(source,/generativelanguage\.googleapis\.com\/v1beta\/models/);
+  assert.match(source,/responseJsonSchema:patchMode\?PATCH_OUTPUT_SCHEMA:OUTPUT_SCHEMA/);
+  assert.match(source,/maxOutputTokens:patchMode\?2400:8500/);
+  assert.doesNotMatch(source,/127\.0\.0\.1:11434|ollamaReady|ensureLocalVibeRuntime|ollama\s/);
   assert.match(source,/기존 HTML 전체를 재생성하지 않고 현재 소스에 적용할 최소 exact edits만 생성한다/);
 });
 
@@ -143,7 +146,7 @@ test('Celestial Bastion shallow tower button is rejected and returns to Vibe ins
   assert.doesNotMatch(current,/data-(?:placement-position|build-slot|tower-slot|grid-x|grid-y)/i);
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-celestial-repair-')),candidate=path.join(temp,'candidate');
   try{
-    await assert.rejects(()=>buildFirstPlayable({gameId:'seed-single-defense-strat-celestial-bastion',gameName:'Celestial Bastion',baseline,sourcePath:'web-games/seed-single-defense-strat-celestial-bastion',candidatePath:candidate,candidateId:'repair-test',sourceCommit:'test',model:'none'}),/VIBE2_LOCAL_MODEL_REQUIRED/);
+    await assert.rejects(()=>buildFirstPlayable({gameId:'seed-single-defense-strat-celestial-bastion',gameName:'Celestial Bastion',baseline,sourcePath:'web-games/seed-single-defense-strat-celestial-bastion',candidatePath:candidate,candidateId:'repair-test',sourceCommit:'test',model:'none'}),/VIBE2_GEMINI_MODEL_REQUIRED/);
     assert.equal(fs.existsSync(path.join(candidate,'index.html')),false);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
@@ -162,8 +165,8 @@ test('canonical Web bootstrap is deterministic-first and invokes Vibe2 only afte
   assert.match(source,/AI_OPTIONAL=YES/);
   const start=source.indexOf('export async function buildFirstPlayable');
   const deterministic=source.indexOf('const fallback=buildContractSafePlayable({gameId,gameName,baseline});',start);
-  const model=source.indexOf('await ensureLocalVibeRuntime(model);',start);
-  assert.ok(deterministic>start&&model>deterministic,'deterministic compiler must run before local model setup');
+  const model=source.indexOf('ensureGeminiRuntime(model);',start);
+  assert.ok(deterministic>start&&model>deterministic,'deterministic compiler must run before Gemini model setup');
   assert.match(source,/await buildVibePlayable\(/);
   assert.match(source,/VIBE_DEVELOPMENT_CONTEXT/);
   assert.match(source,/repairReason/);
