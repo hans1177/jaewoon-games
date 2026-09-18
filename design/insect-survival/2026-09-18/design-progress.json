@@ -2,7 +2,7 @@
   "version": 2,
   "gameId": "insect-survival",
   "date": "2026-09-18",
-  "engineDigest": "cf12f1c49f0b4b7f7cc029cdbc4903f963778889836a64c033c4c9cfa8b8bc3d",
+  "engineDigest": "53b71013da3b97c735457e81ccd8ee6bc08f27fded708880f64336a8f4fa7962",
   "status": "IN_PROGRESS",
   "currentStage": "DESIGNER_DRAFT",
   "percent": 17,
@@ -10,22 +10,22 @@
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
   "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
+  "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGNER_EXTERNAL_CALL_FAILED gemini:gemini-3.8-flash: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+  "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
-      "calls": 6,
+      "calls": 1,
       "successes": 0,
-      "failures": 6,
+      "failures": 1,
       "timeouts": 0,
-      "jsonFailures": 2,
-      "totalMs": 46047,
-      "lastMs": 7804,
+      "jsonFailures": 0,
+      "totalMs": 3349,
+      "lastMs": 3349,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T05:39:32.650Z"
+      "updatedAt": "2026-09-18T05:41:40.037Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T05:39:32.650Z"
+  "updatedAt": "2026-09-18T05:41:40.037Z"
 }
