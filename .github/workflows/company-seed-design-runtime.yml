@@ -242,7 +242,7 @@ jobs:
           worktree="/tmp/design-checkpoint-${{ matrix.target.game_id }}"
           last_checkpoint_sync_key=''
           checkpoint_sync_key() {
-            node -e "const fs=require('fs');const cp=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));let p={};try{p=JSON.parse(fs.readFileSync(process.argv[2],'utf8'))}catch{};process.stdout.write([cp.status||'',cp.currentPhase||'',(cp.completedPhases||[]).length,p.percent??''].join('|'))" "$checkpoint_path" "$progress_path"
+            node -e "const fs=require('fs');const cp=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));let p={};try{p=JSON.parse(fs.readFileSync(process.argv[2],'utf8'))}catch{};process.stdout.write([cp.status||'',cp.currentPhase||'',(cp.completedPhases||[]).length,p.percent??'',cp.lastSuccessfulModelCallAt||'',Object.values(cp.modelHealth||{}).reduce((sum,row)=>sum+Number(row?.calls||0),0),cp.lastError||''].join('|'))" "$checkpoint_path" "$progress_path"
           }
           persist_design_checkpoint() {
             if [ ! -f "$checkpoint_path" ]; then
