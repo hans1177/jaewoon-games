@@ -1,5 +1,5 @@
 // 파일명: assets/vibe-experience-memory.js
-// 역할: 검증된 성공/실패 경험을 저장하고 유사 작업에 재사용할 수 있는 근거를 검색한다.
+// 역할: 검증된 성공/실패 경험을 저장하고 반복 검증된 경험을 더 빠르게 강화해 유사 작업에 재사용한다.
 // 원칙: 검증되지 않은 시도는 재사용 경험으로 승격하지 않으며, 경험은 권한이나 게임 수치를 자동 변경하지 않는다.
 
 const clean = (value) => String(value ?? '').trim();
@@ -22,6 +22,19 @@ function hash(value = '') {
     h = Math.imul(h, 16777619);
   }
   return (h >>> 0).toString(36);
+}
+
+function normalizeConfirmations(value = 1) {
+  return Math.max(1, Math.min(1000000, Math.floor(Number(value) || 1)));
+}
+
+function confidenceFor(confirmations = 1) {
+  const count = normalizeConfirmations(confirmations);
+  return Number((1 - (1 / (count + 1))).toFixed(4));
+}
+
+function laterTimestamp(...values) {
+  return values.map(clean).filter(Boolean).sort().at(-1) || null;
 }
 
 function experienceFingerprint({ gameId = '', engine = '', taskType = '', problem = '', goal = '', change = '', outcome = '', failureCause = '' } = {}) {
@@ -54,7 +67,9 @@ export function createVibeExperienceRecord({
   reusablePatterns = [],
   avoidPatterns = [],
   verified = false,
-  createdAt = ''
+  confirmations = 1,
+  createdAt = '',
+  lastVerifiedAt = ''
 } = {}) {
   const normalizedOutcome = ['PASS', 'FAIL', 'REVISE'].includes(clean(outcome).toUpperCase()) ? clean(outcome).toUpperCase() : 'REVISE';
   const proof = freezeList(evidence);
@@ -63,8 +78,10 @@ export function createVibeExperienceRecord({
   const learningValid = validEvidence && (normalizedOutcome === 'PASS' || Boolean(failure));
   const fingerprint = experienceFingerprint({ gameId, engine, taskType, problem, goal, change, outcome: normalizedOutcome, failureCause: failure });
   const seed = [fingerprint, proof.join('|')].join('::');
+  const confirmationCount = normalizeConfirmations(confirmations);
+  const firstVerifiedAt = clean(createdAt) || null;
   return freeze({
-    version: 2,
+    version: 3,
     id: clean(id) || `exp_${hash(seed)}`,
     fingerprint,
     gameId: clean(gameId) || null,
@@ -83,30 +100,61 @@ export function createVibeExperienceRecord({
     avoidPatterns: freezeList(avoidPatterns),
     verified: validEvidence,
     reusable: learningValid,
-    createdAt: clean(createdAt) || null,
+    confirmations: confirmationCount,
+    confidence: confidenceFor(confirmationCount),
+    createdAt: firstVerifiedAt,
+    lastVerifiedAt: clean(lastVerifiedAt) || firstVerifiedAt,
     authority: 'retrieval-context-only-no-automatic-gameplay-mutation'
+  });
+}
+
+function mergeVerifiedExperience(left, right) {
+  const confirmations = normalizeConfirmations((left?.confirmations || 1) + (right?.confirmations || 1));
+  return freeze({
+    ...left,
+    version: 3,
+    departments: freezeList([...(left?.departments || []), ...(right?.departments || [])]),
+    qa: freezeList([...(left?.qa || []), ...(right?.qa || [])]),
+    evidence: freezeList([...(left?.evidence || []), ...(right?.evidence || [])]),
+    reusablePatterns: freezeList([...(left?.reusablePatterns || []), ...(right?.reusablePatterns || [])]),
+    avoidPatterns: freezeList([...(left?.avoidPatterns || []), ...(right?.avoidPatterns || [])]),
+    confirmations,
+    confidence: confidenceFor(confirmations),
+    createdAt: clean(left?.createdAt) || clean(right?.createdAt) || null,
+    lastVerifiedAt: laterTimestamp(left?.lastVerifiedAt, left?.createdAt, right?.lastVerifiedAt, right?.createdAt),
+    verified: true,
+    reusable: true
   });
 }
 
 export function createVibeExperienceMemory(seed = {}) {
   const input = Array.isArray(seed) ? seed : Array.isArray(seed?.records) ? seed.records : [];
   const records = [];
-  const seenIds = new Set();
-  const seenFingerprints = new Set();
+  const indexById = new Map();
+  const indexByFingerprint = new Map();
   for (const inputRecord of input) {
     const record = createVibeExperienceRecord(inputRecord);
-    if (!record.reusable || seenIds.has(record.id) || seenFingerprints.has(record.fingerprint)) continue;
-    seenIds.add(record.id);
-    seenFingerprints.add(record.fingerprint);
+    if (!record.reusable) continue;
+    const existingIndex = indexByFingerprint.get(record.fingerprint) ?? indexById.get(record.id);
+    if (existingIndex != null) {
+      const existing = records[existingIndex];
+      if (existing.fingerprint === record.fingerprint) records[existingIndex] = mergeVerifiedExperience(existing, record);
+      continue;
+    }
+    const index = records.length;
     records.push(record);
+    indexById.set(record.id, index);
+    indexByFingerprint.set(record.fingerprint, index);
   }
   return freeze({
-    version: 2,
+    version: 3,
     policy: freeze({
       verifiedEvidenceRequired: true,
       verifiedFailureMayTeach: true,
       unverifiedAttemptReusable: false,
       exactDuplicateSuppressed: true,
+      duplicateVerificationReinforces: true,
+      repeatedVerificationRaisesConfidence: true,
       mayExpandAuthority: false,
       mayAutoCopyGameplayValues: false
     }),
@@ -120,6 +168,7 @@ export function addVibeExperience(memory, recordInput = {}) {
   if (!record.reusable) {
     return freeze({
       added: false,
+      reinforced: false,
       reason: record.verified ? 'verified-failure-cause-or-success-required' : 'verified-evidence-required',
       record,
       memory: current
@@ -127,16 +176,29 @@ export function addVibeExperience(memory, recordInput = {}) {
   }
   const duplicate = current.records.find((item) => item.id === record.id || item.fingerprint === record.fingerprint);
   if (duplicate) {
-    return freeze({ added: false, reason: 'duplicate-experience', record: duplicate, memory: current });
+    const reinforced = mergeVerifiedExperience(duplicate, record);
+    const nextRecords = current.records.map((item) => item.id === duplicate.id ? reinforced : item);
+    return freeze({
+      added: true,
+      reinforced: true,
+      reason: 'experience-reinforced',
+      record: reinforced,
+      memory: createVibeExperienceMemory(nextRecords)
+    });
   }
-  return freeze({ added: true, record, memory: createVibeExperienceMemory([...current.records, record]) });
+  return freeze({ added: true, reinforced: false, reason: 'experience-added', record, memory: createVibeExperienceMemory([...current.records, record]) });
 }
 
 function scoreRecord(record, query) {
   let score = 0;
   const reasons = [];
+  const queryGameId = clean(query.gameId).toLowerCase();
   const queryEngine = clean(query.engine).toLowerCase();
   const queryTaskType = clean(query.taskType).toLowerCase();
+  if (queryGameId && clean(record.gameId).toLowerCase() === queryGameId) {
+    score += 7;
+    reasons.push('same-game');
+  }
   if (queryEngine && clean(record.engine).toLowerCase() === queryEngine) {
     score += 5;
     reasons.push('same-engine');
@@ -159,9 +221,14 @@ function scoreRecord(record, query) {
     score += Math.min(10, overlap);
     reasons.push(`keyword-overlap:${overlap}`);
   }
+  const confirmations = normalizeConfirmations(record.confirmations);
+  if (confirmations > 1) {
+    score += Math.min(8, Math.log2(confirmations + 1) * 2);
+    reasons.push(`repeated-verification:${confirmations}`);
+  }
   if (record.outcome === 'PASS') score += 1;
   else if (record.failureCause) score += 0.5;
-  return freeze({ record, score, reasons: freezeList(reasons) });
+  return freeze({ record, score: Number(score.toFixed(4)), reasons: freezeList(reasons) });
 }
 
 export function searchVibeExperience(memory, query = {}, { limit = 5, minimumScore = 1 } = {}) {
@@ -171,11 +238,12 @@ export function searchVibeExperience(memory, query = {}, { limit = 5, minimumSco
   const matches = current.records
     .map((record) => scoreRecord(record, query))
     .filter((match) => match.score >= minimum)
-    .sort((a, b) => b.score - a.score || String(b.record.createdAt || '').localeCompare(String(a.record.createdAt || '')) || a.record.id.localeCompare(b.record.id))
+    .sort((a, b) => b.score - a.score || b.record.confidence - a.record.confidence || String(b.record.lastVerifiedAt || b.record.createdAt || '').localeCompare(String(a.record.lastVerifiedAt || a.record.createdAt || '')) || a.record.id.localeCompare(b.record.id))
     .slice(0, max);
   return freeze({
-    version: 1,
+    version: 2,
     query: freeze({
+      gameId: clean(query.gameId) || null,
       engine: clean(query.engine) || null,
       taskType: clean(query.taskType) || null,
       departments: freezeList(query.departments || []),
@@ -192,10 +260,11 @@ export function searchVibeExperience(memory, query = {}, { limit = 5, minimumSco
 export function createVibeLearningContext(memory, query = {}, options = {}) {
   const result = searchVibeExperience(memory, query, options);
   return freeze({
-    version: 1,
+    version: 2,
     records: freeze(result.matches.map(({ record, score, reasons }) => freeze({
       id: record.id,
       fingerprint: record.fingerprint,
+      gameId: record.gameId,
       engine: record.engine,
       taskType: record.taskType,
       outcome: record.outcome,
@@ -205,9 +274,12 @@ export function createVibeLearningContext(memory, query = {}, options = {}) {
       reusablePatterns: record.reusablePatterns,
       avoidPatterns: record.avoidPatterns,
       evidence: record.evidence,
+      confirmations: record.confirmations,
+      confidence: record.confidence,
       relevance: score,
       reasons
     }))),
+    acceleratedByRepeatedVerification: true,
     mayAutoExecute: false,
     mustReviewBeforeReuse: true,
     mayChangeProtectedGameplayValues: false
