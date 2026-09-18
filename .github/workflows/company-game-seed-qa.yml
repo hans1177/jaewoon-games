@@ -54,6 +54,10 @@ on:
       - 'qa/company-central-pipeline-only.test.mjs'
   workflow_dispatch:
 
+concurrency:
+  group: company-game-seed-production-qa-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
