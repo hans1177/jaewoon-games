@@ -23,6 +23,7 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const c=JSON.parse(fs.readFileSync('company-learning/vibe3-engine-contract.json','utf8'));
+          const central=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           if(c.version!==3||c.status!=='OWNER_DIRECT_LOCKED') throw new Error('Vibe3 contract version/status mismatch');
           if(c.relationshipToVibe2!=='INTELLIGENCE_LAYER_UPGRADE_INSIDE_EXISTING_PIPELINE'||c.parallelPipeline!==false) throw new Error('Vibe3 must remain inside canonical pipeline');
           if(c.execution?.minIndependentCandidates!==3||c.execution?.maxIndependentCandidates!==5||c.execution?.defaultIndependentCandidates!==5||c.execution?.defaultMaxRepairAttempts!==3) throw new Error('Vibe3 Pump tournament/repair contract changed');
@@ -39,9 +40,13 @@ jobs:
           if(c.assetTransformation?.originalImmutable!==true||c.assetTransformation?.variantTournamentRequired!==true) throw new Error('Vibe3 asset transformation safety contract changed');
           if(c.modelSelection?.route!=='LOCAL_SELF_HOSTED_ONLY'||c.modelSelection?.paidApiAllowed!==false||c.modelSelection?.githubHostedTrainingAllowed!==false) throw new Error('Vibe3 model route policy changed');
           const roadmap=c.platformRoadmap;
-          if(roadmap?.enabled!==true||JSON.stringify(roadmap.priority)!==JSON.stringify(['ROBLOX','UNITY','FORTNITE_UEFN'])) throw new Error('platform roadmap priority changed');
-          if(roadmap?.currentPhase!=='ROBLOX_FAST_RELEASE_STABILIZATION'||roadmap?.unityExistingPathPreserved!==true||roadmap?.separatePlatformLearningPipelineAllowed!==false) throw new Error('platform roadmap phase/preservation changed');
-          if(roadmap?.phase1Implementation?.taskType!=='roblox'||roadmap?.phase1Implementation?.adapter!=='tools/vibe3-roblox-platform.mjs'||roadmap?.phase1Implementation?.publishRequiresExplicitExecute!==true||roadmap?.phase1Implementation?.cookieAuthAllowed!==false) throw new Error('Roblox Phase 1 implementation contract changed');
+          if(roadmap?.enabled!==true||roadmap?.contract!=='company-learning/platform-release-roadmap.json') throw new Error('Vibe3 central roadmap binding missing');
+          if(roadmap?.policyAuthority!=='CENTRAL_MACHINE_SOURCE_OF_TRUTH'||roadmap?.policyResolvedAtRuntime!==true) throw new Error('Vibe3 must not create platform policy');
+          if(Object.hasOwn(roadmap,'priority')||Object.hasOwn(roadmap,'currentPhase')) throw new Error('Vibe3 dynamic platform policy mirror forbidden');
+          if(!Array.isArray(roadmap?.dynamicPolicyFields)||!['priority','currentPhase','platformPriorityInvariant','developmentAccess'].every(key=>roadmap.dynamicPolicyFields.includes(key))) throw new Error('Vibe3 dynamic roadmap fields not declared');
+          if(central?.machineSourceOfTruth!==roadmap.contract||central?.runtimeContractCannotCreatePolicy!==true) throw new Error('central roadmap authority mismatch');
+          if(roadmap?.unityExistingPathPreserved!==true||roadmap?.separatePlatformLearningPipelineAllowed!==false) throw new Error('platform roadmap preservation changed');
+          if(roadmap?.robloxImplementation?.taskType!=='roblox'||roadmap?.robloxImplementation?.adapter!=='tools/vibe3-roblox-platform.mjs'||roadmap?.robloxImplementation?.publishRequiresExplicitExecute!==true||roadmap?.robloxImplementation?.cookieAuthAllowed!==false) throw new Error('Roblox implementation contract changed');
           if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
           console.log('PASS Vibe3 Pump machine contract with portable Web context and native Roblox isolation');
           NODE
@@ -51,11 +56,17 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-          if(r.status!=='OWNER_DIRECT_LOCKED') throw new Error('platform roadmap not owner locked');
-          if(JSON.stringify(r.priority)!==JSON.stringify(['ROBLOX','UNITY','FORTNITE_UEFN'])) throw new Error('platform priority mismatch');
-          if(r.currentPhase!=='ROBLOX_FAST_RELEASE_STABILIZATION') throw new Error('Roblox must be current Phase 1');
+          if(r.status!=='OWNER_DIRECT_LOCKED'||r.machineSourceOfTruth!=='company-learning/platform-release-roadmap.json') throw new Error('platform roadmap not owner locked');
+          if(JSON.stringify(r.priority)!==JSON.stringify(['UNITY','ROBLOX','FORTNITE_UEFN'])) throw new Error('platform priority mismatch');
+          if(r.currentPhase!=='ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE') throw new Error('Unity/Roblox concurrent phase required');
           if(r.parallelLearningPipelineAllowed!==false) throw new Error('parallel platform learning pipeline forbidden');
-          if(r.phases?.[1]?.unityExistingPathPreserved!==true||r.phases?.[1]?.unityDeletedOrReplacedByRoblox!==false) throw new Error('Unity preservation contract changed');
+          const invariant=r.platformPriorityInvariant||{};
+          if(invariant.mode!=='UNITY_ROBLOX_EQUAL_FIRST_TIER') throw new Error('Unity/Roblox equal first tier required');
+          if(JSON.stringify(invariant.priorityTiers)!==JSON.stringify([['UNITY','ROBLOX'],['FORTNITE_UEFN']])) throw new Error('platform priority tiers mismatch');
+          if(invariant.equalTierSelection!=='READINESS_THEN_ESTIMATED_EXECUTION_COST_THEN_ENQUEUED_AT') throw new Error('equal tier selection contract mismatch');
+          if(invariant.robloxMustReceiveFirstEligibleDevelopmentSlot!==false||invariant.qualityOrEvidenceGateWeakeningAllowed!==false) throw new Error('platform scheduling invariant mismatch');
+          if(r.developmentAccess?.UNITY!=='ALWAYS_ALLOWED'||r.developmentAccess?.ROBLOX!=='ALWAYS_ALLOWED'||r.developmentAccess?.FORTNITE_UEFN!=='OWNER_HOLD') throw new Error('platform development access mismatch');
+          if(r.phases?.[1]?.id!=='ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE'||r.phases?.[1]?.status!=='ACTIVE'||r.phases?.[1]?.unityExistingPathPreserved!==true||r.phases?.[1]?.unityDeletedOrReplacedByRoblox!==false) throw new Error('Unity/Roblox concurrent phase contract changed');
           console.log('PASS platform release roadmap contract');
           NODE
 

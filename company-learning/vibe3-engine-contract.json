@@ -52,7 +52,16 @@
     "failureMemoryIsWarningOnly": true,
     "portableContextMayCrossPlatforms": true,
     "platformPassEvidenceMayNotTransfer": true,
-    "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "roblox", "graphics", "planning", "general"]
+    "supportedPlaybooks": [
+      "coding",
+      "bugfix",
+      "qa",
+      "unity",
+      "roblox",
+      "graphics",
+      "planning",
+      "general"
+    ]
   },
   "portableWebLearning": {
     "enabled": true,
@@ -128,14 +137,19 @@
   "platformRoadmap": {
     "enabled": true,
     "contract": "company-learning/platform-release-roadmap.json",
-    "humanReadableSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
-    "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
-    "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
+    "policyAuthority": "CENTRAL_MACHINE_SOURCE_OF_TRUTH",
+    "policyResolvedAtRuntime": true,
+    "dynamicPolicyFields": [
+      "priority",
+      "currentPhase",
+      "platformPriorityInvariant",
+      "developmentAccess"
+    ],
     "unityExistingPathPreserved": true,
     "platformSpecificEvidenceRequired": true,
     "portableVerifiedExperienceSharedThroughV3Memory": true,
     "separatePlatformLearningPipelineAllowed": false,
-    "phase1Implementation": {
+    "robloxImplementation": {
       "taskType": "roblox",
       "adapter": "tools/vibe3-roblox-platform.mjs",
       "test": "qa/vibe3-roblox-platform.test.mjs",
@@ -154,6 +168,10 @@
   "canonicalLearningChainUnchanged": true,
   "promotion": {
     "freshAdapterState": "TRAINED_UNVERIFIED",
-    "requiredNext": ["FIXED_HOLDOUT_AB", "CANARY", "PROMOTE_OR_ROLLBACK"]
+    "requiredNext": [
+      "FIXED_HOLDOUT_AB",
+      "CANARY",
+      "PROMOTE_OR_ROLLBACK"
+    ]
   }
 }
