@@ -184,6 +184,64 @@ jobs:
           console.log('PASS game kit/session restore');
           NODE
 
+      - name: Validate Google Play rotation workflow structure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/external-mobile-free-game-playtest.yml').read_text(encoding='utf-8')
+          assert text.count('      - name: Resolve rotating Google Play batch') == 1
+          assert text.count('      - name: Verify seed-derived commercial reference policy') == 1
+          assert text.count('      - name: Resolve Android platform tools from local Unity SDK') == 1
+          assert text.count('      - name: Prepare runtime evidence directory') == 1
+          assert text.count('      - name: Install and black-box playtest free mobile reference game') == 1
+          assert "if ($max -notmatch '^\\d+
+      - name: Check Godot common toolkit structure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('godot-games/common-game-systems.gd').read_text(encoding='utf-8')
+          for token in ['class_name JaewoonCommonGameSystems','create_inventory','start_quest','can_use_skill','roll_loot','migrate_save']:
+            assert token in text, token
+          print('PASS Godot common toolkit structure')
+          PY
+
+      - name: Repository hygiene
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          limit = 100 * 1024 * 1024
+          bad = [(str(p), p.stat().st_size) for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts and p.stat().st_size >= limit]
+          if bad: raise SystemExit('\n'.join(f'{p}: {s}' for p, s in bad))
+          print('PASS repository hygiene')
+          PY
+ -or [int]$max -lt 1 -or [int]$max -gt 12)" in text
+          assert "if ($requestedStart -notmatch '^\\d+
+      - name: Check Godot common toolkit structure
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('godot-games/common-game-systems.gd').read_text(encoding='utf-8')
+          for token in ['class_name JaewoonCommonGameSystems','create_inventory','start_quest','can_use_skill','roll_loot','migrate_save']:
+            assert token in text, token
+          print('PASS Godot common toolkit structure')
+          PY
+
+      - name: Repository hygiene
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          limit = 100 * 1024 * 1024
+          bad = [(str(p), p.stat().st_size) for p in Path('.').rglob('*') if p.is_file() and '.git' not in p.parts and p.stat().st_size >= limit]
+          if bad: raise SystemExit('\n'.join(f'{p}: {s}' for p, s in bad))
+          print('PASS repository hygiene')
+          PY
+)" in text
+          assert "-StartIndex ([int]$env:PLAYTEST_START_INDEX)" in text
+          assert "cron: '43 * * * *'" in text
+          assert '\n -or [int]$max' not in text
+          print('PASS Google Play rotation workflow structure')
+          PY
+
       - name: Run integrated regression
         run: node qa/vibe-regression.mjs
 
