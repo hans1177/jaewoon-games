@@ -59,6 +59,32 @@ test('precomputed exploration artifact is reused instead of rescanning',()=>{
   }
 });
 
+test('existing Web exploration emits a preservation strategy before implementation',()=>{
+  const cwd=tempRoot();
+  const web=path.join(cwd,'web-games/demo/index.html');
+  const designRoot=path.join(cwd,'design/demo/2026-09-18');
+  write(web,`<!doctype html><html><head><meta name="viewport" content="width=device-width"></head><body><canvas></canvas><script>
+  let hp=10,wave=2,gold=30,playerX=1,playerY=1,enemy={hp:3};
+  addEventListener('touchstart',()=>{enemy.hp-=1}); function update(){requestAnimationFrame(update)}update();
+  function restart(){wave=1} const victory='victory',defeat='defeat'; localStorage.setItem('save','1'); new AudioContext();
+  </script></body></html>`);
+  write(path.join(designRoot,'design-revised.json'),JSON.stringify({content:{coreFun:'위치를 선택해 방어 유닛을 배치하고 적의 경로를 막는다',coreLoop:['위치 선택','유닛 배치','적 이동과 전투','보상으로 강화']}},null,2));
+  write(path.join(designRoot,'cycle-status.json'),JSON.stringify({baselineGate:{state:'DESIGN_BASELINE_READY',ready:true}},null,2));
+  const before=fs.readFileSync(web,'utf8');
+  const order={
+    run:true,taskId:'web-assess',gameId:'demo',target:'web',goal:'[EXISTING_WEB_ASSESS_AND_IMPLEMENT]',
+    source:{root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],ignoredPaths:[]},
+    selectedTask:{evidence:['web-strict-score:84']},evidence:['web-strict-score:84'],
+    workPackage:{id:'web-wp',sharedContext:{diagnosticEvidence:[]}}
+  };
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(result.sourceWrite,false);
+  assert.equal(result.existingWebAssessment.strategy,'KEEP_AND_CONTINUE');
+  assert.equal(result.existingWebAssessment.fullRewriteAllowed,false);
+  assert.equal(result.existingWebAssessment.evidence.validationScore,84);
+  assert.equal(fs.readFileSync(web,'utf8'),before);
+});
+
 test('performance sanity is read only and requires exploration evidence',()=>{
   const cwd=tempRoot();
   write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player {}\n');
