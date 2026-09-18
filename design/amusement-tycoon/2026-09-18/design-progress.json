@@ -3,30 +3,32 @@
   "gameId": "amusement-tycoon",
   "date": "2026-09-18",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
-  "status": "IN_PROGRESS",
-  "currentStage": "DEPARTMENT_REVIEWS",
-  "percent": 67,
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "five_lead_reviews",
+    "designer_revision"
   ],
-  "completedPhaseCount": 2,
-  "cachedTaskCount": 4,
-  "lastSuccessfulModelCallAt": "2026-09-18T14:10:08.136Z",
+  "completedPhaseCount": 4,
+  "cachedTaskCount": 5,
+  "lastSuccessfulModelCallAt": "2026-09-18T14:11:10.680Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 15969,
-      "lastMs": 4493,
+      "totalMs": 23993,
+      "lastMs": 8024,
       "lastError": null,
-      "updatedAt": "2026-09-18T14:09:49.345Z"
+      "updatedAt": "2026-09-18T14:11:10.680Z"
     },
     "gemini:gemini-3.5-flash": {
       "calls": 1,
@@ -40,15 +42,15 @@
       "updatedAt": "2026-09-18T14:09:24.143Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 8,
-      "successes": 0,
+      "calls": 9,
+      "successes": 1,
       "failures": 8,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 108327,
-      "lastMs": 10843,
+      "totalMs": 155460,
+      "lastMs": 47133,
       "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=27",
-      "updatedAt": "2026-09-18T14:10:26.210Z"
+      "updatedAt": "2026-09-18T14:11:02.500Z"
     },
     "gemini:gemini-3-flash-preview": {
       "calls": 1,
@@ -74,5 +76,7 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T14:10:26.211Z"
+  "updatedAt": "2026-09-18T14:11:10.807Z",
+  "preGateScore": 80,
+  "postRevisionPreGateScore": 80
 }
