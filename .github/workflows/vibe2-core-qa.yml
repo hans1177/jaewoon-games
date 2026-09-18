@@ -50,6 +50,7 @@ on:
       - 'qa/vibe2-post-release-focus.test.mjs'
       - 'qa/vibe2-learning-motor.test.mjs'
       - 'qa/vibe2-code-pattern-ingest.test.mjs'
+      - 'qa/vibe2-learning-practice-worker.test.mjs'
       - 'qa/company-machine-development-lifecycle.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
@@ -133,6 +134,7 @@ jobs:
           node --check qa/vibe2-post-release-focus.test.mjs
           node --check qa/vibe2-learning-motor.test.mjs
           node --check qa/vibe2-code-pattern-ingest.test.mjs
+          node --check qa/vibe2-learning-practice-worker.test.mjs
           node --check qa/company-machine-development-lifecycle.test.mjs
           node --check qa/vibe2-auto-planner.test.mjs
           node --check qa/vibe2-core-engine-motion.test.mjs
@@ -169,6 +171,7 @@ jobs:
           node --test qa/vibe2-post-release-focus.test.mjs
           node --test qa/vibe2-learning-motor.test.mjs
           node --test qa/vibe2-code-pattern-ingest.test.mjs
+          node --test qa/vibe2-learning-practice-worker.test.mjs
           node --test qa/company-machine-development-lifecycle.test.mjs
 
       - name: Generate machine handoff
