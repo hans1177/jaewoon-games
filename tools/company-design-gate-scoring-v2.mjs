@@ -93,7 +93,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const failureBasic=Boolean(design.failureRetryRisk);
   const failureConnected=failureBasic&&Array.isArray(design.failureRetryRisk?.failureStates)&&distinct(design.failureRetryRisk.failureStates).length>=2&&textReady(design.failureRetryRisk?.retryFlow,20)&&textReady(design.failureRetryRisk?.riskPressure,20)&&textReady(design.failureRetryRisk?.recoveryRules,20);
   const platformBasic=platformKnown&&Boolean(design.platformFitPlan)&&textReady(design.mobileUx,20);
-  const platformConnected=platformBasic&&objectReady(design.platformFitPlan,['targetPlatform','inputModel','performanceBudget','sessionConstraints'],16)&&clean(design.platformFitPlan?.targetPlatform).toUpperCase()===platform;
+  const platformConnected=platformBasic&&clean(design.platformFitPlan?.targetPlatform).toUpperCase()===platform&&textReady(design.platformFitPlan?.targetPlatform,3)&&objectReady(design.platformFitPlan,['inputModel','performanceBudget','sessionConstraints'],16);
   const uxBasic=Boolean(design.uxAccessibilityPlan)&&textReady(design.mobileUx,20);
   const uxConnected=uxBasic&&objectReady(design.uxAccessibilityPlan,['hudPriorities','touchAndInput','readability','accessibility'],16);
   const artBasic=Boolean(design.artAudioDirection)&&textReady(design.visualDirection,20);
