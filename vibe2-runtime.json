@@ -158,7 +158,9 @@
     "idlePracticeQueue": ".vibe2/idle-practice-queue.json",
     "webRobloxHandoffs": ".vibe2/web-roblox-handoffs.json",
     "verifiedCodePatterns": ".vibe2/code-pattern-library.json",
-    "webExperienceIngest": "tools/vibe2-web-experience-ingest.mjs"
+    "webExperienceIngest": "tools/vibe2-web-experience-ingest.mjs",
+    "externalAiDistillationPolicy": "company-learning/external-ai-distillation-policy.json",
+    "externalAiDistilledKnowledge": ".vibe2/external-ai-distilled-knowledge.json"
   },
   "workers": {
     "exploration": {
@@ -691,6 +693,19 @@
       "requiresDeterministicReplay": true,
       "candidatePassAloneInsufficient": true,
       "gateBypass": false
+    },
+    "externalAiDistillation": {
+      "enabled": true,
+      "rawOutputDirectUse": false,
+      "independentVerificationRequired": true,
+      "minimumTraceableEvidenceItems": 2,
+      "advisoryOnly": true,
+      "internalVerifiedAlwaysPreferred": true,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   }
 }
