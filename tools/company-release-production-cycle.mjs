@@ -155,7 +155,7 @@ function writeState(state,{baseline=null,implementation=null,build=null,runtime=
   const implementationTree=implementationSourceTreeSha(implementation?.data);
   const buildTree=buildSourceTreeSha(build?.data);
   const status={
-    version:3,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'COMPANY_FLOW.md',
+    version:3,gameId,date,productionClass,tierAlias,tier:tierAlias,policyDocument:'company-learning/platform-release-roadmap.json',
     flow:'RELEASE_CONFIRMED_GATED_DIRECT_RELEASE_PRODUCTION',executionMode:'GATED_DIRECT_RELEASE_PRODUCTION',
     status:state==='RELEASE_READY'?'COMPLETE':state==='RELEASE_BLOCKED'?'BLOCKED':state==='BUILDING'?'BUILDING':'WAITING',
     state,vibe2PrimaryDeveloper:true,coreDesignLock:true,
@@ -192,7 +192,7 @@ function writeState(state,{baseline=null,implementation=null,build=null,runtime=
   writeJson(path.join(base,'release-production-status.json'),status);
   writeJson(path.join(base,'cycle-status.json'),status);
   writeJson(path.join(base,'release-production-request.json'),{
-    version:3,gameId,date,state,nextAction,blockers,policyDocument:'COMPANY_FLOW.md',
+    version:3,gameId,date,state,nextAction,blockers,policyDocument:'company-learning/platform-release-roadmap.json',
     vibe2PrimaryDeveloper:true,coreDesignLock:true,unityProjectPath:unityProjectPath||null,currentSourceTreeSha
   });
   console.log(`RELEASE_DIRECT_STATE=${state}`);
@@ -281,7 +281,7 @@ if(!unityProjectPath||!fs.existsSync(unityProjectPath)||!currentSourceTreeSha){
     version:3,gameId,date,productionClass,owner:'VIBE2',role:'PRIMARY_DEVELOPMENT_ENGINE',state:'BUILDING',
     developmentBaseline:baseline.path,unityProjectPath:unityProjectPath||null,coreDesignLock:true,
     instruction:'Development Baseline을 따라 Unity Android 프로젝트/본개발을 준비하고 현재 Unity source tree SHA를 기록할 수 있는 상태로 만든다.',
-    policyDocument:'COMPANY_FLOW.md'
+    policyDocument:'company-learning/platform-release-roadmap.json'
   });
   writeState('BUILDING',{
     baseline,blockers:['unity-project-or-source-tree-required'],
@@ -312,7 +312,7 @@ if(explicitState(implementation.data)!=='PASS'||!implementationTree||implementat
     version:3,gameId,date,productionClass,owner:'VIBE2',role:'PRIMARY_DEVELOPMENT_ENGINE',state:'BUILDING',
     developmentBaseline:baseline.path,unityProjectPath,currentSourceTreeSha,coreDesignLock:true,
     instruction:'Development Baseline을 따라 Unity Android 본개발/통합을 수행한다. 새 핵심 기능을 임의 추가하지 말고 구현 완료 근거에 현재 sourceTreeSha를 정확히 기록한다.',
-    policyDocument:'COMPANY_FLOW.md'
+    policyDocument:'company-learning/platform-release-roadmap.json'
   });
   writeState('BUILDING',{
     baseline,implementation,blockers:['current-source-vibe2-implementation-evidence-required'],
@@ -421,7 +421,7 @@ writeJson(releaseBaselinePath,{
   androidRuntimeValidation:runtime.path,independentQa:qa.path,
   departmentRiskWatch:finalRiskWatch.path,departmentPreflightRiskWatch:preflightRiskWatch.path,
   finalDepartmentReviewEvidenceBound:true,coreDesignLockPreserved:true,
-  policyDocument:'COMPANY_FLOW.md',createdAt:new Date().toISOString()
+  policyDocument:'company-learning/platform-release-roadmap.json',createdAt:new Date().toISOString()
 });
 
 const editorModel=pool[hash(`${gameId}:release-artbook-editor`)%pool.length];
