@@ -630,25 +630,41 @@ async function generateDesignerDraft(){
     return mergeDesignerDesign(basePart,gatePart,'DRAFT');
   }
 }
+function scoreCurrentDesign(label,design){
+  const started=Date.now();
+  const scored=deterministicPreGate(design);
+  phaseMs[label]=Date.now()-started;
+  designCheckpoint.phases[label]=scored;
+  if(!designCheckpoint.completedPhases.includes(label))designCheckpoint.completedPhases.push(label);
+  designCheckpoint.failedPhase=null;
+  designCheckpoint.failedTask=null;
+  designCheckpoint.lastError=null;
+  persistDesignCheckpoint();
+  console.log(`DESIGN_DETERMINISTIC_PRE_GATE=${label}|${scored.totalScore}|hard=${(scored.hardFailures||[]).join(',')||'NONE'}`);
+  return scored;
+}
+
 let designDraft=await runPhase('designer_draft',generateDesignerDraft);
-let preGate=await runPhase('deterministic_pre_gate',async()=>deterministicPreGate(designDraft));
+// Deterministic scoring is intentionally never served from checkpoint cache.
+// The current design object is cheap to rescore and may have changed after targeted repair.
+let preGate=scoreCurrentDesign('deterministic_pre_gate',designDraft);
 const preGateHistory=[preGate];
-writeJson(path.join(base,'design-pre-gate.json'),{version:2,gameId,date,attempt:0,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate});
-for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++){
+writeJson(path.join(base,'design-pre-gate.json'),{version:3,gameId,date,attempt:0,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate});
+for(let repairAttempt=1;repairAttempt<=3&&!preGatePass(preGate);repairAttempt++){
   const fields=repairFields(preGate);
   const schema=designSliceSchema(fields);
   const packet=repairPacket(preGate);
   const patch=await runPhase(`designer_pre_gate_repair_${repairAttempt}`,()=>callDesignerModel(
     '너는 최초 설계를 작성한 동일 Game Designer AI다. 실패한 deterministic 설계축만 실제 설계 변경으로 수리한다. 통과를 가장하거나 실패코드를 삭제하지 않는다.',
-    `현재 실패축만 수정하라. 지정 필드 외 내용은 반환하지 않는다.\nREPAIR_FIELDS=${JSON.stringify(fields)}\nREPAIR_PACKET=${clip(packet,6500)}\nGAME_SEED=${clip(seed,4500)}\nCURRENT_DESIGN=${clip(Object.fromEntries(fields.map(field=>[field,designDraft[field]])),8000)}`,
+    `현재 실패축만 수정하라. 지정 필드 외 내용은 반환하지 않는다. 각 필드는 REPAIR_PACKET의 requiredAction을 실제 구현 가능한 구체적 설계로 만족시켜야 한다.\nREPAIR_FIELDS=${JSON.stringify(fields)}\nREPAIR_PACKET=${clip(packet,6500)}\nGAME_SEED=${clip(seed,4500)}\nCURRENT_DESIGN=${clip(Object.fromEntries(fields.map(field=>[field,designDraft[field]])),8000)}`,
     schema,
-    {predict:Math.min(1400,500+fields.length*130),temperature:0.12,numCtx:6144,timeoutMs:120000}
+    {predict:Math.min(1500,550+fields.length*140),temperature:0.1,numCtx:6144,timeoutMs:120000,maxAttempts:2}
   ));
   designDraft=mergeTargetedPatch(designDraft,patch,`PRE_GATE_REPAIR_${repairAttempt}`);
-  preGate=await runPhase(`deterministic_pre_gate_after_repair_${repairAttempt}`,async()=>deterministicPreGate(designDraft));
-  preGateHistory.push(preGate);
   designCheckpoint.phases.designer_draft=designDraft;
-  writeJson(path.join(base,'design-pre-gate.json'),{version:2,gameId,date,attempt:repairAttempt,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate,history:preGateHistory.map(row=>({totalScore:row.totalScore,hardFailures:row.hardFailures,criticalAxisFailures:row.criticalAxisFailures}))});
+  preGate=scoreCurrentDesign(`deterministic_pre_gate_after_repair_${repairAttempt}`,designDraft);
+  preGateHistory.push(preGate);
+  writeJson(path.join(base,'design-pre-gate.json'),{version:3,gameId,date,attempt:repairAttempt,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate,history:preGateHistory.map(row=>({totalScore:row.totalScore,hardFailures:row.hardFailures,criticalAxisFailures:row.criticalAxisFailures}))});
   persistDesignCheckpoint();
 }
 writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
