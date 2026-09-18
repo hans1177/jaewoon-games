@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {DESIGN_GATE_WEIGHTS,DESIGN_DIRECT_SCORE_LEVELS,DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,scoreDesignGateV2} from '../tools/company-design-gate-scoring-v2.mjs';
 
 assert.equal(Object.keys(DESIGN_GATE_WEIGHTS).length,11);
@@ -77,5 +78,15 @@ const weakResult=scoreDesignGateV2({seed,designRecord:weak,cycleStatus,robloxGen
 assert.ok(weakResult.criticalAxisFailures.includes('UX_AND_ACCESSIBILITY_PLAN'));
 assert.ok(weakResult.hardFailures.includes('CRITICAL_AXIS_MINIMUM_FAIL'));
 assert.ok(weakResult.totalScore<=79||weakResult.hardFailures.length>0);
+
+
+const strictReviewSource=fs.readFileSync('tools/company-strict-production-review.mjs','utf8');
+assert.match(strictReviewSource,/scoreDesignGateV2/);
+assert.match(strictReviewSource,/designContent\.identity\|\|seed\.DISTINCT_IDENTITY/);
+assert.match(strictReviewSource,/designContent\.coreLoop/);
+assert.match(strictReviewSource,/thirtyMinuteHardGateApplied/);
+const designReviewBlock=strictReviewSource.slice(strictReviewSource.indexOf('function designReview(){'),strictReviewSource.indexOf('function implementationReview(){'));
+assert.doesNotMatch(designReviewBlock,/hard\.push\('30MIN_CONTENT_FAIL'\)/);
+assert.doesNotMatch(designReviewBlock,/identity\.length>=80/);
 
 console.log('COMPANY_DESIGN_GATE_SCORING_V2_TEST=PASS');
