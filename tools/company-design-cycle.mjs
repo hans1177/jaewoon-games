@@ -517,13 +517,14 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
   return value;
 }
 
-async function callModel(model,system,user,schema,{predict=1100,temperature=0.25,repairRequired=null,numCtx=8192,timeoutMs=null}={}){
+async function callModel(model,system,user,schema,{predict=1100,temperature=0.25,repairRequired=null,numCtx=8192,timeoutMs=null,maxAttempts=3}={}){
   const callStarted=Date.now();
   const deepSeek=model.startsWith('deepseek-r1');
   const effectiveCtx=Math.min(8192,Math.max(3072,Number(numCtx||8192)));
   const effectiveTimeoutMs=Math.min(180000,Math.max(60000,Number(timeoutMs||modelCallTimeoutMs)));
   let lastError=null;
-  for(let attempt=1;attempt<=3;attempt++){
+  const attemptLimit=Math.min(3,Math.max(1,Number(maxAttempts||3)));
+  for(let attempt=1;attempt<=attemptLimit;attempt++){
     const mode=deepSeek?'json':(attempt===1?'schema':'json');
     try{
       const schemaPrompt=(deepSeek||attempt>1)?`\nJSON_SCHEMA=${JSON.stringify(schema)}\n사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다.`:'';
@@ -557,7 +558,7 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
       lastError=error;
       recordModelHealth(model,{success:false,elapsedMs:Date.now()-callStarted,error});
       persistDesignCheckpoint();
-      if(attempt<3){
+      if(attempt<attemptLimit){
         const nextMode='json';
         console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${nextMode}|reason=${clean(error?.message)}`);
         await new Promise(r=>setTimeout(r,800*attempt));
@@ -571,13 +572,13 @@ async function generateDesignerDraft(){
   const system='너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용한다. 유명 성공작의 구조는 오마주/재해석할 수 있지만 보호되는 표현과 소스코드는 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.';
   const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,10500)}`;
   try{
-    const full=await callModel(designerModel,system,user,DESIGN,{predict:2200,temperature:0.28,numCtx:8192,timeoutMs:180000,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
+    const full=await callModel(designerModel,system,user,DESIGN,{predict:2200,temperature:0.28,numCtx:8192,timeoutMs:90000,maxAttempts:1,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
     console.log('DESIGNER_DRAFT_GENERATION=ONE_CALL');
     return full;
   }catch(error){
     console.log(`DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT|reason=${clean(error?.message||error)}`);
-    const basePart=await callModel(designerModel,system,`기본 설계 필드만 작성하라.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,8500)}`,DESIGN_BASE,{predict:1000,temperature:0.3,numCtx:8192,timeoutMs:150000});
-    const gatePart=await callModel(designerModel,'너는 같은 Game Designer AI다. 기본 설계를 하드관문이 검증 가능한 상세 설계로 확장한다.',`관문 상세 필드만 작성하라.\nGAME_SEED=${clip(seed,4500)}\nBASE_DESIGN=${clip(basePart,8000)}`,DESIGN_GATE,{predict:1000,temperature:0.2,numCtx:8192,timeoutMs:150000});
+    const basePart=await callModel(designerModel,system,`기본 설계 필드만 작성하라.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,8500)}`,DESIGN_BASE,{predict:1000,temperature:0.3,numCtx:8192,timeoutMs:90000,maxAttempts:2});
+    const gatePart=await callModel(designerModel,'너는 같은 Game Designer AI다. 기본 설계를 하드관문이 검증 가능한 상세 설계로 확장한다.',`관문 상세 필드만 작성하라.\nGAME_SEED=${clip(seed,4500)}\nBASE_DESIGN=${clip(basePart,8000)}`,DESIGN_GATE,{predict:1000,temperature:0.2,numCtx:8192,timeoutMs:90000,maxAttempts:2});
     return mergeDesignerDesign(basePart,gatePart,'DRAFT');
   }
 }
@@ -667,7 +668,7 @@ async function generateDesignerRevision(){
   const system='너는 초안을 작성한 동일 Game Designer AI다. 5개 부서 Lead의 직접 검토를 받아 실제 설계를 한 번 수정한다. 회의 합의 절차는 없으며 서로 충돌하는 조언은 GAME_SEED와 strict 기준을 기준으로 판단한다.';
   const user=`수정된 전체 상세 설계를 한 번에 반환하라. 이전 하드관문 실패를 삭제·재명명·무시하지 말고 실제 설계 변경으로 해결한다.\nGAME_SEED=${clip(seed,4500)}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4000)}\nCURRENT_DESIGN=${clip(designDraft,11000)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,9000)}`;
   try{
-    const full=await callModel(designerModel,system,user,DESIGN,{predict:2200,temperature:0.14,numCtx:8192,timeoutMs:150000,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})});
+    const full=await callModel(designerModel,system,user,DESIGN,{predict:2200,temperature:0.14,numCtx:8192,timeoutMs:90000,maxAttempts:1,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})});
     console.log('DESIGNER_REVISION_GENERATION=ONE_CALL');
     return full;
   }catch(error){
@@ -679,14 +680,14 @@ async function generateDesignerRevision(){
       system,
       `기본 설계 필드만 수정하라.\nBASE_DRAFT=${clip(baseSeed,8200)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,7000)}`,
       DESIGN_BASE,
-      {predict:1000,temperature:0.16,numCtx:7168,timeoutMs:120000}
+      {predict:1000,temperature:0.16,numCtx:7168,timeoutMs:90000,maxAttempts:2}
     );
     const gatePart=await callModel(
       designerModel,
       '너는 같은 Game Designer AI다. 수정된 기본 설계에 맞춰 하드관문 상세 필드만 수정한다.',
       `REVISED_BASE=${clip(basePart,8200)}\nPREVIOUS_GATE_DETAIL=${clip(gateSeed,7000)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,6000)}`,
       DESIGN_GATE,
-      {predict:1000,temperature:0.1,numCtx:7168,timeoutMs:120000}
+      {predict:1000,temperature:0.1,numCtx:7168,timeoutMs:90000,maxAttempts:2}
     );
     return mergeDesignerDesign(basePart,gatePart,'REVISION');
   }
