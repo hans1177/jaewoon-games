@@ -263,6 +263,59 @@ test('owner directive sync preserves running state and derived verified context'
   }
 });
 
+test('newer owner design reset supersedes older imported owner directive without deleting history',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-owner-reset-'));
+  try{
+    const queueFile=path.join(root,'queue.json');
+    const catalogFile=path.join(root,'game-catalog.json');
+    const directivesFile=path.join(root,'owner-directives.json');
+    const directive={
+      id:'OWNER-RESET-DEMO',gameId:'demo',status:'pending',mode:'FULL_REBUILD',priority:'critical',
+      sourceRoot:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],workUnits:5,
+      goal:'demo rebuild',evidence:['owner-selected:2026-09-16']
+    };
+    fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:20,tasks:[]}), 'utf8');
+    fs.writeFileSync(directivesFile,JSON.stringify({directives:[directive]}), 'utf8');
+    fs.writeFileSync(catalogFile,JSON.stringify({games:[{
+      id:'demo',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'OWNER_CONFIRMED_2026-09-16',
+      lifecycleReason:'OWNER_CONFIRMED'
+    }]}), 'utf8');
+
+    const imported=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot:root,ownerDirectivesFile:directivesFile});
+    assert.equal(imported.ownerImported.length,1);
+    let queue=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+    assert.equal(queue.tasks.find(row=>row.id==='OWNER-RESET-DEMO')?.status,'queued');
+
+    fs.writeFileSync(catalogFile,JSON.stringify({games:[{
+      id:'demo',productionClass:'DESIGN_ONLY',productionClassSource:'OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17',
+      lifecycleReason:'OWNER_ALL_GAMES_DESIGN_RESET',developmentHandling:'OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE'
+    }]}), 'utf8');
+    const superseded=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot:root,ownerDirectivesFile:directivesFile});
+    assert.equal(superseded.ownerSuperseded.length,1);
+    assert.equal(superseded.ownerImported.length,0);
+    queue=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+    const stopped=queue.tasks.find(row=>row.id==='OWNER-RESET-DEMO');
+    assert.equal(stopped.status,'cancelled');
+    assert.equal(stopped.lastOutcome,'CANCELLED');
+    assert.equal(stopped.blocker,'owner-directive-superseded-by-newer-owner-reset');
+    assert.equal(stopped.evidence.includes('owner-directive-superseded-by:OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17'),true);
+    assert.equal(stopped.evidence.includes('owner-selected:2026-09-16'),true);
+
+    fs.writeFileSync(directivesFile,JSON.stringify({directives:[{
+      ...directive,evidence:['owner-selected:2026-09-18']
+    }]}), 'utf8');
+    const newer=queueReleaseBaselineGap({catalogFile,queueFile,repoRoot:root,ownerDirectivesFile:directivesFile});
+    assert.equal(newer.ownerSuperseded.length,0);
+    assert.equal(newer.ownerRefreshed.length,1);
+    queue=JSON.parse(fs.readFileSync(queueFile,'utf8'));
+    const resumed=queue.tasks.find(row=>row.id==='OWNER-RESET-DEMO');
+    assert.equal(resumed.status,'queued');
+    assert.equal(resumed.evidence.includes('owner-selected:2026-09-18'),true);
+  }finally{
+    fs.rmSync(root,{recursive:true,force:true});
+  }
+});
+
 test('explicit work-order output path overrides runtime default path',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-output-path-'));
   const queueFile=path.join(root,'queue.json');
