@@ -24,6 +24,9 @@ test('DESIGN_ONLY pipeline is GAME_SEED-backed design -> baseline and stops befo
   assert.match(source,/const transientModelFailure=/);
   assert.match(source,/return schemaOrJsonFailure\|\|transientModelFailure/);
   assert.match(source,/aborted due to timeout/);
+  assert.match(source,/unterminated string/);
+  assert.match(source,/expected \['\\\",\]/);
+  assert.match(source,/json at position/);
   assert.doesNotMatch(source,/if\(\/\(\?:aborted due to timeout\|timeout\|timed out\)\/i\.test\(output\)\)return false/);
   assert.match(source,/retryWhen:designSchemaRetryable/);
   assert.match(source,/RETRY=NO\|reason=NON_RETRYABLE_FAILURE/);
