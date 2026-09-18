@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "kind": "vibe2-idle-practice-queue",
+  "productionWorkAlwaysPreemptsPractice": true,
+  "drills": [
+    {
+      "id": "gap-asset_production-l1",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_PRODUCTION"
+      ]
+    },
+    {
+      "id": "gap-economy-l1",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ECONOMY"
+      ]
+    },
+    {
+      "id": "gap-performance-l1",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "PERFORMANCE"
+      ]
+    },
+    {
+      "id": "gap-roblox_datastore-l1",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_DATASTORE"
+      ]
+    },
+    {
+      "id": "gap-roblox_multiplayer-l1",
+      "kind": "MINI_GAME_SYSTEM_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ROBLOX_MULTIPLAYER"
+      ]
+    }
+  ]
+}

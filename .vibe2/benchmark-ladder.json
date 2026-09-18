@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "kind": "vibe2-benchmark-ladder",
+  "cases": [
+    {
+      "id": "mastery-coding-l3",
+      "track": "CODING",
+      "level": 3,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-bugfix-l3",
+      "track": "BUGFIX",
+      "level": 3,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-web_gameplay-l3",
+      "track": "WEB_GAMEPLAY",
+      "level": 3,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-roblox_native-l1",
+      "track": "ROBLOX_NATIVE",
+      "level": 1,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-ai-l4",
+      "track": "AI",
+      "level": 4,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-save-l3",
+      "track": "SAVE",
+      "level": 3,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-performance-l1",
+      "track": "PERFORMANCE",
+      "level": 1,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    },
+    {
+      "id": "mastery-asset_production-l1",
+      "track": "ASSET_PRODUCTION",
+      "level": 1,
+      "state": "READY_FOR_VERIFIED_PRACTICE",
+      "countsAsTrainingSample": false,
+      "requiredVerification": [
+        "SYNTAX",
+        "RUNTIME_WHEN_APPLICABLE",
+        "INDEPENDENT_QA",
+        "REGRESSION"
+      ],
+      "promotionRule": "ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION"
+    }
+  ],
+  "authority": "practice-and-measurement-only"
+}
