@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 46,
-  "updatedAt": "2026-09-18",
+  "revision": 47,
+  "updatedAt": "2026-09-19",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
   "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
@@ -890,5 +890,14 @@
     "authoritative": false,
     "requiredForExecution": false,
     "mayCreatePolicy": false
+  },
+  "machineCompanions": {
+    "otherAiExecutionDirective": {
+      "path": "company-learning/other-ai-machine-directive.json",
+      "authority": "NON_AUTHORITATIVE_EXECUTION_GUIDE",
+      "mustReadCentralPolicyFirst": true,
+      "mayOverrideCentralPolicy": false,
+      "humanDocumentRequired": false
+    }
   }
 }
