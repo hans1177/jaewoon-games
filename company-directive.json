@@ -655,7 +655,9 @@
       "hardFailuresMustBeEmpty": true,
       "forcePromotionForbidden": true,
       "qualityGateWeakeningForbidden": true,
-      "robloxPriorityAffectsSchedulingOnly": true
+      "robloxPriorityAffectsSchedulingOnly": true,
+      "doesNotChangePassThreshold": true,
+      "doesNotOverrideHardFailures": true
     },
     "roadmapPhaseEntryGatesForbidden": true,
     "platformDevelopmentMayStartWithoutPriorPlatformCompletion": true,
