@@ -13,7 +13,7 @@ import {
 
 const contract=createRobloxPlatformContract();
 assert.equal(contract.platform,'ROBLOX');
-assert.equal(contract.roadmapPhase,'ROBLOX_FAST_RELEASE_STABILIZATION');
+assert.equal(contract.roadmapPhase,'ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE');
 assert.equal(contract.parallelPipeline,false);
 assert.equal(contract.learning.useExistingCanonicalDistillation,true);
 assert.equal(contract.publishing.liveExecutionRequiresExplicitFlag,true);
