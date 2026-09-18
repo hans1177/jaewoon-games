@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "revision": 41,
-  "updatedAt": "2026-09-17",
+  "revision": 42,
+  "updatedAt": "2026-09-18",
   "priority": "owner-immediate",
   "policyDocument": "COMPANY_FLOW.md",
   "instruction": "Use COMPANY_FLOW.md as the machine-oriented production policy source of truth. This file mirrors executable values and invariant flags only and cannot create policy.",
@@ -306,18 +306,18 @@
     "departmentRepresentativeAuthoredByLead": false,
     "departmentRebuttalAuthoredByLead": false,
     "modelPool": [
-      "qwen3:0.6b",
-      "gemma3:1b",
-      "llama3.2:1b",
-      "qwen2.5:1.5b",
-      "smollm2:1.7b"
+      "gemini-3.8-flash",
+      "gemini-3.7-flash",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite"
     ],
     "departmentLeadModels": {
-      "planning": "qwen3:0.6b",
-      "graphics": "gemma3:1b",
-      "development": "llama3.2:1b",
-      "qa": "qwen2.5:1.5b",
-      "balance": "smollm2:1.7b"
+      "planning": "gemini-3.8-flash",
+      "graphics": "gemini-3.7-flash",
+      "development": "gemini-3.6-flash",
+      "qa": "gemini-3.5-flash",
+      "balance": "gemini-3.5-flash-lite"
     },
     "gameDesigner": {
       "authorsInitialDetailedDesign": true,
@@ -325,20 +325,14 @@
       "sameModelRevisesAfterMeeting": false,
       "sameModelRevisesAfterLeadReview": true,
       "providerPriority": [
-        "OPENAI",
-        "GEMINI",
-        "OLLAMA"
+        "GEMINI"
       ],
       "externalProvidersAllowed": true,
       "cloudProviderRequiresConfiguredSecret": true,
-      "cloudFailureFallsBackToLocal": true,
-      "openaiModel": "gpt-5",
+      "cloudFailureFallsBackToLocal": false,
+      "openaiModel": null,
       "geminiModel": "gemini-3.8-flash",
-      "localFallbackModels": [
-        "smollm2:1.7b",
-        "gemma3:1b",
-        "qwen3:0.6b"
-      ],
+      "localFallbackModels": [],
       "autoBanOnRepeatedFailure": true,
       "autoBanThresholds": {
         "failures": 2,
@@ -400,11 +394,12 @@
       "designOrArtbookPrimaryAuthorInDevelopmentClass": false,
       "designOrArtbookPrimaryAuthorInDevelopmentConfirmed": false
     },
-    "designerBannedModels": [
-      "qwen2.5:1.5b",
-      "llama3.2:1b",
-      "deepseek-r1:1.5b"
-    ]
+    "designerBannedModels": [],
+    "providerMode": "GEMINI_ONLY",
+    "providerSecret": "GEMINI_API_KEY",
+    "openAiProviderAllowed": false,
+    "ollamaProviderAllowed": false,
+    "localModelFallbackAllowed": false
   },
   "classes": {
     "DESIGN_ONLY": {
