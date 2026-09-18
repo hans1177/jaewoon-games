@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    #turn-feedback {
+      margin-bottom: 20px;
+    }
+    #controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+    }
+    .control {
+      flex: 1 1 25%;
+      background: #333;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s;
+    }
+    .control:hover {
+      transform: scale(1.02);
+    }
+    .control.active {
+      background: #555;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div id="turn-feedback"></div>
+    <div id="controls">
+      <div class="control" data-action="move">Move</div>
+      <div class="control" data-action="attack">Attack</div>
+      <div class="control" data-action="defend">Defend</div>
+      <div class="control" data-action="restart">Restart</div>
+    </div>
+    <div id="status"></div>
+  </main>
+
+  <script>
+    const game = document.getElementById('game');
+    const turnFeedback = document.getElementById('turn-feedback');
+    const controls = document.getElementById('controls');
+    const status = document.getElementById('status');
+
+    let currentPlayer = 'player';
+    let gameStatus = 'idle';
+    let turn = 0;
+
+    function updateStatus(message) {
+      status.textContent = message;
+    }
+
+    function updateTurnFeedback(message) {
+      turnFeedback.textContent = message;
+    }
+
+    function handleMove(action) {
+      if (currentPlayer === 'player') {
+        if (action === 'move') {
+          updateStatus('Player moves to a new position.');
+          turn++;
+          if (turn >= 10) {
+            updateStatus('Game over. Player wins!');
+            gameStatus = 'win';
+          }
+        } else if (action === 'attack') {
+          updateStatus('Player attacks the enemy.');
+          turn++;
+          if (turn >= 10) {
+            updateStatus('Game over. Player wins!');
+            gameStatus = 'win';
+          }
+        } else if (action === 'defend') {
+          updateStatus('Player defends against the enemy attack.');
+          turn++;
+          if (turn >= 10) {
+            updateStatus('Game over. Player wins!');
+            gameStatus = 'win';
+          }
+        }
+      } else {
+        updateStatus('Enemy attacks. Player defends.');
+        turn++;
+        if (turn >= 10) {
+          updateStatus('Game over. Enemy wins!');
+          gameStatus = 'loss';
+        }
+      }
+    }
+
+    function handleRestart() {
+      currentPlayer = 'player';
+      gameStatus = 'idle';
+      turn = 0;
+      updateStatus('Game restarted.');
+    }
+
+    function handleControlClick(event) {
+      const control = event.target;
+      const action = control.getAttribute('data-action');
+
+      if (action) {
+        handleMove(action);
+      }
+    }
+
+    controls.addEventListener('click', handleControlClick);
+
+    // Initial game state
+    updateStatus('Game started.');
+    updateTurnFeedback('Turn 0');
+  </script>
+</body>
+</html>
