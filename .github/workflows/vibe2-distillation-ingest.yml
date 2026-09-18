@@ -159,6 +159,9 @@ jobs:
           console.log('FUTURE_REVISIONS_ALLOWED=YES');
           console.log(`UNITY_RELEASE_BASELINES_EXAMINED=${ingest.unityRelease?.examined||0}`);
           console.log(`EXTERNAL_BLACK_BOX_EXAMINED=${ingest.externalBlackBox?.examined||0}`);
+          console.log(`AUTHORIZED_SOURCE_EXAMINED=${ingest.authorizedSource?.examined||0}`);
+          console.log(`AUTHORIZED_SOURCE_WRITTEN=${ingest.authorizedSource?.written?.length||0}`);
+          console.log(`AUTHORIZED_SOURCE_REFRESHED=${ingest.authorizedSource?.refreshed?.length||0}`);
           console.log(`VIBE3_TRAJECTORIES_EXAMINED=${trajectory.examined||0}`);
           console.log(`VIBE3_TRAJECTORY_SAMPLES_WRITTEN=${trajectory.written?.length||0}`);
           console.log(`VIBE3_PUMP_POSITIVE_MEMORY=${pump.verifiedPositiveMemory||0}`);
@@ -252,6 +255,7 @@ jobs:
           echo '- bounded self repair: max 3 attempts' >> "$GITHUB_STEP_SUMMARY"
           echo '- external commercial source: black-box verified observations only; no proprietary code/assets/internal algorithms' >> "$GITHUB_STEP_SUMMARY"
           echo '- external black-box browser QA: NOT_APPLICABLE; dedicated evidence marker required' >> "$GITHUB_STEP_SUMMARY"
+          echo '- authorized Block Blast source: owner-authorized static source/assets/native/algorithm learning; STATIC_VERIFIED is not runtime PASS' >> "$GITHUB_STEP_SUMMARY"
           echo '- Unity/Roblox/Fortnite UEFN browser QA: NOT_APPLICABLE; verified native runtime evidence required' >> "$GITHUB_STEP_SUMMARY"
           echo '- failed Vibe3 candidates: comparison context only, never promoted as answer targets' >> "$GITHUB_STEP_SUMMARY"
           echo '- paid API: NO' >> "$GITHUB_STEP_SUMMARY"
