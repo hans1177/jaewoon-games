@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const clean=v=>String(v??'').trim();
 const upper=v=>clean(v).toUpperCase();
-const posix=v=>clean(v).replaceAll('\\\\','/').replace(/^\\.\\//,'').replace(/\\/+$/,'');
+const posix=v=>clean(v).replaceAll('\\','/').replace(/^\\.\\//,'').replace(/\\/+$/,'');
 const readJson=(file,fallback={})=>file&&fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):fallback;
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\\n','utf8');};
 const safeId=v=>clean(v).replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90)||'game';
