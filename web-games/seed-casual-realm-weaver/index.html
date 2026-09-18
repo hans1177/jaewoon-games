@@ -1,1 +1,102 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>세계의 직조자</title></head><body><script>window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>세계의 직조자</title>
+  <link rel="stylesheet" href="/web-games/_shared/styles.css">
+</head>
+<body>
+  <script>
+    window.GAME_CONFIG = {
+      id: 'seed-casual-realm-weaver',
+      name: '세계의 직조자',
+      mode: 'realm',
+      desc: '마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'
+    };
+
+    // Initialize game state
+    let gameState = {
+      progress: 0,
+      progressTarget: 100,
+      worldStability: 50,
+      population: 0,
+      resources: {
+        wood: 0,
+        stone: 0,
+        water: 0,
+        mana: 0
+      },
+      buildings: [],
+      players: []
+    };
+
+    // Game logic
+    function updateGame() {
+      // Update progress
+      gameState.progress += 1;
+      gameState.progress %= gameState.progressTarget;
+
+      // Update world stability
+      gameState.worldStability += Math.floor(Math.random() * 5);
+      gameState.worldStability = Math.min(gameState.worldStability, 100);
+
+      // Update population
+      gameState.population += Math.floor(Math.random() * 5);
+      gameState.population = Math.min(gameState.population, 1000);
+
+      // Update resources
+      gameState.resources.wood = Math.floor(Math.random() * 100);
+      gameState.resources.stone = Math.floor(Math.random() * 100);
+      gameState.resources.water = Math.floor(Math.random() * 100);
+      gameState.resources.mana = Math.floor(Math.random() * 100);
+
+      // Update buildings
+      gameState.buildings = [
+        { type: 'forest', count: Math.floor(Math.random() * 10) },
+        { type: 'path', count: Math.floor(Math.random() * 10) },
+        { type: 'village', count: Math.floor(Math.random() * 10) }
+      ];
+
+      // Update players
+      gameState.players = [
+        { type: 'player', count: Math.floor(Math.random() * 10) },
+        { type: 'assistant', count: Math.floor(Math.random() * 10) }
+      ];
+    }
+
+    // Game UI
+    function renderUI() {
+      // Render progress bar
+      document.getElementById('progress-bar').style.width = gameState.progress + '%';
+      document.getElementById('progress-bar').innerText = gameState.progress + '%';
+
+      // Render world stability
+      document.getElementById('world-stability').innerText = gameState.worldStability + '%';
+
+      // Render population
+      document.getElementById('population').innerText = gameState.population + ' people';
+
+      // Render resources
+      document.getElementById('resources').innerText = `Wood: ${gameState.resources.wood}, Stone: ${gameState.resources.stone}, Water: ${gameState.resources.water}, Mana: ${gameState.resources.mana}`;
+
+      // Render buildings
+      document.getElementById('buildings').innerText = `Forest: ${gameState.buildings[0].count}, Path: ${gameState.buildings[1].count}, Village: ${gameState.buildings[2].count}`;
+
+      // Render players
+      document.getElementById('players').innerText = `Player: ${gameState.players[0].count}, Assistant: ${gameState.players[1].count}`;
+    }
+
+    // Game loop
+    function gameLoop() {
+      updateGame();
+      renderUI();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Start game
+    gameLoop();
+  </script>
+</body>
+</html>
