@@ -7,12 +7,245 @@
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로, 플레이어가 자원과 지형을 활용해 몰려오는 해충의 특성에 대응하는 전략적 판단을 내리며, coreLoop와 signatureSystems를 통해 매 웨이브마다 구체적인 전술적 상태 변화를 경험하도록 설계된 정통 싱글 플레이 디펜스 전략 게임입니다.",
+      "playerFantasy": "플레이어는 정원의 수호자이자 전략가로서, 다양한 특성을 가진 아군 곤충 디펜더들을 최적의 위치에 배치하고 지형을 활용하여 끊임없이 밀려오는 해충 군단을 막아내며 거대한 위협을 극복하는 승리의 쾌감을 느끼게 됩니다.",
+      "coreFun": "적의 웨이브 패턴을 관찰하고 상성이 맞는 곤충 디펜서를 선택하여 배치하며, 적이 격파되거나 자원이 증가하는 즉각적인 상태 변화를 확인하고 다음 웨이브를 위한 전략적 업그레이드 결정을 내리는 반복 속의 깊이 있는 재미를 제공합니다.",
+      "coreLoop": [
+        "밀려오는 해충의 이동 경로와 속성 패턴을 시각적으로 분석하고 진형의 취약점을 파악한다.",
+        "제한된 자원을 소모하여 상성에 맞는 디펜서 유닛을 배치하거나 기존 유닛을 전략적으로 업그레이드한다.",
+        "웨이브 방어 성공에 따른 자원 보상을 획득하고 다음 웨이브의 난이도 상승에 대비한 장기적 빌드 선택을 수행한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "상성 기반 곤충 포지셔닝 시스템",
+          "purpose": "플레이어가 적의 속성과 방어력 특성에 따라 유연하게 곤충 유닛을 배치하여 단순한 화력전 이상의 전술적 깊이를 제공하고 효율적인 방어선을 구축하게 합니다.",
+          "playerChoice": "다양한 공격 타입과 사거리를 가진 곤충 유닛 중 현재 웨이브에 가장 적합한 유닛을 선택하고 최적의 타일에 배치하는 결정."
+        },
+        {
+          "name": "지형 환경 활용 및 상호작용 시스템",
+          "purpose": "맵 내의 특정 환경 요소와 유닛의 능력을 결합하여 추가적인 디버프나 광역 피해를 발생시키고 전장 상황을 유리하게 역전시킬 수 있는 기회를 제공합니다.",
+          "playerChoice": "자연 자원을 소모하여 지형의 특성을 변경하거나 함정을 설치하여 적의 이동을 제어하고 효율적인 킬존을 설계하는 결정."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "상성 기반 곤충 포지셔닝 시스템",
+          "toSystem": "지형 환경 활용 및 상호작용 시스템",
+          "trigger": "특정 위치에 디펜서 유닛을 배치하고 전투가 시작될 때",
+          "stateChange": "주변 지형의 환경 버프가 활성화되어 유닛의 공격력과 사거리가 동적으로 증가함"
+        },
+        {
+          "fromSystem": "지형 환경 활용 및 상호작용 시스템",
+          "toSystem": "진행 및 경제 밸런스 시스템",
+          "trigger": "적 유닛이 지형 함정에 의해 처치되거나 제어될 때",
+          "stateChange": "추가 자원이 생성되어 플레이어의 경제 재화가 실시간으로 증가하고 다음 업그레이드에 반영됨"
+        },
+        {
+          "fromSystem": "진행 및 경제 밸런스 시스템",
+          "toSystem": "상성 기반 곤충 포지셔닝 시스템",
+          "trigger": "웨이브가 종료되고 보상 정산이 완료될 때",
+          "stateChange": "사용 가능한 자원 총량이 갱신되며 새로운 고급 곤충 유닛의 해금 및 구매가 가능해짐"
+        }
+      ],
+      "progressionDirection": "플레이어는 총 30개의 웨이브를 거치며 초반의 단순한 단일 라인 방어에서 다중 갈래 경로와 특수 보스 웨이브로 확장되는 전장에 직면하게 되며, 지속적인 자원 관리와 유닛 조합 업그레이드를 통해 점진적으로 강화되는 난이도를 극복하는 성취감을 경험합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "웨이브 클리어 -> 재화 획득 -> 유닛 해금 및 배치 강화 -> 더 강력한 적 웨이브 도전으로 이어지는 순환 구조를 통해 지속적인 성장 동기를 부여합니다.",
+        "resourceFlow": "적 처치 및 웨이브 완수 보상으로 얻는 생태 에너지를 재화로 사용하여 유닛 배치, 업그레이드, 지형 함정 설치에 소모합니다.",
+        "balanceRules": "초반에는 자원 수급 속도를 빠르게 하여 빠른 성장의 재미를 주고, 후반에는 유닛 배치 제한과 적의 다양성을 높여 자원 관리의 전략적 긴장감을 극대화합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "중반부 신규 지형 및 비행 곤충 도입",
+          "newGameplay": "지상 공격 유닛만으로는 대응할 수 없는 공중 해충 웨이브가 등장하며 이를 저격하는 특수 방공 곤충 유닛 배치가 필수가 됩니다.",
+          "systemImpact": "기존의 지상 중심 포지셔닝 시스템에 수직적 방어 요소가 추가되어 전체적인 타일 배치 전략의 복잡도가 크게 증가합니다."
+        },
+        {
+          "milestone": "후반부 거대 보스 곤충 및 특수 능력 해금",
+          "newGameplay": "강력한 군집 스킬과 방어막을 가진 보스 곤충이 등장하여 제한된 시간 내에 화력을 집중해야 하는 극한의 전투 상황이 연출됩니다.",
+          "systemImpact": "지형 환경 활용 시스템과 연계하여 보스의 이동을 강제로 지연시키고 광역 딜링 유닛을 집중시키는 복합적인 전략 운용이 요구됩니다."
+        },
+        {
+          "milestone": "엔드게임 무한 웨이브 및 챌린지 모드",
+          "newGameplay": "끝없이 몰려오는 해충 군단에 맞서 최고 기록을 달성하는 생존 챌린지 규칙이 도입되어 반복 플레이의 동기를 제공합니다.",
+          "systemImpact": "진행 및 경제 밸런스 시스템의 한계를 시험하며, 최적화된 유닛 조합과 극한의 자원 효율성을 검증하는 무대가 완성됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "방어선 기지에 해충이 허용치 이상 침입하여 생명력이 모두 소모된 경우",
+          "특정 보스 웨이브에서 화력 부족으로 인해 주요 방어선이 완전히 무력화된 경우"
+        ],
+        "retryFlow": "패배 시 현재 웨이브의 시작 시점으로 즉시 돌아가거나 해당 스테이지를 재시작할 수 있으며, 실패 원인이 된 적의 속성을 확인하고 유닛 배치 전략을 수정하여 곧바로 재도전할 수 있습니다.",
+        "riskPressure": "웨이브 후반부로 갈수록 적의 물량이 급증하여 실시간 판단 실수 하나가 전체 방어선의 붕괴로 이어지는 높은 긴장감을 제공합니다.",
+        "recoveryRules": "재도전 시 이전 시도에서 획득한 일부 재화나 연구 포인트를 활용하여 기초 유닛의 능력치를 보강하고 더 수월하게 재기할 수 있는 기반을 제공합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치스크린과 PC 마우스 입력을 모두 완벽히 지원하며, 유닛을 드래그하여 타일에 배치하고 탭하여 업그레이드 메뉴를 여는 직관적인 인터페이스를 제공합니다.",
+        "performanceBudget": "모바일 저사양 기기에서도 60프레임을 유지할 수 있도록 곤충 유닛 및 이펙트의 폴리곤 수와 드로우 콜을 최적화하고 메모리 사용량을 엄격히 관리합니다.",
+        "sessionConstraints": "한 판의 플레이 타임을 평균 30분 내외로 설계하여 모바일 환경과 데스크톱 환경 모두에서 부담 없이 즐길 수 있도록 세션 호환성을 확보합니다."
+      },
+      "visualDirection": "아기자기하면서도 생동감 있는 디테일을 살린 로우폴리곤 곤충들과 싱그러운 정원 및 자연 배경을 조화시켜 시각적 가독성을 높이고, 전투 중 발생하는 이펙트를 명확하게 전달합니다.",
+      "mobileUx": "엄지손가락 주요 조작 영역 내에 핵심 유닛 구매 및 스킬 버튼을 배치하고, 작은 화면에서도 적과 아군의 상태를 한눈에 파악할 수 있도록 UI 스케일과 명암 대비를 최적화했습니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 웨이브 진행도, 남은 생명력, 보유 자원, 그리고 긴급 스킬 쿨다운을 화면 상단과 하단에 고정하여 항상 명확하게 인지할 수 있도록 합니다.",
+        "touchAndInput": "오동작을 방지하기 위해 드래그 앤 드롭 배치 시 유효 타일이 시각적으로 강조되며, 탭 영역을 충분히 넓게 확보하여 모바일 터치 피로도를 최소화합니다.",
+        "readability": "다양한 색상의 해충과 곤충 유닛들이 복잡한 전장에서도 서로 겹쳐 보이지 않도록 외곽선 강조 및 명확한 실루엣 구분을 적용합니다.",
+        "accessibility": "색약 플레이어도 적의 속성을 쉽게 구분할 수 있도록 색상 외에 고유 문양과 아이콘 형태를 병행 표기하여 정보 전달력을 높입니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "친근한 자연 테마를 바탕으로 하되, 해충들의 위협적인 움직임과 곤충 유닛들의 개성 있는 공격 애니메이션을 대조적으로 연출하여 시각적 몰입감을 극대화합니다.",
+        "audioIdentity": "경쾌하고 자연친화적인 배경 음악 위에 곤충들의 날갯짓 소리, 공격 적중 시의 타격감 있는 효과음을 조합하여 청각적 피드백을 강화합니다.",
+        "gameplayFeedbackSync": "유닛 배치, 적 피격, 자원 획득 등의 주요 게임플레이 이벤트마다 즉각적인 사운드와 시각 파티클을 동기화하여 플레이어의 조작 만족도를 높입니다."
+      },
+      "marketTargetDirection": "글로벌 전략 디펜스 장르 팬층을 겨냥하여 직관적이면서도 깊이 있는 상성 플레이를 제공하며, 모바일과 PC 플랫폼 모두에서 쾌적하게 즐길 수 있는 완성도 높은 싱글 플레이 경험을 선사합니다.",
+      "steamExpansionDecision": "스팀 플랫폼 출시 시 고해상도 그래픽 옵션, 넓은 시야각 지원, 그리고 키보드 단축키 커스텀 기능을 추가하여 PC 게이머들의 플레이 편의성을 극대화합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "추후 업데이트를 통해 협동(COOP) 디펜스 모드나 친구와 웨이브 클리어 기록을 경쟁하는 리더보드 시스템의 도입 가능성을 열어둡니다.",
+      "technicalAssumptions": [
+        "유니티 엔진의 타일맵(Tilemap) 시스템을 활용하여 곤충 유닛의 효율적인 그리드 기반 배치와 경로 탐색을 구현한다.",
+        "오브젝트 풀링(Object Pooling) 기법을 적용하여 다수의 해충 유닛이 동시에 스폰되고 이동할 때 발생하는 가용한 프레임 저하를 방지한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 매 웨이브마다 적의 상성을 파악하고 유닛 배치를 변경하는 전술적 선택을 자연스럽게 유도하고 있는가?",
+        "30분 동안의 세션 동안 자원 수급과 난이도 상승 곡선이 지루함 없이 최적의 긴장감을 유지하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "상성 기반 곤충 포지셔닝 시스템",
+          "responsibleSystem": "상성 기반 곤충 포지셔닝 시스템 컴포넌트",
+          "validationEvidence": "유닛 배치 시 적의 방어 속성과 유닛 공격 타입이 일치할 때 데미지 보정이 정상적으로 적용되는지 유닛 테스트를 통해 검증함."
+        },
+        {
+          "designElement": "지형 환경 활용 및 상호작용 시스템",
+          "responsibleSystem": "지형 및 함정 상호작용 매니저",
+          "validationEvidence": "적 유닛이 함정 타일에 진입했을 때 상태 이상 디버프와 추가 자원 생성 이벤트가 정확히 트리거되는지 로그를 통해 확인함."
+        },
+        {
+          "designElement": "진행 및 경제 밸런스 시스템",
+          "responsibleSystem": "경제 및 웨이브 진행 컨트롤러",
+          "validationEvidence": "웨이브 종료 시 보상 정산과 자원 갱신이 누락 없이 이루어지며 다음 웨이브 난이도 파라미터가 올바르게 스케일링되는지 확인함."
+        }
+      ],
+      "openQuestions": [
+        "추가적인 특수 능력을 가진 지형 타일을 플레이어가 직접 건설할 수 있는 요소를 도입할 것인가?",
+        "일회성 소모품 스킬의 쿨다운 방식을 자원 소모형으로 변경했을 때의 밸런스 영향은 어떠한가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
-  "modelHealth": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 15238,
+      "lastMs": 15238,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:50:09.116Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 122,
+      "lastMs": 122,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 50.689223836s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"50s\" } ] } }",
+      "updatedAt": "2026-09-18T08:50:09.334Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 182,
+      "lastMs": 182,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 50.628321433s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"50s\" } ] } }",
+      "updatedAt": "2026-09-18T08:50:09.395Z"
+    }
+  },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T08:49:53.876Z",
-  "updatedAt": "2026-09-18T08:49:53.877Z"
+  "updatedAt": "2026-09-18T08:50:10.707Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:50:09.116Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3-flash-preview"
 }
