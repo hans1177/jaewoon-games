@@ -355,6 +355,33 @@ jobs:
           put('variant',process.env.VARIANT||'primary');
           NODE
 
+      - name: Run source-free learning practice
+        id: practice
+        if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'analysis-only'
+        continue-on-error: true
+        env:
+          SAFE_TASK: ${{ matrix.safeTask }}
+          VARIANT: ${{ matrix.variant }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          command -v ollama >/dev/null
+          nohup ollama serve > "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+            if [ "$i" = 30 ]; then cat "/tmp/ollama-practice-${SAFE_TASK}-${VARIANT}.log" || true; exit 1; fi
+            sleep 2
+          done
+          if ! ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$VIBE2_LOCAL_MODEL"; then
+            ollama pull "$VIBE2_LOCAL_MODEL"
+          fi
+          node tools/vibe2-learning-practice-worker.mjs \
+            --order=/tmp/vibe2-work-order.json \
+            --output=/tmp/vibe2-learning-practice-result.json
+          test -f /tmp/vibe2-learning-practice-result.json
+          echo 'VIBE2_ANALYSIS_WORKER=PRACTICE_ONLY'
+          echo 'VIBE2_PRACTICE_PRODUCTION_PASS=NO'
+
       - name: Download reusable exploration handoff
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
         uses: actions/download-artifact@v4
@@ -529,6 +556,7 @@ jobs:
           IQA_HASH: ${{ steps.incremental_qa.outputs.hash }}
           IQA_CACHE: ${{ steps.incremental_qa.outputs.cache }}
           PERFORMANCE_OUTCOME: ${{ steps.performance.outcome }}
+          PRACTICE_OUTCOME: ${{ steps.practice.outcome }}
           SAFE_TASK: ${{ matrix.safeTask }}
           RESERVED_AT: ${{ matrix.reservedAt }}
           REQUESTED_MAX: ${{ matrix.requestedMax }}
@@ -558,7 +586,10 @@ jobs:
             else if(!testOk){outcome='FAIL';blocker='incremental-qa-failed';}
             else{outcome='FAIL';blocker='performance-sanity-failed';}
           }else if(process.env.ORDER_RUN==='true' && route==='engine-editor') blocker='engine-editor-worker-not-connected';
-          else if(process.env.ORDER_RUN==='true' && route==='analysis-only') blocker='analysis-worker-not-connected';
+          else if(process.env.ORDER_RUN==='true' && route==='analysis-only'){
+            if(process.env.PRACTICE_OUTCOME==='success'){outcome='PASS';blocker='learning-practice-complete';}
+            else{outcome='FAIL';blocker='learning-practice-worker-failed';}
+          }
 
           let manifest={};
           const candidateDir=clean(process.env.CANDIDATE_DIR);
@@ -583,7 +614,8 @@ jobs:
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             `actions-run:${process.env.GITHUB_RUN_ID}`,
-            `variant:${clean(process.env.VARIANT)||'primary'}`
+            `variant:${clean(process.env.VARIANT)||'primary'}`,
+            ...(route==='analysis-only'?['learning-practice-only','production-pass:NO','source-write:NO']:[ ])
           ].filter(Boolean);
           const workerStartedAt=Number(fs.readFileSync(process.env.WORKER_STARTED_AT_FILE,'utf8'))||Date.now();
           const workerFinishedAt=Date.now();
