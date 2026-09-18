@@ -3,343 +3,12 @@
   "gameId": "bug-defense",
   "date": "2026-09-19",
   "seedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
-  "fingerprint": "ec980e20f0ac5bd98043963b5ab2708b77a8a6bdc2a3e93189e84bae650504a2",
+  "fingerprint": "326e2a2615b8c87fb9dc4695ecd616ce8264e6e5379985743e00e245040cea89",
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "completedPhases": [
-    "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1"
-  ],
-  "phases": {
-    "designer_draft": {
-      "identity": "곤충 디펜스: 생태계 전략은 곤충의 고유한 생물학적 특성과 서식지 환경의 상성을 활용하여 몰려오는 해충 웨이브를 막아내는 전략 디펜스 게임입니다. 플레이어는 각 곤충 병종의 공격 방식과 서식지 지형의 이점을 결합하여 최적의 방어선을 구축해야 하며, 이는 단순히 타워를 배치하는 것을 넘어 곤충의 생태적 상성을 고려한 심도 있는 선택과 전술적 상태 변화를 유도합니다.",
-      "playerFantasy": "플레이어는 곤충 왕국의 사령관이 되어, 위기에 처한 서식지를 지키기 위해 다양한 곤충 병력을 지휘하고 적재적소에 배치하여 거대한 해충 군단을 격퇴하는 승리의 쾌감을 경험합니다.",
-      "coreFun": "웨이브마다 변화하는 적의 속성을 관찰하고, 상성에 맞는 곤충 병종을 선택하여 배치함으로써 적의 진격을 저지하는 즉각적인 전술적 피드백과 방어선이 성공적으로 작동할 때의 시각적 만족감을 제공합니다.",
-      "coreLoop": [
-        "웨이브 시작 전 적의 침입 경로와 해충의 속성(비행, 장갑, 속도)을 분석하고 대응 전략을 수립합니다.",
-        "보유한 자원을 사용하여 지형에 맞는 곤충 방어 유닛을 배치하거나 기존 유닛을 업그레이드하여 방어선을 강화합니다.",
-        "웨이브 진행 중 적의 돌파 시도에 실시간으로 대응하여 스킬을 사용하거나 유닛 위치를 조정하고, 전투 결과로 얻은 자원을 통해 다음 웨이브를 위한 더 강력한 병종을 해금합니다."
-      ],
-      "signatureSystems": [
-        {
-          "name": "생태 상성 시스템",
-          "purpose": "각 곤충 병종과 해충 적군 사이에 존재하는 생물학적 상성을 통해 단순한 화력 투사가 아닌 전략적 유닛 선택을 강제하기 위함입니다.",
-          "playerChoice": "플레이어는 적의 속성(예: 불개미의 장갑, 말벌의 비행)을 파악하여 이에 대응하는 천적 곤충(예: 거미줄 함정, 사마귀 포수)을 선택하여 배치해야 합니다."
-        },
-        {
-          "name": "서식지 환경 변조",
-          "purpose": "고정된 타워 배치에서 벗어나 지형지물을 활용하여 방어 효율을 극대화하고 전장의 흐름을 제어하기 위함입니다.",
-          "playerChoice": "플레이어는 특정 지점에 페로몬을 살포하여 곤충의 이동 경로를 유도하거나, 잎사귀나 나뭇가지 같은 지형물을 배치하여 적의 이동 속도를 늦추는 선택을 할 수 있습니다."
-        }
-      ],
-      "systemInterconnections": [
-        {
-          "fromSystem": "생태 상성 시스템",
-          "toSystem": "전투 결과 처리",
-          "trigger": "유닛의 공격이 적에게 적중할 때",
-          "stateChange": "상성 우위 시 데미지 배율이 적용되어 적의 체력이 급격히 감소하고, 상성 열세 시 데미지가 경감되어 적이 방어선을 돌파할 확률이 높아집니다."
-        },
-        {
-          "fromSystem": "서식지 환경 변조",
-          "toSystem": "적 이동 경로 알고리즘",
-          "trigger": "플레이어가 페로몬 타일을 설치할 때",
-          "stateChange": "적 유닛의 이동 경로가 페로몬 타일 쪽으로 강제 변경되어, 플레이어가 미리 설치해둔 방어 유닛의 사거리 안으로 적을 유인할 수 있게 됩니다."
-        },
-        {
-          "fromSystem": "전투 결과 처리",
-          "toSystem": "자원 경제 시스템",
-          "trigger": "적 유닛을 처치할 때",
-          "stateChange": "처치한 적의 종류와 난이도에 따라 꿀(자원)이 생성되며, 이는 다음 웨이브를 위한 유닛 배치 및 업그레이드 비용으로 즉시 환원됩니다."
-        }
-      ],
-      "progressionDirection": "초반에는 기본적인 곤충 병종으로 시작하여, 웨이브를 거듭할수록 새로운 생태 환경과 더 복잡한 해충 패턴을 마주하게 됩니다. 플레이어는 획득한 자원으로 병종의 고유 스킬을 강화하고, 특정 환경에 특화된 곤충을 연구하여 점진적으로 더 높은 난이도의 방어 과제를 해결해 나갑니다.",
-      "progressionEconomyBalance": {
-        "progressionLoop": "웨이브 클리어 -> 자원 획득 -> 유닛 업그레이드 및 신규 병종 연구 -> 다음 웨이브 난이도 상승의 순환 구조를 가집니다.",
-        "resourceFlow": "적 처치 시 획득하는 '꿀'은 유닛 배치와 업그레이드의 핵심 재화이며, 웨이브 종료 시 보너스 자원을 통해 성장의 폭을 조절합니다.",
-        "balanceRules": "웨이브가 진행될수록 적의 체력과 물량이 지수적으로 증가하며, 플레이어의 유닛 업그레이드 효율과 적절한 상성 선택이 없으면 방어선이 붕괴되도록 설계합니다."
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "Phase 1: 서식지 환경 변조 및 지형 상성 시스템 도입",
-          "newGameplay": "플레이어가 맵의 특정 타일 속성을 변경하여 곤충의 이동 경로를 강제로 수정하거나, 특정 지형에서만 발동하는 환경 버프를 활용하는 전략적 지형 변조 플레이를 도입합니다.",
-          "systemImpact": "기존의 고정된 경로 기반 타워 디펜스 로직을 동적 경로 탐색 시스템으로 전환해야 하며, 타일 속성 데이터가 유닛의 이동 속도와 공격력 보너스에 실시간으로 반영되도록 연산 로직을 확장합니다."
-        },
-        {
-          "milestone": "Phase 2: 곤충 병종별 진화 및 특수 스킬 트리 구현",
-          "newGameplay": "전투 중 획득한 자원을 사용하여 유닛을 특정 진화 경로로 업그레이드하며, 액티브 스킬을 수동으로 발동시켜 위기 상황을 돌파하는 능동적 전투 메커니즘을 추가합니다.",
-          "systemImpact": "유닛 데이터 구조에 스킬 쿨타임과 진화 상태 변수를 추가하고, UI 시스템에서 스킬 발동을 위한 입력 처리와 시각적 피드백 레이어를 새롭게 구축해야 합니다."
-        },
-        {
-          "milestone": "Phase 3: 거대 보스 곤충의 다단계 페이즈 전투",
-          "newGameplay": "단순 물량 공세가 아닌, 체력 구간별로 패턴이 변화하는 보스 곤충을 배치하여 플레이어가 보스의 약점 속성에 맞춰 타워를 재배치하거나 스킬을 집중해야 하는 보스전 전용 모드를 추가합니다.",
-          "systemImpact": "보스 몬스터의 상태 머신(FSM)을 고도화하여 페이즈 전환 로직을 구현하고, 보스전 전용 체력바 및 패턴 알림 시스템을 기존 HUD 시스템과 통합합니다."
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "방어선 돌파로 인한 서식지 점령",
-          "자원 고갈로 인한 방어 불능 상태",
-          "보스전 패배로 인한 웨이브 리셋"
-        ],
-        "retryFlow": "실패 시 해당 웨이브의 시작 지점으로 돌아가며, 이전 웨이브에서 획득한 자원 중 일부를 유지한 채 전략을 수정하여 재도전할 수 있습니다.",
-        "riskPressure": "웨이브가 진행될수록 적의 물량이 압도적으로 변하며, 한 번의 실수로 방어선이 무너질 수 있는 긴장감을 유지합니다.",
-        "recoveryRules": "실패 후 재도전 시, 이전 패배의 원인을 분석할 수 있도록 적의 침입 경로와 유닛 배치 정보를 시각적으로 피드백합니다."
-      },
-      "platformFitPlan": {
-        "targetPlatform": "UNITY",
-        "inputModel": "모바일 환경을 고려하여 드래그 앤 드롭 방식의 유닛 배치와 탭을 통한 스킬 발동을 기본으로 하며, 직관적인 터치 인터페이스를 제공합니다.",
-        "performanceBudget": "다수의 적 유닛이 화면에 등장하므로 오브젝트 풀링을 사용하여 메모리 할당을 최소화하고, 렌더링 최적화를 통해 저사양 기기에서도 60fps를 유지합니다.",
-        "sessionConstraints": "한 웨이브당 3~5분 내외로 구성하여 짧은 호흡으로도 전략적 재미를 느낄 수 있도록 설계하며, 30분 세션 동안 약 6~8개의 웨이브를 진행합니다."
-      },
-      "visualDirection": "곤충의 생태적 특징을 살린 아기자기하면서도 디테일한 2D 아트 스타일을 지향하며, 각 곤충의 고유한 색감과 움직임을 통해 상성 관계를 시각적으로 명확히 구분합니다.",
-      "mobileUx": "화면 하단에 유닛 선택 바를 배치하고, 전장은 핀치 줌과 드래그로 자유롭게 이동할 수 있게 하여 작은 화면에서도 전장 전체를 파악하기 쉽게 합니다.",
-      "uxAccessibilityPlan": {
-        "hudPriorities": "현재 자원량, 다음 웨이브 예고, 유닛 배치 상태를 최우선으로 표시하여 플레이어가 전략적 판단을 내리는 데 필요한 정보를 즉각 제공합니다.",
-        "touchAndInput": "오터치 방지를 위해 유닛 배치 시 드래그 영역을 명확히 표시하고, 배치 취소 기능을 직관적으로 구현합니다.",
-        "readability": "적의 속성을 색상과 아이콘으로 구분하여 색약 플레이어도 상성을 쉽게 파악할 수 있도록 시각적 보조 장치를 제공합니다.",
-        "accessibility": "게임 속도 조절(배속) 기능을 통해 반응 속도가 느린 플레이어도 충분히 전략을 고민할 수 있는 환경을 제공합니다."
-      },
-      "artAudioDirection": {
-        "visualIdentity": "자연 친화적인 파스텔 톤 배경과 대비되는 곤충들의 선명한 원색을 사용하여 전장의 가독성을 높입니다.",
-        "audioIdentity": "곤충의 날갯짓 소리, 공격 시의 타격음 등 자연의 소리를 기반으로 한 효과음을 사용하여 몰입감을 극대화합니다.",
-        "gameplayFeedbackSync": "유닛이 적을 처치할 때마다 경쾌한 효과음과 함께 시각적 이펙트를 발생시켜 플레이어에게 즉각적인 성취감을 전달합니다."
-      },
-      "marketTargetDirection": "전략 디펜스 장르를 선호하는 글로벌 유저층을 타겟으로 하며, 곤충이라는 독특한 테마를 통해 기존 디펜스 게임과의 차별성을 강조합니다.",
-      "steamExpansionDecision": "모바일에서의 성공적인 안착 후, 더 넓은 화면과 정밀한 마우스 조작을 활용할 수 있는 PC 버전으로의 확장을 고려합니다.",
-      "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "현재는 싱글 플레이 전략에 집중하며, 향후 협동 모드(COOP)를 통해 친구와 함께 방어선을 구축하는 콘텐츠를 검토할 예정입니다.",
-      "technicalAssumptions": [
-        "유닛 간 상성 계산은 연산 부하를 줄이기 위해 비트마스크 기반의 고속 연산 테이블을 사용하여 실시간으로 처리합니다.",
-        "모바일 환경의 성능 최적화를 위해 모든 곤충 유닛의 스프라이트와 애니메이션은 오브젝트 풀링 기법을 사용하여 메모리 할당을 최소화합니다."
-      ],
-      "validationQuestions": [
-        "플레이어가 새로운 지형 변조 시스템을 활용하여 난이도를 극복하는 전략적 선택을 3회 이상 시도하는지 로그 데이터를 통해 확인 가능한가?",
-        "보스전 페이즈 전환 시 발생하는 연산 부하가 모바일 기기에서 프레임 드랍 없이 60FPS를 유지하는지 성능 프로파일링으로 검증 가능한가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "지형 변조 및 타일 속성 시스템",
-          "responsibleSystem": "타일 데이터 관리 및 경로 탐색 엔진",
-          "validationEvidence": "지형 속성 변경 시 적 유닛의 경로 탐색 알고리즘(A*)이 즉시 재계산되어 변경된 경로로 이동하는지 유닛 테스트를 통해 경로 최적성을 검증합니다."
-        },
-        {
-          "designElement": "유닛 진화 및 액티브 스킬 시스템",
-          "responsibleSystem": "전투 로직 및 상태 관리 시스템",
-          "validationEvidence": "진화 트리 선택 시 유닛의 스탯이 정확히 반영되고, 스킬 발동 시 쿨타임 로직이 정상 작동하는지 시뮬레이션 환경에서 데이터 무결성을 검증합니다."
-        },
-        {
-          "designElement": "보스 몬스터 페이즈 전환 로직",
-          "responsibleSystem": "보스 AI 상태 머신(FSM) 시스템",
-          "validationEvidence": "보스 체력이 특정 임계값에 도달할 때마다 상태가 전환되고 패턴이 변경되는지 디버그 로그를 통해 상태 전이의 정확성을 검증합니다."
-        }
-      ],
-      "openQuestions": [
-        "곤충의 진화 트리를 얼마나 복잡하게 구성해야 전략적 깊이와 진입 장벽 사이의 균형을 맞출 수 있을까?",
-        "보스전의 패턴을 어떻게 설계해야 반복적인 디펜스 플레이에서 벗어난 신선한 경험을 제공할 수 있을까?"
-      ]
-    },
-    "deterministic_pre_gate": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 60,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 6,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
-      },
-      "totalScore": 77,
-      "criticalAxisFailures": [
-        "CONTENT_EXPANSION_PLAN",
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-      ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "CONTENT_EXPANSION_PLAN",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 6,
-            "axisWeight": 10
-          },
-          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    },
-    "designer_pre_gate_repair_1": {
-      "contentExpansionPlan": [
-        {
-          "milestone": "Phase 1: 서식지 환경 변조 및 지형 상성 시스템 도입",
-          "newGameplay": "플레이어가 맵의 특정 타일 속성을 변경하여 곤충의 이동 경로를 강제로 수정하거나, 특정 지형에서만 발동하는 환경 버프를 활용하는 전략적 지형 변조 플레이를 도입합니다.",
-          "systemImpact": "기존의 고정된 경로 기반 타워 디펜스 로직을 동적 경로 탐색 시스템으로 전환해야 하며, 타일 속성 데이터가 유닛의 이동 속도와 공격력 보너스에 실시간으로 반영되도록 연산 로직을 확장합니다."
-        },
-        {
-          "milestone": "Phase 2: 곤충 병종별 진화 및 특수 스킬 트리 구현",
-          "newGameplay": "전투 중 획득한 자원을 사용하여 유닛을 특정 진화 경로로 업그레이드하며, 액티브 스킬을 수동으로 발동시켜 위기 상황을 돌파하는 능동적 전투 메커니즘을 추가합니다.",
-          "systemImpact": "유닛 데이터 구조에 스킬 쿨타임과 진화 상태 변수를 추가하고, UI 시스템에서 스킬 발동을 위한 입력 처리와 시각적 피드백 레이어를 새롭게 구축해야 합니다."
-        },
-        {
-          "milestone": "Phase 3: 거대 보스 곤충의 다단계 페이즈 전투",
-          "newGameplay": "단순 물량 공세가 아닌, 체력 구간별로 패턴이 변화하는 보스 곤충을 배치하여 플레이어가 보스의 약점 속성에 맞춰 타워를 재배치하거나 스킬을 집중해야 하는 보스전 전용 모드를 추가합니다.",
-          "systemImpact": "보스 몬스터의 상태 머신(FSM)을 고도화하여 페이즈 전환 로직을 구현하고, 보스전 전용 체력바 및 패턴 알림 시스템을 기존 HUD 시스템과 통합합니다."
-        }
-      ],
-      "technicalAssumptions": [
-        "유닛 간 상성 계산은 연산 부하를 줄이기 위해 비트마스크 기반의 고속 연산 테이블을 사용하여 실시간으로 처리합니다.",
-        "모바일 환경의 성능 최적화를 위해 모든 곤충 유닛의 스프라이트와 애니메이션은 오브젝트 풀링 기법을 사용하여 메모리 할당을 최소화합니다."
-      ],
-      "validationQuestions": [
-        "플레이어가 새로운 지형 변조 시스템을 활용하여 난이도를 극복하는 전략적 선택을 3회 이상 시도하는지 로그 데이터를 통해 확인 가능한가?",
-        "보스전 페이즈 전환 시 발생하는 연산 부하가 모바일 기기에서 프레임 드랍 없이 60FPS를 유지하는지 성능 프로파일링으로 검증 가능한가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "지형 변조 및 타일 속성 시스템",
-          "responsibleSystem": "타일 데이터 관리 및 경로 탐색 엔진",
-          "validationEvidence": "지형 속성 변경 시 적 유닛의 경로 탐색 알고리즘(A*)이 즉시 재계산되어 변경된 경로로 이동하는지 유닛 테스트를 통해 경로 최적성을 검증합니다."
-        },
-        {
-          "designElement": "유닛 진화 및 액티브 스킬 시스템",
-          "responsibleSystem": "전투 로직 및 상태 관리 시스템",
-          "validationEvidence": "진화 트리 선택 시 유닛의 스탯이 정확히 반영되고, 스킬 발동 시 쿨타임 로직이 정상 작동하는지 시뮬레이션 환경에서 데이터 무결성을 검증합니다."
-        },
-        {
-          "designElement": "보스 몬스터 페이즈 전환 로직",
-          "responsibleSystem": "보스 AI 상태 머신(FSM) 시스템",
-          "validationEvidence": "보스 체력이 특정 임계값에 도달할 때마다 상태가 전환되고 패턴이 변경되는지 디버그 로그를 통해 상태 전이의 정확성을 검증합니다."
-        }
-      ]
-    },
-    "deterministic_pre_gate_after_repair_1": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 80,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 8,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
-      },
-      "totalScore": 80,
-      "criticalAxisFailures": [],
-      "hardFailures": [],
-      "rejectionReasons": [],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    }
-  },
+  "completedPhases": [],
+  "phases": {},
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
@@ -348,10 +17,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 831,
-      "lastMs": 831,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\nPlease retry in 3.189187129s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash-lite\" }, \"quotaValue\": \"500\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"3s\" } ] } }",
-      "updatedAt": "2026-09-18T19:21:56.828Z"
+      "totalMs": 485,
+      "lastMs": 485,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 500, model: gemini-3.5-flash-lite\\nPlease retry in 36.129575339s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash-lite\", \"location\": \"global\" }, \"quotaValue\": \"500\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"36s\" } ] } }",
+      "updatedAt": "2026-09-18T19:28:23.900Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -359,10 +28,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 937,
-      "lastMs": 937,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 3.079871918s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"3s\" } ] } }",
-      "updatedAt": "2026-09-18T19:21:56.934Z"
+      "totalMs": 587,
+      "lastMs": 587,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 36.016582192s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.8-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"36s\" } ] } }",
+      "updatedAt": "2026-09-18T19:28:24.002Z"
     },
     "gemini:gemini-3.7-flash": {
       "calls": 1,
@@ -370,10 +39,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1023,
-      "lastMs": 1023,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 2.990608971s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"2s\" } ] } }",
-      "updatedAt": "2026-09-18T19:21:57.020Z"
+      "totalMs": 675,
+      "lastMs": 675,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 35.928572757s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"35s\" } ] } }",
+      "updatedAt": "2026-09-18T19:28:24.090Z"
     },
     "gemini:gemini-3.6-flash": {
       "calls": 1,
@@ -381,10 +50,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1141,
-      "lastMs": 1141,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 2.871743269s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.6-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"2s\" } ] } }",
-      "updatedAt": "2026-09-18T19:21:57.138Z"
+      "totalMs": 764,
+      "lastMs": 764,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 35.840268572s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"35s\" } ] } }",
+      "updatedAt": "2026-09-18T19:28:24.179Z"
     },
     "gemini:gemini-3.5-flash": {
       "calls": 1,
@@ -392,10 +61,10 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1223,
-      "lastMs": 1223,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 2.792351427s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"2s\" } ] } }",
-      "updatedAt": "2026-09-18T19:21:57.220Z"
+      "totalMs": 857,
+      "lastMs": 857,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 35.746561208s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"35s\" } ] } }",
+      "updatedAt": "2026-09-18T19:28:24.272Z"
     },
     "gemini:gemini-3.1-pro-preview": {
       "calls": 1,
@@ -403,67 +72,14 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1281,
-      "lastMs": 1281,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 2.731066034s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.1-pro\", \"location\": \"global\" }",
-      "updatedAt": "2026-09-18T19:21:57.278Z"
-    },
-    "gemini:gemini-2.5-pro": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 1338,
-      "lastMs": 1338,
-      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T19:21:57.335Z"
-    },
-    "gemini:gemini-2.5-flash": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 1386,
-      "lastMs": 1386,
-      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T19:21:57.383Z"
-    },
-    "gemini:gemini-2.5-flash-lite": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 1450,
-      "lastMs": 1450,
-      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T19:21:57.447Z"
-    },
-    "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
-      "successes": 2,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 21852,
-      "lastMs": 5716,
-      "lastError": null,
-      "updatedAt": "2026-09-18T19:22:17.852Z"
+      "totalMs": 947,
+      "lastMs": 947,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 35.656545106s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerDay-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\"",
+      "updatedAt": "2026-09-18T19:28:24.363Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DEPARTMENT_REVIEWS",
-  "createdAt": "2026-09-18T19:21:55.974Z",
-  "updatedAt": "2026-09-18T19:22:18.051Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T19:22:17.852Z",
-  "geminiModelResolution": {
-    "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
-  },
-  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
-  "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": "five_lead_reviews",
-  "failedTask": "development",
-  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
+  "currentPhase": "DESIGNER_DRAFT",
+  "createdAt": "2026-09-18T19:28:23.413Z",
+  "updatedAt": "2026-09-18T19:28:24.363Z"
 }
