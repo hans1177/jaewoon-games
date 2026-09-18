@@ -3,6 +3,8 @@ name: Vibe2 Continuous Core
 on:
   workflow_call:
   workflow_dispatch:
+  repository_dispatch:
+    types: [vibe2-slot-refill]
   push:
     branches:
       - 'vibe2/refill/**'
@@ -618,15 +620,20 @@ jobs:
       - name: Signal immediate slot refill after single-variant worker completion
         if: always() && matrix.earlyRefill == true && steps.result.outputs.file != ''
         env:
+          GH_TOKEN: ${{ github.token }}
           TASK_ID: ${{ matrix.taskId }}
         shell: bash
         run: |
           set -euo pipefail
-          encoded="$(node -e "process.stdout.write(Buffer.from(process.env.TASK_ID||'').toString('base64url'))")"
-          test -n "$encoded"
-          callback="vibe2/refill/task/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/${encoded}"
-          git push origin "HEAD:refs/heads/${callback}"
-          echo "VIBE2_EARLY_SLOT_REFILL_SIGNAL=$callback"
+          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-slot-refill',client_payload:{task_id:process.env.TASK_ID||'',source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||''}}))")"
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
+            --data "$payload"
+          echo 'VIBE2_EARLY_SLOT_REFILL_SIGNAL=REPOSITORY_DISPATCH'
 
   fan_in:
     needs: [reserve, worker]
@@ -695,6 +702,7 @@ jobs:
           node tools/vibe2-queue-control.mjs fan-in --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
           # Per-candidate test/performance roles already ran. Regression runs once at fan-in.
+          set +e
           node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
@@ -709,6 +717,27 @@ jobs:
             qa/vibe2-candidate-reconcile.test.mjs \
             qa/vibe2-experience-control.test.mjs \
             qa/vibe2-handoff.test.mjs
+          regression_rc=$?
+          set -e
+          if [ "$regression_rc" -ne 0 ]; then
+            node tools/vibe2-queue-control.mjs fan-in-regression-fail \
+              --input=/tmp/vibe2-fan-in.json \
+              --blocker=fan-in-regression-failed
+            git add .vibe2/queue.json .vibe2/parallelism-control.json
+            if ! git diff --cached --quiet; then
+              git commit -m "vibe2: requeue after fan-in regression failure [skip ci]"
+              pushed=0
+              for attempt in 1 2 3; do
+                if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
+                git rebase --abort 2>/dev/null || true
+                git fetch origin vibe2-unreal-core --quiet
+                sleep $((attempt * 2))
+              done
+              test "$pushed" = 1
+            fi
+            echo 'VIBE2_REGRESSION_ROLE=FAIL_REQUEUED'
+            exit "$regression_rc"
+          fi
           echo 'VIBE2_REGRESSION_ROLE=PASS'
           echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
 
