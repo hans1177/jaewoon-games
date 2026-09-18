@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "gameId": "territory-war",
+  "date": "2026-09-18",
+  "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
+  "status": "PRE_GATE_BLOCKED",
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
+  ],
+  "completedPhaseCount": 6,
+  "cachedTaskCount": 0,
+  "lastSuccessfulModelCallAt": "2026-09-18T08:41:58.251Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 3,
+      "successes": 3,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 14523,
+      "lastMs": 1481,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:41:58.251Z"
+    }
+  },
+  "slowPhases": {},
+  "updatedAt": "2026-09-18T08:41:58.254Z",
+  "blocked": true,
+  "preGateScore": 79,
+  "hardFailures": [
+    "CRITICAL_AXIS_MINIMUM_FAIL"
+  ],
+  "repairPacket": {
+    "source": "DETERMINISTIC_PRE_GATE_V2",
+    "bypassAllowed": false,
+    "totalScore": 79,
+    "passMinimum": 80,
+    "hardFailures": [
+      "CRITICAL_AXIS_MINIMUM_FAIL"
+    ],
+    "failedAxes": [
+      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+    ],
+    "reasons": [
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": 60,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 3,
+          "axisWeight": 5
+        },
+        "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+        "bypassAllowed": false
+      }
+    ]
+  }
+}
