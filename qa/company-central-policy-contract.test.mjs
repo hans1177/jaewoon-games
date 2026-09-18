@@ -312,3 +312,17 @@ test('paid execution remains forbidden',()=>{
   assert.equal(directive.ai.paidRunnerAllowed,false);
   assert.ok(directive.rules.includes('paid-ai-paid-overage-and-paid-runners-remain-forbidden'));
 });
+
+
+test('Roblox deployment control allows Open Cloud routes only and pauses automatic publishing',()=>{
+  assert.equal(roadmap.roblox.deploymentControl.automaticPublishPaused,true);
+  assert.equal(roadmap.roblox.deploymentControl.automaticReleaseDispatchAllowed,false);
+  assert.equal(roadmap.roblox.deploymentControl.manualPublishAllowed,true);
+  assert.deepEqual(roadmap.roblox.deploymentControl.allowedPublishRoutes,[
+    'GITHUB_CLOUD_OPEN_CLOUD',
+    'LOCAL_SELF_HOSTED_OPEN_CLOUD',
+  ]);
+  assert.equal(roadmap.roblox.deploymentControl.studioUiPublishAllowed,false);
+  assert.equal(roadmap.roblox.deploymentControl.cookiePublishAllowed,false);
+  assert.equal(roadmap.roblox.deploymentControl.resumeMode,'MANUAL_ONLY_WHILE_PAUSED');
+});
