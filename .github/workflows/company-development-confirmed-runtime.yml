@@ -38,7 +38,7 @@ on:
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-speed-sequence-workflow.test.mjs'
-      - 'COMPANY_FLOW.md'
+      - 'company-learning/platform-release-roadmap.json'
       - 'company-directive.json'
   workflow_dispatch:
   schedule:
@@ -385,7 +385,7 @@ jobs:
               if(initialReport.contentDepthValidation?.pass===true||initialReport.homepageTestEligible===true)throw new Error('WEB_INITIAL_STAGE_MUST_NOT_CLAIM_FINAL_30MIN_PASS');
               initialReport.candidateSourcePath=candidatePath;
               initialReport.sourcePath=stableSource;
-              initialReport.policyDocument='COMPANY_FLOW.md';
+              initialReport.policyDocument='company-learning/platform-release-roadmap.json';
               initialReport.requiredBeforeFinalContentDepth=true;
               fs.writeFileSync(gameplayEvidence,JSON.stringify(initialReport,null,2)+'\n');
               const webOut=path.join(persistRoot,stableSource);
@@ -447,7 +447,7 @@ jobs:
               report.sourcePath=item.webInitialCycleSourcePath;
               report.initialCycleEvidencePath=item.webInitialCycleEvidencePath;
               report.initialCycleSourceIndexSha256=item.webInitialCycleSourceIndexSha256;
-              report.policyDocument='COMPANY_FLOW.md';
+              report.policyDocument='company-learning/platform-release-roadmap.json';
               report.requiredBeforeTargetPlatform=true;
               fs.writeFileSync(gameplayEvidence,JSON.stringify(report,null,2)+'\n');
               const evidenceOut=path.join(persistRoot,finalEvidenceRelative);
@@ -474,8 +474,8 @@ jobs:
                 webValidationSchemaVersion:Number(report.validationSchemaVersion||report.version||0)||null,
                 webSourceIndexSha256:report.sourceIndexSha256||null,webDesignBaselineSha256:report.designBaselineSha256||null,
                 webPromotionRevalidationPassed:report.promotionRevalidation?.pass===true,
-                homepageTestEligible:true,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:formalPass?'WAITING_ARTBOOK':'WEB_STRICT_REPAIR_REQUIRED',
-                formalImplementationPassed:formalPass,formalImplementationVerdict:formalPass?'PASS':'REVISE',
+                homepageTestEligible:true,homepageTestCandidate:false,homepageTestScore:strictScore,homepageTestVerdict:formalPass?'WAITING_ARTBOOK':'WEB_VIBE_REPAIR_REQUIRED',
+                formalImplementationPassed:formalPass,formalImplementationVerdict:formalPass?'PASS':'REVISE',vibeWebImplementationRequired:!formalPass,
                 postPromotionArtbookRequired:false,postWebArtbookRequired:true,artbookTiming:'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER',
                 webValidationSourceRevision:process.env.GITHUB_SHA,
                 routingBlockers:formalPass?[]:[promotionBlocker],webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp,
@@ -497,7 +497,7 @@ jobs:
                 finalEvidencePersisted=true;
               }
               result={gameId:item.gameId,pass:false,update:{
-                status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED',
+                status:'ACTIVE',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
                 sourcePath:item.webInitialCycleSourcePath||item.webSourcePath,webSourcePath:item.webInitialCycleSourcePath||item.webSourcePath,
                 webValidationRequired:true,musicValidationRequired:true,
                 webInitialCyclePassed:true,webInitialCyclePassedAt:item.webInitialCyclePassedAt,
@@ -508,19 +508,20 @@ jobs:
                 webInitialCycleMusicValidationPassed:item.webInitialCycleMusicValidationPassed,
                 webValidationPassedAt:null,musicValidationPassed:false,
                 webFinalContentDepthEvidencePath:finalEvidencePersisted?finalEvidenceRelative:(item.webFinalContentDepthEvidencePath||null),
-                homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED',
+                homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WEB_VIBE_REPAIR_REQUIRED',
                 formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,
                 routingBlockers:[`web-content-development-rework:${signature}`],webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp,
               }};
               console.log(`WEB_FINAL_CONTENT_DEPTH_FAIL=${item.gameId}:${signature}`);
-              console.log('WEB_CANONICAL_STATE=WEB_CONTENT_EXPANSION_REPAIR_REQUIRED');
+              console.log('WEB_CANONICAL_STATE=WEB_VIBE_REPAIR_REQUIRED');
+               console.log('WEB_RETURN_TO_VIBE=YES');
               console.log('WEB_CONTENT_RETURN_TO_DEVELOPMENT=YES');
               console.log('WEB_INITIAL_PASS_PRESERVED_FOR_REPAIR_CONTEXT=YES');
             }else{
               const rework=item.webInitialCyclePassed===true||item.existingWebValidated===true;
-              const repairState=rework?'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED':'WEB_GAMEPLAY_REPAIR_REQUIRED';
+              const repairState='WEB_VIBE_REPAIR_REQUIRED';
               result={gameId:item.gameId,pass:false,update:{
-                status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:repairState,
+                status:'ACTIVE',currentStep:rework?'VIBE_WEB_REPAIR':'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:repairState,
                 sourcePath:item.webInitialCycleSourcePath||item.webSourcePath,webSourcePath:item.webInitialCycleSourcePath||item.webSourcePath,webValidationRequired:true,musicValidationRequired:true,
                 webInitialCyclePassed:rework,webInitialCyclePassedAt:rework?item.webInitialCyclePassedAt:'',
                 webInitialCycleEvidencePath:rework?item.webInitialCycleEvidencePath:'',webInitialCycleSourcePath:rework?(item.webInitialCycleSourcePath||item.webSourcePath):'',
@@ -534,6 +535,7 @@ jobs:
                 routingBlockers:[`${rework?'web-content-development-rework':'web-gameplay-music'}:${signature}`],webValidationLastAttemptAt:stamp,updatedAt:stamp,
               }};
               console.log(`WEB_GAMEPLAY_MUSIC_FAIL=${item.gameId}:${signature}`);
+               console.log('WEB_RETURN_TO_VIBE=YES');
               if(rework)console.log('WEB_CONTENT_REWORK_RETRY_PRESERVED=YES');
               console.log('WEB_FINAL_CONTENT_DEPTH_EXECUTED=NO');
             }
@@ -734,8 +736,8 @@ jobs:
             const finalStage=target.runtimeStage==='final-content-depth';
             const reworkInitial=!finalStage&&(target.webInitialCyclePassed===true||target.existingWebValidated===true);
             const missing=finalStage
-              ?{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED',sourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webSourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:true,webInitialCyclePassedAt:target.webInitialCyclePassedAt||'',webInitialCycleEvidencePath:target.webInitialCycleEvidencePath||'',webInitialCycleSourcePath:target.webInitialCycleSourcePath||'',webInitialCycleSourceIndexSha256:target.webInitialCycleSourceIndexSha256||'',webInitialCycleDesignBaselineSha256:target.webInitialCycleDesignBaselineSha256||'',webInitialCycleValidationSchemaVersion:Number(target.webInitialCycleValidationSchemaVersion||0)||0,webInitialCycleStrictScore:Number(target.webInitialCycleStrictScore||0)||0,webInitialCycleStrictReviewPath:target.webInitialCycleStrictReviewPath||'',webInitialCycleSourceRevision:target.webInitialCycleSourceRevision||'',webInitialCycleMusicValidationPassed:target.webInitialCycleMusicValidationPassed===true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED',formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:['web-content-development-rework:web-worker-result-missing'],webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp}}
-              :{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP',canonicalState:reworkInitial?'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED':'WEB_GAMEPLAY_REPAIR_REQUIRED',sourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webSourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:reworkInitial,webInitialCyclePassedAt:reworkInitial?(target.webInitialCyclePassedAt||''):'',webInitialCycleEvidencePath:reworkInitial?(target.webInitialCycleEvidencePath||''):'',webInitialCycleSourcePath:reworkInitial?(target.webInitialCycleSourcePath||target.webSourcePath):'',webInitialCycleSourceIndexSha256:reworkInitial?(target.webInitialCycleSourceIndexSha256||''):'',webInitialCycleDesignBaselineSha256:reworkInitial?(target.webInitialCycleDesignBaselineSha256||''):'',webInitialCycleValidationSchemaVersion:reworkInitial?(Number(target.webInitialCycleValidationSchemaVersion||0)||0):0,webInitialCycleStrictScore:reworkInitial?(Number(target.webInitialCycleStrictScore||0)||0):0,webInitialCycleStrictReviewPath:reworkInitial?(target.webInitialCycleStrictReviewPath||''):'',webInitialCycleSourceRevision:reworkInitial?(target.webInitialCycleSourceRevision||''):'',webInitialCycleMusicValidationPassed:reworkInitial&&target.webInitialCycleMusicValidationPassed===true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:reworkInitial?'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED':'WEB_GAMEPLAY_REPAIR_REQUIRED',formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:[reworkInitial?'web-content-development-rework:web-worker-result-missing':'web-gameplay-music:web-worker-result-missing'],webValidationLastAttemptAt:stamp,updatedAt:stamp}};
+              ?{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',sourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webSourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:true,webInitialCyclePassedAt:target.webInitialCyclePassedAt||'',webInitialCycleEvidencePath:target.webInitialCycleEvidencePath||'',webInitialCycleSourcePath:target.webInitialCycleSourcePath||'',webInitialCycleSourceIndexSha256:target.webInitialCycleSourceIndexSha256||'',webInitialCycleDesignBaselineSha256:target.webInitialCycleDesignBaselineSha256||'',webInitialCycleValidationSchemaVersion:Number(target.webInitialCycleValidationSchemaVersion||0)||0,webInitialCycleStrictScore:Number(target.webInitialCycleStrictScore||0)||0,webInitialCycleStrictReviewPath:target.webInitialCycleStrictReviewPath||'',webInitialCycleSourceRevision:target.webInitialCycleSourceRevision||'',webInitialCycleMusicValidationPassed:target.webInitialCycleMusicValidationPassed===true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WEB_VIBE_REPAIR_REQUIRED',formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:['vibe-web-development-required:web-worker-result-missing'],vibeWebImplementationRequired:true,webFinalContentDepthLastAttemptAt:stamp,updatedAt:stamp}}
+              :{gameId:target.gameId,pass:false,update:{status:'ACTIVE',currentStep:reworkInitial?'VIBE_WEB_REPAIR':'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',sourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webSourcePath:target.webInitialCycleSourcePath||target.webSourcePath,webValidationRequired:true,musicValidationRequired:true,webInitialCyclePassed:reworkInitial,webInitialCyclePassedAt:reworkInitial?(target.webInitialCyclePassedAt||''):'',webInitialCycleEvidencePath:reworkInitial?(target.webInitialCycleEvidencePath||''):'',webInitialCycleSourcePath:reworkInitial?(target.webInitialCycleSourcePath||target.webSourcePath):'',webInitialCycleSourceIndexSha256:reworkInitial?(target.webInitialCycleSourceIndexSha256||''):'',webInitialCycleDesignBaselineSha256:reworkInitial?(target.webInitialCycleDesignBaselineSha256||''):'',webInitialCycleValidationSchemaVersion:reworkInitial?(Number(target.webInitialCycleValidationSchemaVersion||0)||0):0,webInitialCycleStrictScore:reworkInitial?(Number(target.webInitialCycleStrictScore||0)||0):0,webInitialCycleStrictReviewPath:reworkInitial?(target.webInitialCycleStrictReviewPath||''):'',webInitialCycleSourceRevision:reworkInitial?(target.webInitialCycleSourceRevision||''):'',webInitialCycleMusicValidationPassed:reworkInitial&&target.webInitialCycleMusicValidationPassed===true,webValidationPassedAt:null,musicValidationPassed:false,homepageTestEligible:false,homepageTestCandidate:false,homepageTestVerdict:'WEB_VIBE_REPAIR_REQUIRED',formalImplementationPassed:false,formalImplementationVerdict:'REVISE',webPromotionRevalidationPassed:false,routingBlockers:['vibe-web-development-required:web-worker-result-missing'],vibeWebImplementationRequired:true,webValidationLastAttemptAt:stamp,updatedAt:stamp}};
             results.push(missing);
             byId.set(target.gameId,missing);
           }
@@ -771,6 +773,30 @@ jobs:
           fi
           echo 'WEB_RUNTIME_PERSIST=PASS'
           echo 'PUBLIC_MAIN_WRITE=NO'
+
+      - name: Dispatch Vibe Web implementation and repair
+        if: needs.web-plan.outputs.target_count != '0' && steps.runtime_binding.outputs.fresh == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
+          git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/development-queue-after-web.json
+          count="$(node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const q=JSON.parse(fs.readFileSync('/tmp/development-queue-after-web.json','utf8'));
+          const rows=(q.items||[]).filter(item=>item.vibeWebImplementationRequired===true||/^WEB_VIBE_(IMPLEMENTATION|REPAIR)_REQUIRED$/.test(String(item.canonicalState||'')));
+          process.stdout.write(String(rows.length));
+          NODE
+          )"
+          echo "WEB_VIBE_REQUIRED_COUNT=$count"
+          if [[ "$count" =~ ^[1-9][0-9]*$ ]]; then
+            gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
+            echo 'WEB_VIBE_24H_DISPATCH=YES'
+          else
+            echo 'WEB_VIBE_24H_DISPATCH=NO'
+          fi
 
       - name: Stale Web worker batch summary
         if: needs.web-plan.outputs.target_count != '0' && steps.runtime_binding.outputs.fresh != 'true'
