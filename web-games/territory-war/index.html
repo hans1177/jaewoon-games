@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: new Array(10).fill(0)
+      },
+      player: {
+        x: 0,
+        y: 0,
+        direction: 'right'
+      },
+      enemies: [],
+      ai: {
+        behavior: 'basic',
+        target: null
+      },
+      ui: {
+        display: false
+      },
+      save: {
+        state: {
+          map: JSON.stringify(game.map),
+          player: JSON.stringify(game.player),
+          enemies: JSON.stringify(game.enemies),
+          ai: JSON.stringify(game.ai)
+        },
+        persistence: true
+      }
+    };
+
+    // Initialize game
+    function init() {
+      // Load saved state if exists
+      if (game.save.state) {
+        game.map = JSON.parse(game.save.state.map);
+        game.player = JSON.parse(game.save.state.player);
+        game.enemies = JSON.parse(game.save.state.enemies);
+        game.ai = JSON.parse(game.save.state.ai);
+      }
+
+      // Create initial map
+      for (let y = 0; y < game.map.height; y++) {
+        for (let x = 0; x < game.map.width; x++) {
+          game.map[y][x] = 0;
+        }
+      }
+
+      // Place player
+      game.player.x = 0;
+      game.player.y = 0;
+
+      // Place enemies
+      game.enemies = [
+        { x: 1, y: 1, direction: 'right' },
+        { x: 1, y: 2, direction: 'left' }
+      ];
+
+      // Set UI
+      game.ui.display = true;
+
+      // Start game loop
+      startGameLoop();
+    }
+
+    // Game loop
+    function startGameLoop() {
+      // Update AI
+      game.ai.behavior.update(game.enemies);
+
+      // Update player
+      game.player.direction = game.ai.behavior.target;
+      game.player.x += game.player.direction === 'right' ? 1 : -1;
+      game.player.y += game.player.direction === 'down' ? 1 : -1;
+
+      // Check for collision
+      if (game.player.x < 0 || game.player.x >= game.map.width || game.player.y < 0 || game.player.y >= game.map.height) {
+        game.ui.display = false;
+        game.save.state = {
+          map: JSON.stringify(game.map),
+          player: JSON.stringify(game.player),
+          enemies: JSON.stringify(game.enemies),
+          ai: JSON.stringify(game.ai)
+        };
+        game.save.persistence = false;
+        alert('Game over!');
+        return;
+      }
+
+      // Check for enemy collision
+      for (let enemy of game.enemies) {
+        if (game.player.x === enemy.x && game.player.y === enemy.y) {
+          game.ui.display = false;
+          game.save.state = {
+            map: JSON.stringify(game.map),
+            player: JSON.stringify(game.player),
+            enemies: JSON.stringify(game.enemies),
+            ai: JSON.stringify(game.ai)
+          };
+          game.save.persistence = false;
+          alert('You lost!');
+          return;
+        }
+      }
+
+      // Update UI
+      game.ui.display = true;
+
+      // Request next frame
+      requestAnimationFrame(startGameLoop);
+    }
+
+    // Start game
+    init();
+  </script>
+</body>
+</html>
