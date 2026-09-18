@@ -1336,13 +1336,15 @@ aiOrganization:
     - development
     - qa
     - balance
-  departmentMultimodelStartsAt: DESIGN_ONLY
+  departmentMultimodelStartsAt: DEVELOPMENT_CONFIRMED
   fiveDistinctLeadModelIdsRequiredPerCycle: true
-  minDistinctModelsPerDepartment: 3
+  designOnlyReviewMode: FIVE_DISTINCT_LEAD_PARALLEL_REVIEW
+  designOnlyModelsPerDepartment: 1
+  minDistinctModelsPerDepartment: 1
   structurePerDepartment:
     leadCount: 1
-    assistantMinCount: 2
-    allModelsWithinDepartmentMustBeDistinct: true
+    assistantMinCount: 0
+    allModelsWithinDepartmentMustBeDistinct: false
   assistantModelsMayOverlapAcrossDepartments: true
   leadModelAssignmentRemappable: true
   paidAiAllowed: false
@@ -1640,34 +1642,19 @@ departmentStandards:
     - DIRECTOR_VERDICT
 
 meeting:
-  departmentInternalReview:
-    leadIndependentReview: true
-    assistantIndependentReview: true
-    representativeAuthor: DEPARTMENT_LEAD
-    representativeRequiredFields:
-      - KEEP
-      - FIX
-      - ADD
-      - RISK
-      - EVIDENCE
-      - MODEL_IDS
-      - DEPARTMENT_SCORE
-  crossDepartment:
-    participants: FIVE_DEPARTMENT_LEADS
-    eachLeadReadsOtherFourRepresentatives: true
-    rebuttalRounds: 1
-    rebuttalAuthor: SAME_DEPARTMENT_LEAD
-    issueStates:
-      - CONSENSUS
-      - CONFLICT
-      - HOLD
-    autoRevisionUsesOnly: CONSENSUS
-    conflictOrHoldMustNotBeHidden: true
+  DESIGN_ONLY:
+    required: false
+    crossDepartmentMeeting: false
+    rebuttalRounds: 0
+    directLeadReviewsFeedDesigner: true
+    rationale: SPEED_SIMPLIFICATION_WITHOUT_WEAKENING_STRICT_GATE
+  laterStages:
+    relatedDepartmentReviewMayRunWhenEvidenceRequires: true
 
 GameDesigner:
   onePrimaryAuthorPerProjectRevisionCycle: true
   writesInitialDetailedDesign: true
-  sameDesignerRevisesAfterMeeting: true
+  sameDesignerRevisesAfterLeadReview: true
   departmentsDoNotCoauthorInitialDraft: true
 
 ArtbookEditor:
@@ -1698,12 +1685,11 @@ flows:
     requiredFlow:
       - GAME_SEED
       - GAME_DESIGNER_DRAFT
-      - FIVE_DISTINCT_DEPARTMENT_LEADS
-      - DEPARTMENT_LEAD_PLUS_ASSISTANT_MULTIMODEL_REVIEW
-      - DEPARTMENT_LEAD_INTERNAL_CONSENSUS
-      - CROSS_DEPARTMENT_LEAD_MEETING
-      - ONE_LEAD_REBUTTAL_ROUND
-      - GAME_DESIGNER_REVISION
+      - DETERMINISTIC_PRE_GATE
+      - FAILED_AXIS_DESIGNER_REPAIR_MAX_2
+      - FIVE_DISTINCT_DEPARTMENT_LEAD_PARALLEL_REVIEW
+      - GAME_DESIGNER_REVISION_FROM_DIRECT_LEAD_FEEDBACK
+      - STRICT_DESIGN_REVIEW
       - ROBLOX_GENRE_PROFILE_ASSIGNMENT
       - DESIGN_BASELINE_GATE
     baselineReadyRequires:
@@ -1718,9 +1704,9 @@ flows:
       - APPROVED_SCOPE_INVENTORY_RECORDED
       - ROBLOX_GENRE_PROFILE_RECORDED
       - FIVE_DISTINCT_LEAD_MODELS
-      - FIVE_DEPARTMENT_SCORES_RECORDED
-      - PER_DEPARTMENT_MULTIMODEL_REVIEW_PASS
-      - NO_HIDDEN_FATAL_CONFLICT
+      - FIVE_DEPARTMENT_LEAD_REVIEWS_RECORDED
+      - STRICT_DESIGN_SCORE_AT_LEAST_80
+      - STRICT_DESIGN_HARD_FAILURES_EMPTY
     readyState: DESIGN_BASELINE_READY
   DEVELOPMENT_CONFIRMED:
     executionMode: GATED_DIRECT
