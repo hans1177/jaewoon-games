@@ -1,114 +1,181 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-16",
+  "updatedAt": "2026-09-18",
   "directives": [
     {
       "id": "OWNER-FULL-REBUILD-TERRITORY-WAR-20260916",
       "gameId": "territory-war",
       "title": "영토전쟁",
       "sourceRoot": "web-games/territory-war",
-      "responsibleFiles": ["web-games/territory-war/index.html"],
+      "responsibleFiles": [
+        "web-games/territory-war/index.html"
+      ],
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
       "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 기존 영토전쟁의 영토 점령·확장 정체성을 먼저 읽고 보존하면서 허접한 구현은 전면 재구현한다. 실제 맵 점령 루프, 적 진영 AI, 거점 충돌, 명확한 전황 피드백, 승패·재시작, 모바일 터치 조작과 반응형 UI, 런타임 안정성과 성능을 갖춘 실제 플레이 가능한 게임으로 만든다. 전체 index.html은 단순 껍데기나 짧은 샘플이 아니라 실제 플레이 루프가 완결되는 충분한 분량의 self-contained 단일 HTML이어야 하며, 모델 출력이 너무 짧아 전체 파일 품질 하한을 통과하지 못하는 형태는 금지한다. 기존 세이브 의미가 있으면 호환 또는 명시적 마이그레이션을 유지한다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다. 임의 유료 서비스·광고·새 과금은 추가하지 않는다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized", "pipeline-fix:complete-full-file-output"]
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "rebuild-scope:single-game-root",
+        "source-root-bootstrap-authorized",
+        "pipeline-fix:complete-full-file-output"
+      ]
     },
     {
       "id": "OWNER-FULL-REBUILD-CRYSTAL-DEFENSE-20260916",
       "gameId": "crystal-defense",
       "title": "수정 디펜스",
       "sourceRoot": "web-games/crystal-defense",
-      "responsibleFiles": ["web-games/crystal-defense/index.html"],
+      "responsibleFiles": [
+        "web-games/crystal-defense/index.html"
+      ],
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
       "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 수정 방어라는 기존 정체성을 먼저 읽고 보존하면서 약한 구현은 전면 재구현한다. 실제 배치 가능한 방어 수단, 적 웨이브와 경로, 자원·업그레이드 루프, 피격·투사체·웨이브 진행 피드백, 패배·재시작, 모바일 터치와 읽기 쉬운 HUD를 갖춘 실제 플레이 가능한 디펜스로 만든다. 기존 규칙과 수치는 근거 없이 임의 변경하지 않는다. 기존 세이브 의미가 있으면 호환 또는 명시적 마이그레이션을 유지한다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized"]
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "rebuild-scope:single-game-root",
+        "source-root-bootstrap-authorized"
+      ]
     },
     {
       "id": "OWNER-FULL-REBUILD-EGG-HEIST-20260916",
       "gameId": "egg-heist",
       "title": "알 도둑 대작전",
       "sourceRoot": "web-games/egg-heist",
-      "responsibleFiles": ["web-games/egg-heist/index.html"],
+      "responsibleFiles": [
+        "web-games/egg-heist/index.html"
+      ],
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
       "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 기존 알 도둑 대작전의 알 훔치기 정체성은 유지하되 현재의 얇은 구현은 전면 재구현한다. 잠입→알 획득→위험 증가→추격→탈출의 실제 플레이 루프, 적 시야·추격, 단계별 위험, 성공·실패·재시작, 모바일 직접 조작과 명확한 피드백을 갖춘다. 단순 상태 버튼·검증 대시보드·가짜 프로토타입으로 끝내지 않는다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized"]
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "rebuild-scope:single-game-root",
+        "source-root-bootstrap-authorized"
+      ]
     },
     {
       "id": "OWNER-FULL-REBUILD-CHESS-BATTLE-20260916",
       "gameId": "chess-battle",
       "title": "체스 배틀",
       "sourceRoot": "web-games/chess-battle",
-      "responsibleFiles": ["web-games/chess-battle/index.html"],
+      "responsibleFiles": [
+        "web-games/chess-battle/index.html"
+      ],
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
       "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. SOURCE_ROOT_BOOTSTRAP_ALLOWED. 기존 체스 배틀의 체스 기반 전술·전투 정체성과 기존 변형 규칙이 있으면 먼저 읽고 보존하면서 허접한 구현은 전면 재구현한다. 실제 합법 수 또는 기존 변형 규칙에 맞는 턴 진행, 상대 AI, 선택 가능한 말과 이동 피드백, 승패·재시작, 전투 연출, 모바일 터치 조작을 갖춘 실제 플레이 가능한 게임으로 만든다. 임의로 체스 규칙을 다른 게임으로 바꾸지 않는다. 홈페이지·공용 카탈로그는 구현 단계에서 수정하지 말고 검증 승격 단계에서만 연결한다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-root-bootstrap-authorized", "pipeline-fix:transient-model-retry-e283735", "pipeline-fix:ollama-runtime-repair-f4b8ced"]
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "rebuild-scope:single-game-root",
+        "source-root-bootstrap-authorized",
+        "pipeline-fix:transient-model-retry-e283735",
+        "pipeline-fix:ollama-runtime-repair-f4b8ced"
+      ]
     },
     {
       "id": "OWNER-FULL-REBUILD-CELESTIAL-BASTION-20260916",
       "gameId": "seed-single-defense-strat-celestial-bastion",
       "title": "천상의 보루",
       "sourceRoot": "web-games/seed-single-defense-strat-celestial-bastion",
-      "responsibleFiles": ["web-games/seed-single-defense-strat-celestial-bastion/index.html"],
+      "responsibleFiles": [
+        "web-games/seed-single-defense-strat-celestial-bastion/index.html"
+      ],
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 천상의 보루의 디펜스·전략 정체성은 유지하되 검증용 셸에서 확장된 흔적에 의존하지 말고 실제 게임 기준으로 전면 재구현한다. 명확한 전장과 경로, 방어 배치·선택, 웨이브별 적 조합과 카운터, 자원·업그레이드·보스 또는 후반 압박, 승패·재시작, 모바일 터치 조작과 전투 피드백을 갖춘다. 기존 규칙·세이브 의미가 있으면 보존 또는 명시적 마이그레이션을 유지한다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-existing:web-companion"]
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT] 천상의 보루. 기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. Vibe exploration이 KEEP_AND_CONTINUE / PARTIAL_REPAIR / MAJOR_REWORK / FULL_REBUILD 중 전략을 결정한다. 기존 시스템·세이브·핵심 루프에서 재사용 가치가 있는 부분은 보존한다. FULL_REBUILD는 exploration이 승인 scope coverage와 실제 gameplay 신호가 부족하다고 판정한 경우에만 허용한다. 검증된 학습·코드 패턴·알고리즘·에셋 역할 패턴은 원본 복사 없이 새 구현/새 표현으로 재조합한다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "source-existing:web-companion",
+        "assessment-strategy:VIBE_EXPLORATION",
+        "prototype-marker-alone-cannot-force-rebuild"
+      ],
+      "mode": "ASSESS_EXISTING_WEB"
     },
     {
       "id": "OWNER-FULL-REBUILD-CRYSTAL-BLOOM-20260916",
       "gameId": "seed-idle-growth-rpg-crystal-bloom",
       "title": "수정의 개화",
       "sourceRoot": "web-games/seed-idle-growth-rpg-crystal-bloom",
-      "responsibleFiles": ["web-games/seed-idle-growth-rpg-crystal-bloom/index.html"],
+      "responsibleFiles": [
+        "web-games/seed-idle-growth-rpg-crystal-bloom/index.html"
+      ],
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 수정의 개화의 방치 성장 RPG 정체성은 유지하면서 전투·회복·강화·자동전투를 처음부터 실제 게임 루프로 재설계·재구현한다. 성장 선택이 체감되도록 적·단계·보스 또는 목표 진행, 전투 피드백, 강화 경제, 패배·복구·재시작, 저장 호환과 모바일 조작을 갖춘다. 단순 숫자 버튼 대시보드 형태로 끝내지 않는다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-existing:web-companion"]
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT] 수정의 개화. 기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. Vibe exploration이 KEEP_AND_CONTINUE / PARTIAL_REPAIR / MAJOR_REWORK / FULL_REBUILD 중 전략을 결정한다. 기존 시스템·세이브·핵심 루프에서 재사용 가치가 있는 부분은 보존한다. FULL_REBUILD는 exploration이 승인 scope coverage와 실제 gameplay 신호가 부족하다고 판정한 경우에만 허용한다. 검증된 학습·코드 패턴·알고리즘·에셋 역할 패턴은 원본 복사 없이 새 구현/새 표현으로 재조합한다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "source-existing:web-companion",
+        "assessment-strategy:VIBE_EXPLORATION",
+        "prototype-marker-alone-cannot-force-rebuild"
+      ],
+      "mode": "ASSESS_EXISTING_WEB"
     },
     {
       "id": "OWNER-FULL-REBUILD-REALM-WEAVER-20260916",
       "gameId": "seed-casual-realm-weaver",
       "title": "세계의 직조자",
       "sourceRoot": "web-games/seed-casual-realm-weaver",
-      "responsibleFiles": ["web-games/seed-casual-realm-weaver/index.html"],
+      "responsibleFiles": [
+        "web-games/seed-casual-realm-weaver/index.html"
+      ],
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 세계의 직조자의 세계 창조 정체성을 유지하면서 숲·물길·마을 배치가 실제 맵과 상호작용하고 서로 영향을 주는 게임으로 전면 재구현한다. 배치 비용 또는 제한, 지형·주민·자원 피드백, 목표·진행·실패 또는 장기 성장, 되돌리기·재시작, 모바일 직접 조작과 명확한 시각 피드백을 갖춘다. 단순 버튼으로 수치만 증가하는 형태로 끝내지 않는다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-existing:web-companion"]
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT] 세계의 직조자. 기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. Vibe exploration이 KEEP_AND_CONTINUE / PARTIAL_REPAIR / MAJOR_REWORK / FULL_REBUILD 중 전략을 결정한다. 기존 시스템·세이브·핵심 루프에서 재사용 가치가 있는 부분은 보존한다. FULL_REBUILD는 exploration이 승인 scope coverage와 실제 gameplay 신호가 부족하다고 판정한 경우에만 허용한다. 검증된 학습·코드 패턴·알고리즘·에셋 역할 패턴은 원본 복사 없이 새 구현/새 표현으로 재조합한다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "source-existing:web-companion",
+        "assessment-strategy:VIBE_EXPLORATION",
+        "prototype-marker-alone-cannot-force-rebuild"
+      ],
+      "mode": "ASSESS_EXISTING_WEB"
     },
     {
       "id": "OWNER-FULL-REBUILD-CHROMATIC-CASCADE-20260916",
       "gameId": "seed-puzzle-chromatic-cascade",
       "title": "색채의 연쇄",
       "sourceRoot": "web-games/seed-puzzle-chromatic-cascade",
-      "responsibleFiles": ["web-games/seed-puzzle-chromatic-cascade/index.html"],
+      "responsibleFiles": [
+        "web-games/seed-puzzle-chromatic-cascade/index.html"
+      ],
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 색채의 연쇄를 실제 연쇄 퍼즐로 처음부터 재구축한다. 직접 조작 가능한 보드, 명확한 연결·제거 규칙, 콤보와 연쇄 피드백, 난이도 또는 스테이지 진행, 목표·실패·재시작, 점수와 시각·사운드 피드백, 모바일 터치 정확성을 갖춘다. 기존 퍼즐 정체성은 보존하고 검증용 공용 셸 느낌은 제거한다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-existing:web-companion"]
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT] 색채의 연쇄. 기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. Vibe exploration이 KEEP_AND_CONTINUE / PARTIAL_REPAIR / MAJOR_REWORK / FULL_REBUILD 중 전략을 결정한다. 기존 시스템·세이브·핵심 루프에서 재사용 가치가 있는 부분은 보존한다. FULL_REBUILD는 exploration이 승인 scope coverage와 실제 gameplay 신호가 부족하다고 판정한 경우에만 허용한다. 검증된 학습·코드 패턴·알고리즘·에셋 역할 패턴은 원본 복사 없이 새 구현/새 표현으로 재조합한다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "source-existing:web-companion",
+        "assessment-strategy:VIBE_EXPLORATION",
+        "prototype-marker-alone-cannot-force-rebuild"
+      ],
+      "mode": "ASSESS_EXISTING_WEB"
     },
     {
       "id": "OWNER-FULL-REBUILD-ELDORIA-20260916",
       "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
       "title": "엘도리아 연대기",
       "sourceRoot": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
-      "responsibleFiles": ["web-games/seed-story-complete-rpg-chronicles-of-eldoria/index.html"],
+      "responsibleFiles": [
+        "web-games/seed-story-complete-rpg-chronicles-of-eldoria/index.html"
+      ],
       "priority": "critical",
       "workUnits": 5,
       "status": "pending",
-      "goal": "[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD. 엘도리아 연대기의 5장 완결 RPG 정체성과 이야기 흐름은 보존하면서 탐색·전투·휴식·강화·스토리 연출을 실제 플레이 가능한 RPG로 전면 재구현한다. 각 장의 장소·전투·선택 또는 목표가 구분되도록 하고 전투 피드백, 진행 저장, 패배·재시도, 결말 도달, 모바일 조작과 가독성을 갖춘다. 텍스트 선택 화면만 이어지는 형태로 끝내지 않는다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
-      "evidence": ["owner-selected:2026-09-16", "rebuild-scope:single-game-root", "source-existing:web-companion"]
+      "goal": "[EXISTING_WEB_ASSESS_AND_IMPLEMENT] 엘도리아 연대기. 기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. Vibe exploration이 KEEP_AND_CONTINUE / PARTIAL_REPAIR / MAJOR_REWORK / FULL_REBUILD 중 전략을 결정한다. 기존 시스템·세이브·핵심 루프에서 재사용 가치가 있는 부분은 보존한다. FULL_REBUILD는 exploration이 승인 scope coverage와 실제 gameplay 신호가 부족하다고 판정한 경우에만 허용한다. 검증된 학습·코드 패턴·알고리즘·에셋 역할 패턴은 원본 복사 없이 새 구현/새 표현으로 재조합한다. 홈페이지·공용 카탈로그는 검증 승격 전에는 수정하지 않는다.",
+      "evidence": [
+        "owner-selected:2026-09-16",
+        "source-existing:web-companion",
+        "assessment-strategy:VIBE_EXPLORATION",
+        "prototype-marker-alone-cannot-force-rebuild"
+      ],
+      "mode": "ASSESS_EXISTING_WEB"
     }
   ]
 }
