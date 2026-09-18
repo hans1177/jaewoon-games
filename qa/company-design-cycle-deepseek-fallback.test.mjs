@@ -39,3 +39,14 @@ test('full design author role remains distinct and same model revises',()=>{
   assert.match(design,/sameModelAsDraft:true/);
   assert.match(design,/sameModelRevised:true/);
 });
+
+test('strict hard-gate feedback returns to the same game designer without bypass',()=>{
+  assert.match(design,/const strictDesignerFeedback=/);
+  assert.match(design,/source:'PRIOR_STRICT_DESIGN_REVIEW'/);
+  assert.match(design,/bypassAllowed:false/);
+  assert.match(design,/hardFailures:\[\.\.\.new Set\(designLearningEvents\.flatMap/);
+  assert.match(design,/STRICT_GATE_FEEDBACK=\$\{clip\(strictDesignerFeedback,5000\)\}/);
+  assert.match(design,/관문 이름을 숨기거나 완화하지 말고 실제 설계 내용으로 원인을 해결하라/);
+  assert.match(design,/하드관문 실패는 삭제·재명명·무시하지 말고/);
+  assert.match(design,/strictGateBypassAllowed:false/);
+});
