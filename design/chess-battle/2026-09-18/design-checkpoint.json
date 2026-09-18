@@ -6,7 +6,7 @@
   "fingerprint": "78bc9127c20f571f706a7069c6a3c1af197a530cbfaea2079ac4cc0346fb5670",
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
   "engineDigest": "1678961c9ca98d0c0a1ff143cc5cae0bcbed44bcdefc197e0d16960e75858422",
-  "status": "PRE_GATE_BLOCKED",
+  "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
@@ -123,19 +123,19 @@
       ],
       "implementationTraceability": [
         {
-          "designElement": "직관적인 기물 이동 및 타일 선택",
-          "responsibleSystem": "전장 타일 버프 시스템",
-          "validationEvidence": "플레이어 테스트를 통해 터치 후 0.2초 이내에 이동 가능 범위가 시각화되는지 확인한다."
+          "designElement": "직관적인 기물 이동 및 타일 선택 피드백",
+          "responsibleSystem": "전장 타일 버프 및 렌더링 시스템",
+          "validationEvidence": "플레이어 사용성 테스트를 통해 터치 입력 후 0.2초 이내에 이동 가능 범위와 타일 효과가 시각화되는지 렌더링 프로파일러로 확인한다."
         },
         {
-          "designElement": "각성 게이지 충전 및 특수 스킬 발동",
-          "responsibleSystem": "기물 각성 시스템",
-          "validationEvidence": "로그 데이터를 분석하여 스테이지당 평균 1회 이상의 각성 스킬이 전략적으로 사용되는지 검증한다."
+          "designElement": "각성 게이지 충전 및 특수 스킬 발동 연출",
+          "responsibleSystem": "기물 전투 및 각성 매니저",
+          "validationEvidence": "로그 데이터를 수집하여 스테이지당 평균 1회 이상의 각성 스킬이 실제 전투 승패에 영향을 주며 전략적으로 사용되는지 검증한다."
         },
         {
-          "designElement": "목표 달성 시 스테이지 클리어 및 전환",
-          "responsibleSystem": "코어 루프 진행 시스템",
-          "validationEvidence": "목표 충족 조건 만족 즉시 끊김 없이 다음 스테이지 보드가 로드되는지 성능 프로파일링을 수행한다."
+          "designElement": "목표 달성 시 스테이지 클리어 및 다음 단계 전환",
+          "responsibleSystem": "코어 루프 진행 및 스테이지 로더",
+          "validationEvidence": "목표 충족 조건 만족 즉시 프레임 드랍 없이 부드럽게 다음 스테이지 보드가 로드되는지 메모리 및 성능 프로파일링을 수행한다."
         }
       ],
       "openQuestions": [
@@ -221,27 +221,114 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "technicalAssumptions": [
+        "서버와 클라이언트 간의 상태 동기화는 턴 종료 시점에만 이루어져 네트워크 지연에 영향을 받지 않는 구조를 채택한다.",
+        "보드 위의 모든 기물 위치와 타일 데이터는 2차원 배열 형태로 가볍게 관리되어 빠른 연산 속도를 보장한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 매 턴마다 3초 이내에 자신의 전술적 선택의 의미를 명확히 이해할 수 있는가?",
+        "기물 각성 시스템이 단순한 수치 상승을 넘어 실제 판세를 뒤집는 극적인 순간을 자주 만들어내는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "직관적인 기물 이동 및 타일 선택 피드백",
+          "responsibleSystem": "전장 타일 버프 및 렌더링 시스템",
+          "validationEvidence": "플레이어 사용성 테스트를 통해 터치 입력 후 0.2초 이내에 이동 가능 범위와 타일 효과가 시각화되는지 렌더링 프로파일러로 확인한다."
+        },
+        {
+          "designElement": "각성 게이지 충전 및 특수 스킬 발동 연출",
+          "responsibleSystem": "기물 전투 및 각성 매니저",
+          "validationEvidence": "로그 데이터를 수집하여 스테이지당 평균 1회 이상의 각성 스킬이 실제 전투 승패에 영향을 주며 전략적으로 사용되는지 검증한다."
+        },
+        {
+          "designElement": "목표 달성 시 스테이지 클리어 및 다음 단계 전환",
+          "responsibleSystem": "코어 루프 진행 및 스테이지 로더",
+          "validationEvidence": "목표 충족 조건 만족 즉시 프레임 드랍 없이 부드럽게 다음 스테이지 보드가 로드되는지 메모리 및 성능 프로파일링을 수행한다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 19929,
-      "lastMs": 1556,
+      "totalMs": 22048,
+      "lastMs": 2119,
       "lastError": null,
-      "updatedAt": "2026-09-18T07:42:05.913Z"
+      "updatedAt": "2026-09-18T07:43:30.719Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T07:38:28.184Z",
-  "updatedAt": "2026-09-18T07:42:05.989Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T07:42:05.913Z",
+  "updatedAt": "2026-09-18T07:43:30.857Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T07:43:30.719Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
@@ -249,5 +336,5 @@
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL"
+  "lastError": null
 }

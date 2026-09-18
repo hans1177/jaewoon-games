@@ -3,9 +3,9 @@
   "gameId": "chess-battle",
   "date": "2026-09-18",
   "engineDigest": "1678961c9ca98d0c0a1ff143cc5cae0bcbed44bcdefc197e0d16960e75858422",
-  "status": "PRE_GATE_BLOCKED",
-  "currentStage": "PRE_GATE_REPAIR",
-  "percent": 50,
+  "status": "IN_PROGRESS",
+  "currentStage": "DEPARTMENT_REVIEWS",
+  "percent": 67,
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
@@ -16,54 +16,23 @@
   ],
   "completedPhaseCount": 6,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T07:42:05.913Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T07:43:30.719Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 6,
+      "successes": 6,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 19929,
-      "lastMs": 1556,
+      "totalMs": 22048,
+      "lastMs": 2119,
       "lastError": null,
-      "updatedAt": "2026-09-18T07:42:05.913Z"
+      "updatedAt": "2026-09-18T07:43:30.719Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T07:42:05.990Z",
-  "blocked": true,
-  "preGateScore": 79,
-  "hardFailures": [
-    "CRITICAL_AXIS_MINIMUM_FAIL"
-  ],
-  "repairPacket": {
-    "source": "DETERMINISTIC_PRE_GATE_V2",
-    "bypassAllowed": false,
-    "totalScore": 79,
-    "passMinimum": 80,
-    "hardFailures": [
-      "CRITICAL_AXIS_MINIMUM_FAIL"
-    ],
-    "failedAxes": [
-      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-    ],
-    "reasons": [
-      {
-        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-        "evidenceLevel": 60,
-        "minimumRequired": 75,
-        "evidence": {
-          "axisScore": 3,
-          "axisWeight": 5
-        },
-        "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-        "bypassAllowed": false
-      }
-    ]
-  }
+  "updatedAt": "2026-09-18T07:43:30.859Z"
 }
