@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #555;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div class="controls">
+      <button onclick="startGame()">Start Game</button>
+      <button onclick="restartGame()">Restart</button>
+    </div>
+    <div class="status">Status: <span id="status">Initializing...</span></div>
+    <div class="status">Progression: <span id="progression">0%</span></div>
+    <div class="status">Economy: <span id="economy">0</span></div>
+    <div class="status">UI: <span id="ui">0</span></div>
+  </main>
+  <script>
+    let game = null;
+    let status = "Initializing...";
+    let progression = 0;
+    let economy = 0;
+    let ui = 0;
+
+    function startGame() {
+      game = {
+        status: status,
+        progression: progression,
+        economy: economy,
+        ui: ui
+      };
+      document.getElementById("status").textContent = status;
+      document.getElementById("progression").textContent = progression + "%";
+      document.getElementById("economy").textContent = economy;
+      document.getElementById("ui").textContent = ui;
+    }
+
+    function restartGame() {
+      progression = 0;
+      economy = 0;
+      ui = 0;
+      status = "Initializing...";
+      document.getElementById("status").textContent = status;
+      document.getElementById("progression").textContent = progression + "%";
+      document.getElementById("economy").textContent = economy;
+      document.getElementById("ui").textContent = ui;
+    }
+
+    // Simulated game logic
+    function simulateGame() {
+      // Simulate game progression
+      progression += 1;
+      economy += 1;
+      ui += 1;
+
+      // Simulate UI updates
+      document.getElementById("status").textContent = "Status: " + status;
+      document.getElementById("progression").textContent = progression + "%";
+      document.getElementById("economy").textContent = economy;
+      document.getElementById("ui").textContent = ui;
+    }
+
+    // Simulate game loop
+    function gameLoop() {
+      simulateGame();
+      setTimeout(gameLoop, 1000);
+    }
+
+    // Start the game loop
+    gameLoop();
+  </script>
+</body>
+</html>
