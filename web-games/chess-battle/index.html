@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+    #game {
+      width: 80%;
+      max-width: 800px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    .game-area {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .game-piece {
+      width: 100px;
+      height: 100px;
+      background-color: #4CAF50;
+      border: 2px solid #333;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .game-piece:hover {
+      background-color: #45a049;
+    }
+    .game-piece.selected {
+      background-color: #388e3c;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div class="game-area" id="game-area"></div>
+  </main>
+  <script>
+    const gameArea = document.getElementById('game-area');
+    const gamePieces = [
+      { id: 'r1', type: 'rook', color: 'red' },
+      { id: 'n1', type: 'knight', color: 'red' },
+      { id: 'b1', type: 'bishop', color: 'red' },
+      { id: 'q1', type: 'queen', color: 'red' },
+      { id: 'k1', type: 'king', color: 'red' },
+      { id: 'b2', type: 'bishop', color: 'red' },
+      { id: 'n2', type: 'knight', color: 'red' },
+      { id: 'r2', type: 'rook', color: 'red' },
+      { id: 'p1', type: 'pawn', color: 'red' },
+      { id: 'p2', type: 'pawn', color: 'red' },
+      { id: 'p3', type: 'pawn', color: 'red' },
+      { id: 'p4', type: 'pawn', color: 'red' },
+      { id: 'p5', type: 'pawn', color: 'red' },
+      { id: 'p6', type: 'pawn', color: 'red' },
+      { id: 'p7', type: 'pawn', color: 'red' },
+      { id: 'p8', type: 'pawn', color: 'red' },
+      { id: 'r3', type: 'rook', color: 'red' },
+      { id: 'n3', type: 'knight', color: 'red' },
+      { id: 'b3', type: 'bishop', color: 'red' },
+      { id: 'q3', type: 'queen', color: 'red' },
+      { id: 'k3', type: 'king', color: 'red' },
+      { id: 'b4', type: 'bishop', color: 'red' },
+      { id: 'n4', type: 'knight', color: 'red' },
+      { id: 'r4', type: 'rook', color: 'red' },
+      { id: 'p8', type: 'pawn', color: 'red' }
+    ];
+
+    const pieceColors = {
+      'red': '#4CAF50',
+      'blue': '#008CBA',
+      'green': '#45a049',
+      'yellow': '#FFA726',
+      'purple': '#8E44AD',
+      'orange': '#FF851B'
+    };
+
+    function createPiece(id, type, color) {
+      const piece = document.createElement('div');
+      piece.className = 'game-piece';
+      piece.textContent = type.charAt(0).toUpperCase();
+      piece.style.backgroundColor = color;
+      piece.style.color = 'white';
+      piece.style.fontSize = '24px';
+      piece.style.cursor = 'pointer';
+      piece.style.borderRadius = '5px';
+      piece.style.transition = 'background-color 0.2s';
+      piece.addEventListener('click', () => {
+        piece.classList.toggle('selected');
+      });
+      return piece;
+    }
+
+    function renderGameArea() {
+      gameArea.innerHTML = '';
+      const row = 0;
+      for (let i = 0; i < 8; i++) {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'game-row';
+        for (let j = 0; j < 8; j++) {
+          const piece = createPiece(`${i}${j}`, 'pawn', 'red');
+          rowDiv.appendChild(piece);
+        }
+        gameArea.appendChild(rowDiv);
+      }
+    }
+
+    renderGameArea();
+  </script>
+</body>
+</html>
