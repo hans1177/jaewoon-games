@@ -291,7 +291,22 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
 }
 
 function get(item,...keys){for(const k of keys){const v=item?.[k];if(v!==undefined&&v!==null&&v!=='')return v;}return null;}
-export function buildWebRobloxHandoffs(companyQueueInput={}){
+function verifiedWebSemanticContext(experienceInput={},gameId=''){
+  const records=(experienceInput?.records||[]).filter(record=>record?.verified===true&&record?.reusable===true&&upper(record?.outcome)==='PASS'&&lower(record?.engine)==='web'&&clean(record?.gameId)===clean(gameId)).sort((a,b)=>String(b?.lastVerifiedAt||b?.createdAt||'').localeCompare(String(a?.lastVerifiedAt||a?.createdAt||'')));
+  const values={},sourceExperienceIds=[];
+  let runtimeEvidence=null;
+  for(const record of records){
+    sourceExperienceIds.push(clean(record.id));
+    if(!runtimeEvidence){const marker=(record.evidence||[]).map(clean).find(value=>value.startsWith('web-runtime-evidence:'));if(marker)runtimeEvidence=marker.slice('web-runtime-evidence:'.length);}
+    for(const pattern of record.reusablePatterns||[]){
+      const match=/^WEB_SEMANTIC:([A-Z_]+):(.+)$/.exec(clean(pattern));
+      if(!match||values[match[1]])continue;
+      values[match[1]]=clean(match[2]);
+    }
+  }
+  return{values,sourceExperienceIds:uniq(sourceExperienceIds),runtimeEvidence};
+}
+export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={}){
   const items=companyQueueInput?.items||companyQueueInput?.projects||[];
   const handoffs=[];
   for(const item of items){
@@ -300,24 +315,27 @@ export function buildWebRobloxHandoffs(companyQueueInput={}){
     const webPassed=Boolean(get(item,'webValidationPassedAt','webPromotionRevalidationPassed','formalImplementationPassed'));
     if(!webPassed) continue;
     const gameId=clean(get(item,'gameId','id')); if(!gameId) continue;
+    const verifiedSemantic=verifiedWebSemanticContext(experienceInput,gameId);
+    const semantic=verifiedSemantic.values;
     const handoff={
       gameId,selectedPlatform:'ROBLOX',sourceStage:'WEB_VALIDATED_EXECUTABLE_BLUEPRINT',
-      CORE_LOOP:get(item,'coreLoop','webCoreLoop','gameplayLoop')||null,
-      STATE_MODEL:get(item,'stateModel','webStateModel')||null,
-      COMBAT_AI_INTENT:get(item,'combatAiIntent','combatModel','aiModel')||null,
-      PROGRESSION_MODEL:get(item,'progressionModel')||null,
-      ECONOMY_MEANING:get(item,'economyMeaning','economyModel')||null,
-      UI_FLOW:get(item,'uiFlow')||null,
-      INPUT_INTENT:get(item,'inputIntent')||null,
-      SAVE_MEANING:get(item,'saveMeaning','saveModel')||null,
-      CONTENT_STRUCTURE:get(item,'contentStructure')||null,
-      BALANCE_INTENT:get(item,'balanceIntent')||null,
+      CORE_LOOP:get(item,'coreLoop','webCoreLoop','gameplayLoop')||semantic.CORE_LOOP||null,
+      STATE_MODEL:get(item,'stateModel','webStateModel')||semantic.STATE_MODEL||null,
+      COMBAT_AI_INTENT:get(item,'combatAiIntent','combatModel','aiModel')||semantic.COMBAT_AI_INTENT||null,
+      PROGRESSION_MODEL:get(item,'progressionModel')||semantic.PROGRESSION_MODEL||null,
+      ECONOMY_MEANING:get(item,'economyMeaning','economyModel')||semantic.ECONOMY_MEANING||null,
+      UI_FLOW:get(item,'uiFlow')||semantic.UI_FLOW||null,
+      INPUT_INTENT:get(item,'inputIntent')||semantic.INPUT_INTENT||null,
+      SAVE_MEANING:get(item,'saveMeaning','saveModel')||semantic.SAVE_MEANING||null,
+      CONTENT_STRUCTURE:get(item,'contentStructure')||semantic.CONTENT_STRUCTURE||null,
+      BALANCE_INTENT:get(item,'balanceIntent')||semantic.BALANCE_INTENT||null,
       VERIFIED_FAILURES:get(item,'verifiedFailures','webVerifiedFailures')||[],
       VERIFIED_FIXES:get(item,'verifiedFixes','webVerifiedFixes')||[],
-      WEB_RUNTIME_EVIDENCE:get(item,'webValidationPassedAt','webRuntimeEvidence')||null,
+      WEB_RUNTIME_EVIDENCE:get(item,'webValidationPassedAt','webRuntimeEvidence')||verifiedSemantic.runtimeEvidence||null,
       discardAsImplementation:['DOM_STRUCTURE','CSS_IMPLEMENTATION','WEB_RENDERING_HACKS','WEB_ONLY_STORAGE_CODE'],
       robloxNativeReimplementationRequired:true,
-      webEvidenceSubstitutesRobloxQa:false
+      webEvidenceSubstitutesRobloxQa:false,
+      verifiedSemanticExperienceIds:verifiedSemantic.sourceExperienceIds
     };
     handoff.complete=['CORE_LOOP','STATE_MODEL','PROGRESSION_MODEL','UI_FLOW','INPUT_INTENT','SAVE_MEANING','CONTENT_STRUCTURE','BALANCE_INTENT','WEB_RUNTIME_EVIDENCE'].every(k=>handoff[k]!=null);
     handoffs.push(handoff);
@@ -338,7 +356,7 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     addedCodePatterns:patternApplied.added,
     benchmark,
     idlePractice,
-    handoffs:buildWebRobloxHandoffs(companyQueueInput),
+    handoffs:buildWebRobloxHandoffs(companyQueueInput,experienceInput),
     queue:practice.queue,
     tournamentTasksChanged:tournament.changed,
     idlePracticeTaskAdded:practice.added,

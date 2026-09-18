@@ -16,6 +16,62 @@ const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true})
 const safeGame=v=>clean(v).replace(/[^A-Za-z0-9._-]+/g,'-').slice(0,80);
 const get=(item,...keys)=>{for(const k of keys){const v=item?.[k];if(v!==undefined&&v!==null&&v!=='')return v;}return null;};
 
+const semanticText=value=>{
+  const raw=Array.isArray(value)?value.map(clean).filter(Boolean).join(' → '):typeof value==='object'&&value!==null?JSON.stringify(value):clean(value);
+  return clean(raw).replace(/[\r\n|]+/g,' / ').replace(/\s+/g,' ').slice(0,700);
+};
+const semanticPattern=(key,value)=>{const text=semanticText(value);return text?`WEB_SEMANTIC:${key}:${text}`:'';};
+function verifiedWebSemantics({gate={},report={},design=null,designPath=''}={}){
+  const promotion=report?.promotionRevalidation||{};
+  const scope=report?.scopeCoverage||{};
+  const content=design?.content||{};
+  const gameId=clean(design?.gameId);
+  const verified=gate.valid===true
+    &&gameId===clean(gate.gameId)
+    &&report?.approvedScopeFullyImplemented===true
+    &&scope?.pass===true
+    &&promotion?.required===true
+    &&promotion?.independentRun===true
+    &&promotion?.pass===true
+    &&promotion?.baselineHashMatch===true;
+  if(!verified)return{verified:false,sourcePath:clean(designPath)||null,patterns:[]};
+  const coreLoop=Array.isArray(content.coreLoop)?content.coreLoop.map(clean).filter(Boolean):[];
+  const assumptions=Array.isArray(content.technicalAssumptions)?content.technicalAssumptions.map(clean).filter(Boolean):[];
+  const signatureSystems=Array.isArray(content.signatureSystems)?content.signatureSystems:[];
+  const uiLabels=uniq([...(report?.before?.functionalLabels||[]),...(report?.after?.functionalLabels||[])]);
+  const inputBindings=uniq(scope?.mechanicBindings||[]);
+  const variety=uniq(report?.contentDepthValidation?.varietyEvents||[]);
+  const metrics=report?.implementationMetrics||report?.contentDepthValidation?.metrics||{};
+  const runtime=report?.runtimeValidationEvidence||{};
+  const stateModel=[
+    Number(report?.stateChangeCount||metrics?.meaningfulStateTransitionCount)>0?`meaningful-state-transitions=${Number(report?.stateChangeCount||metrics?.meaningfulStateTransitionCount)}`:'',
+    Number(metrics?.uniqueGameplayStateCount)>0?`unique-gameplay-states=${Number(metrics.uniqueGameplayStateCount)}`:'',
+    report?.terminalOutcome?.reached===true?`terminal-outcome=${clean(report?.terminalOutcome?.result)||'reached'}`:''
+  ].filter(Boolean);
+  const combatIntent=coreLoop.filter(value=>/enemy|combat|attack|damage|defen[sc]e|wave|boss|threat|적|전투|공격|방어|웨이브|보스/i.test(value));
+  const progression=[clean(content.progressionDirection),...coreLoop.filter(value=>/progress|unlock|stage|level|wave|reward|upgrade|성장|해금|단계|레벨|웨이브|보상|강화/i.test(value))].filter(Boolean);
+  const economy=coreLoop.filter(value=>/resource|earn|spend|currency|coin|gold|reward|cost|shop|upgrade|자원|획득|소비|골드|코인|보상|비용|상점|강화/i.test(value));
+  const balance=assumptions.filter(value=>/balance|counter|pressure|difficulty|threat|coverage|밸런스|상성|난이도|압박|위협/i.test(value));
+  const structure=uniq([
+    ...signatureSystems.map(row=>clean(row?.name)||clean(row?.purpose)).filter(Boolean),
+    ...variety
+  ]);
+  const saveMeaning=runtime?.saveRestore?.required===true&&runtime?.saveRestore?.pass===true?'verified runtime save/restore of current gameplay state':'';
+  const patterns=uniq([
+    semanticPattern('CORE_LOOP',coreLoop),
+    semanticPattern('STATE_MODEL',stateModel),
+    semanticPattern('COMBAT_AI_INTENT',combatIntent),
+    semanticPattern('PROGRESSION_MODEL',progression),
+    semanticPattern('ECONOMY_MEANING',economy),
+    semanticPattern('UI_FLOW',uiLabels),
+    semanticPattern('INPUT_INTENT',[clean(content.mobileUx),...inputBindings].filter(Boolean)),
+    semanticPattern('SAVE_MEANING',saveMeaning),
+    semanticPattern('CONTENT_STRUCTURE',structure),
+    semanticPattern('BALANCE_INTENT',balance)
+  ]);
+  return{verified:true,sourcePath:clean(designPath)||null,patterns};
+}
+
 export function validateFormalWebLearningEvidence(item={},report={}){
   const issues=[];
   const gameId=clean(get(item,'gameId','id')||report.gameId);
@@ -60,10 +116,11 @@ export function validateFormalWebLearningEvidence(item={},report={}){
   };
 }
 
-export function buildFormalWebExperienceReview({item={},report={},evidencePath=''}={}){
+export function buildFormalWebExperienceReview({item={},report={},evidencePath='',design=null,designPath=''}={}){
   const gate=validateFormalWebLearningEvidence(item,report);
   if(!gate.valid)return {valid:false,gate,review:null};
   const runtime=report.runtimeValidationEvidence||{};
+  const semantics=verifiedWebSemantics({gate,report,design,designPath});
   const reusablePatterns=uniq([
     runtime.replayRegression?.pass===true?'deterministic-replay-stable':'',
     runtime.saveRestore?.required===true&&runtime.saveRestore?.pass===true?'save-restore-verified':'',
@@ -72,7 +129,8 @@ export function buildFormalWebExperienceReview({item={},report={},evidencePath='
     runtime.preplatformReadiness?.pass===true?'preplatform-gameplay-readiness':'',
     runtime.strategyOutcomes?.required===true&&runtime.strategyOutcomes?.pass===true?'strategy-outcome-divergence-verified':'',
     report.terminalOutcome?.reached===true?'terminal-retry-loop-verified':'',
-    report.contentDepthValidation?.pass===true?'real-30min-content-depth-verified':''
+    report.contentDepthValidation?.pass===true?'real-30min-content-depth-verified':'',
+    ...semantics.patterns
   ]);
   const gameId=gate.gameId;
   const sourceRevision=gate.sourceRevision;
@@ -101,7 +159,8 @@ export function buildFormalWebExperienceReview({item={},report={},evidencePath='
       `strict-review-score:${gate.score}`,
       'real-30min-content-depth:PASS',
       'deterministic-replay:PASS',
-      'promotion-revalidation:PASS'
+      'promotion-revalidation:PASS',
+      semantics.verified?`verified-web-semantics:${semantics.sourcePath||'embedded-design'}`:''
     ]),
     reusablePatterns,
     avoidPatterns:[],
@@ -123,10 +182,23 @@ function readJsonFromGit(ref,file){
   return JSON.parse(raw);
 }
 
+function designPathCandidates(evidencePath=''){
+  const dir=path.posix.dirname(clean(evidencePath).replaceAll('\\','/'));
+  if(!dir||dir==='.')return[];
+  return[`${dir}/design-after-web.json`,`${dir}/design-revised.json`];
+}
+function readFirstJsonFromGit(ref,files=[]){
+  for(const file of files){
+    try{return{path:file,data:readJsonFromGit(ref,file)};}catch{}
+  }
+  return{path:null,data:null};
+}
+
 export function ingestFormalWebExperiences({
   queueInput={},
   memoryInput={},
-  evidenceLoader=()=>null
+  evidenceLoader=()=>null,
+  designLoader=()=>({path:null,data:null})
 }={}){
   let memory=memoryInput;
   const results=[];
@@ -139,7 +211,9 @@ export function ingestFormalWebExperiences({
       results.push({gameId:clean(item?.gameId),promoted:false,reason:'web-final-evidence-unreadable',error:clean(error?.message||error).slice(0,240)});
       continue;
     }
-    const built=buildFormalWebExperienceReview({item,report,evidencePath});
+    let designInfo={path:null,data:null};
+    try{designInfo=designLoader(evidencePath,item,report)||designInfo;}catch{}
+    const built=buildFormalWebExperienceReview({item,report,evidencePath,design:designInfo?.data||null,designPath:designInfo?.path||''});
     if(!built.valid){
       results.push({gameId:built.gate.gameId||clean(item?.gameId),promoted:false,reason:'formal-web-learning-gate-failed',issues:built.gate.issues});
       continue;
@@ -186,7 +260,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const result=ingestFormalWebExperiences({
     queueInput:readJson(queueFile,{items:[]}),
     memoryInput:readJson(memoryFile,{records:[]}),
-    evidenceLoader:file=>readJsonFromGit(runtimeRef,file)
+    evidenceLoader:file=>readJsonFromGit(runtimeRef,file),
+    designLoader:file=>readFirstJsonFromGit(runtimeRef,designPathCandidates(file))
   });
   if(result.promotedCount>0)writeJson(memoryFile,result.memory);
   console.log('VIBE2_WEB_EXPERIENCE_INGEST=PASS');
