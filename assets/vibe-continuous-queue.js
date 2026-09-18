@@ -134,6 +134,7 @@ function normalizeTask(input = {}, index = 0) {
     packageMinWorkUnits: clampInt(input.packageMinWorkUnits || 0, 0, 12),
     packageLongWorkProtected: input.packageLongWorkProtected === true,
     postReleaseFocused: input.postReleaseFocused === true,
+    historicalDeploymentRecovery: input.historicalDeploymentRecovery === true,
     focusCycle: clampInt(input.focusCycle || 0, 0, 1000000),
     focusPolicyRef: clean(input.focusPolicyRef) || null,
     packageContext: normalizePackageContext(input.packageContext),
