@@ -16,7 +16,7 @@ policy:
   evidenceFilesCannotCreatePolicy: true
   separatePolicyDocumentsForbidden: true
   machineContractsMayMirrorPolicyButCannotCreatePolicy: true
-  latestOwnerDirectiveRecordedAt: 2026-09-17
+  latestOwnerDirectiveRecordedAt: 2026-09-18
 
 priority:
   - OWNER_LATEST_DIRECT_INSTRUCTION
@@ -139,6 +139,84 @@ ownerCurrentProductionContract:
     categorySelectionMayRoundRobin: true
     selectedPlatformMustDriveImplementationAndScoring: true
     webIsNotNativeDevelopmentSubstitute: true
+  webToTargetPlatformContinuity:
+    mode: WEB_PORTABLE_BASE_THEN_NATIVE_CONTINUATION
+    webPhaseIsDisposablePrototype: false
+    webPhasePurpose:
+      - REAL_PLAYABLE_VALIDATION
+      - PORTABLE_GAMEPLAY_BASE_IMPLEMENTATION
+      - SYSTEM_CONTRACT_STABILIZATION
+    portableBaseRequiredBeforeTargetPlatformDispatch: true
+    portableBaseMustCover:
+      - CORE_LOOP_RULES
+      - GAME_STATE_MODEL
+      - PROGRESSION_MODEL
+      - ECONOMY_AND_REWARD_SEMANTICS
+      - SAVE_AND_RECOVERY_SEMANTICS
+      - CONTENT_AND_LEVEL_SCHEMA
+      - BALANCE_AND_DIFFICULTY_RULES
+      - INPUT_ACTION_ABSTRACTION
+      - UI_STATE_CONTRACT
+      - FAILURE_RETRY_AND_SESSION_FLOW
+    platformHandoff:
+      source: CURRENT_VALIDATED_WEB_COMPANION_PLUS_APPROVED_DESIGN_BASELINE
+      target: PROJECT_SELECTED_PLATFORM
+      preserveValidatedGameplaySemantics: true
+      silentCoreSystemReimplementationDriftForbidden: true
+      platformSpecificAdaptationRequired: true
+      nativeEvidenceRequiredIndependently: true
+      webEvidenceCannotSubstituteNativeEvidence: true
+      nativeMayExtendPortableBase: true
+      nativeMayReplaceWebSpecificRenderingAndInputLayers: true
+      nativeMustPreserveSaveProgressionEconomyMeaningUnlessApprovedDesignRevisionExists: true
+    ROBLOX:
+      secondStageRole: NATIVE_CONTINUATION_AND_EXPANSION
+      inheritPortableBaseContracts: true
+      requiredNativeLayers:
+        - ROBLOX_INPUT_AND_MOBILE_UX
+        - ROBLOX_CLIENT_SERVER_AUTHORITY
+        - ROBLOX_SESSION_AND_RESPAWN
+        - ROBLOX_DATASTORE_OR_PROJECT_SAVE_ADAPTER_WHEN_APPLICABLE
+        - ROBLOX_NETWORKING_AND_MULTIPLAYER_WHEN_DESIGNED
+        - ROBLOX_PERFORMANCE_AND_STREAMING
+        - ROBLOX_PLATFORM_FEEDBACK_AND_PRESENTATION
+      validatedWebCoreRegressionForbidden: true
+  postReleaseFocusedDevelopment:
+    enabled: true
+    scope: RELEASE_CONFIRMED_ROBLOX_ACTIVE_OR_REBUILD
+    protectedRunnerSlots: 1
+    oneFocusedTaskRunningGlobally: true
+    continuousRefill: true
+    refillUntil:
+      - OWNER_DIRECTIVE_STOPS_OR_REPRIORITIZES
+      - GAME_LIFECYCLE_NOT_ACTIVE_OR_REBUILD
+      - STRUCTURAL_RETIRE_DECISION
+    releaseEndsInitialDevelopmentOnly: true
+    liveDevelopmentContinuesAfterRelease: true
+    taskGenerationMode: EVIDENCE_DRIVEN_ROTATING_QUALITY_AXIS
+    focusAxes:
+      - CORE_LOOP_DEPTH
+      - CONTENT_VARIATION
+      - PROGRESSION_AND_ECONOMY
+      - MOBILE_INPUT_AND_UX
+      - SAVE_SESSION_AND_RECOVERY
+      - PERFORMANCE_AND_LONG_SESSION_STABILITY
+      - BALANCE_AND_REWARD
+      - VISUAL_AUDIO_FEEDBACK
+      - SOCIAL_OR_MULTIPLAYER_WHEN_DESIGNED
+    noBlindChurn: true
+    preserveCoreDesignUnlessApprovedRevision: true
+    preserveSaveMeaning: true
+    preservePublishedProjectIdentity: true
+    everyChangeRequires:
+      - TARGETED_NATIVE_QA
+      - REGRESSION_CHECK
+      - CURRENT_SOURCE_BINDING
+      - LIVE_VERSION_UPDATE_GATE
+    learningContext:
+      useVerifiedVibeMemory: true
+      useTransformativeRecombinationWhenEligible: true
+      learningMayExpandAuthority: false
   developmentConcurrency:
     scope: DEVELOPMENT_CONFIRMED_SELECTED_PLATFORM_GAME_IMPLEMENTATION
     concurrentGameWipTarget: 20
