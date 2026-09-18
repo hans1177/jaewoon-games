@@ -3,324 +3,39 @@
   "gameId": "insect-survival",
   "date": "2026-09-18",
   "seedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
-  "fingerprint": "64416fafa0b6d5a84f60c1be08287a210ccd19d8b723241a7d0bda05319b2fcf",
+  "fingerprint": "d82c15357f58dc0d882e3456dba6d557138819bca1d52cee4afbf73f73a59719",
   "policyDigest": "5bb8edfcf9f558f65b3d9e97c3939aa085a73644ba9077f7d5a0341fbae4347f",
-  "engineDigest": "46ea84c1af753f87a382297b3b1395c376f7aebd3e87781ec1dd732bf179429e",
+  "engineDigest": "6479e85c265341c260e5f562da5a494aaecac93060ad65bdc0dcc453db6b481c",
   "status": "IN_PROGRESS",
-  "completedPhases": [
-    "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1",
-    "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
-  ],
-  "phases": {
-    "designer_draft": {
-      "identity": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 액션 생존 게임입니다.",
-      "playerFantasy": "거대한 자연 속 미지의 초원 한복판에서 곤충들의 위협을 헤쳐나가며 생태계를 지배하는 최상위 포식자이자 생존자가 되는 환상을 제공합니다.",
-      "coreFun": "몰려드는 곤충 무리를 실시간으로 돌파하며 무기와 특성을 조합해 자신만의 강력한 생존 빌드를 완성하는 재미입니다.",
-      "coreLoop": [
-        "밀려드는 곤충 무리와 전투를 벌이며 맵 위에서 위치를 선정하고 자원을 수집합니다.",
-        "적을 처치하고 얻은 경험치와 보상으로 공격 방식이나 특성을 선택해 빌드를 확장합니다.",
-        "획득한 업그레이드를 조합해 더욱 강력한 빌드를 만들고 다음 웨이브나 보스전에서 생존합니다.",
-        "생존 결과로 얻은 재화를 영구 성장 및 다음 탐험 준비에 투자하여 지속적인 성장을 이룹니다."
-      ],
-      "signatureSystems": [
-        {
-          "name": "생태 적응 빌드 시스템",
-          "purpose": "플레이어가 런 중 다양한 곤충 특성을 흡수하여 전투 스타일을 자유롭게 변화시키도록 유도합니다.",
-          "playerChoice": "근접 공격력 강화, 독성 범위 피해, 이동 속도 중심의 회피 중 하나를 전략적으로 선택합니다."
-        },
-        {
-          "name": "환경 위협 및 웨이브 압박",
-          "purpose": "제한된 시간과 좁은 공간에서 몰려오는 곤충 무리를 통해 긴장감을 극대화합니다.",
-          "playerChoice": "위험 지역을 빠르게 돌파하거나 안전한 거점을 확보하기 위한 이동 경로를 결정합니다."
-        }
-      ],
-      "systemInterconnections": [
-        {
-          "fromSystem": "생태 적응 빌드 시스템",
-          "toSystem": "환경 위협 및 웨이브 압박",
-          "trigger": "레벨 업 및 특성 선택 완료 시",
-          "stateChange": "플레이어의 공격 범위와 이동 속도가 증가하여 웨이브 대응 능력이 강화됩니다."
-        },
-        {
-          "fromSystem": "환경 위협 및 웨이브 압박",
-          "toSystem": "생태 적응 빌드 시스템",
-          "trigger": "웨이브 클리어 또는 엘리트 적 처치 시",
-          "stateChange": "희귀 재료 및 상위 특성 선택지가 해제되어 다음 빌드 구성에 영향을 줍니다."
-        },
-        {
-          "fromSystem": "영구 성장 시스템",
-          "toSystem": "생태 적응 빌드 시스템",
-          "trigger": "런 종료 후 재화 정산 시",
-          "stateChange": "기본 체력 및 초기 자원 획득량이 증가하여 다음 런의 시작 빌드 선택 폭이 넓어집니다."
-        }
-      ],
-      "progressionDirection": "세션 단위의 빠른 런을 반복하며 수집한 재화로 기본 능력을 강화하고, 더 높은 난이도의 곤충 생태계 지역을 해금하는 방향으로 진행됩니다.",
-      "progressionEconomyBalance": {
-        "progressionLoop": "런 진입 -> 생존 및 자원 획득 -> 런 종료 및 정산 -> 영구 능력치 강화 및 다음 런 준비",
-        "resourceFlow": "적 처치 시 경험치(런 내 성장)와 생태 파편(영구 성장 재화)이 드랍되며, 상점에서 소모됩니다.",
-        "balanceRules": "웨이브가 진행될수록 적의 체력과 공격력이 비선형적으로 증가하여 빌드의 시너지 없이는 생존이 불가능하도록 설계합니다."
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "마일스톤 1: 덤불 지대 및 독성 곤충 생태계 확장",
-          "newGameplay": "원거리 독침을 발사하는 말벌 및 포자 함정 오브젝트가 추가되어 위치 선점과 회피 기동 중심의 전투 플레이 제공",
-          "systemImpact": "방어 및 해독 특성 트리의 효용성이 상승하며 UpgradeManager 내 상태이상 판정 및 WaveDirector 스폰 테이블 확장"
-        },
-        {
-          "milestone": "마일스톤 2: 지하 개미굴 침투 및 시야 제한 야간 모드",
-          "newGameplay": "제한된 시야 반경 내에서 무리지어 협동 공격을 가하는 병정개미 군단 방어 미션 및 발광 페로몬 채취 기믹 추가",
-          "systemImpact": "시야 반경 확장 특성 및 근접 넉백 스킬의 가치 재조정, Lighting 렌더링 파이프라인 및 시야 동적 마스킹 시스템 연동"
-        },
-        {
-          "milestone": "마일스톤 3: 최상위 포식자 사마귀 레이드 및 무한 시련",
-          "newGameplay": "다단계 페이즈 전환과 즉사급 전방 절단 공격을 사용하는 거대 사마귀 보스전 및 무한 스케일링 서바이벌 모드 개방",
-          "systemImpact": "엔드게임 영구 성장 재화 파밍 효율 증대, PlayerProgressionData의 초월 특성 해금 및 난이도별 데미지 보정 공식 개편"
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "플레이어 체력이 0이 되어 사망",
-          "제한 시간 내에 탈출 지점에 도달 실패"
-        ],
-        "retryFlow": "사망 시 즉시 결과 화면으로 이동하며, 획득한 재화의 일부를 정산받고 메인 화면으로 복귀하여 재도전합니다.",
-        "riskPressure": "웨이브가 거듭될수록 적으로 화면이 가득 차며 플레이어의 퇴로를 차단하는 압박을 가합니다.",
-        "recoveryRules": "영구 성장을 통해 초기 체력, 회복 아이템 드랍률을 높여 반복 플레이 시 실패 피로도를 완화합니다."
-      },
-      "platformFitPlan": {
-        "targetPlatform": "UNITY",
-        "inputModel": "모바일 단일 터치 가상 조이스틱(드래그 이동)과 사거리 내 적 자동 타겟팅 공격 결합, 쿨다운 기반 대시/특수기는 화면 탭 제스처로 발동",
-        "performanceBudget": "동시 화면 몬스터 300마리 기준 60FPS 유지(드로우콜 60 이하, CPU 프레임타임 12ms 이내, 메모리 점유율 450MB 이하, GPU 스프라이트 GPU 인스턴싱 적용)",
-        "sessionConstraints": "단일 런 4~6분(웨이브 3단계 구성), 일일 총 세션 20~25분 내외 설계(지하철/대중교통 이동 중 끊김 없는 플레이를 위해 백그라운드 전환 시 자동 일시정지 및 복구 지원)"
-      },
-      "visualDirection": "탑뷰 시점에서 아기자기하면서도 생동감 넘치는 곤충들의 애니메이션과 화려한 탄막 및 파티클 효과를 결합한 스타일리시한 비주얼",
-      "mobileUx": "한 손 파지 엄지 조작 영역에 최적화된 플로팅 가상 조이스틱과 하단 안전 영역(Safe Area)을 준수한 UI 배치. 레벨업 선택 카드는 가로형 3열 카드로 중앙 정렬되어 0.3초 오터치 방지 딜레이 적용 및 높은 텍스트/아이콘 대비비(최소 4.5:1) 유지.",
-      "uxAccessibilityPlan": {
-        "hudPriorities": "남은 체력, 웨이브 타이머, 경험치 게이지를 화면 상단에 직관적으로 배치",
-        "touchAndInput": "화면 어디서나 드래그하여 조이스틱을 활성화할 수 있는 프리 플로팅 패드 적용",
-        "readability": "복잡한 탄막 속에서도 플레이어 캐릭터와 적의 공격 범위를 색상 대비로 명확히 구분",
-        "accessibility": "플래시 효과 감소 옵션 및 텍스트 크기 조절 기능 지원"
-      },
-      "artAudioDirection": {
-        "visualIdentity": "풀잎과 흙바닥이 살아있는 세밀한 탑뷰 2D 그래픽",
-        "audioIdentity": "풀벌레 소리와 긴장감 넘치는 타악기 중심의 배경음악",
-        "gameplayFeedbackSync": "적 타격 시 명확한 타격음과 화면 쉐이크 효과 동기화"
-      },
-      "marketTargetDirection": "모바일 액션 로그라이트 및 생존 게임을 선호하는 글로벌 유저층을 타겟으로 함",
-      "steamExpansionDecision": "모바일 버전 안정화 이후 PC 및 콘솔 플랫폼으로의 확장 검토",
-      "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "싱글 플레이 완성도 확보 후 협동(COOP) 모드 추후 검토",
-      "technicalAssumptions": [
-        "Unity 2D Sprite GPU Instancing 및 Struct 기반 Object Pooling으로 300+ 개체 GC Alloc 0B 유지",
-        "Time.deltaTime 기반 Deterministic 고정 프레임 연산으로 기기 사양별 물리/충돌 오차 최소화"
-      ],
-      "validationQuestions": [
-        "저사양 모바일 기기(Snapdragon 680급)에서 300마리 웨이브 시 60FPS가 안정적으로 유지되는가?",
-        "한 손 조작 환경에서 5분 런 동안 피로도 없이 레벨업 카드 선택 및 회피 기동이 정밀하게 수행되는가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "군집 곤충 서바이벌 웨이브 압박",
-          "responsibleSystem": "WaveDirector & ObjectPoolManager",
-          "validationEvidence": "초당 스폰율 및 최대 300마리 동시 렌더링 시 프로파일러 상 DrawCall 60 이하 및 FPS 60 유지 로그 확인"
-        },
-        {
-          "designElement": "3지선다 생태 적응 퍽 빌드 조합",
-          "responsibleSystem": "UpgradeManager & PlayerStatController",
-          "validationEvidence": "경험치 완충 시 레벨업 팝업 호출, 3개 무작위 카드 선택 시 플레이어 능력치 실시간 갱신 및 시너지 배율 계산 유닛 테스트 통과"
-        },
-        {
-          "designElement": "런 종료 후 메타 영구 성장 및 저장",
-          "responsibleSystem": "PlayerProgressionData & SaveSystem",
-          "validationEvidence": "사망/클리어 시 획득 생체 정수가 암호화 로컬 저장소에 기록되고 재접속 시 능력치 강화 트리에 영구 반영됨을 세이브 무결성 검증기로 확인"
-        }
-      ],
-      "openQuestions": [
-        "향후 멀티플레이 도입 시 동기화 방식에 대한 기술적 검토 필요 여부"
-      ]
-    },
-    "deterministic_pre_gate": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 60,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 60,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 6,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 4.8,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
-      },
-      "totalScore": 75.4,
-      "criticalAxisFailures": [
-        "CONTENT_EXPANSION_PLAN",
-        "PLATFORM_FIT_DESIGN",
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-      ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "CONTENT_EXPANSION_PLAN",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 6,
-            "axisWeight": 10
-          },
-          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "PLATFORM_FIT_DESIGN",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 4.8,
-            "axisWeight": 8
-          },
-          "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    }
-  },
+  "completedPhases": [],
+  "phases": {},
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 331,
-      "lastMs": 142,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 29.027064924s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"29s\" } ] } }",
-      "updatedAt": "2026-09-18T06:06:30.998Z"
-    },
-    "gemini:gemini-3.7-flash": {
-      "calls": 5,
-      "successes": 1,
-      "failures": 4,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 40535,
-      "lastMs": 224,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 28.938654563s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.7-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"28s\" } ] } }",
-      "updatedAt": "2026-09-18T06:06:31.080Z"
-    },
-    "gemini:gemini-3.6-flash": {
-      "calls": 3,
-      "successes": 1,
-      "failures": 2,
-      "timeouts": 0,
-      "jsonFailures": 1,
-      "totalMs": 37848,
-      "lastMs": 10446,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T06:06:29.788Z"
-    },
-    "gemini:gemini-3.5-flash": {
       "calls": 1,
       "successes": 0,
       "failures": 1,
       "timeouts": 0,
-      "jsonFailures": 1,
-      "totalMs": 39964,
-      "lastMs": 39964,
-      "lastError": "Expected ',' or '}' after property value in JSON at position 3822 (line 1 column 3823)",
-      "updatedAt": "2026-09-18T06:05:02.887Z"
+      "jsonFailures": 0,
+      "totalMs": 3154,
+      "lastMs": 3154,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T06:08:51.041Z"
     },
-    "gemini:gemini-3.5-flash-lite": {
+    "gemini:gemini-3.7-flash": {
       "calls": 1,
-      "successes": 1,
-      "failures": 0,
+      "successes": 0,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 92232,
-      "lastMs": 92232,
-      "lastError": null,
-      "updatedAt": "2026-09-18T06:05:55.155Z"
+      "totalMs": 3542,
+      "lastMs": 3542,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T06:08:51.429Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
-  "createdAt": "2026-09-18T06:04:22.921Z",
-  "updatedAt": "2026-09-18T06:06:31.080Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:06:29.788Z",
-  "geminiModelResolution": {
-    "gemini-3.8-flash": "gemini-3.6-flash"
-  },
-  "effectiveDesignerModel": "gemini:gemini-3.8-flash",
-  "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=78.4 hard=CRITICAL_AXIS_MINIMUM_FAIL"
+  "currentPhase": "DESIGNER_DRAFT",
+  "createdAt": "2026-09-18T06:08:47.886Z",
+  "updatedAt": "2026-09-18T06:08:51.429Z"
 }
