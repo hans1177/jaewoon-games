@@ -221,25 +221,21 @@ jobs:
           stale_active="$(printf '%s\n' "$stale_ids" | sed '/^$/d' | wc -l | tr -d ' ')"
           echo "ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=$current_active"
           echo "ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=$stale_active"
-          if [ "$stale_active" -gt 0 ]; then
-            while IFS= read -r run_id; do
-              [ -n "$run_id" ] || continue
-              gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null || true
-              echo "GAME_SEED_STALE_DESIGN_RUN_CANCEL_REQUESTED=$run_id"
-            done <<< "$stale_ids"
-          fi
-          if [ "$current_active" -gt 0 ]; then
+          total_active=$((current_active + stale_active))
+          echo 'GAME_SEED_STALE_DESIGN_RUN_POLICY=FINISH_PINNED_ENGINE'
+          if [ "$total_active" -gt 0 ]; then
             echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=NO'
-            echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE'
+            if [ "$current_active" -gt 0 ]; then
+              echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE'
+            else
+              echo 'GAME_SEED_DESIGN_CONTINUATION=SKIP_PINNED_ENGINE_ACTIVE'
+            fi
+            echo 'GAME_SEED_DESIGN_RUNNING_BATCH_CANCELLED=NO'
             exit 0
           fi
           gh workflow run company-seed-design-runtime.yml --ref main
           echo 'GAME_SEED_DESIGN_CONTINUATION_DISPATCHED=YES'
-          if [ "$stale_active" -gt 0 ]; then
-            echo 'GAME_SEED_DESIGN_CONTINUATION_SCOPE=REPLACE_STALE_HEAD_BATCH'
-          else
-            echo 'GAME_SEED_DESIGN_CONTINUATION_SCOPE=START_LATEST_HEAD_BATCH'
-          fi
+          echo 'GAME_SEED_DESIGN_CONTINUATION_SCOPE=START_LATEST_HEAD_BATCH'
 
       - name: Summary
         if: always()
