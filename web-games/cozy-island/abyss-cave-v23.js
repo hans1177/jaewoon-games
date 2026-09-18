@@ -424,7 +424,19 @@ function updateEnemyBurns() {
       burn.ticks--;
       burn.nextAt += 1000;
     }
-    if (burn.ticks <= 0 || enemy.hp <= 0) {
+    if (enemy.hp <= 0) {
+      enemy.hp = 0;
+      enemy._burnUntil = 0;
+      enemyBurns.delete(id);
+      const caveEnemy = enemies.find(e => e.id === id);
+      if (caveEnemy) {
+        caveEnemy.alive = false;
+        if (selectedEnemyId === id) selectedEnemyId = null;
+        roomCleared(caveEnemy.room);
+      }
+      continue;
+    }
+    if (burn.ticks <= 0) {
       enemyBurns.delete(id);
       enemy._burnUntil = 0;
     }
