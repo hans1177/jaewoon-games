@@ -10,6 +10,7 @@ import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
 import { queueReleaseBaselineGap } from '../tools/vibe2-release-baseline-queue.mjs';
+import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
@@ -154,10 +155,37 @@ test('worker completion uses repository dispatch to refill slots before batch fa
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
 });
 
+test('fan-in review exports only reviewed winner candidate branches',()=>{
+  const evidence=[
+    'role-result:exploration:PASS',
+    'role-result:implementation:PASS',
+    'role-result:test:PASS',
+    'role-result:performance:PASS',
+    'vibe2/candidate/demo-primary-run'
+  ];
+  const result=finalizeVibe2FanInReview({
+    queue:{tasks:[{id:'demo',status:'running',blocker:'candidate-awaiting-qa-and-deployment',evidence}]},
+    taskIds:['demo']
+  });
+  assert.equal(result.pass,true);
+  assert.deepEqual(result.releaseCandidates,[{taskId:'demo',candidateBranch:'vibe2/candidate/demo-primary-run'}]);
+
+  const missing=finalizeVibe2FanInReview({
+    queue:{tasks:[{id:'missing',status:'running',blocker:'candidate-awaiting-qa-and-deployment',evidence:evidence.filter(value=>!value.startsWith('vibe2/candidate/'))}]},
+    taskIds:['missing']
+  });
+  assert.equal(missing.pass,false);
+  assert.equal(missing.releaseCandidates.length,0);
+  assert.deepEqual(missing.reviewed[0].missing,['candidate-branch']);
+});
+
 test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
   assert(workflow.includes('Event-driven fan-in refill fallback'));
   assert(workflow.includes("event_type:'vibe2-fanin-refill'"));
   assert(workflow.includes('VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'));
+  assert(workflow.includes('Dispatch reviewed winner candidates to release gate'));
+  assert(workflow.includes('review.releaseCandidates||[]'));
+  assert(workflow.includes('vibe2-candidate-release.yml/dispatches'));
   assert(!workflow.includes('gh workflow run vibe2-continuous-core.yml'));
   assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'));
