@@ -1,16 +1,19 @@
 {
   "version": 1,
-  "revision": 43,
+  "revision": 44,
   "updatedAt": "2026-09-18",
   "priority": "owner-immediate",
-  "policyDocument": "COMPANY_FLOW.md",
-  "instruction": "Use COMPANY_FLOW.md as the machine-oriented production policy source of truth. This file mirrors executable values and invariant flags only and cannot create policy.",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "instruction": "Use company-learning/platform-release-roadmap.json as the canonical machine execution policy source of truth. This file mirrors executable values and invariant flags only and cannot create or override policy.",
   "documentationSynchronization": {
     "centralPolicyFirst": true,
     "workDocumentsMustMirrorCurrentCentralPolicy": true,
     "syncRelevantWorkDocumentsOnEveryPolicyChange": true,
     "implementationWorkStartsAfterRelevantWorkDocumentsAreSynchronized": true,
-    "workDocumentsCannotOverrideCentralPolicy": true
+    "workDocumentsCannotOverrideCentralPolicy": true,
+    "centralPolicyPath": "company-learning/platform-release-roadmap.json",
+    "legacyHumanPolicyMirror": "COMPANY_FLOW.md",
+    "legacyMirrorAuthoritative": false
   },
   "homepageOperations": {
     "mode": "SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR",
@@ -842,5 +845,14 @@
     "webImplementationStartForbiddenUntilOwnerResume": false,
     "designPromotionMayContinueWhileWebPaused": true,
     "strictDesignGateMustRemainUnchanged": true
+  },
+  "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
+  "authority": "MACHINE_EXECUTION_CONTRACT",
+  "humanDocumentRequired": false,
+  "legacyPolicyMirror": {
+    "path": "COMPANY_FLOW.md",
+    "authoritative": false,
+    "requiredForExecution": false,
+    "mayCreatePolicy": false
   }
 }
