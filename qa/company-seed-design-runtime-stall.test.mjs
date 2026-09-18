@@ -33,9 +33,10 @@ test('seed design runtime uses the central WIP cap and avoids repeated Ollama se
   assert.match(workflow,/path: ~\/\.ollama\/models/);
   assert.match(workflow,/ollama-seed-design-\$\{\{ runner\.os \}\}-\$\{\{ hashFiles\('company-directive\.json'\) \}\}/);
   assert.match(workflow,/OLLAMA_VERSION: '0\.33\.3'/);
-  assert.match(workflow,/OLLAMA_MAX_LOADED_MODELS: '1'/);
-  assert.match(workflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '1'/);
-  assert.match(workflow,/COMPANY_MODEL_KEEP_ALIVE: '2m'/);
+  assert.match(workflow,/OLLAMA_MAX_LOADED_MODELS: '2'/);
+  assert.match(workflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '4'/);
+  assert.match(workflow,/COMPANY_MAX_ACTIVE_MODEL_LANES: '2'/);
+  assert.match(workflow,/COMPANY_MODEL_KEEP_ALIVE: '5m'/);
   assert.match(workflow,/uses: \.\/\.github\/actions\/prepare-ollama/);
   assert.match(workflow,/model: \$\{\{ steps\.models\.outputs\.primary_model \}\}/);
   assert.match(workflow,/version: \$\{\{ env\.OLLAMA_VERSION \}\}/);
@@ -110,7 +111,9 @@ test('parallel seed jobs persist only generated target paths on the latest compa
 test('structured Ollama design calls preserve JSON budget and reuse loaded models briefly',()=>{
   assert.match(design,/const payload=\{model,stream:false,think:false,keep_alive:modelKeepAlive/);
   assert.match(design,/if\(!deepSeek&&attempt===1\)payload\.format=schema/);
-  assert.match(design,/const modelKeepAlive=clean\(process\.env\.COMPANY_MODEL_KEEP_ALIVE\|\|'2m'\)/);
+  assert.match(design,/const modelKeepAlive=clean\(process\.env\.COMPANY_MODEL_KEEP_ALIVE\|\|'5m'\)/);
+  assert.match(design,/num_ctx:effectiveCtx/);
+  assert.match(design,/AbortSignal\.timeout\(effectiveTimeoutMs\)/);
   assert.match(design,/MODEL_EMPTY_CONTENT_WITH_THINKING=/);
   assert.match(design,/empty model response \(\$\{mode\}\)/);
 });
@@ -126,12 +129,20 @@ test('independent review generation keeps one department-model task per required
   assert.match(design,/DEPARTMENT_REVIEW_MISSING/);
 });
 
-test('independent five-way department phases use bounded parallel execution without removing reviews',()=>{
-  assert.match(design,/const modelPhaseConcurrency=1;/);
-  assert.match(design,/async function parallelObject\(keys,worker\)/);
-  assert.match(design,/department_representatives',[\s\S]*parallelObject\(ROLES,async role=>/);
-  assert.match(design,/lead_rebuttals',[\s\S]*parallelObject\(ROLES,async role=>/);
-  assert.match(design,/five_lead_fatal_review',[\s\S]*parallelObject\(ROLES,role=>/);
+test('independent and lead review phases use bounded adaptive parallel execution without removing reviews',()=>{
+  assert.match(design,/const modelPhaseConcurrency=Math\.min\(4,/);
+  assert.match(design,/independent_department_reviews:modelPhaseConcurrency/);
+  assert.match(design,/department_representatives:Math\.min\(3,modelPhaseConcurrency\)/);
+  assert.match(design,/lead_rebuttals:Math\.min\(3,modelPhaseConcurrency\)/);
+  assert.match(design,/five_lead_fatal_review:Math\.min\(3,modelPhaseConcurrency\)/);
+  assert.match(design,/const maxLoadedModelLanes=Math\.min\(2,/);
+  assert.match(design,/async function parallelObject\(keys,worker,concurrency=modelPhaseConcurrency\)/);
+  assert.match(design,/adaptiveParallel\('independent_department_reviews'/);
+  assert.match(design,/adaptiveParallel\('department_representatives'/);
+  assert.match(design,/adaptiveParallel\('lead_rebuttals'/);
+  assert.match(design,/adaptiveParallel\('five_lead_fatal_review'/);
+  assert.match(design,/MODEL_PHASE_CONCURRENCY_FALLBACK=/);
+  assert.match(design,/departmentDesignContext\(role,designDraft\)/);
   assert.match(design,/repeatedFatalReview:true/);
   assert.match(design,/rebuttalRounds:1/);
   assert.match(design,/sameModelRevised:true/);
