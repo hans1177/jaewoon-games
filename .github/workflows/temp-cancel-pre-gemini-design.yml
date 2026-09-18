@@ -1,4 +1,4 @@
-name: Cancel Pre-Gemini Design Runtime
+name: Cancel Superseded Design Runtime
 
 on:
   push:
@@ -22,11 +22,11 @@ jobs:
           set -euo pipefail
           run_id=35312988820
           state="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status')"
-          echo "PRE_GEMINI_RUN_STATUS=$state"
+          echo "SUPERSEDED_RUN_STATUS=$state"
           if [[ "$state" =~ ^(queued|in_progress|pending|waiting|requested)$ ]]; then
             gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/force-cancel" >/dev/null
-            echo 'PRE_GEMINI_RUN_FORCE_CANCEL_REQUESTED=YES'
+            echo 'SUPERSEDED_RUN_FORCE_CANCEL_REQUESTED=YES'
           else
-            echo 'PRE_GEMINI_RUN_CANCEL_REQUESTED=NO_ALREADY_TERMINAL'
+            echo 'SUPERSEDED_RUN_CANCEL_REQUESTED=NO_ALREADY_TERMINAL'
           fi
           echo 'KEEP_GEMINI_RUN_ID=35313263863'
