@@ -12,19 +12,32 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
-      "calls": 1,
+      "calls": 7,
       "successes": 0,
-      "failures": 1,
+      "failures": 7,
       "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 29464,
+      "lastMs": 217,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 29.74767824s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quot",
+      "updatedAt": "2026-09-18T05:55:30.273Z"
+    },
+    "smollm2:1.7b": {
+      "calls": 9,
+      "successes": 0,
+      "failures": 9,
+      "timeouts": 9,
       "jsonFailures": 0,
-      "totalMs": 1402,
-      "lastMs": 1402,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T05:41:23.568Z"
+      "totalMs": 1082421,
+      "lastMs": 180805,
+      "lastError": "The operation was aborted due to timeout",
+      "updatedAt": "2026-09-18T05:55:26.978Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-09-18T05:41:22.150Z",
-  "updatedAt": "2026-09-18T05:41:23.568Z"
+  "updatedAt": "2026-09-18T05:55:30.273Z",
+  "failedPhase": "designer_draft",
+  "lastError": "GAME_DESIGNER_ALL_ROUTES_FAILED: MODEL_CALL_FAILED smollm2:1.7b: The operation was aborted due to timeout"
 }
