@@ -90,6 +90,12 @@ assert(quota.vibeSubstitution.forbiddenResponsibilities.includes('DESIGN_INDEPEN
 assert(quota.vibeSubstitution.forbiddenResponsibilities.includes('STAGE_GATE_SCORE_OR_VERDICT_SYNTHESIS'));
 assert.equal(quota.geminiFallback.paidApiAdditionForbidden,true);
 assert.equal(quota.geminiFallback.resumeFromExactBlockedTask,true);
-assert.match(seedDesignRuntime,/COMPANY_GEMINI_FALLBACK_MODELS: '[^']*gemini-2\.5-flash[^']*gemini-2\.5-flash-lite'/);
+assert.match(seedDesignRuntime,/COMPANY_GEMINI_FALLBACK_MODELS: '[^']*gemini-2\.5-flash[^']*gemini-2\.5-flash-lite[^']*gemini-2\.5-pro'/);
+assert.match(seedDesignRuntime,/Resolve checkpoint-aware Gemini quota lanes/);
+assert.match(seedDesignRuntime,/WAITING_FOR_GEMINI_QUOTA/);
+assert.match(seedDesignRuntime,/GEMINI_QUOTA_FULL_CYCLE_RESTART=NO/);
+assert.match(seedDesignRuntime,/DESIGN_GATE_REPAIR_LOOP_DISPATCH=WAITING_FOR_GEMINI_QUOTA/);
+assert.match(queue,/WAITING_FOR_GEMINI_QUOTA/);
+assert.match(queue,/isExternalQuotaWaitingTask/);
 
 console.log('PASS machine lifecycle binds Web baseline to native source and one protected Roblox post-release focus slot');
