@@ -69,7 +69,12 @@ test('global selected-platform development window is deterministic, capped at tw
   assert.equal(targetPlatformDevelopmentEligible(rows.at(-1)),false);
   const window=selectTargetPlatformDevelopmentWindow(rows);
   assert.equal(window.length,20);
-  assert.deepEqual(window.map(x=>x.gameId),Array.from({length:20},(_,i)=>`g${String(i+1).padStart(2,'0')}`));
+  assert.deepEqual(window.map(x=>x.gameId),[
+    'g01','g03','g05','g07','g09','g11','g13','g15','g17','g19','g21',
+    'g02','g04','g06','g08','g10','g12','g14','g16','g18'
+  ]);
+  assert.equal(window.filter(x=>x.selectedPlatform==='ROBLOX').length,11);
+  assert.equal(window.filter(x=>x.selectedPlatform==='UNITY').length,9);
   assert.equal(window.some(x=>x.gameId==='stale'),false);
   assert.equal(window.some(x=>x.gameId==='uefn-not-configured'),false);
 });
