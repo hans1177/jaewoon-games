@@ -21,7 +21,7 @@ const geminiApiKey=clean(process.env.GEMINI_API_KEY);
 if(!geminiApiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
 const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||'gemini-3.8-flash');
 const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite').split(','));
-const geminiFallbackModelList=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-pro-preview,gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-3.1-flash-lite').split(','));
+const geminiFallbackModelList=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.1-pro-preview').split(','));
 const geminiUnavailableModels=new Map();
 function geminiCandidatesFor(primary){
   const ordered=uniq([primary,...geminiFallbackModelList]);
@@ -264,6 +264,15 @@ function repairFields(scored){
   ]);
   const fields=uniq(axes.flatMap(axis=>AXIS_FIELDS[axis]||[])).filter(field=>DESIGN.required.includes(field));
   return fields.length?fields:['identity','coreFun','coreLoop','signatureSystems'];
+}
+function repairStructureContract(fields){
+  const rules=[];
+  if(fields.includes('contentExpansionPlan'))rules.push('contentExpansionPlan: 최소 3개 서로 다른 객체. 각 milestone/newGameplay/systemImpact 문자열은 공백 제외 의미 있는 내용으로 각각 최소 12자 이상.');
+  if(fields.includes('implementationTraceability'))rules.push('implementationTraceability: 최소 3개 서로 다른 객체. 각 designElement/responsibleSystem/validationEvidence 문자열은 각각 최소 10자 이상.');
+  if(fields.includes('technicalAssumptions'))rules.push('technicalAssumptions: 서로 다른 구현 가정 최소 2개.');
+  if(fields.includes('validationQuestions'))rules.push('validationQuestions: 서로 다른 검증 질문 최소 2개.');
+  if(fields.includes('systemInterconnections'))rules.push('systemInterconnections: 최소 3개 서로 다른 객체. fromSystem/toSystem/trigger/stateChange를 모두 구체적으로 작성.');
+  return rules;
 }
 function impactedRolesFromScores(...scores){
   const axes=uniq(scores.flatMap(scored=>[
@@ -676,7 +685,7 @@ for(let repairAttempt=1;repairAttempt<=3&&!preGatePass(preGate);repairAttempt++)
   const packet=repairPacket(preGate);
   const patch=await runPhase(`designer_pre_gate_repair_${repairAttempt}`,()=>callDesignerModel(
     '너는 최초 설계를 작성한 동일 Game Designer AI다. 실패한 deterministic 설계축만 실제 설계 변경으로 수리한다. 통과를 가장하거나 실패코드를 삭제하지 않는다.',
-    `현재 실패축만 수정하라. 지정 필드 외 내용은 반환하지 않는다. 각 필드는 REPAIR_PACKET의 requiredAction을 실제 구현 가능한 구체적 설계로 만족시켜야 한다.\nREPAIR_FIELDS=${JSON.stringify(fields)}\nREPAIR_PACKET=${clip(packet,6500)}\nGAME_SEED=${clip(seed,4500)}\nCURRENT_DESIGN=${clip(Object.fromEntries(fields.map(field=>[field,designDraft[field]])),8000)}`,
+    `현재 실패축만 수정하라. 지정 필드 외 내용은 반환하지 않는다. 각 필드는 REPAIR_PACKET의 requiredAction을 실제 구현 가능한 구체적 설계로 만족시켜야 한다. 아래 STRUCTURE_CONTRACT는 scorer가 직접 검사하는 최소 구조이며 축소하거나 형식적으로 채우면 안 된다.\nREPAIR_FIELDS=${JSON.stringify(fields)}\nSTRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(fields))}\nREPAIR_PACKET=${clip(packet,6500)}\nGAME_SEED=${clip(seed,4500)}\nCURRENT_DESIGN=${clip(Object.fromEntries(fields.map(field=>[field,designDraft[field]])),8000)}`,
     schema,
     {predict:Math.min(1500,550+fields.length*140),temperature:0.1,numCtx:6144,timeoutMs:120000,maxAttempts:2}
   ));
@@ -728,16 +737,24 @@ const leadReviews=await runPhase('five_lead_reviews',()=>adaptiveParallel(
   )
 ));
 
+const resolvedLeadModels=Object.fromEntries(ROLES.map(role=>[
+  role,
+  designCheckpoint.geminiModelResolution?.[leadModels[role]]||leadModels[role]
+]));
+const distinctResolvedLeadModels=uniq(Object.values(resolvedLeadModels));
+console.log(`GEMINI_RESOLVED_LEAD_MODELS=${Object.entries(resolvedLeadModels).map(([role,model])=>`${role}:${model}`).join(',')}`);
+console.log(`GEMINI_RESOLVED_DISTINCT_LEAD_COUNT=${distinctResolvedLeadModels.length}`);
+
 for(const role of ROLES){
   const lead=leadModels[role];
   const review=leadReviews[role];
   writeJson(path.join(base,'departments',role,'lead-review.json'),{
     version:5,gameId,date,productionClass:'DESIGN_ONLY',department:role,
-    leadModel:lead,reviewMode:'DIRECT_LEAD_ONLY',review
+    leadModel:lead,actualLeadModel:resolvedLeadModels[role],reviewMode:'DIRECT_LEAD_ONLY',review
   });
   writeJson(path.join(base,'departments',role,'representative.json'),{
     version:5,gameId,date,productionClass:'DESIGN_ONLY',department:role,
-    representativeModel:lead,leadModel:lead,assistantModels:[],
+    representativeModel:resolvedLeadModels[role],leadModel:lead,actualLeadModel:resolvedLeadModels[role],assistantModels:[],
     representativeAuthoredByLead:true,syntheticCompatibilityRecord:true,representative:review
   });
 }
@@ -806,9 +823,10 @@ writeJson(path.join(base,'design-disposition.json'),dispositionEvidence);
 
 const modelAudit=Object.fromEntries(ROLES.map(role=>[role,{
   leadModel:leadModels[role],
+  actualLeadModel:resolvedLeadModels[role],
   assistantModels:[],
-  models:[leadModels[role]],
-  count:1,required:1,pass:Boolean(leadModels[role]),
+  models:[resolvedLeadModels[role]],
+  count:1,required:1,pass:Boolean(resolvedLeadModels[role]),
   reviewMode:'DIRECT_LEAD_ONLY'
 }]));
 const runtimeMetrics={
@@ -842,8 +860,10 @@ writeJson(path.join(base,'cycle-status.json'),{
   gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true},
   designer:{role:'GAME_DESIGNER_AI',model:activeDesignerRoute.id,singleAuthor:true,sameModelRevised:true},
   departments:{
-    count:ROLES.length,roles:ROLES,leadModels,distinctLeadModels,
-    distinctLeadModelCount:distinctLeadModels.length,leadModelsDistinct:distinctLeadModels.length===ROLES.length,
+    count:ROLES.length,roles:ROLES,leadModels,resolvedLeadModels,
+    distinctLeadModels:distinctResolvedLeadModels,
+    distinctLeadModelCount:distinctResolvedLeadModels.length,
+    leadModelsDistinct:distinctResolvedLeadModels.length===ROLES.length,
     reviewModelCount:1,modelAudit,rebuttalRounds:0,repeatedFatalReview:false,
     reviewMode:'FIVE_DISTINCT_LEAD_PARALLEL_REVIEW'
   },
