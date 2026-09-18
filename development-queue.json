@@ -1,36 +1,7 @@
 {
   "version": 1,
-  "items": [
-    {
-      "gameId": "bug-defense",
-      "seedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
-      "gameName": "곤충 디펜스",
-      "productionClass": "DEVELOPMENT_CONFIRMED",
-      "selectedPlatform": "UNITY",
-      "targetPlatform": "UNITY",
-      "targetSourcePath": "unity-games/bug-defense",
-      "webSourcePath": "web-games/bug-defense",
-      "designBaselineSource": "design/bug-defense/2026-09-18/design-revised.json",
-      "designDate": "2026-09-18",
-      "artbookSource": "artbook-submissions/bug-defense/current.json",
-      "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
-      "postPromotionArtbookRequired": false,
-      "postWebArtbookRequired": true,
-      "strictDesignScore": 89.4,
-      "enqueuedAt": "2026-09-18T06:47:15.773Z",
-      "webValidationRequired": true,
-      "musicValidationRequired": true,
-      "homepageTestCandidate": false,
-      "homepageTestScore": null,
-      "homepageTestVerdict": "WAITING_WEB_STRICT_REVIEW",
-      "status": "ACTIVE",
-      "sourcePath": "web-games/bug-defense",
-      "currentStep": "WEB_PLAYABLE_BOOTSTRAP",
-      "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
-      "webValidationQueuedAt": "2026-09-18T06:47:15.773Z"
-    }
-  ],
-  "updatedAt": "2026-09-18T06:47:15.773Z",
+  "items": [],
+  "updatedAt": "2026-09-18T06:47:26.516Z",
   "routerContractVersion": 4,
   "routerPolicy": "COMPANY_FLOW.md",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
@@ -45,5 +16,6 @@
   "formalImplementationMinimum": 90,
   "webValidationEvidenceSchemaMinimum": 15,
   "webPromotionRevalidationRequired": true,
-  "developmentGameWipMax": 6
+  "developmentGameWipMax": 6,
+  "reconciliationPolicy": "CATALOG_ACTIVE_REBUILD_DEVELOPMENT_CONFIRMED_AUTO_GUARANTEE"
 }
