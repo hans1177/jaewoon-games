@@ -1,5 +1,5 @@
 {
-  "version": 14,
+  "version": 15,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -326,7 +326,8 @@
         "company-runtime:development-queue.json",
         "main:roblox-games/<gameId>",
         "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
-        ".vibe2/queue.json"
+        ".vibe2/queue.json",
+        "main:company-learning/roblox-sustained-maintenance.json"
       ],
       "generatedTaskContract": {
         "postReleaseFocused": true,
@@ -350,8 +351,39 @@
         "reviewing",
         "other"
       ],
-      "schedulerGuarantee": "RESERVE_ONE_POST_RELEASE_FOCUSED_TASK_BEFORE_GENERAL_BATCH_SELECTION",
-      "learningRunsInParallel": true
+      "schedulerGuarantee": "RESERVE_ONE_SHARED_ROBLOX_SUSTAINED_MAINTENANCE_SLOT_BEFORE_GENERAL_BATCH_SELECTION",
+      "learningRunsInParallel": true,
+      "historicalDeploymentRecovery": {
+        "enabled": true,
+        "registry": "company-learning/roblox-sustained-maintenance.json",
+        "protectedSlotSharedWithCurrentPostReleaseFocus": true,
+        "maxActiveHistoricalMaintenanceTasks": 1,
+        "eligibility": [
+          "actual-studio-runtime-pass",
+          "post-runtime-independent-qa-pass",
+          "regression-pass",
+          "historical-publication-target-observed",
+          "source-root-present"
+        ],
+        "currentReleaseClaimRequired": false,
+        "currentReleaseClaimMustNotBeInvented": true,
+        "maintenanceTaskReleaseState": "development-confirmed",
+        "taskFlag": "historicalDeploymentRecovery",
+        "automaticRepublish": false,
+        "republishRoute": "EXISTING_ROBLOX_RELEASE_PROMOTION_PIPELINE",
+        "currentSourceChangeRequires": [
+          "TARGET_PLATFORM_RUNTIME",
+          "TARGET_PLATFORM_INDEPENDENT_QA",
+          "TARGET_PLATFORM_REGRESSION",
+          "RELEASE_PROMOTION"
+        ],
+        "publicationTargetEvidenceMayBeHistorical": true,
+        "publicationTargetDoesNotProveCurrentRelease": true,
+        "assetStates": {
+          "HISTORICAL_PUBLICATION_TARGET_VERIFIED": "MAINTENANCE_ELIGIBLE",
+          "HISTORICAL_RUNTIME_VALIDATED_PUBLICATION_TARGET_UNCONFIRMED": "PRESERVE_ONLY"
+        }
+      }
     },
     "executionBindings": {
       "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
