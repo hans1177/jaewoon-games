@@ -108,15 +108,21 @@ function robloxBuildProfile(out,seed,mode){
     displayLabelKo:classified.displayLabelKo
   };
 }
-function validRobloxBuildProfile(profile,mode){
-  if(!profile||Array.isArray(profile)||typeof profile!=='object')return false;
-  if(profile.targetPlatform!=='ROBLOX'||clean(profile.playMode).toUpperCase()!==mode)return false;
-  if(!clean(profile.genre)||clean(profile.genre)==='Utility & other')return false;
-  const multi=mode!=='SINGLE';
-  if(profile.multiplayerRequired!==multi||profile.networkingRequired!==multi||profile.multiplayerQaRequired!==multi)return false;
-  if(profile.coopImplementationRequired!==(mode==='COOP'||mode==='HYBRID'))return false;
-  if(profile.competitiveImplementationRequired!==(mode==='COMPETITIVE'||mode==='HYBRID'))return false;
-  return Number(profile.minimumParticipantsForRequiredQa)===(multi?2:1);
+export function validateRobloxBuildProfile(profile,mode){
+  const blockers=[];
+  const expectedMode=clean(mode).toUpperCase();
+  if(!profile||Array.isArray(profile)||typeof profile!=='object')return {valid:false,blockers:['object']};
+  if(profile.targetPlatform!=='ROBLOX')blockers.push('targetPlatform');
+  if(!MODES.has(expectedMode)||clean(profile.playMode).toUpperCase()!==expectedMode)blockers.push('playMode');
+  if(!clean(profile.genre)||clean(profile.genre)==='Utility & other')blockers.push('genre');
+  const multi=expectedMode!=='SINGLE';
+  if(profile.multiplayerRequired!==multi)blockers.push('multiplayerRequired');
+  if(profile.networkingRequired!==multi)blockers.push('networkingRequired');
+  if(profile.multiplayerQaRequired!==multi)blockers.push('multiplayerQaRequired');
+  if(profile.coopImplementationRequired!==(expectedMode==='COOP'||expectedMode==='HYBRID'))blockers.push('coopImplementationRequired');
+  if(profile.competitiveImplementationRequired!==(expectedMode==='COMPETITIVE'||expectedMode==='HYBRID'))blockers.push('competitiveImplementationRequired');
+  if(Number(profile.minimumParticipantsForRequiredQa)!==(multi?2:1))blockers.push('minimumParticipantsForRequiredQa');
+  return {valid:blockers.length===0,blockers};
 }
 
 export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNKNOWN',designDate='',allowLegacyMultiplayerInference=false}={}){
@@ -156,15 +162,18 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
   setMissingArray(out,'validationQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
   setMissingArray(out,'openQuestions',[],repairs,'STRUCTURAL_EMPTY_ALLOWED',{min:0,max:8});
 
-  const required=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','visualDirection','mobileUx','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision',...(requireRobloxBuildProfile?['robloxBuildProfile']:[]),'technicalAssumptions','validationQuestions','openQuestions'];
+  const required=['identity','playerFantasy','coreFun','coreLoop','signatureSystems','progressionDirection','visualDirection','mobileUx','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','technicalAssumptions','validationQuestions','openQuestions'];
   const unresolved=required.filter(key=>{
     if(key==='coreLoop')return !Array.isArray(out[key])||out[key].length<3;
     if(['signatureSystems','technicalAssumptions','validationQuestions','openQuestions'].includes(key))return !Array.isArray(out[key]);
     if(key==='multiplayerMode')return !MODES.has(clean(out[key]).toUpperCase());
-    if(key==='robloxBuildProfile')return !validRobloxBuildProfile(out[key],clean(out.multiplayerMode).toUpperCase());
     return !clean(out[key]);
   });
-  return {value:out,repairs,unresolved,phase};
+  const robloxProfileValidation=requireRobloxBuildProfile
+    ?validateRobloxBuildProfile(out.robloxBuildProfile,clean(out.multiplayerMode).toUpperCase())
+    :{valid:true,blockers:[]};
+  if(!robloxProfileValidation.valid)for(const blocker of robloxProfileValidation.blockers)unresolved.push(`robloxBuildProfile.${blocker}`);
+  return {value:out,repairs,unresolved,phase,robloxBuildProfileBlockers:robloxProfileValidation.blockers};
 }
 
 export function repairPersistedDesignForPromotion({root='.',designRoot='design',gameId,date,phase='PRE_REVIEW'}={}){
@@ -182,7 +191,7 @@ export function repairPersistedDesignForPromotion({root='.',designRoot='design',
   if(changed){revised.content=repaired.value;revised.prePromotionRepair={phase,repairs:repaired.repairs,groundedOnly:true,legacyMultiplayerNormalization:repaired.repairs.some(row=>String(row.source||'').startsWith('LEGACY_DESIGN.')),strictScoreOrVerdictModified:false,repairedAt:new Date().toISOString()};writeJson(revisedPath,revised);}
   const strictAfter=readJson(strictPath,null);
   if(JSON.stringify(strictBefore)!==JSON.stringify(strictAfter))throw new Error('STRICT_REVIEW_MUTATION_FORBIDDEN');
-  return {changed,repairs:repaired.repairs,unresolved:repaired.unresolved,reason:changed?'GROUNDED_DESIGN_FIELDS_REPAIRED':'NO_SAFE_REPAIR_REQUIRED',robloxBuildProfile:repaired.value.robloxBuildProfile||null};
+  return {changed,repairs:repaired.repairs,unresolved:repaired.unresolved,reason:changed?'GROUNDED_DESIGN_FIELDS_REPAIRED':'NO_SAFE_REPAIR_REQUIRED',robloxBuildProfile:repaired.value.robloxBuildProfile||null,robloxBuildProfileBlockers:repaired.robloxBuildProfileBlockers||[]};
 }
 
 function arg(name){const hit=process.argv.find(value=>value.startsWith(`--${name}=`));return hit?clean(hit.slice(name.length+3)):'';}
@@ -197,6 +206,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`PREPROMOTION_REPAIR_REASON=${result.reason}`);
   console.log(`PREPROMOTION_REPAIR_FIELDS=${result.repairs.map(x=>x.field).join(',')}`);
   console.log(`PREPROMOTION_REPAIR_UNRESOLVED=${result.unresolved.join(',')}`);
+  console.log(`PREPROMOTION_REPAIR_PROFILE_BLOCKERS=${(result.robloxBuildProfileBlockers||[]).join(',')||'NONE'}`);
   console.log(`ROBLOX_BUILD_GENRE=${clean(build.genre)||'MISSING'}`);
   console.log(`ROBLOX_BUILD_SUBGENRE=${clean(build.subgenre)||'NONE'}`);
   console.log(`ROBLOX_BUILD_PLAY_MODE=${clean(build.playMode)||'MISSING'}`);
