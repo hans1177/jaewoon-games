@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .game {
+      width: 80%;
+      max-width: 800px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(8, 50px);
+      grid-template-rows: repeat(8, 50px);
+      gap: 5px;
+      margin: 20px 0;
+    }
+    .square {
+      width: 50px;
+      height: 50px;
+      background-color: #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #333;
+      border: 1px solid #ccc;
+      cursor: pointer;
+    }
+    .square.selected {
+      background-color: #007bff;
+      color: white;
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #ddd;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div class="game">
+      <div class="board" id="board"></div>
+      <div class="controls">
+        <button id="newGame">새 게임</button>
+        <button id="restart">재시작</button>
+        <button id="aiMove">AI 움직임</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const board = document.getElementById('board');
+    const newGameBtn = document.getElementById('newGame');
+    const restartBtn = document.getElementById('restart');
+    const aiMoveBtn = document.getElementById('aiMove');
+
+    // 게임 초기화
+    function initGame() {
+      board.innerHTML = '';
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.className = 'square';
+          square.dataset.row = row;
+          square.dataset.col = col;
+          square.addEventListener('click', () => selectSquare(square));
+          board.appendChild(square);
+        }
+      }
+    }
+
+    // 선택된 퀀트 선택
+    function selectSquare(square) {
+      if (!square.classList.contains('selected')) {
+        square.classList.add('selected');
+        // AI 움직임 처리
+        aiMoveBtn.disabled = false;
+      }
+    }
+
+    // 게임 재시작
+    function restartGame() {
+      initGame();
+      restartBtn.disabled = true;
+      aiMoveBtn.disabled = true;
+    }
+
+    // AI 움직임
+    function aiMove() {
+      // AI 움직임 로직
+      // 예: AI가 랜덤하게 움직임
+      const emptySquares = [];
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          if (!board.querySelectorAll(`[data-row='${row}'][data-col='${col}']`).some(sq => sq.classList.contains('selected'))) {
+            emptySquares.push({ row, col });
+          }
+        }
+      }
+      if (emptySquares.length > 0) {
+        const randomSquare = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+        const selectedSquare = board.querySelectorAll(`[data-row='${randomSquare.row}'][data-col='${randomSquare.col}']`);
+        selectedSquare[0].classList.remove('selected');
+        selectedSquare[0].classList.add('selected');
+      }
+    }
+
+    // 게임 시작
+    newGameBtn.addEventListener('click', () => {
+      initGame();
+      restartBtn.disabled = false;
+      aiMoveBtn.disabled = false;
+    });
+
+    // 재시작 버튼 클릭
+    restartBtn.addEventListener('click', restartGame);
+
+    // AI 움직임 버튼 클릭
+    aiMoveBtn.addEventListener('click', aiMove);
+  </script>
+</body>
+</html>
