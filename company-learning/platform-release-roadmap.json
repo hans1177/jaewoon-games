@@ -183,8 +183,8 @@
     "cookieAuthAllowed": false,
     "deploymentControl": {
       "version": 1,
-      "automaticPublishPaused": true,
-      "automaticReleaseDispatchAllowed": false,
+      "automaticPublishPaused": false,
+      "automaticReleaseDispatchAllowed": true,
       "manualPublishAllowed": true,
       "allowedPublishRoutes": [
         "GITHUB_CLOUD_OPEN_CLOUD",
@@ -192,8 +192,15 @@
       ],
       "studioUiPublishAllowed": false,
       "cookiePublishAllowed": false,
-      "resumeMode": "MANUAL_ONLY_WHILE_PAUSED",
-      "authority": "OWNER_DIRECTIVE_2026-09-19"
+      "resumeMode": "AUTO_AFTER_CANONICAL_FINAL_REVIEW",
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "openCloudSafety": {
+        "officialApiOnly": true,
+        "exactFinalReviewedArtifactRequired": true,
+        "transient409RetryWithinRun": true,
+        "automaticRedispatchAfter409": false,
+        "rateLimitBackoffRequired": true
+      }
     }
   },
   "unity": {
