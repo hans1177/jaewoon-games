@@ -30,7 +30,7 @@ function designSchemaRetryable(error){
   const terminalDesignFailure=/(?:DESIGN_PRE_GATE_BLOCKED|DESIGN_BASELINE_BLOCKED|GAME_SEED_REQUIRED|GEMINI_API_KEY_REQUIRED|GEMINI_LEAD_MODEL_GATE|GEMINI_DISTINCT_LEAD_GATE|GEMINI_NO_AVAILABLE_MODELS)/i.test(output);
   if(terminalDesignFailure)return false;
   const schemaOrJsonFailure=/(?:schema required missing|schema object mismatch|schema enum mismatch|schema additional property|schema array mismatch|schema minItems mismatch|schema maxItems mismatch|schema string mismatch|schema maxLength mismatch|model response is not a JSON object|empty model response|unexpected token|unexpected end of json input|expected ['\",]|unterminated string|unterminated array|unterminated object|bad control character|json at position)/i.test(output);
-  const transientModelFailure=/(?:aborted due to timeout|timeout|timed out)/i.test(output);
+  const transientModelFailure=/(?:aborted due to timeout|timed out|AbortError|TimeoutError)/i.test(output);
   return schemaOrJsonFailure||transientModelFailure;
 }
 async function runWithRetry(script,{attempts='UNLIMITED',label='PIPELINE_STAGE',retryWhen=()=>true}={}){
