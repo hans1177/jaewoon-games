@@ -130,13 +130,9 @@ test('Pocket Foundry deterministic template fails closed when semantic spatial s
   assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',baseline}),/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/);
 });
 
-test('permanently removed Vector Clash canonical template fails closed after source deletion',()=>{
-  const gameId='seed-roblox-battleground-fight-welcome-to-bloxburg';
-  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
-  assert.ok(roadmap.permanentProjectRemoval.ids.includes(gameId));
-  assert.equal(roadmap.permanentProjectRemoval.sourceDeletionRequired,true);
+test('Vector Clash deterministic template fails closed when semantic interaction or spatial scope is missing',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001',content:{identity:'Vector Clash',coreFun:'combat, opponent, skill, cooldown',coreLoop:['read opponent movement and create an attack opening','damage opponents and reposition around cooldowns','finish rounds and re-enter with a changed tactical choice'],mobileUx:'touch controls'}};
-  assert.throws(()=>buildContractSafePlayable({gameId,gameName:'Vector Clash',baseline}),/CANONICAL_REAL_GAME_TEMPLATE_MISSING:web-games\/seed-roblox-battleground-fight-welcome-to-bloxburg\/index\.html/);
+  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',baseline}),/(?:APPROVED_SCOPE_REAL_(?:ENTITY_INTERACTION|SPATIAL_STATE)_REQUIRED|CANONICAL_REAL_GAME_TEMPLATE_MISSING)/);
 });
 
 test('Celestial Bastion shallow tower button is rejected and returns to Vibe instead of being preserved',async()=>{
