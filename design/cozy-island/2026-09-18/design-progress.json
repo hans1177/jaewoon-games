@@ -2,81 +2,33 @@
   "version": 2,
   "gameId": "cozy-island",
   "date": "2026-09-18",
-  "engineDigest": "fb57cc31b517538b876d9f42ad117d843c7ec529d6d7f806549a1614a65ee57a",
-  "status": "COMPLETE",
-  "currentStage": "COMPLETE",
-  "percent": 100,
+  "engineDigest": "1678961c9ca98d0c0a1ff143cc5cae0bcbed44bcdefc197e0d16960e75858422",
+  "status": "IN_PROGRESS",
+  "currentStage": "DEPARTMENT_REVIEWS",
+  "percent": 67,
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate",
-    "five_lead_reviews",
-    "designer_revision"
+    "deterministic_pre_gate"
   ],
-  "completedPhaseCount": 4,
-  "cachedTaskCount": 5,
-  "lastSuccessfulModelCallAt": "2026-09-18T07:37:24.468Z",
+  "completedPhaseCount": 2,
+  "cachedTaskCount": 0,
+  "lastSuccessfulModelCallAt": "2026-09-18T07:39:18.671Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 19973,
-      "lastMs": 7424,
-      "lastError": null,
-      "updatedAt": "2026-09-18T07:37:24.468Z"
-    },
-    "gemini:gemini-3-flash-preview": {
       "calls": 1,
       "successes": 1,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2538,
-      "lastMs": 2538,
+      "totalMs": 13287,
+      "lastMs": 13287,
       "lastError": null,
-      "updatedAt": "2026-09-18T07:37:08.715Z"
-    },
-    "gemini:gemini-3.5-flash": {
-      "calls": 1,
-      "successes": 1,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 6407,
-      "lastMs": 6407,
-      "lastError": null,
-      "updatedAt": "2026-09-18T07:37:12.582Z"
-    },
-    "gemini:gemini-3.1-flash-lite": {
-      "calls": 1,
-      "successes": 1,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 5799,
-      "lastMs": 5799,
-      "lastError": null,
-      "updatedAt": "2026-09-18T07:37:14.515Z"
-    },
-    "gemini:gemini-3.6-flash": {
-      "calls": 1,
-      "successes": 1,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 2951,
-      "lastMs": 2951,
-      "lastError": null,
-      "updatedAt": "2026-09-18T07:37:17.040Z"
+      "updatedAt": "2026-09-18T07:39:18.671Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T07:37:24.471Z",
-  "preGateScore": 80,
-  "postRevisionPreGateScore": 80
+  "updatedAt": "2026-09-18T07:39:19.766Z"
 }
