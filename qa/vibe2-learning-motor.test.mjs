@@ -1,4 +1,5 @@
 import test from 'node:test';
+import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import { dedupeIdlePracticeTasks, injectIdlePracticeTask } from '../tools/vibe2-learning-motor.mjs';
 
@@ -65,4 +66,23 @@ test('dedupe never merges unrelated production tasks',()=>{
   assert.equal(result.removed,1);
   assert.equal(result.tasks.filter(t=>t.id==='prod-a').length,2);
   assert.equal(result.tasks.filter(t=>t.id==='LEARNING-PRACTICE-gap-save-l1').length,1);
+});
+
+
+test('idle practice model answers require verification and distillation before reuse',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe2-learning-motor.json',import.meta.url),'utf8'));
+  const boundary=policy.idleTraining?.knowledgeBoundary||{};
+  assert.equal(boundary.rawPracticeModelAnswerAuthority,'UNTRUSTED_PRACTICE_OUTPUT');
+  assert.equal(boundary.rawPracticeModelAnswerMayEnterRetrieval,false);
+  assert.equal(boundary.rawPracticeModelAnswerMayBecomeExperience,false);
+  assert.equal(boundary.rawPracticeModelAnswerMayIncreaseMastery,false);
+  assert.equal(boundary.rawPracticeModelAnswerMayEnterCanonicalTraining,false);
+  assert.equal(boundary.independentVerificationRequiredBeforeReuse,true);
+  assert.equal(boundary.distillationRequiredBeforeReuse,true);
+  assert.equal(boundary.verifiedDistilledLessonAuthority,'VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE');
+  assert.equal(boundary.verifiedDistilledLessonMayEnterRetrieval,true);
+  assert.equal(boundary.verifiedProjectOutcomeStillRequiredForPositiveMasteryOrTraining,true);
+  assert.equal(boundary.authorityExpanded,false);
+  assert.equal(policy.modelTraining?.practiceRawModelOutputDirectTraining,false);
+  assert.equal(policy.modelTraining?.practiceDistilledKnowledgeDirectTraining,false);
 });
