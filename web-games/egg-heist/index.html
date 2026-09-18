@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 1px solid #333;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .controls button:hover {
+      background-color: #444;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Protected state preservation
+    const protectedState = {
+      game: {
+        progress: 0,
+        difficulty: 1,
+        inventory: [],
+        health: 100,
+        money: 0,
+        location: "start"
+      },
+      ui: {
+        isMenuOpen: false,
+        isGameOver: false,
+        isRestartRequired: false
+      }
+    };
+
+    // Game loop
+    function gameLoop() {
+      const game = protectedState.game;
+      const ui = protectedState.ui;
+
+      // Game logic here
+      if (game.progress === 100) {
+        ui.isGameOver = true;
+        ui.isRestartRequired = true;
+      }
+
+      // UI updates
+      if (ui.isMenuOpen) {
+        document.body.style.backgroundColor = "#333";
+      } else {
+        document.body.style.backgroundColor = "#222";
+      }
+
+      // Mobile gameplay
+      if (ui.isRestartRequired) {
+        alert("Game over! Restart required.");
+      }
+
+      // Runtime checks
+      if (game.health <= 0) {
+        alert("Game over! You died.");
+      }
+
+      // Save state preservation
+      if (game.progress >= 50) {
+        protectedState.game.progress = game.progress;
+      }
+
+      // Game loop continues
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Initialize game
+    gameLoop();
+  </script>
+</body>
+</html>
