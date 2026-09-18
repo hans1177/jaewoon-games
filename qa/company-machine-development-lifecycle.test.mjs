@@ -149,6 +149,9 @@ assert.equal(focus.generatedTaskContract.packageLongWorkProtected,true);
 assert.equal(focus.generatedTaskContract.packageRole,'implementation-owner');
 assert.equal(focus.historicalDeploymentRecovery.registry,'company-learning/roblox-sustained-maintenance.json');
 assert.equal(focus.historicalDeploymentRecovery.currentReleaseClaimRequired,false);
+assert.equal(focus.historicalDeploymentRecovery.taskFlag,'historicalDeploymentRecovery');
+assert.match(queue,/historicalDeploymentRecovery: input\.historicalDeploymentRecovery === true/);
+assert.match(planner,/self-recovery:HISTORICAL_DEPLOYMENT_FLAG_RESTORED/);
 assert.match(planner,/company-learning\/roblox-sustained-maintenance\.json/);
 assert.match(planner,/lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE/);
 
