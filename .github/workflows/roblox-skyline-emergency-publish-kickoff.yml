@@ -1,11 +1,7 @@
 name: Kick Skyline Rush Normalized Publish
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/roblox-skyline-emergency-publish-kickoff.yml'
-      - '.github/workflows/roblox-skyline-emergency-final-publish.yml'
+  workflow_dispatch:
 
 permissions:
   actions: write
