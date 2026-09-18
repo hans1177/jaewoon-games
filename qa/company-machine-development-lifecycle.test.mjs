@@ -144,10 +144,10 @@ assert(quota.vibeSubstitution.forbiddenResponsibilities.includes('DESIGN_INDEPEN
 assert(quota.vibeSubstitution.forbiddenResponsibilities.includes('STAGE_GATE_SCORE_OR_VERDICT_SYNTHESIS'));
 assert.equal(quota.geminiFallback.paidApiAdditionForbidden,true);
 assert.equal(quota.geminiFallback.resumeFromExactBlockedTask,true);
-assert.match(seedDesignRuntime,/COMPANY_GEMINI_FALLBACK_MODELS: '[^']*gemini-3\.8-flash[^']*gemini-3\.7-flash'/);
-assert.doesNotMatch(seedDesignRuntime,/COMPANY_GEMINI_FALLBACK_MODELS: '[^']*gemini-2\.5-flash/);
-assert.doesNotMatch(seedDesignRuntime,/COMPANY_GEMINI_FALLBACK_MODELS: '[^']*gemini-2\.5-flash-lite/);
-assert.doesNotMatch(seedDesignRuntime,/COMPANY_GEMINI_FALLBACK_MODELS: '[^']*gemini-2\.5-pro/);
+assert.match(seedDesignRuntime,/COMPANY_GEMINI_LEAD_MODELS: '[^']*gemini-3\.8-flash[^']*gemini-3\.7-flash[^']*'/);
+assert.match(seedDesignRuntime,/const authorizedLeadPool=uniq\(directive\?\.ai\?\.modelPool\|\|\[\]\);/);
+assert.match(seedDesignRuntime,/if\(primary\.some\(model=>!authorizedLeadPool\.includes\(model\)\)\)throw new Error\('GEMINI_QUOTA_GOVERNOR_UNAUTHORIZED_LEAD_MODEL'\);/);
+assert.match(seedDesignRuntime,/const fallback=authorizedLeadPool;/);
 assert.match(seedDesignRuntime,/COMPANY_GEMINI_LEAD_FALLBACK_LANES:/);
 assert.match(seedDesignRuntime,/Resolve checkpoint-aware Gemini quota lanes/);
 assert.match(seedDesignRuntime,/WAITING_FOR_GEMINI_QUOTA/);
