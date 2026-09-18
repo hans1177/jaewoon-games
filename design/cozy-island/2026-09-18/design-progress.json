@@ -4,15 +4,16 @@
   "date": "2026-09-18",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
   "status": "IN_PROGRESS",
-  "currentStage": "DEPARTMENT_REVIEWS",
-  "percent": 67,
+  "currentStage": "DESIGNER_REVISION",
+  "percent": 83,
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "five_lead_reviews"
   ],
-  "completedPhaseCount": 2,
-  "cachedTaskCount": 4,
-  "lastSuccessfulModelCallAt": "2026-09-18T14:56:22.484Z",
+  "completedPhaseCount": 3,
+  "cachedTaskCount": 5,
+  "lastSuccessfulModelCallAt": "2026-09-18T14:58:26.661Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -62,17 +63,17 @@
       "updatedAt": "2026-09-18T14:56:22.484Z"
     },
     "gemini:gemini-3.6-flash": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 90001,
-      "lastMs": 90001,
+      "totalMs": 224152,
+      "lastMs": 134151,
       "lastError": "The operation was aborted due to timeout",
-      "updatedAt": "2026-09-18T14:57:42.512Z"
+      "updatedAt": "2026-09-18T14:58:26.661Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T14:57:42.512Z"
+  "updatedAt": "2026-09-18T14:58:26.664Z"
 }

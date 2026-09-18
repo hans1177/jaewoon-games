@@ -9,7 +9,8 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "five_lead_reviews"
   ],
   "phases": {
     "designer_draft": {
@@ -197,6 +198,108 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "five_lead_reviews": {
+      "balance": {
+        "keep": [
+          "실패 시 캐릭터 사망이나 페널티 없이 즉시 제자리에서 재시도할 수 있는 스트레스 없는 복귀 루프"
+        ],
+        "fix": [
+          "낚시 줄 끊김 시 소모되는 미끼의 획득 난이도를 낮추고 주변 채집을 통해 100% 확정 수급되도록 조정"
+        ],
+        "add": [
+          "날씨 및 시간대 변화에 따른 희귀 자원 출현율 보정 테이블 및 세션당 최소 1회 조우 보장 안전장치"
+        ],
+        "risks": [
+          "피로도 감소를 위한 보상 배율 과도 상향 시 콘텐츠 소모 속도가 급증하여 마일스톤 1 도달 전 정체 발생 우려"
+        ],
+        "evidence": [
+          "글로벌 캐주얼 세션 데이터 기준 평균 세션 시간 4분에 맞춘 1회 채집/낚시 사이클 30초 이내 설계 필요"
+        ],
+        "questions": [
+          "수중 잠수 기능 추가 시 기존 지상 도구의 업그레이드 수치가 수중 장비 효율에 직접 전이되는 구조인가?"
+        ]
+      },
+      "development": {
+        "keep": [
+          "클라이언트 측 독립 채집/인벤토리 로직 처리를 통한 0.1초 이내의 즉각적인 터치 반응성 확보"
+        ],
+        "fix": [
+          "비동기 데이터 저장 시점과 로컬 캐시 간의 동기화 간격을 좁혀 재접속 시 데이터 유실 가능성을 원천 차단할 것"
+        ],
+        "add": [
+          "ROBLOX 플랫폼의 DataStore v2를 활용한 섬 배치 데이터의 버전 관리 및 자동 롤백 시스템 구현"
+        ],
+        "risks": [
+          "실시간 날씨/시간 변화에 따른 대량의 오브젝트 스폰 및 교체 시 저사양 모바일 기기에서의 메모리 스파이크 발생 위험"
+        ],
+        "evidence": [
+          "ROBLOX 모바일 환경의 평균 프레임 드랍 지점 분석 결과, 잦은 인스턴스 생성/파괴보다 풀링 시스템 활용 시 성능 40% 향상"
+        ],
+        "questions": [
+          "동시 접속자가 많은 HYBRID 멀티플레이 환경에서 개별 플레이어의 섬 커스텀 데이터 로드 부하를 어떻게 분산할 것인가?"
+        ]
+      },
+      "graphics": {
+        "keep": [
+          "따뜻한 파스텔 톤 색감과 로우폴리 3D 아트 스타일을 유지하여 시각적 편안함과 친근한 브랜드 아이덴티티를 구축할 것."
+        ],
+        "fix": [
+          "저사양 모바일 기기 최적화를 위해 셰이더 복잡도를 낮추고, 텍스처 아틀라스 활용 및 드로우 콜 최소화 설계를 즉시 적용할 것."
+        ],
+        "add": [
+          "날씨 변화에 따른 실시간 라이팅 및 환경 효과(비, 안개 등)를 추가하여 섬의 생태적 유기성을 시각적으로 강화할 것."
+        ],
+        "risks": [
+          "로우폴리 스타일에서 디테일 부족으로 인한 시각적 단조로움이 발생할 수 있으며, 이는 오브젝트별 고유 실루엣으로 해결해야 함."
+        ],
+        "evidence": [
+          "캐주얼 힐링 장르의 성공 사례인 'Animal Crossing' 및 'Cozy Grove'의 시각적 밀도와 가독성 벤치마크를 참조함."
+        ],
+        "questions": [
+          "섬의 지형 변화가 시각적으로 즉각 인지되도록 하는 '상태 변화 애니메이션'의 리소스 예산은 어느 정도로 책정되어 있는가?"
+        ]
+      },
+      "planning": {
+        "keep": [
+          "한 손 터치 기반의 직관적인 낚시 및 채집 코어 루프와 빠른 재시도 흐름"
+        ],
+        "fix": [
+          "실패 시 미끼 손실에 대한 압박감을 완전히 제거하여 힐링 장르 정체성 강화"
+        ],
+        "add": [
+          "마일스톤 1 단계의 수중 잠수 탐험 콘텐츠를 즉시 개발 계획에 구체화 반영"
+        ],
+        "risks": [
+          "하이브리드 멀티플레이 도입 시 서버 동기화 및 친구 방문 허용 범위 설정 복잡성"
+        ],
+        "evidence": [
+          "글로벌 캐주얼 세션 4분 및 일일 세션 지표에 부합하는 짧고 빠른 리플레이 구조"
+        ],
+        "questions": [
+          "계절 변화 주기를 실제 시간 기반과 게임 내 시간 기반 중 어느 쪽으로 고정할 것인가?"
+        ]
+      },
+      "qa": {
+        "keep": [
+          "실패 페널티 없는 직관적인 원터치 낚시 및 채집 루프와 저사양 60fps 최적화 계획 유지"
+        ],
+        "fix": [
+          "네트워크 지연 발생 시 낚시 손맛 및 타이밍 판정이 클라이언트에서 이탈하지 않도록 예측 로직 보정 지시"
+        ],
+        "add": [
+          "멀티플레이 시 타 플레이어 동시 채집/낚시 동작 간 데이터 동기화 검증 자동화 테스트 케이스 추가"
+        ],
+        "risks": [
+          "주야간/날씨 교체 시 실시간 생물 리스트 스왑 과정에서 메모리 누수 및 클라이언트 프레임 드롭 위험"
+        ],
+        "evidence": [
+          "100회 연속 입력 테스트 로그 및 데이터 무결성 검증 계획을 통해 기초 UI/데이터 안정성 확인 완료"
+        ],
+        "questions": [
+          "HYBRID 멀티플레이 환경에서 다른 사용자의 섬 방문 시 동기화 지연 한계치는 몇 ms로 설정할 것인가?"
+        ]
+      }
     }
   },
   "tasks": {
@@ -279,6 +382,26 @@
       "questions": [
         "수중 잠수 기능 추가 시 기존 지상 도구의 업그레이드 수치가 수중 장비 효율에 직접 전이되는 구조인가?"
       ]
+    },
+    "five_lead_reviews::qa": {
+      "keep": [
+        "실패 페널티 없는 직관적인 원터치 낚시 및 채집 루프와 저사양 60fps 최적화 계획 유지"
+      ],
+      "fix": [
+        "네트워크 지연 발생 시 낚시 손맛 및 타이밍 판정이 클라이언트에서 이탈하지 않도록 예측 로직 보정 지시"
+      ],
+      "add": [
+        "멀티플레이 시 타 플레이어 동시 채집/낚시 동작 간 데이터 동기화 검증 자동화 테스트 케이스 추가"
+      ],
+      "risks": [
+        "주야간/날씨 교체 시 실시간 생물 리스트 스왑 과정에서 메모리 누수 및 클라이언트 프레임 드롭 위험"
+      ],
+      "evidence": [
+        "100회 연속 입력 테스트 로그 및 데이터 무결성 검증 계획을 통해 기초 UI/데이터 안정성 확인 완료"
+      ],
+      "questions": [
+        "HYBRID 멀티플레이 환경에서 다른 사용자의 섬 방문 시 동기화 지연 한계치는 몇 ms로 설정할 것인가?"
+      ]
     }
   },
   "modelHealth": {
@@ -327,27 +450,28 @@
       "updatedAt": "2026-09-18T14:56:22.484Z"
     },
     "gemini:gemini-3.6-flash": {
-      "calls": 1,
-      "successes": 0,
+      "calls": 2,
+      "successes": 1,
       "failures": 1,
       "timeouts": 1,
       "jsonFailures": 0,
-      "totalMs": 90001,
-      "lastMs": 90001,
+      "totalMs": 224152,
+      "lastMs": 134151,
       "lastError": "The operation was aborted due to timeout",
-      "updatedAt": "2026-09-18T14:57:42.512Z"
+      "updatedAt": "2026-09-18T14:58:26.661Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DEPARTMENT_REVIEWS",
+  "currentPhase": "DESIGNER_REVISION",
   "createdAt": "2026-09-18T14:55:48.146Z",
-  "updatedAt": "2026-09-18T14:57:42.512Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T14:56:22.484Z",
+  "updatedAt": "2026-09-18T14:58:26.664Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T14:58:26.661Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
     "gemini-3-flash-preview": "gemini-3-flash-preview",
     "gemini-3.1-flash-lite": "gemini-3.1-flash-lite",
-    "gemini-3.5-flash": "gemini-3.5-flash"
+    "gemini-3.5-flash": "gemini-3.5-flash",
+    "gemini-3.6-flash": "gemini-3.6-flash"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
