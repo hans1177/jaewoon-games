@@ -8,7 +8,9 @@ const VIBE_WORKFLOWS = new Set(['Vibe QA','Vibe Integrated Regression']);
 const RUNTIME_SYNC_SECONDS = 30;
 const MIN_DEVELOPMENT_SCORE_SCHEMA = 13;
 const RUNTIME_SUPPORTED_PLATFORMS = ['UNITY','ROBLOX','FORTNITE_UEFN'];
-const UNIVERSAL_TOUCH_SCRIPT='<script src="/web-games/_shared/touch-controls.js?v=20260913-touch1"></script>';
+const UNIVERSAL_TOUCH_VERSION='20260918-noab4';
+const UNIVERSAL_TOUCH_PATH='/web-games/_shared/touch-controls.js';
+const UNIVERSAL_TOUCH_SCRIPT=`<script src="${UNIVERSAL_TOUCH_PATH}?v=${UNIVERSAL_TOUCH_VERSION}"></script>`;
 
 function aiJson(data,status=200,extraHeaders={}){
   return new Response(JSON.stringify(data),{status,headers:{...AI_JSON_HEADERS,...extraHeaders}});
@@ -340,6 +342,19 @@ async function handleRuntimeStatus(request,env){
   }
 }
 
+async function serveUniversalTouchScript(request,env){
+  const cleanUrl=new URL(request.url);
+  cleanUrl.search='';
+  const assetRequest=new Request(cleanUrl.toString(),request);
+  const response=await env.ASSETS.fetch(assetRequest);
+  const headers=new Headers(response.headers);
+  headers.set('Cache-Control','no-store, no-cache, must-revalidate');
+  headers.set('Pragma','no-cache');
+  headers.set('Expires','0');
+  headers.delete('Content-Length');
+  return new Response(request.method==='HEAD'?null:await response.arrayBuffer(),{status:response.status,statusText:response.statusText,headers});
+}
+
 async function injectUniversalTouchControls(response){
   const type=response.headers.get('content-type')||'';
   if(!type.includes('text/html'))return response;
@@ -368,6 +383,7 @@ async function serveSurvival2(request,env){
 export default{
   async fetch(request,env){
     const url=new URL(request.url);
+    if(url.pathname===UNIVERSAL_TOUCH_PATH)return serveUniversalTouchScript(request,env);
     if(url.pathname==='/api/ai/status')return handleAiStatus(env);
     if(url.pathname==='/api/ai/gemini')return handleGemini(request,env);
     if(url.pathname==='/api/vibe/workflow-observation')return handleVibeWorkflowObservation(request,env,url);
