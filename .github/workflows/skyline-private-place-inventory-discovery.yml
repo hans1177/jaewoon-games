@@ -1,0 +1,104 @@
+name: Skyline Private Place Inventory Discovery
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/skyline-private-place-inventory-discovery.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: skyline-private-place-inventory-discovery
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    if: github.head_ref == 'diag/skyline-publication-target-discovery-20260917'
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 8
+    steps:
+      - name: Resolve authenticated Studio identity from exact Skyline package
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
+          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
+          $studio = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions\*\RobloxStudioBeta.exe') -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          $root = Join-Path $env:RUNNER_TEMP 'skyline-inventory-exact-package'
+          if (Test-Path $root) { Remove-Item -Recurse -Force $root }
+          New-Item -ItemType Directory -Path $root | Out-Null
+          gh run download 35110903876 --repo $env:GITHUB_REPOSITORY --name development-roblox-package-seed-roblox-obby-party-minigam-tower-of-hell --dir $root
+          if ($LASTEXITCODE -ne 0) { throw 'exact Skyline package download failed' }
+          $places = @(Get-ChildItem $root -Recurse -File | Where-Object { $_.Extension -in @('.rbxl','.rbxlx') })
+          if ($places.Count -ne 1) { throw "expected one exact Skyline place, found $($places.Count)" }
+          $place = $places[0]
+          $hash = (Get-FileHash $place.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne '7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc') { throw "exact Skyline artifact hash mismatch: $hash" }
+          $script = Join-Path $env:RUNNER_TEMP 'skyline-inventory-identity.luau'
+          $output = Join-Path $env:RUNNER_TEMP 'skyline-inventory-identity.output.log'
+          $stdout = Join-Path $env:RUNNER_TEMP 'skyline-inventory-identity.stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'skyline-inventory-identity.stderr.log'
+          $scriptText = @'
+          print("SKYLINE_INVENTORY_EXECUTION" .. "=YES")
+          local studioService = game:GetService("StudioService")
+          local okUser, userId = pcall(function()
+              return studioService:GetUserId()
+          end)
+          if okUser then
+              print("SKYLINE_INVENTORY_STUDIO_USER_ID" .. "=" .. tostring(userId))
+          end
+          '@
+          [System.IO.File]::WriteAllText($script, $scriptText, (New-Object System.Text.UTF8Encoding($false)))
+          Remove-Item -Force $output,$stdout,$stderr -ErrorAction SilentlyContinue
+          $argLine = "--task RunScript --localPlaceFile `"$($place.FullName)`" --runScriptFile `"$script`" --outputFile `"$output`" --quitAfterExecution"
+          $p = Start-Process -FilePath $studio.FullName -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          $exited = $p.WaitForExit(90000)
+          if (-not $exited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue; throw 'Studio identity probe timeout' }
+          $p.WaitForExit()
+          $combined = ''
+          foreach ($f in @($stdout,$stderr,$output)) { if (Test-Path $f) { $combined += "`n" + (Get-Content $f -Raw) } }
+          if ($combined -notmatch '(?m)^SKYLINE_INVENTORY_EXECUTION=YES\r?$') { throw 'Studio inventory probe execution sentinel missing' }
+          $m = [regex]::Match($combined, '(?m)^SKYLINE_INVENTORY_STUDIO_USER_ID=([1-9][0-9]*)\r?$')
+          if (-not $m.Success) { throw 'authenticated Studio user id missing' }
+          $userId = $m.Groups[1].Value
+          Write-Host "::add-mask::$userId"
+          "SKYLINE_STUDIO_USER_ID=$userId" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host 'SKYLINE_INVENTORY_STUDIO_IDENTITY=PASS'
+
+      - name: Query Created place inventory for exact Skyline title
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:SKYLINE_STUDIO_USER_ID -notmatch '^[1-9][0-9]*$') { throw 'masked Studio user id unavailable' }
+          $cursor = ''
+          $matches = @()
+          do {
+            $url = "https://inventory.roblox.com/v1/users/$($env:SKYLINE_STUDIO_USER_ID)/places/inventory?itemsPerPage=100&placesTab=Created&cursor=$([uri]::EscapeDataString($cursor))"
+            $response = Invoke-RestMethod -Uri $url -Method Get -Headers @{ Accept = 'application/json' }
+            foreach ($place in @($response.data)) {
+              if ([string]$place.name -ceq 'Skyline Sprint') { $matches += $place }
+            }
+            $cursor = [string]$response.nextPageCursor
+          } while ($cursor)
+          if ($matches.Count -eq 0) {
+            Write-Host 'SKYLINE_PRIVATE_PLACE_MATCH=NONE'
+            exit 0
+          }
+          if ($matches.Count -ne 1) { throw "ambiguous Skyline Sprint Created-place matches: $($matches.Count)" }
+          $match = $matches[0]
+          $placeId = [string]$match.placeId
+          $universeId = [string]$match.universeId
+          if ($placeId -notmatch '^[1-9][0-9]*$') { throw 'Skyline Created-place match has invalid placeId' }
+          Write-Host 'SKYLINE_PRIVATE_PLACE_MATCH=FOUND'
+          Write-Host "SKYLINE_PRIVATE_PLACE_ID=$placeId"
+          if ($universeId -match '^[1-9][0-9]*$') {
+            Write-Host "SKYLINE_PRIVATE_UNIVERSE_ID=$universeId"
+          } else {
+            Write-Host 'SKYLINE_PRIVATE_UNIVERSE_ID=UNAVAILABLE'
+          }

@@ -1,0 +1,155 @@
+name: Skyline Publication Target Discovery
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/skyline-publication-target-discovery.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: skyline-publication-target-discovery
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    if: github.head_ref == 'diag/skyline-publication-target-discovery-20260917'
+    runs-on: [self-hosted, Windows, X64, roblox-studio-authenticated]
+    timeout-minutes: 8
+    steps:
+      - name: Verify authenticated Studio runner
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $runnerMetadata = Get-Content 'C:\actions-runner\.runner' -Raw | ConvertFrom-Json
+          if ([string]$runnerMetadata.agentName -ne 'roblox-studio-local') { throw "Unexpected runner: $($runnerMetadata.agentName)" }
+          Write-Host 'SKYLINE_TARGET_DISCOVERY_RUNNER=roblox-studio-local'
+
+      - name: Inspect Skyline-bearing Studio logs for publication IDs
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $logRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+          if (-not (Test-Path $logRoot)) {
+            Write-Host 'SKYLINE_TARGET_LOG_EVIDENCE=NONE:NO_LOG_ROOT'
+            exit 0
+          }
+          $cutoff = (Get-Date).AddDays(-14)
+          $files = @(Get-ChildItem $logRoot -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -ge $cutoff })
+          $hits = @()
+          foreach ($file in $files) {
+            $text = Get-Content $file.FullName -Raw -ErrorAction SilentlyContinue
+            if (-not $text) { continue }
+            if ($text -notmatch '(?i)Skyline Sprint|seed-roblox-obby-party-minigam-tower-of-hell') { continue }
+            foreach ($pattern in @(
+              '(?i)(?:UniverseId|Universe ID|GameId|Game ID)[^0-9]{0,30}([1-9][0-9]{7,})',
+              '(?i)(?:PlaceId|Place ID|placeId)[^0-9]{0,30}([1-9][0-9]{7,})',
+              '(?i)roblox\.com/games/([1-9][0-9]{7,})'
+            )) {
+              foreach ($m in [regex]::Matches($text, $pattern)) { $hits += $m.Value }
+            }
+          }
+          $hits = @($hits | Sort-Object -Unique)
+          if ($hits.Count -eq 0) {
+            Write-Host 'SKYLINE_TARGET_LOG_EVIDENCE=NONE'
+          } else {
+            Write-Host 'SKYLINE_TARGET_LOG_EVIDENCE=FOUND'
+            foreach ($hit in $hits) { Write-Host "SKYLINE_TARGET_LOG_MATCH=$hit" }
+          }
+
+      - name: Run exact retained Skyline package in authenticated Studio and inspect identity
+        shell: powershell
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $studio = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Roblox\Versions\*\RobloxStudioBeta.exe') -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $studio) { throw 'RobloxStudioBeta.exe not found' }
+          $root = Join-Path $env:RUNNER_TEMP 'skyline-target-exact-package'
+          if (Test-Path $root) { Remove-Item -Recurse -Force $root }
+          New-Item -ItemType Directory -Path $root | Out-Null
+          gh run download 35110903876 --repo $env:GITHUB_REPOSITORY --name development-roblox-package-seed-roblox-obby-party-minigam-tower-of-hell --dir $root
+          if ($LASTEXITCODE -ne 0) { throw 'exact Skyline package download failed' }
+          $places = @(Get-ChildItem $root -Recurse -File | Where-Object { $_.Extension -in @('.rbxl','.rbxlx') })
+          if ($places.Count -ne 1) { throw "expected one exact Skyline place, found $($places.Count)" }
+          $place = $places[0]
+          $hash = (Get-FileHash $place.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne '7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc') { throw "exact Skyline artifact hash mismatch: $hash" }
+          Write-Host 'SKYLINE_TARGET_EXACT_ARTIFACT=PASS'
+
+          $script = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.luau'
+          $stdout = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.stdout.log'
+          $stderr = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.stderr.log'
+          $output = Join-Path $env:RUNNER_TEMP 'skyline-target-identity.output.log'
+          $scriptText = @'
+          print("SKYLINE_TARGET_EXECUTION" .. "=YES")
+          print("SKYLINE_TARGET_LOCAL_GAME_ID" .. "=" .. tostring(game.GameId))
+          print("SKYLINE_TARGET_LOCAL_PLACE_ID" .. "=" .. tostring(game.PlaceId))
+          local studioService = game:GetService("StudioService")
+          local okUser, userId = pcall(function()
+              return studioService:GetUserId()
+          end)
+          print("SKYLINE_TARGET_STUDIO_USER_OK" .. "=" .. tostring(okUser))
+          if okUser then
+              print("SKYLINE_TARGET_STUDIO_USER_ID" .. "=" .. tostring(userId))
+          end
+          '@
+          [System.IO.File]::WriteAllText($script, $scriptText, (New-Object System.Text.UTF8Encoding($false)))
+          Remove-Item -Force $stdout,$stderr,$output -ErrorAction SilentlyContinue
+          $started = Get-Date
+          $argLine = "--task RunScript --localPlaceFile `"$($place.FullName)`" --runScriptFile `"$script`" --outputFile `"$output`" --quitAfterExecution"
+          $p = Start-Process -FilePath $studio.FullName -ArgumentList $argLine -PassThru -RedirectStandardOutput $stdout -RedirectStandardError $stderr
+          $exited = $p.WaitForExit(90000)
+          if (-not $exited) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue; throw 'Studio identity probe timeout' }
+          $p.WaitForExit()
+          $combined = ''
+          foreach ($f in @($stdout,$stderr,$output)) { if (Test-Path $f) { $combined += "`n" + (Get-Content $f -Raw) } }
+          $nativeRoot = Join-Path $env:LOCALAPPDATA 'Roblox\logs'
+          if (Test-Path $nativeRoot) {
+            foreach ($f in Get-ChildItem $nativeRoot -File -ErrorAction SilentlyContinue | Where-Object { $_.LastWriteTime -ge $started.AddSeconds(-2) }) {
+              $combined += "`n" + (Get-Content $f.FullName -Raw -ErrorAction SilentlyContinue)
+            }
+          }
+          if ($combined -notmatch '(?m)^SKYLINE_TARGET_EXECUTION=YES\r?$') { throw 'Studio identity probe execution sentinel missing' }
+          $gameId = [regex]::Match($combined, '(?m)^SKYLINE_TARGET_LOCAL_GAME_ID=([^\r\n]+)\r?$').Groups[1].Value.Trim()
+          $placeId = [regex]::Match($combined, '(?m)^SKYLINE_TARGET_LOCAL_PLACE_ID=([^\r\n]+)\r?$').Groups[1].Value.Trim()
+          $userMatch = [regex]::Match($combined, '(?m)^SKYLINE_TARGET_STUDIO_USER_ID=([1-9][0-9]*)\r?$')
+          Write-Host "SKYLINE_TARGET_LOCAL_GAME_ID=$gameId"
+          Write-Host "SKYLINE_TARGET_LOCAL_PLACE_ID=$placeId"
+          if (-not $userMatch.Success) { throw 'authenticated Studio user id missing' }
+          $studioUserId = $userMatch.Groups[1].Value
+          Write-Host "::add-mask::$studioUserId"
+          "SKYLINE_STUDIO_USER_ID=$studioUserId" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          Write-Host 'SKYLINE_TARGET_STUDIO_IDENTITY=PASS'
+
+      - name: Query exact Skyline title in authenticated creator public games
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:SKYLINE_STUDIO_USER_ID -notmatch '^[1-9][0-9]*$') { throw 'masked Studio user id unavailable' }
+          $matches = @()
+          $cursor = ''
+          do {
+            $url = "https://games.roblox.com/v2/users/$($env:SKYLINE_STUDIO_USER_ID)/games?accessFilter=2&limit=50&sortOrder=Asc"
+            if ($cursor) { $url += "&cursor=$([uri]::EscapeDataString($cursor))" }
+            $response = Invoke-RestMethod -Uri $url -Method Get -Headers @{ Accept = 'application/json' }
+            foreach ($game in @($response.data)) {
+              if ([string]$game.name -ceq 'Skyline Sprint') { $matches += $game }
+            }
+            $cursor = [string]$response.nextPageCursor
+          } while ($cursor)
+          if ($matches.Count -eq 0) {
+            Write-Host 'SKYLINE_TARGET_ACCOUNT_MATCH=NONE'
+            exit 0
+          }
+          if ($matches.Count -ne 1) { throw "ambiguous Skyline Sprint account matches: $($matches.Count)" }
+          $match = $matches[0]
+          $universeId = [string]$match.id
+          $rootPlaceId = [string]$match.rootPlace.id
+          if ($universeId -notmatch '^[1-9][0-9]*$' -or $rootPlaceId -notmatch '^[1-9][0-9]*$') { throw 'Skyline account match has invalid universe/root place ids' }
+          Write-Host 'SKYLINE_TARGET_ACCOUNT_MATCH=FOUND'
+          Write-Host "SKYLINE_TARGET_ACCOUNT_UNIVERSE_ID=$universeId"
+          Write-Host "SKYLINE_TARGET_ACCOUNT_PLACE_ID=$rootPlaceId"
