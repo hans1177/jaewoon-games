@@ -85,6 +85,7 @@ jobs:
           set -euo pipefail
           git fetch origin \
             '+refs/heads/main:refs/remotes/origin/main' \
+            '+refs/heads/company-runtime:refs/remotes/origin/company-runtime' \
             '+refs/heads/autonomous-dev:refs/remotes/origin/autonomous-dev' \
             '+refs/heads/autonomous/candidate-*:refs/remotes/origin/autonomous/candidate-*' \
             --prune
@@ -167,6 +168,7 @@ jobs:
           node tools/vibe2-distillation-ingest.mjs \
             --dev-ref=origin/autonomous-dev \
             --main-ref=origin/main \
+            --company-runtime-ref=origin/company-runtime \
             --out-dir=company-learning/training-samples | tee /tmp/vibe2-distillation-ingest.json
           node tools/vibe3-trajectory-ingest.mjs \
             --trajectory-dir=company-learning/vibe3-trajectories \
@@ -202,6 +204,9 @@ jobs:
           const pump=read('/tmp/vibe3-pump.json');
           console.log(`DISTILLATION_SAMPLES_WRITTEN=${ingest.written.length}`);
           console.log(`DISTILLATION_SAMPLES_REFRESHED=${ingest.refreshed?.length||0}`);
+          console.log(`WEB_FINAL_SAMPLES_EXAMINED=${ingest.webFinal?.examined||0}`);
+          console.log(`WEB_FINAL_SAMPLES_WRITTEN=${ingest.webFinal?.written?.length||0}`);
+          console.log(`WEB_FINAL_SAMPLES_SKIPPED=${ingest.webFinal?.skipped?.length||0}`);
           console.log(`LEGACY_LEARNING_INVALIDATED=${sanitized.invalidated||0}`);
           console.log(`LEGACY_LEARNING_INVALIDATION_GAMES=${Object.keys(sanitized.byGame||{}).join(',')||'NONE'}`);
           console.log('OWNER_EXISTING_GAMES_BLANKET_BLOCKED=NO');
