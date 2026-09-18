@@ -1,0 +1,30 @@
+{
+  "contractVersion": 2,
+  "gameId": "cozy-island",
+  "date": "2026-09-18",
+  "seedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
+  "fingerprint": "0f61fb3f64000ee61b65b2ae64eb4f711452f7df3b0d773ae892f84d6ce10748",
+  "policyDigest": "4ba5cefda9bb72060f4934114c91ba83051c6624d5449a2e30cab94221bf4321",
+  "engineDigest": "05b2a9d594155708ebf27797b249a78c3cdfbee815c1ddae3923df631ae3fe37",
+  "status": "IN_PROGRESS",
+  "completedPhases": [],
+  "phases": {},
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.8-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 13880,
+      "lastMs": 13880,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T06:29:10.806Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DESIGNER_DRAFT",
+  "createdAt": "2026-09-18T06:28:56.924Z",
+  "updatedAt": "2026-09-18T06:29:10.806Z"
+}

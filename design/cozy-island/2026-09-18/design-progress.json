@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "gameId": "cozy-island",
+  "date": "2026-09-18",
+  "engineDigest": "05b2a9d594155708ebf27797b249a78c3cdfbee815c1ddae3923df631ae3fe37",
+  "status": "IN_PROGRESS",
+  "currentStage": "DESIGNER_DRAFT",
+  "percent": 17,
+  "completedPhases": [],
+  "completedPhaseCount": 0,
+  "cachedTaskCount": 0,
+  "lastSuccessfulModelCallAt": null,
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "modelHealth": {
+    "gemini:gemini-3.8-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 13880,
+      "lastMs": 13880,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T06:29:10.806Z"
+    }
+  },
+  "slowPhases": {},
+  "updatedAt": "2026-09-18T06:29:10.806Z"
+}
