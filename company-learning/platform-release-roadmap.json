@@ -1,5 +1,5 @@
 {
-  "version": 19,
+  "version": 20,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -200,6 +200,18 @@
         "transient409RetryWithinRun": true,
         "automaticRedispatchAfter409": false,
         "rateLimitBackoffRequired": true
+      },
+      "ownerPinnedPublicationTarget": {
+        "version": 1,
+        "enabled": true,
+        "purpose": "OPEN_CLOUD_AUTOMATION_TEST_TARGET",
+        "experienceName": "test",
+        "universeId": "10766974456",
+        "placeId": "112507741861842",
+        "fallbackOnlyWhenNoGameSpecificVerifiedTarget": true,
+        "persistPerGameAfterProvenPublish": true,
+        "requireGitHubSecretIdMatch": true,
+        "authority": "OWNER_DIRECTIVE_2026-09-19"
       }
     }
   },
