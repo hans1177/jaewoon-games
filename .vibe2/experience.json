@@ -355,6 +355,57 @@
       "createdAt": "2026-09-16T00:52:38.538Z",
       "lastVerifiedAt": "2026-09-16T00:52:38.538Z",
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "exp_rg6lvy",
+      "fingerprint": "fp_ir28gd",
+      "gameId": "block-blast",
+      "engine": "android",
+      "departments": [
+        "development",
+        "qa",
+        "design"
+      ],
+      "taskType": "coding",
+      "problem": "Reuse verified implementation knowledge from an authorized Block Blast source-derived learning pack.",
+      "goal": "Apply authorized source, asset, native-library and algorithm structure lessons as retrieval context without treating static analysis as runtime evidence.",
+      "change": "package=fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c; domains=board-grid-placement,score-combo-reward,input-drag-touch,progression-difficulty,save-state-persistence,ads-monetization,session-retry-gameover,tutorial-onboarding",
+      "outcome": "PASS",
+      "failureCause": null,
+      "qa": [
+        "AUTHORIZED_SOURCE_PROVENANCE_PASS",
+        "STATIC_ANALYSIS_ONLY"
+      ],
+      "build": "AUTHORIZED_SOURCE_MEMORY",
+      "evidence": [
+        "AUTHORIZED_STATIC_EXTRACTION_PASS",
+        "PACKAGE_FINGERPRINT:fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c",
+        "SUMMARY_SHA256:5467e01b9a7955de715eb1d030c051c7cae42c67938c610c0caf3b29ae99167b",
+        "SOURCE_PATH:/tmp/vibe2-main/company-learning/authorized-source/block-blast/authorized-learning-summary.json"
+      ],
+      "reusablePatterns": [
+        "AUTHORIZED_SOURCE:board-grid-placement",
+        "AUTHORIZED_SOURCE:score-combo-reward",
+        "AUTHORIZED_SOURCE:input-drag-touch",
+        "AUTHORIZED_SOURCE:progression-difficulty",
+        "AUTHORIZED_SOURCE:save-state-persistence",
+        "AUTHORIZED_SOURCE:ads-monetization",
+        "AUTHORIZED_SOURCE:session-retry-gameover",
+        "AUTHORIZED_SOURCE:tutorial-onboarding"
+      ],
+      "avoidPatterns": [
+        "do-not-treat-static-analysis-as-runtime-pass",
+        "do-not-bypass-current-project-qa",
+        "do-not-expand-authority-beyond-owner-authorized-scope"
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": "2026-09-18T00:16:50.454Z",
+      "lastVerifiedAt": "2026-09-18T00:16:50.454Z",
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
     }
   ]
 }
