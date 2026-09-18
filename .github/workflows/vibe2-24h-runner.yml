@@ -44,6 +44,10 @@ env:
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '20'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
 
+concurrency:
+  group: vibe2-24h-cycle-main
+  cancel-in-progress: false
+
 jobs:
   plan:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
