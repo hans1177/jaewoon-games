@@ -153,6 +153,33 @@ test('registered historical Roblox maintenance survives catalog absence and revi
   assert.ok(revived.evidence.includes('self-recovery:HISTORICAL_DEPLOYMENT_FLAG_RESTORED'));
 });
 
+test('owner permanent removal hard-cancels historical maintenance and cannot revive',()=>{
+  const root=tempRepo();
+  const id='removed-game';
+  const task={
+    id:'removed-maintenance',gameId:id,target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/removed-game',releaseState:'development-confirmed',status:'queued',
+    postReleaseFocused:true,historicalDeploymentRecovery:true,packageLongWorkProtected:true,packageRole:'implementation-owner',
+    evidence:['historical-deployment-recovery:yes','historical-current-release-claim:NO','maintenance-registry:company-learning/roblox-sustained-maintenance.json']
+  };
+  const historicalRegistry={assets:[{
+    gameId:id,sourceRoot:'roblox-games/removed-game',maintenanceEligible:true,currentReleaseClaim:false,
+    recoveryState:'HISTORICAL_PUBLICATION_TARGET_VERIFIED'
+  }]};
+  const catalog={
+    permanentRemovalPolicy:{ids:[id],reentryAllowed:false,automaticRecoveryAllowed:false,automaticMaintenanceAllowed:false},
+    games:[{id,homepageCategory:'development-confirmed',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]
+  };
+  const result=planVibe2AutonomousTasks({status:{projects:[]},catalog,queue:{tasks:[task]},historicalRegistry,repoRoot:root,maxConcurrentTasks:4});
+  const cancelled=result.queue.tasks.find(row=>row.id==='removed-maintenance');
+  assert.equal(cancelled.status,'cancelled');
+  assert.equal(cancelled.blocker,'lifecycle-inactive:REMOVED_PERMANENTLY');
+  assert.equal(cancelled.lastOutcome,'CANCELLED_BY_OWNER_PERMANENT_REMOVAL');
+  assert.equal(cancelled.postReleaseFocused,false);
+  assert.equal(cancelled.historicalDeploymentRecovery,false);
+  assert.ok(cancelled.evidence.includes('owner-permanent-removal:yes'));
+});
+
 test('historical flags alone cannot bypass catalog authority without registry eligibility',()=>{
   const root=tempRepo();
   const task={
