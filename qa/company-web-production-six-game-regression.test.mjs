@@ -29,7 +29,7 @@ for(const row of HISTORICAL_REAL_GAMES){
     assert.ok(staticReview.blockers.some(code=>code.startsWith('APPROVED_SCOPE_ITEM_MISSING:')||code.startsWith('APPROVED_SCOPE_MECHANIC_DIVERSITY_TOO_LOW:')),staticReview.blockers.join(','));
     const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-six-real-repair-')),candidatePath=path.join(temp,'candidate');
     try{
-      await assert.rejects(()=>buildFirstPlayable({gameId:row.gameId,gameName:row.gameName,baseline:lockedBaseline,sourcePath,candidatePath,candidateId:'six-game-semantic-repair',sourceCommit:'test',model:'none'}),/VIBE2_GEMINI_MODEL_REQUIRED/);
+      await assert.rejects(()=>buildFirstPlayable({gameId:row.gameId,gameName:row.gameName,baseline:lockedBaseline,sourcePath,candidatePath,candidateId:'six-game-semantic-repair',sourceCommit:'test',model:'none'}),/VIBE_WEB_IMPLEMENTATION_REQUIRED/);
       assert.equal(fs.existsSync(path.join(candidatePath,'index.html')),false,'a shallow source must not be copied forward as a pass');
       console.log(`HISTORICAL_SOURCE_REPAIR_REQUIRED=${row.gameId}:PASS`);
     }finally{fs.rmSync(temp,{recursive:true,force:true});}
@@ -42,7 +42,7 @@ for(const [gameId,gameName,seed] of HARNESS_GAMES){
     const raw=fs.readFileSync(indexFile,'utf8');assert.match(raw,/(?:scope-control-|FULL APPROVED WEB COMPANION|<button\b[^>]*data-session-stage)/i);
     const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-six-harness-')),candidatePath=path.join(temp,'candidate');
     try{
-      await assert.rejects(()=>buildFirstPlayable({gameId,gameName,baseline:baseline(seed,gameName),sourcePath,candidatePath,candidateId:'six-game-harness-return',sourceCommit:'test',model:'none'}),/VIBE2_GEMINI_MODEL_REQUIRED/);
+      await assert.rejects(()=>buildFirstPlayable({gameId,gameName,baseline:baseline(seed,gameName),sourcePath,candidatePath,candidateId:'six-game-harness-return',sourceCommit:'test',model:'none'}),/VIBE_WEB_IMPLEMENTATION_REQUIRED/);
       assert.equal(fs.existsSync(path.join(candidatePath,'index.html')),false);console.log(`HARNESS_PRODUCTION_RETURN=${gameId}:PASS`);
     }finally{fs.rmSync(temp,{recursive:true,force:true});}
   });
