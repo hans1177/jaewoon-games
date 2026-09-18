@@ -193,7 +193,8 @@ const checkpointCompatibleEngineDigests=new Set([
   '4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec',
   '24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03',
   '2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f',
-  '84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf'
+  '84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf',
+  '9aae351acc02880ef280b371a21ead70b013c820010af4eeb88e23fe059d71b3'
 ]);
 const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
   &&clean(designCheckpoint?.gameId)===gameId
