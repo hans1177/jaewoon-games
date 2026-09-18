@@ -223,7 +223,9 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(design,/deterministic_pre_gate/);
   assert.match(design,/DETERMINISTIC_PRE_GATE_V2/);
   assert.match(design,/designer_pre_gate_repair_/);
-  assert.match(design,/repairAttempt<=2/);
+  assert.match(design,/repairAttempt<=3/);
+  assert.match(design,/function scoreCurrentDesign/);
+  assert.match(design,/Deterministic scoring is intentionally never served from checkpoint cache/);
   assert.match(design,/DESIGN_PRE_GATE_BLOCKED/);
   assert.match(design,/DESIGNER_DRAFT_GENERATION=ONE_CALL/);
   assert.match(design,/DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT/);
