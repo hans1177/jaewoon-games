@@ -97,7 +97,9 @@ jobs:
           fi
 
       - name: Download verified Google Play runtime samples
+        id: google_play_samples
         if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Vibe2 External Mobile Free Game Playtest'
+        continue-on-error: true
         uses: actions/download-artifact@v4
         with:
           name: external-mobile-gameplay-samples
@@ -105,8 +107,15 @@ jobs:
           github-token: ${{ github.token }}
           run-id: ${{ github.event.workflow_run.id }}
 
+      - name: Report deferred Google Play learning run
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Vibe2 External Mobile Free Game Playtest' && steps.google_play_samples.outcome != 'success'
+        shell: bash
+        run: |
+          echo 'COMMERCIAL_RUNTIME_ARTIFACT=ABSENT'
+          echo 'COMMERCIAL_RUNTIME_IMPORT=SKIPPED_NO_REAL_PLAYTEST_ARTIFACT'
+
       - name: Import Google Play runtime samples into canonical learning state
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Vibe2 External Mobile Free Game Playtest'
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Vibe2 External Mobile Free Game Playtest' && steps.google_play_samples.outcome == 'success'
         shell: bash
         run: |
           set -euo pipefail
