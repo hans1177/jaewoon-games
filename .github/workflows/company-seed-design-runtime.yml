@@ -29,7 +29,7 @@ env:
   # Model identity is remappable by central policy. Prefer models with remaining free-tier quota before exhausted daily lanes.
   COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3.5-flash-lite'
   COMPANY_GEMINI_LEAD_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash'
-  COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash,gemini-3.8-flash,gemini-3.7-flash,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-2.5-pro'
+  COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.6-flash,gemini-3.5-flash,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-2.5-pro,gemini-3.8-flash,gemini-3.7-flash'
 
 jobs:
   resolve-seed-targets:
@@ -254,10 +254,10 @@ jobs:
           const checkpointPath=path.join('design',clean(process.env.ARTBOOK_GAME_ID),clean(process.env.ARTBOOK_DATE),'design-checkpoint.json');
           let checkpoint={};
           try{checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));}catch{}
-          const dailyQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i;
+          const unavailableModel=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
           const exhausted=new Set();
           for(const [rawModel,row] of Object.entries(checkpoint.modelHealth||{})){
-            if(!dailyQuota.test(clean(row?.lastError)))continue;
+            if(!unavailableModel.test(clean(row?.lastError)))continue;
             exhausted.add(clean(rawModel).replace(/^gemini:/,''));
           }
           const completedTasks=checkpoint.tasks&&typeof checkpoint.tasks==='object'?checkpoint.tasks:{};
@@ -267,7 +267,7 @@ jobs:
           const modelCapacityRemaining=allModels.some(model=>!exhausted.has(model));
           const runModelCycle=blockedRoles.length===0&&modelCapacityRemaining;
           console.log(`GEMINI_QUOTA_GOVERNOR=${runModelCycle?'READY':'WAITING_FOR_GEMINI_QUOTA'}`);
-          console.log(`GEMINI_DAILY_EXHAUSTED_MODELS=${[...exhausted].join(',')||'NONE'}`);
+          console.log(`GEMINI_UNAVAILABLE_MODELS=${[...exhausted].join(',')||'NONE'}`);
           console.log(`GEMINI_INCOMPLETE_LEAD_ROLES=${missingRoles.join(',')||'NONE'}`);
           console.log(`GEMINI_BLOCKED_LEAD_ROLES=${blockedRoles.join(',')||'NONE'}`);
           console.log(`GEMINI_QUOTA_CHECKPOINT_PRESERVED=${fs.existsSync(checkpointPath)?'YES':'NO'}`);
@@ -695,14 +695,14 @@ jobs:
           const state=JSON.parse(show('game-seed-state.json'));
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const dailyQuota=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i;
+          const unavailableModel=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
           let blocked=0;
           for(const seed of state.seeds||[]){
             if(clean(seed.status).toUpperCase()!=='ACTIVE')continue;
             const cpPath=`design/${seed.gameId}/${date}/design-checkpoint.json`;
             if(!exists(cpPath))continue;
             let cp={};try{cp=JSON.parse(show(cpPath));}catch{continue;}
-            const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>dailyQuota.test(clean(row?.lastError))).map(([model])=>clean(model).replace(/^gemini:/,'')));
+            const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>unavailableModel.test(clean(row?.lastError))).map(([model])=>clean(model).replace(/^gemini:/,'')));
             if(!exhausted.size)continue;
             const tasks=cp.tasks&&typeof cp.tasks==='object'?cp.tasks:{};
             const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(tasks,`five_lead_reviews::${role}`));
