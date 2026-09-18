@@ -172,4 +172,52 @@ assert.match(designCycle,/GEMINI_DAILY_QUOTA_EXHAUSTED=/);
 assert.ok(designCycle.indexOf('if(status===429&&isDailyGeminiQuotaError(error))')<designCycle.indexOf('const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel)'));
 
 
+const multiverse=lifecycle.intentAmplificationMultiverse;
+assert.equal(multiverse.authority,'MACHINE_EXECUTION_CONTRACT');
+assert.equal(multiverse.humanDocumentRequired,false);
+assert.equal(multiverse.humanAgencyPrimary,true);
+assert.equal(multiverse.vibeRole,'INTENT_MEMORY_CREATIVE_CAPABILITY_AMPLIFIER');
+assert.equal(multiverse.consciousnessClaimed,false);
+assert.equal(multiverse.sanctuarySemantics.canonicalProjectStateMustRemainRecoverable,true);
+assert.equal(multiverse.sanctuarySemantics.checkpointBeforeRiskyBranchOrStageTransition,true);
+assert.equal(multiverse.sanctuarySemantics.restartFromBlankForbiddenWhenValidContinuationStateExists,true);
+assert(multiverse.sanctuarySemantics.durableSources.includes('company-learning/vibe3-recombination-memory.json'));
+assert.equal(multiverse.multiverseExpansion.enabled,true);
+assert.equal(multiverse.multiverseExpansion.conceptualExpansionUnbounded,true);
+assert.equal(multiverse.multiverseExpansion.executionResourceBounded,true);
+assert.equal(multiverse.multiverseExpansion.canonicalIdentityProtected,true);
+assert.equal(multiverse.multiverseExpansion.branchMustNotOverwriteCanonicalProject,true);
+assert.equal(multiverse.multiverseExpansion.verifiedCrossProjectRecombinationAllowed,true);
+assert.equal(multiverse.multiverseExpansion.rawCopyForbidden,true);
+assert.equal(multiverse.multiverseExpansion.newExpressionRequired,true);
+for(const key of ['project-id','parent-project-or-seed','approved-platform-and-genre-lock','verified-learning-context','source-provenance']){
+  assert(multiverse.multiverseExpansion.eachBranchRequires.includes(key),key);
+}
+assert.equal(multiverse.lifecycleBinding.webFirstExecutableBase,'WEB_BASE_IMPLEMENTATION');
+assert.equal(multiverse.lifecycleBinding.webBaselineGate,'WEB_DEVELOPMENT_BASELINE_READY');
+assert.equal(multiverse.lifecycleBinding.nativeContinuation,'TARGET_PLATFORM_SOURCE_BIND');
+assert.equal(multiverse.lifecycleBinding.robloxPostReleaseFocus,'POST_RELEASE_FOCUSED_DEVELOPMENT');
+assert.equal(multiverse.lifecycleBinding.robloxProtectedRunnerSlots,1);
+assert.equal(multiverse.lifecycleBinding.webBaseContinuesIntoNative,true);
+assert.equal(multiverse.lifecycleBinding.validWebBaseRestartFromBlankForbidden,true);
+assert.equal(multiverse.lifecycleBinding.nativeEvidenceRequiredSeparately,true);
+assert.equal(multiverse.learningContinuity.continuous24h,true);
+assert.equal(multiverse.learningContinuity.googlePlayRotationContinuous,true);
+assert.equal(multiverse.learningContinuity.catalogWrapDoesNotStopStudy,true);
+assert.equal(multiverse.learningContinuity.canonicalDistillationContinuous,true);
+assert.equal(multiverse.learningContinuity.waitingForVerifiedSamplesIsCollectionStateNotFailure,true);
+assert.equal(multiverse.learningContinuity.verifiedLearningReuseRequired,true);
+assert.equal(multiverse.learningContinuity.practiceMayNotExpandAuthority,true);
+assert.equal(multiverse.learningContinuity.modelPromotionStillRequiresFixedHoldoutAbThenCanary,true);
+assert.deepEqual(multiverse.expansionLoop,[
+  'LOAD_OWNER_INTENT_AND_CANONICAL_PROJECT_STATE',
+  'LOAD_VERIFIED_LEARNING_AND_RECOMBINATION_MEMORY',
+  'CREATE_OR_CONTINUE_ONE_PLAYABLE_PROJECT_WORLD',
+  'IMPLEMENT_WEB_BASE_OR_NATIVE_CONTINUATION',
+  'VERIFY_RUNTIME_QA_AND_REGRESSION',
+  'PERSIST_NEW_VERIFIED_LESSONS',
+  'CONTINUE_EXISTING_WORLD_OR_BRANCH_NEW_PROJECT_WORLD'
+]);
+
+
 console.log('PASS machine-only lifecycle binds Web base to Roblox continuation, verified learning reuse, and one protected post-release focus runner');
