@@ -657,14 +657,14 @@
     }
   },
   "platformStrategy": {
-    "ownerDirectiveRecordedAt": "2026-09-14",
+    "ownerDirectiveRecordedAt": "2026-09-19",
     "primaryPlatform": "ROBLOX",
     "priority": [
-      "ROBLOX",
       "UNITY",
+      "ROBLOX",
       "FORTNITE_UEFN"
     ],
-    "priorityMeaning": "DEFAULT_FOCUS_AND_EXPERIENCE_ACCUMULATION_ORDER_ONLY",
+    "priorityMeaning": "UNITY_ROBLOX_EQUAL_FIRST_TIER_READINESS_AND_EXECUTION_EFFICIENCY_TIEBREAK",
     "developmentAccess": {
       "ROBLOX": "ALWAYS_ALLOWED",
       "UNITY": "ALWAYS_ALLOWED",
@@ -673,10 +673,11 @@
     "allThreePlatformsMayBeDevelopedConcurrently": true,
     "priorityDoesNotCreatePlatformLock": true,
     "designStabilizationScheduling": {
-      "mode": "ROBLOX_FIRST_THEN_OTHER_PLATFORMS",
-      "activeWhileMilestone": "ROBLOX_FAST_RELEASE_STABILIZATION",
+      "mode": "UNITY_ROBLOX_EQUAL_FIRST_TIER",
+      "activeWhileMilestone": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
       "sortKeys": [
-        "ROBLOX_TARGET_FIRST",
+        "READINESS_FIRST",
+        "ESTIMATED_EXECUTION_EFFICIENCY",
         "OLDEST_PENDING_FIRST"
       ],
       "perGameIndependentCompletion": true,
@@ -686,15 +687,16 @@
       "hardFailuresMustBeEmpty": true,
       "forcePromotionForbidden": true,
       "qualityGateWeakeningForbidden": true,
-      "robloxPriorityAffectsSchedulingOnly": true,
+      "robloxPriorityAffectsSchedulingOnly": false,
       "doesNotChangePassThreshold": true,
-      "doesNotOverrideHardFailures": true
+      "doesNotOverrideHardFailures": true,
+      "unityRobloxEqualPriority": true
     },
     "roadmapPhaseEntryGatesForbidden": true,
     "platformDevelopmentMayStartWithoutPriorPlatformCompletion": true,
     "platformReleaseMayProceedWhenItsOwnEvidenceGatesPass": true,
-    "currentExperiencePhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
-    "currentPrimaryExperiencePlatform": "ROBLOX",
+    "currentExperiencePhase": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
+    "currentPrimaryExperiencePlatform": "UNITY_OR_ROBLOX_EQUAL_TIER",
     "roadmapContract": "company-learning/platform-release-roadmap.json",
     "roadmapSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
     "parallelLearningPipelineAllowed": false,
@@ -711,14 +713,14 @@
       "silentApprovedGameplayFeatureOmissionForbidden": true
     },
     "ROBLOX": {
-      "role": "PRIMARY_DEFAULT_PLATFORM",
+      "role": "EQUAL_PRIMARY_SUPPORTED_PLATFORM",
       "sourceRoot": "roblox-games/",
       "taskType": "roblox",
       "runtimeAndPublishAdapter": "tools/vibe3-roblox-platform.mjs",
       "mobileFirst": true
     },
     "UNITY": {
-      "role": "FULL_SUPPORTED_PLATFORM",
+      "role": "EQUAL_PRIMARY_SUPPORTED_PLATFORM",
       "developmentAlwaysAllowed": true,
       "existingPathPreserved": true,
       "robloxDoesNotReplaceUnity": true,
@@ -735,13 +737,15 @@
     },
     "focusMilestones": {
       "ROBLOX_FAST_RELEASE_STABILIZATION": {
-        "defaultPriority": 1,
+        "defaultPriority": 2,
         "blocksUnityDevelopment": false,
-        "blocksFortniteDevelopment": false
+        "blocksFortniteDevelopment": false,
+        "status": "SUPERSEDED"
       },
       "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE": {
-        "defaultPriority": 2,
-        "entryGate": false
+        "defaultPriority": 1,
+        "entryGate": false,
+        "status": "ACTIVE"
       },
       "FORTNITE_UEFN_EXPANSION": {
         "defaultPriority": 3,
@@ -752,7 +756,25 @@
       "portableVerifiedPatternsUseExistingV3MemoryAndCanonicalDistillation": true,
       "platformSpecificImplementationRemainsPlatformScoped": true,
       "successEvidenceDoesNotTransferAcrossPlatforms": true
-    }
+    },
+    "primaryPlatforms": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "primaryPlatformLegacyCompatibilityOnly": true,
+    "priorityTiers": [
+      [
+        "UNITY",
+        "ROBLOX"
+      ],
+      [
+        "FORTNITE_UEFN"
+      ]
+    ],
+    "permanentRemovedGameIds": [
+      "seed-roblox-battleground-fight-welcome-to-bloxburg",
+      "seed-roblox-obby-party-minigam-tower-of-hell"
+    ]
   },
   "learning": {
     "webGameEvidence": {
