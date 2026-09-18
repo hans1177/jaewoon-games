@@ -49,6 +49,21 @@ test('speed sequence changes execution only and cannot weaken quality gates',()=
   assert.match(flow,/cronMustNotBePrimaryProgressionEngine: true/);
 });
 
+test('Roblox remains the always-first development priority without blocking lower-priority platforms',()=>{
+  assert.deepEqual(roadmap.priority,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(roadmap.primaryPlatform,'ROBLOX');
+  assert.equal(roadmap.platformPriorityInvariant.mode,'ROBLOX_ALWAYS_FIRST');
+  assert.deepEqual(roadmap.platformPriorityInvariant.schedulingOrder,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligibleDevelopmentSlot,true);
+  assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligibleFocusedSlot,true);
+  assert.equal(roadmap.platformPriorityInvariant.robloxMustReceiveFirstEligiblePostReleaseProtectedSlot,true);
+  assert.equal(roadmap.platformPriorityInvariant.unityDevelopmentStillAllowed,true);
+  assert.equal(roadmap.platformPriorityInvariant.fortniteUefnDevelopmentStillAllowed,true);
+  assert.equal(roadmap.platformPriorityInvariant.lowerPriorityPlatformsMayRunInParallelWhenCapacityRemains,true);
+  assert.equal(roadmap.platformPriorityInvariant.lowerPriorityPlatformMayNotPreemptEligibleRobloxWork,true);
+  assert.equal(roadmap.developmentLifecycleMachine.platformPriorityInvariant.schedulerMustHonorRobloxFirst,true);
+});
+
 test('canonical machine roadmap owns the execution contract',()=>{
   assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
   assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
