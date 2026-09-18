@@ -125,7 +125,22 @@
       "featureParity": "FULL_APPROVED_GAMEPLAY_SCOPE_EQUIVALENT_OR_DOCUMENTED_PLATFORM_ADAPTATION",
       "silentFeatureOmissionForbidden": true,
       "webBuildIsNotNativePlatformSubstitute": true,
-      "nativePlatformReleaseStillRequiresNativeEvidence": true
+      "nativePlatformReleaseStillRequiresNativeEvidence": true,
+      "portableBaseForTargetPlatform": true,
+      "disposablePrototype": false,
+      "portableBaseRequiredBeforeTargetPlatformDispatch": true,
+      "portableBaseMustCover": [
+        "CORE_LOOP_RULES",
+        "GAME_STATE_MODEL",
+        "PROGRESSION_MODEL",
+        "ECONOMY_AND_REWARD_SEMANTICS",
+        "SAVE_AND_RECOVERY_SEMANTICS",
+        "CONTENT_AND_LEVEL_SCHEMA",
+        "BALANCE_AND_DIFFICULTY_RULES",
+        "INPUT_ACTION_ABSTRACTION",
+        "UI_STATE_CONTRACT",
+        "FAILURE_RETRY_AND_SESSION_FLOW"
+      ]
     },
     "approvedScopeCompletion": {
       "mode": "FULL_APPROVED_DESIGN_SCOPE_REQUIRED",
@@ -135,6 +150,53 @@
       "prototypeCannotSatisfyCompletionOrReleaseCandidateGate": true,
       "infeasibleScopeRequiresDesignRevisionBeforeBaselineApprovalOrExplicitOwnerDecision": true,
       "missingApprovedContentBlocksCompletion": true
+    },
+    "webToTargetPlatformContinuity": {
+      "mode": "WEB_PORTABLE_BASE_THEN_NATIVE_CONTINUATION",
+      "source": "CURRENT_VALIDATED_WEB_COMPANION_PLUS_APPROVED_DESIGN_BASELINE",
+      "target": "PROJECT_SELECTED_PLATFORM",
+      "preserveValidatedGameplaySemantics": true,
+      "silentCoreSystemReimplementationDriftForbidden": true,
+      "platformSpecificAdaptationRequired": true,
+      "nativeEvidenceRequiredIndependently": true,
+      "webEvidenceCannotSubstituteNativeEvidence": true,
+      "nativeMayExtendPortableBase": true,
+      "nativeMayReplaceWebSpecificRenderingAndInputLayers": true,
+      "nativeMustPreserveSaveProgressionEconomyMeaningUnlessApprovedDesignRevisionExists": true
+    },
+    "postReleaseFocusedDevelopment": {
+      "enabled": true,
+      "scope": "RELEASE_CONFIRMED_ROBLOX_ACTIVE_OR_REBUILD",
+      "protectedRunnerSlots": 1,
+      "oneFocusedTaskRunningGlobally": true,
+      "continuousRefill": true,
+      "releaseEndsInitialDevelopmentOnly": true,
+      "liveDevelopmentContinuesAfterRelease": true,
+      "taskGenerationMode": "EVIDENCE_DRIVEN_ROTATING_QUALITY_AXIS",
+      "focusAxes": [
+        "CORE_LOOP_DEPTH",
+        "CONTENT_VARIATION",
+        "PROGRESSION_AND_ECONOMY",
+        "MOBILE_INPUT_AND_UX",
+        "SAVE_SESSION_AND_RECOVERY",
+        "PERFORMANCE_AND_LONG_SESSION_STABILITY",
+        "BALANCE_AND_REWARD",
+        "VISUAL_AUDIO_FEEDBACK",
+        "SOCIAL_OR_MULTIPLAYER_WHEN_DESIGNED"
+      ],
+      "noBlindChurn": true,
+      "preserveCoreDesignUnlessApprovedRevision": true,
+      "preserveSaveMeaning": true,
+      "preservePublishedProjectIdentity": true,
+      "everyChangeRequires": [
+        "TARGETED_NATIVE_QA",
+        "REGRESSION_CHECK",
+        "CURRENT_SOURCE_BINDING",
+        "LIVE_VERSION_UPDATE_GATE"
+      ],
+      "useVerifiedVibeMemory": true,
+      "useTransformativeRecombinationWhenEligible": true,
+      "learningMayExpandAuthority": false
     }
   },
   "portfolioGovernance": {
@@ -623,14 +685,30 @@
       "webCompanionMaySharePortableCoreLogicWherePractical": true,
       "platformSpecificRuntimeAndUxRemainPlatformScoped": true,
       "documentedPlatformAdaptationAllowed": true,
-      "silentApprovedGameplayFeatureOmissionForbidden": true
+      "silentApprovedGameplayFeatureOmissionForbidden": true,
+      "portableBaseContractRequired": true,
+      "validatedWebCoreFeedsNativeImplementation": true,
+      "webSpecificRenderingAndInputMayBeReplacedAtNativeLayer": true,
+      "gameplaySemanticsMustRemainTraceable": true
     },
     "ROBLOX": {
       "role": "PRIMARY_DEFAULT_PLATFORM",
       "sourceRoot": "roblox-games/",
       "taskType": "roblox",
       "runtimeAndPublishAdapter": "tools/vibe3-roblox-platform.mjs",
-      "mobileFirst": true
+      "mobileFirst": true,
+      "secondStageRole": "NATIVE_CONTINUATION_AND_EXPANSION",
+      "inheritPortableBaseContracts": true,
+      "requiredNativeLayers": [
+        "ROBLOX_INPUT_AND_MOBILE_UX",
+        "ROBLOX_CLIENT_SERVER_AUTHORITY",
+        "ROBLOX_SESSION_AND_RESPAWN",
+        "ROBLOX_DATASTORE_OR_PROJECT_SAVE_ADAPTER_WHEN_APPLICABLE",
+        "ROBLOX_NETWORKING_AND_MULTIPLAYER_WHEN_DESIGNED",
+        "ROBLOX_PERFORMANCE_AND_STREAMING",
+        "ROBLOX_PLATFORM_FEEDBACK_AND_PRESENTATION"
+      ],
+      "validatedWebCoreRegressionForbidden": true
     },
     "UNITY": {
       "role": "FULL_SUPPORTED_PLATFORM",
