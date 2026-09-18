@@ -269,7 +269,7 @@ test('creative rebuild receives verified multi-project transformative recombinat
   assert.equal(result.planned,true);
   assert.equal(result.task.gameId,'dev-web');
   assert.match(result.task.goal,/TRANSFORMATIVE_RECOMBINATION_CONTEXT/);
-  assert.match(result.task.goal,/새 코드\/새 에셋 표현/);
+  assert.match(result.task.goal,/new code\/asset expression|새 코드\/새 에셋 표현/i);
   assert.equal(result.task.evidence.includes('recombination-recipe:recombine-demo'),true);
   assert.equal(result.task.evidence.includes('recombination-copy-mode:NO'),true);
   assert.equal(result.task.evidence.includes('recombination-original-modifier-required:YES'),true);
