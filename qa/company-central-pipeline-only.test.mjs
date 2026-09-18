@@ -109,5 +109,5 @@ test('technical release implementation remains subordinate to central evidence g
   assert.match(flow,/developmentBaselineRequired:\s*true/);
   assert.match(flow,/sourceTreeBindingRequired:\s*true/);
   assert.match(flow,/independentQaSeparatedFromVibe2SelfCheck:\s*true/);
-  assert.match(releaseCycle,/COMPANY_FLOW\.md/);
+  assert.ok(releaseCycle.includes('company-learning/platform-release-roadmap.json'));
 });
