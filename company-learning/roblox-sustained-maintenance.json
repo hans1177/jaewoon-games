@@ -64,6 +64,44 @@
         "maintenanceActivationRequiresPublicationTargetEvidence": true,
         "automaticRepublish": false
       }
+    },
+    {
+      "gameId": "seed-roblox-obby-party-minigam-tower-of-hell",
+      "gameName": "Skyline Rush",
+      "aliases": [
+        "Skyline Sprint"
+      ],
+      "sourceRoot": "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell",
+      "webCompanionRoot": "web-games/seed-roblox-obby-party-minigam-tower-of-hell",
+      "historicalSourceRevision": "117a87320e67c690c1c8b3972598d331cf366c56",
+      "artifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc",
+      "evidence": {
+        "actualStudioRuntime": true,
+        "postRuntimeIndependentQa": true,
+        "regression": true,
+        "multiplayerQa": true,
+        "publicationTargetObserved": true,
+        "deploymentObserved": true,
+        "universeId": "10766723635",
+        "placeId": "129342889720619",
+        "observedAt": "2026-09-17",
+        "observedFrom": "Skyline Rush normalized publish and authenticated Studio recovery"
+      },
+      "recoveryState": "HISTORICAL_PUBLICATION_TARGET_VERIFIED",
+      "maintenanceEligible": true,
+      "currentReleaseClaim": false,
+      "maintenanceMode": "SUSTAINED_POST_DEPLOYMENT_SOURCE_DEVELOPMENT",
+      "rules": {
+        "preserveGameIdentity": true,
+        "preserveSaveMeaning": true,
+        "preserveHistoricalPublicationTarget": true,
+        "preserveWebToRobloxContinuation": true,
+        "useVerifiedLearning": true,
+        "doNotClaimCurrentPublicReleaseWithoutFreshEvidence": true,
+        "sourceChangesRequireCanonicalRuntimeQaRegressionPromotion": true,
+        "automaticRepublish": false
+      }
     }
-  ]
+  ],
+  "updatedAt": "2026-09-19"
 }
