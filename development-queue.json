@@ -23,11 +23,11 @@
       "musicValidationRequired": true,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageTestVerdict": "WAITING_WEB_STRICT_REVIEW",
+      "homepageTestVerdict": "WEB_GAMEPLAY_REPAIR_REQUIRED",
       "status": "ACTIVE",
       "sourcePath": "web-games/bug-defense",
-      "currentStep": "WEB_GAMEPLAY_AND_MUSIC_VALIDATION",
-      "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
+      "currentStep": "FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP",
+      "canonicalState": "WEB_GAMEPLAY_REPAIR_REQUIRED",
       "webValidationQueuedAt": "2026-09-18T09:20:10.076Z",
       "lifecycleState": "ACTIVE",
       "designComplete": true,
@@ -51,10 +51,10 @@
       "formalImplementationVerdict": "REVISE",
       "webPromotionRevalidationPassed": false,
       "routingBlockers": [
-        "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-bootstrap.mjs --game-id=bug-defense --game-name=곤충 디펜스 --baseline=design/bug-defense/2026-09-18/design-revised.json --source-path=web-games/bug-def"
+        "web-gameplay-music:Command failed: /opt/hostedtoolcache/node/22.23.2/x64/bin/node tools/company-development-web-gameplay-validation.mjs --game-id=bug-defense --source=web-games/.autonomous-candidates/development-web-bug-defense-35331018463-1 --port=4181 --out"
       ],
-      "webValidationLastAttemptAt": "2026-09-18T09:25:56.000Z",
-      "updatedAt": "2026-09-18T09:25:56.000Z",
+      "webValidationLastAttemptAt": "2026-09-18T09:44:06.127Z",
+      "updatedAt": "2026-09-18T09:44:06.127Z",
       "strictImplementationReviewPath": null,
       "strictImplementationScore": null,
       "webStrictScore": null,
@@ -66,12 +66,12 @@
       "webValidationEvidencePath": null
     }
   ],
-  "updatedAt": "2026-09-18T09:43:48.828Z",
+  "updatedAt": "2026-09-18T09:44:32.538Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
   "executionContract": "CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT",
-  "webValidationPolicy": "REQUIRED_WEB_STRICT_REVIEW_BEFORE_POST_WEB_ARTBOOK_AND_TARGET_PLATFORM",
+  "webValidationPolicy": "WEB_80_FOR_HOMEPAGE_90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM",
   "webValidationContractVersion": 4,
   "webGateRequired": true,
   "webValidationParallelism": 20,
