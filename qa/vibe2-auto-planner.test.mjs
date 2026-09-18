@@ -60,15 +60,34 @@ test('active independent work no longer blocks autonomous planning when slots re
   assert.equal(result.queue.tasks.filter(t=>['queued','running'].includes(t.status)).length<=4,true);
 });
 
-test('owner directive prevents autonomous invention even when slots are free',()=>{
+test('owner directive keeps priority while independent free slots continue refilling',()=>{
   const root=tempRepo();
   const result=planVibe2AutonomousTasks({
     status,catalog,
     queue:{maxConcurrentTasks:4,tasks:[{id:'owner',gameId:'demo',sourceRoot:'unity-games/demo',status:'running',goal:'owner',target:'unity',ownerDirective:true}]},
     repoRoot:root,maxConcurrentTasks:4
   });
-  assert.equal(result.planned,false);
-  assert.equal(result.reason,'OWNER_DIRECTIVE_ACTIVE');
+  assert.equal(result.planned,true);
+  assert.equal(result.reason,'WORK_PACKAGES_PLANNED_AROUND_OWNER_DIRECTIVES');
+  assert.equal(result.ownerDirectiveActiveCount,1);
+  assert.equal(result.tasks.every(task=>task.sourceRoot!=='unity-games/demo'),true);
+});
+
+test('DEVELOPMENT_CONFIRMED Web enters Vibe planning before homepage publication and may bootstrap a missing root',()=>{
+  const root=tempRepo();
+  const result=planVibe2AutonomousTask({
+    status:{projects:[]},
+    catalog:{games:[{id:'new-web',name:'New Web',webPath:'/web-games/new-web/',hasWebArchive:true,homepageWebPlayable:false,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.task.gameId,'new-web');
+  assert.equal(result.task.target,'web');
+  assert.equal(result.task.ownerDirective,true);
+  assert.match(result.task.goal,/WEB_BASE_IMPLEMENTATION/);
+  assert.match(result.task.goal,/SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.ok(result.task.evidence.includes('central-policy:company-learning/platform-release-roadmap.json'));
+  assert.ok(result.task.evidence.includes('web-stage:WEB_BASE_IMPLEMENTATION'));
 });
 
 test('planner fills independent development web source roots in one pass',()=>{
