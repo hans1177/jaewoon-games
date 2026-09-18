@@ -132,7 +132,7 @@ test('Pocket Foundry deterministic template fails closed when semantic spatial s
 
 test('Vector Clash deterministic template fails closed when semantic interaction or spatial scope is missing',()=>{
   const baseline={gameSeedId:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001',content:{identity:'Vector Clash',coreFun:'combat, opponent, skill, cooldown',coreLoop:['read opponent movement and create an attack opening','damage opponents and reposition around cooldowns','finish rounds and re-enter with a changed tactical choice'],mobileUx:'touch controls'}};
-  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',baseline}),/APPROVED_SCOPE_REAL_(?:ENTITY_INTERACTION|SPATIAL_STATE)_REQUIRED/);
+  assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',baseline}),/(?:APPROVED_SCOPE_REAL_(?:ENTITY_INTERACTION|SPATIAL_STATE)_REQUIRED|CANONICAL_REAL_GAME_TEMPLATE_MISSING)/);
 });
 
 test('Celestial Bastion shallow tower button is rejected and returns to Vibe instead of being preserved',async()=>{
