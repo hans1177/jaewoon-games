@@ -39,6 +39,45 @@ assert.deepEqual(lifecycle.stages,[
   'RELEASE_PROMOTION','POST_RELEASE_FOCUSED_DEVELOPMENT'
 ]);
 
+const work=lifecycle.machineWorkInstruction;
+assert.equal(work.authority,'MACHINE_EXECUTION_CONTRACT');
+assert.equal(work.humanDocumentRequired,false);
+assert.equal(work.sourceOfTruth,'company-learning/platform-release-roadmap.json');
+assert.equal(work.objective,'USE_VERIFIED_LEARNING_TO_CONTINUE_ONE_GAME_FROM_WEB_BASE_TO_NATIVE_RELEASE_AND_POST_RELEASE_COMPLETENESS');
+for(const step of [
+  'LOAD_APPROVED_PLATFORM_GENRE_AND_DESIGN_BASELINE',
+  'LOAD_VERIFIED_LEARNING_CONTEXT',
+  'IMPLEMENT_OR_CONTINUE_WEB_EXECUTABLE_BASE',
+  'PERSIST_WEB_PLATFORM_HANDOFF',
+  'CONTINUE_SELECTED_PLATFORM_NATIVE_IMPLEMENTATION_FROM_WEB_BASE',
+  'VERIFY_NATIVE_RUNTIME_INDEPENDENT_QA_AND_REGRESSION',
+  'IF_ROBLOX_RELEASED_RESERVE_ONE_POST_RELEASE_FOCUSED_RUNNER',
+  'PERSIST_VERIFIED_LEARNING_AND_CREATE_NEXT_FOCUS_CYCLE'
+]) assert(work.executionOrder.includes(step),step);
+assert.equal(work.webWorker.instruction,'BUILD_OR_CONTINUE_A_REAL_EXECUTABLE_PORTABLE_GAMEPLAY_BASE_NOT_A_DISPOSABLE_PROTOTYPE');
+assert.equal(work.webWorker.restartFromBlankForbiddenWithoutEvidence,true);
+assert.equal(work.webWorker.output,'webPlatformHandoff');
+assert.equal(work.selectedPlatformWorker.webPortableMeaningMustCarryForward,true);
+assert.equal(work.selectedPlatformWorker.nativeCodeMustRemainPlatformSpecific,true);
+assert.equal(work.selectedPlatformWorker.webEvidenceCannotSubstituteNativePass,true);
+assert.equal(work.robloxWorker.verifiedLearningRequired,true);
+assert.equal(work.robloxWorker.bootstrap,'tools/company-development-roblox-bootstrap.mjs');
+assert.equal(work.postReleaseWorker.protectedRunnerSlots,1);
+assert.equal(work.postReleaseWorker.continuousRefill,true);
+assert.equal(work.postReleaseWorker.oneConcreteGapPerCycle,true);
+assert.equal(work.postReleaseWorker.automaticRepublish,false);
+assert.equal(work.learningInstruction.sameGameFirst,true);
+assert.equal(work.learningInstruction.crossGameTransformativeRecombinationAllowed,true);
+assert.equal(work.learningInstruction.rawCopyForbidden,true);
+assert.equal(work.learningInstruction.positiveLearningRequiresVerifiedEvidence,true);
+assert.equal(work.learningInstruction.persistAfterVerifiedCycle,true);
+assert.equal(work.learningInstruction.modelTrainingThresholdsMustNotBeLowered,true);
+assert.equal(work.queueInstruction.postReleaseLongWorkProtected,true);
+assert.equal(work.queueInstruction.postReleaseConcurrentProtectedSlots,1);
+assert.equal(work.queueInstruction.productionWorkPreemptsPractice,true);
+assert.match(work.completionRule,/NEVER_STOP_AT_WEB/);
+assert.match(work.completionRule,/NEVER_STOP_AT_RELEASE/);
+
 const continuation=lifecycle.machineOnlyProjectContinuation;
 assert.equal(continuation.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(continuation.humanDocumentRequired,false);
