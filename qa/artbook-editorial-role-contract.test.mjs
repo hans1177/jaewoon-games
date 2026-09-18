@@ -130,7 +130,7 @@ test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary in RELEASE_CONFI
   assert.equal(directive.ai.vibe2.implementationOwner,true);
   assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,true);
   assert.equal(machinePolicy.developmentLifecycleMachine?.gameDevelopmentAuthority?.implementationOwner,'VIBE2_VIBE3');
-  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_DEVELOPMENT_ENGINE');
+  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
 
