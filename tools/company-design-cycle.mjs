@@ -60,6 +60,7 @@ const designLearningContext={
     hardFailures:Array.isArray(event?.hardFailures)?event.hardFailures:[],
     resolvedHardFailures:Array.isArray(event?.resolvedHardFailures)?event.resolvedHardFailures:[],
     addedHardFailures:Array.isArray(event?.addedHardFailures)?event.addedHardFailures:[],
+    rejectionReasons:Array.isArray(event?.rejectionReasons)?event.rejectionReasons:[],
     improvementTargets:Array.isArray(event?.improvementTargets)?event.improvementTargets:[],
     recordedAt:clean(event?.recordedAt)
   }))
@@ -68,6 +69,7 @@ const strictDesignerFeedback={
   source:'PRIOR_STRICT_DESIGN_REVIEW',
   bypassAllowed:false,
   hardFailures:[...new Set(designLearningEvents.flatMap(event=>Array.isArray(event?.hardFailures)?event.hardFailures:[]).map(clean).filter(Boolean))],
+  rejectionReasons:designLearningEvents.flatMap(event=>Array.isArray(event?.rejectionReasons)?event.rejectionReasons:[]).slice(-20),
   improvementTargets:designLearningEvents.flatMap(event=>Array.isArray(event?.improvementTargets)?event.improvementTargets:[]).slice(-12)
 };
 const evidence={game,gameSeed:seed,factPack,designLearningContext,centralPolicy:'COMPANY_FLOW.md'};
