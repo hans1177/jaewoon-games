@@ -1,16 +1,16 @@
 {
-  "version": 17,
+  "version": 18,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
   "priority": [
-    "ROBLOX",
     "UNITY",
+    "ROBLOX",
     "FORTNITE_UEFN"
   ],
   "primaryPlatform": "ROBLOX",
-  "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
-  "priorityMeaning": "ROBLOX_ALWAYS_FIRST_FOR_SCHEDULING_FOCUS_AND_PROTECTED_CAPACITY_WITHOUT_BLOCKING_OTHER_PLATFORMS",
+  "currentPhase": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
+  "priorityMeaning": "UNITY_AND_ROBLOX_EQUAL_FIRST_TIER; WITHIN_TIER_SELECT_BY_READINESS_AND_EXECUTION_EFFICIENCY; FORTNITE_UEFN_OWNER_HOLD",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
     "UNITY": "ALWAYS_ALLOWED",
@@ -144,19 +144,21 @@
   "phases": [
     {
       "id": "ROBLOX_FAST_RELEASE_STABILIZATION",
-      "priority": 1,
+      "priority": 2,
       "entryGate": false,
       "objective": "FAST_REAL_RELEASE_AND_STABILIZATION_EXPERIENCE",
       "blocksUnityDevelopment": false,
-      "blocksFortniteDevelopment": false
+      "blocksFortniteDevelopment": false,
+      "status": "SUPERSEDED_BY_EQUAL_UNITY_ROBLOX_PRIORITY"
     },
     {
       "id": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
-      "priority": 2,
+      "priority": 1,
       "entryGate": false,
-      "objective": "CONCURRENT_ROBLOX_AND_UNITY_RELEASE_EXPERIENCE",
+      "objective": "EQUAL_PRIORITY_ROBLOX_UNITY_DEVELOPMENT_AND_RELEASE_EXPERIENCE",
       "unityExistingPathPreserved": true,
-      "unityDeletedOrReplacedByRoblox": false
+      "unityDeletedOrReplacedByRoblox": false,
+      "status": "ACTIVE"
     },
     {
       "id": "FORTNITE_UEFN_EXPANSION",
@@ -798,7 +800,7 @@
     },
     "platformPriorityInvariant": {
       "source": "platformPriorityInvariant",
-      "schedulerMustHonorRobloxFirst": true,
+      "schedulerMustHonorRobloxFirst": false,
       "appliesTo": [
         "WEB_BASE_IMPLEMENTATION",
         "TARGET_PLATFORM_SOURCE_BIND",
@@ -808,7 +810,13 @@
         "RELEASE_PROMOTION",
         "POST_RELEASE_FOCUSED_DEVELOPMENT"
       ],
-      "learningRunsInParallel": true
+      "learningRunsInParallel": true,
+      "schedulerMustHonorUnityRobloxEqualTier": true,
+      "equalTierPlatforms": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "equalTierSelection": "READINESS_THEN_EXECUTION_EFFICIENCY"
     },
     "platformExecutionHolds": {
       "FORTNITE_UEFN": {
@@ -1032,6 +1040,17 @@
       "requiresCompetitiveQualityParity": true,
       "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
       "relevantSourceChangeRequiresRevalidation": true
+    },
+    "permanentProjectRemoval": {
+      "source": "game-catalog.json#permanentRemovalPolicy",
+      "ids": [
+        "seed-roblox-battleground-fight-welcome-to-bloxburg",
+        "seed-roblox-obby-party-minigam-tower-of-hell"
+      ],
+      "plannerAction": "HARD_EXCLUDE_AND_CANCEL_EXISTING_TASKS",
+      "postReleaseRecoveryAllowed": false,
+      "historicalMaintenanceRecoveryAllowed": false,
+      "sourceDeletionRequired": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
@@ -1044,21 +1063,31 @@
     "mayCreatePolicy": false
   },
   "platformPriorityInvariant": {
-    "mode": "ROBLOX_ALWAYS_FIRST",
+    "mode": "UNITY_ROBLOX_EQUAL_FIRST_TIER",
     "schedulingOrder": [
-      "ROBLOX",
       "UNITY",
+      "ROBLOX",
       "FORTNITE_UEFN"
     ],
-    "robloxMustReceiveFirstEligibleDevelopmentSlot": true,
-    "robloxMustReceiveFirstEligibleFocusedSlot": true,
-    "robloxMustReceiveFirstEligiblePostReleaseProtectedSlot": true,
+    "robloxMustReceiveFirstEligibleDevelopmentSlot": false,
+    "robloxMustReceiveFirstEligibleFocusedSlot": false,
+    "robloxMustReceiveFirstEligiblePostReleaseProtectedSlot": false,
     "unityDevelopmentStillAllowed": true,
     "fortniteUefnDevelopmentStillAllowed": true,
     "lowerPriorityPlatformsMayRunInParallelWhenCapacityRemains": true,
-    "lowerPriorityPlatformMayNotPreemptEligibleRobloxWork": true,
+    "lowerPriorityPlatformMayNotPreemptEligibleRobloxWork": false,
     "qualityOrEvidenceGateWeakeningAllowed": false,
-    "ownerExplicitOverrideAllowed": true
+    "ownerExplicitOverrideAllowed": true,
+    "priorityTiers": [
+      [
+        "UNITY",
+        "ROBLOX"
+      ],
+      [
+        "FORTNITE_UEFN"
+      ]
+    ],
+    "equalTierSelection": "READINESS_THEN_ESTIMATED_EXECUTION_COST_THEN_ENQUEUED_AT"
   },
   "homepagePortfolioVisibility": {
     "version": 1,
@@ -1195,5 +1224,37 @@
       }
     }
   },
-  "updatedAt": "2026-09-19"
+  "updatedAt": "2026-09-19",
+  "priorityTiers": [
+    {
+      "tier": 1,
+      "platforms": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "selection": "READINESS_THEN_ESTIMATED_EXECUTION_COST_THEN_ENQUEUED_AT"
+    },
+    {
+      "tier": 2,
+      "platforms": [
+        "FORTNITE_UEFN"
+      ],
+      "selection": "OWNER_HOLD"
+    }
+  ],
+  "primaryPlatformRole": "LEGACY_COMPATIBILITY_ONLY_NOT_SCHEDULING_PRIORITY",
+  "permanentProjectRemoval": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE",
+    "ids": [
+      "seed-roblox-battleground-fight-welcome-to-bloxburg",
+      "seed-roblox-obby-party-minigam-tower-of-hell"
+    ],
+    "state": "REMOVED_PERMANENTLY",
+    "reentryAllowed": false,
+    "automaticRecoveryAllowed": false,
+    "automaticMaintenanceAllowed": false,
+    "sourceDeletionRequired": true,
+    "reason": "INACCESSIBLE_HISTORICALLY_DEPLOYED_GAMES_REMOVED_BY_OWNER_2026-09-19"
+  }
 }
