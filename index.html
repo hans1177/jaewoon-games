@@ -102,6 +102,7 @@ window.addEventListener('appinstalled',()=>{deferredAppInstall=null;if(appInstal
 if(appInstallBtn)appInstallBtn.addEventListener('click',requestHomepageInstall);
 if(appStandalone){appInstallBtn.disabled=true;appInstallBtn.textContent='설치됨';setAppInstallState('이미 재운컴퍼니 앱으로 실행 중이야.')}else registerHomepagePwa();
 const fallbackGames=[
+{id:'line-defense',name:'골목 군단 대전',description:'유닛을 소환해 상대 아지트를 부수는 라인 디펜스',genre:['라인 디펜스','전략','자동전투'],image:'assets/page-bg-v2.webp',webPath:'/web-games/line-defense/',hasWebArchive:true,featured:true},
 {id:'insect-survival',name:'곤충 생존기',description:'작은 세계에서 살아남는 생존 게임',genre:['생존','제작','탐험'],image:'assets/insect-main-v3.webp',webPath:'/web-games/insect-survival/',hasWebArchive:true,featured:true},
 {id:'crystal-defense',name:'수정 디펜스',description:'수정을 지키는 웨이브 디펜스',genre:['디펜스','전략'],image:'assets/crystal-v2.webp',webPath:'/web-games/crystal-defense/',hasWebArchive:true,featured:true},
 {id:'bug-defense',name:'곤충 디펜스',description:'30웨이브 곤충 디펜스',genre:['웨이브','전략','곤충'],image:'assets/insect-war-v2.webp',webPath:'/web-games/bug-defense/',hasWebArchive:true,featured:true},
