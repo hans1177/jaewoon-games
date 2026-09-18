@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "sourceSeed": "game-seed-market-evidence.json",
   "authority": "EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE",
   "practiceOnly": true,
@@ -210,20 +210,125 @@
       "storeUrl": "https://play.google.com/store/apps/details?id=io.supercent.pizzaidle",
       "inputProfile": "IDLE_RPG",
       "seedListed": true
+    },
+    {
+      "id": "asphalt-legends",
+      "title": "Asphalt Legends",
+      "category": "RACING",
+      "packageIds": [
+        "com.gameloft.android.ANMP.GloftA9HM"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.gameloft.android.ANMP.GloftA9HM",
+      "inputProfile": "DRIVE_TWO_BUTTON",
+      "seedListed": false
+    },
+    {
+      "id": "efootball",
+      "title": "eFootball",
+      "category": "SPORTS_FOOTBALL",
+      "packageIds": [
+        "jp.konami.pesam"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=jp.konami.pesam",
+      "inputProfile": "ARENA_DUAL_STICK",
+      "seedListed": false
+    },
+    {
+      "id": "standoff-2",
+      "title": "Standoff 2",
+      "category": "FPS_TACTICAL",
+      "packageIds": [
+        "com.axlebolt.standoff2"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.axlebolt.standoff2",
+      "inputProfile": "ARENA_DUAL_STICK",
+      "seedListed": false
+    },
+    {
+      "id": "arknights",
+      "title": "Arknights",
+      "category": "TOWER_DEFENSE",
+      "packageIds": [
+        "com.YoStarEN.Arknights"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.YoStarEN.Arknights",
+      "inputProfile": "STRATEGY_TAP",
+      "seedListed": false
+    },
+    {
+      "id": "simcity-buildit",
+      "title": "SimCity BuildIt",
+      "category": "CITY_BUILDER_SIMULATION",
+      "packageIds": [
+        "com.ea.game.simcitymobile_row"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.ea.game.simcitymobile_row",
+      "inputProfile": "STRATEGY_TAP",
+      "seedListed": false
+    },
+    {
+      "id": "hay-day",
+      "title": "Hay Day",
+      "category": "FARM_COZY",
+      "packageIds": [
+        "com.supercell.hayday"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.supercell.hayday",
+      "inputProfile": "STRATEGY_TAP",
+      "seedListed": false
+    },
+    {
+      "id": "among-us",
+      "title": "Among Us",
+      "category": "SOCIAL_PARTY",
+      "packageIds": [
+        "com.innersloth.spacemafia"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.innersloth.spacemafia",
+      "inputProfile": "LOCATION_TAP",
+      "seedListed": false
+    },
+    {
+      "id": "pk-xd",
+      "title": "PK XD",
+      "category": "SANDBOX_SOCIAL",
+      "packageIds": [
+        "com.movile.playkids.pkxd"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.movile.playkids.pkxd",
+      "inputProfile": "SURVIVAL",
+      "seedListed": false
+    },
+    {
+      "id": "piano-fire",
+      "title": "Piano Fire: Edm Music & Piano",
+      "category": "RHYTHM",
+      "packageIds": [
+        "beatmaker.edm.musicgames.PianoGames"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=beatmaker.edm.musicgames.PianoGames",
+      "inputProfile": "CARD_TAP",
+      "seedListed": false
     }
   ],
   "rotationPolicy": {
-    "mode": "HOURLY_ROTATING_BATCH",
+    "mode": "CONTINUOUS_CHAIN_PLUS_HOURLY_SAFETY_NET",
     "defaultBatchSize": 3,
     "manualMaxBatchSize": 12,
     "wrapAround": true,
-    "startIndexDerivedFromRunNumber": true
+    "startIndexDerivedFromRunNumber": true,
+    "continuousRefill": true,
+    "safetyNetCron": "43 * * * *"
   },
   "learningPolicy": {
     "copyMode": false,
     "transformativeReinterpretation": true,
     "derivedFeaturesOnly": true,
     "rawSourceOutputAllowed": false,
-    "rawAssetOutputAllowed": false
+    "rawAssetOutputAllowed": false,
+    "genreCoverageRequired": true,
+    "genreExpansionMode": "GOOGLE_PLAY_ROTATING_REFERENCE",
+    "runtimeSamplePersistsToCanonicalLearning": true,
+    "recombinationMemoryRefresh": true
   }
 }
