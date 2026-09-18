@@ -287,6 +287,7 @@ jobs:
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=${runModelCycle?'true':'false'}\nquota_state=${runModelCycle?'READY':'WAITING_FOR_GEMINI_QUOTA'}\n`);
           NODE
       - name: Run seed-backed DESIGN_ONLY pipeline without artbook
+        id: design_pipeline
         if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
@@ -373,9 +374,61 @@ jobs:
           wait "$sync_pid" >/dev/null 2>&1 || true
           sync_pid=0
           persist_design_checkpoint || true
+          if [ "$rc" -eq 0 ]; then
+            echo 'complete=true' >> "$GITHUB_OUTPUT"
+            echo 'quota_state=READY' >> "$GITHUB_OUTPUT"
+            echo 'DESIGN_MODEL_CYCLE_RESULT=COMPLETE'
+            exit 0
+          fi
+
+          quota_wait='false'
+          if [ -f "$checkpoint_path" ]; then
+            quota_wait="$(CHECKPOINT="$checkpoint_path" node <<'NODE'
+          const fs=require('fs');
+          const clean=value=>String(value??'').trim();
+          const uniq=values=>[...new Set(values.map(clean).filter(Boolean))];
+          const roles=['planning','graphics','development','qa','balance'];
+          const leads=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS).split(',')).slice(0,roles.length);
+          const laneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES);
+          const configured=Object.fromEntries(roles.map(role=>[role,[]]));
+          for(const entry of laneSpec.split(';').map(clean).filter(Boolean)){
+            const at=entry.indexOf(':');
+            if(at<1)continue;
+            const role=clean(entry.slice(0,at));
+            if(!roles.includes(role))continue;
+            configured[role]=uniq(entry.slice(at+1).split('|'));
+          }
+          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([leads[index],...configured[role]])]));
+          const cp=JSON.parse(fs.readFileSync(process.env.CHECKPOINT,'utf8'));
+          const unavailable=/GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota|RESOURCE_EXHAUSTED|Quota exceeded|no longer available to new users|NOT_FOUND|PERMISSION_DENIED/i;
+          const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>unavailable.test(clean(row?.lastError))).map(([model])=>clean(model).replace(/^gemini:/,'')));
+          const tasks=cp.tasks&&typeof cp.tasks==='object'?cp.tasks:{};
+          const phases=cp.phases&&typeof cp.phases==='object'?cp.phases:{};
+          const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(tasks,`five_lead_reviews::${role}`));
+          const currentPhase=clean(cp.currentPhase).toUpperCase()||'BOOTSTRAP';
+          const leadPhaseActive=currentPhase==='DEPARTMENT_REVIEWS'||missingRoles.length<roles.length;
+          const roleBlocked=leadPhaseActive&&missingRoles.some(role=>lanes[role].every(model=>exhausted.has(model)));
+          const designer=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
+          const designerBlocked=!Object.prototype.hasOwnProperty.call(phases,'designer_draft')&&exhausted.has(designer);
+          process.stdout.write(roleBlocked||(!leadPhaseActive&&designerBlocked)?'true':'false');
+          NODE
+            )"
+          fi
+
+          if [ "$quota_wait" = "true" ]; then
+            echo 'complete=false' >> "$GITHUB_OUTPUT"
+            echo 'quota_state=WAITING_FOR_GEMINI_QUOTA' >> "$GITHUB_OUTPUT"
+            echo 'DESIGN_MODEL_CYCLE_RESULT=WAITING_FOR_GEMINI_QUOTA'
+            echo 'DESIGN_QUOTA_FAILURE_IS_DESIGN_GATE_FAILURE=NO'
+            echo 'DESIGN_CHECKPOINT_RESUME_REQUIRED=YES'
+            exit 0
+          fi
+
+          echo 'complete=false' >> "$GITHUB_OUTPUT"
+          echo 'quota_state=ERROR' >> "$GITHUB_OUTPUT"
           exit "$rc"
       - name: Verify design learning context consumption
-        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true' && steps.design_pipeline.outputs.complete == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -404,7 +457,7 @@ jobs:
           console.log('POSITIVE_TRAINING_FROM_DESIGN_ONLY=NO');
           NODE
       - name: Repair missing pre-promotion design requirements
-        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true' && steps.design_pipeline.outputs.complete == 'true'
         env:
           GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -420,7 +473,7 @@ jobs:
           fi
           echo 'PREPROMOTION_REPAIR_GATE=PASS'
       - name: Apply strict 30-minute design review
-        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true' && steps.design_pipeline.outputs.complete == 'true'
         env:
           GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -433,7 +486,7 @@ jobs:
           if [ "$rc" -eq 0 ]; then echo 'STRICT_DESIGN_GATE=PASS'; else echo 'STRICT_DESIGN_GATE=REVISE_OR_REBUILD'; fi
           exit 0
       - name: Apply review-feedback repair and re-review within this cycle
-        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true' && steps.design_pipeline.outputs.complete == 'true'
         env:
           GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -454,7 +507,7 @@ jobs:
           echo 'REVIEW_FEEDBACK_REPAIR_PER_CYCLE=1'
           echo 'DESIGN_GATE_TOTAL_REPAIR_ATTEMPTS=UNLIMITED'
       - name: Verify baseline and strict review contract
-        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true' && steps.design_pipeline.outputs.complete == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
@@ -464,7 +517,7 @@ jobs:
           import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');if(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true)throw new Error('five department lead contract failed');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('STRICT_DESIGN_SCORE_SYNTHESIZED=NO');console.log('STRICT_DESIGN_VERDICT_SYNTHESIZED=NO');console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
       - name: Persist validated design evidence to company runtime branch
-        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true' && steps.design_pipeline.outputs.complete == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -481,7 +534,7 @@ jobs:
           echo 'PUBLIC_MAIN_WRITE=NO'
 
       - name: Dispatch per-game promotion reconciliation on own strict PASS
-        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
+        if: steps.target.outputs.should_run == 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true' && steps.design_pipeline.outputs.complete == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           GAME_ID: ${{ matrix.target.game_id }}
