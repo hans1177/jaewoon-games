@@ -126,7 +126,7 @@ function incrementalQaPlan(task, target, responsibleFiles, speculativeVariants =
   });
 }
 
-export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', learningMotorState = {}, codePatterns = {}, playbooks = {} } = {}) {
+export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', learningMotorState = {}, codePatterns = {}, playbooks = {}, externalAiKnowledge = {} } = {}) {
   const normalizedQueue = createVibeContinuousQueue(queue);
   const resolved = resolveTask(normalizedQueue, taskId);
   const base = {
@@ -182,7 +182,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     experienceInput:experience,
     codePatternsInput:codePatterns,
     playbooksInput:playbooks,
-    masteryInput:learningMotorState
+    masteryInput:learningMotorState,
+    externalAiKnowledgeInput:externalAiKnowledge
   });
   const unifiedLearningGuidance = buildMotorGuidance(unifiedLearning);
   const assetProduction = buildVibeAssetProductionPlan({ task, target:plan.target, repoRoot:process.cwd() });
@@ -224,6 +225,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     ...(plan.qa || []),
     'design-intelligence-contract',
     'verified-learning-motor-contract',
+    'external-ai-distillation-boundary',
     'asset-production-plan-contract',
     'asset-runtime-visual-qa-required',
     'exploration-handoff-required-before-implementation',
@@ -257,6 +259,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     workerPolicy:freeze({
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
       paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
+      externalAiRawDevelopmentUseAllowed:false, externalAiDistilledKnowledgeAdvisoryOnly:true,
+      externalAiMayClaimProductionPass:false, externalAiMayExpandAuthority:false,
       binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
       vibeOwnsAssetProductionDecision:true,
       webDirectAssetAuthoringAllowed:plan.target==='web',
@@ -270,7 +274,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   });
 }
 
-export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', outputFile='', taskId='', learningMotorStateFile='', codePatternsFile='', playbooksFile='' } = {}) {
+export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', outputFile='', taskId='', learningMotorStateFile='', codePatternsFile='', playbooksFile='', externalAiKnowledgeFile='' } = {}) {
   const runtime = readJson(runtimeFile, {});
   const resolvedQueueFile = clean(queueFile) || clean(runtime?.sources?.queue) || '.vibe2/queue.json';
   const resolvedControlFile = clean(controlFile) || clean(runtime?.sources?.parallelism) || clean(runtime?.adaptiveBackpressure?.stateFile) || '.vibe2/parallelism-control.json';
@@ -280,7 +284,9 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
   const learningMotorState = readJson(clean(learningMotorStateFile)||'.vibe2/learning-motor-state.json', {});
   const codePatterns = readJson(clean(codePatternsFile)||'.vibe2/code-pattern-library.json', readJson('company-learning/vibe2-code-pattern-library.json',{patterns:[]}));
   const playbooks = readJson(clean(playbooksFile)||'company-learning/vibe3-task-playbooks.json', {taskTypes:{}});
-  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, learningMotorState, codePatterns, playbooks });
+  const resolvedExternalAiKnowledgeFile=clean(externalAiKnowledgeFile)||clean(runtime?.sources?.externalAiDistilledKnowledge)||'.vibe2/external-ai-distilled-knowledge.json';
+  const externalAiKnowledge=readJson(resolvedExternalAiKnowledgeFile,{entries:[]});
+  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, learningMotorState, codePatterns, playbooks, externalAiKnowledge });
   writeJson(resolvedOutputFile, order);
   return order;
 }
@@ -289,7 +295,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const args = parseArgs();
   const order = runVibeContinuousRunner({
     runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), outputFile:clean(args.output), taskId:clean(args['task-id']),
-    learningMotorStateFile:clean(args['learning-motor-state']), codePatternsFile:clean(args['code-patterns']), playbooksFile:clean(args.playbooks)
+    learningMotorStateFile:clean(args['learning-motor-state']), codePatternsFile:clean(args['code-patterns']), playbooksFile:clean(args.playbooks), externalAiKnowledgeFile:clean(args['external-ai-knowledge'])
   });
   console.log(`VIBE2_CONTINUOUS_RUN=${order.run?'YES':'NO'}`);
   console.log(`VIBE2_CONTINUOUS_REASON=${order.reason}`);
@@ -314,6 +320,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_UNIFIED_EXPERIENCE_COUNT=${order.unifiedLearning?.experience?.length||0}`);
     console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
     console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
+    console.log(`VIBE2_EXTERNAL_AI_DISTILLED_COUNT=${order.unifiedLearning?.externalKnowledge?.length||0}`);
     console.log(`VIBE2_ASSET_DECISION_COUNT=${order.assetProduction?.decisions?.length||0}`);
     console.log(`VIBE2_EXPERIENCE_CONTEXT_APPLIED=${order.learningAppliedToWorkerGoal?'YES':'NO'}`);
     console.log(`VIBE2_REUSABLE_HANDOFF_CONTEXT=${order.reusedMachineContext?.used?'YES':'NO'}`);
