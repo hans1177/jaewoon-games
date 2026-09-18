@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "authority": "MACHINE_EXECUTION_CONTRACT",
+  "machineSourceOfTruth": "company-learning/catalog-homepage-normalization.json",
+  "catalog": {
+    "source": "game-catalog.json",
+    "schemaVersion": 1,
+    "uniqueKey": "id",
+    "productionClassField": "productionClass",
+    "productionClasses": [
+      "RELEASE_CONFIRMED",
+      "DEVELOPMENT_CONFIRMED",
+      "DESIGN_ONLY"
+    ],
+    "homepageCategoryDerivedFromProductionClass": true,
+    "legacyHomepageCategories": {
+      "historical-deployed": "homepageDisplayMode=ROBLOX_HISTORICAL_DEPLOYMENT"
+    },
+    "ordering": {
+      "mode": "CANONICAL_STABLE",
+      "keys": [
+        "lifecycleRank ASC",
+        "productionClassRank ASC",
+        "featuredRank ASC",
+        "platformRank ASC",
+        "id ASC"
+      ],
+      "lifecycleRank": {
+        "ACTIVE": 0,
+        "REBUILD": 1,
+        "PAUSED": 2,
+        "RETIRED": 3,
+        "REMOVED": 4
+      },
+      "productionClassRank": {
+        "RELEASE_CONFIRMED": 0,
+        "DEVELOPMENT_CONFIRMED": 1,
+        "DESIGN_ONLY": 2
+      },
+      "featuredRank": {
+        "true": 0,
+        "false": 1
+      },
+      "platformRank": {
+        "ROBLOX": 0,
+        "UNITY": 1,
+        "FORTNITE_UEFN": 2,
+        "UNSELECTED": 3
+      },
+      "outputField": "catalogOrder",
+      "contiguousFrom": 1
+    },
+    "normalizedFields": [
+      "id",
+      "name",
+      "description",
+      "genre",
+      "image",
+      "webPath",
+      "hasWebArchive",
+      "featured",
+      "homepageWebPlayable",
+      "homepageCategory",
+      "productionClass",
+      "productionClassSource",
+      "productionTarget",
+      "lifecycleState",
+      "lifecycleReason",
+      "ownerExistingGame",
+      "developmentHandling",
+      "homepageStage",
+      "homepageRecentWork",
+      "webPurpose",
+      "selectedPlatform",
+      "homepageDisplayMode",
+      "catalogOrder",
+      "homepageInfo"
+    ],
+    "passthroughExtensions": true
+  },
+  "homepage": {
+    "catalogSource": "game-catalog.json",
+    "canonicalOrderField": "catalogOrder",
+    "shelves": {
+      "RELEASE_CONFIRMED": "CATALOG_ORDER_ASC",
+      "WEB_PUBLISHED": "CATALOG_ORDER_ASC",
+      "ROBLOX_HISTORICAL_DEPLOYMENT": "CATALOG_ORDER_ASC",
+      "DEVELOPMENT_CONFIRMED": "CURRENT_SCORE_DESC_THEN_CATALOG_ORDER_ASC",
+      "TOP30": "STRICT_IMPLEMENTATION_SCORE_DESC"
+    },
+    "independentManualOrderingForbidden": true
+  },
+  "synchronization": {
+    "writer": "tools/company-status-sync.mjs",
+    "normalizer": "tools/game-catalog-normalize.mjs",
+    "homepageManager": "tools/homepage-manager.mjs",
+    "homepageRenderer": "assets/homepage-enhancements.js",
+    "normalizeBeforeCatalogWrite": true,
+    "homepageValidatesNormalizedCatalog": true
+  }
+}
