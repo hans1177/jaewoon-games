@@ -44,3 +44,15 @@ test('owner reset intake materializes canonical DESIGN_ONLY seeds without duplic
   assert.deepEqual(all.changed,[]);
   assert.equal(all.activeCount,1);
 });
+
+
+test('all-games reset workflow binds expected reset set to current DESIGN_ONLY catalog instead of hardcoded count',()=>{
+  const workflow=fs.readFileSync('.github/workflows/owner-all-games-design-reset.yml','utf8');
+  assert.doesNotMatch(workflow,/OWNER_ALL_GAMES_DESIGN_RESET_COUNT=19/);
+  assert.doesNotMatch(workflow,/OWNER_ALL_GAMES_DESIGN_RESET_EXPECTED_COUNT=19/);
+  assert.match(workflow,/productionClass\|\|'?\)?\.trim\(\)==='DESIGN_ONLY'|productionClass\|\|''/);
+  assert.match(workflow,/OWNER_DESIGN_RESET_COUNT_MISMATCH/);
+  assert.match(workflow,/OWNER_DESIGN_RESET_GAME_IDS_MISMATCH/);
+  assert.match(workflow,/OWNER_ALL_GAMES_DESIGN_RESET_CATALOG_BINDING=PASS/);
+  assert.match(workflow,/gh workflow run company-seed-design-runtime\.yml/);
+});
