@@ -274,12 +274,15 @@ jobs:
             if(String(item.selectedPlatform||item.targetPlatform||'').toUpperCase()!=='ROBLOX')continue;
             const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
             const retryCount=sameHarness?Number(item.robloxRuntimeRetryCount||0):0;
-            const retryBudgetAvailable=true;
+            const maxRetryableFailures=2;
+            const retryBudgetAvailable=retryCount<maxRetryableFailures;
+            const securityHold=item.robloxRuntimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(item.robloxRuntimeEvidence?.failure);
+            if(securityHold)continue;
             const retryableInstallFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
             const retryableStudioBusy=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy';
             const retryableRuntimeFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&['roblox-studio-runtime-failed','roblox-studio-runtime-timeout'].includes(item.robloxRuntimeEvidence?.failure);
             const retryableMissingEvidence=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
-            const retryableStudioStateMigration=!sameHarness&&item.robloxRuntimePassed!==true&&['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable','roblox-studio-busy'].includes(item.robloxRuntimeEvidence?.failure);
+            const retryableStudioStateMigration=!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy';
             const runtimeFailedAt=Date.parse(String(item.robloxRuntimeFailedAt||''));
             const preflightPassedAt=Date.parse(String(item.robloxBuildPreflightPassedAt||''));
             const staleRuntimeFailure=Boolean(item.robloxRuntimeFailedAt)&&Number.isFinite(runtimeFailedAt)&&Number.isFinite(preflightPassedAt)&&runtimeFailedAt<preflightPassedAt;
@@ -295,7 +298,9 @@ jobs:
           console.log(`ROBLOX_RUNTIME_TARGET_COUNT=${rows.length}`);console.log(`ROBLOX_RUNTIME_TARGET_IDS=${rows.map(x=>x.gameId).join(',')||'NONE'}`);
           console.log(`ROBLOX_RUNTIME_HARNESS_VERSION=${harnessVersion}`);
           console.log(`ROBLOX_RUNTIME_LOCAL_WIP_MAX=${runnerWip}`);
-          console.log('ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED');
+          console.log('ROBLOX_RUNTIME_RETRY_LIMIT=2');
+          console.log('ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0');
+          console.log('ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED');
           console.log('ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES');
           console.log('ROBLOX_ACTUAL_STUDIO_RUNTIME_REQUIRED=YES');
           console.log('ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated');
@@ -428,8 +433,9 @@ jobs:
             $nativeText = ($recentLogs | ForEach-Object { Get-Content $_.FullName -Raw -ErrorAction SilentlyContinue }) -join "`n"
             $unauthenticated = $nativeText -match 'Authenticated\s*:\s*NO'
             $loginBlocked = $nativeText -match 'Cookie list not found|https://www\.roblox\.com/login|LoginDialog'
-            if ($unauthenticated -and $loginBlocked) {
-              Set-Content -Path $authFlag -Value 'ROBLOX_STUDIO_AUTHENTICATION_REQUIRED'
+            $securityChallenge = $nativeText -match '(?i)captcha|arkose|funcaptcha|browser authentication|verification required|verify you are human|security challenge'
+            if (($unauthenticated -and $loginBlocked) -or $securityChallenge) {
+              Set-Content -Path $authFlag -Value 'ROBLOX_STUDIO_SECURITY_CHALLENGE_REQUIRED'
               Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue
               Start-Sleep -Seconds 2
               throw 'Roblox Studio authentication required before RunScript can execute'
@@ -624,15 +630,17 @@ jobs:
             const preflightPending=exact&&item.robloxBuildPreflightPassed!==true&&(!item.robloxBuildPreflightFailedAt||stalePreflightFailure);
             const sameHarness=String(item.robloxRuntimeHarnessVersion||'')===harnessVersion;
             const retryCount=sameHarness?Number(item.robloxRuntimeRetryCount||0):0;
-            const retryBudgetAvailable=true;
-            const retryableInstallFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
-            const retryableStudioBusy=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy';
-            const retryableRuntimeFailure=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&['roblox-studio-runtime-failed','roblox-studio-runtime-timeout'].includes(item.robloxRuntimeEvidence?.failure);
-            const retryableMissingEvidence=retryBudgetAvailable&&item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
-            const retryableStudioStateMigration=!sameHarness&&item.robloxRuntimePassed!==true&&['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable','roblox-studio-busy'].includes(item.robloxRuntimeEvidence?.failure);
+            const maxRetryableFailures=2;
+            const retryBudgetAvailable=retryCount<maxRetryableFailures;
+            const securityHold=item.robloxRuntimeSecurityHold===true||['roblox-studio-authentication-required','roblox-studio-local-profile-unavailable'].includes(item.robloxRuntimeEvidence?.failure);
+            const retryableInstallFailure=!securityHold&&retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-install-failed';
+            const retryableStudioBusy=!securityHold&&retryBudgetAvailable&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy';
+            const retryableRuntimeFailure=!securityHold&&retryBudgetAvailable&&item.robloxRuntimePassed!==true&&['roblox-studio-runtime-failed','roblox-studio-runtime-timeout'].includes(item.robloxRuntimeEvidence?.failure);
+            const retryableMissingEvidence=!securityHold&&retryBudgetAvailable&&item.robloxRuntimePassed!==true&&Boolean(item.robloxRuntimeFailedAt)&&item.robloxRuntimeEvidence==null&&item.robloxFailureSignature==='ROBLOX_RUNTIME_RESULT_MISSING';
+            const retryableStudioStateMigration=!securityHold&&!sameHarness&&item.robloxRuntimePassed!==true&&item.robloxRuntimeEvidence?.failure==='roblox-studio-busy';
             const runtimeFailedAt=Date.parse(String(item.robloxRuntimeFailedAt||''));const preflightPassedAt=Date.parse(String(item.robloxBuildPreflightPassedAt||''));
             const staleRuntimeFailure=Boolean(item.robloxRuntimeFailedAt)&&Number.isFinite(runtimeFailedAt)&&Number.isFinite(preflightPassedAt)&&runtimeFailedAt<preflightPassedAt;
-            const runtimePending=exact&&item.robloxBuildPreflightPassed===true&&(item.robloxRuntimePassed!==true||!sameHarness)&&(!item.robloxRuntimeFailedAt||staleRuntimeFailure||retryableInstallFailure||retryableStudioBusy||retryableRuntimeFailure||retryableMissingEvidence||retryableStudioStateMigration);
+            const runtimePending=!securityHold&&exact&&item.robloxBuildPreflightPassed===true&&(item.robloxRuntimePassed!==true||!sameHarness)&&(!item.robloxRuntimeFailedAt||staleRuntimeFailure||retryableInstallFailure||retryableStudioBusy||retryableRuntimeFailure||retryableMissingEvidence||retryableStudioStateMigration);
             if(preflightPending||runtimePending)n++;}
           process.stdout.write(String(n));
           NODE
@@ -655,7 +663,9 @@ jobs:
           echo 'ROBLOX_PROMOTION_COUNT_GATE=NONE'
           echo 'ROBLOX_EXECUTION_WIP_MAX=6'
           echo 'ROBLOX_RUNTIME_LOCAL_WIP_MAX=3'
-          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=UNLIMITED'
+          echo 'ROBLOX_RUNTIME_RETRY_LIMIT=2'
+          echo 'ROBLOX_RUNTIME_SECURITY_CHALLENGE_RETRY=0'
+          echo 'ROBLOX_RUNTIME_SECURITY_HOLD=ENABLED'
           echo 'ROBLOX_RUNTIME_RUNNER_POOL_CAPACITY_AWARE=YES'
           echo "ROBLOX_RUNTIME_HARNESS_VERSION=$ROBLOX_RUNTIME_HARNESS_VERSION"
           echo 'ROBLOX_RUNTIME_RUNNER=self-hosted-authenticated'
