@@ -166,6 +166,7 @@ const checkpointFingerprint=createHash('sha256').update(JSON.stringify({
   discardPolicy:directive.discardPolicy?.DESIGN_ONLY||null
 })).digest('hex');
 let designCheckpoint=readJson(checkpointPath,null);
+const priorCheckpointStatus=clean(designCheckpoint?.status).toUpperCase();
 const checkpointReusable=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION&&designCheckpoint?.fingerprint===checkpointFingerprint;
 const checkpointV2MigrationEligible=designCheckpoint?.contractVersion===2
   &&clean(designCheckpoint?.gameId)===gameId
@@ -175,7 +176,10 @@ const checkpointV2MigrationEligible=designCheckpoint?.contractVersion===2
   &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
   &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
   &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
-const checkpointCompatibleEngineDigests=new Set(['4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec']);
+const checkpointCompatibleEngineDigests=new Set([
+  '4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec',
+  '24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03'
+]);
 const checkpointV3CompatibleEngineMigrationEligible=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION
   &&clean(designCheckpoint?.gameId)===gameId
   &&clean(designCheckpoint?.date)===date
@@ -228,6 +232,31 @@ if(!checkpointReusable&&(checkpointV2MigrationEligible||checkpointV3CompatibleEn
   designCheckpoint.updatedAt=new Date().toISOString();
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_CHECKPOINT_RESUME=YES|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}`);
+}
+if(priorCheckpointStatus==='PRE_GATE_BLOCKED'&&Object.prototype.hasOwnProperty.call(designCheckpoint.phases||{},'designer_draft')){
+  const retryPhases=[
+    'designer_pre_gate_repair_1',
+    'deterministic_pre_gate_after_repair_1',
+    'designer_pre_gate_repair_2',
+    'deterministic_pre_gate_after_repair_2'
+  ];
+  let invalidated=0;
+  for(const phase of retryPhases){
+    if(Object.prototype.hasOwnProperty.call(designCheckpoint.phases,phase)){
+      delete designCheckpoint.phases[phase];
+      invalidated+=1;
+    }
+  }
+  designCheckpoint.completedPhases=(designCheckpoint.completedPhases||[]).filter(phase=>!retryPhases.includes(phase));
+  designCheckpoint.preGateRepairGeneration=Math.max(0,Number(designCheckpoint.preGateRepairGeneration||0))+1;
+  designCheckpoint.failedPhase=null;
+  designCheckpoint.failedTask=null;
+  designCheckpoint.lastError=null;
+  designCheckpoint.currentPhase='PRE_GATE_REPAIR';
+  designCheckpoint.status='IN_PROGRESS';
+  designCheckpoint.updatedAt=new Date().toISOString();
+  writeJson(checkpointPath,designCheckpoint);
+  console.log(`DESIGN_PRE_GATE_REPAIR_RETRY_GENERATION=${designCheckpoint.preGateRepairGeneration}|invalidated=${invalidated}|fullCycleRestart=NO`);
 }
 for(const [rawModel,row] of Object.entries(designCheckpoint.modelHealth||{})){
   const status=persistentGeminiUnavailableStatus(row?.lastError);
