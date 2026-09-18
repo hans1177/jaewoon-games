@@ -32,3 +32,5 @@ jobs:
             gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null || true
             echo "DESIGN_RUNTIME_CLEANUP_CANCEL=$run_id"
           done
+
+# retrigger: quota-safe-design-lanes
