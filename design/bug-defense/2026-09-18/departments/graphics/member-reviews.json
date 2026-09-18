@@ -6,13 +6,13 @@
   "department": "graphics",
   "leadModel": "gemma3:1b",
   "assistantModels": [
-    "llama3.2:1b",
-    "qwen2.5:1.5b"
+    "qwen3:0.6b",
+    "llama3.2:1b"
   ],
   "models": [
     "gemma3:1b",
-    "llama3.2:1b",
-    "qwen2.5:1.5b"
+    "qwen3:0.6b",
+    "llama3.2:1b"
   ],
   "reviews": [
     {
@@ -20,22 +20,46 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "game_quality"
+          "game_design_quality"
         ],
         "fix": [
-          "game_design"
+          "game_design_quality"
         ],
         "add": [
-          "game_leveling"
+          "game_design_quality"
         ],
         "risks": [
-          "game_stability"
+          "game_design_quality"
         ],
         "evidence": [
-          "game_replayability"
+          "game_design_quality"
         ],
         "questions": [
           "game_design_quality"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED"
+        ],
+        "add": [
+          "DISTINCT_IDENTITY"
+        ],
+        "risks": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "evidence": [
+          "Kingdom Rush"
+        ],
+        "questions": [
+          "Bloons TD 6"
         ]
       }
     },
@@ -44,46 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라. 각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
+          "game's core fun to learn"
         ],
         "fix": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "game's core loop"
         ],
         "add": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "distinct identity"
         ],
         "risks": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "game's market evidence summary"
         ],
         "evidence": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "game's market evidence summary"
         ],
         "questions": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
-        ]
-      }
-    },
-    {
-      "model": "qwen2.5:1.5b",
-      "memberRole": "ASSISTANT",
-      "review": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT=graphics"
-        ],
-        "fix": [
-          "GAME_SEED=OWNER-FULL-REBUILD-BUG-DEFENSE-20260916"
-        ],
-        "add": [
-          "GAME_SEED=bug-defense"
-        ],
-        "risks": [
-          "GAME_SEED=bug-defense"
-        ],
-        "evidence": [
-          "GAME_SEED=bug-defense"
-        ],
-        "questions": [
-          "GAME_SEED=bug-defense"
+          "game's market evidence summary"
         ]
       }
     }

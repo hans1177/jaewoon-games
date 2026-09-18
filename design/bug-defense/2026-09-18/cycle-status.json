@@ -70,13 +70,13 @@
       "graphics": {
         "leadModel": "gemma3:1b",
         "assistantModels": [
-          "llama3.2:1b",
-          "qwen2.5:1.5b"
+          "qwen3:0.6b",
+          "llama3.2:1b"
         ],
         "models": [
           "gemma3:1b",
-          "llama3.2:1b",
-          "qwen2.5:1.5b"
+          "qwen3:0.6b",
+          "llama3.2:1b"
         ],
         "count": 3,
         "required": 3,
@@ -89,13 +89,13 @@
       "development": {
         "leadModel": "llama3.2:1b",
         "assistantModels": [
-          "qwen2.5:1.5b",
-          "smollm2:1.7b"
+          "qwen3:0.6b",
+          "gemma3:1b"
         ],
         "models": [
           "llama3.2:1b",
-          "qwen2.5:1.5b",
-          "smollm2:1.7b"
+          "qwen3:0.6b",
+          "gemma3:1b"
         ],
         "count": 3,
         "required": 3,
@@ -108,13 +108,13 @@
       "qa": {
         "leadModel": "qwen2.5:1.5b",
         "assistantModels": [
-          "smollm2:1.7b",
-          "qwen3:0.6b"
+          "qwen3:0.6b",
+          "gemma3:1b"
         ],
         "models": [
           "qwen2.5:1.5b",
-          "smollm2:1.7b",
-          "qwen3:0.6b"
+          "qwen3:0.6b",
+          "gemma3:1b"
         ],
         "count": 3,
         "required": 3,
@@ -149,7 +149,7 @@
     "repeatedFatalReview": true
   },
   "meeting": {
-    "consensusCount": 5,
+    "consensusCount": 1,
     "conflictCount": 0,
     "holdCount": 0,
     "coordinatorModel": "qwen3:0.6b"
@@ -162,7 +162,7 @@
     "sameDesignerRevisionAttempted": true,
     "repeatedFiveDepartmentReview": true,
     "allFiveLeadModelsReviewed": true,
-    "discardVotes": 3,
+    "discardVotes": 1,
     "commonFatalCriteria": [],
     "unanimousFatalDiscard": false,
     "fatalReviews": {
@@ -170,29 +170,24 @@
         "recommendedState": "ACTIVE",
         "fatalCriteria": [],
         "evidence": [
-          "Market evidence shows strong demand for strategic gameplay and wave defense readability in the target market (Kingdom Rush, Bloons TD 6, etc.)",
-          "Global mobile gaming revenue in 2025 is projected to reach $113.3 billion, indicating strong market potential",
-          "The game's core functionality (wave defense, strategic placement) aligns with benchmark metrics from top-tier games like Kingdom Rush",
-          "The game's design is consistent with the core fun elements and progression direction set by the owner"
+          "OWN의 유지보수 목표는 게임의 핵심 콘텐츠와 핵심 루프를 반복하고, 다른 부서의 의견을 수용/반박/수정함. 게임의 핵심 재미를 유지하고, 첫 세션 조작을 시작하는 핵심 루프를 개선합니다. 또한, game.seedId를 추가하여 특정 게임의 환경을 명확히 합니다.",
+          "MARKET_EVIDENCE_SUMMARY",
+          "game.seedId를 추가하여 특정 게임의 환경을 명확히 합니다."
         ],
-        "reason": "The game design is viable and aligns with market expectations, with no critical design issues identified."
+        "reason": "게임의 핵심 콘텐츠와 핵심 루프를 반복적으로 개선하며, 핵심 루프를 반복적으로 개선합니다. 게임의 핵심 콘텐츠와 learning process를 반영합니다."
       },
       "graphics": {
         "recommendedState": "DISCARD",
         "fatalCriteria": [
           "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
           "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
-          "CORE_FUN_CANNOT_BE_RECOVERED"
+          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
         ],
-        "evidence": [
-          "game_design_quality",
-          "balance"
-        ],
-        "reason": "The game's core loop, while potentially engaging, has several issues. The design is overly reliant on a specific strategy, which could lead to a repetitive gameplay experience. The core loop is not sufficiently unique and could be easily replicated. The game's design is not well-balanced, and the current design does not allow for player creativity. The game's design is not well-balanced, and the current design does not allow for player creativity. The game's design is not well-balanced, and the current design does not allow for player creativity. The game's design is not well-balanced, and the current design does not allow for player creativity. The game's design is not well-balanced, and it"
+        "evidence": [],
+        "reason": "수정 설계를 다시 검토한 후, 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 DISCARD를 선택해야 합니다. 이 경우, 핵심 콘텐츠의 반복적인 개선과 핵심 루프의 조작을 위한 핵심 기능의 유지보수를 위해 게임의 핵심 콘텐츠를 반복적으로 개선하고, 핵심 루프를 반복적으로 개선해야 합니다. 핵심 루프를 반복적으로 개선하는 과정에서 핵심 콘텐츠의 반복적인 개선을 통해 게임의 핵심 재미를 유지해야 합니다."
       },
       "development": {
-        "recommendedState": "DISCARD",
+        "recommendedState": "REDESIGN",
         "fatalCriteria": [
           "CORE_FUN_CANNOT_BE_RECOVERED",
           "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
@@ -203,9 +198,9 @@
           "game-seed-market-evidence.json",
           "game-seed-platform-profiles.json",
           "ESA Power of Play 2025 Global Report",
-          "Newzoo 2025 Full-Year Games Market Review"
+          "Kingdom Rush"
         ],
-        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+        "reason": "game.seedId를 추가하여 특정 게임의 환경을 명확히 하기ため"
       },
       "qa": {
         "recommendedState": "REDESIGN",
@@ -216,48 +211,81 @@
           "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
         ],
         "evidence": [
-          "BUG_DEFENSE_SEED.json",
-          "BUG_DEFENSE_REVISION.json",
-          "BUG_DEFENSE_PLATFORM_PROFILE.json"
+          "The seed seedId is OWNER-FULL-REBUILD-BUG-DEFENSE-20260916, which indicates a full rebuild and rollback reference implementation. This seed should not be used as the base for the implementation."
         ],
-        "reason": "The current design does not meet the core functionality and identity requirements, leading to a fatal design blocker that remains after revision. The seed, platform profiles, and evidence files support this conclusion."
+        "reason": "The current seed is a full rebuild and rollback reference implementation, which should not be used as the base for the implementation. The seed contains the core fun, core loop, and learning process, which are essential for the game's design and functionality."
       },
       "balance": {
-        "recommendedState": "DISCARD",
+        "recommendedState": "ACTIVE",
         "fatalCriteria": [
           "CORE_FUN_CANNOT_BE_RECOVERED",
           "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
           "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
           "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
         ],
-        "evidence": [],
-        "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하고, 필요시 수정하여 정확한 스키마를 유지합니다."
+        "evidence": [
+          "CORE_FUN_TO_LEARN",
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME"
+        ],
+        "reason": "곤충 디펜스 게임의 핵심 콘텐츠를 반복적으로 개선하며, 핵심 루프를 반복적으로 개선합니다."
       }
     },
     "marketMetricAloneUsedForDiscard": false
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft": 133108,
-      "independent_department_reviews": 701357,
-      "department_representatives": 98166,
-      "lead_rebuttals": 74677,
-      "cross_department_meeting": 15973,
-      "designer_revision": 65550,
-      "five_lead_fatal_review": 310128
+      "designer_draft_base": 130176,
+      "designer_draft_gate": 194147,
+      "independent_department_reviews": 763445,
+      "department_representatives": 62116,
+      "lead_rebuttals": 82155,
+      "cross_department_meeting": 16420,
+      "designer_revision_base": 105166,
+      "designer_revision_gate": 58695,
+      "five_lead_fatal_review": 400432
     },
-    "totalModelCalls": 33,
-    "totalModelCallMs": 1398945,
-    "modelPhaseConcurrency": 1,
-    "modelKeepAlive": "2m",
+    "totalModelCalls": 36,
+    "totalModelCallMs": 3083207,
+    "modelPhaseConcurrency": 4,
+    "phaseConcurrency": {
+      "independent_department_reviews": 4,
+      "department_representatives": 3,
+      "lead_rebuttals": 3,
+      "five_lead_fatal_review": 3
+    },
+    "maxLoadedModelLanes": 2,
+    "modelKeepAlive": "5m",
+    "fastAssistantPool": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "checkpoint": {
+      "contractVersion": 1,
+      "reused": false,
+      "completedPhases": 9,
+      "cachedTasks": 30
+    },
+    "modelCenteredReviewOrder": true,
+    "adaptiveConcurrency": true,
+    "departmentScopedContext": true,
     "independentReviewOutputs": 15,
     "fullPoolReviewOutputs": 25
   },
   "designLearning": {
-    "candidateCount": 3,
+    "candidateCount": 4,
     "usedAsDesignContext": true,
     "positiveTrainingEligible": false,
-    "validatedRuntimeRequiredForPositiveTraining": true
+    "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
+    "strictGateHardFailures": [
+      "CORE_FUN_WEAK"
+    ],
+    "strictGateBypassAllowed": false
   },
   "artbook": {
     "created": false,
@@ -364,7 +392,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-18T02:17:36.757Z"
+    "checkedAt": "2026-09-18T04:51:50.315Z"
   },
   "artbookUi": {
     "status": "WRITING",

@@ -22,62 +22,68 @@
   "representatives": {
     "planning": {
       "keep": [
-        "Ensure that the design is focused on the core functionality of the bug-defense strategy, such as wave reading, counter placement, "
+        "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
       ],
       "fix": [
-        "Clarify the specific requirements for the core fun, such as readability and counterplay, and ensure that the core loop is well-"
+        "game.failureState1"
       ],
       "add": [
-        "Include details about the visual direction, progression, and market target, as well as the technical assumptions and validation"
+        "game.seedId"
       ],
       "risks": [
-        "Address the potential issues with the core fun, such as readability and counterplay, and ensure that the core loop is well-"
+        "game.failureState1"
       ],
       "evidence": [
-        "Provide evidence that supports the design, such as the reference games and market data, to demonstrate the design's validity"
+        "game.seedId"
       ],
       "questions": [
-        "Address the potential issues with the core fun, such as readability and counterplay, and ensure that the core loop is well-"
+        "game.coreFun"
       ]
     },
     "graphics": {
       "keep": [
-        "game_quality"
+        "gemma3:1b",
+        "qwen3:0.6b"
       ],
       "fix": [
-        "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라. 각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
+        "gemma3:1b",
+        "qwen3:0.6b"
       ],
       "add": [
-        "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+        "gemma3:1b",
+        "qwen3:0.6b"
       ],
       "risks": [
-        "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+        "gemma3:1b",
+        "qwen3:0.6b"
       ],
       "evidence": [
-        "game_replayability"
+        "gemma3:1b",
+        "qwen3:0.6b"
       ],
       "questions": [
-        "game_design_quality"
+        "gemma3:1b",
+        "qwen3:0.6b"
       ]
     },
     "development": {
       "keep": [
-        "GAME_SEED"
+        "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
       ],
       "fix": [
-        "GAME_SEED"
+        "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
       ],
       "add": [
-        "GAME_SEED"
+        "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
       ],
       "risks": [
-        "GAME_SEED"
+        "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
       ],
       "evidence": [
-        "GAME_SEED"
+        "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
       ],
       "questions": [
-        "GAME_SEED"
+        "game의 core fun과 its learning process"
       ]
     },
     "qa": {
@@ -102,22 +108,22 @@
     },
     "balance": {
       "keep": [
-        "Read the incoming insect wave and its threat pattern. Place or adjust defenders and spend limited resources on the highest-value\n "
+        "keep1"
       ],
       "fix": [
-        "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+        "fix1"
       ],
       "add": [
-        "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+        "add1"
       ],
       "risks": [
-        "Ensure the game remains a single strategy."
+        "risk1"
       ],
       "evidence": [
-        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        "evidence1"
       ],
       "questions": [
-        "How to make the game more engaging?"
+        "question1"
       ]
     }
   },
@@ -128,62 +134,18 @@
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하고, 필요시 수정하여 정확한 스키마를 유지합니다.",
+      "reason": "OWN의 유지보수 목표는 게임의 핵심 콘텐츠와 핵심 루프를 반복하고, 다른 부서의 의견을 수용/반박/수정함. 게임의 핵심 재미를 유지하고, 첫 세션 조작을 시작하는 핵심 루프를 개선합니다. 또한, game.seedId를 추가하여 특정 게임의 환경을 명확히 합니다. 게임의 핵심 콘텐츠를 반복적으로 개선하며, 핵심 루프를 반복적으로 개선합니다. 게임의 핵심 콘텐츠와 learning process를 반영합니다.",
       "departments": [
         "planning",
-        "fix",
-        "add",
-        "risks",
-        "evidence"
-      ]
-    },
-    {
-      "topic": "graphics",
-      "status": "CONSENSUS",
-      "reason": "game_design_quality",
-      "departments": [
         "graphics",
-        "add",
-        "risks",
-        "evidence"
-      ]
-    },
-    {
-      "topic": "development",
-      "status": "CONSENSUS",
-      "reason": "",
-      "departments": [
         "development",
-        "fix",
-        "add",
-        "risks"
-      ]
-    },
-    {
-      "topic": "qa",
-      "status": "CONSENSUS",
-      "reason": "",
-      "departments": [
         "qa",
-        "add",
-        "risks"
-      ]
-    },
-    {
-      "topic": "balance",
-      "status": "CONSENSUS",
-      "reason": "OWN",
-      "departments": [
-        "balance",
-        "keep",
-        "fix",
-        "add",
-        "risks"
+        "balance"
       ]
     }
   ],
   "counts": {
-    "consensus": 5,
+    "consensus": 1,
     "conflict": 0,
     "hold": 0
   }
