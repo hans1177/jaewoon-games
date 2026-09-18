@@ -1,7 +1,7 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { dedupeIdlePracticeTasks, injectIdlePracticeTask } from '../tools/vibe2-learning-motor.mjs';
+import { dedupeIdlePracticeTasks, injectIdlePracticeTask, retrieveUnifiedLearning } from '../tools/vibe2-learning-motor.mjs';
 
 function practice(id,status='failed',retries=1,evidence=[]){
   return {
@@ -79,10 +79,29 @@ test('idle practice model answers require verification and distillation before r
   assert.equal(boundary.rawPracticeModelAnswerMayEnterCanonicalTraining,false);
   assert.equal(boundary.independentVerificationRequiredBeforeReuse,true);
   assert.equal(boundary.distillationRequiredBeforeReuse,true);
+  assert.equal(boundary.distiller,'tools/vibe2-practice-distillation.mjs');
+  assert.equal(boundary.distilledKnowledgeStore,'.vibe2/practice-distilled-knowledge.json');
+  assert.equal(boundary.minimumTraceableVerificationEvidenceItems,2);
+  assert.equal(boundary.candidateTextPersistentStorage,false);
   assert.equal(boundary.verifiedDistilledLessonAuthority,'VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE');
   assert.equal(boundary.verifiedDistilledLessonMayEnterRetrieval,true);
   assert.equal(boundary.verifiedProjectOutcomeStillRequiredForPositiveMasteryOrTraining,true);
   assert.equal(boundary.authorityExpanded,false);
   assert.equal(policy.modelTraining?.practiceRawModelOutputDirectTraining,false);
   assert.equal(policy.modelTraining?.practiceDistilledKnowledgeDirectTraining,false);
+});
+
+
+test('verified distilled practice knowledge is advisory retrieval only',()=>{
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'g1',target:'web',goal:'repair save restore persistence'},
+    practiceDistilledInput:{entries:[
+      {id:'pd-save',domain:'SAVE',verified:true,independentlyVerified:true,retrievalEligible:true,authority:'VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE',confirmations:3,verificationEvidence:['code-pattern:p1:r1','code-pattern:p2:r2']},
+      {id:'pd-bad',domain:'SAVE',verified:false,independentlyVerified:false,retrievalEligible:true,authority:'VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE',confirmations:99,verificationEvidence:['x','y']}
+    ]}
+  });
+  assert.equal(ctx.practiceDistilled.length,1);
+  assert.equal(ctx.practiceDistilled[0].id,'pd-save');
+  assert.equal(ctx.practiceDistilled[0].domain,'SAVE');
+  assert.ok(ctx.priority.includes('VERIFIED_PRACTICE_DISTILLED_ADVISORY'));
 });
