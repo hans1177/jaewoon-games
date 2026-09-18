@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    #game {
+      width: 100%;
+      max-width: 800px;
+      height: 600px;
+      background-color: #111;
+      border: 2px solid #333;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    #game canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    #controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: 2px solid #fff;
+      border-radius: 5px;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+    #controls button:hover {
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+  <div id="controls">
+    <button onclick="startGame()">Start Game</button>
+    <button onclick="restartGame()">Restart</button>
+  </div>
+
+  <script>
+    const gameContainer = document.getElementById('game');
+    const controls = document.getElementById('controls');
+
+    let game = null;
+
+    function startGame() {
+      game = new Game();
+      gameContainer.innerHTML = '';
+      game.draw();
+      controls.innerHTML = '';
+    }
+
+    function restartGame() {
+      if (game) {
+        game = null;
+        gameContainer.innerHTML = '';
+        controls.innerHTML = '';
+        startGame();
+      }
+    }
+
+    class Game {
+      constructor() {
+        this.map = new Map();
+        this.player = new Player();
+        this.ai = new AI();
+        this.progression = new Progression();
+        this.ui = new UI();
+        this.saveState = new SaveState();
+      }
+
+      draw() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 800;
+        canvas.height = 600;
+        gameContainer.appendChild(canvas);
+        this.map.draw(canvas);
+        this.player.draw(canvas);
+        this.ai.draw(canvas);
+        this.progression.draw(canvas);
+        this.ui.draw(canvas);
+      }
+
+      update() {
+        this.map.update();
+        this.player.update();
+        this.ai.update();
+        this.progression.update();
+        this.ui.update();
+      }
+
+      render() {
+        const canvas = document.querySelector('#game canvas');
+        canvas.width = 800;
+        canvas.height = 600;
+        this.map.render(canvas);
+        this.player.render(canvas);
+        this.ai.render(canvas);
+        this.progression.render(canvas);
+        this.ui.render(canvas);
+      }
+
+      start() {
+        this.update();
+        this.render();
+        setInterval(() => {
+          this.update();
+          this.render();
+        }, 1000);
+      }
+    }
+
+    class Map {
+      constructor() {
+        this.grid = new Grid(10, 10);
+        this.playerPosition = { x: 0, y: 0 };
+      }
+
+      draw(canvas) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        this.grid.draw(ctx);
+      }
+
+      update() {
+        this.playerPosition = this.ai.getMove(this.playerPosition);
+        this.grid.setTile(this.playerPosition.x, this.playerPosition.y, 'player');
+      }
+
+      getMove(position) {
+        // Simple AI for demonstration
+        return { x: position.x, y: position.y };
+      }
+    }
+
+    class Grid {
+      constructor(rows, cols) {
+        this.rows = rows;
+        this.cols = cols;
+        this.tiles = new Array(rows).fill(0).map(() => new Array(cols).fill('empty'));
+      }
+
+      draw(ctx) {
+        for (let y = 0; y < this.rows; y++) {
+          for (let x = 0; x < this.cols; x++) {
+            ctx.fillStyle = this.tiles[y][x] === 'player' ? 'green' : this.tiles[y][x] === 'enemy' ? 'red' : 'gray';
+            ctx.fillRect(x * 64, y * 64, 64, 64);
+          }
+        }
+      }
+
+      setTile(x, y, type) {
+        this.tiles[y][x] = type;
+      }
+    }
+
+    class Player {
+      constructor() {
+        this.position = { x: 0, y: 0 };
+      }
+
+      draw(ctx) {
+        ctx.fillStyle = 'blue';
+        ctx.fillRect(this.position.x * 64, this.position.y * 64, 64, 64);
+      }
+
+      update() {
+        this.position = this.ai.getMove(this.position);
+      }
+    }
+
+    class AI {
+      constructor() {
+        this.directions = [
+          { x: 0, y: 1 },
+          { x: 1, y: 0 },
+          { x: 0, y: -1 },
+          { x: -1, y: 0 }
+        ];
+      }
+
+      getMove(position) {
+        // Simple AI for demonstration
+        return this.directions[Math.floor(Math.random() * this.directions.length)];
+      }
+    }
+
+    class Progression {
+      constructor() {
+        this.difficulty = 1;
+        this.score = 0;
+      }
+
+      draw(ctx) {
+        ctx.fillStyle = 'yellow';
+        ctx.fillRect(500, 500, 100, 30);
+        ctx.fillStyle = 'red';
+        ctx.fillRect(520, 510, 80, 20);
+        ctx.fillStyle = 'green';
+        ctx.fillRect(540, 520, 60, 20);
+      }
+
+      update() {
+        this.difficulty += 0.1;
+        this.score += 10;
+      }
+    }
+
+    class UI {
+      constructor() {
+        this.score = 0;
+      }
+
+      draw(ctx) {
+        ctx.fillStyle = 'white';
+        ctx.font = '16px Arial';
+        ctx.fillText(`Score: ${this.score}`, 10, 30);
+      }
+
+      update() {
+        this.score += 10;
+      }
+    }
+
+    class SaveState {
+      constructor() {
+        this.state = {
+          difficulty: 1,
+          score: 0
+        };
+      }
+
+      save() {
+        localStorage.setItem('vibe2_state', JSON.stringify(this.state));
+      }
+
+      load() {
+        if (localStorage.getItem('vibe2_state')) {
+          this.state = JSON.parse(localStorage.getItem('vibe2_state'));
+        }
+      }
+    }
+
+    // Initialize game
+    window.onload = () => {
+      startGame();
+    };
+  </script>
+</body>
+</html>
