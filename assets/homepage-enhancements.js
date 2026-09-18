@@ -118,7 +118,7 @@ function webPublishedRows(catalog){
       return activeLifecycle(game)&&(web.playable===true||game?.homepageWebPlayable===true)&&(web.archive===true||game?.hasWebArchive===true)&&String(web.path||game?.webPath||'').trim();
     })
     .map(game=>({...game,homepageDisplayMode:'WEB_PUBLISHED'}))
-    .sort((a,b)=>(Date.parse(updatedAt(b)||'')||0)-(Date.parse(updatedAt(a)||'')||0)||gameIdOf(a).localeCompare(gameIdOf(b)));
+    .sort(catalogOrderCompare);
 }
 function verifiedRobloxDeploymentRows(catalog){
   return (Array.isArray(catalog?.games)?catalog.games:[])
