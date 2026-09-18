@@ -50,4 +50,6 @@ test('empty canonical queue does not redispatch development runtime',()=>{
   assert.match(workflow,/queue_count=.*development-queue\.json/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
   assert.doesNotMatch(workflow,/name: Dispatch development runtime\n\s*if:\s*\$\{\{\s*always\(\) && !cancelled\(\)\s*\}\}/);
+  assert.match(workflow,/git checkout origin\/main -- tools\/company-development-queue-reconcile\.mjs/);
+  assert.doesNotMatch(workflow,/git checkout origin\/main --[^\n]*game-catalog\.json/);
 });
