@@ -28,6 +28,35 @@ assert.deepEqual(lifecycle.stages,[
   'RELEASE_PROMOTION','POST_RELEASE_FOCUSED_DEVELOPMENT'
 ]);
 
+const continuation=lifecycle.machineOnlyProjectContinuation;
+assert.equal(continuation.authority,'MACHINE_EXECUTION_CONTRACT');
+assert.equal(continuation.humanDocumentRequired,false);
+assert.equal(continuation.sourceOfTruth,'company-learning/platform-release-roadmap.json');
+assert.equal(continuation.objective,'WEB_BASE_THEN_NATIVE_CONTINUATION_THEN_POST_RELEASE_FOCUSED_DEVELOPMENT');
+assert.equal(continuation.webBaseImplementation.disposablePrototype,false);
+assert.equal(continuation.webBaseImplementation.completionGate,'WEB_DEVELOPMENT_BASELINE_READY');
+for(const system of ['core-loop-runtime','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent']){
+  assert(continuation.webBaseImplementation.requiredBaseSystems.includes(system),system);
+}
+assert.equal(continuation.nativePlatformContinuation.secondImplementationContinuesFromWebBase,true);
+assert.equal(continuation.nativePlatformContinuation.restartFromBlankForbiddenWhenValidWebBaseExists,true);
+assert.equal(continuation.nativePlatformContinuation.handoffRequired,true);
+assert.equal(continuation.nativePlatformContinuation.webEvidenceCannotSubstituteNativePass,true);
+assert.equal(continuation.robloxContinuation.continueFromPortableBase,true);
+assert.equal(continuation.robloxContinuation.verifiedLearningReuseRequired,true);
+assert.equal(continuation.postReleaseFocusedDevelopment.dedicatedProtectedRunnerSlots,1);
+assert.equal(continuation.postReleaseFocusedDevelopment.continuousRefill,true);
+assert.equal(continuation.postReleaseFocusedDevelopment.worker,'.github/workflows/vibe2-continuous-core.yml');
+assert.equal(continuation.postReleaseFocusedDevelopment.feeder,'tools/vibe2-post-release-focus.mjs');
+assert.equal(continuation.verifiedLearningMaxUse.required,true);
+assert.equal(continuation.verifiedLearningMaxUse.sameGameHighestPriority,true);
+assert.equal(continuation.verifiedLearningMaxUse.crossGameTransformativeRecombinationAllowed,true);
+assert.equal(continuation.verifiedLearningMaxUse.learningMayExpandAuthority,false);
+assert.equal(continuation.verifiedLearningMaxUse.learningMayReplaceNativeVerification,false);
+for(const source of ['.vibe2/experience.json','.vibe2/game-study-knowledge.json','company-learning/vibe3-memory-index.json','company-learning/vibe3-recombination-memory.json','company-learning/vibe3-task-playbooks.json','company-learning/vibe2-code-pattern-library.json']){
+  assert(continuation.verifiedLearningMaxUse.retrievalSources.includes(source),source);
+}
+
 assert.equal(lifecycle.webToPlatformHandoff.required,true);
 assert.equal(lifecycle.webToPlatformHandoff.webIsDisposablePrototype,false);
 assert.equal(lifecycle.webToPlatformHandoff.queueField,'webPlatformHandoff');
@@ -143,4 +172,4 @@ assert.match(designCycle,/GEMINI_DAILY_QUOTA_EXHAUSTED=/);
 assert.ok(designCycle.indexOf('if(status===429&&isDailyGeminiQuotaError(error))')<designCycle.indexOf('const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel)'));
 
 
-console.log('PASS machine lifecycle binds Web baseline to native source and one protected Roblox post-release focus slot');
+console.log('PASS machine-only lifecycle binds Web base to Roblox continuation, verified learning reuse, and one protected post-release focus runner');
