@@ -1,7 +1,7 @@
 // 파일명: qa/production-diversity.test.mjs
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { gameplayFamily, selectDiverseTopRows, syncProductionClasses } from '../tools/company-status-sync.mjs';
+import { applyHomepageRuntimeInfo, gameplayFamily, selectDiverseTopRows, syncProductionClasses } from '../tools/company-status-sync.mjs';
 import { productionClassOf } from '../tools/production-classification.mjs';
 
 const fsStub={existsSync:()=>true};
@@ -136,4 +136,48 @@ test('diversity selector remains diagnostic-only and does not control membership
   ];
   const selected=selectDiverseTopRows(rows,5,{enabled:true,maxFocusScoreGap:1});
   assert.deepEqual(selected.map(row=>row.project.id),['A','B','D','C','E']);
+});
+
+
+test('homepage runtime info exposes only current schema-bound initial Web scores from company runtime',()=>{
+  const catalog={updatedAt:'2026-09-18',games:[
+    {id:'dev',name:'Dev',genre:['디펜스'],productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',selectedPlatform:'UNITY'},
+    {id:'design',name:'Design',genre:['RPG'],productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE',selectedPlatform:'ROBLOX'}
+  ]};
+  const developmentQueue={items:[{
+    gameId:'dev',status:'ACTIVE',canonicalState:'WEB_INITIAL_CYCLE_PASS',selectedPlatform:'UNITY',
+    webInitialCyclePassed:true,webInitialCycleStrictScore:88,webInitialCycleValidationSchemaVersion:15,
+    webInitialCycleMusicValidationPassed:true,webSourceIndexSha256:'source-a',webInitialCycleSourceIndexSha256:'source-a',
+    webDesignBaselineSha256:'baseline-a',webInitialCycleDesignBaselineSha256:'baseline-a',updatedAt:'2026-09-18T14:00:00Z'
+  }]};
+  const seedState={seeds:[{
+    gameId:'design',status:'ACTIVE',INITIAL_TARGET_PLATFORM:'ROBLOX',MULTIPLAYER_DESIGN_MODE:'COOP',
+    ROBLOX_GENRE_LABEL_KO:'RPG',ROBLOX_SUBGENRE_LABEL_KO:'탐험'
+  }]};
+
+  applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
+  assert.equal(catalog.runtimeAuthority,'company-runtime');
+  assert.equal(catalog.runtimeInfoAuthority,'company-runtime');
+  assert.deepEqual(catalog.runtimeSupportedPlatforms,['ROBLOX','UNITY','FORTNITE_UEFN']);
+  assert.equal(catalog.runtimeCounts.homepageInfo,2);
+
+  const dev=catalog.games.find(row=>row.id==='dev').homepageInfo;
+  assert.equal(dev.score,88);
+  assert.equal(dev.scoreCurrent,true);
+  assert.equal(dev.scoreSource,'SERVER_DEVELOPMENT_QUEUE');
+  assert.equal(dev.validationSchemaVersion,15);
+  assert.equal(dev.productionClass,'DEVELOPMENT_CONFIRMED');
+
+  const design=catalog.games.find(row=>row.id==='design').homepageInfo;
+  assert.equal(design.score,null);
+  assert.equal(design.platform,'ROBLOX');
+  assert.equal(design.genreLabel,'RPG · 탐험');
+  assert.equal(design.playModeLabel,'협동');
+
+  developmentQueue.items[0].webSourceIndexSha256='source-b';
+  applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
+  const stale=catalog.games.find(row=>row.id==='dev').homepageInfo;
+  assert.equal(stale.score,null);
+  assert.equal(stale.scoreCurrent,false);
+  assert.equal(stale.scoreLabel,'재검증 필요');
 });
