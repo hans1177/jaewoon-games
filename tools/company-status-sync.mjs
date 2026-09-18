@@ -10,28 +10,25 @@ import {
   productionClassCounts,
   productionClassOf,
 } from './production-classification.mjs';
+import { WEB_VALIDATION_SCHEMA_VERSION } from './company-web-validation-evidence-contract.mjs';
 
 const companyPath='company-status.json';
 const supervisionPath='director-supervision-status.json';
 const portfolioPath='autonomous-portfolio.json';
 const catalogPath='game-catalog.json';
 const artbooksPath='game-artbooks.json';
-const centralPolicyPath='COMPANY_FLOW.md';
+const developmentQueuePath='development-queue.json';
+const seedStatePath='game-seed-state.json';
+const centralPolicyPath='company-learning/platform-release-roadmap.json';
 const PLATFORM_PRIORITY=['ROBLOX','UNITY','FORTNITE_UEFN'];
-const CENTRAL_POLICY_REQUIRED_TOKENS=[
-  'sourceOfTruth: COMPANY_FLOW.md',
-  'primaryPlatform: ROBLOX',
-  'allThreePlatformsMayBeDevelopedConcurrently: true',
-  'priorityDoesNotCreatePlatformLock: true',
-  'requiredForEveryGame: true',
-  'approvedDesignBaselineMustBeFullyImplemented: true',
-  'silentScopeReductionForbidden: true',
-  'webBuildIsNotNativeDevelopmentSubstitute: true',
-  'nativePlatformReleaseStillRequiresNativeEvidence: true',
-  'target: PROJECT_SELECTED_PLATFORM',
-  'canonicalLifecycleAuthority: GAME_CATALOG_LIFECYCLE_STATE_BY_GAME_ID',
-  'developmentPipelineTarget: 60',
-  'staleCompanyStatusCannotResurrectMissingCatalogGame: true',
+const CENTRAL_POLICY_REQUIRED_STAGES=[
+  'WEB_BASE_IMPLEMENTATION',
+  'WEB_RUNTIME_VALIDATION',
+  'TARGET_PLATFORM_SOURCE_BIND',
+  'TARGET_PLATFORM_RUNTIME',
+  'TARGET_PLATFORM_INDEPENDENT_QA',
+  'TARGET_PLATFORM_REGRESSION',
+  'RELEASE_PROMOTION',
 ];
 
 const statusMap={WORKING:'working',DONE:'done',IDLE_NO_TASK:'idle',BLOCKED:'blocked',FAILED:'failed',STALE:'stale'};
@@ -69,6 +66,74 @@ export function normalizeSelectedPlatform(value){
   if(['FORTNITE_UEFN','UEFN','FORTNITE'].includes(raw))return 'FORTNITE_UEFN';
   return '';
 }
+const optionalJson=(filesystem,file,fallback)=>{try{return JSON.parse(filesystem.readFileSync(file,'utf8'));}catch{return fallback;}};
+const bindingMatches=(current,initial)=>{const c=clean(current),i=clean(initial);return !c||(Boolean(i)&&c===i);};
+const requiresRevalidation=row=>[row?.canonicalState,row?.currentStep,row?.homepageTestVerdict,row?.formalImplementationVerdict,row?.resumeStage]
+  .some(value=>{const v=clean(value).toUpperCase();return v.includes('REWORK')||v.includes('REVALIDATION');});
+const playModeLabel=value=>{const v=clean(value).toUpperCase();if(v==='SINGLE')return'싱글';if(v==='COOP')return'협동';if(v==='COMPETITIVE')return'경쟁';if(v==='HYBRID')return'혼합';return'플레이 방식 미평가';};
+const latestById=(rows,idField)=>{const map=new Map();for(const row of Array.isArray(rows)?rows:[]){const id=clean(row?.[idField]);if(!id)continue;const old=map.get(id);const t=Date.parse(row?.ROBLOX_GENRE_REVIEWED_AT||row?.updatedAt||row?.webValidationLastAttemptAt||row?.createdAt||row?.enqueuedAt||'')||0;const oldT=Date.parse(old?.ROBLOX_GENRE_REVIEWED_AT||old?.updatedAt||old?.webValidationLastAttemptAt||old?.createdAt||old?.enqueuedAt||'')||0;if(!old||t>=oldT)map.set(id,row);}return map;};
+const developmentHomepageScore=row=>{
+  if(!row)return{score:null,label:'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
+  if(requiresRevalidation(row))return{score:null,label:'재검증 필요',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
+  const schema=Number(row.webInitialCycleValidationSchemaVersion);
+  const raw=row.webInitialCycleStrictScore;
+  const score=raw===null||raw===undefined||raw===''?NaN:Number(raw);
+  const valid=row.webInitialCyclePassed===true
+    &&Number.isFinite(schema)&&schema>=WEB_VALIDATION_SCHEMA_VERSION
+    &&row.webInitialCycleMusicValidationPassed===true
+    &&bindingMatches(row.webSourceIndexSha256,row.webInitialCycleSourceIndexSha256)
+    &&bindingMatches(row.webDesignBaselineSha256,row.webInitialCycleDesignBaselineSha256)
+    &&Number.isFinite(score)&&score>=0&&score<=100;
+  if(valid)return{score,label:`${score}점`,current:true,source:'SERVER_DEVELOPMENT_QUEUE'};
+  const stale=row.webInitialCyclePassed===true
+    &&Number.isFinite(schema)&&schema>=WEB_VALIDATION_SCHEMA_VERSION
+    &&row.webInitialCycleMusicValidationPassed===true
+    &&(!bindingMatches(row.webSourceIndexSha256,row.webInitialCycleSourceIndexSha256)||!bindingMatches(row.webDesignBaselineSha256,row.webInitialCycleDesignBaselineSha256));
+  return{score:null,label:stale?'재검증 필요':'점수 미평가',current:false,source:'SERVER_DEVELOPMENT_QUEUE'};
+};
+const homepageLatestWork=(game,queue)=>clean(queue?.homepageRecentWork||game?.homepageRecentWork||queue?.currentStep||queue?.resumeStage||queue?.canonicalState)||'개발 작업 정보 없음';
+
+export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState={}}={}){
+  if(!catalog||!Array.isArray(catalog.games))return catalog;
+  const queueById=latestById(developmentQueue?.items,'gameId');
+  const seedById=latestById((seedState?.seeds||[]).filter(seed=>clean(seed?.status).toUpperCase()==='ACTIVE'),'gameId');
+  catalog.runtimeAuthority='company-runtime';
+  catalog.runtimeInfoAuthority='company-runtime';
+  catalog.runtimeSupportedPlatforms=[...PLATFORM_PRIORITY];
+  for(const game of catalog.games){
+    const id=clean(game?.id);if(!id)continue;
+    const queue=queueById.get(id)||null,seed=seedById.get(id)||null;
+    const platform=normalizeSelectedPlatform(queue?.selectedPlatform||queue?.targetPlatform||seed?.selectedPlatform||seed?.INITIAL_TARGET_PLATFORM||game?.selectedPlatform||game?.targetPlatform||game?.productionTarget);
+    const score=developmentHomepageScore(queue);
+    const baseGenres=Array.isArray(game?.genre)?game.genre:[];
+    const robloxGenre=clean(seed?.ROBLOX_GENRE_LABEL_KO||seed?.ROBLOX_GENRE||queue?.ROBLOX_GENRE_LABEL_KO||queue?.ROBLOX_GENRE);
+    const robloxSubgenre=clean(seed?.ROBLOX_SUBGENRE_LABEL_KO||seed?.ROBLOX_SUBGENRE||queue?.ROBLOX_SUBGENRE_LABEL_KO||queue?.ROBLOX_SUBGENRE);
+    const genreLabel=platform==='ROBLOX'&&robloxGenre?[robloxGenre,robloxSubgenre].filter(Boolean).join(' · '):(baseGenres.join(' · ')||'장르 미평가');
+    const playMode=clean(seed?.MULTIPLAYER_DESIGN_MODE||seed?.INITIAL_PLAY_MODE||queue?.ROBLOX_PLAY_MODE||queue?.playMode).toUpperCase();
+    game.homepageInfo={
+      authority:'company-runtime',
+      platform,
+      platformLabel:platformLabel(platform),
+      score:score.score,
+      scoreLabel:score.label,
+      scoreCurrent:score.current,
+      scoreSource:score.source,
+      validationSchemaVersion:Number(queue?.webInitialCycleValidationSchemaVersion)||null,
+      genre:baseGenres,
+      genreLabel,
+      subgenre:platform==='ROBLOX'?robloxSubgenre:'',
+      playMode,
+      playModeLabel:playModeLabel(playMode),
+      latestWork:homepageLatestWork(game,queue),
+      updatedAt:queue?.updatedAt||queue?.webValidationLastAttemptAt||seed?.ROBLOX_GENRE_REVIEWED_AT||seed?.updatedAt||catalog.updatedAt||null,
+      status:clean(queue?.canonicalState||queue?.status||seed?.status||game?.lifecycleState)||'ACTIVE',
+      productionClass:clean(game?.productionClass||'DESIGN_ONLY').toUpperCase()
+    };
+  }
+  catalog.runtimeCounts={...(catalog.runtimeCounts||{}),canonicalGames:catalog.games.length,homepageInfo:catalog.games.filter(game=>game.homepageInfo?.authority==='company-runtime').length};
+  return catalog;
+}
+
 
 export function selectedPlatformOf(project={},game={}){
   for(const candidate of [project.selectedPlatform,project.targetPlatform,game.selectedPlatform,game.targetPlatform,project.targetEngine,game.preferredPlatform,game.productionTarget]){
@@ -87,15 +152,15 @@ export function platformTargetEngine(platform){
 
 export function synchronizeCompanyStatusPolicy(company,{filesystem=fs}={}){
   if(filesystem?.existsSync?.(centralPolicyPath)){
-    const flow=filesystem.readFileSync(centralPolicyPath,'utf8');
-    for(const token of CENTRAL_POLICY_REQUIRED_TOKENS){
-      if(!flow.includes(token))throw new Error(`COMPANY_FLOW central policy token missing: ${token}`);
-    }
+    const machine=JSON.parse(filesystem.readFileSync(centralPolicyPath,'utf8'));
+    if(machine.authority!=='MACHINE_EXECUTION_CONTRACT'||machine.machineSourceOfTruth!==centralPolicyPath||machine.humanDocumentRequired!==false)throw new Error('canonical machine production policy invalid');
+    const stages=machine?.developmentLifecycleMachine?.stages||[];
+    for(const stage of CENTRAL_POLICY_REQUIRED_STAGES)if(!stages.includes(stage))throw new Error(`canonical machine lifecycle stage missing: ${stage}`);
   }
   company.policy ||= {};
   const policy=company.policy;
-  policy.sourceOfTruth='COMPANY_FLOW.md';
-  policy.policyAuthority='COMPANY_FLOW.md';
+  policy.sourceOfTruth=centralPolicyPath;
+  policy.policyAuthority='MACHINE_EXECUTION_CONTRACT';
   policy.primaryPlatform='ROBLOX';
   policy.allowedTargetPlatforms=[...PLATFORM_PRIORITY];
   policy.platformPriority=[...PLATFORM_PRIORITY];
@@ -342,9 +407,13 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const portfolio=JSON.parse(filesystem.readFileSync(portfolioPath,'utf8'));
   const catalog=JSON.parse(filesystem.readFileSync(catalogPath,'utf8'));
   const artbooks=JSON.parse(filesystem.readFileSync(artbooksPath,'utf8'));
+  const developmentQueue=optionalJson(filesystem,developmentQueuePath,{items:[]});
+  const seedState=optionalJson(filesystem,seedStatePath,{seeds:[]});
 
   synchronizeCompanyStatusPolicy(company,{filesystem});
   const classResult=syncProductionClasses({portfolio,catalog,artbooks,filesystem});
+  applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
+  company.runtimeAuthority='company-runtime';
   company.updatedAt=supervision.dateKst||company.updatedAt;
   company.supervision={
     source:supervisionPath,
@@ -414,6 +483,8 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   filesystem.writeFileSync(companyPath,JSON.stringify(company,null,2)+'\n');
   console.log('COMPANY_STATUS_SYNC=PASS');
   console.log(`COMPANY_POLICY_SOURCE=${company.policy?.sourceOfTruth||'unknown'}`);
+  console.log(`COMPANY_HOMEPAGE_RUNTIME_INFO=${catalog.runtimeCounts?.homepageInfo||0}/${catalog.games?.length||0}`);
+  console.log(`COMPANY_HOMEPAGE_RUNTIME_AUTHORITY=${catalog.runtimeInfoAuthority||'none'}`);
   console.log(`COMPANY_PRIMARY_PLATFORM=${company.policy?.primaryPlatform||'unknown'}`);
   console.log(`PRODUCTION_CLASS_RELEASE_CONFIRMED=${classResult.state.releaseConfirmedGameIds.join(',')||'none'}`);
   console.log(`PRODUCTION_CLASS_DEVELOPMENT_CONFIRMED=${classResult.state.developmentConfirmedGameIds.join(',')||'none'}`);
