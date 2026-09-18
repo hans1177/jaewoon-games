@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    h1 {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div id="ui">
+      <button id="start">Start Game</button>
+      <div id="progression">Progression: <span id="progress">0</span>%</div>
+      <div id="economy">Economy: <span id="economyValue">0</span></div>
+      <div id="combat">Combat: <span id="combatValue">0</span></div>
+    </div>
+    <div id="gameArea"></div>
+  </main>
+  <script>
+    // Protected state preservation
+    const protectedState = {
+      progression: 0,
+      economy: 0,
+      combat: 0,
+      gameArea: document.getElementById('gameArea')
+    };
+
+    // Game loop
+    function gameLoop() {
+      const progress = protectedState.progression;
+      const economy = protectedState.economy;
+      const combat = protectedState.combat;
+
+      // Simulate game progression
+      protectedState.progression = progress + 1;
+      protectedState.economy = economy + 1;
+      protectedState.combat = combat + 1;
+
+      // Update UI
+      document.getElementById('progress').textContent = progress;
+      document.getElementById('economyValue').textContent = economy;
+      document.getElementById('combatValue').textContent = combat;
+
+      // Check for game completion
+      if (progress === 100 && economy === 100 && combat === 100) {
+        alert("Game Completed!");
+      }
+
+      // Simulate player input
+      document.getElementById('start').addEventListener('click', () => {
+        protectedState.progression = 0;
+        protectedState.economy = 0;
+        protectedState.combat = 0;
+        document.getElementById('progress').textContent = 0;
+        document.getElementById('economyValue').textContent = 0;
+        document.getElementById('combatValue').textContent = 0;
+      });
+    }
+
+    // Initialize game
+    document.getElementById('start').addEventListener('click', gameLoop);
+  </script>
+</body>
+</html>
