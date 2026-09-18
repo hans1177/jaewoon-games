@@ -255,3 +255,65 @@ test('bot-dispatched Roblox package flow wakes continuation and preserves exact 
   assert.ok(workflow.includes('gh workflow run company-development-roblox-runtime-continuation.yml --repo "$GITHUB_REPOSITORY" --ref main'));
   assert.ok(workflow.includes('ROBLOX_POST_PACKAGE_CONTINUATION_DISPATCH=YES'));
 });
+
+test('Roblox bootstrap consumes Vibe3 playbook and transformative learning context',()=>{
+  const playbooks={
+    taskTypes:{
+      roblox:{
+        authority:'verified-task-playbook',
+        checklist:[
+          'bind-roblox-source-and-place',
+          'separate-server-client-authority',
+          'validate-remotes-and-datastore-boundaries',
+          'run-real-roblox-runtime-and-independent-qa'
+        ],
+        reuse:[{project:'block-blast'},{project:'shattered-pixel-dungeon'}]
+      },
+      coding:{
+        checklist:['rank-responsible-source-before-edit','run-syntax-tests-runtime-regression'],
+        reuse:[{project:'idle-fantasy'}]
+      }
+    }
+  };
+  const recombination={
+    recipes:[{
+      id:'recombine-roblox-test',
+      sourceProjects:['block-blast','shattered-pixel-dungeon'],
+      featureBlend:['progression-difficulty','touch-input','session-retry-gameover'],
+      transformationOperator:'change-input-model',
+      internalCreationRequirement:'ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT'
+    }]
+  };
+  const learned=compileRobloxSource({
+    gameId:'roblox-learning-test',
+    gameName:'Learning Test',
+    baseline,
+    artbook:{content:{identity:'Pocket Foundry',coreLoop:['collect','upgrade','unlock']}},
+    playbooks,
+    recombination
+  });
+  assert.equal(learned.learning.applied,true);
+  assert.equal(learned.learning.recipeId,'recombine-roblox-test');
+  assert.equal(learned.generationMode,'DETERMINISTIC_PROFILE_BOUND_WITH_VIBE3_LEARNING_CONTEXT');
+  assert.ok(learned.actions.some(action=>Boolean(action.learningPattern)));
+  assert.ok(learned.result.sharedConfig.includes('LearningContext = {'));
+  assert.ok(learned.result.sharedConfig.includes('RecipeId = "recombine-roblox-test"'));
+  assert.ok(learned.result.serverCode.includes('ActionSequence'));
+  assert.ok(learned.result.serverCode.includes('LastLearningPattern'));
+  assert.ok(learned.result.clientCode.includes('ContextActionService'));
+  assert.ok(learned.result.clientCode.includes('BindAction("VibePrimaryAction"'));
+  assert.equal(learned.validation.learningApplied,true);
+  assert.equal(learned.validation.pass,true,learned.validation.blockers.join(','));
+});
+
+test('Roblox source workflow requires durable Vibe3 learning memory for source generation',()=>{
+  const workflow=fs.readFileSync(new URL('../.github/workflows/company-development-roblox-runtime.yml',import.meta.url),'utf8');
+  assert.ok(workflow.includes('VIBE2_LEARNING_RUNTIME_BRANCH: vibe2-learning-runtime'));
+  assert.ok(workflow.includes('company-learning/vibe3-task-playbooks.json'));
+  assert.ok(workflow.includes('company-learning/vibe3-recombination-memory.json'));
+  assert.ok(workflow.includes('--playbooks=/tmp/vibe3-task-playbooks.json'));
+  assert.ok(workflow.includes('--recombination=/tmp/vibe3-recombination-memory.json'));
+  assert.ok(workflow.includes('ROBLOX_VIBE3_LEARNING_MEMORY=READY'));
+  assert.ok(workflow.includes('e.vibe3LearningApplied!==true||!e.recombinationRecipeId'));
+});
+
