@@ -57,6 +57,7 @@ test('Gemini daily quota quarantine precedes minute-rate retry handling',()=>{
   assert.match(design,/minuteRateRetries<2/);
   assert.match(design,/attempt-=1;\s*continue;/);
   assert.match(design,/2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f/);
+  assert.match(design,/84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf/);
 });
 
 
