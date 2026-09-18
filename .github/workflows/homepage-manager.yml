@@ -160,21 +160,22 @@ jobs:
           for file in \
             index.html company.html game-catalog.json company-status.json test-game-candidates.json \
             public-release-baselines.json game-artbooks.json artbook-viewer.html \
-            assets/homepage-enhancements.js assets/homepage-enhancements-core.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
+            assets/homepage-enhancements.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
             COMPANY_FLOW.md company-directive.json REMOTE_AUTOMATION.md _headers; do
             test -f "$file"
           done
           node -e "for (const file of ['game-catalog.json','company-status.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
           node --check assets/homepage-enhancements.js
-          node --check assets/homepage-enhancements-core.js
           node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
           node --check tools/homepage-test-candidate-sync.mjs
+          node --check tools/company-status-sync.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
-          grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements-core.js
-          grep -Fq "const RAW_MAIN_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/main';" assets/homepage-enhancements-core.js
-          grep -Fq "const RAW_RUNTIME_BASE='https://raw.githubusercontent.com/hans1177/jaewoon-games/company-runtime';" assets/homepage-enhancements-core.js
+          grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
+          grep -Fq "catalog?.runtimeInfoAuthority!=='company-runtime'" assets/homepage-enhancements.js
+          grep -Fq "status?.runtimeAuthority!=='company-runtime'" assets/homepage-enhancements.js
+          grep -Fq "runtimeInfoAuthority='company-runtime'" tools/company-status-sync.mjs
           node <<'NODE'
           const fs=require('fs');
           const catalog=JSON.parse(fs.readFileSync(process.env.HOMEPAGE_CATALOG_PATH||'game-catalog.json','utf8'));
@@ -220,11 +221,11 @@ jobs:
             if(!source||!fs.existsSync(source)){failures.push(`${book.id}:source`);continue;}
             if(source.endsWith('.json')){try{JSON.parse(fs.readFileSync(source,'utf8'));}catch{failures.push(`${book.id}:json`);}}
           }
-          const core=fs.readFileSync('assets/homepage-enhancements-core.js','utf8');
           const entry=fs.readFileSync('assets/homepage-enhancements.js','utf8');
+          const candidateSync=fs.readFileSync('tools/homepage-test-candidate-sync.mjs','utf8');
           const viewer=fs.readFileSync('assets/artbook-viewer.js','utf8');
-          if(!core.includes('getLatestArtbook(')||!core.includes('/artbook-viewer.html?game='))failures.push('homepage:artbook-link-contract');
-          if(!entry.includes('TEST_SHELF_LIMIT=30')||!entry.includes('TEST_SHELF_MIN_SCORE=80')||!entry.includes('enforceOfficialCardVisibility'))failures.push('homepage:test-shelf-contract');
+          if(!entry.includes("const artbookBtn=artbook?")||!entry.includes('homepageArtbookPath'))failures.push('homepage:artbook-link-contract');
+          if(!candidateSync.includes('const limit=30')||!candidateSync.includes('const minimumScore=WEB_HOMEPAGE_MINIMUM')||!candidateSync.includes('STRICTLY_HIGHER_SCORE_REPLACES_CUTLINE'))failures.push('homepage:test-shelf-contract');
           if(!viewer.includes("loadJson('/game-artbooks.json'"))failures.push('viewer:registry-contract');
           if(failures.length)throw new Error(`homepage artbook failures: ${failures.join(',')}`);
           console.log(`HOMEPAGE_ARTBOOK_QA=PASS COUNT=${visible.length}`);
