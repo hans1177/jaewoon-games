@@ -20,6 +20,7 @@ on:
       - 'tools/vibe2-continuous-runner.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
       - 'tools/vibe2-exploration-worker.mjs'
+      - 'tools/vibe2-existing-web-assessment.mjs'
       - 'tools/vibe2-source-worker.mjs'
       - 'tools/vibe2-performance-sanity.mjs'
       - 'tools/vibe2-fan-in-review.mjs'
@@ -37,6 +38,7 @@ on:
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
       - 'qa/vibe2-exploration-worker.test.mjs'
+      - 'qa/vibe2-existing-web-assessment.test.mjs'
       - 'qa/vibe2-source-worker.test.mjs'
       - 'qa/vibe2-queue-control.test.mjs'
       - 'qa/vibe2-work-package.test.mjs'
@@ -116,6 +118,7 @@ jobs:
           node --check tools/vibe2-continuous-runner.mjs
           node --check tools/vibe2-design-intelligence.mjs
           node --check tools/vibe2-exploration-worker.mjs
+          node --check tools/vibe2-existing-web-assessment.mjs
           node --check tools/vibe2-source-worker.mjs
           node --check tools/vibe2-performance-sanity.mjs
           node --check tools/vibe2-fan-in-review.mjs
@@ -134,6 +137,7 @@ jobs:
           node --check qa/vibe2-core-engine-motion.test.mjs
           node --check qa/vibe2-design-intelligence.test.mjs
           node --check qa/vibe2-exploration-worker.test.mjs
+          node --check qa/vibe2-existing-web-assessment.test.mjs
           node --check qa/vibe2-source-worker.test.mjs
           node --check qa/vibe2-queue-control.test.mjs
           node --check qa/vibe2-work-package.test.mjs
@@ -152,6 +156,7 @@ jobs:
           node --test qa/vibe2-core-engine-motion.test.mjs
           node --test qa/vibe2-design-intelligence.test.mjs
           node --test qa/vibe2-exploration-worker.test.mjs
+          node --test qa/vibe2-existing-web-assessment.test.mjs
           node --test qa/vibe2-source-worker.test.mjs
           node --test qa/vibe2-queue-control.test.mjs
           node --test qa/vibe2-work-package.test.mjs
