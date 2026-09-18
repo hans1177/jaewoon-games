@@ -1,9 +1,7 @@
 name: One-shot Skyline Rush Final Publish Kickoff
 
 on:
-  push:
-    paths:
-      - '.github/workflows/roblox-skyline-final-publish-kickoff.yml'
+  workflow_dispatch:
 
 permissions:
   contents: read
