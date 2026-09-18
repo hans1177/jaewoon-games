@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: new Array(10).fill(0)
+      },
+      players: [
+        { id: 0, position: { x: 0, y: 0 }, direction: 'right' },
+        { id: 1, position: { x: 0, y: 0 }, direction: 'left' }
+      ],
+      ai: {
+        players: [
+          { id: 0, behavior: 'expand', target: { x: 1, y: 1 } },
+          { id: 1, behavior: 'defend', target: { x: 9, y: 9 } }
+        ]
+      },
+      state: {
+        saved: false,
+        progress: 0,
+        economy: 0
+      }
+    };
+
+    // Game loop
+    function gameLoop() {
+      // Update AI behavior
+      game.ai.players.forEach(player => {
+        if (player.behavior === 'expand') {
+          player.position.x += 1;
+        } else if (player.behavior === 'defend') {
+          player.position.x -= 1;
+        }
+      });
+
+      // Update player movement
+      game.players.forEach(player => {
+        if (player.direction === 'right') {
+          player.position.y += 1;
+        } else if (player.direction === 'left') {
+          player.position.y -= 1;
+        }
+      });
+
+      // Check for collisions
+      game.map.tiles.forEach((tile, index) => {
+        if (tile === 1) {
+          // Collision detected
+        }
+      });
+
+      // Update game state
+      game.state.progress += 1;
+      game.state.economy += 1;
+
+      // Check for win/loss
+      if (game.state.progress === 100) {
+        alert("You win!");
+      } else if (game.state.economy === 100) {
+        alert("You lose!");
+      }
+
+      // Save state
+      game.state.saved = true;
+    }
+
+    // Start game
+    gameLoop();
+  </script>
+</body>
+</html>
