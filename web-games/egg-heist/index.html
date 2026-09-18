@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      background-color: #333;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .controls button:hover {
+      background-color: #555;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game">
+      <h1>Vibe2</h1>
+      <div class="controls">
+        <button onclick="startGame()">Start</button>
+        <button onclick="restartGame()">Restart</button>
+      </div>
+      <div class="status" id="status">Ready</div>
+      <div id="gameArea"></div>
+    </div>
+  </main>
+  <script>
+    let gameArea = document.getElementById('gameArea');
+    let status = document.getElementById('status');
+    let game = null;
+
+    function startGame() {
+      status.textContent = 'Initializing...';
+      game = {
+        area: gameArea,
+        status: 'Ready',
+        progress: 0,
+        isRunning: false,
+        isRestarted: false
+      };
+      gameArea.innerHTML = '';
+      status.textContent = 'Initializing...';
+      // Simulate game initialization
+      setTimeout(() => {
+        status.textContent = 'Game Initialized';
+        gameArea.innerHTML = '<p>Game initialized. Ready for play.</p>';
+      }, 1000);
+    }
+
+    function restartGame() {
+      if (game) {
+        game.isRestarted = true;
+        status.textContent = 'Restarting...';
+        setTimeout(() => {
+          status.textContent = 'Game Restarted';
+          gameArea.innerHTML = '<p>Game restarted. Ready for play.</p>';
+        }, 1000);
+      }
+    }
+
+    // Simulate game loop
+    function gameLoop() {
+      if (!game || !game.isRunning) return;
+
+      game.progress += 0.1;
+      if (game.progress >= 1) {
+        game.isRunning = false;
+        status.textContent = 'Game Over';
+        gameArea.innerHTML = '<p>Game over. Try again.</p>';
+      } else {
+        gameArea.innerHTML = `<p>Progress: ${game.progress.toFixed(2)}</p>`;
+      }
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
