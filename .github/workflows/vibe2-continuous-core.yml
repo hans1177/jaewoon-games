@@ -153,10 +153,11 @@ jobs:
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
             exploration.push({taskId:row.taskId,safeTask});
-            const earlyRefill=Number(row.speculativeVariants||1)===1;
+            const variantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
+            const earlyRefill=variantCount===1;
             const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservedAt:batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||20),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||20)};
             workers.push({...shared,variant:'primary',earlyRefill});
-            if(Number(row.speculativeVariants||1)>1)workers.push({...shared,variant:'speculative',earlyRefill:false});
+            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`,earlyRefill:false});
           }
           fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
           fs.appendFileSync(out,`worker_count=${workers.length}\n`);
