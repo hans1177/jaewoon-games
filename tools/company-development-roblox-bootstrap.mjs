@@ -121,7 +121,7 @@ function sourceBlockers(text,{kind,saveRequired=false,profile=null}={}){
   if(/loadstring\s*\(/.test(value))blockers.push(`${kind.toUpperCase()}_LOADSTRING_FORBIDDEN`);
   if(/require\s*\(\s*\d+\s*\)/.test(value))blockers.push(`${kind.toUpperCase()}_ASSET_REQUIRE_FORBIDDEN`);
   if(kind==='config'){
-    if(!/PolicySource\s*=\s*["']COMPANY_FLOW\.md["']/.test(value))blockers.push('CONFIG_POLICY_SOURCE_REQUIRED');
+    if(!/PolicySource\s*=\s*["']company-learning\/platform-release-roadmap\.json["']/.test(value))blockers.push('CONFIG_POLICY_SOURCE_REQUIRED');
     if(!/Platform\s*=\s*["']ROBLOX["']/.test(value))blockers.push('CONFIG_ROBLOX_PLATFORM_REQUIRED');
     if(!/MobileFirst\s*=\s*true/.test(value))blockers.push('CONFIG_MOBILE_FIRST_REQUIRED');
     if(profile){
