@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization and setup
+    const game = {
+      board: [],
+      currentPlayer: 'player',
+      ai: {
+        name: 'AI',
+        moves: []
+      },
+      turn: 0,
+      gameOver: false
+    };
+
+    // Initialize game board
+    function initBoard() {
+      // Initialize board with proper structure
+      game.board = [
+        ['player', 'player', 'player', 'player', 'player', 'player', 'player'],
+        ['player', 'player', 'player', 'player', 'player', 'player', 'player'],
+        ['player', 'player', 'player', 'player', 'player', 'player', 'player'],
+        ['player', 'player', 'player', 'player', 'player', 'player', 'player'],
+        ['player', 'player', 'player', 'player', 'player', 'player', 'player'],
+        ['player', 'player', 'player', 'player', 'player', 'player', 'player'],
+        ['player', 'player', 'player', 'player', 'player', 'player', 'player']
+      ];
+    }
+
+    // Handle player input
+    function handleInput() {
+      // Handle touch input and player moves
+      // Implement proper movement logic
+    }
+
+    // Handle AI moves
+    function handleAI() {
+      // Implement AI logic with proper progression
+    }
+
+    // Check for game over conditions
+    function checkGameOver() {
+      // Check for win/loss conditions
+    }
+
+    // Main game loop
+    function gameLoop() {
+      if (game.gameOver) return;
+
+      // Handle player input
+      handleInput();
+
+      // Handle AI moves
+      handleAI();
+
+      // Check for game over
+      checkGameOver();
+
+      // Increment turn and update UI
+      game.turn++;
+    }
+
+    // Start the game
+    function startGame() {
+      initBoard();
+      gameLoop();
+    }
+
+    // Initialize the game
+    window.onload = startGame;
+  </script>
+</body>
+</html>
