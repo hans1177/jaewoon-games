@@ -80,7 +80,7 @@ function directiveTask(directive = {}, { completedDirectiveIds = new Set() } = {
     workUnits,
     taskWorkUnits: workUnits,
     evidence: [
-      'central-policy:COMPANY_FLOW.md',
+      'central-policy:company-learning/platform-release-roadmap.json',
       OWNER_TASK_EVIDENCE,
       ...(rebuild.fullRebuild ? [OWNER_EVIDENCE] : []),
       'platform-focus:roblox-primary',
