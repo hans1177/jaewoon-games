@@ -283,6 +283,8 @@ test('DESIGN_ONLY stops at design baseline; artbook is post-Web strict review on
   assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
   assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_SKIPPED=WAIT_FOR_PROMOTION/);
   assert.match(pipeline,/DESIGN_ONLY_VIBE2_USED=NO/);
+  assert.match(pipeline,/terminalDesignFailure=.*DESIGN_PRE_GATE_BLOCKED/);
+  assert.match(pipeline,/if\(terminalDesignFailure\)return false/);
   assert.match(gate,/designOnlyVibe2Forbidden:true/);
   assert.match(artbook,/postWebStrictReview:true/);
   assert.match(artbook,/POST_WEB_ARTBOOK_REQUIRES_WEB_STRICT_80_NO_HARD_FAILURE/);
