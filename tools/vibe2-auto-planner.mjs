@@ -54,13 +54,20 @@ function transformativeTaskEligible(taskInput={}){
   return /FULL_WEB_GAME_REBUILD|EXISTING_WEB_DEVELOPMENT_CONTINUATION|REBUILD_EXISTING_GAME|NEW_GAME_IMPLEMENTATION/i.test(clean(taskInput.goal));
 }
 function selectTransformativeRecipe(memory={},taskInput={}){
-  const recipes=Array.isArray(memory?.recipes)?memory.recipes.filter(recipe=>Array.isArray(recipe?.sourceProjects)&&new Set(recipe.sourceProjects.map(clean).filter(Boolean)).size>=2):[];
-  if(!recipes.length)return null;
   const target=clean(taskInput.gameId);
-  const preferred=recipes.filter(recipe=>!recipe.sourceProjects.map(clean).includes(target));
-  const pool=preferred.length?preferred:recipes;
+  const recipes=Array.isArray(memory?.recipes)?memory.recipes.filter(recipe=>{
+    const projects=[...new Set((recipe?.sourceProjects||[]).map(clean).filter(Boolean))];
+    return recipe?.authority==='transformative-recombination-context-only'
+      &&projects.length>=2
+      &&!projects.includes(target)
+      &&recipe?.assetStrategy?.newAssetRequired===true
+      &&recipe?.assetStrategy?.outputMustBeNewExpression===true
+      &&recipe?.codeStrategy?.newImplementationRequired===true
+      &&recipe?.codeStrategy?.verbatimSourceReuseAllowed===false;
+  }):[];
+  if(!recipes.length)return null;
   const seed=parseInt(stableHash([taskInput.id,target,taskInput.target].join('|')),36);
-  return pool[Number.isFinite(seed)?seed%pool.length:0]||null;
+  return recipes[Number.isFinite(seed)?seed%recipes.length:0]||null;
 }
 function applyTransformativeRecombination(taskInput={},memory={}){
   if(!transformativeTaskEligible(taskInput))return taskInput;
@@ -261,10 +268,11 @@ export function runVibe2AutoPlanner({
   const machineHandoff={used:true,kind:handoff.kind,sourceOfTruth:handoff.sourceOfTruth,consistency:handoff.consistency,currentPersistentMax:handoff.parallelism.currentPersistentMax,lastDecision:handoff.parallelism.lastDecision};
   if(handoff.consistency?.ok!==true)return{planned:false,reason:'MACHINE_STATE_INCONSISTENT',machineHandoff,effectivePlannerMax:0};
   const effectivePlannerMax=Math.min(parallelLimit(maxConcurrentTasks),parallelLimit(handoff.parallelism.currentPersistentMax));
-  const recombinationMemory=readJson(recombinationFile||'',{version:1,recipes:[]});
+  const resolvedRecombinationFile=clean(recombinationFile)||path.join(repoRoot,'company-learning','vibe3-recombination-memory.json');
+  const recombinationMemory=readJson(resolvedRecombinationFile,{version:1,recipes:[]});
   const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:readJson(resolvedQueueFile,{tasks:[]}),repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{},recombinationMemory});
   if(result.planned)writeJson(resolvedQueueFile,result.queue);
-  return{...result,machineHandoff,effectivePlannerMax};
+  return{...result,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
@@ -292,4 +300,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_WORK_PACKAGE_REWORK_RATE=${result.workloadTelemetry?.historicalReworkRatePct||0}`);
   console.log(`VIBE2_WORK_PACKAGE_QA_DUPLICATE_RATE=${result.workloadTelemetry?.historicalQaDuplicateRatePct||0}`);
   console.log(`VIBE2_WORK_PACKAGE_LOW_EFFICIENCY_STREAK=${result.workloadTelemetry?.lowEfficiencyStreak||0}`);
+  console.log(`VIBE3_RECOMBINATION_RECIPES_AVAILABLE=${result.recombinationContext?.recipes||0}`);
+  console.log(`VIBE3_RECOMBINATION_TASKS_APPLIED=${result.recombinationContext?.applied||0}`);
 }
