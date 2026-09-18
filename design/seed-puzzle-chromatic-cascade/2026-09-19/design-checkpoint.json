@@ -7,8 +7,218 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "색채의 연쇄는 단순한 매칭을 넘어 색의 흐름을 조작하는 전략적 퍼즐 게임입니다. 플레이어는 보드 위의 색상을 연결하여 연쇄 반응을 일으키며, 이 과정에서 발생하는 색상 전이 시스템과 연쇄 증폭 시스템은 매 턴마다 어떤 색을 먼저 터뜨릴지 결정해야 하는 고도의 전략적 선택을 강요합니다. 이러한 시스템적 상호작용은 단순 반복을 넘어 매번 새로운 상태 변화를 만들어내며, 플레이어에게 퍼즐 해결의 쾌감을 극대화합니다.",
+      "playerFantasy": "플레이어는 색채의 마법사로서, 무질서하게 흩어진 색의 파편들을 조율하여 아름다운 연쇄 반응을 일으키고, 보드 전체를 정화된 색으로 물들이는 성취감을 경험합니다.",
+      "coreFun": "제한된 이동 횟수 내에서 색상 블록을 전략적으로 배치하고 터뜨려 연쇄 반응을 유도합니다. 블록이 터지며 주변 색상이 변하는 즉각적인 시각적 피드백과, 연쇄가 증폭되어 보드가 정리되는 결과를 통해 퍼즐 해결의 즐거움을 반복적으로 느낍니다.",
+      "coreLoop": [
+        "보드 상태를 관찰하고 터뜨릴 색상 블록의 위치와 연쇄 경로를 예측하여 첫 번째 블록을 선택합니다.",
+        "선택한 블록이 터지며 주변 블록의 색상을 변화시키고, 이로 인해 새로운 매칭 조건이 형성되는 연쇄 반응을 관찰합니다.",
+        "연쇄 반응으로 얻은 점수와 보상을 획득하여 다음 레벨의 난이도나 새로운 장애물 패턴을 확인하고 성장을 도모합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "색상 전이 시스템",
+          "purpose": "단순 매칭을 넘어 인접한 블록의 색상을 변화시켜 연쇄의 가능성을 확장하고 전략적 깊이를 더합니다.",
+          "playerChoice": "플레이어는 특정 블록을 터뜨릴 때 주변 블록이 어떤 색으로 변할지 예측하여, 연쇄를 끊기지 않게 이어갈지 아니면 특정 구역을 집중적으로 정화할지 선택해야 합니다."
+        },
+        {
+          "name": "연쇄 증폭 시스템",
+          "purpose": "연속적인 매칭이 발생할수록 보상과 파괴력이 기하급수적으로 증가하여 플레이어의 숙련도를 보상합니다.",
+          "playerChoice": "플레이어는 연쇄를 즉시 터뜨려 안전하게 점수를 얻을지, 아니면 더 많은 블록을 모아 증폭 배율을 높여 한 번에 보드를 정리할지 위험을 감수하는 선택을 합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "색상 전이 시스템",
+          "toSystem": "연쇄 증폭 시스템",
+          "trigger": "블록 매칭으로 인한 색상 변화가 연쇄적으로 발생할 때",
+          "stateChange": "연쇄 카운트가 증가하며 증폭 배율이 활성화되어 더 높은 점수 획득 상태로 전환됩니다."
+        },
+        {
+          "fromSystem": "연쇄 증폭 시스템",
+          "toSystem": "진행 및 보상 시스템",
+          "trigger": "연쇄가 종료되고 최종 점수가 계산될 때",
+          "stateChange": "획득한 점수에 따라 별 등급이 결정되고 다음 레벨 해금 조건이 충족됩니다."
+        },
+        {
+          "fromSystem": "진행 및 보상 시스템",
+          "toSystem": "색상 전이 시스템",
+          "trigger": "새로운 레벨이 시작되거나 난이도가 상승할 때",
+          "stateChange": "보드에 배치되는 초기 색상 분포와 장애물 배치가 더욱 복잡하게 재설정됩니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 레벨을 클리어하며 획득한 재화로 색상 테마를 해금하고, 특정 색상 블록의 특수 능력을 강화하여 더 높은 난이도의 퍼즐을 해결하는 방향으로 성장합니다. 단순한 레벨업이 아닌, 플레이어의 전략적 선택지가 넓어지는 수평적 성장을 지향합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "레벨 클리어 -> 재화 획득 -> 능력 강화 및 테마 해금 -> 더 어려운 레벨 도전의 순환 구조를 가집니다.",
+        "resourceFlow": "퍼즐 해결을 통해 얻은 기본 재화는 게임 내 아이템 구매에 사용되며, 특정 미션 달성 시 얻는 희귀 재화는 영구적인 능력 강화에 사용됩니다.",
+        "balanceRules": "레벨 난이도 상승 곡선과 재화 획득량은 플레이어의 평균 성공률을 고려하여 설계하며, 과도한 재화 축적을 방지하기 위해 소모처를 지속적으로 제공합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "시즌 1: 색채의 축제",
+          "newGameplay": "새로운 색상 블록인 '무지개 블록'이 추가되어 어떤 색과도 매칭이 가능해지며 전략적 유연성이 대폭 증가합니다.",
+          "systemImpact": "기존 색상 전이 시스템에 무지개 블록의 변환 규칙이 추가되어 연쇄 반응의 예측 가능성과 복잡도가 동시에 상승합니다."
+        },
+        {
+          "milestone": "시즌 2: 얼어붙은 보드",
+          "newGameplay": "특정 턴 동안 움직이지 않는 '얼음 장애물'이 등장하여 플레이어의 이동 경로를 제한하고 전략적 우회로를 찾게 합니다.",
+          "systemImpact": "연쇄 증폭 시스템에 얼음 파괴 로직이 추가되어, 장애물을 제거하는 것이 연쇄의 핵심 목표 중 하나로 편입됩니다."
+        },
+        {
+          "milestone": "시즌 3: 무한의 연쇄 모드",
+          "newGameplay": "제한된 턴이 아닌 시간 제한 모드가 도입되어, 끊임없이 쏟아지는 블록을 빠르게 매칭해야 하는 긴박한 플레이를 제공합니다.",
+          "systemImpact": "기존의 턴제 기반 시스템이 실시간 처리 시스템으로 확장되며, 연쇄 증폭 시스템의 속도 보너스 로직이 새롭게 적용됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "이동 횟수 소진 시 목표 미달성",
+          "보드 내 더 이상 매칭 가능한 조합이 없음",
+          "시간 제한 모드에서 제한 시간 종료"
+        ],
+        "retryFlow": "실패 시 즉시 재시도 버튼을 제공하거나, 소량의 재화를 사용하여 이동 횟수를 추가하고 현재 상태에서 게임을 이어갈 수 있는 기회를 제공합니다.",
+        "riskPressure": "실패는 플레이어의 진행을 일시적으로 막지만, 재시도를 통해 이전의 전략적 실수를 교정하고 더 나은 결과를 도출하도록 유도하여 학습을 강화합니다.",
+        "recoveryRules": "연속 실패 시 난이도를 일시적으로 낮춰주는 보정 시스템을 도입하여 플레이어의 이탈을 방지하고 성취감을 유지합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "터치 기반의 드래그 앤 드롭 방식을 채택하여 모바일 환경에서 직관적인 조작을 보장하며, 탭 한 번으로 블록을 선택하고 드래그로 경로를 지정합니다.",
+        "performanceBudget": "모바일 기기에서의 원활한 구동을 위해 블록의 연쇄 반응 시 발생하는 파티클 효과를 최적화하고, 오브젝트 풀링을 사용하여 메모리 사용량을 최소화합니다.",
+        "sessionConstraints": "한 판당 플레이 시간을 3~5분 내외로 설계하여 출퇴근 시간 등 짧은 휴식 시간에 부담 없이 즐길 수 있도록 세션 길이를 최적화합니다."
+      },
+      "visualDirection": "밝고 채도가 높은 색상을 사용하여 시각적 즐거움을 극대화하고, 블록이 터질 때 발생하는 화려한 이펙트와 부드러운 애니메이션을 통해 퍼즐 게임 특유의 쾌감을 강조합니다.",
+      "mobileUx": "한 손으로도 충분히 플레이 가능한 세로형 UI를 기본으로 하며, 중요한 정보는 화면 하단에 배치하여 엄지손가락의 접근성을 높이고 조작 피로도를 줄입니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "남은 이동 횟수, 현재 점수, 목표 달성도를 화면 상단에 명확하게 표시하여 플레이어가 현재 상황을 즉각적으로 파악할 수 있게 합니다.",
+        "touchAndInput": "블록 선택 시 시각적 강조 효과를 주어 터치 피드백을 강화하고, 잘못된 조작을 방지하기 위해 드래그 취소 영역을 충분히 확보합니다.",
+        "readability": "색약 플레이어를 위해 블록마다 고유한 패턴이나 심볼을 추가하여 색상 구분이 어려운 경우에도 플레이에 지장이 없도록 설계합니다.",
+        "accessibility": "게임 속도 조절 옵션과 텍스트 크기 조절 기능을 제공하여 다양한 연령대와 신체적 조건을 가진 플레이어들을 배려합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "미니멀하고 깔끔한 디자인의 블록과 화려한 파티클 이펙트의 대비를 통해 시각적 만족감을 제공합니다.",
+        "audioIdentity": "경쾌하고 리듬감 있는 배경음악과 블록이 터질 때마다 발생하는 경쾌한 효과음을 통해 플레이어의 행동에 즉각적인 청각적 보상을 제공합니다.",
+        "gameplayFeedbackSync": "연쇄 반응의 속도에 맞춰 효과음의 피치가 점진적으로 상승하도록 설계하여, 연쇄가 길어질수록 플레이어가 느끼는 고조감을 극대화합니다."
+      },
+      "marketTargetDirection": "전 세계의 캐주얼 퍼즐 게임을 즐기는 모든 연령층을 대상으로 하며, 특히 짧은 시간에 강렬한 성취감을 원하는 모바일 유저를 주 타겟으로 합니다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 후, PC 환경에 맞춘 고해상도 그래픽과 마우스 조작 최적화를 거쳐 스팀 플랫폼으로 확장할 계획입니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "현재는 싱글 플레이 중심의 퍼즐 경험에 집중하며, 향후 업데이트를 통해 친구와 점수를 경쟁하는 비동기식 멀티플레이 모드 도입을 검토할 예정입니다.",
+      "technicalAssumptions": [
+        "유니티 엔진의 2D 물리 엔진을 사용하여 블록의 낙하와 충돌을 자연스럽게 구현할 수 있다고 가정합니다.",
+        "서버와의 통신은 최소화하여 오프라인 환경에서도 기본적인 퍼즐 플레이가 가능하도록 설계합니다."
+      ],
+      "validationQuestions": [
+        "플레이어들이 색상 전이 시스템의 규칙을 튜토리얼 없이 직관적으로 이해할 수 있는가?",
+        "연쇄 증폭 시스템이 플레이어에게 충분한 전략적 고민과 성취감을 제공하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "색상 전이 시스템",
+          "responsibleSystem": "블록 매니저 및 규칙 엔진",
+          "validationEvidence": "다양한 색상 조합 테스트를 통해 전이 규칙이 의도한 대로 작동하며 연쇄 반응을 유도하는지 검증합니다."
+        },
+        {
+          "designElement": "연쇄 증폭 시스템",
+          "responsibleSystem": "점수 계산 및 이펙트 컨트롤러",
+          "validationEvidence": "연쇄 횟수에 따른 점수 배율 변화가 로그 데이터상에서 기하급수적으로 증가하는지 확인합니다."
+        },
+        {
+          "designElement": "모바일 UX 최적화",
+          "responsibleSystem": "책임 시스템: UI/UX 매니저",
+          "validationEvidence": "다양한 모바일 기기 해상도에서 UI 요소가 겹치지 않고 터치 조작이 정확하게 인식되는지 테스트합니다."
+        }
+      ],
+      "openQuestions": [
+        "색상 전이 시스템의 규칙이 너무 복잡하여 초보 플레이어의 진입 장벽이 되지 않을까?",
+        "연쇄 증폭 시스템의 밸런스가 특정 색상 조합에 치우치지 않도록 어떻게 조정할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 79,
+      "criticalAxisFailures": [
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
@@ -109,10 +319,30 @@
       "lastMs": 14158,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
       "updatedAt": "2026-09-18T19:27:00.987Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 30304,
+      "lastMs": 30304,
+      "lastError": null,
+      "updatedAt": "2026-09-18T19:27:17.133Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T19:26:46.826Z",
-  "updatedAt": "2026-09-18T19:27:00.987Z"
+  "updatedAt": "2026-09-18T19:27:17.137Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T19:27:17.133Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
