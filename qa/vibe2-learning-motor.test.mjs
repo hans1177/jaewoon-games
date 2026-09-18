@@ -1,7 +1,7 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { dedupeIdlePracticeTasks, injectIdlePracticeTask, retrieveUnifiedLearning } from '../tools/vibe2-learning-motor.mjs';
+import { buildIdlePracticeQueue, dedupeIdlePracticeTasks, injectIdlePracticeTask, retrieveUnifiedLearning } from '../tools/vibe2-learning-motor.mjs';
 
 function practice(id,status='failed',retries=1,evidence=[]){
   return {
@@ -104,4 +104,17 @@ test('verified distilled practice knowledge is advisory retrieval only',()=>{
   assert.equal(ctx.practiceDistilled[0].id,'pd-save');
   assert.equal(ctx.practiceDistilled[0].domain,'SAVE');
   assert.ok(ctx.priority.includes('VERIFIED_PRACTICE_DISTILLED_ADVISORY'));
+});
+
+
+test('idle practice advances beyond the first five represented mastery gaps',()=>{
+  const idle=buildIdlePracticeQueue({});
+  assert.ok(idle.drills.length>5);
+  const represented=idle.drills.slice(0,5).map(drill=>practice(`LEARNING-PRACTICE-${drill.id}`,'done',0,['learning-practice-complete']));
+  const result=injectIdlePracticeTask({tasks:represented},idle);
+  assert.equal(result.added,true);
+  assert.equal(result.reason,'IDLE_PRACTICE_ENQUEUED');
+  assert.equal(result.task.id,`LEARNING-PRACTICE-${idle.drills[5].id}`);
+  assert.equal(result.task.type,'research');
+  assert.ok(result.task.evidence.includes('production-pass:NO'));
 });
