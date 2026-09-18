@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    #game {
+      width: 100%;
+      max-width: 800px;
+      padding: 20px;
+      background-color: #111;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    #game canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <canvas id="gameCanvas"></canvas>
+  </main>
+  <script>
+    // Game logic here
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Game initialization
+    function initGame() {
+      // Initialize game state
+      const game = {
+        map: {
+          width: 10,
+          height: 10,
+          cells: Array(100).fill(null)
+        },
+        player: {
+          x: 4,
+          y: 4,
+          direction: 'right'
+        },
+        enemies: [],
+        score: 0
+      };
+
+      // Draw game
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Draw map
+        for (let y = 0; y < game.map.height; y++) {
+          for (let x = 0; x < game.map.width; x++) {
+            if (game.map.cells[y * game.map.width + x]) {
+              ctx.fillStyle = '#444';
+              ctx.fillRect(x * 30, y * 30, 30, 30);
+            }
+          }
+        }
+        // Draw player
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(game.player.x * 30, game.player.y * 30, 30, 30);
+        // Draw enemies
+        game.enemies.forEach(enemy => {
+          ctx.fillStyle = '#ff0000';
+          ctx.fillRect(enemy.x * 30, enemy.y * 30, 30, 30);
+        });
+        // Draw score
+        ctx.fillStyle = '#fff';
+        ctx.font = '16px Arial';
+        ctx.fillText(`Score: ${game.score}`, 10, 20);
+      }
+
+      // Game loop
+      function gameLoop() {
+        draw();
+        requestAnimationFrame(gameLoop);
+      }
+
+      gameLoop();
+    }
+
+    // Handle player input
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        game.player.direction = 'right';
+      } else if (e.key === 'ArrowLeft') {
+        game.player.direction = 'left';
+      } else if (e.key === 'ArrowUp') {
+        game.player.direction = 'up';
+      } else if (e.key === 'ArrowDown') {
+        game.player.direction = 'down';
+      }
+    });
+
+    // Handle enemy AI
+    function enemyAI() {
+      // Simple AI for enemies
+      game.enemies.forEach((enemy, index) => {
+        if (game.player.direction === 'right') {
+          if (enemy.x < game.player.x) {
+            enemy.x++;
+          } else if (enemy.x > game.player.x) {
+            enemy.x--;
+          }
+        } else if (game.player.direction === 'left') {
+          if (enemy.x > game.player.x) {
+            enemy.x--;
+          } else if (enemy.x < game.player.x) {
+            enemy.x++;
+          }
+        } else if (game.player.direction === 'up') {
+          if (enemy.y < game.player.y) {
+            enemy.y++;
+          } else if (enemy.y > game.player.y) {
+            enemy.y--;
+          }
+        } else if (game.player.direction === 'down') {
+          if (enemy.y < game.player.y) {
+            enemy.y--;
+          } else if (enemy.y > game.player.y) {
+            enemy.y++;
+          }
+        }
+      });
+    }
+
+    // Handle collision detection
+    function checkCollision() {
+      // Simple collision detection
+      for (let i = 0; i < game.enemies.length; i++) {
+        const enemy = game.enemies[i];
+        if (enemy.x === game.player.x && enemy.y === game.player.y) {
+          game.score = 0;
+          game.enemies.splice(i, 1);
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // Handle restart
+    document.addEventListener('click', () => {
+      game.player.x = 4;
+      game.player.y = 4;
+      game.score = 0;
+      game.enemies = [];
+      initGame();
+    });
+
+    // Start game
+    initGame();
+  </script>
+</body>
+</html>
