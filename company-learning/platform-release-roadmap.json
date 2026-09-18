@@ -1,8 +1,8 @@
 {
-  "version": 12,
+  "version": 13,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-18",
+  "recordedAt": "2026-09-19",
   "priority": [
     "ROBLOX",
     "UNITY",
@@ -10,7 +10,7 @@
   ],
   "primaryPlatform": "ROBLOX",
   "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
-  "priorityMeaning": "DEFAULT_FOCUS_ONLY",
+  "priorityMeaning": "ROBLOX_ALWAYS_FIRST_FOR_SCHEDULING_FOCUS_AND_PROTECTED_CAPACITY_WITHOUT_BLOCKING_OTHER_PLATFORMS",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
     "UNITY": "ALWAYS_ALLOWED",
@@ -733,6 +733,20 @@
       "preserveExistingGlobalProtectedSlotCapacity": true,
       "learningMustContinue": true,
       "gameAndRuntimeSettingsMayNotBeChangedByStateProjection": true
+    },
+    "platformPriorityInvariant": {
+      "source": "platformPriorityInvariant",
+      "schedulerMustHonorRobloxFirst": true,
+      "appliesTo": [
+        "WEB_BASE_IMPLEMENTATION",
+        "TARGET_PLATFORM_SOURCE_BIND",
+        "TARGET_PLATFORM_RUNTIME",
+        "TARGET_PLATFORM_INDEPENDENT_QA",
+        "TARGET_PLATFORM_REGRESSION",
+        "RELEASE_PROMOTION",
+        "POST_RELEASE_FOCUSED_DEVELOPMENT"
+      ],
+      "learningRunsInParallel": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
@@ -743,5 +757,22 @@
     "authoritative": false,
     "requiredForExecution": false,
     "mayCreatePolicy": false
+  },
+  "platformPriorityInvariant": {
+    "mode": "ROBLOX_ALWAYS_FIRST",
+    "schedulingOrder": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
+    "robloxMustReceiveFirstEligibleDevelopmentSlot": true,
+    "robloxMustReceiveFirstEligibleFocusedSlot": true,
+    "robloxMustReceiveFirstEligiblePostReleaseProtectedSlot": true,
+    "unityDevelopmentStillAllowed": true,
+    "fortniteUefnDevelopmentStillAllowed": true,
+    "lowerPriorityPlatformsMayRunInParallelWhenCapacityRemains": true,
+    "lowerPriorityPlatformMayNotPreemptEligibleRobloxWork": true,
+    "qualityOrEvidenceGateWeakeningAllowed": false,
+    "ownerExplicitOverrideAllowed": true
   }
 }
