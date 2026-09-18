@@ -4,6 +4,7 @@ import {execFileSync} from 'node:child_process';
 import {loadSeedState,saveSeedState,normalizeSeedState,activeSeedForGame} from './game-seed-state.mjs';
 import {scoreWebStrictImplementation} from './company-web-validation-evidence-contract.mjs';
 import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
+import {scoreDesignGateV2} from './company-design-gate-scoring-v2.mjs';
 
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim();
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
@@ -88,7 +89,57 @@ function significantTokens(value){return [...new Set(clean(value).toLowerCase().
 function sourceBundle(root){if(!root||!fs.existsSync(root))return '';const chunks=[];const walk=dir=>{for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory()){if(!['node_modules','.git'].includes(e.name))walk(p);continue;}if(/\.(html|js|mjs|css|json|lua|luau|cs|verse)$/i.test(e.name)){try{chunks.push(fs.readFileSync(p,'utf8'));}catch{}}}};walk(root);return chunks.join('\n').slice(0,4_000_000);}
 function improvementTargets(scores={},scoreWeights=designWeights){return Object.entries(scoreWeights).map(([dimension,maxScore])=>({dimension,current:Number(scores?.[dimension]||0),maxScore,gap:Math.max(0,maxScore-Number(scores?.[dimension]||0))})).filter(x=>x.gap>0).sort((a,b)=>b.gap-a.gap||b.maxScore-a.maxScore||a.dimension.localeCompare(b.dimension)).slice(0,3);}
 function finalResult({scores,hardFailures,evidence,reviewStage,passThreshold,rebuildBelow,scoreWeights=designWeights}){const total=Object.values(scores).reduce((a,b)=>a+Number(b||0),0);let verdict='PASS';if(hardFailures.length||total<passThreshold)verdict=total<rebuildBelow?'REBUILD':'REVISE';const targets=improvementTargets(scores,scoreWeights);return{version:4,gameId,reviewStage,scoreScale:100,passThreshold,excellentThreshold:EXCELLENT_THRESHOLD,excellent:reviewStage==='DESIGN_STRICT_REVIEW'&&total>=EXCELLENT_THRESHOLD&&hardFailures.length===0,totalScore:total,scores,weights:scoreWeights,improvementTargets:targets,hardFailures:[...new Set(hardFailures)],verdict,evidence,policyDocument:'COMPANY_FLOW.md',rules:{scoreCannotOverrideHardGate:true,correctableRejectAction:'FIX_AND_REVALIDATE',structuralRejectAction:'REBUILD_CANDIDATE',officialCardBeforePassForbidden:true,testShelfBeforePassOnly:true,learningRecordRequired:true,improvementPriority:'TOP_3_SCORE_GAPS',implementationScoreComposition:reviewStage==='IMPLEMENTATION_STRICT_REVIEW'?'COMMON_60_PLUS_CATEGORY_40':'LEGACY_DESIGN_100',initialWebStrictRequires30Minutes:false,final30MinuteContentDepthValidationOnly:true},reviewedAt:new Date().toISOString()};}
-function designReview(){const hard=[];const loops=Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[];const identity=clean(seed.DISTINCT_IDENTITY);const sessionOk=Number(seed.TARGET_SESSION_MINUTES)===30&&/0\s*[~\-]\s*5|30분|30\s*min/i.test(clean(seed.TARGET_SESSION_DIRECTION));const multiplayer=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(clean(seed.MULTIPLAYER_DESIGN_MODE).toUpperCase());const materials=Array.isArray(seed.SEED_MATERIAL_IDS)?seed.SEED_MATERIAL_IDS:[];const generation=clean(seed.generation).toUpperCase();const materialComposed=generation.includes('MATERIAL')||generation.includes('COMPOSED');const materialContractOk=!materialComposed||(materials.length>=2&&materials.length<=4);const categoryOk=clean(seed.GAME_CATEGORY).length>0;const platformOk=['ROBLOX','UNITY','FORTNITE_UEFN'].includes(clean(seed.INITIAL_TARGET_PLATFORM).toUpperCase());const ideaOk=identity.length>=80&&loops.length>=3&&materialContractOk;if(!sessionOk)hard.push('30MIN_CONTENT_FAIL');if(!multiplayer)hard.push('MULTIPLAYER_MISSING');if(!categoryOk)hard.push('CATEGORY_MISMATCH');if(!ideaOk)hard.push('CORE_FUN_WEAK');const designPath=date?path.join('design',gameId,date,'design-revised.json'):'';const design=readJson(designPath,null);const designText=JSON.stringify(design||{});const robloxGenreProfile=classifyRobloxGenre({category:seed.GAME_CATEGORY,identity,coreLoop:loops,designText,multiplayerMode:seed.MULTIPLAYER_DESIGN_MODE});const storyBearing=/STORY|RPG|ADVENTURE/i.test(clean(seed.GAME_CATEGORY));const storyOk=!storyBearing||/(story|quest|goal|consequence|스토리|퀘스트|목표|결과)/i.test(designText);if(!storyOk)hard.push('STORY_INCOHERENT');const scores={ideaDistinctness:scoreFlag(ideaOk,15,6),categoryFit:scoreFlag(categoryOk&&loops.length>=3,10,4),platformFit:scoreFlag(platformOk,10,0),designFidelity:scoreFlag(Boolean(design),15,8),session30Quality:scoreFlag(sessionOk,15,0),implementationCompleteness:15,storyCausality:scoreFlag(storyOk,10,3),progressionBalance:scoreFlag(/progress|growth|reward|econom|성장|보상|경제/i.test(designText),5,2),artDirectionFidelity:5};return finalResult({scores,hardFailures:hard,evidence:{seedId:seed.seedId,seedGeneration:seed.generation||null,materialContractApplied:materialComposed,materialIds:materials,designPath:designPath||null,multiplayerDesignMode:seed.MULTIPLAYER_DESIGN_MODE,targetSessionMinutes:seed.TARGET_SESSION_MINUTES,robloxGenreProfile,reviewContextSource},reviewStage:'DESIGN_STRICT_REVIEW',passThreshold:DESIGN_PASS_THRESHOLD,rebuildBelow:60,scoreWeights:designWeights});}
+function designReview(){
+  const designPath=date?path.join('design',gameId,date,'design-revised.json'):'';
+  const designRecord=readJson(designPath,null);
+  const cyclePath=date?path.join('design',gameId,date,'cycle-status.json'):'';
+  const cycleStatus=readJson(cyclePath,{});
+  const designContent=designRecord?.content&&typeof designRecord.content==='object'?designRecord.content:{};
+  const designIdentity=clean(designContent.identity||seed.DISTINCT_IDENTITY);
+  const designLoops=Array.isArray(designContent.coreLoop)?designContent.coreLoop:(Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[]);
+  const designPlayMode=clean(designContent.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE);
+  const designText=JSON.stringify(designRecord||{});
+  const robloxGenreProfile=classifyRobloxGenre({
+    category:seed.GAME_CATEGORY,
+    identity:designIdentity,
+    coreLoop:designLoops,
+    designText,
+    multiplayerMode:designPlayMode
+  });
+  const scored=scoreDesignGateV2({seed,designRecord,cycleStatus,robloxGenreProfile});
+  const result=finalResult({
+    scores:scored.scores,
+    hardFailures:scored.hardFailures,
+    evidence:{
+      seedId:seed.seedId,
+      seedGeneration:seed.generation||null,
+      materialContractApplied:!scored.materialContractOk?true:Boolean((Array.isArray(seed.SEED_MATERIAL_IDS)?seed.SEED_MATERIAL_IDS:[]).length),
+      materialIds:Array.isArray(seed.SEED_MATERIAL_IDS)?seed.SEED_MATERIAL_IDS:[],
+      designPath:designPath||null,
+      cyclePath:cyclePath||null,
+      multiplayerDesignMode:designPlayMode||null,
+      targetSessionMinutes:seed.TARGET_SESSION_MINUTES,
+      robloxGenreProfile,
+      reviewContextSource,
+      scoreSystem:scored.scoreSystem,
+      evidenceLevels:scored.evidenceLevels,
+      criticalAxisFailures:scored.criticalAxisFailures,
+      criticalAxisMinimumPercent:scored.criticalAxisMinimumPercent,
+      thirtyMinuteHardGateApplied:scored.thirtyMinuteHardGateApplied
+    },
+    reviewStage:'DESIGN_STRICT_REVIEW',
+    passThreshold:scored.passMinimum,
+    rebuildBelow:60,
+    scoreWeights:scored.weights
+  });
+  result.scoreSystem=scored.scoreSystem;
+  result.scoreSystemVersion=scored.version;
+  result.directScoreLevels=scored.directScoreLevels;
+  result.criticalAxisMinimumPercent=scored.criticalAxisMinimumPercent;
+  result.criticalAxisFailures=scored.criticalAxisFailures;
+  result.thirtyMinuteHardGateApplied=scored.thirtyMinuteHardGateApplied;
+  return result;
+}
 function implementationReview(){
   const hard=[];const source=arg('source');const evidenceFile=arg('evidence');const runtime=readJson(evidenceFile,{});const text=sourceBundle(source);const lower=text.toLowerCase();const baseline=arg('baseline')?readJson(arg('baseline'),{}):{};const artbook=arg('artbook')?readJson(arg('artbook'),{}):{};const designText=JSON.stringify(baseline||{});const artText=JSON.stringify(artbook||{});const coreTokens=significantTokens([...(seed.CORE_LOOP||[]),seed.DISTINCT_IDENTITY].join(' ')).slice(0,24);const matched=coreTokens.filter(t=>lower.includes(t.toLowerCase()));const fidelity=coreTokens.length?matched.length/coreTokens.length:0;const normalizedSource=String(source).replaceAll('\\','/');const isWeb=clean(runtime?.target).toLowerCase()==='web'||normalizedSource.startsWith('web-games/');const scopeOk=runtime?.approvedScopeFullyImplemented===true&&runtime?.scopeCoverage?.pass===true;const runtimeEvidencePresent=Boolean(evidenceFile&&runtime&&typeof runtime==='object'&&Object.keys(runtime).length);const generic=/contract-safe|generic shell|vibe2-final\.js/i.test(text);const multiMode=clean(seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();const multiKnown=['SINGLE','COOP','COMPETITIVE','HYBRID'].includes(multiMode);const multiRequired=multiKnown&&multiMode!=='SINGLE';const multiplayerOk=!multiRequired||(Number(runtime?.multiplayer?.participants)>=2&&runtime?.multiplayer?.meaningfulLoopPassed===true);const storyBearing=/STORY|RPG|ADVENTURE/i.test(clean(seed.GAME_CATEGORY));const storyTokens=significantTokens(designText).slice(0,20);const storyMatch=!storyBearing||storyTokens.filter(t=>lower.includes(t)).length>=Math.min(3,storyTokens.length);const artTokens=significantTokens(artText).slice(0,20);const artMatch=!artTokens.length||artTokens.filter(t=>lower.includes(t)).length>=Math.min(2,artTokens.length);
   if(isWeb){
