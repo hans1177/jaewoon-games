@@ -18,8 +18,8 @@ permissions:
   actions: write
 
 concurrency:
-  # Engine pushes must replace stale code while workflow_dispatch/schedule runs keep their checkpointed cycle.
-  group: company-seed-design-runtime
+  # Engine pushes replace only stale push-triggered runs. Continuation/schedule runs keep their checkpointed cycle.
+  group: company-seed-design-runtime-${{ github.event_name == 'push' && 'engine-push' || 'continuation' }}
   cancel-in-progress: ${{ github.event_name == 'push' }}
 
 env:
