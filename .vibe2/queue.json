@@ -2385,12 +2385,13 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
         "practice-kind:MINI_GAME_SYSTEM_DRILL",
-        "practice-domain:ASSET_PRODUCTION"
+        "practice-domain:ASSET_PRODUCTION",
+        "slot-dispatch:35356425222:1"
       ],
       "lastOutcome": null,
       "reservationId": "35354309420:2",
