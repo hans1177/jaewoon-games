@@ -11,7 +11,9 @@ import {
   releaseVibeTaskExecutionSlot,
   settleVibeTask,
   applyVibeFanInResults,
-  recoverFixedFullWebTransportFailures
+  recoverFixedFullWebTransportFailures,
+  recoverStaleRunningReservations,
+  recoverFanInRegressionFailure
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 
@@ -243,6 +245,63 @@ test('retryable failure clears blocker and remains selectable until retry limit'
   reserved=reserveNextVibeTask(failed.queue);
   failed=settleVibeTask(reserved.queue,{taskId:'retry',outcome:'FAIL',evidence:['fail-2'],blocker:'source-candidate-generation-failed'});
   assert.equal(failed.queue.tasks[0].status,'failed');
+});
+
+test('stale running development reservation is requeued without consuming retry', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'stale',gameId:'stale',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/stale',goal:'implementation',status:'running',retries:1,maxRetries:2,
+    reservationId:'run-old:1',reservationRunId:'run-old',reservationRunAttempt:1,reservedAt:'2026-09-18T09:00:00Z'
+  }]});
+  const recovered=recoverStaleRunningReservations(queue,{nowMs:Date.parse('2026-09-18T10:00:00Z')});
+  const task=recovered.queue.tasks[0];
+  assert.equal(recovered.recovered,1);
+  assert.equal(task.status,'queued');
+  assert.equal(task.retries,1);
+  assert.equal(task.lastOutcome,'STALE_RESERVATION_RECOVERED');
+  assert.equal(task.reservationId,null);
+  assert.ok(task.evidence.includes('recovery:stale-running-reservation-v1'));
+});
+
+test('awaiting QA running reservation is not reclaimed as stale worker capacity', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'awaiting',gameId:'awaiting',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/awaiting',goal:'implementation',status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+    reservationId:'run-old:1',reservedAt:'2026-09-18T08:00:00Z'
+  }]});
+  const recovered=recoverStaleRunningReservations(queue,{nowMs:Date.parse('2026-09-18T10:00:00Z')});
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.queue.tasks[0].status,'running');
+  assert.equal(recovered.queue.tasks[0].reservationId,'run-old:1');
+});
+
+test('fan-in regression failure requeues matching worker-pass task and clears reservation', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'pass-worker',gameId:'a',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/a',goal:'a',status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+    retries:1,maxRetries:2,reservationId:'run-1:1',reservationRunId:'run-1',reservationRunAttempt:1,reservedAt:'2026-09-18T09:00:00Z'
+  }]});
+  const recovered=recoverFanInRegressionFailure(queue,[{taskId:'pass-worker',reservationId:'run-1:1',outcome:'PASS'}]);
+  const task=recovered.queue.tasks[0];
+  assert.equal(recovered.recovered,1);
+  assert.equal(task.status,'queued');
+  assert.equal(task.retries,1);
+  assert.equal(task.lastOutcome,'RETRY_AFTER_FAN_IN_REGRESSION_FAILURE');
+  assert.equal(task.reservationId,null);
+  assert.ok(task.evidence.includes('failure-cause:fan-in-regression-failed'));
+  assert.ok(task.evidence.includes('recovery:fan-in-regression-requeue-v1'));
+});
+
+test('fan-in regression recovery ignores stale mismatched reservation result', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'pass-worker',gameId:'a',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/a',goal:'a',status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+    reservationId:'new-run:1',reservedAt:'2026-09-18T09:00:00Z'
+  }]});
+  const recovered=recoverFanInRegressionFailure(queue,[{taskId:'pass-worker',reservationId:'old-run:1',outcome:'PASS'}]);
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.queue.tasks[0].status,'running');
+  assert.equal(recovered.queue.tasks[0].reservationId,'new-run:1');
 });
 
 test('output-budget repair requeues capped owner full-web rebuild failures once even after v1 transport retry', () => {
