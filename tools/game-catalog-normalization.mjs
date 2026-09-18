@@ -13,6 +13,130 @@ const bool=value=>value===true;
 const list=value=>[...new Set((Array.isArray(value)?value:[]).map(clean).filter(Boolean))];
 const numericRank=(table,key,fallback=999)=>Number.isFinite(Number(table?.[key]))?Number(table[key]):fallback;
 
+const platformLabel=platform=>platform==='ROBLOX'?'Roblox':platform==='UNITY'?'Unity Android':platform==='FORTNITE_UEFN'?'Fortnite UEFN':'';
+function autoClassificationPolicy(){
+  try{
+    const roadmap=JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8'));
+    return roadmap?.catalogNormalization?.autoClassification||{};
+  }catch{
+    return{};
+  }
+}
+function webSourcePresent(game={}){
+  return Boolean(clean(game.webPath)||game.hasWebArchive===true||game.homepageWebPlayable===true);
+}
+function webSourceText(game={}){
+  const raw=clean(game.webPath).replace(/^\/+|\/+$/g,'');
+  if(!raw||!fs.existsSync(raw))return '';
+  const files=[];
+  try{
+    const stat=fs.statSync(raw);
+    if(stat.isFile())files.push(raw);
+    else if(stat.isDirectory()){
+      const preferred=['index.html','index.js','game.js','main.js','script.js','app.js','config.json','game.json'];
+      for(const name of preferred){
+        const file=raw+'/'+name;
+        if(fs.existsSync(file))files.push(file);
+      }
+      if(files.length<8){
+        for(const entry of fs.readdirSync(raw,{withFileTypes:true})){
+          if(files.length>=8)break;
+          if(!entry.isFile()||!/[.](?:html?|m?js|json)$/i.test(entry.name))continue;
+          const file=raw+'/'+entry.name;
+          if(!files.includes(file))files.push(file);
+        }
+      }
+    }
+  }catch{return '';}
+  let text='';
+  for(const file of files.slice(0,8)){
+    try{text+='\n'+fs.readFileSync(file,'utf8').slice(0,24000);}catch{}
+    if(text.length>=96000)break;
+  }
+  return text.slice(0,96000);
+}
+function classificationText(game={}){
+  const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
+  return [
+    game.id,game.name,game.description,game.productionTarget,game.homepageStage,game.homepageRecentWork,
+    ...(Array.isArray(game.genre)?game.genre:[]),
+    ...(Array.isArray(runtime.genre)?runtime.genre:[]),
+    webSourceText(game)
+  ].map(clean).filter(Boolean).join(' ').toLowerCase();
+}
+function addGenres(out,...values){for(const value of values){const v=clean(value);if(v&&!out.includes(v))out.push(v);}}
+
+export function inferHomepageGenres(game={}){
+  const policy=autoClassificationPolicy();
+  const max=Math.max(1,Math.min(8,Number(policy?.genre?.maximumLabels)||4));
+  const text=classificationText(game);
+  const out=[];
+  if(/(tower.?defen|tower defense|타워.?디펜|라인.?디펜|defense|디펜스)/i.test(text))addGenres(out,'디펜스','전략');
+  if(/(rpg|role.?play|dungeon|던전|quest|퀘스트|레벨업|boss|보스)/i.test(text))addGenres(out,'RPG');
+  if(/(survival|생존|horde|웨이브|wave|roguelite|로그라이트|roguelike|로그라이크)/i.test(text))addGenres(out,'생존','액션');
+  if(/(fps|tps|shooter|shooting|gun|총기|사격|슈팅)/i.test(text))addGenres(out,'슈팅');
+  if(/(racing|race|레이싱|경주|driving|운전)/i.test(text))addGenres(out,'레이싱');
+  if(/(football|soccer|basketball|baseball|sport|축구|농구|야구|스포츠)/i.test(text))addGenres(out,'스포츠');
+  if(/(tycoon|타이쿤|management|경영|shop|restaurant|restaurant|놀이공원|theme.?park)/i.test(text))addGenres(out,'경영','시뮬레이션');
+  if(/(sandbox|샌드박스|world.?build|building|건설|건축)/i.test(text))addGenres(out,'샌드박스');
+  if(/(farm|farming|농장|cozy|힐링|생활)/i.test(text))addGenres(out,'생활');
+  if(/(fish|fishing|낚시)/i.test(text))addGenres(out,'낚시');
+  if(/(puzzle|퍼즐|match.?3|매치|merge|머지|block.?puzzle|grid.?puzzle)/i.test(text))addGenres(out,'퍼즐');
+  if(/(rhythm|리듬|music.?game|음악.?게임|piano|피아노)/i.test(text))addGenres(out,'리듬','음악');
+  if(/(board|card|chess|보드|카드|체스)/i.test(text))addGenres(out,'보드','전략');
+  if(/(strategy|strategic|전략|tactical|전술)/i.test(text))addGenres(out,'전략');
+  if(/(collect|collection|수집|pet|펫|동료|도감)/i.test(text))addGenres(out,'수집');
+  if(/(adventure|explor|모험|탐험)/i.test(text))addGenres(out,'모험');
+  if(/(platformer|platform game|obby|오비|플랫포머|runner|러너)/i.test(text))addGenres(out,'플랫폼');
+  if(/(social|소셜|party|파티|multiplayer|멀티플레이|co-?op|협동)/i.test(text))addGenres(out,'소셜');
+  if(/(idle|방치|afk)/i.test(text))addGenres(out,'방치형');
+  if(/(combat|fight|battle|전투|격투|action|액션)/i.test(text))addGenres(out,'액션');
+  if(/(casual|캐주얼|minigame|미니게임)/i.test(text))addGenres(out,'캐주얼');
+  const fallback=list(policy?.genre?.fallback).length?list(policy.genre.fallback):['기타'];
+  return (out.length?out:fallback).slice(0,max);
+}
+
+export function inferHomepagePlatform(game={}){
+  const explicit=selectedPlatformOf(game);
+  if(explicit)return explicit;
+  if(clean(game.uefnProjectPath||game.fortniteProjectPath))return 'FORTNITE_UEFN';
+  const robloxTarget=game.robloxPublicationTarget&&typeof game.robloxPublicationTarget==='object'?game.robloxPublicationTarget:{};
+  if(clean(game.robloxProjectPath)||clean(robloxTarget.placeId)||clean(robloxTarget.universeId))return 'ROBLOX';
+  if(clean(game.unityProjectPath))return 'UNITY';
+  const text=classificationText(game);
+  if(/(fortnite|uefn|\bverse\b|battle.?royale|배틀.?로얄|fortnite.?island)/i.test(text))return 'FORTNITE_UEFN';
+  if(/(roblox|obby|오비|tycoon|타이쿤|role.?play|롤플레이|hangout|소셜|party|파티|pet|펫|sandbox|샌드박스|minigame|미니게임)/i.test(text))return 'ROBLOX';
+  if(/(unity|android|mobile|모바일|3d|rpg|던전|survival|생존|fps|tps|shooter|슈팅|racing|레이싱|sport|스포츠|simulation|시뮬|management|경영|fishing|낚시|puzzle|퍼즐|rhythm|리듬)/i.test(text))return 'UNITY';
+  const policy=autoClassificationPolicy();
+  return normalizePlatform(policy?.platform?.centralDefault)||'ROBLOX';
+}
+
+export function applyHomepageAutoClassification(game={}){
+  const policy=autoClassificationPolicy();
+  if(policy?.enabled!==true||!webSourcePresent(game))return game;
+  const runtime=game.homepageInfo&&typeof game.homepageInfo==='object'?game.homepageInfo:{};
+  game.homepageInfo=runtime;
+
+  let platform=selectedPlatformOf(game);
+  if(!platform){
+    platform=inferHomepagePlatform(game);
+    if(platform)game.selectedPlatform=platform;
+  }else if(!normalizePlatform(game.selectedPlatform)){
+    game.selectedPlatform=platform;
+  }
+  if(platform&&!normalizePlatform(runtime.platform))runtime.platform=platform;
+  if(platform&&!clean(runtime.platformLabel))runtime.platformLabel=platformLabel(platform);
+
+  let genres=list(game.genre);
+  const runtimeGenres=list(runtime.genre);
+  if(!genres.length&&runtimeGenres.length)genres=runtimeGenres;
+  if(!genres.length)genres=inferHomepageGenres(game);
+  if(!list(game.genre).length)game.genre=genres;
+  if(!runtimeGenres.length)runtime.genre=genres;
+  if(!clean(runtime.genreLabel))runtime.genreLabel=genres.join(' · ');
+  return game;
+}
+
 function normalizationPolicy(){
   try{
     const roadmap=JSON.parse(fs.readFileSync(ROADMAP_PATH,'utf8'));
@@ -183,6 +307,7 @@ export function normalizeCatalog(catalog={}){
   const policy=normalizationPolicy();
   const ids=new Set();
   for(const game of catalog.games){
+    applyHomepageAutoClassification(game);
     const id=clean(game.id||game.gameId);
     if(!id)throw new Error('catalog game id missing');
     if(ids.has(id))throw new Error('duplicate catalog game id: '+id);
