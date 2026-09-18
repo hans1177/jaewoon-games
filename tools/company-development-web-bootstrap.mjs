@@ -15,7 +15,6 @@ const MIN_REAL_GAME_BYTES=12000;
 const MIN_REAL_SCRIPT_BYTES=6000;
 const SHARED_REAL_ENGINE='web-games/_shared/vibe2-final.js';
 const POCKET_FOUNDRY_TEMPLATE='web-games/seed-roblox-simulator-tycoon-i-adopt-me/index.html';
-const VECTOR_CLASH_TEMPLATE='web-games/seed-roblox-battleground-fight-welcome-to-bloxburg/index.html';
 const PRESERVED_PATCH_MAX_EDITS=8;
 const FINAL_CONTENT_DEPTH_REWORK_REQUIRED='최종 콘텐츠 깊이 재작업에서는 반복 행동/재시작 시간으로 분량을 채우지 말고 새 적·구역·목표·상호작용·전략 결과를 실제 gameplay로 추가한다.';
 const WEB_PREPLATFORM_IMPLEMENTATION_POLICY=`Web 빌드는 출시용 장식 데모나 기능 샘플이 아니라 본 플랫폼 개발 전에 재미와 게임성을 검증하는 축소된 완성 게임이다. 본 플랫폼과 핵심 게임 규칙의 품질 기준은 동일하게 유지하고 줄여도 되는 것은 전체 맵 크기, 최종 지역/아이템/보스 수, 최종 아트 품질, 플랫폼 전용 연동과 엔드게임 분량뿐이다. 핵심 이동·탐험·전투·적 AI·상호작용·성장·경제·퀘스트·장비·보상·사망·재도전·저장 일관성은 승인 설계에 존재하면 Web 단계에서 실제 플레이 가능하게 구현한다. 액션/RPG/생존/모험/탐험/역할형처럼 플레이어 아바타가 핵심인 2D 게임은 실제 플레이어 엔티티와 변경되는 X/Y 월드 좌표, 키보드 이동, 모바일 터치 또는 가상 조이스틱, 월드 경계와 장애물 충돌, 큰 맵의 카메라 추적 또는 월드 스크롤을 구현한다. data-player-x/data-player-y, data-collision-enabled, data-collision-count, data-camera-active 및 필요 시 data-camera-x/data-camera-y를 실제 상태와 함께 갱신하고 좌표 값만 바꾸는 가짜 이동은 금지한다. 맵/월드/탐험이 있으면 서로 실제로 이동 가능한 복수 지역, 지역별 위험·적·자원 차이, 랜드마크와 발견/보상 요소, 접근 거리 기반 상호작용을 넣고 data-area/data-zone/data-region/data-landmark/data-discovery 같은 런타임 표식을 실제 상태에 연결한다. 전투는 공격 거리, 공격 쿨다운, 피격 피드백, 적 추적/복귀 AI, 불공정 연속 피격 방지, 실제 투사체 또는 근접 판정 등 장르에 필요한 규칙이 실제 결과를 바꾸게 한다. 보스가 설계에 있으면 Web 단계에서 최소 한 번의 완전한 보스전을 구현하고 단순 고체력 일반 적으로 대체하지 않는다. 최소 2개의 구분되는 공격 패턴 또는 단계, 강공격 예고, 피할 수 있는 대응 공간, 처치 보상과 재도전 흐름을 만들고 data-boss/data-boss-id/data-boss-pattern/data-boss-phase를 실제 보스 상태와 함께 갱신한다. 탐험→전투→보상→성장→더 위험한 지역 또는 보스의 재미 루프가 실제 플레이로 이어져야 하며 빈 맵 걷기, 버튼 클릭→숫자 변화, 적 클릭→체력 감소, 맵 클릭→순간이동 같은 가짜 플레이를 핵심 장르 구현으로 인정하지 않는다. 인벤토리·장비·제작·상점·퀘스트가 있으면 획득/소모/장착/가격/조건/보상이 실제 상태와 연결되고 UI 표시값과 내부 계산값이 일치해야 한다. 세이브가 이미 있는 게임은 플레이어와 월드 진행을 함께 복구하고 구버전/부분 데이터 때문에 흰 화면이나 소프트락이 생기지 않게 한다. delta time, 공격 무적시간, 스폰 안전성, 리스폰 중복 방지, 이벤트/리스너/타이머 누적 방지, pause/탭 복귀 안정성, NaN/Infinity 방지, 모바일 멀티터치와 화면 넘침 방지 등 실제 플레이 안정성을 유지한다. 검증용 플래그·숫자·숨은 텔레메트리만 맞추고 화면과 실제 게임 결과가 변하지 않는 구현은 금지하며 내부 상태·화면 변화·입력 결과를 서로 일치시킨다.`;
@@ -210,13 +209,9 @@ function buildCanonicalGame({template,gameName,baseline,inventory,fallbackName,f
 function buildPocketFoundryFromCanonical({gameName,baseline,inventory}){
   return buildCanonicalGame({template:POCKET_FOUNDRY_TEMPLATE,gameName,baseline,inventory,fallbackName:'Pocket Foundry',fallbackCore:'채굴, 제련, 판매, 자동화와 구역 해금으로 공장을 성장시킨다.',validationQuestion:'실제 생산 루프 구현 여부',implementationNotes:['canonical Pocket Foundry real-game template','resource dependencies','automation','heat failure state','complete gameplay cycle before content-depth expansion']});
 }
-function buildVectorClashFromCanonical({gameName,baseline,inventory}){
-  return buildCanonicalGame({template:VECTOR_CLASH_TEMPLATE,gameName,baseline,inventory,fallbackName:'Vector Clash',fallbackCore:'거리 조절, 공격, 회피, 스킬 쿨다운과 적 AI를 읽어 3라운드 선승을 만든다.',validationQuestion:'실제 1대1 전투 루프 구현 여부',implementationNotes:['canonical Vector Clash real-game template','distance control and attack ranges','dodge and enemy intent','skill energy and cooldown','round win/loss state','complete gameplay cycle before content-depth expansion']});
-}
 export function buildContractSafePlayable({gameId='',gameName='',baseline={}}={}){
   const genre=inferDevelopmentGenre({gameId,baseline}),inventory=deriveApprovedScopeInventory(baseline);
   if(genre==='SIMULATOR_TYCOON_INCREMENTAL')return buildPocketFoundryFromCanonical({gameId,gameName,baseline,inventory});
-  if(genre==='BATTLEGROUND_FIGHTING_SHOOTER')return buildVectorClashFromCanonical({gameId,gameName,baseline,inventory});
   throw new Error(`GENRE_REAL_IMPLEMENTATION_NOT_READY:${genre}`);
 }
 
