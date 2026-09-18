@@ -185,7 +185,9 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION_SCOPE=REPLACE_STALE_HEAD_BATCH/);
   assert.match(seedWorkflow,/actions\/runs\/\$run_id\/cancel/);
   assert.match(seedWorkflow,/cancel-in-progress: true/);
-  assert.match(seedDesignWorkflow,/cancel-in-progress: false/);
+  assert.match(seedDesignWorkflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(seedDesignWorkflow,/push:[\s\S]{0,500}tools\/company-design-cycle\.mjs/);
+  assert.match(seedDesignWorkflow,/push:[\s\S]{0,500}tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
   assert.ok((seedDesignWorkflow.match(/ownerAllGamesDesignReset/g)||[]).length>=4);
   assert.ok((seedDesignWorkflow.match(/const evidenceAt=Date\.parse\(review\.reviewedAt\|\|review\.generatedAt\|\|review\.updatedAt\|\|review\.createdAt\|\|''\)\|\|0;/g)||[]).length>=4);
