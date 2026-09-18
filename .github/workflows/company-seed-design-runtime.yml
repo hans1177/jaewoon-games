@@ -256,7 +256,6 @@ jobs:
             const role=clean(entry.slice(0,at));if(!roles.includes(role))continue;
             configuredLanes[role]=uniq(entry.slice(at+1).split('|'));
           }
-          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([primary[index],...configuredLanes[role]])]));
           const checkpointPath=path.join('design',clean(process.env.ARTBOOK_GAME_ID),clean(process.env.ARTBOOK_DATE),'design-checkpoint.json');
           let checkpoint={};
           try{checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));}catch{}
@@ -285,6 +284,35 @@ jobs:
           const missingRoles=roles.filter(role=>!Object.prototype.hasOwnProperty.call(completedTasks,`five_lead_reviews::${role}`));
           const currentPhase=clean(checkpoint.currentPhase).toUpperCase()||'BOOTSTRAP';
           const leadPhaseActive=currentPhase==='DEPARTMENT_REVIEWS'||missingRoles.length<roles.length;
+          const primarySet=new Set(primary);
+          const availableExtraFallbacks=fallback.filter(model=>!primarySet.has(model)&&!exhausted.has(model));
+          const adaptiveFallbacks=Object.fromEntries(roles.map(role=>[role,[]]));
+          const usedFallbacks=new Set();
+          const blockedPrimaryRoles=leadPhaseActive
+            ? missingRoles.filter(role=>exhausted.has(primary[roles.indexOf(role)]))
+            : [];
+          const assignFallback=(role,candidates)=>{
+            for(const model of candidates){
+              if(exhausted.has(model)||primarySet.has(model)||usedFallbacks.has(model))continue;
+              adaptiveFallbacks[role].push(model);
+              usedFallbacks.add(model);
+              return true;
+            }
+            return false;
+          };
+          for(const role of blockedPrimaryRoles){
+            if(assignFallback(role,configuredLanes[role]))continue;
+            assignFallback(role,availableExtraFallbacks);
+          }
+          for(const role of missingRoles){
+            if(blockedPrimaryRoles.includes(role)||adaptiveFallbacks[role].length)continue;
+            assignFallback(role,configuredLanes[role]);
+          }
+          const lanes=Object.fromEntries(roles.map((role,index)=>[role,uniq([primary[index],...adaptiveFallbacks[role]])]));
+          const adaptiveLaneSpec=roles
+            .filter(role=>adaptiveFallbacks[role].length)
+            .map(role=>`${role}:${adaptiveFallbacks[role].join('|')}`)
+            .join(';');
           const blockedRoles=leadPhaseActive?missingRoles.filter(role=>lanes[role].every(model=>exhausted.has(model))):[];
           const designerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
           const designerCheckpointPresent=Object.prototype.hasOwnProperty.call(completedPhases,'designer_draft');
@@ -296,9 +324,10 @@ jobs:
           console.log(`GEMINI_UNAVAILABLE_MODELS=${[...exhausted].join(',')||'NONE'}`);
           console.log(`GEMINI_INCOMPLETE_LEAD_ROLES=${missingRoles.join(',')||'NONE'}`);
           console.log(`GEMINI_BLOCKED_LEAD_ROLES=${blockedRoles.join(',')||'NONE'}`);
+          console.log(`GEMINI_ADAPTIVE_FALLBACK_LANES=${adaptiveLaneSpec||'NONE'}`);
           console.log(`GEMINI_QUOTA_CHECKPOINT_PRESERVED=${fs.existsSync(checkpointPath)?'YES':'NO'}`);
           console.log(`GEMINI_QUOTA_FULL_CYCLE_RESTART=NO`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=${runModelCycle?'true':'false'}\nquota_state=${runModelCycle?'READY':'WAITING_FOR_GEMINI_QUOTA'}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=${runModelCycle?'true':'false'}\nquota_state=${runModelCycle?'READY':'WAITING_FOR_GEMINI_QUOTA'}\nfallback_lanes=${adaptiveLaneSpec}\n`);
           NODE
       - name: Run seed-backed DESIGN_ONLY pipeline without artbook
         id: design_pipeline
@@ -307,6 +336,7 @@ jobs:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          COMPANY_GEMINI_LEAD_FALLBACK_LANES: ${{ steps.gemini_quota.outputs.fallback_lanes }}
         shell: bash
         run: |
           set -euo pipefail
