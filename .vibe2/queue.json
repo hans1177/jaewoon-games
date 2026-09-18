@@ -2299,14 +2299,14 @@
       "dependencies": [],
       "priority": "critical",
       "releaseState": "development-confirmed",
-      "status": "running",
-      "retries": 1,
+      "status": "queued",
+      "retries": 2,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "candidate-awaiting-qa-and-deployment",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "owner-directive:existing-web-assessment",
@@ -2367,7 +2367,9 @@
         "release-dispatch-recovery-invalidated:manifest-selector-fixed",
         "release-dispatch-recovery-requested:vibe2/candidate/OWNER-FULL-REBUILD-CRYSTAL-BLOOM-20260916-primary-35347486742-1",
         "release-dispatch-recovery-at:1789738168286",
-        "release-dispatch-recovery-candidate-sha:3c258d758910cbfb90b98b348a9e4199f6b4043e"
+        "release-dispatch-recovery-candidate-sha:3c258d758910cbfb90b98b348a9e4199f6b4043e",
+        "candidate-release-rejected",
+        "actions-run-35350518054"
       ],
       "lastOutcome": "FAIL",
       "companyContext": null,
