@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import {GAME_SEED_REQUIRED_FIELDS,GAME_SEED_POLICY,validateGameSeed} from '../tools/company-game-seed-contract.mjs';
 
 const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
+const machineSource='company-learning/platform-release-roadmap.json';
+const machinePolicy=JSON.parse(fs.readFileSync(machineSource,'utf8'));
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const cycle=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
 const devCycle=fs.readFileSync('tools/company-development-validation-cycle.mjs','utf8');
@@ -11,10 +13,17 @@ const releaseCycle=fs.readFileSync('tools/company-release-production-cycle.mjs',
 const pipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const roles=['planning','graphics','development','qa','balance'];
 
-test('one central policy source owns class design meeting and release rules',()=>{
-  assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
-  assert.match(flow,/sourceOfTruth: COMPANY_FLOW\.md/);
-  assert.match(flow,/format: MACHINE_ORIENTED_POLICY_SPEC/);
+test('one canonical machine policy source owns class design meeting and release rules',()=>{
+  assert.equal(directive.policyDocument,machineSource);
+  assert.equal(directive.machineSourceOfTruth,machineSource);
+  assert.equal(directive.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(machinePolicy.machineSourceOfTruth,machineSource);
+  assert.equal(machinePolicy.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(machinePolicy.humanDocumentRequired,false);
+  assert.match(flow,/sourceOfTruth: company-learning\/platform-release-roadmap\.json/);
+  assert.match(flow,/authority: LEGACY_POLICY_MIRROR/);
+  assert.match(flow,/authoritative: false/);
+  assert.match(flow,/canonicalMachineAuthority: MACHINE_EXECUTION_CONTRACT/);
   assert.match(flow,/machineContractsMayMirrorPolicyButCannotCreatePolicy: true/);
   assert.match(flow,/evidenceFilesCannotCreatePolicy: true/);
 });
@@ -117,7 +126,10 @@ test('DESIGN_ONLY uses direct lead feedback without meeting or rebuttal layer',(
 test('Vibe2 starts at DEVELOPMENT_CONFIRMED and remains primary in RELEASE_CONFIRMED',()=>{
   assert.equal(directive.ai.vibe2.startsAtClass,'DEVELOPMENT_CONFIRMED');
   assert.equal(directive.ai.vibe2.designOnlyActive,false);
-  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
+  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
+  assert.equal(directive.ai.vibe2.implementationOwner,true);
+  assert.equal(directive.ai.vibe2.ownsWebFirstImplementation,true);
+  assert.equal(machinePolicy.gameDevelopmentAuthority?.implementationOwner,'VIBE2_VIBE3');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_DEVELOPMENT_ENGINE');
   assert.match(flow,/Vibe2:\n  startsAt: DEVELOPMENT_CONFIRMED/);
 });
