@@ -3,18 +3,20 @@
   "gameId": "bug-defense",
   "date": "2026-09-18",
   "engineDigest": "05d80223e443cbfedec68800da37d99acfc2bb77a390c0f1f17b8562228365b4",
-  "status": "IN_PROGRESS",
-  "currentStage": "DEPARTMENT_REVIEWS",
-  "percent": 67,
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
     "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1"
+    "deterministic_pre_gate_after_repair_1",
+    "five_lead_reviews",
+    "designer_revision"
   ],
-  "completedPhaseCount": 4,
-  "cachedTaskCount": 4,
-  "lastSuccessfulModelCallAt": "2026-09-18T06:19:27.296Z",
+  "completedPhaseCount": 6,
+  "cachedTaskCount": 5,
+  "lastSuccessfulModelCallAt": "2026-09-18T06:19:34.544Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -64,15 +66,15 @@
       "updatedAt": "2026-09-18T06:19:13.061Z"
     },
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 10,
-      "successes": 7,
+      "calls": 12,
+      "successes": 9,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 3,
-      "totalMs": 46571,
-      "lastMs": 1299,
+      "totalMs": 54116,
+      "lastMs": 6242,
       "lastError": "Expected ',' or '}' after property value in JSON at position 1659 (line 1 column 1660)",
-      "updatedAt": "2026-09-18T06:19:27.296Z"
+      "updatedAt": "2026-09-18T06:19:34.544Z"
     },
     "gemini:gemini-3.1-pro-preview": {
       "calls": 1,
@@ -131,5 +133,7 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T06:19:27.298Z"
+  "updatedAt": "2026-09-18T06:19:34.547Z",
+  "preGateScore": 80,
+  "postRevisionPreGateScore": 80
 }
