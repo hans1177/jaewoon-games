@@ -130,6 +130,7 @@ function normalizeTask(input = {}, index = 0) {
     packageLongWorkProtected: input.packageLongWorkProtected === true,
     postReleaseFocused: input.postReleaseFocused === true,
     historicalDeploymentRecovery: input.historicalDeploymentRecovery === true,
+    selectedPlatform: clean(input.selectedPlatform || (clean(input.target).toLowerCase()==='roblox'?'ROBLOX':clean(input.target).toLowerCase()==='unity'?'UNITY':'' )).toUpperCase() || null,
     focusCycle: clampInt(input.focusCycle || 0, 0, 1000000),
     focusPolicyRef: clean(input.focusPolicyRef) || null,
     packageContext: normalizePackageContext(input.packageContext),
@@ -158,6 +159,8 @@ export function createVibeContinuousQueue(seed = {}) {
       responsibleFileExclusive: true,
       unityReleaseFocusSlots: 1,
       postReleaseFocusedSlots: 1,
+      robloxFirstEligibleSlots: 1,
+      platformPriority: freezeList(['ROBLOX','UNITY','FORTNITE_UEFN']),
       longWorkProtectedSlots: 1,
       roleSeparation: true,
       baseShardSlots: BASE_SHARD_SLOTS,
@@ -236,6 +239,14 @@ function releasesWorkerCapacity(task) {
 function isProtectedLongOwner(task) {
   return task?.packageLongWorkProtected === true && clean(task?.packageRole) === 'implementation-owner';
 }
+function isOwnerDirectiveTask(task) {
+  return task?.ownerDirective === true;
+}
+function isRobloxPriorityDevelopment(task) {
+  return clean(task?.selectedPlatform).toUpperCase() === 'ROBLOX'
+    && clean(task?.department).toLowerCase() === 'development'
+    && clean(task?.type).toLowerCase() === 'implementation';
+}
 function isHistoricalPostReleaseMaintenance(task) {
   return task?.historicalDeploymentRecovery === true
     && clean(task?.releaseState).toLowerCase() === 'development-confirmed'
@@ -305,9 +316,22 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
   const shardUse = Object.create(null);
   for (const task of capacityRunning) shardUse[task.shard] = (shardUse[task.shard] || 0) + 1;
 
+  // Owner directives always consume eligible capacity before protected/autonomous lanes.
+  for (const ownerRow of candidates.filter((row) => isOwnerDirectiveTask(row.task))) {
+    if (selected.length >= freeSlots) break;
+    const conflict = conflictsWith(ownerRow.task, active);
+    if (conflict) {
+      if (!deferredConflicts.some((item) => item.task.id === ownerRow.task.id)) deferredConflicts.push(freeze({ task: ownerRow.task, reason: conflict }));
+      continue;
+    }
+    selected.push(ownerRow.task);
+    active.push(ownerRow.task);
+    shardUse[ownerRow.task.shard] = (shardUse[ownerRow.task.shard] || 0) + 1;
+  }
+
   let postReleaseFocusedSlotUsed = false;
   let postReleaseFocusedTaskId = null;
-  if (freeSlots > 0 && !capacityRunning.some(isPostReleaseFocused)) {
+  if (selected.length < freeSlots && !capacityRunning.some(isPostReleaseFocused)) {
     for (const focusedRow of candidates.filter((row) => isPostReleaseFocused(row.task))) {
       const conflict = conflictsWith(focusedRow.task, active);
       if (conflict) {
@@ -325,7 +349,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
 
   let longWorkProtectedSlotUsed = false;
   let longWorkOwnerTaskId = null;
-  if (freeSlots > 0 && !capacityRunning.some(isProtectedLongOwner)) {
+  if (selected.length < freeSlots && !capacityRunning.some(isProtectedLongOwner)) {
     for (const protectedRow of candidates.filter((row) => isProtectedLongOwner(row.task))) {
       const conflict = conflictsWith(protectedRow.task, active);
       if (conflict) {
@@ -337,6 +361,25 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
       shardUse[protectedRow.task.shard] = (shardUse[protectedRow.task.shard] || 0) + 1;
       longWorkProtectedSlotUsed = true;
       longWorkOwnerTaskId = protectedRow.task.id;
+      break;
+    }
+  }
+
+  let robloxFirstEligibleSlotUsed = false;
+  let robloxFirstEligibleTaskId = null;
+  if (selected.length < freeSlots && !capacityRunning.some(isRobloxPriorityDevelopment) && !selected.some(isRobloxPriorityDevelopment)) {
+    for (const robloxRow of candidates.filter((row) => isRobloxPriorityDevelopment(row.task))) {
+      if (selected.some((task) => task.id === robloxRow.task.id)) continue;
+      const conflict = conflictsWith(robloxRow.task, active);
+      if (conflict) {
+        if (!deferredConflicts.some((item) => item.task.id === robloxRow.task.id)) deferredConflicts.push(freeze({ task: robloxRow.task, reason: conflict }));
+        continue;
+      }
+      selected.push(robloxRow.task);
+      active.push(robloxRow.task);
+      shardUse[robloxRow.task.shard] = (shardUse[robloxRow.task.shard] || 0) + 1;
+      robloxFirstEligibleSlotUsed = true;
+      robloxFirstEligibleTaskId = robloxRow.task.id;
       break;
     }
   }
@@ -380,6 +423,8 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
     freeSlots,
     postReleaseFocusedSlotUsed,
     postReleaseFocusedTaskId,
+    robloxFirstEligibleSlotUsed,
+    robloxFirstEligibleTaskId,
     longWorkProtectedSlotUsed,
     longWorkOwnerTaskId,
     workStealingUsed: selected.some((task) => (shardUse[task.shard] || 0) > (BASE_SHARD_SLOTS[task.shard] || 1)),
@@ -493,6 +538,8 @@ export function summarizeVibeContinuousQueue(queueInput) {
     freeSlots: next.freeSlots,
     postReleaseFocusedSlotUsed: next.postReleaseFocusedSlotUsed,
     postReleaseFocusedTaskId: next.postReleaseFocusedTaskId,
+    robloxFirstEligibleSlotUsed: next.robloxFirstEligibleSlotUsed,
+    robloxFirstEligibleTaskId: next.robloxFirstEligibleTaskId,
     longWorkProtectedSlotUsed: next.longWorkProtectedSlotUsed,
     longWorkOwnerTaskId: next.longWorkOwnerTaskId,
     shardUse: next.shardUse,
