@@ -28,6 +28,8 @@ function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
 
 function tempRepo() {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-auto-plan-'));
+  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({authority:'MACHINE_EXECUTION_CONTRACT',machineSourceOfTruth:'company-learning/platform-release-roadmap.json',humanDocumentRequired:false},null,2),'utf8');
   const scripts=path.join(root,'unity-games/demo/Assets/Scripts');
   fs.mkdirSync(scripts,{recursive:true});
   fs.writeFileSync(path.join(scripts,'GameCore.cs'),'var regions = new Dictionary<string, object> { ["field-4"] = new object() };\npublic List<string> ownedWeapons;\n','utf8');
@@ -73,23 +75,6 @@ test('owner directive keeps priority while independent free slots continue refil
   assert.equal(result.tasks.every(task=>task.sourceRoot!=='unity-games/demo'),true);
 });
 
-test('DEVELOPMENT_CONFIRMED Web enters Vibe planning before homepage publication and may bootstrap a missing root',()=>{
-  const root=tempRepo();
-  const result=planVibe2AutonomousTask({
-    status:{projects:[]},
-    catalog:{games:[{id:'new-web',name:'New Web',webPath:'/web-games/new-web/',hasWebArchive:true,homepageWebPlayable:false,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
-    queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4
-  });
-  assert.equal(result.planned,true);
-  assert.equal(result.task.gameId,'new-web');
-  assert.equal(result.task.target,'web');
-  assert.equal(result.task.ownerDirective,true);
-  assert.match(result.task.goal,/WEB_BASE_IMPLEMENTATION/);
-  assert.match(result.task.goal,/SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
-  assert.ok(result.task.evidence.includes('central-policy:company-learning/platform-release-roadmap.json'));
-  assert.ok(result.task.evidence.includes('web-stage:WEB_BASE_IMPLEMENTATION'));
-});
-
 test('planner fills independent development web source roots in one pass',()=>{
   const root=tempRepo();
   const result=planVibe2AutonomousTasks({status,catalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
@@ -100,6 +85,35 @@ test('planner fills independent development web source roots in one pass',()=>{
   assert.ok(result.workloadTelemetry.plannedPackageCount>=1);
   assert.equal(result.cycleTarget.quantityTargetMet,true);
 });
+
+test('development-confirmed Web enters Vibe planning before homepage publication',()=>{
+  const root=tempRepo();
+  const hiddenRoot=path.join(root,'web-games/hidden-dev');
+  fs.mkdirSync(hiddenRoot,{recursive:true});
+  fs.writeFileSync(path.join(hiddenRoot,'index.html'),'<!doctype html><html><body><main>DEVELOPMENT_CONFIRMED ·</main><button class="action">Play</button></body></html>','utf8');
+  const result=planVibe2AutonomousTask({
+    status:{projects:[]},
+    catalog:{games:[{id:'hidden-dev',name:'Hidden Dev',webPath:'/web-games/hidden-dev/',hasWebArchive:true,homepageWebPlayable:false,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.task.gameId,'hidden-dev');
+  assert.equal(result.task.target,'web');
+  assert.equal(result.task.ownerDirective,true);
+  assert.ok(result.task.evidence.includes('central-policy:company-learning/platform-release-roadmap.json'));
+  assert.ok(result.task.evidence.includes('existing-web-assessment-required'));
+  assert.match(result.task.goal,/EXISTING_WEB_ASSESS_AND_IMPLEMENT/);
+  assert.doesNotMatch(result.task.goal,/FULL_WEB_GAME_REBUILD/);
+});
+
+test('historical baseline policy metadata remains reusable under current roadmap authority',()=>{
+  const root=tempRepo();
+  const evidence=latestDevelopmentBaselineEvidence('demo',root);
+  assert.equal(evidence.ready,true);
+  assert.equal(evidence.policySource,'company-learning/platform-release-roadmap.json');
+  assert.equal(evidence.historicalPolicyDocument,'COMPANY_FLOW.md');
+});
+
 
 test('release-confirmed web archive is never an autonomous feature target',()=>{
   const root=tempRepo();
@@ -185,7 +199,7 @@ test('active source root is skipped while another project can be planned',()=>{
   assert.equal(result.tasks.some(t=>t.gameId==='dev-web'),true);
 });
 
-test('development web without TODO uses deterministic diagnostics as task feeder',()=>{
+test('development web is assessed before deterministic diagnostics',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
   fs.mkdirSync(webRoot,{recursive:true});
@@ -197,22 +211,23 @@ test('development web without TODO uses deterministic diagnostics as task feeder
   });
   assert.equal(result.planned,true);
   assert.equal(result.task.gameId,'diag-web');
-  assert.match(result.task.id,/diagnostic-bundle/);
+  assert.equal(result.task.id,'diag-web-existing-web-assessment-v1');
   assert.deepEqual([...result.task.responsibleFiles],['web-games/diag-web/index.html']);
-  assert.equal(result.task.evidence.includes('diagnostic:MISSING_VIEWPORT'),true);
-  assert.equal(result.task.packageWorkUnits>=3,true);
-  assert.equal(result.task.completionCriteria.includes('full-core-regression-once-at-fan-in'),true);
-  assert.equal(result.task.evidence.includes('repair-mode:RULE_PATCH'),true);
+  assert.equal(result.task.evidence.includes('existing-web-assessment-required'),true);
+  assert.equal(result.task.evidence.includes('strategy-decision:EXPLORATION'),true);
+  assert.equal(result.task.ownerDirective,true);
 });
 
-test('planner groups real disjoint related candidates into one work package',()=>{
+test('planner groups disjoint post-assessment candidates into one work package',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/dev-web');
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Dev</title></head><body><button>Play</button></body></html>\n','utf8');
+  fs.writeFileSync(path.join(webRoot,'extra.js'),'// TODO: harden secondary UI path\n','utf8');
+  const assessed={id:'dev-web-existing-web-assessment-v1',gameId:'dev-web',target:'web',sourceRoot:'web-games/dev-web',status:'done',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
     catalog:{games:[{id:'dev-web',webPath:'/web-games/dev-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]},
-    queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4
+    queue:{tasks:[assessed]},repoRoot:root,maxConcurrentTasks:4
   });
   assert.equal(result.planned,true);
   assert.equal(result.packages.length,1);
@@ -222,18 +237,19 @@ test('planner groups real disjoint related candidates into one work package',()=
   assert.equal(responsible[0].some(file=>responsible[1].includes(file)),false);
 });
 
-test('completed diagnostic package is never recreated after completion',()=>{
+test('completed diagnostic package is never recreated after assessment and completion',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Diag</title></head><body><button>Play</button></body></html>','utf8');
   const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
-  const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
+  const assessed={id:'diag-web-existing-web-assessment-v1',gameId:'diag-web',target:'web',sourceRoot:'web-games/diag-web',status:'done',goal:'assessment complete',evidence:['existing-web-assessment-required']};
+  const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[assessed]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
   const firstKeys=first.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
   assert.equal(firstKeys.length>0,true);
   const done={...first.task,status:'done',result:'PASS'};
-  const second=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
+  const second=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[assessed,done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){
     assert.notEqual(second.task.id,first.task.id);
     const secondKeys=second.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
@@ -258,4 +274,38 @@ test('completed Unity package is never recreated after completion and tiny seed 
   }else{
     assert.equal(['NO_SAFE_AUTONOMOUS_TASK','NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK'].includes(second.reason),true);
   }
+});
+
+
+test('creative rebuild receives verified multi-project transformative recombination context',()=>{
+  const root=tempRepo();
+  const webRoot=path.join(root,'web-games','dev-web');
+  fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><body>STATUS: 준비<button data-action="start">검증 루프</button></body></html>','utf8');
+  const recombinationMemory={
+    version:1,
+    recipes:[{
+      id:'recombine-demo',
+      sourceProjects:['block-blast','commercial-game'],
+      featureBlend:['board-grid-placement','short-session','touch-input'],
+      transformationOperator:'change-core-goal',
+      authority:'transformative-recombination-context-only',
+      assetStrategy:{newAssetRequired:true,outputMustBeNewExpression:true,rawPixelReuseAllowed:false},
+      codeStrategy:{newImplementationRequired:true,verbatimSourceReuseAllowed:false}
+    }]
+  };
+  const result=planVibe2AutonomousTask({
+    status:{projects:[]},
+    catalog:{games:[{id:'dev-web',name:'Dev Web',webPath:'/web-games/dev-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]},
+    queue:{tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:4,
+    recombinationMemory
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.task.gameId,'dev-web');
+  assert.match(result.task.goal,/TRANSFORMATIVE_RECOMBINATION_CONTEXT/);
+  assert.match(result.task.goal,/new code\/asset expression|새 코드\/새 에셋 표현/i);
+  assert.equal(result.task.evidence.includes('recombination-recipe:recombine-demo'),true);
+  assert.equal(result.task.evidence.includes('recombination-copy-mode:NO'),true);
+  assert.equal(result.task.evidence.includes('recombination-original-modifier-required:YES'),true);
 });
