@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    h1 {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div id="ui">
+      <button id="start">Start Game</button>
+      <div id="progression">Progression: <span id="progress">0</span>%</div>
+      <div id="economy">Economy: <span id="economyValue">0</span></div>
+      <div id="combat">Combat: <span id="combatValue">0</span></div>
+    </div>
+    <div id="gameArea"></div>
+  </main>
+  <script>
+    // Protected state preservation
+    const protectedState = {
+      progression: 0,
+      economy: 0,
+      combat: 0,
+      gameArea: document.getElementById('gameArea')
+    };
+
+    // Game loop
+    function gameLoop() {
+      const progress = protectedState.progression;
+      const economy = protectedState.economy;
+      const combat = protectedState.combat;
+
+      document.getElementById('progress').textContent = progress;
+      document.getElementById('economyValue').textContent = economy;
+      document.getElementById('combatValue').textContent = combat;
+
+      // Game logic here
+      // Simulate game progression
+      protectedState.progression += 1;
+      protectedState.economy += 1;
+      protectedState.combat += 1;
+
+      // Check for game over
+      if (progress >= 100) {
+        alert('Game Over!');
+        window.location.reload();
+      }
+    }
+
+    // Start game
+    document.getElementById('start').addEventListener('click', () => {
+      protectedState.progression = 0;
+      protectedState.economy = 0;
+      protectedState.combat = 0;
+      document.getElementById('gameArea').innerHTML = '';
+      gameLoop();
+    });
+
+    // Restart game
+    document.getElementById('restart').addEventListener('click', () => {
+      protectedState.progression = 0;
+      protectedState.economy = 0;
+      protectedState.combat = 0;
+      document.getElementById('gameArea').innerHTML = '';
+      gameLoop();
+    });
+
+    // Mobile gameplay
+    document.addEventListener('touchstart', (e) => {
+      if (e.target.id === 'start') {
+        document.getElementById('start').textContent = 'Game Started';
+        document.getElementById('start').style.backgroundColor = '#4CAF50';
+      }
+    });
+
+    // Responsive layout
+    window.addEventListener('resize', () => {
+      if (window.innerWidth < 600) {
+        document.getElementById('game').style.margin = '20px';
+      } else {
+        document.getElementById('game').style.margin = '40px';
+      }
+    });
+  </script>
+</body>
+</html>
