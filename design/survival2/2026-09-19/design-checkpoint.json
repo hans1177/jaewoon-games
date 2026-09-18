@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -61,19 +63,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "신규 계절 업데이트",
-          "newGameplay": "새로운 계절인 '혹한기'를 추가하여 빙결 상태 이상과 얼음 지형을 도입하고, 이에 대응하는 화염 속성 스킬군을 추가합니다.",
-          "systemImpact": "기존 계절 생태계 시스템에 새로운 환경 변수를 추가하여, 기존 빌드들의 효율성을 재평가하고 새로운 전략적 조합을 유도합니다."
+          "milestone": "계절별 생태계 및 혹한기 환경 업데이트",
+          "newGameplay": "혹한기 계절 도입으로 빙결 상태 이상과 얼음 지형을 추가하며, 이에 대응하는 화염 속성 스킬군과 체온 유지 메커니즘을 새롭게 구현하여 생존 전략을 다변화합니다.",
+          "systemImpact": "기존 환경 제어 시스템에 계절 변수 로직을 확장하여, 기존 빌드들의 효율성을 재평가하고 환경 변화에 따른 새로운 전략적 조합을 강제하여 메타의 고착화를 방지합니다."
         },
         {
-          "milestone": "동료 캐릭터 확장",
-          "newGameplay": "고유한 액티브 스킬을 가진 신규 동료 캐릭터 3종을 추가하여 협력 플레이의 다양성을 대폭 강화합니다.",
-          "systemImpact": "동료 시너지 스킬 시스템의 조합 경우의 수를 늘려, 플레이어들이 더 다양한 빌드를 실험하고 최적의 조합을 찾도록 유도합니다."
+          "milestone": "협력형 동료 캐릭터 및 시너지 시스템 확장",
+          "newGameplay": "고유한 액티브 스킬을 가진 신규 동료 캐릭터 3종을 추가하고, 동료와 플레이어 간의 스킬 연계가 가능한 콤보 시스템을 도입하여 협력 플레이의 깊이를 더합니다.",
+          "systemImpact": "기존 동료 시너지 스킬 시스템의 조합 경우의 수를 대폭 늘려, 플레이어들이 더 다양한 빌드를 실험하고 최적의 조합을 찾도록 유도하며 전투 밸런스 로직을 재조정합니다."
         },
         {
-          "milestone": "거점 방어 모드",
-          "newGameplay": "기존 생존 모드와 달리 고정된 거점을 지키는 디펜스 형태의 신규 모드를 추가하여 새로운 목표를 제공합니다.",
-          "systemImpact": "실시간 전투 시스템의 적 스폰 로직을 수정하여, 이동 중심의 전투에서 거점 방어 중심의 전략적 배치 전투로 시스템을 확장합니다."
+          "milestone": "거점 방어 모드 및 전략적 배치 시스템",
+          "newGameplay": "기존 생존 모드와 달리 고정된 거점을 지키는 디펜스 형태의 신규 모드를 추가하여, 거점 강화 시설 설치 및 방어 타워 배치와 같은 새로운 목표를 제공합니다.",
+          "systemImpact": "실시간 전투 시스템의 적 스폰 로직을 수정하여, 이동 중심의 전투에서 거점 방어 중심의 전략적 배치 전투로 시스템을 확장하고 방어 시설 데이터 관리 로직을 추가합니다."
         }
       ],
       "failureRetryRisk": {
@@ -110,28 +112,28 @@
       "multiplayerMode": "COOP",
       "multiplayerExpansionDecision": "협력 플레이를 기본으로 하되, 향후 경쟁 모드나 길드 시스템을 추가하여 커뮤니티 요소를 강화할 계획입니다.",
       "technicalAssumptions": [
-        "로블록스 엔진의 서버-클라이언트 동기화 모델을 사용하여 다인 협력 플레이 시 지연 시간을 최소화합니다.",
-        "데이터스토어 서비스를 활용하여 플레이어의 영구적인 성장 데이터와 거점 정보를 안전하게 저장합니다."
+        "로블록스 엔진의 서버-클라이언트 동기화 모델을 사용하여 다인 협력 플레이 시 지연 시간을 최소화하고 상태 일관성을 유지합니다.",
+        "데이터스토어 서비스를 활용하여 플레이어의 영구적인 성장 데이터와 거점 정보를 안전하게 저장하고 로드하는 비동기 처리 구조를 가정합니다."
       ],
       "validationQuestions": [
-        "플레이어들이 계절 변화에 따른 전략적 선택의 차이를 명확하게 인지하고 즐기는가?",
-        "협력 플레이 시 동료와의 스킬 연계가 충분한 재미와 성취감을 제공하는가?"
+        "플레이어들이 계절 변화에 따른 전략적 선택의 차이를 명확하게 인지하고, 혹한기 환경에서 생존을 위해 빌드를 변경하는지 확인하는가?",
+        "협력 플레이 시 동료와의 스킬 연계가 충분한 재미와 성취감을 제공하며, 전투 효율성 지표가 유의미하게 상승하는지 검증하는가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "계절 생태계 시스템",
-          "responsibleSystem": "책임 시스템: 환경 제어 시스템",
-          "validationEvidence": "테스트 세션에서 계절별로 플레이어의 빌드 선택이 통계적으로 유의미하게 변화하는지 데이터를 수집하여 검증합니다."
+          "designElement": "계절 생태계 및 환경 제어 시스템",
+          "responsibleSystem": "환경 제어 및 상태 이상 관리 시스템",
+          "validationEvidence": "테스트 세션에서 계절별로 플레이어의 빌드 선택이 통계적으로 유의미하게 변화하는지 데이터를 수집하고, 환경 데미지 로직이 의도대로 작동하는지 로그를 분석하여 검증합니다."
         },
         {
-          "designElement": "동료 시너지 스킬",
-          "responsibleSystem": "책임 시스템: 전투 로직 시스템",
-          "validationEvidence": "협력 플레이 테스트를 통해 스킬 연계 발동 빈도와 그에 따른 적 처치 효율을 측정하여 시스템의 효과를 검증합니다."
+          "designElement": "동료 시너지 스킬 및 연계 로직",
+          "responsibleSystem": "전투 로직 및 캐릭터 스킬 시스템",
+          "validationEvidence": "협력 플레이 테스트를 통해 스킬 연계 발동 빈도와 그에 따른 적 처치 효율을 측정하고, 연계 스킬의 쿨타임과 데미지 배율이 밸런스 범위 내에 있는지 확인하여 검증합니다."
         },
         {
-          "designElement": "모바일 터치 UI",
-          "responsibleSystem": "책임 시스템: UX/UI 시스템",
-          "validationEvidence": "사용성 테스트를 통해 플레이어들이 조작에 어려움을 느끼지 않고 30분 세션을 완주하는지 확인하여 검증합니다."
+          "designElement": "거점 방어 모드 및 시설 배치 UI",
+          "responsibleSystem": "UX/UI 시스템 및 거점 방어 로직",
+          "validationEvidence": "사용성 테스트를 통해 플레이어들이 거점 방어 모드의 조작법을 5분 이내에 습득하는지 확인하고, 방어 시설 설치 시의 반응 속도와 UI 가독성을 측정하여 검증합니다."
         }
       ],
       "openQuestions": [
@@ -229,6 +231,110 @@
           "source": "STAGE_GATE_SCORING_V2"
         }
       ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "계절별 생태계 및 혹한기 환경 업데이트",
+          "newGameplay": "혹한기 계절 도입으로 빙결 상태 이상과 얼음 지형을 추가하며, 이에 대응하는 화염 속성 스킬군과 체온 유지 메커니즘을 새롭게 구현하여 생존 전략을 다변화합니다.",
+          "systemImpact": "기존 환경 제어 시스템에 계절 변수 로직을 확장하여, 기존 빌드들의 효율성을 재평가하고 환경 변화에 따른 새로운 전략적 조합을 강제하여 메타의 고착화를 방지합니다."
+        },
+        {
+          "milestone": "협력형 동료 캐릭터 및 시너지 시스템 확장",
+          "newGameplay": "고유한 액티브 스킬을 가진 신규 동료 캐릭터 3종을 추가하고, 동료와 플레이어 간의 스킬 연계가 가능한 콤보 시스템을 도입하여 협력 플레이의 깊이를 더합니다.",
+          "systemImpact": "기존 동료 시너지 스킬 시스템의 조합 경우의 수를 대폭 늘려, 플레이어들이 더 다양한 빌드를 실험하고 최적의 조합을 찾도록 유도하며 전투 밸런스 로직을 재조정합니다."
+        },
+        {
+          "milestone": "거점 방어 모드 및 전략적 배치 시스템",
+          "newGameplay": "기존 생존 모드와 달리 고정된 거점을 지키는 디펜스 형태의 신규 모드를 추가하여, 거점 강화 시설 설치 및 방어 타워 배치와 같은 새로운 목표를 제공합니다.",
+          "systemImpact": "실시간 전투 시스템의 적 스폰 로직을 수정하여, 이동 중심의 전투에서 거점 방어 중심의 전략적 배치 전투로 시스템을 확장하고 방어 시설 데이터 관리 로직을 추가합니다."
+        }
+      ],
+      "technicalAssumptions": [
+        "로블록스 엔진의 서버-클라이언트 동기화 모델을 사용하여 다인 협력 플레이 시 지연 시간을 최소화하고 상태 일관성을 유지합니다.",
+        "데이터스토어 서비스를 활용하여 플레이어의 영구적인 성장 데이터와 거점 정보를 안전하게 저장하고 로드하는 비동기 처리 구조를 가정합니다."
+      ],
+      "validationQuestions": [
+        "플레이어들이 계절 변화에 따른 전략적 선택의 차이를 명확하게 인지하고, 혹한기 환경에서 생존을 위해 빌드를 변경하는지 확인하는가?",
+        "협력 플레이 시 동료와의 스킬 연계가 충분한 재미와 성취감을 제공하며, 전투 효율성 지표가 유의미하게 상승하는지 검증하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "계절 생태계 및 환경 제어 시스템",
+          "responsibleSystem": "환경 제어 및 상태 이상 관리 시스템",
+          "validationEvidence": "테스트 세션에서 계절별로 플레이어의 빌드 선택이 통계적으로 유의미하게 변화하는지 데이터를 수집하고, 환경 데미지 로직이 의도대로 작동하는지 로그를 분석하여 검증합니다."
+        },
+        {
+          "designElement": "동료 시너지 스킬 및 연계 로직",
+          "responsibleSystem": "전투 로직 및 캐릭터 스킬 시스템",
+          "validationEvidence": "협력 플레이 테스트를 통해 스킬 연계 발동 빈도와 그에 따른 적 처치 효율을 측정하고, 연계 스킬의 쿨타임과 데미지 배율이 밸런스 범위 내에 있는지 확인하여 검증합니다."
+        },
+        {
+          "designElement": "거점 방어 모드 및 시설 배치 UI",
+          "responsibleSystem": "UX/UI 시스템 및 거점 방어 로직",
+          "validationEvidence": "사용성 테스트를 통해 플레이어들이 거점 방어 모드의 조작법을 5분 이내에 습득하는지 확인하고, 방어 시설 설치 시의 반응 속도와 UI 가독성을 측정하여 검증합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
@@ -336,28 +442,28 @@
       "updatedAt": "2026-09-18T19:44:03.350Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 6,
-      "successes": 1,
+      "calls": 7,
+      "successes": 2,
       "failures": 5,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 563387,
-      "lastMs": 139183,
+      "totalMs": 571323,
+      "lastMs": 7936,
       "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=3501",
-      "updatedAt": "2026-09-18T19:57:38.891Z"
+      "updatedAt": "2026-09-18T19:57:46.832Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T19:43:00.151Z",
-  "updatedAt": "2026-09-18T19:57:38.896Z",
-  "failedPhase": null,
-  "lastError": null,
-  "lastSuccessfulModelCallAt": "2026-09-18T19:57:38.891Z",
+  "updatedAt": "2026-09-18T19:57:46.853Z",
+  "failedPhase": "five_lead_reviews",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite",
+  "lastSuccessfulModelCallAt": "2026-09-18T19:57:46.832Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedTask": null
+  "failedTask": "development"
 }
