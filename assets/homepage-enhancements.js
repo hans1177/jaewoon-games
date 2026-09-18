@@ -59,10 +59,12 @@ const progressState=row=>String(runtimeInfo(row).status||'진행상태 미평가
 const updatedAt=row=>runtimeInfo(row).updatedAt||null;
 const selectedPlatform=row=>runtimeInfo(row).platform||productionOf(row).selectedPlatform||row?.selectedPlatform||'';
 const activeLifecycle=row=>['ACTIVE','REBUILD'].includes(String(lifecycleOf(row).state||row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase());
-const classState=row=>{const mode=String(row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
+const classState=row=>{const mode=String(homepageOf(row).displayMode||row?.homepageDisplayMode||'').toUpperCase();if(mode==='ROBLOX_HISTORICAL_DEPLOYMENT')return'Roblox 배포 기록';if(mode==='WEB_PUBLISHED')return'웹게임';const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
 const productionClassOf=row=>String(runtimeInfo(row).productionClass||productionOf(row).class||row?.productionClass||'DESIGN_ONLY').toUpperCase();
 const displayEligible=row=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClassOf(row));
 const catalogMap=catalog=>new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[gameIdOf(game),game]));
+const catalogOrderOf=row=>{const raw=canonicalOf(row).catalogOrder??row?.catalogOrder;const n=Number(raw);return Number.isFinite(n)&&n>0?n:Number.MAX_SAFE_INTEGER;};
+const catalogOrderCompare=(a,b)=>catalogOrderOf(a)-catalogOrderOf(b)||gameIdOf(a).localeCompare(gameIdOf(b));
 
 function latestVerifiedUnityBuilds(status){
   const map=new Map();
@@ -93,7 +95,7 @@ function releaseRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
     .filter(game=>activeLifecycle(game)&&productionClassOf(game)==='RELEASE_CONFIRMED')
     .map(game=>bindVerifiedUnityBuild(game,status))
-    .sort((a,b)=>(Date.parse(updatedAt(b)||'')||0)-(Date.parse(updatedAt(a)||'')||0)||gameIdOf(a).localeCompare(gameIdOf(b)));
+    .sort(catalogOrderCompare);
 }
 function developmentRows(catalog,status){
   return (Array.isArray(catalog?.games)?catalog.games:[])
@@ -106,7 +108,7 @@ function developmentRows(catalog,status){
         if(sb.score===null)return-1;
         if(sb.score!==sa.score)return sb.score-sa.score;
       }
-      return (Date.parse(updatedAt(b)||'')||0)-(Date.parse(updatedAt(a)||'')||0)||gameIdOf(a).localeCompare(gameIdOf(b));
+      return catalogOrderCompare(a,b);
     });
 }
 function webPublishedRows(catalog){
@@ -129,10 +131,7 @@ function verifiedRobloxDeploymentRows(catalog){
       return /^[1-9][0-9]*$/.test(placeId)&&target?.verified===true&&target?.historical===true&&evidence?.historicalPublicationTargetVerified===true;
     })
     .map(game=>({...game,homepageDisplayMode:'ROBLOX_HISTORICAL_DEPLOYMENT'}))
-    .sort((a,b)=>{
-      const pa=publicationOf(a).roblox||{},pb=publicationOf(b).roblox||{};
-      return (Date.parse(pa.observedAt||a?.robloxPublicationTarget?.observedAt||'')||0)-(Date.parse(pb.observedAt||b?.robloxPublicationTarget?.observedAt||'')||0);
-    });
+    .sort(catalogOrderCompare);
 }
 function homepageRows(catalog,status,testManifest={}){
   const byId=catalogMap(catalog);
@@ -240,7 +239,7 @@ function buildDevelopmentPipeline(catalog,status,testManifest={}){
   const development=games.filter(game=>productionClassOf(game)==='DEVELOPMENT_CONFIRMED');
   const released=games.filter(game=>productionClassOf(game)==='RELEASE_CONFIRMED');
   const validated=Array.isArray(testManifest?.candidates)?testManifest.candidates.filter(row=>Number(row?.strictScore??row?.reviewScore??row?.totalScore??row?.score)>=80):[];
-  const focus=[...released,...development,...webReady].sort((a,b)=>(Date.parse(updatedAt(b)||'')||0)-(Date.parse(updatedAt(a)||'')||0))[0]||null;
+  const focus=[...released,...development,...webReady].sort((a,b)=>classRank(a)-classRank(b)||catalogOrderCompare(a,b))[0]||null;
   const runnerCount=Number(status?.postReleaseFocusedDevelopment?.runningCount??status?.postReleaseFocusRunner?.runningCount??0);
   const runnerActive=Number.isFinite(runnerCount)&&runnerCount>0;
   if(focus){
