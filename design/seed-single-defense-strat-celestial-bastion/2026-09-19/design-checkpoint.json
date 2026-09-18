@@ -3,9 +3,9 @@
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "date": "2026-09-19",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-SINGLE-DEFENSE-STRAT-CELESTIAL-BASTION-20260917",
-  "fingerprint": "91c7cb0ccaf29ff7b0a10c3fb1573c1c975aa66fff1d5c1965074246757838ba",
+  "fingerprint": "dace50291c7fecce26f8ad19b9b8f4dbc0995c9efba5797d4eb8b3e5ba7cd3d7",
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
-  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "engineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
   "status": "PRE_GATE_BLOCKED",
   "completedPhases": [
     "designer_draft",
@@ -421,22 +421,22 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 16631,
-      "lastMs": 1495,
+      "totalMs": 19200,
+      "lastMs": 1216,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:10:12.681Z"
+      "updatedAt": "2026-09-18T15:43:18.109Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T15:09:56.042Z",
-  "updatedAt": "2026-09-18T15:18:52.968Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T15:10:12.681Z",
+  "updatedAt": "2026-09-18T15:43:18.112Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:43:18.109Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
@@ -444,5 +444,15 @@
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=78 hard=CRITICAL_AXIS_MINIMUM_FAIL"
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=78 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "checkpointMigration": {
+    "fromContractVersion": 3,
+    "toContractVersion": 3,
+    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
+    "previousEngineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+    "preservedPhaseCount": 6,
+    "preservedTaskCount": 0,
+    "migratedAt": "2026-09-18T15:43:15.528Z"
+  },
+  "preGateRepairGeneration": 1
 }
