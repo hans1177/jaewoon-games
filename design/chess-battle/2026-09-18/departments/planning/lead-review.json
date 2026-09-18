@@ -1,0 +1,30 @@
+{
+  "version": 5,
+  "gameId": "chess-battle",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "gemini-3.5-flash-lite",
+  "actualLeadModel": "gemini-3.5-flash-lite",
+  "reviewMode": "DIRECT_LEAD_ONLY",
+  "review": {
+    "keep": [
+      "체스의 공간 읽기와 말별 전투 능력을 결합한 전술 배틀 코어 루프를 유지한다."
+    ],
+    "fix": [
+      "제한된 턴 내 스테이지 실패 시 즉시 재배치와 힌트 제공 흐름을 구체화하라."
+    ],
+    "add": [
+      "초보 플레이어의 진입 장벽을 낮추기 위한 단계별 튜토리얼 단계를 추가하라."
+    ],
+    "risks": [
+      "턴 수 제한으로 인한 높은 긴장감이 신규 유저의 이탈을 유발할 위험이 있다."
+    ],
+    "evidence": [
+      "글로벌 퍼즐 및 액션 장르의 높은 세션 유지율 데이터를 바탕으로 한 스테이지 설계를 적용한다."
+    ],
+    "questions": [
+      "비동기식 멀티플레이 확장 시 턴 타이머 길이를 어떻게 최적화할 것인가?"
+    ]
+  }
+}

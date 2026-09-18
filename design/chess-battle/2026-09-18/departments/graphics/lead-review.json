@@ -1,0 +1,30 @@
+{
+  "version": 5,
+  "gameId": "chess-battle",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemini-3.1-flash-lite",
+  "actualLeadModel": "gemini-3.1-flash-lite",
+  "reviewMode": "DIRECT_LEAD_ONLY",
+  "review": {
+    "keep": [
+      "로우폴리곤 스타일의 체스 말과 화려한 타격 이펙트의 대비를 통한 시각적 명확성 확보"
+    ],
+    "fix": [
+      "모바일 환경을 고려하여 유닛 이동 경로 하이라이트 시 색각 이상자를 위한 패턴 오버레이를 기본 적용"
+    ],
+    "add": [
+      "전장 상황 변화를 즉각 인지할 수 있도록 유닛 상태(공격/피격/스킬)에 따른 실시간 애니메이션 피드백 시스템 추가"
+    ],
+    "risks": [
+      "로우폴리곤 스타일과 화려한 이펙트가 혼재될 경우 전장 가독성이 저하될 가능성"
+    ],
+    "evidence": [
+      "Royal Match 등 성공적인 퍼즐 게임의 직관적인 UI/UX 및 시각적 피드백 구조 참조"
+    ],
+    "questions": [
+      "로블록스 환경에서 60프레임 유지를 위한 이펙트 셰이더 최적화 가이드라인이 수립되었는가?"
+    ]
+  }
+}

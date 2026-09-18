@@ -1,0 +1,30 @@
+{
+  "version": 5,
+  "gameId": "chess-battle",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "gemini-3.6-flash",
+  "actualLeadModel": "gemini-3.6-flash",
+  "reviewMode": "DIRECT_LEAD_ONLY",
+  "review": {
+    "keep": [
+      "체스 기보 기반 이동과 특수 스킬 간 체계적인 연동 설계 및 3분 이내의 짧은 세션 타겟팅 방향성을 유지함."
+    ],
+    "fix": [
+      "터치 오작동 방지를 위한 확인 탭 단계가 3분 단위 빠른 템포의 전술 액션을 저해하므로 즉시 이동 옵션을 추가할 것."
+    ],
+    "add": [
+      "클라이언트 예측 이동 시 서버 validation 실패로 인한 유닛 위치 동기화 오차 검증 자동화 테스트 케이스 추가 필요."
+    ],
+    "risks": [
+      "엄격한 턴 제한으로 인해 기교적인 수싸움 대신 특정 스킬 조합에만 의존하는 일차원적 플레이 스타일 고착화 위험."
+    ],
+    "evidence": [
+      "ChessBoardController 검증 항목을 통해 허용되지 않은 이동 패턴 차단을 실시간 단위 테스트로 입증 가능함."
+    ],
+    "questions": [
+      "반복 패배 시 제공되는 임시 버프 시스템이 스테이지 본연의 퍼즐 난이도 밸런스를 훼손하지 않는가?"
+    ]
+  }
+}

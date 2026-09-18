@@ -1,0 +1,33 @@
+{
+  "version": 5,
+  "gameId": "chess-battle",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "development",
+  "representativeModel": "gemini-3-flash-preview",
+  "leadModel": "gemini-3-flash-preview",
+  "actualLeadModel": "gemini-3-flash-preview",
+  "assistantModels": [],
+  "representativeAuthoredByLead": true,
+  "syntheticCompatibilityRecord": true,
+  "representative": {
+    "keep": [
+      "체스 기반의 직관적인 이동 규칙과 드래그 앤 드롭 방식의 입력 모델을 유지하여 조작 편의성을 확보함."
+    ],
+    "fix": [
+      "클라이언트 측 이동 경로 연산 결과를 서버에서 반드시 검증하도록 로직을 추가하여 데이터 변조를 방지함."
+    ],
+    "add": [
+      "턴 기반 데이터 동기화 시 패킷 손실에 대비한 시퀀스 번호 기반의 상태 복구 메커니즘을 구현함."
+    ],
+    "risks": [
+      "복잡한 스킬 이펙트와 다수의 유닛 연산이 저사양 모바일 기기에서 프레임 드랍을 유발할 가능성이 있음."
+    ],
+    "evidence": [
+      "Roblox 환경에서 3분 내외의 짧은 세션은 모바일 유저의 높은 리텐션을 유도하는 검증된 패턴임."
+    ],
+    "questions": [
+      "동시 접속자가 급증할 경우 서버 측의 유닛 위치 검증 부하를 분산하기 위한 샤딩 전략이 준비되어 있는가?"
+    ]
+  }
+}

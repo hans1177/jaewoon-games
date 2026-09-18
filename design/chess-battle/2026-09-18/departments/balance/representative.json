@@ -1,0 +1,33 @@
+{
+  "version": 5,
+  "gameId": "chess-battle",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "gemini-3.5-flash",
+  "leadModel": "gemini-3.5-flash",
+  "actualLeadModel": "gemini-3.5-flash",
+  "assistantModels": [],
+  "representativeAuthoredByLead": true,
+  "syntheticCompatibilityRecord": true,
+  "representative": {
+    "keep": [
+      "체스 고유의 이동 규칙과 턴 제한을 결합한 퍼즐식 보드 설계 및 턴 수 제한을 통한 긴장감 유지"
+    ],
+    "fix": [
+      "강화 수치에 따른 밸런스 붕괴를 막기 위해 유닛 강화 시 공격력 대신 유틸리티 및 쿨타임 감소 위주로 조정"
+    ],
+    "add": [
+      "턴당 획득하는 전술 포인트의 최대치 제한 및 유닛별 스킬 소모 비용의 차등 적용 규칙 추가"
+    ],
+    "risks": [
+      "유닛 강화로 인한 스펙 인플레이션 발생 시 체스 특유의 정교한 수싸움과 퍼즐 요소가 무력화될 위험"
+    ],
+    "evidence": [
+      "글로벌 퍼즐 세션 시간 평균 5.7분 지표에 맞춰 1개 스테이지당 최대 턴 수를 10턴 내외로 제한 설계 필요"
+    ],
+    "questions": [
+      "강화 시스템이 도입된 상태에서 무과금 플레이어가 제3장 보스 스테이지를 클리어할 수 있는 최소 스펙 기준은 무엇인가"
+    ]
+  }
+}

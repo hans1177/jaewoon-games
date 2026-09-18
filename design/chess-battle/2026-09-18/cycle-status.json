@@ -1,0 +1,370 @@
+{
+  "version": 6,
+  "date": "2026-09-18",
+  "gameId": "chess-battle",
+  "gameName": "체스 배틀",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
+    "category": "PUZZLE",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "gemini:gemini-3.5-flash-lite",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "gemini-3.5-flash-lite",
+      "graphics": "gemini-3.1-flash-lite",
+      "development": "gemini-3-flash-preview",
+      "qa": "gemini-3.6-flash",
+      "balance": "gemini-3.5-flash"
+    },
+    "resolvedLeadModels": {
+      "planning": "gemini-3.5-flash-lite",
+      "graphics": "gemini-3.1-flash-lite",
+      "development": "gemini-3-flash-preview",
+      "qa": "gemini-3.6-flash",
+      "balance": "gemini-3.5-flash"
+    },
+    "distinctLeadModels": [
+      "gemini-3.5-flash-lite",
+      "gemini-3.1-flash-lite",
+      "gemini-3-flash-preview",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash"
+    ],
+    "distinctLeadModelCount": 5,
+    "leadModelsDistinct": true,
+    "reviewModelCount": 1,
+    "modelAudit": {
+      "planning": {
+        "leadModel": "gemini-3.5-flash-lite",
+        "actualLeadModel": "gemini-3.5-flash-lite",
+        "assistantModels": [],
+        "models": [
+          "gemini-3.5-flash-lite"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      },
+      "graphics": {
+        "leadModel": "gemini-3.1-flash-lite",
+        "actualLeadModel": "gemini-3.1-flash-lite",
+        "assistantModels": [],
+        "models": [
+          "gemini-3.1-flash-lite"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      },
+      "development": {
+        "leadModel": "gemini-3-flash-preview",
+        "actualLeadModel": "gemini-3-flash-preview",
+        "assistantModels": [],
+        "models": [
+          "gemini-3-flash-preview"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      },
+      "qa": {
+        "leadModel": "gemini-3.6-flash",
+        "actualLeadModel": "gemini-3.6-flash",
+        "assistantModels": [],
+        "models": [
+          "gemini-3.6-flash"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      },
+      "balance": {
+        "leadModel": "gemini-3.5-flash",
+        "actualLeadModel": "gemini-3.5-flash",
+        "assistantModels": [],
+        "models": [
+          "gemini-3.5-flash"
+        ],
+        "count": 1,
+        "required": 1,
+        "pass": true,
+        "reviewMode": "DIRECT_LEAD_ONLY"
+      }
+    },
+    "rebuttalRounds": 0,
+    "repeatedFatalReview": false,
+    "reviewMode": "FIVE_DISTINCT_LEAD_PARALLEL_REVIEW"
+  },
+  "meeting": {
+    "required": false,
+    "crossDepartmentMeeting": false,
+    "rebuttalRounds": 0
+  },
+  "disposition": {
+    "version": 2,
+    "gameId": "chess-battle",
+    "date": "2026-09-18",
+    "state": "ACTIVE",
+    "sameDesignerRevisionAttempted": true,
+    "fiveDepartmentLeadReviewCompleted": true,
+    "repeatedFiveDepartmentReview": false,
+    "meetingRequired": false,
+    "rebuttalRounds": 0,
+    "automaticDiscardAllowed": false,
+    "discardVotes": 0,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "strictGateStillAuthoritative": true,
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 16051,
+      "deterministic_pre_gate": 2,
+      "five_lead_reviews": 80639,
+      "designer_revision": 6523
+    },
+    "phaseBudgetMs": {
+      "designer_draft": 180000,
+      "designer_draft_base": 180000,
+      "designer_draft_gate": 180000,
+      "deterministic_pre_gate": 30000,
+      "designer_pre_gate_repair_1": 180000,
+      "designer_pre_gate_repair_2": 180000,
+      "independent_department_reviews": 240000,
+      "designer_revision": 180000,
+      "designer_revision_base": 180000,
+      "designer_revision_gate": 180000,
+      "five_lead_reviews": 180000
+    },
+    "totalModelCalls": 7,
+    "totalModelCallMs": 169384,
+    "modelPhaseConcurrency": 2,
+    "phaseConcurrency": {
+      "five_lead_reviews": 2
+    },
+    "maxLoadedModelLanes": 5,
+    "modelKeepAlive": "GEMINI_API",
+    "modelHealth": {
+      "gemini:gemini-3.5-flash-lite": {
+        "calls": 3,
+        "successes": 3,
+        "failures": 0,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 23862,
+        "lastMs": 6521,
+        "lastError": null,
+        "updatedAt": "2026-09-18T07:36:32.542Z"
+      },
+      "gemini:gemini-3-flash-preview": {
+        "calls": 1,
+        "successes": 1,
+        "failures": 0,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 16109,
+        "lastMs": 16109,
+        "lastError": null,
+        "updatedAt": "2026-09-18T07:35:21.491Z"
+      },
+      "gemini:gemini-3.5-flash": {
+        "calls": 3,
+        "successes": 1,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 95300,
+        "lastMs": 59227,
+        "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+        "updatedAt": "2026-09-18T07:36:04.608Z"
+      },
+      "gemini:gemini-3.1-flash-lite": {
+        "calls": 2,
+        "successes": 1,
+        "failures": 1,
+        "timeouts": 0,
+        "jsonFailures": 1,
+        "totalMs": 69454,
+        "lastMs": 64525,
+        "lastError": "model response is not a JSON object",
+        "updatedAt": "2026-09-18T07:36:26.017Z"
+      },
+      "gemini:gemini-3.6-flash": {
+        "calls": 2,
+        "successes": 1,
+        "failures": 1,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 7410,
+        "lastMs": 5661,
+        "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+        "updatedAt": "2026-09-18T07:36:11.564Z"
+      }
+    },
+    "preGate": {
+      "attempts": 0,
+      "totalScore": 80,
+      "hardFailures": [],
+      "postRevisionScore": 80,
+      "postRevisionHardFailures": []
+    },
+    "checkpoint": {
+      "contractVersion": 2,
+      "engineDigest": "fb57cc31b517538b876d9f42ad117d843c7ec529d6d7f806549a1614a65ee57a",
+      "reused": false,
+      "completedPhases": 4,
+      "cachedTasks": 5
+    },
+    "simplifiedLeadOnlyReview": true,
+    "aiMeetingCalls": 0,
+    "rebuttalCalls": 0,
+    "representativeSynthesisCalls": 0,
+    "leadReviewCalls": 5,
+    "departmentScopedContext": true
+  },
+  "designLearning": {
+    "candidateCount": 0,
+    "usedAsDesignContext": false,
+    "positiveTrainingEligible": false,
+    "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
+    "strictGateHardFailures": [],
+    "strictGateBypassAllowed": false
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": false,
+  "vibe2LearningContextUsed": false,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "ready": false,
+    "blockers": [
+      "game-seed-field-required:REFERENCE_GAMES"
+    ],
+    "advisoryDisposition": "ACTIVE",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
+        "source": "game-seed-state.json"
+      },
+      "designMultiplayer": {
+        "required": true,
+        "mode": "SINGLE",
+        "valid": true,
+        "decisionStage": "GAME_DESIGN",
+        "allowedModes": [
+          "SINGLE",
+          "COOP",
+          "COMPETITIVE",
+          "HYBRID"
+        ]
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": true,
+        "source": "company-qa-runtime-evidence.json"
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": false,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": null
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "ROBLOX",
+        "present": false,
+        "path": null,
+        "projectField": "robloxProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "ROBLOX",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "roblox-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "multiplayerModeRequiredAtGameDesign": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresFullApprovedWebScope": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-18T07:36:39.779Z"
+  },
+  "artbookUi": {
+    "status": "WAITING",
+    "label": "대기중",
+    "path": "artbook-submissions/chess-battle/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "reason": "baseline-not-ready"
+  }
+}
