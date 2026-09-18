@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    #game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    #map {
+      width: 100%;
+      height: 400px;
+      background-color: #333;
+      border: 1px solid #555;
+      margin-bottom: 20px;
+    }
+    #status {
+      width: 100%;
+      max-width: 600px;
+      background: #222;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+    #controls {
+      width: 100%;
+      max-width: 600px;
+      background: #333;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+    #game-over {
+      width: 100%;
+      max-width: 600px;
+      background: #222;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div id="map"></div>
+    <div id="status">
+      <h2>Status</h2>
+      <p id="status-text"></p>
+    </div>
+    <div id="controls">
+      <h2>Controls</h2>
+      <p>Touch or click to move. Touch or click to attack. Touch or click to retreat.</p>
+    </div>
+    <div id="game-over">
+      <h2>Game Over</h2>
+      <p id="game-over-text"></p>
+    </div>
+  </main>
+
+  <script>
+    const map = document.getElementById('map');
+    const statusText = document.getElementById('status-text');
+    const gameOverText = document.getElementById('game-over-text');
+
+    let game = {
+      player: { x: 0, y: 0 },
+      map: {
+        width: 10,
+        height: 10,
+        cells: Array(100).fill(null).map((_, i) => ({ id: i, isOccupied: false }))
+      },
+      turn: 0,
+      winner: null
+    };
+
+    function drawMap() {
+      map.innerHTML = '';
+      for (let y = 0; y < game.map.height; y++) {
+        for (let x = 0; x < game.map.width; x++) {
+          const cell = game.map.cells[y * game.map.width + x];
+          const div = document.createElement('div');
+          div.style.width = '30px';
+          div.style.height = '30px';
+          div.style.backgroundColor = cell ? '#00ff00' : '#333';
+          div.style.border = '1px solid #555';
+          div.style.display = 'inline-block';
+          div.style.margin = '2px';
+          div.draggable = true;
+          div.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', e.target.id);
+          });
+          div.addEventListener('dragend', () => {
+            if (e.target.id) {
+              game.player.x = parseInt(e.target.id.split('')[0]);
+              game.player.y = parseInt(e.target.id.split('')[2]);
+            }
+          });
+          map.appendChild(div);
+        }
+      }
+    }
+
+    function updateStatus() {
+      statusText.textContent = `Turn: ${game.turn}`;
+    }
+
+    function checkWin() {
+      // Simple win condition for demo
+      if (game.player.x === 9 && game.player.y === 9) {
+        game.winner = 'Player';
+        return true;
+      }
+      return false;
+    }
+
+    function handleMove(dx, dy) {
+      const newX = game.player.x + dx;
+      const newY = game.player.y + dy;
+      if (newX >= 0 && newX < game.map.width && newY >= 0 && newY < game.map.height) {
+        game.player.x = newX;
+        game.player.y = newY;
+        updateStatus();
+        if (checkWin()) {
+          gameOverText.textContent = 'You win!';
+          return true;
+        }
+        return false;
+      }
+      return false;
+    }
+
+    function handleAttack() {
+      // Simple attack logic for demo
+      if (game.player.x === 9 && game.player.y === 9) {
+        game.winner = 'Computer';
+        return true;
+      }
+      return false;
+    }
+
+    function handleRetreat() {
+      // Simple retreat logic for demo
+      if (game.player.x > 0) {
+        game.player.x--;
+        updateStatus();
+        if (checkWin()) {
+          gameOverText.textContent = 'You win!';
+          return true;
+        }
+        return false;
+      }
+      return false;
+    }
+
+    function handleTouch(e) {
+      const rect = map.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const cellId = (x / 30) * 100 + (y / 30) * 10;
+      if (cellId < 100) {
+        const cell = game.map.cells[cellId];
+        if (cell && cell.isOccupied) {
+          if (x < 30 && y < 30) {
+            // Attack
+            if (handleAttack()) {
+              gameOverText.textContent = 'Computer wins!';
+            }
+          } else if (x > 30 && y < 30) {
+            // Retreat
+            if (handleRetreat()) {
+              gameOverText.textContent = 'You win!';
+            }
+          }
+        }
+      }
+    }
+
+    document.addEventListener('touchstart', handleTouch);
+    document.addEventListener('click', handleTouch);
+
+    drawMap();
+    updateStatus();
+  </script>
+</body>
+</html>
