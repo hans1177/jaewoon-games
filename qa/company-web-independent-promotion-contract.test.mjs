@@ -25,5 +25,7 @@ test('web and native share competitive quality parity and web pass is not releas
   assert.equal(directive.developmentLifecycle.webFirst.competitiveQualityParityWithNative,true);
   assert.equal(directive.developmentLifecycle.webFirst.webPassIsReleaseSignal,false);
   assert.equal(directive.developmentLifecycle.nativeSecondStage.competitiveQualityParityWithWeb,true);
-  assert.equal(directive.developmentLifecycle.releaseMaturity.singlePassInsufficient,true);
+  assert.equal(directive.developmentLifecycle.releaseMaturity.singleRuntimePassInsufficient,true);
+  assert.equal(directive.developmentLifecycle.releaseMaturity.singleScorePassInsufficient,true);
+  assert.equal(directive.developmentLifecycle.releaseMaturity.freshCompetitiveRevalidationRequired,true);
 });
