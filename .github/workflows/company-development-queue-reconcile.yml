@@ -83,7 +83,7 @@ jobs:
             }
             console.log(`DEVELOPMENT_QUEUE_INVARIANT_COUNT=${actual.length}`);
             console.log('DEVELOPMENT_QUEUE_CANONICAL_LIFECYCLE_INVARIANT=PASS');
-            NODE
+          NODE
 
             git add -- development-queue.json
             git diff --cached --check
