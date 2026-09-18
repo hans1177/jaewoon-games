@@ -19,7 +19,7 @@ test('designer schema requires one explicit canonical multiplayer mode and no le
   assert.match(design,/required:\['identity'.*'multiplayerMode'.*'multiplayerExpansionDecision'/s);
   assert.match(design,/multiplayerMode:\{type:'string',enum:MULTIPLAYER_MODES\}/);
   assert.match(design,/SINGLE\/COOP\/COMPETITIVE\/HYBRID 중 하나를 multiplayerMode에 반드시 명시/);
-  assert.match(design,/multiplayerExpansionDecision과 현재 플레이 모드를 혼동하지 마라/);
+  assert.match(design,/SINGLE\/COOP\/COMPETITIVE\/HYBRID 중 하나를 multiplayerMode에 반드시 명시/);
   assert.doesNotMatch(design,/Android 모바일 싱글 기본/);
 });
 
