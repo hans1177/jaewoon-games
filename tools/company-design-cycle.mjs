@@ -17,35 +17,23 @@ function hash(value){let h=2166136261;for(const ch of String(value)){h^=ch.codeP
 
 const directive=readJson('company-directive.json',{});
 const ai=directive.ai||{};
-const pool=uniq(clean(process.env.COMPANY_MODEL_POOL).split(',').filter(Boolean).length?clean(process.env.COMPANY_MODEL_POOL).split(','):(ai.modelPool||[]));
-const reviewModelCount=Math.max(Number(ai.minDistinctModelsPerDepartment||3),Number(ai.departmentReviewModelCount||3));
-const leadModels=Object.fromEntries(ROLES.map(role=>[role,clean(ai.departmentLeadModels?.[role])]));
-const distinctLeadModels=uniq(ROLES.map(role=>leadModels[role]));
-if(pool.length<reviewModelCount)throw new Error(`MULTIMODEL_GATE: ${pool.length}/${reviewModelCount}`);
-if(distinctLeadModels.length<ROLES.length)throw new Error(`DEPARTMENT_LEAD_GATE: ${distinctLeadModels.length}/${ROLES.length}`);
-for(const role of ROLES)if(!leadModels[role]||!pool.includes(leadModels[role]))throw new Error(`DEPARTMENT_LEAD_GATE: invalid ${role} lead`);
-function modelParameterBillions(model){const m=clean(model).match(/:(\d+(?:\.\d+)?)b(?:\b|$)/i);return m?Number(m[1]):Number.POSITIVE_INFINITY;}
-const fastAssistantPool=[...pool].sort((a,b)=>modelParameterBillions(a)-modelParameterBillions(b)||a.localeCompare(b));
-function reviewModelsFor(role){
-  const lead=leadModels[role];
-  const models=[lead];
-  for(const candidate of fastAssistantPool){
-    if(models.length>=reviewModelCount)break;
-    if(candidate&&candidate!==lead&&!models.includes(candidate))models.push(candidate);
-  }
-  if(models.length<reviewModelCount)throw new Error(`${role} review model gate failed`);
-  return models;
-}
-const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,reviewModelsFor(role)]));
-const independentReviewTasks=Object.fromEntries(ROLES.flatMap(role=>departmentReviewModels[role].map(model=>{const key=`${role}::${model}`;return[key,{role,model}];})));
-const independentReviewOrder=Object.keys(independentReviewTasks).sort((a,b)=>independentReviewTasks[a].model.localeCompare(independentReviewTasks[b].model)||independentReviewTasks[a].role.localeCompare(independentReviewTasks[b].role));
-const modelPhaseConcurrency=Math.min(4,Math.max(1,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||4)));
-const phaseConcurrency={
-  five_lead_reviews:Math.min(5,modelPhaseConcurrency)
-};
-const maxLoadedModelLanes=Math.min(2,Math.max(1,Number(process.env.COMPANY_MAX_ACTIVE_MODEL_LANES||2)));
-const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'5m');
-const modelCallTimeoutMs=Math.min(180000,Math.max(90000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||150000)));
+const geminiApiKey=clean(process.env.GEMINI_API_KEY);
+if(!geminiApiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
+const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||'gemini-3.8-flash');
+const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-2.5-pro').split(','));
+if(geminiLeadModelList.length<ROLES.length)throw new Error(`GEMINI_LEAD_MODEL_GATE: ${geminiLeadModelList.length}/${ROLES.length}`);
+const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadModelList[index]]));
+const distinctLeadModels=uniq(Object.values(leadModels));
+if(distinctLeadModels.length<ROLES.length)throw new Error(`GEMINI_DISTINCT_LEAD_GATE: ${distinctLeadModels.length}/${ROLES.length}`);
+const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,[leadModels[role]]]));
+const independentReviewTasks={};
+const independentReviewOrder=[];
+const reviewModelCount=1;
+const modelPhaseConcurrency=Math.min(5,Math.max(1,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||5)));
+const phaseConcurrency={five_lead_reviews:Math.min(5,modelPhaseConcurrency)};
+const maxLoadedModelLanes=5;
+const modelKeepAlive='GEMINI_API';
+const modelCallTimeoutMs=Math.min(120000,Math.max(30000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||90000)));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
@@ -57,32 +45,15 @@ const catalog=readJson('game-catalog.json',{games:[]});
 const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||null;
 if(catalogGame&&clean(catalogGame.productionClass)&&clean(catalogGame.productionClass)!=='DESIGN_ONLY')throw new Error(`DESIGN_ONLY_CLASS_REQUIRED: ${catalogGame.productionClass}`);
 const game={id:gameId,name:clean(catalogGame?.name||seed.gameName||gameId),description:clean(catalogGame?.description||seed.DISTINCT_IDENTITY),genre:clean(catalogGame?.genre||seed.GAME_CATEGORY),productionClass:'DESIGN_ONLY',productionTier:3,productionTarget:'DESIGN_BASELINE',webPath:catalogGame?.webPath||null,unityProjectPath:catalogGame?.unityProjectPath||null};
-const designerPolicy=ai.gameDesigner||{};
-const designerBannedModels=new Set(uniq([...(Array.isArray(ai.bannedModels)?ai.bannedModels:[]),...(Array.isArray(ai.designerBannedModels)?ai.designerBannedModels:[])]));
-const localDesignerPool=uniq([...(Array.isArray(designerPolicy.localFallbackModels)?designerPolicy.localFallbackModels:[]),...pool]).filter(model=>!designerBannedModels.has(model)&&!model.startsWith('deepseek-r1'));
-if(!localDesignerPool.length)throw new Error('GAME_DESIGNER_MODEL_POOL_EMPTY');
-const openaiApiKey=clean(process.env.OPENAI_API_KEY);
-const geminiApiKey=clean(process.env.GEMINI_API_KEY);
-const openaiDesignerModel=clean(process.env.COMPANY_DESIGNER_OPENAI_MODEL||designerPolicy.openaiModel||'gpt-5');
-const geminiDesignerModel=clean(process.env.COMPANY_DESIGNER_GEMINI_MODEL||designerPolicy.geminiModel||'gemini-3.8-flash');
-const cloudDesignerRoutes=[];
-if(designerPolicy.externalProvidersAllowed===true&&openaiApiKey)cloudDesignerRoutes.push({provider:'OPENAI',model:openaiDesignerModel,id:`openai:${openaiDesignerModel}`});
-if(designerPolicy.externalProvidersAllowed===true&&geminiApiKey)cloudDesignerRoutes.push({provider:'GEMINI',model:geminiDesignerModel,id:`gemini:${geminiDesignerModel}`});
-const localDesignerModel=localDesignerPool[hash(`${gameId}:designer-local`)%localDesignerPool.length];
-const localDesignerRoute={provider:'OLLAMA',model:localDesignerModel,id:`ollama:${localDesignerModel}`};
-const designerProviderHint=clean(process.env.COMPANY_DESIGNER_PROVIDER_HINT).toUpperCase();
-const hintedDesignerRoute=cloudDesignerRoutes.find(route=>route.provider===designerProviderHint)||null;
-const designerRoute=hintedDesignerRoute||cloudDesignerRoutes[0]||localDesignerRoute;
-const designerFailoverRoutes=uniq([designerRoute.id,...cloudDesignerRoutes.map(route=>route.id),localDesignerRoute.id]).map(id=>[...cloudDesignerRoutes,localDesignerRoute].find(route=>route.id===id)).filter(Boolean);
+const designerRoute={provider:'GEMINI',model:geminiDesignerModel,id:`gemini:${geminiDesignerModel}`};
+const designerFailoverRoutes=[designerRoute];
 let activeDesignerRoute=designerRoute;
 const designerModel=designerRoute.id;
-console.log(`GAME_DESIGNER_PROVIDER_HINT=${designerProviderHint||'NONE'}`);
-console.log(`GAME_DESIGNER_PROVIDER=${designerRoute.provider}`);
+const coordinatorModel=geminiDesignerModel;
+console.log('AI_PROVIDER=GEMINI_ONLY');
+console.log(`GAME_DESIGNER_PROVIDER=GEMINI`);
 console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
-console.log(`GAME_DESIGNER_FAILOVER_ROUTES=${designerFailoverRoutes.map(route=>route.id).join('>')}`);
-console.log(`GAME_DESIGNER_BANNED_MODELS=${[...designerBannedModels].join(',')||'NONE'}`);
-console.log(`GAME_DESIGNER_CLOUD_CONFIGURED=${cloudDesignerRoutes.length?'YES':'NO'}`);
-const coordinatorModel=pool[hash(`${gameId}:coordinator`)%pool.length];
+console.log(`GEMINI_LEAD_MODELS=${Object.entries(leadModels).map(([role,model])=>`${role}:${model}`).join(',')}`);
 const base=path.join('design',gameId,date);fs.mkdirSync(base,{recursive:true});
 const submissionBase=path.join('artbook-submissions',gameId,date);
 const factPack=readJson(path.join(submissionBase,'fact-pack.json'),{});
@@ -541,143 +512,67 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
 
 async function callModel(model,system,user,schema,{predict=1100,temperature=0.25,repairRequired=null,numCtx=8192,timeoutMs=null,maxAttempts=3}={}){
   const callStarted=Date.now();
-  const deepSeek=model.startsWith('deepseek-r1');
-  const effectiveCtx=Math.min(8192,Math.max(3072,Number(numCtx||8192)));
-  const effectiveTimeoutMs=Math.min(180000,Math.max(60000,Number(timeoutMs||modelCallTimeoutMs)));
+  const effectiveTimeoutMs=Math.min(120000,Math.max(30000,Number(timeoutMs||modelCallTimeoutMs)));
   let lastError=null;
   const attemptLimit=Math.min(3,Math.max(1,Number(maxAttempts||3)));
   for(let attempt=1;attempt<=attemptLimit;attempt++){
-    const mode=deepSeek?'json':(attempt===1?'schema':'json');
     try{
-      const schemaPrompt=(deepSeek||attempt>1)?`\nJSON_SCHEMA=${JSON.stringify(schema)}\n사고 과정이나 설명 없이 위 스키마를 만족하는 JSON 객체만 반환한다.`:'';
-      const correction=attempt>1&&lastError?`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message)}\n이 오류를 정확히 수정하고 누락된 필수 구조를 모두 포함하라.`:'';
-      const payload={model,stream:false,think:false,keep_alive:modelKeepAlive,messages:[{role:'system',content:system},{role:'user',content:user+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.'+schemaPrompt+correction}],options:{temperature:attempt===1?temperature:0,num_ctx:effectiveCtx,num_predict:deepSeek?4096:Math.min(4096,predict*attempt)}};
-      if(!deepSeek&&attempt===1)payload.format=schema;
-      else if(mode==='json')payload.format='json';
-      const response=await fetch('http://127.0.0.1:11434/api/chat',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload),signal:AbortSignal.timeout(effectiveTimeoutMs)});
-      if(!response.ok)throw new Error(`ollama ${response.status}: ${await response.text()}`);
-      const body=await response.json();const text=String(body?.message?.content??'').trim();
-      if(!text){if(clean(body?.message?.thinking))console.log(`MODEL_EMPTY_CONTENT_WITH_THINKING=${model}|attempt=${attempt}|mode=${mode}`);throw new Error(`empty model response (${mode})`);}
-      const parsed=parseJsonObject(text);const repairs=[];let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
-      if(typeof repairRequired==='function'){
-        const grounded=repairRequired(normalized);
-        if(grounded?.value)normalized=grounded.value;
-        if(Array.isArray(grounded?.repairs)&&grounded.repairs.length){
-          for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
-          console.log(`MODEL_REQUIRED_FIELD_REPAIRED=${model}|attempt=${attempt}|${grounded.repairs.map(item=>`${item.field}<-${item.source}`).join(',')}`);
-        }
-      }
-      if(repairs.length)console.log(`MODEL_SCHEMA_NORMALIZED=${model}|attempt=${attempt}|${repairs.join(',')}`);
-      assertSchemaValue(normalized,schema);
-      const elapsedMs=Date.now()-callStarted;
-      recordModelHealth(model,{success:true,elapsedMs});
-      designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
-      modelCallStats.push({model,attempt,elapsedMs,predict,mode,numCtx:effectiveCtx,timeoutMs:effectiveTimeoutMs,schemaRepairs:repairs.length});
-      persistDesignCheckpoint();
-      console.log(`MODEL_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|predict=${predict}|ctx=${effectiveCtx}|timeout=${effectiveTimeoutMs}|mode=${mode}`);
-      return normalized;
-    }catch(error){
-      lastError=error;
-      recordModelHealth(model,{success:false,elapsedMs:Date.now()-callStarted,error});
-      persistDesignCheckpoint();
-      if(attempt<attemptLimit){
-        const nextMode='json';
-        console.log(`MODEL_CALL_FALLBACK=${model}|attempt=${attempt}|next=${nextMode}|reason=${clean(error?.message)}`);
-        await new Promise(r=>setTimeout(r,800*attempt));
-      }
-    }
-  }
-  throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
-}
-
-async function callExternalDesignerModel(route,system,user,schema,{predict=1100,temperature=0.2,repairRequired=null,timeoutMs=90000}={}){
-  const callStarted=Date.now();
-  const timeout=Math.min(120000,Math.max(45000,Number(timeoutMs||90000)));
-  try{
-    let response;
-    if(route.provider==='OPENAI'){
-      response=await fetch('https://api.openai.com/v1/responses',{
-        method:'POST',
-        headers:{'content-type':'application/json','authorization':`Bearer ${openaiApiKey}`},
-        body:JSON.stringify({
-          model:route.model,
-          input:[
-            {role:'system',content:[{type:'input_text',text:system}]},
-            {role:'user',content:[{type:'input_text',text:user+'\n출력은 JSON 객체만 반환한다.'}]}
-          ],
-          max_output_tokens:Math.min(8192,Math.max(512,Number(predict||1100))),
-          text:{format:{type:'json_schema',name:'design_output',schema,strict:true}}
-        }),
-        signal:AbortSignal.timeout(timeout)
-      });
-    }else if(route.provider==='GEMINI'){
-      response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(route.model)}:generateContent?key=${encodeURIComponent(geminiApiKey)}`,{
+      const prompt=user+(attempt>1&&lastError?`\nPREVIOUS_VALIDATION_ERROR=${clean(lastError?.message)}\n오류를 수정하고 JSON 객체만 반환한다.`:'')+'\n출력은 스키마에 맞는 JSON 객체만 반환한다.';
+      const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(geminiApiKey)}`,{
         method:'POST',
         headers:{'content-type':'application/json'},
         body:JSON.stringify({
           systemInstruction:{parts:[{text:system}]},
-          contents:[{role:'user',parts:[{text:user+'\n출력은 JSON 객체만 반환한다.'}]}],
+          contents:[{role:'user',parts:[{text:prompt}]}],
           generationConfig:{
-            temperature,
+            temperature:attempt===1?temperature:0,
             maxOutputTokens:Math.min(8192,Math.max(512,Number(predict||1100))),
             responseMimeType:'application/json',
             responseJsonSchema:schema
           }
         }),
-        signal:AbortSignal.timeout(timeout)
+        signal:AbortSignal.timeout(effectiveTimeoutMs)
       });
-    }else{
-      throw new Error(`UNSUPPORTED_DESIGNER_PROVIDER ${route.provider}`);
-    }
-    if(!response.ok)throw new Error(`${route.provider.toLowerCase()} ${response.status}: ${clip(await response.text(),1200)}`);
-    const body=await response.json();
-    const raw=route.provider==='OPENAI'
-      ? clean(body.output_text)||clean((body.output||[]).flatMap(item=>item?.content||[]).map(part=>part?.text||part?.output_text||'').join(''))
-      : clean((body.candidates||[]).flatMap(candidate=>candidate?.content?.parts||[]).map(part=>part?.text||'').join(''));
-    if(!raw)throw new Error(`${route.provider}_EMPTY_DESIGNER_RESPONSE`);
-    const parsed=parseJsonObject(raw);
-    const repairs=[];
-    let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
-    if(typeof repairRequired==='function'){
-      const grounded=repairRequired(normalized);
-      if(grounded?.value)normalized=grounded.value;
-      if(Array.isArray(grounded?.repairs)&&grounded.repairs.length)for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
-    }
-    assertSchemaValue(normalized,schema);
-    const elapsedMs=Date.now()-callStarted;
-    recordModelHealth(route.id,{success:true,elapsedMs});
-    designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
-    modelCallStats.push({model:route.id,provider:route.provider,attempt:1,elapsedMs,predict,mode:'external-json-schema',timeoutMs:timeout,schemaRepairs:repairs.length});
-    persistDesignCheckpoint();
-    console.log(`DESIGNER_EXTERNAL_CALL_MS=${route.id}|${elapsedMs}|timeout=${timeout}`);
-    return normalized;
-  }catch(error){
-    const elapsedMs=Date.now()-callStarted;
-    recordModelHealth(route.id,{success:false,elapsedMs,error});
-    persistDesignCheckpoint();
-    throw new Error(`DESIGNER_EXTERNAL_CALL_FAILED ${route.id}: ${clean(error?.message||error)}`);
-  }
-}
-async function callDesignerModel(system,user,schema,options={}){
-  const ordered=[activeDesignerRoute,...designerFailoverRoutes.filter(route=>route.id!==activeDesignerRoute.id)];
-  let lastError=null;
-  for(const route of ordered){
-    try{
-      const value=route.provider==='OLLAMA'
-        ?await callModel(route.model,system,user,schema,options)
-        :await callExternalDesignerModel(route,system,user,schema,options);
-      if(activeDesignerRoute.id!==route.id)console.log(`GAME_DESIGNER_FAILOVER_ACTIVE=${activeDesignerRoute.id}->${route.id}`);
-      activeDesignerRoute=route;
-      designCheckpoint.effectiveDesignerModel=route.id;
-      designCheckpoint.effectiveDesignerProvider=route.provider;
+      if(!response.ok)throw new Error(`gemini ${response.status}: ${clip(await response.text(),1200)}`);
+      const body=await response.json();
+      const raw=clean((body.candidates||[]).flatMap(candidate=>candidate?.content?.parts||[]).map(part=>part?.text||'').join(''));
+      if(!raw)throw new Error('GEMINI_EMPTY_RESPONSE');
+      const parsed=parseJsonObject(raw);
+      const repairs=[];
+      let normalized=normalizeSchemaValue(parsed,schema,'root',repairs);
+      if(typeof repairRequired==='function'){
+        const grounded=repairRequired(normalized);
+        if(grounded?.value)normalized=grounded.value;
+        if(Array.isArray(grounded?.repairs)&&grounded.repairs.length)for(const item of grounded.repairs)repairs.push(`grounded-required:${item.field}:${item.source}`);
+      }
+      assertSchemaValue(normalized,schema);
+      const elapsedMs=Date.now()-callStarted;
+      recordModelHealth(`gemini:${model}`,{success:true,elapsedMs});
+      designCheckpoint.lastSuccessfulModelCallAt=new Date().toISOString();
+      modelCallStats.push({model:`gemini:${model}`,provider:'GEMINI',attempt,elapsedMs,predict,mode:'gemini-json-schema',timeoutMs:effectiveTimeoutMs,schemaRepairs:repairs.length});
       persistDesignCheckpoint();
-      return value;
+      console.log(`GEMINI_CALL_MS=${model}|${elapsedMs}|attempt=${attempt}|timeout=${effectiveTimeoutMs}`);
+      return normalized;
     }catch(error){
       lastError=error;
-      console.log(`GAME_DESIGNER_ROUTE_FAILED=${route.id}|reason=${clean(error?.message||error)}`);
+      recordModelHealth(`gemini:${model}`,{success:false,elapsedMs:Date.now()-callStarted,error});
+      persistDesignCheckpoint();
+      if(attempt<attemptLimit)await new Promise(r=>setTimeout(r,600*attempt));
     }
   }
-  throw new Error(`GAME_DESIGNER_ALL_ROUTES_FAILED: ${clean(lastError?.message||lastError)}`);
+  throw new Error(`GEMINI_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
+}
+
+async function callExternalDesignerModel(route,system,user,schema,options={}){
+  if(route.provider!=='GEMINI')throw new Error(`GEMINI_ONLY_PROVIDER_REQUIRED ${route.provider}`);
+  return callModel(route.model,system,user,schema,options);
+}
+async function callDesignerModel(system,user,schema,options={}){
+  const value=await callExternalDesignerModel(designerRoute,system,user,schema,options);
+  designCheckpoint.effectiveDesignerModel=designerRoute.id;
+  designCheckpoint.effectiveDesignerProvider='GEMINI';
+  persistDesignCheckpoint();
+  return value;
 }
 
 async function generateDesignerDraft(){
@@ -884,7 +779,7 @@ writeJson(path.join(base,'cycle-status.json'),{
     strictGateHardFailures:strictDesignerFeedback.hardFailures,strictGateBypassAllowed:false
   },
   artbook:{created:false,reason:'DESIGN_BASELINE_GATE_MUST_RUN_FIRST'},
-  vibe2Used:false,vibe2LearningContextUsed:designLearningEvents.length>0,paidApi:false
+  vibe2Used:false,vibe2LearningContextUsed:designLearningEvents.length>0,paidApi:true
 });
 designCheckpoint.status='COMPLETE';
 designCheckpoint.currentPhase='COMPLETE';
@@ -913,4 +808,4 @@ console.log('DESIGN_ONLY_VIBE2_USED=NO');
 console.log(`DESIGN_LEARNING_CONTEXT_CANDIDATES=${designLearningEvents.length}`);
 console.log(`DESIGN_ONLY_VIBE2_LEARNING_CONTEXT=${designLearningEvents.length>0?'YES':'NO'}`);
 console.log('DESIGN_LEARNING_POSITIVE_TRAINING_ELIGIBLE=NO_UNTIL_VALIDATED_RUNTIME');
-console.log('PAID_API=NO');
+console.log('PAID_API=GEMINI');
