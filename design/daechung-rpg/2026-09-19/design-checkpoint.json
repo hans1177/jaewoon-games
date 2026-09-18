@@ -1,0 +1,250 @@
+{
+  "contractVersion": 3,
+  "gameId": "daechung-rpg",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ALL-DESIGN-RESET-DAECHUNG-RPG-20260917",
+  "fingerprint": "2709aacc5afa86fc8e94fae1b6d3b848b60653a7fe34477bb6581e17b5f5787e",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "대충 RPG는 단순한 탭 입력과 실시간 로그 기반의 전투 및 탐험을 결합하여, 모바일 환경에서 짧은 시간 동안 깊이 있는 캐릭터 성장의 재미를 느끼게 하는 방패 없는 모바일 RPG입니다. coreLoop는 짤막한 전투 세션과 자원 회수를 반복하며, signatureSystems인 자동 탐험 경로 선택과 장비 합성 시스템을 통해 플레이어에게 매 순간 의미 있는 선택과 상태 변화를 선사합니다.",
+      "playerFantasy": "플레이어는 전설적인 모험가가 되어 복잡한 조작 없이도 터치 한 번으로 위험한 던전을 돌파하고, 획득한 전리품으로 최강의 장비를 맞춰나가는 성취감을 경험합니다.",
+      "coreFun": "짧은 세션 동안 자원을 소모하여 장비를 강화하고 즉시 다음 탐험에 돌입하여 캐릭터의 능력치 상승과 새로운 지역 해금이라는 명확하고 관찰 가능한 상태 변화를 반복적으로 체감하는 재미입니다.",
+      "coreLoop": [
+        "시작 즉시 간단한 원터치로 탐험 지역과 전투 경로를 선택하고 캐릭터를 출발시킵니다.",
+        "실시간으로 진행되는 전투의 결과를 관찰하며 획득한 골드와 장비 재료를 수집합니다.",
+        "탐험 종료 후 즉시 장비를 업그레이드하고 다음 지역으로 진입할 위험과 보상을 저울질합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "자동 탐험 경로 선택",
+          "purpose": "플레이어가 복잡한 이동 조작 없이도 매번 다른 위험도와 보상을 가진 탐험지를 전략적으로 선택하도록 유도합니다.",
+          "playerChoice": "안전한 단기 보상 경로와 위험하지만 높은 등급의 전리품을 주는 장기 탐험 경로 중 하나를 선택합니다."
+        },
+        {
+          "name": "원클릭 장비 합성",
+          "purpose": "획득한 수많은 하위 장비를 빠르고 직관적으로 상위 장비로 전환하여 성장 체감을 극대화합니다.",
+          "playerChoice": "현재 보유한 재화를 소모하여 어떤 장비 부위를 먼저 강화하고 합성할지 결정합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "자동 탐험 경로 선택",
+          "toSystem": "원클릭 장비 합성",
+          "trigger": "탐험 완료 및 전리품 획득",
+          "stateChange": "합성 가능한 재료 수량이 증가하고 장비 업그레이드 가능 상태로 전환됩니다."
+        },
+        {
+          "fromSystem": "원클릭 장비 합성",
+          "toSystem": "자동 탐험 경로 선택",
+          "trigger": "장비 업그레이드 완료에 따른 전투력 상승",
+          "stateChange": "이전에 도전 불가능했던 상위 난이도 탐험 지역의 잠금이 해제됩니다."
+        },
+        {
+          "fromSystem": "자동 탐험 경로 선택",
+          "toSystem": "실패 및 재시도 시스템",
+          "trigger": "고난도 탐험 중 캐릭터 사망 또는 체력 고갈",
+          "stateChange": "획득한 자원의 일부가 손실되고 안전한 지역으로 강제 복귀하여 재정비가 시작됩니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 초반 5분간 기본 조작을 익히고, 15분 내에 첫 번째 장비 합성 시스템을 해금하며, 30분 시점에는 중급 던전 돌파와 새로운 탐험 지역 확장을 경험하도록 설계되었습니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "탐험을 통한 골드 및 재료 수집 -> 장비 합성 및 강화 -> 상위 던전 해금 및 더 많은 보상 획득의 선순환 구조입니다.",
+        "resourceFlow": "골드와 장비 파편은 탐험에서만 수급되며, 강화와 합성에 전량 소모되어 인플레이션을 방지합니다.",
+        "balanceRules": "상위 지역으로 갈수록 실패 확률이 높아지므로, 플레이어는 주기적으로 장비를 강화하거나 안전한 지역을 파밍해야 합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "중급 던전 지역 확장 업데이트",
+          "newGameplay": "새로운 속성을 가진 몬스터와 특수 자원이 등장하는 얼어붙은 설원 지역을 탐험할 수 있습니다.",
+          "systemImpact": "기존 장비 합성 시스템에 빙결 저항 속성 부위가 추가되어 새로운 조합 전략이 요구됩니다."
+        },
+        {
+          "milestone": "길드 및 협동 레이드 시스템 도입",
+          "newGameplay": "다른 플레이어들과 함께 거대한 보스 몬스터를 공략하고 주간 보상을 획득하는 모드가 열립니다.",
+          "systemImpact": "개인 중심의 자원 수급 루프가 협동을 통한 대규모 보상 획득 루프로 확장됩니다."
+        },
+        {
+          "milestone": "무한의 탑 챌린지 모드 추가",
+          "newGameplay": "매층마다 제한된 조건 속에서 연속으로 전투를 치르는 고난도 도전 콘텐츠입니다.",
+          "systemImpact": "단순 파밍을 넘어 극한의 장비 세팅과 스킬 조합을 시험하는 엔드게임 시스템으로 작용합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "고난도 던전 탐험 중 전투 패배 및 체력 소실",
+          "제한 시간 내에 목표 웨이브 클리어 실패"
+        ],
+        "retryFlow": "실패 즉시 로비로 귀환하며, 소모된 시간과 일부 자원을 제외하고 즉시 재도전 버튼을 통해 다음 탐험을 시작할 수 있습니다.",
+        "riskPressure": "고난도 지역에 도전할수록 실패 시 손실되는 자원과 시간적 비용이 증가하여 신중한 선택을 압박합니다.",
+        "recoveryRules": "연속 실패 시 일시적인 능력치 버프나 안전 지역 보상 증가 효과를 제공하여 플레이어의 이탈을 방지합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 화면에 최적화된 원터치 및 스와이프 인터페이스로, 한 손으로도 모든 탐험과 장비 합성이 가능합니다.",
+        "performanceBudget": "저사양 모바일 기기에서도 60프레임 유지 및 30MB 이하의 리소스 로딩 속도를 보장합니다.",
+        "sessionConstraints": "한 번의 탐험 세션은 3분에서 5분 내외로 구성되어 언제 어디서나 끊김 없이 즐길 수 있습니다."
+      },
+      "visualDirection": "직관적이고 깔끔한 2D 캐주얼 판타지풍 그래픽을 사용하여, 복잡한 정보 없이도 캐릭터의 상태와 장비 변화를 한눈에 파악할 수 있도록 구성합니다.",
+      "mobileUx": "엄지손가락 동선 내에 핵심 액션 버튼을 배치하고, 전투 결과와 보상 획득 연출을 직관적인 텍스트와 사운드로 즉시 피드백합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 체력, 골드 보유량, 그리고 진행 중인 탐험의 남은 시간을 화면 상단에 가장 크고 명확하게 배치합니다.",
+        "touchAndInput": "모든 버튼의 터치 영역을 최소 48dp 이상으로 설정하여 오입력을 방지하고 쾌적한 조작을 지원합니다.",
+        "readability": "모바일 화면에서 텍스트가 잘 읽히도록 충분히 큰 폰트 크기와 높은 대비의 색상을 사용합니다.",
+        "accessibility": "시각적 피드백 외에도 중요한 상태 변화에 진동 및 사운드 피드백을 동시에 제공합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "밝고 경쾌한 색감의 카툰 스타일 아이콘과 직관적인 UI 디자인을 채택하여 친근함을 줍니다.",
+        "audioIdentity": "경쾌한 루프 배경음악과 타격감 있는 효과음을 통해 전투와 보상 획득의 즐거움을 배가시킵니다.",
+        "gameplayFeedbackSync": "장비 합성 완료나 보상 획득 시 시각적 애니메이션과 오디오 효과가 0.1초 이내에 동시 출력됩니다."
+      },
+      "marketTargetDirection": "출퇴근길이나 짧은 휴식 시간에 가볍게 즐기면서도 수집과 성장의 재미를 찾는 글로벌 캐주얼 RPG 유저층을 타겟으로 합니다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후, 확장된 콘텐츠와 UI 최적화를 거쳐 스팀 플랫폼으로의 진출을 검토합니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "초기에는 싱글플레이 중심으로 완성도를 높이고, 향후 업데이트를 통해 비동기식 협동 및 경쟁 콘텐츠를 추가합니다.",
+      "technicalAssumptions": [
+        "유니티 엔진 기반으로 클라이언트 단독 실행이 가능하며 네트워크 지연 없이 오프라인에서도 기본 플레이를 지원한다.",
+        "모바일 기기의 메모리 사용량을 최소화하기 위해 리소스 에셋을 압축하고 동적 로딩 방식을 적용한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 이내에 게임의 핵심 루프와 조작 방식을 온전히 이해하고 다음 세션으로 자연스럽게 이어지는가?",
+        "장비 합성 시스템이 반복적인 파밍을 지루하지 않게 만들고 지속적인 성취감을 제공하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "자동 탐험 경로 선택 기능",
+          "responsibleSystem": "자동 탐험 경로 선택",
+          "validationEvidence": "플레이어가 탭 한 번으로 서로 다른 위험도의 경로를 선택하고 결과 화면으로 진입하는지 QA 테스트를 통해 검증한다."
+        },
+        {
+          "designElement": "원클릭 장비 합성 메커니즘",
+          "responsibleSystem": "책임 시스템: 원클릭 장비 합성",
+          "validationEvidence": "하위 재료를 소모하여 상위 등급 장비가 즉시 생성되고 전투력이 올바르게 갱신되는지 로그를 통해 확인한다."
+        },
+        {
+          "designElement": "세션 실패 및 재시도 흐름",
+          "responsibleSystem": "실패 및 재시도 시스템",
+          "validationEvidence": "전투 패배 시 즉시 로비로 복귀하여 자원 손실 상태가 반영되고 곧바로 재도전이 가능한지 시나리오 테스트를 수행한다."
+        }
+      ],
+      "openQuestions": [
+        "오프라인 방치 보상 시스템을 도입할 때 플레이어의 세션 체류 시간에 미칠 긍정적/부정적 영향은 무엇인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 11993,
+      "lastMs": 11993,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:08:34.457Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 97,
+      "lastMs": 97,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 25.28433804s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"25s\" } ] } }",
+      "updatedAt": "2026-09-18T15:08:34.746Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 156,
+      "lastMs": 156,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 25.223850266s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"25s\" } ] } }",
+      "updatedAt": "2026-09-18T15:08:34.806Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T15:08:22.461Z",
+  "updatedAt": "2026-09-18T15:08:34.807Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:08:34.457Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 25.223850266s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"25s\" } ] } }"
+}
