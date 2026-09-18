@@ -88,17 +88,53 @@ jobs:
           else if(target==='unity' && root!==`unity-games/${game}`) reason='unity-source-root-mismatch';
           else if(!['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClass)) reason='current-production-class-not-auto-deployable';
           else { decision=target; reason='candidate-authorized'; }
-          put('decision',decision); put('reason',reason); put('task_id',task); put('game_id',game);
+          put('candidate_decision',decision); put('candidate_reason',reason); put('task_id',task); put('game_id',game);
           put('target',target); put('source_root',root); put('base_sha',base); put('release_state',state); put('production_class',productionClass); put('origin',origin);
           put('request_file',target==='unity'?`.build-requests/unity/${game}.json`:'');
           NODE
 
-          decision="$(sed -n 's/^decision=//p' "$GITHUB_OUTPUT" | tail -n1)"
-          [ "$decision" = 'reject' ] && exit 0
+          decision="$(sed -n 's/^candidate_decision=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          reason="$(sed -n 's/^candidate_reason=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          if [ "$decision" = 'reject' ]; then
+            echo 'decision=reject' >> "$GITHUB_OUTPUT"
+            echo "reason=$reason" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          task_id="$(sed -n 's/^task_id=//p' "$GITHUB_OUTPUT" | tail -n1)"
           source_root="$(sed -n 's/^source_root=//p' "$GITHUB_OUTPUT" | tail -n1)"
           base_sha="$(sed -n 's/^base_sha=//p' "$GITHUB_OUTPUT" | tail -n1)"
           game_id="$(sed -n 's/^game_id=//p' "$GITHUB_OUTPUT" | tail -n1)"
           production_class="$(sed -n 's/^production_class=//p' "$GITHUB_OUTPUT" | tail -n1)"
+          candidate_origin="$(sed -n 's/^origin=//p' "$GITHUB_OUTPUT" | tail -n1)"
+
+          if [ "$candidate_origin" = 'VIBE2_NATIVE' ]; then
+            git fetch origin vibe2-unreal-core --quiet
+            git show origin/vibe2-unreal-core:.vibe2/queue.json > /tmp/vibe2-current-control-queue.json
+            control_state="$(TASK_ID="$task_id" CANDIDATE_BRANCH="$SUBMITTED_CANDIDATE_BRANCH" node <<'NODE'
+          const fs=require('fs');
+          const queue=JSON.parse(fs.readFileSync('/tmp/vibe2-current-control-queue.json','utf8'));
+          const task=(queue.tasks||[]).find(row=>String(row?.id||'').trim()===String(process.env.TASK_ID||'').trim());
+          const evidence=(task?.evidence||[]).map(value=>String(value||'').trim());
+          const blocker=String(task?.blocker||'').trim();
+          const current=Boolean(
+            task &&
+            task.status==='running' &&
+            /candidate-awaiting-qa-and-deployment|awaiting.*qa/i.test(blocker) &&
+            evidence.includes(String(process.env.CANDIDATE_BRANCH||'').trim()) &&
+            evidence.includes('package-review:all-required-roles-pass')
+          );
+          process.stdout.write(current?'CURRENT':'STALE');
+          NODE
+            )"
+            if [ "$control_state" != 'CURRENT' ]; then
+              echo 'decision=stale' >> "$GITHUB_OUTPUT"
+              echo 'reason=stale-candidate-not-current-control-winner' >> "$GITHUB_OUTPUT"
+              echo "VIBE2_CANDIDATE_RELEASE_STALE=$SUBMITTED_CANDIDATE_BRANCH"
+              exit 0
+            fi
+            echo "VIBE2_CANDIDATE_CURRENT_WINNER=$SUBMITTED_CANDIDATE_BRANCH"
+          fi
+
           reject() { echo 'decision=reject' >> "$GITHUB_OUTPUT"; echo "reason=$1" >> "$GITHUB_OUTPUT"; exit 0; }
           git cat-file -e "${base_sha}^{commit}" 2>/dev/null || reject base-main-sha-missing
           [ -z "$(git diff --name-only "$base_sha" origin/main -- "$source_root")" ] || reject source-root-changed-on-main
@@ -136,6 +172,9 @@ jobs:
           console.log(`RELEASE_DEVELOPMENT_BASELINE_GATE=${game}:PASS`);
           NODE
           fi
+
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+          echo "reason=$reason" >> "$GITHUB_OUTPUT"
 
   web-release:
     needs: inspect
