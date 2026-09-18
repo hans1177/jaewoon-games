@@ -11,7 +11,9 @@
     "designer_draft",
     "deterministic_pre_gate",
     "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1"
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
   ],
   "phases": {
     "designer_draft": {
@@ -38,22 +40,22 @@
       ],
       "systemInterconnections": [
         {
-          "fromSystem": "웨이브 관리 시스템",
-          "toSystem": "페로몬 시너지 시스템",
-          "trigger": "특정 적 유형이 포함된 웨이브가 시작될 때",
-          "stateChange": "현재 적의 속성에 맞춰 페로몬 버프의 효율과 적용 범위를 실시간으로 재계산하여 방어 난이도를 조정합니다."
+          "fromSystem": "WaveManagementSystem",
+          "toSystem": "PheromoneSynergySystem",
+          "trigger": "When a specific insect wave containing elite pheromone-sensitive units is triggered and spawns on the battlefield",
+          "stateChange": "Recalculates the active pheromone buff efficiency and area-of-effect multipliers in real-time to dynamically adjust the defense difficulty based on the incoming enemy attributes."
         },
         {
-          "fromSystem": "전투 시스템",
-          "toSystem": "진화 돌연변이 시스템",
-          "trigger": "엘리트 적을 처치하여 보상을 획득할 때",
-          "stateChange": "진화 포인트를 누적하여 플레이어가 다음 웨이브 시작 전 유닛의 돌연변이 트리를 선택할 수 있는 상태로 전환합니다."
+          "fromSystem": "CombatEvaluationSystem",
+          "toSystem": "EvolutionMutationSystem",
+          "trigger": "When an elite insect boss is successfully defeated and drops rare genetic mutation materials on the field",
+          "stateChange": "Accumulates evolution points and transitions the player's interface to allow selecting mutation tree upgrades before the next wave begins."
         },
         {
-          "fromSystem": "자원 관리 시스템",
-          "toSystem": "전투 시스템",
-          "trigger": "적 처치로 넥타 자원을 획득할 때",
-          "stateChange": "사용 가능한 자원량을 갱신하여 플레이어가 즉시 새로운 유닛을 배치하거나 기존 유닛을 강화할 수 있는 선택지를 활성화합니다."
+          "fromSystem": "ResourceManagementSystem",
+          "toSystem": "CombatEvaluationSystem",
+          "trigger": "When nectar resources are harvested from defeated insect waves or environmental resource nodes",
+          "stateChange": "Updates the available resource pool and immediately unlocks high-tier unit placement options and active skill triggers for the player."
         }
       ],
       "progressionDirection": "초반에는 기본적인 유닛 배치와 상성 이해에 집중하며, 중반부터는 진화 돌연변이를 통해 유닛의 특수 능력을 조합하는 전략적 깊이를 더합니다. 후반부에는 고난도 웨이브를 대비한 자원 최적화와 페로몬 시너지의 극대화를 통해 플레이어의 성장을 체감하게 합니다.",
@@ -64,19 +66,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "중간 보스 웨이브 도입",
-          "newGameplay": "특수 능력을 가진 보스 곤충이 등장하여 방어선을 돌파하려 시도하며, 플레이어는 집중 화력과 제어기를 사용해야 합니다.",
-          "systemImpact": "전투 시스템에 보스 패턴 인식 로직이 추가되며, 페로몬 시너지 시스템이 보스 대응을 위한 버프 집중 전략을 요구하게 됩니다."
+          "milestone": "Milestone 1: Introduction of Giant Boss Insect Waves",
+          "newGameplay": "Players must defend against massive boss insects with unique path-altering abilities and high armor, requiring precise targeting and active skill usage.",
+          "systemImpact": "Integrates boss pattern recognition into the Combat Evaluation System and forces the Pheromone Synergy System to adapt to single-target high-threat calculations."
         },
         {
-          "milestone": "환경 요소 추가",
-          "newGameplay": "전장에 늪지대나 바람 같은 환경 요소가 추가되어 유닛의 이동 속도나 공격 사거리에 영향을 미칩니다.",
-          "systemImpact": "배치 시스템에 환경 상성 로직이 통합되어, 플레이어는 지형지물을 고려한 더욱 정교한 유닛 배치를 수행해야 합니다."
+          "milestone": "Milestone 2: Dynamic Environmental Hazard Integration",
+          "newGameplay": "Introduces changing weather conditions like heavy rain or wind that slow down insect movement and reduce the attack range of projectile-based defenders.",
+          "systemImpact": "Modifies the Unit Placement System to calculate terrain-based stat penalties and forces the Resource Management System to adjust nectar generation rates based on weather."
         },
         {
-          "milestone": "무한 모드 해금",
-          "newGameplay": "끝없이 몰려오는 적을 상대로 얼마나 오래 버티는지 겨루는 모드로, 점진적으로 난이도가 상승합니다.",
-          "systemImpact": "진화 돌연변이 시스템이 무한 모드 전용의 고효율 트리로 확장되어, 장기적인 전략 수립의 재미를 극대화합니다."
+          "milestone": "Milestone 3: Endless Survival Mode and Leaderboards",
+          "newGameplay": "An endless wave mode where players face infinitely scaling insect hordes to test the absolute limits of their defense strategies and compete for high scores.",
+          "systemImpact": "Requires the Evolution Mutation System to support infinite progression tiers and forces the Wave Management System to dynamically generate procedural enemy compositions."
         }
       ],
       "failureRetryRisk": {
@@ -367,6 +369,105 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "designer_pre_gate_repair_2": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "WaveManagementSystem",
+          "toSystem": "PheromoneSynergySystem",
+          "trigger": "When a specific insect wave containing elite pheromone-sensitive units is triggered and spawns on the battlefield",
+          "stateChange": "Recalculates the active pheromone buff efficiency and area-of-effect multipliers in real-time to dynamically adjust the defense difficulty based on the incoming enemy attributes."
+        },
+        {
+          "fromSystem": "CombatEvaluationSystem",
+          "toSystem": "EvolutionMutationSystem",
+          "trigger": "When an elite insect boss is successfully defeated and drops rare genetic mutation materials on the field",
+          "stateChange": "Accumulates evolution points and transitions the player's interface to allow selecting mutation tree upgrades before the next wave begins."
+        },
+        {
+          "fromSystem": "ResourceManagementSystem",
+          "toSystem": "CombatEvaluationSystem",
+          "trigger": "When nectar resources are harvested from defeated insect waves or environmental resource nodes",
+          "stateChange": "Updates the available resource pool and immediately unlocks high-tier unit placement options and active skill triggers for the player."
+        }
+      ],
+      "contentExpansionPlan": [
+        {
+          "milestone": "Milestone 1: Introduction of Giant Boss Insect Waves",
+          "newGameplay": "Players must defend against massive boss insects with unique path-altering abilities and high armor, requiring precise targeting and active skill usage.",
+          "systemImpact": "Integrates boss pattern recognition into the Combat Evaluation System and forces the Pheromone Synergy System to adapt to single-target high-threat calculations."
+        },
+        {
+          "milestone": "Milestone 2: Dynamic Environmental Hazard Integration",
+          "newGameplay": "Introduces changing weather conditions like heavy rain or wind that slow down insect movement and reduce the attack range of projectile-based defenders.",
+          "systemImpact": "Modifies the Unit Placement System to calculate terrain-based stat penalties and forces the Resource Management System to adjust nectar generation rates based on weather."
+        },
+        {
+          "milestone": "Milestone 3: Endless Survival Mode and Leaderboards",
+          "newGameplay": "An endless wave mode where players face infinitely scaling insect hordes to test the absolute limits of their defense strategies and compete for high scores.",
+          "systemImpact": "Requires the Evolution Mutation System to support infinite progression tiers and forces the Wave Management System to dynamically generate procedural enemy compositions."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_2": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
   "tasks": {},
@@ -416,15 +517,15 @@
       "updatedAt": "2026-09-18T21:24:57.415Z"
     },
     "gemini:gemini-3.5-flash": {
-      "calls": 21,
-      "successes": 0,
+      "calls": 22,
+      "successes": 1,
       "failures": 21,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 54810,
-      "lastMs": 700,
+      "totalMs": 83333,
+      "lastMs": 28523,
       "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 31.967398591s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"31s\" } ] } }",
-      "updatedAt": "2026-09-18T21:20:28.053Z"
+      "updatedAt": "2026-09-18T21:25:18.217Z"
     },
     "gemini:gemini-3.1-pro-preview": {
       "calls": 43,
@@ -483,16 +584,16 @@
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T19:28:23.413Z",
-  "updatedAt": "2026-09-18T21:24:57.415Z",
-  "failedPhase": null,
-  "lastError": null,
-  "lastSuccessfulModelCallAt": "2026-09-18T21:13:06.614Z",
+  "updatedAt": "2026-09-18T21:25:18.246Z",
+  "failedPhase": "five_lead_reviews",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite",
+  "lastSuccessfulModelCallAt": "2026-09-18T21:25:18.217Z",
   "geminiModelResolution": {
-    "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
+    "gemini-3.5-flash-lite": "gemini-3.5-flash"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedTask": null
+  "failedTask": "development"
 }
