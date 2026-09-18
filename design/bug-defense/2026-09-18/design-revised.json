@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 6,
   "gameId": "bug-defense",
   "date": "2026-09-18",
   "productionClass": "DESIGN_ONLY",
@@ -7,144 +7,141 @@
   "tier": 3,
   "gameSeedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
   "authorRole": "GAME_DESIGNER_AI",
-  "authorModel": "llama3.2:1b",
+  "authorModel": "gemini:gemini-3.8-flash",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 1,
-  "unresolvedConflictCount": 0,
-  "heldCount": 0,
+  "reviewMode": "FIVE_LEAD_DIRECT_NO_MEETING",
   "status": "DESIGN_BASELINE_CANDIDATE",
+  "postRevisionPreGate": {
+    "totalScore": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": []
+  },
   "content": {
-    "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.",
-    "playerFantasy": "스키마에 맞는 JSON 객체만 반환한다. 게임의 특징",
-    "coreFun": "game의 core fun",
+    "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계된 싱글 플레이 전략 디펜스.",
+    "playerFantasy": "플레이어는 정원의 수호자이자 전략가로서 밀려오는 다양한 곤충 군단에 맞서 식물과 곤충 유닛을 배치하여 방어선을 구축하는 판타지를 경험한다.",
+    "coreFun": "적의 웨이브 패턴을 읽고 상성에 맞는 타워를 배치 및 업그레이드하여 웨이브를 방어하는 전술적 재미와 자원 관리의 성취감.",
     "coreLoop": [
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
+      "밀려오는 곤충 웨이브의 진입 경로와 위협 패턴을 파악한다.",
+      "제한된 자원을 소모하여 가장 효과적인 상성 디펜스 유닛을 배치하거나 업그레이드한다.",
+      "웨이브를 방어하고 획득한 보상으로 다음 방어를 위한 전략적 결정을 내린다."
     ],
     "signatureSystems": [
       {
-        "name": "game의 core fun",
-        "purpose": "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-        "playerChoice": "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
+        "name": "상성 기반 방어 유닛 배치",
+        "purpose": "특정 곤충 적에게 강한 유닛을 배치하여 전략적 깊이를 제공.",
+        "playerChoice": "어떤 타이밍에 어떤 특성의 유닛을 어느 위치에 배치할 것인가."
       },
       {
-        "name": "game의 core fun",
-        "purpose": "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-        "playerChoice": "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
-      },
-      {
-        "name": "game의 core fun",
-        "purpose": "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-        "playerChoice": "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
+        "name": "자원 및 경제 순환 시스템",
+        "purpose": "웨이브 클리어 보상과 유닛 유지비를 통해 지속적인 경제적 선택 유도.",
+        "playerChoice": "자원을 즉시 유닛 강화에 쓸 것인지, 자원 생산 시설에 투자할 것인가."
       }
-    ],
-    "progressionDirection": "플레이 모드",
-    "visualDirection": "플레이 모드",
-    "mobileUx": "COOP",
-    "marketTargetDirection": "MULTIPLAYER",
-    "steamExpansionDecision": "MULTIPLAYER",
-    "multiplayerMode": "COOP",
-    "multiplayerExpansionDecision": "MULTIPLAYER",
-    "technicalAssumptions": [
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
-    ],
-    "validationQuestions": [
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
-    ],
-    "openQuestions": [
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프",
-      "game의 core fun을 반복하고, 첫 성장에 대한 목표를 이해하고, 첫 세션의 조작을 시작하는 핵심 루프"
     ],
     "systemInterconnections": [
       {
-        "fromSystem": "game",
-        "toSystem": "game",
-        "trigger": "game.start",
-        "stateChange": "game.start"
+        "fromSystem": "Wave Management System",
+        "toSystem": "Combat Logic Engine",
+        "trigger": "Enemy wave spawn event",
+        "stateChange": "Injects specific insect type attributes and pathing data into the combat engine to initialize target acquisition logic."
       },
       {
-        "fromSystem": "game",
-        "toSystem": "game",
-        "trigger": "game.end",
-        "stateChange": "game.end"
+        "fromSystem": "Combat Logic Engine",
+        "toSystem": "Economy System",
+        "trigger": "Enemy unit destruction",
+        "stateChange": "Triggers resource reward calculation based on enemy difficulty tier and updates player gold balance."
       },
       {
-        "fromSystem": "game",
-        "toSystem": "game",
-        "trigger": "game.update",
-        "stateChange": "game.update"
+        "fromSystem": "Economy System",
+        "toSystem": "Defender Upgrade System",
+        "trigger": "Player initiates unit upgrade",
+        "stateChange": "Deducts currency and modifies the specific defender's damage multiplier or attack range parameters."
       }
     ],
+    "progressionDirection": "총 30개의 웨이브 동안 단계적으로 새로운 적 병종과 특수 환경이 도입되며, 플레이어는 해금되는 유닛과 업그레이드를 통해 방어 전략을 확장한다.",
     "progressionEconomyBalance": {
-      "progressionLoop": "game.progressionLoop",
-      "resourceFlow": "game.resourceFlow",
-      "balanceRules": "game.balanceRules"
+      "progressionLoop": "적 처치 및 웨이브 클리어 -> 골드 획득 -> 유닛 해금 및 강화 -> 고난도 웨이브 돌파",
+      "resourceFlow": "초기 기본 자원으로 시작해 적 처치 시 고정 골드 획득, 웨이브 종료 시 보너스 골드 지급",
+      "balanceRules": "유닛의 배치 비용과 업그레이드 비용은 지수 함수적으로 증가하며, 적의 체력과 공격력은 웨이브에 비례하여 상승"
     },
     "contentExpansionPlan": [
       {
-        "milestone": "game.milestone",
-        "newGameplay": "game.newGameplay",
-        "systemImpact": "game.systemImpact"
+        "milestone": "Wave 10: Aerial Invasion",
+        "newGameplay": "Introduction of flying insect swarms that ignore ground-based pathing obstacles.",
+        "systemImpact": "Forces the Combat Logic Engine to prioritize anti-air targeting logic and requires players to diversify defender placement."
       },
       {
-        "milestone": "game.milestone",
-        "newGameplay": "game.newGameplay",
-        "systemImpact": "game.systemImpact"
+        "milestone": "Wave 20: Environmental Hazard",
+        "newGameplay": "Introduction of toxic terrain patches that damage defenders placed within them.",
+        "systemImpact": "Updates the Placement Validation System to include terrain-type checks and restricts optimal defender positioning."
       },
       {
-        "milestone": "game.milestone",
-        "newGameplay": "game.newGameplay",
-        "systemImpact": "game.systemImpact"
+        "milestone": "Wave 30: Hive Queen Boss",
+        "newGameplay": "Boss unit with high health and ability to spawn minor minions.",
+        "systemImpact": "Requires the Wave Management System to handle multi-stage boss health bars and dynamic minion spawning logic."
       }
     ],
     "failureRetryRisk": {
       "failureStates": [
-        "game.failureState1",
-        "game.failureState2"
+        "기지 체력이 0에 도달",
+        "제한 시간 내 보스 처치 실패"
       ],
-      "retryFlow": "game.retryFlow",
-      "riskPressure": "game.riskPressure",
-      "recoveryRules": "game.recoveryRules"
+      "retryFlow": "게임 오버 화면 출력 후 해당 웨이브의 시작 시점으로 즉시 재시도 또는 메인 메뉴로 복귀",
+      "riskPressure": "웨이브가 진행될수록 적의 러시 속도가 빨라져 실시간 판단 실수 시 치명타 발생",
+      "recoveryRules": "패배 시 일부 자원을 보존하여 리빌딩 기회 제공"
     },
     "platformFitPlan": {
-      "targetPlatform": "ROBLOX",
-      "inputModel": "game.inputModel",
-      "performanceBudget": "game.performanceBudget",
-      "sessionConstraints": "game.sessionConstraints"
+      "targetPlatform": "UNITY",
+      "inputModel": "모바일 터치 및 마우스 클릭 기반의 직관적인 드래그 앤 드롭 배치",
+      "performanceBudget": "모바일 저사양 기기에서 60프레임 유지, 폴리곤 수 최소화 및 최적화된 이펙트 사용",
+      "sessionConstraints": "한 판당 평균 30분 내외의 플레이 타임 보장"
     },
+    "visualDirection": "아기자기하면서도 디테일한 2D/3D 하이브리드 탑뷰 스타일로 곤충과 식물의 특징을 직관적으로 표현",
+    "mobileUx": "엄지손가락 조작 영역 내에 주요 유닛 배치 및 스킬 버튼을 배치하여 한 손 플레이 지원",
     "uxAccessibilityPlan": {
-      "hudPriorities": "game.hudPriorities",
-      "touchAndInput": "game.touchAndInput",
-      "readability": "game.readability",
-      "accessibility": "game.accessibility"
+      "hudPriorities": "기지 체력, 현재 골드, 웨이브 진행도를 화면 상단에 고정하여 가독성 극대화",
+      "touchAndInput": "오터치 방지를 위한 충분한 터치 히트박스 확보",
+      "readability": "적의 종류와 상성 관계를 아이콘과 색상으로 명확히 구분",
+      "accessibility": "색약 모드 지원 및 UI 폰트 크기 조절 옵션 제공"
     },
     "artAudioDirection": {
-      "visualIdentity": "game.visualIdentity",
-      "audioIdentity": "game.audioIdentity",
-      "gameplayFeedbackSync": "game.gameplayFeedbackSync"
+      "visualIdentity": "생동감 있는 자연 환경과 개성 있는 곤충 캐릭터 디자인",
+      "audioIdentity": "자연을 연상시키는 경쾌한 배경음악과 타격감 있는 효과음",
+      "gameplayFeedbackSync": "유닛 공격 및 적 피격 시 즉각적인 시청각 피드백 제공"
     },
+    "marketTargetDirection": "글로벌 전략 디펜스 및 캐주얼 코어 게이머층 타겟팅",
+    "steamExpansionDecision": "모바일 버전 안정화 이후 PC 스팀 플랫폼으로의 확장 검토",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "향후 협동(COOP) 모드 추가 가능성 검토",
+    "technicalAssumptions": [
+      "Unity DOTS (Data-Oriented Technology Stack) will be used to handle large swarms of insect entities efficiently.",
+      "The game state will be serialized to JSON for save/load functionality and cloud synchronization.",
+      "Input handling will utilize a raycast-based system to map screen touches to grid coordinates in the game world.",
+      "Asset bundles will be used to manage memory for different insect species and environment themes."
+    ],
+    "validationQuestions": [
+      "Does the interaction between insect types and defender counters provide a clear, readable strategic feedback loop for the player?",
+      "Can the system maintain a stable 60 FPS when 50+ insect entities are active on screen simultaneously?",
+      "Is the resource economy balanced such that players are forced to make meaningful choices between upgrading existing units vs. building new ones?"
+    ],
     "implementationTraceability": [
       {
-        "designElement": "game.designElement",
-        "responsibleSystem": "game.responsibleSystem",
-        "validationEvidence": "game.validationEvidence"
+        "designElement": "Insect-Defender Type Counterplay",
+        "responsibleSystem": "Combat Logic Engine",
+        "validationEvidence": "Unit tests verifying that 'Fire-Ant' defenders deal 2x damage to 'Leaf-Cutter' enemies while 'Water-Beetle' defenders deal 0.5x damage."
       },
       {
-        "designElement": "game.designElement",
-        "responsibleSystem": "game.responsibleSystem",
-        "validationEvidence": "game.validationEvidence"
+        "designElement": "Dynamic Wave Difficulty Scaling",
+        "responsibleSystem": "Wave Management System",
+        "validationEvidence": "Integration tests confirming that enemy spawn rates and health pools increase linearly with wave progression index."
       },
       {
-        "designElement": "game.designElement",
-        "responsibleSystem": "game.responsibleSystem",
-        "validationEvidence": "game.validationEvidence"
+        "designElement": "Grid-Based Placement Logic",
+        "responsibleSystem": "Placement Validation System",
+        "validationEvidence": "Functional tests ensuring defenders cannot be placed on occupied tiles or invalid terrain types."
       }
+    ],
+    "openQuestions": [
+      "특수 스킬 쿨타임 시스템을 도입하여 액션성을 더 강화할 것인가?"
     ]
   }
 }

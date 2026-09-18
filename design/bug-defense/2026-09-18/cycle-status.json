@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "date": "2026-09-18",
   "gameId": "bug-defense",
   "gameName": "곤충 디펜스",
@@ -17,7 +17,7 @@
   },
   "designer": {
     "role": "GAME_DESIGNER_AI",
-    "model": "llama3.2:1b",
+    "model": "gemini:gemini-3.8-flash",
     "singleAuthor": true,
     "sameModelRevised": true
   },
@@ -31,259 +31,275 @@
       "balance"
     ],
     "leadModels": {
-      "planning": "qwen3:0.6b",
-      "graphics": "gemma3:1b",
-      "development": "llama3.2:1b",
-      "qa": "qwen2.5:1.5b",
-      "balance": "smollm2:1.7b"
+      "planning": "gemini-3.8-flash",
+      "graphics": "gemini-3.7-flash",
+      "development": "gemini-3.6-flash",
+      "qa": "gemini-3.5-flash",
+      "balance": "gemini-3.5-flash-lite"
     },
     "distinctLeadModels": [
-      "qwen3:0.6b",
-      "gemma3:1b",
-      "llama3.2:1b",
-      "qwen2.5:1.5b",
-      "smollm2:1.7b"
+      "gemini-3.8-flash",
+      "gemini-3.7-flash",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-3.5-flash-lite"
     ],
     "distinctLeadModelCount": 5,
     "leadModelsDistinct": true,
-    "reviewModelCount": 3,
+    "reviewModelCount": 1,
     "modelAudit": {
       "planning": {
-        "leadModel": "qwen3:0.6b",
-        "assistantModels": [
-          "gemma3:1b",
-          "llama3.2:1b"
-        ],
+        "leadModel": "gemini-3.8-flash",
+        "assistantModels": [],
         "models": [
-          "qwen3:0.6b",
-          "gemma3:1b",
-          "llama3.2:1b"
+          "gemini-3.8-flash"
         ],
-        "count": 3,
-        "required": 3,
+        "count": 1,
+        "required": 1,
         "pass": true,
-        "representativeModel": "qwen3:0.6b",
-        "representativeAuthoredByLead": true,
-        "rebuttalModel": "qwen3:0.6b",
-        "rebuttalAuthoredByLead": true
+        "reviewMode": "DIRECT_LEAD_ONLY"
       },
       "graphics": {
-        "leadModel": "gemma3:1b",
-        "assistantModels": [
-          "qwen3:0.6b",
-          "llama3.2:1b"
-        ],
+        "leadModel": "gemini-3.7-flash",
+        "assistantModels": [],
         "models": [
-          "gemma3:1b",
-          "qwen3:0.6b",
-          "llama3.2:1b"
+          "gemini-3.7-flash"
         ],
-        "count": 3,
-        "required": 3,
+        "count": 1,
+        "required": 1,
         "pass": true,
-        "representativeModel": "gemma3:1b",
-        "representativeAuthoredByLead": true,
-        "rebuttalModel": "gemma3:1b",
-        "rebuttalAuthoredByLead": true
+        "reviewMode": "DIRECT_LEAD_ONLY"
       },
       "development": {
-        "leadModel": "llama3.2:1b",
-        "assistantModels": [
-          "qwen3:0.6b",
-          "gemma3:1b"
-        ],
+        "leadModel": "gemini-3.6-flash",
+        "assistantModels": [],
         "models": [
-          "llama3.2:1b",
-          "qwen3:0.6b",
-          "gemma3:1b"
+          "gemini-3.6-flash"
         ],
-        "count": 3,
-        "required": 3,
+        "count": 1,
+        "required": 1,
         "pass": true,
-        "representativeModel": "llama3.2:1b",
-        "representativeAuthoredByLead": true,
-        "rebuttalModel": "llama3.2:1b",
-        "rebuttalAuthoredByLead": true
+        "reviewMode": "DIRECT_LEAD_ONLY"
       },
       "qa": {
-        "leadModel": "qwen2.5:1.5b",
-        "assistantModels": [
-          "qwen3:0.6b",
-          "gemma3:1b"
-        ],
+        "leadModel": "gemini-3.5-flash",
+        "assistantModels": [],
         "models": [
-          "qwen2.5:1.5b",
-          "qwen3:0.6b",
-          "gemma3:1b"
+          "gemini-3.5-flash"
         ],
-        "count": 3,
-        "required": 3,
+        "count": 1,
+        "required": 1,
         "pass": true,
-        "representativeModel": "qwen2.5:1.5b",
-        "representativeAuthoredByLead": true,
-        "rebuttalModel": "qwen2.5:1.5b",
-        "rebuttalAuthoredByLead": true
+        "reviewMode": "DIRECT_LEAD_ONLY"
       },
       "balance": {
-        "leadModel": "smollm2:1.7b",
-        "assistantModels": [
-          "qwen3:0.6b",
-          "gemma3:1b"
-        ],
+        "leadModel": "gemini-3.5-flash-lite",
+        "assistantModels": [],
         "models": [
-          "smollm2:1.7b",
-          "qwen3:0.6b",
-          "gemma3:1b"
+          "gemini-3.5-flash-lite"
         ],
-        "count": 3,
-        "required": 3,
+        "count": 1,
+        "required": 1,
         "pass": true,
-        "representativeModel": "smollm2:1.7b",
-        "representativeAuthoredByLead": true,
-        "rebuttalModel": "smollm2:1.7b",
-        "rebuttalAuthoredByLead": true
+        "reviewMode": "DIRECT_LEAD_ONLY"
       }
     },
-    "rebuttalRounds": 1,
-    "rebuttalAuthoredByDepartmentLeads": true,
-    "repeatedFatalReview": true
+    "rebuttalRounds": 0,
+    "repeatedFatalReview": false,
+    "reviewMode": "FIVE_DISTINCT_LEAD_PARALLEL_REVIEW"
   },
   "meeting": {
-    "consensusCount": 1,
-    "conflictCount": 0,
-    "holdCount": 0,
-    "coordinatorModel": "qwen3:0.6b"
+    "required": false,
+    "crossDepartmentMeeting": false,
+    "rebuttalRounds": 0
   },
   "disposition": {
-    "version": 1,
+    "version": 2,
     "gameId": "bug-defense",
     "date": "2026-09-18",
-    "state": "REDESIGN",
+    "state": "ACTIVE",
     "sameDesignerRevisionAttempted": true,
-    "repeatedFiveDepartmentReview": true,
-    "allFiveLeadModelsReviewed": true,
-    "discardVotes": 1,
+    "fiveDepartmentLeadReviewCompleted": true,
+    "repeatedFiveDepartmentReview": false,
+    "meetingRequired": false,
+    "rebuttalRounds": 0,
+    "automaticDiscardAllowed": false,
+    "discardVotes": 0,
     "commonFatalCriteria": [],
     "unanimousFatalDiscard": false,
-    "fatalReviews": {
-      "planning": {
-        "recommendedState": "ACTIVE",
-        "fatalCriteria": [],
-        "evidence": [
-          "OWN의 유지보수 목표는 게임의 핵심 콘텐츠와 핵심 루프를 반복하고, 다른 부서의 의견을 수용/반박/수정함. 게임의 핵심 재미를 유지하고, 첫 세션 조작을 시작하는 핵심 루프를 개선합니다. 또한, game.seedId를 추가하여 특정 게임의 환경을 명확히 합니다.",
-          "MARKET_EVIDENCE_SUMMARY",
-          "game.seedId를 추가하여 특정 게임의 환경을 명확히 합니다."
-        ],
-        "reason": "게임의 핵심 콘텐츠와 핵심 루프를 반복적으로 개선하며, 핵심 루프를 반복적으로 개선합니다. 게임의 핵심 콘텐츠와 learning process를 반영합니다."
-      },
-      "graphics": {
-        "recommendedState": "DISCARD",
-        "fatalCriteria": [
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
-        ],
-        "evidence": [],
-        "reason": "수정 설계를 다시 검토한 후, 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 DISCARD를 선택해야 합니다. 이 경우, 핵심 콘텐츠의 반복적인 개선과 핵심 루프의 조작을 위한 핵심 기능의 유지보수를 위해 게임의 핵심 콘텐츠를 반복적으로 개선하고, 핵심 루프를 반복적으로 개선해야 합니다. 핵심 루프를 반복적으로 개선하는 과정에서 핵심 콘텐츠의 반복적인 개선을 통해 게임의 핵심 재미를 유지해야 합니다."
-      },
-      "development": {
-        "recommendedState": "REDESIGN",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "game-seed-market-evidence.json",
-          "game-seed-platform-profiles.json",
-          "ESA Power of Play 2025 Global Report",
-          "Kingdom Rush"
-        ],
-        "reason": "game.seedId를 추가하여 특정 게임의 환경을 명확히 하기ため"
-      },
-      "qa": {
-        "recommendedState": "REDESIGN",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "The seed seedId is OWNER-FULL-REBUILD-BUG-DEFENSE-20260916, which indicates a full rebuild and rollback reference implementation. This seed should not be used as the base for the implementation."
-        ],
-        "reason": "The current seed is a full rebuild and rollback reference implementation, which should not be used as the base for the implementation. The seed contains the core fun, core loop, and learning process, which are essential for the game's design and functionality."
-      },
-      "balance": {
-        "recommendedState": "ACTIVE",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "CORE_FUN_TO_LEARN",
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME"
-        ],
-        "reason": "곤충 디펜스 게임의 핵심 콘텐츠를 반복적으로 개선하며, 핵심 루프를 반복적으로 개선합니다."
-      }
-    },
+    "strictGateStillAuthoritative": true,
     "marketMetricAloneUsedForDiscard": false
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft_base": 130176,
-      "designer_draft_gate": 194147,
-      "independent_department_reviews": 763445,
-      "department_representatives": 62116,
-      "lead_rebuttals": 82155,
-      "cross_department_meeting": 16420,
-      "designer_revision_base": 105166,
-      "designer_revision_gate": 58695,
-      "five_lead_fatal_review": 400432
+      "designer_draft": 0,
+      "deterministic_pre_gate": 2,
+      "five_lead_reviews": 1932,
+      "designer_revision": 5630
     },
-    "totalModelCalls": 36,
-    "totalModelCallMs": 3083207,
-    "modelPhaseConcurrency": 4,
+    "phaseBudgetMs": {
+      "designer_draft": 180000,
+      "designer_draft_base": 180000,
+      "designer_draft_gate": 180000,
+      "deterministic_pre_gate": 30000,
+      "designer_pre_gate_repair_1": 180000,
+      "designer_pre_gate_repair_2": 180000,
+      "independent_department_reviews": 240000,
+      "designer_revision": 180000,
+      "designer_revision_base": 180000,
+      "designer_revision_gate": 180000,
+      "five_lead_reviews": 180000
+    },
+    "totalModelCalls": 2,
+    "totalModelCallMs": 7556,
+    "modelPhaseConcurrency": 5,
     "phaseConcurrency": {
-      "independent_department_reviews": 4,
-      "department_representatives": 3,
-      "lead_rebuttals": 3,
-      "five_lead_fatal_review": 3
+      "five_lead_reviews": 5
     },
-    "maxLoadedModelLanes": 2,
-    "modelKeepAlive": "5m",
-    "fastAssistantPool": [
-      "qwen3:0.6b",
-      "gemma3:1b",
-      "llama3.2:1b",
-      "qwen2.5:1.5b",
-      "smollm2:1.7b"
-    ],
+    "maxLoadedModelLanes": 5,
+    "modelKeepAlive": "GEMINI_API",
+    "modelHealth": {
+      "gemini:gemini-3.8-flash": {
+        "calls": 6,
+        "successes": 0,
+        "failures": 6,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 1324,
+        "lastMs": 287,
+        "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 46.729992539s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"46s\" } ] } }",
+        "updatedAt": "2026-09-18T06:15:13.286Z"
+      },
+      "gemini:gemini-3.7-flash": {
+        "calls": 6,
+        "successes": 0,
+        "failures": 6,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 2027,
+        "lastMs": 390,
+        "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 46.626524786s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"46s\" } ] } }",
+        "updatedAt": "2026-09-18T06:15:13.390Z"
+      },
+      "gemini:gemini-3.6-flash": {
+        "calls": 6,
+        "successes": 0,
+        "failures": 6,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 2086,
+        "lastMs": 198,
+        "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 46.84785707s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"46s\" } ] } }",
+        "updatedAt": "2026-09-18T06:15:13.197Z"
+      },
+      "gemini:gemini-3.5-flash": {
+        "calls": 6,
+        "successes": 0,
+        "failures": 6,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 3096,
+        "lastMs": 472,
+        "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 46.545961598s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"46s\" } ] } }",
+        "updatedAt": "2026-09-18T06:15:13.471Z"
+      },
+      "gemini:gemini-3.5-flash-lite": {
+        "calls": 15,
+        "successes": 13,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 43407,
+        "lastMs": 5628,
+        "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.5-flash-lite\\nPlease retry in 44.7133747s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash-lite\" }, \"quotaValue\": \"15\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"44s\" } ] } }",
+        "updatedAt": "2026-09-18T06:15:20.561Z"
+      },
+      "gemini:gemini-3.1-pro-preview": {
+        "calls": 2,
+        "successes": 0,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 803,
+        "lastMs": 617,
+        "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\nPlease retry in 44.59772267s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerDay-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.1-pro\", \"location\": \"global\"",
+        "updatedAt": "2026-09-18T06:14:15.419Z"
+      },
+      "gemini:gemini-2.5-pro": {
+        "calls": 2,
+        "successes": 0,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 978,
+        "lastMs": 702,
+        "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+        "updatedAt": "2026-09-18T06:14:15.504Z"
+      },
+      "gemini:gemini-2.5-flash": {
+        "calls": 2,
+        "successes": 0,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 1202,
+        "lastMs": 819,
+        "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+        "updatedAt": "2026-09-18T06:14:15.621Z"
+      },
+      "gemini:gemini-2.5-flash-lite": {
+        "calls": 2,
+        "successes": 0,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 1362,
+        "lastMs": 887,
+        "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+        "updatedAt": "2026-09-18T06:14:15.689Z"
+      },
+      "gemini:gemini-3.1-flash-lite": {
+        "calls": 12,
+        "successes": 5,
+        "failures": 7,
+        "timeouts": 0,
+        "jsonFailures": 6,
+        "totalMs": 51290,
+        "lastMs": 972,
+        "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.1-flash-lite\\nPlease retry in 44.241922492s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-flash-lite\" }, \"quotaValue\": \"15\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"44s\" } ] } }",
+        "updatedAt": "2026-09-18T06:14:15.774Z"
+      }
+    },
+    "preGate": {
+      "attempts": 0,
+      "totalScore": 80,
+      "hardFailures": [],
+      "postRevisionScore": 80,
+      "postRevisionHardFailures": []
+    },
     "checkpoint": {
-      "contractVersion": 1,
-      "reused": false,
-      "completedPhases": 9,
-      "cachedTasks": 30
+      "contractVersion": 2,
+      "engineDigest": "0fa968df991094cf552456b8e6af95974e1980f3f44c31c2a87aa7e402aaa603",
+      "reused": true,
+      "completedPhases": 10,
+      "cachedTasks": 5
     },
-    "modelCenteredReviewOrder": true,
-    "adaptiveConcurrency": true,
-    "departmentScopedContext": true,
-    "independentReviewOutputs": 15,
-    "fullPoolReviewOutputs": 25
+    "simplifiedLeadOnlyReview": true,
+    "aiMeetingCalls": 0,
+    "rebuttalCalls": 0,
+    "representativeSynthesisCalls": 0,
+    "leadReviewCalls": 5,
+    "departmentScopedContext": true
   },
   "designLearning": {
-    "candidateCount": 4,
+    "candidateCount": 5,
     "usedAsDesignContext": true,
     "positiveTrainingEligible": false,
     "validatedRuntimeRequiredForPositiveTraining": true,
     "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
     "strictGateHardFailures": [
-      "CORE_FUN_WEAK"
+      "CORE_FUN_WEAK",
+      "CRITICAL_AXIS_MINIMUM_FAIL"
     ],
     "strictGateBypassAllowed": false
   },
@@ -293,16 +309,18 @@
   },
   "vibe2Used": false,
   "vibe2LearningContextUsed": true,
-  "paidApi": false,
+  "paidApi": true,
   "baselineGate": {
     "policyDocument": "COMPANY_FLOW.md",
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_READY",
-    "ready": true,
-    "blockers": [],
-    "advisoryDisposition": "REDESIGN",
+    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "ready": false,
+    "blockers": [
+      "post-revision-five-department-review-required"
+    ],
+    "advisoryDisposition": "ACTIVE",
     "unanimousFatalDiscard": false,
     "meeting": {
       "conflictCount": 0,
@@ -318,7 +336,7 @@
       },
       "designMultiplayer": {
         "required": true,
-        "mode": "COOP",
+        "mode": "SINGLE",
         "valid": true,
         "decisionStage": "GAME_DESIGN",
         "allowedModes": [
@@ -392,17 +410,17 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-18T04:51:50.315Z"
+    "checkedAt": "2026-09-18T06:15:27.773Z"
   },
   "artbookUi": {
-    "status": "WRITING",
-    "label": "작성중",
+    "status": "WAITING",
+    "label": "대기중",
     "path": "artbook-submissions/bug-defense/status.json"
   },
   "artbookPublication": {
     "published": false,
     "path": null,
-    "baselineGateState": "DESIGN_BASELINE_READY",
-    "reason": "awaiting-post-baseline-artbook-editor"
+    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "reason": "baseline-not-ready"
   }
 }

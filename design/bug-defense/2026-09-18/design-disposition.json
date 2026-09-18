@@ -1,80 +1,17 @@
 {
-  "version": 1,
+  "version": 2,
   "gameId": "bug-defense",
   "date": "2026-09-18",
-  "state": "REDESIGN",
+  "state": "ACTIVE",
   "sameDesignerRevisionAttempted": true,
-  "repeatedFiveDepartmentReview": true,
-  "allFiveLeadModelsReviewed": true,
-  "discardVotes": 1,
+  "fiveDepartmentLeadReviewCompleted": true,
+  "repeatedFiveDepartmentReview": false,
+  "meetingRequired": false,
+  "rebuttalRounds": 0,
+  "automaticDiscardAllowed": false,
+  "discardVotes": 0,
   "commonFatalCriteria": [],
   "unanimousFatalDiscard": false,
-  "fatalReviews": {
-    "planning": {
-      "recommendedState": "ACTIVE",
-      "fatalCriteria": [],
-      "evidence": [
-        "OWN의 유지보수 목표는 게임의 핵심 콘텐츠와 핵심 루프를 반복하고, 다른 부서의 의견을 수용/반박/수정함. 게임의 핵심 재미를 유지하고, 첫 세션 조작을 시작하는 핵심 루프를 개선합니다. 또한, game.seedId를 추가하여 특정 게임의 환경을 명확히 합니다.",
-        "MARKET_EVIDENCE_SUMMARY",
-        "game.seedId를 추가하여 특정 게임의 환경을 명확히 합니다."
-      ],
-      "reason": "게임의 핵심 콘텐츠와 핵심 루프를 반복적으로 개선하며, 핵심 루프를 반복적으로 개선합니다. 게임의 핵심 콘텐츠와 learning process를 반영합니다."
-    },
-    "graphics": {
-      "recommendedState": "DISCARD",
-      "fatalCriteria": [
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
-      ],
-      "evidence": [],
-      "reason": "수정 설계를 다시 검토한 후, 수정 후에도 남은 치명 조건이 실제 설계 근거로 확인될 때만 DISCARD를 선택해야 합니다. 이 경우, 핵심 콘텐츠의 반복적인 개선과 핵심 루프의 조작을 위한 핵심 기능의 유지보수를 위해 게임의 핵심 콘텐츠를 반복적으로 개선하고, 핵심 루프를 반복적으로 개선해야 합니다. 핵심 루프를 반복적으로 개선하는 과정에서 핵심 콘텐츠의 반복적인 개선을 통해 게임의 핵심 재미를 유지해야 합니다."
-    },
-    "development": {
-      "recommendedState": "REDESIGN",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "game-seed-market-evidence.json",
-        "game-seed-platform-profiles.json",
-        "ESA Power of Play 2025 Global Report",
-        "Kingdom Rush"
-      ],
-      "reason": "game.seedId를 추가하여 특정 게임의 환경을 명확히 하기ため"
-    },
-    "qa": {
-      "recommendedState": "REDESIGN",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "The seed seedId is OWNER-FULL-REBUILD-BUG-DEFENSE-20260916, which indicates a full rebuild and rollback reference implementation. This seed should not be used as the base for the implementation."
-      ],
-      "reason": "The current seed is a full rebuild and rollback reference implementation, which should not be used as the base for the implementation. The seed contains the core fun, core loop, and learning process, which are essential for the game's design and functionality."
-    },
-    "balance": {
-      "recommendedState": "ACTIVE",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "CORE_FUN_TO_LEARN",
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME"
-      ],
-      "reason": "곤충 디펜스 게임의 핵심 콘텐츠를 반복적으로 개선하며, 핵심 루프를 반복적으로 개선합니다."
-    }
-  },
+  "strictGateStillAuthoritative": true,
   "marketMetricAloneUsedForDiscard": false
 }

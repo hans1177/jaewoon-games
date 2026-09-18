@@ -3124,14 +3124,14 @@
         ]
       },
       "ROBLOX_GENRE": "Obby & platformer",
-      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_SUBGENRE": "Tower Obby",
       "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
-      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
-      "ROBLOX_PLAY_MODE": "COOP",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
-      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 멀티·협동",
+      "ROBLOX_SUBGENRE_LABEL_KO": "타워 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T04:51:50.385Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T06:15:27.874Z",
       "strictDesignReview": {
         "verdict": "REBUILD",
         "totalScore": 31,
@@ -13856,6 +13856,48 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-18T04:51:50.385Z"
+      },
+      {
+        "gameId": "bug-defense",
+        "seedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "PASS",
+        "totalScore": 89.4,
+        "previousScore": 31,
+        "scoreDelta": 58.400000000000006,
+        "hardFailures": [],
+        "resolvedHardFailures": [
+          "CORE_FUN_WEAK",
+          "CRITICAL_AXIS_MINIMUM_FAIL"
+        ],
+        "addedHardFailures": [],
+        "rejectionReasons": [],
+        "improvementTargets": [
+          {
+            "dimension": "CORE_LOOP_DESIGN",
+            "current": 11.2,
+            "maxScore": 14,
+            "gap": 2.8000000000000007
+          },
+          {
+            "dimension": "IDEA_AND_DISTINCTNESS",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          },
+          {
+            "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-18T06:15:27.874Z"
       }
     ],
     "causeCounts": {
@@ -13881,7 +13923,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-18T04:51:50.385Z"
+    "updatedAt": "2026-09-18T06:15:27.875Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
