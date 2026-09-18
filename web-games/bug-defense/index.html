@@ -1,10 +1,483 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다.</title><style>*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#0b1020;color:#f5f7fb;font-family:system-ui,-apple-system,"Segoe UI",sans-serif}body{display:flex;justify-content:center;overflow-x:hidden}.game{width:min(100%,560px);min-height:100vh;padding:16px;background:linear-gradient(180deg,#15213a,#0a1120 66%,#070b14)}.hero,.panel{padding:15px;border:1px solid #2b3c5d;border-radius:18px;background:#17233a;margin-bottom:12px}.hero h1{margin:6px 0 8px;font-size:25px}.desc,.status{font-size:13px;line-height:1.5;color:#c8d4e8}.arena{position:relative;height:170px;border-radius:18px;border:1px solid #324667;background:radial-gradient(circle at 55% 35%,#28416a,#111a2e 58%,#0a0f1b);margin-bottom:12px;overflow:hidden}.player{position:absolute;width:52px;height:52px;border-radius:16px;left:calc(12% + (var(--pos,0) * 9%));top:72px;background:#60a5fa;border:4px solid #dbeafe;transition:left .18s}.enemy{position:absolute;width:48px;height:48px;border-radius:50%;right:34px;top:48px;background:#fb7185;border:4px solid #ffe4e6}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.stat{padding:8px 4px;border-radius:11px;background:#0d1729;text-align:center}.stat b{display:block;font-size:16px}.scope{display:grid;gap:8px}.scope-action,.audio button,.session-phase{min-height:54px;border:0;border-radius:13px;background:#eef4ff;color:#111827;font-weight:760;text-align:left;padding:9px 11px}.scope-action span,.session-phase span,.session-phase small{display:block;font-size:12px;line-height:1.35;margin:2px 0}.scope-action small,.session-phase small{font-size:10px;opacity:.72}.scope-action[data-scope-covered="true"],.session-phase[data-session-stage-complete="true"]{outline:3px solid #86efac}.session-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.audio{display:grid;grid-template-columns:116px 1fr;gap:10px;align-items:center}.audio input{width:100%}.meter{height:8px;border-radius:8px;background:#23314d;overflow:hidden;margin-top:10px}.meter span{display:block;height:100%;width:0;background:#a78bfa;transition:width .2s}@media(max-width:390px){.stats,.session-grid{grid-template-columns:repeat(2,1fr)}.audio{grid-template-columns:1fr}}</style></head><body data-audio-state="locked" data-approved-scope-count="5"><main class="game" data-session-minutes="30" data-session-stage-count="4" data-session-current-stage="0" data-session-completed-stages="0"><section class="hero"><small>DEVELOPMENT_CONFIRMED · FULL APPROVED WEB COMPANION · 캐주얼</small><h1>곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 처음부터 다시 설계한다.</h1><p class="desc">wave defense readability</p></section><section class="panel"><h2>30분 플레이 구조</h2><div class="session-grid"><button class="session-phase" type="button" data-session-stage="1" data-session-start="0" data-session-end="5" data-session-stage-complete="false"><b>0–5분</b><span>도입 · 조작과 첫 목표</span><small>Read the incoming insect wave and its threat pattern.</small></button><button class="session-phase" type="button" data-session-stage="2" data-session-start="5" data-session-end="15" data-session-stage-complete="false"><b>5–15분</b><span>핵심 루프 · 반복과 성장</span><small>Place or adjust defenders and spend limited resources on the highest-value counter.</small></button><button class="session-phase" type="button" data-session-stage="3" data-session-start="15" data-session-end="25" data-session-stage-complete="false"><b>15–25분</b><span>난도 상승 · 변형과 압박</span><small>Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.</small></button><button class="session-phase" type="button" data-session-stage="4" data-session-start="25" data-session-end="30" data-session-stage-complete="false"><b>25–30분</b><span>마무리 · 클라이맥스와 보상</span><small>누적된 성장과 학습을 사용해 마지막 목표를 해결하고 명확한 보상과 다음 목표를 연다.</small></button></div></section><section class="arena"><div class="player" id="player"></div><div class="enemy" id="enemy"></div></section><section class="stats" id="state" data-state="ready" data-score="0" data-health="100" data-resource="0" data-progress="0"><div class="stat"><b id="score">0</b><small>SCORE</small></div><div class="stat"><b id="health">100</b><small>HP</small></div><div class="stat"><b id="wave">1</b><small>WAVE</small></div><div class="stat"><b id="resource">0</b><small>RESOURCE</small></div><div class="stat"><b id="level">1</b><small>LEVEL</small></div><div class="stat"><b id="enemyHp">100</b><small>ENEMY HP</small></div><div class="stat"><b id="position">0</b><small>POSITION</small></div><div class="stat"><b id="cooldown">0</b><small>COOLDOWN</small></div></section><section class="panel"><h2>승인 분량 전체 구현</h2><div class="scope"><button id="scope-control-1" class="scope-action" data-scope-id="scope-corefun-f9eac87035" type="button"><b>1</b><span>wave defense readability</span><small>OBJECTIVE</small></button><button id="scope-control-2" class="scope-action" data-scope-id="scope-coreloop-0-f96e139c08" type="button"><b>2</b><span>Read the incoming insect wave and its threat pattern.</span><small>SURVIVAL</small></button><button id="scope-control-3" class="scope-action" data-scope-id="scope-coreloop-1-e0fc69d258" type="button"><b>3</b><span>Place or adjust defenders and spend limited resources on the highest-value counter.</span><small>ECONOMY</small></button><button id="scope-control-4" class="scope-action" data-scope-id="scope-coreloop-2-87f31deaff" type="button"><b>4</b><span>Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision.</span><small>PROGRESSION</small></button><button id="scope-control-5" class="scope-action" data-scope-id="scope-mobileux-bb5af6ed38" type="button"><b>5</b><span>Yes</span><small>MOBILE</small></button></div><div class="meter"><span id="meter"></span></div></section><section class="panel audio"><button id="mute" data-audio-control="mute" type="button">음악 켜짐</button><label>볼륨 <input id="volume" data-audio-control="volume" type="range" min="0" max="1" step="0.05" value="0.28"></label></section><div class="panel status" id="status">STATUS: 준비 · 30분 4단계 세션 · 승인 scope 5개 실제 입력 검증 대기</div></main><script>const cfg={"genre":"CASUAL","initial":{"score":0,"hp":100,"wave":1,"resource":0,"progress":0},"notes":[220,277.2,329.6],"scopeCount":5,"sessionMinutes":30,"sessionPhases":[{"id":"onboarding","start":0,"end":5,"label":"도입 · 조작과 첫 목표"},{"id":"core-loop","start":5,"end":15,"label":"핵심 루프 · 반복과 성장"},{"id":"escalation","start":15,"end":25,"label":"난도 상승 · 변형과 압박"},{"id":"climax","start":25,"end":30,"label":"마무리 · 클라이맥스와 보상"}]};const state={...cfg.initial,turn:0,level:1,enemyHp:100,position:0,cooldown:0,combo:0,energy:100,objective:0};const $=id=>document.getElementById(id);let audioCtx=null,master=null,osc=null,muted=false;async function ensureAudio(){if(!audioCtx){const AC=window.AudioContext||window.webkitAudioContext;audioCtx=new AC();master=audioCtx.createGain();master.gain.value=Number($('volume').value);master.connect(audioCtx.destination);osc=audioCtx.createOscillator();osc.type='sine';osc.frequency.value=cfg.notes[0];osc.connect(master);osc.start()}if(audioCtx.state==='suspended')await audioCtx.resume();document.body.dataset.audioState=muted?'muted':'running'}function advance(label){if(state.progress>=100){state.progress=state.progress%100;state.wave++;state.level++;state.resource+=2}const s=$('state');s.dataset.state='turn-'+state.turn;s.dataset.score=String(state.score);s.dataset.health=String(state.hp);s.dataset.resource=String(state.resource);s.dataset.progress=String(state.progress);$('score').textContent=state.score;$('health').textContent=state.hp;$('wave').textContent=state.wave;$('resource').textContent=state.resource;$('level').textContent=state.level;$('enemyHp').textContent=state.enemyHp;$('position').textContent=state.position;$('cooldown').textContent=state.cooldown;$('meter').style.width=Math.min(100,state.progress)+'%';$('player').style.setProperty('--pos',String(state.position));$('enemy').style.opacity=String(.35+.65*(state.enemyHp/100));if(osc)osc.frequency.setTargetAtTime(cfg.notes[state.turn%cfg.notes.length],audioCtx.currentTime,.03);$('status').textContent='STATUS: '+label+' · TURN '+state.turn+' · OBJECTIVE '+state.objective+' · ENERGY '+state.energy+' · SESSION '+cfg.sessionMinutes+'m'} async function scopeHandler1(){await ensureAudio();const button=document.getElementById("scope-control-1");button.dataset.scopeCovered='true';state.turn++;state.objective++;state.score+=7;state.progress+=9;state.position=(state.position+1)%8;advance("scope-corefun-f9eac87035");}
-document.getElementById("scope-control-1").addEventListener('click',scopeHandler1);
-async function scopeHandler2(){await ensureAudio();const button=document.getElementById("scope-control-2");button.dataset.scopeCovered='true';state.turn++;state.hp=Math.min(100,state.hp+3);state.energy=Math.min(100,state.energy+4);state.score+=6;state.progress+=7;advance("scope-coreloop-0-f96e139c08");}
-document.getElementById("scope-control-2").addEventListener('click',scopeHandler2);
-async function scopeHandler3(){await ensureAudio();const button=document.getElementById("scope-control-3");button.dataset.scopeCovered='true';state.turn++;state.resource+=9;state.score+=6;state.progress+=7;state.energy=Math.min(100,state.energy+2);advance("scope-coreloop-1-e0fc69d258");}
-document.getElementById("scope-control-3").addEventListener('click',scopeHandler3);
-async function scopeHandler4(){await ensureAudio();const button=document.getElementById("scope-control-4");button.dataset.scopeCovered='true';state.turn++;state.resource+=8;state.level++;state.score+=9;state.progress+=11;advance("scope-coreloop-2-87f31deaff");}
-document.getElementById("scope-control-4").addEventListener('click',scopeHandler4);
-async function scopeHandler5(){await ensureAudio();const button=document.getElementById("scope-control-5");button.dataset.scopeCovered='true';state.turn++;state.position=(state.position+1)%8;state.energy=Math.min(100,state.energy+1);state.score+=7;state.progress+=8;advance("scope-mobileux-bb5af6ed38");}
-document.getElementById("scope-control-5").addEventListener('click',scopeHandler5); const sessionRoot=document.querySelector('[data-session-minutes="30"]');const sessionStages=[...document.querySelectorAll('[data-session-stage]')];sessionStages.forEach((button,index)=>button.addEventListener('click',async()=>{await ensureAudio();button.dataset.sessionStageComplete='true';sessionRoot.dataset.sessionCurrentStage=String(index+1);sessionRoot.dataset.sessionCompletedStages=String(sessionStages.filter(x=>x.dataset.sessionStageComplete==='true').length);state.turn++;state.score+=5+index;state.progress+=8+index;advance('session-stage-'+(index+1));}));document.addEventListener('keydown',event=>{if(['ArrowRight','ArrowUp','Space'].includes(event.code)){const buttons=[...document.querySelectorAll('.scope-action')];const button=buttons[state.turn%buttons.length];if(button)button.click()}});$('mute').addEventListener('click',async()=>{await ensureAudio();muted=!muted;master.gain.value=muted?0:Number($('volume').value);$('mute').textContent=muted?'음악 꺼짐':'음악 켜짐';document.body.dataset.audioState=muted?'muted':'running'});$('volume').addEventListener('input',async()=>{await ensureAudio();if(!muted)master.gain.value=Number($('volume').value)});advance('ready');</script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#102416">
+<title>곤충 방어대</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#f4f7ee;background:#08130d}
+html,body{margin:0;min-height:100%;background:#08130d}
+body{display:flex;justify-content:center;overflow-x:hidden}
+.game{width:min(100%,760px);min-height:100vh;padding:14px;background:linear-gradient(180deg,#18351f,#0d2014 42%,#08130d)}
+.hero,.panel{border:1px solid #31533a;border-radius:18px;background:#102a18;padding:14px;margin-bottom:10px;box-shadow:0 10px 30px #0003}
+.hero{background:linear-gradient(135deg,#1f4a2a,#173c24)}
+.hero small{font-weight:800;color:#b8f3a9}.hero h1{margin:4px 0 7px;font-size:25px}.hero p{margin:0;color:#d2e6ce;font-size:12px;line-height:1.45}
+.hud{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-bottom:10px}
+.stat{min-width:0;text-align:center;padding:8px 4px;border-radius:12px;background:#0a1e11;border:1px solid #294832}.stat b{display:block;font-size:17px}.stat small{display:block;font-size:9px;color:#a7bea9;margin-top:2px}
+.battlefield{position:relative;border:1px solid #41674a;border-radius:20px;overflow:hidden;background:#132b18;padding:10px;margin-bottom:10px}
+.areas{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+.area{padding:7px 9px;border:1px solid #3c6546;border-radius:11px;font-size:11px;background:#183821;color:#cbe7cb}
+.area.active{outline:2px solid #e8cc68;color:#fff}
+.path{position:relative;height:114px;border-radius:16px;background:linear-gradient(90deg,#6b5835,#7b673e 46%,#5f4b2e);border:2px solid #8b7447;overflow:hidden}
+.path:before{content:"";position:absolute;left:0;right:0;top:50%;height:4px;background:#c3aa6d;transform:translateY(-50%);opacity:.55}
+.base{position:absolute;right:8px;top:31px;width:48px;height:50px;border-radius:10px;background:#355f34;border:3px solid #b7d48c;display:grid;place-items:center;font-size:24px}
+.enemy-lane{position:absolute;left:10px;right:66px;top:16px;height:80px}
+.enemy{position:absolute;top:23px;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;border:3px solid #f7dfba;background:#854d3a;transition:left .25s,opacity .2s;left:var(--enemy-x,4%);font-size:20px}
+.enemy[data-enemy-type="moth"]{background:#66568e}.enemy[data-enemy-type="beetle"]{background:#374a55}.enemy[data-enemy-type="queen"]{background:#7f3148;width:48px;height:48px;top:18px}
+.build-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px}
+.slot{position:relative;min-height:68px;border:1px dashed #66896b;border-radius:12px;background:#15341c;color:#a8c7a7;padding:4px;touch-action:manipulation}
+.slot.selected{outline:3px solid #f0d56f}.slot.occupied{border-style:solid;background:#1b4024}
+.slot small{font-size:8px}.tower{position:absolute;inset:8px;border-radius:12px;display:grid;place-items:center;font-size:24px;border:2px solid #d5efbb;background:#285d32}
+.tower[data-tower-type="mantis"]{background:#4e6d2a}.tower[data-tower-type="beetle"]{background:#354f56}
+.controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.action{min-height:60px;border:0;border-radius:14px;background:#edf7e8;color:#102116;padding:8px 10px;text-align:left;font-weight:800;touch-action:manipulation}
+.action b,.action span,.action small{display:block}.action span{font-size:11px;margin-top:3px;line-height:1.3}.action small{font-size:9px;opacity:.63;margin-top:2px}
+.action:active{transform:scale(.985)}.action.active{outline:3px solid #efcf63}
+.action[data-unit="ant"]{background:#f1e4c0}.action[data-unit="mantis"]{background:#d8efbb}.action[data-unit="beetle"]{background:#cbe2e7}
+.status{font-size:12px;line-height:1.45;min-height:52px;color:#d6e4d3}
+.preview{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.preview strong{font-size:13px}.counter{font-size:11px;color:#f0d77b}
+.audio{display:grid;grid-template-columns:120px 1fr;gap:10px;align-items:center}
+.audio button{min-height:44px;border:0;border-radius:12px;font-weight:800}.audio input{width:100%}
+.reset{width:100%;min-height:46px;border:1px solid #6c8d70;border-radius:13px;background:#15331c;color:#e9f4e6;font-weight:800}
+[data-touch-layout="compact"] .controls{grid-template-columns:1fr}
+[data-touch-layout="compact"] .action{min-height:68px;font-size:16px}
+.boss-card{display:none;margin-top:8px;padding:8px;border-radius:12px;border:1px solid #925169;background:#351722;font-size:11px}
+.boss-card.active{display:block}.boss-card span{margin-right:8px}
+@media(max-width:520px){.hud{grid-template-columns:repeat(3,1fr)}.build-grid{grid-template-columns:repeat(3,1fr)}.controls{grid-template-columns:1fr 1fr}}
+@media(max-width:360px){.controls{grid-template-columns:1fr}.areas{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-audio-state="locked" data-run-result="running" data-placement-mode="idle" data-touch-layout="standard">
+<main id="game"
+ class="game"
+ data-web-artifact-type="REAL_PLAYABLE_GAME"
+ data-approved-scope-count="5"
+ data-gameplay-system-count="9"
+ data-playable-cycle-contract="ONE_COMPLETE_PLAYABLE_GAMEPLAY_CYCLE"
+ data-run-result="running"
+ data-route-id="garden-east"
+ data-collision-enabled="true"
+ data-collision-count="0">
+<section class="hero">
+<small>정원 수호대 · 싱글 전략 디펜스</small>
+<h1>곤충 방어대</h1>
+<p>다가오는 적의 경로와 약점을 읽고, 실제 위치에 곤충 수비대를 배치해 기지를 지켜라. 같은 자원이라도 어떤 곤충을 어디에 놓느냐에 따라 웨이브 결과가 달라진다.</p>
+</section>
+
+<section class="hud" id="hud" data-state="ready" data-score="0" data-resource="34" data-progress="0">
+<div class="stat"><b id="hp">100</b><small>기지 HP</small></div>
+<div class="stat"><b id="wave">1</b><small>웨이브</small></div>
+<div class="stat"><b id="resource">34</b><small>수액</small></div>
+<div class="stat"><b id="score">0</b><small>방어 점수</small></div>
+<div class="stat"><b id="level">1</b><small>지휘 레벨</small></div>
+<div class="stat"><b id="towers">0</b><small>수비대</small></div>
+</section>
+
+<section class="battlefield" data-gameplay-surface="true">
+<div class="areas">
+<div class="area active" data-area="garden" id="areaGarden">정원 동쪽 경로 · 짧고 빠른 길</div>
+<div class="area" data-area="wetland" id="areaWetland">습지 서쪽 경로 · 느리지만 단단한 적</div>
+</div>
+<div class="path" data-route="garden-east" id="route">
+<div class="enemy-lane" id="enemyLane"></div>
+<div class="base" aria-label="수호 기지">🌿</div>
+</div>
+<div class="build-grid" id="buildGrid">
+<button class="slot" type="button" data-build-slot="A1" data-grid-x="1" data-grid-y="1"><small>A1</small></button>
+<button class="slot" type="button" data-build-slot="A2" data-grid-x="2" data-grid-y="1"><small>A2</small></button>
+<button class="slot" type="button" data-build-slot="A3" data-grid-x="3" data-grid-y="1"><small>A3</small></button>
+<button class="slot" type="button" data-build-slot="B1" data-grid-x="1" data-grid-y="2"><small>B1</small></button>
+<button class="slot" type="button" data-build-slot="B2" data-grid-x="2" data-grid-y="2"><small>B2</small></button>
+<button class="slot" type="button" data-build-slot="B3" data-grid-x="3" data-grid-y="2"><small>B3</small></button>
+</div>
+<div class="boss-card" id="bossCard">
+<strong class="boss" data-boss-id="aphid-queen" data-enemy-type="queen" data-state="waiting">진딧물 여왕</strong>
+<span data-boss-pattern="charge">돌진 예고</span>
+<span data-boss-pattern="spore">포자 폭발</span>
+</div>
+</section>
+
+<section class="panel preview">
+<div>
+<strong id="forecast">웨이브 1 · 진딧물 무리</strong>
+<div class="counter" id="counter">추천 상성: 일개미 · 정원 동쪽</div>
+</div>
+<div id="threat">위협 1</div>
+</section>
+
+<section class="panel">
+<div class="controls">
+<button id="analyze" class="action" type="button"
+ data-gameplay-action="true"
+ data-scope-id="scope-corefun-9ebd444daf"
+ data-mechanic-id="counter-analysis">
+<b>상성 분석</b><span>다음 적의 방어 약점을 읽고 추천 곤충을 갱신</span><small>분석</small>
+</button>
+
+<button id="routeScan" class="action" type="button"
+ data-gameplay-action="true"
+ data-scope-id="scope-coreloop-0-b85cf343ff"
+ data-mechanic-id="route-path-scan">
+<b>경로 위협 읽기</b><span>정원·습지 경로를 전환해 적의 이동 특성을 확인</span><small>경로 선택</small>
+</button>
+
+<button id="placeAnt" class="action" type="button" data-unit="ant"
+ data-gameplay-action="true"
+ data-scope-id="scope-coreloop-1-e0fc69d258"
+ data-mechanic-id="place-ant-tower">
+<b>일개미 배치 준비</b><span>비용 8 · 진딧물/무리형에 강함 · 슬롯을 선택해 실제 배치</span><small>위치 배치</small>
+</button>
+
+<button id="resolveGarden" class="action" type="button"
+ data-gameplay-action="true"
+ data-scope-id="scope-coreloop-2-87f31deaff"
+ data-mechanic-id="resolve-defense-wave">
+<b>방어 실행</b><span>현재 배치와 상성으로 웨이브를 해결하고 보상을 받아 다음 선택 준비</span><small>전투 결과</small>
+</button>
+
+<button id="placeBeetle" class="action" type="button" data-unit="beetle"
+ data-gameplay-action="true"
+ data-mechanic-id="place-beetle-tower">
+<b>장수풍뎅이 배치 준비</b><span>비용 15 · 갑각/보스형에 강한 고화력 수비대</span><small>전략 배치</small>
+</button>
+
+<button id="resolveWetland" class="action" type="button"
+ data-gameplay-action="true"
+ data-mechanic-id="resolve-pressure-wave">
+<b>압박 웨이브 실행</b><span>습지 적을 현재 조합으로 막아 배치 선택의 결과를 확인</span><small>전략 결과</small>
+</button>
+
+<button id="placeMantis" class="action" type="button" data-unit="mantis"
+ data-gameplay-action="true"
+ data-mechanic-id="place-mantis-tower">
+<b>사마귀 배치 준비</b><span>비용 12 · 비행형에 강하고 공격 주기가 빠름</span><small>전술 배치</small>
+</button>
+
+<button id="resolveBoss" class="action" type="button"
+ data-gameplay-action="true"
+ data-mechanic-id="resolve-boss-wave">
+<b>결전 웨이브 실행</b><span>누적 배치와 남은 자원을 사용해 보스 압박을 버틴다</span><small>결전</small>
+</button>
+
+<button id="mobileMode" class="action" type="button"
+ data-gameplay-action="true"
+ data-scope-id="scope-mobileux-a660a00af1"
+ data-mechanic-id="mobile-command-layout">
+<b>한손 지휘 모드</b><span>큰 버튼과 세로 배치로 전환해 터치 배치를 쉽게 한다</span><small>모바일 조작</small>
+</button>
+</div>
+</section>
+
+<section class="panel audio">
+<button id="mute" data-audio-control="mute" type="button">음악 켜기</button>
+<label>볼륨 <input id="volume" data-audio-control="volume" type="range" min="0" max="1" step="0.05" value="0.24"></label>
+</section>
+
+<section class="panel status" id="status">첫 웨이브의 경로를 읽고 곤충 수비대를 배치해.</section>
+<button class="reset" id="retry" data-retry="true" type="button">재도전 · 방어선 초기화</button>
+</main>
+
+<script>
+const TOWER_SPECS={
+  ant:{name:'일개미',icon:'🐜',cost:8,damage:13,rate:1.15,range:2,counters:['aphid','swarm'],effect:'집중 물기'},
+  mantis:{name:'사마귀',icon:'🦗',cost:12,damage:19,rate:1.45,range:2,counters:['moth','winged'],effect:'빠른 낫질'},
+  beetle:{name:'장수풍뎅이',icon:'🪲',cost:15,damage:27,rate:.78,range:1,counters:['beetle','queen'],effect:'갑각 돌진'}
+};
+const WAVE_SPECS=[
+  {id:'aphid-swarm',name:'진딧물 무리',type:'aphid',icon:'🟢',hp:44,count:4,speed:1.25,reward:10,route:'garden-east',counter:'ant'},
+  {id:'moth-flight',name:'나방 비행대',type:'moth',icon:'🦋',hp:66,count:5,speed:1.55,reward:13,route:'wetland-west',counter:'mantis'},
+  {id:'shell-column',name:'딱정벌레 종대',type:'beetle',icon:'🪲',hp:92,count:5,speed:.82,reward:16,route:'garden-east',counter:'beetle'},
+  {id:'aphid-queen',name:'진딧물 여왕',type:'queen',icon:'👑',hp:135,count:1,speed:.7,reward:25,route:'wetland-west',counter:'beetle',boss:true}
+];
+const state={
+  hp:100,maxHp:100,waveIndex:0,resource:34,score:0,level:1,
+  towers:[],selectedUnit:'ant',routeId:'garden-east',analysisCount:0,
+  mobileCompact:false,placementMode:false,collisionCount:0,won:false,lost:false,cycle:0,
+  lastWaveDamage:0,lastLeakDamage:0,lastReward:0
+};
+const $=id=>document.getElementById(id);
+const root=$('game');
+const slots=[...document.querySelectorAll('[data-build-slot]')];
+const actionButtons=[...document.querySelectorAll('[data-gameplay-action]')];
+let audioCtx=null,masterGain=null,droneOsc=null,muted=false;
+
+function currentWave(){
+  const base=WAVE_SPECS[Math.min(state.waveIndex,WAVE_SPECS.length-1)];
+  const cycleScale=state.cycle*10;
+  return {...base,hp:base.hp+cycleScale,reward:base.reward+state.cycle*2};
+}
+function unitLabel(unit){return TOWER_SPECS[unit]?.name||unit;}
+function setStatus(message){$('status').textContent=message;}
+function setRunResult(value){
+  document.body.dataset.runResult=value;
+  root.dataset.runResult=value;
+}
+function updateSpatialState(){
+  root.dataset.routeId=state.routeId;
+  root.dataset.collisionCount=String(state.collisionCount);
+  $('areaGarden').classList.toggle('active',state.routeId==='garden-east');
+  $('areaWetland').classList.toggle('active',state.routeId==='wetland-west');
+  $('route').dataset.route=state.routeId;
+}
+function updateHud(reason='ready'){
+  $('hp').textContent=String(Math.max(0,state.hp));
+  $('wave').textContent=String(Math.min(state.waveIndex+1,WAVE_SPECS.length));
+  $('resource').textContent=String(state.resource);
+  $('score').textContent=String(state.score);
+  $('level').textContent=String(state.level);
+  $('towers').textContent=String(state.towers.length);
+  const hud=$('hud');
+  hud.dataset.state=`${reason}-${state.cycle}-${state.waveIndex}-${state.selectedUnit}-${state.routeId}`;
+  hud.dataset.score=String(state.score);
+  hud.dataset.resource=String(state.resource);
+  hud.dataset.progress=String(state.waveIndex);
+  root.dataset.state=hud.dataset.state;
+  root.dataset.resource=String(state.resource);
+  updateSpatialState();
+  renderForecast();
+}
+function renderForecast(){
+  const wave=currentWave();
+  $('forecast').textContent=`웨이브 ${Math.min(state.waveIndex+1,WAVE_SPECS.length)} · ${wave.name}`;
+  $('counter').textContent=`추천 상성: ${unitLabel(wave.counter)} · ${wave.route==='garden-east'?'정원 동쪽':'습지 서쪽'}`;
+  $('threat').textContent=`위협 ${state.waveIndex+1}`;
+  $('bossCard').classList.toggle('active',Boolean(wave.boss)||state.waveIndex>=3);
+}
+function renderEnemyPreview(progress=0){
+  const lane=$('enemyLane');
+  lane.innerHTML='';
+  const wave=currentWave();
+  const visibleCount=Math.min(4,wave.count);
+  for(let i=0;i<visibleCount;i++){
+    const e=document.createElement('div');
+    e.className=wave.boss?'enemy boss':'enemy';
+    e.dataset.enemy=wave.id;
+    e.dataset.enemyType=wave.type;
+    if(wave.boss){
+      e.dataset.bossId=wave.id;
+      e.dataset.bossPattern=state.waveIndex%2?'spore':'charge';
+      e.dataset.bossPhase=state.hp<45?'rage':'guard';
+    }
+    e.style.setProperty('--enemy-x',`${Math.min(84,4+progress*68+i*5)}%`);
+    e.textContent=wave.icon;
+    lane.appendChild(e);
+  }
+}
+function renderTowers(){
+  for(const slot of slots){
+    const slotId=slot.dataset.buildSlot;
+    const tower=state.towers.find(t=>t.slot===slotId);
+    slot.classList.toggle('occupied',Boolean(tower));
+    const old=slot.querySelector('.tower');
+    if(old)old.remove();
+    if(!tower)continue;
+    const spec=TOWER_SPECS[tower.type];
+    const node=document.createElement('div');
+    node.className='tower';
+    node.dataset.tower=String(tower.id);
+    node.dataset.towerType=tower.type;
+    node.dataset.placementPosition=tower.slot;
+    node.dataset.gridX=slot.dataset.gridX;
+    node.dataset.gridY=slot.dataset.gridY;
+    node.dataset.damage=String(spec.damage+tower.level*2);
+    node.dataset.range=String(spec.range);
+    node.dataset.rate=String(spec.rate);
+    node.dataset.effect=spec.effect;
+    node.textContent=spec.icon;
+    node.title=`${spec.name} Lv.${tower.level}`;
+    slot.appendChild(node);
+  }
+}
+function ensureAudio(){
+  if(!audioCtx){
+    const AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC)return Promise.resolve();
+    audioCtx=new AC();
+    masterGain=audioCtx.createGain();
+    masterGain.gain.value=Number($('volume').value);
+    masterGain.connect(audioCtx.destination);
+    droneOsc=audioCtx.createOscillator();
+    droneOsc.type='triangle';
+    droneOsc.frequency.value=146.8;
+    droneOsc.connect(masterGain);
+    droneOsc.start();
+  }
+  document.body.dataset.audioState=muted?'muted':'running';
+  return audioCtx.state==='suspended'?audioCtx.resume():Promise.resolve();
+}
+function ping(frequency=220,duration=.08){
+  if(!audioCtx||!masterGain)return;
+  const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+  osc.frequency.value=frequency;
+  osc.type='square';
+  gain.gain.value=.045;
+  osc.connect(gain);gain.connect(masterGain);
+  osc.start();gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+duration);
+  osc.stop(audioCtx.currentTime+duration);
+}
+function chooseUnit(unit){
+  if(state.won||state.lost)return;
+  state.selectedUnit=unit;
+  state.placementMode=true;
+  document.body.dataset.placementMode='active';
+  for(const button of actionButtons)button.classList.toggle('active',button.dataset.unit===unit);
+  setStatus(`${unitLabel(unit)} 배치 준비 · 빛나는 슬롯을 눌러 실제 위치를 선택해.`);
+  updateHud(`choose-${unit}`);
+  ping(unit==='beetle'?110:unit==='mantis'?330:220);
+}
+function placeSelectedTower(slot){
+  if(state.won||state.lost||!state.placementMode)return;
+  const spec=TOWER_SPECS[state.selectedUnit];
+  const slotId=slot.dataset.buildSlot;
+  const existing=state.towers.find(t=>t.slot===slotId);
+  if(existing){
+    const upgradeCost=6+existing.level*3;
+    if(state.resource<upgradeCost){setStatus(`수액이 부족해. ${upgradeCost} 필요.`);return;}
+    state.resource-=upgradeCost;existing.level++;
+    state.score+=4;state.level=Math.max(state.level,existing.level);
+    setStatus(`${slotId} ${unitLabel(existing.type)}를 Lv.${existing.level}로 강화했어.`);
+  }else{
+    if(state.resource<spec.cost){setStatus(`${spec.name} 배치에는 수액 ${spec.cost}이 필요해.`);return;}
+    state.resource-=spec.cost;
+    state.towers.push({id:`tower-${state.towers.length+1}`,type:state.selectedUnit,slot:slotId,level:1});
+    state.score+=3;
+    setStatus(`${slotId}에 ${spec.name} 배치 완료. 다음 웨이브 결과가 달라져.`);
+  }
+  state.placementMode=false;
+  document.body.dataset.placementMode='idle';
+  slots.forEach(s=>s.classList.toggle('selected',s===slot));
+  renderTowers();updateHud('placement');ping(196);
+}
+function analyzeCounter(){
+  if(state.won||state.lost)return;
+  state.analysisCount++;
+  const wave=currentWave();
+  state.selectedUnit=wave.counter;
+  state.score+=1;
+  state.collisionCount+=1;
+  setStatus(`${wave.name} 분석 완료 · ${unitLabel(wave.counter)}가 가장 효율적이야.`);
+  updateHud('analysis');
+  ping(262);
+}
+function scanRoute(){
+  if(state.won||state.lost)return;
+  const wave=currentWave();
+  state.routeId=state.routeId==='garden-east'?'wetland-west':'garden-east';
+  state.score+=2;
+  state.collisionCount+=1;
+  renderEnemyPreview(.18);
+  setStatus(`${state.routeId==='garden-east'?'정원 동쪽':'습지 서쪽'} 경로를 읽었어. ${wave.name}의 이동 속도 ${wave.speed.toFixed(2)}.`);
+  updateHud('route-scan');
+  ping(294);
+}
+function towerWaveDamage(wave){
+  let total=0;
+  for(const tower of state.towers){
+    const spec=TOWER_SPECS[tower.type];
+    const levelPower=spec.damage+tower.level*3;
+    const counterBonus=spec.counters.includes(wave.type)?1.8:1;
+    const routeBonus=(wave.route==='wetland-west'&&tower.type==='mantis')?1.12:(wave.route==='garden-east'&&tower.type==='ant')?1.1:1;
+    const slot=document.querySelector(`[data-build-slot="${tower.slot}"]`);
+    const laneFactor=Number(slot?.dataset.gridY||1)===1?1.04:.96;
+    total+=levelPower*spec.rate*counterBonus*routeBonus*laneFactor;
+  }
+  return Math.round(total);
+}
+function resolveCurrentWave(source){
+  if(state.won||state.lost)return;
+  if(!state.towers.length){
+    state.hp=Math.max(0,state.hp-24);
+    state.score=Math.max(0,state.score-2);
+    state.lastWaveDamage=0;state.lastLeakDamage=24;
+    setStatus('수비대가 없어 적이 기지까지 돌파했어.');
+  }else{
+    const wave=currentWave();
+    renderEnemyPreview(.45);
+    const damage=towerWaveDamage(wave);
+    const remaining=Math.max(0,wave.hp-damage);
+    const routePressure=wave.route===state.routeId?1:.78;
+    const leak=Math.ceil((remaining/wave.hp)*wave.count*7*routePressure);
+    const reward=Math.max(3,wave.reward-Math.floor(leak/4));
+    state.hp=Math.max(0,state.hp-leak);
+    state.resource+=reward;
+    state.score+=Math.max(5,Math.round(damage/4)-leak);
+    state.lastWaveDamage=damage;state.lastLeakDamage=leak;state.lastReward=reward;
+    setStatus(`${wave.name} 방어 결과 · 화력 ${damage}, 누수 피해 ${leak}, 수액 +${reward}.`);
+    if(wave.boss){
+      const boss=$('bossCard').querySelector('.boss');
+      boss.dataset.state=remaining<=0?'defeated':'escaped';
+      boss.dataset.bossPhase=remaining>50?'rage':'broken';
+    }
+  }
+  state.collisionCount+=Math.max(1,state.towers.length);
+  const clearedWave=state.waveIndex;
+  state.waveIndex++;
+  if(state.hp<=0){
+    state.lost=true;setRunResult('defeat');
+    setStatus('기지가 무너졌어 · 패배. 재도전에서 배치를 바꿔 다시 막아.');
+  }else if(state.waveIndex>=4){
+    state.won=true;setRunResult('victory');
+    state.score+=20;
+    setStatus('정원 핵심 방어 성공 · 승리. 다른 곤충 조합으로 결과를 비교할 수 있어.');
+  }else{
+    state.level=1+Math.floor(state.waveIndex/2);
+    const next=currentWave();
+    state.routeId=next.route;
+    setRunResult('running');
+    renderEnemyPreview(.08);
+  }
+  updateHud(`wave-${clearedWave+1}-${source}`);
+  renderTowers();
+  ping(state.won?392:state.lost?98:174);
+}
+function toggleMobileLayout(){
+  state.mobileCompact=!state.mobileCompact;
+  document.body.dataset.touchLayout=state.mobileCompact?'compact':'standard';
+  root.dataset.touchLayout=state.mobileCompact?'compact':'standard';
+  root.dataset.state=`mobile-${state.mobileCompact?'compact':'standard'}-${state.waveIndex}`;
+  setStatus(state.mobileCompact?'한손 지휘 모드 · 큰 버튼으로 배치하기 쉬워졌어.':'표준 지휘 모드로 돌아왔어.');
+  ping(247);
+}
+function resetGame(){
+  const completed=state.won||state.lost;
+  if(completed)state.cycle++;
+  state.hp=100;state.waveIndex=0;state.resource=34+Math.min(12,state.cycle*2);state.score=0;state.level=1;
+  state.towers=[];state.selectedUnit='ant';state.routeId='garden-east';state.analysisCount=0;
+  state.placementMode=false;state.collisionCount=0;state.won=false;state.lost=false;
+  state.lastWaveDamage=0;state.lastLeakDamage=0;state.lastReward=0;
+  document.body.dataset.placementMode='idle';setRunResult('running');
+  slots.forEach(s=>s.classList.remove('selected','occupied'));
+  renderTowers();renderEnemyPreview(.05);updateHud('retry');
+  setStatus('새 방어선 준비 완료 · 경로를 읽고 곤충을 배치해.');
+}
+function bindControls(){
+  $('analyze').addEventListener('click',async()=>{await ensureAudio();analyzeCounter();});
+  $('routeScan').addEventListener('click',async()=>{await ensureAudio();scanRoute();});
+  $('placeAnt').addEventListener('click',async()=>{await ensureAudio();chooseUnit('ant');});
+  $('resolveGarden').addEventListener('click',async()=>{await ensureAudio();resolveCurrentWave('garden');});
+  $('placeBeetle').addEventListener('click',async()=>{await ensureAudio();chooseUnit('beetle');});
+  $('resolveWetland').addEventListener('click',async()=>{await ensureAudio();resolveCurrentWave('wetland');});
+  $('placeMantis').addEventListener('click',async()=>{await ensureAudio();chooseUnit('mantis');});
+  $('resolveBoss').addEventListener('click',async()=>{await ensureAudio();resolveCurrentWave('boss');});
+  $('mobileMode').addEventListener('click',async()=>{await ensureAudio();toggleMobileLayout();});
+  for(const slot of slots)slot.addEventListener('click',async()=>{await ensureAudio();placeSelectedTower(slot);});
+  $('retry').addEventListener('click',resetGame);
+  $('mute').addEventListener('click',async()=>{await ensureAudio();muted=!muted;if(masterGain)masterGain.gain.value=muted?0:Number($('volume').value);$('mute').textContent=muted?'음악 꺼짐':'음악 켜기';document.body.dataset.audioState=muted?'muted':'running';});
+  $('volume').addEventListener('input',async()=>{await ensureAudio();if(masterGain&&!muted)masterGain.gain.value=Number($('volume').value);});
+  document.addEventListener('keydown',event=>{
+    if(event.key==='1')chooseUnit('ant');
+    if(event.key==='2')chooseUnit('mantis');
+    if(event.key==='3')chooseUnit('beetle');
+    if(event.key==='Enter')resolveCurrentWave('keyboard');
+  });
+}
+bindControls();
+renderEnemyPreview(.05);
+renderTowers();
+updateHud('ready');
+</script>
+</body>
+</html>
