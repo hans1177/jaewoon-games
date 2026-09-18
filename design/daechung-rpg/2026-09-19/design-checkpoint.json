@@ -350,23 +350,23 @@
       "updatedAt": "2026-09-18T18:44:50.046Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 8,
+      "calls": 9,
       "successes": 1,
-      "failures": 7,
+      "failures": 8,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 195366,
-      "lastMs": 51570,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T19:03:46.402Z"
+      "totalMs": 316360,
+      "lastMs": 120994,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=2252",
+      "updatedAt": "2026-09-18T19:04:55.826Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T18:44:48.897Z",
-  "updatedAt": "2026-09-18T19:03:46.402Z",
-  "failedPhase": null,
-  "lastError": null,
+  "updatedAt": "2026-09-18T19:04:55.826Z",
+  "failedPhase": "designer_pre_gate_repair_1",
+  "lastError": "GEMINI_CALL_FAILED gemini-3.5-flash-lite: GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=2252",
   "lastSuccessfulModelCallAt": "2026-09-18T18:54:11.215Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
