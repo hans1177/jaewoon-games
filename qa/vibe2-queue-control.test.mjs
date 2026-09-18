@@ -263,6 +263,24 @@ test('stale running development reservation is requeued without consuming retry'
   assert.ok(task.evidence.includes('recovery:stale-running-reservation-v1'));
 });
 
+test('stale released learning practice reservation is requeued after cancelled fan-in', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'LEARNING-PRACTICE-gap-asset_production-l1',gameId:null,target:'web',department:'development',type:'research',
+    sourceRoot:'learning-practice:gap-asset_production-l1',goal:'[VIBE_LEARNING_PRACTICE] asset production',status:'running',
+    retries:1,maxRetries:1,blocker:'slot-released-awaiting-fan-in',
+    evidence:['learning-practice-only','production-pass:NO'],
+    reservationId:'run-practice:1',reservationRunId:'run-practice',reservationRunAttempt:1,reservedAt:'2026-09-18T09:00:00Z'
+  }]});
+  const recovered=recoverStaleRunningReservations(queue,{nowMs:Date.parse('2026-09-18T09:13:00Z')});
+  assert.equal(recovered.recovered,1);
+  const task=recovered.queue.tasks[0];
+  assert.equal(task.status,'queued');
+  assert.equal(task.blocker,null);
+  assert.equal(task.retries,1);
+  assert.equal(task.reservationId,null);
+  assert.equal(task.lastOutcome,'STALE_RESERVATION_RECOVERED');
+});
+
 test('awaiting QA running reservation is not reclaimed as stale worker capacity', () => {
   const queue=createVibeContinuousQueue({tasks:[{
     id:'awaiting',gameId:'awaiting',target:'web',department:'development',type:'implementation',
