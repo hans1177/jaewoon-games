@@ -144,6 +144,20 @@ export function ingestFormalWebExperiences({
       results.push({gameId:built.gate.gameId||clean(item?.gameId),promoted:false,reason:'formal-web-learning-gate-failed',issues:built.gate.issues});
       continue;
     }
+    const alreadyRecorded=(memory?.records||[]).some(record=>
+      clean(record?.id)===clean(built.review.id) ||
+      (clean(record?.gameId)===clean(built.review.gameId) && (record?.evidence||[]).some(value=>clean(value)===`source-revision:${built.gate.sourceRevision}`))
+    );
+    if(alreadyRecorded){
+      results.push({
+        gameId:built.review.gameId,
+        promoted:false,
+        reason:'formal-web-experience-already-ingested',
+        recordId:built.review.id,
+        sourceRevision:built.gate.sourceRevision
+      });
+      continue;
+    }
     const promoted=promoteVibeReviewedExperience(memory,built.review);
     memory=promoted.memory;
     results.push({
