@@ -131,8 +131,11 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   add(Number(expected.handoff || 0) > 0 && Number(expected.handoff) !== 3, 'HANDOFF_VERSION_MISMATCH');
 
   const humanDocs = Array.isArray(docs.humanDocuments) ? docs.humanDocuments.map(clean).filter(Boolean) : [];
-  add(Number(docs.humanDocumentLimit || 0) !== 1, 'HUMAN_DOCUMENT_LIMIT_NOT_ONE');
-  add(humanDocs.length !== 1 || humanDocs[0] !== 'VIBE2.md', 'HUMAN_DOCUMENT_SET_INVALID');
+  const humanDocumentRequired = docs.humanDocumentRequired === true;
+  const expectedHumanDocumentLimit = humanDocumentRequired ? 1 : 0;
+  add(Number(docs.humanDocumentLimit || 0) !== expectedHumanDocumentLimit, 'HUMAN_DOCUMENT_LIMIT_MISMATCH');
+  if (humanDocumentRequired) add(humanDocs.length !== 1 || humanDocs[0] !== 'VIBE2.md', 'HUMAN_DOCUMENT_SET_INVALID');
+  else add(humanDocs.length !== 0, 'HUMAN_DOCUMENT_SET_INVALID');
   add(docs.manualHandoffDocumentsAllowed !== false, 'MANUAL_HANDOFF_DOCUMENT_ALLOWED');
   add(work.humanMaintainedHandoff !== false, 'HUMAN_HANDOFF_ENABLED');
   add(work.handoffMode !== 'generated-from-machine-state', 'HANDOFF_MODE_NOT_GENERATED');
