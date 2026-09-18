@@ -291,5 +291,145 @@
       "POST_RELEASE_FOCUS_REFILLS_CONTINUOUSLY",
       "VERIFIED_LEARNING_PERSISTS_CONTINUOUSLY"
     ]
+  },
+  "homepageRuntimeSyncWorkOrder": {
+    "id": "HOMEPAGE_PUBLIC_RUNTIME_SYNC_V1",
+    "kind": "MACHINE_WORK_ORDER",
+    "humanDocumentRequired": false,
+    "authority": "EXECUTION_SEQUENCE_ONLY",
+    "sourceOfTruth": [
+      "company-runtime:game-catalog.json",
+      "company-runtime:company-status.json",
+      "main:game-catalog.json",
+      "main:company-status.json"
+    ],
+    "publicEndpoint": {
+      "baseUrl": "https://jaewoon-games.pages.dev/",
+      "catalogUrl": "https://jaewoon-games.pages.dev/game-catalog.json",
+      "statusUrl": "https://jaewoon-games.pages.dev/company-status.json",
+      "legacyRepoHomepageMetadataMustNotBeUsed": true
+    },
+    "observedAtCreation": {
+      "mainCatalogGames": 22,
+      "mainCatalogVersion": 24,
+      "mainCompanyRuntimeCatalogSame": true,
+      "mainCompanyRuntimeStatusSame": true,
+      "homepageManagerLatestObservedResult": "SUCCESS",
+      "diagnosis": "CANONICAL_RUNTIME_MIRROR_IMPLEMENTED_PUBLIC_DEPLOYMENT_FRESHNESS_UNVERIFIED"
+    },
+    "requiredReads": [
+      ".github/workflows/homepage-manager.yml",
+      "tools/homepage-manager.mjs",
+      "assets/homepage-enhancements.js",
+      "game-catalog.json",
+      "company-status.json",
+      "company-learning/other-ai-machine-directive.json"
+    ],
+    "executionRules": {
+      "noNewHomepagePipeline": true,
+      "preserveHomepageManager": true,
+      "preserveSingleManagerSingleSupervisor": true,
+      "preserveExistingHomepageFunctions": true,
+      "canonicalRuntimeDataMustRemainSourceOfTruth": true,
+      "publicEndpointMustBeComparedAgainstCanonical": true,
+      "semanticComparisonRequired": true,
+      "staleDeploymentMustBeDiagnosedBeforeCodeMutation": true,
+      "deploymentProviderSettingsMustNotBeGuessed": true,
+      "ownerSettingsMustNotBeChangedWithoutConcreteNeed": true,
+      "humanDocumentationForbidden": true
+    },
+    "steps": [
+      {
+        "order": 1,
+        "stage": "FETCH_LIVE_PUBLIC_RUNTIME",
+        "actions": [
+          "GET_PUBLIC_ROOT",
+          "GET_PUBLIC_GAME_CATALOG_JSON_NO_CACHE",
+          "GET_PUBLIC_COMPANY_STATUS_JSON_NO_CACHE"
+        ],
+        "requiredEvidence": [
+          "HTTP_STATUS",
+          "RESPONSE_TIMESTAMP_OR_HASH",
+          "PUBLIC_CATALOG_GAME_COUNT",
+          "PUBLIC_CATALOG_VERSION"
+        ]
+      },
+      {
+        "order": 2,
+        "stage": "COMPARE_WITH_CANONICAL_RUNTIME",
+        "compare": [
+          "PUBLIC_GAME_CATALOG_VS_COMPANY_RUNTIME",
+          "PUBLIC_COMPANY_STATUS_VS_COMPANY_RUNTIME",
+          "PUBLIC_GAME_CATALOG_VS_MAIN_MIRROR",
+          "PUBLIC_COMPANY_STATUS_VS_MAIN_MIRROR"
+        ],
+        "comparisonMode": "SEMANTIC_JSON_PLUS_CONTENT_HASH",
+        "expectedInvariant": "MAIN_AND_COMPANY_RUNTIME_MIRRORS_MATCH_BEFORE_PUBLICATION"
+      },
+      {
+        "order": 3,
+        "stage": "CLASSIFY_FAILURE",
+        "outcomes": [
+          "PUBLIC_CURRENT_NO_ACTION",
+          "PUBLIC_STALE_DEPLOYMENT",
+          "PUBLIC_CACHE_STALE",
+          "PUBLIC_ROUTE_MISSING",
+          "PUBLIC_RUNTIME_AUTHORITY_REJECTED_BY_RENDERER",
+          "HOMEPAGE_MANAGER_PUBLICATION_GAP"
+        ],
+        "codeMutationBeforeClassificationForbidden": true
+      },
+      {
+        "order": 4,
+        "stage": "REPAIR_EXISTING_DEPLOYMENT_PATH_ONLY",
+        "appliesWhen": "PUBLIC_CURRENT_NO_ACTION!=TRUE",
+        "priorities": [
+          "VERIFY_PAGES_DEV_DEPLOY_SOURCE_AND_BRANCH",
+          "VERIFY_LATEST_MAIN_REVISION_REACHED_PUBLIC_BUILD",
+          "VERIFY_GAME_CATALOG_AND_COMPANY_STATUS_ARE_INCLUDED_IN_PUBLIC_OUTPUT",
+          "VERIFY_CACHE_HEADERS_DO_NOT_PIN_OLD_JSON",
+          "VERIFY_RUNTIME_AUTHORITY_FIELDS_MATCH_RENDERER_REQUIREMENTS",
+          "TRIGGER_EXISTING_DEPLOYMENT_OR_EXISTING_HOMEPAGE_PUBLICATION_PATH",
+          "DO_NOT_CREATE_SHADOW_DEPLOYMENT"
+        ]
+      },
+      {
+        "order": 5,
+        "stage": "PUBLIC_REVERIFY",
+        "required": [
+          "PUBLIC_ROOT_200",
+          "PUBLIC_GAME_CATALOG_200",
+          "PUBLIC_COMPANY_STATUS_200",
+          "PUBLIC_CATALOG_MATCHES_CANONICAL",
+          "PUBLIC_STATUS_MATCHES_CANONICAL",
+          "HOMEPAGE_RENDERER_ACCEPTS_COMPANY_RUNTIME_AUTHORITY"
+        ]
+      },
+      {
+        "order": 6,
+        "stage": "PERSIST_MACHINE_EVIDENCE",
+        "persist": [
+          "LIVE_PUBLIC_URL",
+          "PUBLIC_CATALOG_HASH",
+          "PUBLIC_STATUS_HASH",
+          "CANONICAL_CATALOG_HASH",
+          "CANONICAL_STATUS_HASH",
+          "DEPLOYED_REVISION",
+          "SYNC_RESULT"
+        ],
+        "humanReportRequired": false
+      }
+    ],
+    "successSignals": [
+      "PUBLIC_HOMEPAGE_CURRENT",
+      "PUBLIC_CATALOG_CANONICAL_MATCH",
+      "PUBLIC_STATUS_CANONICAL_MATCH",
+      "NO_SHADOW_PIPELINE_CREATED"
+    ],
+    "stopConditions": [
+      "PUBLIC_ENDPOINT_NETWORK_UNREACHABLE_FROM_RUNNER",
+      "DEPLOYMENT_PROVIDER_CONFIGURATION_UNAVAILABLE",
+      "OWNER_HOLD"
+    ]
   }
 }
