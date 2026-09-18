@@ -290,5 +290,6 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DEVELOPMENT_CONFIRMED_SEED_RECONCILED=${result.reconciledPromotedSeeds.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_EXISTING_RECONCILED=${result.reconciledExisting.join(',')||'NONE'}`);
   console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${result.ownerResetSeedsMaterialized.join(',')||'NONE'}`);
+  console.log('LEGACY_DIRECT_LEAD_STALE_GATE_RECONCILE=SUPPORTED');
   if(result.skipped.length)console.log(`DESIGN_PROMOTION_SKIPPED=${JSON.stringify(result.skipped)}`);
 }
