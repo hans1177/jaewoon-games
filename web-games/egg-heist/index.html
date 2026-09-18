@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      background-color: #111;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .game-container > div {
+      width: 80%;
+      max-width: 600px;
+      background-color: #333;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .game-container > div > h2 {
+      margin-bottom: 10px;
+    }
+    .game-container > div > p {
+      margin-bottom: 15px;
+    }
+    .game-container > div > button {
+      background-color: #555;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .game-container > div > button:hover {
+      background-color: #777;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Protected state preservation
+    let gameState = {
+      player: {
+        position: { x: 0, y: 0 },
+        inventory: [],
+        health: 100,
+        score: 0
+      },
+      enemies: [],
+      progress: {
+        level: 1,
+        experience: 0,
+        money: 0
+      },
+      isGameRunning: true
+    };
+
+    // Direct player input
+    document.querySelector('button').addEventListener('click', () => {
+      if (gameState.isGameRunning) {
+        gameState.player.position.x += 1;
+        gameState.player.health -= 1;
+        gameState.player.score += 10;
+        gameState.progress.experience += 5;
+        gameState.progress.money += 5;
+        updateGame();
+      }
+    });
+
+    // Game loop
+    function updateGame() {
+      const gameContainer = document.querySelector('.game-container');
+      gameContainer.innerHTML = `
+        <h2>Game Loop</h2>
+        <p>Player position: ${gameState.player.position.x}, ${gameState.player.position.y}</p>
+        <p>Health: ${gameState.player.health}</p>
+        <p>Score: ${gameState.player.score}</p>
+        <p>Experience: ${gameState.progress.experience}</p>
+        <p>Money: ${gameState.progress.money}</p>
+        <button>Move Right</button>
+      `;
+    }
+
+    // Game state preservation
+    function saveGameState() {
+      localStorage.setItem('gameState', JSON.stringify(gameState));
+    }
+
+    // Game state restoration
+    function restoreGameState() {
+      if (localStorage.getItem('gameState')) {
+        gameState = JSON.parse(localStorage.getItem('gameState'));
+        updateGame();
+      }
+    }
+
+    // Game progression
+    function updateProgress() {
+      const level = gameState.progress.level;
+      const experience = gameState.progress.experience;
+      const money = gameState.progress.money;
+      const levelUpThreshold = 100;
+      const moneyPerLevel = 50;
+
+      if (experience >= levelUpThreshold) {
+        gameState.progress.level += 1;
+        gameState.progress.money += moneyPerLevel;
+      }
+    }
+
+    // Game failure/success
+    function checkGameStatus() {
+      if (gameState.player.health <= 0) {
+        alert("Game Over! You lost.");
+        gameState.isGameRunning = false;
+      } else if (gameState.progress.experience >= 100) {
+        alert("Game Won! You reached level 10!");
+        gameState.isGameRunning = false;
+      }
+    }
+
+    // Game restart
+    function restartGame() {
+      gameState = {
+        player: {
+          position: { x: 0, y: 0 },
+          inventory: [],
+          health: 100,
+          score: 0
+        },
+        enemies: [],
+        progress: {
+          level: 1,
+          experience: 0,
+          money: 0
+        },
+        isGameRunning: true
+      };
+      restoreGameState();
+      updateGame();
+    }
+
+    // Game loop
+    function gameLoop() {
+      updateProgress();
+      checkGameStatus();
+      updateGame();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Start game
+    gameLoop();
+  </script>
+</body>
+</html>
