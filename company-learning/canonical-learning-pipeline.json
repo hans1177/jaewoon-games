@@ -1,8 +1,8 @@
 {
-  "version": 1,
+  "version": 2,
   "authority": "COMPANY_FLOW_SUBORDINATE_CANONICAL_IMPLEMENTATION_CONTRACT",
   "status": "LOCKED",
-  "ownerDirectiveRecordedAt": "2026-09-12",
+  "ownerDirectiveRecordedAt": "2026-09-18",
   "purpose": "Freeze the one authorized Vibe2 evidence-to-learning chain and preserve the verified Block Blast Run 30 success-learning method without inventing evidence or weakening gates.",
   "canonicalChain": [
     "VALIDATED_EVIDENCE",
@@ -115,5 +115,29 @@
     "currentAcceptedSamples": 1,
     "currentTrainSamples": 1,
     "proprietaryExtraction": false
+  },
+  "authorizedSourcePolicy": {
+    "allowed": true,
+    "authority": "OWNER_ASSERTED_REUSE_REINTERPRETATION",
+    "requiredEvidenceMarker": "AUTHORIZED_SOURCE_EVIDENCE_PASS",
+    "staticRuntimeState": "STATIC_VERIFIED",
+    "browserQa": "NOT_APPLICABLE",
+    "sourceCodeStudyAllowed": true,
+    "assetStudyAllowed": true,
+    "nativeLibraryStaticAnalysisAllowed": true,
+    "algorithmStudyAllowed": true,
+    "rawPublicRedistributionAllowed": false,
+    "staticAnalysisCountsAsRuntimePass": false,
+    "feeds24hExperienceMemory": true,
+    "feedsCanonicalTrainingSamples": true,
+    "promotionStillRequiresExistingTrainingHoldoutCanaryGates": true
+  },
+  "blockBlastAuthorizedSourceLearning": {
+    "gameId": "block-blast",
+    "packageId": "com.block.juggle",
+    "summaryPath": "company-learning/authorized-source/block-blast/authorized-learning-summary.json",
+    "experienceIngestTool": "tools/vibe2-authorized-source-memory.mjs",
+    "trainingIngestTool": "tools/vibe2-distillation-ingest.mjs",
+    "modelTrainingPromotion": "WAITING_FOR_GLOBAL_VERIFIED_SAMPLE_THRESHOLDS"
   }
 }
