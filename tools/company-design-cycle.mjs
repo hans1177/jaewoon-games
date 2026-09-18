@@ -745,13 +745,6 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
         recordModelHealth(`gemini:${candidateModel}`,{success:false,elapsedMs:Date.now()-callStarted,error});
         persistDesignCheckpoint();
         const status=Number(error?.geminiStatus||0);
-        if(status===429&&isDailyGeminiQuotaError(error)){
-          quarantineGeminiModel(candidateModel,status);
-          const nextCandidate=candidates.slice(candidates.indexOf(candidateModel)+1).find(model=>!geminiUnavailableModels.has(model))||null;
-          console.log(`GEMINI_DAILY_QUOTA_EXHAUSTED=${candidateModel}|retry=NO|next=${nextCandidate||'NONE'}`);
-          console.log(`GEMINI_MODEL_FAILOVER=${requestedModel}|${candidateModel}->${nextCandidate||'NONE'}|status=${status}`);
-          break;
-        }
         const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel);
         if(status===429&&minuteRetryMs>0&&minuteRateRetries<2){
           minuteRateRetries+=1;
@@ -759,6 +752,13 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
           await new Promise(r=>setTimeout(r,minuteRetryMs));
           attempt-=1;
           continue;
+        }
+        if(status===429&&isDailyGeminiQuotaError(error)){
+          quarantineGeminiModel(candidateModel,status);
+          const nextCandidate=candidates.slice(candidates.indexOf(candidateModel)+1).find(model=>!geminiUnavailableModels.has(model))||null;
+          console.log(`GEMINI_DAILY_QUOTA_EXHAUSTED=${candidateModel}|retry=NO|next=${nextCandidate||'NONE'}`);
+          console.log(`GEMINI_MODEL_FAILOVER=${requestedModel}|${candidateModel}->${nextCandidate||'NONE'}|status=${status}`);
+          break;
         }
         if(status===429||status===404||status===403){
           quarantineGeminiModel(candidateModel,status);
