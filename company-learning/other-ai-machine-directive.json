@@ -1,0 +1,130 @@
+{
+  "version": 1,
+  "updatedAt": "2026-09-19",
+  "kind": "MACHINE_EXECUTION_DIRECTIVE",
+  "audience": "OTHER_AI_AND_RUNNERS",
+  "humanDocumentRequired": false,
+  "authority": "NON_AUTHORITATIVE_EXECUTION_GUIDE",
+  "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+  "policyOverrideAllowed": false,
+  "requiredReads": [
+    "company-directive.json",
+    "company-learning/platform-release-roadmap.json",
+    "company-learning/canonical-learning-pipeline.json",
+    "company-learning/vibe2-learning-motor.json",
+    ".vibe2/experience.json"
+  ],
+  "executionRules": {
+    "latestMainRequired": true,
+    "latestControlStateRequiredWhenTouchingVibeRuntime": true,
+    "preserveExistingAutomation": true,
+    "preserveExistingSettings": true,
+    "inventVerifiedPassForbidden": true,
+    "directPolicyMutationForbidden": true,
+    "gameplayImplementationOwner": "VIBE2_VIBE3",
+    "nonVibeGameSourceWriteAllowed": false,
+    "nonVibeRole": [
+      "TEACH",
+      "REVIEW",
+      "DIAGNOSE",
+      "UNBLOCK",
+      "VALIDATE",
+      "ORCHESTRATION_CI_WHEN_NEEDED"
+    ]
+  },
+  "developmentLifecycle": {
+    "platformGenreDecisionRequiredBeforeImplementation": true,
+    "webFirst": {
+      "required": true,
+      "role": "PORTABLE_EXECUTABLE_GAMEPLAY_BASELINE",
+      "disposablePrototype": false,
+      "implementRealBaseSystems": true,
+      "carryForward": [
+        "core-loop",
+        "gameplay-state-model",
+        "progression-model",
+        "input-intent",
+        "ui-flow",
+        "save-meaning",
+        "content-structure",
+        "balance-intent",
+        "verified-learning-context"
+      ],
+      "preserveReusableSystems": true,
+      "preserveSaveMeaningWhenCompatible": true,
+      "restartFromBlankForbiddenWhenValidContinuationExists": true
+    },
+    "nativeSecondStage": {
+      "selectedPlatformSourceBindRequired": true,
+      "webBaseMustCarryForward": true,
+      "platformAdaptationAllowed": true,
+      "silentScopeDropForbidden": true,
+      "nativeRuntimeEvidenceRequiredSeparately": true,
+      "webPassCannotSubstituteNativePass": true
+    },
+    "robloxPostRelease": {
+      "enabled": true,
+      "state": "POST_RELEASE_FOCUSED_DEVELOPMENT",
+      "protectedRunnerSlots": 1,
+      "maxActiveFocusTaskPerProject": 1,
+      "continuousRefill": true,
+      "sourceRoot": "roblox-games/<gameId>",
+      "priorities": [
+        "gameplay-completeness",
+        "content-depth",
+        "roblox-native-ux",
+        "mobile-readability",
+        "performance",
+        "maintainability",
+        "verified-learning-reuse"
+      ],
+      "ownerHoldOrKillStopsFocus": true
+    }
+  },
+  "learning": {
+    "continuous24h": true,
+    "googlePlayRotationContinuous": true,
+    "catalogWrapMustNotStopStudy": true,
+    "canonicalDistillationContinuous": true,
+    "waitingForVerifiedSamplesMeansCollectionStateNotFailure": true,
+    "maximizeVerifiedLearningUse": true,
+    "sameGameVerifiedKnowledgeHighestPriority": true,
+    "crossGameTransformativeRecombinationAllowed": true,
+    "rawCopyForbidden": true,
+    "newExpressionRequired": true,
+    "retrievalSources": [
+      ".vibe2/experience.json",
+      ".vibe2/game-study-knowledge.json",
+      "company-learning/vibe3-memory-index.json",
+      "company-learning/vibe3-recombination-memory.json",
+      "company-learning/vibe3-task-playbooks.json",
+      "company-learning/vibe2-code-pattern-library.json"
+    ],
+    "learningMayExpandAuthority": false,
+    "learningMayReplaceNativeVerification": false,
+    "promotionStillRequires": "FIXED_HOLDOUT_AB_THEN_CANARY"
+  },
+  "localExecution": {
+    "initiateLocalModelTraining": false,
+    "reason": "OWNER_CURRENTLY_HAS_NO_LOCAL_TRAINING_PLAN",
+    "doNotChangeCanonicalTrainingRoute": true
+  },
+  "doNot": [
+    "CREATE_SHADOW_PIPELINE",
+    "LOWER_VERIFICATION_GATES",
+    "RESTART_VALID_PROJECT_FROM_BLANK",
+    "DROP_APPROVED_SCOPE_SILENTLY",
+    "TREAT_WEB_PASS_AS_NATIVE_PASS",
+    "WRITE_GAMEPLAY_SOURCE_AS_NON_VIBE_AI",
+    "STOP_24H_LEARNING_AT_CATALOG_WRAP",
+    "CLAIM_MODEL_TRAINING_BEFORE_READINESS"
+  ],
+  "successContract": [
+    "CENTRAL_POLICY_READ",
+    "VERIFIED_LEARNING_REUSED",
+    "WEB_BASE_PRESERVED_IN_NATIVE_CONTINUATION",
+    "NATIVE_RUNTIME_REVERIFIED",
+    "ROBLOX_RELEASE_CAN_ENTER_ONE_SLOT_POST_RELEASE_FOCUS",
+    "NEW_VERIFIED_LESSONS_PERSISTED"
+  ]
+}
