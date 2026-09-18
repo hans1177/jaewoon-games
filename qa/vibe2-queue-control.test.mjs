@@ -19,6 +19,16 @@ function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
 
+test('legacy central policy evidence is migrated to the roadmap authority during queue normalization', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'legacy-policy',gameId:'legacy',target:'web',sourceRoot:'web-games/legacy',goal:'legacy',
+    status:'queued',evidence:['central-policy:COMPANY_FLOW.md','owner-directive:existing']
+  }]});
+  assert.equal(queue.tasks[0].evidence.includes('central-policy:COMPANY_FLOW.md'),false);
+  assert.equal(queue.tasks[0].evidence.includes('central-policy:company-learning/platform-release-roadmap.json'),true);
+  assert.equal(queue.tasks[0].evidence.includes('owner-directive:existing'),true);
+});
+
 test('owner directive preempts release and development work', () => {
   let queue=createVibeContinuousQueue();
   queue=add(queue,'dev','dev','unity',{releaseState:'development-confirmed'});
@@ -131,11 +141,11 @@ test('adaptive backpressure steps 20 down through 16 12 8 4 as pressure rises', 
   }
 });
 
-test('high-risk opt-in task creates two speculative worker variants', () => {
+test('high-risk opt-in task creates three speculative worker variants', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risky','risky','web',{estimatedRisk:'high',speculativeEligible:true});
   const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
-  assert.equal(reserved.matrix[0].speculativeVariants,2);
+  assert.equal(reserved.matrix[0].speculativeVariants,3);
 });
 
 test('fan-in accepts first passing speculative variant and keeps task awaiting full QA', () => {
@@ -205,6 +215,22 @@ test('twenty independent tasks can fill all 20 slots', () => {
   assert.equal(reserved.selection.effectiveMaxConcurrentTasks,20);
 });
 
+test('Gemini quota wait releases worker capacity while preserving source lock', () => {
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
+    {id:'quota-wait',gameId:'game-a',target:'web',sourceRoot:'web-games/game-a',goal:'model-bound review',status:'running',blocker:'WAITING_FOR_GEMINI_QUOTA',responsibleFiles:['shared.js']},
+    {id:'same-root',gameId:'game-a',target:'web',sourceRoot:'web-games/game-a',goal:'same root work',status:'queued',responsibleFiles:['shared.js']},
+    {id:'independent',gameId:'game-b',target:'web',sourceRoot:'web-games/game-b',goal:'independent implementation',status:'queued',responsibleFiles:['game.js']}
+  ]});
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:2});
+  assert.equal(batch.capacityRunning.length,0);
+  assert.deepEqual(batch.quotaWaiting.map(task=>task.id),['quota-wait']);
+  assert.equal(batch.freeSlots,2);
+  assert.equal(batch.selected.some(task=>task.id==='same-root'),false);
+  assert.equal(batch.selected.some(task=>task.id==='independent'),true);
+  const summary=createVibeContinuousQueue(batch.selected.length?queue:queue);
+  assert.equal(summary.tasks.length,3);
+});
+
 test('awaiting QA backpressure does not consume worker slots twice', () => {
   const awaiting=Array.from({length:8},(_,i)=>({
     id:`await-${i}`,gameId:`await-${i}`,target:'web',sourceRoot:`web-games/await-${i}`,goal:'await',
@@ -259,4 +285,21 @@ test('work package metadata survives queue normalization and larger functional p
   assert.equal(selection.selected[0].packageId,'p-feature');
   assert.equal(selection.selected[0].packageContext.sharedPreparation,true);
   assert.deepEqual([...selection.selected[0].completionCriteria],['functional-scope-implemented']);
+});
+
+
+test('practice-only PASS settles done without candidate QA promotion', () => {
+  let queue=createVibeContinuousQueue({tasks:[{
+    id:'practice',target:'web',department:'development',type:'research',goal:'[VIBE_LEARNING_PRACTICE] save',
+    status:'running',priority:'low',releaseState:'other',evidence:['learning-practice-only','production-pass:NO']
+  }]});
+  const merged=applyVibeFanInResults(queue,[{
+    taskId:'practice',variant:'primary',outcome:'PASS',blocker:'learning-practice-complete',
+    evidence:['learning-practice-only','production-pass:NO','source-write:NO']
+  }]);
+  const task=merged.queue.tasks.find(t=>t.id==='practice');
+  assert.equal(task.status,'done');
+  assert.equal(task.lastOutcome,'PASS');
+  assert.ok(task.evidence.includes('production-pass:NO'));
+  assert.equal(merged.applied[0].outcome,'DONE_PRACTICE');
 });
