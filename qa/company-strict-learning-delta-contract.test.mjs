@@ -23,7 +23,9 @@ test('design review feedback is reused as unvalidated next-design learning conte
   assert.match(designSource,/role:'UNVALIDATED_DESIGN_FEEDBACK_ONLY'/);
   assert.match(designSource,/successTrainingEligible:false/);
   assert.match(designSource,/validatedRuntimeRequiredForPositiveTraining:true/);
-  assert.match(designSource,/DESIGN_LEARNING_CONTEXT=/);
+  assert.match(designSource,/const latestDesignFeedbackEvent=designLearningEvents\.at\(-1\)\|\|null/);
+  assert.match(designSource,/STRICT_GATE_FEEDBACK=\$\{clip\(strictDesignerFeedback,4500\)\}/);
+  assert.match(designSource,/rejectionReasons:Array\.isArray\(latestDesignFeedbackEvent\?\.rejectionReasons\)/);
   assert.match(flow,/designReviewFeedbackStoredAsUnvalidatedLearningCandidate: true/);
   assert.match(flow,/designReviewFeedbackFeedsNextDesignContext: true/);
 });
