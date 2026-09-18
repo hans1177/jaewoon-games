@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "authority": "MACHINE_EXECUTION_CONTRACT",
+  "mode": "EXTERNAL_AI_KNOWLEDGE_DISTILLATION_ONLY",
+  "purpose": "Allow external AI to contribute knowledge without giving external models development, source-write, QA, release, mastery, or training-sample authority.",
+  "developmentBoundary": {
+    "externalAiMayWriteGameSource": false,
+    "externalAiMayCreateGameplayFeatureCommits": false,
+    "externalAiMayDirectlyModifyProductionWorkOrders": false,
+    "externalAiMayClaimQaPass": false,
+    "externalAiMayClaimProductionPass": false,
+    "externalAiMayProvideReleaseEvidence": false,
+    "externalAiMayChangeGameplayBalanceOrSaveMeaning": false,
+    "externalAiRawOutputMayEnterDevelopmentPrompt": false
+  },
+  "distillation": {
+    "rawPacketPersistence": "TEMPORARY_OUTSIDE_REPOSITORY_ONLY",
+    "rawExternalAiMayEnterRetrieval": false,
+    "packetSha256Required": true,
+    "independentReviewRequired": "PASS",
+    "minimumIndependentEvidenceItemsPerKnowledgeItem": 2,
+    "rawCodeCopyForbidden": true,
+    "maxDistilledPatternChars": 700,
+    "destination": ".vibe2/external-ai-distilled-knowledge.json",
+    "onlyDistilledVerifiedEntriesMayEnterRetrieval": true
+  },
+  "retrieval": {
+    "priority": "AFTER_VERIFIED_INTERNAL_EXPERIENCE_CODE_PATTERNS_AND_GAME_STUDY",
+    "advisoryOnly": true,
+    "sameGameAuthorityBonus": false,
+    "mayExpandAuthority": false,
+    "mayOverrideProtectedSemantics": false,
+    "mayOverrideVerifiedInternalEvidence": false
+  },
+  "learning": {
+    "countsAsMasteryXp": false,
+    "countsAsVerifiedSuccess": false,
+    "countsAsTrainingSample": false,
+    "countsAsReleaseEvidence": false,
+    "promotionRule": "ONLY_AFTER_VIBE_IMPLEMENTATION_AND_NORMAL_VERIFIED_QA_MAY_RESULT_ENTER_EXISTING_EXPERIENCE_OR_TRAINING_PIPELINES"
+  }
+}
