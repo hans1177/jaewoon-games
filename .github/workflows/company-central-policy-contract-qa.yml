@@ -27,6 +27,7 @@ on:
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'tools/homepage-test-candidate-sync.mjs'
@@ -91,6 +92,7 @@ on:
       - 'tools/company-development-validation-cycle.mjs'
       - 'tools/company-release-production-cycle.mjs'
       - 'tools/company-development-roblox-bootstrap.mjs'
+      - 'tools/company-development-roblox-source-reconcile.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'tools/homepage-test-candidate-sync.mjs'
@@ -163,6 +165,7 @@ jobs:
           node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-development-roblox-bootstrap.mjs
+          node --check tools/company-development-roblox-source-reconcile.mjs
           node --check tools/vibe2-post-release-focus.mjs
           node --check tools/homepage-test-candidate-sync.mjs
           node --test \
