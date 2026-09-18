@@ -6,6 +6,15 @@ const clean = (value) => String(value ?? '').trim();
 const freeze = (value) => Object.freeze(value);
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
 const freezeList = (values = []) => freeze(unique(values));
+const CANONICAL_POLICY_EVIDENCE='central-policy:company-learning/platform-release-roadmap.json';
+const LEGACY_POLICY_EVIDENCE='central-policy:COMPANY_FLOW.md';
+function normalizeEvidence(values=[]){
+  const rows=unique(values);
+  const hadLegacy=rows.includes(LEGACY_POLICY_EVIDENCE);
+  const filtered=rows.filter(value=>value!==LEGACY_POLICY_EVIDENCE);
+  if(hadLegacy&&!filtered.includes(CANONICAL_POLICY_EVIDENCE))filtered.unshift(CANONICAL_POLICY_EVIDENCE);
+  return filtered;
+}
 const clampInt = (value, min = 0, max = Number.MAX_SAFE_INTEGER) => Math.max(min, Math.min(max, Math.floor(Number(value) || 0)));
 const posix = (value) => clean(value).replaceAll('\\', '/').replace(/^\.\//, '').replace(/\/+$/, '');
 
@@ -103,7 +112,7 @@ function normalizeTask(input = {}, index = 0) {
     protectedChange: Boolean(input.protectedChange),
     paidResourceRequired: Boolean(input.paidResourceRequired),
     blocker: clean(input.blocker) || null,
-    evidence: freezeList(input.evidence || []),
+    evidence: freezeList(normalizeEvidence(input.evidence || [])),
     lastOutcome: clean(input.lastOutcome) || null,
     companyContext: normalizeCompanyContext(input.companyContext),
     sourceRoot: inferSourceRoot(input),
