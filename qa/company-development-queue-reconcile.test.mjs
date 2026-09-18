@@ -17,7 +17,8 @@ test('guarantees active confirmed games, preserves progress, removes inactive an
       {id:'design-only',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE'}
     ]});
     write(root,'web-games/cozy-island/index.html','<!doctype html><canvas></canvas>');
-    write(root,'development-queue.json',{version:1,routerPolicy:'COMPANY_FLOW.md',items:[
+    write(root,'company-learning/platform-release-roadmap.json',{developmentSpeedExecution:{globalSelectedPlatformDevelopmentWipMax:20}});
+    write(root,'development-queue.json',{version:1,routerPolicy:'COMPANY_FLOW.md',developmentGameWipMax:6,items:[
       {gameId:'progressed',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'WEB_CONTENT_EXPANSION',canonicalState:'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION',customEvidence:'KEEP'},
       {gameId:'progressed',gameName:'중복'},
       {gameId:'paused',currentStep:'WEB_PLAYABLE_BOOTSTRAP'},
@@ -39,6 +40,7 @@ test('guarantees active confirmed games, preserves progress, removes inactive an
     assert.equal(cozy.webValidationRequired,true);
     assert.equal(cozy.musicValidationRequired,true);
     assert.equal(queue.routerPolicy,'company-learning/platform-release-roadmap.json');
+    assert.equal(queue.developmentGameWipMax,20);
     assert.equal(result.routerPolicy,'company-learning/platform-release-roadmap.json');
     assert.equal(result.duplicateRemoved,1);
     assert.ok(result.removed.includes('paused'));
@@ -54,11 +56,13 @@ test('repairs stale router policy even when canonical queue items are already st
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'queue-policy-reconcile-'));
   try{
     write(root,'game-catalog.json',{games:[]});
-    write(root,'development-queue.json',{version:1,routerPolicy:'COMPANY_FLOW.md',items:[]});
+    write(root,'company-learning/platform-release-roadmap.json',{developmentSpeedExecution:{globalSelectedPlatformDevelopmentWipMax:20}});
+    write(root,'development-queue.json',{version:1,routerPolicy:'COMPANY_FLOW.md',developmentGameWipMax:6,items:[]});
     const result=reconcileDevelopmentQueue({root});
     const queue=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8'));
     assert.equal(result.changed,true);
     assert.equal(queue.routerPolicy,'company-learning/platform-release-roadmap.json');
+    assert.equal(queue.developmentGameWipMax,20);
     assert.equal(reconcileDevelopmentQueue({root}).changed,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
@@ -69,6 +73,6 @@ test('empty canonical queue does not redispatch development runtime',()=>{
   assert.match(workflow,/queue_count=.*development-queue\.json/);
   assert.match(workflow,/steps\.queue_state\.outputs\.queue_count != '0'/);
   assert.doesNotMatch(workflow,/name: Dispatch development runtime\n\s*if:\s*\$\{\{\s*always\(\) && !cancelled\(\)\s*\}\}/);
-  assert.match(workflow,/git checkout origin\/main -- tools\/company-development-queue-reconcile\.mjs/);
+  assert.match(workflow,/git checkout origin\/main -- tools\/company-development-queue-reconcile\.mjs company-learning\/platform-release-roadmap\.json/);
   assert.doesNotMatch(workflow,/git checkout origin\/main --[^\n]*game-catalog\.json/);
 });
