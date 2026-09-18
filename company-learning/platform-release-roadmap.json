@@ -61,8 +61,8 @@
     "representativeSetSizePerPlatform": 6,
     "globalPortfolioCap": false,
     "forcedReleaseCount": false,
-    "implementationWipTarget": 6,
-    "implementationWipMax": 6,
+    "implementationWipTarget": 20,
+    "implementationWipMax": 20,
     "implementationWipScope": "GLOBAL_SELECTED_PLATFORM_DEVELOPMENT",
     "webValidationParallelismUnchanged": true,
     "unityHistoricalSixPreserved": true,
@@ -109,7 +109,7 @@
   "developmentSpeedExecution": {
     "scope": "EXECUTION_SPEED_ONLY",
     "qualityOrEvidenceGateWeakeningForbidden": true,
-    "globalSelectedPlatformDevelopmentWipMax": 6,
+    "globalSelectedPlatformDevelopmentWipMax": 20,
     "webValidationParallelismControlledSeparately": true,
     "runtimeRunnerCapacityMaySerializeRuntimeQa": true,
     "canonicalSequence": [
@@ -180,7 +180,21 @@
     "ciContract": ".github/workflows/vibe3-engine-contract.yml",
     "publishModeDefault": "DRY_RUN",
     "livePublishRequiresExplicitExecute": true,
-    "cookieAuthAllowed": false
+    "cookieAuthAllowed": false,
+    "deploymentControl": {
+      "version": 1,
+      "automaticPublishPaused": true,
+      "automaticReleaseDispatchAllowed": false,
+      "manualPublishAllowed": true,
+      "allowedPublishRoutes": [
+        "GITHUB_CLOUD_OPEN_CLOUD",
+        "LOCAL_SELF_HOSTED_OPEN_CLOUD"
+      ],
+      "studioUiPublishAllowed": false,
+      "cookiePublishAllowed": false,
+      "resumeMode": "MANUAL_ONLY_WHILE_PAUSED",
+      "authority": "OWNER_DIRECTIVE_2026-09-19"
+    }
   },
   "unity": {
     "platformAdapter": "tools/company-development-unity-platform.mjs",
