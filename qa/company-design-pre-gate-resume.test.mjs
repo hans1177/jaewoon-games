@@ -72,3 +72,14 @@ test('checkpoint quota governor reallocates unique fallback lanes to blocked lea
   assert.match(workflow,/fallback_lanes=\$\{adaptiveLaneSpec\}/);
   assert.match(workflow,/COMPANY_GEMINI_LEAD_FALLBACK_LANES: \$\{\{ steps\.gemini_quota\.outputs\.fallback_lanes \}\}/);
 });
+
+
+test('current Gemini quota failure remains WAITING even when provider retry window already elapsed',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/const currentFailureQuota=retryableQuota\.test\(clean\(cp\.lastError\)\)/);
+  assert.match(workflow,/DESIGN_CURRENT_FAILURE_CLASS=EXTERNAL_MODEL_CAPACITY/);
+  assert.match(workflow,/currentFailureQuota\|\|roleBlocked\|\|\(!leadPhaseActive&&designerBlocked\)/);
+  assert.match(workflow,/DESIGN_MODEL_CYCLE_RESULT=WAITING_FOR_GEMINI_QUOTA/);
+  assert.match(workflow,/DESIGN_QUOTA_FAILURE_IS_DESIGN_GATE_FAILURE=NO/);
+  assert.match(workflow,/DESIGN_CHECKPOINT_RESUME_REQUIRED=YES/);
+});
