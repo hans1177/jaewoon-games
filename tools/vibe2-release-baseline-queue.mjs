@@ -91,6 +91,27 @@ function isImportedOwnerWebTask(task){
   if(task?.ownerDirective!==true||!Array.isArray(task?.evidence))return false;
   return task.evidence.includes('owner-directive:full-web-game-rebuild')||task.evidence.includes('owner-directive:existing-web-assessment');
 }
+function explicitOwnerSelectedDate(directive){
+  const dates=(directive?.evidence||[])
+    .map(clean)
+    .map(value=>value.match(/^owner-selected:(\d{4}-\d{2}-\d{2})$/)?.[1]||null)
+    .filter(Boolean)
+    .sort();
+  return dates.at(-1)||null;
+}
+function explicitDesignReset(game){
+  if(clean(game?.productionClass)!=='DESIGN_ONLY')return null;
+  if(clean(game?.lifecycleReason)!=='OWNER_ALL_GAMES_DESIGN_RESET')return null;
+  const source=clean(game?.productionClassSource);
+  const date=source.match(/^OWNER_ALL_GAMES_DESIGN_RESET_(\d{4}-\d{2}-\d{2})$/)?.[1]||null;
+  return date?{date,source}:null;
+}
+function ownerDirectiveSupersession(directive,catalogByGame){
+  const selectedAt=explicitOwnerSelectedDate(directive);
+  const reset=explicitDesignReset(catalogByGame.get(clean(directive?.gameId)));
+  if(!selectedAt||!reset||reset.date<=selectedAt)return null;
+  return {selectedAt,resetAt:reset.date,resetSource:reset.source};
+}
 function ownerDirectiveSpec(task){
   let goal=clean(task?.goal);
   for(const marker of [
@@ -127,27 +148,64 @@ function ownerDirectiveSpec(task){
     evidence:(task?.evidence||[]).map(clean).filter(Boolean).filter(value=>!derivedEvidencePrefixes.some(prefix=>value.startsWith(prefix)))
   });
 }
-function importOwnerDirectives(queue,directivesFile){
+function importOwnerDirectives(queue,directivesFile,catalog={games:[]}){
   const inboxExists=Boolean(directivesFile&&fs.existsSync(directivesFile));
   const inbox=readJson(directivesFile,{directives:[]});
+  const catalogByGame=new Map((catalog?.games||[]).map(game=>[clean(game?.id),game]).filter(([id])=>Boolean(id)));
   const activeDirectives=[];
+  const supersededDirectives=[];
   for(const directive of inbox?.directives||[]){
     const state=clean(directive?.status||'pending').toLowerCase();
     if(['cancelled','disabled'].includes(state))continue;
     const task=ownerDirectiveTask(directive);
-    if(task)activeDirectives.push({directive,task});
+    if(!task)continue;
+    const supersession=ownerDirectiveSupersession(directive,catalogByGame);
+    if(supersession){
+      supersededDirectives.push({directive,task,...supersession});
+      continue;
+    }
+    activeDirectives.push({directive,task});
   }
+
+  let tasks=[...(queue.tasks||[])];
+  const superseded=[];
+  for(const row of supersededDirectives){
+    const index=tasks.findIndex(task=>clean(task.id)===row.task.id);
+    if(index<0){
+      superseded.push({...row.task,supersededBy:row.resetSource,ownerSelectedAt:row.selectedAt});
+      continue;
+    }
+    const existing=tasks[index];
+    if(!isImportedOwnerWebTask(existing))continue;
+    const evidence=[...new Set([
+      ...(existing.evidence||[]),
+      `owner-directive-superseded-by:${row.resetSource}`,
+      `owner-directive-superseded-reset-at:${row.resetAt}`,
+      `owner-directive-superseded-selected-at:${row.selectedAt}`
+    ])];
+    const active=['queued','running','blocked'].includes(clean(existing.status).toLowerCase());
+    tasks[index]={
+      ...existing,
+      ...(active?{status:'cancelled',lastOutcome:'CANCELLED',blocker:'owner-directive-superseded-by-newer-owner-reset'}:{}),
+      evidence
+    };
+    superseded.push({...tasks[index],supersededBy:row.resetSource,ownerSelectedAt:row.selectedAt});
+  }
+  if(superseded.length)queue=createVibeContinuousQueue({...queue,tasks});
+
   const activeIds=new Set(activeDirectives.map(row=>row.task.id));
+  const supersededIds=new Set(supersededDirectives.map(row=>row.task.id));
   let pruned=[];
   if(inboxExists){
-    pruned=(queue.tasks||[]).filter(task=>isImportedOwnerWebTask(task)&&!activeIds.has(clean(task.id)));
+    pruned=(queue.tasks||[]).filter(task=>isImportedOwnerWebTask(task)&&!activeIds.has(clean(task.id))&&!supersededIds.has(clean(task.id)));
     if(pruned.length){
       queue=createVibeContinuousQueue({...queue,tasks:(queue.tasks||[]).filter(task=>!pruned.some(row=>row.id===task.id))});
     }
   }
+
   const imported=[];
   const refreshed=[];
-  let tasks=[...(queue.tasks||[])];
+  tasks=[...(queue.tasks||[])];
   for(const {task} of activeDirectives){
     const index=tasks.findIndex(row=>clean(row.id)===task.id);
     if(index<0){
@@ -162,14 +220,14 @@ function importOwnerDirectives(queue,directivesFile){
     refreshed.push(task);
   }
   if(imported.length||refreshed.length)queue=createVibeContinuousQueue({...queue,tasks});
-  return {queue,imported,refreshed,pruned};
+  return {queue,imported,refreshed,pruned,superseded};
 }
 
 export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDirectivesFile=''}){
   const catalog=readJson(catalogFile,{games:[]});
   let queue=createVibeContinuousQueue(readJson(queueFile,{tasks:[]}));
   const directivesPath=path.resolve(ownerDirectivesFile||path.join(path.dirname(queueFile),'owner-directives.json'));
-  const ownerResult=importOwnerDirectives(queue,directivesPath);
+  const ownerResult=importOwnerDirectives(queue,directivesPath,catalog);
   queue=ownerResult.queue;
   const planned=[];
   for(const game of catalog.games||[]){
@@ -213,7 +271,7 @@ export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDir
     break;
   }
   writeJson(queueFile,queue);
-  return {planned:planned.length>0,count:planned.length,tasks:planned,ownerImported:ownerResult.imported,ownerRefreshed:ownerResult.refreshed,ownerPruned:ownerResult.pruned};
+  return {planned:planned.length>0,count:planned.length,tasks:planned,ownerImported:ownerResult.imported,ownerRefreshed:ownerResult.refreshed,ownerPruned:ownerResult.pruned,ownerSuperseded:ownerResult.superseded};
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
@@ -225,6 +283,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_OWNER_DIRECTIVES_PRUNED=${result.ownerPruned.map(x=>x.id).join(',')||'NONE'}`);
   console.log(`VIBE2_OWNER_DIRECTIVES_IMPORTED=${result.ownerImported.map(x=>x.id).join(',')||'NONE'}`);
   console.log(`VIBE2_OWNER_DIRECTIVES_REFRESHED=${result.ownerRefreshed.map(x=>x.id).join(',')||'NONE'}`);
+  console.log(`VIBE2_OWNER_DIRECTIVES_SUPERSEDED=${result.ownerSuperseded.map(x=>x.id).join(',')||'NONE'}`);
   console.log(`VIBE2_RELEASE_BASELINE_GAP_PLAN=${result.planned?'YES':'NO'}`);
   console.log(`VIBE2_RELEASE_BASELINE_GAP_TASKS=${result.tasks.map(x=>x.id).join(',')||'NONE'}`);
 }
