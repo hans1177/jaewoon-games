@@ -1,0 +1,250 @@
+{
+  "contractVersion": 3,
+  "gameId": "line-defense",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ALL-DESIGN-RESET-LINE-DEFENSE-20260917",
+  "fingerprint": "2f570b75227eddd5473d46b6599e9edc7896999116753abe2087dbd8de1b7bcc",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "골목 군단 대전은 몰려오는 적의 공세를 막아내며 유닛을 전략적으로 배치하고 자원을 관리하는 라인 디펜스 게임이다. 핵심 루프와 시그니처 시스템을 통해 플레이어는 매 순간의 자원 분배와 유닛 배치를 고민하며 전장의 상태 변화를 직접 유도하게 된다.",
+      "playerFantasy": "플레이어는 골목을 수호하는 군단의 지휘관이 되어, 제한된 자원으로 최적의 방어선을 구축하고 밀려오는 적들을 물리치는 전술적 성취감과 영웅적 판타지를 경험한다.",
+      "coreFun": "적의 웨이브를 관찰하고 적절한 위치에 유닛을 배치하여 즉각적으로 적을 소탕하는 시각적 쾌감과, 자원을 획득해 유닛을 업그레이드하고 다음 웨이브에 대비하는 전략적 선택의 반복에서 오는 재미를 제공한다.",
+      "coreLoop": [
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+      ],
+      "signatureSystems": [
+        {
+          "name": "라인 방어 배치 시스템",
+          "purpose": "플레이어가 각 라인의 특성에 맞춰 유닛을 배치하여 적의 진격을 저지하고 전술적 요충지를 방어하도록 유도한다.",
+          "playerChoice": "어떤 라인에 어떤 유닛을 우선적으로 배치할지 선택하며 제한된 자원 속에서 방어선의 효율을 극대화한다."
+        },
+        {
+          "name": "전술 자원 관리 시스템",
+          "purpose": "적 처치를 통해 획득한 자원을 바탕으로 유닛 강화 및 특수 능력을 해제하여 장기적인 생존과 성장을 관리한다.",
+          "playerChoice": "즉시 유닛을 추가로 소환할지, 아니면 기존 유닛을 강화하여 강력한 적에 대비할지 전략적 결정을 내린다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "라인 방어 배치 시스템",
+          "toSystem": "전술 자원 관리 시스템",
+          "trigger": "적이 유닛의 공격으로 처치될 때",
+          "stateChange": "플레이어의 자원 수치가 증가하여 다음 업그레이드나 소환에 사용할 수 있게 된다."
+        },
+        {
+          "fromSystem": "전술 자원 관리 시스템",
+          "toSystem": "라인 방어 배치 시스템",
+          "trigger": "플레이어가 자원을 소비하여 유닛 업그레이드를 구매할 때",
+          "stateChange": "해당 유닛의 공격력과 방어력이 상승하여 라인 유지력이 크게 강화된다."
+        },
+        {
+          "fromSystem": "라인 방어 배치 시스템",
+          "toSystem": "전술 자원 관리 시스템",
+          "trigger": "적 유닛이 방어선을 돌파하여 기지에 도달할 때",
+          "stateChange": "기지 체력이 감소하며 플레이어는 자원 획득 기회를 잃고 위기 상황에 직면한다."
+        }
+      ],
+      "progressionDirection": "스테이지가 진행됨에 따라 새로운 적 유형과 보스가 등장하며, 플레이어는 더 복잡한 라인 구성과 고급 유닛 조합을 해제하며 심도 있는 전략적 플레이를 경험하게 된다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "적 처치 및 웨이브 클리어 -> 자원 획득 -> 유닛 강화 및 배치 확장 -> 고난도 스테이지 도전의 순환 구조를 유지한다.",
+        "resourceFlow": "초기에는 빠른 소환 위주로 자원이 소모되며, 후반부에는 고비용 고효율 유닛 강화와 특수 스킬에 자원이 집중되도록 설계된다.",
+        "balanceRules": "웨이브별 적의 체력과 공격력 상승 곡선에 맞춰 플레이어의 자원 획득량과 유닛 성장 폭을 정밀하게 조절하여 항상 긴장감을 유지한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "중급 스테이지 및 신규 적 추가",
+          "newGameplay": "이동 속도가 빠른 돌격형 적과 원거리 공격형 적이 등장하여 기존 단일 라인 방어 전략의 수정이 요구된다.",
+          "systemImpact": "라인 방어 배치 시스템에서 유닛 간 상성과 조합의 중요성이 한층 더 높아지며 자원 배분의 우선순위가 바뀐다."
+        },
+        {
+          "milestone": "보스 레이드 모드 도입",
+          "newGameplay": "체력이 매우 높고 특수 패턴을 사용하는 강력한 보스 유닛이 등장하여 집중 화력 배치가 필요해진다.",
+          "systemImpact": "전술 자원 관리 시스템에서 순간적인 화력 집중을 위한 특수 스킬 구매 비용과 쿨타임 요소가 추가된다."
+        },
+        {
+          "milestone": "고급 방어 타워 및 특성 해제",
+          "newGameplay": "플레이어가 선택할 수 있는 다양한 특수 능력을 가진 고급 타워와 패시브 업그레이드 트리가 개방된다.",
+          "systemImpact": "플레이어의 커스터마이징 선택지가 넓어져 스테이지별 맞춤형 전략 수립이 가능해진다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "기지 체력이 모두 소모되어 적의 침략을 막지 못한 경우",
+          "제한 시간 내에 보스를 처치하지 못해 방어선이 무너진 경우"
+        ],
+        "retryFlow": "패배 시 현재 스테이지의 초기 상태로 돌아가며, 획득한 일부 재화를 활용해 영구적인 능력치를 소폭 강화한 후 재도전할 수 있다.",
+        "riskPressure": "웨이브가 거듭될수록 적의 공세가 빨라져 자원 관리에 실패하면 순식간에 방어선이 무너지는 압박감을 제공한다.",
+        "recoveryRules": "재도전 시 이전 실패에서 학습한 적의 등장 패턴을 바탕으로 유닛 배치 위치를 미리 조정하여 클리어 확률을 높인다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치 기반의 드래그 앤 드롭 및 탭 인터페이스를 사용하여 누구나 직관적으로 유닛을 배치하고 업그레이드할 수 있다.",
+        "performanceBudget": "모바일 저사양 기기에서도 60프레임을 유지할 수 있도록 스프라이트 아틀라스 최적화 및 파티클 효과 관리.",
+        "sessionConstraints": "한 판의 플레이 타임을 3분에서 5분 내외로 구성하여 모바일 환경에서 가볍게 즐기기에 적합하도록 설계."
+      },
+      "visualDirection": "깔끔하고 시인성이 높은 2D 카툰 스타일을 채택하여 모바일 화면에서도 적과 아군의 구분이 명확하도록 시각적 완성도를 높인다.",
+      "mobileUx": "엄지손가락 한 손으로도 조작이 가능하도록 주요 UI 버튼과 배치 영역을 하단과 측면에 집중 배치하여 접근성을 극대화한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "남은 기지 체력, 현재 자원 수치, 다음 웨이브 경과 시간을 화면 상단에 크고 명확하게 상시 표시한다.",
+        "touchAndInput": "오류 배치를 방지하기 위해 유닛 선택 후 배치 가능 지역을 하이라이트로 시각적 피드백을 제공한다.",
+        "readability": "다수의 적이 몰려올 때도 유닛의 공격 범위와 상태를 직관적으로 파악할 수 있는 이펙트 구조를 적용한다.",
+        "accessibility": "색약 플레이어를 위해 아이콘 형태와 패턴을 병행 표기하여 유닛의 속성과 상태를 쉽게 구분할 수 있게 한다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "아기자기하면서도 타격감이 살아있는 2D 애니메이션을 통해 유쾌하고 몰입감 있는 전장 분위기를 연출한다.",
+        "audioIdentity": "경쾌하고 긴장감 넘치는 백그라운드 음악과 함께 유닛 공격 및 적 피격 시 명확한 타격 효과음을 제공한다.",
+        "gameplayFeedbackSync": "자원 획득과 유닛 업그레이드 순간에 즉각적인 시청각적 피드백을 주어 플레이어의 행동 만족도를 높인다."
+      },
+      "marketTargetDirection": "글로벌 모바일 캐주얼 전략 및 디펜스 장르 선호 유저층을 타겟으로 하며, 직관적인 규칙과 깊이 있는 전략성을 동시에 제공한다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후 PC 플랫폼 확장을 검토하며, 마우스 조작에 맞춘 UI 개선과 단축키 지원을 추가한다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "향후 협동(COOP) 모드나 실시간 대전(COMPETITIVE) 모드의 확장 가능성을 열어두고 기초 시스템을 설계한다.",
+      "technicalAssumptions": [
+        "유닛과 적의 충돌 판정 및 이동 경로는 2D 그리드 시스템을 기반으로 최적화되어 연산 부하를 최소화한다.",
+        "게임 내 모든 웨이브 데이터와 스테이지 구성은 JSON 파일로 외부에 분리하여 유지보수와 밸런스 조정이 용이하다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 번째 웨이브에서 조작의 직관성을 1분 안에 이해하고 스스로 방어선을 구축할 수 있는가?",
+        "자원 획득과 유닛 업그레이드 간의 경제 밸런스가 후반 스테이지까지 지루함 없이 유지되는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "라인 방어 배치 시스템",
+          "responsibleSystem": "GridPlacementController",
+          "validationEvidence": "터치 입력 좌표를 정확한 타일 그리드로 변환하고 유닛 배치 가능 여부를 판정하여 정상적으로 생성되는지 테스트한다."
+        },
+        {
+          "designElement": "전술 자원 관리 시스템",
+          "responsibleSystem": "ResourceManager",
+          "validationEvidence": "적 처치 시 자원이 정확히 가산되며 유닛 구매 및 업그레이드 시 차감 로직이 오차 없이 작동하는지 검증한다."
+        },
+        {
+          "designElement": "웨이브 및 적 스폰 시스템",
+          "responsibleSystem": "WaveManager",
+          "validationEvidence": "시간 경과에 따라 정해진 적 타입과 수량이 지정된 라인 스폰 지점에서 올바르게 생성되는지 로그를 통해 확인한다."
+        }
+      ],
+      "openQuestions": [
+        "향후 업데이트에서 플레이어가 직접 조작할 수 있는 지휘관 캐릭터나 스킬 요소를 추가할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 11478,
+      "lastMs": 11478,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:42:22.376Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 102,
+      "lastMs": 102,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 37.341583418s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"37s\" } ] } }",
+      "updatedAt": "2026-09-18T15:42:22.676Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 139,
+      "lastMs": 139,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 37.30287355s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"37s\" } ] } }",
+      "updatedAt": "2026-09-18T15:42:22.715Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T15:42:10.896Z",
+  "updatedAt": "2026-09-18T15:42:22.717Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:42:22.376Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 37.30287355s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"37s\" } ] } }"
+}
