@@ -1,0 +1,167 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "coordinatorModel": "qwen2.5:1.5b",
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "distinctLeadModels": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b",
+    "smollm2:1.7b"
+  ],
+  "distinctLeadModelCount": 5,
+  "representatives": {
+    "planning": {
+      "keep": [
+        "플랫폼별 기능 구현을 최소화하고, 기능의 유연성을 유지하기 위해 기능을 분리하고 구현합니다."
+      ],
+      "fix": [
+        "플랫폼별 성능 향상과 사용자 경험 향상에 대한 기술적 기반을 추가합니다."
+      ],
+      "add": [
+        "플랫폼별 사용자 경험 향상과 기능 유연성 확보를 위한 기술적 기반을 추가합니다."
+      ],
+      "risks": [
+        "플랫폼별 기능 구현과 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다."
+      ],
+      "evidence": [
+        "플랫폼별 기능 구현과 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다."
+      ],
+      "questions": [
+        "플랫폼별 기능 구현과 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다."
+      ]
+    },
+    "graphics": {
+      "keep": [
+        "Gameplay Visuals"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT=graphics"
+      ],
+      "add": [
+        "GAME_SEED={"
+      ],
+      "risks": [
+        "GAME_SEED={"
+      ],
+      "evidence": [
+        "GAME_SEED={"
+      ],
+      "questions": [
+        "GAME_SEED={"
+      ]
+    },
+    "development": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "GAME_SEED"
+      ],
+      "add": [
+        "GAME_SEED"
+      ],
+      "risks": [
+        "GAME_SEED"
+      ],
+      "evidence": [
+        "GAME_SEED"
+      ],
+      "questions": [
+        "GAME_SEED"
+      ]
+    },
+    "qa": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "fix": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "add": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "risks": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "evidence": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ]
+    },
+    "balance": {
+      "keep": [
+        "생존 선택의 중요성"
+      ],
+      "fix": [
+        "자원 선택의 중요성"
+      ],
+      "add": [
+        "생태 선택의 중요성"
+      ],
+      "risks": [
+        "곤충 생존기"
+      ],
+      "evidence": [
+        "생존 선택의 중요성"
+      ],
+      "questions": [
+        "생존 선택의 중요성"
+      ]
+    }
+  },
+  "rebuttalRound": 1,
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "summary": "5부서 회의 조정 결과",
+  "decisions": [
+    {
+      "topic": "플랫폼별 기능 구현",
+      "status": "CONSENSUS",
+      "reason": "플랫폼별 기능 구현과 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "플랫폼별 성능 향상",
+      "status": "CONFLICT",
+      "reason": "플랫폼별 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    },
+    {
+      "topic": "플랫폼별 사용자 경험 향상",
+      "status": "HOLD",
+      "reason": "플랫폼별 사용자 경험 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다.",
+      "departments": [
+        "graphics",
+        "development",
+        "qa",
+        "balance"
+      ]
+    }
+  ],
+  "counts": {
+    "consensus": 1,
+    "conflict": 1,
+    "hold": 1
+  }
+}

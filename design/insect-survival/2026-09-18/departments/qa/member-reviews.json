@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT: qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "생존 선택의 중요성을 명확히 설명하자."
+        ],
+        "fix": [
+          "생존 선택의 중요성을 명확히 설명하자."
+        ],
+        "add": [
+          "생존 선택의 중요성을 명확히 설명하자."
+        ],
+        "risks": [
+          "생존 선택의 중요성을 명확히 설명하자."
+        ],
+        "evidence": [
+          "생존 선택의 중요성을 명확히 설명하자."
+        ],
+        "questions": [
+          "생존 선택의 중요성을 명확히 설명하자."
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "지정된 qa 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+        ],
+        "fix": [
+          "각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "GAME_SEED={...}"
+        ],
+        "evidence": [
+          "Vampire Survivors - horde pressure, simple attacks, upgrade choices and build combinations"
+        ],
+        "questions": [
+          "Brotato - compact arena survival benchmark for short runs, item choices and build synergy"
+        ]
+      }
+    }
+  ]
+}

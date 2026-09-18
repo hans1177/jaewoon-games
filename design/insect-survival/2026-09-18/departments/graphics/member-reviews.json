@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Gameplay Visuals"
+        ],
+        "fix": [
+          "Enemy Design"
+        ],
+        "add": [
+          "Level Design"
+        ],
+        "risks": [
+          "Enemy Variety"
+        ],
+        "evidence": [
+          "Gameplay Flow"
+        ],
+        "questions": [
+          "Gameplay Balance"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라. 각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
+        ],
+        "fix": [
+          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+        ],
+        "add": [
+          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+        ],
+        "risks": [
+          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+        ],
+        "evidence": [
+          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+        ],
+        "questions": [
+          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED={"
+        ],
+        "add": [
+          "GAME_SEED={"
+        ],
+        "risks": [
+          "GAME_SEED={"
+        ],
+        "evidence": [
+          "GAME_SEED={"
+        ],
+        "questions": [
+          "GAME_SEED={"
+        ]
+      }
+    }
+  ]
+}

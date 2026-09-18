@@ -1,0 +1,61 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-FULL-REBUILD-INSECT-SURVIVAL-20260916",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "qwen2.5:1.5b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "곤충 생존기",
+    "playerFantasy": "곤충 생존기",
+    "coreFun": "생존",
+    "coreLoop": [
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+    ],
+    "signatureSystems": [
+      {
+        "name": "生存",
+        "purpose": "생존",
+        "playerChoice": "생존 선택"
+      },
+      {
+        "name": "자원",
+        "purpose": "자원",
+        "playerChoice": "자원 선택"
+      },
+      {
+        "name": "생태",
+        "purpose": "생태",
+        "playerChoice": "생태 선택"
+      }
+    ],
+    "progressionDirection": "성장",
+    "visualDirection": "생존",
+    "mobileUx": "플랫폼",
+    "marketTargetDirection": "생존",
+    "steamExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
+    "technicalAssumptions": [
+      "플랫폼별 기능 구현",
+      "플랫폼별 성능 향상",
+      "플랫폼별 사용자 경험 향상"
+    ],
+    "validationQuestions": [
+      "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
+      "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
+    ],
+    "openQuestions": [
+      "생존 선택의 중요성",
+      "자원 선택의 중요성",
+      "생태 선택의 중요성"
+    ]
+  }
+}

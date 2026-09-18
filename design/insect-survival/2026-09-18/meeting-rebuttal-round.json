@@ -1,0 +1,80 @@
+{
+  "version": 4,
+  "gameId": "insect-survival",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "OWN: keep, add, risks, evidence, questions",
+        "OTHERS: graphics, development, qa, balance"
+      ],
+      "challenge": [
+        "OWN: keep, add, risks, evidence, questions",
+        "OTHERS: graphics, development, qa, balance"
+      ],
+      "revision": [
+        "OWN: keep, add, risks, evidence, questions",
+        "OTHERS: graphics, development, qa, balance"
+      ],
+      "reason": "OWN의 기능 분리과 유연성 유지, OTHERS의 기능 구현 및 향상 기반 확보"
+    },
+    "graphics": {
+      "accept": [
+        "Gameplay Visuals"
+      ],
+      "challenge": [
+        "GAME_SEED={"
+      ],
+      "revision": [
+        "GAME_SEED={"
+      ],
+      "reason": "game_seed_is_complex_and_requires_careful_implementation_to_ensure_stability_and_performance_on_different_platforms_while_maintaining_a_consistent_visual_style_and_aesthetic_feel_across_the_game_experience_and_avoid_potential_technical_issues_and_bugs_that_could_impact_player_engagement_and_overall_game_quality_and_satisfaction_and_maintain_a_high_level_of_quality_and_stability_for_the_game_and_avoid_potential_technical_failures_and_bugs_that_could_affect_player_experience_and_game_quality_and_satisfaction_and_stability_and_avoid_potential_game"
+    },
+    "development": {
+      "accept": [
+        "GAME_SEED"
+      ],
+      "challenge": [
+        "GAME_SEED"
+      ],
+      "revision": [
+        "GAME_SEED"
+      ],
+      "reason": "GAME_SEED"
+    },
+    "qa": {
+      "accept": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "challenge": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "revision": [
+        "ASSIGNED_DEPARTMENT: qa"
+      ],
+      "reason": "QA 부서는 전체적인 프로세스와 결과를 검증하고, 품질을 유지하는 역할을 합니다. 이는 기능의 분리와 기능의 유연성을 유지하는 데 중요한 역할을 합니다."
+    },
+    "balance": {
+      "accept": [
+        "생존 선택의 중요성"
+      ],
+      "challenge": [
+        "플랫폼별 기능 구현을 최소화하고, 기능의 유연성을 유지하기 위해 기능을 분리하고 구현합니다."
+      ],
+      "revision": [
+        "플랫폼별 성능 향상과 사용자 경험 향상에 대한 기술적 기반을 추가합니다."
+      ],
+      "reason": "플랫폼별 기능 구현과 성능 향상의 기술적 기반을 확보하기 위해 기술적 기반을 추가합니다."
+    }
+  }
+}
