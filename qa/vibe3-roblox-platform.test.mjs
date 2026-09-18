@@ -13,7 +13,9 @@ import {
 
 const contract=createRobloxPlatformContract();
 assert.equal(contract.platform,'ROBLOX');
-assert.equal(contract.roadmapPhase,'ROBLOX_FAST_RELEASE_STABILIZATION');
+assert.equal(contract.roadmapContract,'company-learning/platform-release-roadmap.json');
+assert.equal(contract.roadmapPhaseSource,'CENTRAL_RUNTIME_RESOLVED');
+assert.equal(Object.hasOwn(contract,'roadmapPhase'),false);
 assert.equal(contract.parallelPipeline,false);
 assert.equal(contract.learning.useExistingCanonicalDistillation,true);
 assert.equal(contract.publishing.liveExecutionRequiresExplicitFlag,true);
