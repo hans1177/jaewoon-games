@@ -32,10 +32,10 @@
           "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
         ],
         "evidence": [
-          "Readable stealth comedy"
+          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
         ],
         "questions": [
-          "What is the main goal of the game?"
+          "What is the purpose of the game? (readable stealth comedy, short objective chains, risk-reward escape)"
         ]
       }
     },
@@ -47,19 +47,19 @@
           "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
         ],
         "fix": [
-          "TARGET_DESIGN_REFERENCE_MARKET_EVIDENCE_SUMMARY"
+          "MARKET_EVIDENCE_SUMMARY"
         ],
         "add": [
-          "GAME_SEED_CORE_FUN_TO_LEARN_KEY_POINTS: 1. Readable stealth comedy 2. Short objective chains 3. Risk-reward escape 4. Start immedi"
+          "ESA Power of Play 2025 Global Report"
         ],
         "risks": [
-          "수집, 모험"
+          "globalMedianSessionsPerDayApprox"
         ],
         "evidence": [
-          "Subway Surfers"
+          "surveyedPlayersAge16Plus"
         ],
         "questions": [
-          "What is the main goal of the game? What is the purpose of the core loop? What is the main mechanic of the game?"
+          "What is the purpose of the game? (readable stealth comedy, short objective chains, risk-reward escape)"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "game-seed"
+          "ASSIGNED_DEPARTMENT=planning"
         ],
         "fix": [
-          "game-seed"
+          "GAME_SEED={"
         ],
         "add": [
-          "game-seed"
+          "ASSIGNED_DEPARTMENT=planning"
         ],
         "risks": [
-          "game-seed"
+          "GAME_SEED={"
         ],
         "evidence": [
-          "game-seed"
+          "MARKET_EVIDENCE_SUMMARY"
         ],
         "questions": [
-          "game-seed"
+          "ASSIGNED_DEPARTMENT=planning"
         ]
       }
     }

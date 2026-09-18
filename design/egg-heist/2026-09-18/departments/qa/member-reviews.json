@@ -26,16 +26,16 @@
           "ASSIGNED_DEPARTMENT=qa"
         ],
         "add": [
-          "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL, "
+          "ASSIGNED_DEPARTMENT=qa"
         ],
         "risks": [
-          "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL, "
+          "ASSIGNED_DEPARTMENT=qa"
         ],
         "evidence": [
-          "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL, "
+          "ASSIGNED_DEPARTMENT=qa"
         ],
         "questions": [
-          "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL, "
+          "ASSIGNED_DEPARTMENT=qa"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "알마다 다른 게임을 시작하고 있습니다."
+          "Keep the core fun of the game as it is."
         ],
         "fix": [
-          "알마다 다른 게임을 시작하고 있습니다."
+          "Fix the core fun of the game by adding more readable stealth comedy."
         ],
         "add": [
-          "알마다 다른 게임을 시작하고 있습니다."
+          "Add more risk-reward escape to the game."
         ],
         "risks": [
-          "알마다 다른 게임을 시작하고 있습니다."
+          "Add more risk-reward escape to the game."
         ],
         "evidence": [
-          "알마다 다른 게임을 시작하고 있습니다."
+          "Provide evidence that the game is a risk-reward escape."
         ],
         "questions": [
-          "알마다 다른 게임을 시작하고 있습니다."
+          "What is the purpose of the game?"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "알 도둑 대작전"
+          "ASSIGNED_DEPARTMENT=qa"
         ],
         "fix": [
-          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-EGG-HEIST-20260913\",\"gameId\":\"egg-heist\",\"gameName\":\"알 도둑 대작전\",\"status\":\"ACTIVE\",\"GA"
         ],
         "add": [
-          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+          "CORE_FUN_TO_LEARN=[\"readable stealth comedy\",\"short objective chains\",\"risk-reward escape\"]"
         ],
         "risks": [
-          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+          "CORE_LOOP=[\"Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.\",\"Play\""
         ],
         "evidence": [
-          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+          "REFERENCE_GAMES=[\"Subway Surfers\",\"Crossy Road\",\"MONOPOLY GO!\"]"
         ],
         "questions": [
-          "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다."
+          "DISTINCT_IDENTITY=\"알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다.\""
         ]
       }
     }

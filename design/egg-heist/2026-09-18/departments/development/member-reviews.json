@@ -47,19 +47,19 @@
           "ASSIGNED_DEPARTMENT=development"
         ],
         "fix": [
-          "GAME_SEED=1.0,seedId=OWNER-ENROLL-EGG-HEIST-20260913,gameId=egg-heist,gameName=알 도둑 대작전,status=ACTIVE,gameCategory=CASUAL,coreFun="
+          "GAME_SEED=123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
         ],
         "add": [
-          "GAME_SEED=GAME_SEED,gameId=egg-heist,gameName=알 도둑 대작전,status=ACTIVE,gameCategory=CASUAL,coreFun=수집,모험,coreLoop=Start immediately"
+          "ASSIGNED_DEPARTMENT=development"
         ],
         "risks": [
-          "GAME_SEED=GAME_SEED,gameId=egg-heist,gameName=알 도둑 대작전,status=ACTIVE,gameCategory=CASUAL,coreFun=수집,모험,coreLoop=Play a brief run"
+          "ASSIGNED_DEPARTMENT=development"
         ],
         "evidence": [
-          "GAME_SEED=GAME_SEED,gameId=egg-heist,gameName=알 도둑 대작전,status=ACTIVE,gameCategory=CASUAL,coreFun=finish or fail, receive a score, "
+          "ASSIGNED_DEPARTMENT=development"
         ],
         "questions": [
-          "GAME_SEED=GAME_SEED,gameId=egg-heist,gameName=알 도둑 대작전,status=ACTIVE,gameCategory=CASUAL,coreFun=What is the main goal of the game"
+          "ASSIGNED_DEPARTMENT=development"
         ]
       }
     },
@@ -76,15 +76,9 @@
         "add": [
           "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
         ],
-        "risks": [
-          "finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
-        ],
-        "evidence": [
-          "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
-        ],
-        "questions": [
-          "What is the main goal of the game?"
-        ]
+        "risks": [],
+        "evidence": [],
+        "questions": []
       }
     }
   ]

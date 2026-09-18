@@ -34,31 +34,30 @@
         "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
       ],
       "evidence": [
-        "Readable stealth comedy"
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
       ],
       "questions": [
-        "What is the main goal of the game?",
-        "What is the purpose of the core loop?"
+        "What is the purpose of the game? (readable stealth comedy, short objective chains, risk-reward escape)"
       ]
     },
     "graphics": {
       "keep": [
-        "TARGET_DESIGN_REFERENCE_SUCCESS"
+        "TARGET_DESIGN_REFERENCE"
       ],
       "fix": [
-        "TARGET_DESIGN_REFERENCE_SUCCESS"
+        "ALMADA"
       ],
       "add": [
-        "TARGET_DESIGN_REFERENCE_SUCCESS"
+        "GAME_SEED"
       ],
       "risks": [
-        "TARGET_DESIGN_REFERENCE_SUCCESS"
+        "ALMADA"
       ],
       "evidence": [
-        "TARGET_DESIGN_REFERENCE_SUCCESS"
+        "Subway Surfers"
       ],
       "questions": [
-        "What is the main goal of the game? What is the purpose of the core loop? What is the main mechanic of the game?"
+        "What is the purpose of the game? (readable stealth comedy, short objective chains, risk-reward escape)"
       ]
     },
     "development": {
@@ -89,54 +88,90 @@
         "ASSIGNED_DEPARTMENT=qa"
       ],
       "add": [
-        "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "risks": [
-        "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "evidence": [
-        "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "questions": [
-        "GAME_SEED=1.0, seedId=OWNER-ENROLL-EGG-HEIST-20260913, gameId=egg-heist, gameName=알 도둑 대작전, status=ACTIVE, GAME_CATEGORY=CASUAL"
+        "ASSIGNED_DEPARTMENT=qa"
       ]
     },
     "balance": {
       "keep": [
-        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run..."
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
       ],
       "fix": [
-        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
+        "Play a brief run with readable feedback, collect rewards, and make a small risk or route choice before the run ends."
       ],
       "add": [
+        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction.",
         "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
       ],
       "risks": [
-        "Finish or fail, receive a score or reward, unlock a small progression benefit, and retry quickly with minimal friction."
+        "Risk-reward escape",
+        "Risk-reward escape"
       ],
       "evidence": [
-        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal. Play a brief run..."
+        "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal."
       ],
       "questions": [
-        "What is the main goal of the game?"
+        "What is the purpose of the game? (readable stealth comedy, short objective chains, risk-reward escape)"
       ]
     }
   },
   "rebuttalRound": 1,
   "rebuttalAuthoredByDepartmentLeads": true,
-  "summary": "알 도둑 대작전 이벤트가 성공적으로 종료되었습니다.",
+  "summary": "CONSENSUS만 자동 수정에 사용한다. 새 기능을 창작하지 않고 대표의견을 정리한다. 새 기능은 없으므로 이를 새 기능으로 수정하지 않는다.",
   "decisions": [
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "알 도둑 대작전 이벤트가 성공적으로 종료되었습니다.",
+      "reason": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "graphics",
+      "status": "CONSENSUS",
+      "reason": "TARGET_DESIGN_REFERENCE",
+      "departments": [
+        "graphics"
+      ]
+    },
+    {
+      "topic": "development",
+      "status": "CONSENSUS",
+      "reason": "ASSIGNED_DEPARTMENT=development",
+      "departments": [
+        "development"
+      ]
+    },
+    {
+      "topic": "qa",
+      "status": "CONSENSUS",
+      "reason": "ASSIGNED_DEPARTMENT=qa",
+      "departments": [
+        "qa"
+      ]
+    },
+    {
+      "topic": "balance",
+      "status": "CONSENSUS",
+      "reason": "Start immediately with simple one-thumb tap or swipe input and a clear score, distance, or short-session goal.",
       "departments": [
         "development"
       ]
     }
   ],
   "counts": {
-    "consensus": 1,
+    "consensus": 5,
     "conflict": 0,
     "hold": 0
   }
