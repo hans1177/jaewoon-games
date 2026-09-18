@@ -1,1435 +1,240 @@
 {
-  "contractVersion": 1,
+  "contractVersion": 3,
   "gameId": "survival2",
   "date": "2026-09-18",
   "seedId": "OWNER-ENROLL-SURVIVAL2-20260913",
-  "fingerprint": "c989331353c268fa3a9428d0accecda1259db13ca40ce2fedc1c5f0ebe98d9b6",
-  "policyDigest": "57957b1b1ae2662bd6fc5f377031f469b6f581dd0f523dadb26c80ea871e9510",
-  "status": "COMPLETE",
+  "fingerprint": "92da3081ad67aaed1093feda7754b9417f4df9c8f4a3db7f07fd474d27bb1d6d",
+  "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
+  "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
+  "status": "IN_PROGRESS",
   "completedPhases": [
-    "designer_draft_base",
-    "designer_draft_gate",
-    "independent_department_reviews",
-    "department_representatives",
-    "lead_rebuttals",
-    "cross_department_meeting",
-    "designer_revision_base",
-    "designer_revision_gate",
-    "five_lead_fatal_review"
+    "designer_draft",
+    "deterministic_pre_gate"
   ],
   "phases": {
-    "designer_draft_base": {
-      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.",
-      "playerFantasy": "숲의 생존자들",
-      "coreFun": "cooperative survival roles, resource risk decisions, clear shelter progression",
+    "designer_draft": {
+      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다. coreLoop와 signatureSystems는 플레이어가 매 순간 자원 분배와 위치 선정에서 독창적인 선택을 하도록 강제하며, 생태계의 상태 변화를 직접 유도한다.",
+      "playerFantasy": "플레이어는 혹독한 숲에서 동료들과 함께 실시간으로 몰려오는 위협을 막아내고, 계절 변화에 따른 생태계의 위기를 극복하며 자신만의 생존 거점을 확장하는 베테랑 생존자 분대장 역할을 수행한다.",
+      "coreFun": "반복되는 실제 선택인 자원 수집과 방어선 구축을 통해, 관찰 가능한 상태변화인 적의 공세 완화와 거점 확장을 이끌어내며, 즉각적인 보상과 능력치 업그레이드를 경험하는 재미를 선사한다.",
       "coreLoop": [
-        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+        "실시간 생존 전장에서 적의 공세를 회피하며 적을 처치하고 경험치와 자원을 수집한다.",
+        "획득한 자원으로 거점을 보강하거나 무기 및 스킬 업그레이드를 선택하여 다음 웨이브에 대비한다.",
+        "변화하는 생태계와 강력한 보스 웨이브에 맞서 빌드를 완성하고 다음 스테이지로 진입한다."
       ],
       "signatureSystems": [
         {
-          "name": "Resource Risk Decisions",
-          "purpose": "Players must make decisions based on the limited resources available to them, such as food, water, and shelter.",
-          "playerChoice": "Players must carefully manage their resources to survive, making choices that affect their survival."
+          "name": "계절별 생태 변동 시스템",
+          "purpose": "사계절 변화에 따라 맵의 자원 수입과 적의 공격 패턴을 다채롭게 변경하여 매번 다른 생존 전략을 세우도록 유도한다.",
+          "playerChoice": "플레이어는 다가오는 계절의 특성에 맞춰 방어 시설을 재배치하거나 특정 원소 저항 스킬을 선택하여 생존 확률을 높여야 한다."
         },
         {
-          "name": "Clear Shelter Progression",
-          "purpose": "Players must find and clear shelter to survive, which involves making choices that affect their shelter's effectiveness.",
-          "playerChoice": "Players must choose the best shelter locations and upgrades to improve their shelter's effectiveness."
-        },
-        {
-          "name": "Cooperative Survival Roles",
-          "purpose": "Players must work together to survive, which involves making choices that affect their team's survival.",
-          "playerChoice": "Players must communicate and coordinate with their team members to survive, making choices that affect their survival."
+          "name": "동료 역할 분담 및 시너지 시스템",
+          "purpose": "다양한 능력을 가진 동료 NPC를 배치하고 조합하여 전투 효율을 극대화하고 전술적 깊이를 더한다.",
+          "playerChoice": "플레이어는 전투 중 획득하는 자원을 소모하여 특정 동료의 역할을 강화하거나 새로운 역할을 해제하여 팀의 전투 성향을 결정할 수 있다."
         }
       ],
-      "progressionDirection": "From simple survival to complex survival, players must adapt to changing environments and make choices that affect their survival.",
-      "visualDirection": "The game features a variety of environments and characters, with a focus on survival and cooperation.",
-      "mobileUx": "The game is designed for mobile devices with a simple and intuitive user interface, making it easy to navigate and play.",
-      "marketTargetDirection": "The game targets players who enjoy survival games and those who enjoy cooperative games, with a focus on mobile devices.",
-      "steamExpansionDecision": "The game is designed to be easily expandable with additional content and features, such as new environments, characters, and gameplay modes.",
-      "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "The game is designed to be easily expandable with additional content and features, such as new environments, characters, and gameplay modes.",
-      "technicalAssumptions": [
-        "The game is designed to be played on mobile devices with a variety of screen sizes and resolutions.",
-        "The game is designed to be played on multiple devices simultaneously, such as tablets and smartphones.",
-        "The game is designed to be played on a variety of screen sizes and resolutions."
-      ],
-      "validationQuestions": [
-        "How does the game support multiplayer collaboration and communication?",
-        "How does the game ensure the safety and security of players during gameplay?",
-        "How does the game ensure the balance and fairness of the game mechanics?"
-      ],
-      "openQuestions": [
-        "How does the game ensure the balance and fairness of the game mechanics?",
-        "How does the game support multiplayer collaboration and communication?",
-        "How does the game ensure the safety and security of players during gameplay?"
-      ]
-    },
-    "designer_draft_gate": {
       "systemInterconnections": [
         {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "CORE_FUN",
-          "trigger": "The game's core functions and mechanics are tested and refined.",
-          "stateChange": "The game's core functions and mechanics are validated and improved."
+          "fromSystem": "계절별 생태 변동 시스템",
+          "toSystem": "동료 역할 분담 및 시너지 시스템",
+          "trigger": "겨울 시즌 진입 시혹한 추위 이벤트 발생",
+          "stateChange": "모든 동료의 체력 회복 속도가 감소하고 특정 화염 계열 동료의 시너지 효과가 150퍼센트로 증가한다."
         },
         {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "PROGRESSION",
-          "trigger": "The progression of the game's mechanics is tested and refined.",
-          "stateChange": "The progression of the game's mechanics is validated and improved."
+          "fromSystem": "전투 및 자원 수집 루프",
+          "toSystem": "계절별 생태 변동 시스템",
+          "trigger": "웨이브 5 클리어 및 보스 처치 완료",
+          "stateChange": "현재 계절이 다음 계절로 즉시 전환되며 맵 전체의 자원 드랍 테이블과 적의 종류가 갱신된다."
         },
         {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "FAILURE",
-          "trigger": "The game's failure states are tested and refined.",
-          "stateChange": "The game's failure states are validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "RETRY",
-          "trigger": "The game's retry flow is tested and refined.",
-          "stateChange": "The game's retry flow is validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "PLATFORM",
-          "trigger": "The game's platform fit is tested and refined.",
-          "stateChange": "The game's platform fit is validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "UX",
-          "trigger": "The game's user experience is tested and refined.",
-          "stateChange": "The game's user experience is validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "ART",
-          "trigger": "The game's art direction is tested and refined.",
-          "stateChange": "The game's art direction is validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "AUDIO",
-          "trigger": "The game's audio direction is tested and refined.",
-          "stateChange": "The game's audio direction is validated and improved."
+          "fromSystem": "동료 역할 분담 및 시너지 시스템",
+          "toSystem": "전투 및 자원 수집 루프",
+          "trigger": "동료 조합 레벨 최대치 달성",
+          "stateChange": "플레이어 캐릭터에게 특수 광역 패시브 스킬이 영구적으로 부여되어 적 처치 효율이 대폭 상승한다."
         }
       ],
+      "progressionDirection": "플레이어는 짧은 실시간 생존 세션을 반복하며 영구적인 거점 레벨을 올리고, 새로운 생존자 역할과 계절별 특성 카드를 해제하여 더 깊이 있는 탐험과 고난도 생존에 도전한다.",
       "progressionEconomyBalance": {
-        "progressionLoop": "The game's progression loop is tested and refined.",
-        "resourceFlow": "The game's resource flow is tested and refined.",
-        "balanceRules": "The game's balance rules are tested and refined."
+        "progressionLoop": "세션 내 전투 승리를 통해 재화를 획득하고, 이를 세션 외 거점 확장과 연구에 투자하여 다음 세션의 시작 조건을 유리하게 만든다.",
+        "resourceFlow": "전투에서 수집된 기본 재화는 일차적으로 장비 업그레이드에 쓰이고, 남은 잔여 재화는 거점 창고로 적립되어 영구 연구 재료로 전환된다.",
+        "balanceRules": "고난도 지역일수록 자원 획득량이 증가하지만 적의 공격력과 체력이 비례해서 상승하므로, 무리한 파밍보다는 빌드 완성도를 우선하도록 설계한다."
       },
       "contentExpansionPlan": [
         {
-          "milestone": "New gameplay feature",
-          "newGameplay": "The game introduces a new gameplay feature that enhances the player's experience.",
-          "systemImpact": "The new gameplay feature impacts the game's overall mechanics and balance."
+          "milestone": "1단계: 신규 지역 늪지대 확장",
+          "newGameplay": "독성 지형과 은신형 적들이 등장하는 신규 서바이벌 맵과 독 저항 메커니즘을 추가하여 새로운 회피 동선을 유도한다.",
+          "systemImpact": "기존 계절 시스템에 독성 기후 이벤트가 추가되며 동료 역할 중 해독 전문 포지션의 가치가 크게 상승한다."
         },
         {
-          "milestone": "New environment",
-          "newGameplay": "The game introduces a new environment that changes the player's experience.",
-          "systemImpact": "The new environment impacts the game's overall mechanics and balance."
+          "milestone": "2단계: 길드 및 협력 레이드 도입",
+          "newGameplay": "여러 플레이어가 거점을 공유하고 거대한 야생 괴수 보스를 함께 토벌하는 주간 협력 레이드 모드를 오픈한다.",
+          "systemImpact": "개인 중심의 빌드 선택이 파티 시너지 중심의 역할 분담 시스템과 결합하여 메타 전략에 큰 변화를 준다."
         },
         {
-          "milestone": "New character",
-          "newGameplay": "The game introduces a new character that changes the player's experience.",
-          "systemImpact": "The new character impacts the game's overall mechanics and balance."
+          "milestone": "3단계: 커스텀 시나리오 에디터",
+          "newGameplay": "플레이어가 직접 웨이브 간격과 적의 종류, 계절 변화 주기를 설정하여 자신만의 생존 챌린지를 만들고 공유한다.",
+          "systemImpact": "사용자 생성 콘텐츠가 활성화되며 핵심 루프의 반복 피로도를 상쇄하고 장기 리텐션을 크게 향상시킨다."
         }
       ],
       "failureRetryRisk": {
         "failureStates": [
-          "Core Fun Weak",
-          "Platform Fit Weak"
+          "플레이어 캐릭터의 체력이 0이 되어 즉시 사망하는 경우",
+          "제한 시간 내에 웨이브 보스를 처치하지 못해 거점이 파괴되는 경우"
         ],
-        "retryFlow": "The game's retry flow is tested and refined.",
-        "riskPressure": "The game's risk pressure is tested and refined.",
-        "recoveryRules": "The game's recovery rules are tested and refined."
+        "retryFlow": "사망 시 해당 세션에서 획득한 임시 장비와 버프는 초기화되지만, 수집한 영구 재화의 일정 비율은 보존되어 로비로 귀환 후 재시도를 준비한다.",
+        "riskPressure": "웨이브가 진행될수록 화면을 가득 채우는 적의 압박과 자원 부족으로 인해 플레이어에게 지속적인 생존 위기감을 부여한다.",
+        "recoveryRules": "로비에서 이전 세션에서 얻은 재화로 방어력을 강화하거나 회복 아이템을 미리 소지하여 다음 시도의 성공률을 보정할 수 있다."
       },
       "platformFitPlan": {
         "targetPlatform": "ROBLOX",
-        "inputModel": "The game is designed for mobile devices with a simple and intuitive user interface.",
-        "performanceBudget": "The game is designed to be played on multiple devices simultaneously.",
-        "sessionConstraints": "The game is designed to be played on a variety of screen sizes and resolutions."
+        "inputModel": "모바일 터치 화면에서는 가상 조이스틱과 자동 공격 기반의 직관적인 이동 조작을 제공하고, PC 환경에서는 WASD 키보드와 마우스 조준을 지원한다.",
+        "performanceBudget": "로블록스 플랫폼의 성능 최적화를 위해 동시 화면에 등장하는 적 유닛의 폴리곤을 경량화하고 인스턴싱 렌더링을 적용하여 60프레임을 유지한다.",
+        "sessionConstraints": "한 번의 생존 세션을 정확히 15분 이내로 제한하여 모바일 사용자도 부담 없이 짧은 시간 안에 핵심 재미를 온전히 즐길 수 있도록 한다."
       },
+      "visualDirection": "로우 폴리곤 스타일을 기반으로 하되, 사계절의 변화에 따라 숲의 색감이 뚜렷하게 대비되도록 시각적 몰입감을 극대화한다.",
+      "mobileUx": "엄지손가락 한 손으로도 캐릭터 이동과 아이템 획득이 원활하도록 핵심 인터페이스를 화면 하단에 집중 배치한다.",
       "uxAccessibilityPlan": {
-        "hudPriorities": "The game's user interface is designed with user-friendly and accessible elements.",
-        "touchAndInput": "The game's touch and input elements are designed for easy navigation and interaction.",
-        "readability": "The game's text and graphics are designed for easy readability.",
-        "accessibility": "The game's accessibility features are designed to support players with disabilities."
+        "hudPriorities": "남은 체력, 현재 웨이브 진행도, 계절 타이머 정보를 화면 최상단에 직관적으로 배치하여 시인성을 높인다.",
+        "touchAndInput": "가상 조이스틱의 터치 감도를 자유롭게 조절할 수 있게 하여 모바일 플레이어의 조작 피로도를 최소화한다.",
+        "readability": "복잡한 탄막 속에서도 플레이어 캐릭터와 적의 공격 범위를 색상 대비로 명확하게 구분하여 피격 판정을 쉽게 인지하도록 한다.",
+        "accessibility": "색맹 플레이어를 위한 패턴 시각화 모드와 UI 폰트 크기 조절 옵션을 기본 제공하여 접근성을 보장한다."
       },
       "artAudioDirection": {
-        "visualIdentity": "The game's visual identity is designed to be visually appealing and consistent.",
-        "audioIdentity": "The game's audio identity is designed to enhance the player's experience.",
-        "gameplayFeedbackSync": "The game's gameplay feedback is designed to be synchronized with the player's experience."
+        "visualIdentity": "아기자기하면서도 거친 야생의 느낌을 주는 로우 폴리곤 3D 그래픽과 역동적인 날씨 파티클 효과를 활용한다.",
+        "audioIdentity": "바람 소리와 나뭇잎이 흔들리는 자연의 앰비언트 사운드와 긴장감을 높이는 타악기 중심의 전투 BGM을 적용한다.",
+        "gameplayFeedbackSync": "적에게 피해를 줄 때마다 타격음과 화면 미세 흔들림 효과를 동기화하여 즉각적인 손맛을 전달한다."
       },
-      "implementationTraceability": [
-        {
-          "designElement": "Resource Risk Decisions",
-          "responsibleSystem": "CORE_FUN",
-          "validationEvidence": "The game's resource risk decisions are validated and improved."
-        },
-        {
-          "designElement": "Clear Shelter Progression",
-          "responsibleSystem": "CORE_FUN",
-          "validationEvidence": "The game's clear shelter progression is validated and improved."
-        },
-        {
-          "designElement": "Cooperative Survival Roles",
-          "responsibleSystem": "CORE_FUN",
-          "validationEvidence": "The game's cooperative survival roles are validated and improved."
-        }
-      ]
-    },
-    "independent_department_reviews": {
-      "balance::gemma3:1b": {
-        "keep": [
-          "Resource Risk Decisions"
-        ],
-        "fix": [
-          "Clear Shelter Progression"
-        ],
-        "add": [
-          "Cooperative Survival Roles"
-        ],
-        "risks": [
-          "Failure Retry Risk"
-        ],
-        "evidence": [
-          "Vampire Survivors"
-        ],
-        "questions": [
-          "TARGET_DESIGN_REFERENCE"
-        ]
-      },
-      "development::gemma3:1b": {
-        "keep": [
-          "GAME_SEED"
-        ],
-        "fix": [
-          "DESIGN"
-        ],
-        "add": [
-          "TARGET_DESIGN_REFERENCE"
-        ],
-        "risks": [
-          "failureRetryRisk"
-        ],
-        "evidence": [
-          "coreFunWeak"
-        ],
-        "questions": [
-          "Resource Risk Decisions"
-        ]
-      },
-      "graphics::gemma3:1b": {
-        "keep": [
-          "협력 확장형 생존 게임"
-        ],
-        "fix": [
-          "재설계"
-        ],
-        "add": [
-          "게임의 핵심 요소"
-        ],
-        "risks": [
-          "사냥"
-        ],
-        "evidence": [
-          "Vampire Survivors"
-        ],
-        "questions": [
-          "gameplay"
-        ]
-      },
-      "planning::gemma3:1b": {
-        "keep": [
-          "GAME_SEED_version=1"
-        ],
-        "fix": [
-          "GAME_SEED_seedId=OWNER-ENROLL-SURVIVAL2-20260913"
-        ],
-        "add": [
-          "gameName=숲의 생존자들"
-        ],
-        "risks": [
-          "Core Fun Weak"
-        ],
-        "evidence": [
-          "Vampire Survivors"
-        ],
-        "questions": [
-          "TARGET_DESIGN_REFERENCE"
-        ]
-      },
-      "qa::gemma3:1b": {
-        "keep": [
-          "GAME_SEED: 버전 1, 시드 ID: OWNER-ENROLL-SURVIVAL2-20260913, 게임 이름: 숲의 생존자들, 상태: 활성, 게임 카테고리: 액션 생존 로그롤, 참조 게임: [], 핵심 기능: 협력 생존 역할, 참"
-        ],
-        "fix": [
-          "게임의 핵심 기능은 협력 생존 역할이 달라지는 협력 확장형 생존 게임으로 재설계합니다.  Fight through an escalating horde in a short real-time survival run while 위치를 조정"
-        ],
-        "add": [
-          "게임의 핵심 기능은 협력 생존 역할이 달라지는 협력 확장형 생존 게임으로 재설계합니다."
-        ],
-        "risks": [
-          "Core Fun Weak"
-        ],
-        "evidence": [
-          "Vampire Survivors"
-        ],
-        "questions": [
-          "게임의 핵심 기능은 어떻게 멀티플레이 협력과 소통을 지원하나요?"
-        ]
-      },
-      "development::llama3.2:1b": {
-        "keep": [
-          "GAME_SEED"
-        ],
-        "fix": [
-          "GAME_SEED"
-        ],
-        "add": [
-          "GAME_SEED"
-        ],
-        "risks": [
-          "GAME_SEED"
-        ],
-        "evidence": [
-          "GAME_SEED"
-        ],
-        "questions": [
-          "GAME_SEED"
-        ]
-      },
-      "graphics::llama3.2:1b": {
-        "keep": [
-          "keep"
-        ],
-        "fix": [
-          "fix"
-        ],
-        "add": [
-          "add"
-        ],
-        "risks": [
-          "risks"
-        ],
-        "evidence": [
-          "evidence"
-        ],
-        "questions": [
-          "questions"
-        ]
-      },
-      "planning::llama3.2:1b": {
-        "keep": [
-          "keep"
-        ],
-        "fix": [
-          "fix"
-        ],
-        "add": [
-          "add"
-        ],
-        "risks": [
-          "risks"
-        ],
-        "evidence": [
-          "evidence"
-        ],
-        "questions": [
-          "questions"
-        ]
-      },
-      "qa::qwen2.5:1.5b": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "fix": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "add": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "risks": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "evidence": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "questions": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ]
-      },
-      "balance::qwen3:0.6b": {
-        "keep": [
-          "Players must manage resources effectively, making decisions that affect their survival in limited resources."
-        ],
-        "fix": [
-          "Players must find and clear shelter effectively, choosing the best shelter locations and upgrades to improve their shelter's value"
-        ],
-        "add": [
-          "Players must work together to survive, making choices that affect their team's survival"
-        ],
-        "risks": [
-          "The game's retry flow is tested and refined."
-        ],
-        "evidence": [
-          "The game's resource flow is tested and refined."
-        ],
-        "questions": [
-          "The game's progression loop is tested and refined."
-        ]
-      },
-      "development::qwen3:0.6b": {
-        "keep": [
-          "The game's core functions and mechanics are tested and refined to ensure they meet the requirements of the development department."
-        ],
-        "fix": [
-          "The game's resource risk decisions are validated and improved to ensure they align with the development department's needs."
-        ],
-        "add": [
-          "The game's clear shelter progression is validated and improved to enhance player survival."
-        ],
-        "risks": [
-          "The game's cooperative survival roles are validated and improved to support teamwork in survival scenarios."
-        ],
-        "evidence": [
-          "The game's market evidence is available and supported by credible references."
-        ],
-        "questions": [
-          "The game's platform fit is validated and improved to ensure compatibility across different devices."
-        ]
-      },
-      "graphics::qwen3:0.6b": {
-        "keep": [
-          "Assigned Department: graphics"
-        ],
-        "fix": [
-          "Game Seed: owner-enroll-survival2-20260913"
-        ],
-        "add": [
-          "Game Name: 숲의 생존자들"
-        ],
-        "risks": [
-          "Status: ACTIVE"
-        ],
-        "evidence": [
-          "Category: ACTION_SURVIVAL_ROGUELITE"
-        ],
-        "questions": [
-          "Reference Games: None"
-        ]
-      },
-      "planning::qwen3:0.6b": {
-        "keep": [
-          "The game's core mechanics are designed to support cooperative survival roles, resource risk decisions, and clear shelter progress,"
-        ],
-        "fix": [
-          "The core loop is structured to encourage players to adapt to changing environments and make choices that affect their survival."
-        ],
-        "add": [
-          "The new gameplay features, environments, and characters are being developed to enhance the player's experience."
-        ],
-        "risks": [
-          "The game's retry flow and recovery rules are being tested and refined to ensure fairness and player safety."
-        ],
-        "evidence": [
-          "The game's market evidence shows a strong interest in survival and cooperative games, with a focus on mobile platforms."
-        ],
-        "questions": [
-          "How does the game ensure the balance and fairness of the game mechanics?"
-        ]
-      },
-      "qa::qwen3:0.6b": {
-        "keep": [
-          "The game's core functions and mechanics are validated and improved."
-        ],
-        "fix": [
-          "The game's core functions and mechanics are tested and refined."
-        ],
-        "add": [
-          "The game's platform fit is validated and improved."
-        ],
-        "risks": [
-          "The game's risk pressure is tested and refined."
-        ],
-        "evidence": [
-          "The game's resource risk decisions are validated and improved."
-        ],
-        "questions": [
-          "How does the game support multiplayer collaboration and communication?"
-        ]
-      },
-      "balance::smollm2:1.7b": {
-        "keep": [
-          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
-        ],
-        "fix": [
-          "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
-        ],
-        "add": [
-          "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression key."
-        ],
-        "risks": [],
-        "evidence": [],
-        "questions": []
-      }
-    },
-    "department_representatives": {
-      "planning": {
-        "keep": [
-          "The game's core mechanics are designed to support cooperative survival roles, resource risk decisions, and clear shelter progress."
-        ],
-        "fix": [
-          "The core loop is structured to encourage players to adapt to changing environments and make choices that affect their survival."
-        ],
-        "add": [
-          "The new gameplay features, environments, and characters are being developed to enhance the player's experience."
-        ],
-        "risks": [
-          "The game's retry flow and recovery rules are being tested and refined to ensure fairness and player safety."
-        ],
-        "evidence": [
-          "The game's market evidence shows a strong interest in survival and cooperative games, with a focus on mobile platforms."
-        ],
-        "questions": [
-          "How does the game ensure the balance and fairness of the game mechanics?"
-        ]
-      },
-      "graphics": {
-        "keep": [
-          "협력 확장형 생존 게임",
-          "재설계"
-        ],
-        "fix": [
-          "재설계"
-        ],
-        "add": [
-          "게임의 핵심 요소"
-        ],
-        "risks": [
-          "사냥"
-        ],
-        "evidence": [
-          "Vampire Survivors"
-        ],
-        "questions": [
-          "gameplay"
-        ]
-      },
-      "development": {
-        "keep": [
-          "GAME_SEED"
-        ],
-        "fix": [
-          "GAME_SEED"
-        ],
-        "add": [
-          "GAME_SEED"
-        ],
-        "risks": [
-          "GAME_SEED"
-        ],
-        "evidence": [
-          "GAME_SEED"
-        ],
-        "questions": [
-          "GAME_SEED"
-        ]
-      },
-      "qa": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "fix": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "add": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "risks": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "evidence": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "questions": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ]
-      },
-      "balance": {
-        "keep": [
-          "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
-        ],
-        "fix": [
-          "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
-        ],
-        "add": [
-          "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression key."
-        ],
-        "risks": [],
-        "evidence": [],
-        "questions": []
-      }
-    },
-    "lead_rebuttals": {
-      "planning": {
-        "accept": [
-          "The game's core mechanics are designed to support cooperative survival roles, resource risk decisions, and clear shelter progress.",
-          "The core loop is structured to encourage players to adapt to changing environments and make choices that affect their survival.",
-          "The new gameplay features, environments, and characters are being developed to enhance the player's experience."
-        ],
-        "challenge": [
-          "The game's retry flow and recovery rules are being tested and refined to ensure fairness and player safety."
-        ],
-        "revision": [
-          "The game's market evidence shows a strong interest in survival and cooperative games, with a focus on mobile platforms."
-        ],
-        "reason": "The game's market evidence shows a strong interest in survival and cooperative games, with a focus on mobile platforms."
-      },
-      "graphics": {
-        "accept": [
-          "재설계"
-        ],
-        "challenge": [
-          "게임의 핵심 요소"
-        ],
-        "revision": [
-          "gameplay"
-        ],
-        "reason": "Vampire Survivors의 핵심은 협력적인 생존 게임, 자원 위험 결정, 그리고 안전한 거처를 쌓는 데 중점을 둡니다. 새로운 게임 기능, 환경, 캐릭터는 플레이어의 경험을 향상시키기 위해 개발되었습니다. 게임의 재설계는 플레이어가 환경에 적응하고 선택을 통해 생존에 영향을 미치는 것을 장려합니다. 게임의 재설계는 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 시장 증거는 게임의 시장에 대한 강력한 관심과 모바일 플랫폼에 중점을 둡니다. 게임의 재설계는 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한"
-      },
-      "development": {
-        "accept": [
-          "OWN",
-          "balance"
-        ],
-        "challenge": [
-          "OWN",
-          "balance"
-        ],
-        "revision": [
-          "OWN",
-          "balance"
-        ],
-        "reason": "OWN의 'balance' 항목은 'keep' 항목과 'fix' 항목과 'add' 항목에서 제한되어 있기 때문에, 'evidence' 항목과 'questions' 항목에서 제한되지 않습니다."
-      },
-      "qa": {
-        "accept": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "challenge": [
-          "The game's core mechanics are designed to support cooperative survival roles, resource risk decisions, and clear shelter progress."
-        ],
-        "revision": [
-          "The core loop is structured to encourage players to adapt to changing environments and make choices that affect their survival."
-        ],
-        "reason": "The new gameplay features, environments, and characters are being developed to enhance the player's experience."
-      },
-      "balance": {
-        "accept": [
-          "keep",
-          "fix",
-          "add"
-        ],
-        "challenge": [
-          "risks"
-        ],
-        "revision": [
-          "evidence",
-          "questions"
-        ],
-        "reason": "OWN"
-      }
-    },
-    "cross_department_meeting": {
-      "summary": "전반적으로 CONSENSUS/CONFLICT/HOLD로 논의된 사항들을 정리했습니다.",
-      "decisions": [
-        {
-          "topic": "planning",
-          "status": "CONSENSUS",
-          "reason": "게임의 핵심 메커니즘이 협력 생존 게임, 자원 위험 결정, 그리고 안전한 거처를 쌓는 데 중점을 둔다는 점을 확인했습니다. 게임의 핵심 루프가 플레이어가 환경에 적응하고 선택을 통해 생존에 영향을 미치는 것을 장려한다는 점을 확인했습니다. 새로운 게임 기능, 환경, 캐릭터를 개발하여 플레이어의 경험을 향상시키기 위한 점을 확인했습니다.",
-          "departments": [
-            "planning"
-          ]
-        }
-      ]
-    },
-    "designer_revision_base": {
-      "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.",
-      "playerFantasy": "숲의 생존자들",
-      "coreFun": "cooperative survival roles, resource risk decisions, clear shelter progression",
-      "coreLoop": [
-        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
-        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
-      ],
-      "signatureSystems": [
-        {
-          "name": "Resource Risk Decisions",
-          "purpose": "Players must make decisions based on the limited resources available to them, such as food, water, and shelter.",
-          "playerChoice": "Players must carefully manage their resources to survive, making choices that affect their survival."
-        },
-        {
-          "name": "Clear Shelter Progression",
-          "purpose": "Players must find and clear shelter to survive, which involves making choices that affect their shelter's effectiveness.",
-          "playerChoice": "Players must choose the best shelter locations and upgrades to improve their shelter's effectiveness."
-        },
-        {
-          "name": "Cooperative Survival Roles",
-          "purpose": "Players must work together to survive, which involves making choices that affect their team's survival.",
-          "playerChoice": "Players must communicate and coordinate with their team members to survive, making choices that affect their survival."
-        }
-      ],
-      "progressionDirection": "From simple survival to complex survival, players must adapt to changing environments and make choices that affect their survival.",
-      "visualDirection": "The game features a variety of environments and characters, with a focus on survival and cooperation.",
-      "mobileUx": "The game is designed for mobile devices with a simple and intuitive user interface, making it easy to navigate and play.",
-      "marketTargetDirection": "The game targets players who enjoy survival games and those who enjoy cooperative games, with a focus on mobile devices.",
-      "steamExpansionDecision": "The game is designed to be easily expandable with additional content and features, such as new environments, characters, and gameplay modes.",
-      "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "The game is designed to be easily expandable with additional content and features, such as new environments, characters, and gameplay modes.",
+      "marketTargetDirection": "글로벌 모바일 및 PC 플랫폼에서 로그라이크 액션과 생존 크래프팅의 재미를 동시에 찾는 10대 후반부터 30대 게이머를 집중 공략한다.",
+      "steamExpansionDecision": "로블록스 플랫폼 내에서의 성공적인 지표 검증 이후, 고해상도 그래픽과 심도 있는 멀티플레이 콘텐츠를 보강하여 스팀 플랫폼으로의 확장 출시를 적극 검토한다.",
+      "multiplayerMode": "COOP",
+      "multiplayerExpansionDecision": "최대 4인의 협력 플레이를 통해 역할을 나누어 거점을 방어하고 자원을 공유하는 코옵 확장 모드를 기본 지원한다.",
       "technicalAssumptions": [
-        "The game is designed to be played on mobile devices with a variety of screen sizes and resolutions.",
-        "The game is designed to be played on multiple devices simultaneously, such as tablets and smartphones.",
-        "The game is designed to be played on a variety of screen sizes and resolutions."
+        "클라이언트와 서버 간의 위치 동기화 최적화를 위해 웨이브 단위의 핵심 적 AI 연산을 서버 권한 방식으로 처리한다.",
+        "대규모 적 유닛 처리를 위해 오브젝트 풀링 패턴을 적용하여 가비지 컬렉션 부하를 최소화한다."
       ],
       "validationQuestions": [
-        "How does the game support multiplayer collaboration and communication?",
-        "How does the game ensure the safety and security of players during gameplay?",
-        "How does the game ensure the balance and fairness of the game mechanics?"
+        "15분의 짧은 세션 동안 플레이어가 자원 수집과 생존의 긴장감을 온전히 체감할 수 있는가?",
+        "계절별 생태 변동 시스템이 매 플레이마다 서로 다른 빌드 선택을 유도하는 데 충분히 기여하는가?"
       ],
-      "openQuestions": [
-        "How does the game ensure the balance and fairness of the game mechanics?",
-        "How does the game support multiplayer collaboration and communication?",
-        "How does the game ensure the safety and security of players during gameplay?"
-      ]
-    },
-    "designer_revision_gate": {
-      "systemInterconnections": [
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "CORE_FUN",
-          "trigger": "The game's core functions and mechanics are tested and refined.",
-          "stateChange": "The game's core functions and mechanics are validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "PROGRESSION",
-          "trigger": "The progression of the game's mechanics is tested and refined.",
-          "stateChange": "The progression of the game's mechanics is validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "FAILURE",
-          "trigger": "The game's failure states are tested and refined.",
-          "stateChange": "The game's failure states are validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "RETRY",
-          "trigger": "The game's retry flow is tested and refined.",
-          "stateChange": "The game's retry flow is validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "PLATFORM",
-          "trigger": "The game's platform fit is tested and refined.",
-          "stateChange": "The game's platform fit is validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "UX",
-          "trigger": "The game's user experience is tested and refined.",
-          "stateChange": "The game's user experience is validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "ART",
-          "trigger": "The game's art direction is tested and refined.",
-          "stateChange": "The game's art direction is validated and improved."
-        },
-        {
-          "fromSystem": "CORE_FUN",
-          "toSystem": "AUDIO",
-          "trigger": "The game's audio direction is tested and refined.",
-          "stateChange": "The game's audio direction is validated and improved."
-        }
-      ],
-      "progressionEconomyBalance": {
-        "progressionLoop": "The game's progression loop is tested and refined.",
-        "resourceFlow": "The game's resource flow is tested and refined.",
-        "balanceRules": "The game's balance rules are tested and refined."
-      },
-      "contentExpansionPlan": [
-        {
-          "milestone": "New gameplay feature",
-          "newGameplay": "The game introduces a new gameplay feature that enhances the player's experience.",
-          "systemImpact": "The new gameplay feature impacts the game's overall mechanics and balance."
-        },
-        {
-          "milestone": "New environment",
-          "newGameplay": "The game introduces a new environment that changes the player's experience.",
-          "systemImpact": "The new environment impacts the game's overall mechanics and balance."
-        },
-        {
-          "milestone": "New character",
-          "newGameplay": "The game introduces a new character that changes the player's experience.",
-          "systemImpact": "The new character impacts the game's overall mechanics and balance."
-        }
-      ],
-      "failureRetryRisk": {
-        "failureStates": [
-          "Core Fun Weak",
-          "Platform Fit Weak"
-        ],
-        "retryFlow": "The game's retry flow is tested and refined.",
-        "riskPressure": "The game's risk pressure is tested and refined.",
-        "recoveryRules": "The game's recovery rules are tested and refined."
-      },
-      "platformFitPlan": {
-        "targetPlatform": "ROBLOX",
-        "inputModel": "The game is designed for mobile devices with a simple and intuitive user interface.",
-        "performanceBudget": "The game is designed to be played on multiple devices simultaneously.",
-        "sessionConstraints": "The game is designed to be played on a variety of screen sizes and resolutions."
-      },
-      "uxAccessibilityPlan": {
-        "hudPriorities": "The game's user interface is designed with user-friendly and accessible elements.",
-        "touchAndInput": "The game's touch and input elements are designed for easy navigation and interaction.",
-        "readability": "The game's text and graphics are designed for easy readability.",
-        "accessibility": "The game's accessibility features are designed to support players with disabilities."
-      },
-      "artAudioDirection": {
-        "visualIdentity": "The game's visual identity is designed to be visually appealing and consistent.",
-        "audioIdentity": "The game's audio identity is designed to enhance the player's experience.",
-        "gameplayFeedbackSync": "The game's gameplay feedback is designed to be synchronized with the player's experience."
-      },
       "implementationTraceability": [
         {
-          "designElement": "Resource Risk Decisions",
-          "responsibleSystem": "CORE_FUN",
-          "validationEvidence": "The game's resource risk decisions are validated and improved."
+          "designElement": "계절별 생태 변동 시스템의 날씨 변화",
+          "responsibleSystem": "계절별 생태 변동 시스템",
+          "validationEvidence": "시뮬레이션 테스트를 통해 계절 전환 시 자원 수입과 적의 능력치가 기획된 수치대로 정상 반영되는지 로그를 통해 검증한다."
         },
         {
-          "designElement": "Clear Shelter Progression",
-          "responsibleSystem": "CORE_FUN",
-          "validationEvidence": "The game's clear shelter progression is validated and improved."
+          "designElement": "동료 역할 분담 및 시너지 효과",
+          "responsibleSystem": "동료 역할 분담 및 시너지 시스템",
+          "validationEvidence": "플레이어 조합에 따른 전투 딜타임과 생존율 변화 데이터를 수집하여 시너지 효율이 의도된 밸런스 범위 내에 있는지 확인한다."
         },
         {
-          "designElement": "Cooperative Survival Roles",
-          "responsibleSystem": "CORE_FUN",
-          "validationEvidence": "The game's cooperative survival roles are validated and improved."
+          "designElement": "실시간 웨이브 공세 및 자원 루프",
+          "responsibleSystem": "전투 및 자원 수집 루프",
+          "validationEvidence": "유저 플레이 테스트를 통해 적 처치 후 보상 획득과 업그레이드 선택까지의 소요 시간이 원활하게 이어지는지 관찰한다."
         }
+      ],
+      "openQuestions": [
+        "플레이어 간의 자원 공유 방식을 완전 자율 분배로 할 것인가 아니면 파티 공용 창고로 고정할 것인가?",
+        "시즌별 업데이트 주기를 2주 단위로 짧게 가져갈 것인가 아니면 1달 단위의 대규모로 진행할 것인가?"
       ]
     },
-    "five_lead_fatal_review": {
-      "planning": {
-        "recommendedState": "ACTIVE",
-        "fatalCriteria": [],
-        "evidence": [
-          "The game's core mechanics align with cooperative survival and resource management, which are essential for survival in dynamic environments.",
-          "The core loop focuses on survival through decision-making and collaboration, which directly supports the game's purpose.",
-          "The new gameplay features, environments, and character development are designed to enhance player experience and adapt to evolving survival needs."
-        ],
-        "reason": "The game's design prioritizes survival mechanics, collaboration, and adaptability, which are critical for success in dynamic settings. The new features and expansion plans are well-aligned with market expectations and player engagement."
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
       },
-      "graphics": {
-        "recommendedState": "DISCARD",
-        "fatalCriteria": [
-          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
-        ],
-        "evidence": [
-          "TARGET_DESIGN_REFERENCE",
-          "GAME_SEED"
-        ],
-        "reason": "The game's core loop, while collaborative, introduces a potential for material duplication with the existing '숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.  The core gameplay loop, while focused on cooperation, introduces a potential for a repetitive structure that could lead to a similar experience with other games.  The design is currently not aligned with the core gameplay goals and could lead to a similar experience with other games.  The 'TARGET_DESIGN_REFERENCE' and 'GAME_SEED' data suggests a significant redesign is needed to address these concerns."
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
       },
-      "development": {
-        "recommendedState": "REDESIGN",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "REVISED_DESIGN",
-          "GAME_SEED"
-        ],
-        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
       },
-      "qa": {
-        "recommendedState": "REDESIGN",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "The game's core functions and mechanics are tested and refined.",
-          "The game's progression of mechanics is tested and refined.",
-          "The game's failure states are tested and refined.",
-          "The game's retry flow is tested and refined."
-        ],
-        "reason": "The current design does not meet the criteria for active gameplay, as it lacks the necessary elements to support multiplayer collaboration and communication, ensure player safety and security, and maintain game balance and fairness."
-      },
-      "balance": {
-        "recommendedState": "ACTIVE",
-        "fatalCriteria": [
-          "CORE_FUN_CANNOT_BE_RECOVERED",
-          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-        ],
-        "evidence": [
-          "CORE_FUN_TO_LEARN",
-          "DISTINCT_IDENTITY",
-          "MARKET_EVIDENCE_SUMMARY",
-          "GAME_CATEGORY"
-        ],
-        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
-      }
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
-  "tasks": {
-    "independent_department_reviews::development::llama3.2:1b": {
-      "keep": [
-        "GAME_SEED"
-      ],
-      "fix": [
-        "GAME_SEED"
-      ],
-      "add": [
-        "GAME_SEED"
-      ],
-      "risks": [
-        "GAME_SEED"
-      ],
-      "evidence": [
-        "GAME_SEED"
-      ],
-      "questions": [
-        "GAME_SEED"
-      ]
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 12398,
+      "lastMs": 12398,
+      "lastError": null,
+      "updatedAt": "2026-09-18T08:41:30.664Z"
     },
-    "independent_department_reviews::development::gemma3:1b": {
-      "keep": [
-        "GAME_SEED"
-      ],
-      "fix": [
-        "DESIGN"
-      ],
-      "add": [
-        "TARGET_DESIGN_REFERENCE"
-      ],
-      "risks": [
-        "failureRetryRisk"
-      ],
-      "evidence": [
-        "coreFunWeak"
-      ],
-      "questions": [
-        "Resource Risk Decisions"
-      ]
-    },
-    "independent_department_reviews::graphics::gemma3:1b": {
-      "keep": [
-        "협력 확장형 생존 게임"
-      ],
-      "fix": [
-        "재설계"
-      ],
-      "add": [
-        "게임의 핵심 요소"
-      ],
-      "risks": [
-        "사냥"
-      ],
-      "evidence": [
-        "Vampire Survivors"
-      ],
-      "questions": [
-        "gameplay"
-      ]
-    },
-    "independent_department_reviews::graphics::llama3.2:1b": {
-      "keep": [
-        "keep"
-      ],
-      "fix": [
-        "fix"
-      ],
-      "add": [
-        "add"
-      ],
-      "risks": [
-        "risks"
-      ],
-      "evidence": [
-        "evidence"
-      ],
-      "questions": [
-        "questions"
-      ]
-    },
-    "independent_department_reviews::planning::llama3.2:1b": {
-      "keep": [
-        "keep"
-      ],
-      "fix": [
-        "fix"
-      ],
-      "add": [
-        "add"
-      ],
-      "risks": [
-        "risks"
-      ],
-      "evidence": [
-        "evidence"
-      ],
-      "questions": [
-        "questions"
-      ]
-    },
-    "independent_department_reviews::balance::gemma3:1b": {
-      "keep": [
-        "Resource Risk Decisions"
-      ],
-      "fix": [
-        "Clear Shelter Progression"
-      ],
-      "add": [
-        "Cooperative Survival Roles"
-      ],
-      "risks": [
-        "Failure Retry Risk"
-      ],
-      "evidence": [
-        "Vampire Survivors"
-      ],
-      "questions": [
-        "TARGET_DESIGN_REFERENCE"
-      ]
-    },
-    "independent_department_reviews::qa::qwen2.5:1.5b": {
-      "keep": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "fix": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "add": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "risks": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "evidence": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "questions": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ]
-    },
-    "independent_department_reviews::planning::gemma3:1b": {
-      "keep": [
-        "GAME_SEED_version=1"
-      ],
-      "fix": [
-        "GAME_SEED_seedId=OWNER-ENROLL-SURVIVAL2-20260913"
-      ],
-      "add": [
-        "gameName=숲의 생존자들"
-      ],
-      "risks": [
-        "Core Fun Weak"
-      ],
-      "evidence": [
-        "Vampire Survivors"
-      ],
-      "questions": [
-        "TARGET_DESIGN_REFERENCE"
-      ]
-    },
-    "independent_department_reviews::development::qwen3:0.6b": {
-      "keep": [
-        "The game's core functions and mechanics are tested and refined to ensure they meet the requirements of the development department."
-      ],
-      "fix": [
-        "The game's resource risk decisions are validated and improved to ensure they align with the development department's needs."
-      ],
-      "add": [
-        "The game's clear shelter progression is validated and improved to enhance player survival."
-      ],
-      "risks": [
-        "The game's cooperative survival roles are validated and improved to support teamwork in survival scenarios."
-      ],
-      "evidence": [
-        "The game's market evidence is available and supported by credible references."
-      ],
-      "questions": [
-        "The game's platform fit is validated and improved to ensure compatibility across different devices."
-      ]
-    },
-    "independent_department_reviews::balance::qwen3:0.6b": {
-      "keep": [
-        "Players must manage resources effectively, making decisions that affect their survival in limited resources."
-      ],
-      "fix": [
-        "Players must find and clear shelter effectively, choosing the best shelter locations and upgrades to improve their shelter's value"
-      ],
-      "add": [
-        "Players must work together to survive, making choices that affect their team's survival"
-      ],
-      "risks": [
-        "The game's retry flow is tested and refined."
-      ],
-      "evidence": [
-        "The game's resource flow is tested and refined."
-      ],
-      "questions": [
-        "The game's progression loop is tested and refined."
-      ]
-    },
-    "independent_department_reviews::qa::gemma3:1b": {
-      "keep": [
-        "GAME_SEED: 버전 1, 시드 ID: OWNER-ENROLL-SURVIVAL2-20260913, 게임 이름: 숲의 생존자들, 상태: 활성, 게임 카테고리: 액션 생존 로그롤, 참조 게임: [], 핵심 기능: 협력 생존 역할, 참"
-      ],
-      "fix": [
-        "게임의 핵심 기능은 협력 생존 역할이 달라지는 협력 확장형 생존 게임으로 재설계합니다.  Fight through an escalating horde in a short real-time survival run while 위치를 조정"
-      ],
-      "add": [
-        "게임의 핵심 기능은 협력 생존 역할이 달라지는 협력 확장형 생존 게임으로 재설계합니다."
-      ],
-      "risks": [
-        "Core Fun Weak"
-      ],
-      "evidence": [
-        "Vampire Survivors"
-      ],
-      "questions": [
-        "게임의 핵심 기능은 어떻게 멀티플레이 협력과 소통을 지원하나요?"
-      ]
-    },
-    "independent_department_reviews::graphics::qwen3:0.6b": {
-      "keep": [
-        "Assigned Department: graphics"
-      ],
-      "fix": [
-        "Game Seed: owner-enroll-survival2-20260913"
-      ],
-      "add": [
-        "Game Name: 숲의 생존자들"
-      ],
-      "risks": [
-        "Status: ACTIVE"
-      ],
-      "evidence": [
-        "Category: ACTION_SURVIVAL_ROGUELITE"
-      ],
-      "questions": [
-        "Reference Games: None"
-      ]
-    },
-    "independent_department_reviews::planning::qwen3:0.6b": {
-      "keep": [
-        "The game's core mechanics are designed to support cooperative survival roles, resource risk decisions, and clear shelter progress,"
-      ],
-      "fix": [
-        "The core loop is structured to encourage players to adapt to changing environments and make choices that affect their survival."
-      ],
-      "add": [
-        "The new gameplay features, environments, and characters are being developed to enhance the player's experience."
-      ],
-      "risks": [
-        "The game's retry flow and recovery rules are being tested and refined to ensure fairness and player safety."
-      ],
-      "evidence": [
-        "The game's market evidence shows a strong interest in survival and cooperative games, with a focus on mobile platforms."
-      ],
-      "questions": [
-        "How does the game ensure the balance and fairness of the game mechanics?"
-      ]
-    },
-    "independent_department_reviews::qa::qwen3:0.6b": {
-      "keep": [
-        "The game's core functions and mechanics are validated and improved."
-      ],
-      "fix": [
-        "The game's core functions and mechanics are tested and refined."
-      ],
-      "add": [
-        "The game's platform fit is validated and improved."
-      ],
-      "risks": [
-        "The game's risk pressure is tested and refined."
-      ],
-      "evidence": [
-        "The game's resource risk decisions are validated and improved."
-      ],
-      "questions": [
-        "How does the game support multiplayer collaboration and communication?"
-      ]
-    },
-    "independent_department_reviews::balance::smollm2:1.7b": {
-      "keep": [
-        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
-      ],
-      "fix": [
-        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
-      ],
-      "add": [
-        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression key."
-      ],
-      "risks": [],
-      "evidence": [],
-      "questions": []
-    },
-    "department_representatives::planning": {
-      "keep": [
-        "The game's core mechanics are designed to support cooperative survival roles, resource risk decisions, and clear shelter progress."
-      ],
-      "fix": [
-        "The core loop is structured to encourage players to adapt to changing environments and make choices that affect their survival."
-      ],
-      "add": [
-        "The new gameplay features, environments, and characters are being developed to enhance the player's experience."
-      ],
-      "risks": [
-        "The game's retry flow and recovery rules are being tested and refined to ensure fairness and player safety."
-      ],
-      "evidence": [
-        "The game's market evidence shows a strong interest in survival and cooperative games, with a focus on mobile platforms."
-      ],
-      "questions": [
-        "How does the game ensure the balance and fairness of the game mechanics?"
-      ]
-    },
-    "department_representatives::graphics": {
-      "keep": [
-        "협력 확장형 생존 게임",
-        "재설계"
-      ],
-      "fix": [
-        "재설계"
-      ],
-      "add": [
-        "게임의 핵심 요소"
-      ],
-      "risks": [
-        "사냥"
-      ],
-      "evidence": [
-        "Vampire Survivors"
-      ],
-      "questions": [
-        "gameplay"
-      ]
-    },
-    "department_representatives::development": {
-      "keep": [
-        "GAME_SEED"
-      ],
-      "fix": [
-        "GAME_SEED"
-      ],
-      "add": [
-        "GAME_SEED"
-      ],
-      "risks": [
-        "GAME_SEED"
-      ],
-      "evidence": [
-        "GAME_SEED"
-      ],
-      "questions": [
-        "GAME_SEED"
-      ]
-    },
-    "department_representatives::qa": {
-      "keep": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "fix": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "add": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "risks": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "evidence": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "questions": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ]
-    },
-    "department_representatives::balance": {
-      "keep": [
-        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
-      ],
-      "fix": [
-        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
-      ],
-      "add": [
-        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression key."
-      ],
-      "risks": [],
-      "evidence": [],
-      "questions": []
-    },
-    "lead_rebuttals::planning": {
-      "accept": [
-        "The game's core mechanics are designed to support cooperative survival roles, resource risk decisions, and clear shelter progress.",
-        "The core loop is structured to encourage players to adapt to changing environments and make choices that affect their survival.",
-        "The new gameplay features, environments, and characters are being developed to enhance the player's experience."
-      ],
-      "challenge": [
-        "The game's retry flow and recovery rules are being tested and refined to ensure fairness and player safety."
-      ],
-      "revision": [
-        "The game's market evidence shows a strong interest in survival and cooperative games, with a focus on mobile platforms."
-      ],
-      "reason": "The game's market evidence shows a strong interest in survival and cooperative games, with a focus on mobile platforms."
-    },
-    "lead_rebuttals::graphics": {
-      "accept": [
-        "재설계"
-      ],
-      "challenge": [
-        "게임의 핵심 요소"
-      ],
-      "revision": [
-        "gameplay"
-      ],
-      "reason": "Vampire Survivors의 핵심은 협력적인 생존 게임, 자원 위험 결정, 그리고 안전한 거처를 쌓는 데 중점을 둡니다. 새로운 게임 기능, 환경, 캐릭터는 플레이어의 경험을 향상시키기 위해 개발되었습니다. 게임의 재설계는 플레이어가 환경에 적응하고 선택을 통해 생존에 영향을 미치는 것을 장려합니다. 게임의 재설계는 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 시장 증거는 게임의 시장에 대한 강력한 관심과 모바일 플랫폼에 중점을 둡니다. 게임의 재설계는 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한 반복 흐름과 복구 규칙을 테스트하고 조정합니다. 게임의 재현을 개선하기 위한"
-    },
-    "lead_rebuttals::development": {
-      "accept": [
-        "OWN",
-        "balance"
-      ],
-      "challenge": [
-        "OWN",
-        "balance"
-      ],
-      "revision": [
-        "OWN",
-        "balance"
-      ],
-      "reason": "OWN의 'balance' 항목은 'keep' 항목과 'fix' 항목과 'add' 항목에서 제한되어 있기 때문에, 'evidence' 항목과 'questions' 항목에서 제한되지 않습니다."
-    },
-    "lead_rebuttals::qa": {
-      "accept": [
-        "ASSIGNED_DEPARTMENT=qa"
-      ],
-      "challenge": [
-        "The game's core mechanics are designed to support cooperative survival roles, resource risk decisions, and clear shelter progress."
-      ],
-      "revision": [
-        "The core loop is structured to encourage players to adapt to changing environments and make choices that affect their survival."
-      ],
-      "reason": "The new gameplay features, environments, and characters are being developed to enhance the player's experience."
-    },
-    "lead_rebuttals::balance": {
-      "accept": [
-        "keep",
-        "fix",
-        "add"
-      ],
-      "challenge": [
-        "risks"
-      ],
-      "revision": [
-        "evidence",
-        "questions"
-      ],
-      "reason": "OWN"
-    },
-    "five_lead_fatal_review::planning": {
-      "recommendedState": "ACTIVE",
-      "fatalCriteria": [],
-      "evidence": [
-        "The game's core mechanics align with cooperative survival and resource management, which are essential for survival in dynamic environments.",
-        "The core loop focuses on survival through decision-making and collaboration, which directly supports the game's purpose.",
-        "The new gameplay features, environments, and character development are designed to enhance player experience and adapt to evolving survival needs."
-      ],
-      "reason": "The game's design prioritizes survival mechanics, collaboration, and adaptability, which are critical for success in dynamic settings. The new features and expansion plans are well-aligned with market expectations and player engagement."
-    },
-    "five_lead_fatal_review::graphics": {
-      "recommendedState": "DISCARD",
-      "fatalCriteria": [
-        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
-        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
-      ],
-      "evidence": [
-        "TARGET_DESIGN_REFERENCE",
-        "GAME_SEED"
-      ],
-      "reason": "The game's core loop, while collaborative, introduces a potential for material duplication with the existing '숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.  The core gameplay loop, while focused on cooperation, introduces a potential for a repetitive structure that could lead to a similar experience with other games.  The design is currently not aligned with the core gameplay goals and could lead to a similar experience with other games.  The 'TARGET_DESIGN_REFERENCE' and 'GAME_SEED' data suggests a significant redesign is needed to address these concerns."
-    },
-    "five_lead_fatal_review::qa": {
-      "recommendedState": "REDESIGN",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "The game's core functions and mechanics are tested and refined.",
-        "The game's progression of mechanics is tested and refined.",
-        "The game's failure states are tested and refined.",
-        "The game's retry flow is tested and refined."
-      ],
-      "reason": "The current design does not meet the criteria for active gameplay, as it lacks the necessary elements to support multiplayer collaboration and communication, ensure player safety and security, and maintain game balance and fairness."
-    },
-    "five_lead_fatal_review::development": {
-      "recommendedState": "REDESIGN",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "REVISED_DESIGN",
-        "GAME_SEED"
-      ],
-      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
-    },
-    "five_lead_fatal_review::balance": {
-      "recommendedState": "ACTIVE",
-      "fatalCriteria": [
-        "CORE_FUN_CANNOT_BE_RECOVERED",
-        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
-        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
-        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
-      ],
-      "evidence": [
-        "CORE_FUN_TO_LEARN",
-        "DISTINCT_IDENTITY",
-        "MARKET_EVIDENCE_SUMMARY",
-        "GAME_CATEGORY"
-      ],
-      "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 84,
+      "lastMs": 84,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 29.147993999s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"29s\" } ] } }",
+      "updatedAt": "2026-09-18T08:41:30.871Z"
     }
   },
-  "createdAt": "2026-09-18T04:21:56.185Z",
-  "updatedAt": "2026-09-18T04:50:12.200Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
-  "completedAt": "2026-09-18T04:50:12.200Z"
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T08:41:18.264Z",
+  "updatedAt": "2026-09-18T08:41:32.264Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:41:30.664Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3-flash-preview"
 }
