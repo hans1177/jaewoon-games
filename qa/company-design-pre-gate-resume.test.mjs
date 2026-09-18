@@ -48,11 +48,12 @@ test('design runtime replaces only stale engine runs while preserving manual and
 });
 
 
-test('Gemini explicit provider retry delay is honored before daily quota quarantine',()=>{
-  const retryIndex=design.indexOf('const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel)');
+test('Gemini daily quota quarantine precedes minute-rate retry handling',()=>{
+  const dailyIndex=design.indexOf('if(status===429&&isDailyGeminiQuotaError(error))');
+  const retryIndex=design.indexOf('const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel)',dailyIndex);
   const waitIndex=design.indexOf('GEMINI_RATE_LIMIT_WAIT=',retryIndex);
-  const dailyIndex=design.indexOf('if(status===429&&isDailyGeminiQuotaError(error))',retryIndex);
-  assert.ok(retryIndex>0&&waitIndex>retryIndex&&dailyIndex>waitIndex);
+  assert.ok(dailyIndex>0&&retryIndex>dailyIndex&&waitIndex>retryIndex);
+  assert.match(design,/GEMINI_DAILY_QUOTA_EXHAUSTED=.*retry=NO/);
   assert.match(design,/minuteRateRetries<2/);
   assert.match(design,/attempt-=1;\s*continue;/);
   assert.match(design,/2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f/);
