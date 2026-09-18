@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { addVibeExperience, createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
+import { addVibeExperience, createVibeExperienceMemory, createVibeExperienceRecord } from '../assets/vibe-experience-memory.js';
 
 const readJson=file=>JSON.parse(fs.readFileSync(file,'utf8'));
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -23,11 +23,23 @@ export function validateAuthorizedSummary(summary){
 
 export function mergeAuthorizedSummary(memory,summary,{summaryPath='company-learning/authorized-source/block-blast/authorized-learning-summary.json'}={}){
   const valid=validateAuthorizedSummary(summary);
-  const sourceText=JSON.stringify(valid);
+  const stableIdentity=JSON.stringify({
+    gameId:valid.gameId,
+    packageId:valid.packageId,
+    authority:valid.authority,
+    packageFingerprint:valid.packageFingerprint,
+    learningDomains:valid.learningDomains,
+    reusablePatterns:valid.reusablePatterns,
+    sourceCorpus:valid.sourceCorpus,
+    assets:valid.assets,
+    nativeLibraries:valid.nativeLibraries,
+    runtimeEvidenceRequiredForPositiveRuntimeClaims:valid.runtimeEvidenceRequiredForPositiveRuntimeClaims
+  });
+  const summaryDigest=sha256(stableIdentity);
   const evidence=[
     'AUTHORIZED_STATIC_EXTRACTION_PASS',
     `PACKAGE_FINGERPRINT:${valid.packageFingerprint}`,
-    `SUMMARY_SHA256:${sha256(sourceText)}`,
+    `SUMMARY_SHA256:${summaryDigest}`,
     `SOURCE_PATH:${summaryPath}`
   ];
   const record={
@@ -51,7 +63,14 @@ export function mergeAuthorizedSummary(memory,summary,{summaryPath='company-lear
     verified:true,
     createdAt:clean(valid.generatedAt)||null
   };
-  return addVibeExperience(createVibeExperienceMemory(memory),record);
+  const current=createVibeExperienceMemory(memory);
+  const candidate=createVibeExperienceRecord(record);
+  const existing=current.records.find(item=>item.fingerprint===candidate.fingerprint||item.id===candidate.id);
+  const exactCurrent=existing&&evidence.every(token=>existing.evidence.includes(token));
+  if(exactCurrent){
+    return {added:false,reinforced:false,reason:'authorized-source-snapshot-current',record:existing,memory:current};
+  }
+  return addVibeExperience(current,record);
 }
 
 function parseArgs(argv){
@@ -74,7 +93,7 @@ function main(){
     return;
   }
   const summary=readJson(summaryFile);
-  const memory=fs.existsSync(experienceFile)?readJson(experienceFile):{version:2,records:[]};
+  const memory=fs.existsSync(experienceFile)?readJson(experienceFile):{version:3,records:[]};
   const result=mergeAuthorizedSummary(memory,summary,{summaryPath:summaryFile});
   writeJson(experienceFile,result.memory);
   console.log('VIBE2_AUTHORIZED_SOURCE_MEMORY=PASS');
