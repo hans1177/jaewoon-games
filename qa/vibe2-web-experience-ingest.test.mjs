@@ -23,11 +23,16 @@ function validReport(){
     formalImplementationPassed:true,
     gameplayInteractionPerformed:true,
     interactionCount:12,
+    stateChangeCount:18,
+    approvedScopeFullyImplemented:true,
+    scopeCoverage:{pass:true,mechanicBindings:['action-primary','action-secondary']},
+    before:{functionalLabels:['배치','강화']},
+    after:{functionalLabels:['배치','강화','웨이브 시작']},
     sourceRevision:'a'.repeat(40),
     webStrictScore:94,
     strictReview:{verdict:'PASS',totalScore:94,hardFailures:[]},
-    contentDepthValidation:{validationMode:'REAL_ELAPSED_GAMEPLAY',pass:true,meaningfulGameplayMilliseconds:1800000},
-    promotionRevalidation:{required:true,independentRun:true,pass:true},
+    contentDepthValidation:{validationMode:'REAL_ELAPSED_GAMEPLAY',pass:true,meaningfulGameplayMilliseconds:1800000,varietyEvents:['웨이브 시작','타워 강화'],metrics:{uniqueGameplayStateCount:7,meaningfulStateTransitionCount:18}},
+    promotionRevalidation:{required:true,independentRun:true,pass:true,baselineHashMatch:true},
     runtimeValidationEvidence:{
       replayRegression:{required:true,independentRun:true,pass:true},
       preplatformReadiness:{pass:true},
@@ -41,20 +46,46 @@ function validReport(){
   };
 }
 
+
+function validDesign(){
+  return {
+    gameId:'g1',
+    content:{
+      coreLoop:['Read the enemy wave and place defenders.','Earn resources and spend them on upgrades.','Clear the wave to unlock the next stage.'],
+      progressionDirection:'wave-by-wave',
+      mobileUx:'touch-first',
+      signatureSystems:[{name:'lane-defense'}],
+      technicalAssumptions:['Wave pressure and counter balance']
+    }
+  };
+}
+
 test('formal Web evidence builds design-aware verified experience',()=>{
   const gate=validateFormalWebLearningEvidence(validItem(),validReport());
   assert.equal(gate.valid,true);
   assert.equal(gate.autoPlayerVerified,true);
   assert.equal(gate.telemetryVerified,true);
   assert.equal(gate.designReviewVerified,true);
-  const built=buildFormalWebExperienceReview({item:validItem(),report:validReport(),evidencePath:'design/g1/web-gameplay-validation.json'});
+  const built=buildFormalWebExperienceReview({item:validItem(),report:validReport(),evidencePath:'design/g1/web-gameplay-validation.json',design:validDesign(),designPath:'design/g1/design-after-web.json'});
   assert.equal(built.valid,true);
   assert.equal(built.review.designIntelligenceRequired,true);
   assert.equal(built.review.designReviewDecision,'PASS');
   assert.equal(built.review.reviewVerified,true);
   assert.equal(built.review.engineQaVerified,true);
   assert.ok(built.review.reusablePatterns.includes('deterministic-replay-stable'));
+  assert.ok(built.review.reusablePatterns.some(value=>value.startsWith('WEB_SEMANTIC:CORE_LOOP:')));
+  assert.ok(built.review.reusablePatterns.some(value=>value.startsWith('WEB_SEMANTIC:SAVE_MEANING:')));
   assert.ok(built.review.evidence.includes('promotion-revalidation:PASS'));
+  assert.ok(built.review.evidence.includes('verified-web-semantics:design/g1/design-after-web.json'));
+});
+
+test('verified Web semantic promotion requires approved scope and baseline hash match',()=>{
+  const report=validReport();
+  report.promotionRevalidation.baselineHashMatch=false;
+  const built=buildFormalWebExperienceReview({item:validItem(),report,evidencePath:'design/g1/web-gameplay-validation.json',design:validDesign(),designPath:'design/g1/design-after-web.json'});
+  assert.equal(built.valid,true);
+  assert.equal(built.review.reusablePatterns.some(value=>value.startsWith('WEB_SEMANTIC:')),false);
+  assert.equal(built.review.evidence.some(value=>value.startsWith('verified-web-semantics:')),false);
 });
 
 test('strict 90, real 30m and independent replay/revalidation are hard requirements',()=>{
@@ -73,11 +104,12 @@ test('strict 90, real 30m and independent replay/revalidation are hard requireme
 
 test('ingest promotes once and duplicate evidence does not create a second record',()=>{
   const queue={items:[validItem()]};
-  const first=ingestFormalWebExperiences({queueInput:queue,memoryInput:{version:1,records:[]},evidenceLoader:()=>validReport()});
+  const first=ingestFormalWebExperiences({queueInput:queue,memoryInput:{version:1,records:[]},evidenceLoader:()=>validReport(),designLoader:()=>({path:'design/g1/design-after-web.json',data:validDesign()})});
   assert.equal(first.promotedCount,1);
   assert.equal(first.memory.records.length,1);
+  assert.ok(first.memory.records[0].reusablePatterns.some(value=>value.startsWith('WEB_SEMANTIC:CORE_LOOP:')));
   const confirmations=first.memory.records[0].confirmations;
-  const second=ingestFormalWebExperiences({queueInput:queue,memoryInput:first.memory,evidenceLoader:()=>validReport()});
+  const second=ingestFormalWebExperiences({queueInput:queue,memoryInput:first.memory,evidenceLoader:()=>validReport(),designLoader:()=>({path:'design/g1/design-after-web.json',data:validDesign()})});
   assert.equal(second.promotedCount,0);
   assert.equal(second.results[0].reason,'formal-web-experience-already-ingested');
   assert.equal(second.memory.records.length,1);
