@@ -17,9 +17,9 @@
   "completedPhaseCount": 6,
   "cachedTaskCount": 3,
   "lastSuccessfulModelCallAt": "2026-09-18T08:13:03.751Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "balance",
+  "lastError": "GEMINI_CALL_FAILED gemini-3.5-flash: gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 8,
@@ -44,15 +44,15 @@
       "updatedAt": "2026-09-18T08:12:54.196Z"
     },
     "gemini:gemini-3.5-flash": {
-      "calls": 14,
+      "calls": 15,
       "successes": 0,
-      "failures": 14,
+      "failures": 15,
       "timeouts": 2,
       "jsonFailures": 0,
-      "totalMs": 989294,
-      "lastMs": 49338,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 58.008113472s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"58s\" } ] } }",
-      "updatedAt": "2026-09-18T08:21:02.008Z"
+      "totalMs": 1098785,
+      "lastMs": 109491,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 57.857089952s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"57s\" } ] } }",
+      "updatedAt": "2026-09-18T08:22:02.161Z"
     },
     "gemini:gemini-3.1-flash-lite": {
       "calls": 2,
@@ -86,8 +86,19 @@
       "lastMs": 119417,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
       "updatedAt": "2026-09-18T08:15:03.169Z"
+    },
+    "gemini:gemini-2.5-pro": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 109605,
+      "lastMs": 109605,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T08:22:02.275Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T08:21:02.978Z"
+  "updatedAt": "2026-09-18T08:22:02.277Z"
 }
