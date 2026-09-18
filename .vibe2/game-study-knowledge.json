@@ -6,7 +6,7 @@
       "studyId": "study_1yxj4pj",
       "gameId": "external-memory-game",
       "engine": "web",
-      "confirmations": 63,
+      "confirmations": 64,
       "gameDna": {
         "input": 0.9,
         "movement": 0.7,
@@ -79,13 +79,13 @@
         "continual-distillation": "PENDING_CROSS_GAME"
       },
       "firstSeenAt": "2026-09-15T21:14:49.642Z",
-      "lastSeenAt": "2026-09-18T15:45:05.102Z"
+      "lastSeenAt": "2026-09-18T16:15:55.946Z"
     },
     {
       "studyId": "study_16i6nw3",
       "gameId": "external-tictactoe",
       "engine": "web",
-      "confirmations": 65,
+      "confirmations": 66,
       "gameDna": {
         "input": 0.8,
         "movement": 0.65,
@@ -160,7 +160,7 @@
         "continual-distillation": "PENDING_CROSS_GAME"
       },
       "firstSeenAt": "2026-09-15T21:14:55.488Z",
-      "lastSeenAt": "2026-09-18T15:44:58.249Z"
+      "lastSeenAt": "2026-09-18T16:15:58.436Z"
     },
     {
       "studyId": "study_n446gd",
@@ -316,7 +316,7 @@
     "mergedKnowledge": [
       {
         "pattern": "architecture:input",
-        "confirmations": 193,
+        "confirmations": 195,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -331,7 +331,7 @@
       },
       {
         "pattern": "architecture:progression",
-        "confirmations": 193,
+        "confirmations": 195,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -346,7 +346,7 @@
       },
       {
         "pattern": "architecture:ui",
-        "confirmations": 193,
+        "confirmations": 195,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -361,7 +361,7 @@
       },
       {
         "pattern": "mechanic:input",
-        "confirmations": 193,
+        "confirmations": 195,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -376,7 +376,7 @@
       },
       {
         "pattern": "mechanic:progression",
-        "confirmations": 193,
+        "confirmations": 195,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -391,7 +391,7 @@
       },
       {
         "pattern": "mechanic:ui",
-        "confirmations": 193,
+        "confirmations": 195,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -406,7 +406,7 @@
       },
       {
         "pattern": "observed-flow:input->progression",
-        "confirmations": 193,
+        "confirmations": 195,
         "gameCount": 3,
         "games": [
           "external-memory-game",
@@ -421,7 +421,7 @@
       },
       {
         "pattern": "observed-flow:ai->progression",
-        "confirmations": 192,
+        "confirmations": 194,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -434,7 +434,7 @@
       },
       {
         "pattern": "observed-flow:input->ai",
-        "confirmations": 192,
+        "confirmations": 194,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -447,7 +447,7 @@
       },
       {
         "pattern": "observed-flow:progression->input",
-        "confirmations": 192,
+        "confirmations": 194,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -460,7 +460,7 @@
       },
       {
         "pattern": "observed-loop:progression>input",
-        "confirmations": 192,
+        "confirmations": 194,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -473,7 +473,7 @@
       },
       {
         "pattern": "architecture:movement",
-        "confirmations": 128,
+        "confirmations": 130,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -486,7 +486,7 @@
       },
       {
         "pattern": "mechanic:movement",
-        "confirmations": 128,
+        "confirmations": 130,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -499,7 +499,7 @@
       },
       {
         "pattern": "observed-loop:input>progression",
-        "confirmations": 127,
+        "confirmations": 128,
         "gameCount": 2,
         "games": [
           "external-memory-game",
@@ -512,7 +512,7 @@
       },
       {
         "pattern": "mechanic:ai",
-        "confirmations": 129,
+        "confirmations": 130,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -524,7 +524,7 @@
       },
       {
         "pattern": "observed-flow:progression->ui",
-        "confirmations": 129,
+        "confirmations": 130,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -536,7 +536,7 @@
       },
       {
         "pattern": "architecture:restart",
-        "confirmations": 65,
+        "confirmations": 66,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -548,7 +548,7 @@
       },
       {
         "pattern": "mechanic:restart",
-        "confirmations": 65,
+        "confirmations": 66,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -560,7 +560,7 @@
       },
       {
         "pattern": "observed-flow:ai->ui",
-        "confirmations": 65,
+        "confirmations": 66,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -572,7 +572,7 @@
       },
       {
         "pattern": "observed-flow:progression->ai",
-        "confirmations": 65,
+        "confirmations": 66,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
@@ -584,10 +584,46 @@
       },
       {
         "pattern": "observed-flow:ui->progression",
-        "confirmations": 65,
+        "confirmations": 66,
         "gameCount": 1,
         "games": [
           "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ai->movement",
+        "confirmations": 64,
+        "gameCount": 1,
+        "games": [
+          "external-memory-game"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:movement->ui",
+        "confirmations": 64,
+        "gameCount": 1,
+        "games": [
+          "external-memory-game"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:runtime-flow->movement",
+        "confirmations": 64,
+        "gameCount": 1,
+        "games": [
+          "external-memory-game"
         ],
         "engines": [
           "web"
@@ -600,6 +636,18 @@
         "gameCount": 1,
         "games": [
           "external-tictactoe"
+        ],
+        "engines": [
+          "web"
+        ],
+        "crossGameVerified": false
+      },
+      {
+        "pattern": "observed-flow:ui->runtime-flow",
+        "confirmations": 64,
+        "gameCount": 1,
+        "games": [
+          "external-memory-game"
         ],
         "engines": [
           "web"
@@ -624,54 +672,6 @@
         "gameCount": 1,
         "games": [
           "external-tictactoe"
-        ],
-        "engines": [
-          "web"
-        ],
-        "crossGameVerified": false
-      },
-      {
-        "pattern": "observed-flow:ai->movement",
-        "confirmations": 63,
-        "gameCount": 1,
-        "games": [
-          "external-memory-game"
-        ],
-        "engines": [
-          "web"
-        ],
-        "crossGameVerified": false
-      },
-      {
-        "pattern": "observed-flow:movement->ui",
-        "confirmations": 63,
-        "gameCount": 1,
-        "games": [
-          "external-memory-game"
-        ],
-        "engines": [
-          "web"
-        ],
-        "crossGameVerified": false
-      },
-      {
-        "pattern": "observed-flow:runtime-flow->movement",
-        "confirmations": 63,
-        "gameCount": 1,
-        "games": [
-          "external-memory-game"
-        ],
-        "engines": [
-          "web"
-        ],
-        "crossGameVerified": false
-      },
-      {
-        "pattern": "observed-flow:ui->runtime-flow",
-        "confirmations": 63,
-        "gameCount": 1,
-        "games": [
-          "external-memory-game"
         ],
         "engines": [
           "web"
@@ -779,49 +779,67 @@
     "hypotheses": [
       {
         "hypothesis": "input->progression",
-        "confirmations": 193,
+        "confirmations": 195,
         "gameCount": 3,
         "status": "SUPPORTED_ACROSS_GAMES"
       },
       {
         "hypothesis": "ai->progression",
-        "confirmations": 192,
+        "confirmations": 194,
         "gameCount": 2,
         "status": "SUPPORTED_ACROSS_GAMES"
       },
       {
         "hypothesis": "input->ai",
-        "confirmations": 192,
+        "confirmations": 194,
         "gameCount": 2,
         "status": "SUPPORTED_ACROSS_GAMES"
       },
       {
         "hypothesis": "progression->input",
-        "confirmations": 192,
+        "confirmations": 194,
         "gameCount": 2,
         "status": "SUPPORTED_ACROSS_GAMES"
       },
       {
         "hypothesis": "progression->ui",
-        "confirmations": 129,
+        "confirmations": 130,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
       },
       {
         "hypothesis": "ai->ui",
-        "confirmations": 65,
+        "confirmations": 66,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
       },
       {
         "hypothesis": "progression->ai",
-        "confirmations": 65,
+        "confirmations": 66,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
       },
       {
         "hypothesis": "ui->progression",
-        "confirmations": 65,
+        "confirmations": 66,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "ai->movement",
+        "confirmations": 64,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "movement->ui",
+        "confirmations": 64,
+        "gameCount": 1,
+        "status": "OBSERVED_ONCE"
+      },
+      {
+        "hypothesis": "runtime-flow->movement",
+        "confirmations": 64,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
       },
@@ -832,26 +850,8 @@
         "status": "OBSERVED_ONCE"
       },
       {
-        "hypothesis": "ai->movement",
-        "confirmations": 63,
-        "gameCount": 1,
-        "status": "OBSERVED_ONCE"
-      },
-      {
-        "hypothesis": "movement->ui",
-        "confirmations": 63,
-        "gameCount": 1,
-        "status": "OBSERVED_ONCE"
-      },
-      {
-        "hypothesis": "runtime-flow->movement",
-        "confirmations": 63,
-        "gameCount": 1,
-        "status": "OBSERVED_ONCE"
-      },
-      {
         "hypothesis": "ui->runtime-flow",
-        "confirmations": 63,
+        "confirmations": 64,
         "gameCount": 1,
         "status": "OBSERVED_ONCE"
       },
@@ -892,23 +892,23 @@
         "gameId": "external-memory-game",
         "engine": "web",
         "studyId": "study_1yxj4pj",
-        "similarity": 0.9112,
-        "confirmations": 63
+        "similarity": 0.9343,
+        "confirmations": 64
       },
       {
         "gameId": "external-roblox-potion-shop-demo",
         "engine": "roblox",
         "studyId": "study_m43i0t",
-        "similarity": 0.8356,
+        "similarity": 0.7419,
         "confirmations": 1
       }
     ],
     "latestNovelty": {
       "gameId": "external-tictactoe",
-      "novelty": 0.0888,
+      "novelty": 0.0657,
       "basis": "nearest-game-dna"
     },
-    "updatedAt": "2026-09-18T15:45:02.512Z"
+    "updatedAt": "2026-09-18T16:15:58.436Z"
   },
   "policy": {
     "serverFanInOnly": true,
