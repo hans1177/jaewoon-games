@@ -67,7 +67,8 @@ export function assessExistingWebSource({html='',baseline={},approvedDesign=fals
   const prototypeMarkers=[/FULL APPROVED WEB COMPANION/i,/검증\s*(?:루프|패널|체크리스트)/i,/data-session-stage=/i,/STATUS:\s*준비/i,/승인\s*분량\s*전체\s*구현/i].filter(re=>re.test(text)).length;
   const score=Number.isFinite(Number(validationScore))?Number(validationScore):null;
   let strategy='MAJOR_REWORK',confidence='MEDIUM',reasons=[];
-  if(!sourceExists||bytes<300){strategy='FULL_REBUILD';confidence='HIGH';reasons.push('SOURCE_MISSING_OR_EMPTY');}
+  const structurallyEmpty=bytes<120&&signals.count===0&&!/<(?:button|canvas|script|main|section)\b/i.test(text);
+  if(!sourceExists||structurallyEmpty){strategy='FULL_REBUILD';confidence='HIGH';reasons.push('SOURCE_MISSING_OR_EMPTY');}
   else if(score!=null&&score>=80&&signals.count>=4){strategy='KEEP_AND_CONTINUE';confidence='HIGH';reasons.push('CURRENT_WEB_VALIDATION_AT_LEAST_80','REAL_GAMEPLAY_SIGNALS_PRESENT');}
   else if(signals.count>=7&&scope.coveragePct>=55&&prototypeMarkers===0){strategy='KEEP_AND_CONTINUE';confidence='HIGH';reasons.push('STRONG_EXISTING_GAMEPLAY','APPROVED_SCOPE_MOSTLY_REPRESENTED');}
   else if(signals.count>=5&&scope.coveragePct>=35){strategy='PARTIAL_REPAIR';confidence='HIGH';reasons.push('WORKING_GAMEPLAY_REUSABLE','APPROVED_SCOPE_GAPS_REMAIN');}
