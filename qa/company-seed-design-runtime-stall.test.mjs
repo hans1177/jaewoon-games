@@ -172,8 +172,22 @@ test('seed design workflow persists checkpoints on success failure and cancellat
   assert.match(workflow,/runtime: DESIGN_ONLY checkpoint/);
   assert.match(workflow,/DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES/);
   assert.match(workflow,/trap 'exit 143' TERM INT/);
-  assert.match(workflow,/trap 'rc=\$\?; trap - EXIT TERM INT; persist_design_checkpoint \|\| true; exit "\$rc"' EXIT/);
+  assert.match(workflow,/cleanup_design_runtime\(\)/);
+  assert.match(workflow,/trap cleanup_design_runtime EXIT/);
   assert.doesNotMatch(workflow,/git checkout -B seed-design-checkpoint-persist/);
+});
+
+test('mid-cycle Gemini quota exhaustion becomes checkpointed waiting instead of a design gate failure',()=>{
+  assert.match(workflow,/id: design_pipeline/);
+  assert.match(workflow,/DESIGN_MODEL_CYCLE_RESULT=WAITING_FOR_GEMINI_QUOTA/);
+  assert.match(workflow,/DESIGN_QUOTA_FAILURE_IS_DESIGN_GATE_FAILURE=NO/);
+  assert.match(workflow,/DESIGN_CHECKPOINT_RESUME_REQUIRED=YES/);
+  assert.match(workflow,/steps\.design_pipeline\.outputs\.complete == 'true'/);
+  assert.match(workflow,/GEMINI_NO_AVAILABLE_CANDIDATES|GenerateRequestsPerDayPerProjectPerModel-FreeTier|Quota exceeded/);
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.equal(roadmap.developmentLifecycleMachine?.modelQuotaContinuity?.quotaFailureIsDesignGateFailure,false);
+  assert.equal(roadmap.developmentLifecycleMachine?.modelQuotaContinuity?.runnerStopOnQuotaExhaustion,false);
+  assert.equal(roadmap.developmentLifecycleMachine?.modelQuotaContinuity?.checkpointResumeRequired,true);
 });
 
 test('design runtime emits persistent phase timing evidence for the next bottleneck',()=>{
