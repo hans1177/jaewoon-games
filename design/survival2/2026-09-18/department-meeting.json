@@ -22,67 +22,68 @@
   "representatives": {
     "planning": {
       "keep": [
-        "survival2"
+        "The game's core mechanics are designed to support cooperative survival roles, resource risk decisions, and clear shelter progress."
       ],
       "fix": [
-        "survival2"
+        "The core loop is structured to encourage players to adapt to changing environments and make choices that affect their survival."
       ],
       "add": [
-        "survival2"
+        "The new gameplay features, environments, and characters are being developed to enhance the player's experience."
       ],
       "risks": [
-        "survival2"
+        "The game's retry flow and recovery rules are being tested and refined to ensure fairness and player safety."
       ],
       "evidence": [
-        "survival2"
+        "The game's market evidence shows a strong interest in survival and cooperative games, with a focus on mobile platforms."
       ],
       "questions": [
-        "survival2"
+        "How does the game ensure the balance and fairness of the game mechanics?"
       ]
     },
     "graphics": {
       "keep": [
-        "Graphics"
+        "협력 확장형 생존 게임",
+        "재설계"
       ],
       "fix": [
-        "Graphics"
+        "재설계"
       ],
       "add": [
-        "Graphics"
+        "게임의 핵심 요소"
       ],
       "risks": [
-        "Graphics"
+        "사냥"
       ],
       "evidence": [
-        "Graphics"
+        "Vampire Survivors"
       ],
       "questions": [
-        "Graphics"
+        "gameplay"
       ]
     },
     "development": {
       "keep": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "fix": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "add": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "risks": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "evidence": [
-        "game-seed"
+        "GAME_SEED"
       ],
       "questions": [
-        "game-seed"
+        "GAME_SEED"
       ]
     },
     "qa": {
       "keep": [
-        "ASSIGNED_DEPARTMENT"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "fix": [
         "ASSIGNED_DEPARTMENT=qa"
@@ -102,65 +103,35 @@
     },
     "balance": {
       "keep": [
-        "지원되는 모든 부서"
+        "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure."
       ],
       "fix": [
-        "지원되는 모든 부서"
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
       ],
       "add": [
-        "지원되는 모든 부서"
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression key."
       ],
-      "risks": [
-        "지원되는 모든 부서"
-      ],
-      "evidence": [
-        "지원되는 모든 부서"
-      ],
-      "questions": [
-        "지원되는 모든 부서"
-      ]
+      "risks": [],
+      "evidence": [],
+      "questions": []
     }
   },
   "rebuttalRound": 1,
   "rebuttalAuthoredByDepartmentLeads": true,
-  "summary": "새 기능 창작 없음",
+  "summary": "전반적으로 CONSENSUS/CONFLICT/HOLD로 논의된 사항들을 정리했습니다.",
   "decisions": [
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "survival2",
+      "reason": "게임의 핵심 메커니즘이 협력 생존 게임, 자원 위험 결정, 그리고 안전한 거처를 쌓는 데 중점을 둔다는 점을 확인했습니다. 게임의 핵심 루프가 플레이어가 환경에 적응하고 선택을 통해 생존에 영향을 미치는 것을 장려한다는 점을 확인했습니다. 새로운 게임 기능, 환경, 캐릭터를 개발하여 플레이어의 경험을 향상시키기 위한 점을 확인했습니다.",
       "departments": [
-        "survival2"
-      ]
-    },
-    {
-      "topic": "graphics",
-      "status": "CONFLICT",
-      "reason": "Graphics는 핵심 요소이므로, 다른 부서 의견을 수용합니다. Graphics에 대한 추가적인 검토와 개선이 필요합니다. 추가적인 검토를 통해, Graphics의 품질을 높이고, 사용자 경험을 개선할 수 있습니다. 추가적인 검토를 통해, Graphics의 디자인을 개선하고, 사용자에게 더욱 매력적인 경험을 제공할 수 있습니다. 추가적인 검토를 통해, Graphics의 성능을 최적화하고, 사용자에게 최상의 경험을 제공할 수 있습니다. 추가적인 검토를 통해, Graphics의 안정성을 확보하고, 사용자에게 안전하고 신뢰할 수 있는 서비스를 제공할 수 있습니다. 추가적인 검토를 통해, Graphics의 사용자 인터페이스를 개선하고, 사용성을 높일 수 있습니다. 추가적인 검토를 통해, Graphics의 디자인을 개선하고, 사용자에게 더욱 긍정적인 경험을 제공할 수 있습니다. 추가적인 검토를 통해, Graphics의 기능 개선을 통해, 사용자에게 더욱 편리한 서비스를 제공할 수있",
-      "departments": [
-        "own"
-      ]
-    },
-    {
-      "topic": "development",
-      "status": "CONFLICT",
-      "reason": "own",
-      "departments": [
-        "own"
-      ]
-    },
-    {
-      "topic": "qa",
-      "status": "CONSENSUS",
-      "reason": "ASSIGNED_DEPARTMENT=qa",
-      "departments": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "planning"
       ]
     }
   ],
   "counts": {
-    "consensus": 2,
-    "conflict": 2,
+    "consensus": 1,
+    "conflict": 0,
     "hold": 0
   }
 }

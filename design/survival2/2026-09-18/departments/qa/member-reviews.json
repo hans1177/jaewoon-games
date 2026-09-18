@@ -6,13 +6,13 @@
   "department": "qa",
   "leadModel": "qwen2.5:1.5b",
   "assistantModels": [
-    "smollm2:1.7b",
-    "qwen3:0.6b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "models": [
     "qwen2.5:1.5b",
-    "smollm2:1.7b",
-    "qwen3:0.6b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "reviews": [
     {
@@ -20,7 +20,7 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "ASSIGNED_DEPARTMENT"
+          "ASSIGNED_DEPARTMENT=qa"
         ],
         "fix": [
           "ASSIGNED_DEPARTMENT=qa"
@@ -36,30 +36,6 @@
         ],
         "questions": [
           "ASSIGNED_DEPARTMENT=qa"
-        ]
-      }
-    },
-    {
-      "model": "smollm2:1.7b",
-      "memberRole": "ASSISTANT",
-      "review": {
-        "keep": [
-          "지정된 qa 부서 관점의 독립 검토 모델이다."
-        ],
-        "fix": [
-          "마지막 설계를 수정하지 않는다."
-        ],
-        "add": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
-        ],
-        "risks": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
-        ],
-        "evidence": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
-        ],
-        "questions": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
         ]
       }
     },
@@ -68,22 +44,46 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "survival2"
+          "The game's core functions and mechanics are validated and improved."
         ],
         "fix": [
-          "survival2"
+          "The game's core functions and mechanics are tested and refined."
         ],
         "add": [
-          "survival2"
+          "The game's platform fit is validated and improved."
         ],
         "risks": [
-          "survival2"
+          "The game's risk pressure is tested and refined."
         ],
         "evidence": [
-          "survival2"
+          "The game's resource risk decisions are validated and improved."
         ],
         "questions": [
-          "survival2"
+          "How does the game support multiplayer collaboration and communication?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED: 버전 1, 시드 ID: OWNER-ENROLL-SURVIVAL2-20260913, 게임 이름: 숲의 생존자들, 상태: 활성, 게임 카테고리: 액션 생존 로그롤, 참조 게임: [], 핵심 기능: 협력 생존 역할, 참"
+        ],
+        "fix": [
+          "게임의 핵심 기능은 협력 생존 역할이 달라지는 협력 확장형 생존 게임으로 재설계합니다.  Fight through an escalating horde in a short real-time survival run while 위치를 조정"
+        ],
+        "add": [
+          "게임의 핵심 기능은 협력 생존 역할이 달라지는 협력 확장형 생존 게임으로 재설계합니다."
+        ],
+        "risks": [
+          "Core Fun Weak"
+        ],
+        "evidence": [
+          "Vampire Survivors"
+        ],
+        "questions": [
+          "게임의 핵심 기능은 어떻게 멀티플레이 협력과 소통을 지원하나요?"
         ]
       }
     }

@@ -7,13 +7,13 @@
   "representativeModel": "qwen2.5:1.5b",
   "leadModel": "qwen2.5:1.5b",
   "assistantModels": [
-    "smollm2:1.7b",
-    "qwen3:0.6b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "ASSIGNED_DEPARTMENT"
+      "ASSIGNED_DEPARTMENT=qa"
     ],
     "fix": [
       "ASSIGNED_DEPARTMENT=qa"

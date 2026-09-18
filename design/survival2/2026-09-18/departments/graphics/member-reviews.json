@@ -6,13 +6,13 @@
   "department": "graphics",
   "leadModel": "gemma3:1b",
   "assistantModels": [
-    "llama3.2:1b",
-    "qwen2.5:1.5b"
+    "qwen3:0.6b",
+    "llama3.2:1b"
   ],
   "models": [
     "gemma3:1b",
-    "llama3.2:1b",
-    "qwen2.5:1.5b"
+    "qwen3:0.6b",
+    "llama3.2:1b"
   ],
   "reviews": [
     {
@@ -20,22 +20,46 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "Survival Core"
+          "협력 확장형 생존 게임"
         ],
         "fix": [
-          "Gameplay Enhancements"
+          "재설계"
         ],
         "add": [
-          "Visual Updates"
+          "게임의 핵심 요소"
         ],
         "risks": [
-          "Dynamic Difficulty"
+          "사냥"
         ],
         "evidence": [
-          "Gameplay Mechanics"
+          "Vampire Survivors"
         ],
         "questions": [
-          "Gameplay Balance"
+          "gameplay"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Assigned Department: graphics"
+        ],
+        "fix": [
+          "Game Seed: owner-enroll-survival2-20260913"
+        ],
+        "add": [
+          "Game Name: 숲의 생존자들"
+        ],
+        "risks": [
+          "Status: ACTIVE"
+        ],
+        "evidence": [
+          "Category: ACTION_SURVIVAL_ROGUELITE"
+        ],
+        "questions": [
+          "Reference Games: None"
         ]
       }
     },
@@ -44,46 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "graphics"
+          "keep"
         ],
         "fix": [
-          "graphics"
+          "fix"
         ],
         "add": [
-          "graphics"
+          "add"
         ],
         "risks": [
-          "graphics"
+          "risks"
         ],
         "evidence": [
-          "graphics"
+          "evidence"
         ],
         "questions": [
-          "graphics"
-        ]
-      }
-    },
-    {
-      "model": "qwen2.5:1.5b",
-      "memberRole": "ASSISTANT",
-      "review": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT=graphics"
-        ],
-        "fix": [
-          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-SURVIVAL2-20260913\",\"gameId\":\"survival2\",\"gameName\":\"숲의 생존자들\",\"status\":\"ACTIVE\",\"GAM"
-        ],
-        "add": [
-          "GAME_SEED=GAME_SEED"
-        ],
-        "risks": [
-          "ASSIGNED_DEPARTMENT=graphics"
-        ],
-        "evidence": [
-          "GAME_SEED=GAME_SEED"
-        ],
-        "questions": [
-          "GAME_SEED=GAME_SEED"
+          "questions"
         ]
       }
     }

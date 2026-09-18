@@ -6,13 +6,13 @@
   "department": "development",
   "leadModel": "llama3.2:1b",
   "assistantModels": [
-    "qwen2.5:1.5b",
-    "smollm2:1.7b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "models": [
     "llama3.2:1b",
-    "qwen2.5:1.5b",
-    "smollm2:1.7b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "reviews": [
     {
@@ -20,70 +20,70 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "fix": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "add": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "risks": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "evidence": [
-          "game-seed"
+          "GAME_SEED"
         ],
         "questions": [
-          "game-seed"
+          "GAME_SEED"
         ]
       }
     },
     {
-      "model": "qwen2.5:1.5b",
+      "model": "qwen3:0.6b",
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "ASSIGNED_DEPARTMENT=development"
+          "The game's core functions and mechanics are tested and refined to ensure they meet the requirements of the development department."
         ],
         "fix": [
-          "GAME_SEED: GAME_SEED is not a valid JSON object. Please provide a valid JSON object for GAME_SEED."
+          "The game's resource risk decisions are validated and improved to ensure they align with the development department's needs."
         ],
         "add": [
-          "DESIGN: Design should be kept as is since it is already in the required format."
+          "The game's clear shelter progression is validated and improved to enhance player survival."
         ],
         "risks": [
-          "Assuming the development department is responsible for the design, it is not clear what specific changes or improvements are being"
+          "The game's cooperative survival roles are validated and improved to support teamwork in survival scenarios."
         ],
         "evidence": [
-          "GAME_SEED: GAME_SEED is not a valid JSON object. Please provide a valid JSON object for GAME_SEED."
+          "The game's market evidence is available and supported by credible references."
         ],
         "questions": [
-          "DESIGN: Open questions should be kept as is since they are already in the required format."
+          "The game's platform fit is validated and improved to ensure compatibility across different devices."
         ]
       }
     },
     {
-      "model": "smollm2:1.7b",
+      "model": "gemma3:1b",
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "지정된 development 부서 관점의 독립 검토 모델이다."
+          "GAME_SEED"
         ],
         "fix": [
-          "마지막 설계를 수정하지 않는다."
+          "DESIGN"
         ],
         "add": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+          "TARGET_DESIGN_REFERENCE"
         ],
         "risks": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+          "failureRetryRisk"
         ],
         "evidence": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+          "coreFunWeak"
         ],
         "questions": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+          "Resource Risk Decisions"
         ]
       }
     }

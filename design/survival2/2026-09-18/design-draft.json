@@ -11,84 +11,167 @@
   "authorModel": "qwen2.5:1.5b",
   "singleAuthor": true,
   "content": {
-    "identity": "生存者森林",
-    "playerFantasy": "生存者",
-    "coreFun": "生存者",
+    "identity": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.",
+    "playerFantasy": "숲의 생존자들",
+    "coreFun": "cooperative survival roles, resource risk decisions, clear shelter progression",
     "coreLoop": [
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者"
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     ],
     "signatureSystems": [
       {
-        "name": "生存者",
-        "purpose": "生存者",
-        "playerChoice": "生存者"
+        "name": "Resource Risk Decisions",
+        "purpose": "Players must make decisions based on the limited resources available to them, such as food, water, and shelter.",
+        "playerChoice": "Players must carefully manage their resources to survive, making choices that affect their survival."
       },
       {
-        "name": "生存者",
-        "purpose": "生存者",
-        "playerChoice": "生存者"
+        "name": "Clear Shelter Progression",
+        "purpose": "Players must find and clear shelter to survive, which involves making choices that affect their shelter's effectiveness.",
+        "playerChoice": "Players must choose the best shelter locations and upgrades to improve their shelter's effectiveness."
       },
       {
-        "name": "生存者",
-        "purpose": "生存者",
-        "playerChoice": "生存者"
-      },
-      {
-        "name": "生存者",
-        "purpose": "生存者",
-        "playerChoice": "生存者"
-      },
-      {
-        "name": "生存者",
-        "purpose": "生存者",
-        "playerChoice": "生存者"
-      },
-      {
-        "name": "生存者",
-        "purpose": "生存者",
-        "playerChoice": "生存者"
+        "name": "Cooperative Survival Roles",
+        "purpose": "Players must work together to survive, which involves making choices that affect their team's survival.",
+        "playerChoice": "Players must communicate and coordinate with their team members to survive, making choices that affect their survival."
       }
     ],
-    "progressionDirection": "生存者",
-    "visualDirection": "生存者",
-    "mobileUx": "生存者",
-    "marketTargetDirection": "生存者",
-    "steamExpansionDecision": "生存者",
+    "progressionDirection": "From simple survival to complex survival, players must adapt to changing environments and make choices that affect their survival.",
+    "visualDirection": "The game features a variety of environments and characters, with a focus on survival and cooperation.",
+    "mobileUx": "The game is designed for mobile devices with a simple and intuitive user interface, making it easy to navigate and play.",
+    "marketTargetDirection": "The game targets players who enjoy survival games and those who enjoy cooperative games, with a focus on mobile devices.",
+    "steamExpansionDecision": "The game is designed to be easily expandable with additional content and features, such as new environments, characters, and gameplay modes.",
     "multiplayerMode": "SINGLE",
-    "multiplayerExpansionDecision": "生存者",
+    "multiplayerExpansionDecision": "The game is designed to be easily expandable with additional content and features, such as new environments, characters, and gameplay modes.",
     "technicalAssumptions": [
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者"
+      "The game is designed to be played on mobile devices with a variety of screen sizes and resolutions.",
+      "The game is designed to be played on multiple devices simultaneously, such as tablets and smartphones.",
+      "The game is designed to be played on a variety of screen sizes and resolutions."
     ],
     "validationQuestions": [
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者"
+      "How does the game support multiplayer collaboration and communication?",
+      "How does the game ensure the safety and security of players during gameplay?",
+      "How does the game ensure the balance and fairness of the game mechanics?"
     ],
     "openQuestions": [
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者",
-      "生存者"
+      "How does the game ensure the balance and fairness of the game mechanics?",
+      "How does the game support multiplayer collaboration and communication?",
+      "How does the game ensure the safety and security of players during gameplay?"
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "CORE_FUN",
+        "toSystem": "CORE_FUN",
+        "trigger": "The game's core functions and mechanics are tested and refined.",
+        "stateChange": "The game's core functions and mechanics are validated and improved."
+      },
+      {
+        "fromSystem": "CORE_FUN",
+        "toSystem": "PROGRESSION",
+        "trigger": "The progression of the game's mechanics is tested and refined.",
+        "stateChange": "The progression of the game's mechanics is validated and improved."
+      },
+      {
+        "fromSystem": "CORE_FUN",
+        "toSystem": "FAILURE",
+        "trigger": "The game's failure states are tested and refined.",
+        "stateChange": "The game's failure states are validated and improved."
+      },
+      {
+        "fromSystem": "CORE_FUN",
+        "toSystem": "RETRY",
+        "trigger": "The game's retry flow is tested and refined.",
+        "stateChange": "The game's retry flow is validated and improved."
+      },
+      {
+        "fromSystem": "CORE_FUN",
+        "toSystem": "PLATFORM",
+        "trigger": "The game's platform fit is tested and refined.",
+        "stateChange": "The game's platform fit is validated and improved."
+      },
+      {
+        "fromSystem": "CORE_FUN",
+        "toSystem": "UX",
+        "trigger": "The game's user experience is tested and refined.",
+        "stateChange": "The game's user experience is validated and improved."
+      },
+      {
+        "fromSystem": "CORE_FUN",
+        "toSystem": "ART",
+        "trigger": "The game's art direction is tested and refined.",
+        "stateChange": "The game's art direction is validated and improved."
+      },
+      {
+        "fromSystem": "CORE_FUN",
+        "toSystem": "AUDIO",
+        "trigger": "The game's audio direction is tested and refined.",
+        "stateChange": "The game's audio direction is validated and improved."
+      }
+    ],
+    "progressionEconomyBalance": {
+      "progressionLoop": "The game's progression loop is tested and refined.",
+      "resourceFlow": "The game's resource flow is tested and refined.",
+      "balanceRules": "The game's balance rules are tested and refined."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "New gameplay feature",
+        "newGameplay": "The game introduces a new gameplay feature that enhances the player's experience.",
+        "systemImpact": "The new gameplay feature impacts the game's overall mechanics and balance."
+      },
+      {
+        "milestone": "New environment",
+        "newGameplay": "The game introduces a new environment that changes the player's experience.",
+        "systemImpact": "The new environment impacts the game's overall mechanics and balance."
+      },
+      {
+        "milestone": "New character",
+        "newGameplay": "The game introduces a new character that changes the player's experience.",
+        "systemImpact": "The new character impacts the game's overall mechanics and balance."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "Core Fun Weak",
+        "Platform Fit Weak"
+      ],
+      "retryFlow": "The game's retry flow is tested and refined.",
+      "riskPressure": "The game's risk pressure is tested and refined.",
+      "recoveryRules": "The game's recovery rules are tested and refined."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "ROBLOX",
+      "inputModel": "The game is designed for mobile devices with a simple and intuitive user interface.",
+      "performanceBudget": "The game is designed to be played on multiple devices simultaneously.",
+      "sessionConstraints": "The game is designed to be played on a variety of screen sizes and resolutions."
+    },
+    "uxAccessibilityPlan": {
+      "hudPriorities": "The game's user interface is designed with user-friendly and accessible elements.",
+      "touchAndInput": "The game's touch and input elements are designed for easy navigation and interaction.",
+      "readability": "The game's text and graphics are designed for easy readability.",
+      "accessibility": "The game's accessibility features are designed to support players with disabilities."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "The game's visual identity is designed to be visually appealing and consistent.",
+      "audioIdentity": "The game's audio identity is designed to enhance the player's experience.",
+      "gameplayFeedbackSync": "The game's gameplay feedback is designed to be synchronized with the player's experience."
+    },
+    "implementationTraceability": [
+      {
+        "designElement": "Resource Risk Decisions",
+        "responsibleSystem": "CORE_FUN",
+        "validationEvidence": "The game's resource risk decisions are validated and improved."
+      },
+      {
+        "designElement": "Clear Shelter Progression",
+        "responsibleSystem": "CORE_FUN",
+        "validationEvidence": "The game's clear shelter progression is validated and improved."
+      },
+      {
+        "designElement": "Cooperative Survival Roles",
+        "responsibleSystem": "CORE_FUN",
+        "validationEvidence": "The game's cooperative survival roles are validated and improved."
+      }
     ]
   }
 }
