@@ -107,7 +107,7 @@ export function promoteVibeReviewedExperience(memoryInput, review = {}) {
   });
   return Object.freeze({
     promoted: result.added,
-    reason: result.added ? 'verified-reviewed-experience-promoted' : result.reason,
+    reason: result.reinforced ? result.reason : (result.added ? 'verified-reviewed-experience-promoted' : result.reason),
     validation,
     record: result.record,
     memory: result.memory,
