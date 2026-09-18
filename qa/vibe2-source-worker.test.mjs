@@ -106,6 +106,27 @@ test('existing web game text maintenance is allowed', async () => {
   assert.deepEqual(result.changedFiles, ['index.html']);
 });
 
+test('existing Web assessment overrides stale full-rebuild flags when KEEP_AND_CONTINUE is selected', async () => {
+  const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
+  const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-keep-existing' });
+  workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed = true;
+  workOrder.evidence = ['web-strict-score:84'];
+  const source = `<!doctype html><html><body><button id="play">Play</button><script>
+  let hp=10,wave=2,gold=30,playerX=1,playerY=1,enemy={hp:3};
+  addEventListener('touchstart',()=>{enemy.hp-=1}); function update(){requestAnimationFrame(update)}update();
+  function restart(){wave=1} const victory='victory',defeat='defeat'; localStorage.setItem('save','1'); new AudioContext();
+  </script></body></html>`;
+  write(path.join(cwd, 'web-games/demo/index.html'), source);
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(responseFile, JSON.stringify({edits:[{path:'index.html',find:'<button id="play">Play</button>',replace:'<button id="play">Continue</button>'}],newFiles:[],replaceFiles:[]}));
+  const result = await runVibe2SourceWorker({ cwd, responseFile });
+  assert.equal(result.exploration.existingWebAssessment.strategy,'KEEP_AND_CONTINUE');
+  assert.equal(result.fullFileRewriteAllowed,false);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
 test('exploration FULL_REBUILD strategy can authorize full web rewrite without planner pre-deciding rebuild', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.txt');
