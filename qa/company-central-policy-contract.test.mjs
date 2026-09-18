@@ -213,6 +213,29 @@ test('Web learning evidence is auxiliary and cannot replace native platform evid
   assert.match(nativeDatasetGate,/real verified/);
 });
 
+test('Roblox-first design stabilization changes scheduling only and stops before Web implementation',()=>{
+  const strategy=directive.platformStrategy.designStabilizationScheduling;
+  assert.equal(strategy.mode,'ROBLOX_FIRST_THEN_OTHER_PLATFORMS');
+  assert.deepEqual(strategy.sortKeys,['ROBLOX_TARGET_FIRST','OLDEST_PENDING_FIRST']);
+  assert.equal(strategy.perGameIndependentCompletion,true);
+  assert.equal(strategy.portfolioBarrierForbidden,true);
+  assert.equal(strategy.doesNotChangePassThreshold,true);
+  assert.equal(strategy.doesNotOverrideHardFailures,true);
+  assert.equal(strategy.forcePromotionForbidden,true);
+  assert.equal(directive.executionPause.stopAfterStage,'DEVELOPMENT_CONFIRMED_QUEUE');
+  assert.equal(directive.executionPause.webDevelopmentPaused,true);
+  assert.equal(directive.executionPause.developmentConfirmedQueueAllowed,true);
+  assert.equal(directive.executionPause.developmentRuntimeDispatchAllowed,false);
+  assert.equal(directive.executionPause.webImplementationStartForbiddenUntilOwnerResume,true);
+  assert.equal(directive.executionPause.designPromotionMayContinueWhileWebPaused,true);
+  assert.equal(directive.executionPause.strictDesignGateMustRemainUnchanged,true);
+  assert.match(flow,/mode: ROBLOX_FIRST_THEN_OTHER_PLATFORMS/);
+  assert.match(flow,/forcePromotionForbidden: true/);
+  assert.match(flow,/stopAfterStage: DEVELOPMENT_CONFIRMED_QUEUE/);
+  assert.match(flow,/webDevelopmentPaused: true/);
+  assert.match(flow,/developmentRuntimeDispatchAllowed: false/);
+});
+
 test('platform priority is default focus only and creates no development entry gate',()=>{
   const strategy=directive.platformStrategy;
   assert.equal(strategy.primaryPlatform,'ROBLOX');
