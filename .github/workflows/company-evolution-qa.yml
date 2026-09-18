@@ -80,11 +80,10 @@ jobs:
           if(directive.policyDocument!=='COMPANY_FLOW.md')throw new Error('machine settings must point to COMPANY_FLOW.md');
           const roles=['planning','graphics','development','qa','balance'];
           const pool=[...new Set(directive.ai?.modelPool||[])];
-          const min=Number(directive.ai?.minDistinctModelsPerDepartment||0);
-          const reviewCount=Number(directive.ai?.departmentReviewModelCount||0);
+          const reviewCount=Number(directive.ai?.departmentReviewModelCount||1);
           const leads=roles.map(role=>directive.ai?.departmentLeadModels?.[role]).filter(Boolean);
           const distinctLeads=[...new Set(leads)];
-          if(min<3||reviewCount<3||pool.length<reviewCount)throw new Error('multimodel pool insufficient');
+          if(reviewCount!==1||pool.length<roles.length)throw new Error('five direct lead review contract missing');
           if(directive.ai?.departmentLeadModelsMustBeDistinct!==true||distinctLeads.length<5)throw new Error('five distinct lead model gate failed');
           if(leads.some(model=>!pool.includes(model)))throw new Error('department lead model must be in modelPool');
           if(directive.ai?.departmentRepresentativeAuthoredByLead!==true||directive.ai?.departmentRebuttalAuthoredByLead!==true)throw new Error('department lead ownership contract missing');
