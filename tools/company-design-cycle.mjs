@@ -3,6 +3,8 @@ import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {loadSeedState,activeSeedForGame} from './game-seed-state.mjs';
 import {repairDesignRequiredFields} from './company-design-prepromotion-repair.mjs';
+import {scoreDesignGateV2,DESIGN_GATE_PASS_MINIMUM} from './company-design-gate-scoring-v2.mjs';
+import {classifyRobloxGenre} from './roblox-genre-profile.mjs';
 
 const ROLES=['planning','graphics','development','qa','balance'];
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
@@ -97,34 +99,67 @@ const strictDesignerFeedback={
   recordedAt:clean(latestDesignFeedbackEvent?.recordedAt)||null
 };
 const evidence={game,gameSeed:seed,factPack,designLearningContext,centralPolicy:'COMPANY_FLOW.md'};
-const DESIGN_CHECKPOINT_CONTRACT_VERSION=1;
+const DESIGN_CHECKPOINT_CONTRACT_VERSION=2;
 const checkpointPath=path.join(base,'design-checkpoint.json');
+const progressPath=path.join(base,'design-progress.json');
 const policyDigest=createHash('sha256').update(fs.readFileSync('COMPANY_FLOW.md','utf8')).digest('hex');
+const engineFiles=[
+  'tools/company-design-cycle.mjs',
+  'tools/company-design-gate-scoring-v2.mjs',
+  'tools/company-strict-production-review.mjs',
+  'tools/company-design-prepromotion-repair.mjs',
+  'tools/company-baseline-gate.mjs'
+];
+const engineDigest=createHash('sha256').update(engineFiles.map(file=>`${file}\n${fs.readFileSync(file,'utf8')}`).join('\n---\n')).digest('hex');
 const checkpointFingerprint=createHash('sha256').update(JSON.stringify({
   contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
   gameId,date,seed,evidence,strictDesignerFeedback,designerModel,coordinatorModel,
-  reviewModelCount,leadModels,departmentReviewModels,policyDigest,
+  reviewModelCount,leadModels,departmentReviewModels,policyDigest,engineDigest,
   discardPolicy:directive.discardPolicy?.DESIGN_ONLY||null
 })).digest('hex');
 let designCheckpoint=readJson(checkpointPath,null);
 const checkpointReusable=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION&&designCheckpoint?.fingerprint===checkpointFingerprint;
 if(!checkpointReusable){
-  designCheckpoint={contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,gameId,date,seedId:seed.seedId,fingerprint:checkpointFingerprint,policyDigest,status:'IN_PROGRESS',completedPhases:[],phases:{},tasks:{},createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
+  designCheckpoint={contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,gameId,date,seedId:seed.seedId,fingerprint:checkpointFingerprint,policyDigest,engineDigest,status:'IN_PROGRESS',completedPhases:[],phases:{},tasks:{},modelHealth:{},slowPhases:{},currentPhase:'BOOTSTRAP',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   writeJson(checkpointPath,designCheckpoint);
   console.log('DESIGN_CHECKPOINT_RESET=YES');
 }else{
   designCheckpoint.phases=designCheckpoint.phases&&typeof designCheckpoint.phases==='object'?designCheckpoint.phases:{};
   designCheckpoint.tasks=designCheckpoint.tasks&&typeof designCheckpoint.tasks==='object'?designCheckpoint.tasks:{};
+  designCheckpoint.modelHealth=designCheckpoint.modelHealth&&typeof designCheckpoint.modelHealth==='object'?designCheckpoint.modelHealth:{};
+  designCheckpoint.slowPhases=designCheckpoint.slowPhases&&typeof designCheckpoint.slowPhases==='object'?designCheckpoint.slowPhases:{};
   designCheckpoint.completedPhases=Array.isArray(designCheckpoint.completedPhases)?designCheckpoint.completedPhases:[];
+  designCheckpoint.engineDigest=engineDigest;
   designCheckpoint.status='IN_PROGRESS';
   designCheckpoint.updatedAt=new Date().toISOString();
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_CHECKPOINT_RESUME=YES|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}`);
 }
+const PROGRESS_STAGE_ORDER=['BOOTSTRAP','DESIGNER_DRAFT','PRE_GATE','PRE_GATE_REPAIR','DEPARTMENT_REVIEWS','LEAD_CONSENSUS','CROSS_DEPARTMENT_MEETING','DESIGNER_REVISION','FINAL_LEAD_REVIEW','COMPLETE'];
+function writeProgress(stage=designCheckpoint.currentPhase||'BOOTSTRAP',extra={}){
+  const index=Math.max(0,PROGRESS_STAGE_ORDER.indexOf(stage));
+  const percent=stage==='COMPLETE'?100:Math.round(index/(PROGRESS_STAGE_ORDER.length-1)*100);
+  writeJson(progressPath,{
+    version:2,gameId,date,engineDigest,status:designCheckpoint.status,currentStage:stage,percent,
+    completedPhases:[...designCheckpoint.completedPhases],
+    completedPhaseCount:designCheckpoint.completedPhases.length,
+    cachedTaskCount:Object.keys(designCheckpoint.tasks).length,
+    lastSuccessfulModelCallAt:designCheckpoint.lastSuccessfulModelCallAt||null,
+    failedPhase:designCheckpoint.failedPhase||null,
+    failedTask:designCheckpoint.failedTask||null,
+    lastError:designCheckpoint.lastError||null,
+    modelHealth:designCheckpoint.modelHealth||{},
+    slowPhases:designCheckpoint.slowPhases||{},
+    updatedAt:new Date().toISOString(),
+    ...extra
+  });
+}
 function persistDesignCheckpoint(){
   designCheckpoint.updatedAt=new Date().toISOString();
   writeJson(checkpointPath,designCheckpoint);
+  writeProgress();
 }
+writeProgress('BOOTSTRAP',{checkpointReusable});
 
 const MEMBER_TEXT={type:'string',maxLength:130};
 const MEMBER_REVIEW={type:'object',required:['keep','fix','add','risks','evidence','questions'],properties:{keep:{type:'array',maxItems:1,items:MEMBER_TEXT},fix:{type:'array',maxItems:1,items:MEMBER_TEXT},add:{type:'array',maxItems:1,items:MEMBER_TEXT},risks:{type:'array',maxItems:1,items:MEMBER_TEXT},evidence:{type:'array',maxItems:1,items:MEMBER_TEXT},questions:{type:'array',maxItems:1,items:MEMBER_TEXT}},additionalProperties:false};
