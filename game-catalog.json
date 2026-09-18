@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "updatedAt": "2026-09-19",
   "classificationPolicy": {
     "canonicalField": "productionClass",
@@ -1170,6 +1170,78 @@
         "playMode": "MULTIPLAYER",
         "playModeLabel": "멀티플레이",
         "latestWork": "인증된 Roblox Studio 배포 대상과 실제 런타임·모바일·회귀·멀티플레이 검증 기록을 보존하며 지속개발 중",
+        "updatedAt": "2026-09-19",
+        "status": "HISTORICAL_DEPLOYMENT_VERIFIED",
+        "productionClass": "DESIGN_ONLY"
+      }
+    },
+    {
+      "id": "seed-roblox-obby-party-minigam-tower-of-hell",
+      "name": "Skyline Rush",
+      "description": "짧은 타임드 라운드에서 장애물과 체크포인트를 통과하며 이동·점프·회피·완주를 반복하는 Roblox 오비/파티 게임",
+      "genre": [
+        "오비",
+        "파티",
+        "미니게임"
+      ],
+      "image": "assets/page-bg-v2.webp",
+      "webPath": "/web-games/seed-roblox-obby-party-minigam-tower-of-hell/",
+      "hasWebArchive": true,
+      "featured": false,
+      "selectedPlatform": "ROBLOX",
+      "homepageWebPlayable": true,
+      "homepageCategory": "historical-deployed",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "HISTORICAL_PUBLICATION_TARGET_VERIFIED_2026-09-17",
+      "productionTarget": "roblox",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "HISTORICAL_PUBLICATION_TARGET_VERIFIED",
+      "ownerExistingGame": true,
+      "developmentHandling": "SUSTAINED_POST_DEPLOYMENT_SOURCE_DEVELOPMENT",
+      "homepageStage": "Roblox 배포 기록 · 지속개발",
+      "homepageRecentWork": "Skyline Rush의 검증된 Roblox 배포 이력과 실제 런타임·독립 QA·회귀·멀티플레이 근거를 보존하며 지속개발 관리",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "robloxProjectPath": "roblox-games/seed-roblox-obby-party-minigam-tower-of-hell",
+      "robloxPublicationTarget": {
+        "universeId": "10766723635",
+        "placeId": "129342889720619",
+        "verified": true,
+        "historical": true,
+        "currentReleaseClaim": false,
+        "displayName": "Skyline Rush",
+        "observedFrom": "Skyline Rush normalized publish and authenticated Studio recovery",
+        "observedAt": "2026-09-17"
+      },
+      "robloxReleaseEvidence": {
+        "published": true,
+        "historicalPublicationTargetVerified": true,
+        "currentReleaseClaim": false,
+        "actualStudioRuntime": true,
+        "postRuntimeIndependentQa": true,
+        "regression": true,
+        "multiplayerQa": true,
+        "sourceRevision": "117a87320e67c690c1c8b3972598d331cf366c56",
+        "artifactIdentity": "sha256:7d80197d95f3e197ab30b888c71764123125b3d0d840f24ed789bce868eec3cc"
+      },
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "HISTORICAL_VERIFIED_DEPLOYMENT",
+        "validationSchemaVersion": null,
+        "genre": [
+          "오비",
+          "파티",
+          "미니게임"
+        ],
+        "genreLabel": "오비 · 파티 · 미니게임",
+        "subgenre": "",
+        "playMode": "MULTIPLAYER",
+        "playModeLabel": "멀티플레이",
+        "latestWork": "Skyline Rush의 검증된 Roblox 배포 이력과 런타임·QA 근거를 보존하며 지속개발 관리",
         "updatedAt": "2026-09-19",
         "status": "HISTORICAL_DEPLOYMENT_VERIFIED",
         "productionClass": "DESIGN_ONLY"
