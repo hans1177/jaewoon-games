@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {inferLegacyMultiplayerMode,repairDesignRequiredFields,repairPersistedDesignForPromotion} from '../tools/company-design-prepromotion-repair.mjs';
+import {inferLegacyMultiplayerMode,repairDesignRequiredFields,repairPersistedDesignForPromotion,validateRobloxBuildProfile} from '../tools/company-design-prepromotion-repair.mjs';
 
 const write=(root,file,value)=>{const target=path.join(root,file);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,JSON.stringify(value,null,2)+'\n');};
 const read=(root,file)=>JSON.parse(fs.readFileSync(path.join(root,file),'utf8'));
@@ -43,6 +43,20 @@ test('missing required design fields are repaired only from grounded seed/fact e
   assert.equal(result.value.visualDirection,'단순한 기하형 실루엣과 높은 대비');
   assert.deepEqual(result.unresolved,[]);
   assert.ok(result.repairs.some(row=>row.field==='progressionDirection'&&row.source==='GAME_SEED.TARGET_SESSION_DIRECTION'));
+});
+
+test('Roblox pre-review generated build profile satisfies the exact required schema',()=>{
+  const result=repairDesignRequiredFields({identity:'기존 설계',coreFun:'기존 재미',coreLoop:['a','b','c']},{seed,phase:'PRE_REVIEW'});
+  assert.ok(result.value.robloxBuildProfile);
+  assert.deepEqual(result.robloxBuildProfileBlockers,[]);
+  assert.equal(result.unresolved.some(value=>value.startsWith('robloxBuildProfile.')),false);
+  assert.equal(validateRobloxBuildProfile(result.value.robloxBuildProfile,'SINGLE').valid,true);
+
+  const invalid=structuredClone(result.value.robloxBuildProfile);
+  delete invalid.networkingRequired;
+  const validation=validateRobloxBuildProfile(invalid,'SINGLE');
+  assert.equal(validation.valid,false);
+  assert.deepEqual(validation.blockers,['networkingRequired']);
 });
 
 test('non-Roblox pre-review does not require or synthesize Roblox build profile',()=>{
@@ -93,6 +107,8 @@ test('persisted repair never mutates strict score or verdict and creates no artb
   const result=repairPersistedDesignForPromotion({root,gameId:'repair-game',date:'2026-09-15',phase:'PRE_REVIEW'});
   const after=read(root,'design/repair-game/2026-09-15/strict-design-review.json');
   assert.equal(result.changed,true);
+  assert.deepEqual(result.unresolved,[]);
+  assert.deepEqual(result.robloxBuildProfileBlockers,[]);
   assert.deepEqual(after,before);
   assert.equal(fs.existsSync(path.join(root,'artbook-submissions/repair-game/current.json')),false);
   const revised=read(root,'design/repair-game/2026-09-15/design-revised.json');
