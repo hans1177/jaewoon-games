@@ -12,6 +12,7 @@ import { buildWorkPackage, computeWorkloadTelemetry, estimateTaskWorkUnits, reso
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
+const stableHash=value=>{let h=2166136261;for(const ch of String(value??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return(h>>>0).toString(36);};
 const RELEASE_RANK=Object.freeze({'release-confirmed':0,'development-confirmed':1,reviewing:2,other:3});
 const ENGINE_RANK=Object.freeze({web:0,roblox:1,unity:2,unreal:3,godot:4});
 const SEVERITY_PRIORITY=Object.freeze({critical:'critical',high:'high',medium:'normal',low:'low'});
@@ -46,6 +47,46 @@ function activeTasks(queue){return queue.tasks.filter(item=>['queued','running']
 function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoot),bRoot=posix(b.sourceRoot);if(!aRoot||!bRoot||aRoot!==bRoot)return false;const aFiles=new Set((a.responsibleFiles||[]).map(posix).filter(Boolean)),bFiles=new Set((b.responsibleFiles||[]).map(posix).filter(Boolean));if(!aFiles.size||!bFiles.size)return true;for(const file of aFiles)if(bFiles.has(file))return true;return false;}
 function plannerConflict(queue,task){return activeTasks(queue).some(item=>sameRootResponsibilityConflict(item,task));}
 function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];return{id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal,responsibleFiles,dependencies:[],priority,releaseState:project.releaseState,status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',evidence:[`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence]};}
+
+function transformativeTaskEligible(taskInput={}){
+  const evidence=new Set((taskInput.evidence||[]).map(clean));
+  if(evidence.has('full-web-game-rebuild')||evidence.has('existing-web-continuation'))return true;
+  return /FULL_WEB_GAME_REBUILD|EXISTING_WEB_DEVELOPMENT_CONTINUATION|REBUILD_EXISTING_GAME|NEW_GAME_IMPLEMENTATION/i.test(clean(taskInput.goal));
+}
+function selectTransformativeRecipe(memory={},taskInput={}){
+  const recipes=Array.isArray(memory?.recipes)?memory.recipes.filter(recipe=>Array.isArray(recipe?.sourceProjects)&&new Set(recipe.sourceProjects.map(clean).filter(Boolean)).size>=2):[];
+  if(!recipes.length)return null;
+  const target=clean(taskInput.gameId);
+  const preferred=recipes.filter(recipe=>!recipe.sourceProjects.map(clean).includes(target));
+  const pool=preferred.length?preferred:recipes;
+  const seed=parseInt(stableHash([taskInput.id,target,taskInput.target].join('|')),36);
+  return pool[Number.isFinite(seed)?seed%pool.length:0]||null;
+}
+function applyTransformativeRecombination(taskInput={},memory={}){
+  if(!transformativeTaskEligible(taskInput))return taskInput;
+  const recipe=selectTransformativeRecipe(memory,taskInput);
+  if(!recipe)return taskInput;
+  const features=(recipe.featureBlend||[]).map(clean).filter(Boolean).slice(0,8);
+  const sources=(recipe.sourceProjects||[]).map(clean).filter(Boolean).slice(0,4);
+  const operator=clean(recipe.transformationOperator)||'reinterpret-and-recombine';
+  const context=[
+    '',
+    '[TRANSFORMATIVE_RECOMBINATION_CONTEXT]',
+    `recipe=${clean(recipe.id)||'unknown'}`,
+    `source_projects=${sources.join(',')}`,
+    `feature_blend=${features.join(',')}`,
+    `transformation=${operator}`,
+    'Use these as abstract design/implementation references only.',
+    'Create a new project-specific mechanic/constraint and new code/asset expression.',
+    'Do not emit raw source files, raw asset bytes, logos, source-specific identifiers, or verbatim implementation.',
+    'Preserve the current game identity, approved design, gameplay authority, save meaning, and all existing QA/runtime/regression gates.'
+  ].join('\n');
+  return{
+    ...taskInput,
+    goal:`${taskInput.goal}${context}`,
+    evidence:[...new Set([...(taskInput.evidence||[]),`recombination-recipe:${clean(recipe.id)||'unknown'}`,`recombination-sources:${sources.join('+')}`,`recombination-transform:${operator}`,'recombination-copy-mode:NO','recombination-original-modifier-required:YES'])]
+  };
+}
 
 function looksLikeValidationPrototype(text=''){return /검증 루프:|STATUS:\s*준비|FULL APPROVED WEB COMPANION|DEVELOPMENT_CONFIRMED\s*·/i.test(text)&&(/data-action=|class=["'][^"']*action|scope-action|승인 분량 전체 구현/i.test(text));}
 function findWebFullGameTask(project,repoRoot,queue){if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),text=readText(file);if(!text||!looksLikeValidationPrototype(text))return null;const id=`${project.gameId}-owner-full-web-game-rebuild-v1`;if(hasTask(queue,id))return null;const goal=`[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD\n게임: ${project.name||project.gameId}\n현재 index.html은 검증용 프로토타입이다. 이 파일을 실제 플레이 가능한 모바일 웹게임으로 완전히 재구축한다. 장르와 현재 게임 정체성은 유지하되 검증 버튼/숫자 변화 화면을 게임으로 취급하지 않는다. 실제 직접 조작, 실제 게임 상태 변화, 반복 가능한 핵심 루프, 난이도 또는 진행 상승, 실패/성공 또는 생존/점수 목표, 재시작을 구현한다. 모바일 터치 우선, 화면 잘림 금지, 외부 네트워크/유료 API 없이 단일 기존 Web 루트에서 실행한다. 필요하면 index.html 전체 교체를 사용한다. 홈페이지나 회사 파일은 수정하지 않는다. 완료 후 실제 플레이 QA를 통과한 후보만 main에 올린다.`;const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','full-web-game-rebuild','prototype-completion-forbidden']);out.ownerDirective=true;out.speculativeEligible=false;return out;}
@@ -154,7 +195,7 @@ function selectPackageCandidates(candidates,queue,remaining,policy){
 }
 function releaseUnityFocusBusy(queue){return activeTasks(queue).some(item=>item.target==='unity'&&item.releaseState==='release-confirmed');}
 
-export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={}}={}){
+export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={},recombinationMemory={}}={}){
   let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog),maxConcurrentTasks:parallelLimit(maxConcurrentTasks)});
   const active=activeTasks(queue);
   if(active.some(item=>item.ownerDirective))return{planned:false,count:0,reason:'OWNER_DIRECTIVE_ACTIVE',queue,tasks:[],packages:[],workloadTelemetry:computeWorkloadTelemetry(queue,[])};
@@ -172,6 +213,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput=
     const remaining=Math.max(1,capacity-planned.length);
     let packageTasks=selectPackageCandidates(findSafeTasks(project,repoRoot,queue),queue,remaining,policy);
     if(!packageTasks.length)continue;
+    packageTasks=packageTasks.map(candidate=>applyTransformativeRecombination(candidate,recombinationMemory));
     sequence+=1;
     let pkg=buildWorkPackage({tasks:packageTasks,project,sequence,policy});
     if(!pkg.accepted){
@@ -209,7 +251,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput=
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}
 export function runVibe2AutoPlanner({
   statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', queueFile='', runtimeFile='vibe2-runtime.json',
-  controlFile='', experienceFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
+  controlFile='', experienceFile='', recombinationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
 }={}) {
   const runtime=readJson(runtimeFile,{});
   const resolvedQueueFile=clean(queueFile)||clean(runtime.sources?.queue)||'.vibe2/queue.json';
@@ -219,12 +261,13 @@ export function runVibe2AutoPlanner({
   const machineHandoff={used:true,kind:handoff.kind,sourceOfTruth:handoff.sourceOfTruth,consistency:handoff.consistency,currentPersistentMax:handoff.parallelism.currentPersistentMax,lastDecision:handoff.parallelism.lastDecision};
   if(handoff.consistency?.ok!==true)return{planned:false,reason:'MACHINE_STATE_INCONSISTENT',machineHandoff,effectivePlannerMax:0};
   const effectivePlannerMax=Math.min(parallelLimit(maxConcurrentTasks),parallelLimit(handoff.parallelism.currentPersistentMax));
-  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:readJson(resolvedQueueFile,{tasks:[]}),repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{}});
+  const recombinationMemory=readJson(recombinationFile||'',{version:1,recipes:[]});
+  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:readJson(resolvedQueueFile,{tasks:[]}),repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{},recombinationMemory});
   if(result.planned)writeJson(resolvedQueueFile,result.queue);
   return{...result,machineHandoff,effectivePlannerMax};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
+  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
   console.log(`VIBE2_MACHINE_HANDOFF=${result.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
@@ -238,6 +281,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_AUTO_PLAN_PRIORITY=${result.projectPriorityPolicy||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_TASK=${result.task?.id||'NONE'}`);
   console.log(`VIBE2_AUTO_PLAN_TASKS=${(result.tasks||[]).map(t=>t.id).join(',')||'NONE'}`);
+  console.log(`VIBE2_RECOMBINATION_APPLIED=${(result.tasks||[]).filter(t=>(t.evidence||[]).some(e=>String(e).startsWith('recombination-recipe:'))).length}`);
   console.log(`VIBE2_AUTO_PLAN_BLOCKED_TIER1=${(result.blockedTier1GameIds||[]).join(',')||'NONE'}`);
   console.log(`VIBE2_WORK_PACKAGE_COUNT=${result.packages?.length||0}`);
   console.log(`VIBE2_WORK_PACKAGE_UNITS=${result.workloadTelemetry?.plannedWorkUnits||0}`);
