@@ -2,81 +2,35 @@
   "version": 2,
   "gameId": "chess-battle",
   "date": "2026-09-18",
-  "engineDigest": "fb57cc31b517538b876d9f42ad117d843c7ec529d6d7f806549a1614a65ee57a",
-  "status": "COMPLETE",
-  "currentStage": "COMPLETE",
-  "percent": 100,
+  "engineDigest": "1678961c9ca98d0c0a1ff143cc5cae0bcbed44bcdefc197e0d16960e75858422",
+  "status": "IN_PROGRESS",
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
-    "five_lead_reviews",
-    "designer_revision"
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "completedPhaseCount": 4,
-  "cachedTaskCount": 5,
-  "lastSuccessfulModelCallAt": "2026-09-18T07:36:32.542Z",
+  "cachedTaskCount": 0,
+  "lastSuccessfulModelCallAt": "2026-09-18T07:38:42.505Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 23862,
-      "lastMs": 6521,
+      "totalMs": 14315,
+      "lastMs": 1614,
       "lastError": null,
-      "updatedAt": "2026-09-18T07:36:32.542Z"
-    },
-    "gemini:gemini-3-flash-preview": {
-      "calls": 1,
-      "successes": 1,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 16109,
-      "lastMs": 16109,
-      "lastError": null,
-      "updatedAt": "2026-09-18T07:35:21.491Z"
-    },
-    "gemini:gemini-3.5-flash": {
-      "calls": 3,
-      "successes": 1,
-      "failures": 2,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 95300,
-      "lastMs": 59227,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T07:36:04.608Z"
-    },
-    "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
-      "successes": 1,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 1,
-      "totalMs": 69454,
-      "lastMs": 64525,
-      "lastError": "model response is not a JSON object",
-      "updatedAt": "2026-09-18T07:36:26.017Z"
-    },
-    "gemini:gemini-3.6-flash": {
-      "calls": 2,
-      "successes": 1,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 7410,
-      "lastMs": 5661,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T07:36:11.564Z"
+      "updatedAt": "2026-09-18T07:38:42.505Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T07:36:32.545Z",
-  "preGateScore": 80,
-  "postRevisionPreGateScore": 80
+  "updatedAt": "2026-09-18T07:38:42.509Z"
 }
