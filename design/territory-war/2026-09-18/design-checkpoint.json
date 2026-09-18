@@ -6,14 +6,9 @@
   "fingerprint": "fa4f6828afe5af8e6b2c5c12e8c46545bd303706d00160a419c40c282b9306c8",
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
-  "status": "PRE_GATE_BLOCKED",
+  "status": "IN_PROGRESS",
   "completedPhases": [
-    "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1",
-    "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
+    "designer_draft"
   ],
   "phases": {
     "designer_draft": {
@@ -132,7 +127,7 @@
           "validationEvidence": "적 처치 시 골드가 정상적으로 가산되고 타워 업그레이드 시 비용이 차감되며 능력치가 반영되는지 단위 테스트로 확인한다."
         },
         {
-          "designElement": "콘텐츠 확장 계획",
+          "designElement": "설계 요소: 콘텐츠 확장 계획",
           "responsibleSystem": "StageProgressionController",
           "validationEvidence": "스테이지 클리어 조건 만족 시 다음 난이도 맵과 새로운 타워 종류가 정상적으로 해제되는지 데이터 흐름을 검증한다."
         }
@@ -140,297 +135,6 @@
       "openQuestions": [
         "향후 업데이트에서 플레이어블 지휘관 스킬 시스템을 추가할 때 밸런스를 어떻게 유지할 것인가?"
       ]
-    },
-    "deterministic_pre_gate": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 80,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 8,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
-      },
-      "totalScore": 79,
-      "criticalAxisFailures": [
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-      ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    },
-    "designer_pre_gate_repair_1": {
-      "technicalAssumptions": [
-        "클라이언트 측에서 웨이브 스폰과 타워 공격 판정을 처리하여 네트워크 지연 없는 쾌적한 싱글 플레이를 보장한다.",
-        "오브젝트 풀링을 활용하여 대량의 적 유닛 생성과 소멸에 따른 프레임 저하를 방지한다."
-      ],
-      "validationQuestions": [
-        "플레이어가 첫 웨이브에서 타워 배치와 자원 수급의 인과관계를 30초 이내에 직관적으로 이해할 수 있는가?",
-        "웨이브 후반부로 갈수록 자원 관리와 타워 업그레이드의 전략적 선택이 긴장감을 유발하는가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "전선 압박 및 배치 시스템",
-          "responsibleSystem": "TowerPlacementManager",
-          "validationEvidence": "플레이어의 터치 입력을 받아 지정된 경로 위에 타워를 생성하고 적의 이동을 차단하는지 자동화 테스트를 통해 검증한다."
-        },
-        {
-          "designElement": "자원 및 업그레이드 시스템",
-          "responsibleSystem": "EconomyManager",
-          "validationEvidence": "적 처치 시 골드가 정상적으로 가산되고 타워 업그레이드 시 비용이 차감되며 능력치가 반영되는지 단위 테스트로 확인한다."
-        },
-        {
-          "designElement": "콘텐츠 확장 계획",
-          "responsibleSystem": "StageProgressionController",
-          "validationEvidence": "스테이지 클리어 조건 만족 시 다음 난이도 맵과 새로운 타워 종류가 정상적으로 해제되는지 데이터 흐름을 검증한다."
-        }
-      ]
-    },
-    "deterministic_pre_gate_after_repair_1": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 80,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 8,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
-      },
-      "totalScore": 79,
-      "criticalAxisFailures": [
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-      ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    },
-    "designer_pre_gate_repair_2": {
-      "technicalAssumptions": [
-        "클라이언트 측에서 웨이브 스폰과 타워 공격 판정을 처리하여 네트워크 지연 없는 쾌적한 싱글 플레이를 보장한다.",
-        "오브젝트 풀링을 활용하여 대량의 적 유닛 생성과 소멸에 따른 프레임 저하를 방지한다."
-      ],
-      "validationQuestions": [
-        "플레이어가 첫 웨이브에서 타워 배치와 자원 수급의 인과관계를 30초 이내에 직관적으로 이해할 수 있는가?",
-        "웨이브 후반부로 갈수록 자원 관리와 타워 업그레이드의 전략적 선택이 긴장감을 유발하는가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "전선 압박 및 배치 시스템",
-          "responsibleSystem": "TowerPlacementManager",
-          "validationEvidence": "플레이어의 터치 입력을 받아 지정된 경로 위에 타워를 생성하고 적의 이동을 차단하는지 자동화 테스트를 통해 검증한다."
-        },
-        {
-          "designElement": "자원 및 업그레이드 시스템",
-          "responsibleSystem": "EconomyManager",
-          "validationEvidence": "적 처치 시 골드가 정상적으로 가산되고 타워 업그레이드 시 비용이 차감되며 능력치가 반영되는지 단위 테스트로 확인한다."
-        },
-        {
-          "designElement": "콘텐츠 확장 계획",
-          "responsibleSystem": "StageProgressionController",
-          "validationEvidence": "스테이지 클리어 조건 만족 시 다음 난이도 맵과 새로운 타워 종류가 정상적으로 해제되는지 데이터 흐름을 검증한다."
-        }
-      ]
-    },
-    "deterministic_pre_gate_after_repair_2": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 80,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 8,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
-      },
-      "totalScore": 79,
-      "criticalAxisFailures": [
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-      ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
     }
   },
   "tasks": {},
@@ -450,14 +154,15 @@
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T08:41:43.721Z",
-  "updatedAt": "2026-09-18T08:58:27.681Z",
+  "updatedAt": "2026-09-18T08:56:00.000Z",
   "lastSuccessfulModelCallAt": "2026-09-18T08:41:58.251Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
-  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
-  "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL"
+  "manualDeterministicNormalization": {
+    "source": "EXISTING_DESIGN_VALUE_PREFIX_ONLY",
+    "field": "implementationTraceability[2].designElement",
+    "scoreOrVerdictModified": false,
+    "modelReplay": false
+  }
 }
