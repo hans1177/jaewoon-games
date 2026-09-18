@@ -11,7 +11,9 @@ import {
   releaseVibeTaskExecutionSlot,
   settleVibeTask,
   applyVibeFanInResults,
-  recoverFixedFullWebTransportFailures
+  recoverFixedFullWebTransportFailures,
+  recoverStaleRunningReservations,
+  recoverFanInRegressionFailure
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 
@@ -53,6 +55,19 @@ test('independent source roots fan out in one reservation batch', () => {
   assert.equal(reserved.tasks.length,3);
   assert.deepEqual(new Set(reserved.tasks.map(t=>t.id)),new Set(['u1','w1','w2']));
   assert.equal(reserved.selection.workStealingUsed,false);
+});
+
+test('reservation identity is persisted on reserved tasks and worker matrix', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
+  queue=add(queue,'reserved','reserved','web',{priority:'critical',estimatedRisk:'high'});
+  const reservation={id:'35340000000:1',runId:'35340000000',runAttempt:1,reservedAt:'2026-09-18T12:00:00Z'};
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,reservation});
+  assert.equal(reserved.tasks[0].reservationId,reservation.id);
+  assert.equal(reserved.tasks[0].reservationRunId,reservation.runId);
+  assert.equal(reserved.tasks[0].reservationRunAttempt,1);
+  assert.equal(reserved.tasks[0].reservedAt,reservation.reservedAt);
+  assert.equal(reserved.matrix[0].reservationId,reservation.id);
+  assert.equal(reserved.matrix[0].reservedAt,reservation.reservedAt);
 });
 
 test('same source root may fan out when responsibility files are concrete and disjoint', () => {
@@ -169,6 +184,59 @@ test('fan-in accepts first passing speculative variant and keeps task awaiting f
   assert.ok(task.evidence.includes('speculative-winner:speculative'));
 });
 
+test('fan-in safely reconciles queued task only when reservation identity matches', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
+  queue=add(queue,'race','race','web',{priority:'critical',estimatedRisk:'high'});
+  const reservation={id:'run-1:1',runId:'run-1',runAttempt:1,reservedAt:'2026-09-18T12:00:00Z'};
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,reservation});
+  const reset=createVibeContinuousQueue({
+    maxConcurrentTasks:4,
+    tasks:reserved.queue.tasks.map(task=>task.id==='race'?{...task,status:'queued',blocker:null}:task)
+  });
+  const merged=applyVibeFanInResults(reset,[{
+    taskId:'race',reservationId:'run-1:1',variant:'primary',outcome:'PASS',
+    evidence:['candidate-branch'],blocker:'candidate-awaiting-qa-and-deployment'
+  }]);
+  const task=merged.queue.tasks.find(t=>t.id==='race');
+  assert.equal(task.status,'running');
+  assert.equal(task.blocker,'candidate-awaiting-qa-and-deployment');
+  assert.ok(task.evidence.includes('fan-in-reconciled-reservation:run-1:1'));
+  assert.equal(merged.applied[0].outcome,'AWAIT');
+});
+
+test('fan-in skips stale reservation result without mutating requeued task', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
+  queue=add(queue,'race','race','web',{priority:'critical',estimatedRisk:'high'});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4,reservation:{id:'new-run:1',runId:'new-run',runAttempt:1,reservedAt:'2026-09-18T12:01:00Z'}});
+  const reset=createVibeContinuousQueue({
+    maxConcurrentTasks:4,
+    tasks:reserved.queue.tasks.map(task=>task.id==='race'?{...task,status:'queued'}:task)
+  });
+  const merged=applyVibeFanInResults(reset,[{
+    taskId:'race',reservationId:'old-run:1',variant:'primary',outcome:'PASS',
+    evidence:['old-candidate'],blocker:'candidate-awaiting-qa-and-deployment'
+  }]);
+  const task=merged.queue.tasks.find(t=>t.id==='race');
+  assert.equal(task.status,'queued');
+  assert.equal(task.reservationId,'new-run:1');
+  assert.equal(task.evidence.includes('old-candidate'),false);
+  assert.equal(merged.applied[0].outcome,'STALE_RESULT_SKIPPED');
+  assert.equal(merged.applied[0].reason,'RESERVATION_MISMATCH');
+});
+
+test('retryable failure clears reservation identity before the next reservation', () => {
+  let queue=add(createVibeContinuousQueue(),'retry-reservation','retry-reservation','web',{maxRetries:2});
+  const reserved=reserveNextVibeTask(queue,{reservation:{id:'run-a:1',runId:'run-a',runAttempt:1,reservedAt:'2026-09-18T12:00:00Z'}});
+  assert.equal(reserved.task.reservationId,'run-a:1');
+  const failed=settleVibeTask(reserved.queue,{taskId:'retry-reservation',outcome:'FAIL',blocker:'source-candidate-generation-failed'});
+  const task=failed.queue.tasks[0];
+  assert.equal(task.status,'queued');
+  assert.equal(task.reservationId,null);
+  assert.equal(task.reservationRunId,null);
+  assert.equal(task.reservationRunAttempt,0);
+  assert.equal(task.reservedAt,null);
+});
+
 test('retryable failure clears blocker and remains selectable until retry limit', () => {
   let queue=add(createVibeContinuousQueue(),'retry','retry','unity',{maxRetries:1});
   let reserved=reserveNextVibeTask(queue);
@@ -177,6 +245,63 @@ test('retryable failure clears blocker and remains selectable until retry limit'
   reserved=reserveNextVibeTask(failed.queue);
   failed=settleVibeTask(reserved.queue,{taskId:'retry',outcome:'FAIL',evidence:['fail-2'],blocker:'source-candidate-generation-failed'});
   assert.equal(failed.queue.tasks[0].status,'failed');
+});
+
+test('stale running development reservation is requeued without consuming retry', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'stale',gameId:'stale',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/stale',goal:'implementation',status:'running',retries:1,maxRetries:2,
+    reservationId:'run-old:1',reservationRunId:'run-old',reservationRunAttempt:1,reservedAt:'2026-09-18T09:00:00Z'
+  }]});
+  const recovered=recoverStaleRunningReservations(queue,{nowMs:Date.parse('2026-09-18T10:00:00Z')});
+  const task=recovered.queue.tasks[0];
+  assert.equal(recovered.recovered,1);
+  assert.equal(task.status,'queued');
+  assert.equal(task.retries,1);
+  assert.equal(task.lastOutcome,'STALE_RESERVATION_RECOVERED');
+  assert.equal(task.reservationId,null);
+  assert.ok(task.evidence.includes('recovery:stale-running-reservation-v1'));
+});
+
+test('awaiting QA running reservation is not reclaimed as stale worker capacity', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'awaiting',gameId:'awaiting',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/awaiting',goal:'implementation',status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+    reservationId:'run-old:1',reservedAt:'2026-09-18T08:00:00Z'
+  }]});
+  const recovered=recoverStaleRunningReservations(queue,{nowMs:Date.parse('2026-09-18T10:00:00Z')});
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.queue.tasks[0].status,'running');
+  assert.equal(recovered.queue.tasks[0].reservationId,'run-old:1');
+});
+
+test('fan-in regression failure requeues matching worker-pass task and clears reservation', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'pass-worker',gameId:'a',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/a',goal:'a',status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+    retries:1,maxRetries:2,reservationId:'run-1:1',reservationRunId:'run-1',reservationRunAttempt:1,reservedAt:'2026-09-18T09:00:00Z'
+  }]});
+  const recovered=recoverFanInRegressionFailure(queue,[{taskId:'pass-worker',reservationId:'run-1:1',outcome:'PASS'}]);
+  const task=recovered.queue.tasks[0];
+  assert.equal(recovered.recovered,1);
+  assert.equal(task.status,'queued');
+  assert.equal(task.retries,1);
+  assert.equal(task.lastOutcome,'RETRY_AFTER_FAN_IN_REGRESSION_FAILURE');
+  assert.equal(task.reservationId,null);
+  assert.ok(task.evidence.includes('failure-cause:fan-in-regression-failed'));
+  assert.ok(task.evidence.includes('recovery:fan-in-regression-requeue-v1'));
+});
+
+test('fan-in regression recovery ignores stale mismatched reservation result', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'pass-worker',gameId:'a',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/a',goal:'a',status:'running',blocker:'candidate-awaiting-qa-and-deployment',
+    reservationId:'new-run:1',reservedAt:'2026-09-18T09:00:00Z'
+  }]});
+  const recovered=recoverFanInRegressionFailure(queue,[{taskId:'pass-worker',reservationId:'old-run:1',outcome:'PASS'}]);
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.queue.tasks[0].status,'running');
+  assert.equal(recovered.queue.tasks[0].reservationId,'new-run:1');
 });
 
 test('output-budget repair requeues capped owner full-web rebuild failures once even after v1 transport retry', () => {

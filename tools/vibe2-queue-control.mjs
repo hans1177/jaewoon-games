@@ -17,10 +17,11 @@ import {
 } from '../assets/vibe-continuous-queue.js';
 import { computeParallelismTelemetry } from './vibe2-parallelism-telemetry.mjs';
 import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpressure } from './vibe2-adaptive-backpressure.mjs';
-import { runGameStudyPlannerContext } from './vibe2-game-study-planner-context.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
+const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
+const DEFAULT_STALE_RUNNING_MS = 45 * 60 * 1000;
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
 function parseArgs(argv = process.argv.slice(2)) {
@@ -49,6 +50,22 @@ function bool(value) { return value === true || ['1','true','yes','y'].includes(
 function list(value) { return clean(value).split(',').map(clean).filter(Boolean); }
 function maxConcurrent(value) { return Math.max(1, Math.min(20, Math.floor(Number(value) || DEFAULT_MAX_CONCURRENT_TASKS))); }
 function optionalMaxConcurrent(value) { return clean(value) ? maxConcurrent(value) : null; }
+function reservationFromArgs(args = {}) {
+  const id=clean(args['reservation-id']);
+  return id ? {
+    id,
+    runId:clean(args['reservation-run']),
+    runAttempt:Math.max(0,Math.floor(Number(args['reservation-attempt'])||0)),
+    reservedAt:clean(args['reserved-at'])
+  } : {};
+}
+function resultReservationId(row = {}) {
+  const direct=clean(row?.reservationId||row?.metrics?.reservationId);
+  if(direct)return direct;
+  const evidence=Array.isArray(row?.evidence)?row.evidence:[];
+  const marker=evidence.map(clean).find(value=>value.startsWith('reservation-id:'));
+  return marker?clean(marker.slice('reservation-id:'.length)):'';
+}
 
 function isRecoverableFullWebTransportFailure(task = {}) {
   const evidence = Array.isArray(task.evidence) ? task.evidence : [];
@@ -75,6 +92,89 @@ export function recoverFixedFullWebTransportFailures(queueInput) {
       blocker: null,
       lastOutcome: 'RETRY_AFTER_INFRA_REPAIR',
       evidence: [...new Set([...(task.evidence || []), FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE])]
+    };
+  });
+  return {
+    recovered,
+    queue: recovered ? createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks }) : queue
+  };
+}
+
+function isWorkerCapacityReleasedBlocker(value = '') {
+  const blocker = clean(value);
+  return /awaiting.*qa|qa.*awaiting|slot-released.*fan-in|WAITING_FOR_GEMINI_QUOTA|gemini.*quota|external.*model.*quota/i.test(blocker);
+}
+
+function clearedReservation() {
+  return { reservationId:null, reservationRunId:null, reservationRunAttempt:0, reservedAt:null };
+}
+
+export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now(), staleMs = DEFAULT_STALE_RUNNING_MS } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  let recovered = 0;
+  const tasks = queue.tasks.map((task) => {
+    if (task.status !== 'running') return task;
+    if (clean(task.department).toLowerCase() !== 'development' || clean(task.type).toLowerCase() !== 'implementation') return task;
+    if (isWorkerCapacityReleasedBlocker(task.blocker)) return task;
+    const reservedAtMs = Date.parse(clean(task.reservedAt));
+    const leaseMissing = !Number.isFinite(reservedAtMs);
+    const expired = !leaseMissing && (Number(nowMs) - reservedAtMs) > Math.max(60_000, Number(staleMs) || DEFAULT_STALE_RUNNING_MS);
+    if (!leaseMissing && !expired) return task;
+    recovered += 1;
+    return {
+      ...task,
+      ...clearedReservation(),
+      status:'queued',
+      blocker:null,
+      lastOutcome:'STALE_RESERVATION_RECOVERED',
+      evidence:[...new Set([...(task.evidence || []), STALE_RUNNING_RECOVERY_EVIDENCE])]
+    };
+  });
+  return {
+    recovered,
+    queue: recovered ? createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks }) : queue
+  };
+}
+
+function recoverRunnableInfrastructureState(queueInput) {
+  const transport = recoverFixedFullWebTransportFailures(queueInput);
+  const stale = recoverStaleRunningReservations(transport.queue);
+  return {
+    queue:stale.queue,
+    recovered:transport.recovered + stale.recovered,
+    transportRecovered:transport.recovered,
+    staleRecovered:stale.recovered
+  };
+}
+
+export function recoverFanInRegressionFailure(queueInput, results = [], { blocker = 'fan-in-regression-failed' } = {}) {
+  const queue = createVibeContinuousQueue(queueInput);
+  const passing = new Map();
+  for (const row of results || []) {
+    if (clean(row?.outcome).toUpperCase() !== 'PASS') continue;
+    const taskId=clean(row?.taskId);
+    if (!taskId) continue;
+    const rows=passing.get(taskId) || [];
+    rows.push(row);
+    passing.set(taskId,rows);
+  }
+  let recovered = 0;
+  const tasks = queue.tasks.map((task) => {
+    const passRows=passing.get(task.id) || [];
+    if (!passRows.length || task.status !== 'running') return task;
+    if (!/awaiting.*qa|qa.*awaiting|candidate-awaiting-qa-and-deployment|slot-released.*fan-in/i.test(clean(task.blocker))) return task;
+    const reservationIds=[...new Set(passRows.map(resultReservationId).filter(Boolean))];
+    if (reservationIds.length > 1) return task;
+    const expectedReservationId=reservationIds[0] || '';
+    if (expectedReservationId && clean(task.reservationId) !== expectedReservationId) return task;
+    recovered += 1;
+    return {
+      ...task,
+      ...clearedReservation(),
+      status:'queued',
+      blocker:null,
+      lastOutcome:'RETRY_AFTER_FAN_IN_REGRESSION_FAILURE',
+      evidence:[...new Set([...(task.evidence || []), `failure-cause:${clean(blocker) || 'fan-in-regression-failed'}`, 'recovery:fan-in-regression-requeue-v1'])]
     };
   });
   return {
@@ -117,20 +217,20 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
   });
 }
 
-export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null } = {}) {
-  const recovered = recoverFixedFullWebTransportFailures(queueInput);
+export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {} } = {}) {
+  const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
   const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks });
   const selected = selection.selected[0];
   if (!selected) return { reserved: false, queue, selection, recovered: recovered.recovered };
-  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks });
+  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservation });
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
-export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } = {}) {
-  const recovered = recoverFixedFullWebTransportFailures(queueInput);
+export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {} } = {}) {
+  const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks });
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation });
   return {
     reserved: started.started,
     tasks: started.tasks || [],
@@ -143,24 +243,38 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } =
       packageId: task.packageId || null,
       packageRole: task.packageRole || null,
       longWorkProtected: task.packageLongWorkProtected === true,
+      reservationId: task.reservationId || null,
+      reservationRunId: task.reservationRunId || null,
+      reservationRunAttempt: task.reservationRunAttempt || 0,
+      reservedAt: task.reservedAt || null,
       speculativeVariants: task.target !== 'unity' && task.estimatedRisk === 'high' && (task.speculativeEligible || task.priority === 'critical') ? 3 : 1
     }))
   };
 }
 
-export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], blocker = 'awaiting-qa' } = {}) {
+export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], blocker = 'awaiting-qa', expectedReservationId = '' } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskId);
+  const expected = clean(expectedReservationId);
   let found = false;
   const tasks = queue.tasks.map((task) => {
     if (task.id !== id) return task;
     found = true;
-    if (task.status !== 'running') throw new Error(`await requires running task: ${id}`);
+    const currentReservation = clean(task.reservationId);
+    const reservationMatches = Boolean(expected && currentReservation && expected === currentReservation);
+    const reconcileQueued = task.status === 'queued' && reservationMatches;
+    if (expected && !reservationMatches) throw new Error(`await reservation mismatch: ${id}`);
+    if (task.status !== 'running' && !reconcileQueued) throw new Error(`await requires running task: ${id}`);
+    const mergedEvidence = [
+      ...(task.evidence || []),
+      ...(evidence || []).map(clean).filter(Boolean),
+      ...(reconcileQueued ? [`fan-in-reconciled-reservation:${expected}`] : [])
+    ];
     return {
       ...task,
       status: 'running',
       blocker: clean(blocker) || 'awaiting-qa',
-      evidence: [...new Set([...(task.evidence || []), ...(evidence || []).map(clean).filter(Boolean)])]
+      evidence: [...new Set(mergedEvidence)]
     };
   });
   if (!found) throw new Error(`task not found: ${id}`);
@@ -223,6 +337,24 @@ export function applyVibeFanInResults(queueInput, results = []) {
   }
   const applied = [];
   for (const [taskId, variants] of grouped.entries()) {
+    const currentTask = queue.tasks.find((task) => task.id === taskId);
+    if (!currentTask) { applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'TASK_NOT_FOUND' }); continue; }
+    const reservationIds = [...new Set(variants.map(resultReservationId).filter(Boolean))];
+    if (reservationIds.length > 1) { applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'RESERVATION_CONFLICT' }); continue; }
+    const expectedReservationId = reservationIds[0] || '';
+    if (expectedReservationId) {
+      if (clean(currentTask.reservationId) !== expectedReservationId) {
+        applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'RESERVATION_MISMATCH', expectedReservationId, currentReservationId:clean(currentTask.reservationId) || null });
+        continue;
+      }
+      if (!['running','queued'].includes(clean(currentTask.status))) {
+        applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:`TASK_${clean(currentTask.status).toUpperCase()}_NOT_ACTIVE` });
+        continue;
+      }
+    } else if (clean(currentTask.status) !== 'running') {
+      applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'LEGACY_NON_RUNNING_RESULT' });
+      continue;
+    }
     const passes = variants.filter((row) => clean(row.outcome).toUpperCase() === 'PASS');
     const winner = passes.sort((a,b) => Number(a.durationMs || 0) - Number(b.durationMs || 0))[0] || variants[0];
     const allEvidence = [...new Set(variants.flatMap((row) => [
@@ -256,6 +388,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
       queue = markVibeTaskAwaiting(queue, {
         taskId,
         blocker: clean(winner.blocker) || 'candidate-awaiting-qa-and-deployment',
+        expectedReservationId,
         evidence: [...winnerEvidence, ...variantSummary, `speculative-variants:${variants.length}`, `speculative-winner:${clean(winner.variant) || 'primary'}`]
       });
       applied.push({ taskId, outcome:'AWAIT', winner: clean(winner.variant) || 'primary' });
@@ -293,31 +426,17 @@ export function runQueueCommand(args = {}) {
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), summary: summarizeVibeContinuousQueue(queue) };
   } else if (command === 'reserve') {
-    const gameStudyPlanner=runGameStudyPlannerContext({
-      queueFile:file,
-      knowledgeFile:clean(args.knowledge)||'.vibe2/game-study-knowledge.json',
-      experienceFile:clean(args.experience)||'.vibe2/experience.json',
-      runtimeEvidenceRoot:clean(args['runtime-evidence-root'])||'.vibe2/runtime-evidence'
-    });
-    queue=createVibeContinuousQueue(gameStudyPlanner.queue);
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
-    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks });
+    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks, reservation: reservationFromArgs(args) });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
-    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, gameStudyPlanner, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
-    const gameStudyPlanner=runGameStudyPlannerContext({
-      queueFile:file,
-      knowledgeFile:clean(args.knowledge)||'.vibe2/game-study-knowledge.json',
-      experienceFile:clean(args.experience)||'.vibe2/experience.json',
-      runtimeEvidenceRoot:clean(args['runtime-evidence-root'])||'.vibe2/runtime-evidence'
-    });
-    queue=createVibeContinuousQueue(gameStudyPlanner.queue);
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
-    const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks });
+    const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks, reservation: reservationFromArgs(args) });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
@@ -342,15 +461,11 @@ export function runQueueCommand(args = {}) {
           longWorkProtectedSlotUsed:reserved.selection?.longWorkProtectedSlotUsed === true,
           longWorkOwnerTaskId:reserved.selection?.longWorkOwnerTaskId || null,
           shardUse:reserved.selection?.shardUse || {},
-          stopReason:reserved.selection?.stopReason || null,
-          gameStudyPlannerEnrichedCount:gameStudyPlanner.enrichedCount,
-          gameStudyPlannerMaterialCollectedCount:gameStudyPlanner.materialCollectedCount,
-          gameStudyPlannerMultiSourceCollectedCount:gameStudyPlanner.multiSourceCollectedCount,
-          gameStudyPlannerAuthorityExpanded:gameStudyPlanner.authorityExpanded
+          stopReason:reserved.selection?.stopReason || null
         }
       });
     }
-    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, gameStudyPlanner, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
@@ -360,6 +475,15 @@ export function runQueueCommand(args = {}) {
     queue = markVibeTaskAwaiting(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), queue, summary: summarizeVibeContinuousQueue(queue) };
+  } else if (command === 'fan-in-regression-fail') {
+    const input = clean(args.input);
+    if (!input) throw new Error('--input result json required');
+    const payload = readJson(input, []);
+    const rows = Array.isArray(payload) ? payload : Array.isArray(payload.results) ? payload.results : [];
+    const recovered = recoverFanInRegressionFailure(queue, rows, { blocker:clean(args.blocker) || 'fan-in-regression-failed' });
+    queue = recovered.queue;
+    if (recovered.recovered) writeJson(file, queue);
+    result = { command, updated:recovered.recovered > 0, ...recovered, summary:summarizeVibeContinuousQueue(queue) };
   } else if (command === 'fan-in') {
     const input = clean(args.input);
     if (!input) throw new Error('--input result json required');

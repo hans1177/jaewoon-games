@@ -1,6 +1,6 @@
 // 파일명: tools/vibe2-auto-planner.mjs
 // 역할: 최신 회사 상태·게임 카탈로그·실제 소스에서 충돌 없는 작업을 계획한다.
-// 최신 소유자 지시: DEVELOPMENT_CONFIRMED Web 검증 프로토타입은 실제 웹게임 재구축을 최우선한다.
+// DEVELOPMENT_CONFIRMED Web은 기존 소스를 먼저 평가한 뒤 보존/부분수정/대규모개편/전체재구축 전략을 선택한다.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,7 +9,6 @@ import { createVibeContinuousQueue, DEFAULT_MAX_CONCURRENT_TASKS } from '../asse
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { diagnoseGame, microTaskFromIssue } from './autonomous-diagnostics.mjs';
 import { buildWorkPackage, computeWorkloadTelemetry, estimateTaskWorkUnits, resolveWorkPackagePolicy } from './vibe2-work-package.mjs';
-import { runGameStudyPlannerContext } from './vibe2-game-study-planner-context.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -17,7 +16,6 @@ const stableHash=value=>{let h=2166136261;for(const ch of String(value??'')){h^=
 const RELEASE_RANK=Object.freeze({'release-confirmed':0,'development-confirmed':1,reviewing:2,other:3});
 const ENGINE_RANK=Object.freeze({web:0,roblox:1,unity:2,unreal:3,godot:4});
 const SEVERITY_PRIORITY=Object.freeze({critical:'critical',high:'high',medium:'normal',low:'low'});
-const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
 
 function readJson(file,fallback={}){if(!file||!fs.existsSync(file))return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
@@ -29,12 +27,49 @@ function engineFromProject(project={}){const projectPath=posix(project.robloxPro
 function webRootFromCatalog(game={}){const webPath=posix(game.webPath).replace(/^\//,'');return /^web-games\/[a-zA-Z0-9._-]+$/.test(webPath)?webPath:null;}
 function robloxRootFromCatalog(game={}){const explicit=posix(game.robloxProjectPath||game.robloxPath||'');if(/^roblox-games\/[a-zA-Z0-9._-]+$/.test(explicit))return explicit;const id=clean(game.id);return id?`roblox-games/${id}`:null;}
 function catalogById(catalog={}){return new Map((Array.isArray(catalog.games)?catalog.games:[]).map(game=>[clean(game.id),game]));}
+const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
+const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMOVED']);
+export function gameLifecycleState(game={}){const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
+function lifecycleAllowsDevelopment(game={}){return ['ACTIVE','REBUILD'].includes(gameLifecycleState(game));}
+function isProductionImplementationTask(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
+function synchronizeQueueLifecycle(queueInput={},catalog={}){
+  const byId=catalogById(catalog);
+  const tasks=(Array.isArray(queueInput?.tasks)?queueInput.tasks:[]).map(item=>{
+    if(!isProductionImplementationTask(item))return item;
+    const game=byId.get(clean(item.gameId));
+    if(!game||!lifecycleAllowsDevelopment(game)){
+      const state=game?gameLifecycleState(game):'MISSING_FROM_CATALOG';
+      if(item.status==='queued')return{...item,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-sync:${state}`])]};
+      if(item.status==='running')return{...item,blocker:`lifecycle-stop-requested:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-stop-requested:${state}`])]};
+      return item;
+    }
+    const currentReleaseState=stateFromCatalog(game);
+    if(!['release-confirmed','development-confirmed'].includes(currentReleaseState)&&['queued','running','blocked'].includes(clean(item.status).toLowerCase())){
+      const authority=clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase()||'OTHER';
+      return{
+        ...item,
+        status:'cancelled',
+        blocker:`production-authority-inactive:${authority}`,
+        reservationId:null,
+        reservationRunId:null,
+        reservationRunAttempt:0,
+        reservedAt:null,
+        lastOutcome:'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY',
+        evidence:[...new Set([...(item.evidence||[]),`production-authority-sync:${authority}`])]
+      };
+    }
+    return item;
+  });
+  return{...(queueInput||{}),tasks};
+}
 
 export function latestDevelopmentBaselineEvidence(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={ready:false,reason:'DEVELOPMENT_BASELINE_REQUIRED',source:null,gate:null,policySource:CANONICAL_POLICY_PATH};if(!id||!fs.existsSync(root))return missing;const policy=readJson(path.join(repoRoot,CANONICAL_POLICY_PATH),null);if(policy&&(clean(policy.authority)!=='MACHINE_EXECUTION_CONTRACT'||clean(policy.machineSourceOfTruth)!==CANONICAL_POLICY_PATH||policy.humanDocumentRequired!==false))return{...missing,reason:'CENTRAL_MACHINE_POLICY_INVALID'};let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){const file=path.join(root,date,'cycle-status.json'),status=readJson(file,null),gate=status?.baselineGate;if(!gate||gate.state!=='DEVELOPMENT_BASELINE_READY'||gate.ready!==true)continue;const e=gate.evidence||{};if(e.webGameplay?.pass!==true||e.unityProject?.present!==true||e.unityTechnical?.pass!==true)continue;return{ready:true,reason:'DEVELOPMENT_BASELINE_READY',source:posix(path.relative(repoRoot,file)),gate,policySource:CANONICAL_POLICY_PATH,historicalPolicyDocument:clean(gate.policyDocument)||null};}return missing;}
+function latestDevelopmentValidationStatus(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={state:'MISSING',score:null,blockers:[],path:null,evidence:null};if(!id||!fs.existsSync(root))return missing;let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){for(const name of ['development-validation-status.json','cycle-status.json']){const file=path.join(root,date,name);if(!fs.existsSync(file))continue;const data=readJson(file,null);if(!data||clean(data.gameId)!==id)continue;const score=Number(data.webStrictScore??data?.evidence?.web?.webStrictScore);return{state:clean(data.state).toUpperCase()||'MISSING',score:Number.isFinite(score)?score:null,blockers:Array.isArray(data.blockers)?data.blockers.map(clean).filter(Boolean):[],path:posix(path.relative(repoRoot,file)),evidence:data?.evidence||null,nextAction:clean(data.nextAction)};}}return missing;}
+function bottleneckRank(project={}){const v=project.developmentValidation||{},score=Number(v.score),state=clean(v.state).toUpperCase(),blockers=Array.isArray(v.blockers)?v.blockers:[];if(project.engine==='web'&&score>=80&&score<=88)return 0;if(blockers.length===1)return 1;if(project.engine==='web'&&project.releaseState==='development-confirmed'&&state==='MISSING')return 2;if(/REVALIDATION|RETURN_TO_WEB_DEVELOPMENT/.test(state))return 3;if(clean(project.lifecycleState).toUpperCase()==='REBUILD')return 4;return 5;}
 
-function collectProjects(status={},catalog={},repoRoot=process.cwd()){const byId=catalogById(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id)||{},state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null;rows.push({...project,gameId:id,engine,projectPath:root,releaseState:state,existing:true,source:'company-status',developmentBaseline});}
-for(const game of Array.isArray(catalog.games)?catalog.games:[]){const id=clean(game.id),state=stateFromCatalog(game),robloxRoot=robloxRootFromCatalog(game);if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox'))rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',projectPath:robloxRoot,existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;const exists=fs.existsSync(path.join(repoRoot,root));rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});}return rows;}
-function projectSort(a,b){const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);}
+function collectProjects(status={},catalog={},repoRoot=process.cwd()){const byId=catalogById(catalog),rows=[];for(const project of Array.isArray(status.projects)?status.projects:[]){const id=clean(project.gameId),engine=engineFromProject(project),root=posix(project.robloxProjectPath||project.projectPath||project.source);if(!id||!engine||!root||clean(project.ownerDecision).toUpperCase()!=='PASS')continue;const game=byId.get(id);if(!game||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),developmentBaseline=state==='release-confirmed'&&engine==='unity'?latestDevelopmentBaselineEvidence(id,repoRoot):null,developmentValidation=latestDevelopmentValidationStatus(id,repoRoot);rows.push({...project,gameId:id,engine,projectPath:root,lifecycleState:gameLifecycleState(game),releaseState:state,existing:true,source:'company-status',developmentBaseline,developmentValidation});}
+for(const game of Array.isArray(catalog.games)?catalog.games:[]){if(!lifecycleAllowsDevelopment(game))continue;const id=clean(game.id),state=stateFromCatalog(game),robloxRoot=robloxRootFromCatalog(game);if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox'))rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',projectPath:robloxRoot,existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;const exists=fs.existsSync(path.join(repoRoot,root));rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});}return rows;}
+function projectSort(a,b){const bottleneck=bottleneckRank(a)-bottleneckRank(b);if(bottleneck)return bottleneck;const engine=(ENGINE_RANK[a.engine]??9)-(ENGINE_RANK[b.engine]??9);if(engine)return engine;const release=(RELEASE_RANK[a.releaseState]??9)-(RELEASE_RANK[b.releaseState]??9);if(release)return release;return Number(b.progress||0)-Number(a.progress||0)||a.gameId.localeCompare(b.gameId);}
 function isAutonomousProductionTarget(project={}){if(project.engine==='roblox')return['release-confirmed','development-confirmed'].includes(project.releaseState);if(project.releaseState==='release-confirmed')return project.engine==='unity'&&project.developmentBaseline?.ready===true;if(project.releaseState==='development-confirmed')return project.engine==='web';return false;}
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
 function readText(file){try{return fs.readFileSync(file,'utf8');}catch{return'';}}
@@ -47,16 +82,23 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
 function transformativeTaskEligible(taskInput={}){
   const evidence=new Set((taskInput.evidence||[]).map(clean));
   if(evidence.has('full-web-game-rebuild')||evidence.has('existing-web-continuation')||evidence.has('existing-web-assessment-required'))return true;
-  return /FULL_WEB_GAME_REBUILD|EXISTING_WEB_ASSESS_AND_IMPLEMENT|EXISTING_WEB_DEVELOPMENT_CONTINUATION|REBUILD_EXISTING_GAME|NEW_GAME_IMPLEMENTATION/i.test(clean(taskInput.goal));
+  return /FULL_WEB_GAME_REBUILD|EXISTING_WEB_DEVELOPMENT_CONTINUATION|REBUILD_EXISTING_GAME|NEW_GAME_IMPLEMENTATION/i.test(clean(taskInput.goal));
 }
 function selectTransformativeRecipe(memory={},taskInput={}){
-  const recipes=Array.isArray(memory?.recipes)?memory.recipes.filter(recipe=>Array.isArray(recipe?.sourceProjects)&&new Set(recipe.sourceProjects.map(clean).filter(Boolean)).size>=2):[];
-  if(!recipes.length)return null;
   const target=clean(taskInput.gameId);
-  const preferred=recipes.filter(recipe=>!recipe.sourceProjects.map(clean).includes(target));
-  const pool=preferred.length?preferred:recipes;
+  const recipes=Array.isArray(memory?.recipes)?memory.recipes.filter(recipe=>{
+    const projects=[...new Set((recipe?.sourceProjects||[]).map(clean).filter(Boolean))];
+    return recipe?.authority==='transformative-recombination-context-only'
+      &&projects.length>=2
+      &&!projects.includes(target)
+      &&recipe?.assetStrategy?.newAssetRequired===true
+      &&recipe?.assetStrategy?.outputMustBeNewExpression===true
+      &&recipe?.codeStrategy?.newImplementationRequired===true
+      &&recipe?.codeStrategy?.verbatimSourceReuseAllowed===false;
+  }):[];
+  if(!recipes.length)return null;
   const seed=parseInt(stableHash([taskInput.id,target,taskInput.target].join('|')),36);
-  return pool[Number.isFinite(seed)?seed%pool.length:0]||null;
+  return recipes[Number.isFinite(seed)?seed%recipes.length:0]||null;
 }
 function applyTransformativeRecombination(taskInput={},memory={}){
   if(!transformativeTaskEligible(taskInput))return taskInput;
@@ -165,13 +207,26 @@ function expandTaskToMinimumWorkload(taskInput,project,policy){
   };
 }
 function uniqueTaskCandidates(rows=[]){const seen=new Set();return rows.filter(task=>{if(!task||seen.has(task.id))return false;seen.add(task.id);return true;});}
+function findWebStrictImprovementTask(project,repoRoot,queue){if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;const v=project.developmentValidation||{},score=Number(v.score);if(!Number.isFinite(score)||score<80||score>88)return null;const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative);if(!fs.existsSync(file))return null;const id=`${project.gameId}-web-strict-improvement-to-89`;if(hasTask(queue,id))return null;const blockerText=(v.blockers||[]).join(' | ')||'latest validation weak axes';const goal=`[WEB_STRICT_80_88_TO_89] 현재 Web Strict 점수 ${score}점이다. 기존 실제 게임과 승인 설계는 보존하고 최신 development validation의 약한 축/차단 근거를 직접 수정해 89점 목표까지 품질을 올린다. 검증 근거: ${v.path||"unknown"}. blockers=${blockerText}. 숫자·라벨·검증 버튼만 바꾸는 점수 조작은 금지한다. 실제 플레이 변화, 시스템 연결, 장르 품질, Web 플랫폼 품질 중 근거가 약한 책임 영역을 구현하고 모바일/저장/회귀 QA를 다시 통과시킨다. 90점 승격 게이트나 독립 재검증 규칙은 변경하지 않는다.`;return task(id,project,goal,[relative],'high','medium',[`web-strict-score:${score}`,`development-validation:${v.path||"missing"}`,...(v.blockers||[]).map(x=>`validation-blocker:${x}`)]);}
+function findExistingWebDevelopmentContinuationTask(project,repoRoot,queue){
+  if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
+  const validation=project.developmentValidation||{};
+  const score=Number(validation.score);
+  if(clean(validation.state).toUpperCase()!=='MISSING'||Number.isFinite(score))return null;
+  const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative);
+  if(!fs.existsSync(file))return null;
+  const id=`${project.gameId}-existing-web-development-continuation-v1`;
+  if(hasTask(queue,id))return null;
+  const goal=`[EXISTING_WEB_DEVELOPMENT_CONTINUATION] ${project.name||project.gameId}는 ACTIVE DEVELOPMENT_CONFIRMED 기존 실제 Web 게임이지만 최신 development validation이 아직 없다. 기존 게임/세이브/핵심 루프를 재생성하거나 초기화하지 말고 현재 소스를 기준으로 개발을 계속한다. 실제 플레이에서 체감되는 하나의 일관된 기능 패키지를 구현하거나 현재 끊긴 시스템 연결을 완성하고, 모바일 입력·상태 일치·저장 호환·실패/재시도·회귀 안정성을 함께 확인한다. 검증용 숫자/라벨/버튼만 추가하는 작업은 금지한다. 변경 후 다음 Web 실제 플레이 검증이 가능한 상태로 만든다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
+  return task(id,project,goal,[relative],'high','medium',['existing-web-continuation','development-validation:missing','preserve-existing-game']);
+}
 function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='roblox')return uniqueTaskCandidates([scanExplicitMarkerTask(project,repoRoot,queue)]);
   if(project.engine==='unity')return uniqueTaskCandidates([findUnityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   if(project.engine==='web'){
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
-    return uniqueTaskCandidates([findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
 }
@@ -189,7 +244,7 @@ function selectPackageCandidates(candidates,queue,remaining,policy){
 function releaseUnityFocusBusy(queue){return activeTasks(queue).some(item=>item.target==='unity'&&item.releaseState==='release-confirmed');}
 
 export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={},recombinationMemory={}}={}){
-  let queue=createVibeContinuousQueue({...(queueInput||{}),maxConcurrentTasks:parallelLimit(maxConcurrentTasks)});
+  let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog),maxConcurrentTasks:parallelLimit(maxConcurrentTasks)});
   const active=activeTasks(queue);
   const ownerActive=active.filter(item=>item.ownerDirective);
   const capacity=Math.max(0,queue.maxConcurrentTasks-active.length);
@@ -238,48 +293,39 @@ export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput=
     met:quantityTargetMet
   };
   if(!planned.length)return{planned:false,count:0,reason:deferredSmallPackages.length?'MINIMUM_WORKLOAD_GATE':active.length?'NO_INDEPENDENT_SAFE_AUTONOMOUS_TASK':'NO_SAFE_AUTONOMOUS_TASK',queue,tasks:[],packages:[],projectId:projects[0]?.gameId||null,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
-  return{planned:true,count:planned.length,reason:ownerActive.length?'WORK_PACKAGES_PLANNED_AROUND_OWNER_DIRECTIVES':'WORK_PACKAGES_PLANNED',queue,tasks:planned,packages,task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),ownerDirectiveActiveCount:ownerActive.length,projectPriorityPolicy:'OWNER_DIRECTIVES_KEEP_PRIORITY_BUT_INDEPENDENT_FREE_SLOTS_REFILL;WEB_FIRST_IMPLEMENTATION_BY_VIBE',deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
+  return{planned:true,count:planned.length,reason:ownerActive.length?'WORK_PACKAGES_PLANNED_AROUND_OWNER_DIRECTIVES':'WORK_PACKAGES_PLANNED',queue,tasks:planned,packages,task:planned[0],projectId:planned[0].gameId,projectReleaseState:planned[0].releaseState,projectEngine:planned[0].target,blockedTier1GameIds:blockedTier1.map(p=>p.gameId),ownerDirectiveActiveCount:ownerActive.length,projectPriorityPolicy:'OWNER_DIRECTIVES_KEEP_PRIORITY_BUT_INDEPENDENT_FREE_SLOTS_REFILL;WEB_80_88_TO_89_THEN_SINGLE_BLOCKER_THEN_REWORK_THEN_REBUILD_THEN_NEW_DEVELOPMENT',deferredSmallPackages,workPackagePolicy:policy,cycleTarget,workloadTelemetry};
 }
 
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}
 export function runVibe2AutoPlanner({
   statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', queueFile='', runtimeFile='vibe2-runtime.json',
-  controlFile='', experienceFile='', knowledgeFile='', runtimeEvidenceRoot='', recombinationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
+  controlFile='', experienceFile='', recombinationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
 }={}) {
   const runtime=readJson(runtimeFile,{});
   const resolvedQueueFile=clean(queueFile)||clean(runtime.sources?.queue)||'.vibe2/queue.json';
   const resolvedControlFile=clean(controlFile)||clean(runtime.sources?.parallelism)||clean(runtime.adaptiveBackpressure?.stateFile)||'.vibe2/parallelism-control.json';
   const resolvedExperienceFile=clean(experienceFile)||clean(runtime.sources?.experience)||'.vibe2/experience.json';
-  const resolvedKnowledgeFile=clean(knowledgeFile)||clean(runtime.sources?.gameStudyKnowledge)||clean(runtime.gameStudy?.knowledgeState)||'.vibe2/game-study-knowledge.json';
-  const resolvedRuntimeEvidenceRoot=clean(runtimeEvidenceRoot)||clean(runtime.gameStudy?.runtimeEvidenceRoot)||'.vibe2/runtime-evidence';
   const handoff=generateVibe2Handoff({runtimeFile,queueFile:resolvedQueueFile,controlFile:resolvedControlFile,experienceFile:resolvedExperienceFile});
   const machineHandoff={used:true,kind:handoff.kind,sourceOfTruth:handoff.sourceOfTruth,consistency:handoff.consistency,currentPersistentMax:handoff.parallelism.currentPersistentMax,lastDecision:handoff.parallelism.lastDecision};
-  if(handoff.consistency?.ok!==true)return{planned:false,reason:'MACHINE_STATE_INCONSISTENT',machineHandoff,effectivePlannerMax:0,learningContext:null};
+  if(handoff.consistency?.ok!==true)return{planned:false,reason:'MACHINE_STATE_INCONSISTENT',machineHandoff,effectivePlannerMax:0};
   const effectivePlannerMax=Math.min(parallelLimit(maxConcurrentTasks),parallelLimit(handoff.parallelism.currentPersistentMax));
-  const recombinationMemory=readJson(recombinationFile||'',{version:1,recipes:[]});
-  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:readJson(resolvedQueueFile,{tasks:[]}),repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{},recombinationMemory});
-  if(result.planned)writeJson(resolvedQueueFile,result.queue);
-  const learningContext=runGameStudyPlannerContext({
-    queueFile:resolvedQueueFile,
-    knowledgeFile:resolvedKnowledgeFile,
-    experienceFile:resolvedExperienceFile,
-    runtimeEvidenceRoot:resolvedRuntimeEvidenceRoot
-  });
-  return{...result,machineHandoff,effectivePlannerMax,learningContext:Object.freeze({
-    changed:learningContext.changed===true,
-    enrichedCount:Number(learningContext.enrichedCount||0),
-    materialCollectedCount:Number(learningContext.materialCollectedCount||0),
-    multiSourceCollectedCount:Number(learningContext.multiSourceCollectedCount||0),
-    authorityExpanded:false
-  })};
+  const resolvedRecombinationFile=clean(recombinationFile)||path.join(repoRoot,'company-learning','vibe3-recombination-memory.json');
+  const recombinationMemory=readJson(resolvedRecombinationFile,{version:1,recipes:[]});
+  const queueBefore=readJson(resolvedQueueFile,{tasks:[]});
+  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{},recombinationMemory});
+  const normalizedBefore=createVibeContinuousQueue(queueBefore);
+  const queueSynchronized=JSON.stringify(normalizedBefore.tasks)!==JSON.stringify(result.queue?.tasks||[]);
+  if(result.planned||queueSynchronized)writeJson(resolvedQueueFile,result.queue);
+  return{...result,queueSynchronized,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),knowledgeFile:clean(args.knowledge),runtimeEvidenceRoot:clean(args['runtime-evidence-root']),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
+  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
   console.log(`VIBE2_MACHINE_HANDOFF=${result.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
   console.log(`VIBE2_PLANNER_EFFECTIVE_MAX=${result.effectivePlannerMax||0}`);
   console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);
+  console.log(`VIBE2_AUTO_PLAN_QUEUE_SYNC=${result.queueSynchronized?'YES':'NO'}`);
   console.log(`VIBE2_AUTO_PLAN_REASON=${result.reason}`);
   console.log(`VIBE2_AUTO_PLAN_COUNT=${result.count||0}`);
   console.log(`VIBE2_AUTO_PLAN_PROJECT=${result.projectId||'NONE'}`);
@@ -299,8 +345,6 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_WORK_PACKAGE_REWORK_RATE=${result.workloadTelemetry?.historicalReworkRatePct||0}`);
   console.log(`VIBE2_WORK_PACKAGE_QA_DUPLICATE_RATE=${result.workloadTelemetry?.historicalQaDuplicateRatePct||0}`);
   console.log(`VIBE2_WORK_PACKAGE_LOW_EFFICIENCY_STREAK=${result.workloadTelemetry?.lowEfficiencyStreak||0}`);
-  console.log(`VIBE2_PLANNER_LEARNING_CONTEXT=${result.learningContext?.changed?'APPLIED':'NO_CHANGE'}`);
-  console.log(`VIBE2_PLANNER_GAME_STUDY_MATERIALS=${result.learningContext?.materialCollectedCount||0}`);
-  console.log(`VIBE2_PLANNER_MULTI_SOURCE_MATERIALS=${result.learningContext?.multiSourceCollectedCount||0}`);
-  console.log('VIBE2_PLANNER_LEARNING_AUTHORITY_EXPANDED=NO');
+  console.log(`VIBE3_RECOMBINATION_RECIPES_AVAILABLE=${result.recombinationContext?.recipes||0}`);
+  console.log(`VIBE3_RECOMBINATION_TASKS_APPLIED=${result.recombinationContext?.applied||0}`);
 }
