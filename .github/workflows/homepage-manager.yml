@@ -161,7 +161,7 @@ jobs:
             index.html company.html game-catalog.json company-status.json test-game-candidates.json \
             public-release-baselines.json game-artbooks.json artbook-viewer.html \
             assets/homepage-enhancements.js assets/artbook-viewer.js manifest.webmanifest install.html sw.js offline.html command.html \
-            COMPANY_FLOW.md company-directive.json REMOTE_AUTOMATION.md _headers; do
+            COMPANY_FLOW.md company-directive.json _headers; do
             test -f "$file"
           done
           node -e "for (const file of ['game-catalog.json','company-status.json','test-game-candidates.json','public-release-baselines.json','game-artbooks.json','company-directive.json','manifest.webmanifest']) JSON.parse(require('fs').readFileSync(file,'utf8'))"
