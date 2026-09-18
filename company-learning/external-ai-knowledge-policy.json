@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "authority": "MACHINE_EXECUTION_CONTRACT",
+  "policy": "EXTERNAL_AI_KNOWLEDGE_DISTILLATION_ONLY",
+  "purpose": "Use external-AI knowledge as bounded teacher material without giving external models development, source-write, QA, promotion, or production authority.",
+  "externalAiRole": "KNOWLEDGE_SOURCE_ONLY",
+  "directDevelopmentWorkerAllowed": false,
+  "directGameSourceWriteAllowed": false,
+  "directQaPassAllowed": false,
+  "directReleaseEvidenceAllowed": false,
+  "directMasteryCreditAllowed": false,
+  "rawExternalAiOutputCanonicalTrainingAllowed": false,
+  "rawExternalAiOutputRetrievalAllowed": false,
+  "requiredPipeline": [
+    "RAW_OUTPUT_ISOLATION",
+    "CLAIM_AND_PATTERN_EXTRACTION",
+    "PROVENANCE_BINDING",
+    "INDEPENDENT_VERIFICATION_OR_PRACTICE_ONLY_CLASSIFICATION",
+    "CONFLICT_AND_DUPLICATE_REDUCTION",
+    "DISTILLED_KNOWLEDGE_ARTIFACT",
+    "LOW_AUTHORITY_RETRIEVAL",
+    "VERIFIED_INTERNAL_RUNTIME_EVIDENCE_REQUIRED_FOR_CANONICAL_TRAINING"
+  ],
+  "distilledKnowledge": {
+    "authority": "RETRIEVAL_ONLY",
+    "mayGuideReasoning": true,
+    "maySuggestChecks": true,
+    "maySupplyRawCode": false,
+    "mayChangeGameRules": false,
+    "mayChangeBalance": false,
+    "mayChangeSaveMeaning": false,
+    "mayClaimProductionPass": false,
+    "mayCountAsReleaseEvidence": false,
+    "mayCountAsPositiveMastery": false
+  },
+  "canonicalTraining": {
+    "requiresVerifiedInternalOrAuthorizedEvidence": true,
+    "externalAiKnowledgeMayAnnotateVerifiedEvidence": true,
+    "externalAiKnowledgeAloneIsInsufficient": true,
+    "promotion": "FIXED_HOLDOUT_AB_THEN_CANARY"
+  },
+  "providerIndependence": {
+    "providerSpecificRuntimeDependencyAllowed": false,
+    "rawPromptResponseDependencyAllowed": false,
+    "distilledFormatProviderNeutral": true
+  }
+}
