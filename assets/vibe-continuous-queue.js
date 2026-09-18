@@ -25,7 +25,7 @@ export const DEFAULT_MAX_CONCURRENT_TASKS = 20;
 
 const PRIORITY_SCORE = freeze({ 'owner-immediate': 100, critical: 80, high: 60, normal: 40, low: 20 });
 const RELEASE_STATE_SCORE = freeze({ 'release-confirmed': 400, 'development-confirmed': 300, reviewing: 200, other: 100 });
-const BASE_SHARD_SLOTS = freeze({ unity: 3, web: 7, verification: 5, support: 5 });
+const BASE_SHARD_SLOTS = freeze({ roblox: 8, unity: 3, web: 7, verification: 5, support: 5 });
 
 function normalizeReleaseState(value) {
   const state = clean(value).toLowerCase();
@@ -38,6 +38,7 @@ function inferShard(input = {}) {
   const department = clean(input.department).toLowerCase();
   const target = clean(input.target).toLowerCase();
   if (['inspect', 'research', 'qa'].includes(type) || department === 'qa') return 'verification';
+  if (target === 'roblox') return 'roblox';
   if (target === 'unity') return 'unity';
   if (target === 'web') return 'web';
   return 'support';
