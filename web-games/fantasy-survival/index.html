@@ -234,7 +234,7 @@ function handleWorldTap(e){
  const visible=state.enemies.filter(m=>m.area===state.area&&m.hp>0);
  let closest=null,cd=70;
  for(const m of visible){const d=dist(wx,wy,m.x,m.y);if(d<cd){closest=m;cd=d}}
- if(closest){doubleTapTarget('monster:'+closest.type.id+':'+Math.round(closest.x)+':'+Math.round(closest.y),now,()=>unlockBestiary(closest.type.id));return}
+ if(closest){doubleTapTarget('monster:'+closest.type.id,now,()=>unlockBestiary(closest.type.id));return}
  if(state.area==='surface'){
    if(!state.rootTaken&&dist(wx,wy,ROOT_NODE.x,ROOT_NODE.y)<70){doubleTapTarget('root',now,()=>{state.rootTaken=true;state.player.root++;state.dirty=true;showNotice('협곡의 고대 뿌리 획득')});return}
    if(dist(wx,wy,TREE_HOLE.x,TREE_HOLE.y)<80){doubleTapTarget('treehole',now,enterCave);return}
