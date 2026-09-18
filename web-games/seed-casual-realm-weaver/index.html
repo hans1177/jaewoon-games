@@ -1,1 +1,179 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>세계의 직조자</title></head><body><script>window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>세계의 직조자</title>
+  <link rel="stylesheet" href="/web-games/_shared/styles.css">
+</head>
+<body>
+  <script>
+    window.GAME_CONFIG = {
+      id: 'seed-casual-realm-weaver',
+      name: '세계의 직조자',
+      mode: 'realm',
+      desc: '마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'
+    };
+
+    // Initialize game state
+    let gameState = {
+      progress: 0,
+      difficulty: 1,
+      world: {
+        grid: [],
+        population: 0,
+        stability: 0
+      },
+      resources: {
+        mana: 100,
+        wood: 0,
+        water: 0,
+        stone: 0
+      },
+      ui: {
+        currentTile: null,
+        selectedResource: null,
+        progressDisplay: null,
+        difficultyDisplay: null
+      }
+    };
+
+    // Initialize game UI elements
+    const progressDisplay = document.createElement('div');
+    progressDisplay.id = 'progress-display';
+    document.body.appendChild(progressDisplay);
+
+    const difficultyDisplay = document.createElement('div');
+    difficultyDisplay.id = 'difficulty-display';
+    document.body.appendChild(difficultyDisplay);
+
+    const worldGrid = document.createElement('div');
+    worldGrid.id = 'world-grid';
+    document.body.appendChild(worldGrid);
+
+    const resourcesContainer = document.createElement('div');
+    resourcesContainer.id = 'resources-container';
+    document.body.appendChild(resourcesContainer);
+
+    const uiContainer = document.createElement('div');
+    uiContainer.id = 'ui-container';
+    document.body.appendChild(uiContainer);
+
+    // Game logic and progression system
+    function updateProgress() {
+      gameState.progress += 1;
+      updateProgressDisplay();
+      updateDifficultyDisplay();
+    }
+
+    function updateProgressDisplay() {
+      progressDisplay.textContent = `Progress: ${gameState.progress}/${gameState.maxProgress}`;
+    }
+
+    function updateDifficultyDisplay() {
+      difficultyDisplay.textContent = `Difficulty: ${gameState.difficulty}`;
+    }
+
+    // Game mechanics and UI
+    function createWorldGrid() {
+      const grid = [];
+      for (let i = 0; i < 10; i++) {
+        grid[i] = [];
+        for (let j = 0; j < 10; j++) {
+          grid[i][j] = {
+            type: 'empty',
+            resources: {
+              mana: 0,
+              wood: 0,
+              water: 0,
+              stone: 0
+            },
+            population: 0,
+            stability: 0
+          };
+        }
+      }
+      return grid;
+    }
+
+    function renderWorldGrid(grid) {
+      const gridContainer = document.getElementById('world-grid');
+      gridContainer.innerHTML = '';
+      for (let i = 0; i < 10; i++) {
+        const row = document.createElement('div');
+        row.id = `row-${i}`;
+        row.className = 'grid-row';
+        for (let j = 0; j < 10; j++) {
+          const cell = document.createElement('div');
+          cell.id = `cell-${i}-${j}`;
+          cell.className = 'grid-cell';
+          cell.textContent = ' ';
+          row.appendChild(cell);
+        }
+        gridContainer.appendChild(row);
+      }
+    }
+
+    function updateResources() {
+      gameState.resources.mana -= 1;
+      gameState.resources.wood += 1;
+      gameState.resources.water += 1;
+      gameState.resources.stone += 1;
+      updateResourcesContainer();
+    }
+
+    function updateResourcesContainer() {
+      resourcesContainer.innerHTML = `
+        <div>Mana: ${gameState.resources.mana}</div>
+        <div>Wood: ${gameState.resources.wood}</div>
+        <div>Water: ${gameState.resources.water}</div>
+        <div>Stone: ${gameState.resources.stone}</div>
+      `;
+    }
+
+    // Game controls and UI
+    function handlePlayerInput() {
+      const input = window.event;
+      if (input.type === 'click') {
+        const target = input.target;
+        if (target.classList.contains('grid-cell')) {
+          const cell = target;
+          const resources = cell.getAttribute('resources');
+          if (resources) {
+            const { mana, wood, water, stone } = JSON.parse(resources);
+            gameState.resources.mana += mana;
+            gameState.resources.wood += wood;
+            gameState.resources.water += water;
+            gameState.resources.stone += stone;
+            updateResourcesContainer();
+          }
+        }
+      }
+    }
+
+    // Game loop
+    function gameLoop() {
+      updateProgress();
+      updateWorldGrid();
+      updateResources();
+      updateUI();
+      requestAnimationFrame(gameLoop);
+    }
+
+    // Initialize game
+    function initGame() {
+      gameState.maxProgress = 100;
+      gameState.difficulty = 1;
+      gameState.world = createWorldGrid();
+      renderWorldGrid(gameState.world);
+      updateProgressDisplay();
+      updateDifficultyDisplay();
+      gameLoop();
+    }
+
+    // Start game
+    initGame();
+  </script>
+</body>
+</html>
