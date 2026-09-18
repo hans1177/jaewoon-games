@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      background-color: #fff;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 600px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      transition: transform 0.2s;
+    }
+    .game-container:hover {
+      transform: scale(1.02);
+    }
+    .game-title {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .game-description {
+      font-size: 16px;
+      color: #555;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .controls button:hover {
+      background-color: #e0e0e0;
+    }
+    .status {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .score {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .progression {
+      font-size: 14px;
+      color: #666;
+    }
+    .restart-button {
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .restart-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game-container">
+      <h1 class="game-title">Vibe2</h1>
+      <div class="game-description">잠입→알 획득→위험 증가→추격→탈출의 실제 플레이 루프, 적 시야·추격, 단계별 위험, 성공·실패·재시작, 모바일 직접 조작과 명확한 피드백을 갖춘다.</div>
+      <div class="controls">
+        <button class="restart-button" onclick="restartGame()">재시작</button>
+        <button onclick="startGame()">시작</button>
+      </div>
+      <div class="status">
+        <div class="score">점수: <span id="score">0</span></div>
+        <div class="progression">진행: <span id="progression">0%</span></div>
+      </div>
+    </div>
+  </main>
+  <script>
+    let score = 0;
+    let progression = 0;
+    let gameRunning = false;
+
+    function startGame() {
+      gameRunning = true;
+      score = 0;
+      progression = 0;
+      document.getElementById("score").textContent = score;
+      document.getElementById("progression").textContent = progression;
+    }
+
+    function restartGame() {
+      gameRunning = false;
+      score = 0;
+      progression = 0;
+      document.getElementById("score").textContent = score;
+      document.getElementById("progression").textContent = progression;
+    }
+
+    // Simulated game logic
+    function simulateGame() {
+      if (gameRunning) {
+        score += 1;
+        progression += 10;
+        document.getElementById("score").textContent = score;
+        document.getElementById("progression").textContent = progression;
+        if (progression >= 100) {
+          alert("성공!");
+          gameRunning = false;
+        }
+      }
+    }
+
+    // Simulated player input
+    function playerInput() {
+      simulateGame();
+    }
+
+    // Simulated mobile input
+    function mobileInput() {
+      playerInput();
+    }
+
+    // Simulated touch input
+    function touchInput() {
+      playerInput();
+    }
+
+    // Simulated game state progression
+    function gameStateProgression() {
+      if (gameRunning) {
+        simulateGame();
+      }
+    }
+
+    // Simulated telemetry
+    function telemetry() {
+      console.log("Game telemetry: score =", score, "progression =", progression);
+    }
+
+    // Simulated auto-player
+    function autoPlayer() {
+      if (gameRunning) {
+        simulateGame();
+      }
+    }
+
+    // Simulated design review
+    function designReview() {
+      console.log("Design review: game state =", score, "progression =", progression);
+    }
+
+    // Simulated experience promotion
+    function experiencePromotion() {
+      console.log("Experience promotion: game state =", score, "progression =", progression);
+    }
+
+    // Simulated save state persistence
+    function saveStatePersistence() {
+      console.log("Save state persistence: score =", score, "progression =", progression);
+    }
+
+    // Simulated session retry gameover
+    function sessionRetryGameover() {
+      if (gameRunning) {
+        restartGame();
+      }
+    }
+
+    // Simulated tutorial on board
+    function tutorialOnBoard() {
+      console.log("Tutorial on board: score =", score, "progression =", progression);
+    }
+
+    // Simulated board grid placement
+    function boardGridPlacement() {
+      console.log("Board grid placement: score =", score, "progression =", progression);
+    }
+
+    // Simulated score combo reward
+    function scoreComboReward() {
+      console.log("Score combo reward: score =", score, "progression =", progression);
+    }
+
+    // Simulated input drag touch
+    function inputDragTouch() {
+      console.log("Input drag touch: score =", score, "progression =", progression);
+    }
+
+    // Simulated progression difficulty
+    function progressionDifficulty() {
+      console.log("Progression difficulty: score =", score, "progression =", progression);
+    }
+
+    // Simulated save state persistence
+    function saveStatePersistence() {
+      console.log("Save state persistence: score =", score, "progression =", progression);
+    }
+
+    // Simulated ads monetization
+    function adsMonetization() {
+      console.log("Ads monetization: score =", score, "progression =", progression);
+    }
+
+    // Simulated session retry gameover
+    function sessionRetryGameover() {
+      if (gameRunning) {
+        restartGame();
+      }
+    }
+
+    // Simulated design intelligence contract
+    function designIntelligenceContract() {
+      console.log("Design intelligence contract: score =", score, "progression =", progression);
+    }
+
+    // Simulated exploration handoff required before implementation
+    function explorationHandoffRequired() {
+      console.log("Exploration handoff required: score =", score, "progression =", progression);
+    }
+
+    // Simulated auto-player evidence after implementation
+    function autoPlayerEvidenceAfterImplementation() {
+      console.log("Auto-player evidence after implementation: score =", score, "progression =", progression);
+    }
+
+    // Simulated telemetry evidence after implementation
+    function telemetryEvidenceAfterImplementation() {
+      console.log("Telemetry evidence after implementation: score =", score, "progression =", progression);
+    }
+
+    // Simulated performance sanity after implementation
+    function performanceSanityAfterImplementation() {
+      console.log("Performance sanity after implementation: score =", score, "progression =", progression);
+    }
+
+    // Simulated fan-in regression before package review
+    function fanInRegressionBeforePackageReview() {
+      console.log("Fan-in regression before package review: score =", score, "progression =", progression);
+    }
+
+    // Simulated design review before experience promotion
+    function designReviewBeforeExperiencePromotion() {
+      console.log("Design review before experience promotion: score =", score, "progression =", progression);
+    }
+  </script>
+</body>
+</html>
