@@ -58,8 +58,22 @@ jobs:
             sleep $((attempt * 2))
           done
           test "$pushed" = 1
-          grep -q '^OWNER_ALL_GAMES_DESIGN_RESET_COUNT=19$' /tmp/design-reset-state.txt
-          echo 'OWNER_ALL_GAMES_DESIGN_RESET_EXPECTED_COUNT=19'
+          node <<'NODE'
+          const fs=require('fs');
+          const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
+          const state=JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));
+          const expected=(catalog.games||[])
+            .filter(game=>String(game?.productionClass||'').trim()==='DESIGN_ONLY')
+            .map(game=>String(game?.id||'').trim())
+            .filter(Boolean)
+            .sort();
+          const reset=state?.ownerAllGamesDesignReset||{};
+          const actual=(reset.gameIds||[]).map(value=>String(value||'').trim()).filter(Boolean).sort();
+          if(Number(reset.gameCount)!==expected.length)throw new Error(`OWNER_DESIGN_RESET_COUNT_MISMATCH expected=${expected.length} actual=${reset.gameCount}`);
+          if(JSON.stringify(actual)!==JSON.stringify(expected))throw new Error('OWNER_DESIGN_RESET_GAME_IDS_MISMATCH');
+          console.log(`OWNER_ALL_GAMES_DESIGN_RESET_EXPECTED_COUNT=${expected.length}`);
+          console.log('OWNER_ALL_GAMES_DESIGN_RESET_CATALOG_BINDING=PASS');
+          NODE
       - name: Dispatch canonical design pipeline
         env:
           GH_TOKEN: ${{ github.token }}
