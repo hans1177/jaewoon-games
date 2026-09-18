@@ -2501,7 +2501,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
@@ -2521,7 +2521,8 @@
         "workload:changed-lines:0",
         "workload:prep-ms:4669",
         "workload:cycle-ms:109104",
-        "failure-cause:learning-practice-worker-failed"
+        "failure-cause:learning-practice-worker-failed",
+        "slot-dispatch:35361764549:1"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35361487748:1",
