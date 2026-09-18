@@ -67,16 +67,18 @@ jobs:
           echo 'COMPANY_ENGINE_SOURCE=main'
           echo 'COMPANY_RUNTIME_HISTORY_MERGE=NO'
           echo 'PUBLIC_MAIN_WRITE=NO'
-          if git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > development-queue.json 2>/dev/null; then
+          if git show "origin/$COMPANY_RUNTIME_BRANCH:development-queue.json" > /tmp/company-runtime-development-queue.json 2>/dev/null; then
             echo 'COMPANY_RUNTIME_DEVELOPMENT_QUEUE_OVERLAY=YES'
+            echo 'COMPANY_DEVELOPMENT_QUEUE_PATH=/tmp/company-runtime-development-queue.json' >> "$GITHUB_ENV"
           else
-            rm -f development-queue.json
+            rm -f /tmp/company-runtime-development-queue.json
             echo 'COMPANY_RUNTIME_DEVELOPMENT_QUEUE_OVERLAY=NO'
           fi
-          if git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > game-seed-state.json 2>/dev/null; then
+          if git show "origin/$COMPANY_RUNTIME_BRANCH:game-seed-state.json" > /tmp/company-runtime-game-seed-state.json 2>/dev/null; then
             echo 'COMPANY_RUNTIME_SEED_STATE_OVERLAY=YES'
+            echo 'COMPANY_SEED_STATE_PATH=/tmp/company-runtime-game-seed-state.json' >> "$GITHUB_ENV"
           else
-            rm -f game-seed-state.json
+            rm -f /tmp/company-runtime-game-seed-state.json
             echo 'COMPANY_RUNTIME_SEED_STATE_OVERLAY=NO'
           fi
 
