@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization and setup
+    const game = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: Array(100).fill(null)
+      },
+      player: {
+        x: 0,
+        y: 0,
+        health: 100,
+        inventory: []
+      },
+      enemies: [],
+      ai: {
+        behavior: 'basic',
+        targets: []
+      },
+      ui: {
+        display: false
+      }
+    };
+
+    // Game logic and gameplay loop
+    function initGame() {
+      // Initialize game map and player
+      game.map = createMap();
+      game.player = setupPlayer();
+      game.enemies = generateEnemies();
+      game.ai = setupAI();
+      game.ui.display = true;
+
+      // Start gameplay loop
+      startGameLoop();
+    }
+
+    function startGameLoop() {
+      // Game loop logic
+      updateGame();
+      requestAnimationFrame(startGameLoop);
+    }
+
+    function updateGame() {
+      // Update game state
+      handleInput();
+      updateAI();
+      checkForWinLoss();
+      renderGame();
+    }
+
+    function handleInput() {
+      // Handle player input
+      // Example: move player
+      game.player.x += 1;
+    }
+
+    function updateAI() {
+      // Update AI behavior
+      game.ai.behavior.update();
+    }
+
+    function checkForWinLoss() {
+      // Check for win or loss conditions
+      if (game.player.health <= 0) {
+        alert("Game Over!");
+      }
+    }
+
+    function renderGame() {
+      // Render game state
+      // Example: draw map and player
+      drawMap();
+      drawPlayer();
+    }
+
+    function createMap() {
+      // Create game map
+      const map = Array(100).fill(null);
+      for (let i = 0; i < 100; i++) {
+        map[i] = {
+          type: Math.random() < 0.5 ? 'empty' : 'enemy',
+          owner: Math.random() < 0.5 ? 'player' : 'enemy'
+        };
+      }
+      return map;
+    }
+
+    function setupPlayer() {
+      // Setup player
+      return {
+        x: 0,
+        y: 0,
+        health: 100,
+        inventory: []
+      };
+    }
+
+    function generateEnemies() {
+      // Generate enemies
+      const enemies = [];
+      for (let i = 0; i < 10; i++) {
+        enemies.push({
+          x: Math.random() * 10,
+          y: Math.random() * 10,
+          health: 50
+        });
+      }
+      return enemies;
+    }
+
+    function setupAI() {
+      // Setup AI
+      return {
+        behavior: 'basic',
+        targets: []
+      };
+    }
+
+    // Start the game
+    initGame();
+  </script>
+</body>
+</html>
