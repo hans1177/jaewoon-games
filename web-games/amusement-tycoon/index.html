@@ -218,6 +218,7 @@ function adjacentCells(gx,gz){
 }
 
 var visualById={},buildingByCell={},paths={},runtime={};
+var cleanerMeshes=[];
 function registerObject(group,id){
   group.traverse(function(o){if(o.isMesh)o.userData.buildingId=id;});
 }
@@ -304,7 +305,6 @@ function rebuildWorldFromState(){
 }
 rebuildWorldFromState();
 
-var cleanerMeshes=[];
 function makePerson(color){
   var g=new THREE.Group();
   var body=cyl(.18,.22,.48,color,8);body.position.y=.28;g.add(body);
