@@ -144,10 +144,10 @@
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft": 16051,
-      "deterministic_pre_gate": 2,
-      "five_lead_reviews": 80639,
-      "designer_revision": 6523
+      "designer_draft": 0,
+      "deterministic_pre_gate": 3,
+      "five_lead_reviews": 101152,
+      "designer_revision": 7695
     },
     "phaseBudgetMs": {
       "designer_draft": 180000,
@@ -162,8 +162,8 @@
       "designer_revision_gate": 180000,
       "five_lead_reviews": 180000
     },
-    "totalModelCalls": 7,
-    "totalModelCallMs": 169384,
+    "totalModelCalls": 2,
+    "totalModelCallMs": 108841,
     "modelPhaseConcurrency": 2,
     "phaseConcurrency": {
       "five_lead_reviews": 2
@@ -172,15 +172,26 @@
     "modelKeepAlive": "GEMINI_API",
     "modelHealth": {
       "gemini:gemini-3.5-flash-lite": {
-        "calls": 3,
-        "successes": 3,
+        "calls": 8,
+        "successes": 8,
         "failures": 0,
         "timeouts": 0,
         "jsonFailures": 0,
-        "totalMs": 23862,
-        "lastMs": 6521,
+        "totalMs": 31119,
+        "lastMs": 7693,
         "lastError": null,
-        "updatedAt": "2026-09-18T07:36:32.542Z"
+        "updatedAt": "2026-09-18T08:08:18.985Z"
+      },
+      "gemini:gemini-3.5-flash": {
+        "calls": 6,
+        "successes": 1,
+        "failures": 5,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 431994,
+        "lastMs": 150785,
+        "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 58.381064323s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"58s\" } ] } }",
+        "updatedAt": "2026-09-18T07:46:01.644Z"
       },
       "gemini:gemini-3-flash-preview": {
         "calls": 1,
@@ -188,43 +199,32 @@
         "failures": 0,
         "timeouts": 0,
         "jsonFailures": 0,
-        "totalMs": 16109,
-        "lastMs": 16109,
+        "totalMs": 38041,
+        "lastMs": 38041,
         "lastError": null,
-        "updatedAt": "2026-09-18T07:35:21.491Z"
-      },
-      "gemini:gemini-3.5-flash": {
-        "calls": 3,
-        "successes": 1,
-        "failures": 2,
-        "timeouts": 0,
-        "jsonFailures": 0,
-        "totalMs": 95300,
-        "lastMs": 59227,
-        "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-        "updatedAt": "2026-09-18T07:36:04.608Z"
+        "updatedAt": "2026-09-18T07:44:08.901Z"
       },
       "gemini:gemini-3.1-flash-lite": {
-        "calls": 2,
+        "calls": 1,
         "successes": 1,
-        "failures": 1,
-        "timeouts": 0,
-        "jsonFailures": 1,
-        "totalMs": 69454,
-        "lastMs": 64525,
-        "lastError": "model response is not a JSON object",
-        "updatedAt": "2026-09-18T07:36:26.017Z"
-      },
-      "gemini:gemini-3.6-flash": {
-        "calls": 2,
-        "successes": 1,
-        "failures": 1,
+        "failures": 0,
         "timeouts": 0,
         "jsonFailures": 0,
-        "totalMs": 7410,
-        "lastMs": 5661,
+        "totalMs": 2891,
+        "lastMs": 2891,
+        "lastError": null,
+        "updatedAt": "2026-09-18T07:44:11.893Z"
+      },
+      "gemini:gemini-3.6-flash": {
+        "calls": 30,
+        "successes": 1,
+        "failures": 29,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 1420306,
+        "lastMs": 101148,
         "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-        "updatedAt": "2026-09-18T07:36:11.564Z"
+        "updatedAt": "2026-09-18T08:08:11.274Z"
       }
     },
     "preGate": {
@@ -236,9 +236,9 @@
     },
     "checkpoint": {
       "contractVersion": 2,
-      "engineDigest": "fb57cc31b517538b876d9f42ad117d843c7ec529d6d7f806549a1614a65ee57a",
-      "reused": false,
-      "completedPhases": 4,
+      "engineDigest": "1678961c9ca98d0c0a1ff143cc5cae0bcbed44bcdefc197e0d16960e75858422",
+      "reused": true,
+      "completedPhases": 8,
       "cachedTasks": 5
     },
     "simplifiedLeadOnlyReview": true,
@@ -249,8 +249,8 @@
     "departmentScopedContext": true
   },
   "designLearning": {
-    "candidateCount": 0,
-    "usedAsDesignContext": false,
+    "candidateCount": 1,
+    "usedAsDesignContext": true,
     "positiveTrainingEligible": false,
     "validatedRuntimeRequiredForPositiveTraining": true,
     "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
@@ -262,7 +262,7 @@
     "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
   },
   "vibe2Used": false,
-  "vibe2LearningContextUsed": false,
+  "vibe2LearningContextUsed": true,
   "paidApi": false,
   "baselineGate": {
     "policyDocument": "COMPANY_FLOW.md",
@@ -354,7 +354,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-18T07:36:39.779Z"
+    "checkedAt": "2026-09-18T08:08:21.943Z"
   },
   "artbookUi": {
     "status": "WAITING",
