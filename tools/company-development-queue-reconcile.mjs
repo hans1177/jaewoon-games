@@ -79,6 +79,8 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const queuePath=path.join(root,'development-queue.json');
   const catalog=readJson(catalogPath,{version:1,games:[]});
   const queue=readJson(queuePath,{version:1,items:[]});
+  const roadmap=readJson(path.join(root,MACHINE_POLICY_SOURCE),{});
+  const developmentGameWipMax=Number(roadmap?.developmentSpeedExecution?.globalSelectedPlatformDevelopmentWipMax||0);
   catalog.games ||= [];
   queue.items ||= [];
 
@@ -195,15 +197,17 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const before=JSON.stringify(queue.items);
   const after=JSON.stringify(next);
   const policyChanged=clean(queue.routerPolicy)!==MACHINE_POLICY_SOURCE;
-  const changed=before!==after||duplicateRemoved>0||policyChanged;
+  const wipChanged=Number.isInteger(developmentGameWipMax)&&developmentGameWipMax>0&&Number(queue.developmentGameWipMax)!==developmentGameWipMax;
+  const changed=before!==after||duplicateRemoved>0||policyChanged||wipChanged;
   if(changed){
     queue.items=next;
     queue.routerPolicy=MACHINE_POLICY_SOURCE;
+    if(Number.isInteger(developmentGameWipMax)&&developmentGameWipMax>0)queue.developmentGameWipMax=developmentGameWipMax;
     queue.updatedAt=stamp;
     queue.reconciliationPolicy='CATALOG_ACTIVE_REBUILD_DEVELOPMENT_CONFIRMED_AUTO_GUARANTEE';
     writeJson(queuePath,queue);
   }
-  return {changed,created,removed,reset,duplicateRemoved,preserved,queueCount:next.length,routerPolicy:MACHINE_POLICY_SOURCE};
+  return {changed,created,removed,reset,duplicateRemoved,preserved,queueCount:next.length,routerPolicy:MACHINE_POLICY_SOURCE,developmentGameWipMax:Number(queue.developmentGameWipMax||0)};
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
@@ -215,4 +219,5 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DEVELOPMENT_QUEUE_DUPLICATES_REMOVED=${result.duplicateRemoved}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
   console.log(`DEVELOPMENT_QUEUE_ROUTER_POLICY=${result.routerPolicy}`);
+  console.log(`DEVELOPMENT_QUEUE_WIP_MAX=${result.developmentGameWipMax}`);
 }
