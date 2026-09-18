@@ -1,9 +1,13 @@
 {
-  "version": 6,
+  "version": 7,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "COMPANY_FLOW.md",
   "recordedAt": "2026-09-14",
-  "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+  "priority": [
+    "ROBLOX",
+    "UNITY",
+    "FORTNITE_UEFN"
+  ],
   "primaryPlatform": "ROBLOX",
   "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
   "priorityMeaning": "DEFAULT_FOCUS_ONLY",
@@ -20,7 +24,11 @@
   "runtimeContractCannotCreatePolicy": true,
   "webCompanion": {
     "requiredForEveryGame": true,
-    "requiredAcross": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+    "requiredAcross": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
     "approvedScopeMustBeFullyImplemented": true,
     "featureParity": "FULL_APPROVED_GAMEPLAY_SCOPE_EQUIVALENT_OR_DOCUMENTED_PLATFORM_ADAPTATION",
     "silentFeatureOmissionForbidden": true,
@@ -57,7 +65,11 @@
     "singleRoutingDecisionPoint": true,
     "commonAdapterContractRequired": true,
     "commonEvidenceSchemaRequired": true,
-    "allowedPlatforms": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
+    "allowedPlatforms": [
+      "ROBLOX",
+      "UNITY",
+      "FORTNITE_UEFN"
+    ],
     "commonEvidenceFields": [
       "PLATFORM",
       "SOURCE_REVISION",
@@ -182,5 +194,101 @@
     "WEB_EVIDENCE_AS_NATIVE_RUNTIME_SUBSTITUTE",
     "PROTOTYPE_AS_COMPLETION_EVIDENCE",
     "SILENT_APPROVED_SCOPE_REDUCTION"
-  ]
+  ],
+  "developmentLifecycleMachine": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "humanDocumentRequired": false,
+    "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "stages": [
+      "PLATFORM_AND_GENRE_LOCKED",
+      "WEB_BASE_IMPLEMENTATION",
+      "WEB_RUNTIME_VALIDATION",
+      "WEB_DEVELOPMENT_BASELINE_READY",
+      "TARGET_PLATFORM_SOURCE_BIND",
+      "TARGET_PLATFORM_RUNTIME",
+      "TARGET_PLATFORM_INDEPENDENT_QA",
+      "TARGET_PLATFORM_REGRESSION",
+      "RELEASE_PROMOTION",
+      "POST_RELEASE_FOCUSED_DEVELOPMENT"
+    ],
+    "webToPlatformHandoff": {
+      "required": true,
+      "webIsDisposablePrototype": false,
+      "webRole": "PORTABLE_EXECUTABLE_GAMEPLAY_BASELINE",
+      "carryForward": [
+        "core-loop",
+        "gameplay-state-model",
+        "progression-model",
+        "input-intent",
+        "ui-flow",
+        "save-meaning",
+        "content-structure",
+        "balance-intent",
+        "verified-learning-context"
+      ],
+      "platformAdaptationAllowed": true,
+      "silentScopeDropForbidden": true,
+      "webEvidenceCannotReplaceNativeRuntimeEvidence": true
+    },
+    "targetPlatformDevelopment": {
+      "allowedPlatforms": [
+        "ROBLOX",
+        "UNITY",
+        "FORTNITE_UEFN"
+      ],
+      "selectedPlatformOwnsSecondImplementation": true,
+      "preserveWebBaselineAsReference": true,
+      "verifiedLearningContextRequired": true,
+      "runtimeIndependentQaRegressionRequired": true
+    },
+    "postReleaseFocusedDevelopment": {
+      "enabled": true,
+      "platforms": [
+        "ROBLOX"
+      ],
+      "entryRequires": [
+        "published-release-evidence",
+        "exact-release-source-revision",
+        "release-claim-pass"
+      ],
+      "state": "POST_RELEASE_FOCUSED_DEVELOPMENT",
+      "scheduler": "vibe2-continuous-core",
+      "queue": ".vibe2/queue.json",
+      "globalProtectedRunnerSlots": 1,
+      "activeTaskMaxPerProject": 1,
+      "workerRoute": "text-source-worker",
+      "taskTarget": "roblox",
+      "sourceRootPattern": "roblox-games/<gameId>",
+      "longWorkProtected": true,
+      "implementationOwner": true,
+      "continuousRefill": true,
+      "refillBy": "vibe2-24h-runner",
+      "cycle": [
+        "LOAD_RELEASED_SOURCE_AND_VERIFIED_LEARNING",
+        "IDENTIFY_ONE_CONCRETE_COMPLETENESS_OR_QUALITY_GAP",
+        "IMPLEMENT_WITHIN_CURRENT_GAME_IDENTITY",
+        "INCREMENTAL_QA",
+        "PERFORMANCE_SANITY",
+        "FAN_IN_REGRESSION",
+        "PROMOTE_VERIFIED_SOURCE_CHANGE_OR_REQUEUE",
+        "CREATE_NEXT_FOCUS_CYCLE"
+      ],
+      "priorities": [
+        "gameplay-completeness",
+        "content-depth",
+        "roblox-native-ux",
+        "mobile-readability",
+        "performance",
+        "maintainability",
+        "verified-learning-reuse"
+      ],
+      "publicRepublishAutomatic": false,
+      "releaseEvidenceInvalidatedOnlyByRelevantSourceChange": true,
+      "ownerHoldOrKillStopsFocus": true,
+      "noSafeWorkAction": "REASSESS_AND_CREATE_NEXT_VERIFIED_GAP",
+      "newTrainerForbidden": true,
+      "shadowPipelineForbidden": true
+    }
+  }
 }
