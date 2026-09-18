@@ -245,7 +245,10 @@ test('owner directive sync preserves running state and derived verified context'
       'candidate-sha:demo',
       'base-main:demo',
       'vibe2/candidate/OWNER-DEMO-primary-test',
-      'package-review:all-required-roles-pass'
+      'package-review:all-required-roles-pass',
+      'release-dispatch-recovery-requested:vibe2/candidate/OWNER-DEMO-primary-test',
+      'release-dispatch-recovery-at:1234567890',
+      'release-dispatch-recovery-candidate-sha:abcdef1234567890'
     );
     fs.writeFileSync(queueFile,JSON.stringify(queue), 'utf8');
 
