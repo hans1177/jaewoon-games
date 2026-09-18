@@ -406,7 +406,40 @@
       "nonVibeAiMayModifyOrchestrationCiContractsWhenNeeded": true,
       "ownerExplicitInstructionRequiredForAnyException": true,
       "designAuthorityUnaffected": true,
-      "designProviderPolicyUnaffected": true
+      "designProviderPolicyUnaffected": true,
+      "existingWebAssessment": {
+        "required": true,
+        "stage": "WEB_BASE_IMPLEMENTATION",
+        "assessor": "tools/vibe2-exploration-worker.mjs",
+        "decisionSource": "READ_ONLY_EXPLORATION_EVIDENCE",
+        "strategies": [
+          "KEEP_AND_CONTINUE",
+          "PARTIAL_REPAIR",
+          "MAJOR_REWORK",
+          "FULL_REBUILD"
+        ],
+        "requiredInputs": [
+          "approved-design-baseline",
+          "existing-web-source",
+          "approved-scope-coverage",
+          "current-validation-evidence",
+          "verified-learning-context"
+        ],
+        "rules": {
+          "fileExistenceAloneCannotDecide": true,
+          "prototypeMarkerAloneCannotForceFullRebuild": true,
+          "preserveWorkingSystemsWhenNotFullRebuild": true,
+          "preserveSaveMeaningWhenPresent": true,
+          "fullRebuildRequiresEvidence": true,
+          "assessmentMayNotChangeDesignAuthority": true,
+          "assessmentSourceWrite": false
+        },
+        "workerBinding": {
+          "explorationHandoffField": "existingWebAssessment",
+          "fullRewriteAllowedOnlyWhen": "strategy=FULL_REBUILD",
+          "implementationWorker": "tools/vibe2-source-worker.mjs"
+        }
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
