@@ -18,6 +18,16 @@ assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.jso
 assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
 assert.equal(roadmap.humanDocumentRequired,false);
+assert.equal(roadmap.developmentAccess.ROBLOX,'ALWAYS_ALLOWED');
+assert.equal(roadmap.developmentAccess.UNITY,'ALWAYS_ALLOWED');
+assert.equal(roadmap.developmentAccess.FORTNITE_UEFN,'OWNER_HOLD');
+assert.equal(roadmap.fortniteUefn.developmentAlwaysAllowed,false);
+assert.equal(roadmap.fortniteUefn.developmentExecutionAllowed,false);
+assert.equal(roadmap.fortniteUefn.releaseExecutionAllowed,false);
+assert.equal(roadmap.fortniteUefn.learningAllowed,true);
+assert.equal(roadmap.fortniteUefn.ownerStartRequired,true);
+assert.equal(roadmap.developmentLifecycleMachine.platformExecutionHolds.FORTNITE_UEFN.state,'OWNER_HOLD');
+assert.equal(roadmap.developmentLifecycleMachine.platformExecutionHolds.FORTNITE_UEFN.verifiedLearningCollectionContinues,true);
 assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
 assert.equal(lifecycle.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(lifecycle.humanDocumentRequired,false);
@@ -65,6 +75,9 @@ for(const key of ['core-loop','gameplay-state-model','progression-model','input-
   assert(lifecycle.webToPlatformHandoff.carryForward.includes(key),key);
 }
 assert.equal(lifecycle.webToPlatformHandoff.webEvidenceCannotReplaceNativeRuntimeEvidence,true);
+assert.match(webRuntime,/DEVELOPMENT_ROUTE_OWNER_HOLD=/);
+assert.match(webRuntime,/FORTNITE_UEFN_DEVELOPMENT=OWNER_HOLD/);
+assert.match(webRuntime,/FORTNITE_UEFN_LEARNING=CONTINUES/);
 assert.match(webRuntime,/webPlatformHandoff=\{/);
 assert.match(webRuntime,/stage:'WEB_DEVELOPMENT_BASELINE_READY'/);
 assert.match(webRuntime,/nativeRuntimePassTransferred:false/);
