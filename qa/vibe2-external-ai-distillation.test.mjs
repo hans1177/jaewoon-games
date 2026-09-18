@@ -30,6 +30,15 @@ test('external AI raw output cannot be promoted directly',()=>{
   assert.ok(check.reasons.includes('RAW_EXTERNAL_AI_OUTPUT_MUST_NOT_BE_PERSISTED'));
 });
 
+test('external AI candidate rejects non-traceable verification evidence',()=>{
+  const check=validateExternalAiCandidate({
+    ...verifiedCandidate,
+    verification:{independent:true,status:'PASS',method:'independent-qa',evidence:['looks-good']}
+  });
+  assert.equal(check.ok,false);
+  assert.ok(check.reasons.includes('VERIFICATION_EVIDENCE_NOT_TRACEABLE'));
+});
+
 test('external AI candidate requires independent verification evidence',()=>{
   const check=validateExternalAiCandidate({...verifiedCandidate,verification:{independent:false,status:'PASS',method:'independent-qa',evidence:[]}});
   assert.equal(check.ok,false);
