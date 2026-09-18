@@ -101,6 +101,9 @@ test('development-confirmed Web enters Vibe planning before homepage publication
   assert.equal(result.task.target,'web');
   assert.equal(result.task.ownerDirective,true);
   assert.ok(result.task.evidence.includes('central-policy:company-learning/platform-release-roadmap.json'));
+  assert.ok(result.task.evidence.includes('existing-web-assessment-required'));
+  assert.match(result.task.goal,/EXISTING_WEB_ASSESS_AND_IMPLEMENT/);
+  assert.doesNotMatch(result.task.goal,/FULL_WEB_GAME_REBUILD/);
 });
 
 test('historical baseline policy metadata remains reusable under current roadmap authority',()=>{
