@@ -83,3 +83,16 @@ test('current Gemini quota failure remains WAITING even when provider retry wind
   assert.match(workflow,/DESIGN_QUOTA_FAILURE_IS_DESIGN_GATE_FAILURE=NO/);
   assert.match(workflow,/DESIGN_CHECKPOINT_RESUME_REQUIRED=YES/);
 });
+
+
+test('seed scheduler prioritizes valid resumable checkpoints within the existing platform order',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/const checkpointResumePriority=seed=>/);
+  assert.match(workflow,/design-checkpoint\.json/);
+  assert.match(workflow,/checkpoint\.updatedAt\|\|checkpoint\.lastSuccessfulModelCallAt\|\|checkpoint\.createdAt/);
+  assert.match(workflow,/if\(checkpointAt&&checkpointAt<resetAt\)continue/);
+  assert.match(workflow,/if\(!checkpointAt&&date<=resetDate\)continue/);
+  assert.match(workflow,/\['COMPLETE','PASS','DONE','DESIGN_BASELINE_READY'\]\.includes\(status\)/);
+  const sort=workflow.match(/const pending=active\.filter\(seed=>!strictPassFor\(seed\)\)\.sort\(\(a,b\)=>[\s\S]*?\)\.slice\(0,designWipMax\);/)?.[0]||'';
+  assert.match(sort,/platformPriority\(a\)-platformPriority\(b\)[\s\S]*checkpointResumePriority\(a\)-checkpointResumePriority\(b\)/);
+});
