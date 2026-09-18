@@ -163,7 +163,8 @@
     "verifiedCodePatterns": ".vibe2/code-pattern-library.json",
     "gameStudyKnowledge": ".vibe2/game-study-knowledge.json",
     "webExperienceIngest": "tools/vibe2-web-experience-ingest.mjs",
-    "externalAiDistilledKnowledge": ".vibe2/external-ai-distilled-knowledge.json"
+    "externalAiDistilledKnowledge": ".vibe2/external-ai-distilled-knowledge.json",
+    "externalAiDistillationPolicy": "company-learning/external-ai-distillation-policy.json"
   },
   "workers": {
     "exploration": {
@@ -705,6 +706,19 @@
       "requiresDeterministicReplay": true,
       "candidatePassAloneInsufficient": true,
       "gateBypass": false
+    },
+    "externalAiDistillation": {
+      "enabled": true,
+      "rawOutputDirectUse": false,
+      "independentVerificationRequired": true,
+      "minimumTraceableEvidenceItems": 2,
+      "advisoryOnly": true,
+      "internalVerifiedAlwaysPreferred": true,
+      "directSourceWrite": false,
+      "directProductionPass": false,
+      "directMasteryCredit": false,
+      "directTrainingSample": false,
+      "authorityExpanded": false
     }
   }
 }
