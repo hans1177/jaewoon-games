@@ -13,6 +13,11 @@ const runner=read('.github/workflows/vibe2-24h-runner.yml');
 const queue=read('assets/vibe-continuous-queue.js');
 const seedDesignRuntime=read('.github/workflows/company-seed-design-runtime.yml');
 const designCycle=read('tools/company-design-cycle.mjs');
+const queueControl=read('tools/vibe2-queue-control.mjs');
+const adaptiveBackpressure=read('tools/vibe2-adaptive-backpressure.mjs');
+const parallelismTelemetry=read('tools/vibe2-parallelism-telemetry.mjs');
+const releaseDispatchRecovery=read('tools/vibe2-release-dispatch-recovery.mjs');
+const robloxRunnerSelfHeal=read('.github/workflows/roblox-runner-self-heal.yml');
 
 const lifecycle=roadmap.developmentLifecycleMachine;
 assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
@@ -231,6 +236,51 @@ assert.doesNotMatch(designCycle,/delete designCheckpoint\.phases\[key\]/);
 assert.match(designCycle,/GEMINI_DAILY_QUOTA_EXHAUSTED=/);
 assert.ok(designCycle.indexOf('if(status===429&&isDailyGeminiQuotaError(error))')<designCycle.indexOf('const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel)'));
 
+
+const recovery=lifecycle.selfRecoveryAndBottleneckRelief;
+assert.equal(recovery.authority,'MACHINE_EXECUTION_CONTRACT');
+assert.equal(recovery.humanDocumentRequired,false);
+assert.equal(recovery.sourceOfTruth,'company-learning/platform-release-roadmap.json');
+assert.equal(recovery.enabled,true);
+assert.deepEqual(recovery.recoveryLoop,[
+  'DETECT_FAILURE_OR_BOTTLENECK',
+  'CLASSIFY_RETRYABLE_VS_POLICY_BLOCK',
+  'PRESERVE_VERIFIED_STATE_AND_CURRENT_PROJECT_CHECKPOINT',
+  'RELEASE_OR_REQUEUE_STALE_AND_RETRYABLE_WORK',
+  'ADJUST_PARALLELISM_OR_ROUTE_AROUND_BLOCKED_CAPACITY',
+  'REFILL_ELIGIBLE_INDEPENDENT_WORK',
+  'REVERIFY_INCREMENTAL_QA_RUNTIME_AND_FAN_IN',
+  'PERSIST_RECOVERY_TELEMETRY_AND_VERIFIED_LEARNING',
+  'CONTINUE_NEXT_CYCLE'
+]);
+assert.equal(recovery.bindings.queueController,'tools/vibe2-queue-control.mjs');
+assert.equal(recovery.bindings.adaptiveBackpressure,'tools/vibe2-adaptive-backpressure.mjs');
+assert.equal(recovery.bindings.telemetry,'tools/vibe2-parallelism-telemetry.mjs');
+assert.equal(recovery.bindings.releaseDispatchRecovery,'tools/vibe2-release-dispatch-recovery.mjs');
+assert.equal(recovery.bindings.robloxRunnerSelfHeal,'.github/workflows/roblox-runner-self-heal.yml');
+assert.equal(recovery.automaticRecovery.externalModelQuota,'CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK');
+assert.equal(recovery.automaticRecovery.waitingForVerifiedSamples,'CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE');
+assert.deepEqual(recovery.bottleneckPolicy.adaptiveSteps,[20,16,12,8,4]);
+assert.equal(recovery.bottleneckPolicy.maxStepChangesPerRun,1);
+assert.equal(recovery.bottleneckPolicy.productionWorkPreemptsPractice,true);
+assert.equal(recovery.bottleneckPolicy.postReleaseProtectedRunnerSlots,1);
+assert.equal(recovery.bottleneckPolicy.longWorkProtectedSlots,1);
+assert.equal(recovery.bottleneckPolicy.disjointWorkMayContinueWhileOneRouteBlocked,true);
+assert.equal(recovery.bottleneckPolicy.doNotConsumeDevelopmentSlotForExternalQuotaWait,true);
+for(const key of ['noGateBypass','noTrainingThresholdReduction','noVerifiedLearningDeletion','noRestartFromBlankWhenValidCheckpointExists','noSilentScopeDrop','noAutomaticPublicRepublish','noRuntimePassFabrication','learningMustContinueDuringRecoverableDevelopmentBlock']){
+  assert.equal(recovery.invariants[key],true,key);
+}
+assert.match(queueControl,/recoverStaleRunningReservations/);
+assert.match(queueControl,/recoverFanInRegressionFailure/);
+assert.match(queue,/isExternalQuotaWaitingTask/);
+assert.match(adaptiveBackpressure,/ADAPTIVE_PARALLELISM_STEPS = Object\.freeze\(\[4, 8, 12, 16, 20\]\)/);
+assert.match(adaptiveBackpressure,/HEALTHY_STREAK_2/);
+assert.match(parallelismTelemetry,/RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION/);
+assert.match(parallelismTelemetry,/INCREMENTAL_QA/);
+assert.match(parallelismTelemetry,/CHECKOUT_NETWORK/);
+assert.match(releaseDispatchRecovery,/gateBypass:false/);
+assert.match(runner,/vibe2-release-dispatch-recovery\.mjs/);
+assert.match(robloxRunnerSelfHeal,/ROBLOX_RUNNER_SELF_HEAL_APPLIED=YES/);
 
 const multiverse=lifecycle.intentAmplificationMultiverse;
 assert.equal(multiverse.authority,'MACHINE_EXECUTION_CONTRACT');
