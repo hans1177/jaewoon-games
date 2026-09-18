@@ -69,4 +69,12 @@ const second=importCommercialRuntimeSamples({inputDir:input,outputDir:output});
 assert.equal(second.replaced.length,1);
 assert.equal(JSON.parse(fs.readFileSync(target,'utf8')).sourceRevision,'external-playtest-124-brawl-stars');
 
-console.log('PASS commercial runtime artifact importer preserves practice-only canonical boundary');
+const ingestWorkflow=fs.readFileSync('.github/workflows/vibe2-distillation-ingest.yml','utf8');
+const playtestWorkflow=fs.readFileSync('.github/workflows/external-mobile-free-game-playtest.yml','utf8');
+assert.equal((ingestWorkflow.match(/Vibe2 External Mobile Free Game Playtest/g)||[]).length,0,'commercial playtest must not keep a duplicate workflow_run ingest trigger');
+assert.match(ingestWorkflow,/external_playtest_run_id:/);
+assert.match(ingestWorkflow,/run-id: \${\{ inputs\.external_playtest_run_id \}\}/);
+assert.equal((playtestWorkflow.match(/vibe2-distillation-ingest\.yml\/dispatches/g)||[]).length,1,'playtest must dispatch exactly one canonical ingest route');
+assert.match(playtestWorkflow,/external_playtest_run_id:\$run_id/);
+
+console.log('PASS commercial runtime artifact importer preserves practice-only canonical boundary and single ingest route');
