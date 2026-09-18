@@ -103,7 +103,7 @@ jobs:
             sleep $((attempt * 2))
           done
           test "$persisted" = 1
-          queue_count="$(node -e "const q=require('./development-queue.json');process.stdout.write(String((q.items||[]).length))")"
+          queue_count="$(node -e 'const q=require("./development-queue.json");process.stdout.write(String((q.items||[]).length))')"
           echo "queue_count=$queue_count" >> "$GITHUB_OUTPUT"
           echo "changed=$changed" >> "$GITHUB_OUTPUT"
           echo "DEVELOPMENT_QUEUE_RUNTIME_CHANGED=$changed"
