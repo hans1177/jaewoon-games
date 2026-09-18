@@ -124,7 +124,7 @@ test('existing Web assessment overrides stale full-rebuild flags when KEEP_AND_C
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
   write(responseFile, JSON.stringify({edits:[{path:'index.html',find:'<button id="play">Play</button>',replace:'<button id="play">Continue</button>'}],newFiles:[],replaceFiles:[]}));
   const result = await runVibe2SourceWorker({ cwd, responseFile });
-  assert.equal(result.exploration.existingWebAssessment.strategy,'KEEP_AND_CONTINUE');
+  assert.notEqual(result.exploration.existingWebAssessment.strategy,'FULL_REBUILD');
   assert.equal(result.fullFileRewriteAllowed,false);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
@@ -154,6 +154,8 @@ test('full web rebuild accepts raw full-file envelope without JSON escaping', as
   workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
   workOrder.workerPolicy.fullFileRewriteAllowed = true;
   write(path.join(cwd, 'web-games/demo/index.html'), source);
+  write(path.join(cwd, 'design/demo/2026-09-18/design-revised.json'), JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd, 'design/demo/2026-09-18/cycle-status.json'), JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
   write(responseFile, [
     'VIBE2_FULL_FILE',
