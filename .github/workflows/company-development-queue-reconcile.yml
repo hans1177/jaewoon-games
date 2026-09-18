@@ -49,6 +49,7 @@ jobs:
           node --test qa/company-development-queue-reconcile.test.mjs
 
       - name: Reconcile and persist company runtime queue
+        id: queue_state
         shell: bash
         run: |
           set -euo pipefail
@@ -102,10 +103,14 @@ jobs:
             sleep $((attempt * 2))
           done
           test "$persisted" = 1
+          queue_count="$(node -e "const q=require('./development-queue.json');process.stdout.write(String((q.items||[]).length))")"
+          echo "queue_count=$queue_count" >> "$GITHUB_OUTPUT"
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
           echo "DEVELOPMENT_QUEUE_RUNTIME_CHANGED=$changed"
+          echo "DEVELOPMENT_QUEUE_RUNTIME_COUNT=$queue_count"
 
       - name: Dispatch development runtime
-        if: ${{ always() && !cancelled() }}
+        if: ${{ success() && steps.queue_state.outputs.queue_count != '0' }}
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
