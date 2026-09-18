@@ -1,0 +1,248 @@
+{
+  "contractVersion": 3,
+  "gameId": "territory-war",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+  "fingerprint": "4a986eed88f2efa54f846df31b59c644dffdda3fc6d3367d7987ecba62d2e57d",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계된 싱글 타워 디펜스 게임이다. coreLoop는 적의 웨이브를 읽고 타워를 배치하는 선택으로 시작해 전선의 상태를 변화시키며, signatureSystems는 타워의 시너지와 지형 효과를 극대화하여 매 순간 의미 있는 전술적 선택과 상태 변화를 이끌어낸다.",
+      "playerFantasy": "플레이어는 방어선의 지휘관이 되어 밀려오는 적의 공세를 예측하고 최적의 위치에 방어 타워를 배치하여 영토를 수호하는 전술적 성취감을 느낀다.",
+      "coreFun": "적의 공격 패턴을 관찰하고 이에 대응하여 타워를 전략적으로 배치하며, 즉각적으로 적을 저지하고 자원을 획득하는 반복적인 선택과 명확한 전황 변화를 경험한다.",
+      "coreLoop": [
+        "다음 적 웨이브 정보를 읽고 위협받는 경로를 커버할 수 있는 위치에 타워나 방어물을 배치한다.",
+        "처치한 적에게서 자원을 획득하고, 이를 소모하여 업그레이드 및 새로운 방어 배치를 수행한다.",
+        "적의 종류와 웨이브 구성에 맞춰 방어 전략을 적응시키고, 보스를 처치하여 더 어려운 방어 선택지를 해제한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "타워 시너지 시스템",
+          "purpose": "서로 다른 속성의 타워를 조합하여 단일 타워보다 강력한 광역 및 단일 대상 피해를 유도하고 전술적 깊이를 제공한다.",
+          "playerChoice": "플레이어는 자원을 분배하여 기초 타워를 강화할 것인지, 특수 속성 타워를 새로 건설할 것인지 매 웨이브마다 선택한다."
+        },
+        {
+          "name": "지형 특성 활용 시스템",
+          "purpose": "각 스테이지마다 존재하는 고유한 지형적 이점을 활용하여 타워의 효율을 극대화하고 전선을 유리하게 유지한다.",
+          "playerChoice": "플레이어는 좁은 길목이나 요충지에 방어 시설을 집중시킬지, 광역 공격 타워를 넓은 공터에 배치할지 결정한다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "타워 시너지 시스템",
+          "toSystem": "전선 압박 관리",
+          "trigger": "플레이어가 특정 속성 조합의 타워를 완성할 경우",
+          "stateChange": "적의 이동 속도가 감소하고 체력이 빠르게 소모되어 전선 압박이 완화된다."
+        },
+        {
+          "fromSystem": "지형 특성 활용 시스템",
+          "toSystem": "자원 경제 시스템",
+          "trigger": "지형 보너스를 활용해 적을 효율적으로 처치할 경우",
+          "stateChange": "추가 자원이 생성되어 다음 웨이브에서 더 비싼 상위 타워를 구매할 수 있게 된다."
+        },
+        {
+          "fromSystem": "자원 경제 시스템",
+          "toSystem": "타워 시너지 시스템",
+          "trigger": "웨이브 클리어 보스로 자원이 대량 유입될 경우",
+          "stateChange": "새로운 고급 타워 슬롯이 해제되고 기존 타워를 상위 단계로 업그레이드할 수 있다."
+        }
+      ],
+      "progressionDirection": "플레이어는 기본 스테이지를 클리어하며 새로운 타워와 특수 능력을 해제하고, 점점 더 복잡해지는 적의 조합에 맞춰 방어 전략을 발전시켜 나간다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "적 처치 및 웨이브 클리어 -> 자원 획득 -> 타워 업그레이드 및 신규 배치 -> 상위 스테이지 진입",
+        "resourceFlow": "초반에는 기본 자원으로 최소한의 방어선을 구축하고, 중후반에는 보상으로 얻는 재화로 고성능 타워를 운영한다.",
+        "balanceRules": "자원 수급량과 타워 건설 비용의 비율을 조절하여 무한정 업그레이드를 방지하고 매 웨이브마다 전략적 선택을 강제한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "초보자 방어선 마스터",
+          "newGameplay": "기본 타워 4종과 단일 경로 방어 스테이지 5개를 제공하여 기초적인 상성과 배치 감각을 익히게 한다.",
+          "systemImpact": "자원 경제 시스템과 타워 시너지 시스템의 기본 밸런스를 검증하고 플레이어의 체류 시간을 확보한다."
+        },
+        {
+          "milestone": "중급 전선 확장",
+          "newGameplay": "분기하는 다중 경로와 특수 상태 이상을 유발하는 적 유닛을 도입하여 동적 대응 플레이를 강화한다.",
+          "systemImpact": "지형 특성 활용 시스템과 시스템 간 상호작용의 복잡도를 높여 전략적 깊이를 확장한다."
+        },
+        {
+          "milestone": "상위 보스 레이드",
+          "newGameplay": "주기적으로 강력한 광역 스킬을 사용하는 보스 유닛과 이에 대응하는 궁극 방어 타워를 해제한다.",
+          "systemImpact": "후반부 자원 경제 균형을 조정하고 고난도 도전 과제를 통해 플레이어의 리텐션을 유지한다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "방어선이 뚫려 목표 지점의 체력이 0이 되는 경우",
+          "제한 시간 내에 웨이브의 핵심 적을 처치하지 못한 경우"
+        ],
+        "retryFlow": "실패 시 패배 화면에서 즉시 해당 웨이브의 시작점이나 스테이지 선택 화면으로 돌아가 재도전할 수 있다.",
+        "riskPressure": "웨이브가 진행될수록 적의 물량이 증가하여 실수를 용납하지 않는 긴장감을 유지한다.",
+        "recoveryRules": "실패한 스테이지에서는 이전 자원의 일부를 보존하거나 전략을 수정할 수 있는 힌트를 제공하여 반복 실패의 피로감을 줄인다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "터치 및 마우스 클릭을 통한 직관적인 타워 선택과 드래그 앤 드롭 배치 방식을 지원한다.",
+        "performanceBudget": "모바일 및 저사양 PC 환경을 고려하여 동시 렌더링되는 적 유닛과 타워 이펙트의 최적화를 유지한다.",
+        "sessionConstraints": "한 판의 플레이 타임을 5분 내외로 압축하여 모바일 환경에서도 부담 없이 즐길 수 있도록 설계한다."
+      },
+      "visualDirection": "직관적인 탑뷰 시점을 바탕으로 적과 타워의 구분이 명확한 로블록스 캐주얼 스타일의 그래픽을 지향한다.",
+      "mobileUx": "엄지손가락으로 쉽게 조작할 수 있도록 UI 배치와 터치 영역을 최적화하여 원활한 플레이를 보장한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 웨이브 정보, 남은 자원, 목표 체력을 화면 상단에 고정하여 가독성을 극대화한다.",
+        "touchAndInput": "작은 화면에서도 타워 터치와 업그레이드 버튼의 오작동이 없도록 충분한 터치 간격을 확보한다.",
+        "readability": "적의 속성과 타워의 공격 범위를 시각적 이펙트와 색상 대비로 명확하게 구분한다.",
+        "accessibility": "색약 모드 및 핵심 알림 사운드를 제공하여 시청각적 접근성을 보완한다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "깔끔하고 정돈된 전장 디자인 위에 명확한 타격 이펙트를 적용하여 전투의 몰입감을 높인다.",
+        "audioIdentity": "경쾌한 타워 발사음과 적 처치 사운드를 통해 피드백을 직관적으로 전달한다.",
+        "gameplayFeedbackSync": "타워가 적중하는 순간과 자원이 획득되는 순간에 즉각적인 사운드와 시각 효과를 동기화한다."
+      },
+      "marketTargetDirection": "글로벌 모바일 및 캐주얼 전략 게임 유저를 타겟으로 하여 가볍지만 깊이 있는 타워 디펜스 재미를 제공한다.",
+      "steamExpansionDecision": "모바일 플랫폼 검증 이후 추후 스팀 플랫폼을 통해 고해상도 그래픽과 확장된 콘텐츠로의 진출을 고려할 수 있다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "추후 협동(COOP) 모드를 추가하여 두 명의 플레이어가 전선을 나누어 방어하는 확장성을 검토할 수 있다.",
+      "technicalAssumptions": [
+        "서버와 클라이언트 간의 타워 배치 좌표와 웨이브 상태가 지연 없이 동기화되어야 한다.",
+        "다수의 적 유닛이 동시에 이동할 때 패스파인딩 연산이 최적화되어 프레임 저하를 방지해야 한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 매 웨이브마다 자신의 타워 배치 선택이 전선 변화에 영향을 미친다고 명확하게 느끼는가?",
+        "자원 경제와 타워 업그레이드 루프가 지루함 없이 적절한 긴장감을 유지하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "타워 시너지 시스템",
+          "responsibleSystem": "TowerSynergyManager",
+          "validationEvidence": "두 가지 속성 타워가 인접할 때 공격력 버프가 정상 적용되는지 로그로 확인한다."
+        },
+        {
+          "designElement": "지형 특성 활용 시스템",
+          "responsibleSystem": "TerrainBonusCalculator",
+          "validationEvidence": "특수 지형에 배치된 타워의 사거리와 자원 생성량이 의도된 배율로 적용되는지 테스트한다."
+        },
+        {
+          "designElement": "코어 루프 웨이브 관리",
+          "responsibleSystem": "WaveProgressionController",
+          "validationEvidence": "적 처치 후 자원이 지급되고 다음 웨이브가 정상적으로 시작되는지 시뮬레이션한다."
+        }
+      ],
+      "openQuestions": [
+        "향후 멀티플레이 협동 모드 도입 시 자원 공유 방식을 어떻게 설계할 것인가?",
+        "플레이어의 피로도를 낮추기 위해 오토 플레이 기능을 도입할 필요가 있는가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 78,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 14162,
+      "lastMs": 14162,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:07:43.886Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "PRE_GATE_REPAIR",
+  "createdAt": "2026-09-18T15:07:29.722Z",
+  "updatedAt": "2026-09-18T15:07:43.889Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:07:43.886Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
+}

@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "gameId": "territory-war",
+  "date": "2026-09-19",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "completedPhaseCount": 2,
+  "cachedTaskCount": 0,
+  "lastSuccessfulModelCallAt": "2026-09-18T15:07:43.886Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 14162,
+      "lastMs": 14162,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:07:43.886Z"
+    }
+  },
+  "slowPhases": {},
+  "updatedAt": "2026-09-18T15:07:43.890Z"
+}
