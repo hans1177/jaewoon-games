@@ -147,7 +147,7 @@ jobs:
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
           const targets=selected.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
-          const parallelMax=Math.max(1,Math.min(canaryVerified?2:1,targets.length||1));
+          const parallelMax=Math.max(1,Math.min(canaryVerified?designWipMax:1,targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.log(`parallel_max=${parallelMax}`);
@@ -160,6 +160,8 @@ jobs:
           console.error(`GAME_DESIGN_ENGINE_DIGEST=${engineDigest}`);
           console.error(`GAME_DESIGN_WIP_MAX=${designWipMax}`);
           console.error(`GAME_DESIGN_EXECUTION_LANES=${parallelMax}`);
+          console.error('GAME_DESIGN_GATE_BYPASS=NO');
+          console.error('GAME_DESIGN_ONLY_STRICT_PASS_REQUIRED=YES');
           console.error('GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW');
           console.error(`GAME_DESIGN_SCHEDULING_MODE=${designScheduling.mode||'DEFAULT'}`);
           console.error(`GAME_DESIGN_ROBLOX_FIRST=${designScheduling.mode==='ROBLOX_FIRST_THEN_OTHER_PLATFORMS'?'YES':'NO'}`);
