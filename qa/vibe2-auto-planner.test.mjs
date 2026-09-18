@@ -167,6 +167,57 @@ test('historical flags alone cannot bypass catalog authority without registry el
   assert.equal(cancelled.blocker,'lifecycle-inactive:MISSING_FROM_CATALOG');
 });
 
+test('registered historical maintenance remains active under intentional DESIGN_ONLY historical catalog state',()=>{
+  const root=tempRepo();
+  const task={
+    id:'historical-design-only',gameId:'historical-game',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/historical-game',releaseState:'development-confirmed',status:'cancelled',
+    blocker:'production-authority-inactive:DESIGN_ONLY',lastOutcome:'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY',
+    postReleaseFocused:true,historicalDeploymentRecovery:true,packageLongWorkProtected:true,packageRole:'implementation-owner',
+    evidence:[
+      'post-release-focused:yes','historical-deployment-recovery:yes','historical-current-release-claim:NO',
+      'maintenance-registry:company-learning/roblox-sustained-maintenance.json','production-authority-sync:DESIGN_ONLY'
+    ]
+  };
+  const catalog={games:[{
+    id:'historical-game',productionClass:'DESIGN_ONLY',homepageCategory:'historical-deployed',lifecycleState:'ACTIVE',
+    developmentHandling:'SUSTAINED_POST_DEPLOYMENT_SOURCE_DEVELOPMENT'
+  }]};
+  const historicalRegistry={assets:[{
+    gameId:'historical-game',sourceRoot:'roblox-games/historical-game',maintenanceEligible:true,currentReleaseClaim:false,
+    recoveryState:'HISTORICAL_PUBLICATION_TARGET_VERIFIED'
+  }]};
+  const result=planVibe2AutonomousTasks({status:{projects:[]},catalog,queue:{tasks:[task]},historicalRegistry,repoRoot:root,maxConcurrentTasks:4});
+  const recovered=result.queue.tasks.find(row=>row.id==='historical-design-only');
+  assert.equal(recovered.status,'queued');
+  assert.equal(recovered.blocker,null);
+  assert.equal(recovered.lastOutcome,null);
+  assert.ok(recovered.evidence.includes('production-authority-sync:HISTORICAL_REGISTRY_ACTIVE'));
+  assert.ok(recovered.evidence.includes('self-recovery:HISTORICAL_MAINTENANCE_AUTHORITY_RESTORED'));
+});
+
+test('inactive catalog lifecycle still stops registered historical maintenance',()=>{
+  const root=tempRepo();
+  const task={
+    id:'historical-paused',gameId:'historical-game',target:'roblox',department:'development',type:'implementation',
+    sourceRoot:'roblox-games/historical-game',releaseState:'development-confirmed',status:'queued',
+    postReleaseFocused:true,historicalDeploymentRecovery:true,packageLongWorkProtected:true,packageRole:'implementation-owner',
+    evidence:[
+      'post-release-focused:yes','historical-deployment-recovery:yes','historical-current-release-claim:NO',
+      'maintenance-registry:company-learning/roblox-sustained-maintenance.json'
+    ]
+  };
+  const catalog={games:[{id:'historical-game',productionClass:'DESIGN_ONLY',homepageCategory:'historical-deployed',lifecycleState:'PAUSED'}]};
+  const historicalRegistry={assets:[{
+    gameId:'historical-game',sourceRoot:'roblox-games/historical-game',maintenanceEligible:true,currentReleaseClaim:false,
+    recoveryState:'HISTORICAL_PUBLICATION_TARGET_VERIFIED'
+  }]};
+  const result=planVibe2AutonomousTasks({status:{projects:[]},catalog,queue:{tasks:[task]},historicalRegistry,repoRoot:root,maxConcurrentTasks:4});
+  const stopped=result.queue.tasks.find(row=>row.id==='historical-paused');
+  assert.equal(stopped.status,'cancelled');
+  assert.equal(stopped.blocker,'lifecycle-inactive:PAUSED');
+});
+
 test('historical baseline policy metadata remains reusable under current roadmap authority',()=>{
   const root=tempRepo();
   const evidence=latestDevelopmentBaselineEvidence('demo',root);
