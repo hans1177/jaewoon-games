@@ -29,8 +29,13 @@ const command=readText('command.html');
 const offline=readText('offline.html');
 
 const games=catalog.games||[];
-const officialGames=games.filter(g=>g.homepageOfficialCard===true||String(g.productionClass||'').toUpperCase()==='RELEASE_CONFIRMED');
-const catalogIds=new Set(games.map(g=>g.id));
+const canonicalOf=game=>game?.canonical&&typeof game.canonical==='object'?game.canonical:{};
+const canonicalId=game=>String(canonicalOf(game)?.identity?.gameId||game?.id||'').trim();
+const canonicalClass=game=>String(canonicalOf(game)?.production?.class||game?.productionClass||'').toUpperCase();
+const canonicalImage=game=>String(canonicalOf(game)?.identity?.image||game?.image||'').trim();
+const canonicalWeb=game=>canonicalOf(game)?.sources?.web&&typeof canonicalOf(game).sources.web==='object'?canonicalOf(game).sources.web:{};
+const officialGames=games.filter(g=>g.homepageOfficialCard===true||canonicalClass(g)==='RELEASE_CONFIRMED');
+const catalogIds=new Set(games.map(canonicalId));
 const testCandidates=Array.isArray(testManifest.candidates)?testManifest.candidates:[];
 const testCandidateIds=new Set(testCandidates.map(row=>String(row?.gameId||row?.id||'').trim()).filter(Boolean));
 const historicalQueueGames=(queue.games||[]).filter(g=>g.source!=='INCUBATOR_METADATA_ONLY'&&g.currentStage!=='incubator-concept-redesign');
@@ -46,15 +51,15 @@ const brokenTestWebRoutes=testCandidates.filter(row=>{const p=String(row.webPath
 const brokenTestArtbooks=testCandidates.filter(row=>{const source=String(row.artbookSource||'').trim().replace(/^\/+/, '');if(!source||!exists(source))return true;const registry=visibleBooks.some(book=>book.gameId===(row.gameId||row.id)&&book.sourceFile===source);return !registry;}).map(row=>row.gameId||row.id);
 
 const imageOwners=new Map();
-for(const game of officialGames){const image=String(game.image||'').trim();if(!imageOwners.has(image))imageOwners.set(image,[]);imageOwners.get(image).push(game.id);}
-const brokenGameImages=officialGames.filter(game=>{const image=String(game.image||'').trim();if(!image||!exists(image))return true;try{return fs.statSync(image).size<256;}catch{return true;}}).map(game=>game.id);
+for(const game of officialGames){const image=canonicalImage(game);if(!imageOwners.has(image))imageOwners.set(image,[]);imageOwners.get(image).push(canonicalId(game));}
+const brokenGameImages=officialGames.filter(game=>{const image=canonicalImage(game);if(!image||!exists(image))return true;try{return fs.statSync(image).size<256;}catch{return true;}}).map(canonicalId);
 const duplicateGameImages=[...imageOwners.entries()].filter(([image,owners])=>image&&owners.length>1).map(([image,owners])=>({image,games:owners}));
-const placeholderGameImages=officialGames.filter(game=>{const image=String(game.image||'').trim();if(/(?:^|\/)(?:mock|portal|page-bg(?:-v\d+)?|monster-adventure-card)\.(?:webp|png|jpg|jpeg|svg)$/i.test(image))return true;if(game.id!=='daechung-rpg'&&/(?:^|\/)fantasy-rpg-v2\.webp$/i.test(image))return true;return false;}).map(game=>game.id);
-const webIndexPath=game=>{const webPath=String(game.webPath||'').trim().replace(/^\/+|\/+$/g,'');return webPath?`${webPath}/index.html`:'';};
-const homepagePlayableGames=officialGames.filter(game=>game.homepageWebPlayable===true);
+const placeholderGameImages=officialGames.filter(game=>{const image=canonicalImage(game);if(/(?:^|\/)(?:mock|portal|page-bg(?:-v\d+)?|monster-adventure-card)\.(?:webp|png|jpg|jpeg|svg)$/i.test(image))return true;if(canonicalId(game)!=='daechung-rpg'&&/(?:^|\/)fantasy-rpg-v2\.webp$/i.test(image))return true;return false;}).map(canonicalId);
+const webIndexPath=game=>{const webPath=String(canonicalWeb(game).path||game.webPath||'').trim().replace(/^\/+|\/+$/g,'');return webPath?`${webPath}/index.html`:'';};
+const homepagePlayableGames=officialGames.filter(game=>canonicalWeb(game).playable===true||game.homepageWebPlayable===true);
 const brokenWebGameLinks=homepagePlayableGames.filter(game=>{const file=webIndexPath(game);if(!file||!exists(file))return true;try{return fs.statSync(file).size<512;}catch{return true;}}).map(game=>game.id);
-const mismatchedWebPaths=homepagePlayableGames.filter(game=>{const file=webIndexPath(game);return file&&file!==`web-games/${game.id}/index.html`;}).map(game=>game.id);
-const prepromotionOfficialCards=games.filter(game=>game.homepageOfficialCard===true&&String(game.productionClass||'').toUpperCase()!=='RELEASE_CONFIRMED').map(game=>game.id);
+const mismatchedWebPaths=homepagePlayableGames.filter(game=>{const file=webIndexPath(game);return file&&file!==`web-games/${canonicalId(game)}/index.html`;}).map(canonicalId);
+const prepromotionOfficialCards=games.filter(game=>game.homepageOfficialCard===true&&canonicalClass(game)!=='RELEASE_CONFIRMED').map(canonicalId);
 
 const homepagePolicy=directive.homepageOperations||{};
 const homepageTesting=directive.homepageTesting||{};
@@ -62,6 +67,8 @@ const developmentDisplay=homepagePolicy.developmentProgressDisplay||{};
 const documentationSync=directive.documentationSynchronization||{};
 const pwaFiles=['manifest.webmanifest','install.html','sw.js','offline.html','command.html'];
 const checks={
+  normalizedCatalogContract:catalog.catalogSchemaVersion===2&&catalog.normalization?.canonicalRecordPath==='games[].canonical'&&catalog.normalization?.canonicalFirst===true&&catalog.normalization?.homepageReadsCanonicalFirst===true&&games.every(game=>canonicalOf(game)?.schemaVersion===1&&canonicalId(game)),
+  homepageCanonicalRenderer:includesAll(enhancementEntry,['const canonicalOf=row=>','const identityOf=row=>','const publicationOf=row=>','const homepageOf=row=>','const runtimeInfo=row=>homepageOf(row).runtime','const canonical=publicationOf(game).roblox']),
   centralHomepagePolicyExists:roadmap.authority==='MACHINE_EXECUTION_CONTRACT'&&roadmap.machineSourceOfTruth==='company-learning/platform-release-roadmap.json'&&directive.policyDocument==='company-learning/platform-release-roadmap.json'&&homepagePolicy.mode==='SINGLE_MANAGER_WITH_SINGLE_POST_WORK_SUPERVISOR',
   centralTop30EligibilityPolicyExists:Number(homepageTesting.minimumWebStrictScore)===80&&homepageTesting.maxVisibleTestCandidates===30&&homepageTesting.ranking==='STRICT_IMPLEMENTATION_SCORE_DESC',
   developmentAndTop30PlacementDocumented:developmentDisplay.autoRegisterProductionClass==='DEVELOPMENT_CONFIRMED'&&developmentDisplay.separateFromTop30Promotion===true&&homepageTesting.maxVisibleTestCandidates===30&&homepageTesting.ranking==='STRICT_IMPLEMENTATION_SCORE_DESC',
@@ -80,7 +87,7 @@ const checks={
   activeCatalogNonEmpty:games.length>0,
   publishedBooksReferenceCatalogGames:brokenBookRefs.length===0,
   requiredArtbookRolesIntact:JSON.stringify(queue.requiredRoles||[])===JSON.stringify(roles),
-  activeCatalogUsesSemanticProductionClasses:games.every(game=>['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(String(game.productionClass||''))),
+  activeCatalogUsesSemanticProductionClasses:games.every(game=>['DESIGN_ONLY','DEVELOPMENT_CONFIRMED','RELEASE_CONFIRMED'].includes(canonicalClass(game))),
   officialGameImagesPresent:brokenGameImages.length===0,
   officialGameImagesUnique:duplicateGameImages.length===0,
   officialGameNoPlaceholderImages:placeholderGameImages.length===0,
@@ -104,5 +111,5 @@ const checks={
 const failures=Object.entries(checks).filter(([,ok])=>!ok).map(([name])=>name);
 console.log(`HOMEPAGE_MANAGEMENT=${failures.length?'ATTENTION':'PASS'}`);
 console.log(`HOMEPAGE_SELF_QA=${Object.keys(checks).length-failures.length}/${Object.keys(checks).length}`);
-console.log(`HOMEPAGE_CATALOG_SOURCE=${catalogPath}`);console.log(`HOMEPAGE_STATUS_SOURCE=${statusPath}`);console.log(`HOMEPAGE_CATALOG=${games.length}`);console.log(`HOMEPAGE_OFFICIAL_CARD_COUNT=${officialGames.length}`);console.log(`HOMEPAGE_TOP30_COUNT=${testCandidates.length}/30`);console.log(`HOMEPAGE_VISIBLE_ARTBOOKS=${visibleBooks.length}`);console.log(`HOMEPAGE_LEGACY_QUEUE_ENTRIES=${legacyQueueEntries.length}`);console.log(`HOMEPAGE_BROKEN_GAME_IMAGES=${brokenGameImages.length}`);console.log(`HOMEPAGE_DUPLICATE_GAME_IMAGES=${duplicateGameImages.length}`);console.log(`HOMEPAGE_PLACEHOLDER_GAME_IMAGES=${placeholderGameImages.length}`);console.log(`HOMEPAGE_PLAYABLE_OFFICIAL_WEB_GAMES=${homepagePlayableGames.length}`);console.log(`HOMEPAGE_BROKEN_WEB_LINKS=${brokenWebGameLinks.length}`);console.log(`HOMEPAGE_BROKEN_TOP30_WEB_LINKS=${brokenTestWebRoutes.length}`);console.log(`HOMEPAGE_BROKEN_TOP30_ARTBOOKS=${brokenTestArtbooks.length}`);console.log(`HOMEPAGE_PREPROMOTION_OFFICIAL_CARD_VIOLATIONS=${prepromotionOfficialCards.length}`);console.log('HOMEPAGE_DEVELOPMENT_SOURCE=DEVELOPMENT_QUEUE');console.log('HOMEPAGE_DEVELOPMENT_VISIBILITY=PROGRESS_ONLY');console.log('HOMEPAGE_DEVELOPMENT_ORDER=SCORE_DESC');console.log('HOMEPAGE_DEVELOPMENT_SCORE_VISIBLE=YES');console.log('HOMEPAGE_DEVELOPMENT_SCORE_SOURCE=CURRENT_INITIAL_CYCLE');console.log('HOMEPAGE_DEVELOPMENT_STALE_SCORE_POLICY=REVALIDATION_NOT_CURRENT');console.log('HOMEPAGE_DEVELOPMENT_TEST_BUTTONS=WEB_AND_PLATFORM');console.log('HOMEPAGE_TOP30_SOURCE=CANONICAL_TOP30');console.log('HOMEPAGE_TOP30_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');console.log('HOMEPAGE_TOP30_LIMIT=30');console.log('HOMEPAGE_TOP30_MINIMUM_SCORE=80');console.log('HOMEPAGE_APK_INSTALL_PLACEMENT=COMPANY_TEAM_BOTTOM');console.log('HOMEPAGE_OFFICIAL_CARD_POLICY=STRICT_PASS_AND_PROMOTION_ONLY');console.log('HOMEPAGE_RUNTIME_SYNC=DEVELOPMENT_QUEUE_PLUS_SEPARATE_TOP30');console.log('HOMEPAGE_RAW_DESIGN_ONLY_EXECUTION_SHELF=FORBIDDEN');console.log('HOMEPAGE_MANAGER_COUNT=1');console.log('HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1');console.log(`HOMEPAGE_FIXED_PWA_CHAT_CONTRACT=${checks.fixedPwaFilesExist&&checks.pwaManifestCommandEntry&&checks.installPwaContractPreserved&&checks.serviceWorkerPwaContractPreserved&&checks.commandChatContractPreserved?'PASS':'FAIL'}`);
+console.log(`HOMEPAGE_CATALOG_SOURCE=${catalogPath}`);console.log(`HOMEPAGE_STATUS_SOURCE=${statusPath}`);console.log(`HOMEPAGE_CATALOG=${games.length}`);console.log(`HOMEPAGE_CANONICAL_RECORDS=${games.filter(game=>canonicalOf(game)?.schemaVersion===1).length}/${games.length}`);console.log(`HOMEPAGE_OFFICIAL_CARD_COUNT=${officialGames.length}`);console.log(`HOMEPAGE_TOP30_COUNT=${testCandidates.length}/30`);console.log(`HOMEPAGE_VISIBLE_ARTBOOKS=${visibleBooks.length}`);console.log(`HOMEPAGE_LEGACY_QUEUE_ENTRIES=${legacyQueueEntries.length}`);console.log(`HOMEPAGE_BROKEN_GAME_IMAGES=${brokenGameImages.length}`);console.log(`HOMEPAGE_DUPLICATE_GAME_IMAGES=${duplicateGameImages.length}`);console.log(`HOMEPAGE_PLACEHOLDER_GAME_IMAGES=${placeholderGameImages.length}`);console.log(`HOMEPAGE_PLAYABLE_OFFICIAL_WEB_GAMES=${homepagePlayableGames.length}`);console.log(`HOMEPAGE_BROKEN_WEB_LINKS=${brokenWebGameLinks.length}`);console.log(`HOMEPAGE_BROKEN_TOP30_WEB_LINKS=${brokenTestWebRoutes.length}`);console.log(`HOMEPAGE_BROKEN_TOP30_ARTBOOKS=${brokenTestArtbooks.length}`);console.log(`HOMEPAGE_PREPROMOTION_OFFICIAL_CARD_VIOLATIONS=${prepromotionOfficialCards.length}`);console.log('HOMEPAGE_DEVELOPMENT_SOURCE=DEVELOPMENT_QUEUE');console.log('HOMEPAGE_DEVELOPMENT_VISIBILITY=PROGRESS_ONLY');console.log('HOMEPAGE_DEVELOPMENT_ORDER=SCORE_DESC');console.log('HOMEPAGE_DEVELOPMENT_SCORE_VISIBLE=YES');console.log('HOMEPAGE_DEVELOPMENT_SCORE_SOURCE=CURRENT_INITIAL_CYCLE');console.log('HOMEPAGE_DEVELOPMENT_STALE_SCORE_POLICY=REVALIDATION_NOT_CURRENT');console.log('HOMEPAGE_DEVELOPMENT_TEST_BUTTONS=WEB_AND_PLATFORM');console.log('HOMEPAGE_TOP30_SOURCE=CANONICAL_TOP30');console.log('HOMEPAGE_TOP30_ORDER=STRICT_IMPLEMENTATION_SCORE_DESC');console.log('HOMEPAGE_TOP30_LIMIT=30');console.log('HOMEPAGE_TOP30_MINIMUM_SCORE=80');console.log('HOMEPAGE_APK_INSTALL_PLACEMENT=COMPANY_TEAM_BOTTOM');console.log('HOMEPAGE_OFFICIAL_CARD_POLICY=STRICT_PASS_AND_PROMOTION_ONLY');console.log('HOMEPAGE_RUNTIME_SYNC=DEVELOPMENT_QUEUE_PLUS_SEPARATE_TOP30');console.log('HOMEPAGE_RAW_DESIGN_ONLY_EXECUTION_SHELF=FORBIDDEN');console.log('HOMEPAGE_MANAGER_COUNT=1');console.log('HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1');console.log(`HOMEPAGE_FIXED_PWA_CHAT_CONTRACT=${checks.fixedPwaFilesExist&&checks.pwaManifestCommandEntry&&checks.installPwaContractPreserved&&checks.serviceWorkerPwaContractPreserved&&checks.commandChatContractPreserved?'PASS':'FAIL'}`);
 if(failures.length){console.error(`HOMEPAGE_FAILURES=${failures.join(',')}`);process.exitCode=1;}
