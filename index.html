@@ -53,25 +53,9 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 <div class="gameGrid" id="gameGrid"><div class="empty">게임 목록을 불러오는 중이야.</div></div>
 </section>
 
-<section class="panel pipeline" id="developmentPipeline">
-<div class="sectionHead"><h2>개발 흐름</h2><span>Web 베이스 → 선택 플랫폼 → 출시 후 집중개발</span></div>
-<div class="pipelineLead" id="pipelineLead"><b>중앙 개발 상태 연결 중</b><br>프로젝트별 플랫폼·장르·검증 상태를 불러오는 중이야.</div>
-<div class="pipelineGrid">
-<div class="pipelineStep"><b>1. 설계 확정</b><span>장르·핵심 재미·플랫폼·게임 구조를 정하고 개발 기준을 고정.</span><strong>DESIGN</strong></div>
-<div class="pipelineStep"><b>2. Web 베이스</b><span>핵심루프·상태·진행·저장·입력·UI 계약을 실제 플레이 가능한 Web으로 구현.</span><strong>WEB BASE</strong></div>
-<div class="pipelineStep"><b>3. Web 검증</b><span>실플레이·기능·모바일·저장·회귀 검증을 통과한 베이스만 다음 단계로 이동.</span><strong>VALIDATE</strong></div>
-<div class="pipelineStep"><b>4. 선택 플랫폼</b><span>Roblox · Unity · Fortnite UEFN 중 프로젝트 플랫폼에서 Web 베이스를 이어 개발.</span><strong>PLATFORM</strong></div>
-<div class="pipelineStep"><b>5. 출시 후 집중개발</b><span>출시 뒤에도 전용 집중개발 슬롯 1개가 완성도·콘텐츠·성능을 계속 개선.</span><strong>LIVE FOCUS</strong></div>
-</div>
-</section>
 
-<section class="panel company">
-<div class="sectionHead"><h2>재운컴퍼니</h2><span>게임 개발 + 홈페이지 운영</span></div>
-<div class="companySummary"><div class="companyNow"><b>총괄 AI 자동 운영</b><span id="companyNow">회사 상태 불러오는 중</span></div><div class="homepageManager"><b>홈페이지 운영 AI</b><span id="homepageNow">분류·배치·모바일·링크·디자인 관리</span></div></div>
-<div class="companyStats"><div class="companyStat"><b id="companyUnity">-</b><span>플랫폼 개발</span></div><div class="companyStat"><b id="companyReview">-</b><span>재평가 남음</span></div><div class="companyStat"><b id="companyApproval">-</b><span>핵심결정</span></div><div class="companyStat"><b id="companyBuild">-</b><span>공개 테스트</span></div></div>
-<div class="staff"><div><b>LOOP</b>기획·스토리·핵심 재미</div><div><b>CORE</b>Web·플랫폼 구현·성능</div><div><b>CHECK</b>QA·모바일·회귀검증</div><div><b>PIXEL</b>그래픽·UI·VFX</div><div><b>SCALE</b>난이도·성장·밸런스</div><div><b>HOLMES</b>홈페이지·링크·배포</div><div><b>JAY</b>우선순위·승격·조정</div><div><b>공동 개발</b>중요 기능 다부서 검토</div></div>
-<div class="companyActions"><a class="companyBtn" href="/company.html">회사 운영 자세히</a><a class="companyBtn secondary" href="#gameHub">게임 목록으로</a></div>
-</section>
+
+
 
 <section class="reviews"><div class="reviewHead"><strong>게임평 한마디</strong><span id="reviewIndex">1 / 10</span></div><div class="reviewLine"><div class="reviewAvatar">🎮</div><div class="reviewBubble" id="reviewBubble"></div></div><form class="reviewForm" id="reviewForm"><input id="reviewNameInput" maxlength="8" placeholder="이름" required><input id="reviewTextInput" maxlength="40" placeholder="게임평 한마디" required><button>보내기</button></form><small class="reviewNotice" id="reviewNotice">10개의 한마디가 한 줄씩 돌아가. 새 글을 쓰면 가장 오래된 글 1개가 빠져.</small></section>
 
@@ -88,7 +72,6 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const hero=$('hero'),heroPrev=$('heroPrev'),heroNext=$('heroNext'),heroState=$('heroState'),heroPlatform=$('heroPlatform'),heroTitle=$('heroTitle'),heroDesc=$('heroDesc'),heroMeta=$('heroMeta'),heroActions=$('heroActions'),heroCounter=$('heroIndex'),heroDots=$('heroDots');
 const gameSearch=$('gameSearch'),gameSort=$('gameSort'),gameGrid=$('gameGrid'),resultCount=$('resultCount'),platformFilters=$('platformFilters'),stateFilters=$('stateFilters'),installHelp=$('installHelp'),installModal=$('installModal'),modalClose=$('modalClose');
 const metricAll=$('metricAll'),metricUnity=$('metricUnity'),metricWeb=$('metricWeb'),metricBuild=$('metricBuild'),opsStatus=$('opsStatus'),opsUpdated=$('opsUpdated');
-const companyUnity=$('companyUnity'),companyReview=$('companyReview'),companyApproval=$('companyApproval'),companyBuild=$('companyBuild'),companyNow=$('companyNow'),homepageNow=$('homepageNow');
 const reviewBubble=$('reviewBubble'),reviewIndex=$('reviewIndex'),reviewForm=$('reviewForm'),reviewNameInput=$('reviewNameInput'),reviewTextInput=$('reviewTextInput'),reviewNotice=$('reviewNotice');
 const musicNow=$('musicNow'),musicFrame=$('musicFrame'),musicNext=$('musicNext');
 const appInstallBtn=$('appInstallBtn'),appInstallState=$('appInstallState');
@@ -146,7 +129,7 @@ function heroFor(v){return {title:v.name,desc:v.project?.stageLabel||v.descripti
 function setupHero(){const active=view.filter(v=>v.hasUnity).sort((a,b)=>priority(a)-priority(b)||b.progress-a.progress);const featured=view.filter(v=>v.featured&&!active.some(a=>a.id===v.id));heroItems=[...active,...featured].slice(0,5).map(heroFor);if(!heroItems.length)heroItems=view.slice(0,4).map(heroFor);heroPos=0;renderHero()}
 function renderHero(){const h=heroItems[heroPos]||{title:'재운게임즈',desc:'게임을 준비 중이야',image:'assets/page-bg-v4.webp',state:'게임',platform:'재운게임즈',meta:[]};hero.style.setProperty('--hero-bg',`url('${h.image}')`);heroTitle.textContent=h.title;heroDesc.textContent=h.desc;heroState.textContent=h.state;heroPlatform.textContent=h.platform;heroMeta.innerHTML=(h.meta||[]).map(x=>`<span>${esc(x)}</span>`).join('');heroActions.innerHTML=`<a class="heroBtn" href="#gameHub">게임 찾기</a>${h.download?`<a class="heroBtn secondary" href="${esc(h.download)}" download>테스트 APK</a>`:h.web?`<a class="heroBtn secondary" href="${esc(h.web)}">Web 플레이</a>`:''}`;heroCounter.textContent=`${heroPos+1} / ${Math.max(1,heroItems.length)}`;heroDots.innerHTML=heroItems.map((_,i)=>`<button class="dot ${i===heroPos?'on':''}" type="button" data-hero="${i}" aria-label="${i+1}번째 추천"></button>`).join('');heroDots.querySelectorAll('[data-hero]').forEach(b=>b.onclick=()=>{heroPos=Number(b.dataset.hero);renderHero()})}
 heroPrev.onclick=()=>{if(!heroItems.length)return;heroPos=(heroPos-1+heroItems.length)%heroItems.length;renderHero()};heroNext.onclick=()=>{if(!heroItems.length)return;heroPos=(heroPos+1)%heroItems.length;renderHero()};setInterval(()=>{if(heroItems.length>1){heroPos=(heroPos+1)%heroItems.length;renderHero()}},7000);
-function renderSummary(catalogFresh,statusFresh){const publicBuilds=(status.testBuilds||[]).filter(b=>b.homepagePublished===true&&b.download);const visibleProject=view.find(v=>v.hasPlatform);metricAll.textContent=view.length;metricUnity.textContent=view.filter(v=>v.hasUnity).length;metricWeb.textContent=view.filter(v=>v.hasWeb).length;metricBuild.textContent=publicBuilds.length;opsStatus.textContent=statusFresh?'● 게임 운영 상태 연결됨':'● 회사 상태 연결 확인 필요';opsUpdated.textContent=`${catalogFresh?'카탈로그 정상':'기본 목록 사용'} · 상태 기준 ${status.updatedAt||'정보 없음'}`;const rr=status.redevelopmentReview||{},pending=pendingApprovals(status),home=status.operations?.homepage||{};companyUnity.textContent=view.filter(v=>v.hasPlatform).length;companyReview.textContent=rr.remainingGames??0;companyApproval.textContent=pending.length;companyBuild.textContent=publicBuilds.length;companyNow.textContent=visibleProject?`${visibleProject.name} · ${visibleProject.stageLabel}`:'공개 승인된 Unity 프로젝트 상태 대기';homepageNow.textContent=home.task||'게임 분류·검색·배치·모바일·링크·디자인 상시 관리'}
+function renderSummary(catalogFresh,statusFresh){const publicBuilds=(status.testBuilds||[]).filter(b=>b.homepagePublished===true&&b.download);metricAll.textContent=view.length;metricUnity.textContent=view.filter(v=>v.hasUnity).length;metricWeb.textContent=view.filter(v=>v.hasWeb).length;metricBuild.textContent=publicBuilds.length;opsStatus.textContent=statusFresh?'● 게임 운영 상태 연결됨':'● 회사 상태 연결 확인 필요';opsUpdated.textContent=`${catalogFresh?'카탈로그 정상':'기본 목록 사용'} · 상태 기준 ${status.updatedAt||'정보 없음'}`}
 async function loadData(){let catalogFresh=false,statusFresh=false;const [cr,sr]=await Promise.allSettled([fetch('/game-catalog.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json()}),fetch('/company-status.json?ts='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw 0;return r.json()})]);if(cr.status==='fulfilled'&&Array.isArray(cr.value.games)){catalog=cr.value.games;catalogFresh=true}if(sr.status==='fulfilled'){status=sr.value;statusFresh=true}else status={projects:[],testBuilds:[],approvals:[],redevelopmentReview:{queue:[]},operations:{}};buildView();renderSummary(catalogFresh,statusFresh);renderGames();setupHero()}
 loadData();
 function openInstall(){installModal.hidden=false;document.body.style.overflow='hidden';modalClose.focus()}function closeInstall(){installModal.hidden=true;document.body.style.overflow=''}installHelp.onclick=openInstall;modalClose.onclick=closeInstall;installModal.addEventListener('click',e=>{if(e.target===installModal)closeInstall()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!installModal.hidden)closeInstall()});
