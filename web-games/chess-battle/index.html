@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #222;
+    }
+    #game {
+      width: 100%;
+      max-width: 800px;
+      padding: 20px;
+      background-color: #111;
+      border: 1px solid #333;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    h1 {
+      color: #fff;
+    }
+    .game-area {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .piece {
+      width: 60px;
+      height: 60px;
+      background-color: #444;
+      border: 1px solid #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #fff;
+      text-align: center;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .piece:hover {
+      background-color: #666;
+    }
+    .piece.selected {
+      background-color: #000;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div class="game-area" id="game-area"></div>
+  </main>
+  <script>
+    const gameArea = document.getElementById('game-area');
+    const game = {
+      board: [
+        ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
+        ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '']
+      ],
+      currentPlayer: 'w',
+      selectedPiece: null,
+      gameOver: false
+    };
+
+    function createPiece(piece, color) {
+      const pieceDiv = document.createElement('div');
+      pieceDiv.className = 'piece';
+      pieceDiv.textContent = color === 'w' ? 'W' : 'B';
+      pieceDiv.dataset.piece = piece;
+      pieceDiv.dataset.color = color;
+      return pieceDiv;
+    }
+
+    function renderBoard() {
+      gameArea.innerHTML = '';
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const piece = game.board[row][col];
+          const pieceDiv = createPiece(piece, game.board[row][col] === 'w' ? 'w' : 'b');
+          if (piece === '') {
+            pieceDiv.classList.add('empty');
+          }
+          gameArea.appendChild(pieceDiv);
+        }
+      }
+    }
+
+    function selectPiece(row, col) {
+      if (game.selectedPiece) {
+        game.selectedPiece.classList.remove('selected');
+      }
+      game.selectedPiece = document.querySelector(`[data-piece="${game.board[row][col]}"]`);
+      game.selectedPiece.classList.add('selected');
+    }
+
+    function makeMove(fromRow, fromCol, toRow, toCol) {
+      if (game.selectedPiece && game.selectedPiece.dataset.piece === `${game.currentPlayer}P`) {
+        const from = game.board[fromRow][fromCol];
+        const to = game.board[toRow][toCol];
+
+        if (from === '' || to === '') {
+          return false;
+        }
+
+        game.board[fromRow][fromCol] = '';
+        game.board[toRow][toCol] = game.currentPlayer;
+
+        game.currentPlayer = game.currentPlayer === 'w' ? 'b' : 'w';
+        game.selectedPiece = null;
+
+        return true;
+      }
+      return false;
+    }
+
+    function checkGameOver() {
+      const emptyRows = game.board.flat().filter(cell => cell === '');
+      if (emptyRows.length === 64) {
+        return true;
+      }
+      return false;
+    }
+
+    function restartGame() {
+      game.board = [
+        ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR'],
+        ['wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP', 'wP'],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', ''],
+        ['', '', '', '', '', '', '', '']
+      ];
+      game.currentPlayer = 'w';
+      game.selectedPiece = null;
+      game.gameOver = false;
+    }
+
+    document.addEventListener('click', (e) => {
+      const target = e.target;
+      if (target.classList.contains('piece') && !target.classList.contains('selected')) {
+        const row = target.dataset.row;
+        const col = target.dataset.col;
+        selectPiece(parseInt(row), parseInt(col));
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === ' ') {
+        if (game.selectedPiece) {
+          const row = game.selectedPiece.dataset.row;
+          const col = game.selectedPiece.dataset.col;
+          const toRow = parseInt(row) + 1;
+          const toCol = parseInt(col);
+          if (makeMove(parseInt(row), parseInt(col), toRow, toCol)) {
+            renderBoard();
+          }
+        }
+      }
+    });
+
+    renderBoard();
+  </script>
+</body>
+</html>
