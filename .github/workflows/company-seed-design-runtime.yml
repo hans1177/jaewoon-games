@@ -95,11 +95,13 @@ jobs:
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
           const targets=pending.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
+          const parallelMax=Math.max(1,designWipMax-1);
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
-          console.log(`parallel_max=${designWipMax}`);
+          console.log(`parallel_max=${parallelMax}`);
           console.error(`GAME_SEED_DESIGN_TARGET_COUNT=${targets.length}`);
           console.error(`GAME_DESIGN_WIP_MAX=${designWipMax}`);
+          console.error(`GAME_DESIGN_CONTROL_RUNNER_RESERVE=${designWipMax-parallelMax}`);
           console.error('GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW');
           console.error('STRICT_DESIGN_PASS_THRESHOLD=80');
           console.error('STRICT_DESIGN_EXCELLENT_THRESHOLD=90');
