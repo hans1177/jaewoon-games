@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .game {
+      width: 100%;
+      max-width: 800px;
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .controls button {
+      padding: 10px 15px;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      background-color: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #555;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game">
+      <h1>Vibe2</h1>
+      <div class="controls">
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="restartGame()">Restart</button>
+      </div>
+      <div class="status" id="status">Ready</div>
+      <div class="status" id="progression">Progression: 0%</div>
+      <div class="status" id="ui">UI: Basic</div>
+      <div class="status" id="economy">Economy: Basic</div>
+      <div class="status" id="combat">Combat: Basic</div>
+      <div class="status" id="movement">Movement: Basic</div>
+      <div class="status" id="ai">AI: Basic</div>
+    </div>
+  </main>
+  <script>
+    let game = null;
+    let state = {
+      progression: 0,
+      ui: "Basic",
+      economy: "Basic",
+      combat: "Basic",
+      movement: "Basic",
+      ai: "Basic",
+      status: "Ready"
+    };
+
+    function startGame() {
+      game = new Game();
+      game.init();
+      updateStatus();
+    }
+
+    function restartGame() {
+      game = null;
+      state = {
+        progression: 0,
+        ui: "Basic",
+        economy: "Basic",
+        combat: "Basic",
+        movement: "Basic",
+        ai: "Basic",
+        status: "Ready"
+      };
+      updateStatus();
+    }
+
+    function updateStatus() {
+      document.getElementById("progression").textContent = state.progression + "%";
+      document.getElementById("ui").textContent = state.ui;
+      document.getElementById("economy").textContent = state.economy;
+      document.getElementById("combat").textContent = state.combat;
+      document.getElementById("movement").textContent = state.movement;
+      document.getElementById("ai").textContent = state.ai;
+      document.getElementById("status").textContent = state.status;
+    }
+
+    function Game() {
+      this.progression = 0;
+      this.ui = "Basic";
+      this.economy = "Basic";
+      this.combat = "Basic";
+      this.movement = "Basic";
+      this.ai = "Basic";
+      this.status = "Ready";
+      this.init();
+    }
+
+    Game.prototype.init = function() {
+      // Initialize game logic here
+      this.progression = 0;
+      this.ui = "Basic";
+      this.economy = "Basic";
+      this.combat = "Basic";
+      this.movement = "Basic";
+      this.ai = "Basic";
+      this.status = "Ready";
+    };
+
+    // Game logic here
+  </script>
+</body>
+</html>
