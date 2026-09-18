@@ -180,7 +180,21 @@
     "ciContract": ".github/workflows/vibe3-engine-contract.yml",
     "publishModeDefault": "DRY_RUN",
     "livePublishRequiresExplicitExecute": true,
-    "cookieAuthAllowed": false
+    "cookieAuthAllowed": false,
+    "deploymentControl": {
+      "version": 1,
+      "automaticPublishPaused": true,
+      "automaticReleaseDispatchAllowed": false,
+      "manualPublishAllowed": true,
+      "allowedPublishRoutes": [
+        "GITHUB_CLOUD_OPEN_CLOUD",
+        "LOCAL_SELF_HOSTED_OPEN_CLOUD"
+      ],
+      "studioUiPublishAllowed": false,
+      "cookiePublishAllowed": false,
+      "resumeMode": "MANUAL_ONLY_WHILE_PAUSED",
+      "authority": "OWNER_DIRECTIVE_2026-09-19"
+    }
   },
   "unity": {
     "platformAdapter": "tools/company-development-unity-platform.mjs",
