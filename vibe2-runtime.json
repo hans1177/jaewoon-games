@@ -9,7 +9,8 @@
       "queue": ".vibe2/queue.json",
       "parallelism": ".vibe2/parallelism-control.json",
       "experience": ".vibe2/experience.json",
-      "gameStudyKnowledge": ".vibe2/game-study-knowledge.json"
+      "gameStudyKnowledge": ".vibe2/game-study-knowledge.json",
+      "projectLifecycle": ".vibe2/web-roblox-handoffs.json"
     },
     "generatedHandoffTool": "tools/vibe2-handoff.mjs",
     "manualHandoffDocumentsAllowed": false,
@@ -49,7 +50,8 @@
       ".vibe2/queue.json",
       ".vibe2/parallelism-control.json",
       ".vibe2/experience.json",
-      ".vibe2/game-study-knowledge.json"
+      ".vibe2/game-study-knowledge.json",
+      ".vibe2/web-roblox-handoffs.json"
     ],
     "humanMaintainedHandoff": false,
     "machineContextRequired": true,
@@ -165,7 +167,8 @@
     "webExperienceIngest": "tools/vibe2-web-experience-ingest.mjs",
     "externalAiDistilledKnowledge": ".vibe2/external-ai-distilled-knowledge.json",
     "practiceDistilledKnowledge": ".vibe2/practice-distilled-knowledge.json",
-    "externalAiDistillationPolicy": "company-learning/external-ai-distillation-policy.json"
+    "externalAiDistillationPolicy": "company-learning/external-ai-distillation-policy.json",
+    "projectLifecycleState": ".vibe2/web-roblox-handoffs.json"
   },
   "workers": {
     "exploration": {
@@ -720,6 +723,82 @@
       "directMasteryCredit": false,
       "directTrainingSample": false,
       "authorityExpanded": false
+    }
+  },
+  "projectLifecycle": {
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "policySource": "company-learning/platform-release-roadmap.json",
+    "stateFile": ".vibe2/web-roblox-handoffs.json",
+    "stateProducer": "tools/vibe2-learning-motor.mjs",
+    "generatedMachineHandoff": "tools/vibe2-handoff.mjs",
+    "requiredFields": [
+      "PROJECT_PHASE",
+      "PLATFORM",
+      "GENRE",
+      "WEB_BASELINE",
+      "ROBLOX_HANDOFF",
+      "POST_RELEASE_FOCUS_RUNNER",
+      "LEARNING_CONTEXT",
+      "NEXT_MACHINE_ACTION"
+    ],
+    "canonicalFlow": [
+      "PLATFORM_AND_GENRE_LOCKED",
+      "WEB_BASE_IMPLEMENTATION",
+      "WEB_RUNTIME_VALIDATION",
+      "WEB_DEVELOPMENT_BASELINE_READY",
+      "TARGET_PLATFORM_SOURCE_BIND",
+      "TARGET_PLATFORM_RUNTIME",
+      "TARGET_PLATFORM_INDEPENDENT_QA",
+      "TARGET_PLATFORM_REGRESSION",
+      "RELEASE_PROMOTION",
+      "POST_RELEASE_FOCUSED_DEVELOPMENT"
+    ],
+    "webFirst": {
+      "required": true,
+      "role": "PORTABLE_EXECUTABLE_GAMEPLAY_BASELINE",
+      "preserve": [
+        "core-loop",
+        "gameplay-state-model",
+        "progression-model",
+        "balance-intent",
+        "ui-flow",
+        "input-intent",
+        "save-meaning",
+        "content-structure"
+      ],
+      "nativeRuntimePassTransferAllowed": false
+    },
+    "robloxSecondStage": {
+      "simpleRewriteForbidden": true,
+      "requiredContext": [
+        "WEB_BASELINE",
+        "LEARNING_CONTEXT",
+        "ROBLOX_HANDOFF"
+      ],
+      "verifiedWebLearningRequired": true,
+      "transformativeRecombinationRequiredWhenAvailable": true,
+      "robloxNativeReimplementationRequired": true
+    },
+    "postReleaseFocusRunner": {
+      "logicalRunnerPerReleasedProject": 1,
+      "activeTaskMaxPerProject": 1,
+      "sharedProtectedRunnerSlots": 1,
+      "scheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "worker": ".github/workflows/vibe2-continuous-core.yml",
+      "continuousRefill": true
+    },
+    "learningContinuity": {
+      "continuous": true,
+      "runtimeBranch": "vibe2-learning-runtime",
+      "waitingForVerifiedSamplesState": "NORMAL_ACCUMULATION",
+      "localTrainingRequired": false,
+      "canonicalDistillationRequired": true
+    },
+    "settingsProtection": {
+      "gameSettingsMutationByLifecycleState": false,
+      "balanceMutationByLifecycleState": false,
+      "saveMeaningMutationByLifecycleState": false,
+      "qaGateBypass": false
     }
   }
 }

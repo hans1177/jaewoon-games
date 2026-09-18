@@ -52,8 +52,17 @@ test('machine handoff summarizes queue, adaptive state, and game study knowledge
     }
   };
 
-  const first = buildVibe2Handoff({ runtime, queue, parallelism, experience, knowledge });
-  const second = buildVibe2Handoff({ runtime, queue, parallelism, experience, knowledge });
+  const projectLifecycle = {
+    version:1,projectStateVersion:1,
+    requiredProjectFields:['PROJECT_PHASE','PLATFORM','GENRE','WEB_BASELINE','ROBLOX_HANDOFF','POST_RELEASE_FOCUS_RUNNER','LEARNING_CONTEXT','NEXT_MACHINE_ACTION'],
+    projects:[{
+      gameId:'game-a',PROJECT_PHASE:'WEB_BASE_IMPLEMENTATION',PLATFORM:'ROBLOX',GENRE:'RPG',
+      WEB_BASELINE:{state:'PENDING'},ROBLOX_HANDOFF:null,POST_RELEASE_FOCUS_RUNNER:{assigned:false},
+      LEARNING_CONTEXT:{continuousLearning:true},NEXT_MACHINE_ACTION:'IMPLEMENT_WEB_CORE_LOOP_AND_BASE_SYSTEMS'
+    }]
+  };
+  const first = buildVibe2Handoff({ runtime, queue, parallelism, experience, knowledge, projectLifecycle });
+  const second = buildVibe2Handoff({ runtime, queue, parallelism, experience, knowledge, projectLifecycle });
 
   assert.deepEqual(first, second);
   assert.equal(first.sourceOfTruth, 'vibe2-runtime.json');
@@ -70,6 +79,8 @@ test('machine handoff summarizes queue, adaptive state, and game study knowledge
   assert.equal(first.gameStudyKnowledge.entryCount, 1);
   assert.equal(first.gameStudyKnowledge.crossGamePatternCount, 1);
   assert.equal(first.gameStudyKnowledge.supportedHypothesisCount, 1);
+  assert.equal(first.projectLifecycle.projectCount, 1);
+  assert.equal(first.projectLifecycle.projects[0].PROJECT_PHASE, 'WEB_BASE_IMPLEMENTATION');
 });
 
 test('repository uses no Vibe2 human documents and legacy Vibe2 docs are removed', () => {
@@ -78,6 +89,12 @@ test('repository uses no Vibe2 human documents and legacy Vibe2 docs are removed
   assert.deepEqual(runtime.documentation?.humanDocuments, []);
   assert.equal(runtime.documentation?.humanDocumentLimit, 0);
   assert.equal(runtime.documentation?.manualHandoffDocumentsAllowed, false);
+  assert.equal(runtime.documentation?.runtimeState?.projectLifecycle, '.vibe2/web-roblox-handoffs.json');
+  assert.equal(runtime.sources?.projectLifecycleState, '.vibe2/web-roblox-handoffs.json');
+  assert.deepEqual(runtime.projectLifecycle?.requiredFields, [
+    'PROJECT_PHASE','PLATFORM','GENRE','WEB_BASELINE','ROBLOX_HANDOFF',
+    'POST_RELEASE_FOCUS_RUNNER','LEARNING_CONTEXT','NEXT_MACHINE_ACTION'
+  ]);
   assert.equal(fs.existsSync('VIBE2.md'), false);
   assert.equal(fs.existsSync(runtime.documentation?.runtimeState?.gameStudyKnowledge), true);
 
@@ -98,6 +115,12 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.equal(snapshot.parallelism.configuredMax, 20);
   assert.deepEqual(snapshot.parallelism.steps, [20, 16, 12, 8, 4]);
   assert.equal(typeof snapshot.gameStudyKnowledge.entryCount, 'number');
+  assert.equal(snapshot.projectLifecycle.stateVersion, 1);
+  assert.equal(typeof snapshot.projectLifecycle.projectCount, 'number');
+  assert.deepEqual(snapshot.projectLifecycle.requiredFields, [
+    'PROJECT_PHASE','PLATFORM','GENRE','WEB_BASELINE','ROBLOX_HANDOFF',
+    'POST_RELEASE_FOCUS_RUNNER','LEARNING_CONTEXT','NEXT_MACHINE_ACTION'
+  ]);
   assert.ok(snapshot.workState.taskCount > 0);
 });
 
