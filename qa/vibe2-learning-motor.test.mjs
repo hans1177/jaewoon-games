@@ -160,3 +160,65 @@ test('control project machine state projects Web base through Roblox and focused
   assert.equal(released.NEXT_MACHINE_ACTION,'CONTINUE_ONE_FOCUSED_VERIFIED_DEVELOPMENT_CYCLE');
   assert.equal(pack.gateBypass,false);
 });
+
+
+test('project machine state includes post-release Roblox control queue work without inventing Web or release evidence',()=>{
+  const pack=buildWebRobloxHandoffs(
+    {items:[]},
+    {records:[{
+      id:'exp-historical',gameId:'historical-game',engine:'web',verified:true,reusable:true,outcome:'PASS',
+      reusablePatterns:['WEB_SEMANTIC:CORE_LOOP:legacy-loop']
+    }]},
+    {tasks:[{
+      id:'historical-focus',gameId:'historical-game',target:'roblox',department:'development',type:'implementation',
+      releaseState:'development-confirmed',status:'cancelled',blocker:'lifecycle-inactive:MISSING_FROM_CATALOG',
+      postReleaseFocused:true,packageLongWorkProtected:true,packageRole:'implementation-owner',
+      evidence:[
+        'post-release-focused:yes',
+        'historical-deployment-recovery:yes',
+        'maintenance-registry:company-learning/roblox-sustained-maintenance.json',
+        'recombination-recipe:recombine_demo'
+      ]
+    }]}
+  );
+  assert.equal(pack.projects.length,1);
+  assert.equal(pack.handoffs.length,0);
+  const project=pack.projects[0];
+  const required=['PROJECT_PHASE','PLATFORM','GENRE','WEB_BASELINE','ROBLOX_HANDOFF','POST_RELEASE_FOCUS_RUNNER','LEARNING_CONTEXT','NEXT_MACHINE_ACTION'];
+  for(const field of required)assert.ok(Object.hasOwn(project,field),field);
+  assert.equal(project.gameId,'historical-game');
+  assert.equal(project.PROJECT_PHASE,'POST_RELEASE_FOCUSED_DEVELOPMENT');
+  assert.equal(project.PLATFORM,'ROBLOX');
+  assert.equal(project.GENRE,null);
+  assert.equal(project.WEB_BASELINE.verified,false);
+  assert.equal(project.WEB_BASELINE.currentCompanyWebBaselineBound,false);
+  assert.equal(project.WEB_BASELINE.historicalDeploymentRecovery,true);
+  assert.equal(project.ROBLOX_HANDOFF.ready,false);
+  assert.equal(project.ROBLOX_HANDOFF.currentWebHandoffClaim,false);
+  assert.equal(project.ROBLOX_HANDOFF.nativeReverificationRequired,true);
+  assert.equal(project.POST_RELEASE_FOCUS_RUNNER.assigned,false);
+  assert.equal(project.POST_RELEASE_FOCUS_RUNNER.state,'WAITING_FOR_LIFECYCLE_SYNC');
+  assert.equal(project.POST_RELEASE_FOCUS_RUNNER.historicalDeploymentRecovery,true);
+  assert.equal(project.POST_RELEASE_FOCUS_RUNNER.logicalRunnerPerProject,1);
+  assert.equal(project.LEARNING_CONTEXT.verifiedSemanticExperienceIds[0],'exp-historical');
+  assert.equal(project.LEARNING_CONTEXT.recombinationRecipeId,'recombine_demo');
+  assert.equal(project.LEARNING_CONTEXT.gateBypass,false);
+  assert.equal(project.LEARNING_CONTEXT.continuousLearning,true);
+  assert.equal(project.NEXT_MACHINE_ACTION,'SYNC_HISTORICAL_MAINTENANCE_LIFECYCLE');
+  assert.equal(pack.gateBypass,false);
+});
+
+test('project machine state marks queued post-release focus as assigned without fabricating a Web handoff',()=>{
+  const pack=buildWebRobloxHandoffs({items:[]},{records:[]},{tasks:[{
+    id:'focus-1',gameId:'released-game',target:'roblox',department:'development',type:'implementation',
+    releaseState:'release-confirmed',status:'queued',postReleaseFocused:true,
+    packageLongWorkProtected:true,packageRole:'implementation-owner',evidence:['post-release-focused:yes']
+  }]});
+  const project=pack.projects[0];
+  assert.equal(project.PROJECT_PHASE,'POST_RELEASE_FOCUSED_DEVELOPMENT');
+  assert.equal(project.POST_RELEASE_FOCUS_RUNNER.assigned,true);
+  assert.equal(project.POST_RELEASE_FOCUS_RUNNER.state,'ASSIGNED');
+  assert.equal(project.WEB_BASELINE.verified,false);
+  assert.equal(project.ROBLOX_HANDOFF.ready,false);
+  assert.equal(project.NEXT_MACHINE_ACTION,'EXECUTE_POST_RELEASE_FOCUSED_GAP');
+});
