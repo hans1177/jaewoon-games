@@ -104,6 +104,7 @@ export function buildGameStudyPlannerContext({
   knowledgeInput = {},
   experienceInput = {},
   runtimeEvidenceInput = [],
+  externalAiInput = {},
   task = {}
 } = {}) {
   const knowledge = createGameStudyKnowledge(knowledgeInput);
@@ -125,6 +126,7 @@ export function buildGameStudyPlannerContext({
     experienceInput,
     knowledgeInput: knowledge,
     runtimeEvidenceInput,
+    externalAiInput,
     task
   });
   const ownDna = latestOwnDna(knowledge.entries, task?.gameId);
@@ -163,6 +165,8 @@ export function buildGameStudyPlannerContext({
       verifiedQaRegression: true,
       playTelemetry: true,
       crossGameHypothesis: true,
+      externalAiDistilledVerifiedOnly: true,
+      rawExternalAiOutputIncluded: false,
       rawSourceIncluded: false,
       rawGameplayValuesIncluded: false,
       authorityExpanded: false
@@ -222,7 +226,7 @@ export function multiSourceLearningGuidance(context = {}) {
   if (context?.target !== 'roblox' || !(context.multiSourceMaterials || []).length) return '';
   const lines = [
     '[VIBE2 MULTI-SOURCE LEARNING - verified advisory materials only]',
-    '내부 제작 runtime, 검증된 성공/실패 Experience, QA 회귀, 플레이 telemetry, 교차게임 가설에서 Roblox 제작 목표와 직접 관련된 일반화 재료만 사용한다.',
+    '내부 제작 runtime, 검증된 성공/실패 Experience, QA 회귀, 플레이 telemetry, 교차게임 가설, 독립 검증된 외부 AI 증류 지식에서 Roblox 제작 목표와 직접 관련된 일반화 재료만 사용한다.',
     '원본 코드·원본 플레이 데이터·게임 고유 수치를 복사하지 않으며 보호된 gameplay/save/economy/progression 규칙과 권한을 자동 변경하지 않는다.'
   ];
   for (const row of context.multiSourceMaterials || []) {
@@ -235,7 +239,8 @@ export function enrichQueueWithGameStudyKnowledge({
   queueInput = {},
   knowledgeInput = {},
   experienceInput = {},
-  runtimeEvidenceInput = []
+  runtimeEvidenceInput = [],
+  externalAiInput = {}
 } = {}) {
   const tasks = Array.isArray(queueInput?.tasks) ? queueInput.tasks : [];
   let enrichedCount = 0;
@@ -247,7 +252,7 @@ export function enrichQueueWithGameStudyKnowledge({
     const plannerApplied = existingEvidence.some((value) => clean(value) === MARKER);
     const materialApplied = existingEvidence.some((value) => clean(value) === MATERIAL_MARKER);
     const multiSourceApplied = existingEvidence.some((value) => clean(value) === MULTI_SOURCE_MARKER);
-    const context = buildGameStudyPlannerContext({ knowledgeInput, experienceInput, runtimeEvidenceInput, task });
+    const context = buildGameStudyPlannerContext({ knowledgeInput, experienceInput, runtimeEvidenceInput, externalAiInput, task });
     if (!context.applied) return task;
     const plannerGuidance = plannerApplied ? '' : gameStudyPlannerGuidance(context);
     const materialGuidance = materialApplied ? '' : gameStudyMaterialGuidance(context);
@@ -299,17 +304,20 @@ export function runGameStudyPlannerContext({
   queueFile = '.vibe2/queue.json',
   knowledgeFile = '.vibe2/game-study-knowledge.json',
   experienceFile = '.vibe2/experience.json',
-  runtimeEvidenceRoot = '.vibe2/runtime-evidence'
+  runtimeEvidenceRoot = '.vibe2/runtime-evidence',
+  externalAiKnowledgeFile = '.vibe2/external-ai-distilled-knowledge.json'
 } = {}) {
   const queue = readJson(queueFile, { version: 5, tasks: [] });
   const knowledge = readJson(knowledgeFile, { version: 1, entries: [] });
   const experience = readJson(experienceFile, { version: 3, records: [] });
   const runtimeEvidence = readRuntimeEvidenceDirectory(runtimeEvidenceRoot);
+  const externalAi = readJson(externalAiKnowledgeFile, { version: 1, entries: [] });
   const result = enrichQueueWithGameStudyKnowledge({
     queueInput: queue,
     knowledgeInput: knowledge,
     experienceInput: experience,
-    runtimeEvidenceInput: runtimeEvidence
+    runtimeEvidenceInput: runtimeEvidence,
+    externalAiInput: externalAi
   });
   if (result.changed) writeJson(queueFile, result.queue);
   return result;
@@ -321,11 +329,14 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     queueFile: clean(args.queue) || '.vibe2/queue.json',
     knowledgeFile: clean(args.knowledge) || '.vibe2/game-study-knowledge.json',
     experienceFile: clean(args.experience) || '.vibe2/experience.json',
-    runtimeEvidenceRoot: clean(args['runtime-evidence-root']) || '.vibe2/runtime-evidence'
+    runtimeEvidenceRoot: clean(args['runtime-evidence-root']) || '.vibe2/runtime-evidence',
+    externalAiKnowledgeFile: clean(args['external-ai-knowledge']) || '.vibe2/external-ai-distilled-knowledge.json'
   });
   console.log(`VIBE2_GAME_STUDY_PLANNER_CONTEXT=${result.changed ? 'APPLIED' : 'NO_CHANGE'}`);
   console.log(`VIBE2_GAME_STUDY_PLANNER_ENRICHED=${result.enrichedCount}`);
   console.log(`VIBE2_GAME_STUDY_ROBLOX_MATERIALS=${result.materialCollectedCount}`);
   console.log(`VIBE2_MULTI_SOURCE_LEARNING_MATERIALS=${result.multiSourceCollectedCount}`);
+  console.log('VIBE2_EXTERNAL_AI_RAW_DIRECT_USE=NO');
+  console.log('VIBE2_EXTERNAL_AI_DISTILLED_ONLY=YES');
   console.log('VIBE2_GAME_STUDY_PLANNER_AUTHORITY_EXPANDED=NO');
 }
