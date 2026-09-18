@@ -7,8 +7,247 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "놀이공원 타이쿤은 단순한 경영 시뮬레이션을 넘어, 플레이어가 놀이공원의 설계자이자 운영자로서 손님의 동선과 만족도를 실시간으로 최적화하는 전략적 퍼즐 게임입니다. 핵심 루프인 '시설 배치-손님 반응 관찰-수익 재투자'는 매 순간 플레이어의 선택이 손님의 행복도와 공원 수익이라는 즉각적인 상태 변화로 이어지며, 시그니처 시스템인 '동선 최적화 엔진'과 '테마파크 분위기 시스템'을 통해 단순 반복이 아닌 매번 새로운 공원 설계의 재미를 제공합니다.",
+      "playerFantasy": "플레이어는 황무지에 자신만의 꿈의 놀이공원을 건설하는 마법 같은 건축가이자, 손님들의 웃음소리를 보며 공원을 성장시키는 경영의 달인이 되어, 최고의 테마파크를 완성하는 성취감을 경험합니다.",
+      "coreFun": "놀이공원 타이쿤의 핵심 재미는 시설을 배치하고 손님들이 그 시설을 이용하며 즐거워하는 모습을 관찰하는 것입니다. 플레이어는 시설의 위치를 조정하여 손님의 대기 시간을 줄이고, 수익을 극대화하는 즉각적인 피드백을 통해 공원이 성장하는 과정을 직접 체감합니다.",
+      "coreLoop": [
+        "시설 배치 및 경로 설계: 플레이어는 제한된 예산 내에서 놀이기구와 편의시설을 배치하고 손님이 이동할 경로를 설계하여 공원의 효율성을 결정합니다.",
+        "손님 반응 관찰 및 데이터 수집: 배치된 시설을 이용하는 손님들의 만족도와 이동 패턴을 실시간으로 관찰하여 어떤 시설이 인기가 많고 어떤 경로가 병목 현상을 일으키는지 파악합니다.",
+        "수익 재투자 및 공원 확장: 관찰을 통해 얻은 수익으로 더 매력적인 놀이기구를 구매하거나 기존 시설을 업그레이드하여 더 많은 손님을 유치하고 공원의 규모를 확장합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "동선 최적화 엔진",
+          "purpose": "손님들의 AI 경로 탐색 알고리즘을 시각화하여 플레이어가 병목 구간을 쉽게 파악하고 효율적인 공원 레이아웃을 설계하도록 돕습니다.",
+          "playerChoice": "플레이어는 길의 너비, 놀이기구의 입구 위치, 휴식 공간의 배치를 변경하여 손님들의 이동 흐름을 직접 제어하고 최적화할 수 있습니다."
+        },
+        {
+          "name": "테마파크 분위기 시스템",
+          "purpose": "놀이기구와 주변 환경의 조화를 수치화하여 공원의 전체적인 매력도를 결정하고 손님의 재방문율에 영향을 미치는 시스템입니다.",
+          "playerChoice": "플레이어는 특정 테마의 장식물을 선택하거나 놀이기구의 색상을 변경하여 공원의 분위기를 조성하고 특정 타겟 손님층을 공략할 수 있습니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "동선 최적화 엔진",
+          "toSystem": "테마파크 분위기 시스템",
+          "trigger": "손님이 특정 구역에 오래 머무를 때",
+          "stateChange": "해당 구역의 혼잡도가 증가하여 분위기 점수가 하락하고 손님의 만족도가 감소하는 상태로 전환됩니다."
+        },
+        {
+          "fromSystem": "테마파크 분위기 시스템",
+          "toSystem": "경제 시스템",
+          "trigger": "공원 전체 매력도 점수 상승",
+          "stateChange": "손님의 지불 의사가 높아져 놀이기구 이용료 수익이 증가하고 재투자 자금이 확보됩니다."
+        },
+        {
+          "fromSystem": "경제 시스템",
+          "toSystem": "동선 최적화 엔진",
+          "trigger": "신규 놀이기구 구매 및 설치",
+          "stateChange": "공원의 전체적인 레이아웃이 변경되어 손님들의 새로운 이동 경로가 생성되고 최적화 엔진이 재계산됩니다."
+        }
+      ],
+      "progressionDirection": "초기에는 작은 놀이기구 몇 개로 시작하여 손님들의 만족도를 높이고 수익을 창출하는 기초 경영을 익힙니다. 이후 더 복잡한 대형 놀이기구와 테마 구역을 해금하며 공원의 규모를 키우고, 최종적으로는 세계 최고의 테마파크를 건설하는 것을 목표로 합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "시설 설치 -> 손님 유입 -> 수익 창출 -> 시설 업그레이드 및 확장 -> 더 많은 손님 유입의 선순환 구조를 유지합니다.",
+        "resourceFlow": "주요 자원은 '골드'이며, 놀이기구 이용료와 매점 판매를 통해 획득하고, 시설 건설 및 유지보수 비용으로 소비됩니다.",
+        "balanceRules": "시설의 유지비는 수익의 일정 비율을 넘지 않도록 설계하며, 플레이어의 성장에 따라 해금되는 고급 시설은 더 높은 수익을 제공하지만 더 많은 공간과 관리를 요구합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "테마 구역 확장",
+          "newGameplay": "기존의 일반 놀이기구 외에 특정 테마(예: 우주, 판타지)를 가진 구역을 건설하여 손님들의 취향을 만족시키는 새로운 경영 전략을 도입합니다.",
+          "systemImpact": "테마파크 분위기 시스템에 '테마 일치도'라는 새로운 변수가 추가되어 시설 배치 시 더 정교한 전략적 선택이 요구됩니다."
+        },
+        {
+          "milestone": "계절 이벤트 시스템",
+          "newGameplay": "특정 기간 동안 한정판 놀이기구와 장식물을 설치할 수 있는 이벤트가 발생하여 플레이어에게 단기적인 목표를 제공합니다.",
+          "systemImpact": "경제 시스템에 일시적인 수익 증대 효과가 추가되며, 손님들의 선호도가 이벤트 테마에 맞춰 변화합니다."
+        },
+        {
+          "milestone": "VIP 손님 유치",
+          "newGameplay": "특별한 요구사항을 가진 VIP 손님이 방문하여 이들의 만족도를 높이면 대규모 보상을 획득하는 퀘스트 시스템이 도입됩니다.",
+          "systemImpact": "동선 최적화 엔진이 VIP 손님의 우선순위 경로를 계산하도록 확장되어 기존 일반 손님과의 동선 충돌을 관리해야 합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "공원 파산: 유지비가 수익을 초과하여 자금이 0이 되는 상태",
+          "손님 만족도 급락: 시설 고장이나 동선 문제로 손님들이 공원을 떠나는 상태"
+        ],
+        "retryFlow": "파산 시 마지막 저장 지점이나 공원 초기 상태로 돌아가며, 실패 원인을 분석할 수 있는 리포트를 제공하여 재도전 시 전략을 수정하게 합니다.",
+        "riskPressure": "시설이 노후화되면 고장 확률이 높아지며, 이를 방치하면 손님 만족도가 급격히 떨어지는 압박을 가합니다.",
+        "recoveryRules": "대출 시스템을 통해 일시적으로 자금을 확보할 수 있으나, 이자 부담이 발생하여 장기적인 경영 전략을 수정해야 합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 환경을 고려하여 한 손가락 터치로 시설을 선택하고 드래그 앤 드롭으로 배치하는 직관적인 인터페이스를 제공합니다.",
+        "performanceBudget": "동시에 화면에 표시되는 손님 AI 개체 수를 제한하고, 저사양 기기에서도 원활하게 돌아가도록 LOD(Level of Detail) 기술을 적용합니다.",
+        "sessionConstraints": "한 세션당 5~10분 내외로 짧은 경영 판단과 결과 확인이 가능하도록 설계하여 모바일 환경에 최적화합니다."
+      },
+      "visualDirection": "밝고 화사한 파스텔 톤의 3D 그래픽을 사용하여 놀이공원의 즐거운 분위기를 강조하고, 손님들의 표정과 행동을 명확하게 구분할 수 있는 스타일을 지향합니다.",
+      "mobileUx": "화면 하단에 주요 메뉴를 배치하여 한 손으로 조작하기 쉽게 만들고, 시설 배치 시 그리드 시스템을 시각적으로 명확히 표시하여 정확한 배치를 돕습니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 자금, 손님 만족도, 공원 레벨을 화면 상단에 고정하여 항상 확인할 수 있도록 합니다.",
+        "touchAndInput": "핀치 줌으로 공원 전체를 조망하고, 드래그로 화면을 이동하는 직관적인 카메라 컨트롤을 제공합니다.",
+        "readability": "텍스트 크기를 조절 가능하게 하고, 색약 모드를 지원하여 시설의 상태를 색상 외의 아이콘으로도 구분할 수 있게 합니다.",
+        "accessibility": "모든 주요 기능은 터치 한 번으로 접근 가능하도록 메뉴 깊이를 최소화합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "귀엽고 아기자기한 캐릭터 디자인과 놀이기구의 역동적인 움직임을 강조하는 애니메이션 스타일을 채택합니다.",
+        "audioIdentity": "경쾌한 배경음악과 놀이기구의 작동음, 손님들의 즐거운 환호성을 입체적으로 배치하여 몰입감을 높입니다.",
+        "gameplayFeedbackSync": "시설 설치 시 경쾌한 효과음을 재생하고, 만족도가 오를 때 시각적인 이펙트를 추가하여 즉각적인 보상감을 제공합니다."
+      },
+      "marketTargetDirection": "캐주얼 경영 게임을 선호하는 전 연령층을 타겟으로 하며, 특히 짧은 시간에 성취감을 느끼고 싶은 모바일 게이머를 주 타겟으로 합니다.",
+      "steamExpansionDecision": "추후 PC 버전으로 확장 시 더 정교한 경영 시뮬레이션 요소와 커스텀 디자인 기능을 추가하여 깊이 있는 플레이를 제공할 계획입니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "현재는 싱글 플레이 중심의 경영 경험에 집중하며, 향후 친구의 공원을 방문하거나 순위를 경쟁하는 비동기 멀티플레이 요소를 고려합니다.",
+      "technicalAssumptions": [
+        "손님 AI의 경로 탐색은 A* 알고리즘을 최적화하여 실시간으로 수백 명의 개체를 처리할 수 있어야 합니다.",
+        "시설 데이터는 JSON 형식으로 관리하여 향후 업데이트 시 새로운 놀이기구 추가가 용이해야 합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 시설을 배치한 후 손님들의 반응을 즉각적으로 확인할 수 있는가?",
+        "경제 시스템의 밸런스가 초반 성장에 너무 어렵거나 쉽지 않은가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "동선 최적화 엔진",
+          "responsibleSystem": "AI 경로 탐색 시스템",
+          "validationEvidence": "테스트 환경에서 100명의 손님이 병목 구간 없이 이동하는지 시뮬레이션하여 검증합니다."
+        },
+        {
+          "designElement": "테마파크 분위기 시스템",
+          "responsibleSystem": "데이터 관리 시스템",
+          "validationEvidence": "다양한 장식물 조합에 따른 매력도 점수 변화가 기획 의도대로 계산되는지 유닛 테스트를 수행합니다."
+        },
+        {
+          "designElement": "경제 시스템",
+          "responsibleSystem": "책임 시스템: 재화 관리 시스템",
+          "validationEvidence": "게임 내 수익과 지출 데이터를 로그로 기록하여 밸런스 시뮬레이션 결과와 일치하는지 확인합니다."
+        }
+      ],
+      "openQuestions": [
+        "손님들의 개별적인 요구사항을 얼마나 세분화할 것인가?",
+        "오프라인 상태에서도 수익이 발생하는 방치형 요소를 도입할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 60,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 7.2,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 74.6,
+      "criticalAxisFailures": [
+        "SYSTEM_INTERCONNECTION_DESIGN",
+        "CONTENT_EXPANSION_PLAN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 7.2,
+            "axisWeight": 12
+          },
+          "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
@@ -109,10 +348,30 @@
       "lastMs": 1147,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
       "updatedAt": "2026-09-18T18:43:48.973Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 2,
+      "successes": 1,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 46579,
+      "lastMs": 29715,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=3821",
+      "updatedAt": "2026-09-18T18:44:17.541Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T18:43:47.823Z",
-  "updatedAt": "2026-09-18T18:43:48.973Z"
+  "updatedAt": "2026-09-18T18:44:17.565Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T18:44:17.541Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
