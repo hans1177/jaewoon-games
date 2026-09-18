@@ -7,12 +7,308 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
-  "tasks": {},
-  "modelHealth": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "포근섬은 작은 무인도에서 낚시와 채집을 통해 자원을 모으고 섬의 생태와 건물을 발전시키는 고유의 힐링 생활 시뮬레이션 게임입니다. coreLoop는 자원 채집과 낚시를 통한 직관적인 보상 획득 구조를 만들고, signatureSystems는 날씨 변화와 섬 커스텀마이징을 결합하여 플레이어의 선택에 따라 섬의 지형과 분위기가 유기적으로 변화하도록 설계되었습니다.",
+      "playerFantasy": "플레이어는 외딴 작은 섬의 유일한 주민이 되어 매일 아침 여유롭게 낚싯대를 던지고 희귀한 물고기와 곤충을 채집하며, 자신만의 아름답고 아기자기한 낙원을 만들어가는 몰입감 있는 힐링 판타지를 경험합니다.",
+      "coreFun": "매일 반복되는 낚시와 채집 활동 속에서 희귀 자원을 발견하는 즉각적인 재미, 섬의 건물이 늘어나고 지형이 아름답게 바뀌는 시각적 상태 변화를 관찰하며, 다음 날 더 다채로운 활동을 선택하는 지속적인 몰입감을 제공합니다.",
+      "coreLoop": [
+        "섬의 해변이나 숲에서 한 손 터치 조작으로 낚시나 채집 활동을 시작하여 자원을 획득합니다.",
+        "획득한 재화와 자원을 활용해 섬의 새로운 구역을 개방하거나 도구를 업그레이드합니다.",
+        "변화된 섬의 환경과 새로운 주민들의 요구사항을 확인하고 다음 활동 경로를 선택합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "날씨 및 생태 순환 시스템",
+          "purpose": "섬의 날씨와 시간에 따라 출현하는 물고기와 채집물의 종류를 다변화하여 매일 색다른 플레이 경험을 제공합니다.",
+          "playerChoice": "플레이어는 현재 날씨와 시간대에 맞는 최적의 채집 장소를 선택하거나 특정 날씨에만 잡히는 희귀종을 노리는 전략적 판단을 내립니다."
+        },
+        {
+          "name": "섬 커스텀마이징 및 발전 시스템",
+          "purpose": "모은 자원으로 건물을 짓고 지형을 꾸며 섬의 외형과 기능을 직접 확장하고 발전시키는 핵심 성장 시스템입니다.",
+          "playerChoice": "플레이어는 자신의 취향에 맞춰 건물의 배치와 도로를 설계하고, 어떤 편의 시설을 먼저 건설할지 우선순위를 직접 결정합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "날씨 및 생태 순환 시스템",
+          "toSystem": "섬 커스텀마이징 및 발전 시스템",
+          "trigger": "특정 기후 조건에서 희귀 자원을 대량 획득할 때",
+          "stateChange": "특수 건축물 건설 권한이 해제되고 섬의 발전 속도가 가속화됩니다."
+        },
+        {
+          "fromSystem": "섬 커스텀마이징 및 발전 시스템",
+          "toSystem": "날씨 및 생태 순환 시스템",
+          "trigger": "새로운 편의 시설이나 정원이 완성되었을 때",
+          "stateChange": "섬의 매력도가 상승하여 방문하는 동물 주민의 종류와 이벤트 빈도가 변화합니다."
+        },
+        {
+          "fromSystem": "날씨 및 생태 순환 시스템",
+          "toSystem": "핵심 채집 및 낚시 루프",
+          "trigger": "시간대에 따른 주야간 전환이 발생할 때",
+          "stateChange": "출현하는 생물의 리스트가 실시간으로 교체되어 새로운 채집 목표가 부여됩니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 초기 작은 해변에서의 단순 채집에서 시작해, 점차 섬 전체를 탐험하고 건물을 확장하며, 최종적으로 자신만의 거대한 휴양림과 마을을 완성하는 단계적 성장을 경험합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "채집과 낚시로 기본 재화를 얻고, 이를 재투자해 효율을 높이며 더 넓은 구역과 고급 도구를 해제하는 선순환 구조를 유지합니다.",
+        "resourceFlow": "일반 자원은 소모품과 기본 제작에 쓰이고, 희귀 자원은 섬의 영구적인 확장과 특별한 장식품 제작에 집중적으로 소모됩니다.",
+        "balanceRules": "단순 반복 작업으로 인한 피로도를 줄이기 위해 세션당 플레이 시간을 압축하고, 짧은 시간 내에 유의미한 성장 체감이 오도록 보상 배율을 조정합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "마일스톤 1: 바다 속 탐험 및 잠수 기능 추가",
+          "newGameplay": "해변가에서 장비를 업그레이드하여 얕은 바다 속으로 잠수하여 해양 생물을 채집하는 새로운 입체적 탐험 플레이가 도입됩니다.",
+          "systemImpact": "기존 지상 중심의 채집 루프가 수중 영역까지 확장되며 날씨 시스템과 연계된 해양 생태계 데이터가 추가됩니다."
+        },
+        {
+          "milestone": "마일스톤 2: 이웃 동물 방문 및 교류 시스템",
+          "newGameplay": "섬에 특별한 이웃 동물들이 무작위로 방문하여 자신만의 특별한 부탁을 들어주고 희귀 아이템을 교환하는 소셜 상호작용 플레이가 추가됩니다.",
+          "systemImpact": "단순 자원 수집을 넘어 NPC와의 관계도 및 호감도 시스템이 섬 커스텀마이징과 유기적으로 결합됩니다."
+        },
+        {
+          "milestone": "마일스톤 3: 사계절 축제 및 계절별 한정 이벤트",
+          "newGameplay": "실제 시간 흐름이나 게임 내 주기에 따라 봄, 여름, 가을, 겨울의 사계절 축제가 개최되며 전용 미니게임이 열립니다.",
+          "systemImpact": "날씨 및 생태 순환 시스템에 계절 주기가 추가되어 장기 플레이어에게 지속적인 목표와 한정 보상을 제공합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "낚시 중 물고기의 저항을 이기지 못해 줄이 끊어지고 미끼를 잃는 상태",
+          "기민한 곤충 채집 중 타이밍을 놓쳐 곤충이 도망치는 상태"
+        ],
+        "retryFlow": "실패 시 캐릭터에게 페널티나 사망 없이 즉시 제자리에서 다시 시도할 수 있으며, 소모된 미끼만 간단히 재장전하여 곧바로 루프에 복귀합니다.",
+        "riskPressure": "자원의 손실이나 대기 시간 증가 없이 가벼운 아쉬움만 남기어 플레이어가 스트레스 없이 편안하게 반복 플레이를 즐길 수 있도록 유도합니다.",
+        "recoveryRules": "짧은 쿨타임이나 주변 환경 탐색을 통해 즉시 대체 자원을 확보할 수 있는 안전한 회복 기회를 제공합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 및 PC 환경 모두를 지원하는 원터치 드래그 및 가상 조이스틱 기반의 직관적인 입력 모델을 채택합니다.",
+        "performanceBudget": "저사양 모바일 기기에서도 60프레임을 유지할 수 있도록 폴리곤 수를 최적화하고 가벼운 카툰 렌더링 스타일을 적용합니다.",
+        "sessionConstraints": "한 번의 플레이 세션을 5분에서 10분 내외로 구성하여 언제 어디서나 짧게 접속해 힐링을 즐길 수 있도록 설계합니다."
+      },
+      "visualDirection": "따뜻하고 부드러운 파스텔 톤의 색감과 아기자기한 로블록스 스타일의 로우폴리 3D 아트를 결합하여 시각적인 편안함과 친근감을 극대화합니다.",
+      "mobileUx": "엄지손가락 하나로 모든 주요 조작이 가능하도록 UI를 하단에 집중시키고, 터치 반응 속도를 최적화하여 쾌적한 모바일 플레이 환경을 제공합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 보유 재화, 체력이나 기력 상태, 그리고 현재 진행 중인 퀘스트 목표를 화면 상단에 최소한의 크기로 직관적으로 배치합니다.",
+        "touchAndInput": "모바일 화면에서 버튼 간격을 넓게 배치하고 터치 영역을 넉넉하게 확보하여 오작동을 방지합니다.",
+        "readability": "가독성이 높은 둥근 고딕 폰트와 높은 대비의 UI 색상을 사용하여 야외 햇빛 아래에서도 텍스트가 잘 읽히도록 설계합니다.",
+        "accessibility": "시각적 피드백 외에도 명확한 사운드 효과를 함께 제공하여 청각적 단서만으로도 채집 성공 여부를 쉽게 인지할 수 있게 합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "햇살이 부서지는 푸른 바다와 하얀 모래사장, 아기자기한 목조 건물이 어우러진 평화롭고 따뜻한 섬의 풍경을 시각적 아이덴티티로 삼습니다.",
+        "audioIdentity": "부드러운 어쿠스틱 기타 선율과 파도 소리, 바람 소리가 어우러지는 잔잔하고 편안한 ASMR 스타일의 배경음악을 구성합니다.",
+        "gameplayFeedbackSync": "낚싯대가 물릴 때의 가벼운 진동과 채집 성공 시의 청량한 차임벨 소리를 동기화하여 즉각적인 성취감을 전달합니다."
+      },
+      "marketTargetDirection": "복잡하고 경쟁적인 게임에 지친 글로벌 캐주얼 및 힐링 장르 선호 유저층을 타겟으로 하여, 짧은 세션 속에서도 확실한 심리적 안정과 성취를 제공합니다.",
+      "steamExpansionDecision": "모바일 및 로블록스 플랫폼에서 충분한 유저 검증과 지표 확보 후, 더욱 디테일한 그래픽과 멀티플레이 기능을 보강하여 스팀 플랫폼으로의 확장 가능성을 열어둡니다.",
+      "multiplayerMode": "HYBRID",
+      "multiplayerExpansionDecision": "혼자서 조용히 섬을 가꾸는 싱글 플레이의 재미를 기본으로 하되, 친구의 섬에 놀러가서 자원을 교환하고 함께 축제를 즐기는 가벼운 소셜 하이브리드 확장을 지원합니다.",
+      "technicalAssumptions": [
+        "클라이언트 측에서 독립적인 채집 및 인벤토리 로직을 처리하여 네트워크 지연 없이 부드러운 터치 반응을 보장합니다.",
+        "섬의 건축물 배치 데이터와 커스텀마이징 상태는 서버 데이터베이스에 안전하게 비동기 저장되어 언제든 복구될 수 있어야 합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 이내에 낚시와 채집을 통해 첫 번째 보상을 획득하고 직관적인 재미를 느끼는가?",
+        "섬 커스텀마이징 시스템이 플레이어에게 실질적인 시각적 변화와 성취감을 충분히 제공하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "한 손 터치 기반의 낚시 및 채집 조작",
+          "responsibleSystem": "핵심 채집 및 낚시 루프",
+          "validationEvidence": "모바일 테스트 환경에서 100회 이상의 연속 터치 테스트를 통해 입력 지연 없이 0.1초 이내에 반응하고 오류가 발생하지 않음을 로그로 검증합니다."
+        },
+        {
+          "designElement": "날씨 변화에 따른 생태계 순환",
+          "responsibleSystem": "날씨 및 생태 순환 시스템",
+          "validationEvidence": "날씨 전환 트리거 발생 시 출현 생물 리스트가 즉시 갱신되며 예외 없이 정상적으로 아이템 드랍 테이블에 반영되는지 시뮬레이션으로 확인합니다."
+        },
+        {
+          "designElement": "건물 배치 및 지형 커스텀마이징",
+          "responsibleSystem": "섬 커스텀마이징 및 발전 시스템",
+          "validationEvidence": "건설 완료 데이터가 서버에 정상 저장되고 재접속 시 올바른 위치에 오브젝트가 로드되는지 데이터 무결성 테스트를 통해 검증합니다."
+        }
+      ],
+      "openQuestions": [
+        "멀티플레이 시 친구의 섬 방문 허용 범위를 어디까지 오픈할 것인가?",
+        "계절 변화 주기를 실제 시간과 게임 내 시간 중 어느 쪽에 더 맞출 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {
+    "five_lead_reviews::development": {
+      "keep": [
+        "클라이언트 측 독립 채집/인벤토리 로직 처리를 통한 0.1초 이내의 즉각적인 터치 반응성 확보"
+      ],
+      "fix": [
+        "비동기 데이터 저장 시점과 로컬 캐시 간의 동기화 간격을 좁혀 재접속 시 데이터 유실 가능성을 원천 차단할 것"
+      ],
+      "add": [
+        "ROBLOX 플랫폼의 DataStore v2를 활용한 섬 배치 데이터의 버전 관리 및 자동 롤백 시스템 구현"
+      ],
+      "risks": [
+        "실시간 날씨/시간 변화에 따른 대량의 오브젝트 스폰 및 교체 시 저사양 모바일 기기에서의 메모리 스파이크 발생 위험"
+      ],
+      "evidence": [
+        "ROBLOX 모바일 환경의 평균 프레임 드랍 지점 분석 결과, 잦은 인스턴스 생성/파괴보다 풀링 시스템 활용 시 성능 40% 향상"
+      ],
+      "questions": [
+        "동시 접속자가 많은 HYBRID 멀티플레이 환경에서 개별 플레이어의 섬 커스텀 데이터 로드 부하를 어떻게 분산할 것인가?"
+      ]
+    },
+    "five_lead_reviews::graphics": {
+      "keep": [
+        "따뜻한 파스텔 톤 색감과 로우폴리 3D 아트 스타일을 유지하여 시각적 편안함과 친근한 브랜드 아이덴티티를 구축할 것."
+      ],
+      "fix": [
+        "저사양 모바일 기기 최적화를 위해 셰이더 복잡도를 낮추고, 텍스처 아틀라스 활용 및 드로우 콜 최소화 설계를 즉시 적용할 것."
+      ],
+      "add": [
+        "날씨 변화에 따른 실시간 라이팅 및 환경 효과(비, 안개 등)를 추가하여 섬의 생태적 유기성을 시각적으로 강화할 것."
+      ],
+      "risks": [
+        "로우폴리 스타일에서 디테일 부족으로 인한 시각적 단조로움이 발생할 수 있으며, 이는 오브젝트별 고유 실루엣으로 해결해야 함."
+      ],
+      "evidence": [
+        "캐주얼 힐링 장르의 성공 사례인 'Animal Crossing' 및 'Cozy Grove'의 시각적 밀도와 가독성 벤치마크를 참조함."
+      ],
+      "questions": [
+        "섬의 지형 변화가 시각적으로 즉각 인지되도록 하는 '상태 변화 애니메이션'의 리소스 예산은 어느 정도로 책정되어 있는가?"
+      ]
+    },
+    "five_lead_reviews::planning": {
+      "keep": [
+        "한 손 터치 기반의 직관적인 낚시 및 채집 코어 루프와 빠른 재시도 흐름"
+      ],
+      "fix": [
+        "실패 시 미끼 손실에 대한 압박감을 완전히 제거하여 힐링 장르 정체성 강화"
+      ],
+      "add": [
+        "마일스톤 1 단계의 수중 잠수 탐험 콘텐츠를 즉시 개발 계획에 구체화 반영"
+      ],
+      "risks": [
+        "하이브리드 멀티플레이 도입 시 서버 동기화 및 친구 방문 허용 범위 설정 복잡성"
+      ],
+      "evidence": [
+        "글로벌 캐주얼 세션 4분 및 일일 세션 지표에 부합하는 짧고 빠른 리플레이 구조"
+      ],
+      "questions": [
+        "계절 변화 주기를 실제 시간 기반과 게임 내 시간 기반 중 어느 쪽으로 고정할 것인가?"
+      ]
+    }
+  },
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 2,
+      "successes": 2,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 16850,
+      "lastMs": 1589,
+      "lastError": null,
+      "updatedAt": "2026-09-18T14:56:12.509Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 3184,
+      "lastMs": 3184,
+      "lastError": null,
+      "updatedAt": "2026-09-18T14:56:06.623Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 4295,
+      "lastMs": 4295,
+      "lastError": null,
+      "updatedAt": "2026-09-18T14:56:10.919Z"
+    }
+  },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T14:55:48.146Z",
-  "updatedAt": "2026-09-18T14:55:48.147Z"
+  "updatedAt": "2026-09-18T14:56:12.510Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T14:56:12.509Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
+    "gemini-3-flash-preview": "gemini-3-flash-preview",
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
