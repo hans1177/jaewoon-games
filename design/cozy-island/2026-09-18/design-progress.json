@@ -2,7 +2,7 @@
   "version": 2,
   "gameId": "cozy-island",
   "date": "2026-09-18",
-  "engineDigest": "6b4a989179ae5bb3de952269a8b6a0ac648783811d8257cefecaeaf797af6a49",
+  "engineDigest": "4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec",
   "status": "IN_PROGRESS",
   "currentStage": "DEPARTMENT_REVIEWS",
   "percent": 67,
@@ -13,9 +13,9 @@
   "completedPhaseCount": 2,
   "cachedTaskCount": 3,
   "lastSuccessfulModelCallAt": "2026-09-18T08:24:02.479Z",
-  "failedPhase": "five_lead_reviews",
-  "failedTask": "qa",
-  "lastError": "GEMINI_CALL_FAILED gemini-3.6-flash: gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 2,
@@ -96,5 +96,5 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T08:27:01.032Z"
+  "updatedAt": "2026-09-18T08:28:22.084Z"
 }

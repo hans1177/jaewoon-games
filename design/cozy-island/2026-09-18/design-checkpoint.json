@@ -1,11 +1,11 @@
 {
-  "contractVersion": 2,
+  "contractVersion": 3,
   "gameId": "cozy-island",
   "date": "2026-09-18",
   "seedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
-  "fingerprint": "624795d89a1d33197affc0d6370bb036d02c0a5a4e12665bdd2297f6b6b0d403",
+  "fingerprint": "890df1013c6970002e16433afc888fc27cea94a9731b699873df402206e21fb5",
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
-  "engineDigest": "6b4a989179ae5bb3de952269a8b6a0ac648783811d8257cefecaeaf797af6a49",
+  "engineDigest": "4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec",
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
@@ -344,7 +344,7 @@
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T08:23:44.237Z",
-  "updatedAt": "2026-09-18T08:27:01.031Z",
+  "updatedAt": "2026-09-18T08:28:22.083Z",
   "lastSuccessfulModelCallAt": "2026-09-18T08:24:02.479Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
@@ -353,7 +353,16 @@
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": "five_lead_reviews",
-  "failedTask": "qa",
-  "lastError": "GEMINI_CALL_FAILED gemini-3.6-flash: gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }"
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "checkpointMigration": {
+    "fromContractVersion": 2,
+    "toContractVersion": 3,
+    "reason": "PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY",
+    "previousEngineDigest": "6b4a989179ae5bb3de952269a8b6a0ac648783811d8257cefecaeaf797af6a49",
+    "preservedPhaseCount": 2,
+    "preservedTaskCount": 3,
+    "migratedAt": "2026-09-18T08:28:21.651Z"
+  }
 }
