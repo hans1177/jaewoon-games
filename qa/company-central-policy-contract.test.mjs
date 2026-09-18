@@ -251,10 +251,11 @@ test('Web learning evidence is auxiliary and cannot replace native platform evid
   assert.match(nativeDatasetGate,/real verified/);
 });
 
-test('Roblox-first design stabilization changes scheduling only and resumes canonical Web-first development',()=>{
+test('equal-tier design stabilization preserves canonical Web-first development and quality gates',()=>{
   const strategy=directive.platformStrategy.designStabilizationScheduling;
-  assert.equal(strategy.mode,'ROBLOX_FIRST_THEN_OTHER_PLATFORMS');
-  assert.deepEqual(strategy.sortKeys,['ROBLOX_TARGET_FIRST','OLDEST_PENDING_FIRST']);
+  assert.equal(strategy.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
+  assert.deepEqual(strategy.sortKeys,['READINESS_FIRST','ESTIMATED_EXECUTION_EFFICIENCY','OLDEST_PENDING_FIRST']);
+  assert.equal(strategy.unityRobloxEqualPriority,true);
   assert.equal(strategy.perGameIndependentCompletion,true);
   assert.equal(strategy.portfolioBarrierForbidden,true);
   assert.equal(strategy.doesNotChangePassThreshold,true);
@@ -267,7 +268,8 @@ test('Roblox-first design stabilization changes scheduling only and resumes cano
   assert.equal(directive.executionPause.webImplementationStartForbiddenUntilOwnerResume,false);
   assert.equal(directive.executionPause.designPromotionMayContinueWhileWebPaused,true);
   assert.equal(directive.executionPause.strictDesignGateMustRemainUnchanged,true);
-  assert.match(flow,/mode: ROBLOX_FIRST_THEN_OTHER_PLATFORMS/);
+  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
+  assert.equal(roadmap.legacyPolicyMirror.requiredForExecution,false);
   assert.match(flow,/forcePromotionForbidden: true/);
   assert.match(flow,/stopAfterStage: NONE/);
   assert.match(flow,/webDevelopmentPaused: false/);

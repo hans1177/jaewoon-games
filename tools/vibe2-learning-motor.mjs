@@ -365,6 +365,9 @@ const PROJECT_MACHINE_STAGES=Object.freeze(new Set([
   'TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA',
   'TARGET_PLATFORM_REGRESSION','RELEASE_PROMOTION','POST_RELEASE_FOCUSED_DEVELOPMENT'
 ]));
+function permanentProjectIds(roadmapInput={}){
+  return new Set((Array.isArray(roadmapInput?.permanentProjectRemoval?.ids)?roadmapInput.permanentProjectRemoval.ids:[]).map(clean).filter(Boolean));
+}
 function webBaselinePassed(item={}){
   return Boolean(item.webValidationPassedAt||item.webPromotionRevalidationPassed===true||item.formalImplementationPassed===true);
 }
@@ -483,8 +486,100 @@ function projectMachineState(item={},experienceInput={},handoff=null){
     NEXT_MACHINE_ACTION:nextMachineAction(item,phase,handoff)
   };
 }
-export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={}){
-  const items=companyQueueInput?.items||companyQueueInput?.projects||[];
+function postReleaseFocusQueueTask(task={},removedIds=new Set()){
+  const gameId=clean(task.gameId);
+  if(!gameId||removedIds.has(gameId)||clean(task.blocker)==='lifecycle-inactive:REMOVED_PERMANENTLY')return false;
+  const evidence=new Set((task.evidence||[]).map(clean));
+  const historical=task.historicalDeploymentRecovery===true||evidence.has('historical-deployment-recovery:yes');
+  const status=lower(task.status);
+  const retryableFailed=status==='failed'&&Number(task.retries||0)<=Number(task.maxRetries??2);
+  const legacyLifecycleSync=historical&&status==='cancelled'&&clean(task.blocker)==='lifecycle-inactive:MISSING_FROM_CATALOG';
+  return lower(task.target)==='roblox'
+    &&lower(task.department)==='development'
+    &&lower(task.type)==='implementation'
+    &&task.postReleaseFocused===true
+    &&(['queued','running','blocked'].includes(status)||retryableFailed||legacyLifecycleSync);
+}
+function postReleaseFocusProjectState(task={},experienceInput={}){
+  const gameId=clean(task.gameId);
+  const evidence=(task.evidence||[]).map(clean);
+  const evidenceSet=new Set(evidence);
+  const historical=task.historicalDeploymentRecovery===true||evidenceSet.has('historical-deployment-recovery:yes');
+  const status=lower(task.status);
+  const verifiedSemantic=verifiedWebSemanticContext(experienceInput,gameId);
+  const recipe=evidence.find(value=>value.startsWith('recombination-recipe:'))?.slice('recombination-recipe:'.length)||null;
+  const runnerState=status==='running'?'RUNNING'
+    :status==='queued'?'ASSIGNED'
+    :status==='blocked'?'BLOCKED'
+    :status==='failed'?'RECOVERY_PENDING'
+    :'WAITING_FOR_LIFECYCLE_SYNC';
+  const nextAction=status==='running'?'CONTINUE_POST_RELEASE_FOCUSED_GAP'
+    :status==='queued'?'EXECUTE_POST_RELEASE_FOCUSED_GAP'
+    :status==='blocked'?'RECOVER_OR_RESUME_POST_RELEASE_FOCUSED_GAP'
+    :status==='failed'?'REQUEUE_RETRYABLE_POST_RELEASE_FOCUSED_GAP'
+    :'SYNC_HISTORICAL_MAINTENANCE_LIFECYCLE';
+  return {
+    gameId,
+    PROJECT_PHASE:'POST_RELEASE_FOCUSED_DEVELOPMENT',
+    PLATFORM:'ROBLOX',
+    GENRE:projectGenre(task),
+    WEB_BASELINE:{
+      requiredForNewPlatformLifecycle:true,
+      requiredForThisMaintenanceCycle:historical?false:true,
+      state:'NOT_BOUND_IN_CURRENT_COMPANY_QUEUE_SNAPSHOT',
+      verified:false,
+      sourcePath:null,
+      evidencePath:null,
+      currentCompanyWebBaselineBound:false,
+      historicalDeploymentRecovery:historical,
+      reason:historical?'HISTORICAL_NATIVE_MAINTENANCE_DOES_NOT_CLAIM_CURRENT_WEB_BASELINE':'CURRENT_COMPANY_WEB_BASELINE_NOT_PRESENT_IN_QUEUE_SNAPSHOT'
+    },
+    ROBLOX_HANDOFF:historical?{
+      requiredForThisMaintenanceCycle:false,
+      ready:false,
+      historicalDeploymentRecovery:true,
+      currentWebHandoffClaim:false,
+      nativeReverificationRequired:true,
+      webEvidenceSubstitutesRobloxQa:false,
+      reason:'HISTORICAL_NATIVE_MAINTENANCE_USES_EXISTING_VERIFIED_ROBLOX_LINEAGE'
+    }:{
+      required:true,
+      ready:false,
+      currentWebHandoffClaim:false,
+      webEvidenceSubstitutesRobloxQa:false,
+      reason:'CURRENT_COMPANY_WEB_HANDOFF_NOT_PRESENT_IN_QUEUE_SNAPSHOT'
+    },
+    POST_RELEASE_FOCUS_RUNNER:{
+      eligibleAfterRelease:true,
+      assigned:['queued','running','blocked'].includes(status),
+      state:runnerState,
+      queueTaskId:clean(task.id)||null,
+      queueStatus:status||null,
+      logicalRunnerPerProject:1,
+      activeTaskMaxPerProject:1,
+      sharedProtectedRunnerSlots:1,
+      scheduler:'vibe2-24h-runner',
+      worker:'vibe2-continuous-core',
+      continuousRefill:true,
+      historicalDeploymentRecovery:historical
+    },
+    LEARNING_CONTEXT:{
+      authority:'VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT',
+      verifiedSemanticExperienceIds:verifiedSemantic.sourceExperienceIds,
+      canonicalDistillation:'vibe2-learning-runtime:company-learning/distillation-status.json',
+      transformativeRecombination:'vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json',
+      recombinationRecipeId:recipe,
+      rawSourceCopyAllowed:false,
+      rawAssetCopyAllowed:false,
+      gateBypass:false,
+      continuousLearning:true
+    },
+    NEXT_MACHINE_ACTION:nextAction
+  };
+}
+export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={},queueInput={},roadmapInput={}){
+  const removedIds=permanentProjectIds(roadmapInput);
+  const items=(companyQueueInput?.items||companyQueueInput?.projects||[]).filter(item=>!removedIds.has(clean(get(item,'gameId','id'))));
   const handoffs=[];
   const handoffByGameId=new Map();
   for(const item of items){
@@ -517,10 +612,24 @@ export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={}){
     handoffs.push(handoff);
     handoffByGameId.set(gameId,handoff);
   }
-  const projects=items.map(item=>{
+  const companyProjects=items.map(item=>{
     const gameId=clean(get(item,'gameId','id'));
     return projectMachineState(item,experienceInput,handoffByGameId.get(gameId)||null);
   }).filter(project=>project.gameId);
+  const companyProjectIds=new Set(companyProjects.map(project=>project.gameId));
+  const focusStatusRank={running:0,queued:1,blocked:2,failed:3,cancelled:4};
+  const focusByGameId=new Map();
+  for(const task of queueInput?.tasks||[]){
+    if(!postReleaseFocusQueueTask(task,removedIds))continue;
+    const gameId=clean(task.gameId);
+    if(companyProjectIds.has(gameId))continue;
+    const existing=focusByGameId.get(gameId);
+    if(!existing||Number(focusStatusRank[lower(task.status)]??99)<Number(focusStatusRank[lower(existing.status)]??99))focusByGameId.set(gameId,task);
+  }
+  const projects=[
+    ...companyProjects,
+    ...[...focusByGameId.values()].map(task=>postReleaseFocusProjectState(task,experienceInput))
+  ];
   return {
     version:1,
     projectStateVersion:1,
@@ -533,7 +642,7 @@ export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={}){
   };
 }
 
-export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={}}={}){
+export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
   const patternApplied=applyVerifiedCodePatternsToMastery(applied.state,codePatternsInput);
   const benchmark=buildBenchmarkLadder(patternApplied.state);
@@ -546,7 +655,7 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
     addedCodePatterns:patternApplied.added,
     benchmark,
     idlePractice,
-    handoffs:buildWebRobloxHandoffs(companyQueueInput,experienceInput),
+    handoffs:buildWebRobloxHandoffs(companyQueueInput,experienceInput,practice.queue,roadmapInput),
     queue:practice.queue,
     tournamentTasksChanged:tournament.changed,
     idlePracticeTaskAdded:practice.added,
@@ -564,8 +673,9 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const experienceFile=clean(a.experience)||'.vibe2/experience.json';
   const companyQueueFile=clean(a['company-queue'])||'development-queue.json';
   const queueFile=clean(a.queue);
+  const roadmapFile=clean(a.roadmap)||'company-learning/platform-release-roadmap.json';
   const codePatternsFile=clean(a['code-patterns'])||'.vibe2/code-pattern-library.json';
-  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]}});
+  const result=refreshLearningMotor({stateInput:readJson(stateFile,{}),experienceInput:readJson(experienceFile,{records:[]}),codePatternsInput:readJson(codePatternsFile,{patterns:[]}),companyQueueInput:readJson(companyQueueFile,{items:[]}),queueInput:queueFile?readJson(queueFile,{tasks:[]}):{tasks:[]},roadmapInput:readJson(roadmapFile,{})});
   writeJson(stateFile,result.state);
   if(queueFile&&(result.tournamentTasksChanged>0||result.idlePracticeQueueChanged)) writeJson(queueFile,result.queue);
   if(clean(a.benchmark)) writeJson(a.benchmark,result.benchmark);

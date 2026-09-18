@@ -39,9 +39,10 @@ jobs:
           if(c.assetTransformation?.originalImmutable!==true||c.assetTransformation?.variantTournamentRequired!==true) throw new Error('Vibe3 asset transformation safety contract changed');
           if(c.modelSelection?.route!=='LOCAL_SELF_HOSTED_ONLY'||c.modelSelection?.paidApiAllowed!==false||c.modelSelection?.githubHostedTrainingAllowed!==false) throw new Error('Vibe3 model route policy changed');
           const roadmap=c.platformRoadmap;
-          if(roadmap?.enabled!==true||JSON.stringify(roadmap.priority)!==JSON.stringify(['ROBLOX','UNITY','FORTNITE_UEFN'])) throw new Error('platform roadmap priority changed');
-          if(roadmap?.currentPhase!=='ROBLOX_FAST_RELEASE_STABILIZATION'||roadmap?.unityExistingPathPreserved!==true||roadmap?.separatePlatformLearningPipelineAllowed!==false) throw new Error('platform roadmap phase/preservation changed');
-          if(roadmap?.phase1Implementation?.taskType!=='roblox'||roadmap?.phase1Implementation?.adapter!=='tools/vibe3-roblox-platform.mjs'||roadmap?.phase1Implementation?.publishRequiresExplicitExecute!==true||roadmap?.phase1Implementation?.cookieAuthAllowed!==false) throw new Error('Roblox Phase 1 implementation contract changed');
+          if(roadmap?.enabled!==true||JSON.stringify(roadmap.priority)!==JSON.stringify(['UNITY','ROBLOX','FORTNITE_UEFN'])) throw new Error('platform roadmap priority changed');
+          if(JSON.stringify(roadmap?.priorityTiers)!==JSON.stringify([['UNITY','ROBLOX'],['FORTNITE_UEFN']])||roadmap?.currentPhase!=='ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE'||roadmap?.unityExistingPathPreserved!==true||roadmap?.separatePlatformLearningPipelineAllowed!==false) throw new Error('platform roadmap equal-tier phase/preservation changed');
+          if(roadmap?.robloxMustRunFirst!==false||roadmap?.phase1Implementation?.doesNotCreatePlatformPriority!==true) throw new Error('legacy Roblox adapter must not recreate platform priority');
+          if(roadmap?.phase1Implementation?.taskType!=='roblox'||roadmap?.phase1Implementation?.adapter!=='tools/vibe3-roblox-platform.mjs'||roadmap?.phase1Implementation?.publishRequiresExplicitExecute!==true||roadmap?.phase1Implementation?.cookieAuthAllowed!==false) throw new Error('Roblox adapter compatibility contract changed');
           if(c.promotion?.freshAdapterState!=='TRAINED_UNVERIFIED') throw new Error('Vibe3 promotion gate changed');
           console.log('PASS Vibe3 Pump machine contract with portable Web context and native Roblox isolation');
           NODE
@@ -52,8 +53,10 @@ jobs:
           import fs from 'node:fs';
           const r=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           if(r.status!=='OWNER_DIRECT_LOCKED') throw new Error('platform roadmap not owner locked');
-          if(JSON.stringify(r.priority)!==JSON.stringify(['ROBLOX','UNITY','FORTNITE_UEFN'])) throw new Error('platform priority mismatch');
-          if(r.currentPhase!=='ROBLOX_FAST_RELEASE_STABILIZATION') throw new Error('Roblox must be current Phase 1');
+          if(JSON.stringify(r.priority)!==JSON.stringify(['UNITY','ROBLOX','FORTNITE_UEFN'])) throw new Error('platform priority mismatch');
+          if(r.currentPhase!=='ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE') throw new Error('Unity and Roblox equal-tier phase required');
+          if(r.platformPriorityInvariant?.mode!=='UNITY_ROBLOX_EQUAL_FIRST_TIER'||JSON.stringify(r.platformPriorityInvariant?.priorityTiers)!==JSON.stringify([['UNITY','ROBLOX'],['FORTNITE_UEFN']])) throw new Error('equal-tier invariant missing');
+          if(r.platformPriorityInvariant?.robloxMustReceiveFirstEligibleDevelopmentSlot!==false) throw new Error('Roblox-first slot requirement must remain disabled');
           if(r.parallelLearningPipelineAllowed!==false) throw new Error('parallel platform learning pipeline forbidden');
           if(r.phases?.[1]?.unityExistingPathPreserved!==true||r.phases?.[1]?.unityDeletedOrReplacedByRoblox!==false) throw new Error('Unity preservation contract changed');
           console.log('PASS platform release roadmap contract');

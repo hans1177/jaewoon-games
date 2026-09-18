@@ -52,7 +52,16 @@
     "failureMemoryIsWarningOnly": true,
     "portableContextMayCrossPlatforms": true,
     "platformPassEvidenceMayNotTransfer": true,
-    "supportedPlaybooks": ["coding", "bugfix", "qa", "unity", "roblox", "graphics", "planning", "general"]
+    "supportedPlaybooks": [
+      "coding",
+      "bugfix",
+      "qa",
+      "unity",
+      "roblox",
+      "graphics",
+      "planning",
+      "general"
+    ]
   },
   "portableWebLearning": {
     "enabled": true,
@@ -129,8 +138,12 @@
     "enabled": true,
     "contract": "company-learning/platform-release-roadmap.json",
     "humanReadableSpec": "company-learning/PLATFORM_RELEASE_ROADMAP.md",
-    "priority": ["ROBLOX", "UNITY", "FORTNITE_UEFN"],
-    "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
+    "priority": [
+      "UNITY",
+      "ROBLOX",
+      "FORTNITE_UEFN"
+    ],
+    "currentPhase": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
     "unityExistingPathPreserved": true,
     "platformSpecificEvidenceRequired": true,
     "portableVerifiedExperienceSharedThroughV3Memory": true,
@@ -148,12 +161,33 @@
       "cookieAuthAllowed": false,
       "browserQa": "NOT_APPLICABLE",
       "runtime": "PASS",
-      "independentQa": "PASS"
-    }
+      "independentQa": "PASS",
+      "legacyCompatibilityOnly": true,
+      "doesNotCreatePlatformPriority": true
+    },
+    "priorityTiers": [
+      [
+        "UNITY",
+        "ROBLOX"
+      ],
+      [
+        "FORTNITE_UEFN"
+      ]
+    ],
+    "equalFirstTierPlatforms": [
+      "UNITY",
+      "ROBLOX"
+    ],
+    "equalTierSelection": "READINESS_THEN_ESTIMATED_EXECUTION_EFFICIENCY_THEN_ENQUEUED_AT",
+    "robloxMustRunFirst": false
   },
   "canonicalLearningChainUnchanged": true,
   "promotion": {
     "freshAdapterState": "TRAINED_UNVERIFIED",
-    "requiredNext": ["FIXED_HOLDOUT_AB", "CANARY", "PROMOTE_OR_ROLLBACK"]
+    "requiredNext": [
+      "FIXED_HOLDOUT_AB",
+      "CANARY",
+      "PROMOTE_OR_ROLLBACK"
+    ]
   }
 }
