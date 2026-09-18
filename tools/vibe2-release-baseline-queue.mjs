@@ -106,6 +106,7 @@ function ownerDirectiveSpec(task){
     'exploration-','incremental-qa-','workload:','role-result:','failure-cause:',
     'speculative-result:','speculative-winner:','speculative-variants:',
     'candidate-','vibe2/candidate/','base-main:','package-review:',
+    'release-dispatch-recovery-',
     'repair-mode:','repair-retry:','diagnostic:','actions-run:','variant:','slot-'
   ];
   return JSON.stringify({
