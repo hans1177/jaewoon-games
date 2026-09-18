@@ -1,0 +1,1441 @@
+{
+  "contractVersion": 1,
+  "gameId": "survival",
+  "date": "2026-09-18",
+  "seedId": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
+  "fingerprint": "c81206d1328bf5f9159af56804b92d6c3e53ba201b83a58c05cc6744f7cefb34",
+  "policyDigest": "57957b1b1ae2662bd6fc5f377031f469b6f581dd0f523dadb26c80ea871e9510",
+  "status": "COMPLETE",
+  "completedPhases": [
+    "designer_draft_base",
+    "designer_draft_gate",
+    "independent_department_reviews",
+    "department_representatives",
+    "lead_rebuttals",
+    "cross_department_meeting",
+    "designer_revision_base",
+    "designer_revision_gate",
+    "five_lead_fatal_review"
+  ],
+  "phases": {
+    "designer_draft_base": {
+      "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
+      "playerFantasy": "Survival",
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "coreLoop": [
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+        "Repeat the process to improve and adapt to the ever-changing game world."
+      ],
+      "signatureSystems": [
+        {
+          "name": "Survival Needs",
+          "purpose": "Survival needs are the core of the game, and players must gather resources to survive.",
+          "playerChoice": "Player choice is crucial in survival games, allowing players to customize their experience."
+        },
+        {
+          "name": "Resource-to-Crafting Decisions",
+          "purpose": "Resource-to-crafting decisions are critical in survival games, allowing players to craft essential items and equipment.",
+          "playerChoice": "Player choice is crucial in survival games, allowing players to customize their experience."
+        }
+      ],
+      "progressionDirection": "Competitive",
+      "visualDirection": "Competitive",
+      "mobileUx": "COOP",
+      "marketTargetDirection": "Competitive",
+      "steamExpansionDecision": "MultiplayerExpansionDecision",
+      "multiplayerMode": "COOP",
+      "multiplayerExpansionDecision": "MultiplayerExpansionDecision",
+      "technicalAssumptions": [
+        "Unity",
+        "C#",
+        "MonoBehaviour"
+      ],
+      "validationQuestions": [
+        "Is the game's core loop consistent with the survival genre?",
+        "Is the survival needs system balanced and rewarding?",
+        "Are the player's choices and upgrades meaningful and impactful?"
+      ],
+      "openQuestions": [
+        "What are the key design decisions that impact the player's experience?",
+        "How does the game's progression system reward and challenge players?",
+        "What are the most important player choices in the game?"
+      ]
+    },
+    "designer_draft_gate": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "Survival Needs",
+          "toSystem": "Survival Needs",
+          "trigger": "Survival Needs needs",
+          "stateChange": "Survival Needs needs"
+        },
+        {
+          "fromSystem": "Survival Needs",
+          "toSystem": "Survival Needs",
+          "trigger": "Survival Needs needs",
+          "stateChange": "Survival Needs needs"
+        },
+        {
+          "fromSystem": "Survival Needs",
+          "toSystem": "Survival Needs",
+          "trigger": "Survival Needs needs",
+          "stateChange": "Survival Needs needs"
+        }
+      ],
+      "progressionEconomyBalance": {
+        "progressionLoop": "Survival Needs needs",
+        "resourceFlow": "Survival Needs needs",
+        "balanceRules": "Survival Needs needs"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Survival Needs needs",
+          "newGameplay": "Survival Needs needs",
+          "systemImpact": "Survival Needs needs"
+        },
+        {
+          "milestone": "Survival Needs needs",
+          "newGameplay": "Survival Needs needs",
+          "systemImpact": "Survival Needs needs"
+        },
+        {
+          "milestone": "Survival Needs needs",
+          "newGameplay": "Survival Needs needs",
+          "systemImpact": "Survival Needs needs"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Survival Needs needs",
+          "Survival Needs needs",
+          "Survival Needs needs"
+        ],
+        "retryFlow": "Survival Needs needs",
+        "riskPressure": "Survival Needs needs",
+        "recoveryRules": "Survival Needs needs"
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "Survival Needs needs",
+        "performanceBudget": "Survival Needs needs",
+        "sessionConstraints": "Survival Needs needs"
+      },
+      "uxAccessibilityPlan": {
+        "hudPriorities": "Survival Needs needs",
+        "touchAndInput": "Survival Needs needs",
+        "readability": "Survival Needs needs",
+        "accessibility": "Survival Needs needs"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "Survival Needs needs",
+        "audioIdentity": "Survival Needs needs",
+        "gameplayFeedbackSync": "Survival Needs needs"
+      },
+      "implementationTraceability": [
+        {
+          "designElement": "Survival Needs needs",
+          "responsibleSystem": "Survival Needs needs",
+          "validationEvidence": "Survival Needs needs"
+        },
+        {
+          "designElement": "Survival Needs needs",
+          "responsibleSystem": "Survival Needs needs",
+          "validationEvidence": "Survival Needs needs"
+        },
+        {
+          "designElement": "Survival Needs needs",
+          "responsibleSystem": "Survival Needs needs",
+          "validationEvidence": "Survival Needs needs"
+        }
+      ]
+    },
+    "independent_department_reviews": {
+      "balance::gemma3:1b": {
+        "keep": [
+          "GAME_SEED_KEY"
+        ],
+        "fix": [
+          "GAME_SEED_KEY"
+        ],
+        "add": [
+          "GAME_SEED_KEY"
+        ],
+        "risks": [
+          "GAME_SEED_KEY"
+        ],
+        "evidence": [
+          "GAME_SEED_KEY"
+        ],
+        "questions": [
+          "GAME_SEED_KEY"
+        ]
+      },
+      "development::gemma3:1b": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "CORE_FUN_TO_LEARN"
+        ],
+        "add": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "risks": [
+          "failureRetryRisk"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json"
+        ],
+        "questions": [
+          "TARGET_DESIGN_REFERENCE"
+        ]
+      },
+      "graphics::gemma3:1b": {
+        "keep": [
+          "game_core_design_reference_target_design_reference_reference_revision_owner_full_rebuild_20260916-1"
+        ],
+        "fix": [
+          "game_seed_market_evidence.json"
+        ],
+        "add": [
+          "game_seed_platform_profiles.json"
+        ],
+        "risks": [
+          "game_seed_market_evidence.json"
+        ],
+        "evidence": [
+          "Vampire Survivors"
+        ],
+        "questions": [
+          "TARGET_DESIGN_REFERENCE"
+        ]
+      },
+      "planning::gemma3:1b": {
+        "keep": [
+          "GAME_SEED"
+        ],
+        "fix": [
+          "DESIGN_ID"
+        ],
+        "add": [
+          "MARKET_EVIDENCE_SUMMARY"
+        ],
+        "risks": [
+          "failureRetryRisk"
+        ],
+        "evidence": [
+          "sourceFile"
+        ],
+        "questions": [
+          "What are the key design decisions that impact the player's experience?"
+        ]
+      },
+      "qa::gemma3:1b": {
+        "keep": [
+          "Design Review Report - Game Seed Analysis"
+        ],
+        "fix": [
+          "GAME_SEED analysis - design review"
+        ],
+        "add": [
+          "Design Review Report - Game Seed Analysis"
+        ],
+        "risks": [
+          "Failure Retry Risk - Survival Needs needs"
+        ],
+        "evidence": [
+          "Validation Questions - Survival Needs needs"
+        ],
+        "questions": [
+          "Is the game's core loop consistent with the survival genre?"
+        ]
+      },
+      "development::llama3.2:1b": {
+        "keep": [
+          "coreLoop"
+        ],
+        "fix": [
+          "coreLoop"
+        ],
+        "add": [
+          "signatureSystems"
+        ],
+        "risks": [
+          "failureRetryRisk"
+        ],
+        "evidence": [
+          "marketEvidence_SUMMARY"
+        ],
+        "questions": [
+          "marketEvidence_SUMMARY"
+        ]
+      },
+      "graphics::llama3.2:1b": {
+        "keep": [
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+        ],
+        "fix": [
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+        ],
+        "add": [
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+        ],
+        "risks": [
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+        ],
+        "evidence": [
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+        ],
+        "questions": [
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+        ]
+      },
+      "planning::llama3.2:1b": {
+        "keep": [
+          "keep"
+        ],
+        "fix": [
+          "fix"
+        ],
+        "add": [
+          "add"
+        ],
+        "risks": [
+          "risks"
+        ],
+        "evidence": [
+          "evidence"
+        ],
+        "questions": [
+          "questions"
+        ]
+      },
+      "qa::qwen2.5:1.5b": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+        ],
+        "add": [
+          "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+        ],
+        "risks": [
+          "Survival Needs needs"
+        ],
+        "evidence": [
+          "OWNER-FULL-REBUILD-20260916-1"
+        ],
+        "questions": [
+          "Is the game's core loop consistent with the survival genre?"
+        ]
+      },
+      "balance::qwen3:0.6b": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=balance"
+        ],
+        "fix": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+        ],
+        "add": [
+          "CORE_FUN_TO_LEARN=readable survival needs, resource-to-crafting decisions, exploration risk and recovery"
+        ],
+        "risks": [
+          "survival needs needs"
+        ],
+        "evidence": [
+          "Vampire Survivors action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations"
+        ],
+        "questions": [
+          "survivor.io compact arena survival benchmark for short runs, item choices and build synergy"
+        ]
+      },
+      "development::qwen3:0.6b": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=development"
+        ],
+        "fix": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+        ],
+        "add": [
+          "CORE_LOOP=[\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\" , \""
+        ],
+        "risks": [
+          "Survival Needs needs needs Survival Needs needs needs Survival Needs needs"
+        ],
+        "evidence": [
+          "Survival Needs needs Survival Needs needs Survival Needs needs"
+        ],
+        "questions": [
+          "Survival Needs needs Survival Needs needs Survival Needs needs"
+        ]
+      },
+      "graphics::qwen3:0.6b": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+        ],
+        "add": [
+          "DISTINCT_IDENTITY=\"개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.\""
+        ],
+        "risks": [
+          "MARKET_EVIDENCE_SUMMARY={\"role\":\"TARGET_DESIGN_REFERENCE\",\"targetMarketScope\":\"GLOBAL\",\"hardPassFailGate\":false,\"available\":true,\""
+        ],
+        "evidence": [
+          "REFERENCE_GAMES\":[]"
+        ],
+        "questions": [
+          "CORE_FUN_TO_LEARN\":[]"
+        ]
+      },
+      "planning::qwen3:0.6b": {
+        "keep": [
+          "Survival needs are the core of the game, and players must gather resources to survive."
+        ],
+        "fix": [
+          "Player choice is crucial in survival games, allowing players to customize their experience."
+        ],
+        "add": [
+          "Resource-to-crafting decisions are critical in survival games, allowing players to craft essential items and equipment."
+        ],
+        "risks": [
+          "Survival Needs needs, Survival Needs needs, Survival Needs needs"
+        ],
+        "evidence": [
+          "Survival Needs needs"
+        ],
+        "questions": [
+          "What are the key design decisions that impact the player's experience?"
+        ]
+      },
+      "qa::qwen3:0.6b": {
+        "keep": [
+          "Survival Needs needs needs to be consistent with the survival genre and the core loop's progression."
+        ],
+        "fix": [
+          "The survival needs system should be balanced and rewarding for players."
+        ],
+        "add": [
+          "The player's choices and upgrades should be meaningful and impactful."
+        ],
+        "risks": [
+          "The core loop should be repeated to improve and adapt to the ever-changing game world."
+        ],
+        "evidence": [
+          "The survival needs system is a reference for the action survival benchmark."
+        ],
+        "questions": [
+          "Is the game's core loop consistent with the survival genre? Is the survival needs system balanced and rewarding? Are the player's "
+        ]
+      },
+      "balance::smollm2:1.7b": {
+        "keep": [
+          "Survival Needs needs"
+        ],
+        "fix": [
+          "Survival Needs needs"
+        ],
+        "add": [
+          "Survival Needs needs"
+        ],
+        "risks": [
+          "Survival Needs needs"
+        ],
+        "evidence": [
+          "Survival Needs needs"
+        ],
+        "questions": [
+          "Survival Needs needs"
+        ]
+      }
+    },
+    "department_representatives": {
+      "planning": {
+        "keep": [
+          "Survival needs are the core of the game, and players must gather resources to survive."
+        ],
+        "fix": [
+          "Player choice is crucial in survival games, allowing players to customize their experience."
+        ],
+        "add": [
+          "Resource-to-crafting decisions are critical in survival games, allowing players to craft essential items and equipment."
+        ],
+        "risks": [
+          "Survival Needs needs, Survival Needs needs, Survival Needs needs"
+        ],
+        "evidence": [
+          "Survival Needs needs"
+        ],
+        "questions": [
+          "What are the key design decisions that impact the player's experience?"
+        ]
+      },
+      "graphics": {
+        "keep": [
+          "game_seed_platform_profiles.json"
+        ],
+        "fix": [
+          "game_seed_market_evidence.json"
+        ],
+        "add": [
+          "TARGET_DESIGN_REFERENCE"
+        ],
+        "risks": [
+          "game_seed_market_evidence.json"
+        ],
+        "evidence": [
+          "Vampire Survivors"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ]
+      },
+      "development": {
+        "keep": [
+          "coreLoop"
+        ],
+        "fix": [
+          "coreLoop"
+        ],
+        "add": [
+          "signatureSystems"
+        ],
+        "risks": [
+          "failureRetryRisk"
+        ],
+        "evidence": [
+          "marketEvidence_SUMMARY"
+        ],
+        "questions": [
+          "marketEvidence_SUMMARY"
+        ]
+      },
+      "qa": {
+        "keep": [
+          "Survival Needs needs needs to be consistent with the survival genre and the core loop's progression."
+        ],
+        "fix": [
+          "The survival needs system should be balanced and rewarding for players."
+        ],
+        "add": [
+          "The player's choices and upgrades should be meaningful and impactful."
+        ],
+        "risks": [
+          "The core loop should be repeated to improve and adapt to the ever-changing game world."
+        ],
+        "evidence": [
+          "The survival needs system is a reference for the action survival benchmark."
+        ],
+        "questions": [
+          "Is the game's core loop consistent with the survival genre? Is the survival needs system balanced and rewarding? Are the player's choices and upgrades meaningful and impactful?"
+        ]
+      },
+      "balance": {
+        "keep": [
+          "Survival Needs needs"
+        ],
+        "fix": [
+          "Survival Needs needs"
+        ],
+        "add": [
+          "Survival Needs needs"
+        ],
+        "risks": [
+          "Survival Needs needs"
+        ],
+        "evidence": [
+          "Survival Needs needs"
+        ],
+        "questions": [
+          "Survival Needs needs"
+        ]
+      }
+    },
+    "lead_rebuttals": {
+      "planning": {
+        "accept": [
+          "keep",
+          "fix",
+          "add"
+        ],
+        "challenge": [
+          "keep",
+          "fix",
+          "add"
+        ],
+        "revision": [
+          "keep",
+          "fix",
+          "add"
+        ],
+        "reason": "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful. The evidence provided supports the importance of these elements, and the questions are clear about their impact on player experience."
+      },
+      "graphics": {
+        "accept": [
+          "graphics"
+        ],
+        "challenge": [
+          "game_seed_market_evidence.json"
+        ],
+        "revision": [
+          "TARGET_DESIGN_REFERENCE",
+          "risks",
+          "evidence"
+        ],
+        "reason": "graphics is the core of the game, and the design should be consistent with the survival genre and the core loop's progression."
+      },
+      "development": {
+        "accept": [
+          "own",
+          "OTHERS"
+        ],
+        "challenge": [
+          "own",
+          "OTHERS"
+        ],
+        "revision": [
+          "own",
+          "OTHERS"
+        ],
+        "reason": "own"
+      },
+      "qa": {
+        "accept": [
+          "Survival Needs needs needs needs to be consistent with the survival genre and the core loop's progression.",
+          "The survival needs system should be balanced and rewarding for players.",
+          "The player's choices and upgrades should be meaningful and impactful."
+        ],
+        "challenge": [
+          "The core loop should be repeated to improve and adapt to the ever-changing game world."
+        ],
+        "revision": [
+          "The core loop should be repeated to improve and adapt to the ever-changing game world."
+        ],
+        "reason": "The core loop should be repeated to improve and adapt to the ever-changing game world."
+      },
+      "balance": {
+        "accept": [
+          "Survival Needs needs",
+          "Survival Needs needs",
+          "Survival Needs needs"
+        ],
+        "challenge": [
+          "Survival Needs needs",
+          "Survival Needs needs",
+          "Survival Needs needs"
+        ],
+        "revision": [
+          "Survival Needs needs",
+          "Survival Needs needs",
+          "Survival Needs needs"
+        ],
+        "reason": "The survival needs system is a reference for the action survival benchmark."
+      }
+    },
+    "cross_department_meeting": {
+      "summary": "CONSENSUS",
+      "decisions": [
+        {
+          "topic": "planning",
+          "status": "CONSENSUS",
+          "reason": "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful. The evidence provided supports the importance of these elements, and the questions are clear about their impact on player experience.",
+          "departments": [
+            "planning"
+          ]
+        },
+        {
+          "topic": "graphics",
+          "status": "CONSENSUS",
+          "reason": "graphics is the core of the game, and the design should be consistent with the survival genre and the core loop's progression.",
+          "departments": [
+            "graphics"
+          ]
+        },
+        {
+          "topic": "development",
+          "status": "CONSENSUS",
+          "reason": "own",
+          "departments": [
+            "development"
+          ]
+        },
+        {
+          "topic": "qa",
+          "status": "CONSENSUS",
+          "reason": "The core loop should be repeated to improve and adapt to the ever-changing game world.",
+          "departments": [
+            "qa"
+          ]
+        },
+        {
+          "topic": "balance",
+          "status": "CONSENSUS",
+          "reason": "The survival needs system is a reference for the action survival benchmark.",
+          "departments": [
+            "balance"
+          ]
+        }
+      ]
+    },
+    "designer_revision_base": {
+      "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
+      "playerFantasy": "Survival",
+      "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "coreLoop": [
+        "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+        "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+        "Repeat the process to improve and adapt to the ever-changing game world."
+      ],
+      "signatureSystems": [
+        {
+          "name": "Survival Needs",
+          "purpose": "Survival needs are the core of the game, and players must gather resources to survive.",
+          "playerChoice": "Player choice is crucial in survival games, allowing players to customize their experience."
+        },
+        {
+          "name": "Resource-to-Crafting Decisions",
+          "purpose": "Resource-to-crafting decisions are critical in survival games, allowing players to craft essential items and equipment.",
+          "playerChoice": "Player choice is crucial in survival games, allowing players to customize their experience."
+        }
+      ],
+      "progressionDirection": "Competitive",
+      "visualDirection": "Competitive",
+      "mobileUx": "COOP",
+      "marketTargetDirection": "Competitive",
+      "steamExpansionDecision": "MultiplayerExpansionDecision",
+      "multiplayerMode": "COOP",
+      "multiplayerExpansionDecision": "MultiplayerExpansionDecision",
+      "technicalAssumptions": [
+        "Unity",
+        "C#",
+        "MonoBehaviour"
+      ],
+      "validationQuestions": [
+        "Is the game's core loop consistent with the survival genre?",
+        "Is the survival needs system balanced and rewarding?",
+        "Are the player's choices and upgrades meaningful and impactful?"
+      ],
+      "openQuestions": [
+        "What are the key design decisions that impact the player's experience?",
+        "How does the game's progression system reward and challenge players?",
+        "What are the most important player choices in the game?"
+      ]
+    },
+    "designer_revision_gate": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "Survival Needs",
+          "toSystem": "Survival Needs",
+          "trigger": "Survival Needs needs",
+          "stateChange": "Survival Needs needs"
+        },
+        {
+          "fromSystem": "Survival Needs",
+          "toSystem": "Survival Needs",
+          "trigger": "Survival Needs needs",
+          "stateChange": "Survival Needs needs"
+        },
+        {
+          "fromSystem": "Survival Needs",
+          "toSystem": "Survival Needs",
+          "trigger": "Survival Needs needs",
+          "stateChange": "Survival Needs needs"
+        }
+      ],
+      "progressionEconomyBalance": {
+        "progressionLoop": "Survival Needs needs",
+        "resourceFlow": "Survival Needs needs",
+        "balanceRules": "Survival Needs needs"
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "Survival Needs needs",
+          "newGameplay": "Survival Needs needs",
+          "systemImpact": "Survival Needs needs"
+        },
+        {
+          "milestone": "Survival Needs needs",
+          "newGameplay": "Survival Needs needs",
+          "systemImpact": "Survival Needs needs"
+        },
+        {
+          "milestone": "Survival Needs needs",
+          "newGameplay": "Survival Needs needs",
+          "systemImpact": "Survival Needs needs"
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "Survival Needs needs",
+          "Survival Needs needs",
+          "Survival Needs needs"
+        ],
+        "retryFlow": "Survival Needs needs",
+        "riskPressure": "Survival Needs needs",
+        "recoveryRules": "Survival Needs needs"
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "Survival Needs needs",
+        "performanceBudget": "Survival Needs needs",
+        "sessionConstraints": "Survival Needs needs"
+      },
+      "uxAccessibilityPlan": {
+        "hudPriorities": "Survival Needs needs",
+        "touchAndInput": "Survival Needs needs",
+        "readability": "Survival Needs needs",
+        "accessibility": "Survival Needs needs"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "Survival Needs needs",
+        "audioIdentity": "Survival Needs needs",
+        "gameplayFeedbackSync": "Survival Needs needs"
+      },
+      "implementationTraceability": [
+        {
+          "designElement": "Survival Needs needs",
+          "responsibleSystem": "Survival Needs needs",
+          "validationEvidence": "Survival Needs needs"
+        },
+        {
+          "designElement": "Survival Needs needs",
+          "responsibleSystem": "Survival Needs needs",
+          "validationEvidence": "Survival Needs needs"
+        },
+        {
+          "designElement": "Survival Needs needs",
+          "responsibleSystem": "Survival Needs needs",
+          "validationEvidence": "Survival Needs needs"
+        }
+      ]
+    },
+    "five_lead_fatal_review": {
+      "planning": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [],
+        "evidence": [
+          "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful.",
+          "The evidence provided supports the importance of these elements, and the questions are clear about their impact on player experience."
+        ],
+        "reason": "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful."
+      },
+      "graphics": {
+        "recommendedState": "DISCARD",
+        "fatalCriteria": [
+          "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+          "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+          "CORE_FUN_CANNOT_BE_RECOVERED"
+        ],
+        "evidence": [
+          "SURVIVAL_SEED_MARKET_REPORT_20260916"
+        ],
+        "reason": "The core loop and survival needs system are crucial for player experience. While the design decisions are important, the core loop is a fundamental element of the game, and the current design introduces a potential material duplication issue.  The evidence suggests that the core loop is essential for player engagement and the current design introduces a potential issue with the core loop.  The design is not fully resolved and requires further consideration."
+      },
+      "development": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "game-seed-market-evidence.json",
+          "game-seed-platform-profiles.json",
+          "ESA Power of Play 2025 Global Report",
+          "Newzoo 2025 Full-Year Games Market Review"
+        ],
+        "reason": "수정 설계를 다시 검토하여 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+      },
+      "qa": {
+        "recommendedState": "REDESIGN",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "The provided evidence supports the importance of the core loop and survival needs system, and the questions clarify their impact on player experience.",
+          "The graphics design should be consistent with the survival genre and the core loop's progression.",
+          "The survival needs system is a reference for the action survival benchmark, ensuring its relevance and balance."
+        ],
+        "reason": "The current design does not meet the essential criteria for the survival genre and the core loop's progression, leading to a DISCARD."
+      },
+      "balance": {
+        "recommendedState": "ACTIVE",
+        "fatalCriteria": [
+          "CORE_FUN_CANNOT_BE_RECOVERED",
+          "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+          "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+          "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+        ],
+        "evidence": [
+          "readable survival needs",
+          "resource-to-crafting decisions",
+          "exploration risk and recovery"
+        ],
+        "reason": "개인의 생존기록과 채집·제작 선택이 다시 설계한다."
+      }
+    }
+  },
+  "tasks": {
+    "independent_department_reviews::development::llama3.2:1b": {
+      "keep": [
+        "coreLoop"
+      ],
+      "fix": [
+        "coreLoop"
+      ],
+      "add": [
+        "signatureSystems"
+      ],
+      "risks": [
+        "failureRetryRisk"
+      ],
+      "evidence": [
+        "marketEvidence_SUMMARY"
+      ],
+      "questions": [
+        "marketEvidence_SUMMARY"
+      ]
+    },
+    "independent_department_reviews::development::gemma3:1b": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "CORE_FUN_TO_LEARN"
+      ],
+      "add": [
+        "MARKET_EVIDENCE_SUMMARY"
+      ],
+      "risks": [
+        "failureRetryRisk"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json"
+      ],
+      "questions": [
+        "TARGET_DESIGN_REFERENCE"
+      ]
+    },
+    "independent_department_reviews::graphics::llama3.2:1b": {
+      "keep": [
+        "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+      ],
+      "fix": [
+        "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+      ],
+      "add": [
+        "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+      ],
+      "risks": [
+        "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+      ],
+      "evidence": [
+        "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+      ],
+      "questions": [
+        "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
+      ]
+    },
+    "independent_department_reviews::graphics::gemma3:1b": {
+      "keep": [
+        "game_core_design_reference_target_design_reference_reference_revision_owner_full_rebuild_20260916-1"
+      ],
+      "fix": [
+        "game_seed_market_evidence.json"
+      ],
+      "add": [
+        "game_seed_platform_profiles.json"
+      ],
+      "risks": [
+        "game_seed_market_evidence.json"
+      ],
+      "evidence": [
+        "Vampire Survivors"
+      ],
+      "questions": [
+        "TARGET_DESIGN_REFERENCE"
+      ]
+    },
+    "independent_department_reviews::planning::llama3.2:1b": {
+      "keep": [
+        "keep"
+      ],
+      "fix": [
+        "fix"
+      ],
+      "add": [
+        "add"
+      ],
+      "risks": [
+        "risks"
+      ],
+      "evidence": [
+        "evidence"
+      ],
+      "questions": [
+        "questions"
+      ]
+    },
+    "independent_department_reviews::planning::gemma3:1b": {
+      "keep": [
+        "GAME_SEED"
+      ],
+      "fix": [
+        "DESIGN_ID"
+      ],
+      "add": [
+        "MARKET_EVIDENCE_SUMMARY"
+      ],
+      "risks": [
+        "failureRetryRisk"
+      ],
+      "evidence": [
+        "sourceFile"
+      ],
+      "questions": [
+        "What are the key design decisions that impact the player's experience?"
+      ]
+    },
+    "independent_department_reviews::qa::qwen2.5:1.5b": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=qa"
+      ],
+      "fix": [
+        "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+      ],
+      "add": [
+        "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
+      ],
+      "risks": [
+        "Survival Needs needs"
+      ],
+      "evidence": [
+        "OWNER-FULL-REBUILD-20260916-1"
+      ],
+      "questions": [
+        "Is the game's core loop consistent with the survival genre?"
+      ]
+    },
+    "independent_department_reviews::balance::qwen3:0.6b": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=balance"
+      ],
+      "fix": [
+        "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+      ],
+      "add": [
+        "CORE_FUN_TO_LEARN=readable survival needs, resource-to-crafting decisions, exploration risk and recovery"
+      ],
+      "risks": [
+        "survival needs needs"
+      ],
+      "evidence": [
+        "Vampire Survivors action-survival benchmark for horde pressure, simple attacks, upgrade choices and build combinations"
+      ],
+      "questions": [
+        "survivor.io compact arena survival benchmark for short runs, item choices and build synergy"
+      ]
+    },
+    "independent_department_reviews::qa::gemma3:1b": {
+      "keep": [
+        "Design Review Report - Game Seed Analysis"
+      ],
+      "fix": [
+        "GAME_SEED analysis - design review"
+      ],
+      "add": [
+        "Design Review Report - Game Seed Analysis"
+      ],
+      "risks": [
+        "Failure Retry Risk - Survival Needs needs"
+      ],
+      "evidence": [
+        "Validation Questions - Survival Needs needs"
+      ],
+      "questions": [
+        "Is the game's core loop consistent with the survival genre?"
+      ]
+    },
+    "independent_department_reviews::balance::gemma3:1b": {
+      "keep": [
+        "GAME_SEED_KEY"
+      ],
+      "fix": [
+        "GAME_SEED_KEY"
+      ],
+      "add": [
+        "GAME_SEED_KEY"
+      ],
+      "risks": [
+        "GAME_SEED_KEY"
+      ],
+      "evidence": [
+        "GAME_SEED_KEY"
+      ],
+      "questions": [
+        "GAME_SEED_KEY"
+      ]
+    },
+    "independent_department_reviews::development::qwen3:0.6b": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=development"
+      ],
+      "fix": [
+        "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+      ],
+      "add": [
+        "CORE_LOOP=[\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\" , \""
+      ],
+      "risks": [
+        "Survival Needs needs needs Survival Needs needs needs Survival Needs needs"
+      ],
+      "evidence": [
+        "Survival Needs needs Survival Needs needs Survival Needs needs"
+      ],
+      "questions": [
+        "Survival Needs needs Survival Needs needs Survival Needs needs"
+      ]
+    },
+    "independent_department_reviews::graphics::qwen3:0.6b": {
+      "keep": [
+        "ASSIGNED_DEPARTMENT=graphics"
+      ],
+      "fix": [
+        "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+      ],
+      "add": [
+        "DISTINCT_IDENTITY=\"개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.\""
+      ],
+      "risks": [
+        "MARKET_EVIDENCE_SUMMARY={\"role\":\"TARGET_DESIGN_REFERENCE\",\"targetMarketScope\":\"GLOBAL\",\"hardPassFailGate\":false,\"available\":true,\""
+      ],
+      "evidence": [
+        "REFERENCE_GAMES\":[]"
+      ],
+      "questions": [
+        "CORE_FUN_TO_LEARN\":[]"
+      ]
+    },
+    "independent_department_reviews::planning::qwen3:0.6b": {
+      "keep": [
+        "Survival needs are the core of the game, and players must gather resources to survive."
+      ],
+      "fix": [
+        "Player choice is crucial in survival games, allowing players to customize their experience."
+      ],
+      "add": [
+        "Resource-to-crafting decisions are critical in survival games, allowing players to craft essential items and equipment."
+      ],
+      "risks": [
+        "Survival Needs needs, Survival Needs needs, Survival Needs needs"
+      ],
+      "evidence": [
+        "Survival Needs needs"
+      ],
+      "questions": [
+        "What are the key design decisions that impact the player's experience?"
+      ]
+    },
+    "independent_department_reviews::balance::smollm2:1.7b": {
+      "keep": [
+        "Survival Needs needs"
+      ],
+      "fix": [
+        "Survival Needs needs"
+      ],
+      "add": [
+        "Survival Needs needs"
+      ],
+      "risks": [
+        "Survival Needs needs"
+      ],
+      "evidence": [
+        "Survival Needs needs"
+      ],
+      "questions": [
+        "Survival Needs needs"
+      ]
+    },
+    "independent_department_reviews::qa::qwen3:0.6b": {
+      "keep": [
+        "Survival Needs needs needs to be consistent with the survival genre and the core loop's progression."
+      ],
+      "fix": [
+        "The survival needs system should be balanced and rewarding for players."
+      ],
+      "add": [
+        "The player's choices and upgrades should be meaningful and impactful."
+      ],
+      "risks": [
+        "The core loop should be repeated to improve and adapt to the ever-changing game world."
+      ],
+      "evidence": [
+        "The survival needs system is a reference for the action survival benchmark."
+      ],
+      "questions": [
+        "Is the game's core loop consistent with the survival genre? Is the survival needs system balanced and rewarding? Are the player's "
+      ]
+    },
+    "department_representatives::planning": {
+      "keep": [
+        "Survival needs are the core of the game, and players must gather resources to survive."
+      ],
+      "fix": [
+        "Player choice is crucial in survival games, allowing players to customize their experience."
+      ],
+      "add": [
+        "Resource-to-crafting decisions are critical in survival games, allowing players to craft essential items and equipment."
+      ],
+      "risks": [
+        "Survival Needs needs, Survival Needs needs, Survival Needs needs"
+      ],
+      "evidence": [
+        "Survival Needs needs"
+      ],
+      "questions": [
+        "What are the key design decisions that impact the player's experience?"
+      ]
+    },
+    "department_representatives::graphics": {
+      "keep": [
+        "game_seed_platform_profiles.json"
+      ],
+      "fix": [
+        "game_seed_market_evidence.json"
+      ],
+      "add": [
+        "TARGET_DESIGN_REFERENCE"
+      ],
+      "risks": [
+        "game_seed_market_evidence.json"
+      ],
+      "evidence": [
+        "Vampire Survivors"
+      ],
+      "questions": [
+        "ASSIGNED_DEPARTMENT=graphics"
+      ]
+    },
+    "department_representatives::development": {
+      "keep": [
+        "coreLoop"
+      ],
+      "fix": [
+        "coreLoop"
+      ],
+      "add": [
+        "signatureSystems"
+      ],
+      "risks": [
+        "failureRetryRisk"
+      ],
+      "evidence": [
+        "marketEvidence_SUMMARY"
+      ],
+      "questions": [
+        "marketEvidence_SUMMARY"
+      ]
+    },
+    "department_representatives::qa": {
+      "keep": [
+        "Survival Needs needs needs to be consistent with the survival genre and the core loop's progression."
+      ],
+      "fix": [
+        "The survival needs system should be balanced and rewarding for players."
+      ],
+      "add": [
+        "The player's choices and upgrades should be meaningful and impactful."
+      ],
+      "risks": [
+        "The core loop should be repeated to improve and adapt to the ever-changing game world."
+      ],
+      "evidence": [
+        "The survival needs system is a reference for the action survival benchmark."
+      ],
+      "questions": [
+        "Is the game's core loop consistent with the survival genre? Is the survival needs system balanced and rewarding? Are the player's choices and upgrades meaningful and impactful?"
+      ]
+    },
+    "department_representatives::balance": {
+      "keep": [
+        "Survival Needs needs"
+      ],
+      "fix": [
+        "Survival Needs needs"
+      ],
+      "add": [
+        "Survival Needs needs"
+      ],
+      "risks": [
+        "Survival Needs needs"
+      ],
+      "evidence": [
+        "Survival Needs needs"
+      ],
+      "questions": [
+        "Survival Needs needs"
+      ]
+    },
+    "lead_rebuttals::planning": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful. The evidence provided supports the importance of these elements, and the questions are clear about their impact on player experience."
+    },
+    "lead_rebuttals::development": {
+      "accept": [
+        "own",
+        "OTHERS"
+      ],
+      "challenge": [
+        "own",
+        "OTHERS"
+      ],
+      "revision": [
+        "own",
+        "OTHERS"
+      ],
+      "reason": "own"
+    },
+    "lead_rebuttals::graphics": {
+      "accept": [
+        "graphics"
+      ],
+      "challenge": [
+        "game_seed_market_evidence.json"
+      ],
+      "revision": [
+        "TARGET_DESIGN_REFERENCE",
+        "risks",
+        "evidence"
+      ],
+      "reason": "graphics is the core of the game, and the design should be consistent with the survival genre and the core loop's progression."
+    },
+    "lead_rebuttals::qa": {
+      "accept": [
+        "Survival Needs needs needs needs to be consistent with the survival genre and the core loop's progression.",
+        "The survival needs system should be balanced and rewarding for players.",
+        "The player's choices and upgrades should be meaningful and impactful."
+      ],
+      "challenge": [
+        "The core loop should be repeated to improve and adapt to the ever-changing game world."
+      ],
+      "revision": [
+        "The core loop should be repeated to improve and adapt to the ever-changing game world."
+      ],
+      "reason": "The core loop should be repeated to improve and adapt to the ever-changing game world."
+    },
+    "lead_rebuttals::balance": {
+      "accept": [
+        "Survival Needs needs",
+        "Survival Needs needs",
+        "Survival Needs needs"
+      ],
+      "challenge": [
+        "Survival Needs needs",
+        "Survival Needs needs",
+        "Survival Needs needs"
+      ],
+      "revision": [
+        "Survival Needs needs",
+        "Survival Needs needs",
+        "Survival Needs needs"
+      ],
+      "reason": "The survival needs system is a reference for the action survival benchmark."
+    },
+    "five_lead_fatal_review::planning": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [],
+      "evidence": [
+        "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful.",
+        "The evidence provided supports the importance of these elements, and the questions are clear about their impact on player experience."
+      ],
+      "reason": "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful."
+    },
+    "five_lead_fatal_review::graphics": {
+      "recommendedState": "DISCARD",
+      "fatalCriteria": [
+        "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+        "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
+        "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
+        "CORE_FUN_CANNOT_BE_RECOVERED"
+      ],
+      "evidence": [
+        "SURVIVAL_SEED_MARKET_REPORT_20260916"
+      ],
+      "reason": "The core loop and survival needs system are crucial for player experience. While the design decisions are important, the core loop is a fundamental element of the game, and the current design introduces a potential material duplication issue.  The evidence suggests that the core loop is essential for player engagement and the current design introduces a potential issue with the core loop.  The design is not fully resolved and requires further consideration."
+    },
+    "five_lead_fatal_review::development": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "game-seed-market-evidence.json",
+        "game-seed-platform-profiles.json",
+        "ESA Power of Play 2025 Global Report",
+        "Newzoo 2025 Full-Year Games Market Review"
+      ],
+      "reason": "수정 설계를 다시 검토하여 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+    },
+    "five_lead_fatal_review::qa": {
+      "recommendedState": "REDESIGN",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "The provided evidence supports the importance of the core loop and survival needs system, and the questions clarify their impact on player experience.",
+        "The graphics design should be consistent with the survival genre and the core loop's progression.",
+        "The survival needs system is a reference for the action survival benchmark, ensuring its relevance and balance."
+      ],
+      "reason": "The current design does not meet the essential criteria for the survival genre and the core loop's progression, leading to a DISCARD."
+    },
+    "five_lead_fatal_review::balance": {
+      "recommendedState": "ACTIVE",
+      "fatalCriteria": [
+        "CORE_FUN_CANNOT_BE_RECOVERED",
+        "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
+        "SELECTED_TARGET_PLATFORM_CANNOT_WORK_AS_PRODUCT",
+        "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
+      ],
+      "evidence": [
+        "readable survival needs",
+        "resource-to-crafting decisions",
+        "exploration risk and recovery"
+      ],
+      "reason": "개인의 생존기록과 채집·제작 선택이 다시 설계한다."
+    }
+  },
+  "createdAt": "2026-09-18T04:21:37.048Z",
+  "updatedAt": "2026-09-18T04:41:22.197Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "completedAt": "2026-09-18T04:41:22.197Z"
+}
