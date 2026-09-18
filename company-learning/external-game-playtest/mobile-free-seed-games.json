@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "sourceSeed": "game-seed-market-evidence.json",
   "authority": "EXTERNAL_COMMERCIAL_RUNTIME_REFERENCE",
   "practiceOnly": true,
@@ -7,13 +7,15 @@
   "codeExtractionAllowed": false,
   "binaryRedistributionAllowed": false,
   "installPolicy": "OFFICIAL_GOOGLE_PLAY_ONLY",
-  "observedStoreAt": "2026-09-11",
+  "observedStoreAt": "2026-09-18",
   "games": [
     {
       "id": "block-blast",
       "title": "Block Blast!",
       "category": "PUZZLE",
-      "packageIds": ["com.block.juggle"],
+      "packageIds": [
+        "com.block.juggle"
+      ],
       "storeUrl": "https://play.google.com/store/apps/details?id=com.block.juggle",
       "inputProfile": "BLOCK_PUZZLE",
       "seedListed": true,
@@ -25,7 +27,9 @@
       "id": "subway-surfers",
       "title": "Subway Surfers",
       "category": "CASUAL",
-      "packageIds": ["com.kiloo.subwaysurf"],
+      "packageIds": [
+        "com.kiloo.subwaysurf"
+      ],
       "storeUrl": "https://play.google.com/store/apps/details?id=com.kiloo.subwaysurf",
       "inputProfile": "RUNNER",
       "seedListed": true
@@ -34,7 +38,9 @@
       "id": "royal-match",
       "title": "Royal Match",
       "category": "PUZZLE",
-      "packageIds": ["com.dreamgames.royalmatch"],
+      "packageIds": [
+        "com.dreamgames.royalmatch"
+      ],
       "storeUrl": "https://play.google.com/store/apps/details?id=com.dreamgames.royalmatch",
       "inputProfile": "MATCH3",
       "seedListed": true
@@ -43,7 +49,9 @@
       "id": "survivor-io",
       "title": "Survivor.io",
       "category": "ACTION_SURVIVAL_ROGUELITE",
-      "packageIds": ["com.dxx.firenow"],
+      "packageIds": [
+        "com.dxx.firenow"
+      ],
       "storeUrl": "https://play.google.com/store/apps/details?id=com.dxx.firenow",
       "inputProfile": "SURVIVAL",
       "seedListed": true
@@ -52,7 +60,9 @@
       "id": "candy-crush-saga",
       "title": "Candy Crush Saga",
       "category": "PUZZLE",
-      "packageIds": ["com.king.candycrushsaga"],
+      "packageIds": [
+        "com.king.candycrushsaga"
+      ],
       "storeUrl": "https://play.google.com/store/apps/details?id=com.king.candycrushsaga",
       "inputProfile": "MATCH3",
       "seedListed": true
@@ -61,10 +71,159 @@
       "id": "afk-arena",
       "title": "AFK Arena",
       "category": "IDLE_GROWTH_RPG",
-      "packageIds": ["com.lilithgame.hgame.gp.kr", "com.lilithgame.hgame.gp"],
+      "packageIds": [
+        "com.lilithgame.hgame.gp.kr",
+        "com.lilithgame.hgame.gp"
+      ],
       "storeUrl": "https://play.google.com/store/apps/details?id=com.lilithgame.hgame.gp.kr",
       "inputProfile": "IDLE_RPG",
       "seedListed": true
+    },
+    {
+      "id": "brawl-stars",
+      "title": "Brawl Stars",
+      "category": "ACTION_PVP",
+      "packageIds": [
+        "com.supercell.brawlstars"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.supercell.brawlstars",
+      "inputProfile": "ARENA_DUAL_STICK",
+      "seedListed": true
+    },
+    {
+      "id": "clash-of-clans",
+      "title": "Clash of Clans",
+      "category": "STRATEGY_BASE",
+      "packageIds": [
+        "com.supercell.clashofclans"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.supercell.clashofclans",
+      "inputProfile": "STRATEGY_TAP",
+      "seedListed": true
+    },
+    {
+      "id": "monopoly-go",
+      "title": "MONOPOLY GO!",
+      "category": "CASUAL_BOARD",
+      "packageIds": [
+        "com.scopely.monopolygo"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.scopely.monopolygo",
+      "inputProfile": "BOARD_TAP",
+      "seedListed": true
+    },
+    {
+      "id": "stumble-guys",
+      "title": "Stumble Guys",
+      "category": "CASUAL",
+      "packageIds": [
+        "com.kitkagames.fallbuddies"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.kitkagames.fallbuddies",
+      "inputProfile": "RUNNER",
+      "seedListed": true
+    },
+    {
+      "id": "hill-climb-racing-2",
+      "title": "Hill Climb Racing 2",
+      "category": "CASUAL",
+      "packageIds": [
+        "com.fingersoft.hcr2"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.fingersoft.hcr2",
+      "inputProfile": "DRIVE_TWO_BUTTON",
+      "seedListed": true
+    },
+    {
+      "id": "angry-birds-2",
+      "title": "Angry Birds 2",
+      "category": "PUZZLE",
+      "packageIds": [
+        "com.rovio.baba"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.rovio.baba",
+      "inputProfile": "SLINGSHOT",
+      "seedListed": true
+    },
+    {
+      "id": "pokemon-go",
+      "title": "Pokémon GO",
+      "category": "LOCATION_COLLECTION_RPG",
+      "packageIds": [
+        "com.nianticlabs.pokemongo"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.nianticlabs.pokemongo",
+      "inputProfile": "LOCATION_TAP",
+      "seedListed": true
+    },
+    {
+      "id": "gardenscapes",
+      "title": "Gardenscapes",
+      "category": "PUZZLE",
+      "packageIds": [
+        "com.playrix.gardenscapes"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.playrix.gardenscapes",
+      "inputProfile": "MATCH3",
+      "seedListed": true
+    },
+    {
+      "id": "homescapes",
+      "title": "Homescapes",
+      "category": "PUZZLE",
+      "packageIds": [
+        "com.playrix.homescapes"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.playrix.homescapes",
+      "inputProfile": "MATCH3",
+      "seedListed": true
+    },
+    {
+      "id": "pokemon-tcg-pocket",
+      "title": "Pokémon TCG Pocket",
+      "category": "CARD_COLLECTION",
+      "packageIds": [
+        "jp.pokemon.pokemontcgp"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=jp.pokemon.pokemontcgp",
+      "inputProfile": "CARD_TAP",
+      "seedListed": true
+    },
+    {
+      "id": "whiteout-survival",
+      "title": "Whiteout Survival",
+      "category": "STRATEGY_SURVIVAL",
+      "packageIds": [
+        "com.gof.global"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=com.gof.global",
+      "inputProfile": "STRATEGY_TAP",
+      "seedListed": true
+    },
+    {
+      "id": "pizza-ready",
+      "title": "Pizza Ready!",
+      "category": "IDLE_TYCOON",
+      "packageIds": [
+        "io.supercent.pizzaidle"
+      ],
+      "storeUrl": "https://play.google.com/store/apps/details?id=io.supercent.pizzaidle",
+      "inputProfile": "IDLE_RPG",
+      "seedListed": true
     }
-  ]
+  ],
+  "rotationPolicy": {
+    "mode": "HOURLY_ROTATING_BATCH",
+    "defaultBatchSize": 3,
+    "manualMaxBatchSize": 12,
+    "wrapAround": true,
+    "startIndexDerivedFromRunNumber": true
+  },
+  "learningPolicy": {
+    "copyMode": false,
+    "transformativeReinterpretation": true,
+    "derivedFeaturesOnly": true,
+    "rawSourceOutputAllowed": false,
+    "rawAssetOutputAllowed": false
+  }
 }
