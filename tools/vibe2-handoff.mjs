@@ -128,8 +128,8 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   add(clean(state.queue) !== clean(sources.queue), 'QUEUE_SOURCE_DIVERGED');
   add(clean(state.parallelism) !== clean(sources.parallelism || adaptive.stateFile), 'PARALLELISM_SOURCE_DIVERGED');
   add(clean(state.experience) !== clean(sources.experience), 'EXPERIENCE_SOURCE_DIVERGED');
-  const lifecycleStatePath=clean(state.projectLifecycle);
   const lifecycleSourcePath=clean(sources.projectLifecycleState||sources.webRobloxHandoffs);
+  const lifecycleStatePath=clean(state.projectLifecycle||lifecycleSourcePath);
   if(lifecycleStatePath||lifecycleSourcePath)add(lifecycleStatePath!==lifecycleSourcePath,'PROJECT_LIFECYCLE_SOURCE_DIVERGED');
   const projectContract=runtime.projectLifecycle||{};
   const requiredProjectFields=Array.isArray(projectContract.requiredFields)?projectContract.requiredFields.map(clean).filter(Boolean):[];
