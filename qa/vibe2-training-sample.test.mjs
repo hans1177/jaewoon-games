@@ -2,6 +2,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { buildVerifiedTrainingSample, MAX_PATCH_BYTES, TRAINING_SAMPLE_VERSION, validatePositiveTrace, qaEvidencePasses, qaRequirementsForTask } from '../tools/vibe2-training-sample.mjs';
+import { validateVerifiedWebFinalBinding } from '../tools/vibe2-distillation-ingest.mjs';
 
 function trace(sourceRevision = 'abc123', overrides = {}) {
   return { state: 'PASS', sourceRevision, commitSha: sourceRevision, pullRequest: 123, ci: 'PASS', independentQa: 'PASS', runtime: 'PASS', stale: false, flaky: false, ...overrides };
@@ -76,4 +77,40 @@ test('FAIL STALLED NO_ACTIONABLE_WORK stale SHA mismatch는 성공 데이터가 
   for (const state of ['FAIL', 'STALLED', 'NO_ACTIONABLE_WORK', 'INCOMPLETE_PROGRESS', 'FLAKY', 'STALE', 'SHA_MISMATCH']) assert.throws(() => validatePositiveTrace(trace('abc123', { state }), 'abc123'), /성공 trace 상태/);
   assert.throws(() => validatePositiveTrace(trace('abc123', { stale: true }), 'abc123'), /stale/);
   assert.throws(() => validatePositiveTrace(trace('other'), 'abc123'), /SHA mismatch/);
+});
+
+function validFinalWebItem(){
+  return {gameId:'web-g1',formalImplementationPassed:true,webStrictScore:96,strictImplementationVerdict:'PASS'};
+}
+function validFinalWebReport(){
+  return {
+    gameId:'web-g1',pass:true,formalImplementationPassed:true,gameplayInteractionPerformed:true,interactionCount:50,sourceRevision:'a'.repeat(40),
+    webStrictScore:96,strictReview:{verdict:'PASS',totalScore:96,hardFailures:[]},
+    contentDepthValidation:{validationMode:'REAL_ELAPSED_GAMEPLAY',pass:true,meaningfulGameplayMilliseconds:1800000},
+    promotionRevalidation:{required:true,independentRun:true,pass:true,sourceHashMatch:true,baselineHashMatch:true},
+    runtimeValidationEvidence:{
+      replayRegression:{required:true,independentRun:true,pass:true},
+      preplatformReadiness:{pass:true},performance:{pass:true},mobile:{pass:true},saveRestore:{required:true,pass:true},strategyOutcomes:{required:false,pass:true}
+    },
+    implementationMetrics:{gameplayActionCount:50},terminalOutcome:{reached:true}
+  };
+}
+
+test('verified final Web training binding requires runtime hash PR CI and patch together',()=>{
+  const valid=validateVerifiedWebFinalBinding({
+    item:validFinalWebItem(),report:validFinalWebReport(),sourceRoot:'web-games/web-g1',
+    sourceRevision:'b'.repeat(40),pullRequest:1055,ciPass:true,patch:'diff --git a/web-games/web-g1/index.html b/web-games/web-g1/index.html\n-old\n+new',sourceHashMatched:true
+  });
+  assert.equal(valid.pass,true);
+  for(const mutate of [
+    x=>{x.sourceHashMatched=false;},
+    x=>{x.pullRequest=0;},
+    x=>{x.ciPass=false;},
+    x=>{x.patch='';},
+    x=>{x.report.promotionRevalidation.baselineHashMatch=false;}
+  ]){
+    const input={item:validFinalWebItem(),report:validFinalWebReport(),sourceRoot:'web-games/web-g1',sourceRevision:'b'.repeat(40),pullRequest:1055,ciPass:true,patch:'diff',sourceHashMatched:true};
+    mutate(input);
+    assert.equal(validateVerifiedWebFinalBinding(input).pass,false);
+  }
 });
