@@ -10,6 +10,7 @@ const reconcile=read('tools/company-development-roblox-source-reconcile.mjs');
 const feeder=read('tools/vibe2-post-release-focus.mjs');
 const runner=read('.github/workflows/vibe2-24h-runner.yml');
 const queue=read('assets/vibe-continuous-queue.js');
+const seedDesignRuntime=read('.github/workflows/company-seed-design-runtime.yml');
 
 const lifecycle=roadmap.developmentLifecycleMachine;
 assert.equal(lifecycle.authority,'MACHINE_EXECUTION_CONTRACT');
@@ -69,5 +70,26 @@ assert.match(runner,/company-runtime:development-queue\.json|origin\/company-run
 assert.match(queue,/postReleaseFocusedSlots: 1/);
 assert.match(queue,/isPostReleaseFocused/);
 assert.match(queue,/postReleaseFocusedTaskId/);
+
+const quota=lifecycle.modelQuotaContinuity;
+assert.equal(quota.enabled,true);
+assert.equal(quota.designProviderPolicy,'GEMINI_ONLY');
+assert.equal(quota.quotaFailureIsDesignGateFailure,false);
+assert.equal(quota.quotaBlockedState,'WAITING_FOR_GEMINI_QUOTA');
+assert.equal(quota.runnerStopOnQuotaExhaustion,false);
+assert.equal(quota.continuousRefillRequired,true);
+assert.equal(quota.blockedModelTaskConsumesDevelopmentSlot,false);
+assert.equal(quota.checkpointResumeRequired,true);
+assert.equal(quota.completedPhaseReplayForbidden,true);
+assert.equal(quota.fullCycleRestartForbidden,true);
+assert.equal(quota.vibeSubstitution.enabled,true);
+for(const stage of ['WEB_BASE_IMPLEMENTATION','WEB_RUNTIME_VALIDATION','TARGET_PLATFORM_SOURCE_BIND','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','POST_RELEASE_FOCUSED_DEVELOPMENT']){
+  assert(quota.vibeSubstitution.allowedStages.includes(stage),stage);
+}
+assert(quota.vibeSubstitution.forbiddenResponsibilities.includes('DESIGN_INDEPENDENT_LEAD_REVIEW'));
+assert(quota.vibeSubstitution.forbiddenResponsibilities.includes('STAGE_GATE_SCORE_OR_VERDICT_SYNTHESIS'));
+assert.equal(quota.geminiFallback.paidApiAdditionForbidden,true);
+assert.equal(quota.geminiFallback.resumeFromExactBlockedTask,true);
+assert.match(seedDesignRuntime,/COMPANY_GEMINI_FALLBACK_MODELS: '[^']*gemini-2\.5-flash[^']*gemini-2\.5-flash-lite'/);
 
 console.log('PASS machine lifecycle binds Web baseline to native source and one protected Roblox post-release focus slot');
