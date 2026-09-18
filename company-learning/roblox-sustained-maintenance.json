@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "status": "ACTIVE",
+  "authority": "MACHINE_EXECUTION_CONTRACT",
+  "humanDocumentRequired": false,
+  "purpose": "RECOVER_HISTORICALLY_PUBLISHED_OR_VALIDATED_ROBLOX_ASSETS_INTO_SUSTAINED_MAINTENANCE_WITHOUT_INVENTING_CURRENT_RELEASE_CLAIMS",
+  "protectedMaintenanceSlots": 1,
+  "automaticRepublish": false,
+  "canonicalRepublishRoute": "EXISTING_ROBLOX_RELEASE_PROMOTION_PIPELINE",
+  "sourceEvidence": "roblox-games/known-good-runtime-evidence.json",
+  "assets": [
+    {
+      "gameId": "seed-roblox-battleground-fight-welcome-to-bloxburg",
+      "gameName": "Vector Clash",
+      "sourceRoot": "roblox-games/seed-roblox-battleground-fight-welcome-to-bloxburg",
+      "historicalSourceRevision": "1ce32ac40c5d3fcecee11979c5ba531b12e99c49",
+      "artifactIdentity": "sha256:97d89f3dcd07ef9433f96f7c7f5178ec0a9979105051d79a9447da4e7fe71691",
+      "evidence": {
+        "actualStudioRuntime": true,
+        "postRuntimeIndependentQa": true,
+        "regression": true,
+        "multiplayerQa": true,
+        "publicationTargetObserved": true,
+        "universeId": "10766519079",
+        "placeId": "120787429678729",
+        "observedAt": "2026-09-15",
+        "observedFrom": "authenticated Roblox Studio output"
+      },
+      "recoveryState": "HISTORICAL_PUBLICATION_TARGET_VERIFIED",
+      "maintenanceEligible": true,
+      "currentReleaseClaim": false,
+      "maintenanceMode": "SUSTAINED_POST_DEPLOYMENT_SOURCE_DEVELOPMENT",
+      "rules": {
+        "preserveGameIdentity": true,
+        "preserveSaveMeaning": true,
+        "preserveHistoricalPublicationTarget": true,
+        "doNotClaimCurrentPublicReleaseWithoutFreshEvidence": true,
+        "sourceChangesRequireCanonicalRuntimeQaRegressionPromotion": true,
+        "automaticRepublish": false
+      }
+    },
+    {
+      "gameId": "seed-roblox-survival-horror-es-doors",
+      "gameName": "Last Lantern",
+      "sourceRoot": "roblox-games/seed-roblox-survival-horror-es-doors",
+      "historicalSourceRevision": "5fd8f96c445bb3b7a26b49252b9dff7a4ed3f1f1",
+      "artifactIdentity": "sha256:db36cbe655261718e105e90b87533121727a13016e25fcaf547c2535b4b74633",
+      "evidence": {
+        "actualStudioRuntime": true,
+        "postRuntimeIndependentQa": true,
+        "regression": true,
+        "multiplayerQa": false,
+        "publicationTargetObserved": false
+      },
+      "recoveryState": "HISTORICAL_RUNTIME_VALIDATED_PUBLICATION_TARGET_UNCONFIRMED",
+      "maintenanceEligible": false,
+      "currentReleaseClaim": false,
+      "maintenanceMode": "VALIDATED_ASSET_PRESERVATION",
+      "blocker": "PUBLICATION_TARGET_EVIDENCE_MISSING",
+      "rules": {
+        "preserveGameIdentity": true,
+        "preserveSaveMeaning": true,
+        "doNotInventPublicationTarget": true,
+        "maintenanceActivationRequiresPublicationTargetEvidence": true,
+        "automaticRepublish": false
+      }
+    }
+  ]
+}
