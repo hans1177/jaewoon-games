@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-19",
+  "updatedAt": "2026-09-11",
   "policy": {
     "webGames": "mandatory-full-approved-scope-companion",
     "existingWebMaintenance": true,
@@ -60,11 +60,11 @@
       "FORTNITE_UEFN"
     ],
     "platformPriority": [
-      "UNITY",
       "ROBLOX",
+      "UNITY",
       "FORTNITE_UEFN"
     ],
-    "priorityMeaning": "UNITY_ROBLOX_EQUAL_FIRST_TIER_READINESS_AND_EXECUTION_EFFICIENCY_TIEBREAK",
+    "priorityMeaning": "DEFAULT_FOCUS_AND_EXPERIENCE_ACCUMULATION_ORDER_ONLY",
     "primaryPlatformIsDefaultNotLock": true,
     "allThreePlatformsMayBeDevelopedConcurrently": true,
     "platformRoadmapPhaseEntryGatesForbidden": true,
@@ -142,11 +142,11 @@
       "nextDevelopmentGameIds": [],
       "selection": "AUTO_SELECTED_PLATFORM_READY_THEN_SCORE_WITH_IMPACT_AWARE_DEVELOPMENT",
       "platformPriority": [
-        "UNITY",
         "ROBLOX",
+        "UNITY",
         "FORTNITE_UEFN"
       ],
-      "priorityMeaning": "UNITY_ROBLOX_EQUAL_FIRST_TIER",
+      "priorityMeaning": "DEFAULT_FOCUS_ONLY_NO_PLATFORM_GATE",
       "activeDevelopmentRunId": 34531173768,
       "syncIntervalMs": 30000,
       "updatedAtKst": "2026-09-11",
@@ -155,15 +155,6 @@
         "game-artbooks.json",
         "game-catalog.json",
         "tools/autonomous-24h-work-planner.mjs"
-      ],
-      "platformPriorityTiers": [
-        [
-          "UNITY",
-          "ROBLOX"
-        ],
-        [
-          "FORTNITE_UEFN"
-        ]
       ]
     },
     "productionClasses": {
