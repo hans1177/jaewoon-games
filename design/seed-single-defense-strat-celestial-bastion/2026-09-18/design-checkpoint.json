@@ -7,12 +7,245 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "천상의 보루는 싱글 플레이어 디펜스 전략 게임으로, 제한된 자원을 활용해 천상의 길목에 타워와 방어 유닛을 배치하고 다가오는 적의 공세를 막아내는 고유한 정체성을 가집니다. coreLoop는 적의 웨이브 예측, 방어선 구축, 자원 획득 및 업그레이드의 유기적인 순환을 만들고, signatureSystems는 타워 간의 시너지와 지형 활용을 통해 매 판마다 완전히 다른 전략적 선택과 상태 변화를 이끌어냅니다.",
+      "playerFantasy": "플레이어는 천상의 요새를 수호하는 총사령관이 되어, 사방에서 몰려오는 혼돈의 세력에 맞서 전략적인 방어선을 구축하고 요새를 승리로 이끄는 몰입감 넘치는 전술적 판타지를 경험합니다.",
+      "coreFun": "적의 공격 패턴을 관찰하고 최적의 위치에 방어 타워를 배치하여 적을 저지할 때 발생하는 즉각적인 자원 획득과 웨이브 클리어의 쾌감이 반복되는 명확한 상태 변화를 제공합니다.",
+      "coreLoop": [
+        "다가오는 적의 웨이브 정보를 미리 읽고 위협적인 경로를 분석하여 방어 유닛과 타워를 전략적으로 배치한다.",
+        "처치한 적에게서 획득한 자원을 바탕으로 타워를 업그레이드하거나 새로운 전술적 요소를 활성화한다.",
+        "변화하는 적의 구성에 맞춰 방어선을 실시간으로 조정하고 보스 웨이브를 돌파하여 다음 스테이지로 진입한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "천상 자원 및 에너지 연동 시스템",
+          "purpose": "플레이어가 적을 처치하거나 웨이브를 방어할 때 획득하는 에너지를 관리하여 다음 행동의 자원으로 직결되도록 설계된 핵심 경제 시스템입니다.",
+          "playerChoice": "에너지를 즉시 소모하여 저비용 타워를 대량 배치할지, 아니면 미래의 고성능 타워 업그레이드를 위해 에너지를 비축할지 전략적인 양자택일을 강제합니다."
+        },
+        {
+          "name": "지형 및 속성 시너지 배치 시스템",
+          "purpose": "맵의 특정 지형 효과와 타워의 원소 속성을 결합하여 광역 피해나 군중 제어 효과를 극대화하는 전술적 상호작용 시스템입니다.",
+          "playerChoice": "어떤 속성의 타워를 어떤 지형 포인트에 배치할지 결정함으로써 적의 이동 경로를 왜곡하고 방어 효율을 극단적으로 끌어올리는 선택을 합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "천상 자원 및 에너지 연동 시스템",
+          "toSystem": "지형 및 속성 시너지 배치 시스템",
+          "trigger": "웨이브 클리어로 자원이 축적될 때",
+          "stateChange": "고급 속성 타워의 건설 및 지형 개방 권한이 해제되어 방어력과 공격력이 동반 상승한다."
+        },
+        {
+          "fromSystem": "지형 및 속성 시너지 배치 시스템",
+          "toSystem": "전투 웨이브 관리 시스템",
+          "trigger": "특정 속성 타워가 적에게 디버프를 부여할 때",
+          "stateChange": "적의 이동 속도가 저하되고 방어선 내부에서 머무는 시간이 길어져 추가 타격 기회가 생성된다."
+        },
+        {
+          "fromSystem": "전투 웨이브 관리 시스템",
+          "toSystem": "천상 자원 및 에너지 연동 시스템",
+          "trigger": "웨이브가 성공적으로 방어 완료될 때",
+          "stateChange": "보상 에너지가 지급되며 다음 웨이브의 난이도와 자원 배분 비율이 동적으로 재조정된다."
+        }
+      ],
+      "progressionDirection": "플레이어는 초기 스테이지에서 기본 타워와 단순한 웨이브 방어를 학습한 후, 중후반부로 갈수록 다양한 속성 조합과 특수 지형을 활용하는 고도화된 전략적 성장을 경험하게 됩니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "적 처치 및 웨이브 클리어 -> 자원 획득 -> 타워 업그레이드 및 신규 배치 -> 더 강력한 적 웨이브 돌파의 선순환 구조를 유지합니다.",
+        "resourceFlow": "초기에는 빠른 유입으로 기본 빌드를 구축하게 하고, 중반 이후에는 자원 관리의 효율성이 승패를 가르도록 경제 흐름을 설계합니다.",
+        "balanceRules": "모든 타워의 건설 비용과 업그레이드 비용은 웨이브 보상 대비 비선형적으로 증가하여 무한정 강화할 수 없도록 균형을 잡습니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "미션 1단계: 엘리트 적의 등장과 속성 상극 도입",
+          "newGameplay": "특정 속성에 면역을 가지거나 보호막을 두른 엘리트 적들이 등장하여 기존 단일 타워 위주의 빌드에 변화를 강제하는 새로운 전술적 양상을 제공합니다.",
+          "systemImpact": "지형 및 속성 시너지 배치 시스템의 중요성이 대폭 증가하며 다양한 타워 조합을 연구하도록 유도합니다."
+        },
+        {
+          "milestone": "미션 2단계: 천상 특성 트리 및 패시브 능력 해제",
+          "newGameplay": "스테이지 클리어 점수를 통해 영구적인 천상 특성을 해제하고 플레이어만의 고유한 패시브 버프를 장착하여 플레이 스타일을 다변화합니다.",
+          "systemImpact": "자원 연동 시스템과 연계되어 경제 구조에 영구적인 변수를 더하고 리플레이 가치를 높입니다."
+        },
+        {
+          "milestone": "미션 3단계: 무한 방어 챌린지 모드 오픈",
+          "newGameplay": "끝없이 몰려오는 적의 공세를 극한의 타워 배치로 버텨내는 고난도 서바이벌 웨이브 모드를 새롭게 개방합니다.",
+          "systemImpact": "전투 웨이브 관리 시스템의 한계를 시험하며 최적의 자원 배분과 빌드 효율을 검증하는 무대가 됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "방어선이 완전히 돌파되어 천상의 요새 체력이 0이 되는 경우",
+          "제한 시간 내에 보스 적을 저지하지 못하여 핵심 오브젝트가 파괴되는 경우"
+        ],
+        "retryFlow": "실패 시 즉시 패배 화면이 출력되며, 현재 스테이지에서 부족했던 타워 배치나 자원 관리의 패착을 확인한 후 곧바로 재도전이나 이전 단계로 돌아갈 수 있습니다.",
+        "riskPressure": "웨이브가 진행될수록 적의 물량이 급증하므로 한 번의 잘못된 자원 투자가 전체 방어선의 붕괴로 이어지는 높은 긴장감을 유발합니다.",
+        "recoveryRules": "실패한 스테이지에서 획득했던 일부 자원의 일부를 보존하여 재도전 시 초기 빌드업을 소폭 보완할 수 있는 구제 수단을 제공합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치 및 마우스 클릭 기반의 직관적인 드래그 앤 드롭 타워 배치와 터치 인터페이스 최적화",
+        "performanceBudget": "모바일 저사양 기기에서도 60프레임을 유지할 수 있도록 파티클 효과와 동적 오브젝트 풀링 최적화 적용",
+        "sessionConstraints": "한 판의 세션 길이를 평균 5~7분 내외로 설계하여 언제 어디서나 가볍고 몰입감 있게 플레이 가능하도록 구성"
+      },
+      "visualDirection": "신성하고 찬란한 천상의 요새와 대비되는 어두운 혼돈의 세력 간의 시각적 대조를 강조하는 깔끔하고 직관적인 카툰 랜더링 스타일",
+      "mobileUx": "엄지손가락 한 손으로도 주요 타워 업그레이드와 웨이브 시작 버튼을 쉽게 조작할 수 있는 하단 중심의 UI 배치",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "요새 남은 체력, 현재 보유 자원, 다음 웨이브 카운트다운을 화면 상단과 하단에 명확하게 배치하여 시인성 확보",
+        "touchAndInput": "오인 클릭을 방지하기 위한 충분한 터치 히트박스와 드래그 확인 절차 도입",
+        "readability": "색약 모드 지원 및 적과 타워의 시각적 구분을 명확히 하는 이펙트 윤곽선 제공",
+        "accessibility": "게임 속도 조절 기능과 사운드 시각화 인디케이터를 통해 다양한 플레이어 환경 포용"
+      },
+      "artAudioDirection": {
+        "visualIdentity": "황금빛 천상 건축물과 푸른 에너지 파동이 어우러진 신비롭고 정돈된 전장 디자인",
+        "audioIdentity": "웅장한 오케스트라풍의 배경음악과 타워 공격 시 타격감을 높여주는 청량하고 묵직한 효과음",
+        "gameplayFeedbackSync": "적 피격 및 타워 건설 시 즉각적인 사운드와 시각적 파티클 피드백을 동기화하여 조작 만족도 극대화"
+      },
+      "marketTargetDirection": "글로벌 모바일 및 전략 디펜스 장르 선호 유저층을 타겟으로 하여 깊이 있는 전략과 캐주얼한 접근성을 동시에 충족",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후, 넓은 화면과 정밀한 마우스 조작을 지원하는 PC 스팀 플랫폼으로의 확장 가능성 적극 검토",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "싱글 플레이어 경험의 완성도를 최우선으로 검증한 뒤, 향후 협동 방어 모드 등의 확장 여부를 결정",
+      "technicalAssumptions": [
+        "오브젝트 풀링을 활용하여 다수의 적 유닛과 타워 프로젝타일이 생성될 때의 가비지 컬렉션 부하를 최소화한다.",
+        "서버 권위 방식이 아닌 싱글 플레이어 중심의 로컬 상태 관리를 통해 네트워크 지연 없는 쾌적한 반응 속도를 보장한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 이내에 타워 배치와 자원 수급의 인과관계를 직관적으로 이해하고 몰입할 수 있는가?",
+        "중후반 웨이브에서 지형과 속성 시너지가 단순한 화력전 이상의 전술적 선택을 유도하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "천상 자원 및 에너지 연동 시스템",
+          "responsibleSystem": "ResourceManagementController",
+          "validationEvidence": "유닛 처치 시 에너지가 정확히 가산되고 타워 구입 시 차감되는 로직이 단위 테스트를 통해 100퍼센트 검증됨"
+        },
+        {
+          "designElement": "지형 및 속성 시너지 배치 시스템",
+          "responsibleSystem": "TowerPlacementGridSystem",
+          "validationEvidence": "지형 타일에 타워가 정확히 스냅되며 속성 버프가 주변 타워에 적용되는 상태 변화가 시각적으로 확인됨"
+        },
+        {
+          "designElement": "전투 웨이브 관리 시스템",
+          "responsibleSystem": "WaveDirectorService",
+          "validationEvidence": "설정된 웨이브 데이터에 따라 적이 올바른 간격으로 스폰되며 클리어 시 보상이 정상 지급되는지 로그로 확인됨"
+        }
+      ],
+      "openQuestions": [
+        "향후 무한 모드 외에 로그라이크 형식의 무작위 타워 획득 규칙을 도입할 것인가?",
+        "모바일 화면 크기에 따른 UI 레이아웃의 동적 대응 범위를 어디까지 설정할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
-  "modelHealth": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 17679,
+      "lastMs": 17679,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:02:18.594Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 259,
+      "lastMs": 151,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 39.222611587s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"39s\" } ] } }",
+      "updatedAt": "2026-09-18T15:02:20.797Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 316,
+      "lastMs": 154,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 39.197668592s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"39s\" } ] } }",
+      "updatedAt": "2026-09-18T15:02:20.815Z"
+    }
+  },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T15:02:00.914Z",
-  "updatedAt": "2026-09-18T15:02:00.914Z"
+  "updatedAt": "2026-09-18T15:02:20.816Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:02:18.594Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 39.197668592s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"39s\" } ] } }"
 }
