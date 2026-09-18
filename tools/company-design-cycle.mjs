@@ -679,7 +679,7 @@ let designDraft=await runPhase('designer_draft',generateDesignerDraft);
 let preGate=scoreCurrentDesign('deterministic_pre_gate',designDraft);
 const preGateHistory=[preGate];
 writeJson(path.join(base,'design-pre-gate.json'),{version:3,gameId,date,attempt:0,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate});
-for(let repairAttempt=1;repairAttempt<=3&&!preGatePass(preGate);repairAttempt++){
+for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++){
   const fields=repairFields(preGate);
   const schema=designSliceSchema(fields);
   const packet=repairPacket(preGate);
@@ -876,7 +876,7 @@ writeJson(path.join(base,'cycle-status.json'),{
     strictGateHardFailures:strictDesignerFeedback.hardFailures,strictGateBypassAllowed:false
   },
   artbook:{created:false,reason:'DESIGN_BASELINE_GATE_MUST_RUN_FIRST'},
-  vibe2Used:false,vibe2LearningContextUsed:designLearningEvents.length>0,paidApi:true
+  vibe2Used:false,vibe2LearningContextUsed:designLearningEvents.length>0,paidApi:false
 });
 designCheckpoint.status='COMPLETE';
 designCheckpoint.currentPhase='COMPLETE';
@@ -905,4 +905,5 @@ console.log('DESIGN_ONLY_VIBE2_USED=NO');
 console.log(`DESIGN_LEARNING_CONTEXT_CANDIDATES=${designLearningEvents.length}`);
 console.log(`DESIGN_ONLY_VIBE2_LEARNING_CONTEXT=${designLearningEvents.length>0?'YES':'NO'}`);
 console.log('DESIGN_LEARNING_POSITIVE_TRAINING_ELIGIBLE=NO_UNTIL_VALIDATED_RUNTIME');
-console.log('PAID_API=GEMINI');
+console.log('PAID_AI_ALLOWED=NO');
+console.log('AI_PROVIDER=GEMINI_ONLY');
