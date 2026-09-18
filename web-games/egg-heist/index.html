@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #e0e0e0;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    .game-container button {
+      margin: 10px 0;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .game-container button:hover {
+      background-color: #0056b3;
+    }
+    .game-container p {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game logic here
+    const gameContainer = document.getElementById('game');
+    const buttons = [
+      { text: '잠입', class: 'btn-primary' },
+      { text: '알 획득', class: 'btn-success' },
+      { text: '위험 증가', class: 'btn-danger' },
+      { text: '추격', class: 'btn-warning' },
+      { text: '탈출', class: 'btn-info' }
+    ];
+
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'game-container';
+    buttons.forEach(btn => {
+      const button = document.createElement('button');
+      button.textContent = btn.text;
+      button.className = btn.class;
+      button.addEventListener('click', () => {
+        // Game logic here
+        alert('Game action performed!');
+      });
+      buttonContainer.appendChild(button);
+    });
+
+    gameContainer.appendChild(buttonContainer);
+  </script>
+</body>
+</html>
