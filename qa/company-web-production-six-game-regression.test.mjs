@@ -9,15 +9,29 @@ import {deriveApprovedScopeInventory,staticApprovedScopeCoverage} from '../tools
 const ROADMAP=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
 const PERMANENTLY_REMOVED=new Set(ROADMAP.permanentProjectRemoval?.ids||[]);
 const HISTORICAL_REAL_GAMES=[
-  {gameId:'seed-roblox-battleground-fight-welcome-to-bloxburg',gameName:'Vector Clash',seed:'SEED-ROBLOX-BATTLEGROUND_FIGHTING_SHOOTER-001'},
   {gameId:'seed-roblox-simulator-tycoon-i-adopt-me',gameName:'Pocket Foundry',seed:'SEED-ROBLOX-SIMULATOR_TYCOON_INCREMENTAL-001'},
 ].filter(row=>!PERMANENTLY_REMOVED.has(row.gameId));
 const HARNESS_GAMES=[
-  ['seed-roblox-obby-party-minigam-tower-of-hell','Skyline Sprint','SEED-ROBLOX-OBBY_PARTY_MINIGAME-001'],
   ['seed-roblox-roleplay-life-avat-brookhaven-rp','Harbor Days','SEED-ROBLOX-ROLEPLAY_LIFE_AVATAR-001'],
   ['seed-roblox-story-rpg-adventur-blox-fruits','Shardbound Odyssey','SEED-ROBLOX-STORY_RPG_ADVENTURE_RPG-001'],
   ['seed-roblox-survival-horror-es-doors','Last Lantern','SEED-ROBLOX-SURVIVAL_HORROR_ESCAPE-001'],
 ].filter(([gameId])=>!PERMANENTLY_REMOVED.has(gameId));
+
+const PERMANENTLY_REMOVED=[
+  'seed-roblox-battleground-fight-welcome-to-bloxburg',
+  'seed-roblox-obby-party-minigam-tower-of-hell',
+];
+
+test('permanently removed projects stay outside Web production regression',()=>{
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  assert.deepEqual([...roadmap.permanentProjectRemoval.ids].sort(),[...PERMANENTLY_REMOVED].sort());
+  for(const gameId of PERMANENTLY_REMOVED){
+    assert.equal(fs.existsSync(path.join('web-games',gameId,'index.html')),false,gameId);
+    assert.equal(HISTORICAL_REAL_GAMES.some(row=>row.gameId===gameId),false,gameId);
+    assert.equal(HARNESS_GAMES.some(row=>row[0]===gameId),false,gameId);
+  }
+});
+
 const baseline=(seed,identity)=>({gameSeedId:seed,content:{identity,coreFun:'real playable core action with meaningful world state and objective progress',coreLoop:['perform the genre core gameplay action using real player input','change connected game state and earn progression or a meaningful reward','face risk or failure, finish the objective, and retry or continue'],mobileUx:'touch controls for the real gameplay surface'}});
 
 test('permanently removed historical projects stay deleted and outside regression repair targets',()=>{
