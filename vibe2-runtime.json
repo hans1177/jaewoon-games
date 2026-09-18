@@ -8,7 +8,8 @@
     "runtimeState": {
       "queue": ".vibe2/queue.json",
       "parallelism": ".vibe2/parallelism-control.json",
-      "experience": ".vibe2/experience.json"
+      "experience": ".vibe2/experience.json",
+      "gameStudyKnowledge": ".vibe2/game-study-knowledge.json"
     },
     "generatedHandoffTool": "tools/vibe2-handoff.mjs",
     "manualHandoffDocumentsAllowed": false,
@@ -23,8 +24,9 @@
       "runtime": 8,
       "queue": 5,
       "parallelism": 2,
-      "experience": 1,
-      "handoff": 2
+      "experience": 3,
+      "handoff": 3,
+      "gameStudyKnowledge": 1
     },
     "disallowUnlistedVibe2Markdown": true,
     "generatedHandoffArtifact": "vibe2-machine-handoff",
@@ -46,7 +48,8 @@
       "vibe2-runtime.json",
       ".vibe2/queue.json",
       ".vibe2/parallelism-control.json",
-      ".vibe2/experience.json"
+      ".vibe2/experience.json",
+      ".vibe2/game-study-knowledge.json"
     ],
     "humanMaintainedHandoff": false,
     "machineContextRequired": true,
@@ -155,7 +158,8 @@
     "benchmarkLadder": ".vibe2/benchmark-ladder.json",
     "idlePracticeQueue": ".vibe2/idle-practice-queue.json",
     "webRobloxHandoffs": ".vibe2/web-roblox-handoffs.json",
-    "verifiedCodePatterns": ".vibe2/code-pattern-library.json"
+    "verifiedCodePatterns": ".vibe2/code-pattern-library.json",
+    "gameStudyKnowledge": ".vibe2/game-study-knowledge.json"
   },
   "workers": {
     "exploration": {
