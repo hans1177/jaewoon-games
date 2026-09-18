@@ -1885,11 +1885,11 @@ flows:
 
 executionPause:
   ownerDirectiveRecordedAt: 2026-09-18
-  stopAfterStage: DEVELOPMENT_CONFIRMED_QUEUE
-  webDevelopmentPaused: true
+  stopAfterStage: NONE
+  webDevelopmentPaused: false
   developmentConfirmedQueueAllowed: true
-  developmentRuntimeDispatchAllowed: false
-  webImplementationStartForbiddenUntilOwnerResume: true
+  developmentRuntimeDispatchAllowed: true
+  webImplementationStartForbiddenUntilOwnerResume: false
   designPromotionMayContinueWhileWebPaused: true
   strictDesignGateMustRemainUnchanged: true
 

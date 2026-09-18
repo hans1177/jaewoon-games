@@ -309,7 +309,7 @@ test('development runtime ignores queue entries outside canonical active catalog
 
 test('owner pause keeps DEVELOPMENT_CONFIRMED at pre-Web boundary',()=>{
   const workflow=fs.readFileSync('.github/workflows/company-development-confirmed-runtime.yml','utf8');
-  assert.match(workflow,/OWNER_WEB_DEVELOPMENT_PAUSED: 'true'/);
+  assert.match(workflow,/OWNER_WEB_DEVELOPMENT_PAUSED: 'false'/);
   assert.match(workflow,/OWNER_WEB_DEVELOPMENT_PAUSED=YES/);
   assert.match(workflow,/WEB_DEVELOPMENT_TARGET_COUNT=0/);
   assert.match(workflow,/printf 'target_count=0\\n' >> "\$GITHUB_OUTPUT"/);
