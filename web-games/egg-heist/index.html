@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+    button {
+      padding: 0.5em 1em;
+      font-size: 0.9em;
+      margin: 0 0.5em;
+      background-color: #444;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #666;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <button id="startButton">Start Game</button>
+    <div id="gameContent"></div>
+  </main>
+
+  <script>
+    const gameContainer = document.getElementById('gameContent');
+    const startButton = document.getElementById('startButton');
+
+    startButton.addEventListener('click', () => {
+      gameContainer.innerHTML = `
+        <p>Game is starting...</p>
+        <p>Press any key to continue...</p>
+        <button id="continueButton">Continue</button>
+      `;
+      document.getElementById('continueButton').addEventListener('click', () => {
+        gameContainer.innerHTML = `
+          <p>Game is progressing...</p>
+          <p>Press any key to fail or succeed...</p>
+          <button id="failButton">Fail</button>
+          <button id="successButton">Success</button>
+        `;
+        document.getElementById('failButton').addEventListener('click', () => {
+          gameContainer.innerHTML = `
+            <p>Game failed...</p>
+            <p>Try again...</p>
+            <button id="retryButton">Retry</button>
+          `;
+          document.getElementById('retryButton').addEventListener('click', () => {
+            gameContainer.innerHTML = `
+              <p>Game restarted...</p>
+              <p>Enjoy the game!</p>
+            `;
+          });
+        });
+        document.getElementById('successButton').addEventListener('click', () => {
+          gameContainer.innerHTML = `
+            <p>Game succeeded...</p>
+            <p>Great job!</p>
+          `;
+        });
+      });
+    });
+  </script>
+</body>
+</html>
