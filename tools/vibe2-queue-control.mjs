@@ -167,19 +167,29 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
   };
 }
 
-export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], blocker = 'awaiting-qa' } = {}) {
+export function markVibeTaskAwaiting(queueInput, { taskId = '', evidence = [], blocker = 'awaiting-qa', expectedReservationId = '' } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
   const id = clean(taskId);
+  const expected = clean(expectedReservationId);
   let found = false;
   const tasks = queue.tasks.map((task) => {
     if (task.id !== id) return task;
     found = true;
-    if (task.status !== 'running') throw new Error(`await requires running task: ${id}`);
+    const currentReservation = clean(task.reservationId);
+    const reservationMatches = Boolean(expected && currentReservation && expected === currentReservation);
+    const reconcileQueued = task.status === 'queued' && reservationMatches;
+    if (expected && !reservationMatches) throw new Error(`await reservation mismatch: ${id}`);
+    if (task.status !== 'running' && !reconcileQueued) throw new Error(`await requires running task: ${id}`);
+    const mergedEvidence = [
+      ...(task.evidence || []),
+      ...(evidence || []).map(clean).filter(Boolean),
+      ...(reconcileQueued ? [`fan-in-reconciled-reservation:${expected}`] : [])
+    ];
     return {
       ...task,
       status: 'running',
       blocker: clean(blocker) || 'awaiting-qa',
-      evidence: [...new Set([...(task.evidence || []), ...(evidence || []).map(clean).filter(Boolean)])]
+      evidence: [...new Set(mergedEvidence)]
     };
   });
   if (!found) throw new Error(`task not found: ${id}`);
@@ -242,6 +252,24 @@ export function applyVibeFanInResults(queueInput, results = []) {
   }
   const applied = [];
   for (const [taskId, variants] of grouped.entries()) {
+    const currentTask = queue.tasks.find((task) => task.id === taskId);
+    if (!currentTask) { applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'TASK_NOT_FOUND' }); continue; }
+    const reservationIds = [...new Set(variants.map(resultReservationId).filter(Boolean))];
+    if (reservationIds.length > 1) { applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'RESERVATION_CONFLICT' }); continue; }
+    const expectedReservationId = reservationIds[0] || '';
+    if (expectedReservationId) {
+      if (clean(currentTask.reservationId) !== expectedReservationId) {
+        applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'RESERVATION_MISMATCH', expectedReservationId, currentReservationId:clean(currentTask.reservationId) || null });
+        continue;
+      }
+      if (!['running','queued'].includes(clean(currentTask.status))) {
+        applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:`TASK_${clean(currentTask.status).toUpperCase()}_NOT_ACTIVE` });
+        continue;
+      }
+    } else if (clean(currentTask.status) !== 'running') {
+      applied.push({ taskId, outcome:'STALE_RESULT_SKIPPED', reason:'LEGACY_NON_RUNNING_RESULT' });
+      continue;
+    }
     const passes = variants.filter((row) => clean(row.outcome).toUpperCase() === 'PASS');
     const winner = passes.sort((a,b) => Number(a.durationMs || 0) - Number(b.durationMs || 0))[0] || variants[0];
     const allEvidence = [...new Set(variants.flatMap((row) => [
@@ -275,6 +303,7 @@ export function applyVibeFanInResults(queueInput, results = []) {
       queue = markVibeTaskAwaiting(queue, {
         taskId,
         blocker: clean(winner.blocker) || 'candidate-awaiting-qa-and-deployment',
+        expectedReservationId,
         evidence: [...winnerEvidence, ...variantSummary, `speculative-variants:${variants.length}`, `speculative-winner:${clean(winner.variant) || 'primary'}`]
       });
       applied.push({ taskId, outcome:'AWAIT', winner: clean(winner.variant) || 'primary' });
