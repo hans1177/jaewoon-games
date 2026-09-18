@@ -239,15 +239,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 23,
-      "successes": 11,
+      "calls": 25,
+      "successes": 13,
       "failures": 12,
       "timeouts": 0,
       "jsonFailures": 12,
-      "totalMs": 141614,
-      "lastMs": 1947,
+      "totalMs": 145814,
+      "lastMs": 1969,
       "lastError": "Expected ',' or '}' after property value in JSON at position 3732 (line 1 column 3733)",
-      "updatedAt": "2026-09-18T07:10:01.179Z"
+      "updatedAt": "2026-09-18T07:15:49.317Z"
     },
     "gemini:gemini-2.5-flash": {
       "calls": 4,
@@ -352,8 +352,8 @@
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T06:53:33.250Z",
-  "updatedAt": "2026-09-18T07:10:01.182Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T07:10:01.179Z",
+  "updatedAt": "2026-09-18T07:15:49.320Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T07:15:49.317Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
