@@ -92,12 +92,27 @@ function isImportedOwnerWebTask(task){
   return task.evidence.includes('owner-directive:full-web-game-rebuild')||task.evidence.includes('owner-directive:existing-web-assessment');
 }
 function ownerDirectiveSpec(task){
+  let goal=clean(task?.goal);
+  for(const marker of [
+    '\n\n[GAME STUDY KNOWLEDGE - verified advisory context only]',
+    '\n\n[GAME STUDY ROBLOX MATERIAL COLLECTOR - verified generalized materials only]',
+    '\n\n[VIBE2 MULTI-SOURCE LEARNING - verified advisory materials only]'
+  ]){
+    const at=goal.indexOf(marker);
+    if(at>=0)goal=goal.slice(0,at).trim();
+  }
+  const derivedEvidencePrefixes=[
+    'game-study-','multi-source-learning-','learning-motor-candidate-tournament:',
+    'exploration-','incremental-qa-','workload:','role-result:','failure-cause:',
+    'speculative-result:','speculative-winner:','speculative-variants:',
+    'repair-mode:','repair-retry:','diagnostic:','actions-run:','variant:','slot-'
+  ];
   return JSON.stringify({
     gameId:clean(task?.gameId),
     target:clean(task?.target),
     department:clean(task?.department),
     type:clean(task?.type),
-    goal:clean(task?.goal),
+    goal,
     responsibleFiles:(task?.responsibleFiles||[]).map(posix),
     priority:clean(task?.priority),
     releaseState:clean(task?.releaseState),
@@ -107,7 +122,7 @@ function ownerDirectiveSpec(task){
     fullRebuild:task?.fullRebuild===true,
     rebuildMode:clean(task?.rebuildMode),
     workUnits:Number(task?.workUnits||0),
-    evidence:(task?.evidence||[]).map(clean).filter(Boolean)
+    evidence:(task?.evidence||[]).map(clean).filter(Boolean).filter(value=>!derivedEvidencePrefixes.some(prefix=>value.startsWith(prefix)))
   });
 }
 function importOwnerDirectives(queue,directivesFile){
