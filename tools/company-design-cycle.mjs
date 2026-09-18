@@ -188,6 +188,89 @@ function mergeDesignerDesign(basePart,gatePart,phase){
   console.log(`DESIGN_SPLIT_SCHEMA_MERGED=${phase}|base=${DESIGN_BASE_FIELDS.length}|gate=${DESIGN_GATE_FIELDS.length}`);
   return merged;
 }
+const AXIS_FIELDS=Object.freeze({
+  IDEA_AND_DISTINCTNESS:['identity','playerFantasy','coreFun','coreLoop','signatureSystems'],
+  CATEGORY_IDENTITY:['identity','coreLoop','multiplayerMode','multiplayerExpansionDecision'],
+  CORE_LOOP_DESIGN:['coreFun','coreLoop','signatureSystems'],
+  SYSTEM_INTERCONNECTION_DESIGN:['systemInterconnections'],
+  PROGRESSION_ECONOMY_BALANCE_DESIGN:['progressionDirection','progressionEconomyBalance'],
+  CONTENT_EXPANSION_PLAN:['contentExpansionPlan'],
+  FAILURE_RETRY_RISK_DESIGN:['failureRetryRisk'],
+  PLATFORM_FIT_DESIGN:['platformFitPlan','mobileUx'],
+  UX_AND_ACCESSIBILITY_PLAN:['mobileUx','uxAccessibilityPlan'],
+  ART_AUDIO_DIRECTION:['visualDirection','artAudioDirection'],
+  IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY:['technicalAssumptions','validationQuestions','implementationTraceability']
+});
+const AXIS_ROLES=Object.freeze({
+  IDEA_AND_DISTINCTNESS:['planning'],
+  CATEGORY_IDENTITY:['planning','qa'],
+  CORE_LOOP_DESIGN:['planning','balance'],
+  SYSTEM_INTERCONNECTION_DESIGN:['development','qa'],
+  PROGRESSION_ECONOMY_BALANCE_DESIGN:['planning','balance'],
+  CONTENT_EXPANSION_PLAN:['planning','balance'],
+  FAILURE_RETRY_RISK_DESIGN:['qa','balance'],
+  PLATFORM_FIT_DESIGN:['development','qa'],
+  UX_AND_ACCESSIBILITY_PLAN:['graphics','qa'],
+  ART_AUDIO_DIRECTION:['graphics'],
+  IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY:['development','qa']
+});
+function genreProfileForDesign(design){
+  return classifyRobloxGenre({
+    category:seed.GAME_CATEGORY,
+    identity:clean(design?.identity||seed.DISTINCT_IDENTITY),
+    coreLoop:Array.isArray(design?.coreLoop)?design.coreLoop:(Array.isArray(seed.CORE_LOOP)?seed.CORE_LOOP:[]),
+    designText:JSON.stringify(design||{}),
+    multiplayerMode:clean(design?.multiplayerMode||seed.MULTIPLAYER_DESIGN_MODE)
+  });
+}
+function deterministicPreGate(design){
+  return scoreDesignGateV2({
+    seed,
+    designRecord:{sameModelAsDraft:false,content:design},
+    cycleStatus:{status:'IN_PROGRESS'},
+    robloxGenreProfile:genreProfileForDesign(design)
+  });
+}
+function preGatePass(scored){
+  return Number(scored?.totalScore||0)>=DESIGN_GATE_PASS_MINIMUM&&Array.isArray(scored?.hardFailures)&&scored.hardFailures.length===0;
+}
+function repairPacket(scored){
+  const reasons=Array.isArray(scored?.rejectionReasons)?scored.rejectionReasons:[];
+  return {
+    source:'DETERMINISTIC_PRE_GATE_V2',
+    bypassAllowed:false,
+    totalScore:Number(scored?.totalScore||0),
+    passMinimum:DESIGN_GATE_PASS_MINIMUM,
+    hardFailures:Array.isArray(scored?.hardFailures)?scored.hardFailures:[],
+    failedAxes:Array.isArray(scored?.criticalAxisFailures)?scored.criticalAxisFailures:[],
+    reasons:reasons.map(reason=>({
+      code:reason.code,axis:reason.axis,evidenceLevel:reason.evidenceLevel,
+      minimumRequired:reason.minimumRequired,evidence:reason.evidence,
+      requiredAction:reason.requiredAction,bypassAllowed:false
+    }))
+  };
+}
+function repairFields(scored){
+  const axes=uniq([
+    ...(Array.isArray(scored?.criticalAxisFailures)?scored.criticalAxisFailures:[]),
+    ...(Array.isArray(scored?.rejectionReasons)?scored.rejectionReasons.map(reason=>reason?.axis):[])
+  ]);
+  const fields=uniq(axes.flatMap(axis=>AXIS_FIELDS[axis]||[])).filter(field=>DESIGN.required.includes(field));
+  return fields.length?fields:['identity','coreFun','coreLoop','signatureSystems'];
+}
+function impactedRolesFromScores(...scores){
+  const axes=uniq(scores.flatMap(scored=>[
+    ...(Array.isArray(scored?.criticalAxisFailures)?scored.criticalAxisFailures:[]),
+    ...(Array.isArray(scored?.rejectionReasons)?scored.rejectionReasons.map(reason=>reason?.axis):[])
+  ]));
+  const roles=uniq(axes.flatMap(axis=>AXIS_ROLES[axis]||[]));
+  return roles.length?roles:ROLES;
+}
+function mergeTargetedPatch(current,patch,phase){
+  const grounded=repairDesignRequiredFields({...current,...patch},{seed,factPack,phase});
+  assertSchemaValue(grounded.value,DESIGN);
+  return grounded.value;
+}
 const reviewsSchemaFor=roles=>({type:'object',required:roles,properties:Object.fromEntries(roles.map(role=>[role,MEMBER_REVIEW])),additionalProperties:false});
 const REBUTTAL={type:'object',required:['accept','challenge','revision','reason'],properties:{accept:{type:'array',maxItems:3,items:SHORT_TEXT},challenge:{type:'array',maxItems:3,items:SHORT_TEXT},revision:{type:'array',maxItems:3,items:SHORT_TEXT},reason:{type:'string',maxLength:550}},additionalProperties:false};
 const MEETING={type:'object',required:['summary','decisions'],properties:{summary:{type:'string',maxLength:800},decisions:{type:'array',maxItems:12,items:{type:'object',required:['topic','status','reason','departments'],properties:{topic:{type:'string',maxLength:190},status:{type:'string',enum:['CONSENSUS','CONFLICT','HOLD']},reason:{type:'string',maxLength:550},departments:{type:'array',maxItems:5,items:{type:'string',maxLength:40}}},additionalProperties:false}}},additionalProperties:false};
@@ -493,10 +576,54 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
   throw new Error(`MODEL_CALL_FAILED ${model}: ${clean(lastError?.message)}`);
 }
 
-const designDraftBase=await runPhase('designer_draft_base',()=>callModel(designerModel,'너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용하며 부서가 대신 초안을 작성하지 않는다. 유명 성공작의 구조는 오마주/재해석하되 보호되는 표현과 소스코드는 복제하지 않는다.',`DESIGN_ONLY 기본 설계를 작성하라. 핵심 재미·정체성·core loop·signature systems·진행 방향·플레이 모드·기술/검증 질문을 구체화한다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시하고 core loop와 일치시킨다. multiplayerExpansionDecision과 현재 플레이 모드를 혼동하지 마라. 이전 Strict Design 하드관문 실패는 숨기거나 완화하지 말고 실제 설계로 해결한다.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,9000)}`,DESIGN_BASE,{predict:1000,temperature:0.35,numCtx:8192,timeoutMs:150000}));
-const designDraftGate=await runPhase('designer_draft_gate',()=>callModel(designerModel,'너는 같은 Game Designer AI다. 방금 작성한 기본 설계를 하드관문이 검증 가능한 시스템 상세 설계로 확장한다. 점수나 관문을 조작하지 않는다.',`기본 설계를 바꾸지 말고 관문 상세 필드만 작성하라. 시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 모순 없이 연결한다.\nGAME_SEED=${clip(seed,5000)}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nBASE_DESIGN=${clip(designDraftBase,8500)}`,DESIGN_GATE,{predict:1000,temperature:0.25,numCtx:8192,timeoutMs:150000}));
-const designDraft=mergeDesignerDesign(designDraftBase,designDraftGate,'DRAFT');
-writeJson(path.join(base,'design-draft.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,singleAuthor:true,content:designDraft});
+async function generateDesignerDraft(){
+  const system='너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용한다. 유명 성공작의 구조는 오마주/재해석할 수 있지만 보호되는 표현과 소스코드는 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.';
+  const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,10500)}`;
+  try{
+    const full=await callModel(designerModel,system,user,DESIGN,{predict:2200,temperature:0.28,numCtx:8192,timeoutMs:180000,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
+    console.log('DESIGNER_DRAFT_GENERATION=ONE_CALL');
+    return full;
+  }catch(error){
+    console.log(`DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT|reason=${clean(error?.message||error)}`);
+    const basePart=await callModel(designerModel,system,`기본 설계 필드만 작성하라.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,8500)}`,DESIGN_BASE,{predict:1000,temperature:0.3,numCtx:8192,timeoutMs:150000});
+    const gatePart=await callModel(designerModel,'너는 같은 Game Designer AI다. 기본 설계를 하드관문이 검증 가능한 상세 설계로 확장한다.',`관문 상세 필드만 작성하라.\nGAME_SEED=${clip(seed,4500)}\nBASE_DESIGN=${clip(basePart,8000)}`,DESIGN_GATE,{predict:1000,temperature:0.2,numCtx:8192,timeoutMs:150000});
+    return mergeDesignerDesign(basePart,gatePart,'DRAFT');
+  }
+}
+let designDraft=await runPhase('designer_draft',generateDesignerDraft);
+let preGate=await runPhase('deterministic_pre_gate',async()=>deterministicPreGate(designDraft));
+const preGateHistory=[preGate];
+writeJson(path.join(base,'design-pre-gate.json'),{version:2,gameId,date,attempt:0,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate});
+for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++){
+  const fields=repairFields(preGate);
+  const schema=designSliceSchema(fields);
+  const packet=repairPacket(preGate);
+  const patch=await runPhase(`designer_pre_gate_repair_${repairAttempt}`,()=>callModel(
+    designerModel,
+    '너는 최초 설계를 작성한 동일 Game Designer AI다. 실패한 deterministic 설계축만 실제 설계 변경으로 수리한다. 통과를 가장하거나 실패코드를 삭제하지 않는다.',
+    `현재 실패축만 수정하라. 지정 필드 외 내용은 반환하지 않는다.\nREPAIR_FIELDS=${JSON.stringify(fields)}\nREPAIR_PACKET=${clip(packet,6500)}\nGAME_SEED=${clip(seed,4500)}\nCURRENT_DESIGN=${clip(Object.fromEntries(fields.map(field=>[field,designDraft[field]])),8000)}`,
+    schema,
+    {predict:Math.min(1400,500+fields.length*130),temperature:0.12,numCtx:6144,timeoutMs:120000}
+  ));
+  designDraft=mergeTargetedPatch(designDraft,patch,`PRE_GATE_REPAIR_${repairAttempt}`);
+  preGate=await runPhase(`deterministic_pre_gate_after_repair_${repairAttempt}`,async()=>deterministicPreGate(designDraft));
+  preGateHistory.push(preGate);
+  designCheckpoint.phases.designer_draft=designDraft;
+  writeJson(path.join(base,'design-pre-gate.json'),{version:2,gameId,date,attempt:repairAttempt,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate,history:preGateHistory.map(row=>({totalScore:row.totalScore,hardFailures:row.hardFailures,criticalAxisFailures:row.criticalAxisFailures}))});
+  persistDesignCheckpoint();
+}
+writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
+if(!preGatePass(preGate)){
+  designCheckpoint.status='PRE_GATE_BLOCKED';
+  designCheckpoint.lastError=`DESIGN_PRE_GATE_BLOCKED score=${preGate.totalScore} hard=${(preGate.hardFailures||[]).join(',')||'NONE'}`;
+  for(const key of Object.keys(designCheckpoint.phases))if(key.startsWith('designer_pre_gate_repair_')||key.startsWith('deterministic_pre_gate_after_repair_'))delete designCheckpoint.phases[key];
+  persistDesignCheckpoint();
+  writeProgress('PRE_GATE_REPAIR',{blocked:true,preGateScore:preGate.totalScore,hardFailures:preGate.hardFailures,repairPacket:repairPacket(preGate)});
+  throw new Error(designCheckpoint.lastError);
+}
+writeProgress('DEPARTMENT_REVIEWS',{preGateScore:preGate.totalScore,preGatePass:true});
+console.log(`DESIGN_PRE_GATE=PASS|${preGate.totalScore}`);
+
 
 const independentReviews=await runPhase('independent_department_reviews',()=>adaptiveParallel('independent_department_reviews',phaseConcurrency.independent_department_reviews,concurrency=>parallelObjectByLane(independentReviewOrder,key=>independentReviewTasks[key].model,async key=>{
   const {role,model}=independentReviewTasks[key];
