@@ -18,6 +18,20 @@ test('partial DESIGN_ONLY batch failure still evaluates persisted strict-ready g
   assert.match(promotion,/PRE_WEB_ARTBOOK_REQUIRED=NO/);
 });
 
+
+test('promotion is per-game and Web development remains stopped at the queue while owner pause is active',()=>{
+  assert.match(designRuntime,/Dispatch per-game promotion reconciliation on own strict PASS/);
+  assert.match(designRuntime,/PER_GAME_PROMOTION_DISPATCH=YES/);
+  assert.match(designRuntime,/PER_GAME_PROMOTION_FORCE=NO/);
+  assert.match(designRuntime,/PORTFOLIO_WIDE_PASS_WAIT=NO/);
+  assert.match(promotion,/Stop after DEVELOPMENT_CONFIRMED queue while Web development is owner-paused/);
+  assert.match(promotion,/developmentRuntimeDispatchAllowed===false/);
+  assert.match(promotion,/DEVELOPMENT_CONFIRMED_QUEUE=ALLOWED/);
+  assert.match(promotion,/DEVELOPMENT_RUNTIME_DISPATCHED=NO/);
+  assert.match(promotion,/OWNER_WEB_DEVELOPMENT_PAUSED=true/);
+  assert.match(promotion,/STOP_AFTER_STAGE=DEVELOPMENT_CONFIRMED_QUEUE/);
+});
+
 test('promotion persistence retries only against the newest runtime state and never replays stale JSON snapshots',()=>{
   assert.match(promotion,/for attempt in 1 2 3; do/);
   assert.match(promotion,/git fetch origin main "\$COMPANY_RUNTIME_BRANCH"/);
