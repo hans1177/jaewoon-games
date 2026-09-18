@@ -32,11 +32,37 @@ const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMO
 export function gameLifecycleState(game={}){const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
 function lifecycleAllowsDevelopment(game={}){return ['ACTIVE','REBUILD'].includes(gameLifecycleState(game));}
 function isProductionImplementationTask(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
-function synchronizeQueueLifecycle(queueInput={},catalog={}){
-  const byId=catalogById(catalog);
+const HISTORICAL_MAINTENANCE_REGISTRY_PATH='company-learning/roblox-sustained-maintenance.json';
+function historicalMaintenanceById(registry={}){
+  return new Map((Array.isArray(registry.assets)?registry.assets:[])
+    .filter(entry=>entry?.maintenanceEligible===true&&entry?.currentReleaseClaim===false&&clean(entry?.recoveryState)==='HISTORICAL_PUBLICATION_TARGET_VERIFIED')
+    .map(entry=>[clean(entry.gameId),entry])
+    .filter(([gameId])=>Boolean(gameId)));
+}
+function registeredHistoricalMaintenanceTask(item={},registryById=new Map()){
+  const entry=registryById.get(clean(item.gameId));if(!entry)return false;
+  const evidence=new Set((Array.isArray(item.evidence)?item.evidence:[]).map(clean));
+  return item.historicalDeploymentRecovery===true
+    &&item.postReleaseFocused===true
+    &&item.packageLongWorkProtected===true
+    &&clean(item.packageRole)==='implementation-owner'
+    &&clean(item.target).toLowerCase()==='roblox'
+    &&clean(item.releaseState).toLowerCase()==='development-confirmed'
+    &&posix(item.sourceRoot)===posix(entry.sourceRoot)
+    &&evidence.has('historical-deployment-recovery:yes')
+    &&evidence.has('maintenance-registry:'+HISTORICAL_MAINTENANCE_REGISTRY_PATH);
+}
+function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={}){
+  const byId=catalogById(catalog),historicalById=historicalMaintenanceById(historicalRegistry);
   const tasks=(Array.isArray(queueInput?.tasks)?queueInput.tasks:[]).map(item=>{
     if(!isProductionImplementationTask(item))return item;
     const game=byId.get(clean(item.gameId));
+    if(!game&&registeredHistoricalMaintenanceTask(item,historicalById)){
+      if(clean(item.status).toLowerCase()==='cancelled'&&clean(item.blocker)==='lifecycle-inactive:MISSING_FROM_CATALOG'){
+        return{...item,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE'])]};
+      }
+      return item;
+    }
     if(!game||!lifecycleAllowsDevelopment(game)){
       const state=game?gameLifecycleState(game):'MISSING_FROM_CATALOG';
       if(item.status==='queued')return{...item,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-sync:${state}`])]};
@@ -243,8 +269,8 @@ function selectPackageCandidates(candidates,queue,remaining,policy){
 }
 function releaseUnityFocusBusy(queue){return activeTasks(queue).some(item=>item.target==='unity'&&item.releaseState==='release-confirmed');}
 
-export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={},recombinationMemory={}}={}){
-  let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog),maxConcurrentTasks:parallelLimit(maxConcurrentTasks)});
+export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={},recombinationMemory={},historicalRegistry={}}={}){
+  let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog,historicalRegistry),maxConcurrentTasks:parallelLimit(maxConcurrentTasks)});
   const active=activeTasks(queue);
   const ownerActive=active.filter(item=>item.ownerDirective);
   const capacity=Math.max(0,queue.maxConcurrentTasks-active.length);
@@ -299,7 +325,7 @@ export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput=
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}
 export function runVibe2AutoPlanner({
   statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', queueFile='', runtimeFile='vibe2-runtime.json',
-  controlFile='', experienceFile='', recombinationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
+  controlFile='', experienceFile='', recombinationFile='', historicalRegistryFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
 }={}) {
   const runtime=readJson(runtimeFile,{});
   const resolvedQueueFile=clean(queueFile)||clean(runtime.sources?.queue)||'.vibe2/queue.json';
@@ -311,15 +337,17 @@ export function runVibe2AutoPlanner({
   const effectivePlannerMax=Math.min(parallelLimit(maxConcurrentTasks),parallelLimit(handoff.parallelism.currentPersistentMax));
   const resolvedRecombinationFile=clean(recombinationFile)||path.join(repoRoot,'company-learning','vibe3-recombination-memory.json');
   const recombinationMemory=readJson(resolvedRecombinationFile,{version:1,recipes:[]});
+  const resolvedHistoricalRegistryFile=clean(historicalRegistryFile)||path.join(repoRoot,HISTORICAL_MAINTENANCE_REGISTRY_PATH);
+  const historicalRegistry=readJson(resolvedHistoricalRegistryFile,{version:1,assets:[]});
   const queueBefore=readJson(resolvedQueueFile,{tasks:[]});
-  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{},recombinationMemory});
+  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{},recombinationMemory,historicalRegistry});
   const normalizedBefore=createVibeContinuousQueue(queueBefore);
   const queueSynchronized=JSON.stringify(normalizedBefore.tasks)!==JSON.stringify(result.queue?.tasks||[]);
   if(result.planned||queueSynchronized)writeJson(resolvedQueueFile,result.queue);
   return{...result,queueSynchronized,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
+  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),historicalRegistryFile:clean(args['historical-registry']),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
   console.log(`VIBE2_MACHINE_HANDOFF=${result.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
