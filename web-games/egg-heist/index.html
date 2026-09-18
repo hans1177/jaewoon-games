@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+    .game-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .game-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .game-buttons button {
+      padding: 10px 20px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .game-buttons button:hover {
+      background-color: #e0e0e0;
+    }
+    .game-status {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #333;
+    }
+    .game-score {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .game-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .game-actions button {
+      padding: 10px 15px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .game-actions button:hover {
+      background-color: #e0e0e0;
+    }
+    .game-over {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <div class="game-container">
+      <h1>Vibe2</h1>
+      <div class="game-status" id="gameStatus">Status: Ready</div>
+      <div class="game-score" id="gameScore">Score: 0</div>
+      <div class="game-actions">
+        <button id="startGame">Start Game</button>
+        <button id="restartGame">Restart Game</button>
+      </div>
+      <div class="game-buttons">
+        <button id="moveLeft">Move Left</button>
+        <button id="moveRight">Move Right</button>
+        <button id="attack">Attack</button>
+      </div>
+    </div>
+  </main>
+  <script>
+    const gameContainer = document.getElementById('game');
+    const gameStatus = document.getElementById('gameStatus');
+    const gameScore = document.getElementById('gameScore');
+    const startGame = document.getElementById('startGame');
+    const restartGame = document.getElementById('restartGame');
+    const moveLeft = document.getElementById('moveLeft');
+    const moveRight = document.getElementById('moveRight');
+    const attack = document.getElementById('attack');
+
+    // Game logic here
+    // Initialize game state
+    // Handle player input
+    // Update game state
+    // Display game status
+    // Handle game over
+
+    // Example: Start game
+    startGame.addEventListener('click', () => {
+      gameStatus.textContent = "Status: Playing";
+      gameScore.textContent = "Score: 0";
+      // Initialize game state
+    });
+
+    // Example: Restart game
+    restartGame.addEventListener('click', () => {
+      gameStatus.textContent = "Status: Ready";
+      gameScore.textContent = "Score: 0";
+    });
+
+    // Example: Move left
+    moveLeft.addEventListener('click', () => {
+      // Update game state
+    });
+
+    // Example: Move right
+    moveRight.addEventListener('click', () => {
+      // Update game state
+    });
+
+    // Example: Attack
+    attack.addEventListener('click', () => {
+      // Update game state
+    });
+  </script>
+</body>
+</html>
