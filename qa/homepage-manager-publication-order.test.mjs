@@ -81,6 +81,23 @@ test('homepage renders canonical verified server shelves from one current enhanc
   assert.match(homepage,/homeProgressAuthority='company-runtime'/);
 });
 
+test('homepage exposes current Web to selected-platform to live-focus development flow',()=>{
+  const index=fs.readFileSync('index.html','utf8');
+  assert.match(index,/id="developmentPipeline"/);
+  assert.match(index,/Web 베이스/);
+  assert.match(index,/Roblox · Unity · Fortnite UEFN/);
+  assert.match(index,/출시 후 집중개발/);
+  assert.match(index,/data-platform="roblox"/);
+  assert.match(index,/data-platform="unity"/);
+  assert.match(index,/data-platform="fortnite_uefn"/);
+  assert.doesNotMatch(index,/신규 개발 Unity Android 중심/);
+  assert.match(homepage,/function buildDevelopmentPipeline\(catalog,status,testManifest=\{\}\)/);
+  assert.match(homepage,/dataset\.runtimeAuthority/);
+  assert.match(homepage,/dataset\.selectedPlatformCount/);
+  assert.match(homepage,/dataset\.focusRunnerActive/);
+  assert.match(homepage,/buildDevelopmentPipeline\(catalog,status,testManifest\|\|\{\}\)/);
+});
+
 test('homepage platform and touch launch paths stay bound to verified runtime data',()=>{
   assert.match(homepage,/function latestVerifiedUnityBuilds\(status\)/);
   assert.match(homepage,/signatureVerified!==true/);
