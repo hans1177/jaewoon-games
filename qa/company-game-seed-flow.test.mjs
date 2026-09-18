@@ -192,11 +192,10 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(seedDesignWorkflow,/engine_digest=/);
   assert.match(seedDesignWorkflow,/pending_total=/);
   assert.match(seedDesignWorkflow,/pending\.slice\(0,2\)/);
-  assert.match(seedDesignWorkflow,/Math\\.min\\(canaryVerified\\?2:1/);
+  assert.match(seedDesignWorkflow,/Math\.min\(canaryVerified\?2:1/);
   assert.match(seedDesignWorkflow,/mark-design-engine-canary:/);
   assert.match(seedDesignWorkflow,/DESIGN_ENGINE_CANARY=VERIFIED/);
   assert.match(seedDesignWorkflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
-  assert.match(seedDesignWorkflow,/Math\\.min\\(canaryVerified\\?2:1/);
   assert.match(seedDesignWorkflow,/DESIGN_PROGRESS_RUNTIME_PERSIST=YES/);
   assert.match(seedDesignWorkflow,/sleep 15/);
   assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
