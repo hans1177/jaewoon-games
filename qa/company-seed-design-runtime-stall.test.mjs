@@ -154,13 +154,14 @@ test('design cycle resumes from fingerprinted phase and per-model checkpoints wi
   assert.match(design,/independentReviewOutputs:ROLES\.reduce/);
 });
 
-test('seed design workflow persists checkpoints on the runtime branch without switching the live workspace',()=>{
-  assert.match(workflow,/Persist DESIGN_ONLY checkpoint immediately/);
-  assert.match(workflow,/if: always\(\) && steps\.target\.outputs\.should_run == 'true'/);
+test('seed design workflow persists checkpoints on success failure and cancellation without switching the live workspace',()=>{
+  assert.match(workflow,/persist_design_checkpoint\(\)/);
   assert.match(workflow,/design-checkpoint\.json/);
   assert.match(workflow,/git worktree add --detach/);
   assert.match(workflow,/runtime: DESIGN_ONLY checkpoint/);
   assert.match(workflow,/DESIGN_CHECKPOINT_RUNTIME_PERSIST=YES/);
+  assert.match(workflow,/trap 'exit 143' TERM INT/);
+  assert.match(workflow,/trap 'rc=\$\?; trap - EXIT TERM INT; persist_design_checkpoint \|\| true; exit "\$rc"' EXIT/);
   assert.doesNotMatch(workflow,/git checkout -B seed-design-checkpoint-persist/);
 });
 
