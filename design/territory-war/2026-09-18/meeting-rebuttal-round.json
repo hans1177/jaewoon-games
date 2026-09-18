@@ -26,24 +26,20 @@
         "OWN",
         "OTHERS"
       ],
-      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하고, 필요한 경우 추가로 수정합니다."
+      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하거나 수정할 경우, 책임범위를 명확히 하기 위해 JSON 형식으로 반환합니다."
     },
     "graphics": {
       "accept": [
-        "fix",
-        "add",
-        "risks"
+        "TerritoryWar",
+        "strategic gameplay"
       ],
       "challenge": [
-        "evidence",
-        "questions"
+        "territory-war, gameName:영토전쟁, status:ACTIVE, GAME_CATEGORY:SINGLE_DEFENSE_STRATEGY, CORE_FUN_TO_LEARN: ['readable territory']"
       ],
       "revision": [
-        "game_concept_validation",
-        "game_design_strategy",
-        "player_experience_design"
+        "territory-war, gameName:영토전쟁, status:ACTIVE, GAME_CATEGORY:SINGLE_DEFENSE_STRATEGY, CORE_FUN_TO_LEARN: ['readable territory']"
       ],
-      "reason": "The game concept is currently focused on a simple wave and tower defense. It needs to be more complex and engaging to maintain player interest."
+      "reason": "evidence:gameId:territory-war, gameName:영토전쟁, status:ACTIVE, GAME_CATEGORY:SINGLE_DEFENSE_STRATEGY, CORE_FUN_TO_LEARN: ['readable territory']"
     },
     "development": {
       "accept": [
@@ -57,39 +53,34 @@
         "questions"
       ],
       "revision": [
-        "keep",
-        "fix",
-        "add"
+        "OTHERS",
+        "OWN"
       ],
-      "reason": "development"
+      "reason": "own.json"
     },
     "qa": {
       "accept": [
-        "ASSIGNED_DEPARTMENT=qa",
-        "ASSIGNED_DEPARTMENT=development",
-        "ASSIGNED_DEPARTMENT=graphics"
+        "OWN"
       ],
       "challenge": [
-        "What is the target audience for the game?",
-        "What is the player's current defense strategy?"
+        "OTHERS"
       ],
       "revision": [
-        "What is the target audience for the game?",
-        "What is the player's current defense strategy?"
+        "development"
       ],
-      "reason": "The target audience and player's current defense strategy are important for understanding the game's intended audience and ensuring that the game's design is aligned with the intended audience."
+      "reason": "QA 부서의 책임범위는 'ASSIGNED_DEPARTMENT=qa'를 유지하고 있습니다."
     },
     "balance": {
       "accept": [
-        "The player's current defense strategy is maintained."
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
       ],
       "challenge": [
-        "The player's current defense strategy is maintained."
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense."
       ],
       "revision": [
-        "The player's current defense strategy is maintained."
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
       ],
-      "reason": "The player's current defense strategy is maintained."
+      "reason": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
     }
   }
 }

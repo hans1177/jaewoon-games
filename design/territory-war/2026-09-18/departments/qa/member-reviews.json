@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+          "What is the core fun of Territory War?"
         ],
         "fix": [
-          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+          "Territory War is a single-defense strategy game where players must read the next enemy wave and place towers or defenders on lanes"
         ],
         "add": [
-          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+          "What are the core loop mechanics of Territory War?"
         ],
         "risks": [
-          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+          "What are the validation risks of Territory War?"
         ],
         "evidence": [
-          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+          "What evidence is available for Territory War?"
         ],
         "questions": [
-          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+          "What are the open questions for Territory War?"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "지정된 QA 부서만 검토하라. 다른 부서는 제외하라."
-        ],
-        "fix": [
-          "각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
-        ],
-        "add": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
-        ],
-        "risks": [
           "ASSIGNED_DEPARTMENT=qa"
         ],
+        "fix": [
+          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\""
+        ],
+        "add": [
+          "CORE_FUN_TO_LEARN=[\"readable territory pressure\",\"expansion tradeoffs\",\"front-line resource decisions\"]"
+        ],
+        "risks": [
+          "CORE_LOOP=[\"Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.\" , \"Earn"
+        ],
         "evidence": [
-          "GAME_SEED의 상태: ACTIVE, 게임명: 영토전쟁, 게임 측 target: GLOBAL, market evidence: KINGDOM RUSH, PLANTS VS ZOMBIES, etc."
+          "REFERENCE_GAMES=[\"Kingdom Rush\",\"Bloons TD 6\",\"Plants vs. Zombies 2\"]"
         ],
         "questions": [
-          "디자인 시스템: Real Player Input, Core Gameplay Action, Progression Reward or Meaningful Choice, Risk Failure or Resource Pressure, Goal"
+          "MARKET_EVIDENCE_SUMMARY={\"role\":\"TARGET_DESIGN_REFERENCE\",\"targetMarketScope\":\"GLOBAL\"}"
         ]
       }
     }

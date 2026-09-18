@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "ASSIGNED_DEPARTMENT=development"
+          "GAME_SEED"
         ],
         "fix": [
-          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\""
+          "GAME_SEED"
         ],
         "add": [
-          "ASSIGNED_DEPARTMENT=development"
+          "GAME_SEED"
         ],
         "risks": [
-          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\""
+          "GAME_SEED"
         ],
         "evidence": [
-          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\""
+          "GAME_SEED"
         ],
         "questions": [
-          "ASSIGNED_DEPARTMENT=development"
+          "GAME_SEED"
         ]
       }
     },
@@ -47,19 +47,19 @@
           "ASSIGNED_DEPARTMENT=development"
         ],
         "fix": [
-          "GAME_SEED = {'version': 1, 'seedId': 'OWNER-ENROLL-TERRITORY-WAR-20260913', 'gameId': 'territory-war', 'gameName': '영토전쟁', 'status"
+          "GAME_SEED: {}"
         ],
         "add": [
-          "GAME_SEED = {'version': 1, 'seedId': 'OWNER-ENROLL-TERRITORY-WAR-20260913', 'gameId': 'territory-war', 'gameName': '영토전쟁', 'status"
+          "DESIGN: {}"
         ],
         "risks": [
-          "GAME_SEED = {'version': 1, 'seedId': 'OWNER-ENROLL-TERRITORY-WAR-20260913', 'gameId': 'territory-war', 'gameName': '영토전쟁', 'status"
+          "validationQuestions: 버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다"
         ],
         "evidence": [
-          "GAME_SEED = {'version': 1, 'seedId': 'OWNER-ENROLL-TERRITORY-WAR-20260913', 'gameId': 'territory-war', 'gameName': '영토전쟁', 'status"
+          "MARKET_EVIDENCE_SUMMARY: short strategy session and territory expansion judgment preference"
         ],
         "questions": [
-          "GAME_SEED = {'version': 1, 'seedId': 'OWNER-ENROLL-TERRITORY-WAR-20260913', 'gameId': 'territory-war', 'gameName': '영토전쟁', 'status"
+          "openQuestions: 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다. 반복·재시작·대기로 콘텐츠 분량을 채우지 않는다."
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "GAME_SEED"
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
         ],
         "fix": [
-          "GAME_SEED"
+          "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
         ],
         "add": [
-          "GAME_SEED"
+          "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
         ],
         "risks": [
-          "GAME_SEED"
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
         ],
         "evidence": [
-          "GAME_SEED"
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
         ],
         "questions": [
-          "GAME_SEED"
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다."
         ]
       }
     }

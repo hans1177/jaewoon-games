@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "The player's current defense strategy is maintained."
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
         ],
         "fix": [
-          "The player's current defense strategy is maintained."
+          "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
         ],
         "add": [
-          "The player's current defense strategy is maintained."
+          "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
         ],
         "risks": [
-          "The player's current defense strategy is maintained."
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
         ],
         "evidence": [
-          "The player's current defense strategy is maintained."
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
         ],
         "questions": [
-          "What is the player's current defense strategy?"
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
         ]
       }
     },
@@ -53,13 +53,13 @@
           "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
         ],
         "risks": [
-          "Avoid simple action/progression/choice that only time increases."
+          "validationRisks"
         ],
         "evidence": [
-          "Kingdom Rush, Bloons TD 6, Plants vs. Zombies 2, and global strategy/session signal metrics."
+          "Kingdom Rush, Bloons TD 6, Plants vs. Zombies 2, ESA Power of Play 2025, Newzoo, Sensor Tower, GameAnalytics"
         ],
         "questions": [
-          "What is the target audience for the game?"
+          "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다"
         ]
       }
     },
@@ -68,22 +68,16 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "game_design_strategy_feedback"
+          "game_seed_market_evidence.json"
         ],
-        "fix": [
-          "game_design_strategy_feedback"
-        ],
-        "add": [
-          "game_design_strategy_feedback"
-        ],
-        "risks": [
-          "game_design_strategy_feedback"
-        ],
+        "fix": [],
+        "add": [],
+        "risks": [],
         "evidence": [
-          "game_design_strategy_feedback"
+          "kingdom-rush-report"
         ],
         "questions": [
-          "game_design_strategy_feedback"
+          "game-seed-market-evidence.json"
         ]
       }
     }

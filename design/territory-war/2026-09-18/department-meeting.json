@@ -31,53 +31,54 @@
         "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
       ],
       "risks": [
-        "Avoid simple action/progression/repitition that only time increases."
+        "Validate the player's actions and decisions through a loop."
       ],
       "evidence": [
-        "Kingdom Rush, Bloons TD 6, Plants vs. Zombies 2, Global strategy/session signal, Newzoo 2025 Full-Year Games Market Review, Sensor"
+        "Kingdom Rush benchmark for wave pressure, placement, counters and upgrades."
       ],
       "questions": [
-        "What is the target audience for the game?"
+        "Validate the player's actions and decisions through a loop."
       ]
     },
     "graphics": {
       "keep": [
-        "game_design_strategy"
+        "TerritoryWar",
+        "strategic gameplay"
       ],
       "fix": [
-        "player_experience_design"
+        "territory-war, gameName:영토전쟁, status:ACTIVE, GAME_CATEGORY:SINGLE_DEFENSE_STRATEGY, CORE_FUN_TO_LEARN: ['readable territory']"
       ],
       "add": [
-        "visual_design_strategy"
+        "territory-war, gameName:영토전쟁, status:ACTIVE, GAME_CATEGORY:SINGLE_DEFENSE_STRATEGY, CORE_FUN_TO_LEARN: ['readable territory']"
       ],
       "risks": [
-        "gameplay_risk"
+        "gameId:territory-war, gameName:영토전쟁, status:ACTIVE, GAME_CATEGORY:SINGLE_DEFENSE_STRATEGY, CORE_FUN_TO_LEARN: ['readable territory']"
       ],
       "evidence": [
-        "market_analysis"
+        "gameId:territory-war, gameName:영토전쟁, status:ACTIVE, GAME_CATEGORY:SINGLE_DEFENSE_STRATEGY, CORE_FUN_TO_LEARN: ['readable territory']"
       ],
       "questions": [
-        "game_concept_validation"
+        "gameId:territory-war, gameName:영토전쟁, status:ACTIVE, GAME_CATEGORY:SINGLE_DEFENSE_STRATEGY, CORE_FUN_TO_LEARN: ['readable territory']"
       ]
     },
     "development": {
       "keep": [
-        "ASSIGNED_DEPARTMENT=development"
+        "GAME_SEED"
       ],
       "fix": [
-        "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\"}], "
+        "GAME_SEED"
       ],
       "add": [
-        "ASSIGNED_DEPARTMENT=development"
+        "GAME_SEED"
       ],
       "risks": [
-        "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\"}], "
+        "GAME_SEED"
       ],
       "evidence": [
-        "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\"}], "
+        "GAME_SEED"
       ],
       "questions": [
-        "ASSIGNED_DEPARTMENT=development"
+        "GAME_SEED"
       ]
     },
     "qa": {
@@ -85,39 +86,39 @@
         "ASSIGNED_DEPARTMENT=qa"
       ],
       "fix": [
-        "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "add": [
-        "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "risks": [
         "ASSIGNED_DEPARTMENT=qa"
       ],
       "evidence": [
-        "GAME_SEED의 상태: ACTIVE, 게임명: 영토전쟁, 게임 측 target: GLOBAL, market evidence: KINGDOM RUSH, PLANTS VS ZOMBIES, etc."
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "questions": [
-        "디자인 시스템: Real Player Input, Core Gameplay Action, Progression Reward or Meaningful Choice, Risk Failure or Resource Pressure, Goal"
+        "ASSIGNED_DEPARTMENT=qa"
       ]
     },
     "balance": {
       "keep": [
-        "The player's current defense strategy is maintained."
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
       ],
       "fix": [
-        "The player's current defense strategy is maintained."
+        "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
       ],
       "add": [
-        "The player's current defense strategy is maintained."
+        "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense."
       ],
       "risks": [
-        "The player's current defense strategy is maintained."
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
       ],
       "evidence": [
-        "The player's current defense strategy is maintained."
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
       ],
       "questions": [
-        "What is the player's current defense strategy?"
+        "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
       ]
     }
   },
@@ -128,57 +129,18 @@
     {
       "topic": "planning",
       "status": "CONSENSUS",
-      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하고, 필요한 경우 추가로 수정합니다. The game concept is currently focused on a simple wave and tower defense. It needs to be more complex and engaging to maintain player interest.",
+      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하거나 수정할 경우, 책임범위를 명확히 하기 위해 JSON 형식으로 반환합니다.",
       "departments": [
         "planning",
         "fix",
-        "add"
-      ]
-    },
-    {
-      "topic": "graphics",
-      "status": "CONSENSUS",
-      "reason": "The game concept is currently focused on a simple wave and tower defense. It needs to be more complex and engaging to maintain player interest.",
-      "departments": [
-        "graphics",
-        "fix",
-        "add"
-      ]
-    },
-    {
-      "topic": "development",
-      "status": "CONSENSUS",
-      "reason": "development",
-      "departments": [
-        "development",
-        "fix",
-        "add"
-      ]
-    },
-    {
-      "topic": "qa",
-      "status": "CONSENSUS",
-      "reason": "The target audience and player's current defense strategy are important for understanding the game's intended audience and ensuring that the game's design is aligned with the intended audience.",
-      "departments": [
-        "qa",
         "add",
-        "questions"
-      ]
-    },
-    {
-      "topic": "balance",
-      "status": "CONSENSUS",
-      "reason": "The player's current defense strategy is maintained.",
-      "departments": [
-        "balance",
-        "keep",
-        "fix",
-        "add"
+        "risks",
+        "evidence"
       ]
     }
   ],
   "counts": {
-    "consensus": 5,
+    "consensus": 1,
     "conflict": 0,
     "hold": 0
   }

@@ -7313,7 +7313,16 @@
         "evidencePath": "design/territory-war/2026-09-18/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-09-18T01:44:38.452Z"
+      "strictDesignReviewUpdatedAt": "2026-09-18T01:44:38.452Z",
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Tower Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "타워 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T02:04:13.783Z"
     },
     {
       "version": 2,
@@ -13580,6 +13589,64 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-18T01:08:10.566Z"
+      },
+      {
+        "gameId": "territory-war",
+        "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "improvementTargets": [
+          {
+            "dimension": "ideaDistinctness",
+            "current": 6,
+            "maxScore": 15,
+            "gap": 9
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-18T02:04:13.660Z"
+      },
+      {
+        "gameId": "territory-war",
+        "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "REVISE",
+        "totalScore": 91,
+        "previousScore": 91,
+        "scoreDelta": 0,
+        "hardFailures": [
+          "CORE_FUN_WEAK"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [],
+        "improvementTargets": [
+          {
+            "dimension": "ideaDistinctness",
+            "current": 6,
+            "maxScore": 15,
+            "gap": 9
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-18T02:04:13.783Z"
       }
     ],
     "causeCounts": {
@@ -13587,7 +13654,7 @@
       "COMPLETE_PLAYABLE_CYCLE_REQUIRED": 1,
       "FAIL_OR_LOSS_CONDITION_REQUIRED": 1,
       "CATEGORY_PROFILE_MATCH": 2,
-      "CORE_FUN_WEAK": 28,
+      "CORE_FUN_WEAK": 30,
       "REQUIRED_AXIS_MINIMUM": 1
     },
     "preferSeedMaterialFamilies": [],
@@ -13604,7 +13671,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-18T01:08:10.566Z"
+    "updatedAt": "2026-09-18T02:04:13.784Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,

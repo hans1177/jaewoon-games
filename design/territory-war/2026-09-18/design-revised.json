@@ -9,13 +9,13 @@
   "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "qwen2.5:1.5b",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 5,
+  "appliedConsensusCount": 1,
   "unresolvedConflictCount": 0,
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
-    "identity": "Single-Player Defense Strategy",
-    "playerFantasy": "Short Strategy Sessions and Territory Expansion Judgments",
+    "identity": "TerritoryWar",
+    "playerFantasy": "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
     "coreFun": "readable territory pressure, expansion tradeoffs, front-line resource decisions",
     "coreLoop": [
       "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
@@ -24,62 +24,39 @@
     ],
     "signatureSystems": [
       {
-        "name": "Real Player Input",
-        "purpose": "React to the player's actions and the state of the world",
-        "playerChoice": "The player's actions and the world's state"
+        "name": "coreFun",
+        "purpose": "영토 확장 판단의 핵심 행동과 목표",
+        "playerChoice": "플레이어가 실제 게임 상태를 반응하는 행동 패턴을 보여주는 플레이어 행동"
       },
       {
-        "name": "Core Gameplay Action",
-        "purpose": "Apply the player's actions to the game's state and observe the resulting changes in the world or target state",
-        "playerChoice": "The player's actions and the world's state"
+        "name": "coreLoop",
+        "purpose": "플레이어 행동과 실제 게임 상태 변화를 연결하는 루프",
+        "playerChoice": "플레이어가 실제 게임 상태를 반응하는 행동 패턴을 보여주는 플레이어 행동"
       },
       {
-        "name": "Progression Reward or Meaningful Choice",
-        "purpose": "Apply the player's actions to the game's state and observe the resulting changes in the world or target state",
-        "playerChoice": "The player's actions and the world's state"
-      },
-      {
-        "name": "Risk Failure or Resource Pressure",
-        "purpose": "Apply the player's actions to the game's state and observe the resulting changes in the world or target state",
-        "playerChoice": "The player's actions and the world's state"
-      },
-      {
-        "name": "Goal or Retry",
-        "purpose": "Apply the player's actions to the game's state and observe the resulting changes in the world or target state",
-        "playerChoice": "The player's actions and the world's state"
+        "name": "validationRisks",
+        "purpose": "플레이어 행동의 성능 및 안정성을 검증하는 데 사용되는 루프",
+        "playerChoice": "플레이어가 실제 게임 상태를 반응하는 행동 패턴을 보여주는 플레이어 행동"
       }
     ],
-    "progressionDirection": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
-    "visualDirection": "단순한 전략적 움직임과 영토 확장 판단을 중심으로 한 압축형 영토 전략 게임으로 재설계",
-    "mobileUx": "ROBLOX",
-    "marketTargetDirection": "TARGET_DESIGN_REFERENCE",
+    "progressionDirection": "30분 의미 있는 첫 세션 기준: 조작·목표 이해, 핵심 루프 반복과 첫 성장/선택, 변주·난이도·스토리 또는 전략 변화, 중간목표·보상·다음 플레이 동기",
+    "visualDirection": "단순한 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+    "mobileUx": "플레이어: Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+    "marketTargetDirection": "short strategy session and territory expansion judgment preference",
     "steamExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
     "multiplayerMode": "SINGLE",
     "multiplayerExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
     "technicalAssumptions": [
-      "The game is designed to be played on a single player platform.",
-      "The game is designed to be played on a multiplayer platform.",
-      "The game is designed to be played on a cross-platform platform."
+      "단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+      "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다."
     ],
     "validationQuestions": [
-      "Does the game have a clear and consistent user interface?",
-      "Does the game have a clear and consistent user experience?",
-      "Does the game have a clear and consistent user experience?",
-      "Does the game have a clear and consistent user experience?",
-      "Does the game have a clear and consistent user experience?",
-      "Does the game have a clear and consistent user experience?",
-      "Does the game have a clear and consistent user experience?",
-      "Does the game have a clear and consistent user experience?"
+      "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다.",
+      "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다."
     ],
     "openQuestions": [
-      "What is the target audience for the game?",
-      "What is the target audience for the game?",
-      "What is the target audience for the game?",
-      "What is the target audience for the game?",
-      "What is the target audience for the game?",
-      "What is the target audience for the game?",
-      "What is the target audience for the game?",
-      "What is the target audience for the game?"
+      "단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+      "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다."
     ],
     "robloxBuildProfile": {
       "version": 1,
@@ -102,7 +79,7 @@
     }
   },
   "prePromotionRepair": {
-    "phase": "PRE_REVIEW",
+    "phase": "REVIEW_FEEDBACK",
     "repairs": [
       {
         "field": "robloxBuildProfile",
@@ -112,6 +89,6 @@
     "groundedOnly": true,
     "legacyMultiplayerNormalization": false,
     "strictScoreOrVerdictModified": false,
-    "repairedAt": "2026-09-18T01:03:14.798Z"
+    "repairedAt": "2026-09-18T02:04:13.707Z"
   }
 }
