@@ -21,7 +21,7 @@ const geminiApiKey=clean(process.env.GEMINI_API_KEY);
 if(!geminiApiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
 const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||'gemini-3.8-flash');
 const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite').split(','));
-const geminiFallbackModelList=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview,gemini-3.1-pro-preview').split(','));
+const geminiFallbackModelList=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview').split(','));
 const geminiUnavailableModels=new Map();
 function geminiCandidatesFor(primary){
   const ordered=uniq([primary,...geminiFallbackModelList]);
@@ -35,7 +35,7 @@ function quarantineGeminiModel(model,status){
   console.log(`GEMINI_MODEL_QUARANTINED=${model}|status=${status}`);
 }
 function geminiThinkingConfigFor(model){
-  return String(model).startsWith('gemini-2.5-')?{thinkingBudget:512}:{thinkingLevel:'low'};
+  return {thinkingLevel:'low'};
 }
 if(geminiLeadModelList.length<ROLES.length)throw new Error(`GEMINI_LEAD_MODEL_GATE: ${geminiLeadModelList.length}/${ROLES.length}`);
 const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadModelList[index]]));
@@ -278,11 +278,11 @@ function repairStructureContract(fields){
   if(fields.includes('coreFun'))rules.push('coreFun: 공백 포함 최소 40자 이상. 반복되는 실제 선택, 관찰 가능한 상태변화, 즉각적 결과를 명시.');
   if(fields.includes('coreLoop'))rules.push('coreLoop: 서로 다른 실제 플레이 단계 최소 3개. 입력/선택 -> 상태변화 -> 보상·위험·다음 선택의 연결을 포함.');
   if(fields.includes('signatureSystems'))rules.push('signatureSystems: 최소 2개 서로 다른 시스템. 각 name은 최소 2자, purpose와 playerChoice는 각각 최소 20자 이상의 구체적 내용.');
-  if(fields.includes('contentExpansionPlan'))rules.push('contentExpansionPlan: 최소 3개 서로 다른 객체. 각 milestone/newGameplay/systemImpact 문자열은 공백 제외 의미 있는 내용으로 각각 최소 12자 이상.');
-  if(fields.includes('implementationTraceability'))rules.push('implementationTraceability: 최소 3개 서로 다른 객체. 각 designElement/responsibleSystem/validationEvidence 문자열은 각각 최소 10자 이상.');
-  if(fields.includes('technicalAssumptions'))rules.push('technicalAssumptions: 서로 다른 구현 가정 최소 2개.');
-  if(fields.includes('validationQuestions'))rules.push('validationQuestions: 서로 다른 검증 질문 최소 2개.');
-  if(fields.includes('systemInterconnections'))rules.push('systemInterconnections: 최소 3개 서로 다른 객체. fromSystem/toSystem/trigger/stateChange를 모두 구체적으로 작성.');
+  if(fields.includes('contentExpansionPlan'))rules.push('contentExpansionPlan: 최소 3개 서로 다른 객체. JS String.length 기준 각 milestone은 최소 20자, newGameplay/systemImpact는 각각 최소 30자 이상으로 실제 새 플레이와 기존 시스템 영향을 구체적으로 설명.');
+  if(fields.includes('implementationTraceability'))rules.push('implementationTraceability: 최소 3개 서로 다른 객체. JS String.length 기준 각 designElement/responsibleSystem은 최소 20자, validationEvidence는 최소 30자 이상으로 검증 방법까지 구체적으로 작성.');
+  if(fields.includes('technicalAssumptions'))rules.push('technicalAssumptions: 서로 다른 구현 가정 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
+  if(fields.includes('validationQuestions'))rules.push('validationQuestions: 서로 다른 검증 질문 최소 2개이며 각 항목은 JS String.length 기준 최소 24자 이상.');
+  if(fields.includes('systemInterconnections'))rules.push('systemInterconnections: 최소 3개 서로 다른 객체. JS String.length 기준 fromSystem/toSystem은 각각 최소 16자, trigger/stateChange는 각각 최소 24자 이상으로 구체적으로 작성.');
   return rules;
 }
 function impactedRolesFromScores(...scores){
@@ -550,10 +550,9 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
 function geminiMinuteRetryDelayMs(error,candidateModel){
   const message=clean(error?.message||error);
   if(Number(error?.geminiStatus||0)!==429)return 0;
-  if(/PerDayPerProjectPerModel/i.test(message))return 0;
-  if(!/PerMinutePerProjectPerModel|retryDelay|Please retry in/i.test(message))return 0;
   const explicit=message.match(/retryDelay[^0-9]*(\d+(?:\.\d+)?)s/i)?.[1]||message.match(/Please retry in\s+(\d+(?:\.\d+)?)s/i)?.[1];
-  const seconds=Math.min(60,Math.max(5,Math.ceil(Number(explicit||15))));
+  if(!explicit)return 0;
+  const seconds=Math.min(70,Math.max(5,Math.ceil(Number(explicit))));
   const stagger=(hash(`${gameId}:${candidateModel}`)%5)*1000;
   return seconds*1000+stagger;
 }
@@ -659,7 +658,7 @@ async function callDesignerModel(system,user,schema,options={}){
 
 async function generateDesignerDraft(){
   const system='너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용한다. 유명 성공작의 구조는 오마주/재해석할 수 있지만 보호되는 표현과 소스코드는 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.';
-  const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,10500)}`;
+  const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,10500)}`;
   try{
     const full=await callDesignerModel(system,user,DESIGN,{predict:2200,temperature:0.28,numCtx:8192,timeoutMs:90000,maxAttempts:1,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
     console.log('DESIGNER_DRAFT_GENERATION=ONE_CALL');
@@ -740,7 +739,7 @@ const leadReviews=await runPhase('five_lead_reviews',()=>adaptiveParallel(
         `너는 ${role} 부서 Lead AI다. DESIGN_ONLY 설계를 자기 전문영역에서 직접 검토한다. 회의·반박·다른 부서 대리 판단은 하지 않는다.`,
         `가장 중요한 KEEP/FIX/ADD/RISK/EVIDENCE만 짧고 구체적으로 작성하라. 수정 가능한 문제는 실제 수정 지시로 표현하고 점수나 관문을 조작하지 마라.\nASSIGNED_DEPARTMENT=${role}\nGAME_SEED=${clip(seed,3000)}\nDESIGN=${clip(departmentDesignContext(role,designDraft),6500)}`,
         reviewsSchemaFor([role]),
-        {predict:420,numCtx:5120,timeoutMs:90000,candidateModels:leadCandidateModels[role]}
+        {predict:700,numCtx:5120,timeoutMs:90000,candidateModels:leadCandidateModels[role]}
       );
       return result[role];
     }),
