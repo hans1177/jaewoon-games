@@ -8,6 +8,7 @@ on:
       - 'tools/company-design-cycle.mjs'
       - 'tools/company-design-gate-scoring-v2.mjs'
       - 'tools/company-strict-production-review.mjs'
+      - '.github/actions/prepare-ollama/action.yml'
       - '.github/workflows/company-seed-design-runtime.yml'
   schedule:
     - cron: '0 16 * * *' # 01:00 KST fallback; event chain remains primary
