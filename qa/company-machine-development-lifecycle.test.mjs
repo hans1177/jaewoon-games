@@ -11,6 +11,7 @@ const feeder=read('tools/vibe2-post-release-focus.mjs');
 const runner=read('.github/workflows/vibe2-24h-runner.yml');
 const queue=read('assets/vibe-continuous-queue.js');
 const seedDesignRuntime=read('.github/workflows/company-seed-design-runtime.yml');
+const designCycle=read('tools/company-design-cycle.mjs');
 
 const lifecycle=roadmap.developmentLifecycleMachine;
 assert.equal(lifecycle.authority,'MACHINE_EXECUTION_CONTRACT');
@@ -97,5 +98,12 @@ assert.match(seedDesignRuntime,/GEMINI_QUOTA_FULL_CYCLE_RESTART=NO/);
 assert.match(seedDesignRuntime,/DESIGN_GATE_REPAIR_LOOP_DISPATCH=WAITING_FOR_GEMINI_QUOTA/);
 assert.match(queue,/WAITING_FOR_GEMINI_QUOTA/);
 assert.match(queue,/isExternalQuotaWaitingTask/);
+assert.match(designCycle,/DESIGN_CHECKPOINT_CONTRACT_VERSION=3/);
+assert.match(designCycle,/checkpointV2MigrationEligible/);
+assert.match(designCycle,/PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY/);
+assert.match(designCycle,/GEMINI_MODEL_QUARANTINE_RESTORED=/);
+assert.match(designCycle,/GEMINI_DAILY_QUOTA_EXHAUSTED=/);
+assert.ok(designCycle.indexOf('if(status===429&&isDailyGeminiQuotaError(error))')<designCycle.indexOf('const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel)'));
+
 
 console.log('PASS machine lifecycle binds Web baseline to native source and one protected Roblox post-release focus slot');
