@@ -33,6 +33,9 @@ on:
       - '_headers'
       - 'tools/homepage-manager.mjs'
       - 'tools/homepage-test-candidate-sync.mjs'
+      - 'tools/game-catalog-normalization.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/homepage-manager-publication-order.test.mjs'
       - '.github/workflows/homepage-manager.yml'
   pull_request:
@@ -62,6 +65,9 @@ on:
       - '_headers'
       - 'tools/homepage-manager.mjs'
       - 'tools/homepage-test-candidate-sync.mjs'
+      - 'tools/game-catalog-normalization.mjs'
+      - 'company-learning/platform-release-roadmap.json'
+      - 'qa/game-catalog-normalization.test.mjs'
       - 'qa/homepage-manager-publication-order.test.mjs'
       - '.github/workflows/homepage-manager.yml'
   workflow_dispatch:
@@ -169,7 +175,9 @@ jobs:
           node --check assets/artbook-viewer.js
           node --check tools/homepage-manager.mjs
           node --check tools/homepage-test-candidate-sync.mjs
+          node --check tools/game-catalog-normalization.mjs
           node --check tools/company-status-sync.mjs
+          node qa/game-catalog-normalization.test.mjs
           node --test qa/homepage-manager-publication-order.test.mjs
           grep -Fq '/assets/homepage-enhancements.js' index.html
           grep -Fq 'const SYNC_INTERVAL_MS=5000;' assets/homepage-enhancements.js
