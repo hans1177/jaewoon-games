@@ -2,41 +2,30 @@
   "version": 2,
   "gameId": "bug-defense",
   "date": "2026-09-18",
-  "engineDigest": "301a7c5b4c9cc35ed5baa807954a4614f0914b371e70bc5892852615de6cdd2b",
+  "engineDigest": "cf12f1c49f0b4b7f7cc029cdbc4903f963778889836a64c033c4c9cfa8b8bc3d",
   "status": "IN_PROGRESS",
-  "currentStage": "PRE_GATE_REPAIR",
-  "percent": 50,
-  "completedPhases": [
-    "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1"
-  ],
-  "completedPhaseCount": 4,
+  "currentStage": "DESIGNER_DRAFT",
+  "percent": 17,
+  "completedPhases": [],
+  "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T05:33:53.585Z",
-  "failedPhase": null,
+  "lastSuccessfulModelCallAt": null,
+  "failedPhase": "designer_draft",
   "failedTask": null,
-  "lastError": null,
+  "lastError": "DESIGNER_EXTERNAL_CALL_FAILED gemini:gemini-3.8-flash: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
   "modelHealth": {
-    "llama3.2:1b": {
-      "calls": 6,
-      "successes": 3,
-      "failures": 3,
-      "timeouts": 3,
+    "gemini:gemini-3.8-flash": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1320583,
-      "lastMs": 98509,
-      "lastError": "The operation was aborted due to timeout",
-      "updatedAt": "2026-09-18T05:33:53.585Z"
+      "totalMs": 10102,
+      "lastMs": 3530,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T05:36:18.054Z"
     }
   },
-  "slowPhases": {
-    "designer_draft": {
-      "elapsedMs": 681316,
-      "budgetMs": 180000,
-      "recordedAt": "2026-09-18T05:32:15.059Z"
-    }
-  },
-  "updatedAt": "2026-09-18T05:33:53.587Z"
+  "slowPhases": {},
+  "updatedAt": "2026-09-18T05:36:18.055Z"
 }
