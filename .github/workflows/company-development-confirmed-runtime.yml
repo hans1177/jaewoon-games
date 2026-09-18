@@ -265,8 +265,9 @@ jobs:
         run: |
           grep -q "DETERMINISTIC_FIRST=YES" tools/company-development-web-bootstrap.mjs
           grep -q "AI_OPTIONAL=YES" tools/company-development-web-bootstrap.mjs
-          echo 'WEB_AI_MODE=LAZY_OPTIONAL'
+          echo 'WEB_AI_MODE=LAZY_OPTIONAL_GEMINI_ONLY'
           echo 'WEB_MODEL_PREP=DEFERRED_UNTIL_REQUIRED'
+          echo 'WEB_LOCAL_OLLAMA_ALLOWED=NO'
 
       - name: Install isolated browser runtime
         run: |
@@ -275,6 +276,8 @@ jobs:
 
       - name: Build and validate one required Web companion
         env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          COMPANY_GEMINI_WEB_MODEL: 'gemini-3.5-flash-lite'
           GAME_ID: ${{ matrix.gameId }}
           GAME_NAME: ${{ matrix.gameName }}
           DESIGN_BASELINE_SOURCE: ${{ matrix.designBaselineSource }}
