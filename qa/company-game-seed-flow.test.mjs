@@ -179,6 +179,7 @@ test('autonomous runtime remains on company-runtime caps WIP and bounds slow des
   assert.match(seedWorkflow,/gh workflow run company-seed-design-runtime\.yml --ref main/);
   assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_CURRENT_HEAD_RUNS=/);
   assert.match(seedWorkflow,/ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=/);
+  assert.match(seedWorkflow,/actions\\/workflows\\/company-seed-design-runtime\\.yml\\/runs/);
   assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE/);
   assert.match(seedWorkflow,/GAME_SEED_STALE_DESIGN_RUN_CANCEL_REQUESTED=/);
   assert.match(seedWorkflow,/GAME_SEED_DESIGN_CONTINUATION_SCOPE=REPLACE_STALE_HEAD_BATCH/);
