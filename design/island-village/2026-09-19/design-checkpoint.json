@@ -1,0 +1,251 @@
+{
+  "contractVersion": 3,
+  "gameId": "island-village",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
+  "fingerprint": "5ddb21df6e6db6c83ad7a77ecac7ca756c2d69e3318a13ff2b3183bcd4f81568",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임. coreLoop와 signatureSystems가 자원 수집과 주민 배치라는 명확한 선택을 통해 마을의 시각적 성장과 상태 변화를 이끌어낸다.",
+      "playerFantasy": "황폐한 무인도에 도착한 개척자가 되어, 작은 자원을 모으고 주민들을 불러 모아 활기찬 해안 마을로 탈바꿈시키는 따뜻하고 보람찬 경영 판타지.",
+      "coreFun": "플레이어는 자원 채집과 시설 건설을 반복하며, 자원이 건물로 변환되는 관찰 가능한 상태 변화를 겪고, 다음 확장 방향을 결정하는 즉각적인 재미를 느낀다.",
+      "coreLoop": [
+        "한 손 터치나 스와이프 입력으로 나무나 돌 같은 기초 자원을 수집하여 인벤토리에 누적한다.",
+        "수집한 자원을 사용해 마을 내부에 새로운 주거 시설이나 생산 건물을 배치하고 시각적 변화를 유도한다.",
+        "완공된 건물에서 생성되는 세금이나 생산품을 회수하여 다음 단계의 확장이나 주민 고용 선택에 활용한다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "주민 노동 배치 시스템",
+          "purpose": "플레이어가 직접 채집하지 않아도 주민들이 자동으로 자원을 생산하게 만들어 마을 운영의 효율을 높이고 성장의 가속화를 체감하게 한다.",
+          "playerChoice": "어떤 주민을 어떤 생산 시설에 배치할지 선택하고, 주민들의 피로도와 효율성을 관리하여 최적의 자원 수급 조합을 완성한다."
+        },
+        {
+          "name": "해안 구역 확장 시스템",
+          "purpose": "마을이 발전함에 따라 안개에 가려진 새로운 섬 구역을 개방하여 탐험의 재미와 더 높은 등급의 자원을 획득할 수 있는 기회를 제공한다.",
+          "playerChoice": "축적된 자원을 소모하여 어느 방향의 해안을 먼저 개척할지 선택하고, 새로운 지형에 맞는 맞춤형 마을 구역을 설계한다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "자원 채집 및 수집 시스템",
+          "toSystem": "주민 노동 배치 시스템",
+          "trigger": "플레이어가 충분한 식량과 자원을 확보하여 주민을 고용할 때",
+          "stateChange": "유휴 상태였던 주민이 특정 생산 건물에 할당되어 자동 자원 생산 상태로 전환된다."
+        },
+        {
+          "fromSystem": "주민 노동 배치 시스템",
+          "toSystem": "해안 구역 확장 시스템",
+          "trigger": "생산 시설에서 지속적으로 자원이 누적되어 확장 비용 목표치에 도달할 때",
+          "stateChange": "잠겨 있던 해안 구역의 안개가 걷히고 새로운 건설 가능 대지가 활성화된다."
+        },
+        {
+          "fromSystem": "해안 구역 확장 시스템",
+          "toSystem": "자원 채집 및 수집 시스템",
+          "trigger": "새로운 구역에 특수 자원 채집 포인트가 생성되고 플레이어나 주민이 접근할 때",
+          "stateChange": "기존에 얻을 수 없던 희귀 자원이 인벤토리 자원 풀에 새롭게 추가된다."
+        }
+      ],
+      "progressionDirection": "초기에는 플레이어가 직접 모든 자원을 채집하며 기본 생존과 소규모 건물을 짓지만, 중반 이후 주민 자동화와 구역 확장을 통해 거대한 무인도 무역 거점 마을로 성장하는 방향으로 전개된다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "자원 수집 및 건물 건설을 통한 생산력 증대, 그리고 이를 통한 구역 확장과 상위 주민 해금의 순환 구조를 가진다.",
+        "resourceFlow": "초기 자원은 수동 채집으로 얻지만, 중후반부에는 주민 자동 생산을 통해 유입되고 건설 및 구역 개방 비용으로 소모된다.",
+        "balanceRules": "플레이어의 세션 시간에 맞춰 자원 생산 주기를 조절하고, 대기 시간 없이 짧은 플레이 안에서도 의미 있는 성취감을 느치도록 밸런스를 조정한다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "농업 및 요리 시스템 도입",
+          "newGameplay": "확장된 농경지에서 작물을 재배하고 요리 시설을 통해 주민들의 만족도를 높이는 새로운 생산 체인 플레이를 추가한다.",
+          "systemImpact": "기존 자원 수집 시스템과 주민 노동 배치 시스템에 식량 만족도 지표가 추가되어 경영의 깊이가 확장된다."
+        },
+        {
+          "milestone": "해상 무역선 방문 시스템",
+          "newGameplay": "주기적으로 섬에 찾아오는 상인과의 물물 교환을 통해 남는 자원을 희귀 아이템이나 장식품으로 교환하는 플레이를 제공한다.",
+          "systemImpact": "자원 유통 구조가 다변화되며 자원 경제의 가치와 활용도가 한층 더 높아진다."
+        },
+        {
+          "milestone": "밤낮 주기 및 등대 건설",
+          "newGameplay": "시간 흐름에 따른 시각적 변화와 야간에만 출현하는 특수 이벤트를 해결하는 탐험 중심의 확장 콘텐츠를 제공한다.",
+          "systemImpact": "기본 월드 상태 변화 시스템에 시간 축이 도입되어 기존 시설들의 야간 효율성에 영향을 미친다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "모든 주민의 만족도가 바닥나서 생산 활동을 중단하고 이탈하는 상태",
+          "식량 자원이 완전히 고갈되어 추가 건설이나 유지가 불가능한 상태"
+        ],
+        "retryFlow": "파산이나 이탈 발생 시 최근 저장된 마을 상태에서 즉시 재시도할 수 있으며, 페널티를 최소화하여 빠른 복구를 돕는다.",
+        "riskPressure": "자원 관리 소홀 시 생산 효율이 급격히 떨어지는 압박감을 제공하되, 캐주얼한 수준으로 유지한다.",
+        "recoveryRules": "기초 자원 채집 포인트를 통해 빠르게 기본 자원을 다시 수급하고 주민을 재고용할 수 있는 안전장치를 제공한다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "모바일 터치와 PC 마우스 클릭 모두 지원하는 직관적인 원탭 및 드래그 앤 드롭 입력 모델",
+        "performanceBudget": "로블록스 플랫폼 내에서 저사양 모바일 기기 기준 30프레임 이상을 유지하도록 최적화된 폴리곤 및 파츠 예산",
+        "sessionConstraints": "한 번 접속 시 5분에서 15분 단위로 가볍게 즐기고 종료할 수 있는 세션 설계"
+      },
+      "visualDirection": "아기자기하고 따뜻한 로블록스 저폴리 스타일을 활용하여, 파스텔톤의 해변과 초록빛 섬이 조화롭게 어우러지는 시각적 정체성을 구축한다.",
+      "mobileUx": "엄지손가락 하나로 모든 주요 조작이 가능하도록 하단에 핵심 건설 및 메뉴 버튼을 배치하고 가독성을 극대화한다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 보유 자원량, 주민 수, 그리고 다음 목표를 화면 상단에 고정하여 항상 인지할 수 있도록 배치한다.",
+        "touchAndInput": "모바일 터치 오류를 방지하기 위해 상호작용 버튼의 터치 영역을 충분히 넓게 설계한다.",
+        "readability": "아이콘과 텍스트의 대비를 높이고 직관적인 시각적 심볼을 사용하여 언어 장벽을 낮춘다.",
+        "accessibility": "색약 모드 및 UI 크기 조절 옵션을 제공하여 다양한 플레이어들이 쉽게 게임을 즐길 수 있게 한다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "따뜻한 햇살이 비치는 남국의 무인도를 연상시키는 밝고 경쾌한 파스텔 색감의 저폴리 3D 비주얼",
+        "audioIdentity": "잔잔한 파도 소리와 새소리, 그리고 건물을 지을 때 나는 가벼운 타악기 효과음의 조화",
+        "gameplayFeedbackSync": "자원을 획득하거나 건물이 완성될 때 명확한 시각적 파티클과 청각적 효과음이 즉시 동기화되어 출력됨"
+      },
+      "marketTargetDirection": "편안하고 잔잔한 성장의 재미를 추구하는 글로벌 캐주얼 게이머와 시뮬레이션 선호층을 타깃으로 한다.",
+      "steamExpansionDecision": "로블록스 플랫폼에서 검증된 이후, 더 정교한 그래픽과 심도 있는 경영 요소를 더해 스팀 플랫폼으로의 확장 가능성을 열어둔다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "추후 친구의 섬을 방문하여 자원을 선물하거나 도와주는 소셜 방문 형태의 멀티플레이 확장 가능성을 검토한다.",
+      "technicalAssumptions": [
+        "클라이언트 측에서 기본적인 자원 증감 및 건물 상태를 실시간으로 처리할 수 있어야 한다.",
+        "서버는 플레이어의 마을 데이터와 주민 배치 상태를 안정적으로 저장하고 불러올 수 있어야 한다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 안에 자원을 모아 첫 번째 건물을 짓는 과정을 직관적으로 이해할 수 있는가?",
+        "주민 자동 배치 시스템이 자원 경제에 적절한 성취감과 자동화의 재미를 부여하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "한 손 터치 기반 자원 채집",
+          "responsibleSystem": "자원 채집 및 수집 시스템",
+          "validationEvidence": "모바일 환경에서 터치 테스트를 통해 3초 이내에 자원 수집 반응이 일어나는지 검증한다."
+        },
+        {
+          "designElement": "주민 노동력에 따른 자동 생산",
+          "responsibleSystem": "주민 노동 배치 시스템",
+          "validationEvidence": "주민 배치 후 일정 시간 동안 인벤토리 자원 수치가 자동으로 증가하는 로그를 확인하여 검증한다."
+        },
+        {
+          "designElement": "해안 구역의 안개 제거 및 확장",
+          "responsibleSystem": "해안 구역 확장 시스템",
+          "validationEvidence": "확장 버튼 클릭 시 자원이 소모되고 새로운 지형 영역이 활성화되는 상태 변화를 테스트한다."
+        }
+      ],
+      "openQuestions": [
+        "멀티플레이 확장 시 친구 섬 간의 상호작용 범위를 어디까지 허용할 것인가?",
+        "오프라인 방치 보상 시스템을 도입할 때 밸런스를 어떻게 유지할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 11779,
+      "lastMs": 11779,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:07:16.423Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 91,
+      "lastMs": 91,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 43.479726477s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"43s\" } ] } }",
+      "updatedAt": "2026-09-18T15:07:16.535Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 129,
+      "lastMs": 129,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 43.439600404s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"43s\" } ] } }",
+      "updatedAt": "2026-09-18T15:07:16.575Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T15:07:04.641Z",
+  "updatedAt": "2026-09-18T15:07:16.576Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:07:16.423Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 43.439600404s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"43s\" } ] } }"
+}
