@@ -19,6 +19,16 @@ function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
 
+test('legacy central policy evidence is migrated to the roadmap authority during queue normalization', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'legacy-policy',gameId:'legacy',target:'web',sourceRoot:'web-games/legacy',goal:'legacy',
+    status:'queued',evidence:['central-policy:COMPANY_FLOW.md','owner-directive:existing']
+  }]});
+  assert.equal(queue.tasks[0].evidence.includes('central-policy:COMPANY_FLOW.md'),false);
+  assert.equal(queue.tasks[0].evidence.includes('central-policy:company-learning/platform-release-roadmap.json'),true);
+  assert.equal(queue.tasks[0].evidence.includes('owner-directive:existing'),true);
+});
+
 test('owner directive preempts release and development work', () => {
   let queue=createVibeContinuousQueue();
   queue=add(queue,'dev','dev','unity',{releaseState:'development-confirmed'});
