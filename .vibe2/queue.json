@@ -2400,7 +2400,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
@@ -2437,7 +2437,8 @@
         "actions-run:35359478654",
         "reservation-id:35359478654:1",
         "workload:prep-ms:5099",
-        "workload:cycle-ms:113287"
+        "workload:cycle-ms:113287",
+        "slot-dispatch:35360955368:1"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35359487752:2",
@@ -2489,7 +2490,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
@@ -2514,7 +2515,8 @@
         "actions-run:35359478654",
         "reservation-id:35359478654:1",
         "workload:prep-ms:5099",
-        "workload:cycle-ms:113287"
+        "workload:cycle-ms:113287",
+        "slot-dispatch:35360955368:1"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35359487752:2",
@@ -2566,12 +2568,13 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
         "practice-kind:MINI_GAME_SYSTEM_DRILL",
-        "practice-domain:ASSET_PRODUCTION"
+        "practice-domain:ASSET_PRODUCTION",
+        "slot-dispatch:35360955368:1"
       ],
       "lastOutcome": null,
       "reservationId": "35359487752:2",
