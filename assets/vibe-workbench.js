@@ -124,7 +124,7 @@ function editDirectives(request,target,systems,quality){
   else if(target==='unreal')a.push('Unreal .uproject/Content/Config/Source의 실제 책임 파일을 직접 수정하고 Binaries/DerivedDataCache/Intermediate/Saved는 소스 변경 대상으로 사용하지 않음');
   else if(target==='unity')a.push('Unity Assets/Packages/ProjectSettings의 실제 책임 파일을 직접 수정하고 임시 MonoBehaviour override/중복 패치 컴포넌트를 추가하지 않음');
   else if(target==='godot')a.push('main.gd/main.tscn 및 실제 책임 스크립트를 우선 수정하고 임시 override 노드를 추가하지 않음');
-  else a.push('web-games는 보관용 원본이므로 읽기/분석만 하고 소스 수정하지 않음');
+  else a.push('Web 1차 구현/수정은 Vibe 후보 브랜치에서 실제 책임 소스를 직접 수정하고 QA·fan-in 전 main 직접 반영 금지');
   if(has(request,['저장 구조','저장 키','세이브 구조']))a.push('저장 변경이 불가피하면 기존 데이터를 읽는 명시적 마이그레이션 경로를 함께 구현');
   return unique(a);
 }
@@ -173,7 +173,7 @@ export function createVibeEditBrief({request='',target='auto',gameId=null,files=
   if(!prompt)throw new Error('edit brief request required');
   const resolvedTarget=targetOf(prompt,target),systems=detectSystems(prompt),quality=detectQuality(prompt),paths=unique(files.map(f=>clean(typeof f==='string'?f:f?.path)));
   const engineAdapter=createVibeEngineAdapter({request:prompt,target:resolvedTarget,gameSlug:gameId||''});
-  const engineChecks=resolvedTarget==='roblox'?['Luau 소스/프로젝트 구조 확인','place package 확인','Roblox 런타임','독립 QA','회귀','exact revision 확인']:resolvedTarget==='unreal'?['Unreal C++ 컴파일','Blueprint/Animation Blueprint 참조','Map/Level 로드','Montage/State Machine/IK Rig/Retargeter/Control Rig','패키징/런타임 확인']:resolvedTarget==='unity'?['Unity 컴파일/씬 참조/Android 빌드 확인']:resolvedTarget==='godot'?['Godot 씬/스크립트 참조 확인']:['web-games 읽기 전용 확인'];
+  const engineChecks=resolvedTarget==='roblox'?['Luau 소스/프로젝트 구조 확인','place package 확인','Roblox 런타임','독립 QA','회귀','exact revision 확인']:resolvedTarget==='unreal'?['Unreal C++ 컴파일','Blueprint/Animation Blueprint 참조','Map/Level 로드','Montage/State Machine/IK Rig/Retargeter/Control Rig','패키징/런타임 확인']:resolvedTarget==='unity'?['Unity 컴파일/씬 참조/Android 빌드 확인']:resolvedTarget==='godot'?['Godot 씬/스크립트 참조 확인']:['Web source 구조 확인','브라우저 런타임','모바일 레이아웃','터치 입력','회귀 확인'];
   return Object.freeze({version:3,request:prompt,target:resolvedTarget,gameId:gameId?clean(gameId):null,responsibleFiles:Object.freeze(paths),engineAdapter,directives:Object.freeze(editDirectives(prompt,resolvedTarget,systems,quality)),protectedTargets:Object.freeze(PROTECTED.filter(x=>!prompt.includes(x))),requiredChecks:Object.freeze(unique(['변경 전 원본 일치','변경 diff 확인','보호 대상 값/키 변경 검사','문법/구조 QA','실행 회귀 QA','모바일 UI QA',...engineChecks,...engineAdapter.qa])),outputContract:Object.freeze({returnCompleteFiles:true,noWrapperPatch:true,noOverridePatch:true,checkpointBeforeWrite:true,atomicApply:true,rollbackOnFailure:true,sourceWriteAllowed:engineAdapter.mayWriteSource})});
 }
 
@@ -183,7 +183,7 @@ export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file
   const resolvedTarget=targetOf(prompt,target),mode=modeOf(prompt),priority=priorityOf(prompt),systems=detectSystems(prompt),quality=detectQuality(prompt),protectedTargets=PROTECTED.filter(x=>prompt.includes(x));
   const engineAdapter=createVibeEngineAdapter({request:prompt,target:resolvedTarget,gameSlug:gameId||''});
   const candidates=unique([...candidateFiles(resolvedTarget,systems,quality),...engineAdapter.source.candidateFiles]);
-  const structureStep=resolvedTarget==='roblox'?'roblox-games Luau/Lua/JSON 소스와 place package 구조 확인':resolvedTarget==='unreal'?'.uproject/Content/Config/Source 구조와 Animation Blueprint/Montage/State Machine 확인':resolvedTarget==='unity'?'Unity Assets/Packages/ProjectSettings 구조 확인':resolvedTarget==='godot'?'Godot project.godot와 씬/스크립트 구조 확인':'web-games 보관 원본을 읽기 전용으로 분석';
+  const structureStep=resolvedTarget==='roblox'?'roblox-games Luau/Lua/JSON 소스와 place package 구조 확인':resolvedTarget==='unreal'?'.uproject/Content/Config/Source 구조와 Animation Blueprint/Montage/State Machine 확인':resolvedTarget==='unity'?'Unity Assets/Packages/ProjectSettings 구조 확인':resolvedTarget==='godot'?'Godot project.godot와 씬/스크립트 구조 확인':'Web source root와 승인 baseline을 확인하고 신규 구현이면 index.html bootstrap, 기존 구현이면 책임 소스를 분석';
   const steps=['현재 main 기준 대상 게임/파일 확인',structureStep,'현재 게임 규칙·밸런스·저장 구조 확인'];
   const company=companyDevelopmentContext({request:prompt,gameId,mode,artbook,artbookStatus,artbookCutCount,artbookPostprocessComplete,artbookRef});
   if(company.artbookLock.locked)steps.push('완료 아트북 잠금 확인 → 한줄 정의/핵심 재미/세계관/콘티/시스템 재기획 건너뜀','잠긴 아트북 → 기술 구조 → 기술 스파이크 → 플레이어블 초안 → 내부 평가 → 사용자 승인 → 본개발','아트북과 충돌하는 변경 필요 시 구현 중단 → ARTBOOK_CHANGE_REQUEST');
@@ -207,7 +207,7 @@ export function planVibeWorkbenchTask({request='',target='auto',gameId=null,file
   if(protectedTargets.length)warnings.push(`보존 대상: ${protectedTargets.join(', ')}. 현재 값을 먼저 기록`);
   if(company.artbookLock.locked)warnings.push(`완료 아트북 컨셉 잠금: ${company.artbookLock.ref||'completed-artbook'} — Vibe2 재기획 금지`,'컨셉 변경이 필요하면 ARTBOOK_CHANGE_REQUEST 없이 자동 실행 금지');
   if(mode==='repair')warnings.push('증상만 가리는 우회 패치 금지');
-  if(resolvedTarget==='web')warnings.push('web-games는 archive/read-only이며 자동 수정 금지');
+  if(resolvedTarget==='web')warnings.push('Web 구현은 격리 candidate branch에서만 작성하고 검증 전 main 직접 반영 금지','DEVELOPMENT_CONFIRMED 승인 범위·게임 정체성·세이브 의미를 보존');
   if(resolvedTarget==='roblox')warnings.push('Roblox .rbxl/.rbxlx 패키지는 텍스트 worker 직접 편집 금지','실제 게시 전 runtime/independent QA/regression/exact revision 증거 필수');
   if(resolvedTarget==='godot')warnings.push('Godot 바이너리 실행 검증 가능 여부 별도 확인');
   if(resolvedTarget==='unity')warnings.push('Unity 프로젝트는 Library/Temp/Logs/APK/AAB를 소스에 커밋하지 않음');
