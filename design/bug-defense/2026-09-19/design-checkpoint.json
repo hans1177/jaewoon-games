@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -232,6 +234,139 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "웨이브 관리 시스템",
+          "toSystem": "페로몬 시너지 시스템",
+          "trigger": "특정 적 유형이 포함된 웨이브가 시작될 때",
+          "stateChange": "현재 적의 속성에 맞춰 페로몬 버프의 효율과 적용 범위를 실시간으로 재계산하여 방어 난이도를 조정합니다."
+        },
+        {
+          "fromSystem": "전투 시스템",
+          "toSystem": "진화 돌연변이 시스템",
+          "trigger": "엘리트 적을 처치하여 보상을 획득할 때",
+          "stateChange": "진화 포인트를 누적하여 플레이어가 다음 웨이브 시작 전 유닛의 돌연변이 트리를 선택할 수 있는 상태로 전환합니다."
+        },
+        {
+          "fromSystem": "자원 관리 시스템",
+          "toSystem": "전투 시스템",
+          "trigger": "적 처치로 넥타 자원을 획득할 때",
+          "stateChange": "사용 가능한 자원량을 갱신하여 플레이어가 즉시 새로운 유닛을 배치하거나 기존 유닛을 강화할 수 있는 선택지를 활성화합니다."
+        }
+      ],
+      "contentExpansionPlan": [
+        {
+          "milestone": "중간 보스 웨이브 도입",
+          "newGameplay": "특수 능력을 가진 보스 곤충이 등장하여 방어선을 돌파하려 시도하며, 플레이어는 집중 화력과 제어기를 사용해야 합니다.",
+          "systemImpact": "전투 시스템에 보스 패턴 인식 로직이 추가되며, 페로몬 시너지 시스템이 보스 대응을 위한 버프 집중 전략을 요구하게 됩니다."
+        },
+        {
+          "milestone": "환경 요소 추가",
+          "newGameplay": "전장에 늪지대나 바람 같은 환경 요소가 추가되어 유닛의 이동 속도나 공격 사거리에 영향을 미칩니다.",
+          "systemImpact": "배치 시스템에 환경 상성 로직이 통합되어, 플레이어는 지형지물을 고려한 더욱 정교한 유닛 배치를 수행해야 합니다."
+        },
+        {
+          "milestone": "무한 모드 해금",
+          "newGameplay": "끝없이 몰려오는 적을 상대로 얼마나 오래 버티는지 겨루는 모드로, 점진적으로 난이도가 상승합니다.",
+          "systemImpact": "진화 돌연변이 시스템이 무한 모드 전용의 고효율 트리로 확장되어, 장기적인 전략 수립의 재미를 극대화합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 60,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 7.2,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 75.6,
+      "criticalAxisFailures": [
+        "SYSTEM_INTERCONNECTION_DESIGN",
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 7.2,
+            "axisWeight": 12
+          },
+          "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
   "tasks": {},
@@ -292,15 +427,15 @@
       "updatedAt": "2026-09-18T21:12:07.324Z"
     },
     "gemini:gemini-3.1-pro-preview": {
-      "calls": 38,
+      "calls": 39,
       "successes": 0,
-      "failures": 38,
+      "failures": 39,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1294153,
-      "lastMs": 1038,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\nPlease retry in 52.597108639s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerDay-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\"",
-      "updatedAt": "2026-09-18T21:12:07.420Z"
+      "totalMs": 1348359,
+      "lastMs": 54206,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 59.432325221s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\" }",
+      "updatedAt": "2026-09-18T21:13:00.588Z"
     },
     "gemini:gemini-2.5-pro": {
       "calls": 1,
@@ -336,24 +471,24 @@
       "updatedAt": "2026-09-18T19:30:00.999Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 38,
-      "successes": 1,
-      "failures": 37,
+      "calls": 40,
+      "successes": 2,
+      "failures": 38,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2330515,
-      "lastMs": 11842,
-      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=1491",
-      "updatedAt": "2026-09-18T21:08:18.552Z"
+      "totalMs": 2448003,
+      "lastMs": 60232,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=1372",
+      "updatedAt": "2026-09-18T21:13:06.614Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T19:28:23.413Z",
-  "updatedAt": "2026-09-18T21:12:07.420Z",
+  "updatedAt": "2026-09-18T21:13:06.619Z",
   "failedPhase": null,
   "lastError": null,
-  "lastSuccessfulModelCallAt": "2026-09-18T19:49:58.831Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T21:13:06.614Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
