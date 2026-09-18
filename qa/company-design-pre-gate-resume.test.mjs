@@ -1,0 +1,38 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+
+test('PRE_GATE_BLOCKED resume regenerates only targeted repair checkpoints',()=>{
+  assert.match(design,/const priorCheckpointStatus=clean\(designCheckpoint\?\.status\)\.toUpperCase\(\)/);
+  assert.match(design,/priorCheckpointStatus==='PRE_GATE_BLOCKED'/);
+  for(const phase of [
+    'designer_pre_gate_repair_1',
+    'deterministic_pre_gate_after_repair_1',
+    'designer_pre_gate_repair_2',
+    'deterministic_pre_gate_after_repair_2'
+  ]) assert.match(design,new RegExp(phase));
+  assert.match(design,/delete designCheckpoint\.phases\[phase\]/);
+  assert.match(design,/preGateRepairGeneration=Math\.max\(0,Number\(designCheckpoint\.preGateRepairGeneration\|\|0\)\)\+1/);
+  assert.match(design,/DESIGN_PRE_GATE_REPAIR_RETRY_GENERATION=/);
+  assert.match(design,/fullCycleRestart=NO/);
+  assert.match(design,/Object\.prototype\.hasOwnProperty\.call\(designCheckpoint\.phases\|\|\{\},'designer_draft'\)/);
+});
+
+test('blocked resume preserves the current designer draft and gate threshold',()=>{
+  const start=design.indexOf("if(priorCheckpointStatus==='PRE_GATE_BLOCKED'");
+  const end=design.indexOf("for(const [rawModel,row]",start);
+  assert.ok(start>0&&end>start);
+  const section=design.slice(start,end);
+  assert.doesNotMatch(section,/delete designCheckpoint\.phases\.designer_draft/);
+  assert.doesNotMatch(section,/designCheckpoint\.phases\s*=\s*\{\}/);
+  assert.doesNotMatch(section,/DESIGN_GATE_PASS_MINIMUM\s*=/);
+  assert.match(design,/if\(!preGatePass\(preGate\)\)[\s\S]*status='PRE_GATE_BLOCKED'/);
+});
+
+test('current blocked checkpoint engine remains compatible with targeted resume migration',()=>{
+  assert.match(design,/24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03/);
+  assert.match(design,/checkpointV3CompatibleEngineMigrationEligible/);
+  assert.match(design,/QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY/);
+});
