@@ -323,7 +323,29 @@
       "authorsInitialDetailedDesign": true,
       "singleAuthorPerRevisionCycle": true,
       "sameModelRevisesAfterMeeting": false,
-      "sameModelRevisesAfterLeadReview": true
+      "sameModelRevisesAfterLeadReview": true,
+      "providerPriority": [
+        "OPENAI",
+        "GEMINI",
+        "OLLAMA"
+      ],
+      "externalProvidersAllowed": true,
+      "cloudProviderRequiresConfiguredSecret": true,
+      "cloudFailureFallsBackToLocal": true,
+      "openaiModel": "gpt-5",
+      "geminiModel": "gemini-3.8-flash",
+      "localFallbackModels": [
+        "smollm2:1.7b",
+        "gemma3:1b",
+        "qwen3:0.6b"
+      ],
+      "autoBanOnRepeatedFailure": true,
+      "autoBanThresholds": {
+        "failures": 2,
+        "timeouts": 1,
+        "jsonFailures": 2
+      },
+      "banScope": "GAME_DESIGNER_ONLY"
     },
     "departments": [
       "planning",
@@ -372,7 +394,12 @@
       "designOnlyRole": null,
       "designOrArtbookPrimaryAuthorInDevelopmentClass": false,
       "designOrArtbookPrimaryAuthorInDevelopmentConfirmed": false
-    }
+    },
+    "designerBannedModels": [
+      "qwen2.5:1.5b",
+      "llama3.2:1b",
+      "deepseek-r1:1.5b"
+    ]
   },
   "classes": {
     "DESIGN_ONLY": {
