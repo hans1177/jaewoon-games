@@ -34,6 +34,30 @@ const revisionProven=(designRecord,cycleStatus)=>Boolean(
   Number(designRecord?.unresolvedConflictCount||0)===0&&
   Number(designRecord?.heldCount||0)===0
 );
+const AXIS_REPAIR_ACTION=Object.freeze({
+  IDEA_AND_DISTINCTNESS:'정체성·플레이어 판타지·coreFun을 구체화하고 coreLoop와 최소 2개 signature system에 직접 연결한다.',
+  CATEGORY_IDENTITY:'선언 장르와 실제 core loop/play mode가 같은 플레이 정체성을 가리키도록 설계를 정렬한다.',
+  CORE_LOOP_DESIGN:'3단계 이상 core loop를 실제 선택·상태변화로 구체화하고 signature system과 상호작용을 연결한다.',
+  SYSTEM_INTERCONNECTION_DESIGN:'최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.',
+  PROGRESSION_ECONOMY_BALANCE_DESIGN:'진행·자원 흐름·밸런스 규칙을 하나의 반복 가능한 경제/성장 구조로 연결한다.',
+  CONTENT_EXPANSION_PLAN:'최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.',
+  FAILURE_RETRY_RISK_DESIGN:'실패상태·재시도 흐름·위험 압력·회복 규칙을 구체적으로 설계한다.',
+  PLATFORM_FIT_DESIGN:'선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.',
+  UX_AND_ACCESSIBILITY_PLAN:'HUD 우선순위·터치/입력·가독성·접근성 계획을 구체적으로 설계한다.',
+  ART_AUDIO_DIRECTION:'시각 정체성·오디오 정체성·게임플레이 피드백 동기화를 연결한다.',
+  IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY:'설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.'
+});
+const rejectionReason=({code,axis=null,evidenceLevel=null,minimumRequired=null,evidence={},requiredAction})=>({
+  code,
+  kind:'HARD_GATE',
+  axis,
+  evidenceLevel,
+  minimumRequired,
+  evidence,
+  requiredAction,
+  bypassAllowed:false,
+  source:'STAGE_GATE_SCORING_V2'
+});
 const level=(basic,connected,proven=false)=>{
   if(!basic)return 0;
   if(!connected)return 60;
@@ -94,10 +118,23 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const totalScore=Math.round(Object.values(scores).reduce((sum,value)=>sum+Number(value||0),0)*100)/100;
   const criticalAxisFailures=Object.keys(DESIGN_GATE_WEIGHTS).filter(axis=>Number(evidenceLevels[axis]||0)<DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT);
   const hardFailures=[];
-  if(!playModeKnown)hardFailures.push('MULTIPLAYER_MISSING');
-  if(!categoryConnected)hardFailures.push('CATEGORY_MISMATCH');
-  if(Number(evidenceLevels.IDEA_AND_DISTINCTNESS)<60||Number(evidenceLevels.CORE_LOOP_DESIGN)<60)hardFailures.push('CORE_FUN_WEAK');
-  if(criticalAxisFailures.length)hardFailures.push('CRITICAL_AXIS_MINIMUM_FAIL');
+  const rejectionReasons=[];
+  if(!playModeKnown){
+    hardFailures.push('MULTIPLAYER_MISSING');
+    rejectionReasons.push(rejectionReason({code:'MULTIPLAYER_MISSING',axis:'CATEGORY_IDENTITY',evidenceLevel:evidenceLevels.CATEGORY_IDENTITY,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{multiplayerMode:playMode||'MISSING'},requiredAction:'multiplayerMode을 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 명시하고 실제 core loop와 일치시킨다.'}));
+  }
+  if(!categoryConnected){
+    hardFailures.push('CATEGORY_MISMATCH');
+    rejectionReasons.push(rejectionReason({code:'CATEGORY_MISMATCH',axis:'CATEGORY_IDENTITY',evidenceLevel:evidenceLevels.CATEGORY_IDENTITY,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{category:clean(seed.GAME_CATEGORY),genre:clean(robloxGenreProfile?.genre),playMode:playMode||'MISSING'},requiredAction:AXIS_REPAIR_ACTION.CATEGORY_IDENTITY}));
+  }
+  if(Number(evidenceLevels.IDEA_AND_DISTINCTNESS)<60||Number(evidenceLevels.CORE_LOOP_DESIGN)<60){
+    hardFailures.push('CORE_FUN_WEAK');
+    rejectionReasons.push(rejectionReason({code:'CORE_FUN_WEAK',axis:'CORE_LOOP_DESIGN',evidenceLevel:Math.min(Number(evidenceLevels.IDEA_AND_DISTINCTNESS||0),Number(evidenceLevels.CORE_LOOP_DESIGN||0)),minimumRequired:60,evidence:{ideaAndDistinctness:evidenceLevels.IDEA_AND_DISTINCTNESS,coreLoopDesign:evidenceLevels.CORE_LOOP_DESIGN,coreLoopCount:loops.length,signatureSystemCount:signatureSystems.length},requiredAction:'핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.'}));
+  }
+  if(criticalAxisFailures.length){
+    hardFailures.push('CRITICAL_AXIS_MINIMUM_FAIL');
+    for(const axis of criticalAxisFailures)rejectionReasons.push(rejectionReason({code:'CRITICAL_AXIS_MINIMUM_FAIL',axis,evidenceLevel:Number(evidenceLevels[axis]||0),minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{axisScore:Number(scores[axis]||0),axisWeight:Number(DESIGN_GATE_WEIGHTS[axis]||0)},requiredAction:AXIS_REPAIR_ACTION[axis]||'해당 설계 축의 근거를 75% 이상 직접 증명하도록 보강한다.'}));
+  }
   return {
     scoreSystem:'STAGE_GATE_SCORING_V2',
     version:2,
@@ -110,6 +147,7 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
     totalScore,
     criticalAxisFailures,
     hardFailures:[...new Set(hardFailures)],
+    rejectionReasons,
     revalidated,
     thirtyMinuteHardGateApplied:false,
     materialContractOk,
