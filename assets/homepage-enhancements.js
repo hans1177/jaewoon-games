@@ -53,6 +53,9 @@ const updatedAt=row=>runtimeInfo(row).updatedAt||null;
 const selectedPlatform=row=>runtimeInfo(row).platform||'';
 const activeLifecycle=row=>['ACTIVE','REBUILD'].includes(String(row?.lifecycleState||row?.runtimeStatus||'ACTIVE').toUpperCase());
 const classState=row=>{const cls=String(runtimeInfo(row).productionClass||'DESIGN_ONLY').toUpperCase();if(cls==='RELEASE_CONFIRMED')return'출시';if(cls==='DEVELOPMENT_CONFIRMED')return'개발확정';return'설계';};
+const productionClassOf=row=>String(runtimeInfo(row).productionClass||row?.productionClass||'DESIGN_ONLY').toUpperCase();
+const displayEligible=row=>['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'].includes(productionClassOf(row));
+const catalogMap=catalog=>new Map((Array.isArray(catalog?.games)?catalog.games:[]).map(game=>[gameIdOf(game),game]));
 
 function latestVerifiedUnityBuilds(status){
   const map=new Map();
@@ -79,24 +82,55 @@ function classRank(row){
   if(cls==='DEVELOPMENT_CONFIRMED')return 1;
   return 2;
 }
-function homepageRows(catalog,status){
-  const games=(Array.isArray(catalog?.games)?catalog.games:[])
-    .filter(activeLifecycle)
-    .map(game=>bindVerifiedUnityBuild(game,status));
-  return games.sort((a,b)=>{
-    const cr=classRank(a)-classRank(b);
-    if(cr!==0)return cr;
-    const sa=scoreState(a),sb=scoreState(b);
-    if(sa.score!==null||sb.score!==null){
-      if(sa.score===null)return 1;
-      if(sb.score===null)return-1;
-      if(sb.score!==sa.score)return sb.score-sa.score;
-    }
-    return (Date.parse(updatedAt(b)||'')||0)-(Date.parse(updatedAt(a)||'')||0)||gameIdOf(a).localeCompare(gameIdOf(b));
-  }).slice(0,TOP_LIMIT);
+function releaseRows(catalog,status){
+  return (Array.isArray(catalog?.games)?catalog.games:[])
+    .filter(game=>activeLifecycle(game)&&productionClassOf(game)==='RELEASE_CONFIRMED')
+    .map(game=>bindVerifiedUnityBuild(game,status))
+    .sort((a,b)=>(Date.parse(updatedAt(b)||'')||0)-(Date.parse(updatedAt(a)||'')||0)||gameIdOf(a).localeCompare(gameIdOf(b)));
+}
+function developmentRows(catalog,status){
+  return (Array.isArray(catalog?.games)?catalog.games:[])
+    .filter(game=>activeLifecycle(game)&&productionClassOf(game)==='DEVELOPMENT_CONFIRMED')
+    .map(game=>bindVerifiedUnityBuild(game,status))
+    .sort((a,b)=>{
+      const sa=scoreState(a),sb=scoreState(b);
+      if(sa.score!==null||sb.score!==null){
+        if(sa.score===null)return 1;
+        if(sb.score===null)return-1;
+        if(sb.score!==sa.score)return sb.score-sa.score;
+      }
+      return (Date.parse(updatedAt(b)||'')||0)-(Date.parse(updatedAt(a)||'')||0)||gameIdOf(a).localeCompare(gameIdOf(b));
+    });
+}
+function homepageRows(catalog,status,testManifest={}){
+  const byId=catalogMap(catalog);
+  const rows=Array.isArray(testManifest?.candidates)?testManifest.candidates:[];
+  return rows.map(candidate=>{
+    const id=gameIdOf(candidate),base=byId.get(id)||{};
+    const strictScore=Number(candidate?.strictScore??candidate?.reviewScore??candidate?.totalScore??candidate?.score);
+    const homepageInfo={
+      ...(base.homepageInfo||{}),
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      score:Number.isFinite(strictScore)?strictScore:(base.homepageInfo?.score??null),
+      scoreLabel:Number.isFinite(strictScore)?`${strictScore}점`:(base.homepageInfo?.scoreLabel||'점수 미평가'),
+      scoreCurrent:true,
+      scoreSource:'TOP30_STRICT_IMPLEMENTATION_SCORE',
+      updatedAt:candidate?.validatedAt||candidate?.updatedAt||base.homepageInfo?.updatedAt||null
+    };
+    return bindVerifiedUnityBuild({
+      ...base,
+      ...candidate,
+      id,
+      name:candidate?.name||base.name||id,
+      webPath:candidate?.webPath||candidate?.testUrl||base.webPath||'',
+      homepageWebPlayable:true,
+      homepageInfo
+    },status);
+  }).filter(row=>activeLifecycle(row)&&String(row.webPath||'').trim()).slice(0,TOP_LIMIT);
 }
 function mergeGame(row){
-  const rawWeb=String(row?.webPath||'').trim().replace(/^\/+|\/+$/g,'').replace(/\/index\.html$/i,'');
+  const allowWeb=row?.homepageWebPlayable===true&&displayEligible(row);
+  const rawWeb=allowWeb?String(row?.webPath||'').trim().replace(/^\/+|\/+$/g,'').replace(/\/index\.html$/i,''):'';
   return {...row,id:gameIdOf(row),name:row?.name||gameIdOf(row),webPath:rawWeb?`/${rawWeb}/`:'',image:row?.image||'assets/pwa-icon-512.png',description:row?.description||'개발 중인 게임.'};
 }
 function platformHref(game){
@@ -120,10 +154,10 @@ function installStyles(){
 `;
   document.head.appendChild(style);
 }
-function buildFocus(catalog,status){
+function buildFocus(catalog,status,testManifest={}){
   const hero=document.getElementById('hero');
   if(!hero)return;
-  const rows=homepageRows(catalog,status);
+  const rows=[...releaseRows(catalog,status),...homepageRows(catalog,status,testManifest),...developmentRows(catalog,status)];
   if(!rows.length)return;
   const row=rows[0],game=mergeGame(row),released=String(runtimeInfo(row).productionClass||'').toUpperCase()==='RELEASE_CONFIRMED',statusLabel=classState(row),score=scoreState(row),genre=genreState(row),play=playState(row),progress=progressState(row),web=game.webPath,updated=formatDate(updatedAt(row));
   const scoreMeta=score.label&&score.label!==statusLabel?`<span>${esc(score.label)}</span>`:'';
@@ -141,17 +175,27 @@ function buildCard(row,rank){
   const artbookBtn=artbook?`<a class="foldGameBtn secondary" href="${esc(artbook)}">아트북</a>`:'<span class="foldGameBtn off">아트북</span>';
   const platformBtn=platform?`<a class="foldGameBtn platformAction" href="${esc(platform)}">${p==='UNITY'?'Unity APK':p==='ROBLOX'?'Roblox':p==='FORTNITE_UEFN'?'Fortnite UEFN':'플랫폼게임'}</a>`:'<span class="foldGameBtn off">플랫폼게임</span>';
   const scoreBadge=score.label&&score.label!==statusLabel?`<span class="foldBadge score">${esc(score.label)}</span>`:'';
-  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-platform="${esc(p)}" data-server-score="${esc(score.score??'')}" data-server-score-current="${score.current?'true':'false'}" data-server-progress-state="${esc(progress)}" data-genre="${esc(genre)}" data-play-mode="${esc(play)}"><span class="top30Rank">#${rank}</span>${released?'<span class="releaseTag">출시</span>':''}<div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(statusLabel)}</span>${scoreBadge}<span class="foldBadge platform">${esc(platformLabel(selectedPlatform(game)))}</span><span class="foldBadge genre">${esc(genre)}</span><span class="foldBadge play">${esc(play)}</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">진행: ${esc(latestWork(row))}<br><span>${esc(progress)}${updated?` · ${esc(updated)}`:''}</span></div><div class="foldGameActions">${webBtn}${artbookBtn}${platformBtn}</div></div></article>`;
+  return `<article class="foldGameCard" data-game-id="${esc(game.id)}" data-platform="${esc(p)}" data-server-score="${esc(score.score??'')}" data-server-score-current="${score.current?'true':'false'}" data-server-progress-state="${esc(progress)}" data-genre="${esc(genre)}" data-play-mode="${esc(play)}">${rank?`<span class="top30Rank">#${rank}</span>`:''}${released?'<span class="releaseTag">출시</span>':''}<div class="foldGameArt"><img src="${esc(game.image)}" alt="${esc(game.name)}" loading="lazy"><div class="foldGameTitle"><b>${esc(game.name)}</b></div></div><div class="foldGameBody"><div class="foldBadges"><span class="foldBadge score">${esc(statusLabel)}</span>${scoreBadge}<span class="foldBadge platform">${esc(platformLabel(selectedPlatform(game)))}</span><span class="foldBadge genre">${esc(genre)}</span><span class="foldBadge play">${esc(play)}</span></div><p>${esc(game.description)}</p><div class="foldGameMeta">진행: ${esc(latestWork(row))}<br><span>${esc(progress)}${updated?` · ${esc(updated)}`:''}</span></div><div class="foldGameActions">${webBtn}${artbookBtn}${platformBtn}</div></div></article>`;
 }
-function buildGameCenter(catalog,status){
+function buildShelf(hub,id,title,description,rows,{ranked=false}={}){
+  document.getElementById(id)?.remove();
+  const wrapper=document.createElement('section');
+  wrapper.id=id;
+  wrapper.innerHTML=`<div class="top30Head"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div><span class="top30Count">${rows.length}${ranked?` / ${TOP_LIMIT}`:'개'}</span></div><div class="top30Grid">${rows.length?rows.map((row,i)=>buildCard(row,ranked?i+1:'')).join(''):'<div class="foldGameMeta">현재 표시 가능한 검증 게임이 없어.</div>'}</div>`;
+  hub.insertBefore(wrapper,document.getElementById('gameGrid')||null);
+}
+function buildGameCenter(catalog,status,testManifest={}){
   const hub=document.getElementById('gameHub');
   if(!hub)return;
-  document.getElementById('homeTop30GameCenter')?.remove();
-  const rows=homepageRows(catalog,status),wrapper=document.createElement('section');
-  wrapper.id='homeTop30GameCenter';
-  wrapper.innerHTML=`<div class="top30Head"><div><h2>게임 TOP30</h2><p>서버 기준 자동 동기화 · Unity / Roblox / Fortnite UEFN</p></div><span class="top30Count">${rows.length} / ${TOP_LIMIT}</span></div><div class="top30Grid">${rows.map((row,i)=>buildCard(row,i+1)).join('')}</div>`;
-  hub.insertBefore(wrapper,document.getElementById('gameGrid')||null);
-  document.documentElement.dataset.homeTop30Count=String(rows.length);
+  const releases=releaseRows(catalog,status);
+  const top30=homepageRows(catalog,status,testManifest);
+  const development=developmentRows(catalog,status);
+  buildShelf(hub,'homeReleaseGameCenter','출시 게임','서버 검증 완료 · 공식 플랫폼 실행',releases);
+  buildShelf(hub,'homeTop30GameCenter','게임 TOP30','검증 점수 80+ · 실제 플레이 가능한 웹게임',top30,{ranked:true});
+  buildShelf(hub,'homeDevelopmentGameCenter','개발 진행','서버 DEVELOPMENT_CONFIRMED 최신 진행',development);
+  document.documentElement.dataset.homeReleaseCount=String(releases.length);
+  document.documentElement.dataset.homeTop30Count=String(top30.length);
+  document.documentElement.dataset.homeDevelopmentCount=String(development.length);
   document.documentElement.dataset.homeServerAuthority=String(catalog?.runtimeInfoAuthority||catalog?.runtimeAuthority||'none');
   document.documentElement.dataset.homeSupportedPlatforms=(catalog?.runtimeSupportedPlatforms||[]).join(',');
   markDirectPlayCards();
@@ -196,10 +240,10 @@ async function refresh(){
   if(refreshInFlight)return;
   refreshInFlight=true;
   try{
-    const [catalog,status]=await Promise.all([getJson('/game-catalog.json'),getJson('/company-status.json')]);
+    const [catalog,status,testManifest]=await Promise.all([getJson('/game-catalog.json'),getJson('/company-status.json'),getJson('/test-game-candidates.json')]);
     if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
-    const sig=JSON.stringify([catalog,status]);
-    if(sig!==lastSignature){buildFocus(catalog,status);buildGameCenter(catalog,status);lastSignature=sig;}
+    const sig=JSON.stringify([catalog,status,testManifest]);
+    if(sig!==lastSignature){buildFocus(catalog,status,testManifest||{});buildGameCenter(catalog,status,testManifest||{});lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
   }finally{refreshInFlight=false;}
