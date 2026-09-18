@@ -1,11 +1,11 @@
 {
-  "contractVersion": 2,
+  "contractVersion": 3,
   "gameId": "chess-battle",
   "date": "2026-09-18",
   "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
-  "fingerprint": "7a390f64f46dbfee5fa3afdc6debcd90c550dfe8776bee77aec846637513bc37",
+  "fingerprint": "9b46210133c00c53d0c8bd218bba6604334ffba0d19a74187884d4cacba32fc5",
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
-  "engineDigest": "6b4a989179ae5bb3de952269a8b6a0ac648783811d8257cefecaeaf797af6a49",
+  "engineDigest": "4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec",
   "status": "PRE_GATE_BLOCKED",
   "completedPhases": [
     "designer_draft",
@@ -224,22 +224,22 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 15578,
-      "lastMs": 1569,
+      "totalMs": 19308,
+      "lastMs": 1632,
       "lastError": null,
-      "updatedAt": "2026-09-18T08:23:30.713Z"
+      "updatedAt": "2026-09-18T08:28:02.983Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T08:23:15.030Z",
-  "updatedAt": "2026-09-18T08:23:30.815Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T08:23:30.714Z",
+  "updatedAt": "2026-09-18T08:28:02.986Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:28:02.983Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
@@ -247,5 +247,14 @@
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL"
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "checkpointMigration": {
+    "fromContractVersion": 2,
+    "toContractVersion": 3,
+    "reason": "PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY",
+    "previousEngineDigest": "6b4a989179ae5bb3de952269a8b6a0ac648783811d8257cefecaeaf797af6a49",
+    "preservedPhaseCount": 2,
+    "preservedTaskCount": 0,
+    "migratedAt": "2026-09-18T08:27:58.872Z"
+  }
 }
