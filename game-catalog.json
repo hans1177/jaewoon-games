@@ -1,5 +1,5 @@
 {
-  "version": 22,
+  "version": 23,
   "updatedAt": "2026-09-18",
   "classificationPolicy": {
     "canonicalField": "productionClass",
@@ -12,6 +12,33 @@
     "counts": "DERIVED_FROM_CURRENT_MEMBERSHIP"
   },
   "games": [
+    {
+      "id": "amusement-tycoon",
+      "name": "놀이공원 타이쿤",
+      "description": "길을 직접 만들고 손님 만족도를 관리하는 3D 놀이공원 경영 게임",
+      "genre": [
+        "타이쿤",
+        "3D",
+        "경영",
+        "건설"
+      ],
+      "image": "assets/page-bg-v4.webp",
+      "webPath": "/web-games/amusement-tycoon/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "design-only",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_DIRECT_WEB_IMPLEMENTATION_2026-09-18",
+      "productionTarget": "web-first",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "Web 1차 구현",
+      "homepageRecentWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION"
+    },
     {
       "id": "village-dungeons",
       "name": "마을 던전 RPG",
