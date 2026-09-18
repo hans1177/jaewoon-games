@@ -14,6 +14,11 @@ const seedDesignRuntime=read('.github/workflows/company-seed-design-runtime.yml'
 const designCycle=read('tools/company-design-cycle.mjs');
 
 const lifecycle=roadmap.developmentLifecycleMachine;
+assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
+assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
+assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
+assert.equal(roadmap.humanDocumentRequired,false);
+assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
 assert.equal(lifecycle.authority,'MACHINE_EXECUTION_CONTRACT');
 assert.equal(lifecycle.humanDocumentRequired,false);
 assert.equal(lifecycle.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
@@ -41,6 +46,7 @@ assert.match(robloxRuntime,/WEB_HANDOFF_JSON:/);
 assert.match(robloxRuntime,/--web-handoff="\$web_handoff"/);
 assert.match(robloxRuntime,/--roadmap=company-learning\/platform-release-roadmap\.json/);
 assert.match(bootstrap,/validateWebPlatformHandoff/);
+assert.match(bootstrap,/PolicySource = \"company-learning\\/platform-release-roadmap\\.json\"/);
 assert.match(bootstrap,/ROBLOX_WEB_HANDOFF_FAILED/);
 assert.match(bootstrap,/WebBaseline = \{/);
 assert.match(bootstrap,/NativeRuntimePassTransferred = false/);
