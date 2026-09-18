@@ -1,6 +1,6 @@
 {
-  "version": 23,
-  "updatedAt": "2026-09-18",
+  "version": 24,
+  "updatedAt": "2026-09-19",
   "classificationPolicy": {
     "canonicalField": "productionClass",
     "canonicalClasses": [
@@ -12,6 +12,55 @@
     "counts": "DERIVED_FROM_CURRENT_MEMBERSHIP"
   },
   "games": [
+    {
+      "id": "line-defense",
+      "name": "골목 군단 대전",
+      "description": "재화를 모아 유닛을 소환하고 상대 아지트를 부수는 모바일 라인 디펜스",
+      "genre": [
+        "라인 디펜스",
+        "전략",
+        "자동전투"
+      ],
+      "image": "assets/page-bg-v2.webp",
+      "webPath": "/web-games/line-defense/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "design-only",
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_DIRECT_WEB_IMPLEMENTATION_2026-09-19",
+      "productionTarget": "web-first",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_DIRECT_GAME_BUILD",
+      "ownerExistingGame": false,
+      "developmentHandling": "OWNER_DIRECT_WEB_IMPLEMENTATION",
+      "homepageStage": "Web 1차 구현",
+      "homepageRecentWork": "모바일 라인 전투, 유닛 5종, 적 4종+보스, 자동 재화, 응원포, 기지 승패, 영구 강화 구현",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "",
+        "platformLabel": "플랫폼 선택 필요",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "라인 디펜스",
+          "전략",
+          "자동전투"
+        ],
+        "genreLabel": "라인 디펜스 · 전략 · 자동전투",
+        "subgenre": "",
+        "playMode": "",
+        "playModeLabel": "플레이 방식 미평가",
+        "latestWork": "모바일 라인 전투, 유닛 5종, 적 4종+보스, 자동 재화, 응원포, 기지 승패, 영구 강화 구현",
+        "updatedAt": "2026-09-19",
+        "status": "ACTIVE",
+        "productionClass": "DESIGN_ONLY"
+      }
+    },
     {
       "id": "amusement-tycoon",
       "name": "놀이공원 타이쿤",
@@ -160,7 +209,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -210,7 +259,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -315,7 +364,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -365,7 +414,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -714,7 +763,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -762,7 +811,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -812,7 +861,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -860,7 +909,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -908,7 +957,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -956,7 +1005,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -1004,7 +1053,7 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18",
+        "updatedAt": "2026-09-19",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       }
@@ -1067,7 +1116,7 @@
     "FORTNITE_UEFN"
   ],
   "runtimeCounts": {
-    "canonicalGames": 21,
-    "homepageInfo": 21
+    "canonicalGames": 22,
+    "homepageInfo": 22
   }
 }
