@@ -100,7 +100,7 @@ test('DESIGN_ONLY stops at strict design baseline; Web strict review precedes ar
   assert.match(designCycle,/GAME_SEED_REQUIRED/);
   assert.match(designCycle,/sameModelAsDraft:true/);
   assert.match(designCycle,/repeatedFiveDepartmentReview:true/);
-  assert.match(designCycle,/AbortSignal\.timeout\(modelCallTimeoutMs\)/);
+  assert.match(designCycle,/AbortSignal\.timeout\(effectiveTimeoutMs\)/);
   assert.doesNotMatch(designCycle,/VIBE2_VALIDATION_LEARNING|vibe2-validator/);
   assert.match(pipeline,/DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO/);
   assert.doesNotMatch(pipeline,/await run\('tools\/company-design-artbook\.mjs'\)/);
