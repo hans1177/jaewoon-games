@@ -7,6 +7,7 @@ import {
   candidateTournamentPolicy,
   buildBenchmarkLadder,
   buildIdlePracticeQueue,
+  injectIdlePracticeTask,
   buildWebRobloxHandoffs
 } from '../tools/vibe2-learning-motor.mjs';
 
@@ -65,4 +66,17 @@ test('Web to Roblox handoff cannot replace Roblox QA',()=>{
   assert.equal(pack.handoffs[0].robloxNativeReimplementationRequired,true);
   assert.equal(pack.handoffs[0].webEvidenceSubstitutesRobloxQa,false);
   assert.equal(pack.gateBypass,false);
+});
+
+
+test('idle practice is enqueued only when production work is absent',()=>{
+  const idle={drills:[{id:'gap-save-l1',kind:'MINI_GAME_SYSTEM_DRILL',domains:['SAVE'],productionPreemptible:true,countsAsProductionPass:false}]};
+  const empty=injectIdlePracticeTask({tasks:[]},idle);
+  assert.equal(empty.added,true);
+  assert.equal(empty.task.type,'research');
+  assert.ok(empty.task.evidence.includes('learning-practice-only'));
+  assert.ok(empty.task.evidence.includes('production-pass:NO'));
+  const busy=injectIdlePracticeTask({tasks:[{id:'prod',status:'queued',type:'implementation',evidence:[]}]},idle);
+  assert.equal(busy.added,false);
+  assert.equal(busy.reason,'PRODUCTION_WORK_PRESENT');
 });
