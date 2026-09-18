@@ -699,6 +699,30 @@
         "PERSIST_NEW_VERIFIED_LESSONS",
         "CONTINUE_EXISTING_WORLD_OR_BRANCH_NEW_PROJECT_WORLD"
       ]
+    },
+    "projectMachineState": {
+      "authority": "MACHINE_EXECUTION_CONTRACT",
+      "centralRuntimeSourceOfTruth": "vibe2-runtime.json",
+      "stateFile": ".vibe2/web-roblox-handoffs.json",
+      "producer": "tools/vibe2-learning-motor.mjs",
+      "generatedHandoffConsumer": "tools/vibe2-handoff.mjs",
+      "requiredFields": [
+        "PROJECT_PHASE",
+        "PLATFORM",
+        "GENRE",
+        "WEB_BASELINE",
+        "ROBLOX_HANDOFF",
+        "POST_RELEASE_FOCUS_RUNNER",
+        "LEARNING_CONTEXT",
+        "NEXT_MACHINE_ACTION"
+      ],
+      "webBaselineIsImplementationBlueprint": true,
+      "robloxMustConsumeVerifiedWebAndLearningContext": true,
+      "robloxSimpleRewriteForbidden": true,
+      "postReleaseLogicalRunnerPerProject": 1,
+      "preserveExistingGlobalProtectedSlotCapacity": true,
+      "learningMustContinue": true,
+      "gameAndRuntimeSettingsMayNotBeChangedByStateProjection": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
