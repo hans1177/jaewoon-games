@@ -22,13 +22,31 @@ const distinctLeadModels=uniq(ROLES.map(role=>leadModels[role]));
 if(pool.length<reviewModelCount)throw new Error(`MULTIMODEL_GATE: ${pool.length}/${reviewModelCount}`);
 if(distinctLeadModels.length<ROLES.length)throw new Error(`DEPARTMENT_LEAD_GATE: ${distinctLeadModels.length}/${ROLES.length}`);
 for(const role of ROLES)if(!leadModels[role]||!pool.includes(leadModels[role]))throw new Error(`DEPARTMENT_LEAD_GATE: invalid ${role} lead`);
-function reviewModelsFor(role){const lead=leadModels[role];const start=Math.max(0,pool.indexOf(lead));const models=[lead];for(let i=1;models.length<reviewModelCount&&i<=pool.length*2;i++){const candidate=pool[(start+i)%pool.length];if(candidate&&!models.includes(candidate))models.push(candidate);}if(models.length<reviewModelCount)throw new Error(`${role} review model gate failed`);return models;}
+function modelParameterBillions(model){const m=clean(model).match(/:(\d+(?:\.\d+)?)b(?:\b|$)/i);return m?Number(m[1]):Number.POSITIVE_INFINITY;}
+const fastAssistantPool=[...pool].sort((a,b)=>modelParameterBillions(a)-modelParameterBillions(b)||a.localeCompare(b));
+function reviewModelsFor(role){
+  const lead=leadModels[role];
+  const models=[lead];
+  for(const candidate of fastAssistantPool){
+    if(models.length>=reviewModelCount)break;
+    if(candidate&&candidate!==lead&&!models.includes(candidate))models.push(candidate);
+  }
+  if(models.length<reviewModelCount)throw new Error(`${role} review model gate failed`);
+  return models;
+}
 const departmentReviewModels=Object.fromEntries(ROLES.map(role=>[role,reviewModelsFor(role)]));
 const independentReviewTasks=Object.fromEntries(ROLES.flatMap(role=>departmentReviewModels[role].map(model=>{const key=`${role}::${model}`;return[key,{role,model}];})));
 const independentReviewOrder=Object.keys(independentReviewTasks).sort((a,b)=>independentReviewTasks[a].model.localeCompare(independentReviewTasks[b].model)||independentReviewTasks[a].role.localeCompare(independentReviewTasks[b].role));
-const modelPhaseConcurrency=1;
-const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'2m');
-const modelCallTimeoutMs=Math.min(180000,Math.max(120000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||150000)));
+const modelPhaseConcurrency=Math.min(4,Math.max(1,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||4)));
+const phaseConcurrency={
+  independent_department_reviews:modelPhaseConcurrency,
+  department_representatives:Math.min(3,modelPhaseConcurrency),
+  lead_rebuttals:Math.min(3,modelPhaseConcurrency),
+  five_lead_fatal_review:Math.min(3,modelPhaseConcurrency)
+};
+const maxLoadedModelLanes=Math.min(2,Math.max(1,Number(process.env.COMPANY_MAX_ACTIVE_MODEL_LANES||2)));
+const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'5m');
+const modelCallTimeoutMs=Math.min(180000,Math.max(90000,Number(process.env.COMPANY_MODEL_CALL_TIMEOUT_MS||150000)));
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
