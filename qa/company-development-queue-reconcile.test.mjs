@@ -17,7 +17,7 @@ test('guarantees active confirmed games, preserves progress, removes inactive an
       {id:'design-only',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE'}
     ]});
     write(root,'web-games/cozy-island/index.html','<!doctype html><canvas></canvas>');
-    write(root,'development-queue.json',{version:1,items:[
+    write(root,'development-queue.json',{version:1,routerPolicy:'COMPANY_FLOW.md',items:[
       {gameId:'progressed',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'WEB_CONTENT_EXPANSION',canonicalState:'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION',customEvidence:'KEEP'},
       {gameId:'progressed',gameName:'중복'},
       {gameId:'paused',currentStep:'WEB_PLAYABLE_BOOTSTRAP'},
@@ -38,9 +38,28 @@ test('guarantees active confirmed games, preserves progress, removes inactive an
     assert.equal(cozy.existingGameContinuation,true);
     assert.equal(cozy.webValidationRequired,true);
     assert.equal(cozy.musicValidationRequired,true);
+    assert.equal(queue.routerPolicy,'company-learning/platform-release-roadmap.json');
+    assert.equal(result.routerPolicy,'company-learning/platform-release-roadmap.json');
     assert.equal(result.duplicateRemoved,1);
     assert.ok(result.removed.includes('paused'));
     assert.ok(result.removed.includes('missing-from-catalog'));
+
+    const repeat=reconcileDevelopmentQueue({root});
+    assert.equal(repeat.changed,false);
+    assert.equal(repeat.routerPolicy,'company-learning/platform-release-roadmap.json');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
+test('repairs stale router policy even when canonical queue items are already stable',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'queue-policy-reconcile-'));
+  try{
+    write(root,'game-catalog.json',{games:[]});
+    write(root,'development-queue.json',{version:1,routerPolicy:'COMPANY_FLOW.md',items:[]});
+    const result=reconcileDevelopmentQueue({root});
+    const queue=JSON.parse(fs.readFileSync(path.join(root,'development-queue.json'),'utf8'));
+    assert.equal(result.changed,true);
+    assert.equal(queue.routerPolicy,'company-learning/platform-release-roadmap.json');
+    assert.equal(reconcileDevelopmentQueue({root}).changed,false);
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
