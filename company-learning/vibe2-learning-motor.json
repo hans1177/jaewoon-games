@@ -85,10 +85,25 @@
       "company-learning/vibe3-task-playbooks.json",
       "company-learning/vibe2-code-pattern-library.json",
       "assets/asset-manifest.json",
-      "assets/prototype-asset-presets.json"
+      "assets/prototype-asset-presets.json",
+      ".vibe2/external-ai-distilled-knowledge.json"
     ],
     "rawUnauthorizedSourceReuseForbidden": true,
-    "verifiedInternalCodePatternReuseAllowed": true
+    "verifiedInternalCodePatternReuseAllowed": true,
+    "externalAi": {
+      "mode": "DISTILLED_VERIFIED_ADVISORY_ONLY",
+      "policy": "company-learning/external-ai-distillation-policy.json",
+      "rawOutputAllowed": false,
+      "rawOutputMayEnterDevelopmentPrompt": false,
+      "rawOutputMayEnterRetrieval": false,
+      "verifiedDistilledKnowledgeSource": ".vibe2/external-ai-distilled-knowledge.json",
+      "priority": "AFTER_VERIFIED_INTERNAL",
+      "masteryCredit": false,
+      "trainingSample": false,
+      "sourceWrite": false,
+      "productionPass": false,
+      "authorityExpanded": false
+    }
   },
   "webPracticeMotor": {
     "implementationIsPractice": true,
@@ -202,6 +217,8 @@
     "thresholdsUnchanged": true,
     "practiceAdapterMayNotAutoPromote": true,
     "promotion": "FIXED_HOLDOUT_AB_THEN_CANARY",
-    "target": "Increase verified multi-project sample production rather than lower thresholds."
+    "target": "Increase verified multi-project sample production rather than lower thresholds.",
+    "externalAiDistilledKnowledgeMayEnterCanonicalTraining": false,
+    "externalAiKnowledgePromotionRule": "ONLY_AFTER_VIBE_IMPLEMENTATION_AND_NORMAL_VERIFIED_QA"
   }
 }
