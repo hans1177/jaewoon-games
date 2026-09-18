@@ -11,8 +11,8 @@
     "deterministic_pre_gate"
   ],
   "completedPhaseCount": 2,
-  "cachedTaskCount": 3,
-  "lastSuccessfulModelCallAt": "2026-09-18T14:09:49.345Z",
+  "cachedTaskCount": 4,
+  "lastSuccessfulModelCallAt": "2026-09-18T14:10:08.136Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
@@ -40,15 +40,15 @@
       "updatedAt": "2026-09-18T14:09:24.143Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 4,
+      "calls": 5,
       "successes": 0,
-      "failures": 4,
+      "failures": 5,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 44803,
-      "lastMs": 7666,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T14:09:52.484Z"
+      "totalMs": 63534,
+      "lastMs": 18731,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=29",
+      "updatedAt": "2026-09-18T14:10:03.549Z"
     },
     "gemini:gemini-3-flash-preview": {
       "calls": 1,
@@ -60,8 +60,19 @@
       "lastMs": 28338,
       "lastError": null,
       "updatedAt": "2026-09-18T14:09:42.560Z"
+    },
+    "gemini:gemini-3.6-flash": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 18791,
+      "lastMs": 18791,
+      "lastError": null,
+      "updatedAt": "2026-09-18T14:10:08.136Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T14:09:52.485Z"
+  "updatedAt": "2026-09-18T14:10:08.143Z"
 }

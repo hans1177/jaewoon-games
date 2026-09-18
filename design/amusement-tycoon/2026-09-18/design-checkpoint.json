@@ -259,6 +259,26 @@
       "questions": [
         "특수 이벤트 발생 시 모바일 화면에서 UI 혼잡도를 어떻게 최소화할 것인가?"
       ]
+    },
+    "five_lead_reviews::qa": {
+      "keep": [
+        "건설, 이용 수익, 업그레이드로 이어지는 타이트한 타이쿤 루프와 길 개설에 따른 동선 변화 간 연동 구조."
+      ],
+      "fix": [
+        "수십 명의 에이전트 경로 탐색과 동선 최적화 알고리즘의 프레임 드랍 방지를 위한 성능 검증 케이스 추가 작성."
+      ],
+      "add": [
+        "청결도 저하 및 고장 발생 시 스태프 이동 동선과 처리 속도가 공원 평판에 미치는 영향 검증 항목 추가."
+      ],
+      "risks": [
+        "실시간 그리드 길 재설계 시 무수한 A* 경로 계산 재호출로 모바일 환경의 성능 저하 위험 존재."
+      ],
+      "evidence": [
+        "동선 변경 시 손님 에이전트의 최단 경로 재검색 알고리즘 유닛 테스트 및 30분 세션 경제 밸런스 시뮬레이션."
+      ],
+      "questions": [
+        "손님 에이전트 수가 100명 이상으로 증가할 때 저사양 모바일 기기에서의 목표 드로우콜 및 FPS 기준은 무엇인가?"
+      ]
     }
   },
   "modelHealth": {
@@ -285,15 +305,15 @@
       "updatedAt": "2026-09-18T14:09:24.143Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 4,
+      "calls": 5,
       "successes": 0,
-      "failures": 4,
+      "failures": 5,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 44803,
-      "lastMs": 7666,
-      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T14:09:52.484Z"
+      "totalMs": 63534,
+      "lastMs": 18731,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=29",
+      "updatedAt": "2026-09-18T14:10:03.549Z"
     },
     "gemini:gemini-3-flash-preview": {
       "calls": 1,
@@ -305,17 +325,29 @@
       "lastMs": 28338,
       "lastError": null,
       "updatedAt": "2026-09-18T14:09:42.560Z"
+    },
+    "gemini:gemini-3.6-flash": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 18791,
+      "lastMs": 18791,
+      "lastError": null,
+      "updatedAt": "2026-09-18T14:10:08.136Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T14:09:02.722Z",
-  "updatedAt": "2026-09-18T14:09:52.484Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T14:09:49.345Z",
+  "updatedAt": "2026-09-18T14:10:08.137Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T14:10:08.136Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
     "gemini-3.5-flash": "gemini-3.5-flash",
-    "gemini-3-flash-preview": "gemini-3-flash-preview"
+    "gemini-3-flash-preview": "gemini-3-flash-preview",
+    "gemini-3.6-flash": "gemini-3.6-flash"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
