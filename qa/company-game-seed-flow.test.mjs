@@ -225,7 +225,9 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(designSeedNormalize,/ENSURE_REFERENCE_INPUTS_WITHOUT_INVENTING_REFERENCE_GAME/);
   assert.match(designSeedNormalize,/assertGameSeed\(seed\)/);
 
-  assert.match(design,/DESIGN_CHECKPOINT_CONTRACT_VERSION=2/);
+  assert.match(design,/DESIGN_CHECKPOINT_CONTRACT_VERSION=3/);
+  assert.match(design,/DESIGN_CHECKPOINT_MIGRATED=V2_TO_V3/);
+  assert.match(design,/PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY/);
   assert.match(design,/engineDigest/);
   assert.match(design,/design-progress\.json/);
   assert.match(design,/phaseBudgetMs/);
