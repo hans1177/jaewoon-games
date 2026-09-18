@@ -32,6 +32,8 @@ env:
   COMPANY_MAX_ACTIVE_MODEL_LANES: '2'
   COMPANY_MODEL_KEEP_ALIVE: '5m'
   COMPANY_MODEL_CALL_TIMEOUT_MS: '150000'
+  COMPANY_DESIGNER_OPENAI_MODEL: 'gpt-5'
+  COMPANY_DESIGNER_GEMINI_MODEL: 'gemini-3.8-flash'
 
 jobs:
   resolve-seed-targets:
@@ -245,12 +247,15 @@ jobs:
           set -euo pipefail
           ollama list | awk 'NR>1 {print $1}' > /tmp/ollama-present-models.txt
           while IFS= read -r model; do [ -z "$model" ] && continue; grep -Fxq "$model" /tmp/ollama-present-models.txt || { ollama pull "$model"; printf '%s\n' "$model" >> /tmp/ollama-present-models.txt; }; done < /tmp/models.txt
-          echo 'PAID_API=NO'
+          echo 'LOCAL_DEPARTMENT_MODEL_RUNTIME=YES'
+          echo 'DESIGNER_EXTERNAL_API=OPTIONAL_SECRET_GATED'
       - name: Run seed-backed DESIGN_ONLY pipeline without artbook
         if: steps.target.outputs.should_run == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         shell: bash
         run: |
           set -euo pipefail
