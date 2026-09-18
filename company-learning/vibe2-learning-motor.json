@@ -227,6 +227,8 @@
     ],
     "distilledStore": ".vibe2/external-ai-distilled-knowledge.json",
     "distilledKnowledgeUse": "VERIFIED_ADVISORY_RETRIEVAL_ONLY",
-    "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true
+    "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
+    "minimumTraceableVerificationEvidenceItems": 2,
+    "externalAiAdvisoryAlwaysRanksAfterInternalVerified": true
   }
 }
