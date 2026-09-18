@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 - Territory War 20260916</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      territory: {
+        occupied: [],
+        expanding: false,
+        currentTurn: 0,
+        turnCount: 0,
+        map: {
+          width: 10,
+          height: 10,
+          grid: []
+        }
+      },
+      players: [
+        { id: 1, name: "Player 1", color: "red" },
+        { id: 2, name: "Player 2", color: "blue" }
+      ],
+      ai: {
+        player1: {
+          name: "AI Player 1",
+          color: "red",
+          strategy: "basic"
+        },
+        player2: {
+          name: "AI Player 2",
+          color: "blue",
+          strategy: "advanced"
+        }
+      }
+    };
+
+    // Game logic
+    function initGame() {
+      // Initialize game map
+      game.territory.map.grid = [];
+      for (let i = 0; i < game.territory.map.width; i++) {
+        game.territory.map.grid[i] = [];
+        for (let j = 0; j < game.territory.map.height; j++) {
+          game.territory.map.grid[i][j] = { occupied: false, color: "white" };
+        }
+      }
+
+      // Initialize player positions
+      game.territory.occupied = [
+        { player: 1, position: { x: 0, y: 0 } },
+        { player: 2, position: { x: 9, y: 9 } }
+      ];
+
+      // Start game
+      game.territory.expanding = true;
+      game.territory.currentTurn = 0;
+      game.territory.turnCount = 0;
+    }
+
+    // Game loop
+    function gameLoop() {
+      if (game.territory.expanding) {
+        // Expand territory
+        game.territory.occupied[0].position = {
+          x: game.territory.occupied[0].position.x + 1,
+          y: game.territory.occupied[0].position.y
+        };
+        game.territory.turnCount++;
+      } else {
+        // Check for win condition
+        if (game.territory.occupied[0].position.x === game.territory.map.width - 1 &&
+            game.territory.occupied[0].position.y === game.territory.map.height - 1) {
+          alert("Player 1 wins!");
+          game.territory.expanding = false;
+        }
+      }
+    }
+
+    // Start game
+    initGame();
+    gameLoop();
+  </script>
+</body>
+</html>
