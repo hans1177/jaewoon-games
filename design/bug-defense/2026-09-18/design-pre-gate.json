@@ -2,7 +2,7 @@
   "version": 3,
   "gameId": "bug-defense",
   "date": "2026-09-18",
-  "attempt": 0,
+  "attempt": 1,
   "pass": true,
   "repairPacket": {
     "source": "DETERMINISTIC_PRE_GATE_V2",
@@ -72,5 +72,22 @@
     "revalidated": false,
     "thirtyMinuteHardGateApplied": false,
     "materialContractOk": true
-  }
+  },
+  "history": [
+    {
+      "totalScore": 76.6,
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "criticalAxisFailures": [
+        "SYSTEM_INTERCONNECTION_DESIGN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ]
+    },
+    {
+      "totalScore": 80,
+      "hardFailures": [],
+      "criticalAxisFailures": []
+    }
+  ]
 }
