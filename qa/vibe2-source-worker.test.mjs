@@ -119,6 +119,8 @@ test('existing Web assessment overrides stale full-rebuild flags when KEEP_AND_C
   function restart(){wave=1} const victory='victory',defeat='defeat'; localStorage.setItem('save','1'); new AudioContext();
   </script></body></html>`;
   write(path.join(cwd, 'web-games/demo/index.html'), source);
+  write(path.join(cwd, 'design/demo/2026-09-18/design-revised.json'), JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd, 'design/demo/2026-09-18/cycle-status.json'), JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
   write(responseFile, JSON.stringify({edits:[{path:'index.html',find:'<button id="play">Play</button>',replace:'<button id="play">Continue</button>'}],newFiles:[],replaceFiles:[]}));
   const result = await runVibe2SourceWorker({ cwd, responseFile });
@@ -177,6 +179,8 @@ test('full web rebuild rejects truncated raw full-file envelope', async () => {
   workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
   workOrder.workerPolicy.fullFileRewriteAllowed = true;
   write(path.join(cwd, 'web-games/demo/index.html'), '<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd, 'design/demo/2026-09-18/design-revised.json'), JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd, 'design/demo/2026-09-18/cycle-status.json'), JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
   write(responseFile, 'VIBE2_FULL_FILE\nPATH:index.html\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>잘린 출력');
   await assert.rejects(runVibe2SourceWorker({ cwd, responseFile }), /잘렸거나 종료 마커가 없음/);
