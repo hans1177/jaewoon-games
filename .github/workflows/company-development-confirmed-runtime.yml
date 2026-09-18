@@ -1010,15 +1010,33 @@ jobs:
             const targetSourcePath=adapter&&oldTarget.startsWith(adapter.sourceRoot)?oldTarget:canonicalTarget;
             const baseline=String(item.designBaselineSource||'');
             const baselineRevision=baseline?crypto.createHash('sha256').update(baseline).digest('hex'):'';
+            const webPlatformHandoff={
+              version:1,
+              stage:'WEB_DEVELOPMENT_BASELINE_READY',
+              producer:'.github/workflows/company-development-confirmed-runtime.yml',
+              gameId:item.gameId,
+              sourcePath:String(item.webSourcePath||`web-games/${item.gameId}`).replace(/^\/+|\/+$/g,''),
+              evidencePath:String(item.webValidationEvidencePath||''),
+              baselineSource:baseline,
+              sourceIndexSha256:String(item.webSourceIndexSha256||''),
+              designBaselineSha256:String(item.webDesignBaselineSha256||''),
+              validationSchemaVersion:Number(item.webValidationSchemaVersion||0),
+              strictScore:Number(item.webStrictScore??item.strictImplementationScore),
+              promotionRevalidationPassed:item.webPromotionRevalidationPassed===true,
+              validationPassedAt:item.webValidationPassedAt||null,
+              carryForward:['core-loop','gameplay-state-model','progression-model','input-intent','ui-flow','save-meaning','content-structure','balance-intent','verified-learning-context'],
+              nativeRuntimePassTransferred:false,
+              authority:'MACHINE_EXECUTION_CONTRACT'
+            };
             const precheck=cheapPrecheck({selectedPlatform:platform,sourceRevision:baselineRevision,sourcePath:targetSourcePath});
             if(adapter&&adapter.existingExecutionPath==null){
-              updates.push({gameId:item.gameId,status:'BLOCKED',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'DEVELOPMENT_BLOCKED',platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:['platform-runtime-executor-not-configured'],updatedAt:new Date().toISOString()});
+              updates.push({gameId:item.gameId,status:'BLOCKED',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:'DEVELOPMENT_BLOCKED',platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,webPlatformHandoff,routingBlockers:['platform-runtime-executor-not-configured'],updatedAt:new Date().toISOString()});
               console.log(`DEVELOPMENT_ROUTE_EXTERNAL_BLOCKED=${item.gameId}:${platform}:platform-runtime-executor-not-configured`);
               continue;
             }
             const blockers=[...precheck.errors];
             if(blockers.length){
-              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter?.adapterPath||null,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:blockers,updatedAt:new Date().toISOString()});
+              updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:'TARGET_PLATFORM_SOURCE_BIND',canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter?.adapterPath||null,sourcePath:targetSourcePath,targetSourcePath,webPlatformHandoff,routingBlockers:blockers,updatedAt:new Date().toISOString()});
               continue;
             }
             platforms.add(platform);
@@ -1026,7 +1044,7 @@ jobs:
               console.log(`DEVELOPMENT_ROUTE_RESUME_SOURCE_BIND=${item.gameId}:${platform}`);
               continue;
             }
-            updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,routingBlockers:[],routeRevision:baselineRevision,webPromotionEvidenceFresh:true,updatedAt:new Date().toISOString()});
+            updates.push({gameId:item.gameId,status:'ACTIVE',selectedPlatform:platform,targetPlatform:platform,currentStep:canonicalTargetStep(),canonicalState:canonicalTargetWaitingState(),platformAdapter:adapter.adapterPath,sourcePath:targetSourcePath,targetSourcePath,webPlatformHandoff,routingBlockers:[],routeRevision:baselineRevision,webPromotionEvidenceFresh:true,updatedAt:new Date().toISOString()});
           }
           fs.mkdirSync('/tmp/development-route',{recursive:true});
           fs.writeFileSync('/tmp/development-route/updates.json',JSON.stringify(updates,null,2)+'\n');
