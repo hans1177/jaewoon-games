@@ -174,7 +174,7 @@ test('quality gate applies material count only to material-composed seeds and le
   assert.match(qualityGate,/MULTIPLAYER_DESIGN_MODE/);
 });
 
-test('autonomous runtime pins verified design engines, canaries two games, and bounds expensive model work',()=>{
+test('autonomous runtime pins verified design engines, canaries two games, then expands to central WIP without weakening gates',()=>{
   for(const text of [seedWorkflow,seedDesignWorkflow,statusWorkflow]){
     assert.match(text,/COMPANY_RUNTIME_BRANCH: company-runtime/);
     assert.doesNotMatch(text,/gh pr create/);
@@ -196,7 +196,9 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(seedDesignWorkflow,/engine_digest=/);
   assert.match(seedDesignWorkflow,/pending_total=/);
   assert.match(seedDesignWorkflow,/pending\.slice\(0,2\)/);
-  assert.match(seedDesignWorkflow,/Math\.min\(canaryVerified\?2:1/);
+  assert.match(seedDesignWorkflow,/const selected=canaryVerified\?pending:pending\.slice\(0,2\)/);
+  assert.match(seedDesignWorkflow,/Math\.min\(canaryVerified\?designWipMax:1/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_GATE_BYPASS=NO/);
   assert.match(seedDesignWorkflow,/mark-design-engine-canary:/);
   assert.match(seedDesignWorkflow,/DESIGN_ENGINE_CANARY=VERIFIED/);
   assert.match(seedDesignWorkflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
