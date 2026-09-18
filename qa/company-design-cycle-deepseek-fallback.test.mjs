@@ -7,7 +7,7 @@ const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 
 test('structured design calls retain bounded schema recovery',()=>{
   assert.match(design,/think:false/);
-  assert.match(design,/for\\(let attempt=1;attempt<=3;attempt\\+\\+\\)/);
+  assert.match(design,/for\(let attempt=1;attempt<=3;attempt\+\+\)/);
   assert.match(design,/PREVIOUS_VALIDATION_ERROR=/);
   assert.match(design,/normalizeSchemaValue\(parsed,schema,'root',repairs\)/);
   assert.match(design,/MODEL_SCHEMA_NORMALIZED=/);
