@@ -316,17 +316,27 @@ test('paid execution remains forbidden',()=>{
 });
 
 
-test('Roblox deployment control allows Open Cloud routes only and pauses automatic publishing',()=>{
-  assert.equal(roadmap.roblox.deploymentControl.automaticPublishPaused,true);
-  assert.equal(roadmap.roblox.deploymentControl.automaticReleaseDispatchAllowed,false);
-  assert.equal(roadmap.roblox.deploymentControl.manualPublishAllowed,true);
-  assert.deepEqual(roadmap.roblox.deploymentControl.allowedPublishRoutes,[
+test('Roblox deployment control allows guarded Open Cloud publishing only',()=>{
+  const control=roadmap.roblox.deploymentControl;
+  assert.equal(control.automaticPublishPaused,false);
+  assert.equal(control.automaticReleaseDispatchAllowed,true);
+  assert.equal(control.manualPublishAllowed,true);
+  assert.deepEqual(control.allowedPublishRoutes,[
     'GITHUB_CLOUD_OPEN_CLOUD',
     'LOCAL_SELF_HOSTED_OPEN_CLOUD',
   ]);
-  assert.equal(roadmap.roblox.deploymentControl.studioUiPublishAllowed,false);
-  assert.equal(roadmap.roblox.deploymentControl.cookiePublishAllowed,false);
-  assert.equal(roadmap.roblox.deploymentControl.resumeMode,'MANUAL_ONLY_WHILE_PAUSED');
+  assert.equal(control.studioUiPublishAllowed,false);
+  assert.equal(control.cookiePublishAllowed,false);
+  assert.equal(control.resumeMode,'AUTO_AFTER_CANONICAL_FINAL_REVIEW');
+  assert.equal(control.openCloudSafety.officialApiOnly,true);
+  assert.equal(control.openCloudSafety.exactFinalReviewedArtifactRequired,true);
+  assert.equal(control.openCloudSafety.transient409RetryWithinRun,true);
+  assert.equal(control.openCloudSafety.automaticRedispatchAfter409,false);
+  assert.equal(control.ownerPinnedPublicationTarget.enabled,true);
+  assert.equal(control.ownerPinnedPublicationTarget.fallbackOnlyWhenNoGameSpecificVerifiedTarget,true);
+  assert.equal(control.ownerPinnedPublicationTarget.requireGitHubSecretIdMatch,true);
+  assert.equal(control.openCloudSafety.credentialSmoke.passed,true);
+  assert.equal(control.openCloudSafety.credentialSmoke.releaseClaim,false);
 });
 
 
