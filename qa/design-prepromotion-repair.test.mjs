@@ -45,6 +45,14 @@ test('missing required design fields are repaired only from grounded seed/fact e
   assert.ok(result.repairs.some(row=>row.field==='progressionDirection'&&row.source==='GAME_SEED.TARGET_SESSION_DIRECTION'));
 });
 
+test('non-Roblox pre-review does not require or synthesize Roblox build profile',()=>{
+  const unitySeed={...seed,INITIAL_TARGET_PLATFORM:'UNITY'};
+  const result=repairDesignRequiredFields({identity:'기존 설계',coreFun:'기존 재미',coreLoop:['a','b','c']},{seed:unitySeed,phase:'PRE_REVIEW'});
+  assert.equal(result.value.robloxBuildProfile,undefined);
+  assert.equal(result.unresolved.includes('robloxBuildProfile'),false);
+  assert.deepEqual(result.unresolved,[]);
+});
+
 test('missing core decision stays unresolved when seed does not provide it',()=>{
   const noMode={...seed,MULTIPLAYER_DESIGN_MODE:'',INITIAL_PLAY_MODE:''};
   const result=repairDesignRequiredFields({identity:'x',coreFun:'y',coreLoop:['a','b','c']},{seed:noMode});
