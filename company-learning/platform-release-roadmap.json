@@ -1,16 +1,16 @@
 {
-  "version": 16,
+  "version": 19,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
   "priority": [
-    "ROBLOX",
     "UNITY",
+    "ROBLOX",
     "FORTNITE_UEFN"
   ],
   "primaryPlatform": "ROBLOX",
-  "currentPhase": "ROBLOX_FAST_RELEASE_STABILIZATION",
-  "priorityMeaning": "ROBLOX_ALWAYS_FIRST_FOR_SCHEDULING_FOCUS_AND_PROTECTED_CAPACITY_WITHOUT_BLOCKING_OTHER_PLATFORMS",
+  "currentPhase": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
+  "priorityMeaning": "UNITY_AND_ROBLOX_EQUAL_FIRST_TIER; WITHIN_TIER_SELECT_BY_READINESS_AND_EXECUTION_EFFICIENCY; FORTNITE_UEFN_OWNER_HOLD",
   "developmentAccess": {
     "ROBLOX": "ALWAYS_ALLOWED",
     "UNITY": "ALWAYS_ALLOWED",
@@ -38,7 +38,24 @@
     "cannotReplaceNativeRuntimeEvidence": true,
     "learningRole": "AUXILIARY_PORTABLE_LEARNING_EVIDENCE",
     "canonicalDistillationOnly": true,
-    "newTrainerOrCronForbidden": true
+    "newTrainerOrCronForbidden": true,
+    "continuouslyEditableDuringDevelopment": true,
+    "validationMayRepeatAfterEachMeaningfulRevision": true,
+    "runtimePassIsReleaseSignal": false,
+    "competitiveQualityParityWithNative": true,
+    "competitiveQualityContract": "tools/company-common-development-quality-contract.mjs",
+    "competitiveQualityAxes": [
+      "core-loop-quality",
+      "implementation-completeness",
+      "content-depth",
+      "category-fit",
+      "ux-readability",
+      "progression-and-balance",
+      "performance-and-stability",
+      "distinctiveness"
+    ],
+    "releaseRequiresFreshCompetitiveRevalidation": true,
+    "singleWebPassCannotTriggerRelease": true
   },
   "platformRepresentativeSets": {
     "representativeSetSizePerPlatform": 6,
@@ -127,19 +144,21 @@
   "phases": [
     {
       "id": "ROBLOX_FAST_RELEASE_STABILIZATION",
-      "priority": 1,
+      "priority": 2,
       "entryGate": false,
       "objective": "FAST_REAL_RELEASE_AND_STABILIZATION_EXPERIENCE",
       "blocksUnityDevelopment": false,
-      "blocksFortniteDevelopment": false
+      "blocksFortniteDevelopment": false,
+      "status": "SUPERSEDED_BY_EQUAL_UNITY_ROBLOX_PRIORITY"
     },
     {
       "id": "ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE",
-      "priority": 2,
+      "priority": 1,
       "entryGate": false,
-      "objective": "CONCURRENT_ROBLOX_AND_UNITY_RELEASE_EXPERIENCE",
+      "objective": "EQUAL_PRIORITY_ROBLOX_UNITY_DEVELOPMENT_AND_RELEASE_EXPERIENCE",
       "unityExistingPathPreserved": true,
-      "unityDeletedOrReplacedByRoblox": false
+      "unityDeletedOrReplacedByRoblox": false,
+      "status": "ACTIVE"
     },
     {
       "id": "FORTNITE_UEFN_EXPANSION",
@@ -573,7 +592,10 @@
         "recombinationMemoryAllowed": true,
         "rawCopyForbidden": true,
         "outputContract": "webPlatformHandoff",
-        "disposablePrototype": false
+        "disposablePrototype": false,
+        "continuouslyEditable": true,
+        "competitiveQualityParityRequired": true,
+        "webPassIsReleaseSignal": false
       },
       "nativePlatformContinuation": {
         "selectedPlatformSource": "approved-platform-and-genre-lock",
@@ -778,7 +800,7 @@
     },
     "platformPriorityInvariant": {
       "source": "platformPriorityInvariant",
-      "schedulerMustHonorRobloxFirst": true,
+      "schedulerMustHonorRobloxFirst": false,
       "appliesTo": [
         "WEB_BASE_IMPLEMENTATION",
         "TARGET_PLATFORM_SOURCE_BIND",
@@ -788,7 +810,13 @@
         "RELEASE_PROMOTION",
         "POST_RELEASE_FOCUSED_DEVELOPMENT"
       ],
-      "learningRunsInParallel": true
+      "learningRunsInParallel": true,
+      "schedulerMustHonorUnityRobloxEqualTier": true,
+      "equalTierPlatforms": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "equalTierSelection": "READINESS_THEN_EXECUTION_EFFICIENCY"
     },
     "platformExecutionHolds": {
       "FORTNITE_UEFN": {
@@ -847,7 +875,9 @@
         ],
         "existingValidSystemsMustBePreserved": true,
         "restartFromBlankForbiddenWithoutEvidence": true,
-        "output": "webPlatformHandoff"
+        "output": "webPlatformHandoff",
+        "continuouslyEditable": true,
+        "competitiveQualityParityRequired": true
       },
       "selectedPlatformWorker": {
         "owner": "VIBE2_VIBE3",
@@ -855,7 +885,9 @@
         "webPortableMeaningMustCarryForward": true,
         "nativeCodeMustRemainPlatformSpecific": true,
         "webEvidenceCannotSubstituteNativePass": true,
-        "selectedPlatformRuntimeQaRegressionRequired": true
+        "selectedPlatformRuntimeQaRegressionRequired": true,
+        "competitiveQualityParityRequired": true,
+        "commonQualityContract": "tools/company-common-development-quality-contract.mjs"
       },
       "robloxWorker": {
         "bootstrap": "tools/company-development-roblox-bootstrap.mjs",
@@ -988,6 +1020,37 @@
         "required-secret-or-human-authentication-missing",
         "platform-policy-block-that-cannot-be-routed-around"
       ]
+    },
+    "webIterationPolicy": {
+      "continuouslyEditable": true,
+      "ownerMayRequestFurtherRevisionAfterPass": true,
+      "passedEvidenceInvalidatedByRelevantSourceChangeOnly": true,
+      "revalidateAfterRelevantRevision": true,
+      "competitiveQualityParityWithTargetPlatform": true,
+      "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
+      "webPassDoesNotMeanReleaseReadyByItself": true
+    },
+    "releaseMaturityGate": {
+      "prematureReleaseForbidden": true,
+      "singleRuntimePassInsufficient": true,
+      "singleStrictScorePassInsufficient": true,
+      "requiresFreshPlatformRuntime": true,
+      "requiresFreshIndependentQa": true,
+      "requiresFreshRegression": true,
+      "requiresCompetitiveQualityParity": true,
+      "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
+      "relevantSourceChangeRequiresRevalidation": true
+    },
+    "permanentProjectRemoval": {
+      "source": "game-catalog.json#permanentRemovalPolicy",
+      "ids": [
+        "seed-roblox-battleground-fight-welcome-to-bloxburg",
+        "seed-roblox-obby-party-minigam-tower-of-hell"
+      ],
+      "plannerAction": "HARD_EXCLUDE_AND_CANCEL_EXISTING_TASKS",
+      "postReleaseRecoveryAllowed": false,
+      "historicalMaintenanceRecoveryAllowed": false,
+      "sourceDeletionRequired": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
@@ -1000,20 +1063,257 @@
     "mayCreatePolicy": false
   },
   "platformPriorityInvariant": {
-    "mode": "ROBLOX_ALWAYS_FIRST",
+    "mode": "UNITY_ROBLOX_EQUAL_FIRST_TIER",
     "schedulingOrder": [
-      "ROBLOX",
       "UNITY",
+      "ROBLOX",
       "FORTNITE_UEFN"
     ],
-    "robloxMustReceiveFirstEligibleDevelopmentSlot": true,
-    "robloxMustReceiveFirstEligibleFocusedSlot": true,
-    "robloxMustReceiveFirstEligiblePostReleaseProtectedSlot": true,
+    "robloxMustReceiveFirstEligibleDevelopmentSlot": false,
+    "robloxMustReceiveFirstEligibleFocusedSlot": false,
+    "robloxMustReceiveFirstEligiblePostReleaseProtectedSlot": false,
     "unityDevelopmentStillAllowed": true,
     "fortniteUefnDevelopmentStillAllowed": true,
     "lowerPriorityPlatformsMayRunInParallelWhenCapacityRemains": true,
-    "lowerPriorityPlatformMayNotPreemptEligibleRobloxWork": true,
+    "lowerPriorityPlatformMayNotPreemptEligibleRobloxWork": false,
     "qualityOrEvidenceGateWeakeningAllowed": false,
-    "ownerExplicitOverrideAllowed": true
+    "ownerExplicitOverrideAllowed": true,
+    "priorityTiers": [
+      [
+        "UNITY",
+        "ROBLOX"
+      ],
+      [
+        "FORTNITE_UEFN"
+      ]
+    ],
+    "equalTierSelection": "READINESS_THEN_ESTIMATED_EXECUTION_COST_THEN_ENQUEUED_AT"
+  },
+  "homepagePortfolioVisibility": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "humanDocumentRequired": false,
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "renderer": "assets/homepage-enhancements.js",
+    "catalog": "game-catalog.json",
+    "objective": "SHOW_PLAYABLE_WEB_GAMES_AND_VERIFIED_ROBLOX_DEPLOYMENT_HISTORY_WITHOUT_FALSE_RELEASE_PROMOTION",
+    "webGames": {
+      "includeWhen": [
+        "lifecycle-active-or-rebuild",
+        "homepageWebPlayable=true",
+        "hasWebArchive=true",
+        "webPath-present"
+      ],
+      "productionClassPromotionRequired": false,
+      "shelf": "homeWebGameCenter",
+      "label": "웹게임",
+      "directPlayRequired": true
+    },
+    "robloxDeploymentHistory": {
+      "includeWhen": [
+        "platform=ROBLOX",
+        "robloxPublicationTarget.placeId-present",
+        "robloxPublicationTarget.verified=true",
+        "robloxPublicationTarget.historical=true",
+        "robloxReleaseEvidence.historicalPublicationTargetVerified=true"
+      ],
+      "currentReleaseClaimRequired": false,
+      "mustNotConvertHistoricalEvidenceIntoCurrentReleaseClaim": true,
+      "shelf": "homeRobloxDeploymentCenter",
+      "label": "Roblox 배포 기록",
+      "platformButtonUsesVerifiedPlaceId": true
+    },
+    "releaseShelfUnchanged": true,
+    "top30ShelfUnchanged": true,
+    "developmentShelfUnchanged": true,
+    "designOnlyMayAppearInWebOrHistoricalDeploymentShelvesWithoutPromotion": true
+  },
+  "catalogNormalization": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "humanDocumentRequired": false,
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "catalog": "game-catalog.json",
+    "normalizer": "tools/game-catalog-normalization.mjs",
+    "canonicalRecordPath": "games[].canonical",
+    "catalogSchemaVersion": 2,
+    "canonicalGameSchemaVersion": 1,
+    "sections": [
+      "identity",
+      "lifecycle",
+      "production",
+      "sources",
+      "publication",
+      "homepage"
+    ],
+    "rules": {
+      "canonicalFirst": true,
+      "legacyFlatFields": "COMPATIBILITY_MIRROR_ONLY",
+      "companyStatusSyncRegeneratesCanonical": true,
+      "homepageReadsCanonicalFirst": true,
+      "duplicateGameIdsForbidden": true,
+      "duplicateVerifiedRobloxPlaceIdsForbidden": true,
+      "duplicateVerifiedRobloxUniverseIdsForbidden": true,
+      "publicationIdentityMustStayBoundToGameId": true,
+      "historicalDeploymentMustNotBecomeCurrentReleaseClaim": true,
+      "gameRemovalRequiresExplicitLifecycleChange": true,
+      "homepageCategoryDerivedFromProductionClass": true,
+      "legacyHistoricalCategoryMigratesToDisplayMode": true,
+      "catalogOrderMustBeContiguous": true
+    },
+    "homepageBinding": {
+      "renderer": "assets/homepage-enhancements.js",
+      "manager": "tools/homepage-manager.mjs",
+      "identityFrom": "canonical.identity",
+      "lifecycleFrom": "canonical.lifecycle",
+      "productionFrom": "canonical.production",
+      "webFrom": "canonical.sources.web",
+      "robloxPublicationFrom": "canonical.publication.roblox",
+      "presentationFrom": "canonical.homepage",
+      "legacyFallbackAllowed": true,
+      "publicationRequiresNormalizedCatalog": true,
+      "canonicalOrderField": "catalogOrder",
+      "independentManualOrderingForbidden": true,
+      "shelves": {
+        "RELEASE_CONFIRMED": "CATALOG_ORDER_ASC",
+        "WEB_PUBLISHED": "CATALOG_ORDER_ASC",
+        "ROBLOX_HISTORICAL_DEPLOYMENT": "CATALOG_ORDER_ASC",
+        "DEVELOPMENT_CONFIRMED": "CURRENT_SCORE_DESC_THEN_CATALOG_ORDER_ASC",
+        "TOP30": "STRICT_IMPLEMENTATION_SCORE_DESC"
+      }
+    },
+    "execution": {
+      "normalizerRunsInsideExistingCompanyStatusSync": true,
+      "newPipelineForbidden": true,
+      "shadowCatalogForbidden": true,
+      "runtimeMirror": "company-runtime:game-catalog.json",
+      "homepagePublicationUsesExistingHomepageManager": true
+    },
+    "ordering": {
+      "mode": "CANONICAL_STABLE",
+      "outputField": "catalogOrder",
+      "contiguousFrom": 1,
+      "keys": [
+        "lifecycleRank ASC",
+        "productionClassRank ASC",
+        "featuredRank ASC",
+        "platformRank ASC",
+        "gameId ASC"
+      ],
+      "lifecycleRank": {
+        "ACTIVE": 0,
+        "REBUILD": 1,
+        "PAUSED": 2,
+        "RETIRED": 3,
+        "REMOVED": 4
+      },
+      "productionClassRank": {
+        "RELEASE_CONFIRMED": 0,
+        "DEVELOPMENT_CONFIRMED": 1,
+        "DESIGN_ONLY": 2
+      },
+      "featuredRank": {
+        "true": 0,
+        "false": 1
+      },
+      "platformRank": {
+        "ROBLOX": 0,
+        "UNITY": 1,
+        "FORTNITE_UEFN": 2,
+        "UNSELECTED": 3
+      }
+    },
+    "autoClassification": {
+      "version": 1,
+      "authority": "MACHINE_EXECUTION_CONTRACT",
+      "enabled": true,
+      "humanDocumentRequired": false,
+      "executionOwner": "VIBE2",
+      "trigger": "WEB_GAME_HOMEPAGE_REGISTRATION_OR_STATUS_SYNC",
+      "eligibleWhen": "WEB_SOURCE_PRESENT_AND_PLATFORM_OR_GENRE_MISSING",
+      "explicitOwnerOrCatalogValueWins": true,
+      "overwriteExplicitValue": false,
+      "newPipelineForbidden": true,
+      "executionPath": "tools/game-catalog-normalization.mjs inside existing company-status-sync",
+      "platform": {
+        "allowed": [
+          "ROBLOX",
+          "UNITY",
+          "FORTNITE_UEFN"
+        ],
+        "evidenceOrder": [
+          "EXPLICIT_OWNER_OR_CATALOG_VALUE",
+          "EXISTING_NATIVE_PROJECT_OR_PUBLICATION_EVIDENCE",
+          "WEB_SOURCE_AND_GAME_METADATA_SEMANTIC_CLASSIFICATION",
+          "CENTRAL_DEFAULT"
+        ],
+        "centralDefault": "ROBLOX",
+        "writeCompatibilityFields": [
+          "selectedPlatform",
+          "homepageInfo.platform",
+          "homepageInfo.platformLabel"
+        ],
+        "canonicalFields": [
+          "canonical.production.selectedPlatform",
+          "canonical.homepage.runtime.platform"
+        ]
+      },
+      "genre": {
+        "evidenceOrder": [
+          "EXPLICIT_CATALOG_GENRE",
+          "EXPLICIT_HOMEPAGE_RUNTIME_GENRE",
+          "GAME_NAME_AND_DESCRIPTION",
+          "WEB_SOURCE_TEXT"
+        ],
+        "minimumLabels": 1,
+        "maximumLabels": 4,
+        "fallback": [
+          "기타"
+        ],
+        "writeCompatibilityFields": [
+          "genre",
+          "homepageInfo.genre",
+          "homepageInfo.genreLabel"
+        ],
+        "canonicalFields": [
+          "canonical.identity.genres",
+          "canonical.homepage.runtime.genre",
+          "canonical.homepage.runtime.genreLabel"
+        ]
+      }
+    }
+  },
+  "updatedAt": "2026-09-19",
+  "priorityTiers": [
+    {
+      "tier": 1,
+      "platforms": [
+        "UNITY",
+        "ROBLOX"
+      ],
+      "selection": "READINESS_THEN_ESTIMATED_EXECUTION_COST_THEN_ENQUEUED_AT"
+    },
+    {
+      "tier": 2,
+      "platforms": [
+        "FORTNITE_UEFN"
+      ],
+      "selection": "OWNER_HOLD"
+    }
+  ],
+  "primaryPlatformRole": "LEGACY_COMPATIBILITY_ONLY_NOT_SCHEDULING_PRIORITY",
+  "permanentProjectRemoval": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE",
+    "ids": [
+      "seed-roblox-battleground-fight-welcome-to-bloxburg",
+      "seed-roblox-obby-party-minigam-tower-of-hell"
+    ],
+    "state": "REMOVED_PERMANENTLY",
+    "reentryAllowed": false,
+    "automaticRecoveryAllowed": false,
+    "automaticMaintenanceAllowed": false,
+    "sourceDeletionRequired": true,
+    "reason": "INACCESSIBLE_HISTORICALLY_DEPLOYED_GAMES_REMOVED_BY_OWNER_2026-09-19"
   }
 }
