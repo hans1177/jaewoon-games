@@ -85,15 +85,27 @@ function setup(){
 }
 
 {
-  const {root,roadmap,recombination}=setup();
   const registry=JSON.parse(fs.readFileSync('company-learning/roblox-sustained-maintenance.json','utf8'));
-  const vector=registry.assets.find(x=>x.gameName==='Vector Clash');
   const lantern=registry.assets.find(x=>x.gameName==='Last Lantern');
-  assert.equal(vector.maintenanceEligible,true);
-  assert.equal(vector.evidence.publicationTargetObserved,true);
+  assert.equal(registry.assets.some(x=>x.gameName==='Vector Clash'),false);
+  assert.equal(registry.assets.some(x=>x.gameName==='Skyline Rush'),false);
+  assert.deepEqual(registry.permanentRemovalGuard.ids,[
+    'seed-roblox-battleground-fight-welcome-to-bloxburg',
+    'seed-roblox-obby-party-minigam-tower-of-hell'
+  ]);
+  assert.equal(registry.permanentRemovalGuard.recoveryAllowed,false);
+  assert.equal(registry.permanentRemovalGuard.maintenanceAllowed,false);
   assert.equal(lantern.maintenanceEligible,false);
   assert.equal(lantern.evidence.publicationTargetObserved,false);
   assert.equal(lantern.blocker,'PUBLICATION_TARGET_EVIDENCE_MISSING');
+}
+
+{
+  const {root,roadmap,item,recombination}=setup();
+  roadmap.permanentProjectRemoval={ids:['demo'],reentryAllowed:false,automaticRecoveryAllowed:false,automaticMaintenanceAllowed:false};
+  assert.equal(buildPostReleaseFocusTask({item,repoRoot:root,roadmap,recombination,existingTasks:[]}),null);
+  const historical={gameId:'demo',sourceRoot:'roblox-games/demo',maintenanceEligible:true,currentReleaseClaim:false,evidence:{actualStudioRuntime:true,postRuntimeIndependentQa:true,regression:true,publicationTargetObserved:true,universeId:'1',placeId:'2'}};
+  assert.equal(buildHistoricalPostReleaseFocusTask({entry:historical,repoRoot:root,roadmap,recombination,existingTasks:[]}),null);
 }
 
 {
