@@ -112,6 +112,7 @@ export function buildFormalWebExperienceReview({item={},report={},evidencePath='
     autoPlayerVerified:gate.autoPlayerVerified,
     telemetryVerified:gate.telemetryVerified,
     designReviewVerified:gate.designReviewVerified,
+    designReviewDecision:'PASS',
     authorityExpanded:false
   };
   return {valid:true,gate,review};
