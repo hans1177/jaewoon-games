@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: Array(100).fill(null)
+      },
+      player: {
+        x: 0,
+        y: 0,
+        direction: 'right'
+      },
+      enemies: [],
+      ai: {
+        behavior: 'basic',
+        targets: []
+      },
+      save: {
+        version: 1,
+        data: {}
+      }
+    };
+
+    // Initialize game
+    function init() {
+      // Initialize map and player
+      game.map = createMap();
+      game.player = initializePlayer();
+
+      // Initialize enemies
+      game.enemies = generateEnemies();
+
+      // Initialize AI
+      game.ai = initializeAI();
+
+      // Start game loop
+      startGameLoop();
+    }
+
+    // Create map
+    function createMap() {
+      const map = Array(10).fill(null).map(() => Array(10).fill(null));
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          map[i][j] = {
+            isWall: false,
+            isPlayer: false,
+            isEnemy: false
+          };
+        }
+      }
+      return map;
+    }
+
+    // Initialize player
+    function initializePlayer() {
+      return {
+        x: 0,
+        y: 0,
+        direction: 'right'
+      };
+    }
+
+    // Generate enemies
+    function generateEnemies() {
+      const enemies = [];
+      for (let i = 0; i < 5; i++) {
+        enemies.push({
+          x: Math.floor(Math.random() * 10),
+          y: Math.floor(Math.random() * 10),
+          direction: 'random'
+        });
+      }
+      return enemies;
+    }
+
+    // Initialize AI
+    function initializeAI() {
+      return {
+        behavior: 'basic',
+        targets: []
+      };
+    }
+
+    // Start game loop
+    function startGameLoop() {
+      const loop = () => {
+        // Update game state
+        updateGame();
+
+        // Check for win/loss
+        if (checkWin()) {
+          alert('You win!');
+          return;
+        }
+
+        if (checkLoss()) {
+          alert('You lose!');
+          return;
+        }
+
+        // Render game
+        renderGame();
+      };
+
+      // Set interval
+      setInterval(loop, 1000);
+    }
+
+    // Update game state
+    function updateGame() {
+      // Update player position
+      updatePlayerPosition();
+
+      // Update enemies
+      updateEnemies();
+
+      // Update AI
+      updateAI();
+    }
+
+    // Update player position
+    function updatePlayerPosition() {
+      // Logic to move player
+    }
+
+    // Update enemies
+    function updateEnemies() {
+      // Logic to move enemies
+    }
+
+    // Update AI
+    function updateAI() {
+      // Logic to make AI decisions
+    }
+
+    // Check for win
+    function checkWin() {
+      // Logic to check if player has won
+      return false;
+    }
+
+    // Check for loss
+    function checkLoss() {
+      // Logic to check if player has lost
+      return false;
+    }
+
+    // Render game
+    function renderGame() {
+      // Logic to render game
+    }
+
+    // Handle touch input
+    function handleTouchInput(e) {
+      // Logic to handle touch input
+    }
+
+    // Main initialization
+    init();
+  </script>
+</body>
+</html>
