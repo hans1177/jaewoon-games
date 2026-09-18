@@ -14,8 +14,10 @@ on:
       - 'tools/vibe2-web-experience-ingest.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-release-dispatch-recovery.mjs'
+      - 'tools/vibe2-post-release-focus.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/roblox-sustained-maintenance.json'
       - 'company-learning/authorized-source/block-blast/authorized-learning-summary.json'
       - 'VIBE2.md'
       - 'vibe2-runtime.json'
@@ -112,6 +114,7 @@ jobs:
             node /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs \
               --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
               --company-runtime-queue=/tmp/vibe2-company-runtime-queue.json \
+              --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --queue=.vibe2/queue.json \
               --recombination=/tmp/vibe2-recombination-memory.json \
               --root=/tmp/vibe2-main | tee /tmp/vibe2-post-release-focus.log
