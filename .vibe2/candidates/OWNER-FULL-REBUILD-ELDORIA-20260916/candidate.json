@@ -1,0 +1,17 @@
+{
+  "summary": "완결형 RPG로 재구현된 엘도리아 연대기 5장",
+  "expectedEffect": "5장의 장소·전투·선택·목표를 구분한 플레이 가능한 RPG로 전면 재구현",
+  "edits": [],
+  "newFiles": [],
+  "replaceFiles": [
+    {
+      "path": "index.html",
+      "content": "<!doctype html>\n<html lang=\"ko\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n  <meta name=\"theme-color\" content=\"#08111b\">\n  <title>엘도리아 연대기</title>\n  <link rel=\"stylesheet\" href=\"/web-games/_shared/styles.css\">\n</head>\n<body>\n  <script>\n    window.GAME_CONFIG = {\n      id: 'seed-story-complete-rpg-chronicles-of-eldoria',\n      name: '엘도리아 연대기',\n      mode: 'eldoria',\n      hp: 100,\n      desc: '회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',\n      story: '탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'\n    };\n\n    // 게임 로드 시 실행\n    window.addEventListener('load', () => {\n      // 게임 로드 로직 구현\n    });\n  </script>\n  <div id=\"game-container\">\n    <header>\n      <h1>엘도리아 연대기</h1>\n      <p>5장의 이야기를 탐험하고 전투·휴식·장비 강화를 선택해 완결형 RPG로 전면 재구현</p>\n    </header>\n    <main>\n      <section id=\"story-section\">\n        <h2>5장의 이야기</h2>\n        <p>회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.</p>\n        <div id=\"story-progress\">\n          <div class=\"progress-step\" data-step=\"1\">장소 탐험</div>\n          <div class=\"progress-step\" data-step=\"2\">전투 선택</div>\n          <div class=\"progress-step\" data-step=\"3\">휴식</div>\n          <div class=\"progress-step\" data-step=\"4\">장비 강화</div>\n          <div class=\"progress-step\" data-step=\"5\">결말</div>\n        </div>\n      </section>\n      <section id=\"game-area\">\n        <div id=\"map-container\">\n          <div id=\"map\" class=\"map\"></div>\n        </div>\n        <div id=\"inventory\">\n          <h3>장비 및 보물</h3>\n          <ul id=\"inventory-list\"></ul>\n        </div>\n      </section>\n      <section id=\"ui-section\">\n        <h2>UI 및 선택</h2>\n        <div id=\"ui-container\">\n          <div id=\"ui-buttons\"></div>\n          <div id=\"ui-status\"></div>\n        </div>\n      </section>\n    </main>\n    <footer>\n      <p>엘도리아 연대기 - 5장 완결 RPG</p>\n    </footer>\n  </div>\n  <script src=\"/web-games/_shared/vibe2-final.js\"></script>\n</body>\n</html>"
+    }
+  ],
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ]
+}

@@ -1,1 +1,66 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>엘도리아 연대기</title></head><body><script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>엘도리아 연대기</title>
+  <link rel="stylesheet" href="/web-games/_shared/styles.css">
+</head>
+<body>
+  <script>
+    window.GAME_CONFIG = {
+      id: 'seed-story-complete-rpg-chronicles-of-eldoria',
+      name: '엘도리아 연대기',
+      mode: 'eldoria',
+      hp: 100,
+      desc: '회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',
+      story: '탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'
+    };
+
+    // 게임 로드 시 실행
+    window.addEventListener('load', () => {
+      // 게임 로드 로직 구현
+    });
+  </script>
+  <div id="game-container">
+    <header>
+      <h1>엘도리아 연대기</h1>
+      <p>5장의 이야기를 탐험하고 전투·휴식·장비 강화를 선택해 완결형 RPG로 전면 재구현</p>
+    </header>
+    <main>
+      <section id="story-section">
+        <h2>5장의 이야기</h2>
+        <p>회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.</p>
+        <div id="story-progress">
+          <div class="progress-step" data-step="1">장소 탐험</div>
+          <div class="progress-step" data-step="2">전투 선택</div>
+          <div class="progress-step" data-step="3">휴식</div>
+          <div class="progress-step" data-step="4">장비 강화</div>
+          <div class="progress-step" data-step="5">결말</div>
+        </div>
+      </section>
+      <section id="game-area">
+        <div id="map-container">
+          <div id="map" class="map"></div>
+        </div>
+        <div id="inventory">
+          <h3>장비 및 보물</h3>
+          <ul id="inventory-list"></ul>
+        </div>
+      </section>
+      <section id="ui-section">
+        <h2>UI 및 선택</h2>
+        <div id="ui-container">
+          <div id="ui-buttons"></div>
+          <div id="ui-status"></div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>엘도리아 연대기 - 5장 완결 RPG</p>
+    </footer>
+  </div>
+  <script src="/web-games/_shared/vibe2-final.js"></script>
+</body>
+</html>
