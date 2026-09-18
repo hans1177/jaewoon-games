@@ -52,6 +52,7 @@ function registeredHistoricalMaintenanceTask(item={},registryById=new Map()){
     &&clean(item.releaseState).toLowerCase()==='development-confirmed'
     &&posix(item.sourceRoot)===posix(entry.sourceRoot)
     &&evidence.has('historical-deployment-recovery:yes')
+    &&evidence.has('historical-current-release-claim:NO')
     &&evidence.has('maintenance-registry:'+HISTORICAL_MAINTENANCE_REGISTRY_PATH);
 }
 function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={}){
@@ -60,9 +61,12 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
     if(!isProductionImplementationTask(item))return item;
     const game=byId.get(clean(item.gameId));
     if(!game&&registeredHistoricalMaintenanceTask(item,historicalById)){
-      const canonicalHistoricalTask=item.historicalDeploymentRecovery===true?item:{...item,historicalDeploymentRecovery:true};
+      const flagRestored=item.historicalDeploymentRecovery!==true;
+      const canonicalHistoricalTask=flagRestored
+        ?{...item,historicalDeploymentRecovery:true,evidence:[...new Set([...(item.evidence||[]),'self-recovery:HISTORICAL_DEPLOYMENT_FLAG_RESTORED'])]}
+        :item;
       if(clean(item.status).toLowerCase()==='cancelled'&&clean(item.blocker)==='lifecycle-inactive:MISSING_FROM_CATALOG'){
-        return{...canonicalHistoricalTask,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(canonicalHistoricalTask.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE'])]};
+        return{...canonicalHistoricalTask,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(canonicalHistoricalTask.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE','self-recovery:HISTORICAL_MAINTENANCE_REQUEUED'])]};
       }
       return canonicalHistoricalTask;
     }
