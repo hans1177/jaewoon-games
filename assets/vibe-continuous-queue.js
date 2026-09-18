@@ -219,8 +219,11 @@ function isAwaitingQaTask(task) {
 function isReleasedWorkerSlotTask(task) {
   return task?.status === 'running' && /slot-released.*fan-in/i.test(clean(task?.blocker));
 }
+function isExternalQuotaWaitingTask(task) {
+  return task?.status === 'running' && /WAITING_FOR_GEMINI_QUOTA|gemini.*quota|external.*model.*quota/i.test(clean(task?.blocker));
+}
 function releasesWorkerCapacity(task) {
-  return isAwaitingQaTask(task) || isReleasedWorkerSlotTask(task);
+  return isAwaitingQaTask(task) || isReleasedWorkerSlotTask(task) || isExternalQuotaWaitingTask(task);
 }
 function isProtectedLongOwner(task) {
   return task?.packageLongWorkProtected === true && clean(task?.packageRole) === 'implementation-owner';
@@ -346,6 +349,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
     running: freeze(running),
     capacityRunning: freeze(capacityRunning),
     awaitingQa: freeze(running.filter(isAwaitingQaTask)),
+    quotaWaiting: freeze(running.filter(isExternalQuotaWaitingTask)),
     releasedWorkerSlots: freeze(running.filter(isReleasedWorkerSlotTask)),
     hasEligibleWork: selected.length > 0,
     blocked: freeze(blocked),
@@ -442,6 +446,7 @@ export function summarizeVibeContinuousQueue(queueInput) {
     runningTaskIds: freezeList(next.running.map((task) => task.id)),
     capacityRunningTaskIds: freezeList(next.capacityRunning.map((task) => task.id)),
     awaitingQaTaskIds: freezeList(next.awaitingQa.map((task) => task.id)),
+    quotaWaitingTaskIds: freezeList(next.quotaWaiting.map((task) => task.id)),
     releasedWorkerSlotTaskIds: freezeList(next.releasedWorkerSlots.map((task) => task.id)),
     nextReleaseState: next.selected[0]?.releaseState || null,
     continueRequired: next.continueRequired,
