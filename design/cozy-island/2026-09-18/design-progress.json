@@ -16,21 +16,21 @@
   ],
   "completedPhaseCount": 6,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T07:14:50.272Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T07:16:13.337Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": "DESIGN_PRE_GATE_BLOCKED score=74.6 hard=CRITICAL_AXIS_MINIMUM_FAIL",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 7,
-      "successes": 4,
+      "calls": 9,
+      "successes": 6,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 3,
-      "totalMs": 44659,
-      "lastMs": 2697,
+      "totalMs": 50504,
+      "lastMs": 2641,
       "lastError": "Expected ',' or '}' after property value in JSON at position 1627 (line 1 column 1628)",
-      "updatedAt": "2026-09-18T07:14:50.272Z"
+      "updatedAt": "2026-09-18T07:16:13.337Z"
     },
     "gemini:gemini-2.5-flash": {
       "calls": 1,
@@ -133,7 +133,7 @@
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T07:14:50.275Z",
+  "updatedAt": "2026-09-18T07:16:13.340Z",
   "blocked": true,
   "preGateScore": 74.6,
   "hardFailures": [
