@@ -250,7 +250,10 @@ function clientSource({profile,learning={}}){
 export function compileRobloxSource({gameId='',gameName='',baseline={},artbook={},playbooks={},recombination={},webHandoff={},roadmap={}}={}){
   const profile=robloxBuildProfileFromBaseline(baseline);
   const saveRequired=requiresPersistentSave(baseline);
-  const handoffValidation=validateWebPlatformHandoff({handoff:webHandoff,roadmap,gameId});
+  const handoffRequired=roadmap?.developmentLifecycleMachine?.webToPlatformHandoff?.required===true;
+  const handoffValidation=handoffRequired
+    ? validateWebPlatformHandoff({handoff:webHandoff,roadmap,gameId})
+    : Object.freeze({pass:true,blockers:Object.freeze([]),carryForward:Object.freeze(Array.isArray(webHandoff?.carryForward)?webHandoff.carryForward.map(clean):[])});
   if(!handoffValidation.pass)throw new Error(`ROBLOX_WEB_HANDOFF_FAILED: ${handoffValidation.blockers.join('|')}`);
   const learning=createRobloxVibe3LearningContext({gameId,profile,artbook,playbooks,recombination});
   const actions=approvedActions(baseline,profile,learning);
