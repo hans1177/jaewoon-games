@@ -134,7 +134,9 @@ test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate 
   assert.match(policy,/adaptiveBackpressureSteps: \[20, 16, 12, 8, 4\]/);
   assert.ok(designRuntime.includes("const maxMatch=policy.match(/concurrentGameWipMax:\\s*(\\d+)/);"));
   assert.match(designRuntime,/slice\(0,designWipMax\)/);
-  assert.match(designRuntime,/parallel_max=\$\{designWipMax\}/);
+  assert.match(designRuntime,/const parallelMax=Math\.max\(1,designWipMax-1\)/);
+  assert.match(designRuntime,/parallel_max=\$\{parallelMax\}/);
+  assert.match(designRuntime,/GAME_DESIGN_CONTROL_RUNNER_RESERVE=\$\{designWipMax-parallelMax\}/);
   assert.match(designRuntime,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
   assert.match(designRuntime,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
   assert.match(designRuntime,/concurrency:[\s\S]{0,160}group:\s*company-seed-design-runtime[\s\S]{0,100}cancel-in-progress:\s*false/);
