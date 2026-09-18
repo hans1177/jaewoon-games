@@ -42,9 +42,9 @@ export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_A
 }
 
 function pressureLevel(telemetry = {}) {
-  const explicit = clean(telemetry.pressureLevel).toUpperCase();
+  const explicit = clean(telemetry.adaptivePressureLevel || telemetry.pressureLevel).toUpperCase();
   if (['SEVERE', 'HIGH', 'MEDIUM', 'LOW', 'NONE'].includes(explicit)) return explicit;
-  const failureRate = num(telemetry.failureRatePct);
+  const failureRate = num(telemetry.adaptiveFailureRatePct ?? telemetry.failureRatePct);
   if (failureRate >= 40) return 'SEVERE';
   if (failureRate >= 20) return 'HIGH';
   if (failureRate >= 10) return 'MEDIUM';
@@ -53,9 +53,9 @@ function pressureLevel(telemetry = {}) {
 
 function pressureReasons(telemetry = {}) {
   const reasons = [];
-  const failureRate = num(telemetry.failureRatePct);
-  const bottleneck = clean(telemetry.bottleneck);
-  const peakUtil = num(telemetry.effectivePeakUtilizationPct);
+  const failureRate = num(telemetry.adaptiveFailureRatePct ?? telemetry.failureRatePct);
+  const bottleneck = clean(telemetry.adaptiveBottleneck || telemetry.bottleneck);
+  const peakUtil = num(telemetry.adaptiveEffectivePeakUtilizationPct ?? telemetry.effectivePeakUtilizationPct);
   const queueWaitP95 = num(telemetry.queueWait?.p95Ms);
   const checkoutP95 = num(telemetry.checkout?.p95Ms);
   if (failureRate >= 20) reasons.push('FAILURE_RATE');
@@ -67,11 +67,11 @@ function pressureReasons(telemetry = {}) {
 }
 
 function isHealthy(telemetry = {}) {
-  const bottleneck = clean(telemetry.bottleneck);
-  return num(telemetry.failureRatePct) < 10
+  const bottleneck = clean(telemetry.adaptiveBottleneck || telemetry.bottleneck);
+  return num(telemetry.adaptiveFailureRatePct ?? telemetry.failureRatePct) < 10
     && ['LOW', 'NONE'].includes(pressureLevel(telemetry))
     && (!bottleneck || bottleneck === 'NONE')
-    && num(telemetry.effectivePeakUtilizationPct) >= 80
+    && num(telemetry.adaptiveEffectivePeakUtilizationPct ?? telemetry.effectivePeakUtilizationPct) >= 80
     && num(telemetry.queueWait?.p95Ms) < 15000
     && num(telemetry.checkout?.p95Ms) < 15000;
 }
@@ -89,7 +89,8 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   }
 
   const current = control.currentMax;
-  const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
+  const workerCount = Math.max(0, Math.floor(num(telemetry.adaptiveWorkerCount ?? telemetry.workerCount)));
+  const totalWorkerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
   const effectiveMax = Math.max(1, Math.floor(num(telemetry.effectiveMax) || current));
   const saturationFloor = Math.max(1, Math.ceil(current * 0.75));
   const loaded = workerCount >= saturationFloor;
@@ -108,7 +109,7 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   if (!workerCount || !loaded) {
     healthyStreak = 0;
     pressureStreak = 0;
-    reason = workerCount ? 'LOW_LOAD' : 'NO_WORKERS';
+    reason = !workerCount && totalWorkerCount > 0 ? 'NON_PRODUCTION_ONLY' : (workerCount ? 'LOW_LOAD' : 'NO_WORKERS');
   } else if (localBackpressureActive) {
     healthyStreak = 0;
     pressureStreak = 0;
@@ -159,12 +160,13 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     lastTelemetry: {
       runId: runId || null,
       workerCount,
+      totalWorkerCount,
       effectiveMax,
-      actualPeakConcurrency: num(telemetry.actualPeakConcurrency),
-      effectivePeakUtilizationPct: num(telemetry.effectivePeakUtilizationPct),
-      failureRatePct: num(telemetry.failureRatePct),
+      actualPeakConcurrency: num(telemetry.adaptivePeakConcurrency ?? telemetry.actualPeakConcurrency),
+      effectivePeakUtilizationPct: num(telemetry.adaptiveEffectivePeakUtilizationPct ?? telemetry.effectivePeakUtilizationPct),
+      failureRatePct: num(telemetry.adaptiveFailureRatePct ?? telemetry.failureRatePct),
       pressureLevel: level,
-      bottleneck: clean(telemetry.bottleneck) || 'NONE'
+      bottleneck: clean(telemetry.adaptiveBottleneck || telemetry.bottleneck) || 'NONE'
     }
   });
 }
