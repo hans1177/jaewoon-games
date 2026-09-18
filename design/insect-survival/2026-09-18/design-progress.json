@@ -9,11 +9,23 @@
   "completedPhases": [],
   "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "lastSuccessfulModelCallAt": "2026-09-18T05:29:22.404Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
-  "modelHealth": {},
+  "modelHealth": {
+    "qwen2.5:1.5b": {
+      "calls": 6,
+      "successes": 1,
+      "failures": 5,
+      "timeouts": 1,
+      "jsonFailures": 4,
+      "totalMs": 1348509,
+      "lastMs": 238157,
+      "lastError": "Expected ',' or ']' after array element in JSON at position 9190 (line 182 column 6)",
+      "updatedAt": "2026-09-18T05:33:20.562Z"
+    }
+  },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T05:20:32.699Z"
+  "updatedAt": "2026-09-18T05:33:20.562Z"
 }
