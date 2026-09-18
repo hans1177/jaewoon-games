@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+    p {
+      font-size: 1em;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <p>Defense game with preserved game state, progression, and UI</p>
+    <div id="game-content">
+      <div id="player"></div>
+      <div id="enemy"></div>
+      <div id="progression"></div>
+      <div id="ui"></div>
+      <div id="restart-button"></div>
+    </div>
+  </main>
+  <script>
+    // Game logic and initialization
+    const game = {
+      player: {
+        position: { x: 0, y: 0 },
+        health: 100,
+        score: 0
+      },
+      enemy: {
+        position: { x: 0, y: 0 },
+        health: 50,
+        speed: 1
+      },
+      progression: {
+        difficulty: 1,
+        score: 0
+      },
+      ui: {
+        health: 100,
+        score: 0
+      },
+      restartButton: {
+        enabled: true
+      }
+    };
+
+    // Game initialization
+    function initGame() {
+      document.getElementById('player').innerHTML = `
+        <div class="player" style="left:${game.player.position.x}px; top:${game.player.position.y}px; width: 50px; height: 50px; background: #00ff00;"></div>
+      `;
+      document.getElementById('enemy').innerHTML = `
+        <div class="enemy" style="left:${game.enemy.position.x}px; top:${game.enemy.position.y}px; width: 50px; height: 50px; background: #ff0000;"></div>
+      `;
+      document.getElementById('progression').innerHTML = `
+        <div class="progression" style="width: 100px; height: 20px; background: #0000ff; margin: 10px;"></div>
+      `;
+      document.getElementById('ui').innerHTML = `
+        <div class="ui" style="width: 100px; height: 20px; background: #00ff00; margin: 10px;"></div>
+      `;
+      document.getElementById('restart-button').innerHTML = `
+        <button class="restart-button" style="width: 100px; height: 40px; background: #ff00ff; color: #fff; border: none; border-radius: 5px;">Restart</button>
+      `;
+    }
+
+    // Game logic
+    function updateGame() {
+      // Game logic here
+    }
+
+    // Game event handlers
+    document.getElementById('restart-button').addEventListener('click', () => {
+      game.player.health = 100;
+      game.player.score = 0;
+      game.enemy.position = { x: 0, y: 0 };
+      game.progression.difficulty = 1;
+      game.ui.health = 100;
+      game.ui.score = 0;
+      initGame();
+    });
+
+    initGame();
+  </script>
+</body>
+</html>
