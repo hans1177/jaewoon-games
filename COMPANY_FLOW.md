@@ -1184,6 +1184,17 @@ platformStrategy:
     FORTNITE_UEFN: ALWAYS_ALLOWED
   allThreePlatformsMayBeDevelopedConcurrently: true
   priorityDoesNotCreatePlatformLock: true
+  designStabilizationScheduling:
+    mode: ROBLOX_FIRST_THEN_OTHER_PLATFORMS
+    activeWhileMilestone: ROBLOX_FAST_RELEASE_STABILIZATION
+    sortKeys:
+      - ROBLOX_TARGET_FIRST
+      - OLDEST_PENDING_FIRST
+    perGameIndependentCompletion: true
+    portfolioBarrierForbidden: true
+    doesNotChangePassThreshold: true
+    doesNotOverrideHardFailures: true
+    forcePromotionForbidden: true
   roadmapPhaseEntryGatesForbidden: true
   platformDevelopmentMayStartWithoutPriorPlatformCompletion: true
   platformReleaseMayProceedWhenItsOwnEvidenceGatesPass: true
@@ -1874,7 +1885,21 @@ flows:
 
 promotion:
   DESIGN_ONLY_TO_DEVELOPMENT_CONFIRMED:
-    requires: DESIGN_BASELINE_READY
+    requires:
+      - DESIGN_BASELINE_READY
+      - STRICT_DESIGN_VERDICT_PASS
+      - STRICT_DESIGN_SCORE_AT_LEAST_80
+      - STRICT_DESIGN_HARD_FAILURES_EMPTY
+    scheduling:
+      mode: PER_GAME_INDEPENDENT
+      portfolioWidePassRequired: false
+      waitForOtherGamesForbidden: true
+      dispatchImmediatelyAfterOwnEvidencePass: true
+      robloxFirstDuringCurrentStabilization: true
+      robloxFirstAffectsSchedulingOnly: true
+      qualityGateWeakeningForbidden: true
+      forcePromotionForbidden: true
+      promotionWithoutOwnFreshEvidenceForbidden: true
   DEVELOPMENT_CONFIRMED_TO_RELEASE_CONFIRMED:
     requires:
       - DEVELOPMENT_BASELINE_READY
