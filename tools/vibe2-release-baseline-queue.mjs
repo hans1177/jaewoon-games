@@ -105,6 +105,7 @@ function ownerDirectiveSpec(task){
     'game-study-','multi-source-learning-','learning-motor-candidate-tournament:',
     'exploration-','incremental-qa-','workload:','role-result:','failure-cause:',
     'speculative-result:','speculative-winner:','speculative-variants:',
+    'candidate-','vibe2/candidate/','base-main:','package-review:',
     'repair-mode:','repair-retry:','diagnostic:','actions-run:','variant:','slot-'
   ];
   return JSON.stringify({
