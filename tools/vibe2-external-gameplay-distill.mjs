@@ -67,6 +67,51 @@ const lessons = {
     topic: 'commercial-idle-tycoon-runtime-architecture',
     tags: ['service-loop','queue-flow','income-cycle','station-upgrade','capacity-growth'],
     output: '관찰된 방치형 타이쿤 동작을 독립 구현할 때는 고객/작업 큐, 생산 또는 서비스 상태, 수익 원장, 시설 업그레이드, 수용량 성장을 분리한다. 반복 지급은 단일 경제 서비스가 소유하고 화면 애니메이션과 실제 수익 반영을 분리한다.'
+  },
+  RACING: {
+    topic: 'commercial-racing-runtime-architecture',
+    tags: ['vehicle-control','race-progress','speed-feedback','track-pressure','upgrade-loop'],
+    output: '관찰된 모바일 레이싱 동작을 독립 구현할 때는 조향·가속 입력, 차량 물리 상태, 트랙 진행, 체크포인트/순위, 업그레이드 상태를 분리한다. 입력 보조와 실제 물리 권한을 구분하고 속도 연출이 판정 상태를 직접 변경하지 않게 하며, 재시작 시 차량·트랙·타이머 상태를 명시적으로 초기화한다.'
+  },
+  SPORTS_FOOTBALL: {
+    topic: 'commercial-football-runtime-architecture',
+    tags: ['team-control','possession-state','match-clock','formation','action-feedback'],
+    output: '관찰된 모바일 축구 동작을 독립 구현할 때는 선수 선택/이동 입력, 공 소유권, 패스·슛 행동, 포메이션 상태, 경기 시간과 점수를 분리한다. 시각적 공 이동과 실제 소유권 판정을 한 책임 계층에서 일관되게 관리하고 경기 재개·교체·득점 이벤트가 중복 적용되지 않게 한다.'
+  },
+  FPS_TACTICAL: {
+    topic: 'commercial-tactical-fps-runtime-architecture',
+    tags: ['aim-input','movement-state','weapon-state','round-loop','combat-feedback'],
+    output: '관찰된 전술 FPS 동작을 독립 구현할 때는 이동, 시점/조준, 무기 상태, 피해 판정, 라운드 상태를 분리한다. 발사·재장전·무기교체의 상태 전이를 명시적으로 소유하고 네트워크 권한과 로컬 피드백을 구분하며, 라운드 종료 후 전투 상태가 다음 라운드로 누적되지 않게 한다.'
+  },
+  TOWER_DEFENSE: {
+    topic: 'commercial-tower-defense-runtime-architecture',
+    tags: ['lane-pressure','placement','wave-state','upgrade-path','enemy-counter'],
+    output: '관찰된 타워 디펜스 동작을 독립 구현할 때는 배치 가능 위치, 타워 상태, 적 경로/웨이브 상태, 자원 원장, 업그레이드 경로를 분리한다. 공격 대상 선정과 피해 판정은 결정적인 책임 계층이 소유하고 웨이브 전환·판매·업그레이드에서 비용과 효과가 중복 반영되지 않게 한다.'
+  },
+  CITY_BUILDER_SIMULATION: {
+    topic: 'commercial-city-builder-runtime-architecture',
+    tags: ['city-layout','resource-production','population-demand','upgrade-timer','service-coverage'],
+    output: '관찰된 도시 건설 동작을 독립 구현할 때는 도시 배치, 생산/소비 자원, 인구와 수요, 건설·업그레이드 타이머, 서비스 범위를 분리한다. 생산과 비용은 원장형 상태가 소유하고 건물 애니메이션과 실제 경제 상태를 분리하며 장기 타이머의 재접속 계산을 일관되게 처리한다.'
+  },
+  FARM_COZY: {
+    topic: 'commercial-farm-cozy-runtime-architecture',
+    tags: ['crop-cycle','production-chain','order-loop','inventory','expansion'],
+    output: '관찰된 농장·코지 동작을 독립 구현할 때는 작물/생산 타이머, 재고, 주문/요청, 시설 상태, 확장 진행을 분리한다. 수확과 납품 보상은 한 번만 반영하고 생산 큐와 화면 연출을 분리하며, 오프라인 경과 시간이 동일한 규칙으로 복원되게 한다.'
+  },
+  SOCIAL_PARTY: {
+    topic: 'commercial-social-party-runtime-architecture',
+    tags: ['lobby-flow','role-state','round-objective','player-interaction','vote-or-result'],
+    output: '관찰된 소셜 파티 동작을 독립 구현할 때는 로비, 플레이어 역할, 라운드 목표, 상호작용, 투표/결과 상태를 분리한다. 비공개 역할 정보와 공개 UI를 분리하고 서버 권한 상태가 라운드 전환을 소유하며 재접속이나 중복 입력으로 결과가 두 번 반영되지 않게 한다.'
+  },
+  SANDBOX_SOCIAL: {
+    topic: 'commercial-social-sandbox-runtime-architecture',
+    tags: ['avatar-state','world-interaction','social-space','collection','session-persistence'],
+    output: '관찰된 소셜 샌드박스 동작을 독립 구현할 때는 아바타 상태, 월드 상호작용, 소셜 공간 상태, 수집/꾸미기 진행, 세션 영속성을 분리한다. 로컬 표현과 서버 권한 데이터를 구분하고 여러 공간 이동과 재접속에서도 소유·진행 상태가 중복되거나 유실되지 않게 한다.'
+  },
+  RHYTHM: {
+    topic: 'commercial-rhythm-runtime-architecture',
+    tags: ['timing-window','note-stream','input-judgement','combo-state','audio-visual-sync'],
+    output: '관찰된 리듬 게임 동작을 독립 구현할 때는 오디오 시간축, 노트 스케줄, 입력 시각, 판정 윈도우, 콤보/점수 상태를 분리한다. 렌더 프레임보다 일관된 시간 기준으로 판정하고 시각 이펙트가 실제 타이밍 판정을 바꾸지 않게 하며 일시정지·재개에서 시간축 드리프트를 방지한다.'
   }
 };
 
