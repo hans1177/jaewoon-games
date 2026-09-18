@@ -21,7 +21,7 @@
 (()=>{'use strict';
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
 const ui={hpfill:document.getElementById('hpfill'),hptext:document.getElementById('hptext'),weapon:document.getElementById('weapon'),tool:document.getElementById('tool'),armor:document.getElementById('armor'),zone:document.getElementById('zone'),kills:document.getElementById('kills'),wood:document.getElementById('wood'),stone:document.getElementById('stone'),fiber:document.getElementById('fiber'),ironOre:document.getElementById('ironOre'),ironIngot:document.getElementById('ironIngot'),goldOre:document.getElementById('goldOre'),goldIngot:document.getElementById('goldIngot'),notice:document.getElementById('notice'),sheet:document.getElementById('sheet'),sheetBody:document.getElementById('sheetBody'),handTab:document.getElementById('handTab'),benchTab:document.getElementById('benchTab'),ironBenchTab:document.getElementById('ironBenchTab'),goldBenchTab:document.getElementById('goldBenchTab'),inventoryTab:document.getElementById('inventoryTab'),mapTab:document.getElementById('mapTab'),mapBtn:document.getElementById('map'),attack:document.getElementById('attack'),flash:document.getElementById('flash'),smeltPanel:document.getElementById('smeltPanel'),smeltText:document.getElementById('smeltText'),smeltBtn:document.getElementById('smeltBtn'),goldSmeltBtn:document.getElementById('goldSmeltBtn'),smeltProgress:document.getElementById('smeltProgress'),bestiaryBtn:document.getElementById('bestiary'),bossBanner:document.getElementById('bossBanner')};
-const WORLD={w:12000,h:8000},START={x:6000,y:4000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=8,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:12000,h:8000},START={x:6000,y:4000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=9,RESOURCE_RESPAWN_MS=300000;
 const CANYON_POLY=[{x:9150,y:3100},{x:11500,y:4000},{x:11500,y:6500},{x:9850,y:6500},{x:8750,y:5000}];
 const WORLD_TREE_POLY=[{x:3180,y:7150},{x:8820,y:7150},{x:8820,y:8000},{x:3180,y:8000}],WORLD_TREE={x:6000,y:7650},MAP_CELL=400;
 const VOLCANO_POLY=[{x:0,y:0},{x:12000,y:0},{x:12000,y:3200},{x:0,y:3200}];
@@ -45,18 +45,18 @@ const recipes=[
 {id:'iron-bench',name:'철 제작대',where:'bench',cost:{wood:1,stone:3,ironIngot:5},desc:'철 장비와 좋은 붕대 제작',kind:'structure'},
 {id:'iron-sword',name:'철 검',where:'ironbench',cost:{wood:1,stone:2,fiber:3,ironIngot:3},desc:'공격력 54 · 돌검의 3배',kind:'weapon',power:54,range:80,cooldown:380},
 {id:'iron-axe',name:'철 도끼',where:'ironbench',cost:{wood:1,stone:2,fiber:3,ironIngot:3},desc:'공격력 70.2 · 철 검의 1.3배 · 공격속도 1초',kind:'weapon',power:70.2,range:76,cooldown:1000},
-{id:'iron-pick',name:'철 곡괭이',where:'ironbench',cost:{wood:1,fiber:2,ironIngot:3},desc:'철광석 채집 가능 · 철 채집량 5',kind:'tool',target:'iron',mult:5},
+{id:'iron-pick',name:'철 곡괭이',where:'ironbench',cost:{wood:1,fiber:2,ironIngot:3},desc:'철광석 채집 가능 · 철 광맥은 총 3개',kind:'tool',target:'iron',mult:5},
 {id:'forest-wooden-sword',name:'숲의 목검',where:'reward',cost:{},desc:'공격력 40 · 공격 시 30% 확률로 적을 2초간 속박',kind:'weapon',power:40,range:82,cooldown:420,bindChance:.30},
 {id:'gold-bench',name:'금 제작대',where:'ironbench',cost:{wood:3,stone:5,goldIngot:8},desc:'화산 금 장비 제작대',kind:'structure'},
 {id:'good-bandage',name:'좋은 붕대',where:'ironbench',cost:{wood:1,fiber:3},desc:'1초마다 체력 10 · 5초 지속',kind:'consumable',regen:true},
 {id:'gold-greatsword',name:'금대검',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:6},desc:'공격력 189 · 철 검의 3.5배 · 느리지만 압도적',kind:'weapon',power:189,range:105,cooldown:1150},
 {id:'gold-dagger',name:'금단검',where:'goldbench',cost:{wood:1,fiber:2,goldIngot:3},desc:'공격력 68 · 공격속도 0.22초 · 짧은 사거리',kind:'weapon',power:68,range:58,cooldown:220},
 {id:'gold-axe',name:'금 도끼',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:4},desc:'나무 채집량 6배',kind:'tool',target:'tree',mult:6},
-{id:'gold-pick',name:'금 곡괭이',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:4},desc:'돌·철 채집량 강화 · 화산 금은 철 곡괭이만 가능',kind:'tool',target:'rock',mult:7}
+{id:'gold-pick',name:'금 곡괭이',where:'goldbench',cost:{wood:2,fiber:2,goldIngot:4},desc:'돌·철 채집 강화 · 화산 금은 철 곡괭이만 가능',kind:'tool',target:'rock',mult:7}
 ];
 const ITEM_TIER_2=new Set(['rune-shield','iron-sword','iron-axe','iron-pick','gold-greatsword','gold-dagger','gold-axe','gold-pick','forest-wooden-sword']);
 function itemTier(id){return ITEM_TIER_2.has(id)?2:1}
-const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2};
+const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
 const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:665,dmg:42,speed:62,r:40,color:'#3a1728',detect:700,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
@@ -64,8 +64,10 @@ giantburrower:{id:'giantburrower',name:'초거대 잠복벌레',mood:'aggressive
 sandwalker:{id:'sandwalker',name:'오아시스 샌드 워커',mood:'neutral',hp:500,dmg:44,speed:58,r:40,color:'#8f7048',detect:430,attackCooldown:1000,volcanoZone:'wasteland'},
 firegolemneutral:{id:'firegolemneutral',name:'중립 화염 골렘',mood:'neutral',hp:555,dmg:30,speed:38,r:35,color:'#9c4834',detect:430,attackCooldown:2500,volcanoZone:'core'},
 firegolemaggressive:{id:'firegolemaggressive',name:'공격적 화염 골렘',mood:'aggressive',hp:555,dmg:30,speed:42,r:35,color:'#c33d2c',detect:480,attackCooldown:2500,volcanoZone:'core'},
-firesnake:{id:'firesnake',name:'화염 뱀',mood:'aggressive',hp:300,dmg:25,speed:105,r:23,color:'#e66a2d',detect:540,attackCooldown:1000,flame:true,volcanoZone:'volcano'}};
-const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,kills:0,weapon:null,tool:null,armor:null,torch:false,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0},bench:null,furnace:null,ironBench:null,goldBench:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],enemies:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0},discovered:{canyon:false,worldtree:false,volcano:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bestiary:{},records:{lab:false,construction:false},bookCategory:'neutral',dirty:false};
+firesnake:{id:'firesnake',name:'화염 뱀',mood:'aggressive',hp:300,dmg:25,speed:105,r:23,color:'#e66a2d',detect:540,attackCooldown:1000,flame:true,volcanoZone:'volcano'},
+ironibex:{id:'ironibex',name:'철갑 산양',mood:'neutral',hp:180,dmg:18,speed:64,r:23,color:'#78868a',detect:420,attackCooldown:1200,canyon:true},
+sapdeer:{id:'sapdeer',name:'수액사슴',mood:'harmless',hp:120,dmg:0,speed:72,r:22,color:'#8bb476',detect:0,worldtree:true}};
+const state={player:{x:START.x,y:START.y,hp:100,maxHp:100,speed:185,wood:0,stone:0,fiber:0,ironOre:0,ironIngot:0,goldOre:0,goldIngot:0,kills:0,weapon:null,tool:null,armor:null,torch:false,map:false,root:0,inventory:{},attackAt:0,attackFx:0,faceX:1,faceY:0,invuln:0,regenTicks:0,regenNext:0,burnTicks:0,burnNext:0,lavaSince:0,lavaTickAt:0},bench:null,furnace:null,ironBench:null,goldBench:null,trees:[],rocks:[],fibers:[],irons:[],golds:[],enemies:[],camera:{x:0,y:0},keys:new Set(),stick:{x:0,y:0},last:performance.now(),respawns:[],craftMode:'hand',panelMode:'craft',smelting:{endAt:0,type:null,duration:0,queue:[]},discovered:{canyon:false,worldtree:false,volcano:false},explored:{},area:'surface',surfacePos:{x:START.x,y:START.y},rootTaken:false,altarUsed:false,bossSummoned:false,bossDefeated:false,bestiary:{},records:{lab:false,construction:false},bookCategory:'neutral',dirty:false};
 let noticeTimer=0,autosave=0,lastWorldTap={target:null,at:0};
 const rand=(a,b)=>a+Math.random()*(b-a),clamp=(v,a,b)=>Math.max(a,Math.min(b,v)),dist=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 function pointInPoly(x,y,poly=CANYON_POLY){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y,hit=((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi);if(hit)inside=!inside}return inside}
@@ -93,15 +95,15 @@ function discoverRegion(){
   if(r==='worldtree'&&!state.discovered.worldtree){state.discovered.worldtree=true;state.dirty=true;showNotice('발견함 세계수')}if(r==='volcano'&&!state.discovered.volcano){state.discovered.volcano=true;state.dirty=true;showNotice('발견함 화산')}
 }
 function randomCanyonPoint(){let x,y,guard=0;do{x=rand(8750,11520);y=rand(3050,6520);guard++}while((!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y))&&guard<400);return{x,y}}
-function makeNode(kind,i){let x,y;if(kind==='iron'){const p=randomCanyonPoint();x=p.x;y=p.y}else if(kind==='gold'){const p=randomVolcanoPoint('core');x=p.x;y=p.y}else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y))}const maxHp=kind==='tree'?3:kind==='rock'?4:kind==='iron'?5:kind==='gold'?6:2;return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}}
+function makeNode(kind,i){let x,y;if(kind==='iron'){const p=randomCanyonPoint();x=p.x;y=p.y}else if(kind==='gold'){const p=randomVolcanoPoint('core');x=p.x;y=p.y}else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y))}const maxHp=kind==='tree'?3:kind==='rock'?4:kind==='iron'?3:kind==='gold'?6:2;return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}}
 function spawnCreature(type,index=0,anchor=null,packId=null){let x,y;if(type.volcanoZone){const p=randomVolcanoPoint(type.volcanoZone);x=p.x;y=p.y}else if(type.worldtree){const p=randomWorldTreePoint();x=p.x;y=p.y}else if(type.canyon){if(anchor){x=clamp(anchor.x+rand(-55,55),8760,11520);y=clamp(anchor.y+rand(-55,55),3070,6480);if(!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)){x=anchor.x;y=anchor.y}}else{const p=randomCanyonPoint();x=p.x;y=p.y}}else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y))&&tries<300)}else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0}}
 function spawnAt(type,x,y,packId=null){return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0}}
 function initWorld(){
   state.trees=Array.from({length:420},(_,i)=>makeNode('tree',i));
   state.rocks=Array.from({length:340},(_,i)=>makeNode('rock',i));
   state.fibers=Array.from({length:440},(_,i)=>makeNode('fiber',i));
-  state.irons=Array.from({length:95},(_,i)=>makeNode('iron',i));
-  state.golds=Array.from({length:64},(_,i)=>makeNode('gold',i));
+  state.irons=Array.from({length:19},(_,i)=>makeNode('iron',i));
+  state.golds=Array.from({length:13},(_,i)=>makeNode('gold',i));
   state.enemies=[];
   const counts={mossboar:18,golem:10,goblin:18,shadowwolf:15,fairy:8};
   for(const [id,count] of Object.entries(counts))for(let i=0;i<count;i++)state.enemies.push(spawnCreature(creatures[id],i));
@@ -117,7 +119,7 @@ function initWorld(){
   const bearCount=3+Math.floor(Math.random()*3);
   for(let i=0;i<bearCount;i++){
     const p=randomWorldTreePoint();
-    if(dist(p.x,p.y,WORLD_TREE.x,WORLD_TREE.y)<180){p.x=clamp(p.x+300,260,5740)}
+    if(dist(p.x,p.y,WORLD_TREE.x,WORLD_TREE.y)<180){p.x=clamp(p.x+300,3260,8740)}
     state.enemies.push(spawnAt(creatures.worldtreebear,p.x,p.y,null));
   }
   const canyonPacks=[
@@ -133,6 +135,8 @@ function initWorld(){
       state.enemies.push(spawnAt(creatures.ironspirit,x,y,pack));
     }
   });
+  for(let i=0;i<4;i++){const p=randomCanyonPoint();state.enemies.push(spawnAt(creatures.ironibex,p.x,p.y,null))}
+  for(let i=0;i<5;i++){const p=randomWorldTreePoint();state.enemies.push(spawnAt(creatures.sapdeer,p.x,p.y,null))}
   const wolfSpots=[{x:4700,y:420},{x:6200,y:520},{x:7700,y:430}];
   for(const p of wolfSpots)state.enemies.push(spawnAt(creatures.firewolf,p.x,p.y));
   const burrowCount=2+Math.floor(Math.random()*3);
@@ -195,7 +199,9 @@ const BESTIARY_INFO={
  sandwalker:{cat:'neutral',desc:'오아시스와 황무지를 돌아다니는 거대한 성충. 평소에는 중립이지만 공격받으면 매우 위험하다.'},
  firegolemneutral:{cat:'neutral',desc:'화산암과 용암이 굳어 만들어진 중립 화염 골렘. 먼저 공격하지 않으면 움직임이 느긋하다.'},
  firegolemaggressive:{cat:'aggressive',desc:'핵이 불안정해진 화염 골렘. 침입자를 발견하면 무거운 주먹으로 추격한다.'},
- firesnake:{cat:'aggressive',desc:'화산 열기를 먹고 사는 화염 뱀. 물어뜯기와 함께 지속 화염을 남긴다.'}
+ firesnake:{cat:'aggressive',desc:'화산 열기를 먹고 사는 화염 뱀. 물어뜯기와 함께 지속 화염을 남긴다.'},
+ ironibex:{cat:'neutral',desc:'협곡의 철분을 먹어 뿔과 가죽이 금속처럼 단단해진 산양. 먼저 건드리지 않으면 공격하지 않는다.'},
+ sapdeer:{cat:'harmless',desc:'세계수의 수액을 먹고 사는 온순한 사슴. 싸우지 않으며 위협을 느끼면 달아난다.'}
 };
 const BOOK_LABELS={neutral:'중립',aggressive:'공격적',harmless:'무해',boss:'보스',records:'기록'};
 function unlockBestiary(id){
@@ -219,6 +225,8 @@ function bestiaryPortrait(id){
  if(id==='sandwalker')return svg('<ellipse cx="90" cy="60" rx="27" ry="39" fill="#80613d"/><ellipse cx="90" cy="31" rx="20" ry="18" fill="#9c7b51"/><path d="M68 45 L35 20 M112 45 L145 20 M66 60 L28 61 M114 60 L152 61 M68 75 L37 101 M112 75 L143 101" stroke="#6a4b2f" stroke-width="7" stroke-linecap="round"/><path d="M83 19 l-13-14 M97 19 l13-14" stroke="#b59662" stroke-width="3"/><circle cx="83" cy="30" r="3" fill="#edf0b0"/><circle cx="98" cy="30" r="3" fill="#edf0b0"/>');
  if(id==='firegolemneutral'||id==='firegolemaggressive')return svg('<polygon points="47,88 38,58 57,33 83,27 99,38 119,25 143,49 140,82 119,99 75,96" fill="'+(id==='firegolemaggressive'?'#b33928':'#8b4938')+'"/><path d="M70 61 l15-15 11 20 16-15 10 27-24 14-27-12Z" fill="#e46634"/><circle cx="78" cy="60" r="4" fill="#ffd764"/><circle cx="111" cy="59" r="4" fill="#ffd764"/><path d="M55 88 l-15 16 M130 88 l16 15" stroke="#6d2f25" stroke-width="10" stroke-linecap="round"/>');
  if(id==='firesnake')return svg('<path d="M32 83 C48 42 76 98 94 56 C109 22 142 46 148 25" fill="none" stroke="#d9572b" stroke-width="18" stroke-linecap="round"/><path d="M139 27 L159 16 L154 40Z" fill="#ef7c39"/><circle cx="150" cy="25" r="2.5" fill="#fff078"/><path d="M41 77 C61 54 74 91 91 62" fill="none" stroke="#ffb14f" stroke-width="4"/>');
+ if(id==='ironibex')return svg('<path d="M52 78 Q52 49 83 42 Q116 40 132 62 Q137 82 120 91 L68 92 Q52 88 52 78Z" fill="#738085"/><path d="M72 45 Q58 20 43 18 Q55 43 63 55 M111 44 Q124 19 139 18 Q126 43 120 55" fill="none" stroke="#c5d0d0" stroke-width="7" stroke-linecap="round"/><circle cx="81" cy="58" r="3" fill="#eef9ff"/><circle cx="108" cy="58" r="3" fill="#eef9ff"/><rect x="62" y="88" width="9" height="15" rx="3" fill="#596468"/><rect x="112" y="88" width="9" height="15" rx="3" fill="#596468"/>');
+ if(id==='sapdeer')return svg('<path d="M54 78 Q57 49 86 43 Q115 44 128 63 Q130 83 115 91 L69 91 Q54 87 54 78Z" fill="#87ac73"/><path d="M72 45 L61 25 L48 18 M72 45 L76 23 L84 14 M111 45 L119 24 L132 15 M111 45 L105 22 L98 14" stroke="#d3c39a" stroke-width="4" stroke-linecap="round"/><circle cx="82" cy="58" r="3" fill="#f1ffd7"/><circle cx="106" cy="58" r="3" fill="#f1ffd7"/><path d="M67 89 l-4 15 M116 89 l5 15" stroke="#647f56" stroke-width="6" stroke-linecap="round"/><circle cx="91" cy="74" r="7" fill="#b6da91" opacity=".7"/>');
  return svg('<circle cx="90" cy="60" r="30" fill="#777"/>')
 }
 const RECORD_TEXTS={
@@ -261,9 +269,7 @@ function gather(){
  if(best.kind==='gold'&&p.tool!=='iron-pick'){showNotice('화산 금은 철 곡괭이로만 캘 수 있어');return}
  let amount=1;
  if(tool?.target===best.kind)amount=tool.mult;
- if(best.kind==='iron'&&p.tool==='stone-pick')amount=3;
- if(best.kind==='iron'&&p.tool==='iron-pick')amount=5;
- if(best.kind==='iron'&&p.tool==='gold-pick')amount=7;
+ if(best.kind==='iron')amount=1;
  best.hp--;
  if(best.kind==='tree')p.wood+=amount;else if(best.kind==='rock')p.stone+=amount;else if(best.kind==='fiber')p.fiber+=amount;else if(best.kind==='iron')p.ironOre+=amount;else p.goldOre+=amount;
  if(best.hp<=0){best.dead=true;best.respawnAt=performance.now()+RESOURCE_RESPAWN_MS}
@@ -300,29 +306,52 @@ function damagePlayer(n){
  const p=state.player,now=performance.now();if(now<p.invuln)return;const armor=item(p.armor);n*=1-(armor?.reduce||0);p.hp=Math.max(0,p.hp-n);p.invuln=now+520;ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
 }
 function applyBurn(){const p=state.player;p.burnTicks=4;p.burnNext=performance.now()+1000;showNotice('화염 상태 · 4초')}
+function smeltDuration(kind){return kind==='gold'?10000:5000}
+function beginNextSmelt(startAt=Date.now()){
+ const q=state.smelting.queue||[];
+ if(!q.length){state.smelting={endAt:0,type:null,duration:0,queue:[]};return false}
+ const type=q.shift(),duration=smeltDuration(type);
+ state.smelting.type=type;state.smelting.duration=duration;state.smelting.endAt=startAt+duration;state.smelting.queue=q;return true
+}
 function startSmelt(kind='iron'){
  const p=state.player;if(!nearFurnace()){showNotice('화로 가까이 가야 해');return}
- if(state.smelting.endAt>Date.now()){showNotice('이미 제련 중이야');return}
- const gold=kind==='gold',oreKey=gold?'goldOre':'ironOre',duration=gold?10000:5000;
+ const gold=kind==='gold',oreKey=gold?'goldOre':'ironOre';
  if(p[oreKey]<1){showNotice(gold?'화산 금광석이 없어':'철광석이 없어');return}
- p[oreKey]--;state.smelting={endAt:Date.now()+duration,type:kind,duration};state.dirty=true;updateHud();updateSmeltUi()
+ p[oreKey]--;
+ if(state.smelting.endAt>Date.now()){
+   state.smelting.queue=Array.isArray(state.smelting.queue)?state.smelting.queue:[];
+   state.smelting.queue.push(kind);
+   const ironQ=state.smelting.queue.filter(x=>x==='iron').length;
+   showNotice(gold?'금 제련 대기줄에 추가':'철 제련 대기줄 '+ironQ+'개')
+ }else{
+   state.smelting.queue=Array.isArray(state.smelting.queue)?state.smelting.queue:[];
+   state.smelting.type=kind;state.smelting.duration=smeltDuration(kind);state.smelting.endAt=Date.now()+state.smelting.duration
+ }
+ state.dirty=true;updateHud();updateSmeltUi()
 }
 function finishSmeltIfReady(){
- if(state.smelting.endAt&&Date.now()>=state.smelting.endAt){
-   const gold=state.smelting.type==='gold';state.smelting={endAt:0,type:null,duration:0};
+ const now=Date.now();
+ if(!state.smelting.endAt)return;
+ while(state.smelting.endAt&&now>=state.smelting.endAt){
+   const finishedAt=state.smelting.endAt,gold=state.smelting.type==='gold';
    if(gold)state.player.goldIngot++;else state.player.ironIngot++;
-   state.dirty=true;updateHud();renderPanel();updateSmeltUi();showNotice(gold?'화산 금 1개 제련 완료':'철 1개 굽기 완료')
+   state.dirty=true;
+   if(!beginNextSmelt(finishedAt))break
  }
+ updateHud();renderPanel();updateSmeltUi()
 }
 function updateSmeltUi(){
- const end=state.smelting.endAt,now=Date.now(),duration=state.smelting.duration||(state.smelting.type==='gold'?10000:5000);
+ const end=state.smelting.endAt,now=Date.now(),duration=state.smelting.duration||smeltDuration(state.smelting.type),q=Array.isArray(state.smelting.queue)?state.smelting.queue:[];
+ const ironQ=q.filter(x=>x==='iron').length,goldQ=q.filter(x=>x==='gold').length;
  if(end>now){
    const remain=Math.max(0,end-now),pct=100*(1-remain/duration),gold=state.smelting.type==='gold';
-   ui.smeltText.textContent=`${gold?'화산 금':'철'} 제련 중 · ${(remain/1000).toFixed(1)}초 남음`;ui.smeltProgress.style.width=clamp(pct,0,100)+'%';ui.smeltBtn.disabled=true;ui.goldSmeltBtn.disabled=true
+   ui.smeltText.textContent=`${gold?'화산 금':'철'} 제련 중 · ${(remain/1000).toFixed(1)}초 · 대기 철 ${ironQ} / 금 ${goldQ}`;
+   ui.smeltProgress.style.width=clamp(pct,0,100)+'%';ui.smeltBtn.disabled=state.player.ironOre<1;ui.goldSmeltBtn.disabled=state.player.goldOre<1
  }else{
-   ui.smeltText.textContent=`철광석 ${state.player.ironOre} / 구운철 ${state.player.ironIngot} · 금광석 ${state.player.goldOre} / 구운금 ${state.player.goldIngot}`;
-   ui.smeltProgress.style.width='0%';ui.smeltBtn.disabled=false;ui.goldSmeltBtn.disabled=false;ui.smeltBtn.textContent='철 굽기 · 5초';ui.goldSmeltBtn.textContent='금 굽기 · 10초'
+   ui.smeltText.textContent=`철광석 ${state.player.ironOre} / 구운철 ${state.player.ironIngot} · 금광석 ${state.player.goldOre} / 구운금 ${state.player.goldIngot} · 대기 철 ${ironQ}`;
+   ui.smeltProgress.style.width='0%';ui.smeltBtn.disabled=state.player.ironOre<1;ui.goldSmeltBtn.disabled=state.player.goldOre<1
  }
+ ui.smeltBtn.textContent='철 굽기 · 5초';ui.goldSmeltBtn.textContent='금 굽기 · 10초'
 }
 function openSmelt(){if(!state.furnace||state.area!=='surface')return;if(!nearFurnace()){showNotice('화로 가까이 가야 해');return}ui.smeltPanel.classList.add('open');updateSmeltUi()}
 function enterCave(){
@@ -364,7 +393,7 @@ function handleWorldTap(e){
 function monsterTargetForIronSpirit(e){
   let best=null,bestD=e.type.detect||860;
   for(const other of state.enemies){
-    if(other===e||other.hp<=0||other.area!==e.area||other.type.id==='ironspirit'||other.type.boss)continue;
+    if(other===e||other.hp<=0||other.area!==e.area||other.type.id==='ironspirit'||other.type.boss||other.type.mood==='harmless')continue;
     const d=dist(e.x,e.y,other.x,other.y);
     if(d<bestD){best=other;bestD=d}
   }
@@ -602,7 +631,7 @@ function loadGame(){
   p.inventory=o.inventory&&typeof o.inventory==='object'?{...o.inventory}:{};p.weapon=item(o.weapon)?.kind==='weapon'?o.weapon:(o.weapon==='wood-sword'?'wood-spear':null);p.tool=item(o.tool)?.kind==='tool'?o.tool:(item(o.axe)?.kind==='tool'?o.axe:(item(o.pick)?.kind==='tool'?o.pick:null));p.armor=item(o.armor)?.kind==='armor'?o.armor:(o.shield==='stone-shield'?'rune-shield':null);p.torch=!!o.torch;p.map=!!o.map;p.root=Math.max(0,Number(o.root)||0);p.maxHp=p.armor==='forest-armor'?140:100;p.hp=clamp(Number(o.hp)||p.maxHp,1,p.maxHp);ensureEquippedInInventory();
   const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale,35,WORLD.w-35),y:clamp(Number(obj.y)*scale,35,WORLD.h-35)}};
   state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);
-  if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000)}}
+  if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>x==='iron'||x==='gold'):[]}}
   state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano};
   if(version<8&&s.explored&&typeof s.explored==='object'){state.explored={};for(const key of Object.keys(s.explored)){const [gx,gy]=key.split(',').map(Number),nx=Math.floor(((gx*300+150)*2)/MAP_CELL),ny=Math.floor(((gy*300+150)*2)/MAP_CELL);state.explored[nx+','+ny]=1}}else state.explored=s.explored&&typeof s.explored==='object'?{...s.explored}:{};
   state.area=s.area==='underground'?'underground':'surface';state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale,25,WORLD.h-25)}:{x:START.x,y:START.y};
