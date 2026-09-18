@@ -70,25 +70,25 @@ test('global selected-platform development window is deterministic, capped at tw
   const window=selectTargetPlatformDevelopmentWindow(rows);
   assert.equal(window.length,20);
   assert.deepEqual(window.map(x=>x.gameId),[
-    'g02','g04','g06','g08','g10','g12','g14','g16','g18','g20','g22',
-    'g01','g03','g05','g07','g09','g11','g13','g15','g17'
+    'g01','g02','g03','g04','g05','g06','g07','g08','g09','g10',
+    'g11','g12','g13','g14','g15','g16','g17','g18','g19','g20'
   ]);
-  assert.equal(window.filter(x=>x.selectedPlatform==='ROBLOX').length,11);
-  assert.equal(window.filter(x=>x.selectedPlatform==='UNITY').length,9);
+  assert.equal(window.filter(x=>x.selectedPlatform==='ROBLOX').length,10);
+  assert.equal(window.filter(x=>x.selectedPlatform==='UNITY').length,10);
   assert.equal(window.some(x=>x.gameId==='stale'),false);
   assert.equal(window.some(x=>x.gameId==='uefn-not-configured'),false);
 });
 
 test('verified owner Roblox release handoff enters the platform window without weakening downstream gates',()=>{
   const item={
-    gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
+    gameId:'generic-roblox-release',
     selectedPlatform:'ROBLOX',targetPlatform:'ROBLOX',enqueuedAt:'2026-09-13T00:28:35.330Z',
     productionClass:'DEVELOPMENT_CONFIRMED',status:'ACTIVE',
     currentStep:'TARGET_PLATFORM_TECHNICAL_VALIDATION',canonicalState:'TARGET_PLATFORM_REPAIR_REQUIRED',
     webValidationPassedAt:null,musicValidationPassed:false,formalImplementationPassed:false,formalImplementationVerdict:'REVISE',
     robloxVibe2VerifiedHandoff:{
       verified:true,authority:'vibe2-authoritative-studio-qa-plus-owner-release-intent',
-      requestId:'skyline-r5-release-20260916',gameId:'seed-roblox-obby-party-minigam-tower-of-hell',
+      requestId:'generic-r5-release-20260916',gameId:'generic-roblox-release',
       requestedReleaseState:'release-confirmed',sourceRevision:'a'.repeat(40),sourceTreeSha:'b'.repeat(40),candidateSha:'c'.repeat(40),qaRunId:35070803443,
     },
   };
