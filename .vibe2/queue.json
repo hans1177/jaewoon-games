@@ -3050,12 +3050,13 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
         "practice-kind:MINI_GAME_SYSTEM_DRILL",
-        "practice-domain:COMBAT"
+        "practice-domain:COMBAT",
+        "slot-dispatch:35370171671:1"
       ],
       "lastOutcome": null,
       "reservationId": "35369822402:1",
