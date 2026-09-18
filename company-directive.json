@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 44,
+  "revision": 45,
   "updatedAt": "2026-09-18",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -397,19 +397,31 @@
       "startsAtClass": "DEVELOPMENT_CONFIRMED",
       "designOnlyActive": false,
       "roleByClass": {
-        "DEVELOPMENT_CONFIRMED": "VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT",
-        "RELEASE_CONFIRMED": "PRIMARY_DEVELOPMENT_ENGINE"
+        "DEVELOPMENT_CONFIRMED": "PRIMARY_GAME_IMPLEMENTATION_ENGINE",
+        "RELEASE_CONFIRMED": "PRIMARY_GAME_IMPLEMENTATION_ENGINE"
       },
       "designOnlyRole": null,
       "designOrArtbookPrimaryAuthorInDevelopmentClass": false,
-      "designOrArtbookPrimaryAuthorInDevelopmentConfirmed": false
+      "designOrArtbookPrimaryAuthorInDevelopmentConfirmed": false,
+      "implementationOwner": true,
+      "ownsWebFirstImplementation": true,
+      "ownsSelectedPlatformImplementation": true,
+      "ownsPostReleaseGameSourceDevelopment": true
     },
     "designerBannedModels": [],
     "providerMode": "GEMINI_ONLY",
     "providerSecret": "GEMINI_API_KEY",
     "openAiProviderAllowed": false,
     "ollamaProviderAllowed": false,
-    "localModelFallbackAllowed": false
+    "localModelFallbackAllowed": false,
+    "nonVibeDevelopmentAssistant": {
+      "role": "TEACH_REVIEW_DIAGNOSE_UNBLOCK_VALIDATE",
+      "gameDevelopmentOwner": false,
+      "mayWriteGameSource": false,
+      "mayCreateGameplayFeatureCommits": false,
+      "mayModifyOrchestrationCiContractsWhenNeeded": true,
+      "ownerExplicitInstructionRequiredForAnyException": true
+    }
   },
   "classes": {
     "DESIGN_ONLY": {
@@ -768,7 +780,10 @@
     "portable-verified-platform-lessons-use-existing-v3-memory-and-canonical-distillation",
     "platform-specific-parallel-learning-pipeline-is-forbidden",
     "existing-public-web-builds-survive-class-movement",
-    "paid-ai-paid-overage-and-paid-runners-remain-forbidden"
+    "paid-ai-paid-overage-and-paid-runners-remain-forbidden",
+    "vibe2-vibe3-are-the-game-implementation-owner-from-web-first-through-selected-platform-and-post-release-development",
+    "non-vibe-ai-is-teacher-reviewer-diagnostician-unblocker-not-game-development-owner",
+    "non-vibe-ai-must-not-write-game-source-or-gameplay-feature-commits-without-explicit-owner-instruction"
   ],
   "homepageTesting": {
     "minimumWebStrictScore": 80,

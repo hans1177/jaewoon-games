@@ -163,6 +163,28 @@ test('DESIGN_ONLY keeps five distinct lead models and one Game Designer without 
   assert.doesNotMatch(multimodelWorkflow,/productionClassFromLegacyTier|NUMERIC_TIER_POLICY/);
 });
 
+test('Vibe2/Vibe3 are the machine-locked game implementation owner from Web-first onward',()=>{
+  const authority=roadmap.developmentLifecycleMachine.gameDevelopmentAuthority;
+  assert.equal(authority.authority,'VIBE_IMPLEMENTATION_OWNER');
+  assert.equal(authority.implementationOwner,'VIBE2_VIBE3');
+  assert.equal(authority.appliesFromStage,'WEB_BASE_IMPLEMENTATION');
+  assert.equal(authority.ownsWebFirstImplementation,true);
+  assert.equal(authority.ownsSelectedPlatformImplementation,true);
+  assert.equal(authority.ownsPostReleaseGameSourceDevelopment,true);
+  assert.equal(authority.nonVibeAiIsGameDevelopmentOwner,false);
+  assert.equal(authority.nonVibeAiMayWriteGameSource,false);
+  assert.equal(authority.nonVibeAiMayCreateGameplayFeatureCommits,false);
+  assert.equal(authority.nonVibeAiMayModifyOrchestrationCiContractsWhenNeeded,true);
+  assert.equal(authority.ownerExplicitInstructionRequiredForAnyException,true);
+  assert.equal(directive.ai.vibe2.implementationOwner,true);
+  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
+  assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
+  assert.equal(directive.ai.nonVibeDevelopmentAssistant.role,'TEACH_REVIEW_DIAGNOSE_UNBLOCK_VALIDATE');
+  assert.equal(directive.ai.nonVibeDevelopmentAssistant.gameDevelopmentOwner,false);
+  assert.equal(directive.ai.nonVibeDevelopmentAssistant.mayWriteGameSource,false);
+  assert.equal(directive.ai.nonVibeDevelopmentAssistant.mayCreateGameplayFeatureCommits,false);
+});
+
 test('every game requires a full approved-scope Web companion before selected target platform validation',()=>{
   const development=directive.classes.DEVELOPMENT_CONFIRMED;
   const release=directive.classes.RELEASE_CONFIRMED;
@@ -171,7 +193,7 @@ test('every game requires a full approved-scope Web companion before selected ta
   assert.equal(directive.production.webCompanion.silentFeatureOmissionForbidden,true);
   assert.equal(directive.production.approvedScopeCompletion.approvedDesignBaselineMustBeFullyImplemented,true);
   assert.equal(directive.production.approvedScopeCompletion.prototypeCannotSatisfyCompletionOrReleaseCandidateGate,true);
-  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'VALIDATION_TEST_ANALYSIS_AND_DEVELOPMENT_SUPPORT');
+  assert.equal(directive.ai.vibe2.roleByClass.DEVELOPMENT_CONFIRMED,'PRIMARY_GAME_IMPLEMENTATION_ENGINE');
   assert.equal(directive.ai.vibe2.roleByClass.RELEASE_CONFIRMED,'PRIMARY_DEVELOPMENT_ENGINE');
   assert.equal(development.executionMode,'GATED_DIRECT');
   assert.equal(development.webPurpose,'MANDATORY_FULL_APPROVED_SCOPE_WEB_COMPANION_AND_MUSIC_VALIDATION');

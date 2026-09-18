@@ -1,5 +1,5 @@
 {
-  "version": 9,
+  "version": 10,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-18",
@@ -382,6 +382,31 @@
         "quarantineExhaustedModelRequired": true,
         "resumeFromExactBlockedTask": true
       }
+    },
+    "gameDevelopmentAuthority": {
+      "authority": "VIBE_IMPLEMENTATION_OWNER",
+      "implementationOwner": "VIBE2_VIBE3",
+      "appliesFromStage": "WEB_BASE_IMPLEMENTATION",
+      "appliesToStages": [
+        "WEB_BASE_IMPLEMENTATION",
+        "WEB_RUNTIME_VALIDATION",
+        "TARGET_PLATFORM_SOURCE_BIND",
+        "TARGET_PLATFORM_RUNTIME",
+        "TARGET_PLATFORM_INDEPENDENT_QA",
+        "TARGET_PLATFORM_REGRESSION",
+        "POST_RELEASE_FOCUSED_DEVELOPMENT"
+      ],
+      "ownsWebFirstImplementation": true,
+      "ownsSelectedPlatformImplementation": true,
+      "ownsPostReleaseGameSourceDevelopment": true,
+      "nonVibeAiRole": "TEACH_REVIEW_DIAGNOSE_UNBLOCK_VALIDATE",
+      "nonVibeAiIsGameDevelopmentOwner": false,
+      "nonVibeAiMayWriteGameSource": false,
+      "nonVibeAiMayCreateGameplayFeatureCommits": false,
+      "nonVibeAiMayModifyOrchestrationCiContractsWhenNeeded": true,
+      "ownerExplicitInstructionRequiredForAnyException": true,
+      "designAuthorityUnaffected": true,
+      "designProviderPolicyUnaffected": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
