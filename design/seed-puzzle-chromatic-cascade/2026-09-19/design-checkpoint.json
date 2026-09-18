@@ -437,22 +437,22 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 5,
-      "successes": 5,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 19187,
-      "lastMs": 1961,
+      "totalMs": 22234,
+      "lastMs": 1519,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:43:02.176Z"
+      "updatedAt": "2026-09-18T15:47:23.180Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T15:09:45.460Z",
-  "updatedAt": "2026-09-18T15:43:02.179Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T15:43:02.176Z",
+  "updatedAt": "2026-09-18T15:47:23.182Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:47:23.180Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
@@ -470,5 +470,5 @@
     "preservedTaskCount": 0,
     "migratedAt": "2026-09-18T15:42:58.213Z"
   },
-  "preGateRepairGeneration": 1
+  "preGateRepairGeneration": 2
 }
