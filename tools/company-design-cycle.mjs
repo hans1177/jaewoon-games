@@ -65,12 +65,16 @@ const designLearningContext={
     recordedAt:clean(event?.recordedAt)
   }))
 };
+const latestDesignFeedbackEvent=designLearningEvents.at(-1)||null;
 const strictDesignerFeedback={
   source:'PRIOR_STRICT_DESIGN_REVIEW',
   bypassAllowed:false,
-  hardFailures:[...new Set(designLearningEvents.flatMap(event=>Array.isArray(event?.hardFailures)?event.hardFailures:[]).map(clean).filter(Boolean))],
-  rejectionReasons:designLearningEvents.flatMap(event=>Array.isArray(event?.rejectionReasons)?event.rejectionReasons:[]).slice(-20),
-  improvementTargets:designLearningEvents.flatMap(event=>Array.isArray(event?.improvementTargets)?event.improvementTargets:[]).slice(-12)
+  verdict:clean(latestDesignFeedbackEvent?.verdict)||null,
+  totalScore:Number.isFinite(Number(latestDesignFeedbackEvent?.totalScore))?Number(latestDesignFeedbackEvent.totalScore):null,
+  hardFailures:Array.isArray(latestDesignFeedbackEvent?.hardFailures)?latestDesignFeedbackEvent.hardFailures.map(clean).filter(Boolean):[],
+  rejectionReasons:Array.isArray(latestDesignFeedbackEvent?.rejectionReasons)?latestDesignFeedbackEvent.rejectionReasons:[],
+  improvementTargets:Array.isArray(latestDesignFeedbackEvent?.improvementTargets)?latestDesignFeedbackEvent.improvementTargets:[],
+  recordedAt:clean(latestDesignFeedbackEvent?.recordedAt)||null
 };
 const evidence={game,gameSeed:seed,factPack,designLearningContext,centralPolicy:'COMPANY_FLOW.md'};
 
