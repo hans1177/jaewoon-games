@@ -333,3 +333,22 @@ test('obsolete free-concept and direct prototype entrypoints remain removed',()=
   ])assert.equal(fs.existsSync(file),false,`obsolete path still exists: ${file}`);
   assert.equal(fs.existsSync('.github/workflows/company-game-seed-bootstrap.yml'),true);
 });
+
+test('DESIGN_ONLY Gemini workflow uses only centrally authorized lead and designer model pools',()=>{
+  const leadMatch=seedDesignWorkflow.match(/COMPANY_GEMINI_LEAD_MODELS:\s*'([^']+)'/);
+  const fallbackMatch=seedDesignWorkflow.match(/COMPANY_GEMINI_FALLBACK_MODELS:\s*'([^']+)'/);
+  assert.ok(leadMatch&&fallbackMatch);
+  const workflowLeads=leadMatch[1].split(',').map(v=>v.trim()).filter(Boolean);
+  const workflowFallbacks=fallbackMatch[1].split(',').map(v=>v.trim()).filter(Boolean);
+  const roles=['planning','graphics','development','qa','balance'];
+  const policyLeads=roles.map(role=>directive.ai.departmentLeadModels[role]);
+  assert.deepEqual(workflowLeads,policyLeads);
+  assert.equal(new Set(workflowLeads).size,5);
+  for(const model of workflowLeads)assert.ok(directive.ai.modelPool.includes(model),`unauthorized lead model: ${model}`);
+  const authorizedDesigner=new Set([directive.ai.gameDesigner.geminiModel,...directive.ai.gameDesigner.geminiFallbackModels]);
+  for(const model of workflowFallbacks)assert.ok(authorizedDesigner.has(model),`unauthorized designer fallback: ${model}`);
+  assert.match(design,/GEMINI_UNAUTHORIZED_LEAD_MODEL/);
+  assert.match(design,/GEMINI_UNAUTHORIZED_DESIGNER_MODEL/);
+  assert.match(design,/GEMINI_UNAUTHORIZED_DESIGNER_FALLBACK_MODEL/);
+  assert.match(seedDesignWorkflow,/GEMINI_QUOTA_GOVERNOR_UNAUTHORIZED_LEAD_MODEL/);
+});
