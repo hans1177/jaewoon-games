@@ -11,15 +11,32 @@ const readJson=relative=>JSON.parse(readText(relative));
 const flow=readText('COMPANY_FLOW.md');
 const obsoleteAgentsPath=path.join(repoRoot,'AGENTS.md');
 const directive=readJson('company-directive.json');
+const roadmap=readJson('company-learning/platform-release-roadmap.json');
 const multimodelWorkflow=readText('.github/workflows/artbook-free-department-bots.yml');
 const designCycle=readText('tools/company-design-cycle.mjs');
 const pipeline=readText('tools/artbook-production-pipeline.mjs');
 const nativeDatasetGate=readText('tools/vibe2-real-platform-dataset-gate.mjs');
 
-test('COMPANY_FLOW remains the single machine-oriented production policy source',()=>{
-  assert.equal(directive.policyDocument,'COMPANY_FLOW.md');
-  assert.match(flow,/sourceOfTruth: COMPANY_FLOW\.md/);
+test('platform-release-roadmap is the single machine execution policy source',()=>{
+  assert.equal(directive.policyDocument,'company-learning/platform-release-roadmap.json');
+  assert.equal(directive.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
+  assert.equal(directive.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(directive.humanDocumentRequired,false);
+  assert.equal(roadmap.policySource,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.machineSourceOfTruth,'company-learning/platform-release-roadmap.json');
+  assert.equal(roadmap.authority,'MACHINE_EXECUTION_CONTRACT');
+  assert.equal(roadmap.humanDocumentRequired,false);
+  assert.equal(roadmap.runtimeContractCannotCreatePolicy,true);
+  assert.equal(roadmap.legacyPolicyMirror.path,'COMPANY_FLOW.md');
+  assert.equal(roadmap.legacyPolicyMirror.authoritative,false);
+  assert.equal(roadmap.legacyPolicyMirror.requiredForExecution,false);
+  assert.equal(roadmap.legacyPolicyMirror.mayCreatePolicy,false);
+  assert.match(flow,/sourceOfTruth: company-learning\/platform-release-roadmap\.json/);
   assert.match(flow,/format: MACHINE_ORIENTED_POLICY_SPEC/);
+  assert.match(flow,/authority: LEGACY_POLICY_MIRROR/);
+  assert.match(flow,/authoritative: false/);
+  assert.match(flow,/executionRequired: false/);
+  assert.match(flow,/legacyPolicyMirror: true/);
   assert.match(flow,/humanReadableNarrativeRequired: false/);
   assert.match(flow,/ownerInstructionOverridesPolicy: true/);
   assert.match(flow,/passMinimum: 80/);
@@ -30,7 +47,6 @@ test('COMPANY_FLOW remains the single machine-oriented production policy source'
   assert.match(flow,/blockingBudgetMinutes: 10/);
   assert.equal(fs.existsSync(obsoleteAgentsPath),false);
 });
-
 test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and selected-platform policy',()=>{
   assert.equal(directive.gameSeed.enabled,true);
   assert.equal(directive.gameSeed.requiredBeforeDesignerDraft,true);
