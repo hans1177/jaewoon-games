@@ -201,6 +201,17 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(seedDesignWorkflow,/GAME_SEED_CONTINUATION_SCOPE=BATCH_ONCE_AFTER_MATRIX/);
   assert.ok((seedDesignWorkflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length>=5);
   assert.match(seedDesignWorkflow,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_SCHEDULING_MODE=/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_ROBLOX_FIRST=/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_FORCE_PROMOTION=NO/);
+  assert.match(seedDesignWorkflow,/GAME_DESIGN_PORTFOLIO_WIDE_PASS_REQUIRED=NO/);
+  assert.match(seedDesignWorkflow,/platformPriority=seed=>/);
+  assert.match(seedDesignWorkflow,/INITIAL_TARGET_PLATFORM/);
+  assert.match(seedDesignWorkflow,/Dispatch per-game promotion reconciliation on own strict PASS/);
+  assert.match(seedDesignWorkflow,/PER_GAME_PROMOTION_DISPATCH=YES/);
+  assert.match(seedDesignWorkflow,/PER_GAME_PROMOTION_FORCE=NO/);
+  assert.match(seedDesignWorkflow,/PORTFOLIO_WIDE_PASS_WAIT=NO/);
+  assert.match(seedDesignWorkflow,/WEB_DEVELOPMENT_START=NO/);
   assert.match(seedDesignWorkflow,/timeout-minutes: 45/);
   assert.match(seedDesignWorkflow,/COMPANY_MODEL_PHASE_CONCURRENCY: '2'/);
   assert.match(seedDesignWorkflow,/COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'/);
