@@ -23,6 +23,15 @@ const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||'gemi
 const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite').split(','));
 const geminiFallbackModelList=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview').split(','));
 const geminiUnavailableModels=new Map();
+function isDailyGeminiQuotaError(error){
+  return /GenerateRequestsPerDayPerProjectPerModel-FreeTier|requests per day|daily quota/i.test(clean(error?.message||error));
+}
+function kstDateForTimestamp(value){
+  const time=Date.parse(clean(value));if(!Number.isFinite(time))return '';
+  const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(time));
+  const g=t=>p.find(x=>x.type===t)?.value||'';
+  return `${g('year')}-${g('month')}-${g('day')}`;
+}
 function geminiCandidatesFor(primary){
   const ordered=uniq([primary,...geminiFallbackModelList]);
   const available=ordered.filter(model=>!geminiUnavailableModels.has(model));
@@ -112,7 +121,7 @@ const strictDesignerFeedback={
   recordedAt:clean(latestDesignFeedbackEvent?.recordedAt)||null
 };
 const evidence={game,gameSeed:seed,factPack,designLearningContext,centralPolicy:'COMPANY_FLOW.md'};
-const DESIGN_CHECKPOINT_CONTRACT_VERSION=2;
+const DESIGN_CHECKPOINT_CONTRACT_VERSION=3;
 const checkpointPath=path.join(base,'design-checkpoint.json');
 const progressPath=path.join(base,'design-progress.json');
 const policyDigest=createHash('sha256').update(fs.readFileSync('COMPANY_FLOW.md','utf8')).digest('hex');
@@ -132,7 +141,42 @@ const checkpointFingerprint=createHash('sha256').update(JSON.stringify({
 })).digest('hex');
 let designCheckpoint=readJson(checkpointPath,null);
 const checkpointReusable=designCheckpoint?.contractVersion===DESIGN_CHECKPOINT_CONTRACT_VERSION&&designCheckpoint?.fingerprint===checkpointFingerprint;
-if(!checkpointReusable){
+const checkpointV2MigrationEligible=designCheckpoint?.contractVersion===2
+  &&clean(designCheckpoint?.gameId)===gameId
+  &&clean(designCheckpoint?.date)===date
+  &&clean(designCheckpoint?.seedId)===clean(seed.seedId)
+  &&clean(designCheckpoint?.policyDigest)===policyDigest
+  &&designCheckpoint?.phases&&typeof designCheckpoint.phases==='object'
+  &&designCheckpoint?.tasks&&typeof designCheckpoint.tasks==='object'
+  &&designCheckpoint?.modelHealth&&typeof designCheckpoint.modelHealth==='object';
+if(!checkpointReusable&&checkpointV2MigrationEligible){
+  const previousEngineDigest=clean(designCheckpoint.engineDigest);
+  designCheckpoint={
+    ...designCheckpoint,
+    contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
+    fingerprint:checkpointFingerprint,
+    policyDigest,
+    engineDigest,
+    status:'IN_PROGRESS',
+    phases:designCheckpoint.phases,
+    tasks:designCheckpoint.tasks,
+    modelHealth:designCheckpoint.modelHealth,
+    slowPhases:designCheckpoint.slowPhases&&typeof designCheckpoint.slowPhases==='object'?designCheckpoint.slowPhases:{},
+    completedPhases:Array.isArray(designCheckpoint.completedPhases)?designCheckpoint.completedPhases:[],
+    checkpointMigration:{
+      fromContractVersion:2,
+      toContractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,
+      reason:'PERSIST_GEMINI_DAILY_QUARANTINE_WITHOUT_REPLAY',
+      previousEngineDigest,
+      preservedPhaseCount:Object.keys(designCheckpoint.phases).length,
+      preservedTaskCount:Object.keys(designCheckpoint.tasks).length,
+      migratedAt:new Date().toISOString()
+    },
+    updatedAt:new Date().toISOString()
+  };
+  writeJson(checkpointPath,designCheckpoint);
+  console.log(`DESIGN_CHECKPOINT_MIGRATED=V2_TO_V3|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}|replay=NO`);
+}else if(!checkpointReusable){
   designCheckpoint={contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,gameId,date,seedId:seed.seedId,fingerprint:checkpointFingerprint,policyDigest,engineDigest,status:'IN_PROGRESS',completedPhases:[],phases:{},tasks:{},modelHealth:{},slowPhases:{},currentPhase:'BOOTSTRAP',createdAt:new Date().toISOString(),updatedAt:new Date().toISOString()};
   writeJson(checkpointPath,designCheckpoint);
   console.log('DESIGN_CHECKPOINT_RESET=YES');
@@ -147,6 +191,13 @@ if(!checkpointReusable){
   designCheckpoint.updatedAt=new Date().toISOString();
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_CHECKPOINT_RESUME=YES|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}`);
+}
+for(const [rawModel,row] of Object.entries(designCheckpoint.modelHealth||{})){
+  if(kstDateForTimestamp(row?.updatedAt)!==date||!isDailyGeminiQuotaError(row?.lastError))continue;
+  const model=clean(rawModel).replace(/^gemini:/,'');
+  if(!model)continue;
+  geminiUnavailableModels.set(model,429);
+  console.log(`GEMINI_MODEL_QUARANTINE_RESTORED=${model}|status=429|scope=DAILY|${date}`);
 }
 const PROGRESS_STAGE_ORDER=['BOOTSTRAP','DESIGNER_DRAFT','PRE_GATE','PRE_GATE_REPAIR','DEPARTMENT_REVIEWS','DESIGNER_REVISION','COMPLETE'];
 function writeProgress(stage=designCheckpoint.currentPhase||'BOOTSTRAP',extra={}){
@@ -622,6 +673,13 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
         recordModelHealth(`gemini:${candidateModel}`,{success:false,elapsedMs:Date.now()-callStarted,error});
         persistDesignCheckpoint();
         const status=Number(error?.geminiStatus||0);
+        if(status===429&&isDailyGeminiQuotaError(error)){
+          quarantineGeminiModel(candidateModel,status);
+          const nextCandidate=candidates.slice(candidates.indexOf(candidateModel)+1).find(model=>!geminiUnavailableModels.has(model))||null;
+          console.log(`GEMINI_DAILY_QUOTA_EXHAUSTED=${candidateModel}|retry=NO|next=${nextCandidate||'NONE'}`);
+          console.log(`GEMINI_MODEL_FAILOVER=${requestedModel}|${candidateModel}->${nextCandidate||'NONE'}|status=${status}`);
+          break;
+        }
         const minuteRetryMs=geminiMinuteRetryDelayMs(error,candidateModel);
         if(status===429&&minuteRetryMs>0&&minuteRateRetries<2){
           minuteRateRetries+=1;
