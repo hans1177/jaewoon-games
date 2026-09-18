@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -61,19 +63,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "첫 번째 지역 정복",
-          "newGameplay": "지역 점령 후 해당 지역의 자원을 관리하는 경영 요소가 해금되어 지속적인 수익을 창출합니다.",
-          "systemImpact": "기존의 탐험 시스템에 자원 관리라는 새로운 레이어가 추가되어 경제적 선택의 폭이 넓어집니다."
+          "milestone": "고대 유적 탐사 및 유물 발굴 시스템 도입",
+          "newGameplay": "플레이어는 특정 지역에서 고대 유물을 발굴하는 미니게임을 수행하며, 이를 통해 고유한 스킬 강화 아이템을 획득하고 유적의 숨겨진 역사를 해독하는 퍼즐 요소를 경험합니다.",
+          "systemImpact": "기존의 단순 전투 및 탐험 루프에 퍼즐과 수집 요소가 결합되어, 필드 탐색의 목적성이 강화되고 캐릭터 성장 경로가 다변화됩니다."
         },
         {
-          "milestone": "동료 시스템 개방",
-          "newGameplay": "새로운 동료를 영입하여 전투 파티를 구성하고, 동료별 고유 스토리 퀘스트를 수행할 수 있습니다.",
-          "systemImpact": "전술적 연계 전투 시스템에 파티 조합이라는 변수가 추가되어 전투 전략이 더욱 복잡해집니다."
+          "milestone": "진영 간 외교 및 세력 확장 콘텐츠",
+          "newGameplay": "주요 스토리 진행에 따라 플레이어는 특정 진영의 대표가 되어 외교적 선택을 내리고, 영토를 확장하거나 동맹을 맺어 월드 맵의 세력 판도를 직접 변화시킵니다.",
+          "systemImpact": "기존의 선형적인 스토리 진행 방식에서 벗어나, 플레이어의 선택이 월드 맵의 NPC 반응과 상점 물가, 퀘스트 가용성에 직접적인 영향을 미치는 동적 세계 시스템으로 확장됩니다."
         },
         {
-          "milestone": "엔드게임 던전 해금",
-          "newGameplay": "스토리 완결 후 도전 가능한 고난도 무한 던전이 개방되어 최상위 장비를 파밍할 수 있습니다.",
-          "systemImpact": "기존의 성장 시스템이 한계를 돌파하여 캐릭터의 잠재력을 극대화하는 방향으로 확장됩니다."
+          "milestone": "심연의 균열: 무한 도전 모드",
+          "newGameplay": "스토리 완결 이후 개방되는 고난도 던전으로, 매번 무작위로 생성되는 맵과 적 조합을 돌파하며 자신의 한계를 시험하고 시즌제 보상을 획득하는 로그라이크형 플레이를 제공합니다.",
+          "systemImpact": "기존의 정적인 성장 시스템에 반복 플레이 가치를 부여하며, 엔드게임 콘텐츠로서 캐릭터 빌드 최적화와 장비 파밍의 필요성을 극대화합니다."
         }
       ],
       "failureRetryRisk": {
@@ -110,28 +112,28 @@
       "multiplayerMode": "SINGLE",
       "multiplayerExpansionDecision": "현재는 싱글 플레이어의 서사적 몰입을 최우선으로 하며, 추후 업데이트를 통해 비동기식 협동 콘텐츠를 검토할 예정입니다.",
       "technicalAssumptions": [
-        "모바일 기기의 메모리 제한을 고려하여 에셋 번들링 및 동적 로딩 시스템을 구현합니다.",
-        "데이터 무결성을 위해 클라이언트와 서버 간의 세이브 데이터 동기화 로직을 안정적으로 구축합니다."
+        "모바일 환경의 메모리 제약을 고려하여, 모든 필드 에셋은 비동기 스트리밍 방식으로 로딩하며 텍스처 압축 기술을 최적화하여 적용합니다.",
+        "클라이언트와 서버 간의 데이터 동기화는 델타 업데이트 방식을 사용하여 네트워크 트래픽을 최소화하고 데이터 무결성을 보장합니다."
       ],
       "validationQuestions": [
-        "플레이어의 선택이 세계의 상태 변화로 이어지는 과정이 직관적으로 이해되는가?",
-        "30분 세션 내에서 탐험과 전투의 균형이 적절하게 유지되는가?"
+        "플레이어의 선택이 월드 맵의 세력 판도와 NPC 반응에 즉각적이고 가시적으로 반영되는지 확인하는가?",
+        "엔드게임 콘텐츠인 심연의 균열에서 제공하는 보상이 캐릭터 빌드 다양성을 충분히 유도하는가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "운명 결정 시스템",
-          "responsibleSystem": "책임 시스템: 퀘스트 관리 엔진",
-          "validationEvidence": "선택지에 따른 변수 변화가 월드 맵 데이터에 즉각 반영되는지 로그를 통해 검증합니다."
+          "designElement": "고대 유물 발굴 퍼즐 시스템",
+          "responsibleSystem": "인터랙티브 오브젝트 관리 엔진",
+          "validationEvidence": "발굴 성공 시 획득한 아이템 데이터가 인벤토리 DB에 즉시 동기화되고, 관련 퀘스트 플래그가 정상적으로 업데이트되는지 유닛 테스트를 통해 검증합니다."
         },
         {
-          "designElement": "전술적 연계 전투",
-          "responsibleSystem": "책임 시스템: 전투 로직 엔진",
-          "validationEvidence": "콤보 성공 시 데미지 배율이 의도한 대로 적용되는지 전투 시뮬레이션을 통해 확인합니다."
+          "designElement": "진영 외교 및 세력 판도 변화",
+          "responsibleSystem": "월드 상태 관리 시스템",
+          "validationEvidence": "특정 진영 선택 후 월드 맵의 NPC 대사와 상점 아이템 목록이 의도한 대로 변경되는지 시나리오 시뮬레이션을 통해 확인합니다."
         },
         {
-          "designElement": "모바일 UI 최적화",
-          "responsibleSystem": "UI/UX 프레임워크",
-          "validationEvidence": "다양한 화면 비율의 기기에서 버튼 오작동 없이 정상적으로 입력이 처리되는지 테스트합니다."
+          "designElement": "심연의 균열 무작위 맵 생성",
+          "responsibleSystem": "절차적 던전 생성 엔진",
+          "validationEvidence": "던전 생성 알고리즘이 매번 다른 구조를 생성하면서도, 클리어 가능한 난이도 밸런스를 유지하는지 자동화된 봇 플레이 테스트를 통해 검증합니다."
         }
       ],
       "openQuestions": [
@@ -229,6 +231,110 @@
           "source": "STAGE_GATE_SCORING_V2"
         }
       ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "고대 유적 탐사 및 유물 발굴 시스템 도입",
+          "newGameplay": "플레이어는 특정 지역에서 고대 유물을 발굴하는 미니게임을 수행하며, 이를 통해 고유한 스킬 강화 아이템을 획득하고 유적의 숨겨진 역사를 해독하는 퍼즐 요소를 경험합니다.",
+          "systemImpact": "기존의 단순 전투 및 탐험 루프에 퍼즐과 수집 요소가 결합되어, 필드 탐색의 목적성이 강화되고 캐릭터 성장 경로가 다변화됩니다."
+        },
+        {
+          "milestone": "진영 간 외교 및 세력 확장 콘텐츠",
+          "newGameplay": "주요 스토리 진행에 따라 플레이어는 특정 진영의 대표가 되어 외교적 선택을 내리고, 영토를 확장하거나 동맹을 맺어 월드 맵의 세력 판도를 직접 변화시킵니다.",
+          "systemImpact": "기존의 선형적인 스토리 진행 방식에서 벗어나, 플레이어의 선택이 월드 맵의 NPC 반응과 상점 물가, 퀘스트 가용성에 직접적인 영향을 미치는 동적 세계 시스템으로 확장됩니다."
+        },
+        {
+          "milestone": "심연의 균열: 무한 도전 모드",
+          "newGameplay": "스토리 완결 이후 개방되는 고난도 던전으로, 매번 무작위로 생성되는 맵과 적 조합을 돌파하며 자신의 한계를 시험하고 시즌제 보상을 획득하는 로그라이크형 플레이를 제공합니다.",
+          "systemImpact": "기존의 정적인 성장 시스템에 반복 플레이 가치를 부여하며, 엔드게임 콘텐츠로서 캐릭터 빌드 최적화와 장비 파밍의 필요성을 극대화합니다."
+        }
+      ],
+      "technicalAssumptions": [
+        "모바일 환경의 메모리 제약을 고려하여, 모든 필드 에셋은 비동기 스트리밍 방식으로 로딩하며 텍스처 압축 기술을 최적화하여 적용합니다.",
+        "클라이언트와 서버 간의 데이터 동기화는 델타 업데이트 방식을 사용하여 네트워크 트래픽을 최소화하고 데이터 무결성을 보장합니다."
+      ],
+      "validationQuestions": [
+        "플레이어의 선택이 월드 맵의 세력 판도와 NPC 반응에 즉각적이고 가시적으로 반영되는지 확인하는가?",
+        "엔드게임 콘텐츠인 심연의 균열에서 제공하는 보상이 캐릭터 빌드 다양성을 충분히 유도하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "고대 유물 발굴 퍼즐 시스템",
+          "responsibleSystem": "인터랙티브 오브젝트 관리 엔진",
+          "validationEvidence": "발굴 성공 시 획득한 아이템 데이터가 인벤토리 DB에 즉시 동기화되고, 관련 퀘스트 플래그가 정상적으로 업데이트되는지 유닛 테스트를 통해 검증합니다."
+        },
+        {
+          "designElement": "진영 외교 및 세력 판도 변화",
+          "responsibleSystem": "월드 상태 관리 시스템",
+          "validationEvidence": "특정 진영 선택 후 월드 맵의 NPC 대사와 상점 아이템 목록이 의도한 대로 변경되는지 시나리오 시뮬레이션을 통해 확인합니다."
+        },
+        {
+          "designElement": "심연의 균열 무작위 맵 생성",
+          "responsibleSystem": "절차적 던전 생성 엔진",
+          "validationEvidence": "던전 생성 알고리즘이 매번 다른 구조를 생성하면서도, 클리어 가능한 난이도 밸런스를 유지하는지 자동화된 봇 플레이 테스트를 통해 검증합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
@@ -336,28 +442,28 @@
       "updatedAt": "2026-09-18T19:41:02.130Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 76136,
-      "lastMs": 56621,
+      "totalMs": 174659,
+      "lastMs": 98523,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T19:42:17.108Z"
+      "updatedAt": "2026-09-18T19:42:59.010Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T19:41:00.965Z",
-  "updatedAt": "2026-09-18T19:42:17.108Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T19:41:20.482Z",
+  "updatedAt": "2026-09-18T19:42:59.135Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T19:42:59.010Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }
