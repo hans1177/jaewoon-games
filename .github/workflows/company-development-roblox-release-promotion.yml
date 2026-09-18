@@ -363,6 +363,22 @@ jobs:
           item.robloxReleaseClaim=true;
           item.robloxReleasePublishedAt=stamp;
           item.robloxReleaseVersionNumber=version;
+          item.postReleaseFocusedDevelopment={
+            version:1,
+            state:'ACTIVE',
+            machineStage:'POST_RELEASE_FOCUSED_DEVELOPMENT',
+            platform:'ROBLOX',
+            runnerSlots:1,
+            activeTaskMax:1,
+            sourceRoot:`roblox-games/${item.gameId}`,
+            releaseSourceRevision:process.env.SOURCE_REVISION,
+            releaseVersionNumber:version,
+            activatedAt:item.postReleaseFocusedDevelopment?.activatedAt||stamp,
+            lastReleaseAt:stamp,
+            policy:'company-learning/platform-release-roadmap.json',
+          };
+          item.currentStep='POST_RELEASE_FOCUSED_DEVELOPMENT';
+          item.canonicalState='POST_RELEASE_FOCUSED_DEVELOPMENT';
           item.robloxLastSuccessfulStage='RELEASE_PROMOTION';
           item.robloxFailureStage=null;
           item.robloxFailureSignature=null;
@@ -378,6 +394,8 @@ jobs:
           console.log(`ROBLOX_PUBLICATION_TARGET_PERSISTED=${universeId}/${placeId}`);
           console.log(`ROBLOX_RELEASE_CLAIM=${item.robloxReleaseClaim?'YES':'NO'}`);
           console.log(`ROBLOX_RELEASE_VERSION_NUMBER=${version}`);
+          console.log('ROBLOX_POST_RELEASE_FOCUSED_DEVELOPMENT=ACTIVE');
+          console.log('ROBLOX_POST_RELEASE_FOCUSED_RUNNER_SLOTS=1');
           console.log(`ROBLOX_RELEASE_UNIVERSE_ID=${universeId}`);
           console.log(`ROBLOX_RELEASE_PLACE_ID=${placeId}`);
           NODE
