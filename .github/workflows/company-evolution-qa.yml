@@ -76,8 +76,25 @@ jobs:
           node <<'NODE'
           const fs=require('fs');
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          const policy=fs.readFileSync('COMPANY_FLOW.md','utf8');
-          if(directive.policyDocument!=='COMPANY_FLOW.md')throw new Error('machine settings must point to COMPANY_FLOW.md');
+          const machineSource='company-learning/platform-release-roadmap.json';
+          const policy=JSON.parse(fs.readFileSync(machineSource,'utf8'));
+          const legacyMirror=fs.readFileSync('COMPANY_FLOW.md','utf8');
+          if(directive.policyDocument!==machineSource||directive.machineSourceOfTruth!==machineSource)throw new Error('machine settings must point to canonical platform release roadmap');
+          if(directive.authority!=='MACHINE_EXECUTION_CONTRACT')throw new Error('company directive machine authority missing');
+          if(policy.authority!=='MACHINE_EXECUTION_CONTRACT'||policy.machineSourceOfTruth!==machineSource||policy.humanDocumentRequired!==false)throw new Error('canonical machine policy authority invalid');
+          for(const token of [
+            `sourceOfTruth: ${machineSource}`,
+            'authority: LEGACY_POLICY_MIRROR',
+            'authoritative: false',
+            'legacyPolicyMirror: true',
+            `canonicalMachineAuthority: MACHINE_EXECUTION_CONTRACT`
+          ]){
+            if(!legacyMirror.includes(token))throw new Error(`legacy policy mirror pointer missing: ${token}`);
+          }
+          const lifecycle=policy.developmentLifecycleMachine?.stages||[];
+          for(const stage of ['WEB_BASE_IMPLEMENTATION','WEB_RUNTIME_VALIDATION','TARGET_PLATFORM_RUNTIME','TARGET_PLATFORM_INDEPENDENT_QA','TARGET_PLATFORM_REGRESSION','RELEASE_PROMOTION']){
+            if(!lifecycle.includes(stage))throw new Error(`canonical lifecycle stage missing: ${stage}`);
+          }
           const roles=['planning','graphics','development','qa','balance'];
           const pool=[...new Set(directive.ai?.modelPool||[])];
           const reviewCount=Number(directive.ai?.departmentReviewModelCount||1);
@@ -87,25 +104,6 @@ jobs:
           if(directive.ai?.departmentLeadModelsMustBeDistinct!==true||distinctLeads.length<5)throw new Error('five distinct lead model gate failed');
           if(leads.some(model=>!pool.includes(model)))throw new Error('department lead model must be in modelPool');
           if(directive.ai?.departmentRepresentativeAuthoredByLead!==false||directive.ai?.departmentRebuttalAuthoredByLead!==false||directive.ai?.meeting?.designOnlyMeetingRequired!==false||Number(directive.ai?.meeting?.crossDepartmentRebuttalRounds||0)!==0)throw new Error('five direct lead no-meeting contract missing');
-          for(const token of [
-            'sourceOfTruth: COMPANY_FLOW.md',
-            'format: MACHINE_ORIENTED_POLICY_SPEC',
-            'canonicalField: productionClass',
-            'DESIGN_ONLY:',
-            'DEVELOPMENT_CONFIRMED:',
-            'RELEASE_CONFIRMED:',
-            'executionMode: GATED_DIRECT',
-            'executionMode: GATED_DIRECT_RELEASE_PRODUCTION',
-            'target: PROJECT_SELECTED_PLATFORM',
-            'buildPreflightIsNotFinalApproval: true',
-            'finalReviewMustReadSameCurrentBuildRuntimeQaEvidence: true',
-            'independentQaSeparatedFromVibe2SelfCheck: true',
-            'sourceChangeInvalidatesOldBuildValidation: true',
-            'coreDesignLock: true',
-            'finalArtbookOnlyAfterReleaseReady: true'
-          ]){
-            if(!policy.includes(token))throw new Error(`central policy missing: ${token}`);
-          }
           if(directive.production?.canonicalField!=='productionClass')throw new Error('productionClass must remain canonical');
           if(directive.production?.fixedClassCounts!==false)throw new Error('production class counts must remain dynamic');
           if(directive.production?.numericLabelsAreAliasesOnly!==true||directive.production?.numericLabelsOwnerRemappable!==true)throw new Error('numeric labels must remain remappable aliases only');
