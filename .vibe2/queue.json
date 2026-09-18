@@ -2824,12 +2824,13 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "learning-practice-only",
         "production-pass:NO",
         "practice-kind:MINI_GAME_SYSTEM_DRILL",
-        "practice-domain:ROBLOX_REMOTE_SECURITY"
+        "practice-domain:ROBLOX_REMOTE_SECURITY",
+        "slot-dispatch:35368899979:1"
       ],
       "lastOutcome": null,
       "reservationId": "35367332320:3",
