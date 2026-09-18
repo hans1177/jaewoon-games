@@ -3,9 +3,9 @@
   "gameId": "bug-defense",
   "date": "2026-09-18",
   "seedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
-  "fingerprint": "48207ff3dd3d7acdac3264fbfaf1d3baec80e2e8cfa37d8057a2bc52e3dae54b",
+  "fingerprint": "86f166a5f410d7af6705ab8c0eb30b6a54d1cbfb815850551babbb1c325802b8",
   "policyDigest": "5bb8edfcf9f558f65b3d9e97c3939aa085a73644ba9077f7d5a0341fbae4347f",
-  "engineDigest": "6479e85c265341c260e5f562da5a494aaecac93060ad65bdc0dcc453db6b481c",
+  "engineDigest": "0fa968df991094cf552456b8e6af95974e1980f3f44c31c2a87aa7e402aaa603",
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
@@ -13,134 +13,132 @@
     "designer_pre_gate_repair_1",
     "deterministic_pre_gate_after_repair_1",
     "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2",
-    "designer_pre_gate_repair_3",
-    "deterministic_pre_gate_after_repair_3"
+    "deterministic_pre_gate_after_repair_2"
   ],
   "phases": {
     "designer_draft": {
-      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.",
-      "playerFantasy": "플레이어는 정원과 숲의 생태계를 지키는 전략 사령관이 되어, 다양한 해충과 침략 곤충들의 웨이브를 맞서 싸우며 생태계의 균형을 유지하는 판타지를 체험합니다.",
-      "coreFun": "적의 웨이브 패턴을 읽고, 상성 관계가 있는 아군 곤충 수호자를 전략적으로 배치하며, 한정된 자원으로 최적의 카운터 플레이를 완성하는 전략적 재미입니다.",
+      "identity": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계된 싱글 플레이 전략 디펜스.",
+      "playerFantasy": "플레이어는 정원의 수호자이자 전략가로서 밀려오는 다양한 곤충 군단에 맞서 식물과 곤충 유닛을 배치하여 방어선을 구축하는 판타지를 경험한다.",
+      "coreFun": "적의 웨이브 패턴을 읽고 상성에 맞는 타워를 배치 및 업그레이드하여 웨이브를 방어하는 전술적 재미와 자원 관리의 성취감.",
       "coreLoop": [
-        "밀려오는 곤충 웨이브의 진격 경로와 위협 패턴을 파악한다.",
-        "자원을 소모하여 상성에 맞는 디펜서 유닛을 배치하거나 강화한다.",
-        "웨이브를 방어하고 획득한 보상으로 다음 전술적 선택을 준비한다."
+        "밀려오는 곤충 웨이브의 진입 경로와 위협 패턴을 파악한다.",
+        "제한된 자원을 소모하여 가장 효과적인 상성 디펜스 유닛을 배치하거나 업그레이드한다.",
+        "웨이브를 방어하고 획득한 보상으로 다음 방어를 위한 전략적 결정을 내린다."
       ],
       "signatureSystems": [
         {
-          "name": "생태 상성 배치 시스템",
-          "purpose": "특정 곤충 적에게 강력한 효과를 내는 카운터 디펜서 배치를 유도하여 깊이 있는 전략적 판단을 제공합니다.",
-          "playerChoice": "어떤 웨이브에 어떤 속성의 곤충 수호자를 전장에 배치할 것인가?"
+          "name": "상성 기반 방어 유닛 배치",
+          "purpose": "특정 곤충 적에게 강한 유닛을 배치하여 전략적 깊이를 제공.",
+          "playerChoice": "어떤 타이밍에 어떤 특성의 유닛을 어느 위치에 배치할 것인가."
         },
         {
-          "name": "자원 순환 포식 시스템",
-          "purpose": "적을 처치하여 얻은 유기물 자원으로 방어선을 확장하고 추가 유닛을 소모전 없이 지속 공급합니다.",
-          "playerChoice": "획득한 자원을 즉시 유닛 화력 증대에 쓸 것인가, 미래의 경제적 이득을 위해 비축할 것인가?"
+          "name": "자원 및 경제 순환 시스템",
+          "purpose": "웨이브 클리어 보상과 유닛 유지비를 통해 지속적인 경제적 선택 유도.",
+          "playerChoice": "자원을 즉시 유닛 강화에 쓸 것인지, 자원 생산 시설에 투자할 것인가."
         }
       ],
       "systemInterconnections": [
         {
-          "fromSystem": "생태 상성 배치 시스템",
-          "toSystem": "자원 순환 포식 시스템",
-          "trigger": "카운터 유닛으로 적 처치 성공 시",
-          "stateChange": "추가 자원 보너스 획득 및 자원 잔액 증가"
+          "fromSystem": "웨이브 관리 시스템",
+          "toSystem": "상성 기반 방어 유닛 배치",
+          "trigger": "새로운 적 웨이브 스폰",
+          "stateChange": "적의 속성과 경로에 따라 방어 유닛의 타겟팅 및 공격 효과 변경"
         },
         {
-          "fromSystem": "자원 순환 포식 시스템",
-          "toSystem": "생태 상성 배치 시스템",
-          "trigger": "보유 자원 임계점 도달 시",
-          "stateChange": "상위 티어 수호자 해금 및 배치 슬롯 확장"
+          "fromSystem": "상성 기반 방어 유닛 배치",
+          "toSystem": "자원 및 경제 순환 시스템",
+          "trigger": "적 처치 성공",
+          "stateChange": "플레이어에게 골드 자원 지급 및 경제 수치 상승"
         },
         {
-          "fromSystem": "생태 상성 배치 시스템",
-          "toSystem": "웨이브 진행 시스템",
-          "trigger": "유닛 배치 완료 및 웨이브 시작",
-          "stateChange": "적 이동 속도 및 체력 상태 변동"
+          "fromSystem": "자원 및 경제 순환 시스템",
+          "toSystem": "웨이브 관리 시스템",
+          "trigger": "업그레이드 구매 완료",
+          "stateChange": "다음 웨이브에 대응하는 방어력 및 화력 증가"
         }
       ],
-      "progressionDirection": "30분의 세션 동안 점진적으로 복잡해지는 적의 조합과 새로운 전장 환경을 도입하여 플레이어가 지속적인 전술적 고민과 성장의 재미를 느끼도록 유도합니다.",
+      "progressionDirection": "총 30개의 웨이브 동안 단계적으로 새로운 적 병종과 특수 환경이 도입되며, 플레이어는 해금되는 유닛과 업그레이드를 통해 방어 전략을 확장한다.",
       "progressionEconomyBalance": {
-        "progressionLoop": "웨이브 방어 성공 -> 자원 획득 -> 유닛 해금 및 강화 -> 고난도 웨이브 도전",
-        "resourceFlow": "적 처치 및 웨이브 클리어 보상으로 유기물 획득, 유닛 업그레이드 및 설치 비용으로 소모",
-        "balanceRules": "초반에는 빠른 유닛 설치로 조작에 익숙해지고, 중후반에는 자원 관리와 상성 조합의 효율성이 생존을 결정하도록 밸런스 설계"
+        "progressionLoop": "적 처치 및 웨이브 클리어 -> 골드 획득 -> 유닛 해금 및 강화 -> 고난도 웨이브 돌파",
+        "resourceFlow": "초기 기본 자원으로 시작해 적 처치 시 고정 골드 획득, 웨이브 종료 시 보너스 골드 지급",
+        "balanceRules": "유닛의 배치 비용과 업그레이드 비용은 지수 함수적으로 증가하며, 적의 체력과 공격력은 웨이브에 비례하여 상승"
       },
       "contentExpansionPlan": [
         {
-          "milestone": "1단계: 정원 입구 방어",
-          "newGameplay": "기본 진로 방어 및 기초 상성 유닛 학습",
-          "systemImpact": "기본 생태 상성 시스템 및 자원 순환 도입"
+          "milestone": "10 웨이브 달성",
+          "newGameplay": "비행형 곤충 적 등장 및 대공 방어 유닛 해금",
+          "systemImpact": "지상 중심의 배치에서 입체적인 공간 방어 전략으로 확장"
         },
         {
-          "milestone": "2단계: 연못 생태계 확장",
-          "newGameplay": "수생 곤충 추가 및 지형 제약 요소 등장",
-          "systemImpact": "배치 제약 및 신규 방어 유닛 활용"
+          "milestone": "20 웨이브 달성",
+          "newGameplay": "보스 곤충 등장 및 특수 지형 장애물 도입",
+          "systemImpact": "특정 위치 활용 제약 및 집중 화력 투사 필요"
         },
         {
-          "milestone": "3단계: 지하 군락 보스전",
-          "newGameplay": "특수 패턴을 가진 거대 보스 곤충 상대",
-          "systemImpact": "위험 압력 상승 및 특수 회복 규칙 적용"
+          "milestone": "30 웨이브 달성",
+          "newGameplay": "최종 군단 웨이브 및 무한 도전 모드 해금",
+          "systemImpact": "최적화된 빌드와 극한의 자원 관리 시험"
         }
       ],
       "failureRetryRisk": {
         "failureStates": [
-          "적 곤충이 방어선 끝까지 도달하여 기지 생명력 소진",
-          "자원 관리 실패로 인해 몰려오는 웨이브를 저지하지 못함"
+          "기지 체력이 0에 도달",
+          "제한 시간 내 보스 처치 실패"
         ],
-        "retryFlow": "패배 시 마지막으로 클리어한 웨이브 직전으로 돌아가거나 자원 재배치 기회를 얻어 재도전",
-        "riskPressure": "웨이브가 거듭될수록 적의 이동 속도와 물량이 증가하여 실시간 판단 압박 가중",
-        "recoveryRules": "실패한 웨이브에서 소모된 자원의 일부를 반환받아 유닛 배치를 재조정할 수 있는 유예 시간 제공"
+        "retryFlow": "게임 오버 화면 출력 후 해당 웨이브의 시작 시점으로 즉시 재시도 또는 메인 메뉴로 복귀",
+        "riskPressure": "웨이브가 진행될수록 적의 러시 속도가 빨라져 실시간 판단 실수 시 치명타 발생",
+        "recoveryRules": "패배 시 일부 자원을 보존하여 리빌딩 기회 제공"
       },
       "platformFitPlan": {
         "targetPlatform": "UNITY",
-        "inputModel": "터치 기반 드래그 앤 드롭(유닛 배치), 핀치 줌 및 드래그 패닝(맵 뷰어), Single Tap(유닛 선택/업그레이드). ScreenPointToRay 기반 60Hz 타일 레이캐스트 선택 및 0.08초 이하 입력 처리 지연 보장. 터치 제스처 우선순위(UI > World Drag > Panning) 적용 및 멀티터치 수동 입력 차단. 유닛 드래그 시 그리드 스냅핑 및 유효/무효 타일 즉각 컬러 하이라이팅.",
-        "performanceBudget": "URP Batcher 적용으로 렌더링 드로우 콜 45회 이하, Mipmap 적용된 텍스처 아틀라스 2048x2048 2장 이내, 곤충 유닛 150마리 동시 스폰 시 오브젝트 풀링 및 Job System/Burst Compiler 기반 경로 탐색 연산으로 CPU 점유율 30% 이하 유지, Galaxy S10 급 기기 기준 30fps 고정 타겟, 메모리 사용량 420MB 이하, Mobile Unlit/Lit Custom 셰이더 적용.",
-        "sessionConstraints": "웨이브당 45초, 스테이지당 10개 웨이브(총 7분 30초 설계). 세션 중단 및 앱 백그라운드 전환 시 PlayerPrefs 및 JSON 로컬 자동 저장 기능 제공, 세션 복구 시 해당 웨이브 시작 시점으로 재개. 30초 내 이탈 시 무효화, 정상 종료 시 메모리 리소스 즉시 해제 연동."
+        "inputModel": "모바일 터치 및 마우스 클릭 기반의 직관적인 드래그 앤 드롭 배치",
+        "performanceBudget": "모바일 저사양 기기에서 60프레임 유지, 폴리곤 수 최소화 및 최적화된 이펙트 사용",
+        "sessionConstraints": "한 판당 평균 30분 내외의 플레이 타임 보장"
       },
-      "visualDirection": "아기자기하면서도 생동감 있는 로우폴리곤 곤충 모델링과 직관적인 상성 표시 색상 활용",
-      "mobileUx": "한손 및 양손 혼용 조작 최적화: 화면 하단 22% 영역에 유닛 선택 팔레트 및 속성 스킬 버튼 배치, 버튼 최소 타겟 크기 48pt 및 버튼 간 간격 12pt 이상 확보. 유닛 배치 완료 및 터치 시 햅틱 피드백(Vibration API) 제공. 유닛 정보 및 업그레이드 UI는 하단 슬라이드업 모달 패널로 구현하여 전장 시야 가림을 최소화함. 상단 10% 영역에는 웨이브 진행률, 남은 적 수, 자원 현황을 고대비 아이콘과 최소 24pt 폰트로 표시하여 시각적 가독성 확보.",
+      "visualDirection": "아기자기하면서도 디테일한 2D/3D 하이브리드 탑뷰 스타일로 곤충과 식물의 특징을 직관적으로 표현",
+      "mobileUx": "엄지손가락 조작 영역 내에 주요 유닛 배치 및 스킬 버튼을 배치하여 한 손 플레이 지원",
       "uxAccessibilityPlan": {
-        "hudPriorities": "남은 기지 체력, 현재 자원량, 웨이브 진행도를 화면 상단에 고정 표시",
-        "touchAndInput": "오인 클릭을 방지하기 위한 충분한 버튼 간격과 드래그 시각 가이드 제공",
-        "readability": "색약자를 위한 상성 아이콘 병행 표기 및 적 이동 경로 가시화",
-        "accessibility": "게임 속도 조절 기능(배속) 및 시각 피드백 강화 옵션 제공"
+        "hudPriorities": "기지 체력, 현재 골드, 웨이브 진행도를 화면 상단에 고정하여 가독성 극대화",
+        "touchAndInput": "오터치 방지를 위한 충분한 터치 히트박스 확보",
+        "readability": "적의 종류와 상성 관계를 아이콘과 색상으로 명확히 구분",
+        "accessibility": "색약 모드 지원 및 UI 폰트 크기 조절 옵션 제공"
       },
       "artAudioDirection": {
-        "visualIdentity": "친근한 자연 환경 속 역동적인 곤충들의 전투 시각화",
-        "audioIdentity": "풀벌레 소리를 활용한 청량한 배경음악과 타격감 있는 곤충 공격 효과음",
-        "gameplayFeedbackSync": "유닛 공격 및 적 피격 시 즉각적인 사운드와 시각 이펙트 동기화"
+        "visualIdentity": "생동감 있는 자연 환경과 개성 있는 곤충 캐릭터 디자인",
+        "audioIdentity": "자연을 연상시키는 경쾌한 배경음악과 타격감 있는 효과음",
+        "gameplayFeedbackSync": "유닛 공격 및 적 피격 시 즉각적인 시청각 피드백 제공"
       },
-      "marketTargetDirection": "전략 디펜스 장르를 선호하며 모바일 환경에서 가볍고 깊이 있는 플레이를 원하는 글로벌 유저 타겟",
-      "steamExpansionDecision": "모바일 버전 안정화 이후 PC 플랫폼 확장을 위한 컨트롤러 및 해상도 최적화 검토",
+      "marketTargetDirection": "글로벌 전략 디펜스 및 캐주얼 코어 게이머층 타겟팅",
+      "steamExpansionDecision": "모바일 버전 안정화 이후 PC 스팀 플랫폼으로의 확장 검토",
       "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "싱글플레이 완성도 검증 후 향후 협동(COOP) 모드 확장 가능성 열어둠",
+      "multiplayerExpansionDecision": "향후 협동(COOP) 모드 추가 가능성 검토",
       "technicalAssumptions": [
-        "Unity 엔진의 2D/3D 오브젝트 풀링을 활용한 최적화",
-        "이벤트 기반 시스템 통신으로 결합도 최소화"
+        "유니티 엔진의 2D/3D 하이브리드 렌더링 파이프라인 활용",
+        "오브젝트 풀링을 통한 다수의 적 유닛 생성/소멸 성능 최적화"
       ],
       "validationQuestions": [
-        "상성 관계가 플레이어에게 직관적으로 이해되는가?",
-        "30분의 세션 동안 지루할 틈 없이 자원 순환과 웨이브 압력이 맞물리는가?"
+        "30분의 세션 동안 플레이어가 지루하지 않게 새로운 전략적 선택이 제공되는가?",
+        "모바일 환경에서 터치 조작이 직관적이고 오류가 없는가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "생태 상성 배치 시스템",
-          "responsibleSystem": "PlacementManager",
-          "validationEvidence": "특정 적 타입 진입 시 카운터 유닛의 데미지 2배 적용 로그 확인"
+          "designElement": "상성 기반 방어 유닛 배치",
+          "responsibleSystem": "상성 기반 방어 유닛 배치",
+          "validationEvidence": "유닛 배치 후 적 속성에 따른 데미지 증감 로그 확인"
         },
         {
-          "designElement": "자원 순환 포식 시스템",
-          "responsibleSystem": "EconomyManager",
-          "validationEvidence": "적 처치 시 자원이 정상적으로 가산되고 UI에 즉시 반영되는지 테스트"
+          "designElement": "자원 및 경제 순환",
+          "responsibleSystem": "자원 및 경제 순환 시스템",
+          "validationEvidence": "적 처치 시 골드 획득 및 업그레이드 차감 정상 작동 확인"
         },
         {
-          "designElement": "웨이브 진행 시스템",
-          "responsibleSystem": "WaveManager",
-          "validationEvidence": "설정된 웨이브 타이머에 따라 적 스폰 풀이 정확히 생성되는지 확인"
+          "designElement": "웨이브 관리",
+          "responsibleSystem": "웨이브 관리 시스템",
+          "validationEvidence": "웨이브 순서에 따른 적 스폰 및 난이도 상승 확인"
         }
       ],
       "openQuestions": [
-        "추가적인 특수 능력을 가진 지형 요소를 더 도입할 것인가?"
+        "특수 스킬 쿨타임 시스템을 도입하여 액션성을 더 강화할 것인가?"
       ]
     },
     "deterministic_pre_gate": {
@@ -173,31 +171,33 @@
         "IDEA_AND_DISTINCTNESS": 80,
         "CATEGORY_IDENTITY": 80,
         "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 60,
         "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
         "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 60,
+        "PLATFORM_FIT_DESIGN": 80,
         "UX_AND_ACCESSIBILITY_PLAN": 80,
         "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
       },
       "scores": {
         "IDEA_AND_DISTINCTNESS": 9.6,
         "CATEGORY_IDENTITY": 8,
         "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "SYSTEM_INTERCONNECTION_DESIGN": 7.2,
         "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
         "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 4.8,
+        "PLATFORM_FIT_DESIGN": 6.4,
         "UX_AND_ACCESSIBILITY_PLAN": 4.8,
         "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
       },
-      "totalScore": 78.4,
+      "totalScore": 74.6,
       "criticalAxisFailures": [
-        "PLATFORM_FIT_DESIGN"
+        "SYSTEM_INTERCONNECTION_DESIGN",
+        "CONTENT_EXPANSION_PLAN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
       ],
       "hardFailures": [
         "CRITICAL_AXIS_MINIMUM_FAIL"
@@ -206,14 +206,388 @@
         {
           "code": "CRITICAL_AXIS_MINIMUM_FAIL",
           "kind": "HARD_GATE",
-          "axis": "PLATFORM_FIT_DESIGN",
+          "axis": "SYSTEM_INTERCONNECTION_DESIGN",
           "evidenceLevel": 60,
           "minimumRequired": 75,
           "evidence": {
-            "axisScore": 4.8,
-            "axisWeight": 8
+            "axisScore": 7.2,
+            "axisWeight": 12
           },
-          "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
+          "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "웨이브 관리 시스템",
+          "toSystem": "상성 기반 방어 유닛 배치",
+          "trigger": "새로운 적 웨이브 스폰",
+          "stateChange": "적의 속성과 경로에 따라 방어 유닛의 타겟팅 및 공격 효과 변경"
+        },
+        {
+          "fromSystem": "상성 기반 방어 유닛 배치",
+          "toSystem": "자원 및 경제 순환 시스템",
+          "trigger": "적 처치 성공",
+          "stateChange": "플레이어에게 골드 자원 지급 및 경제 수치 상승"
+        },
+        {
+          "fromSystem": "자원 및 경제 순환 시스템",
+          "toSystem": "웨이브 관리 시스템",
+          "trigger": "업그레이드 구매 완료",
+          "stateChange": "다음 웨이브에 대응하는 방어력 및 화력 증가"
+        }
+      ],
+      "contentExpansionPlan": [
+        {
+          "milestone": "10 웨이브 달성",
+          "newGameplay": "비행형 곤충 적 등장 및 대공 방어 유닛 해금",
+          "systemImpact": "지상 중심의 배치에서 입체적인 공간 방어 전략으로 확장"
+        },
+        {
+          "milestone": "20 웨이브 달성",
+          "newGameplay": "보스 곤충 등장 및 특수 지형 장애물 도입",
+          "systemImpact": "특정 위치 활용 제약 및 집중 화력 투사 필요"
+        },
+        {
+          "milestone": "30 웨이브 달성",
+          "newGameplay": "최종 군단 웨이브 및 무한 도전 모드 해금",
+          "systemImpact": "최적화된 빌드와 극한의 자원 관리 시험"
+        }
+      ],
+      "technicalAssumptions": [
+        "유니티 엔진의 2D/3D 하이브리드 렌더링 파이프라인 활용",
+        "오브젝트 풀링을 통한 다수의 적 유닛 생성/소멸 성능 최적화"
+      ],
+      "validationQuestions": [
+        "30분의 세션 동안 플레이어가 지루하지 않게 새로운 전략적 선택이 제공되는가?",
+        "모바일 환경에서 터치 조작이 직관적이고 오류가 없는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "상성 기반 방어 유닛 배치",
+          "responsibleSystem": "상성 기반 방어 유닛 배치",
+          "validationEvidence": "유닛 배치 후 적 속성에 따른 데미지 증감 로그 확인"
+        },
+        {
+          "designElement": "자원 및 경제 순환",
+          "responsibleSystem": "자원 및 경제 순환 시스템",
+          "validationEvidence": "적 처치 시 골드 획득 및 업그레이드 차감 정상 작동 확인"
+        },
+        {
+          "designElement": "웨이브 관리",
+          "responsibleSystem": "웨이브 관리 시스템",
+          "validationEvidence": "웨이브 순서에 따른 적 스폰 및 난이도 상승 확인"
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 60,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 7.2,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 74.6,
+      "criticalAxisFailures": [
+        "SYSTEM_INTERCONNECTION_DESIGN",
+        "CONTENT_EXPANSION_PLAN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 7.2,
+            "axisWeight": 12
+          },
+          "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_2": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "웨이브 관리 시스템",
+          "toSystem": "상성 기반 방어 유닛 배치",
+          "trigger": "새로운 적 웨이브 스폰",
+          "stateChange": "적의 속성과 경로에 따라 방어 유닛의 타겟팅 및 공격 효과 변경"
+        },
+        {
+          "fromSystem": "상성 기반 방어 유닛 배치",
+          "toSystem": "자원 및 경제 순환 시스템",
+          "trigger": "적 처치 성공",
+          "stateChange": "플레이어에게 골드 자원 지급 및 경제 수치 상승"
+        },
+        {
+          "fromSystem": "자원 및 경제 순환 시스템",
+          "toSystem": "웨이브 관리 시스템",
+          "trigger": "업그레이드 구매 완료",
+          "stateChange": "다음 웨이브에 대응하는 방어력 및 화력 증가"
+        }
+      ],
+      "contentExpansionPlan": [
+        {
+          "milestone": "10 웨이브 달성",
+          "newGameplay": "비행형 곤충 적 등장 및 대공 방어 유닛 해금",
+          "systemImpact": "지상 중심의 배치에서 입체적인 공간 방어 전략으로 확장"
+        },
+        {
+          "milestone": "20 웨이브 달성",
+          "newGameplay": "보스 곤충 등장 및 특수 지형 장애물 도입",
+          "systemImpact": "특정 위치 활용 제약 및 집중 화력 투사 필요"
+        },
+        {
+          "milestone": "30 웨이브 달성",
+          "newGameplay": "최종 군단 웨이브 및 무한 도전 모드 해금",
+          "systemImpact": "최적화된 빌드와 극한의 자원 관리 시험"
+        }
+      ],
+      "technicalAssumptions": [
+        "유니티 엔진의 2D/3D 하이브리드 렌더링 파이프라인 활용",
+        "오브젝트 풀링을 통한 다수의 적 유닛 생성/소멸 성능 최적화"
+      ],
+      "validationQuestions": [
+        "30분의 세션 동안 플레이어가 지루하지 않게 새로운 전략적 선택이 제공되는가?",
+        "모바일 환경에서 터치 조작이 직관적이고 오류가 없는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "상성 기반 방어 유닛 배치",
+          "responsibleSystem": "상성 기반 방어 유닛 배치",
+          "validationEvidence": "유닛 배치 후 적 속성에 따른 데미지 증감 로그 확인"
+        },
+        {
+          "designElement": "자원 및 경제 순환",
+          "responsibleSystem": "자원 및 경제 순환 시스템",
+          "validationEvidence": "적 처치 시 골드 획득 및 업그레이드 차감 정상 작동 확인"
+        },
+        {
+          "designElement": "웨이브 관리",
+          "responsibleSystem": "웨이브 관리 시스템",
+          "validationEvidence": "웨이브 순서에 따른 적 스폰 및 난이도 상승 확인"
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_2": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 60,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 7.2,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
+      },
+      "totalScore": 74.6,
+      "criticalAxisFailures": [
+        "SYSTEM_INTERCONNECTION_DESIGN",
+        "CONTENT_EXPANSION_PLAN",
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 7.2,
+            "axisWeight": 12
+          },
+          "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        },
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 3,
+            "axisWeight": 5
+          },
+          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
           "bypassAllowed": false,
           "source": "STAGE_GATE_SCORING_V2"
         }
@@ -226,127 +600,72 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
-      "calls": 10,
+      "calls": 1,
       "successes": 0,
-      "failures": 10,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 1662,
-      "lastMs": 137,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 57.753489054s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.8-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"57s\" } ] } }",
-      "updatedAt": "2026-09-18T06:12:02.267Z"
+      "totalMs": 240,
+      "lastMs": 240,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.8-flash\\nPlease retry in 45.755003036s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.8-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"45s\" } ] } }",
+      "updatedAt": "2026-09-18T06:13:14.283Z"
     },
     "gemini:gemini-3.7-flash": {
-      "calls": 11,
+      "calls": 1,
       "successes": 0,
-      "failures": 11,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 8937,
-      "lastMs": 199,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 57.683358545s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.7-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"57s\" } ] } }",
-      "updatedAt": "2026-09-18T06:12:02.329Z"
+      "totalMs": 350,
+      "lastMs": 350,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 45.636698529s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"45s\" } ] } }",
+      "updatedAt": "2026-09-18T06:13:14.392Z"
     },
     "gemini:gemini-3.6-flash": {
-      "calls": 13,
-      "successes": 3,
-      "failures": 10,
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 27900,
-      "lastMs": 253,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 57.62834913s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"57s\" } ] } }",
-      "updatedAt": "2026-09-18T06:12:02.383Z"
+      "totalMs": 460,
+      "lastMs": 460,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 45.526929798s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"45s\" } ] } }",
+      "updatedAt": "2026-09-18T06:13:14.502Z"
     },
     "gemini:gemini-3.5-flash": {
-      "calls": 10,
-      "successes": 1,
-      "failures": 9,
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 5526,
-      "lastMs": 85,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 6.517784428s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"6s\" } ] } }",
-      "updatedAt": "2026-09-18T06:11:53.495Z"
+      "totalMs": 576,
+      "lastMs": 576,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 45.410753047s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"45s\" } ] } }",
+      "updatedAt": "2026-09-18T06:13:14.618Z"
     },
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 20,
-      "successes": 14,
-      "failures": 6,
-      "timeouts": 0,
-      "jsonFailures": 3,
-      "totalMs": 89024,
-      "lastMs": 1700,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 15, model: gemini-3.5-flash-lite\\nPlease retry in 58.714849422s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerMinutePerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash-lite\" }, \"quotaValue\": \"15\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"58s\" } ] } }",
-      "updatedAt": "2026-09-18T06:11:57.056Z"
-    },
-    "gemini:gemini-3.1-pro-preview": {
-      "calls": 4,
-      "successes": 0,
-      "failures": 4,
+      "calls": 3,
+      "successes": 3,
+      "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 38462,
-      "lastMs": 157,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 58.637903511s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerMinute-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\"",
-      "updatedAt": "2026-09-18T06:11:01.374Z"
-    },
-    "gemini:gemini-2.5-pro": {
-      "calls": 4,
-      "successes": 0,
-      "failures": 4,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 38796,
-      "lastMs": 224,
-      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T06:11:01.441Z"
-    },
-    "gemini:gemini-2.5-flash": {
-      "calls": 4,
-      "successes": 0,
-      "failures": 4,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 39116,
-      "lastMs": 320,
-      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T06:11:01.537Z"
-    },
-    "gemini:gemini-2.5-flash-lite": {
-      "calls": 4,
-      "successes": 0,
-      "failures": 4,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 39418,
-      "lastMs": 378,
-      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T06:11:01.595Z"
-    },
-    "gemini:gemini-3.1-flash-lite": {
-      "calls": 12,
-      "successes": 8,
-      "failures": 4,
-      "timeouts": 0,
-      "jsonFailures": 4,
-      "totalMs": 111778,
-      "lastMs": 5172,
-      "lastError": "model response is not a JSON object",
-      "updatedAt": "2026-09-18T06:11:08.562Z"
+      "totalMs": 13675,
+      "lastMs": 2409,
+      "lastError": null,
+      "updatedAt": "2026-09-18T06:13:27.725Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
-  "createdAt": "2026-09-18T06:08:49.154Z",
-  "updatedAt": "2026-09-18T06:12:02.383Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:11:57.056Z",
+  "createdAt": "2026-09-18T06:13:14.040Z",
+  "updatedAt": "2026-09-18T06:13:27.737Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:13:27.725Z",
   "geminiModelResolution": {
     "gemini-3.8-flash": "gemini-3.5-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.8-flash",
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
-  "lastError": null,
-  "failedTask": null
+  "failedTask": null,
+  "lastError": null
 }
