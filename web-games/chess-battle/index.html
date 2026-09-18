@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #222;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .chess-board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 5px;
+      width: 480px;
+      height: 480px;
+      background-color: #333;
+      border: 2px solid #555;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .square {
+      width: 60px;
+      height: 60px;
+      background-color: #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #fff;
+      border: 1px solid #666;
+    }
+    .square.selected {
+      background-color: #00ffcc;
+    }
+    .square.occupied {
+      background-color: #ff0000;
+    }
+    .square.empty {
+      background-color: #ccc;
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 18px;
+      border: 2px solid #fff;
+      background-color: #00ffcc;
+      color: #000;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .controls button:hover {
+      background-color: #00cc99;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2 Chess Battle</h1>
+    <div class="chess-board" id="chessBoard"></div>
+    <div class="controls">
+      <button onclick="makeMove('a1', 'a2')">Move</button>
+      <button onclick="makeMove('a2', 'a1')">Capture</button>
+      <button onclick="makeMove('b1', 'b2')">Move</button>
+      <button onclick="makeMove('b2', 'b1')">Capture</button>
+    </div>
+  </main>
+
+  <script>
+    const board = document.getElementById('chessBoard');
+    const controls = document.querySelectorAll('.controls button');
+
+    // Initialize chess board
+    function createBoard() {
+      for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+          const square = document.createElement('div');
+          square.className = 'square';
+          square.dataset.row = row;
+          square.dataset.col = col;
+          square.addEventListener('click', () => selectSquare(square));
+          board.appendChild(square);
+        }
+      }
+    }
+
+    function selectSquare(square) {
+      if (square.classList.contains('selected')) return;
+      square.classList.add('selected');
+      square.style.backgroundColor = '#00ffcc';
+      square.style.border = '2px solid #00cc99';
+    }
+
+    // Simulate move logic
+    function makeMove(from, to) {
+      const fromSquare = document.querySelector(`[data-row='${from[0]}'] [data-col='${from[1]}']`);
+      const toSquare = document.querySelector(`[data-row='${to[0]}'] [data-col='${to[1]}']`);
+
+      if (!fromSquare || !toSquare) return;
+
+      if (fromSquare.classList.contains('selected') && toSquare.classList.contains('empty')) {
+        fromSquare.classList.remove('selected');
+        toSquare.classList.add('selected');
+        toSquare.style.backgroundColor = '#00ffcc';
+        toSquare.style.border = '2px solid #00cc99';
+      } else if (fromSquare.classList.contains('selected') && toSquare.classList.contains('occupied')) {
+        fromSquare.classList.remove('selected');
+        toSquare.classList.remove('selected');
+        toSquare.style.backgroundColor = '#ff0000';
+        toSquare.style.border = '2px solid #ff0000';
+      } else {
+        alert('Invalid move');
+      }
+    }
+
+    // Initialize game
+    createBoard();
+  </script>
+</body>
+</html>
