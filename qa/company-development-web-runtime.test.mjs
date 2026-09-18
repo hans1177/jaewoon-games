@@ -24,16 +24,13 @@ test('preserved source repair applies bounded exact edits without whole-document
   assert.throws(()=>applyPreservedSourceEdits('<b>x</b><b>x</b>',[{search:'<b>x</b>',replacement:'<b>y</b>'}]),/VIBE2_PATCH_TARGET_AMBIGUOUS/);
 });
 
-test('Vibe2 fallback uses Gemini only with the central 75 second budget',()=>{
+test('company Web bootstrap cannot generate or repair game source with Gemini',()=>{
   const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
-  assert.match(source,/const MODEL_TIMEOUT_MS=75000;/);
-  assert.match(source,/VIBE2_GEMINI_MODEL_REQUIRED/);
-  assert.match(source,/GEMINI_API_KEY_REQUIRED/);
-  assert.match(source,/generativelanguage\.googleapis\.com\/v1beta\/models/);
-  assert.match(source,/responseJsonSchema:patchMode\?PATCH_OUTPUT_SCHEMA:OUTPUT_SCHEMA/);
-  assert.match(source,/maxOutputTokens:patchMode\?2400:8500/);
-  assert.doesNotMatch(source,/127\.0\.0\.1:11434|ollamaReady|ensureLocalVibeRuntime|ollama\s/);
-  assert.match(source,/기존 HTML 전체를 재생성하지 않고 현재 소스에 적용할 최소 exact edits만 생성한다/);
+  assert.doesNotMatch(source,/generativelanguage\.googleapis|GEMINI_API_KEY|VIBE2_GEMINI_MODEL_REQUIRED|async function callModel|buildVibePlayable/);
+  assert.match(source,/VIBE_WEB_IMPLEMENTATION_REQUIRED/);
+  assert.match(source,/GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3/);
+  assert.match(source,/NON_VIBE_GAME_SOURCE_WRITE=NO/);
+  assert.match(source,/BOOTSTRAP_SOURCE_WRITE_MODE=PRESERVE_ONLY/);
 });
 
 test('Web runtime spatial detector does not treat absent coordinates as 3D and recognizes Korean exploration input',()=>{
@@ -146,7 +143,7 @@ test('Celestial Bastion shallow tower button is rejected and returns to Vibe ins
   assert.doesNotMatch(current,/data-(?:placement-position|build-slot|tower-slot|grid-x|grid-y)/i);
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'web-celestial-repair-')),candidate=path.join(temp,'candidate');
   try{
-    await assert.rejects(()=>buildFirstPlayable({gameId:'seed-single-defense-strat-celestial-bastion',gameName:'Celestial Bastion',baseline,sourcePath:'web-games/seed-single-defense-strat-celestial-bastion',candidatePath:candidate,candidateId:'repair-test',sourceCommit:'test',model:'none'}),/VIBE2_GEMINI_MODEL_REQUIRED/);
+    await assert.rejects(()=>buildFirstPlayable({gameId:'seed-single-defense-strat-celestial-bastion',gameName:'Celestial Bastion',baseline,sourcePath:'web-games/seed-single-defense-strat-celestial-bastion',candidatePath:candidate,candidateId:'repair-test',sourceCommit:'test',model:'none'}),/VIBE_WEB_IMPLEMENTATION_REQUIRED/);
     assert.equal(fs.existsSync(path.join(candidate,'index.html')),false);
   }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });
@@ -156,23 +153,18 @@ test('unfinished deterministic genres fail closed instead of receiving the old g
   assert.throws(()=>buildContractSafePlayable({gameId:'seed-roblox-survival-horror-es-doors',gameName:'Last Lantern',baseline}),/GENRE_REAL_IMPLEMENTATION_NOT_READY:SURVIVAL_HORROR_ESCAPE/);
 });
 
-test('canonical Web bootstrap is deterministic-first and invokes Vibe2 only after deterministic paths fail',()=>{
+test('canonical Web bootstrap is validation-only and returns implementation work to Vibe',()=>{
   const source=fs.readFileSync('tools/company-development-web-bootstrap.mjs','utf8');
-  assert.match(source,/DETERMINISTIC_GENRE_IMPLEMENTATION/);
-  assert.match(source,/VIBE2_PRIMARY_MODEL_IMPLEMENTATION/);
-  assert.match(source,/VIBE2_PRESERVED_SOURCE_REPAIR/);
-  assert.match(source,/DETERMINISTIC_FIRST=YES/);
-  assert.match(source,/AI_OPTIONAL=YES/);
   const start=source.indexOf('export async function buildFirstPlayable');
-  const deterministic=source.indexOf('const fallback=buildContractSafePlayable({gameId,gameName,baseline});',start);
-  const model=source.indexOf('ensureGeminiRuntime(model);',start);
-  assert.ok(deterministic>start&&model>deterministic,'deterministic compiler must run before Gemini model setup');
-  assert.match(source,/await buildVibePlayable\(/);
-  assert.match(source,/VIBE_DEVELOPMENT_CONTEXT/);
-  assert.match(source,/repairReason/);
-  assert.match(source,/FINAL_CONTENT_DEPTH_REWORK_REQUIRED|반복 행동\/재시작 시간/);
-  assert.match(source,/SOURCE_REPAIRED=/);
-  assert.match(source,/GENRE_REAL_IMPLEMENTATION_NOT_READY/);
+  const end=source.indexOf('async function main()',start);
+  const implementation=source.slice(start,end);
+  assert.match(implementation,/SOURCE_PRESERVED_VALIDATION_ONLY/);
+  assert.match(implementation,/VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_BASE_IMPLEMENTATION/);
+  assert.match(implementation,/VIBE_WEB_IMPLEMENTATION_REQUIRED:\$\{forceRepair\?'WEB_REPAIR':'WEB_BASE_IMPLEMENTATION'\}/);
+  assert.doesNotMatch(implementation,/buildContractSafePlayable|callModel|Gemini|GEMINI|buildVibePlayable/);
+  assert.match(source,/GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3/);
+  assert.match(source,/NON_VIBE_GAME_SOURCE_WRITE=NO/);
+  assert.match(source,/MODEL_INVOKED=NO/);
 });
 
 test('legacy frozen implementation context requires an exact canonical game and seed binding',()=>{
@@ -215,7 +207,7 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(initialBlock,/materialize\(`\$\{stableSource\}\/index\.html`\)/);
   assert.match(initialBlock,/WEB_EXISTING_GAME_FRESH_REVALIDATION/);
   assert.match(failureBlock,/item\.webInitialCyclePassed===true\|\|item\.existingWebValidated===true/);
-  assert.match(failureBlock,/const repairState=rework\?'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED':'WEB_GAMEPLAY_REPAIR_REQUIRED'/);
+  assert.match(failureBlock,/const repairState='WEB_VIBE_REPAIR_REQUIRED'/);
   assert.match(failureBlock,/canonicalState:repairState/);
   assert.doesNotMatch(failureBlock,/WAITING_WEB_GAMEPLAY_REVALIDATION/);
   assert.doesNotMatch(failureBlock,/RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION/);
@@ -240,20 +232,22 @@ test('canonical DEVELOPMENT_CONFIRMED runtime returns shallow final content to V
   assert.match(finalBlock,/meaningfulGameplayMilliseconds\)<1800000/);
   assert.match(finalBlock,/homepageTestEligible:true/);
   assert.match(finalBlock,/PENDING_SELECTED_PLATFORM_BIND/);
-  assert.match(finalBlock,/WEB_STRICT_REPAIR_REQUIRED/);
+  assert.match(finalBlock,/WEB_VIBE_REPAIR_REQUIRED/);
 
   // E: final depth failure returns directly to active development repair, and next initial cycle forces Vibe source repair.
   assert.doesNotMatch(finalBlock,/company-development-web-bootstrap\.mjs/);
-  assert.match(failureBlock,/canonicalState:'WEB_CONTENT_EXPANSION_REPAIR_REQUIRED'/);
-  assert.match(failureBlock,/currentStep:'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP'/);
+  assert.match(failureBlock,/canonicalState:'WEB_VIBE_REPAIR_REQUIRED'/);
+  assert.match(failureBlock,/currentStep:'VIBE_WEB_REPAIR'/);
   assert.match(failureBlock,/webInitialCycleEvidencePath:item\.webInitialCycleEvidencePath/);
   assert.match(failureBlock,/webInitialCycleSourcePath:item\.webInitialCycleSourcePath/);
   assert.match(failureBlock,/WEB_CONTENT_RETURN_TO_DEVELOPMENT=YES/);
   assert.match(source,/--force-repair=true/);
+  assert.match(source,/WEB_RETURN_TO_VIBE=YES/);
+  assert.match(source,/WEB_VIBE_24H_DISPATCH=YES/);
   assert.match(source,/--repair-reason=FINAL_CONTENT_DEPTH_REWORK_REQUIRED/);
-  assert.match(source,/web-content-development-rework:web-worker-result-missing/);
-  assert.match(source,/Confirm lazy optional AI runtime policy/);
-  assert.match(source,/WEB_MODEL_PREP=DEFERRED_UNTIL_REQUIRED/);
+  assert.match(source,/vibe-web-development-required:web-worker-result-missing/);
+  assert.doesNotMatch(source,/Confirm lazy optional AI runtime policy/);
+  assert.match(source,/COMPANY_WEB_ROLE=VALIDATE_ROUTE_FAN_IN/);
 
   // F: direct time-stage/test-harness controls stay forbidden.
   assert.match(validator,/DIRECT_TIME_STAGE_CONTROL_FORBIDDEN/);
