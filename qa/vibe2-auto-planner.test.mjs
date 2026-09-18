@@ -28,6 +28,8 @@ function writeDevelopmentBaseline(root, gameId='demo', overrides={}) {
 
 function tempRepo() {
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-auto-plan-'));
+  fs.mkdirSync(path.join(root,'company-learning'),{recursive:true});
+  fs.writeFileSync(path.join(root,'company-learning','platform-release-roadmap.json'),JSON.stringify({authority:'MACHINE_EXECUTION_CONTRACT',machineSourceOfTruth:'company-learning/platform-release-roadmap.json',humanDocumentRequired:false},null,2),'utf8');
   const scripts=path.join(root,'unity-games/demo/Assets/Scripts');
   fs.mkdirSync(scripts,{recursive:true});
   fs.writeFileSync(path.join(scripts,'GameCore.cs'),'var regions = new Dictionary<string, object> { ["field-4"] = new object() };\npublic List<string> ownedWeapons;\n','utf8');
@@ -60,15 +62,17 @@ test('active independent work no longer blocks autonomous planning when slots re
   assert.equal(result.queue.tasks.filter(t=>['queued','running'].includes(t.status)).length<=4,true);
 });
 
-test('owner directive prevents autonomous invention even when slots are free',()=>{
+test('owner directive keeps priority while independent free slots continue refilling',()=>{
   const root=tempRepo();
   const result=planVibe2AutonomousTasks({
     status,catalog,
     queue:{maxConcurrentTasks:4,tasks:[{id:'owner',gameId:'demo',sourceRoot:'unity-games/demo',status:'running',goal:'owner',target:'unity',ownerDirective:true}]},
     repoRoot:root,maxConcurrentTasks:4
   });
-  assert.equal(result.planned,false);
-  assert.equal(result.reason,'OWNER_DIRECTIVE_ACTIVE');
+  assert.equal(result.planned,true);
+  assert.equal(result.reason,'WORK_PACKAGES_PLANNED_AROUND_OWNER_DIRECTIVES');
+  assert.equal(result.ownerDirectiveActiveCount,1);
+  assert.equal(result.tasks.every(task=>task.sourceRoot!=='unity-games/demo'),true);
 });
 
 test('planner fills independent development web source roots in one pass',()=>{
@@ -81,6 +85,32 @@ test('planner fills independent development web source roots in one pass',()=>{
   assert.ok(result.workloadTelemetry.plannedPackageCount>=1);
   assert.equal(result.cycleTarget.quantityTargetMet,true);
 });
+
+test('development-confirmed Web enters Vibe planning before homepage publication',()=>{
+  const root=tempRepo();
+  const hiddenRoot=path.join(root,'web-games/hidden-dev');
+  fs.mkdirSync(hiddenRoot,{recursive:true});
+  fs.writeFileSync(path.join(hiddenRoot,'index.html'),'<!doctype html><html><body><main>DEVELOPMENT_CONFIRMED ·</main><button class="action">Play</button></body></html>','utf8');
+  const result=planVibe2AutonomousTask({
+    status:{projects:[]},
+    catalog:{games:[{id:'hidden-dev',name:'Hidden Dev',webPath:'/web-games/hidden-dev/',hasWebArchive:true,homepageWebPlayable:false,productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE'}]},
+    queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.task.gameId,'hidden-dev');
+  assert.equal(result.task.target,'web');
+  assert.equal(result.task.ownerDirective,true);
+  assert.ok(result.task.evidence.includes('central-policy:company-learning/platform-release-roadmap.json'));
+});
+
+test('historical baseline policy metadata remains reusable under current roadmap authority',()=>{
+  const root=tempRepo();
+  const evidence=latestDevelopmentBaselineEvidence('demo',root);
+  assert.equal(evidence.ready,true);
+  assert.equal(evidence.policySource,'company-learning/platform-release-roadmap.json');
+  assert.equal(evidence.historicalPolicyDocument,'COMPANY_FLOW.md');
+});
+
 
 test('release-confirmed web archive is never an autonomous feature target',()=>{
   const root=tempRepo();
