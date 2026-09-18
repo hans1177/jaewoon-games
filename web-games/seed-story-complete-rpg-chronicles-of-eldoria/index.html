@@ -1,1 +1,83 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>엘도리아 연대기</title></head><body><script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>엘도리아 연대기</title>
+  <link rel="stylesheet" href="/web-games/_shared/styles.css">
+</head>
+<body>
+  <script>
+    window.GAME_CONFIG = {
+      id: 'seed-story-complete-rpg-chronicles-of-eldoria',
+      name: '엘도리아 연대기',
+      mode: 'eldoria',
+      hp: 100,
+      desc: '회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',
+      story: '탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'
+    };
+
+    // Initialize game state
+    let gameState = {
+      progress: 0,
+      inventory: [],
+      gold: 0,
+      currentLocation: 0,
+      isPaused: false,
+      isGameOver: false,
+      lastAction: null
+    };
+
+    // Game logic
+    function updateGame() {
+      if (gameState.isGameOver) return;
+
+      // Update progress
+      gameState.progress += 1;
+      if (gameState.progress >= 5) {
+        gameState.isGameOver = true;
+        alert('게임이 완료되었습니다!');
+        return;
+      }
+
+      // Update UI
+      document.getElementById('game-title').innerText = `장 ${gameState.progress}`;
+      document.getElementById('game-desc').innerText = gameState.story;
+      document.getElementById('gold').innerText = gameState.gold;
+      document.getElementById('inventory').innerText = gameState.inventory.join(', ');
+    }
+
+    // Handle user input
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        gameState.currentLocation = (gameState.currentLocation + e.key === 'ArrowRight') ? gameState.currentLocation + 1 : gameState.currentLocation - 1;
+        updateGame();
+      }
+    });
+
+    // Save game state
+    document.getElementById('save-btn').addEventListener('click', () => {
+      localStorage.setItem('gameState', JSON.stringify(gameState));
+    });
+
+    // Load game state
+    window.onload = () => {
+      const savedState = localStorage.getItem('gameState');
+      if (savedState) {
+        gameState = JSON.parse(savedState);
+        updateGame();
+      }
+    };
+  </script>
+  <div id="game-container">
+    <h1 id="game-title">엘도리아 연대기</h1>
+    <p id="game-desc"></p>
+    <div id="gold">0</div>
+    <div id="inventory"></div>
+    <button id="save-btn">저장</button>
+    <div id="game-location"></div>
+    <div id="game-progress"></div>
+  </div>
+</body>
+</html>

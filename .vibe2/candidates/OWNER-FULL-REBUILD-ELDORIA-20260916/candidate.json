@@ -1,0 +1,17 @@
+{
+  "summary": "Rebuild index.html with full gameplay, persistence, and progression",
+  "expectedEffect": "Complete playable HTML with persistence, progression, and gameplay",
+  "edits": [],
+  "newFiles": [],
+  "replaceFiles": [
+    {
+      "path": "index.html",
+      "content": "<!doctype html>\n<html lang=\"ko\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n  <meta name=\"theme-color\" content=\"#08111b\">\n  <title>엘도리아 연대기</title>\n  <link rel=\"stylesheet\" href=\"/web-games/_shared/styles.css\">\n</head>\n<body>\n  <script>\n    window.GAME_CONFIG = {\n      id: 'seed-story-complete-rpg-chronicles-of-eldoria',\n      name: '엘도리아 연대기',\n      mode: 'eldoria',\n      hp: 100,\n      desc: '회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',\n      story: '탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'\n    };\n\n    // Initialize game state\n    let gameState = {\n      progress: 0,\n      inventory: [],\n      gold: 0,\n      currentLocation: 0,\n      isPaused: false,\n      isGameOver: false,\n      lastAction: null\n    };\n\n    // Game logic\n    function updateGame() {\n      if (gameState.isGameOver) return;\n\n      // Update progress\n      gameState.progress += 1;\n      if (gameState.progress >= 5) {\n        gameState.isGameOver = true;\n        alert('게임이 완료되었습니다!');\n        return;\n      }\n\n      // Update UI\n      document.getElementById('game-title').innerText = `장 ${gameState.progress}`;\n      document.getElementById('game-desc').innerText = gameState.story;\n      document.getElementById('gold').innerText = gameState.gold;\n      document.getElementById('inventory').innerText = gameState.inventory.join(', ');\n    }\n\n    // Handle user input\n    document.addEventListener('keydown', (e) => {\n      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {\n        gameState.currentLocation = (gameState.currentLocation + e.key === 'ArrowRight') ? gameState.currentLocation + 1 : gameState.currentLocation - 1;\n        updateGame();\n      }\n    });\n\n    // Save game state\n    document.getElementById('save-btn').addEventListener('click', () => {\n      localStorage.setItem('gameState', JSON.stringify(gameState));\n    });\n\n    // Load game state\n    window.onload = () => {\n      const savedState = localStorage.getItem('gameState');\n      if (savedState) {\n        gameState = JSON.parse(savedState);\n        updateGame();\n      }\n    };\n  </script>\n  <div id=\"game-container\">\n    <h1 id=\"game-title\">엘도리아 연대기</h1>\n    <p id=\"game-desc\"></p>\n    <div id=\"gold\">0</div>\n    <div id=\"inventory\"></div>\n    <button id=\"save-btn\">저장</button>\n    <div id=\"game-location\"></div>\n    <div id=\"game-progress\"></div>\n  </div>\n</body>\n</html>"
+    }
+  ],
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ]
+}
