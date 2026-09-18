@@ -31,8 +31,19 @@
       "lastMs": 2119,
       "lastError": null,
       "updatedAt": "2026-09-18T07:43:30.719Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 26612,
+      "lastMs": 26612,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T07:43:57.471Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T07:43:30.859Z"
+  "updatedAt": "2026-09-18T07:43:57.471Z"
 }
