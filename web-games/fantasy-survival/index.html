@@ -64,7 +64,7 @@ const ITEM_TIER_3=new Set(['walker-greatsword','sand-armor']);
 function itemTier(id){return ITEM_TIER_3.has(id)?3:ITEM_TIER_2.has(id)?2:1}
 const CREATURE_TIERS={mossboar:1,golem:2,goblin:1,shadowwolf:1,fairy:1,ironspirit:1,worldtreebear:2,rootsovereign:4,firewolf:2,giantburrower:2,sandwalker:3,firegolemneutral:3,firegolemaggressive:3,firesnake:2,ironibex:2,sapdeer:1};
 function creatureTier(id){return CREATURE_TIERS[id]||1}
-const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:665,dmg:42,speed:62,r:40,color:'#3a1728',detect:700,boss:true,area:'underground'},
+const creatures={mossboar:{id:'mossboar',name:'이끼멧돼지',mood:'neutral',hp:72,dmg:9,speed:62,r:20,color:'#73935d',detect:430},golem:{id:'golem',name:'돌정령',mood:'neutral',hp:150,dmg:18,speed:42,r:22,color:'#9ba59b',detect:430},goblin:{id:'goblin',name:'숲 고블린',mood:'aggressive',hp:42,dmg:7,speed:72,r:18,color:'#b0c35a',detect:430},shadowwolf:{id:'shadowwolf',name:'그림자늑대',mood:'aggressive',hp:95,dmg:14,speed:90,r:19,color:'#59687c',detect:430},fairy:{id:'fairy',name:'빛의 요정',mood:'harmless',hp:26,dmg:0,speed:55,r:12,color:'#f7ef9c',detect:0},ironspirit:{id:'ironspirit',name:'철 정령',mood:'aggressive',hp:66.5,dmg:9.8,speed:135,r:18,color:'#87949c',detect:860,canyon:true},worldtreebear:{id:'worldtreebear',name:'세계수 곰',mood:'aggressive',hp:380,dmg:28,speed:70,r:30,color:'#6b4b32',detect:520,attackCooldown:1000,worldtree:true},rootsovereign:{id:'rootsovereign',name:'근원포식자 녹스바르',mood:'boss',hp:1500,dmg:50,speed:62,r:40,color:'#3a1728',detect:700,boss:true,area:'underground'},
 firewolf:{id:'firewolf',name:'화염 늑대',mood:'aggressive',hp:150,dmg:10,speed:96,r:21,color:'#d95832',detect:520,attackCooldown:1000,flame:true,volcanoZone:'colosseum'},
 giantburrower:{id:'giantburrower',name:'초거대 잠복벌레',mood:'aggressive',hp:300,dmg:20,speed:68,r:35,color:'#8c5c34',detect:460,attackCooldown:1000,burrower:true,volcanoZone:'wasteland'},
 sandwalker:{id:'sandwalker',name:'오아시스 샌드 워커',mood:'neutral',hp:500,dmg:44,speed:58,r:40,color:'#8f7048',detect:430,attackCooldown:1000,volcanoZone:'wasteland'},
@@ -452,14 +452,14 @@ function updateBoss(e,p,now){
  const d=dist(e.x,e.y,p.x,p.y);
  if(s.mode==='telegraph-normal'){
    setBossBanner('일반 공격 예고 · 피할 수 있음');
-   if(now>=s.telegraphUntil){if(d<125)damagePlayer(42);s.mode='idle';s.nextAt=now+rand(2000,3000);setBossBanner('')}
+   if(now>=s.telegraphUntil){if(d<125)damagePlayer(50);s.mode='idle';s.nextAt=now+rand(2000,3000);setBossBanner('')}
    return{vx:0,vy:0}
  }
  if(s.mode==='telegraph-triple'){
    setBossBanner('3연참 예고 · 1초 간격');
    if(now>=s.telegraphUntil&&s.hitIndex===0){s.hitIndex=1;s.nextHitAt=now}
    if(s.hitIndex>0&&s.hitIndex<=3&&now>=s.nextHitAt){
-     if(d<135)damagePlayer(20);
+     if(d<135)damagePlayer(100);
      s.hitIndex++;s.nextHitAt=now+1000;
      if(s.hitIndex>3){s.mode='idle';s.nextAt=now+rand(2000,3000);setBossBanner('')}
    }
