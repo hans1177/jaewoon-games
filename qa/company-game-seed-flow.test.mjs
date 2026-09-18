@@ -213,7 +213,7 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(design,/design-progress\.json/);
   assert.match(design,/phaseBudgetMs/);
   assert.match(design,/modelHealthPenalty/);
-  assert.match(design,/MODEL_HEALTH_SCHEDULING_ORDER=/);
+  assert.match(design,/LEAD_REVIEW_ORDER=/);
   assert.match(design,/scoreDesignGateV2/);
   assert.match(design,/deterministic_pre_gate/);
   assert.match(design,/DETERMINISTIC_PRE_GATE_V2/);
@@ -223,26 +223,31 @@ test('autonomous runtime pins verified design engines, canaries two games, and b
   assert.match(design,/DESIGNER_DRAFT_GENERATION=ONE_CALL/);
   assert.match(design,/DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT/);
   assert.match(design,/DESIGNER_REVISION_GENERATION=ONE_CALL/);
-  assert.match(design,/DESIGN_REVIEW_IMPACT_ROLES=/);
-  assert.match(design,/impactBasedFinalReview:true/);
-  assert.match(design,/runCheckpointTask\('independent_department_reviews'/);
-  assert.match(design,/adaptiveParallel\('independent_department_reviews'/);
+  assert.match(design,/DESIGN_ONLY_REVIEW_MODE=FIVE_LEAD_DIRECT/);
+  assert.match(design,/DESIGN_ONLY_MEETING=DISABLED/);
+  assert.match(design,/AI_MEETING_CALLS=0/);
+  assert.match(design,/AI_REBUTTAL_CALLS=0/);
+  assert.match(design,/runCheckpointTask\('five_lead_reviews'/);
+  assert.match(design,/adaptiveParallel\('five_lead_reviews'/);
   assert.match(design,/MODEL_PHASE_CONCURRENCY_FALLBACK=/);
   assert.match(design,/departmentDesignContext\(role,designDraft\)/);
   assert.match(design,/const fastAssistantPool=/);
   assert.match(design,/reviewsSchemaFor\(\[role\]\)/);
   assert.match(design,/AbortSignal\.timeout\(effectiveTimeoutMs\)/);
-  assert.match(design,/repeatedFiveDepartmentReview:true/);
+  assert.match(design,/fiveDepartmentLeadReviewCompleted/);
   assert.doesNotMatch(design,/Math\.max\(900,Math\.ceil\(1400\*roles\.length\/ROLES\.length\)\)/);
 });
 
-test('DESIGN_ONLY requires seed same designer revision and repeated five-lead fatal review',()=>{
+test('DESIGN_ONLY uses one designer and five direct lead reviews without meeting calls',()=>{
   assert.match(design,/GAME_SEED_REQUIRED/);
   assert.match(design,/sameModelAsDraft:true/);
-  assert.match(design,/repeatedFiveDepartmentReview:true/);
-  assert.match(design,/discardVotes\.length===ROLES\.length&&commonFatal\.length>0/);
+  assert.match(design,/fiveDepartmentLeadReviewCompleted/);
+  assert.match(design,/automaticDiscardAllowed:false/);
+  assert.match(design,/meetingRequired:false/);
+  assert.match(design,/rebuttalRounds:0/);
   assert.match(design,/marketMetricAloneUsedForDiscard:false/);
   assert.match(design,/vibe2Used:false/);
+  assert.doesNotMatch(design,/cross_department_meeting|lead_rebuttals|department_representatives/);
   assert.doesNotMatch(design,/vibe2-validator|VIBE2_VALIDATION_LEARNING/);
 });
 
