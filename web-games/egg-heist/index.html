@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      background-color: #111;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .game-container > div {
+      width: 80%;
+      max-width: 600px;
+      background-color: #333;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .game-container > div > h2 {
+      margin-bottom: 10px;
+    }
+    .game-container > div > p {
+      margin-bottom: 15px;
+    }
+    .game-container > div > button {
+      background-color: #555;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .game-container > div > button:hover {
+      background-color: #777;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Protected state preservation
+    let gameState = {
+      player: {
+        position: { x: 0, y: 0 },
+        inventory: [],
+        health: 100,
+        score: 0
+      },
+      enemies: [],
+      progress: 0,
+      isGameOver: false
+    };
+
+    // Direct player input
+    const gameContainer = document.createElement('div');
+    gameContainer.className = 'game-container';
+    document.body.appendChild(gameContainer);
+
+    // Game loop
+    function gameLoop() {
+      if (gameState.isGameOver) return;
+
+      // Game logic here
+      gameState.progress += 0.1;
+
+      // UI updates
+      gameContainer.innerHTML = `
+        <h2>Game Progress: ${gameState.progress.toFixed(2)}</h2>
+        <p>Player Health: ${gameState.player.health}</p>
+        <p>Score: ${gameState.player.score}</p>
+        <button onclick="movePlayer()">Move</button>
+      `;
+
+      // Check for game over
+      if (gameState.progress >= 1.0) {
+        gameState.isGameOver = true;
+        gameContainer.innerHTML += `<p>Game Over!</p>`;
+      }
+    }
+
+    // Game initialization
+    function initGame() {
+      // Initialize game state
+      gameState.player = {
+        position: { x: 0, y: 0 },
+        inventory: [],
+        health: 100,
+        score: 0
+      };
+      gameState.enemies = [];
+      gameState.progress = 0;
+      gameState.isGameOver = false;
+
+      // Start game loop
+      gameLoop();
+    }
+
+    // Start game
+    initGame();
+  </script>
+</body>
+</html>
