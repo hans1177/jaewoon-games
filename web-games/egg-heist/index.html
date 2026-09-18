@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #222;
+      color: #fff;
+    }
+    main {
+      padding: 20px;
+      background-color: #111;
+      min-height: 100vh;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .game-container > div {
+      width: 100%;
+      max-width: 600px;
+      background-color: #333;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+    .game-container > div > h2 {
+      margin-bottom: 10px;
+    }
+    .game-container > div > p {
+      margin-bottom: 20px;
+    }
+    .game-container > div > button {
+      background-color: #555;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .game-container > div > button:hover {
+      background-color: #777;
+    }
+  </style>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Protected state preservation
+    const protectedState = {
+      player: {
+        name: "Player",
+        health: 100,
+        inventory: [],
+        progress: 0
+      },
+      game: {
+        title: "Vibe2",
+        difficulty: "easy",
+        state: "start"
+      }
+    };
+
+    // Full gameplay loop
+    function startGame() {
+      const gameContainer = document.querySelector('.game-container');
+      gameContainer.innerHTML = `
+        <h1>Vibe2</h1>
+        <div>
+          <h2>잠입</h2>
+          <p>잠입을 통해 알을 획득하세요.</p>
+          <button onclick="startAlStealing()">알 획득</button>
+        </div>
+        <div>
+          <h2>위험 증가</h2>
+          <p>위험을 줄이기 위해 조치를 취하세요.</p>
+          <button onclick="increaseRisk()">위험 증가</button>
+        </div>
+        <div>
+          <h2>추격</h2>
+          <p>추격을 방지하기 위해 조치를 취하세요.</p>
+          <button onclick="preventChase()">추격 방지</button>
+        </div>
+        <div>
+          <h2>탈출</h2>
+          <p>탈출을 위해 조치를 취하세요.</p>
+          <button onclick="escape()">탈출</button>
+        </div>
+      `;
+    }
+
+    function startAlStealing() {
+      protectedState.player.inventory.push("알");
+      protectedState.game.state = "al_stealing";
+    }
+
+    function increaseRisk() {
+      protectedState.player.health -= 10;
+      protectedState.game.state = "risk_increase";
+    }
+
+    function preventChase() {
+      protectedState.game.state = "chase_prevention";
+    }
+
+    function escape() {
+      protectedState.player.health = 100;
+      protectedState.game.state = "escape";
+    }
+
+    // Direct player input
+    document.querySelector('button').addEventListener('click', function() {
+      const button = this;
+      const action = button.textContent;
+      if (action === "알 획득") {
+        startAlStealing();
+      } else if (action === "위험 증가") {
+        increaseRisk();
+      } else if (action === "추격 방지") {
+        preventChase();
+      } else if (action === "탈출") {
+        escape();
+      }
+    });
+
+    // Protected state preservation
+    if (protectedState.game.state === "start") {
+      startGame();
+    }
+  </script>
+</body>
+</html>
