@@ -115,8 +115,31 @@ jobs:
             if(designScheduling.mode!=='ROBLOX_FIRST_THEN_OTHER_PLATFORMS')return 0;
             return String(seed?.INITIAL_TARGET_PLATFORM||'').trim().toUpperCase()==='ROBLOX'?0:1;
           };
+          const checkpointResumePriority=seed=>{
+            const gameRoot=path.join('design',String(seed?.gameId||''));
+            if(!fs.existsSync(gameRoot))return 1;
+            try{
+              const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
+              for(const date of dates){
+                const checkpointPath=path.join(gameRoot,date,'design-checkpoint.json');
+                if(!fs.existsSync(checkpointPath))continue;
+                const checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));
+                const checkpointAt=Date.parse(checkpoint.updatedAt||checkpoint.lastSuccessfulModelCallAt||checkpoint.createdAt||'')||0;
+                if(resetAt){
+                  if(checkpointAt&&checkpointAt<resetAt)continue;
+                  if(!checkpointAt&&date<=resetDate)continue;
+                }
+                const status=String(checkpoint.status||'').trim().toUpperCase();
+                if(!status)continue;
+                if(['COMPLETE','PASS','DONE','DESIGN_BASELINE_READY'].includes(status))return 1;
+                return 0;
+              }
+            }catch{}
+            return 1;
+          };
           const pending=active.filter(seed=>!strictPassFor(seed)).sort((a,b)=>
             platformPriority(a)-platformPriority(b)||
+            checkpointResumePriority(a)-checkpointResumePriority(b)||
             String(a.createdAt||'').localeCompare(String(b.createdAt||''))||
             String(a.gameId||'').localeCompare(String(b.gameId||''))
           ).slice(0,designWipMax);
