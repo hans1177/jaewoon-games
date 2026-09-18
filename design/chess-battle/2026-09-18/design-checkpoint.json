@@ -6,10 +6,12 @@
   "fingerprint": "0a7e276bcbea6396f6d6d9e8353c5a5d781511aeb2b43e1d93b2cfe8051e8a7b",
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
   "engineDigest": "fb57cc31b517538b876d9f42ad117d843c7ec529d6d7f806549a1614a65ee57a",
-  "status": "IN_PROGRESS",
+  "status": "COMPLETE",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "five_lead_reviews",
+    "designer_revision"
   ],
   "phases": {
     "designer_draft": {
@@ -196,6 +198,233 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "five_lead_reviews": {
+      "balance": {
+        "keep": [
+          "체스 고유의 이동 규칙과 턴 제한을 결합한 퍼즐식 보드 설계 및 턴 수 제한을 통한 긴장감 유지"
+        ],
+        "fix": [
+          "강화 수치에 따른 밸런스 붕괴를 막기 위해 유닛 강화 시 공격력 대신 유틸리티 및 쿨타임 감소 위주로 조정"
+        ],
+        "add": [
+          "턴당 획득하는 전술 포인트의 최대치 제한 및 유닛별 스킬 소모 비용의 차등 적용 규칙 추가"
+        ],
+        "risks": [
+          "유닛 강화로 인한 스펙 인플레이션 발생 시 체스 특유의 정교한 수싸움과 퍼즐 요소가 무력화될 위험"
+        ],
+        "evidence": [
+          "글로벌 퍼즐 세션 시간 평균 5.7분 지표에 맞춰 1개 스테이지당 최대 턴 수를 10턴 내외로 제한 설계 필요"
+        ],
+        "questions": [
+          "강화 시스템이 도입된 상태에서 무과금 플레이어가 제3장 보스 스테이지를 클리어할 수 있는 최소 스펙 기준은 무엇인가"
+        ]
+      },
+      "development": {
+        "keep": [
+          "체스 기반의 직관적인 이동 규칙과 드래그 앤 드롭 방식의 입력 모델을 유지하여 조작 편의성을 확보함."
+        ],
+        "fix": [
+          "클라이언트 측 이동 경로 연산 결과를 서버에서 반드시 검증하도록 로직을 추가하여 데이터 변조를 방지함."
+        ],
+        "add": [
+          "턴 기반 데이터 동기화 시 패킷 손실에 대비한 시퀀스 번호 기반의 상태 복구 메커니즘을 구현함."
+        ],
+        "risks": [
+          "복잡한 스킬 이펙트와 다수의 유닛 연산이 저사양 모바일 기기에서 프레임 드랍을 유발할 가능성이 있음."
+        ],
+        "evidence": [
+          "Roblox 환경에서 3분 내외의 짧은 세션은 모바일 유저의 높은 리텐션을 유도하는 검증된 패턴임."
+        ],
+        "questions": [
+          "동시 접속자가 급증할 경우 서버 측의 유닛 위치 검증 부하를 분산하기 위한 샤딩 전략이 준비되어 있는가?"
+        ]
+      },
+      "graphics": {
+        "keep": [
+          "로우폴리곤 스타일의 체스 말과 화려한 타격 이펙트의 대비를 통한 시각적 명확성 확보"
+        ],
+        "fix": [
+          "모바일 환경을 고려하여 유닛 이동 경로 하이라이트 시 색각 이상자를 위한 패턴 오버레이를 기본 적용"
+        ],
+        "add": [
+          "전장 상황 변화를 즉각 인지할 수 있도록 유닛 상태(공격/피격/스킬)에 따른 실시간 애니메이션 피드백 시스템 추가"
+        ],
+        "risks": [
+          "로우폴리곤 스타일과 화려한 이펙트가 혼재될 경우 전장 가독성이 저하될 가능성"
+        ],
+        "evidence": [
+          "Royal Match 등 성공적인 퍼즐 게임의 직관적인 UI/UX 및 시각적 피드백 구조 참조"
+        ],
+        "questions": [
+          "로블록스 환경에서 60프레임 유지를 위한 이펙트 셰이더 최적화 가이드라인이 수립되었는가?"
+        ]
+      },
+      "planning": {
+        "keep": [
+          "체스의 공간 읽기와 말별 전투 능력을 결합한 전술 배틀 코어 루프를 유지한다."
+        ],
+        "fix": [
+          "제한된 턴 내 스테이지 실패 시 즉시 재배치와 힌트 제공 흐름을 구체화하라."
+        ],
+        "add": [
+          "초보 플레이어의 진입 장벽을 낮추기 위한 단계별 튜토리얼 단계를 추가하라."
+        ],
+        "risks": [
+          "턴 수 제한으로 인한 높은 긴장감이 신규 유저의 이탈을 유발할 위험이 있다."
+        ],
+        "evidence": [
+          "글로벌 퍼즐 및 액션 장르의 높은 세션 유지율 데이터를 바탕으로 한 스테이지 설계를 적용한다."
+        ],
+        "questions": [
+          "비동기식 멀티플레이 확장 시 턴 타이머 길이를 어떻게 최적화할 것인가?"
+        ]
+      },
+      "qa": {
+        "keep": [
+          "체스 기보 기반 이동과 특수 스킬 간 체계적인 연동 설계 및 3분 이내의 짧은 세션 타겟팅 방향성을 유지함."
+        ],
+        "fix": [
+          "터치 오작동 방지를 위한 확인 탭 단계가 3분 단위 빠른 템포의 전술 액션을 저해하므로 즉시 이동 옵션을 추가할 것."
+        ],
+        "add": [
+          "클라이언트 예측 이동 시 서버 validation 실패로 인한 유닛 위치 동기화 오차 검증 자동화 테스트 케이스 추가 필요."
+        ],
+        "risks": [
+          "엄격한 턴 제한으로 인해 기교적인 수싸움 대신 특정 스킬 조합에만 의존하는 일차원적 플레이 스타일 고착화 위험."
+        ],
+        "evidence": [
+          "ChessBoardController 검증 항목을 통해 허용되지 않은 이동 패턴 차단을 실시간 단위 테스트로 입증 가능함."
+        ],
+        "questions": [
+          "반복 패배 시 제공되는 임시 버프 시스템이 스테이지 본연의 퍼즐 난이도 밸런스를 훼손하지 않는가?"
+        ]
+      }
+    },
+    "designer_revision": {
+      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임입니다. coreLoop와 signatureSystems는 플레이어가 매 순간 전장 상태를 분석하고 최적의 선택을 내리도록 유도하여 깊이 있는 전략적 상태 변화를 만들어냅니다.",
+      "playerFantasy": "플레이어는 고대의 전장을 지휘하는 전술가로서, 제한된 턴 안에서 체스 말들의 특수한 전투 능력을 조합해 적의 방어선을 무너뜨리고 승리를 쟁취하는 판타지를 경험합니다.",
+      "coreFun": "매 턴마다 플레이어가 내리는 신중한 이동 선택이 적의 포위망을 붕괴시키는 관찰 가능한 상태 변화로 이어지며, 즉각적인 전황 역전의 쾌감을 제공합니다.",
+      "coreLoop": [
+        "제한된 이동력과 전장 목표가 주어지는 보드 스테이지를 시작하고 초기 배치 상태를 확인합니다.",
+        "체스 말의 고유 이동 규칙과 전투 능력을 활용해 말을 이동시키고 적의 유닛을 제압하여 보드 상태를 변화시킵니다.",
+        "목표를 달성하여 보상을 획득하고 다음 스테이지의 더 복잡한 지형과 강력한 적 조합에 대응합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "전술 체스 배치 시스템",
+          "purpose": "플레이어가 각 유닛의 고유한 이동 반경과 공격 범위를 계산하여 최적의 진형을 구축하도록 유도합니다.",
+          "playerChoice": "어떤 유닛을 전방에 배치하여 공격을 주도하고 어떤 유닛을 후방에서 보호할지 직접 결정합니다."
+        },
+        {
+          "name": "말별 특수 전투 시스템",
+          "purpose": "단순한 이동을 넘어 각 유닛이 가진 고유 스킬을 통해 전장 판도를 뒤집을 수 있는 변수를 제공합니다.",
+          "playerChoice": "특수 게이지를 소모하여 강력한 범위 공격이나 아군 지원 스킬을 적절한 타이밍에 발동합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "전술 체스 배치 시스템",
+          "toSystem": "말별 특수 전투 시스템",
+          "trigger": "유닛이 특정 위치에 성공적으로 도달하여 적을 포위했을 때",
+          "stateChange": "특수 전투 스킬의 쿨타임이 감소하고 스킬 사용 가능 상태로 전환됩니다."
+        },
+        {
+          "fromSystem": "말별 특수 전투 시스템",
+          "toSystem": "전장 목표 달성 시스템",
+          "trigger": "강력한 스킬로 적의 핵심 수호 유닛을 격파했을 때",
+          "stateChange": "스테이지 클리어 조건이 충족되며 다음 단계로의 진행 문이 개방됩니다."
+        },
+        {
+          "fromSystem": "전장 목표 달성 시스템",
+          "toSystem": "보상 및 성장 시스템",
+          "trigger": "스테이지 클리어 판정이 내려지고 결과 화면이 출력될 때",
+          "stateChange": "재화가 지급되고 유닛 업그레이드 및 새로운 전술 장비 해제가 가능해집니다."
+        }
+      ],
+      "progressionDirection": "스테이지가 진행될수록 새로운 장애물과 특수 능력을 가진 적이 등장하여 플레이어가 기존의 정형화된 전술에서 벗어나 유연하게 대처하도록 유도합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "스테이지 클리어 -> 재화 획득 -> 유닛 및 스킬 강화 -> 더 높은 난이도의 스테이지 도전으로 이어지는 순환 구조입니다.",
+        "resourceFlow": "전투 승리를 통해 획득한 전술 포인트를 소모하여 유닛의 기본 능력치를 상승시키거나 특수 능력을 해제합니다.",
+        "balanceRules": "플레이어의 성장 속도에 맞춰 적의 체력과 공격력을 조절하여 항상 긴장감 있는 도전 난이도를 유지합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "제1장: 전초전 마스터",
+          "newGameplay": "기본 체스 룰에 간단한 지형 장애물과 첫 번째 특수 능력이 도입되어 초보 플레이어의 적응을 돕습니다.",
+          "systemImpact": "전술 체스 배치 시스템의 활용도가 높아지고 기초적인 유닛 상성 이해를 강제합니다."
+        },
+        {
+          "milestone": "제2장: 중급 전술가 시험",
+          "newGameplay": "턴 제한이 걸린 퍼즐형 보드와 움직이는 적 유닛이 추가되어 동선 예측의 중요성이 대폭 상승합니다.",
+          "systemImpact": "말별 특수 전투 시스템의 쿨타임 관리와 자원 배분의 중요성이 유기적으로 연결됩니다."
+        },
+        {
+          "milestone": "제3장: 마스터 배틀 필드",
+          "newGameplay": "보스급 유닛과 광역 상태 이상 지형이 등장하여 극한의 수싸움과 고도화된 진형 구축이 요구됩니다.",
+          "systemImpact": "모든 시스템이 복합적으로 맞물려 종합적인 전술 판단 능력을 최종 검증합니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "제한된 턴 내에 스테이지 클리어 목표를 달성하지 못한 경우",
+          "핵심 지휘 유닛이 적의 공격에 의해 격파당한 경우"
+        ],
+        "retryFlow": "패배 즉시 실패 원인 분석 화면이 노출되며, 동일 스테이지를 즉시 재시도하거나 진형을 재배치하여 다시 도전할 수 있습니다.",
+        "riskPressure": "턴 수가 제한되어 있어 잘못된 수 한 번이 전체 패배로 직결될 수 있는 높은 긴장감을 유발합니다.",
+        "recoveryRules": "재도전 시 패널티 없이 즉시 재배치가 가능하며, 반복 실패 시 유용한 힌트나 임시 버프 선택지를 제공합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "ROBLOX",
+        "inputModel": "마우스 클릭 및 모바일 터치를 통한 직관적인 드래그 앤 드롭 이동과 UI 버튼을 통한 스킬 발동 방식을 지원합니다.",
+        "performanceBudget": "저사양 모바일 기기와 태블릿 환경에서도 60프레임을 안정적으로 유지하도록 폴리곤 수를 최적화합니다.",
+        "sessionConstraints": "한 판당 3분 내외로 플레이 가능하도록 설계하여 짧은 세션 동안 몰입감 있는 경험을 제공합니다."
+      },
+      "visualDirection": "클래식한 체스판의 정갈함과 현대적인 판타지 전투의 이펙트를 결합하여 시인성이 높고 직관적인 비주얼을 구축합니다.",
+      "mobileUx": "엄지손가락 조작 범위 내에 주요 이동 및 스킬 버튼을 배치하고, 터치 시 유닛의 이동 가능 경로가 명확하게 하이라이트되도록 구성합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "남은 턴 수, 현재 유닛의 체력, 그리고 활성화된 특수 스킬 버튼을 화면 상단과 하단에 고정하여 시인성을 극대화합니다.",
+        "touchAndInput": "작은 모바일 화면에서도 터치 미스가 발생하지 않도록 충분히 큰 판정 영역과 확인 탭 단계를 제공합니다.",
+        "readability": "대비가 뚜렷한 색상 팔레트를 사용하여 아군과 적군의 유닛을 한눈에 구분할 수 있게 합니다.",
+        "accessibility": "색각 이상자를 위한 패턴 표시 옵션과 텍스트 크기 조절 기능을 기본 제공합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "깔끔한 로우폴리곤 스타일의 체스 말과 화려한 타격 이펙트의 조화를 통해 세련된 전술 전장을 시각화합니다.",
+        "audioIdentity": "차분하고 긴장감 있는 클래식 선율과 유닛 이동 및 공격 시의 타격감 있는 효과음을 매칭합니다.",
+        "gameplayFeedbackSync": "유닛이 이동하거나 적을 격파할 때 즉각적인 사운드와 시각 효과를 동기화하여 성취감을 강화합니다."
+      },
+      "marketTargetDirection": "빠른 턴제 전술과 퍼즐 요소를 선호하는 글로벌 캐주얼 및 미드코어 게이머층을 타겟으로 합니다.",
+      "steamExpansionDecision": "추후 글로벌 스팀 플랫폼 출시 시 더 정교한 멀티플레이어 대전 모드와 커스텀 전장 에디터 기능을 확장할 계획입니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "싱글 플레이어 캠페인 검증 완료 후, 실시간 비동기식 1대1 대전 모드로 멀티플레이어를 확장할 수 있습니다.",
+      "technicalAssumptions": [
+        "클라이언트와 서버 간의 턴 데이터 동기화는 가벼운 JSON 패킷 교환 방식으로 처리하여 지연을 최소화합니다.",
+        "보드 위의 유닛 위치와 이동 가능 경로 계산은 클라이언트 측에서 즉시 연산하여 쾌적한 반응 속도를 보장합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 제한된 턴 안에서 직관적으로 다음 수를 예측하고 흥미를 느끼기에 충분한 난이도 곡선인가?",
+        "모바일 터치 환경에서 유닛을 조작할 때 오작동 없이 정확하고 편안한 입력 경험을 제공하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "전술 체스 배치 시스템",
+          "responsibleSystem": "ChessBoardController",
+          "validationEvidence": "유닛 드래그 시 이동 가능 경로가 실시간으로 하이라이트되며 규칙에 맞지 않는 배치가 엄격히 차단되는지 테스트로 검증합니다."
+        },
+        {
+          "designElement": "말별 특수 전투 시스템",
+          "responsibleSystem": "UnitAbilityManager",
+          "validationEvidence": "스킬 게이지 충전 조건 만족 시 버튼이 활성화되고 사용 즉시 대상 유닛에게 올바른 데미지 및 상태 변화가 적용되는지 확인합니다."
+        },
+        {
+          "designElement": "전장 목표 달성 시스템",
+          "responsibleSystem": "StageProgressSystem",
+          "validationEvidence": "승리 조건 충족 시 즉시 결과 UI가 호출되고 보상 재화가 정확하게 플레이어 계정에 반영되는지 로그를 통해 검증합니다."
+        }
+      ],
+      "openQuestions": [
+        "향후 멀티플레이 도입 시 턴 제한 시간에 따른 플레이어 이탈을 방지하기 위한 최적의 타이머 길이는 얼마로 설정할 것인가?"
+      ]
     }
   },
   "tasks": {
@@ -218,19 +447,99 @@
       "questions": [
         "동시 접속자가 급증할 경우 서버 측의 유닛 위치 검증 부하를 분산하기 위한 샤딩 전략이 준비되어 있는가?"
       ]
+    },
+    "five_lead_reviews::balance": {
+      "keep": [
+        "체스 고유의 이동 규칙과 턴 제한을 결합한 퍼즐식 보드 설계 및 턴 수 제한을 통한 긴장감 유지"
+      ],
+      "fix": [
+        "강화 수치에 따른 밸런스 붕괴를 막기 위해 유닛 강화 시 공격력 대신 유틸리티 및 쿨타임 감소 위주로 조정"
+      ],
+      "add": [
+        "턴당 획득하는 전술 포인트의 최대치 제한 및 유닛별 스킬 소모 비용의 차등 적용 규칙 추가"
+      ],
+      "risks": [
+        "유닛 강화로 인한 스펙 인플레이션 발생 시 체스 특유의 정교한 수싸움과 퍼즐 요소가 무력화될 위험"
+      ],
+      "evidence": [
+        "글로벌 퍼즐 세션 시간 평균 5.7분 지표에 맞춰 1개 스테이지당 최대 턴 수를 10턴 내외로 제한 설계 필요"
+      ],
+      "questions": [
+        "강화 시스템이 도입된 상태에서 무과금 플레이어가 제3장 보스 스테이지를 클리어할 수 있는 최소 스펙 기준은 무엇인가"
+      ]
+    },
+    "five_lead_reviews::planning": {
+      "keep": [
+        "체스의 공간 읽기와 말별 전투 능력을 결합한 전술 배틀 코어 루프를 유지한다."
+      ],
+      "fix": [
+        "제한된 턴 내 스테이지 실패 시 즉시 재배치와 힌트 제공 흐름을 구체화하라."
+      ],
+      "add": [
+        "초보 플레이어의 진입 장벽을 낮추기 위한 단계별 튜토리얼 단계를 추가하라."
+      ],
+      "risks": [
+        "턴 수 제한으로 인한 높은 긴장감이 신규 유저의 이탈을 유발할 위험이 있다."
+      ],
+      "evidence": [
+        "글로벌 퍼즐 및 액션 장르의 높은 세션 유지율 데이터를 바탕으로 한 스테이지 설계를 적용한다."
+      ],
+      "questions": [
+        "비동기식 멀티플레이 확장 시 턴 타이머 길이를 어떻게 최적화할 것인가?"
+      ]
+    },
+    "five_lead_reviews::qa": {
+      "keep": [
+        "체스 기보 기반 이동과 특수 스킬 간 체계적인 연동 설계 및 3분 이내의 짧은 세션 타겟팅 방향성을 유지함."
+      ],
+      "fix": [
+        "터치 오작동 방지를 위한 확인 탭 단계가 3분 단위 빠른 템포의 전술 액션을 저해하므로 즉시 이동 옵션을 추가할 것."
+      ],
+      "add": [
+        "클라이언트 예측 이동 시 서버 validation 실패로 인한 유닛 위치 동기화 오차 검증 자동화 테스트 케이스 추가 필요."
+      ],
+      "risks": [
+        "엄격한 턴 제한으로 인해 기교적인 수싸움 대신 특정 스킬 조합에만 의존하는 일차원적 플레이 스타일 고착화 위험."
+      ],
+      "evidence": [
+        "ChessBoardController 검증 항목을 통해 허용되지 않은 이동 패턴 차단을 실시간 단위 테스트로 입증 가능함."
+      ],
+      "questions": [
+        "반복 패배 시 제공되는 임시 버프 시스템이 스테이지 본연의 퍼즐 난이도 밸런스를 훼손하지 않는가?"
+      ]
+    },
+    "five_lead_reviews::graphics": {
+      "keep": [
+        "로우폴리곤 스타일의 체스 말과 화려한 타격 이펙트의 대비를 통한 시각적 명확성 확보"
+      ],
+      "fix": [
+        "모바일 환경을 고려하여 유닛 이동 경로 하이라이트 시 색각 이상자를 위한 패턴 오버레이를 기본 적용"
+      ],
+      "add": [
+        "전장 상황 변화를 즉각 인지할 수 있도록 유닛 상태(공격/피격/스킬)에 따른 실시간 애니메이션 피드백 시스템 추가"
+      ],
+      "risks": [
+        "로우폴리곤 스타일과 화려한 이펙트가 혼재될 경우 전장 가독성이 저하될 가능성"
+      ],
+      "evidence": [
+        "Royal Match 등 성공적인 퍼즐 게임의 직관적인 UI/UX 및 시각적 피드백 구조 참조"
+      ],
+      "questions": [
+        "로블록스 환경에서 60프레임 유지를 위한 이펙트 셰이더 최적화 가이드라인이 수립되었는가?"
+      ]
     }
   },
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 16048,
-      "lastMs": 16048,
+      "totalMs": 23862,
+      "lastMs": 6521,
       "lastError": null,
-      "updatedAt": "2026-09-18T07:35:05.358Z"
+      "updatedAt": "2026-09-18T07:36:32.542Z"
     },
     "gemini:gemini-3-flash-preview": {
       "calls": 1,
@@ -242,20 +551,57 @@
       "lastMs": 16109,
       "lastError": null,
       "updatedAt": "2026-09-18T07:35:21.491Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 3,
+      "successes": 1,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 95300,
+      "lastMs": 59227,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T07:36:04.608Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 2,
+      "successes": 1,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 69454,
+      "lastMs": 64525,
+      "lastError": "model response is not a JSON object",
+      "updatedAt": "2026-09-18T07:36:26.017Z"
+    },
+    "gemini:gemini-3.6-flash": {
+      "calls": 2,
+      "successes": 1,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 7410,
+      "lastMs": 5661,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T07:36:11.564Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DEPARTMENT_REVIEWS",
+  "currentPhase": "COMPLETE",
   "createdAt": "2026-09-18T07:34:49.308Z",
-  "updatedAt": "2026-09-18T07:35:21.491Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T07:35:21.491Z",
+  "updatedAt": "2026-09-18T07:36:32.545Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T07:36:32.542Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
-    "gemini-3-flash-preview": "gemini-3-flash-preview"
+    "gemini-3-flash-preview": "gemini-3-flash-preview",
+    "gemini-3.5-flash": "gemini-3.5-flash",
+    "gemini-3.6-flash": "gemini-3.6-flash",
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": null,
+  "completedAt": "2026-09-18T07:36:32.545Z"
 }
