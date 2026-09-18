@@ -76,6 +76,26 @@ assert.ok(workOrder.successSignals.includes('VERIFIED_LEARNING_PERSISTS_CONTINUO
 assert.ok(workOrder.forbidden.includes('NON_VIBE_GAMEPLAY_SOURCE_WRITE'));
 assert.ok(workOrder.forbidden.includes('STOP_24H_LEARNING_AFTER_CATALOG_WRAP'));
 
+const homepageSync=directive.homepageRuntimeSyncWorkOrder;
+assert.equal(homepageSync.id,'HOMEPAGE_PUBLIC_RUNTIME_SYNC_V1');
+assert.equal(homepageSync.kind,'MACHINE_WORK_ORDER');
+assert.equal(homepageSync.humanDocumentRequired,false);
+assert.equal(homepageSync.publicEndpoint.baseUrl,'https://jaewoon-games.pages.dev/');
+assert.equal(homepageSync.publicEndpoint.legacyRepoHomepageMetadataMustNotBeUsed,true);
+assert.equal(homepageSync.executionRules.noNewHomepagePipeline,true);
+assert.equal(homepageSync.executionRules.preserveHomepageManager,true);
+assert.equal(homepageSync.executionRules.publicEndpointMustBeComparedAgainstCanonical,true);
+assert.equal(homepageSync.executionRules.deploymentProviderSettingsMustNotBeGuessed,true);
+assert.deepEqual(homepageSync.steps.map(step=>step.order),[1,2,3,4,5,6]);
+const homepageByStage=Object.fromEntries(homepageSync.steps.map(step=>[step.stage,step]));
+assert.equal(homepageByStage.COMPARE_WITH_CANONICAL_RUNTIME.comparisonMode,'SEMANTIC_JSON_PLUS_CONTENT_HASH');
+assert.equal(homepageByStage.CLASSIFY_FAILURE.codeMutationBeforeClassificationForbidden,true);
+assert.ok(homepageByStage.REPAIR_EXISTING_DEPLOYMENT_PATH_ONLY.priorities.includes('DO_NOT_CREATE_SHADOW_DEPLOYMENT'));
+assert.ok(homepageByStage.PUBLIC_REVERIFY.required.includes('PUBLIC_CATALOG_MATCHES_CANONICAL'));
+assert.ok(homepageByStage.PUBLIC_REVERIFY.required.includes('PUBLIC_STATUS_MATCHES_CANONICAL'));
+assert.ok(homepageSync.successSignals.includes('PUBLIC_HOMEPAGE_CURRENT'));
+assert.ok(homepageSync.successSignals.includes('NO_SHADOW_PIPELINE_CREATED'));
+
 assert.equal(lifecycle.webToPlatformHandoff.required,true);
 assert.equal(lifecycle.webToPlatformHandoff.webIsDisposablePrototype,false);
 assert.equal(lifecycle.postReleaseFocusedDevelopment.enabled,true);
