@@ -15,70 +15,82 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "Survival needs are the core requirements for survival in the game world.",
-        "Player can choose to focus on survival needs, crafting, or exploration.",
-        "The player can survive for 30 minutes without any issues."
+        "keep",
+        "fix",
+        "add"
       ],
       "challenge": [
-        "What is the purpose of Survival Needs in the game world?",
-        "Is the player able to survive for 30 minutes without any issues?"
+        "keep",
+        "fix",
+        "add"
       ],
       "revision": [
-        "The player can collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-        "The purpose of Survival Needs in the game world is to provide a core survival experience."
+        "keep",
+        "fix",
+        "add"
       ],
-      "reason": "The original content already covers the key points, so no revision is needed."
+      "reason": "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful. The evidence provided supports the importance of these elements, and the questions are clear about their impact on player experience."
     },
     "graphics": {
       "accept": [
-        "fix",
-        "add",
-        "risks"
+        "graphics"
       ],
       "challenge": [
-        "evidence",
-        "questions"
+        "game_seed_market_evidence.json"
       ],
       "revision": [
-        "balance"
+        "TARGET_DESIGN_REFERENCE",
+        "risks",
+        "evidence"
       ],
-      "reason": "The game's core gameplay loop should be prioritized.  The player's survival needs are fundamental to the game's experience, and ensuring they are met is the primary focus.  We need to ensure the player's survival needs are clearly defined and are a core part of the gameplay loop.  The current evidence suggests the player can survive for 30 minutes without issues, so we should maintain that."
+      "reason": "graphics is the core of the game, and the design should be consistent with the survival genre and the core loop's progression."
     },
     "development": {
       "accept": [
-        "OWN"
+        "own",
+        "OTHERS"
       ],
       "challenge": [
-        "OWN"
+        "own",
+        "OTHERS"
       ],
       "revision": [
-        "OWN"
+        "own",
+        "OTHERS"
       ],
-      "reason": "own의 책임 범위에서 한 번만 수용/반박/수정"
+      "reason": "own"
     },
     "qa": {
       "accept": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "Survival Needs needs needs needs to be consistent with the survival genre and the core loop's progression.",
+        "The survival needs system should be balanced and rewarding for players.",
+        "The player's choices and upgrades should be meaningful and impactful."
       ],
       "challenge": [
-        "ASSIGNED_DEPARTMENT=qa"
+        "The core loop should be repeated to improve and adapt to the ever-changing game world."
       ],
       "revision": [
-        "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\"}"
+        "The core loop should be repeated to improve and adapt to the ever-changing game world."
       ],
-      "reason": "The QA department is responsible for ensuring the game's quality and stability, which includes addressing potential risks and maintaining a high level of performance. The evidence provided shows that the player can survive for 30 minutes without any issues, which is a significant concern that the QA team should address."
+      "reason": "The core loop should be repeated to improve and adapt to the ever-changing game world."
     },
     "balance": {
       "accept": [
-        "Survival Needs"
+        "Survival Needs needs",
+        "Survival Needs needs",
+        "Survival Needs needs"
       ],
       "challenge": [
-        "Survival needs are the core requirements for survival in the game world."
+        "Survival Needs needs",
+        "Survival Needs needs",
+        "Survival Needs needs"
       ],
       "revision": [
-        "Survival needs are the core requirements for survival in the game world."
+        "Survival Needs needs",
+        "Survival Needs needs",
+        "Survival Needs needs"
       ],
-      "reason": "Survival needs are the core requirements for survival in the game world."
+      "reason": "The survival needs system is a reference for the action survival benchmark."
     }
   }
 }

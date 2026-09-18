@@ -6,13 +6,13 @@
   "department": "qa",
   "leadModel": "qwen2.5:1.5b",
   "assistantModels": [
-    "smollm2:1.7b",
-    "qwen3:0.6b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "models": [
     "qwen2.5:1.5b",
-    "smollm2:1.7b",
-    "qwen3:0.6b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "reviews": [
     {
@@ -20,46 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "ASSIGNED_DEPARTMENT"
+          "ASSIGNED_DEPARTMENT=qa"
         ],
         "fix": [
-          "ASSIGNED_DEPARTMENT=qa"
+          "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
         ],
         "add": [
-          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+          "GAME_SEED=OWNER-FULL-REBUILD-SURVIVAL-20260916"
         ],
         "risks": [
-          "ASSIGNED_DEPARTMENT=qa"
+          "Survival Needs needs"
         ],
         "evidence": [
-          "ASSIGNED_DEPARTMENT=qa"
+          "OWNER-FULL-REBUILD-20260916-1"
         ],
         "questions": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ]
-      }
-    },
-    {
-      "model": "smollm2:1.7b",
-      "memberRole": "ASSISTANT",
-      "review": {
-        "keep": [
-          "GAME_SEED"
-        ],
-        "fix": [
-          "ASSIGNED_DEPARTMENT=qa"
-        ],
-        "add": [
-          "GAME_SEED={"
-        ],
-        "risks": [
-          "GAME_SEED"
-        ],
-        "evidence": [
-          "GAME_SEED"
-        ],
-        "questions": [
-          "GAME_SEED"
+          "Is the game's core loop consistent with the survival genre?"
         ]
       }
     },
@@ -68,22 +44,46 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "지정된 QA 부서만 검토하라. 다른 부서는 제시되지 않다."
+          "Survival Needs needs needs to be consistent with the survival genre and the core loop's progression."
         ],
         "fix": [
-          "각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
+          "The survival needs system should be balanced and rewarding for players."
         ],
         "add": [
-          "ASSIGNED_DEPARTMENT=qa"
+          "The player's choices and upgrades should be meaningful and impactful."
         ],
         "risks": [
-          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않다."
+          "The core loop should be repeated to improve and adapt to the ever-changing game world."
         ],
         "evidence": [
-          "GAME_SEED의 기능을 명확히 설명하고, 관련 게임 데이터를 활용한 검토 기간을 명시합니다."
+          "The survival needs system is a reference for the action survival benchmark."
         ],
         "questions": [
-          "지정된 QA 부서의 기능을 명확히 설명하고, 관련 게임 데이터를 활용한 검토 기간을 명시합니다."
+          "Is the game's core loop consistent with the survival genre? Is the survival needs system balanced and rewarding? Are the player's "
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Design Review Report - Game Seed Analysis"
+        ],
+        "fix": [
+          "GAME_SEED analysis - design review"
+        ],
+        "add": [
+          "Design Review Report - Game Seed Analysis"
+        ],
+        "risks": [
+          "Failure Retry Risk - Survival Needs needs"
+        ],
+        "evidence": [
+          "Validation Questions - Survival Needs needs"
+        ],
+        "questions": [
+          "Is the game's core loop consistent with the survival genre?"
         ]
       }
     }

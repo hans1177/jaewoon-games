@@ -7,29 +7,28 @@
   "representativeModel": "llama3.2:1b",
   "leadModel": "llama3.2:1b",
   "assistantModels": [
-    "qwen2.5:1.5b",
-    "smollm2:1.7b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "GAME_SEED"
+      "coreLoop"
     ],
     "fix": [
-      "GAME_SEED"
+      "coreLoop"
     ],
     "add": [
-      "CORE_FUN_TO_LEARN",
-      "CORE_LOOP"
+      "signatureSystems"
     ],
     "risks": [
-      "CORE_LOOP"
+      "failureRetryRisk"
     ],
     "evidence": [
-      "MARKET_EVIDENCE_SUMMARY"
+      "marketEvidence_SUMMARY"
     ],
     "questions": [
-      "CORE_LOOP"
+      "marketEvidence_SUMMARY"
     ]
   }
 }

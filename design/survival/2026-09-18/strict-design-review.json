@@ -6,19 +6,19 @@
   "passThreshold": 80,
   "excellentThreshold": 90,
   "excellent": false,
-  "totalScore": 18.4,
+  "totalScore": 42.199999999999996,
   "scores": {
     "IDEA_AND_DISTINCTNESS": 0,
     "CATEGORY_IDENTITY": 10,
-    "CORE_LOOP_DESIGN": 8.4,
-    "SYSTEM_INTERCONNECTION_DESIGN": 0,
+    "CORE_LOOP_DESIGN": 11.2,
+    "SYSTEM_INTERCONNECTION_DESIGN": 7.2,
     "PROGRESSION_ECONOMY_BALANCE_DESIGN": 0,
-    "CONTENT_EXPANSION_PLAN": 0,
-    "FAILURE_RETRY_RISK_DESIGN": 0,
+    "CONTENT_EXPANSION_PLAN": 6,
+    "FAILURE_RETRY_RISK_DESIGN": 4.8,
     "PLATFORM_FIT_DESIGN": 0,
     "UX_AND_ACCESSIBILITY_PLAN": 0,
     "ART_AUDIO_DIRECTION": 0,
-    "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 0
+    "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
   },
   "weights": {
     "IDEA_AND_DISTINCTNESS": 12,
@@ -41,16 +41,16 @@
       "gap": 12
     },
     {
-      "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
-      "current": 0,
-      "maxScore": 12,
-      "gap": 12
-    },
-    {
-      "dimension": "CONTENT_EXPANSION_PLAN",
+      "dimension": "PROGRESSION_ECONOMY_BALANCE_DESIGN",
       "current": 0,
       "maxScore": 10,
       "gap": 10
+    },
+    {
+      "dimension": "PLATFORM_FIT_DESIGN",
+      "current": 0,
+      "maxScore": 8,
+      "gap": 8
     }
   ],
   "hardFailures": [
@@ -65,36 +65,35 @@
     "materialIds": [],
     "designPath": "design/survival/2026-09-18/design-revised.json",
     "cyclePath": "design/survival/2026-09-18/cycle-status.json",
-    "multiplayerDesignMode": "SINGLE",
+    "multiplayerDesignMode": "COOP",
     "targetSessionMinutes": 30,
     "robloxGenreProfile": {
       "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "genre": "Survival",
-      "genreLabelKo": "서바이벌",
-      "subgenre": null,
-      "subgenreLabelKo": null,
-      "playMode": "SINGLE",
-      "playModeLabelKo": "싱글",
-      "displayLabelKo": "서바이벌 · 싱글"
+      "genre": "Obby & platformer",
+      "genreLabelKo": "오비·플랫포머",
+      "subgenre": "Classic Obby",
+      "subgenreLabelKo": "클래식 오비",
+      "playMode": "COOP",
+      "playModeLabelKo": "멀티·협동",
+      "displayLabelKo": "오비·플랫포머 · 클래식 오비 · 멀티·협동"
     },
     "reviewContextSource": "ACTIVE_SEED",
     "scoreSystem": "STAGE_GATE_SCORING_V2",
     "evidenceLevels": {
       "IDEA_AND_DISTINCTNESS": 0,
       "CATEGORY_IDENTITY": 100,
-      "CORE_LOOP_DESIGN": 60,
-      "SYSTEM_INTERCONNECTION_DESIGN": 0,
+      "CORE_LOOP_DESIGN": 80,
+      "SYSTEM_INTERCONNECTION_DESIGN": 60,
       "PROGRESSION_ECONOMY_BALANCE_DESIGN": 0,
-      "CONTENT_EXPANSION_PLAN": 0,
-      "FAILURE_RETRY_RISK_DESIGN": 0,
+      "CONTENT_EXPANSION_PLAN": 60,
+      "FAILURE_RETRY_RISK_DESIGN": 60,
       "PLATFORM_FIT_DESIGN": 0,
       "UX_AND_ACCESSIBILITY_PLAN": 0,
       "ART_AUDIO_DIRECTION": 0,
-      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 0
+      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
     },
     "criticalAxisFailures": [
       "IDEA_AND_DISTINCTNESS",
-      "CORE_LOOP_DESIGN",
       "SYSTEM_INTERCONNECTION_DESIGN",
       "PROGRESSION_ECONOMY_BALANCE_DESIGN",
       "CONTENT_EXPANSION_PLAN",
@@ -120,7 +119,7 @@
     "initialWebStrictRequires30Minutes": false,
     "final30MinuteContentDepthValidationOnly": true
   },
-  "reviewedAt": "2026-09-18T02:51:55.876Z",
+  "reviewedAt": "2026-09-18T04:41:24.364Z",
   "scoreSystem": "STAGE_GATE_SCORING_V2",
   "scoreSystemVersion": 2,
   "directScoreLevels": [
@@ -134,7 +133,6 @@
   "criticalAxisMinimumPercent": 75,
   "criticalAxisFailures": [
     "IDEA_AND_DISTINCTNESS",
-    "CORE_LOOP_DESIGN",
     "SYSTEM_INTERCONNECTION_DESIGN",
     "PROGRESSION_ECONOMY_BALANCE_DESIGN",
     "CONTENT_EXPANSION_PLAN",
@@ -144,5 +142,149 @@
     "ART_AUDIO_DIRECTION",
     "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
   ],
-  "thirtyMinuteHardGateApplied": false
+  "thirtyMinuteHardGateApplied": false,
+  "rejectionReasons": [
+    {
+      "code": "CORE_FUN_WEAK",
+      "kind": "HARD_GATE",
+      "axis": "CORE_LOOP_DESIGN",
+      "evidenceLevel": 0,
+      "minimumRequired": 60,
+      "evidence": {
+        "ideaAndDistinctness": 0,
+        "coreLoopDesign": 80,
+        "coreLoopCount": 3,
+        "signatureSystemCount": 2
+      },
+      "requiredAction": "핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    },
+    {
+      "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+      "kind": "HARD_GATE",
+      "axis": "IDEA_AND_DISTINCTNESS",
+      "evidenceLevel": 0,
+      "minimumRequired": 75,
+      "evidence": {
+        "axisScore": 0,
+        "axisWeight": 12
+      },
+      "requiredAction": "정체성·플레이어 판타지·coreFun을 구체화하고 coreLoop와 최소 2개 signature system에 직접 연결한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    },
+    {
+      "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+      "kind": "HARD_GATE",
+      "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+      "evidenceLevel": 60,
+      "minimumRequired": 75,
+      "evidence": {
+        "axisScore": 7.2,
+        "axisWeight": 12
+      },
+      "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    },
+    {
+      "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+      "kind": "HARD_GATE",
+      "axis": "PROGRESSION_ECONOMY_BALANCE_DESIGN",
+      "evidenceLevel": 0,
+      "minimumRequired": 75,
+      "evidence": {
+        "axisScore": 0,
+        "axisWeight": 10
+      },
+      "requiredAction": "진행·자원 흐름·밸런스 규칙을 하나의 반복 가능한 경제/성장 구조로 연결한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    },
+    {
+      "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+      "kind": "HARD_GATE",
+      "axis": "CONTENT_EXPANSION_PLAN",
+      "evidenceLevel": 60,
+      "minimumRequired": 75,
+      "evidence": {
+        "axisScore": 6,
+        "axisWeight": 10
+      },
+      "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    },
+    {
+      "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+      "kind": "HARD_GATE",
+      "axis": "FAILURE_RETRY_RISK_DESIGN",
+      "evidenceLevel": 60,
+      "minimumRequired": 75,
+      "evidence": {
+        "axisScore": 4.8,
+        "axisWeight": 8
+      },
+      "requiredAction": "실패상태·재시도 흐름·위험 압력·회복 규칙을 구체적으로 설계한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    },
+    {
+      "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+      "kind": "HARD_GATE",
+      "axis": "PLATFORM_FIT_DESIGN",
+      "evidenceLevel": 0,
+      "minimumRequired": 75,
+      "evidence": {
+        "axisScore": 0,
+        "axisWeight": 8
+      },
+      "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    },
+    {
+      "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+      "kind": "HARD_GATE",
+      "axis": "UX_AND_ACCESSIBILITY_PLAN",
+      "evidenceLevel": 0,
+      "minimumRequired": 75,
+      "evidence": {
+        "axisScore": 0,
+        "axisWeight": 6
+      },
+      "requiredAction": "HUD 우선순위·터치/입력·가독성·접근성 계획을 구체적으로 설계한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    },
+    {
+      "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+      "kind": "HARD_GATE",
+      "axis": "ART_AUDIO_DIRECTION",
+      "evidenceLevel": 0,
+      "minimumRequired": 75,
+      "evidence": {
+        "axisScore": 0,
+        "axisWeight": 5
+      },
+      "requiredAction": "시각 정체성·오디오 정체성·게임플레이 피드백 동기화를 연결한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    },
+    {
+      "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+      "kind": "HARD_GATE",
+      "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+      "evidenceLevel": 60,
+      "minimumRequired": 75,
+      "evidence": {
+        "axisScore": 3,
+        "axisWeight": 5
+      },
+      "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+      "bypassAllowed": false,
+      "source": "STAGE_GATE_SCORING_V2"
+    }
+  ]
 }

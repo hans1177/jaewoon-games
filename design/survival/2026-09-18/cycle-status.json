@@ -70,13 +70,13 @@
       "graphics": {
         "leadModel": "gemma3:1b",
         "assistantModels": [
-          "llama3.2:1b",
-          "qwen2.5:1.5b"
+          "qwen3:0.6b",
+          "llama3.2:1b"
         ],
         "models": [
           "gemma3:1b",
-          "llama3.2:1b",
-          "qwen2.5:1.5b"
+          "qwen3:0.6b",
+          "llama3.2:1b"
         ],
         "count": 3,
         "required": 3,
@@ -89,13 +89,13 @@
       "development": {
         "leadModel": "llama3.2:1b",
         "assistantModels": [
-          "qwen2.5:1.5b",
-          "smollm2:1.7b"
+          "qwen3:0.6b",
+          "gemma3:1b"
         ],
         "models": [
           "llama3.2:1b",
-          "qwen2.5:1.5b",
-          "smollm2:1.7b"
+          "qwen3:0.6b",
+          "gemma3:1b"
         ],
         "count": 3,
         "required": 3,
@@ -108,13 +108,13 @@
       "qa": {
         "leadModel": "qwen2.5:1.5b",
         "assistantModels": [
-          "smollm2:1.7b",
-          "qwen3:0.6b"
+          "qwen3:0.6b",
+          "gemma3:1b"
         ],
         "models": [
           "qwen2.5:1.5b",
-          "smollm2:1.7b",
-          "qwen3:0.6b"
+          "qwen3:0.6b",
+          "gemma3:1b"
         ],
         "count": 3,
         "required": 3,
@@ -149,7 +149,7 @@
     "repeatedFatalReview": true
   },
   "meeting": {
-    "consensusCount": 4,
+    "consensusCount": 5,
     "conflictCount": 0,
     "holdCount": 0,
     "coordinatorModel": "qwen3:0.6b"
@@ -170,28 +170,26 @@
         "recommendedState": "ACTIVE",
         "fatalCriteria": [],
         "evidence": [
-          "The player's survival needs are fundamental to the game's core gameplay, and ensuring they are clearly defined and part of the gameplay loop is essential.",
-          "The evidence shows that the player can survive for 30 minutes without issues, which is a significant concern that the QA team should address.",
-          "The game's core gameplay loop prioritizes survival needs, which aligns with the player's focus on survival and progression."
+          "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful.",
+          "The evidence provided supports the importance of these elements, and the questions are clear about their impact on player experience."
         ],
-        "reason": "The original content already covers the key points, so no revision is needed."
+        "reason": "The core loop and survival needs system are essential for player experience, and their design decisions should be balanced and meaningful."
       },
       "graphics": {
         "recommendedState": "DISCARD",
         "fatalCriteria": [
           "CORE_LOOP_MATERIALLY_DUPLICATES_ANOTHER_ACTIVE_SEED_OR_GAME",
+          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION",
           "IP_OR_EXPRESSION_DEPENDENCY_CANNOT_BE_RESOLVED_BY_REINTERPRETATION",
-          "FATAL_DESIGN_BLOCKER_REMAINS_AFTER_REVISION"
+          "CORE_FUN_CANNOT_BE_RECOVERED"
         ],
         "evidence": [
-          "The player can survive for 30 minutes without any issues.",
-          "The game's core gameplay loop should be prioritized.",
-          "The QA department is responsible for ensuring the game's quality and stability."
+          "SURVIVAL_SEED_MARKET_REPORT_20260916"
         ],
-        "reason": "The original design has several critical issues that require immediate attention. The player's survival time is a significant concern, and the current design risks creating a gameplay loop that is not stable or engaging.  The evidence suggests a potential risk, and a thorough review is necessary to mitigate this risk before proceeding with further development."
+        "reason": "The core loop and survival needs system are crucial for player experience. While the design decisions are important, the core loop is a fundamental element of the game, and the current design introduces a potential material duplication issue.  The evidence suggests that the core loop is essential for player engagement and the current design introduces a potential issue with the core loop.  The design is not fully resolved and requires further consideration."
       },
       "development": {
-        "recommendedState": "ACTIVE",
+        "recommendedState": "REDESIGN",
         "fatalCriteria": [
           "CORE_FUN_CANNOT_BE_RECOVERED",
           "HOMAGE_OR_REINTERPRETATION_CANNOT_PRODUCE_DISTINCT_IDENTITY",
@@ -200,9 +198,11 @@
         ],
         "evidence": [
           "game-seed-market-evidence.json",
-          "game-seed-platform-profiles.json"
+          "game-seed-platform-profiles.json",
+          "ESA Power of Play 2025 Global Report",
+          "Newzoo 2025 Full-Year Games Market Review"
         ],
-        "reason": "수정 설계를 다시 검토해 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
+        "reason": "수정 설계를 다시 검토하여 ACTIVE/REDESIGN/DISCARD 중 하나를 권고하라. 이유와 근거는 치명 판단에 필요한 핵심만 짧게 작성하라."
       },
       "qa": {
         "recommendedState": "REDESIGN",
@@ -213,11 +213,11 @@
           "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
         ],
         "evidence": [
-          "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base.",
-          "Player can survive for 30 minutes without any issues.",
-          "Player can collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+          "The provided evidence supports the importance of the core loop and survival needs system, and the questions clarify their impact on player experience.",
+          "The graphics design should be consistent with the survival genre and the core loop's progression.",
+          "The survival needs system is a reference for the action survival benchmark, ensuring its relevance and balance."
         ],
-        "reason": "The evidence provided shows that the player can survive for 30 minutes without any issues, which is a significant concern that the QA team should address. Ensuring the game's quality and stability is crucial, and the QA department is responsible for addressing potential risks and maintaining a high level of performance."
+        "reason": "The current design does not meet the essential criteria for the survival genre and the core loop's progression, leading to a DISCARD."
       },
       "balance": {
         "recommendedState": "ACTIVE",
@@ -228,36 +228,68 @@
           "REQUIRED_PRODUCTION_SCOPE_EXCEEDS_CAPABILITY_AND_SCOPING_DOWN_DESTROYS_CORE_FUN"
         ],
         "evidence": [
-          "CORE_FUN_TO_LEARN",
-          "DISTINCT_IDENTITY"
+          "readable survival needs",
+          "resource-to-crafting decisions",
+          "exploration risk and recovery"
         ],
-        "reason": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+        "reason": "개인의 생존기록과 채집·제작 선택이 다시 설계한다."
       }
     },
     "marketMetricAloneUsedForDiscard": false
   },
   "runtimeMetrics": {
     "phaseMs": {
-      "designer_draft": 92556,
-      "independent_department_reviews": 552748,
-      "department_representatives": 42454,
-      "lead_rebuttals": 50194,
-      "cross_department_meeting": 17001,
-      "designer_revision": 49624,
-      "five_lead_fatal_review": 223736
+      "designer_draft_base": 0,
+      "designer_draft_gate": 0,
+      "independent_department_reviews": 159124,
+      "department_representatives": 60895,
+      "lead_rebuttals": 72214,
+      "cross_department_meeting": 16867,
+      "designer_revision_base": 65917,
+      "designer_revision_gate": 58057,
+      "five_lead_fatal_review": 260466
     },
-    "totalModelCalls": 33,
-    "totalModelCallMs": 1028304,
-    "modelPhaseConcurrency": 1,
-    "modelKeepAlive": "2m",
+    "totalModelCalls": 27,
+    "totalModelCallMs": 1413806,
+    "modelPhaseConcurrency": 4,
+    "phaseConcurrency": {
+      "independent_department_reviews": 4,
+      "department_representatives": 3,
+      "lead_rebuttals": 3,
+      "five_lead_fatal_review": 3
+    },
+    "maxLoadedModelLanes": 2,
+    "modelKeepAlive": "5m",
+    "fastAssistantPool": [
+      "qwen3:0.6b",
+      "gemma3:1b",
+      "llama3.2:1b",
+      "qwen2.5:1.5b",
+      "smollm2:1.7b"
+    ],
+    "checkpoint": {
+      "contractVersion": 1,
+      "reused": true,
+      "completedPhases": 9,
+      "cachedTasks": 30
+    },
+    "modelCenteredReviewOrder": true,
+    "adaptiveConcurrency": true,
+    "departmentScopedContext": true,
     "independentReviewOutputs": 15,
     "fullPoolReviewOutputs": 25
   },
   "designLearning": {
-    "candidateCount": 2,
+    "candidateCount": 3,
     "usedAsDesignContext": true,
     "positiveTrainingEligible": false,
-    "validatedRuntimeRequiredForPositiveTraining": true
+    "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
+    "strictGateHardFailures": [
+      "CORE_FUN_WEAK",
+      "CRITICAL_AXIS_MINIMUM_FAIL"
+    ],
+    "strictGateBypassAllowed": false
   },
   "artbook": {
     "created": false,
@@ -292,7 +324,7 @@
       },
       "designMultiplayer": {
         "required": true,
-        "mode": "SINGLE",
+        "mode": "COOP",
         "valid": true,
         "decisionStage": "GAME_DESIGN",
         "allowedModes": [
@@ -366,7 +398,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-18T02:51:55.322Z"
+    "checkedAt": "2026-09-18T04:41:24.295Z"
   },
   "artbookUi": {
     "status": "WAITING",

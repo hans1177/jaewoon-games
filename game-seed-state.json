@@ -3977,15 +3977,15 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       },
-      "ROBLOX_GENRE": "Survival",
-      "ROBLOX_SUBGENRE": null,
-      "ROBLOX_GENRE_LABEL_KO": "서바이벌",
-      "ROBLOX_SUBGENRE_LABEL_KO": null,
-      "ROBLOX_PLAY_MODE": "SINGLE",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 싱글",
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "COOP",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·협동",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 멀티·협동",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T02:51:55.876Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T04:41:24.364Z",
       "strictDesignReview": {
         "verdict": "REBUILD",
         "totalScore": 18.4,
@@ -13653,6 +13653,191 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-18T02:51:55.876Z"
+      },
+      {
+        "gameId": "survival",
+        "seedId": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "REBUILD",
+        "totalScore": 42.199999999999996,
+        "previousScore": 18.4,
+        "scoreDelta": 23.799999999999997,
+        "hardFailures": [
+          "CORE_FUN_WEAK",
+          "CRITICAL_AXIS_MINIMUM_FAIL"
+        ],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [],
+        "rejectionReasons": [
+          {
+            "code": "CORE_FUN_WEAK",
+            "kind": "HARD_GATE",
+            "axis": "CORE_LOOP_DESIGN",
+            "evidenceLevel": 0,
+            "minimumRequired": 60,
+            "evidence": {
+              "ideaAndDistinctness": 0,
+              "coreLoopDesign": 80,
+              "coreLoopCount": 3,
+              "signatureSystemCount": 2
+            },
+            "requiredAction": "핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          },
+          {
+            "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+            "kind": "HARD_GATE",
+            "axis": "IDEA_AND_DISTINCTNESS",
+            "evidenceLevel": 0,
+            "minimumRequired": 75,
+            "evidence": {
+              "axisScore": 0,
+              "axisWeight": 12
+            },
+            "requiredAction": "정체성·플레이어 판타지·coreFun을 구체화하고 coreLoop와 최소 2개 signature system에 직접 연결한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          },
+          {
+            "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+            "kind": "HARD_GATE",
+            "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+            "evidenceLevel": 60,
+            "minimumRequired": 75,
+            "evidence": {
+              "axisScore": 7.2,
+              "axisWeight": 12
+            },
+            "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          },
+          {
+            "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+            "kind": "HARD_GATE",
+            "axis": "PROGRESSION_ECONOMY_BALANCE_DESIGN",
+            "evidenceLevel": 0,
+            "minimumRequired": 75,
+            "evidence": {
+              "axisScore": 0,
+              "axisWeight": 10
+            },
+            "requiredAction": "진행·자원 흐름·밸런스 규칙을 하나의 반복 가능한 경제/성장 구조로 연결한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          },
+          {
+            "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+            "kind": "HARD_GATE",
+            "axis": "CONTENT_EXPANSION_PLAN",
+            "evidenceLevel": 60,
+            "minimumRequired": 75,
+            "evidence": {
+              "axisScore": 6,
+              "axisWeight": 10
+            },
+            "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          },
+          {
+            "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+            "kind": "HARD_GATE",
+            "axis": "FAILURE_RETRY_RISK_DESIGN",
+            "evidenceLevel": 60,
+            "minimumRequired": 75,
+            "evidence": {
+              "axisScore": 4.8,
+              "axisWeight": 8
+            },
+            "requiredAction": "실패상태·재시도 흐름·위험 압력·회복 규칙을 구체적으로 설계한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          },
+          {
+            "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+            "kind": "HARD_GATE",
+            "axis": "PLATFORM_FIT_DESIGN",
+            "evidenceLevel": 0,
+            "minimumRequired": 75,
+            "evidence": {
+              "axisScore": 0,
+              "axisWeight": 8
+            },
+            "requiredAction": "선택 플랫폼 입력·성능예산·세션 제약·모바일 UX를 실제 구현 조건으로 명시한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          },
+          {
+            "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+            "kind": "HARD_GATE",
+            "axis": "UX_AND_ACCESSIBILITY_PLAN",
+            "evidenceLevel": 0,
+            "minimumRequired": 75,
+            "evidence": {
+              "axisScore": 0,
+              "axisWeight": 6
+            },
+            "requiredAction": "HUD 우선순위·터치/입력·가독성·접근성 계획을 구체적으로 설계한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          },
+          {
+            "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+            "kind": "HARD_GATE",
+            "axis": "ART_AUDIO_DIRECTION",
+            "evidenceLevel": 0,
+            "minimumRequired": 75,
+            "evidence": {
+              "axisScore": 0,
+              "axisWeight": 5
+            },
+            "requiredAction": "시각 정체성·오디오 정체성·게임플레이 피드백 동기화를 연결한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          },
+          {
+            "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+            "kind": "HARD_GATE",
+            "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+            "evidenceLevel": 60,
+            "minimumRequired": 75,
+            "evidence": {
+              "axisScore": 3,
+              "axisWeight": 5
+            },
+            "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+            "bypassAllowed": false,
+            "source": "STAGE_GATE_SCORING_V2"
+          }
+        ],
+        "improvementTargets": [
+          {
+            "dimension": "IDEA_AND_DISTINCTNESS",
+            "current": 0,
+            "maxScore": 12,
+            "gap": 12
+          },
+          {
+            "dimension": "PROGRESSION_ECONOMY_BALANCE_DESIGN",
+            "current": 0,
+            "maxScore": 10,
+            "gap": 10
+          },
+          {
+            "dimension": "PLATFORM_FIT_DESIGN",
+            "current": 0,
+            "maxScore": 8,
+            "gap": 8
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-18T04:41:24.364Z"
       }
     ],
     "causeCounts": {
@@ -13660,9 +13845,9 @@
       "COMPLETE_PLAYABLE_CYCLE_REQUIRED": 1,
       "FAIL_OR_LOSS_CONDITION_REQUIRED": 1,
       "CATEGORY_PROFILE_MATCH": 2,
-      "CORE_FUN_WEAK": 30,
+      "CORE_FUN_WEAK": 31,
       "REQUIRED_AXIS_MINIMUM": 1,
-      "CRITICAL_AXIS_MINIMUM_FAIL": 1
+      "CRITICAL_AXIS_MINIMUM_FAIL": 2
     },
     "preferSeedMaterialFamilies": [],
     "avoidSeedMaterialFamilies": [],
@@ -13678,7 +13863,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-18T02:51:55.877Z"
+    "updatedAt": "2026-09-18T04:41:24.365Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,

@@ -9,44 +9,138 @@
   "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "llama3.2:1b",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 4,
+  "appliedConsensusCount": 5,
   "unresolvedConflictCount": 0,
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
   "content": {
-    "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다",
+    "identity": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
     "playerFantasy": "Survival",
-    "coreFun": "readable survival needs",
+    "coreFun": "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
     "coreLoop": [
-      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
       "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
-      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice.",
+      "Repeat the process to improve and adapt to the ever-changing game world."
     ],
     "signatureSystems": [
       {
         "name": "Survival Needs",
-        "purpose": "Survival needs are the core requirements for survival in the game world.",
-        "playerChoice": "Player can choose to focus on survival needs, crafting, or exploration."
+        "purpose": "Survival needs are the core of the game, and players must gather resources to survive.",
+        "playerChoice": "Player choice is crucial in survival games, allowing players to customize their experience."
+      },
+      {
+        "name": "Resource-to-Crafting Decisions",
+        "purpose": "Resource-to-crafting decisions are critical in survival games, allowing players to craft essential items and equipment.",
+        "playerChoice": "Player choice is crucial in survival games, allowing players to customize their experience."
       }
     ],
-    "progressionDirection": "Survival Needs",
-    "visualDirection": "Survival Needs",
-    "mobileUx": "Survival Needs",
-    "marketTargetDirection": "Survival Needs",
-    "steamExpansionDecision": "Survival Needs",
-    "multiplayerMode": "SINGLE",
-    "multiplayerExpansionDecision": "Survival Needs",
+    "progressionDirection": "Competitive",
+    "visualDirection": "Competitive",
+    "mobileUx": "COOP",
+    "marketTargetDirection": "Competitive",
+    "steamExpansionDecision": "MultiplayerExpansionDecision",
+    "multiplayerMode": "COOP",
+    "multiplayerExpansionDecision": "MultiplayerExpansionDecision",
     "technicalAssumptions": [
-      "Player can survive for 30 minutes without any issues.",
-      "Player can collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build."
+      "Unity",
+      "C#",
+      "MonoBehaviour"
     ],
     "validationQuestions": [
-      "Is the player able to survive for 30 minutes without any issues?",
-      "Is the player able to collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build?"
+      "Is the game's core loop consistent with the survival genre?",
+      "Is the survival needs system balanced and rewarding?",
+      "Are the player's choices and upgrades meaningful and impactful?"
     ],
     "openQuestions": [
-      "What is the purpose of Survival Needs in the game world?",
-      "What is the purpose of the core loop in the game world?"
+      "What are the key design decisions that impact the player's experience?",
+      "How does the game's progression system reward and challenge players?",
+      "What are the most important player choices in the game?"
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "Survival Needs",
+        "toSystem": "Survival Needs",
+        "trigger": "Survival Needs needs",
+        "stateChange": "Survival Needs needs"
+      },
+      {
+        "fromSystem": "Survival Needs",
+        "toSystem": "Survival Needs",
+        "trigger": "Survival Needs needs",
+        "stateChange": "Survival Needs needs"
+      },
+      {
+        "fromSystem": "Survival Needs",
+        "toSystem": "Survival Needs",
+        "trigger": "Survival Needs needs",
+        "stateChange": "Survival Needs needs"
+      }
+    ],
+    "progressionEconomyBalance": {
+      "progressionLoop": "Survival Needs needs",
+      "resourceFlow": "Survival Needs needs",
+      "balanceRules": "Survival Needs needs"
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "Survival Needs needs",
+        "newGameplay": "Survival Needs needs",
+        "systemImpact": "Survival Needs needs"
+      },
+      {
+        "milestone": "Survival Needs needs",
+        "newGameplay": "Survival Needs needs",
+        "systemImpact": "Survival Needs needs"
+      },
+      {
+        "milestone": "Survival Needs needs",
+        "newGameplay": "Survival Needs needs",
+        "systemImpact": "Survival Needs needs"
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "Survival Needs needs",
+        "Survival Needs needs",
+        "Survival Needs needs"
+      ],
+      "retryFlow": "Survival Needs needs",
+      "riskPressure": "Survival Needs needs",
+      "recoveryRules": "Survival Needs needs"
+    },
+    "platformFitPlan": {
+      "targetPlatform": "ROBLOX",
+      "inputModel": "Survival Needs needs",
+      "performanceBudget": "Survival Needs needs",
+      "sessionConstraints": "Survival Needs needs"
+    },
+    "uxAccessibilityPlan": {
+      "hudPriorities": "Survival Needs needs",
+      "touchAndInput": "Survival Needs needs",
+      "readability": "Survival Needs needs",
+      "accessibility": "Survival Needs needs"
+    },
+    "artAudioDirection": {
+      "visualIdentity": "Survival Needs needs",
+      "audioIdentity": "Survival Needs needs",
+      "gameplayFeedbackSync": "Survival Needs needs"
+    },
+    "implementationTraceability": [
+      {
+        "designElement": "Survival Needs needs",
+        "responsibleSystem": "Survival Needs needs",
+        "validationEvidence": "Survival Needs needs"
+      },
+      {
+        "designElement": "Survival Needs needs",
+        "responsibleSystem": "Survival Needs needs",
+        "validationEvidence": "Survival Needs needs"
+      },
+      {
+        "designElement": "Survival Needs needs",
+        "responsibleSystem": "Survival Needs needs",
+        "validationEvidence": "Survival Needs needs"
+      }
     ]
   }
 }

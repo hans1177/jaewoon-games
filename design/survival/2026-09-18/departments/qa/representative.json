@@ -7,29 +7,28 @@
   "representativeModel": "qwen2.5:1.5b",
   "leadModel": "qwen2.5:1.5b",
   "assistantModels": [
-    "smollm2:1.7b",
-    "qwen3:0.6b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "ASSIGNED_DEPARTMENT"
+      "Survival Needs needs needs to be consistent with the survival genre and the core loop's progression."
     ],
     "fix": [
-      "ASSIGNED_DEPARTMENT=qa"
+      "The survival needs system should be balanced and rewarding for players."
     ],
     "add": [
-      "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\"}",
-      "risks:GAME_SEED"
+      "The player's choices and upgrades should be meaningful and impactful."
     ],
     "risks": [
-      "ASSIGNED_DEPARTMENT=qa"
+      "The core loop should be repeated to improve and adapt to the ever-changing game world."
     ],
     "evidence": [
-      "ASSIGNED_DEPARTMENT=qa"
+      "The survival needs system is a reference for the action survival benchmark."
     ],
     "questions": [
-      "ASSIGNED_DEPARTMENT=qa"
+      "Is the game's core loop consistent with the survival genre? Is the survival needs system balanced and rewarding? Are the player's choices and upgrades meaningful and impactful?"
     ]
   }
 }

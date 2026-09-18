@@ -6,13 +6,13 @@
   "department": "graphics",
   "leadModel": "gemma3:1b",
   "assistantModels": [
-    "llama3.2:1b",
-    "qwen2.5:1.5b"
+    "qwen3:0.6b",
+    "llama3.2:1b"
   ],
   "models": [
     "gemma3:1b",
-    "llama3.2:1b",
-    "qwen2.5:1.5b"
+    "qwen3:0.6b",
+    "llama3.2:1b"
   ],
   "reviews": [
     {
@@ -20,22 +20,46 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "visual style"
+          "game_core_design_reference_target_design_reference_reference_revision_owner_full_rebuild_20260916-1"
         ],
         "fix": [
-          "visual quality"
+          "game_seed_market_evidence.json"
         ],
         "add": [
-          "color correction"
+          "game_seed_platform_profiles.json"
         ],
         "risks": [
-          "color palette"
+          "game_seed_market_evidence.json"
         ],
         "evidence": [
-          "gameplay details"
+          "Vampire Survivors"
         ],
         "questions": [
-          "game balance"
+          "TARGET_DESIGN_REFERENCE"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+        ],
+        "add": [
+          "DISTINCT_IDENTITY=\"개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.\""
+        ],
+        "risks": [
+          "MARKET_EVIDENCE_SUMMARY={\"role\":\"TARGET_DESIGN_REFERENCE\",\"targetMarketScope\":\"GLOBAL\",\"hardPassFailGate\":false,\"available\":true,\""
+        ],
+        "evidence": [
+          "REFERENCE_GAMES\":[]"
+        ],
+        "questions": [
+          "CORE_FUN_TO_LEARN\":[]"
         ]
       }
     },
@@ -44,46 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "Survival Needs are the core requirements for survival in the game world. Player can choose to focus on survival needs, crafting,  "
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
         ],
         "fix": [
-          "Survival needs are the core requirements for survival in the game world. Player can choose to focus on survival needs, crafting,  "
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
         ],
         "add": [
-          "Survival needs are the core requirements for survival in the game world. Player can choose to focus on survival needs, crafting,  "
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
         ],
         "risks": [
-          "Survival needs are the core requirements for survival in the game world. Player can choose to focus on survival needs, crafting,  "
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
         ],
         "evidence": [
-          "Survival needs are the core requirements for survival in the game world. Player can choose to focus on survival needs, crafting,  "
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
         ],
         "questions": [
-          "Survival needs are the core requirements for survival in the game world. Player can choose to focus on survival needs, crafting,  "
-        ]
-      }
-    },
-    {
-      "model": "qwen2.5:1.5b",
-      "memberRole": "ASSISTANT",
-      "review": {
-        "keep": [
-          "ASSIGNED_DEPARTMENT: graphics"
-        ],
-        "fix": [
-          "GAME_SEED: {"
-        ],
-        "add": [
-          "GAME_SEED: {"
-        ],
-        "risks": [
-          "GAME_SEED: {"
-        ],
-        "evidence": [
-          "GAME_SEED: {"
-        ],
-        "questions": [
-          "GAME_SEED: {"
+          "survival run run run run run run run run run run run run run run run run run run run run run run run run run run run run run run"
         ]
       }
     }

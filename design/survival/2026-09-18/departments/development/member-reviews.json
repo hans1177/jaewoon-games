@@ -6,13 +6,13 @@
   "department": "development",
   "leadModel": "llama3.2:1b",
   "assistantModels": [
-    "qwen2.5:1.5b",
-    "smollm2:1.7b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "models": [
     "llama3.2:1b",
-    "qwen2.5:1.5b",
-    "smollm2:1.7b"
+    "qwen3:0.6b",
+    "gemma3:1b"
   ],
   "reviews": [
     {
@@ -20,70 +20,70 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "GAME_SEED"
+          "coreLoop"
         ],
         "fix": [
-          "GAME_SEED"
+          "coreLoop"
         ],
         "add": [
-          "CORE_FUN_TO_LEARN"
+          "signatureSystems"
         ],
         "risks": [
-          "CORE_LOOP"
+          "failureRetryRisk"
         ],
         "evidence": [
-          "MARKET_EVIDENCE_SUMMARY"
+          "marketEvidence_SUMMARY"
         ],
         "questions": [
-          "CORE_LOOP"
+          "marketEvidence_SUMMARY"
         ]
       }
     },
     {
-      "model": "qwen2.5:1.5b",
+      "model": "qwen3:0.6b",
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
           "ASSIGNED_DEPARTMENT=development"
         ],
         "fix": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
         ],
         "add": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "CORE_LOOP=[\"Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.\" , \""
         ],
         "risks": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "Survival Needs needs needs Survival Needs needs needs Survival Needs needs"
         ],
         "evidence": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "Survival Needs needs Survival Needs needs Survival Needs needs"
         ],
         "questions": [
-          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
+          "Survival Needs needs Survival Needs needs Survival Needs needs"
         ]
       }
     },
     {
-      "model": "smollm2:1.7b",
+      "model": "gemma3:1b",
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+          "GAME_SEED"
         ],
         "fix": [
-          "GAME_SEED 설계를 위해 새로운 데이터를 생성하고 새로운 데이터를 이용해 새로운 모델을 생성한다"
+          "CORE_FUN_TO_LEARN"
         ],
         "add": [
-          "GAME_SEED 설계를 위해 새로운 데이터를 생성하고 새로운 데이터를 이용해 새로운 모델을 생성한다"
+          "MARKET_EVIDENCE_SUMMARY"
         ],
         "risks": [
-          "GAME_SEED 설계를 위해 새로운 데이터를 생성하고 새로운 데이터를 이용해 새로운 모델을 생성한다"
+          "failureRetryRisk"
         ],
         "evidence": [
-          "GAME_SEED 설계를 위해 새로운 데이터를 생성하고 새로운 데이터를 이용해 새로운 모델을 생성한다"
+          "game-seed-market-evidence.json"
         ],
         "questions": [
-          "GAME_SEED 설계를 위해 새로운 데이터를 생성하고 새로운 데이터를 이용해 새로운 모델을 생성한다"
+          "TARGET_DESIGN_REFERENCE"
         ]
       }
     }
