@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Initialize game with preserved state and progression
+    const game = {
+      // Preserved state and progression data
+      saveState: {
+        player: {
+          health: 100,
+          energy: 50,
+          position: { x: 0, y: 0 },
+          inventory: []
+        },
+        enemies: [
+          { id: 1, type: 'slime', health: 10, damage: 5 },
+          { id: 2, type: 'pirate', health: 20, damage: 10 }
+        ],
+        progress: {
+          level: 1,
+          experience: 50,
+          currency: { gold: 100, silver: 50 }
+        }
+      },
+      // Game logic and progression system
+      gameLoop: function() {
+        // Game logic and progression system
+      },
+      // UI and input system
+      ui: {
+        healthBar: document.getElementById('health-bar'),
+        inventory: document.getElementById('inventory'),
+        statusMessage: document.getElementById('status-message')
+      }
+    };
+
+    // Initialize game with preserved state and progression
+    game.init();
+
+    // Handle player input and game progression
+    document.addEventListener('keydown', function(e) {
+      if (e.code === 'Space') {
+        game.gameLoop();
+      }
+    });
+
+    // Handle UI updates and game progression
+    game.ui.healthBar.addEventListener('click', function() {
+      game.saveState.player.health += 10;
+    });
+
+    // Handle enemy interactions and progression
+    game.saveState.enemies.forEach(enemy => {
+      enemy.health -= game.saveState.player.damage;
+      if (enemy.health <= 0) {
+        game.saveState.progress.experience += 10;
+        game.saveState.currency.gold += 5;
+      }
+    });
+  </script>
+</body>
+</html>
