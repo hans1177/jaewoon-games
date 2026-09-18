@@ -198,7 +198,6 @@ test('explicit work-order output path overrides runtime default path',()=>{
 
   fs.mkdirSync(path.join(root,'tools'),{recursive:true});
   fs.mkdirSync(path.join(root,'.github','workflows'),{recursive:true});
-  fs.writeFileSync(path.join(root,'VIBE2.md'),'# Vibe2\n','utf8');
   fs.writeFileSync(path.join(root,'tools','vibe2-handoff.mjs'),'// fixture\n','utf8');
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'name: fixture\n','utf8');
   fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
