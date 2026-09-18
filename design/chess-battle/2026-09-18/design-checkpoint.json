@@ -3,232 +3,142 @@
   "gameId": "chess-battle",
   "date": "2026-09-18",
   "seedId": "OWNER-ENROLL-CHESS-BATTLE-20260913",
-  "fingerprint": "956ac3c25f7ff315d5317b1118d6a271e74e4346b63f273b05e04ca22114467f",
-  "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
+  "fingerprint": "bec641bd20f05d40fdbe1b3ad97af2102ed215eee18e11ba66431977320a7349",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1",
-    "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
+    "deterministic_pre_gate"
   ],
   "phases": {
     "designer_draft": {
-      "identity": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임. coreLoop의 단계적 선택과 signatureSystems의 전술적 변수가 결합하여 매 판마다 고유한 전장 상태 변화를 유도한다.",
-      "playerFantasy": "제한된 자원과 예측 가능한 정보 속에서 말들의 고유 능력을 조합하여 적의 방어선을 뚫고 전장의 주도권을 장악하는 지휘관의 판타지.",
-      "coreFun": "반복되는 배치와 이동 선택을 통해 전장 전용 능력이 활성화되고, 유닛 격파 및 목표 달성을 관찰하며 즉각적인 보상과 다음 단계의 전술적 우위를 획득하는 재미.",
+      "identity": "체스의 공간 읽기를 기반으로 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임. coreLoop의 단계적 자원 획득과 signatureSystems의 동적 전장 배치 선택이 플레이어에게 매 순간 유의미한 전술적 상태 변화를 선사한다.",
+      "playerFantasy": "제한된 턴과 전장 제약 속에서 자신만의 체스 말 부대를 지휘하여 적의 방어선을 뚫고 궁극의 전술적 승리를 거두는 지휘관이 된다.",
+      "coreFun": "매 턴마다 제공되는 예측 가능한 전술 정보를 분석하여 최적의 위치에 말을 이동시키고, 즉각적인 유닛 격파와 보상 획득이라는 관찰 가능한 상태 변화를 경험한다.",
       "coreLoop": [
-        "제한된 이동력과 전장 목표가 주어지면 플레이어는 첫 번째 유닛 배치와 이동 경로를 선택한다.",
-        "선택한 경로에 따라 유닛 간 상호작용과 전투가 발생하며 즉각적인 전장 상태 변화와 점수 획득이 일어난다.",
-        "스테이지 목표를 달성하여 보상을 획득하고, 다음 레벨의 새로운 장애물과 강화된 적 패턴에 대응할 준비를 한다."
+        "제한된 이동력과 전장 제약 조건을 확인하고 이번 스테이지의 구체적인 클리어 목표를 설정한다.",
+        "체스 말을 전략적으로 이동시키며 콤보를 유발하고 적 유닛을 제압하여 즉각적인 전장 피드백을 얻는다.",
+        "목표 달성 보상을 획득하여 새로운 말이나 능력을 해제하고 더 복잡한 다음 전장 패턴에 도전한다."
       ],
       "signatureSystems": [
         {
-          "name": "전술 격돌 시스템",
-          "purpose": "체스 말의 이동 법칙을 기반으로 하되 전투 스킬을 결합하여 단순 이동 이상의 교전 판정을 생성한다.",
-          "playerChoice": "플레이어는 어떤 유닛을 먼저 전진시켜 적의 핵심 방어망을 무너뜨리고 아군의 피해를 최소화할지 선택한다."
+          "name": "전술 격전 시스템",
+          "purpose": "플레이어가 체스 말의 고유 이동 규칙을 활용해 적을 격파하고 전장 점령 상태를 유리하게 전환하도록 유도한다.",
+          "playerChoice": "어떤 말을 먼저 전진시키고 어떤 경로로 적의 공격을 회피할지 매 턴마다 세밀하게 결정한다."
         },
         {
-          "name": "전장 오브젝트 변주 시스템",
-          "purpose": "매 스테이지마다 배치되는 특수 지형과 오브젝트를 통해 기존 정형화된 패턴을 깨고 매번 새로운 공간적 제약을 제공한다.",
-          "playerChoice": "플레이어는 지형 버프를 활용할지 아니면 장애물을 파괴하여 새로운 돌파구를 열어갈지 전략적 판단을 내린다."
+          "name": "강화 특성 조합기",
+          "purpose": "스테이지 클리어 보상으로 얻은 자원을 활용해 말의 특수 능력을 강화하고 다음 전투의 양상을 변화시킨다.",
+          "playerChoice": "방어적인 유닛을 강화할지 공격적인 콤보 유닛을 육성할지 선택하여 자신만의 전투 스타일을 구축한다."
         }
       ],
       "systemInterconnections": [
         {
-          "fromSystem": "전술 격돌 시스템",
-          "toSystem": "전장 오브젝트 변주 시스템",
-          "trigger": "유닛이 특정 특수 지형 위로 이동하여 전투를 승리했을 때",
-          "stateChange": "지형이 아군 점령 상태로 전환되며 주변 아군 유닛에게 공격력 버프를 부여한다."
+          "fromSystem": "전술 격전 시스템",
+          "toSystem": "강화 특성 조합기",
+          "trigger": "스테이지 내에서 적 유닛을 성공적으로 격파하고 목표를 달성할 때",
+          "stateChange": "플레이어에게 경험치와 특수 자원이 지급되어 강화 특성 조합기를 통한 능력치 업그레이드가 활성화된다."
         },
         {
-          "fromSystem": "전장 오브젝트 변주 시스템",
-          "toSystem": "진행 및 경제 시스템",
-          "trigger": "모든 장애물과 오브젝트를 성공적으로 파괴하고 레벨을 클리어했을 때",
-          "stateChange": "추가 보상 재화가 지급되고 상점에서 새로운 유닛 강화 패시브를 해제할 수 있게 된다."
+          "fromSystem": "강화 특성 조합기",
+          "toSystem": "전술 격전 시스템",
+          "trigger": "플레이어가 새로운 특성이나 강화 효과를 장착하고 전투를 시작할 때",
+          "stateChange": "체스 말의 공격력과 이동 반경이 확장되어 다음 전장의 난이도와 공략 방식에 직접적인 변화를 준다."
         },
         {
-          "fromSystem": "진행 및 경제 시스템",
-          "toSystem": "전술 격돌 시스템",
-          "trigger": "플레이어가 재화를 소비하여 특정 체스 말의 특수 능력을 업그레이드 완료했을 때",
-          "stateChange": "다음 전투부터 해당 유닛의 사거리와 스킬 데이타가 상향 적용되어 전술 선택지가 넓어진다."
+          "fromSystem": "전술 격전 시스템",
+          "toSystem": "전술 격전 시스템",
+          "trigger": "제한된 턴 내에 목표를 달성하지 못하거나 유닛이 파괴될 때",
+          "stateChange": "전장 위험도가 상승하고 남은 턴 수와 배치 가능한 자원이 재조정되어 긴장감이 높아진다."
         }
       ],
-      "progressionDirection": "초반 0~5분간은 기본 이동과 규칙을 익히고, 5~15분에는 첫 번째 오브젝트 변주와 유닛 강화를 경험하며, 15~30분 동안 복잡한 전장 패턴과 고난도 스테이지를 돌파하는 구조로 확장된다.",
+      "progressionDirection": "초반부에는 기본 체스 규칙과 단순한 이동 제약을 학습하고, 중후반부로 갈수록 다양한 특성 조합과 복잡한 지형 장애물이 도입되어 깊이 있는 전술적 판단을 요구하는 방향으로 진행된다.",
       "progressionEconomyBalance": {
-        "progressionLoop": "스테이지 클리어 -> 재화 획득 -> 유닛 및 특수 능력 업그레이드 -> 더 높은 난이도의 스테이지 도전으로 이어지는 순환 고리.",
-        "resourceFlow": "전투 승리와 오브젝트 파괴를 통해 기본 골드를 획득하고, 이를 소모하여 핵심 유닛의 전투력을 영구적으로 강화한다.",
-        "balanceRules": "스테이지 난이도 상승 곡선에 맞춰 유닛의 필요 업그레이드 비용을 조절하여 무한 파밍을 방지하고 전략적 선택의 무게를 높인다."
+        "progressionLoop": "스테이지 도전 -> 목표 클리어 -> 자원 획득 -> 유닛 및 특성 강화 -> 상위 난이도 스테이지 진입의 순환 구조를 유지한다.",
+        "resourceFlow": "적 격파 및 턴 클리어 시 전술 포인트가 지급되며, 이를 소모해 유닛의 특수 능력을 해제하고 다음 스테이지의 전략적 우위를 점한다.",
+        "balanceRules": "과도한 자원 축적을 방지하기 위해 스테이지별 턴 제한과 소모품 비용을 동적으로 조절하여 항상 긴장감 있는 선택을 유도한다."
       },
       "contentExpansionPlan": [
         {
-          "milestone": "시즌 1: 신규 기물과 특수 지형 추가",
-          "newGameplay": "새로운 이동 패턴을 가진 원거리 마법사 기물과 빙판 지형 장애물이 도입되어 기존 정면 돌파 외의 변칙 플레이가 강제된다.",
-          "systemImpact": "전술 격돌 시스템과 전장 오브젝트 변주 시스템의 조합 경우의 수가 2배 이상 늘어나며 새로운 플레이 패턴을 유도한다."
+          "milestone": "1단계: 지형 변수 확장",
+          "newGameplay": "이동을 제한하거나 특수 버프를 제공하는 타일 지형을 도입하여 기존 체스판 구조에 전략적 다양성을 더한다.",
+          "systemImpact": "전술 격전 시스템의 경로 계산과 배치 선택의 중요성이 대폭 상승하여 플레이어의 고민을 깊게 만든다."
         },
         {
-          "milestone": "시즌 2: 엘리트 보스 레이드 스테이지",
-          "newGameplay": "턴 제한 내에 특수 패턴을 사용하는 거대 보스 기물을 제압해야 하는 고난도 퍼즐 레이드 모드가 추가된다.",
-          "systemImpact": "단순 적 섬멸에서 벗어나 특정 오브젝트 파괴와 유닛 배치 순서가 절대적으로 중요해지는 시스템적 압박을 준다."
+          "milestone": "2단계: 엘리트 적 유닛 도입",
+          "newGameplay": "특정 패턴으로 반격하거나 아군의 이동을 방해하는 엘리트 보스 체스 유닛을 전장에 등장시킨다.",
+          "systemImpact": "강화 특성 조합기를 통한 유닛 성장과 시너지 조합의 필요성이 필수가 되도록 유도한다."
         },
         {
-          "milestone": "시즌 3: 무한 전술 도전 모드",
-          "newGameplay": "매판 무작위로 주어지는 기물 조합으로 연속 스테이지를 클리어하는 로그라이트 형식의 생존 모드가 오픈된다.",
-          "systemImpact": "경제 시스템과 성장 밸류가 초기화된 상태에서 순수 전술적 판단력만을 시험하는 깊이 있는 엔드콘텐츠로 기능한다."
+          "milestone": "3단계: 무한 전술 챌린지 모드",
+          "newGameplay": "제한된 자원으로 연속해서 여러 전장을 돌파해야 하는 고난도 로그라이크 형식의 생존 모드를 해제한다.",
+          "systemImpact": "전체 경제 시스템과 자원 관리의 밸류에이션을 시험하는 궁극의 엔드게임 콘텐츠로 작용한다."
         }
       ],
       "failureRetryRisk": {
         "failureStates": [
-          "제한된 턴 수 내에 스테이지 클리어 목표를 달성하지 못했을 때",
-          "핵심 지휘 유닛이 적의 공격에 의해 파괴되었을 때"
+          "제한된 턴 내에 스테이지 클리어 조건을 달성하지 못한 경우",
+          "핵심 지휘 유닛이 적의 공격에 의해 파괴되어 전투 불능이 된 경우"
         ],
-        "retryFlow": "실패 시 즉시 패배 화면이 출력되며, 플레이어는 실패 원인 분석 후 해당 스테이지를 재시작하거나 유닛 배치를 변경하여 즉시 재도전할 수 있다.",
-        "riskPressure": "자원 소모 없이 재도전이 가능하지만 동일 스테이지 반복 실패 시 최적의 배치 경로를 찾아야 하는 인지적 압박이 가중된다.",
-        "recoveryRules": "연속 3회 실패 시 게임 시스템이 힌트 UI를 활성화하여 추천 이동 경로의 일부를 시각적으로 가이드해 준다."
+        "retryFlow": "실패 즉시 현재 전장의 초기화면으로 부드럽게 복귀하며, 패배 원인을 분석하고 다른 유닛 배치를 시도할 수 있는 재도전 버튼을 제공한다.",
+        "riskPressure": "스테이지가 진행될수록 턴 제한이 엄격해지고 적의 반격 위험이 커져 매 행동마다 신중한 수읽기를 강제한다.",
+        "recoveryRules": "패배 시 일정량의 기본 재화를 보상으로 지급하여 실패하더라도 점진적인 성장을 통해 다음 시도를 유리하게 만들 수 있다."
       },
       "platformFitPlan": {
         "targetPlatform": "ROBLOX",
-        "inputModel": "모바일 터치 및 PC 마우스 클릭 기반의 직관적인 드래그 앤 드롭 이동 인터페이스를 제공한다.",
-        "performanceBudget": "로블록스 플랫폼 내에서 저사양 모바일 기기 기준 30fps 이상을 유지하도록 폴리곤 수를 최적화하고 이펙트를 간소화한다.",
-        "sessionConstraints": "한 판의 플레이 타임을 3~5분 이내로 설정하여 언제 어디서나 짧게 접속해 즐길 수 있도록 세션을 설계한다."
+        "inputModel": "모바일 터치와 PC 마우스 클릭 모두를 지원하는 직관적인 그리드 선택 및 드래그 앤 드롭 입력 모델을 채택한다.",
+        "performanceBudget": "가벼운 로블록스 클라이언트 최적화를 위해 폴리곤 수를 최소화하고 턴제 연산에 소모되는 서버 부하를 줄인다.",
+        "sessionConstraints": "한 판의 플레이 타임을 3~5분 내외로 설계하여 모바일 환경에서도 언제든지 짧고 강렬하게 즐길 수 있도록 보장한다."
       },
-      "visualDirection": "깔끔하고 시인성이 높은 로우폴리곤 체스 보드 스타일을 채택하여 모바일 화면에서도 기물의 종류와 상태를 한눈에 알아볼 수 있도록 한다.",
-      "mobileUx": "엄지손가락 한 손으로 조작할 수 있도록 하단에 핵심 스킬과 이동 버튼을 배치하고, 터치 시 이동 가능한 칸을 하이라이트로 명확히 표시한다.",
+      "visualDirection": "깔끔하고 세련된 미니멀리즘 체스 보드 디자인을 바탕으로, 유닛의 공격과 스킬 발동 시 화려한 이펙트와 명확한 시각적 피드백을 제공한다.",
+      "mobileUx": "엄지손가락 한 손으로도 쉽게 조작할 수 있도록 핵심 버튼과 유닛 선택 영역을 하단에 집중시키고 가독성을 극대화한다.",
       "uxAccessibilityPlan": {
-        "hudPriorities": "남은 턴 수, 현재 목표, 유닛 체력 및 특수 스킬 쿨다운 상태를 화면 상단과 하단에 고정하여 가독성을 높인다.",
-        "touchAndInput": "작은 모바일 화면에서도 터치 미스를 방지하기 위해 드래그 영역과 선택 판정 박스를 여유 있게 설정한다.",
-        "readability": "색상 구분에 의존하지 않고 아이콘 형태와 패턴을 병기하여 색각 이상 플레이어도 판세를 쉽게 읽을 수 있게 한다.",
-        "accessibility": "UI 텍스트 크기 조절 옵션과 중요한 전술 이벤트 발생 시 시각적 효과와 함께 사운드 피드백을 동시에 제공한다."
+        "hudPriorities": "남은 턴 수, 현재 목표, 보유 자원 정보를 화면 상단에 직관적으로 배치하여 플레이어가 항상 인지하도록 한다.",
+        "touchAndInput": "오동작을 방지하기 위해 유닛 이동 전 한 번 더 확인하는 터치 프리뷰 시스템을 도입한다.",
+        "readability": "색약자를 위한 고대비 컬러 모드와 명확한 이동 가능 경로 표시 라인을 제공하여 시각적 인지 편의성을 높인다.",
+        "accessibility": "복잡한 조작을 배제하고 단순 터치와 직관적인 아이콘만으로 모든 게임 플레이가 가능하도록 설계한다."
       },
       "artAudioDirection": {
-        "visualIdentity": "중세 판타지 보드게임을 현대적으로 재해석한 깔끔한 그래픽과 직관적인 이펙트를 지향한다.",
-        "audioIdentity": "말을 이동할 때 나는 묵직한 나무 타격음과 스킬 사용 시의 경쾌한 타격 효과음을 중심으로 구성한다.",
-        "gameplayFeedbackSync": "이동 및 공격 직후 0.1초 이내에 사운드와 진동 피드백이 연동되어 조작의 손맛을 극대화한다."
+        "visualIdentity": "클래식한 보드게임의 고급스러움과 현대적인 사이버네틱 전술 요소를 결합한 독창적인 비주얼 아이덴티티를 구축한다.",
+        "audioIdentity": "말이 이동할 때의 단단한 목재 및 금속 마찰음과 스킬 적중 시 타격감 넘치는 사운드로 전술적 몰입감을 배가시킨다.",
+        "gameplayFeedbackSync": "유닛의 이동, 공격, 적 격파 등 모든 핵심 액션에 0.1초 이내의 시청각적 피드백을 동기화하여 조작감을 극대화한다."
       },
-      "marketTargetDirection": "짧은 시간 동안 깊이 있는 전술적 재미를 찾는 글로벌 캐주얼 전략 및 퍼즐 게임 유저를 타겟으로 한다.",
-      "steamExpansionDecision": "모바일 및 로블록스 플랫폼에서 검증된 데이터를 바탕으로 추후 스팀 플랫폼 진출 시 더 넓은 보드와 정밀한 조작 UI를 확장 적용한다.",
+      "marketTargetDirection": "빠른 템포의 퍼즐과 깊이 있는 전략적 사고를 동시에 원하는 글로벌 모바일 및 코어 게이머층을 겨냥한다.",
+      "steamExpansionDecision": "모바일 및 로블록스 플랫폼에서 검증된 강력한 전술 루프와 콘텐츠 확장성을 바탕으로 향후 고해상도 UI와 멀티플레이를 강화한 스팀 버전 확장을 검토한다.",
       "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "싱글 플레이의 완성도를 우선 확보한 뒤 추후 비동기식 1대1 대전 PvP 모드 확장 가능성을 열어둔다.",
+      "multiplayerExpansionDecision": "향후 유저 간 실시간 전술 대결을 펼칠 수 있는 1대1 경쟁 매치메이킹 모드의 추가 확장 가능성을 열어둔다.",
       "technicalAssumptions": [
-        "서버는 보드 위의 유닛 위치와 이동 경로 데이터만 실시간으로 검증하고 렌더링 및 입력 처리는 클라이언트 엔진에서 전담한다.",
-        "스테이지 데이터는 외부 JSON 포맷으로 관리하여 앱 패키지 업데이트 없이도 신규 퍼즐 스테이지를 유연하게 동적 확장할 수 있다."
+        "서버와 클라이언트 간의 턴 기반 상태 동기화는 경량화된 JSON 메시지를 통해 지연 없이 처리할 수 있다.",
+        "그리드 기반의 이동 가능 영역 계산 알고리즘은 클라이언트 단에서 즉시 연산되어 부드러운 반응 속도를 보장한다."
       ],
       "validationQuestions": [
-        "플레이어가 세션 첫 5분 이내에 체스 고유의 공간 이동 규칙과 스테이지별 전투 목표를 직관적으로 이해하고 몰입하는가?",
-        "매 스테이지마다 제공되는 특수 오브젝트 변주가 반복 플레이 시 발생하는 플레이어의 지루함을 충분히 상쇄하는가?"
+        "플레이어가 매 턴마다 체스 말의 이동 경로와 전장 목표 사이에서 충분한 고민과 재미를 느끼는가?",
+        "실패 후 재도전 과정에서 스트레스보다 다음 전략을 세우는 동기가 더 강하게 유발되는가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "직관적인 턴 기반 유닛 이동 및 전투 기능 구현",
-          "responsibleSystem": "책임 시스템: 전술 격돌 시스템",
-          "validationEvidence": "유닛 이동 시뮬레이션 자동화 테스트를 통해 이동 가능 범위 내 판정이 99퍼센트 이상 정확하게 작동하는지 실행 로그와 유닛 상태 머신을 통해 검증한다."
+          "designElement": "전술 격전 시스템의 그리드 이동",
+          "responsibleSystem": "책임 시스템: 전술 격전 시스템",
+          "validationEvidence": "유닛 선택 시 이동 가능 좌표가 정확히 하이라이트되며 규칙에 맞지 않는 이동은 즉시 차단되는지 테스트로 검증한다."
         },
         {
-          "designElement": "매판 달라지는 특수 지형과 오브젝트 배치 알고리즘",
-          "responsibleSystem": "전장 오브젝트 변주 시스템",
-          "validationEvidence": "스테이지 로드시 무작위 오브젝트 생성 알고리즘이 중복 없이 정상적으로 배치되는지 단위 테스트 코드와 커버리지 리포트를 통해 엄격하게 확인한다."
+          "designElement": "강화 특성 조합기의 자원 연동",
+          "responsibleSystem": "책임 시스템: 강화 특성 조합기",
+          "validationEvidence": "스테이지 클리어 시 획득한 포인트가 정확히 누적되고 특성 해제 시 다음 전투 능력치에 즉시 반영되는지 확인한다."
         },
         {
-          "designElement": "스테이지 클리어 보상 지급 및 영구 유닛 성장 구조",
-          "responsibleSystem": "진행 및 경제 시스템",
-          "validationEvidence": "재화 획득량과 업그레이드 비용 데이터 테이블 간의 밸런스 시뮬레이션을 실행하여 자원 고갈 구간이 없는지 데이터 정합성을 검증한다."
+          "designElement": "시스템 간 상호 연결 상태 변화",
+          "responsibleSystem": "시스템 인터 conexão (연결 구조)",
+          "validationEvidence": "패배 시 위험도 상승과 자원 재조정 규칙이 로그에 정확히 기록되고 다음 루프에 정상 적용되는지 시뮬레이션한다."
         }
       ],
       "openQuestions": [
-        "향후 멀티플레이 PvP 도입 시 턴 제한 시간을 몇 초로 설정하는 것이 모바일 환경에서 가장 적합할까?"
+        "초보 플레이어가 체스 규칙의 진입장벽을 1분 이내로 쉽게 이해할 수 있도록 어떤 시각적 튜토리얼을 제공해야 할까?",
+        "장기적인 리텐션을 유지하기 위해 시즌제 전장 변수나 일일 챌린지 시스템을 어떻게 설계하는 것이 가장 효과적일까?"
       ]
     },
     "deterministic_pre_gate": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 80,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 8,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
-      },
-      "totalScore": 80,
-      "criticalAxisFailures": [],
-      "hardFailures": [],
-      "rejectionReasons": [],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    },
-    "designer_pre_gate_repair_1": {
-      "technicalAssumptions": [
-        "서버는 보드 위의 유닛 위치와 이동 경로 데이터만 실시간으로 검증하고 렌더링 및 입력 처리는 클라이언트 엔진에서 전담한다.",
-        "스테이지 데이터는 외부 JSON 포맷으로 관리하여 앱 패키지 업데이트 없이도 신규 퍼즐 스테이지를 유연하게 동적 확장할 수 있다."
-      ],
-      "validationQuestions": [
-        "플레이어가 세션 첫 5분 이내에 체스 고유의 공간 이동 규칙과 스테이지별 전투 목표를 직관적으로 이해하고 몰입하는가?",
-        "매 스테이지마다 제공되는 특수 오브젝트 변주가 반복 플레이 시 발생하는 플레이어의 지루함을 충분히 상쇄하는가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "직관적인 턴 기반 유닛 이동 및 전투 기능 구현",
-          "responsibleSystem": "전술 격돌 시스템",
-          "validationEvidence": "유닛 이동 시뮬레이션 자동화 테스트를 통해 이동 가능 범위 내 판정이 99퍼센트 이상 정확하게 작동하는지 실행 로그와 유닛 상태 머신을 통해 검증한다."
-        },
-        {
-          "designElement": "매판 달라지는 특수 지형과 오브젝트 배치 알고리즘",
-          "responsibleSystem": "전장 오브젝트 변주 시스템",
-          "validationEvidence": "스테이지 로드시 무작위 오브젝트 생성 알고리즘이 중복 없이 정상적으로 배치되는지 단위 테스트 코드와 커버리지 리포트를 통해 엄격하게 확인한다."
-        },
-        {
-          "designElement": "스테이지 클리어 보상 지급 및 영구 유닛 성장 구조",
-          "responsibleSystem": "진행 및 경제 시스템",
-          "validationEvidence": "재화 획득량과 업그레이드 비용 데이터 테이블 간의 밸런스 시뮬레이션을 실행하여 자원 고갈 구간이 없는지 데이터 정합성을 검증한다."
-        }
-      ]
-    },
-    "deterministic_pre_gate_after_repair_1": {
       "scoreSystem": "STAGE_GATE_SCORING_V2",
       "version": 2,
       "passMinimum": 80,
@@ -292,15 +202,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 16,
-      "successes": 16,
+      "calls": 1,
+      "successes": 1,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 39640,
-      "lastMs": 1978,
+      "totalMs": 12304,
+      "lastMs": 12304,
       "lastError": null,
-      "updatedAt": "2026-09-18T08:37:14.907Z"
+      "updatedAt": "2026-09-18T14:56:00.940Z"
     },
     "gemini:gemini-3.5-flash": {
       "calls": 1,
@@ -308,54 +218,23 @@
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 106,
-      "lastMs": 106,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 44.989799468s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"44s\" } ] } }",
-      "updatedAt": "2026-09-18T08:37:15.028Z"
-    },
-    "gemini:gemini-3.7-flash": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 208,
-      "lastMs": 208,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 44.886966847s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"44s\" } ] } }",
-      "updatedAt": "2026-09-18T08:37:15.130Z"
-    },
-    "gemini:gemini-2.5-flash": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 296,
-      "lastMs": 296,
-      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T08:37:15.218Z"
+      "totalMs": 132,
+      "lastMs": 132,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 58.930584761s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"58s\" } ] } }",
+      "updatedAt": "2026-09-18T14:56:01.098Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
-  "createdAt": "2026-09-18T08:23:15.030Z",
-  "updatedAt": "2026-09-18T08:37:16.342Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T08:37:14.907Z",
+  "createdAt": "2026-09-18T14:55:48.634Z",
+  "updatedAt": "2026-09-18T14:56:01.098Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T14:56:00.940Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": "five_lead_reviews",
-  "failedTask": "balance",
-  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash",
-  "checkpointMigration": {
-    "fromContractVersion": 3,
-    "toContractVersion": 3,
-    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
-    "previousEngineDigest": "4e114701cd81e031c4a089be79544cfb23c4275c8d0f5b5f49d92926084a48ec",
-    "preservedPhaseCount": 2,
-    "preservedTaskCount": 0,
-    "migratedAt": "2026-09-18T08:37:12.887Z"
-  }
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
