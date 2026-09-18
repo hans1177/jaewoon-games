@@ -31,7 +31,7 @@ test('validated playable web is kept and continued',()=>{
   addEventListener('touchstart',()=>{enemy.hp-=1}); function update(){requestAnimationFrame(update)}update();
   function restart(){wave=1} const victory='victory',defeat='defeat'; localStorage.setItem('save','1'); new AudioContext();
   </script></body></html>`;
-  const result=assessExistingWebSource({html,baseline,approvedDesign:true,validationScore:84,sourceExists:true});
+  const result=assessExistingWebSource({html,baseline:{},approvedDesign:true,validationScore:84,sourceExists:true});
   assert.equal(result.strategy,'KEEP_AND_CONTINUE');
   assert.equal(result.preserveExistingSource,true);
   assert.equal(result.fullRewriteAllowed,false);
