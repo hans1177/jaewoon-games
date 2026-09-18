@@ -4,6 +4,7 @@
 
 import fs from 'node:fs';
 import crypto from 'node:crypto';
+import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const clean=(value)=>String(value??'').trim();
@@ -33,11 +34,38 @@ export function validateExternalAiCandidate(row={}){
   if(clean(verification.status).toUpperCase()!=='PASS')reasons.push('VERIFICATION_PASS_REQUIRED');
   if(!METHODS.has(method))reasons.push('VERIFICATION_METHOD_NOT_ALLOWED');
   if(!evidence.length)reasons.push('VERIFICATION_EVIDENCE_REQUIRED');
+  if(evidence.length&&!evidence.some(value=>/^(qa|runtime|source|multi-source|actions-run|artifact):/i.test(value)))reasons.push('VERIFICATION_EVIDENCE_NOT_TRACEABLE');
   if(!patterns.length)reasons.push('DISTILLED_PATTERN_REQUIRED');
   if(row.sourceWrite===true)reasons.push('SOURCE_WRITE_FORBIDDEN');
   if(row.productionPass===true)reasons.push('PRODUCTION_PASS_FORBIDDEN');
   if(row.authorityExpanded===true)reasons.push('AUTHORITY_EXPANSION_FORBIDDEN');
   return {ok:reasons.length===0,reasons,verification:{independent:true,status:'PASS',method,evidence},rawOutputSha256,patterns,cautions};
+}
+
+export function isTrustedDistilledExternalAiEntry(row={}){
+  const verification=row?.verification&&typeof row.verification==='object'?row.verification:{};
+  const evidence=unique(verification.evidence||[]);
+  return row?.sourceKind==='external-ai-distilled'
+    && row?.verified===true
+    && row?.independentlyVerified===true
+    && row?.distilled===true
+    && row?.advisoryOnly===true
+    && row?.reusable===true
+    && row?.rawOutputStored===false
+    && SHA256.test(clean(row?.rawOutputSha256))
+    && verification.independent===true
+    && clean(verification.status).toUpperCase()==='PASS'
+    && METHODS.has(clean(verification.method).toLowerCase())
+    && evidence.length>0
+    && evidence.some(value=>/^(qa|runtime|source|multi-source|actions-run|artifact):/i.test(value))
+    && Array.isArray(row?.patterns)
+    && row.patterns.length>0
+    && row?.directDevelopmentUse!==true
+    && row?.directSourceWrite!==true
+    && row?.directProductionPass!==true
+    && row?.directMasteryCredit!==true
+    && row?.directTrainingSample!==true
+    && row?.authorityExpanded!==true;
 }
 
 export function distillExternalAiKnowledge(input={},existing={}){
@@ -104,6 +132,7 @@ export function runExternalAiDistillation({inputFile='',outputFile='.vibe2/exter
   const input=readJson(inputFile,{records:[]});
   const existing=readJson(outputFile,{version:1,entries:[]});
   const result=distillExternalAiKnowledge(input,existing);
+  fs.mkdirSync(path.dirname(outputFile),{recursive:true});
   fs.writeFileSync(outputFile,JSON.stringify(result.knowledge,null,2)+'\n','utf8');
   return result;
 }
