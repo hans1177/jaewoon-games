@@ -87,7 +87,8 @@
       "company-learning/vibe2-code-pattern-library.json",
       "assets/asset-manifest.json",
       "assets/prototype-asset-presets.json",
-      ".vibe2/external-ai-distilled-knowledge.json"
+      ".vibe2/external-ai-distilled-knowledge.json",
+      ".vibe2/practice-distilled-knowledge.json"
     ],
     "rawUnauthorizedSourceReuseForbidden": true,
     "verifiedInternalCodePatternReuseAllowed": true,
@@ -182,6 +183,10 @@
       "rawPracticeModelAnswerMayEnterCanonicalTraining": false,
       "independentVerificationRequiredBeforeReuse": true,
       "distillationRequiredBeforeReuse": true,
+      "distiller": "tools/vibe2-practice-distillation.mjs",
+      "distilledKnowledgeStore": ".vibe2/practice-distilled-knowledge.json",
+      "minimumTraceableVerificationEvidenceItems": 2,
+      "candidateTextPersistentStorage": false,
       "verifiedDistilledLessonAuthority": "VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE",
       "verifiedDistilledLessonMayEnterRetrieval": true,
       "verifiedProjectOutcomeStillRequiredForPositiveMasteryOrTraining": true,
