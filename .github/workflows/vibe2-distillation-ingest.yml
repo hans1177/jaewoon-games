@@ -26,6 +26,7 @@ on:
       - 'qa/vibe3-trajectory-ingest.test.mjs'
       - 'qa/vibe3-pump-index.test.mjs'
       - 'qa/vibe3-commercial-runtime-import.test.mjs'
+      - 'qa/vibe2-google-play-catalog-coverage.test.mjs'
       - 'company-learning/invalidated-learning-sources.json'
       - 'company-learning/canonical-learning-pipeline.json'
       - 'company-learning/vibe3-trajectories/**'
@@ -142,6 +143,7 @@ jobs:
           node qa/vibe3-trajectory-ingest.test.mjs
           node qa/vibe3-pump-index.test.mjs
           node qa/vibe3-commercial-runtime-import.test.mjs
+          node qa/vibe2-google-play-catalog-coverage.test.mjs
 
       - name: Ingest verified diffs trajectories and refresh readiness
         id: ingest
