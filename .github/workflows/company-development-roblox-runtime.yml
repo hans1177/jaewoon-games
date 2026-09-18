@@ -185,7 +185,7 @@ jobs:
           echo "safe=$safe" >> "$GITHUB_OUTPUT"
           echo "ROBLOX_SOURCE_CANDIDATE=PASS:$GAME_ID"
           echo 'ROBLOX_SOURCE_MODEL_USED=NO'
-          grep -q '^ROBLOX_VIBE3_LEARNING_APPLIED=YES
+          node -e "const e=require(process.argv[1]);if(e.vibe3LearningApplied!==true)process.exit(2);console.log('ROBLOX_VIBE3_LEARNING_EVIDENCE=PASS')" "$evidence"
       - name: Attempt validated Roblox source promotion through PR
         id: merge
         if: steps.generate.outcome == 'success'
