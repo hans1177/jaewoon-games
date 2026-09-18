@@ -121,8 +121,8 @@ jobs:
               --queue=.vibe2/queue.json \
               --root=/tmp/vibe2-main | tee /tmp/vibe2-release-baseline-plan.log
 
-            node --check /tmp/vibe2-main/tools/vibe2-auto-planner.mjs
-            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+            node --check tools/vibe2-auto-planner.mjs
+            node tools/vibe2-auto-planner.mjs \
               --runtime=vibe2-runtime.json \
               --status=/tmp/vibe2-main/company-status.json \
               --catalog=/tmp/vibe2-main/game-catalog.json \
@@ -135,7 +135,7 @@ jobs:
 
             node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import { createVibeContinuousQueue } from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js';
+          import { createVibeContinuousQueue } from './assets/vibe-continuous-queue.js';
           const file = '.vibe2/queue.json';
           const beforeText = fs.readFileSync(file, 'utf8');
           const before = JSON.parse(beforeText);
