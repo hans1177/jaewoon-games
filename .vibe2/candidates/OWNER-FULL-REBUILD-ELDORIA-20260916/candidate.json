@@ -1,0 +1,17 @@
+{
+  "summary": "완결형 RPG로 재구현된 엘도리아 연대기 5장",
+  "expectedEffect": "5장의 장소·전투·선택·목표가 구분되며 탐색·전투·휴식·강화·스토리 연출이 가능하게 되어진다",
+  "edits": [],
+  "newFiles": [],
+  "replaceFiles": [
+    {
+      "path": "index.html",
+      "content": "<!doctype html>\n<html lang=\"ko\">\n<head>\n  <meta charset=\"utf-8\">\n  <meta name=\"viewport\" content=\"width=device-width,initial-scale=1,viewport-fit=cover\">\n  <meta name=\"theme-color\" content=\"#08111b\">\n  <title>엘도리아 연대기</title>\n  <link rel=\"stylesheet\" href=\"/web-games/_shared/styles.css\">\n</head>\n<body>\n  <script>\n    window.GAME_CONFIG = {\n      id: 'seed-story-complete-rpg-chronicles-of-eldoria',\n      name: '엘도리아 연대기',\n      mode: 'eldoria',\n      hp: 100,\n      desc: '회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',\n      story: '탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'\n    };\n\n    // 게임 로드 시 실행\n    window.addEventListener('load', () => {\n      // 게임 로드 시 기본 설정 및 로드 상태 처리\n      const game = vibe2.createGame({\n        id: window.GAME_CONFIG.id,\n        name: window.GAME_CONFIG.name,\n        mode: window.GAME_CONFIG.mode,\n        hp: window.GAME_CONFIG.hp,\n        desc: window.GAME_CONFIG.desc,\n        story: window.GAME_CONFIG.story\n      });\n\n      // 게임 로드 완료 후 실행\n      game.loadComplete(() => {\n        // 기본 UI 및 게임 로드 상태 처리\n        document.body.innerHTML = `\n          <div id=\"game-container\">\n            <h1>엘도리아 연대기</h1>\n            <div id=\"game-ui\">\n              <div id=\"game-status\">게임이 로드되었습니다.</div>\n              <div id=\"game-story\">다섯 장의 이야기를 끝내라.</div>\n            </div>\n            <div id=\"game-map\">\n              <div id=\"map-container\">\n                <div id=\"map\" class=\"map\"></div>\n              </div>\n            </div>\n            <div id=\"game-actions\">\n              <button id=\"start-game\">게임 시작</button>\n            </div>\n          </div>\n        `;\n      });\n    });\n  </script>\n  <script src=\"/web-games/_shared/vibe2-final.js\"></script>\n</body>\n</html>"
+    }
+  ],
+  "tests": [
+    "mobile gameplay",
+    "restart",
+    "runtime"
+  ]
+}

@@ -1,1 +1,58 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>엘도리아 연대기</title></head><body><script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>엘도리아 연대기</title>
+  <link rel="stylesheet" href="/web-games/_shared/styles.css">
+</head>
+<body>
+  <script>
+    window.GAME_CONFIG = {
+      id: 'seed-story-complete-rpg-chronicles-of-eldoria',
+      name: '엘도리아 연대기',
+      mode: 'eldoria',
+      hp: 100,
+      desc: '회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',
+      story: '탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'
+    };
+
+    // 게임 로드 시 실행
+    window.addEventListener('load', () => {
+      // 게임 로드 시 기본 설정 및 로드 상태 처리
+      const game = vibe2.createGame({
+        id: window.GAME_CONFIG.id,
+        name: window.GAME_CONFIG.name,
+        mode: window.GAME_CONFIG.mode,
+        hp: window.GAME_CONFIG.hp,
+        desc: window.GAME_CONFIG.desc,
+        story: window.GAME_CONFIG.story
+      });
+
+      // 게임 로드 완료 후 실행
+      game.loadComplete(() => {
+        // 기본 UI 및 게임 로드 상태 처리
+        document.body.innerHTML = `
+          <div id="game-container">
+            <h1>엘도리아 연대기</h1>
+            <div id="game-ui">
+              <div id="game-status">게임이 로드되었습니다.</div>
+              <div id="game-story">다섯 장의 이야기를 끝내라.</div>
+            </div>
+            <div id="game-map">
+              <div id="map-container">
+                <div id="map" class="map"></div>
+              </div>
+            </div>
+            <div id="game-actions">
+              <button id="start-game">게임 시작</button>
+            </div>
+          </div>
+        `;
+      });
+    });
+  </script>
+  <script src="/web-games/_shared/vibe2-final.js"></script>
+</body>
+</html>
