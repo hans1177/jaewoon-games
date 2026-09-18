@@ -63,8 +63,8 @@ jobs:
             git checkout -B development-queue-reconcile-runtime "origin/$COMPANY_RUNTIME_BRANCH"
             git reset --hard "origin/$COMPANY_RUNTIME_BRANCH"
             git clean -fd
-            git checkout origin/main -- tools/company-development-queue-reconcile.mjs game-catalog.json
-            git reset -- tools/company-development-queue-reconcile.mjs game-catalog.json >/dev/null 2>&1 || true
+            git checkout origin/main -- tools/company-development-queue-reconcile.mjs
+            git reset -- tools/company-development-queue-reconcile.mjs >/dev/null 2>&1 || true
 
             node tools/company-development-queue-reconcile.mjs
 
