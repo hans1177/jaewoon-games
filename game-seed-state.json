@@ -3063,9 +3063,9 @@
         "genre-appropriate sound music and combat feedback",
         "zero blocking runtime or console errors"
       ],
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "REFERENCE_INPUTS": [
         {
           "type": "GAME_REFERENCE",
@@ -3137,9 +3137,31 @@
         "totalScore": 89.4,
         "hardFailures": [],
         "evidencePath": "design/bug-defense/2026-09-18/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": false
       },
-      "strictDesignReviewUpdatedAt": "2026-09-18T06:16:27.112Z"
+      "strictDesignReviewUpdatedAt": "2026-09-18T06:16:27.112Z",
+      "productionTier": 2,
+      "selectedPlatform": "UNITY",
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "UNITY",
+        "targetSourcePath": "unity-games/bug-defense",
+        "webSourcePath": "web-games/bug-defense",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/bug-defense/2026-09-18/design-revised.json",
+        "designDate": "2026-09-18",
+        "artbookSource": "artbook-submissions/bug-defense/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/bug-defense/2026-09-18/strict-design-review.json",
+        "strictDesignScore": 89.4,
+        "excellentDesign": false,
+        "promotedAt": "2026-09-18T06:47:15.773Z"
+      }
     },
     {
       "version": 2,
@@ -13973,7 +13995,7 @@
   ],
   "lastRunAt": "2026-09-14T14:23:36.674Z",
   "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
-  "updatedAt": "2026-09-18T06:30:43.002Z",
+  "updatedAt": "2026-09-18T06:47:15.773Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
