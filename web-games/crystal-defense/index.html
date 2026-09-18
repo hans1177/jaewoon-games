@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #111;
+      color: #fff;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 1em;
+    }
+    button {
+      padding: 0.5em 1em;
+      font-size: 0.9em;
+      margin: 0 0.5em;
+      background-color: #222;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #444;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <button onclick="startGame()">Start Game</button>
+  </main>
+  <script>
+    function startGame() {
+      const gameContainer = document.getElementById('game');
+      gameContainer.innerHTML = `
+        <h2>Game Start</h2>
+        <p>Click to begin the game.</p>
+        <button onclick="beginGame()">Begin Game</button>
+      `;
+    }
+
+    function beginGame() {
+      const gameContainer = document.getElementById('game');
+      gameContainer.innerHTML = `
+        <h2>Game in Progress</h2>
+        <p>Game is now in progress.</p>
+        <button onclick="endGame()">End Game</button>
+      `;
+    }
+
+    function endGame() {
+      const gameContainer = document.getElementById('game');
+      gameContainer.innerHTML = `
+        <h2>Game Over</h2>
+        <p>The game has ended.</p>
+        <button onclick="restartGame()">Restart Game</button>
+      `;
+    }
+
+    function restartGame() {
+      const gameContainer = document.getElementById('game');
+      gameContainer.innerHTML = `
+        <h2>Game Restart</h2>
+        <p>The game has been restarted.</p>
+        <button onclick="startGame()">Start Game</button>
+      `;
+    }
+  </script>
+</body>
+</html>
