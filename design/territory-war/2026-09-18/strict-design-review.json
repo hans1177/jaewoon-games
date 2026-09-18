@@ -1,0 +1,78 @@
+{
+  "version": 4,
+  "gameId": "territory-war",
+  "reviewStage": "DESIGN_STRICT_REVIEW",
+  "scoreScale": 100,
+  "passThreshold": 80,
+  "excellentThreshold": 90,
+  "excellent": false,
+  "totalScore": 91,
+  "scores": {
+    "ideaDistinctness": 6,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "weights": {
+    "ideaDistinctness": 15,
+    "categoryFit": 10,
+    "platformFit": 10,
+    "designFidelity": 15,
+    "session30Quality": 15,
+    "implementationCompleteness": 15,
+    "storyCausality": 10,
+    "progressionBalance": 5,
+    "artDirectionFidelity": 5
+  },
+  "improvementTargets": [
+    {
+      "dimension": "ideaDistinctness",
+      "current": 6,
+      "maxScore": 15,
+      "gap": 9
+    }
+  ],
+  "hardFailures": [
+    "CORE_FUN_WEAK"
+  ],
+  "verdict": "REVISE",
+  "evidence": {
+    "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+    "seedGeneration": "OWNER_REDESIGN_RESET",
+    "materialContractApplied": false,
+    "materialIds": [],
+    "designPath": "design/territory-war/2026-09-18/design-revised.json",
+    "multiplayerDesignMode": "SINGLE",
+    "targetSessionMinutes": 30,
+    "robloxGenreProfile": {
+      "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "genre": "Obby & platformer",
+      "genreLabelKo": "오비·플랫포머",
+      "subgenre": "Tower Obby",
+      "subgenreLabelKo": "타워 오비",
+      "playMode": "SINGLE",
+      "playModeLabelKo": "싱글",
+      "displayLabelKo": "오비·플랫포머 · 타워 오비 · 싱글"
+    },
+    "reviewContextSource": "ACTIVE_SEED"
+  },
+  "policyDocument": "COMPANY_FLOW.md",
+  "rules": {
+    "scoreCannotOverrideHardGate": true,
+    "correctableRejectAction": "FIX_AND_REVALIDATE",
+    "structuralRejectAction": "REBUILD_CANDIDATE",
+    "officialCardBeforePassForbidden": true,
+    "testShelfBeforePassOnly": true,
+    "learningRecordRequired": true,
+    "improvementPriority": "TOP_3_SCORE_GAPS",
+    "implementationScoreComposition": "LEGACY_DESIGN_100",
+    "initialWebStrictRequires30Minutes": false,
+    "final30MinuteContentDepthValidationOnly": true
+  },
+  "reviewedAt": "2026-09-18T01:03:14.927Z"
+}

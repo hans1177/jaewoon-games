@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "territory-war",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "representativeModel": "qwen2.5:1.5b",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "ASSIGNED_DEPARTMENT=qa"
+    ],
+    "fix": [
+      "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+    ],
+    "add": [
+      "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+    ],
+    "risks": [
+      "ASSIGNED_DEPARTMENT=qa"
+    ],
+    "evidence": [
+      "GAME_SEED의 상태: ACTIVE, 게임명: 영토전쟁, 게임 측 target: GLOBAL, market evidence: KINGDOM RUSH, PLANTS VS ZOMBIES, etc."
+    ],
+    "questions": [
+      "디자인 시스템: Real Player Input, Core Gameplay Action, Progression Reward or Meaningful Choice, Risk Failure or Resource Pressure, Goal"
+    ]
+  }
+}

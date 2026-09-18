@@ -1,0 +1,34 @@
+{
+  "version": 4,
+  "gameId": "territory-war",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "representativeModel": "smollm2:1.7b",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "representativeAuthoredByLead": true,
+  "representative": {
+    "keep": [
+      "The player's current defense strategy is maintained."
+    ],
+    "fix": [
+      "The player's current defense strategy is maintained."
+    ],
+    "add": [
+      "The player's current defense strategy is maintained."
+    ],
+    "risks": [
+      "The player's current defense strategy is maintained."
+    ],
+    "evidence": [
+      "The player's current defense strategy is maintained."
+    ],
+    "questions": [
+      "What is the player's current defense strategy?"
+    ]
+  }
+}

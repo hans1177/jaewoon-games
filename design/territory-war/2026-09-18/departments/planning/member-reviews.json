@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "territory-war",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "planning",
+  "leadModel": "qwen3:0.6b",
+  "assistantModels": [
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "models": [
+    "qwen3:0.6b",
+    "gemma3:1b",
+    "llama3.2:1b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        ],
+        "fix": [
+          "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        ],
+        "add": [
+          "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
+        ],
+        "risks": [
+          "Avoid simple action/progression/repitition that only time increases."
+        ],
+        "evidence": [
+          "Kingdom Rush, Bloons TD 6, Plants vs. Zombies 2, Global strategy/session signal, Newzoo 2025 Full-Year Games Market Review, Sensor"
+        ],
+        "questions": [
+          "What is the target audience for the game?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "GAME_SEED_version: 1"
+        ],
+        "fix": [
+          "GAME_SEED_seedId: OWN-ENROLL-TERRITORY-WAR-20260913"
+        ],
+        "add": [
+          "GAME_CATEGORY: SINGLE_DEFENSE_STRATEGY"
+        ],
+        "risks": [
+          "MARKET_EVIDENCE_SUMMARY: TARGET_DESIGN_REFERENCE"
+        ],
+        "evidence": [
+          "Kingdom Rush"
+        ],
+        "questions": [
+          "What is the target audience for the game?"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=planning"
+        ],
+        "fix": [
+          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\""
+        ],
+        "add": [
+          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\""
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=planning"
+        ],
+        "evidence": [
+          "GAME_SEED={\"version\":1,\"seedId\":\"OWNER-ENROLL-TERRITORY-WAR-20260913\",\"gameId\":\"territory-war\",\"gameName\":\"영토전쟁\",\"status\":\"ACTIVE\""
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=planning"
+        ]
+      }
+    }
+  ]
+}

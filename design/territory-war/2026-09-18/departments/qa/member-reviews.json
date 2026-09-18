@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "territory-war",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "qa",
+  "leadModel": "qwen2.5:1.5b",
+  "assistantModels": [
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "models": [
+    "qwen2.5:1.5b",
+    "smollm2:1.7b",
+    "qwen3:0.6b"
+  ],
+  "reviews": [
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "fix": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "add": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "questions": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ]
+      }
+    },
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+        ],
+        "fix": [
+          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+        ],
+        "add": [
+          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+        ],
+        "risks": [
+          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+        ],
+        "evidence": [
+          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+        ],
+        "questions": [
+          "What is the target audience for the game?\n\nWhat is the target audience for the game?\n\nWhat is the target audience for the game?\n\n"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "지정된 QA 부서만 검토하라. 다른 부서는 제외하라."
+        ],
+        "fix": [
+          "각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
+        ],
+        "add": [
+          "GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다."
+        ],
+        "risks": [
+          "ASSIGNED_DEPARTMENT=qa"
+        ],
+        "evidence": [
+          "GAME_SEED의 상태: ACTIVE, 게임명: 영토전쟁, 게임 측 target: GLOBAL, market evidence: KINGDOM RUSH, PLANTS VS ZOMBIES, etc."
+        ],
+        "questions": [
+          "디자인 시스템: Real Player Input, Core Gameplay Action, Progression Reward or Meaningful Choice, Risk Failure or Resource Pressure, Goal"
+        ]
+      }
+    }
+  ]
+}

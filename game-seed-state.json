@@ -3966,15 +3966,15 @@
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
       },
-      "ROBLOX_GENRE": "Survival",
-      "ROBLOX_SUBGENRE": null,
-      "ROBLOX_GENRE_LABEL_KO": "서바이벌",
-      "ROBLOX_SUBGENRE_LABEL_KO": null,
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
       "ROBLOX_PLAY_MODE": "SINGLE",
       "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "서바이벌 · 싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T00:58:51.978Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-17T23:47:19.874Z",
       "strictDesignReview": {
         "verdict": "REVISE",
         "totalScore": 91,
@@ -7274,7 +7274,16 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Tower Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "타워 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-18T01:03:14.927Z"
     },
     {
       "version": 2,
@@ -13485,19 +13494,21 @@
         "recordedAt": "2026-09-17T23:47:19.874Z"
       },
       {
-        "gameId": "survival",
-        "seedId": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
+        "gameId": "territory-war",
+        "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
         "reviewStage": "DESIGN_STRICT_REVIEW",
         "runtimeTarget": null,
         "verdict": "REVISE",
         "totalScore": 91,
-        "previousScore": 91,
-        "scoreDelta": 0,
+        "previousScore": null,
+        "scoreDelta": null,
         "hardFailures": [
           "CORE_FUN_WEAK"
         ],
         "resolvedHardFailures": [],
-        "addedHardFailures": [],
+        "addedHardFailures": [
+          "CORE_FUN_WEAK"
+        ],
         "improvementTargets": [
           {
             "dimension": "ideaDistinctness",
@@ -13510,7 +13521,7 @@
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
-        "recordedAt": "2026-09-18T00:58:51.978Z"
+        "recordedAt": "2026-09-18T01:03:14.927Z"
       }
     ],
     "causeCounts": {
@@ -13535,7 +13546,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-18T00:58:51.979Z"
+    "updatedAt": "2026-09-18T01:03:14.928Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,

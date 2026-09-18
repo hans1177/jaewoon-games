@@ -1,0 +1,95 @@
+{
+  "version": 4,
+  "gameId": "territory-war",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "round": 1,
+  "departmentLeadModels": {
+    "planning": "qwen3:0.6b",
+    "graphics": "gemma3:1b",
+    "development": "llama3.2:1b",
+    "qa": "qwen2.5:1.5b",
+    "balance": "smollm2:1.7b"
+  },
+  "rebuttalAuthoredByDepartmentLeads": true,
+  "rebuttals": {
+    "planning": {
+      "accept": [
+        "OWN",
+        "OTHERS"
+      ],
+      "challenge": [
+        "OWN",
+        "OTHERS"
+      ],
+      "revision": [
+        "OWN",
+        "OTHERS"
+      ],
+      "reason": "OWN의 의견을 수용하고, OTHERS의 의견을 반박하고, 필요한 경우 추가로 수정합니다."
+    },
+    "graphics": {
+      "accept": [
+        "fix",
+        "add",
+        "risks"
+      ],
+      "challenge": [
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "game_concept_validation",
+        "game_design_strategy",
+        "player_experience_design"
+      ],
+      "reason": "The game concept is currently focused on a simple wave and tower defense. It needs to be more complex and engaging to maintain player interest."
+    },
+    "development": {
+      "accept": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "challenge": [
+        "risks",
+        "evidence",
+        "questions"
+      ],
+      "revision": [
+        "keep",
+        "fix",
+        "add"
+      ],
+      "reason": "development"
+    },
+    "qa": {
+      "accept": [
+        "ASSIGNED_DEPARTMENT=qa",
+        "ASSIGNED_DEPARTMENT=development",
+        "ASSIGNED_DEPARTMENT=graphics"
+      ],
+      "challenge": [
+        "What is the target audience for the game?",
+        "What is the player's current defense strategy?"
+      ],
+      "revision": [
+        "What is the target audience for the game?",
+        "What is the player's current defense strategy?"
+      ],
+      "reason": "The target audience and player's current defense strategy are important for understanding the game's intended audience and ensuring that the game's design is aligned with the intended audience."
+    },
+    "balance": {
+      "accept": [
+        "The player's current defense strategy is maintained."
+      ],
+      "challenge": [
+        "The player's current defense strategy is maintained."
+      ],
+      "revision": [
+        "The player's current defense strategy is maintained."
+      ],
+      "reason": "The player's current defense strategy is maintained."
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "territory-war",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "graphics",
+  "leadModel": "gemma3:1b",
+  "assistantModels": [
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "models": [
+    "gemma3:1b",
+    "llama3.2:1b",
+    "qwen2.5:1.5b"
+  ],
+  "reviews": [
+    {
+      "model": "gemma3:1b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "game_design_strategy"
+        ],
+        "fix": [
+          "player_experience_design"
+        ],
+        "add": [
+          "visual_design_strategy"
+        ],
+        "risks": [
+          "gameplay_risk"
+        ],
+        "evidence": [
+          "market_analysis"
+        ],
+        "questions": [
+          "game_concept_validation"
+        ]
+      }
+    },
+    {
+      "model": "llama3.2:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "gameId:territory-war,gameName:영토전쟁,gameCategory:SINGLE_DEFENSE_STRATEGY,referenceGames:[]"
+        ],
+        "fix": [
+          "gameId:territory-war,gameName:영토전쟁,gameCategory:SINGLE_DEFENSE_STRATEGY,referenceGames:[]"
+        ],
+        "add": [
+          "gameId:territory-war,gameName:영토전쟁,gameCategory:SINGLE_DEFENSE_STRATEGY,referenceGames:[]"
+        ],
+        "risks": [
+          "gameId:territory-war,gameName:영토전쟁,gameCategory:SINGLE_DEFENSE_STRATEGY,referenceGames:[]"
+        ],
+        "evidence": [
+          "gameId:territory-war,gameName:영토전쟁,gameCategory:SINGLE_DEFENSE_STRATEGY,referenceGames:[]"
+        ],
+        "questions": [
+          "gameId:territory-war,gameName:영토전쟁,gameCategory:SINGLE_DEFENSE_STRATEGY,referenceGames:[]"
+        ]
+      }
+    },
+    {
+      "model": "qwen2.5:1.5b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "ASSIGNED_DEPARTMENT=graphics"
+        ],
+        "fix": [
+          "GAME_SEED=OWNER-ENROLL-TERRITORY-WAR-20260913"
+        ],
+        "add": [
+          "GAME_SEED=territory-war"
+        ],
+        "risks": [
+          "GAME_SEED=territory-war"
+        ],
+        "evidence": [
+          "GAME_SEED=territory-war"
+        ],
+        "questions": [
+          "GAME_SEED=territory-war"
+        ]
+      }
+    }
+  ]
+}

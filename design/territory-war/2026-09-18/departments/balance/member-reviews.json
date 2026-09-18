@@ -1,0 +1,91 @@
+{
+  "version": 4,
+  "gameId": "territory-war",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": "smollm2:1.7b",
+  "assistantModels": [
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "models": [
+    "smollm2:1.7b",
+    "qwen3:0.6b",
+    "gemma3:1b"
+  ],
+  "reviews": [
+    {
+      "model": "smollm2:1.7b",
+      "memberRole": "LEAD",
+      "review": {
+        "keep": [
+          "The player's current defense strategy is maintained."
+        ],
+        "fix": [
+          "The player's current defense strategy is maintained."
+        ],
+        "add": [
+          "The player's current defense strategy is maintained."
+        ],
+        "risks": [
+          "The player's current defense strategy is maintained."
+        ],
+        "evidence": [
+          "The player's current defense strategy is maintained."
+        ],
+        "questions": [
+          "What is the player's current defense strategy?"
+        ]
+      }
+    },
+    {
+      "model": "qwen3:0.6b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route."
+        ],
+        "fix": [
+          "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases."
+        ],
+        "add": [
+          "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense"
+        ],
+        "risks": [
+          "Avoid simple action/progression/choice that only time increases."
+        ],
+        "evidence": [
+          "Kingdom Rush, Bloons TD 6, Plants vs. Zombies 2, and global strategy/session signal metrics."
+        ],
+        "questions": [
+          "What is the target audience for the game?"
+        ]
+      }
+    },
+    {
+      "model": "gemma3:1b",
+      "memberRole": "ASSISTANT",
+      "review": {
+        "keep": [
+          "game_design_strategy_feedback"
+        ],
+        "fix": [
+          "game_design_strategy_feedback"
+        ],
+        "add": [
+          "game_design_strategy_feedback"
+        ],
+        "risks": [
+          "game_design_strategy_feedback"
+        ],
+        "evidence": [
+          "game_design_strategy_feedback"
+        ],
+        "questions": [
+          "game_design_strategy_feedback"
+        ]
+      }
+    }
+  ]
+}

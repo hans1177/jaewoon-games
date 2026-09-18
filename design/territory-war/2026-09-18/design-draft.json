@@ -1,0 +1,82 @@
+{
+  "version": 4,
+  "gameId": "territory-war",
+  "date": "2026-09-18",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+  "gameSeedSource": "game-seed-state.json",
+  "authorRole": "GAME_DESIGNER_AI",
+  "authorModel": "qwen2.5:1.5b",
+  "singleAuthor": true,
+  "content": {
+    "identity": "Single-Player Defense Strategy",
+    "playerFantasy": "Short Strategy Sessions and Territory Expansion Judgments",
+    "coreFun": "readable territory pressure, expansion tradeoffs, front-line resource decisions",
+    "coreLoop": [
+      "Read the next enemy wave and place towers or defenders on lanes or positions that cover the threatened route.",
+      "Earn resources from defeated enemies and spend them on upgrades, new placements, or tactical changes before pressure increases.",
+      "Adapt the defense to enemy types and wave composition, protect the objective, and clear the stage or boss to unlock harder defense choices."
+    ],
+    "signatureSystems": [
+      {
+        "name": "Real Player Input",
+        "purpose": "React to the player's actions and the state of the world",
+        "playerChoice": "The player's actions and the world's state"
+      },
+      {
+        "name": "Core Gameplay Action",
+        "purpose": "Apply the player's actions to the game's state and observe the resulting changes in the world or target state",
+        "playerChoice": "The player's actions and the world's state"
+      },
+      {
+        "name": "Progression Reward or Meaningful Choice",
+        "purpose": "Apply the player's actions to the game's state and observe the resulting changes in the world or target state",
+        "playerChoice": "The player's actions and the world's state"
+      },
+      {
+        "name": "Risk Failure or Resource Pressure",
+        "purpose": "Apply the player's actions to the game's state and observe the resulting changes in the world or target state",
+        "playerChoice": "The player's actions and the world's state"
+      },
+      {
+        "name": "Goal or Retry",
+        "purpose": "Apply the player's actions to the game's state and observe the resulting changes in the world or target state",
+        "playerChoice": "The player's actions and the world's state"
+      }
+    ],
+    "progressionDirection": "30분 의미 있는 첫 세션 기준: 0~5분 조작·목표 이해, 5~15분 핵심 루프 반복과 첫 성장/선택, 15~25분 변주·난이도·스토리 또는 전략 변화, 25~30분 중간목표·보상·다음 플레이 동기. 단순 체력/대기/반복으로 시간만 늘리는 것은 금지한다.",
+    "visualDirection": "단순한 전략적 움직임과 영토 확장 판단을 중심으로 한 압축형 영토 전략 게임으로 재설계",
+    "mobileUx": "ROBLOX",
+    "marketTargetDirection": "TARGET_DESIGN_REFERENCE",
+    "steamExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
+    "technicalAssumptions": [
+      "The game is designed to be played on a single player platform.",
+      "The game is designed to be played on a multiplayer platform.",
+      "The game is designed to be played on a cross-platform platform."
+    ],
+    "validationQuestions": [
+      "Does the game have a clear and consistent user interface?",
+      "Does the game have a clear and consistent user experience?",
+      "Does the game have a clear and consistent user experience?",
+      "Does the game have a clear and consistent user experience?",
+      "Does the game have a clear and consistent user experience?",
+      "Does the game have a clear and consistent user experience?",
+      "Does the game have a clear and consistent user experience?",
+      "Does the game have a clear and consistent user experience?"
+    ],
+    "openQuestions": [
+      "What is the target audience for the game?",
+      "What is the target audience for the game?",
+      "What is the target audience for the game?",
+      "What is the target audience for the game?",
+      "What is the target audience for the game?",
+      "What is the target audience for the game?",
+      "What is the target audience for the game?",
+      "What is the target audience for the game?"
+    ]
+  }
+}
