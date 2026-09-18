@@ -58,3 +58,15 @@ test('Gemini daily quota quarantine precedes minute-rate retry handling',()=>{
   assert.match(design,/attempt-=1;\s*continue;/);
   assert.match(design,/2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f/);
 });
+
+
+test('checkpoint quota governor reallocates unique fallback lanes to blocked lead roles',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/const availableExtraFallbacks=fallback\.filter\(model=>!primarySet\.has\(model\)&&!exhausted\.has\(model\)\)/);
+  assert.match(workflow,/const blockedPrimaryRoles=leadPhaseActive/);
+  assert.match(workflow,/const usedFallbacks=new Set\(\)/);
+  assert.match(workflow,/for\(const role of blockedPrimaryRoles\)/);
+  assert.match(workflow,/GEMINI_ADAPTIVE_FALLBACK_LANES=/);
+  assert.match(workflow,/fallback_lanes=\$\{adaptiveLaneSpec\}/);
+  assert.match(workflow,/COMPANY_GEMINI_LEAD_FALLBACK_LANES: \$\{\{ steps\.gemini_quota\.outputs\.fallback_lanes \}\}/);
+});
