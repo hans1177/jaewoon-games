@@ -47,20 +47,35 @@ jobs:
         run: |
           set -euo pipefail
           api="https://api.github.com/repos/${REPOSITORY}/actions/workflows/external-mobile-free-game-playtest.yml/runs?per_page=50"
-          active_other="$(curl --fail --silent --show-error \
+          runs_json="$(curl --fail --silent --show-error \
             -H "Authorization: Bearer ${GH_TOKEN}" \
             -H "Accept: application/vnd.github+json" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            "${api}" | jq --arg current "${CURRENT_RUN_ID}" \
-            '[.workflow_runs[] | select((.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending") and ((.id|tostring)!=$current))] | length')"
-          echo "EXTERNAL_MOBILE_ACTIVE_OTHER=${active_other}"
-          if [ "${active_other}" -gt 0 ]; then
+            "${api}")"
+          running_other="$(jq --arg current "${CURRENT_RUN_ID}" '[.workflow_runs[] | select((.status=="in_progress" or .status=="waiting") and ((.id|tostring)!=$current))] | length' <<<"${runs_json}")"
+          newer_pending="$(jq --argjson current "${CURRENT_RUN_ID}" '[.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id > $current))] | length' <<<"${runs_json}")"
+          older_pending_ids="$(jq -r --argjson current "${CURRENT_RUN_ID}" '.workflow_runs[] | select((.status=="queued" or .status=="pending") and (.id < $current)) | .id' <<<"${runs_json}")"
+          echo "EXTERNAL_MOBILE_RUNNING_OTHER=${running_other}"
+          echo "EXTERNAL_MOBILE_NEWER_PENDING=${newer_pending}"
+          if [ "${running_other}" -gt 0 ] || [ "${newer_pending}" -gt 0 ]; then
             echo 'should_run=NO' >> "$GITHUB_OUTPUT"
             echo 'EXTERNAL_MOBILE_GATE=DEFER_TO_EXISTING_ACTIVE_RUN'
-          else
-            echo 'should_run=YES' >> "$GITHUB_OUTPUT"
-            echo 'EXTERNAL_MOBILE_GATE=RUN'
+            exit 0
           fi
+          if [ -n "${older_pending_ids}" ]; then
+            while IFS= read -r stale_id; do
+              [ -n "${stale_id}" ] || continue
+              echo "EXTERNAL_MOBILE_CANCEL_OLDER_PENDING=${stale_id}"
+              curl --fail --silent --show-error \
+                -X POST \
+                -H "Authorization: Bearer ${GH_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                -H "X-GitHub-Api-Version: 2022-11-28" \
+                "https://api.github.com/repos/${REPOSITORY}/actions/runs/${stale_id}/cancel" || true
+            done <<<"${older_pending_ids}"
+          fi
+          echo 'should_run=YES' >> "$GITHUB_OUTPUT"
+          echo 'EXTERNAL_MOBILE_GATE=RUN'
 
   playtest:
     needs: gate
