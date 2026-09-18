@@ -6,6 +6,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
+import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -108,6 +109,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     testTargets,
     protectedScopeSignals,
     diagnosticEvidence,
+    existingWebAssessment,
     fileDigests,
     reuseKey,
     generatedAt:new Date().toISOString()
