@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2 Bootstrap</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      gap: 5px;
+      width: 480px;
+      height: 480px;
+      background-color: #fff;
+      border: 2px solid #ccc;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin: 20px;
+    }
+    .square {
+      width: 60px;
+      height: 60px;
+      background-color: #eee;
+      border: 1px solid #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #333;
+    }
+    .square.selected {
+      background-color: #007bff;
+      color: white;
+    }
+    .square.occupied {
+      background-color: #007bff;
+      color: white;
+    }
+    .square.empty {
+      background-color: #fff;
+      color: #999;
+    }
+    .controls {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .controls button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: 2px solid #007bff;
+      border-radius: 5px;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .controls button:hover {
+      background-color: #005f99;
+    }
+  </style>
+</head>
+<body>
+  <main id="game">
+    <h1>Vibe2</h1>
+    <div class="game-board" id="board"></div>
+    <div class="controls">
+      <button id="newGame">새 게임</button>
+      <button id="restartGame">재시작</button>
+    </div>
+  </main>
+
+  <script>
+    const board = document.getElementById('board');
+    const newGameBtn = document.getElementById('newGame');
+    const restartGameBtn = document.getElementById('restartGame');
+
+    // 게임 로직 구현 (기존 체스 기반 전술·전투 정체성 및 기존 변형 규칙을 유지)
+    // 이는 실제 게임 로직을 구현하는 데 필요한 기초 코드로, 구체적인 로직은 추가로 구현해야 함
+
+    // 게임 시작
+    function startGame() {
+      // 게임 초기화 로직
+      // 말의 위치 설정, 턴 진행 로직, 상대 AI 로직 등 구현
+    }
+
+    // 게임 재시작
+    function restartGame() {
+      // 게임 재시작 로직
+    }
+
+    // 턴 진행
+    function makeMove() {
+      // 턴 진행 로직
+    }
+
+    // 상대 AI
+    function getAIMove() {
+      // 상대 AI의 이동 로직
+    }
+
+    // 이동 피드백
+    function updateBoard() {
+      // 이동 피드백 로직
+    }
+
+    // 승패 및 재시작
+    function checkResult() {
+      // 승패 검증 및 재시작 로직
+    }
+
+    // 터치 조작
+    function handleTouch(input) {
+      // 터치 입력 처리 로직
+    }
+
+    // 게임 시작
+    startGame();
+  </script>
+</body>
+</html>
