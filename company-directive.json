@@ -345,7 +345,12 @@
         "timeouts": 1,
         "jsonFailures": 2
       },
-      "banScope": "GAME_DESIGNER_ONLY"
+      "banScope": "GAME_DESIGNER_ONLY",
+      "geminiFallbackModels": [
+        "gemini-3.8-flash",
+        "gemini-3.7-flash",
+        "gemini-3.6-flash"
+      ]
     },
     "departments": [
       "planning",
