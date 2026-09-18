@@ -22,7 +22,8 @@ function setIfChanged(key,value,reason){
 setIfChanged('REFERENCE_GAMES',uniq(seed.REFERENCE_GAMES).slice(0,4),'NORMALIZE_OPTIONAL_REFERENCE_GAMES');
 
 const materialIds=uniq(seed.SEED_MATERIAL_IDS).slice(0,4);
-if(!Array.isArray(seed.SEED_MATERIAL_IDS))setIfChanged('SEED_MATERIAL_IDS',materialIds,'NORMALIZE_MATERIAL_IDS');
+if(Array.isArray(seed.SEED_MATERIAL_IDS)&&materialIds.length>=2)setIfChanged('SEED_MATERIAL_IDS',materialIds,'NORMALIZE_MATERIAL_IDS');
+if(!Array.isArray(seed.SEED_MATERIAL_IDS))delete seed.SEED_MATERIAL_IDS;
 if(!Array.isArray(seed.REFERENCE_INPUTS)||seed.REFERENCE_INPUTS.length===0){
   const materialMap=new Map((state.seedMaterials||[]).map(row=>[clean(row?.materialId),row]));
   const materialInputs=materialIds.map(id=>materialMap.get(id)).filter(Boolean).map(row=>({
