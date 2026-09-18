@@ -43,7 +43,8 @@ function historicalMaintenanceById(registry={}){
 function registeredHistoricalMaintenanceTask(item={},registryById=new Map()){
   const entry=registryById.get(clean(item.gameId));if(!entry)return false;
   const evidence=new Set((Array.isArray(item.evidence)?item.evidence:[]).map(clean));
-  return item.historicalDeploymentRecovery===true
+  const historicalRecoveryMarked=item.historicalDeploymentRecovery===true||evidence.has('historical-deployment-recovery:yes');
+  return historicalRecoveryMarked
     &&item.postReleaseFocused===true
     &&item.packageLongWorkProtected===true
     &&clean(item.packageRole)==='implementation-owner'
@@ -59,10 +60,11 @@ function synchronizeQueueLifecycle(queueInput={},catalog={},historicalRegistry={
     if(!isProductionImplementationTask(item))return item;
     const game=byId.get(clean(item.gameId));
     if(!game&&registeredHistoricalMaintenanceTask(item,historicalById)){
+      const canonicalHistoricalTask=item.historicalDeploymentRecovery===true?item:{...item,historicalDeploymentRecovery:true};
       if(clean(item.status).toLowerCase()==='cancelled'&&clean(item.blocker)==='lifecycle-inactive:MISSING_FROM_CATALOG'){
-        return{...item,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(item.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE'])]};
+        return{...canonicalHistoricalTask,status:'queued',blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:null,evidence:[...new Set([...(canonicalHistoricalTask.evidence||[]),'lifecycle-sync:HISTORICAL_REGISTRY_ACTIVE'])]};
       }
-      return item;
+      return canonicalHistoricalTask;
     }
     if(!game||!lifecycleAllowsDevelopment(game)){
       const state=game?gameLifecycleState(game):'MISSING_FROM_CATALOG';
