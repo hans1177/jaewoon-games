@@ -50,3 +50,16 @@ test('strict hard-gate feedback returns to the same game designer without bypass
   assert.match(design,/하드관문 실패는 삭제·재명명·무시하지 말고/);
   assert.match(design,/strictGateBypassAllowed:false/);
 });
+
+test('game designer schema supplies every stage gate v2 evidence axis',()=>{
+  for(const field of [
+    'systemInterconnections','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk',
+    'platformFitPlan','uxAccessibilityPlan','artAudioDirection','implementationTraceability'
+  ]) assert.match(design,new RegExp(field));
+  assert.match(design,/signatureSystems:\{type:'array',minItems:2/);
+  assert.match(design,/systemInterconnections:\{type:'array',minItems:3/);
+  assert.match(design,/contentExpansionPlan:\{type:'array',minItems:3/);
+  assert.match(design,/failureStates:\{type:'array',minItems:2/);
+  assert.match(design,/implementationTraceability:\{type:'array',minItems:3/);
+  assert.match(design,/targetPlatform:\{type:'string',enum:\['ROBLOX','UNITY','FORTNITE_UEFN'\]\}/);
+});
