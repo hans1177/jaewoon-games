@@ -218,19 +218,59 @@
       "questions": [
         "알의 무게 중심 변화가 물리 엔진 기반의 실제 토크를 발생시키는지, 아니면 단순 수치 기반의 감속인지 확정이 필요함"
       ]
+    },
+    "five_lead_reviews::graphics": {
+      "keep": [
+        "밝고 유쾌한 카툰 렌더링 스타일과 캐릭터 애니메이션을 유지하여 코믹한 잠입 분위기를 조성하는 방향성은 적절함."
+      ],
+      "fix": [
+        "알의 무게와 크기에 따른 시각적 변화(속도감, 흔들림)를 캐릭터 애니메이션에 즉각 반영하도록 구체화할 것."
+      ],
+      "add": [
+        "경비병의 시야각을 색상뿐만 아니라 바닥의 패턴이나 그림자 변화로도 인지할 수 있는 시각적 보조 장치를 추가할 것."
+      ],
+      "risks": [
+        "로블록스 환경에서 다수의 경비병과 알 오브젝트가 동시에 렌더링될 때 발생하는 드로우 콜 부하 및 프레임 저하 가능성."
+      ],
+      "evidence": [
+        "Subway Surfers의 높은 가독성 및 Crossy Road의 단순 명료한 시각적 피드백이 모바일 캐주얼 시장에서 검증됨."
+      ],
+      "questions": [
+        "알의 무게에 따른 이동 속도 변화를 플레이어가 시각적으로 즉각 체감할 수 있는 구체적인 애니메이션 기법은 무엇인가?"
+      ]
+    },
+    "five_lead_reviews::planning": {
+      "keep": [
+        "코믹 잠입과 운반 무게 중심 시스템을 결합한 독창적인 캐주얼 루프를 유지한다."
+      ],
+      "fix": [
+        "알 운반 무게 중심 시스템의 조작 난이도와 이동 속도 감소율을 구체적인 수치로 명시하라."
+      ],
+      "add": [
+        "멀티플레이 확장성 검토를 위한 단기 리텐션 지표 측정 마일스톤을 추가하라."
+      ],
+      "risks": [
+        "짧은 세션 내에 잠입과 운반의 전략적 선택지가 과도할 경우 피로도가 증가할 수 있다."
+      ],
+      "evidence": [
+        "글로벌 캐주얼 세션 벤치마크인 4분 평균 플레이 시간에 부합하는 루프 설계이다."
+      ],
+      "questions": [
+        "경비 생태 적응 시스템의 학습 곡선이 초기 1분 이내에 직관적으로 체감되는가?"
+      ]
     }
   },
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 1,
-      "successes": 1,
+      "calls": 2,
+      "successes": 2,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 11024,
-      "lastMs": 11024,
+      "totalMs": 12462,
+      "lastMs": 1438,
       "lastError": null,
-      "updatedAt": "2026-09-18T08:40:09.483Z"
+      "updatedAt": "2026-09-18T08:40:19.744Z"
     },
     "gemini:gemini-3.5-flash": {
       "calls": 1,
@@ -253,16 +293,50 @@
       "lastMs": 2770,
       "lastError": null,
       "updatedAt": "2026-09-18T08:40:12.282Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 2,
+      "successes": 1,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 9331,
+      "lastMs": 6022,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=25",
+      "updatedAt": "2026-09-18T08:40:18.305Z"
+    },
+    "gemini:gemini-3.6-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 112,
+      "lastMs": 112,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 40.162177527s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"40s\" } ] } }",
+      "updatedAt": "2026-09-18T08:40:19.857Z"
+    },
+    "gemini:gemini-3.8-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 2416,
+      "lastMs": 2416,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T08:40:22.161Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T08:39:58.456Z",
-  "updatedAt": "2026-09-18T08:40:12.283Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T08:40:12.282Z",
+  "updatedAt": "2026-09-18T08:40:22.161Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:40:19.744Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
-    "gemini-3-flash-preview": "gemini-3-flash-preview"
+    "gemini-3-flash-preview": "gemini-3-flash-preview",
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
