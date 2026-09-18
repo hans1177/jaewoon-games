@@ -43,7 +43,7 @@ function setup(){
   assert.equal(first.queue.tasks.length,1);
   const second=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,repoRoot:root});
   assert.equal(second.added,false);
-  assert.equal(second.reason,'NO_NEW_SOURCE_CYCLE');
+  assert.equal(second.reason,'PROTECTED_SLOT_OCCUPIED');
   assert.equal(JSON.parse(fs.readFileSync(queueFile,'utf8')).tasks.length,1);
 }
 
