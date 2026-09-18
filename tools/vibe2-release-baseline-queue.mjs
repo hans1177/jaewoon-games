@@ -70,22 +70,26 @@ function ownerDirectiveTask(directive){
   if(!responsibleFiles.length||responsibleFiles.some(file=>!file.startsWith(`${sourceRoot}/`)))return null;
   const workUnits=Math.max(5,Math.trunc(Number(directive?.workUnits)||5));
   const extraEvidence=(directive?.evidence||[]).map(clean).filter(Boolean);
+  const mode=clean(directive?.mode||'FULL_REBUILD').toUpperCase();
+  const assessExisting=mode==='ASSESS_EXISTING_WEB';
   return {
     id,gameId,target:'web',department:'development',type:'implementation',goal:clean(directive?.goal),
     responsibleFiles,dependencies:[],priority:clean(directive?.priority)||'critical',releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,
     ownerDirective:true,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,
     sourceRoot,estimatedRisk:'high',speculativeEligible:false,
-    fullRebuild:true,rebuildMode:'FULL_REBUILD',workUnits,taskWorkUnits:workUnits,
+    fullRebuild:!assessExisting,rebuildMode:assessExisting?'ASSESS_EXISTING_WEB':'FULL_REBUILD',workUnits,taskWorkUnits:workUnits,
     evidence:[
-      'central-policy:COMPANY_FLOW.md',
-      'owner-directive:full-web-game-rebuild',
+      'central-policy:company-learning/platform-release-roadmap.json',
+      assessExisting?'owner-directive:existing-web-assessment':'owner-directive:full-web-game-rebuild',
+      assessExisting?'strategy-decision:EXPLORATION':'source-bootstrap-mode:NEW_WEB_IMPLEMENTATION',
       `source-root:${sourceRoot}`,
       ...extraEvidence
     ]
   };
 }
-function isImportedOwnerFullRebuildTask(task){
-  return task?.ownerDirective===true&&Array.isArray(task?.evidence)&&task.evidence.includes('owner-directive:full-web-game-rebuild');
+function isImportedOwnerWebTask(task){
+  if(task?.ownerDirective!==true||!Array.isArray(task?.evidence))return false;
+  return task.evidence.includes('owner-directive:full-web-game-rebuild')||task.evidence.includes('owner-directive:existing-web-assessment');
 }
 function ownerDirectiveSpec(task){
   return JSON.stringify({
@@ -119,7 +123,7 @@ function importOwnerDirectives(queue,directivesFile){
   const activeIds=new Set(activeDirectives.map(row=>row.task.id));
   let pruned=[];
   if(inboxExists){
-    pruned=(queue.tasks||[]).filter(task=>isImportedOwnerFullRebuildTask(task)&&!activeIds.has(clean(task.id)));
+    pruned=(queue.tasks||[]).filter(task=>isImportedOwnerWebTask(task)&&!activeIds.has(clean(task.id)));
     if(pruned.length){
       queue=createVibeContinuousQueue({...queue,tasks:(queue.tasks||[]).filter(task=>!pruned.some(row=>row.id===task.id))});
     }
@@ -135,7 +139,7 @@ function importOwnerDirectives(queue,directivesFile){
       continue;
     }
     const existing=tasks[index];
-    if(!isImportedOwnerFullRebuildTask(existing))continue;
+    if(!isImportedOwnerWebTask(existing))continue;
     if(ownerDirectiveSpec(existing)===ownerDirectiveSpec(task))continue;
     tasks[index]=task;
     refreshed.push(task);
@@ -180,7 +184,7 @@ export function queueReleaseBaselineGap({catalogFile,queueFile,repoRoot,ownerDir
       sourceRoot,estimatedRisk:'high',speculativeEligible:true,
       releaseImplementationScope:'INCREMENTAL_BASELINE_GAP',releaseImplementationComplete:false,
       evidence:[
-        'central-policy:COMPANY_FLOW.md',
+        'central-policy:company-learning/platform-release-roadmap.json',
         `development-baseline:${baseline.path||baseline.file}`,
         request?.path?`release-request:${request.path}`:'release-request:implicit-building',
         `source-root:${sourceRoot}`,
