@@ -47,7 +47,8 @@ function reusableEvidence(task = {}) {
   const prefixes = [
     'exploration-reuse:', 'exploration-impact:', 'exploration-tests:', 'role-result:',
     'incremental-qa-hash:', 'incremental-qa-cache:', 'workload:', 'failure-cause:',
-    'speculative-result:', 'speculative-winner:', 'repair-mode:', 'diagnostic:'
+    'speculative-result:', 'speculative-winner:', 'repair-mode:', 'diagnostic:',
+    'game-study:', 'game-study-intelligence:', 'game-study-knowledge-updated'
   ];
   return [...new Set((Array.isArray(task.evidence) ? task.evidence : [])
     .map(clean)
@@ -92,10 +93,26 @@ function reusableContext(task = {}) {
   };
 }
 
+function knowledgeSummary(knowledge = {}) {
+  const entries = Array.isArray(knowledge?.entries) ? knowledge.entries : [];
+  const merged = Array.isArray(knowledge?.derived?.mergedKnowledge) ? knowledge.derived.mergedKnowledge : [];
+  const conflicts = Array.isArray(knowledge?.derived?.conflicts) ? knowledge.derived.conflicts : [];
+  const hypotheses = Array.isArray(knowledge?.derived?.hypotheses) ? knowledge.derived.hypotheses : [];
+  return {
+    entryCount: entries.length,
+    gameCount: new Set(entries.map((row) => clean(row?.gameId)).filter(Boolean)).size,
+    engineCount: new Set(entries.map((row) => clean(row?.engine)).filter(Boolean)).size,
+    crossGamePatternCount: merged.filter((row) => row?.crossGameVerified === true).length,
+    conflictCount: conflicts.length,
+    supportedHypothesisCount: hypotheses.filter((row) => clean(row?.status) === 'SUPPORTED_ACROSS_GAMES').length,
+    latestNovelty: knowledge?.derived?.latestNovelty || null
+  };
+}
+
 const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const resolveFrom = (root, file) => path.isAbsolute(clean(file)) ? clean(file) : path.join(root, clean(file));
 
-export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelism = {}, experience = {}, repoRoot = process.cwd() } = {}) {
+export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelism = {}, experience = {}, knowledge = {}, repoRoot = process.cwd() } = {}) {
   const errors = [];
   const docs = runtime.documentation || {};
   const expected = docs.machineStateVersions || {};
@@ -110,7 +127,8 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   add(Number(expected.queue || 0) > 0 && Number(queue.version || 0) !== Number(expected.queue), 'QUEUE_VERSION_MISMATCH');
   add(Number(expected.parallelism || 0) > 0 && Number(parallelism.version || 0) !== Number(expected.parallelism), 'PARALLELISM_VERSION_MISMATCH');
   add(Number(expected.experience || 0) > 0 && Number(experience.version || 0) !== Number(expected.experience), 'EXPERIENCE_VERSION_MISMATCH');
-  add(Number(expected.handoff || 0) > 0 && Number(expected.handoff) !== 2, 'HANDOFF_VERSION_MISMATCH');
+  add(Number(expected.gameStudyKnowledge || 0) > 0 && Number(knowledge.version || 0) !== Number(expected.gameStudyKnowledge), 'GAME_STUDY_KNOWLEDGE_VERSION_MISMATCH');
+  add(Number(expected.handoff || 0) > 0 && Number(expected.handoff) !== 3, 'HANDOFF_VERSION_MISMATCH');
 
   const humanDocs = Array.isArray(docs.humanDocuments) ? docs.humanDocuments.map(clean).filter(Boolean) : [];
   const humanDocumentRequired = docs.humanDocumentRequired === true;
@@ -128,6 +146,7 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
   add(clean(state.queue) !== clean(sources.queue), 'QUEUE_SOURCE_DIVERGED');
   add(clean(state.parallelism) !== clean(sources.parallelism || adaptive.stateFile), 'PARALLELISM_SOURCE_DIVERGED');
   add(clean(state.experience) !== clean(sources.experience), 'EXPERIENCE_SOURCE_DIVERGED');
+  add(clean(state.gameStudyKnowledge) !== clean(sources.gameStudyKnowledge), 'GAME_STUDY_KNOWLEDGE_SOURCE_DIVERGED');
   add(clean(adaptive.stateFile) !== clean(state.parallelism), 'ADAPTIVE_STATE_FILE_DIVERGED');
 
   const steps = Array.isArray(adaptive.steps) ? adaptive.steps.map(Number) : [];
@@ -154,6 +173,8 @@ export function validateVibe2MachineState({ runtime = {}, queue = {}, parallelis
       const normalized = clean(file);
       add(!normalized || !fs.existsSync(path.join(repoRoot, normalized)), `${name}_WORKFLOW_MISSING`);
     }
+    const knowledgeFile = clean(state.gameStudyKnowledge || sources.gameStudyKnowledge);
+    add(!knowledgeFile || !fs.existsSync(path.join(repoRoot, knowledgeFile)), 'GAME_STUDY_KNOWLEDGE_FILE_MISSING');
   }
 
   return { ok: errors.length === 0, errors: [...new Set(errors)] };
@@ -164,6 +185,7 @@ export function buildVibe2Handoff({
   queue = {},
   parallelism = {},
   experience = {},
+  knowledge = {},
   consistency = { ok: true, errors: [] }
 } = {}) {
   const tasks = Array.isArray(queue.tasks) ? queue.tasks : [];
@@ -180,7 +202,7 @@ export function buildVibe2Handoff({
   const reusable = tasks.filter((task) => clean(task.packageId) || reusableEvidence(task).length || clean(task.blocker));
 
   return {
-    version: 2,
+    version: 3,
     kind: 'vibe2-machine-handoff',
     consistency: { ok: consistency?.ok !== false, errors: Array.isArray(consistency?.errors) ? [...consistency.errors] : [] },
     sourceOfTruth: docs.machineSourceOfTruth || 'vibe2-runtime.json',
@@ -189,7 +211,8 @@ export function buildVibe2Handoff({
       runtimeVersion: Number(runtime.version || 0),
       queueVersion: Number(queue.version || 0),
       parallelismVersion: Number(parallelism.version || 0),
-      experienceVersion: Number(experience.version || 0)
+      experienceVersion: Number(experience.version || 0),
+      gameStudyKnowledgeVersion: Number(knowledge.version || 0)
     },
     workPolicy: {
       largeWorkExecution: work.largeWorkExecution || 'phased-until-complete',
@@ -227,11 +250,13 @@ export function buildVibe2Handoff({
     experience: {
       recordCount: records.length
     },
+    gameStudyKnowledge: knowledgeSummary(knowledge),
     readOrder: Array.isArray(work.handoffReadOrder) ? work.handoffReadOrder : [
       'vibe2-runtime.json',
       '.vibe2/queue.json',
       '.vibe2/parallelism-control.json',
-      '.vibe2/experience.json'
+      '.vibe2/experience.json',
+      '.vibe2/game-study-knowledge.json'
     ],
     commands: {
       handoff: 'node tools/vibe2-handoff.mjs',
@@ -245,7 +270,8 @@ export function generateVibe2Handoff({
   runtimeFile = 'vibe2-runtime.json',
   queueFile = '',
   controlFile = '',
-  experienceFile = ''
+  experienceFile = '',
+  knowledgeFile = ''
 } = {}) {
   const runtimePath = path.resolve(runtimeFile);
   const repoRoot = path.dirname(runtimePath);
@@ -254,11 +280,13 @@ export function generateVibe2Handoff({
   const queuePath = resolveFrom(repoRoot, clean(queueFile) || state.queue || runtime.sources?.queue || '.vibe2/queue.json');
   const controlPath = resolveFrom(repoRoot, clean(controlFile) || state.parallelism || runtime.sources?.parallelism || runtime.adaptiveBackpressure?.stateFile || '.vibe2/parallelism-control.json');
   const experiencePath = resolveFrom(repoRoot, clean(experienceFile) || state.experience || runtime.sources?.experience || '.vibe2/experience.json');
+  const knowledgePath = resolveFrom(repoRoot, clean(knowledgeFile) || state.gameStudyKnowledge || runtime.sources?.gameStudyKnowledge || '.vibe2/game-study-knowledge.json');
   const queue = readJson(queuePath, { version: 0, tasks: [] });
   const parallelism = readJson(controlPath, { version: 0 });
   const experience = readJson(experiencePath, { version: 0, records: [] });
-  const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, repoRoot });
-  return buildVibe2Handoff({ runtime, queue, parallelism, experience, consistency });
+  const knowledge = readJson(knowledgePath, { version: 0, entries: [], derived: {} });
+  const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, knowledge, repoRoot });
+  return buildVibe2Handoff({ runtime, queue, parallelism, experience, knowledge, consistency });
 }
 
 export function writeVibe2Handoff(file, snapshot) {
@@ -274,7 +302,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     runtimeFile: clean(args.runtime) || 'vibe2-runtime.json',
     queueFile: clean(args.queue),
     controlFile: clean(args.control),
-    experienceFile: clean(args.experience)
+    experienceFile: clean(args.experience),
+    knowledgeFile: clean(args.knowledge)
   });
   if (clean(args.output)) writeVibe2Handoff(args.output, snapshot);
   console.log(JSON.stringify(snapshot, null, 2));
