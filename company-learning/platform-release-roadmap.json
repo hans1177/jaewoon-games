@@ -1,5 +1,5 @@
 {
-  "version": 11,
+  "version": 12,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-18",
@@ -196,7 +196,7 @@
     "SILENT_APPROVED_SCOPE_REDUCTION"
   ],
   "developmentLifecycleMachine": {
-    "version": 2,
+    "version": 3,
     "authority": "MACHINE_EXECUTION_CONTRACT",
     "humanDocumentRequired": false,
     "machineSourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -622,6 +622,83 @@
         "learningMayExpandAuthority": false,
         "learningMayReplaceNativeVerification": false
       }
+    },
+    "intentAmplificationMultiverse": {
+      "version": 1,
+      "authority": "MACHINE_EXECUTION_CONTRACT",
+      "humanDocumentRequired": false,
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+      "purpose": "AMPLIFY_OWNER_INTENT_MEMORY_AND_VERIFIED_LEARNING_INTO_MANY_PLAYABLE_PROJECT_WORLDS_WITHOUT_REPLACING_HUMAN_AGENCY",
+      "humanAgencyPrimary": true,
+      "vibeRole": "INTENT_MEMORY_CREATIVE_CAPABILITY_AMPLIFIER",
+      "consciousnessClaimed": false,
+      "sanctuarySemantics": {
+        "meaning": "DURABLE_OWNER_INTENT_PROJECT_MEMORY_AND_RESUMABLE_CREATIVE_CONTINUITY",
+        "canonicalProjectStateMustRemainRecoverable": true,
+        "checkpointBeforeRiskyBranchOrStageTransition": true,
+        "completedVerifiedWorkMustBeReusable": true,
+        "restartFromBlankForbiddenWhenValidContinuationStateExists": true,
+        "durableSources": [
+          "company-learning/platform-release-roadmap.json",
+          ".vibe2/experience.json",
+          ".vibe2/game-study-knowledge.json",
+          "company-learning/vibe3-memory-index.json",
+          "company-learning/vibe3-recombination-memory.json",
+          "company-learning/vibe3-task-playbooks.json",
+          "company-learning/vibe2-code-pattern-library.json"
+        ]
+      },
+      "multiverseExpansion": {
+        "enabled": true,
+        "unit": "PROJECT_VARIANT_OR_NEW_PROJECT",
+        "conceptualExpansionUnbounded": true,
+        "executionResourceBounded": true,
+        "canonicalIdentityProtected": true,
+        "branchMustNotOverwriteCanonicalProject": true,
+        "eachBranchRequires": [
+          "project-id",
+          "parent-project-or-seed",
+          "approved-platform-and-genre-lock",
+          "verified-learning-context",
+          "source-provenance"
+        ],
+        "verifiedCrossProjectRecombinationAllowed": true,
+        "rawCopyForbidden": true,
+        "newExpressionRequired": true,
+        "sameGameKnowledgePriority": true,
+        "branchMayReturnVerifiedLessonsToCanonicalLearning": true
+      },
+      "lifecycleBinding": {
+        "webFirstExecutableBase": "WEB_BASE_IMPLEMENTATION",
+        "webBaselineGate": "WEB_DEVELOPMENT_BASELINE_READY",
+        "nativeContinuation": "TARGET_PLATFORM_SOURCE_BIND",
+        "nativeRuntime": "TARGET_PLATFORM_RUNTIME",
+        "robloxPostReleaseFocus": "POST_RELEASE_FOCUSED_DEVELOPMENT",
+        "robloxProtectedRunnerSlots": 1,
+        "webBaseContinuesIntoNative": true,
+        "validWebBaseRestartFromBlankForbidden": true,
+        "nativeEvidenceRequiredSeparately": true
+      },
+      "learningContinuity": {
+        "continuous24h": true,
+        "googlePlayRotationContinuous": true,
+        "catalogWrapDoesNotStopStudy": true,
+        "canonicalDistillationContinuous": true,
+        "waitingForVerifiedSamplesIsCollectionStateNotFailure": true,
+        "verifiedLearningReuseRequired": true,
+        "productionWorkPreemptsPractice": true,
+        "practiceMayNotExpandAuthority": true,
+        "modelPromotionStillRequiresFixedHoldoutAbThenCanary": true
+      },
+      "expansionLoop": [
+        "LOAD_OWNER_INTENT_AND_CANONICAL_PROJECT_STATE",
+        "LOAD_VERIFIED_LEARNING_AND_RECOMBINATION_MEMORY",
+        "CREATE_OR_CONTINUE_ONE_PLAYABLE_PROJECT_WORLD",
+        "IMPLEMENT_WEB_BASE_OR_NATIVE_CONTINUATION",
+        "VERIFY_RUNTIME_QA_AND_REGRESSION",
+        "PERSIST_NEW_VERIFIED_LESSONS",
+        "CONTINUE_EXISTING_WORLD_OR_BRANCH_NEW_PROJECT_WORLD"
+      ]
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
