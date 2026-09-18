@@ -1,0 +1,240 @@
+{
+  "contractVersion": 3,
+  "gameId": "amusement-tycoon",
+  "date": "2026-09-19",
+  "seedId": "OWNER-ALL-DESIGN-RESET-AMUSEMENT-TYCOON-20260917",
+  "fingerprint": "afc0d7c8484808020f252d910e49801593b4862d29a060df87cc80d1cde745b0",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
+  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "status": "IN_PROGRESS",
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "놀이공원 타이쿤은 플레이어가 직접 3D 공간에 길을 설계하고 어트랙션을 배치하여 손님의 만족도와 재정 상태를 동시에 극대화하는 경영 시뮬레이션 게임입니다. coreLoop를 통해 공간 효율성과 자원 수급의 균형을 맞추며, signatureSystems를 통해 손님의 실시간 심리 상태와 시설 유지보수를 직접 통제하는 독창적인 선택과 상태 변화를 경험하게 합니다.",
+      "playerFantasy": "플레이어는 전설적인 놀이공원의 총지배인이 되어, 좁은 부지를 효율적인 동선으로 재탄생시키고 수많은 관람객들이 환호하는 최고의 테마파크를 완성하는 경영 판타지를 체험합니다.",
+      "coreFun": "매 순간 주어지는 자원으로 최적의 어트랙션을 건설하고 손님의 이동 동선을 관찰하며, 즉각적인 수익 발생과 만족도 상승이라는 관찰 가능한 상태 변화를 통해 몰입감 있는 경영의 재미를 선사합니다.",
+      "coreLoop": [
+        "플레이어는 초기 자본을 바탕으로 부지에 새로운 놀이기구나 상점을 건설하고 통행로를 연결합니다.",
+        "손님들이 공원에 입장하여 시설을 이용하고 비용을 지불함으로써 골드와 평판 점수가 즉시 누적됩니다.",
+        "누적된 수익으로 시설을 업그레이드하거나 새로운 구역을 해금하며 다음 성장 단계를 선택합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "동선 최적화 시스템",
+          "purpose": "손님의 이동 거리를 실시간으로 계산하여 병목 현상을 방지하고 공원 전체의 회전율을 극대화합니다.",
+          "playerChoice": "플레이어는 좁은 우회로를 만들거나 넓은 광장을 조성하여 손님들의 이동 속도와 만족도를 직접 조절할 수 있습니다."
+        },
+        {
+          "name": "시설 내구도 및 위생 관리",
+          "purpose": "오래 가동된 놀이기구의 고장 확률과 쓰레기 증가로 인한 위생 저하를 방지하여 사고를 예방합니다.",
+          "playerChoice": "플레이어는 정비공과 청소부를 고용하여 즉시 수리할지, 아니면 비용을 아끼다 대형 사고 위험을 감수할지 선택합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "동선 최적화 시스템",
+          "toSystem": "시설 내구도 및 위생 관리",
+          "trigger": "특정 구역에 손님 밀집도가 임계치를 초과할 때",
+          "stateChange": "해당 구역의 쓰레기 생성 속도가 가속화되고 청소 우선순위가 상승합니다."
+        },
+        {
+          "fromSystem": "시설 내구도 및 위생 관리",
+          "toSystem": "경제 및 자원 순환 시스템",
+          "trigger": "놀이기구가 고장나거나 위생 점수가 최저점으로 떨어질 때",
+          "stateChange": "손님 만족도가 급감하며 티켓 판매 수익과 일일 보조금이 크게 감소합니다."
+        },
+        {
+          "fromSystem": "경제 및 자원 순환 시스템",
+          "toSystem": "동선 최적화 시스템",
+          "trigger": "일일 결산에서 흑자 달성 및 신규 자금이 정산될 때",
+          "stateChange": "새로운 토지 확장 권한이 주어져 길을 더 넓게 확장할 수 있게 됩니다."
+        }
+      ],
+      "progressionDirection": "초기에는 단일 구역의 소규모 놀이기구 운영으로 시작하여, 점진적으로 테마 구역을 확장하고 대형 롤러코스터와 편의시설을 해금하며 글로벌 최고 수준의 테마파크로 성장하는 방향으로 진행됩니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "시설 건설 -> 손님 유입 -> 수익 창출 -> 유지보수 및 재투자 -> 영토 확장 및 대형 시설 해금으로 이어지는 선순환 구조를 유지합니다.",
+        "resourceFlow": "입장료와 매점 매출로 골드를 획득하며, 평판 점수를 통해 특수 설계도와 숙련된 인력을 해금하는 이원화된 자원 흐름을 가집니다.",
+        "balanceRules": "고성능 놀이기구는 높은 수익을 창출하는 동시에 빠른 내구도 감소와 막대한 유지비를 요구하여 무분별한 확장을 견제합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "워터파크 테마 구역 추가",
+          "newGameplay": "기존 지상 어트랙션과 완전히 다른 물놀이 시설 건설 및 수온 관리 메커니즘이 도입됩니다.",
+          "systemImpact": "기존 동선 시스템에 수로 연결 요소가 추가되며 새로운 위생 관리 자원이 확장됩니다."
+        },
+        {
+          "milestone": "야간 개장 및 퍼레이드 도입",
+          "newGameplay": "시간대 변화 시스템이 도입되어 야간 조명 관리와 대규모 퍼레이드 동선 기획이 가능해집니다.",
+          "systemImpact": "에너지 소비 시스템과 손님의 체류 시간 연장 효과가 기존 경제 루프에 결합됩니다."
+        },
+        {
+          "milestone": "글로벌 체인 테마파크 경쟁",
+          "newGameplay": "다른 지역의 가상 공원과 주간 단위로 경영 실적을 비교하고 특별 보상을 획득하는 경쟁 콘텐츠입니다.",
+          "systemImpact": "평판 점수의 가치가 상승하며 고급 인력 고용 비용 구조에 직접적인 영향을 줍니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "공원 파산으로 인한 강제 영업 중단",
+          "지속적인 사고 발생으로 인한 평판 폭락 및 강제 폐쇄"
+        ],
+        "retryFlow": "파산 시 마지막으로 저장된 안정적인 시점으로 돌아가거나 일부 자산을 매각하여 부채를 청산하고 재도전할 수 있습니다.",
+        "riskPressure": "시간이 지날수록 증가하는 인건비와 시설 감가상각으로 인해 방심하면 순식간에 적자로 돌아섭니다.",
+        "recoveryRules": "비수익 시설을 철거하고 대출을 활용하여 단기 자금을 확보한 뒤 핵심 동선을 재정비하면 빠르게 회복할 수 있습니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치 및 PC 마우스 드래그를 통한 직관적인 길 잇기 및 시설 드롭 앤 드롭 조작 방식을 채택합니다.",
+        "performanceBudget": "수백 명의 손님 AI와 3D 오브젝트를 최적화하기 위해 인스턴싱 렌더링과 LoD를 적극 활용하여 60프레임을 유지합니다.",
+        "sessionConstraints": "한 번의 플레이는 5분에서 10분 단위의 짧은 경영 판단과 즉각적인 결과 확인이 가능하도록 설계되었습니다."
+      },
+      "visualDirection": "아기자기하고 캐주얼한 로우폴리곤 3D 스타일을 채택하여 다양한 기기에서 쾌적한 가시성과 따뜻한 분위기를 제공합니다.",
+      "mobileUx": "엄지손가락 하나로도 쉽게 길을 설치하고 메뉴를 탐색할 수 있도록 핵심 버튼을 하단에 배치한 인체공학적 UI를 적용합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "현재 자금, 공원 평판, 손님 만족도를 화면 상단에 상시 고정하여 한눈에 파악할 수 있도록 합니다.",
+        "touchAndInput": "오인 터치를 방지하기 위해 건설 모드와 철거 모드를 명확히 구분하고 햅틱 피드백을 제공합니다.",
+        "readability": "색맹인 플레이어도 시설의 상태를 쉽게 알아볼 수 있도록 아이콘과 텍스트를 병기합니다.",
+        "accessibility": "게임 속도 조절 기능을 제공하여 급박한 상황에서도 여유롭게 대처할 수 있도록 배려합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "밝고 채도 높은 파스텔톤 컬러 팔레트를 사용하여 활기찬 놀이공원의 감성을 시각적으로 극대화합니다.",
+        "audioIdentity": "경쾌한 유원지 BGM과 함께 놀이기구 탑승객들의 환호성, 동전 소리 등의 효과음을 입체적으로 제공합니다.",
+        "gameplayFeedbackSync": "건설 완료나 수익 획득 시 즉각적인 사운드와 시각적 파티클을 출력하여 플레이어의 행동을 보상합니다."
+      },
+      "marketTargetDirection": "경영 시뮬레이션과 캐주얼 타이쿤 장르를 선호하는 글로벌 유저층을 타겟으로 하여 남녀노소 누구나 쉽게 접근할 수 있도록 설계했습니다.",
+      "steamExpansionDecision": "추후 스팀 플랫폼 출시 시 정밀한 세부 경영 지표와 단축키 지원, 모드(Mod) 툴 연동 기능을 추가하여 깊이 있는 플레이를 지원할 예정입니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "추후 협동 모드를 도입하여 친구와 함께 거대한 테마파크를 공동 경영하거나 자원을 교류하는 확장성을 검토할 수 있습니다.",
+      "technicalAssumptions": [
+        "대규모 AI 경로 탐색(Pathfinding) 연산을 위해 최적화된 네비메시(NavMesh) 시스템을 도입합니다.",
+        "오프라인 상태에서도 자원이 일정 수준 누적될 수 있도록 세이브 데이터 구조를 경량화합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 5분 안에 길을 만들고 손님이 입장하는 핵심 루프를 자연스럽게 이해하는가?",
+        "동선 최적화와 시설 유지보수 시스템이 서로 유기적으로 맞물려 긴장감을 유지하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "길 설치 및 동선 관리",
+          "responsibleSystem": "동선 최적화 시스템",
+          "validationEvidence": "손님이 길을 따라 이동하는 경로 데이터와 병목 현상 발생 빈도 로그를 통해 검증합니다."
+        },
+        {
+          "designElement": "시설 고장 및 수리",
+          "responsibleSystem": "시설 내구도 및 위생 관리",
+          "validationEvidence": "내구도 소모 시점에 따른 고장 확률과 정비공의 이동 시간을 테스트하여 검증합니다."
+        },
+        {
+          "designElement": "수익 정산 및 재투자",
+          "responsibleSystem": "경제 및 자원 순환 시스템",
+          "validationEvidence": "입장료와 유지비의 밸런스 시뮬레이션을 통해 파산 확률과 성장 주기를 검증합니다."
+        }
+      ],
+      "openQuestions": [
+        "손님의 개별 성향을 너무 세분화하면 모바일 가독성이 떨어질 우려가 있는데 적정 복잡도는 얼마인가?",
+        "멀티플레이어 확장 시 서버 동기화 부하를 최소화할 수 있는 효율적인 데이터 구조는 무엇인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
+  "tasks": {},
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 11063,
+      "lastMs": 11063,
+      "lastError": null,
+      "updatedAt": "2026-09-18T15:08:04.603Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 101,
+      "lastMs": 101,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 55.290842125s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"55s\" } ] } }",
+      "updatedAt": "2026-09-18T15:08:04.728Z"
+    }
+  },
+  "slowPhases": {},
+  "currentPhase": "DEPARTMENT_REVIEWS",
+  "createdAt": "2026-09-18T15:07:53.537Z",
+  "updatedAt": "2026-09-18T15:08:04.729Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:08:04.603Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 55.290842125s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"55s\" } ] } }"
+}
