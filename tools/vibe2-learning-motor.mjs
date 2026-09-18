@@ -257,13 +257,13 @@ export function enrichQueueForCandidateTournaments(queueInput={},masteryInput={}
 
 export function buildIdlePracticeQueue(masteryInput={}){
   const state=createMasteryState(masteryInput);
-  const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0])).slice(0,5);
+  const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
   const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
   const drills=[
     ...repeated.map(([sig,row])=>({id:`review-${sig}`,kind:Number(row.count)>=3?'REPRO_DRILL':'FORCED_RETRIEVAL_REVIEW',priority:'high',productionPreemptible:true,countsAsProductionPass:false,domains:row.domains,sourceFailure:sig})),
     ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:'MINI_GAME_SYSTEM_DRILL',priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
-  return {version:1,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:true,drills:drills.slice(0,8)};
+  return {version:1,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:true,drills};
 }
 
 function isIdlePracticeTask(task={}){
