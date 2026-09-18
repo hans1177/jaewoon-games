@@ -6,14 +6,12 @@
   "fingerprint": "123bf11c99676ceede66466513cc328fa5b6f5e2e0d3500dea382d204a2ef72d",
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
-  "status": "PRE_GATE_BLOCKED",
+  "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
     "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1",
-    "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -65,17 +63,17 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "초급 요새 방어 완료",
+          "milestone": "초급 요새 방어 완료 및 영토 확장 스테이지 진입",
           "newGameplay": "새로운 이동 경로와 비행 유닛이 등장하는 공중 침공 웨이브 모드가 추가되어 대공 방어 타워의 전략적 중요성이 높아집니다.",
           "systemImpact": "기존 지상 중심의 타워 시너지 배치 시스템에 대공 속성 연계 규칙이 새롭게 결합됩니다."
         },
         {
-          "milestone": "중급 요새 방어 완료",
+          "milestone": "중급 요새 방어 완료 및 중부 전선 방어선 구축",
           "newGameplay": "특수 지형 변동 시스템이 도입되어 플레이어가 직접 방어 경로를 수정하거나 장애물을 배치할 수 있게 됩니다.",
           "systemImpact": "실시간 웨이브 적응 시스템의 선택지가 넓어져 플레이어의 즉각적인 개입 능력이 강화됩니다."
         },
         {
-          "milestone": "상급 요새 최종 정복",
+          "milestone": "상급 요새 최종 정복 및 천상의 보루 수호 완료",
           "newGameplay": "무한 웨이브 생존 모드와 고난이도 보스 레이드 전용 규칙이 해제되어 극한의 자원 관리 시험을 제공합니다.",
           "systemImpact": "진행 및 경제 시스템의 상한선이 확장되고 최적화된 빌드 검증이 가능해집니다."
         }
@@ -224,17 +222,17 @@
     "designer_pre_gate_repair_1": {
       "contentExpansionPlan": [
         {
-          "milestone": "초급 요새 방어 완료",
+          "milestone": "초급 요새 방어 완료 및 영토 확장 스테이지 진입",
           "newGameplay": "새로운 이동 경로와 비행 유닛이 등장하는 공중 침공 웨이브 모드가 추가되어 대공 방어 타워의 전략적 중요성이 높아집니다.",
           "systemImpact": "기존 지상 중심의 타워 시너지 배치 시스템에 대공 속성 연계 규칙이 새롭게 결합됩니다."
         },
         {
-          "milestone": "중급 요새 방어 완료",
+          "milestone": "중급 요새 방어 완료 및 중부 전선 방어선 구축",
           "newGameplay": "특수 지형 변동 시스템이 도입되어 플레이어가 직접 방어 경로를 수정하거나 장애물을 배치할 수 있게 됩니다.",
           "systemImpact": "실시간 웨이브 적응 시스템의 선택지가 넓어져 플레이어의 즉각적인 개입 능력이 강화됩니다."
         },
         {
-          "milestone": "상급 요새 최종 정복",
+          "milestone": "상급 요새 최종 정복 및 천상의 보루 수호 완료",
           "newGameplay": "무한 웨이브 생존 모드와 고난이도 보스 레이드 전용 규칙이 해제되어 극한의 자원 관리 시험을 제공합니다.",
           "systemImpact": "진행 및 경제 시스템의 상한선이 확장되고 최적화된 빌드 검증이 가능해집니다."
         }
@@ -272,7 +270,7 @@
         "CORE_LOOP_DESIGN": 80,
         "SYSTEM_INTERCONNECTION_DESIGN": 80,
         "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 60,
+        "CONTENT_EXPANSION_PLAN": 80,
         "FAILURE_RETRY_RISK_DESIGN": 80,
         "PLATFORM_FIT_DESIGN": 80,
         "UX_AND_ACCESSIBILITY_PLAN": 80,
@@ -285,134 +283,17 @@
         "CORE_LOOP_DESIGN": 11.2,
         "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
         "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 6,
+        "CONTENT_EXPANSION_PLAN": 8,
         "FAILURE_RETRY_RISK_DESIGN": 6.4,
         "PLATFORM_FIT_DESIGN": 6.4,
         "UX_AND_ACCESSIBILITY_PLAN": 4.8,
         "ART_AUDIO_DIRECTION": 4,
         "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
       },
-      "totalScore": 78,
-      "criticalAxisFailures": [
-        "CONTENT_EXPANSION_PLAN"
-      ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "CONTENT_EXPANSION_PLAN",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 6,
-            "axisWeight": 10
-          },
-          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
-    },
-    "designer_pre_gate_repair_2": {
-      "contentExpansionPlan": [
-        {
-          "milestone": "초급 요새 방어 완료",
-          "newGameplay": "새로운 이동 경로와 비행 유닛이 등장하는 공중 침공 웨이브 모드가 추가되어 대공 방어 타워의 전략적 중요성이 높아집니다.",
-          "systemImpact": "기존 지상 중심의 타워 시너지 배치 시스템에 대공 속성 연계 규칙이 새롭게 결합됩니다."
-        },
-        {
-          "milestone": "중급 요새 방어 완료",
-          "newGameplay": "특수 지형 변동 시스템이 도입되어 플레이어가 직접 방어 경로를 수정하거나 장애물을 배치할 수 있게 됩니다.",
-          "systemImpact": "실시간 웨이브 적응 시스템의 선택지가 넓어져 플레이어의 즉각적인 개입 능력이 강화됩니다."
-        },
-        {
-          "milestone": "상급 요새 최종 정복",
-          "newGameplay": "무한 웨이브 생존 모드와 고난이도 보스 레이드 전용 규칙이 해제되어 극한의 자원 관리 시험을 제공합니다.",
-          "systemImpact": "진행 및 경제 시스템의 상한선이 확장되고 최적화된 빌드 검증이 가능해집니다."
-        }
-      ]
-    },
-    "deterministic_pre_gate_after_repair_2": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 60,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 6,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
-      },
-      "totalScore": 78,
-      "criticalAxisFailures": [
-        "CONTENT_EXPANSION_PLAN"
-      ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "CONTENT_EXPANSION_PLAN",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 6,
-            "axisWeight": 10
-          },
-          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
@@ -421,30 +302,41 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 22489,
-      "lastMs": 1438,
+      "totalMs": 24217,
+      "lastMs": 1728,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:57:27.733Z"
+      "updatedAt": "2026-09-18T16:01:47.385Z"
+    },
+    "gemini:gemini-3.6-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 98,
+      "lastMs": 98,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 12.348791308s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"12s\" } ] } }",
+      "updatedAt": "2026-09-18T16:01:47.660Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T15:09:56.042Z",
-  "updatedAt": "2026-09-18T15:57:27.783Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T15:57:27.733Z",
+  "updatedAt": "2026-09-18T16:01:47.661Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T16:01:47.385Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=78 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3.6-flash: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 12.348791308s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"12s\" } ] } }",
   "checkpointMigration": {
     "fromContractVersion": 3,
     "toContractVersion": 3,
@@ -454,5 +346,5 @@
     "preservedTaskCount": 0,
     "migratedAt": "2026-09-18T15:57:24.425Z"
   },
-  "preGateRepairGeneration": 2
+  "preGateRepairGeneration": 3
 }

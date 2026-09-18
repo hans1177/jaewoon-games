@@ -3,67 +3,45 @@
   "gameId": "seed-single-defense-strat-celestial-bastion",
   "date": "2026-09-19",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
-  "status": "PRE_GATE_BLOCKED",
-  "currentStage": "PRE_GATE_REPAIR",
-  "percent": 50,
+  "status": "IN_PROGRESS",
+  "currentStage": "DEPARTMENT_REVIEWS",
+  "percent": 67,
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
     "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1",
-    "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
+    "deterministic_pre_gate_after_repair_1"
   ],
-  "completedPhaseCount": 6,
+  "completedPhaseCount": 4,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T15:57:27.733Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=78 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "lastSuccessfulModelCallAt": "2026-09-18T16:01:47.385Z",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_CALL_FAILED gemini-3.6-flash: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 12.348791308s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"12s\" } ] } }",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 8,
+      "successes": 8,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 22489,
-      "lastMs": 1438,
+      "totalMs": 24217,
+      "lastMs": 1728,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:57:27.733Z"
+      "updatedAt": "2026-09-18T16:01:47.385Z"
+    },
+    "gemini:gemini-3.6-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 98,
+      "lastMs": 98,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 12.348791308s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"12s\" } ] } }",
+      "updatedAt": "2026-09-18T16:01:47.660Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T15:57:27.783Z",
-  "blocked": true,
-  "preGateScore": 78,
-  "hardFailures": [
-    "CRITICAL_AXIS_MINIMUM_FAIL"
-  ],
-  "repairPacket": {
-    "source": "DETERMINISTIC_PRE_GATE_V2",
-    "bypassAllowed": false,
-    "totalScore": 78,
-    "passMinimum": 80,
-    "hardFailures": [
-      "CRITICAL_AXIS_MINIMUM_FAIL"
-    ],
-    "failedAxes": [
-      "CONTENT_EXPANSION_PLAN"
-    ],
-    "reasons": [
-      {
-        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-        "axis": "CONTENT_EXPANSION_PLAN",
-        "evidenceLevel": 60,
-        "minimumRequired": 75,
-        "evidence": {
-          "axisScore": 6,
-          "axisWeight": 10
-        },
-        "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-        "bypassAllowed": false
-      }
-    ]
-  }
+  "updatedAt": "2026-09-18T16:01:47.661Z"
 }
