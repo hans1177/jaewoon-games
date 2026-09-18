@@ -86,7 +86,7 @@ jobs:
           if(reviewCount!==1||pool.length<roles.length)throw new Error('five direct lead review contract missing');
           if(directive.ai?.departmentLeadModelsMustBeDistinct!==true||distinctLeads.length<5)throw new Error('five distinct lead model gate failed');
           if(leads.some(model=>!pool.includes(model)))throw new Error('department lead model must be in modelPool');
-          if(directive.ai?.departmentRepresentativeAuthoredByLead!==true||directive.ai?.departmentRebuttalAuthoredByLead!==true)throw new Error('department lead ownership contract missing');
+          if(directive.ai?.departmentRepresentativeAuthoredByLead!==false||directive.ai?.departmentRebuttalAuthoredByLead!==false||directive.ai?.meeting?.designOnlyMeetingRequired!==false||Number(directive.ai?.meeting?.crossDepartmentRebuttalRounds||0)!==0)throw new Error('five direct lead no-meeting contract missing');
           for(const token of [
             'sourceOfTruth: COMPANY_FLOW.md',
             'format: MACHINE_ORIENTED_POLICY_SPEC',
