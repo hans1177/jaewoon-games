@@ -64,7 +64,7 @@ function fullSourceRewriteAllowed(order,target,responsibleFiles=[],exploration={
   const goal=clean(order?.goal);
   const policyAllowed=order?.workerPolicy?.fullFileRewriteAllowed===true;
   const webStrategy=clean(exploration?.existingWebAssessment?.strategy).toUpperCase();
-  if(target==='web')return webStrategy==='FULL_REBUILD'||policyAllowed||/FULL_WEB_GAME_REBUILD|실제 웹게임|프로토타입.*웹게임/i.test(goal);
+  if(target==='web'){if(webStrategy)return webStrategy==='FULL_REBUILD';return policyAllowed||/FULL_WEB_GAME_REBUILD|실제 웹게임|프로토타입.*웹게임/i.test(goal);}
   if(target!=='roblox')return false;
   const task=order?.selectedTask&&typeof order.selectedTask==='object'?order.selectedTask:{};
   const ownerAuthorized=task.ownerDirective===true||order?.ownerDirective===true;
