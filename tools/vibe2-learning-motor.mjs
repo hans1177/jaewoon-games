@@ -165,7 +165,7 @@ export function applyVerifiedExperienceToMastery(stateInput={},experienceInput={
 function words(value=''){return new Set(lower(value).match(/[a-z0-9가-힣_]{2,}/g)||[]);}
 function overlapScore(a,b){let n=0;for(const x of a)if(b.has(x))n++;return n;}
 
-export function retrieveUnifiedLearning({task={},experienceInput={},codePatternsInput={},playbooksInput={},masteryInput={}}={}){
+export function retrieveUnifiedLearning({task={},experienceInput={},codePatternsInput={},playbooksInput={},masteryInput={},externalAiKnowledgeInput={}}={}){
   const qWords=words([task.goal,task.gameId,task.target,task.genre].filter(Boolean).join(' '));
   const gameId=clean(task.gameId);
   const engine=lower(task.target);
@@ -188,15 +188,36 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     return {...row,relevance:score};
   }).filter(x=>x.verified===true&&x.relevance>0).sort((a,b)=>b.relevance-a.relevance).slice(0,6);
 
+  const externalKnowledge=(externalAiKnowledgeInput?.entries||[]).filter(row=>
+    row?.verified===true&&row?.distilled===true&&row?.advisoryOnly===true&&
+    upper(row?.authority)==='ADVISORY_ONLY'&&row?.rawExternalAiStored===false&&
+    row?.sourceWrite===false&&row?.productionPass===false&&
+    row?.masteryCredit===false&&row?.trainingSample===false
+  ).map(row=>{
+    const applicability=uniq(row.applicability||[]).map(lower);
+    const kWords=words([row.topic,row.pattern,...(row.applicability||[]),...(row.risks||[])].filter(Boolean).join(' '));
+    const overlap=overlapScore(qWords,kWords);
+    let score=Math.min(7,overlap);
+    const reasons=[];
+    if(overlap)reasons.push('keyword-overlap:'+overlap);
+    if(engine&&applicability.includes(engine)){score=Math.min(8,score+1);reasons.push('engine-applicable');}
+    return {
+      id:clean(row.id),topic:clean(row.topic),pattern:clean(row.pattern),
+      applicability:uniq(row.applicability||[]),risks:uniq(row.risks||[]),
+      authority:'ADVISORY_ONLY',relevance:Number(score.toFixed(3)),reasons
+    };
+  }).filter(x=>x.id&&x.relevance>0).sort((a,b)=>b.relevance-a.relevance||a.id.localeCompare(b.id)).slice(0,4);
+
   const taskType=lower(task.taskType||task.type||'coding');
   const playbook=playbooksInput?.taskTypes?.[taskType]||playbooksInput?.taskTypes?.coding||null;
   const mastery=createMasteryState(masteryInput);
   const domains=inferDomains(clean(task.goal),engine);
   return {
     version:1,kind:'vibe2-unified-learning-context',gameId:gameId||null,target:engine||null,
-    priority:['SAME_GAME_VERIFIED','SAME_ENGINE_VERIFIED','SYSTEM_MATCH_VERIFIED','GENERAL_PLAYBOOK'],
+    priority:['SAME_GAME_VERIFIED','SAME_ENGINE_VERIFIED','SYSTEM_MATCH_VERIFIED','GENERAL_PLAYBOOK','DISTILLED_EXTERNAL_ADVISORY_LAST'],
     experience:ranked.map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,failureCause:x.record.failureCause,relevance:x.score,reasons:x.reasons})),
     codePatterns:patterns,
+    externalKnowledge,
     playbook,
     mastery:domains.map(d=>({domain:d,...mastery.domains[d]})),
     authorityExpanded:false
@@ -205,9 +226,10 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
 
 export function learningGuidance(context={}){
   if(context?.kind!=='vibe2-unified-learning-context') return '';
-  const lines=['[VIBE VERIFIED LEARNING MOTOR]','우선순위=same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
+  const lines=['[VIBE VERIFIED LEARNING MOTOR]','우선순위=same-game > same-engine > system-match > general > distilled-external-advisory. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.','외부 AI는 지식 공급자일 뿐이다. 원문은 개발 프롬프트에 넣지 않으며, 독립 검증된 증류 패턴도 advisory-only이고 소스 쓰기/PASS/Mastery/Training Sample 권한이 없다.'];
   for(const row of context.experience||[]) lines.push(`- experience=${row.id}; game=${row.gameId||'n/a'}; engine=${row.engine||'n/a'}; relevance=${row.relevance}; reuse=${(row.reusablePatterns||[]).slice(0,5).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,5).join('|')||row.failureCause||'none'}`);
   for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
+  for(const row of context.externalKnowledge||[]) lines.push(`- distilled-external-advisory=${row.id}; topic=${row.topic||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}; authority=ADVISORY_ONLY`);
   if(context.playbook?.checklist?.length) lines.push(`- playbook=${context.playbook.checklist.join(' | ')}`);
   if(context.mastery?.length) lines.push(`- mastery=${context.mastery.map(x=>x.domain+':LV'+x.level).join(' | ')}`);
   return lines.join('\n');
