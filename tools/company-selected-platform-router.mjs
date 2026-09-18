@@ -143,6 +143,10 @@ export function selectTargetPlatformDevelopmentWindow(items=[],max=DEVELOPMENT_G
     .filter(targetPlatformDevelopmentEligible)
     .map(item=>({...item,selectedPlatform:resolveSelectedPlatform(item)}))
     .sort((a,b)=>{
+      const priority={ROBLOX:0,UNITY:1,FORTNITE_UEFN:2};
+      const ap=priority[resolveSelectedPlatform(a)]??99;
+      const bp=priority[resolveSelectedPlatform(b)]??99;
+      if(ap!==bp)return ap-bp;
       const at=Date.parse(a.enqueuedAt||'')||0;
       const bt=Date.parse(b.enqueuedAt||'')||0;
       if(at!==bt)return at-bt;
