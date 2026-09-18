@@ -20,7 +20,7 @@ const verifiedCandidate={
     independent:true,
     status:'PASS',
     method:'independent-qa',
-    evidence:['qa:external-ai-claim-reproduced']
+    evidence:['qa:external-ai-claim-reproduced','source:independent-pattern-review']
   }
 };
 
@@ -36,6 +36,16 @@ test('external AI candidate rejects non-traceable verification evidence',()=>{
     verification:{independent:true,status:'PASS',method:'independent-qa',evidence:['looks-good']}
   });
   assert.equal(check.ok,false);
+  assert.ok(check.reasons.includes('VERIFICATION_EVIDENCE_NOT_TRACEABLE'));
+});
+
+test('external AI candidate requires at least two traceable verification evidence items',()=>{
+  const check=validateExternalAiCandidate({
+    ...verifiedCandidate,
+    verification:{independent:true,status:'PASS',method:'independent-qa',evidence:['qa:single-check']}
+  });
+  assert.equal(check.ok,false);
+  assert.ok(check.reasons.includes('VERIFICATION_EVIDENCE_MINIMUM_NOT_MET'));
   assert.ok(check.reasons.includes('VERIFICATION_EVIDENCE_NOT_TRACEABLE'));
 });
 
@@ -91,4 +101,27 @@ test('planner material collector uses only independently verified distilled exte
     task:{target:'roblox',goal:'combat hit UI feedback'}
   });
   assert.equal(bad.materials.length,0);
+});
+
+test('distilled external AI never outranks internal verified material when capacity is limited',()=>{
+  const accepted=distillExternalAiKnowledge({records:[verifiedCandidate]},{entries:[]}).knowledge;
+  const result=collectMultiSourceLearningMaterials({
+    experienceInput:{records:[{
+      id:'internal-combat',
+      verified:true,
+      reusable:true,
+      outcome:'PASS',
+      engine:'roblox',
+      gameId:'demo',
+      problem:'combat hit feedback',
+      goal:'combat UI',
+      reusablePatterns:['combat hit feedback should be state-driven']
+    }]},
+    externalAiInput:accepted,
+    task:{target:'roblox',goal:'combat hit UI feedback'},
+    maxMaterials:1
+  });
+  assert.equal(result.materials.length,1);
+  assert.notEqual(result.materials[0].sourceType,'external-ai-distilled-verified');
+  assert.equal(result.materials[0].externalAdvisoryLast,false);
 });

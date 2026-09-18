@@ -33,8 +33,10 @@ export function validateExternalAiCandidate(row={}){
   if(verification.independent!==true)reasons.push('INDEPENDENT_VERIFICATION_REQUIRED');
   if(clean(verification.status).toUpperCase()!=='PASS')reasons.push('VERIFICATION_PASS_REQUIRED');
   if(!METHODS.has(method))reasons.push('VERIFICATION_METHOD_NOT_ALLOWED');
+  const traceableEvidence=evidence.filter(value=>/^(qa|runtime|source|multi-source|actions-run|artifact):/i.test(value));
   if(!evidence.length)reasons.push('VERIFICATION_EVIDENCE_REQUIRED');
-  if(evidence.length&&!evidence.some(value=>/^(qa|runtime|source|multi-source|actions-run|artifact):/i.test(value)))reasons.push('VERIFICATION_EVIDENCE_NOT_TRACEABLE');
+  if(evidence.length<2)reasons.push('VERIFICATION_EVIDENCE_MINIMUM_NOT_MET');
+  if(traceableEvidence.length<2)reasons.push('VERIFICATION_EVIDENCE_NOT_TRACEABLE');
   if(!patterns.length)reasons.push('DISTILLED_PATTERN_REQUIRED');
   if(row.sourceWrite===true)reasons.push('SOURCE_WRITE_FORBIDDEN');
   if(row.productionPass===true)reasons.push('PRODUCTION_PASS_FORBIDDEN');
@@ -56,8 +58,8 @@ export function isTrustedDistilledExternalAiEntry(row={}){
     && verification.independent===true
     && clean(verification.status).toUpperCase()==='PASS'
     && METHODS.has(clean(verification.method).toLowerCase())
-    && evidence.length>0
-    && evidence.some(value=>/^(qa|runtime|source|multi-source|actions-run|artifact):/i.test(value))
+    && evidence.length>=2
+    && evidence.filter(value=>/^(qa|runtime|source|multi-source|actions-run|artifact):/i.test(value)).length>=2
     && Array.isArray(row?.patterns)
     && row.patterns.length>0
     && row?.directDevelopmentUse!==true
@@ -112,6 +114,7 @@ export function distillExternalAiKnowledge(input={},existing={}){
       policy:{
         rawExternalAiOutputMayEnterDevelopment:false,
         independentVerificationRequired:true,
+        minimumTraceableVerificationEvidenceItems:2,
         distilledKnowledgeAdvisoryOnly:true,
         directSourceWrite:false,
         directProductionPass:false,

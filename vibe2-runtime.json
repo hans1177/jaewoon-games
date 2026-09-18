@@ -593,7 +593,9 @@
     "externalAiRawOutputMayCountAsLearningEvidence": false,
     "externalAiDistilledKnowledgeMayExpandAuthority": false,
     "externalAiDirectMasteryCredit": false,
-    "externalAiDirectCanonicalTrainingSample": false
+    "externalAiDirectCanonicalTrainingSample": false,
+    "externalAiMinimumTraceableVerificationEvidenceItems": 2,
+    "externalAiAdvisoryAlwaysRanksAfterInternalVerified": true
   },
   "workPackages": {
     "enabled": true,

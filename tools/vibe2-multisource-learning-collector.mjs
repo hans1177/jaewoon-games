@@ -248,10 +248,11 @@ export function collectMultiSourceLearningMaterials({
       return Object.freeze({
         ...row,
         relevance: Number(relevance.toFixed(2)),
-        transferClass: sameEngine ? 'roblox-observed' : 'cross-engine-generalized'
+        transferClass: sameEngine ? 'roblox-observed' : 'cross-engine-generalized',
+        externalAdvisoryLast: row.sourceType === 'external-ai-distilled-verified'
       });
     })
-    .sort((a, b) => b.relevance - a.relevance || b.confirmations - a.confirmations || a.pattern.localeCompare(b.pattern))
+    .sort((a, b) => Number(a.externalAdvisoryLast) - Number(b.externalAdvisoryLast) || b.relevance - a.relevance || b.confirmations - a.confirmations || a.pattern.localeCompare(b.pattern))
     .slice(0, Math.max(1, Math.floor(Number(maxMaterials) || MAX_MATERIALS)));
 
   const sourceCounts = {};
