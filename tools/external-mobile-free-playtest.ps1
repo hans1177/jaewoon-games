@@ -1,7 +1,8 @@
 param(
   [string]$ManifestPath = 'company-learning/external-game-playtest/mobile-free-seed-games.json',
   [string]$OutDir = "$env:RUNNER_TEMP\external-mobile-game-playtest",
-  [int]$MaxGames = 1
+  [int]$MaxGames = 1,
+  [int]$StartIndex = 0
 )
 
 $ErrorActionPreference = 'Stop'
@@ -192,6 +193,39 @@ function Invoke-SafeInputProfile {
       Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.45),[int]($h*.65)) | Out-Null
       Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.35),[int]($h*.72)) | Out-Null
     }
+    'ARENA_DUAL_STICK' {
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',[int]($w*.22),[int]($h*.76),[int]($w*.30),[int]($h*.66),'650') | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.82),[int]($h*.72)) | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.72),[int]($h*.62)) | Out-Null
+    }
+    'STRATEGY_TAP' {
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.50),[int]($h*.60)) | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.68),[int]($h*.52)) | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.32),[int]($h*.52)) | Out-Null
+    }
+    'BOARD_TAP' {
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.50),[int]($h*.58)) | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.50),[int]($h*.78)) | Out-Null
+    }
+    'DRIVE_TWO_BUTTON' {
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.78),[int]($h*.82)) | Out-Null
+      Start-Sleep -Milliseconds 500
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.22),[int]($h*.82)) | Out-Null
+      Start-Sleep -Milliseconds 500
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.78),[int]($h*.82)) | Out-Null
+    }
+    'SLINGSHOT' {
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',[int]($w*.30),[int]($h*.62),[int]($w*.18),[int]($h*.70),'700') | Out-Null
+    }
+    'LOCATION_TAP' {
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.50),[int]($h*.55)) | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.50),[int]($h*.82)) | Out-Null
+    }
+    'CARD_TAP' {
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.30),[int]($h*.70)) | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.50),[int]($h*.70)) | Out-Null
+      Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','tap',[int]($w*.70),[int]($h*.70)) | Out-Null
+    }
     default {
       Invoke-Adb -Serial $Serial -AdbArgs @('shell','input','swipe',$cx,$cy,$right,$cy,'300') | Out-Null
     }
@@ -217,7 +251,17 @@ function Invoke-ExternalMobilePlaytest {
   if (-not $serial) { throw 'BLOCKED_PLAY_STORE_NOT_PROVISIONED' }
 
   $size = Get-ScreenSize -Serial $serial
-  $games = @($manifest.games | Select-Object -First $MaxGames)
+  $allGames = @($manifest.games)
+  if ($allGames.Count -lt 1) { throw 'EXTERNAL_MOBILE_PLAYTEST_EMPTY_CATALOG' }
+  $batchCount = [Math]::Min([Math]::Max(1,$MaxGames),$allGames.Count)
+  $normalizedStart = (($StartIndex % $allGames.Count) + $allGames.Count) % $allGames.Count
+  $games = @()
+  for ($i = 0; $i -lt $batchCount; $i++) {
+    $games += $allGames[($normalizedStart + $i) % $allGames.Count]
+  }
+  Write-Host "EXTERNAL_MOBILE_PLAYTEST_START_INDEX=$normalizedStart"
+  Write-Host "EXTERNAL_MOBILE_PLAYTEST_BATCH_COUNT=$batchCount"
+  Write-Host "EXTERNAL_MOBILE_PLAYTEST_BATCH_IDS=$((@($games | ForEach-Object { $_.id })) -join ',')"
   $summary = @()
   foreach ($game in $games) {
     $gameDir = Join-Path $OutDir $game.id
