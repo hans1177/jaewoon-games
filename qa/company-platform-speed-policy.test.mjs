@@ -52,7 +52,7 @@ test('speed sequence changes execution only and cannot weaken quality gates',()=
 test('Unity and Roblox share the first scheduling tier without weakening lower-platform or quality rules',()=>{
   assert.deepEqual(roadmap.priority,['UNITY','ROBLOX','FORTNITE_UEFN']);
   assert.equal(roadmap.primaryPlatform,'ROBLOX');
-  assert.equal(roadmap.primaryPlatformRole,'LEGACY_COMPATIBILITY_ONLY');
+  assert.equal(roadmap.primaryPlatformRole,'LEGACY_COMPATIBILITY_ONLY_NOT_SCHEDULING_PRIORITY');
   assert.equal(roadmap.platformPriorityInvariant.mode,'UNITY_ROBLOX_EQUAL_FIRST_TIER');
   assert.deepEqual(roadmap.platformPriorityInvariant.priorityTiers,[['UNITY','ROBLOX'],['FORTNITE_UEFN']]);
   assert.deepEqual(roadmap.platformPriorityInvariant.schedulingOrder,['UNITY','ROBLOX','FORTNITE_UEFN']);
