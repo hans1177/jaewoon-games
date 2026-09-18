@@ -52,7 +52,13 @@
       ],
       "preserveReusableSystems": true,
       "preserveSaveMeaningWhenCompatible": true,
-      "restartFromBlankForbiddenWhenValidContinuationExists": true
+      "restartFromBlankForbiddenWhenValidContinuationExists": true,
+      "continuouslyEditableDuringDevelopment": true,
+      "validationMayRepeatAfterMeaningfulRevision": true,
+      "competitiveQualityParityWithNative": true,
+      "competitiveQualityContract": "tools/company-common-development-quality-contract.mjs",
+      "webPassIsReleaseSignal": false,
+      "singlePassReleaseForbidden": true
     },
     "nativeSecondStage": {
       "selectedPlatformSourceBindRequired": true,
@@ -60,7 +66,10 @@
       "platformAdaptationAllowed": true,
       "silentScopeDropForbidden": true,
       "nativeRuntimeEvidenceRequiredSeparately": true,
-      "webPassCannotSubstituteNativePass": true
+      "webPassCannotSubstituteNativePass": true,
+      "competitiveQualityParityWithWeb": true,
+      "competitiveQualityContract": "tools/company-common-development-quality-contract.mjs",
+      "nativeStillRequiresOwnRuntimeQaRegression": true
     },
     "robloxPostRelease": {
       "enabled": true,
@@ -79,6 +88,14 @@
         "verified-learning-reuse"
       ],
       "ownerHoldOrKillStopsFocus": true
+    },
+    "releaseMaturity": {
+      "prematureReleaseForbidden": true,
+      "singleRuntimePassInsufficient": true,
+      "singleScorePassInsufficient": true,
+      "freshCompetitiveRevalidationRequired": true,
+      "relevantSourceChangeRequiresRevalidation": true,
+      "releaseOnlyAfterExistingReleaseGatesAndCompetitiveQualityPass": true
     }
   },
   "learning": {
@@ -117,7 +134,9 @@
     "TREAT_WEB_PASS_AS_NATIVE_PASS",
     "WRITE_GAMEPLAY_SOURCE_AS_NON_VIBE_AI",
     "STOP_24H_LEARNING_AT_CATALOG_WRAP",
-    "CLAIM_MODEL_TRAINING_BEFORE_READINESS"
+    "CLAIM_MODEL_TRAINING_BEFORE_READINESS",
+    "TREAT_SINGLE_WEB_PASS_AS_RELEASE_READY",
+    "RELEASE_WITHOUT_COMPETITIVE_QUALITY_PARITY"
   ],
   "successContract": [
     "CENTRAL_POLICY_READ",
@@ -125,7 +144,9 @@
     "WEB_BASE_PRESERVED_IN_NATIVE_CONTINUATION",
     "NATIVE_RUNTIME_REVERIFIED",
     "ROBLOX_RELEASE_CAN_ENTER_ONE_SLOT_POST_RELEASE_FOCUS",
-    "NEW_VERIFIED_LESSONS_PERSISTED"
+    "NEW_VERIFIED_LESSONS_PERSISTED",
+    "WEB_AND_NATIVE_COMPETITIVE_QUALITY_PARITY_VERIFIED",
+    "RELEASE_ONLY_AFTER_FRESH_COMPETITIVE_REVALIDATION"
   ],
   "workOrder": {
     "id": "WEB_TO_NATIVE_TO_POST_RELEASE_CONTINUOUS_DEVELOPMENT_V1",
@@ -175,7 +196,11 @@
         "stage": "WEB_RUNTIME_VALIDATION",
         "requireRealRuntime": true,
         "completionSignal": "WEB_DEVELOPMENT_BASELINE_READY",
-        "nativePassClaimAllowed": false
+        "nativePassClaimAllowed": false,
+        "competitiveQualityParityRequired": true,
+        "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
+        "passMeansDevelopmentBaselineReadyNotRelease": true,
+        "repeatAfterRelevantRevision": true
       },
       {
         "order": 4,
@@ -217,7 +242,12 @@
         "order": 7,
         "stage": "RELEASE_PROMOTION",
         "requiresOwnPlatformEvidencePass": true,
-        "automaticPublicRepublish": false
+        "automaticPublicRepublish": false,
+        "prematureReleaseForbidden": true,
+        "singlePassInsufficient": true,
+        "competitiveQualityParityRequired": true,
+        "commonQualityContract": "tools/company-common-development-quality-contract.mjs",
+        "freshRevalidationRequired": true
       },
       {
         "order": 8,
