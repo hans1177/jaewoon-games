@@ -71,5 +71,12 @@
   "sourceBranch": "vibe2-authorized-learning-runtime",
   "sourceCommit": "47de4cf35cf7e1a059d74eb1acc94b0a765e824f",
   "sourceSummaryBlobSha": "c9440c655db4fbb2e69e04bf677ad5c0166224e4",
-  "publicSnapshotKind": "DERIVED_LEARNING_SUMMARY_NO_RAW_APK_OR_ASSET_BYTES"
+  "publicSnapshotKind": "DERIVED_LEARNING_SUMMARY_NO_RAW_APK_OR_ASSET_BYTES",
+  "vibe2Binding": {
+    "version": 1,
+    "target": "vibe2-unreal-core:.vibe2/experience.json",
+    "mode": "verified-retrieval-context-only",
+    "triggerWorkflow": ".github/workflows/vibe2-24h-runner.yml",
+    "staticAnalysisIsRuntimePass": false
+  }
 }
