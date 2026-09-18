@@ -163,9 +163,11 @@ test('same verified experience is not stored twice', () => {
   const first = promoteVibeReviewedExperience(createVibeExperienceMemory(), successfulReview());
   const second = promoteVibeReviewedExperience(first.memory, successfulReview());
   assert.equal(first.promoted, true);
-  assert.equal(second.promoted, false);
-  assert.equal(second.reason, 'duplicate-experience');
+  assert.equal(second.promoted, true);
+  assert.equal(second.reason, 'experience-reinforced');
   assert.equal(second.memory.records.length, 1);
+  assert.equal(second.memory.records[0].confirmations, 2);
+  assert.ok(second.memory.records[0].confidence > first.memory.records[0].confidence);
 });
 
 test('experience storage failure does not change the already verified review decision', () => {
