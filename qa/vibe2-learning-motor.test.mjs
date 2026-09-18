@@ -1,7 +1,7 @@
 import test from 'node:test';
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
-import { buildIdlePracticeQueue, dedupeIdlePracticeTasks, injectIdlePracticeTask, retrieveUnifiedLearning } from '../tools/vibe2-learning-motor.mjs';
+import { buildIdlePracticeQueue, buildWebRobloxHandoffs, dedupeIdlePracticeTasks, injectIdlePracticeTask, retrieveUnifiedLearning } from '../tools/vibe2-learning-motor.mjs';
 
 function practice(id,status='failed',retries=1,evidence=[]){
   return {
@@ -117,4 +117,46 @@ test('idle practice advances beyond the first five represented mastery gaps',()=
   assert.equal(result.task.id,`LEARNING-PRACTICE-${idle.drills[5].id}`);
   assert.equal(result.task.type,'research');
   assert.ok(result.task.evidence.includes('production-pass:NO'));
+});
+
+
+test('control project machine state projects Web base through Roblox and focused release',()=>{
+  const sha='a'.repeat(40);
+  const artifact='sha256:'+'b'.repeat(64);
+  const pack=buildWebRobloxHandoffs({items:[
+    {gameId:'g-web',selectedPlatform:'ROBLOX',genre:'Survival'},
+    {
+      gameId:'g-handoff',selectedPlatform:'ROBLOX',genre:'RPG',webPromotionRevalidationPassed:true,
+      coreLoop:'explore-fight-reward',stateModel:'state',progressionModel:'progress',uiFlow:'ui',
+      inputIntent:'touch',saveMeaning:'save',contentStructure:'content',balanceIntent:'balance',
+      webValidationPassedAt:'2026-09-19T00:00:00Z'
+    },
+    {
+      gameId:'g-release',selectedPlatform:'ROBLOX',genre:'Simulation',webPromotionRevalidationPassed:true,
+      coreLoop:'build-earn-upgrade',stateModel:'state',progressionModel:'progress',uiFlow:'ui',
+      inputIntent:'touch',saveMeaning:'save',contentStructure:'content',balanceIntent:'balance',
+      webValidationPassedAt:'2026-09-19T00:00:00Z',
+      robloxSourceCommit:sha,robloxBuildArtifactIdentity:artifact,robloxReleaseClaim:true,
+      robloxFinalReviewPassed:true,robloxRegressionPassed:true,robloxExactRevisionPassed:true,
+      robloxReleaseEvidence:{published:true,sourceRevision:sha,artifactIdentity:artifact,versionNumber:1}
+    }
+  ]});
+  const required=['PROJECT_PHASE','PLATFORM','GENRE','WEB_BASELINE','ROBLOX_HANDOFF','POST_RELEASE_FOCUS_RUNNER','LEARNING_CONTEXT','NEXT_MACHINE_ACTION'];
+  assert.deepEqual(pack.requiredProjectFields,required);
+  assert.equal(pack.projectStateVersion,1);
+  assert.equal(pack.projects.length,3);
+  const web=pack.projects.find(project=>project.gameId==='g-web');
+  assert.equal(web.PROJECT_PHASE,'WEB_BASE_IMPLEMENTATION');
+  assert.equal(web.NEXT_MACHINE_ACTION,'IMPLEMENT_WEB_CORE_LOOP_AND_BASE_SYSTEMS');
+  const handoff=pack.projects.find(project=>project.gameId==='g-handoff');
+  assert.equal(handoff.PROJECT_PHASE,'TARGET_PLATFORM_SOURCE_BIND');
+  assert.equal(handoff.ROBLOX_HANDOFF.complete,true);
+  assert.equal(handoff.LEARNING_CONTEXT.continuousLearning,true);
+  const released=pack.projects.find(project=>project.gameId==='g-release');
+  assert.equal(released.PROJECT_PHASE,'POST_RELEASE_FOCUSED_DEVELOPMENT');
+  assert.equal(released.POST_RELEASE_FOCUS_RUNNER.assigned,true);
+  assert.equal(released.POST_RELEASE_FOCUS_RUNNER.logicalRunnerPerProject,1);
+  assert.equal(released.POST_RELEASE_FOCUS_RUNNER.activeTaskMaxPerProject,1);
+  assert.equal(released.NEXT_MACHINE_ACTION,'CONTINUE_ONE_FOCUSED_VERIFIED_DEVELOPMENT_CYCLE');
+  assert.equal(pack.gateBypass,false);
 });
