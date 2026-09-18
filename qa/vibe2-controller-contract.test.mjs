@@ -60,7 +60,10 @@ test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
   assert.equal(runtime.qaOptimization.contentHashCache,true);
   assert.equal(runtime.qaOptimization.fullCoreRegressionOnceAtFanIn,true);
   assert.equal(runtime.safety.existingWebMaintenanceAllowed,true);
-  assert.equal(runtime.safety.newWebGameAutomatic,false);
+  assert.equal(runtime.safety.newWebGameAutomatic,true);
+  assert.equal(runtime.contracts.core.engineTargets.web.automaticNewGame,true);
+  assert.equal(runtime.contracts.core.engineTargets.web.implementationAuthority,'DEVELOPMENT_CONFIRMED_MACHINE_GATE');
+  assert.equal(runtime.safety.directMainWriteByWorker,false);
   assert.equal(runtime.assetDecision.learningMayOverrideFixedRules,false);
   assert.equal(runtime.workManagement.machineContextRequired,true);
   assert.deepEqual(runtime.workManagement.handoffConsumers,['planner','reserve','worker','fan-in']);
