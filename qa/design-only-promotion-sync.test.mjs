@@ -161,3 +161,37 @@ test('owner reset DESIGN_ONLY seed rejects pre-reset PASS evidence',()=>{
   assert.equal(read(root,'development-queue.json').items.length,0);
   assert.equal(read(root,'game-seed-state.json').seeds[0].productionClass,undefined);
 });
+
+test('legacy direct-five-lead stale blocker self-heals only when it is the sole blocker',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-stale-direct-lead-'));
+  write(root,'game-seed-state.json',{version:1,seeds:[{seedId:'S-STALE',gameId:'g-stale-ready',gameName:'Stale Ready',status:'ACTIVE',GAME_CATEGORY:'SINGLE_DEFENSE_STRATEGY',INITIAL_TARGET_PLATFORM:'UNITY'}]});
+  baseFiles(root);
+  const date='2026-09-18';
+  write(root,`design/g-stale-ready/${date}/design-revised.json`,{gameId:'g-stale-ready',content:{identity:'distinct design'}});
+  write(root,`design/g-stale-ready/${date}/strict-design-review.json`,{verdict:'PASS',totalScore:89.4,hardFailures:[]});
+  write(root,`design/g-stale-ready/${date}/cycle-status.json`,{
+    gameId:'g-stale-ready',productionClass:'DESIGN_ONLY',status:'COMPLETE',
+    baselineGate:{state:'DESIGN_BASELINE_REDESIGN_REQUIRED',ready:false,blockers:['post-revision-five-department-review-required'],meeting:{conflictCount:0,holdCount:0}},
+    disposition:{fiveDepartmentLeadReviewCompleted:true},
+    meeting:{required:false}
+  });
+  const result=promoteReadyDesignSeeds({root});
+  assert.deepEqual(result.promoted,['g-stale-ready']);
+  const queue=read(root,'development-queue.json').items[0];
+  assert.equal(queue.selectedPlatform,'UNITY');
+  assert.equal(queue.currentStep,'WEB_PLAYABLE_BOOTSTRAP');
+
+  const rootBlocked=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-stale-blocked-'));
+  write(rootBlocked,'game-seed-state.json',{version:1,seeds:[{seedId:'S-BLOCK',gameId:'g-stale-blocked',status:'ACTIVE',GAME_CATEGORY:'PUZZLE',INITIAL_TARGET_PLATFORM:'UNITY'}]});
+  baseFiles(rootBlocked);
+  write(rootBlocked,`design/g-stale-blocked/${date}/design-revised.json`,{gameId:'g-stale-blocked'});
+  write(rootBlocked,`design/g-stale-blocked/${date}/strict-design-review.json`,{verdict:'PASS',totalScore:95,hardFailures:[]});
+  write(rootBlocked,`design/g-stale-blocked/${date}/cycle-status.json`,{
+    gameId:'g-stale-blocked',productionClass:'DESIGN_ONLY',status:'COMPLETE',
+    baselineGate:{state:'DESIGN_BASELINE_REDESIGN_REQUIRED',ready:false,blockers:['post-revision-five-department-review-required','another-real-blocker'],meeting:{conflictCount:0,holdCount:0}},
+    disposition:{fiveDepartmentLeadReviewCompleted:true},
+    meeting:{required:false}
+  });
+  const blocked=promoteReadyDesignSeeds({root:rootBlocked});
+  assert.deepEqual(blocked.promoted,[]);
+});

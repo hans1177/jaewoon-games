@@ -76,7 +76,17 @@ jobs:
           const latestStrict=(gameId)=>{
             const root=path.join('design',gameId);if(!fs.existsSync(root))return {pass:false,review:null,file:null};
             const dates=fs.readdirSync(root,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
-            for(const date of dates){const file=path.join(root,date,'strict-design-review.json');const statusFile=path.join(root,date,'cycle-status.json');if(!fs.existsSync(file)||!fs.existsSync(statusFile))continue;const review=JSON.parse(fs.readFileSync(file,'utf8'));const status=JSON.parse(fs.readFileSync(statusFile,'utf8'));const ready=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;return {pass:ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0,review,file};}return {pass:false,review:null,file:null};
+            for(const date of dates){
+              const file=path.join(root,date,'strict-design-review.json'),statusFile=path.join(root,date,'cycle-status.json');
+              if(!fs.existsSync(file)||!fs.existsSync(statusFile))continue;
+              const review=JSON.parse(fs.readFileSync(file,'utf8')),status=JSON.parse(fs.readFileSync(statusFile,'utf8'));
+              const blockers=Array.isArray(status?.baselineGate?.blockers)?status.baselineGate.blockers:[];
+              const currentReady=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
+              const legacyDirectLeadReady=status?.status==='COMPLETE'&&status?.productionClass==='DESIGN_ONLY'&&blockers.length===1&&blockers[0]==='post-revision-five-department-review-required'&&status?.disposition?.fiveDepartmentLeadReviewCompleted===true&&status?.meeting?.required===false&&Number(status?.baselineGate?.meeting?.conflictCount||0)===0&&Number(status?.baselineGate?.meeting?.holdCount||0)===0;
+              const ready=currentReady||legacyDirectLeadReady;
+              return {pass:ready&&review.verdict==='PASS'&&Number(review.totalScore)>=80&&Array.isArray(review.hardFailures)&&review.hardFailures.length===0,review,file};
+            }
+            return {pass:false,review:null,file:null};
           };
           const queueByGame=new Map((queue.items||[]).map(item=>[item.gameId,item]));let strictReadyCount=0;let confirmedSeedCount=0;
           for(const seed of state.seeds||[]){

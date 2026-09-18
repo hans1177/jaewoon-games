@@ -15,6 +15,15 @@ const selectedPlatformOf=seed=>resolveSelectedPlatform(seed?.INITIAL_TARGET_PLAT
 const targetSourcePathOf=(gameId,platform)=>`${adapterForPlatform(platform)?.sourceRoot||''}${gameId}`;
 const webSourcePathOf=gameId=>`web-games/${gameId}`;
 
+function baselineReadyForPromotion(status={}){
+  const currentReady=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
+  if(currentReady)return true;
+  const blockers=Array.isArray(status?.baselineGate?.blockers)?status.baselineGate.blockers:[];
+  const legacyDirectLeadOnly=blockers.length===1&&blockers[0]==='post-revision-five-department-review-required';
+  const directFiveLeadReviewComplete=status?.disposition?.fiveDepartmentLeadReviewCompleted===true&&status?.meeting?.required===false;
+  const meetingClear=Number(status?.baselineGate?.meeting?.conflictCount||0)===0&&Number(status?.baselineGate?.meeting?.holdCount||0)===0;
+  return status?.status==='COMPLETE'&&status?.productionClass==='DESIGN_ONLY'&&legacyDirectLeadOnly&&directFiveLeadReviewComplete&&meetingClear;
+}
 function latestReadyDesign(root,gameId){
   const gameRoot=path.join(root,'design',gameId);
   if(!fs.existsSync(gameRoot))return null;
@@ -24,7 +33,7 @@ function latestReadyDesign(root,gameId){
     const status=readJson(path.join(base,'cycle-status.json'),null);
     const review=readJson(path.join(base,'strict-design-review.json'),null);
     const revised=path.join(base,'design-revised.json');
-    const baselineReady=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&fs.existsSync(revised);
+    const baselineReady=baselineReadyForPromotion(status)&&fs.existsSync(revised);
     if(!baselineReady)continue;
     return {date,status,review,designSource:path.relative(root,revised).replaceAll('\\','/'),strictSource:path.relative(root,path.join(base,'strict-design-review.json')).replaceAll('\\','/')};
   }
