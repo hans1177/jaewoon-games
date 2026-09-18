@@ -4,6 +4,10 @@ import { IslandRendererV3 } from './render-v3.js';
 const RAID_INTERVAL = 120;
 const KNIGHT_CAVALRY_MULTIPLIER = 1.7;
 const DAMAGE_BUFFER = 260;
+const FIRE_BURN_CHANCE = 0.30;
+const FIRE_BURN_DAMAGE = 5;
+const FIRE_BURN_TICKS = 3;
+const FIRE_BURN_INTERVAL_MS = 1000;
 
 let currentGame = null;
 let activeRuntime = null;
@@ -95,10 +99,10 @@ window.addEventListener('focus', forceResume);
 function patchEnemyBalance(game) {
   for (const enemy of game?.enemies || []) {
     if (!enemy || enemy.hp <= 0) continue;
-    if (enemy.kind === 'blackArcher') enemy.attack = 17.5;
+    if (enemy.kind === 'blackArcher') enemy.attack = 30;
     else if (enemy.kind === 'blackHeavy') enemy.attack = 50;
-    else if (enemy.kind === 'fireSoldier') enemy.fireDamage = 20;
-    else if (enemy.kind === 'blackGeneral') enemy.generalDamage = 30;
+    else if (enemy.kind === 'fireSoldier') enemy.fireDamage = 35;
+    else if (enemy.kind === 'blackGeneral') enemy.generalDamage = 50;
   }
 }
 
@@ -126,6 +130,80 @@ function boostKnightAndCavalry(game) {
   }
 }
 
+
+const burnStates = new Map();
+
+function applyBurn(unit) {
+  if (!unit || unit.hp <= 0) return;
+  burnStates.set(unit.id, {
+    unit,
+    ticks: FIRE_BURN_TICKS,
+    nextAt: performance.now() + FIRE_BURN_INTERVAL_MS
+  });
+  unit.__fireBurnUntil = performance.now() + FIRE_BURN_TICKS * FIRE_BURN_INTERVAL_MS;
+}
+
+function updateBurns(game) {
+  const now = performance.now();
+  let armyChanged = false;
+  for (const [id, burn] of [...burnStates.entries()]) {
+    const unit = (game?.allies || []).find(u => u?.id === id);
+    if (!unit || unit.hp <= 0) {
+      burnStates.delete(id);
+      continue;
+    }
+    while (burn.ticks > 0 && now >= burn.nextAt) {
+      unit.hp -= FIRE_BURN_DAMAGE;
+      burn.ticks -= 1;
+      burn.nextAt += FIRE_BURN_INTERVAL_MS;
+    }
+    if (unit.hp <= 0) {
+      burnStates.delete(id);
+      const index = game.allies.indexOf(unit);
+      if (index >= 0) game.allies.splice(index, 1);
+      armyChanged = true;
+    } else if (burn.ticks <= 0) {
+      burnStates.delete(id);
+      unit.__fireBurnUntil = 0;
+    }
+  }
+  if (armyChanged && game?.state) {
+    game.state.army = (game.allies || []).filter(u => u?.hp > 0).map(u => ({ kind: u.kind }));
+    activeRuntime?.queueSaveProgress(game.state, 0);
+  }
+}
+
+function captureFireAttacks(game) {
+  const before = new Map();
+  for (const enemy of game?.enemies || []) {
+    if (enemy?.kind === 'fireSoldier') before.set(enemy.id, Number(enemy._fireAttackUntil) || 0);
+  }
+  return before;
+}
+
+function applyRaidFireBurn(game, before) {
+  const now = performance.now();
+  const allies = (game?.allies || []).filter(u => u && !u.enemy && u.hp > 0);
+  if (!allies.length) return;
+  for (const enemy of game?.enemies || []) {
+    if (!enemy || enemy.kind !== 'fireSoldier' || enemy.hp <= 0) continue;
+    const marker = Number(enemy._fireAttackUntil) || 0;
+    const previous = before.get(enemy.id) || 0;
+    if (marker <= previous || marker < now || Math.random() >= FIRE_BURN_CHANCE) continue;
+    let target = null;
+    let best = Infinity;
+    for (const unit of allies) {
+      const d = Math.hypot(unit.x - enemy.x, unit.y - enemy.y);
+      if (d < best) { best = d; target = unit; }
+    }
+    if (!target) continue;
+    const splash = Number(enemy.splash) || 95;
+    for (const unit of allies) {
+      if (Math.hypot(unit.x - target.x, unit.y - target.y) <= splash) applyBurn(unit);
+    }
+  }
+}
+
 function beginSensitiveDamageWindow(game) {
   const phase = Number(game?.raidPhase);
   const fieldMission = !game?.raidActive && (game?.allies || []).some(unit => unit?._darknessFlameMission && unit.hp > 0);
@@ -148,29 +226,41 @@ function near(value, target, tolerance = 1.25) {
 
 function adjustedFieldDamage(raw) {
   if (near(raw, 25)) return 25;      // 검은 병사 유지
-  if (near(raw, 35)) return 17.5;    // 검은 궁수 0.5배
+  if (near(raw, 35)) return 30;      // 검은 궁수
   if (near(raw, 45)) return 50;      // 검은 중갑병 50
-  if (near(raw, 40)) return 20;      // 화염병 0.5배
-  if (near(raw, 60)) return 30;      // 검은 장군 기본타 0.5배
-  if (near(raw, 120)) return 60;     // 검은 장군 강타도 0.5배
+  if (near(raw, 40)) return 35;      // 화염병
+  if (near(raw, 60)) return 50;      // 검은 장군 기본타
+  if (near(raw, 120)) return 100;    // 검은 장군 강타
   return raw;
 }
 
 function adjustedRaidDamage(raw) {
   // v20에서 일반 공격값은 이미 절반으로 바뀌지만, 검은 장군 30% 강타는 기존 코드에 120이 고정돼 있다.
-  if (near(raw, 120)) return 60;
+  if (near(raw, 120)) return 100;
   return raw;
 }
 
 function finishSensitiveDamageWindow(game, windowState) {
   if (!windowState) return;
   const deadIds = new Set();
+  let fieldFireHit = false;
+  if (windowState.fieldMission) {
+    for (const unit of game.allies || []) {
+      const before = windowState.records.get(unit?.id);
+      if (!before) continue;
+      const rawLoss = Math.max(0, before.hp + DAMAGE_BUFFER - (Number(unit.hp) || 0));
+      if (near(rawLoss, 40)) { fieldFireHit = true; break; }
+    }
+  }
+  const fieldBurnProc = fieldFireHit && Math.random() < FIRE_BURN_CHANCE;
+
   for (const unit of game.allies || []) {
     const before = windowState.records.get(unit?.id);
     if (!before) continue;
     const rawLoss = Math.max(0, before.hp + DAMAGE_BUFFER - (Number(unit.hp) || 0));
     const desiredLoss = windowState.fieldMission ? adjustedFieldDamage(rawLoss) : adjustedRaidDamage(rawLoss);
     unit.hp = Math.min(Number(unit.maxHp) || before.hp, before.hp - desiredLoss);
+    if (fieldBurnProc && near(rawLoss, 40) && unit.hp > 0) applyBurn(unit);
     if (unit.hp <= 0) deadIds.add(unit.id);
   }
   if (deadIds.size) {
@@ -221,11 +311,14 @@ proto.draw = function drawWithBalanceAndResume(game) {
   // 지난 프레임에 만들어진 습격 적은 기본 전투가 돌기 전에 이미 조정된 값을 유지한다.
   patchEnemyBalance(game);
   boostKnightAndCavalry(game);
+  const fireAttacksBefore = captureFireAttacks(game);
   const damageWindow = beginSensitiveDamageWindow(game);
 
   const result = originalDraw.call(this, game);
 
   finishSensitiveDamageWindow(game, damageWindow);
+  applyRaidFireBurn(game, fireAttacksBefore);
+  updateBurns(game);
   applySavedRaid(game);
   patchEnemyBalance(game);
   boostKnightAndCavalry(game);
