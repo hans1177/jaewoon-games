@@ -2,10 +2,8 @@
   "version": 8,
   "mode": "continuous-core",
   "documentation": {
-    "humanDocuments": [
-      "VIBE2.md"
-    ],
-    "humanDocumentLimit": 1,
+    "humanDocuments": [],
+    "humanDocumentLimit": 0,
     "machineSourceOfTruth": "vibe2-runtime.json",
     "runtimeState": {
       "queue": ".vibe2/queue.json",
@@ -18,7 +16,8 @@
       "VIBE2_CORE.md",
       "VIBE2_CONTINUOUS_OPERATIONS.md",
       "VIBE2_MOTION_CORE.md",
-      "VIBE2_VISUAL_AUTONOMY_PLAN.md"
+      "VIBE2_VISUAL_AUTONOMY_PLAN.md",
+      "VIBE2.md"
     ],
     "machineStateVersions": {
       "runtime": 8,
@@ -28,7 +27,8 @@
       "handoff": 2
     },
     "disallowUnlistedVibe2Markdown": true,
-    "generatedHandoffArtifact": "vibe2-machine-handoff"
+    "generatedHandoffArtifact": "vibe2-machine-handoff",
+    "humanDocumentRequired": false
   },
   "branches": {
     "control": "vibe2-unreal-core",
