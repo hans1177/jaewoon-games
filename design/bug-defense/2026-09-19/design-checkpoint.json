@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -62,19 +64,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "신규 곤충 병종 추가",
-          "newGameplay": "비행형 적을 전문적으로 요격하는 말벌 유닛과 광역 피해를 주는 무당벌레 유닛을 추가하여 공중전 전략을 도입합니다.",
-          "systemImpact": "기존 지상 중심의 방어 전략에서 공중 위협을 고려한 입체적인 방어선 구축이 필요해지며 상성 시스템의 복잡도가 증가합니다."
+          "milestone": "공중 위협 대응을 위한 신규 곤충 병종 및 공중전 메커니즘 도입",
+          "newGameplay": "비행형 적을 전문적으로 요격하는 말벌 포탑과 광역 독성 피해를 입히는 무당벌레 유닛을 추가하여, 기존 지상 중심의 방어 전략을 입체적인 공중전 대응 전략으로 확장합니다.",
+          "systemImpact": "기존의 지상 경로 기반 AI 시스템에 고도 개념이 추가되며, 유닛 상성 엔진이 공중/지상 속성 간의 데미지 보정치를 계산하도록 시스템 로직이 대폭 수정됩니다."
         },
         {
-          "milestone": "계절별 테마 전장",
-          "newGameplay": "봄, 여름, 가을, 겨울 테마의 전장을 추가하여 각 계절마다 다른 환경 효과(예: 겨울의 이동 속도 감소)를 적용합니다.",
-          "systemImpact": "지형 변형 시스템에 계절별 환경 변수가 추가되어 플레이어가 환경에 맞춘 유닛 조합을 매번 재구성해야 합니다."
+          "milestone": "계절별 환경 변수 및 지형 상호작용 시스템 구축",
+          "newGameplay": "봄, 여름, 가을, 겨울 테마의 전장을 도입하고, 각 계절마다 이동 속도 감소나 공격력 버프 등 고유한 환경 효과를 적용하여 매 웨이브마다 전략적 선택을 강제합니다.",
+          "systemImpact": "환경 데이터 관리 시스템이 추가되어 웨이브 시작 시 전역 환경 변수를 유닛 스탯에 실시간으로 반영하며, 기존 지형 타일 데이터 구조에 계절 속성 필드가 확장됩니다."
         },
         {
-          "milestone": "보스 웨이브 도입",
-          "newGameplay": "특수 패턴을 가진 거대 해충 보스가 등장하여 특정 유닛의 공격을 무력화하거나 지형을 파괴하는 기믹을 수행합니다.",
-          "systemImpact": "단순한 물량 방어에서 보스의 패턴을 파악하고 대응하는 실시간 컨트롤 요소가 핵심 시스템으로 강화됩니다."
+          "milestone": "거대 해충 보스 패턴 및 지형 파괴 기믹 구현",
+          "newGameplay": "특수 패턴을 가진 거대 해충 보스가 등장하여 특정 유닛의 공격을 무력화하거나 방어 타워가 설치된 지형을 파괴하는 기믹을 통해 긴장감을 극대화합니다.",
+          "systemImpact": "보스 AI 상태 머신이 추가되고, 지형 파괴 시 경로 탐색 시스템이 즉각적으로 재계산되어 적들의 이동 경로가 동적으로 변경되도록 시스템이 연동됩니다."
         }
       ],
       "failureRetryRisk": {
@@ -110,28 +112,28 @@
       "multiplayerMode": "SINGLE",
       "multiplayerExpansionDecision": "현재는 싱글 플레이어 경험에 집중하며, 향후 업데이트를 통해 비동기식 경쟁 모드(방어 기록 경쟁) 도입을 검토할 예정입니다.",
       "technicalAssumptions": [
-        "모바일 기기의 사양을 고려하여 최대 동시 화면 표시 유닛 수를 100개로 제한합니다.",
-        "네트워크 연결 없이도 원활한 플레이가 가능하도록 오프라인 우선 구조로 설계합니다."
+        "모바일 기기의 하드웨어 성능을 고려하여, 화면 내 최대 동시 활성 유닛 수를 100개로 제한하고 오브젝트 풀링을 통해 메모리 점유율을 최적화합니다.",
+        "네트워크 연결 상태와 무관하게 안정적인 게임 경험을 제공하기 위해 모든 전투 로직과 세이브 데이터를 로컬 기기에 저장하는 오프라인 우선 구조를 채택합니다."
       ],
       "validationQuestions": [
-        "플레이어가 유닛 배치 시 상성 관계를 직관적으로 이해하고 있는가?",
-        "웨이브 난이도가 플레이어의 성장 속도에 맞춰 적절하게 상승하는가?"
+        "플레이어가 유닛 배치 단계에서 곤충 간의 상성 관계를 시각적 피드백을 통해 직관적으로 이해하고 전략에 반영하는가?",
+        "웨이브 난이도 곡선이 플레이어의 자원 획득 및 유닛 업그레이드 속도와 정밀하게 동기화되어 적절한 도전감을 제공하는가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "생태 상성 시스템",
-          "responsibleSystem": "책임 시스템: 전투 로직 엔진",
-          "validationEvidence": "유닛별 데미지 계산식과 적 속성 데이터를 대조하여 상성 보너스가 정확히 적용되는지 테스트합니다."
+          "designElement": "생태 상성 시스템의 속성 보너스 로직",
+          "responsibleSystem": "전투 로직 엔진 및 데미지 계산 모듈",
+          "validationEvidence": "유닛별 공격 속성과 적 속성 데이터를 대조하는 유닛 테스트를 수행하여, 상성 보너스가 1.5배 적용되는지 로그를 통해 검증하고 밸런스 시뮬레이션을 완료합니다."
         },
         {
-          "designElement": "지형 변형 시스템",
+          "designElement": "동적 지형 변형 및 경로 탐색 업데이트",
           "responsibleSystem": "경로 탐색(Pathfinding) 시스템",
-          "validationEvidence": "지형 변경 시 적들이 변경된 경로를 즉시 인식하고 최단 경로로 이동하는지 시뮬레이션합니다."
+          "validationEvidence": "지형 파괴 이벤트 발생 시 A* 알고리즘이 즉시 재계산되어 적들이 변경된 경로를 최단 시간 내에 인식하고 이동하는지 시각적 디버그 툴로 확인합니다."
         },
         {
-          "designElement": "모바일 터치 조작",
-          "responsibleSystem": "UI/UX 입력 핸들러",
-          "validationEvidence": "다양한 모바일 기기에서 터치 반응 속도와 드래그 정확도를 측정하여 오작동률을 확인합니다."
+          "designElement": "모바일 터치 조작 및 반응형 UI 핸들러",
+          "responsibleSystem": "UI/UX 입력 핸들러 및 이벤트 시스템",
+          "validationEvidence": "다양한 해상도의 모바일 기기에서 터치 반응 속도와 드래그 정확도를 측정하고, 95% 이상의 입력 성공률을 기록하는지 성능 프로파일링을 통해 확인합니다."
         }
       ],
       "openQuestions": [
@@ -229,6 +231,110 @@
           "source": "STAGE_GATE_SCORING_V2"
         }
       ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "공중 위협 대응을 위한 신규 곤충 병종 및 공중전 메커니즘 도입",
+          "newGameplay": "비행형 적을 전문적으로 요격하는 말벌 포탑과 광역 독성 피해를 입히는 무당벌레 유닛을 추가하여, 기존 지상 중심의 방어 전략을 입체적인 공중전 대응 전략으로 확장합니다.",
+          "systemImpact": "기존의 지상 경로 기반 AI 시스템에 고도 개념이 추가되며, 유닛 상성 엔진이 공중/지상 속성 간의 데미지 보정치를 계산하도록 시스템 로직이 대폭 수정됩니다."
+        },
+        {
+          "milestone": "계절별 환경 변수 및 지형 상호작용 시스템 구축",
+          "newGameplay": "봄, 여름, 가을, 겨울 테마의 전장을 도입하고, 각 계절마다 이동 속도 감소나 공격력 버프 등 고유한 환경 효과를 적용하여 매 웨이브마다 전략적 선택을 강제합니다.",
+          "systemImpact": "환경 데이터 관리 시스템이 추가되어 웨이브 시작 시 전역 환경 변수를 유닛 스탯에 실시간으로 반영하며, 기존 지형 타일 데이터 구조에 계절 속성 필드가 확장됩니다."
+        },
+        {
+          "milestone": "거대 해충 보스 패턴 및 지형 파괴 기믹 구현",
+          "newGameplay": "특수 패턴을 가진 거대 해충 보스가 등장하여 특정 유닛의 공격을 무력화하거나 방어 타워가 설치된 지형을 파괴하는 기믹을 통해 긴장감을 극대화합니다.",
+          "systemImpact": "보스 AI 상태 머신이 추가되고, 지형 파괴 시 경로 탐색 시스템이 즉각적으로 재계산되어 적들의 이동 경로가 동적으로 변경되도록 시스템이 연동됩니다."
+        }
+      ],
+      "technicalAssumptions": [
+        "모바일 기기의 하드웨어 성능을 고려하여, 화면 내 최대 동시 활성 유닛 수를 100개로 제한하고 오브젝트 풀링을 통해 메모리 점유율을 최적화합니다.",
+        "네트워크 연결 상태와 무관하게 안정적인 게임 경험을 제공하기 위해 모든 전투 로직과 세이브 데이터를 로컬 기기에 저장하는 오프라인 우선 구조를 채택합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 유닛 배치 단계에서 곤충 간의 상성 관계를 시각적 피드백을 통해 직관적으로 이해하고 전략에 반영하는가?",
+        "웨이브 난이도 곡선이 플레이어의 자원 획득 및 유닛 업그레이드 속도와 정밀하게 동기화되어 적절한 도전감을 제공하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "생태 상성 시스템의 속성 보너스 로직",
+          "responsibleSystem": "전투 로직 엔진 및 데미지 계산 모듈",
+          "validationEvidence": "유닛별 공격 속성과 적 속성 데이터를 대조하는 유닛 테스트를 수행하여, 상성 보너스가 1.5배 적용되는지 로그를 통해 검증하고 밸런스 시뮬레이션을 완료합니다."
+        },
+        {
+          "designElement": "동적 지형 변형 및 경로 탐색 업데이트",
+          "responsibleSystem": "경로 탐색(Pathfinding) 시스템",
+          "validationEvidence": "지형 파괴 이벤트 발생 시 A* 알고리즘이 즉시 재계산되어 적들이 변경된 경로를 최단 시간 내에 인식하고 이동하는지 시각적 디버그 툴로 확인합니다."
+        },
+        {
+          "designElement": "모바일 터치 조작 및 반응형 UI 핸들러",
+          "responsibleSystem": "UI/UX 입력 핸들러 및 이벤트 시스템",
+          "validationEvidence": "다양한 해상도의 모바일 기기에서 터치 반응 속도와 드래그 정확도를 측정하고, 95% 이상의 입력 성공률을 기록하는지 성능 프로파일링을 통해 확인합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
@@ -336,28 +442,28 @@
       "updatedAt": "2026-09-18T18:45:00.422Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
-      "successes": 1,
+      "calls": 3,
+      "successes": 2,
       "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 160191,
-      "lastMs": 89662,
+      "totalMs": 171864,
+      "lastMs": 11673,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
-      "updatedAt": "2026-09-18T18:45:19.692Z"
+      "updatedAt": "2026-09-18T18:45:31.370Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T18:43:50.027Z",
-  "updatedAt": "2026-09-18T18:45:19.696Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T18:45:19.692Z",
+  "updatedAt": "2026-09-18T18:45:31.562Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T18:45:31.370Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }
