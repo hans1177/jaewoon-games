@@ -28,7 +28,7 @@ function setup(){
   assert.equal(task.postReleaseFocused,true);
   assert.equal(task.packageLongWorkProtected,true);
   assert.equal(task.packageRole,'implementation-owner');
-  assert.equal(task.priority,'high');
+  assert.equal(task.priority,'critical');
   assert.equal(task.responsibleFiles.length,3);
   assert.match(task.goal,/POST_RELEASE_FOCUSED_DEVELOPMENT/);
   assert(task.evidence.some(x=>x==='recombination-recipe:r1'));
@@ -65,6 +65,11 @@ function setup(){
   assert.match(runner,/commit_message='vibe2: ingest authorized Block Blast learning memory \[skip ci\]'/);
   assert.match(runner,/commit_message='vibe2: queue release baseline implementation gap \[skip ci\]'/);
   assert.match(runner,/commit_message='vibe2: plan next machine-state work \[skip ci\]'/);
+  const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
+  const focus=roadmap.developmentLifecycleMachine.postReleaseFocusedDevelopment;
+  assert.equal(focus.generatedTaskContract.priority,'critical');
+  assert.deepEqual(focus.machinePriorityOrder.slice(0,3),['owner-directive','post-release-focused-development','release-confirmed']);
+  assert.equal(focus.learningRunsInParallel,true);
 }
 
 console.log('PASS post-release Roblox focused development feeder enforces exact published release and one source cycle');
