@@ -35,6 +35,8 @@ on:
       - 'tools/vibe2-post-release-focus.mjs'
       - 'tools/vibe2-release-dispatch-recovery.mjs'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/vibe2-learning-motor.json'
+      - 'company-learning/external-ai-distillation-policy.json'
       - 'qa/vibe2-auto-planner.test.mjs'
       - 'qa/vibe2-core-engine-motion.test.mjs'
       - 'qa/vibe2-design-intelligence.test.mjs'
@@ -56,6 +58,7 @@ on:
       - 'qa/vibe2-learning-motor.test.mjs'
       - 'qa/vibe2-code-pattern-ingest.test.mjs'
       - 'qa/vibe2-learning-practice-worker.test.mjs'
+      - 'qa/vibe2-external-ai-distillation.test.mjs'
       - 'qa/vibe2-web-experience-ingest.test.mjs'
       - 'qa/company-machine-development-lifecycle.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
@@ -86,7 +89,11 @@ on:
       - 'tools/vibe2-experience-control.mjs'
       - 'tools/vibe2-handoff.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
+      - 'tools/vibe2-external-ai-distillation.mjs'
+      - 'tools/vibe2-multisource-learning-collector.mjs'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/vibe2-learning-motor.json'
+      - 'company-learning/external-ai-distillation-policy.json'
       - 'qa/vibe2-*.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
@@ -144,7 +151,10 @@ jobs:
           node --check qa/vibe2-continuous-release-dispatch.test.mjs
           node --check qa/vibe2-learning-motor.test.mjs
           node --check qa/vibe2-code-pattern-ingest.test.mjs
+          node --check tools/vibe2-external-ai-distillation.mjs
+          node --check tools/vibe2-multisource-learning-collector.mjs
           node --check qa/vibe2-learning-practice-worker.test.mjs
+          node --check qa/vibe2-external-ai-distillation.test.mjs
           node --check qa/vibe2-web-experience-ingest.test.mjs
           node --check qa/company-machine-development-lifecycle.test.mjs
           node --check qa/vibe2-auto-planner.test.mjs
@@ -187,6 +197,7 @@ jobs:
           node --test qa/vibe2-learning-motor.test.mjs
           node --test qa/vibe2-code-pattern-ingest.test.mjs
           node --test qa/vibe2-learning-practice-worker.test.mjs
+          node --test qa/vibe2-external-ai-distillation.test.mjs
           node --test qa/vibe2-web-experience-ingest.test.mjs
           node --test qa/company-machine-development-lifecycle.test.mjs
 
