@@ -36,3 +36,13 @@ test('current blocked checkpoint engine remains compatible with targeted resume 
   assert.match(design,/checkpointV3CompatibleEngineMigrationEligible/);
   assert.match(design,/QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY/);
 });
+
+
+test('design runtime replaces only stale engine runs while preserving manual and scheduled cycles',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
+  assert.match(workflow,/group: company-seed-design-runtime/);
+  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
+  assert.match(workflow,/push:[\s\S]*tools\/company-design-cycle\.mjs/);
+  assert.match(workflow,/workflow_dispatch:/);
+  assert.match(workflow,/schedule:/);
+});
