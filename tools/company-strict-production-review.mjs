@@ -138,6 +138,7 @@ function designReview(){
   result.criticalAxisMinimumPercent=scored.criticalAxisMinimumPercent;
   result.criticalAxisFailures=scored.criticalAxisFailures;
   result.thirtyMinuteHardGateApplied=scored.thirtyMinuteHardGateApplied;
+  result.rejectionReasons=Array.isArray(scored.rejectionReasons)?scored.rejectionReasons:[];
   return result;
 }
 function implementationReview(){
@@ -175,7 +176,7 @@ function updateLearning(result){
   const resolvedHardFailures=[...previousHard].filter(x=>!currentHard.has(x));
   const addedHardFailures=[...currentHard].filter(x=>!previousHard.has(x));
   const learningSignal=!validated?'UNVALIDATED':result.verdict==='PASS'?'POSITIVE_SUCCESS':result.totalScore>=80&&result.totalScore<90&&result.hardFailures.length===0?'IMPROVEMENT_80_89':'NEGATIVE_OR_REBUILD';
-  learning.events.push({gameId,seedId:seed.seedId,reviewStage:result.reviewStage,runtimeTarget:result.evidence?.runtimeTarget||null,verdict:result.verdict,totalScore:result.totalScore,previousScore,scoreDelta,hardFailures:result.hardFailures,resolvedHardFailures,addedHardFailures,improvementTargets:result.improvementTargets||[],learningSignal,materialFamilies:families,validatedRealEvidence:validated,reviewContextSource,recordedAt:result.reviewedAt});
+  learning.events.push({gameId,seedId:seed.seedId,reviewStage:result.reviewStage,runtimeTarget:result.evidence?.runtimeTarget||null,verdict:result.verdict,totalScore:result.totalScore,previousScore,scoreDelta,hardFailures:result.hardFailures,resolvedHardFailures,addedHardFailures,rejectionReasons:Array.isArray(result.rejectionReasons)?result.rejectionReasons:[],improvementTargets:result.improvementTargets||[],learningSignal,materialFamilies:families,validatedRealEvidence:validated,reviewContextSource,recordedAt:result.reviewedAt});
   learning.events=learning.events.slice(-500);
   for(const cause of result.hardFailures)learning.causeCounts[cause]=Number(learning.causeCounts[cause]||0)+1;
   const passCounts={},rebuildCounts={};
@@ -193,5 +194,5 @@ function updateLearning(result){
 const result=mode==='web'||mode==='implementation'?implementationReview():designReview();
 const output=arg('output')||(date?path.join('design',gameId,date,mode==='design'?'strict-design-review.json':'strict-implementation-review.json'):`strict-${mode}-review.json`);
 writeJson(output,result);updateLearning(result);
-console.log(`STRICT_REVIEW_STAGE=${result.reviewStage}`);console.log(`STRICT_REVIEW_SCORE=${result.totalScore}`);console.log(`STRICT_REVIEW_PASS_THRESHOLD=${result.passThreshold}`);console.log(`STRICT_REVIEW_EXCELLENT=${result.excellent?'YES':'NO'}`);console.log(`STRICT_REVIEW_VERDICT=${result.verdict}`);console.log(`STRICT_REVIEW_HARD_FAILURES=${result.hardFailures.join(',')||'NONE'}`);console.log(`STRICT_REVIEW_IMPROVEMENT_TARGETS=${(result.improvementTargets||[]).map(x=>`${x.dimension}:${x.gap}`).join(',')||'NONE'}`);console.log(`STRICT_REVIEW_CONTEXT=${reviewContextSource}`);if(result.reviewStage==='DESIGN_STRICT_REVIEW'&&result.evidence?.robloxGenreProfile){const p=result.evidence.robloxGenreProfile;console.log(`STRICT_REVIEW_ROBLOX_GENRE=${p.genre}`);console.log(`STRICT_REVIEW_ROBLOX_SUBGENRE=${p.subgenre||'NONE'}`);console.log(`STRICT_REVIEW_ROBLOX_PLAY_MODE=${p.playMode}`);console.log(`STRICT_REVIEW_ROBLOX_DISPLAY_KO=${p.displayLabelKo}`);}console.log('STRICT_REVIEW_LEARNING_RECORDED=YES');
+console.log(`STRICT_REVIEW_STAGE=${result.reviewStage}`);console.log(`STRICT_REVIEW_REJECTION_REASONS=${JSON.stringify(result.rejectionReasons||[])}`);console.log(`STRICT_REVIEW_SCORE=${result.totalScore}`);console.log(`STRICT_REVIEW_PASS_THRESHOLD=${result.passThreshold}`);console.log(`STRICT_REVIEW_EXCELLENT=${result.excellent?'YES':'NO'}`);console.log(`STRICT_REVIEW_VERDICT=${result.verdict}`);console.log(`STRICT_REVIEW_HARD_FAILURES=${result.hardFailures.join(',')||'NONE'}`);console.log(`STRICT_REVIEW_IMPROVEMENT_TARGETS=${(result.improvementTargets||[]).map(x=>`${x.dimension}:${x.gap}`).join(',')||'NONE'}`);console.log(`STRICT_REVIEW_CONTEXT=${reviewContextSource}`);if(result.reviewStage==='DESIGN_STRICT_REVIEW'&&result.evidence?.robloxGenreProfile){const p=result.evidence.robloxGenreProfile;console.log(`STRICT_REVIEW_ROBLOX_GENRE=${p.genre}`);console.log(`STRICT_REVIEW_ROBLOX_SUBGENRE=${p.subgenre||'NONE'}`);console.log(`STRICT_REVIEW_ROBLOX_PLAY_MODE=${p.playMode}`);console.log(`STRICT_REVIEW_ROBLOX_DISPLAY_KO=${p.displayLabelKo}`);}console.log('STRICT_REVIEW_LEARNING_RECORDED=YES');
 if(result.verdict!=='PASS')process.exitCode=3;
