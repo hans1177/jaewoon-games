@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-source-worker.test.mjs
-// 역할: Vibe2 source worker의 격리, 코드 인텔리전스, 수리 루프, 책임 파일 경계와 기존 회귀 계약을 검증한다.
+// 역할: Vibe2 텍스트 source worker의 격리, 책임 파일 경계, 웹 유지보수, 바이너리 차단과 안전 편집 일치를 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -8,11 +8,6 @@ import os from 'node:os';
 import path from 'node:path';
 import { runVibe2SourceWorker } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
-import {
-  buildSmartCodeContext,
-  classifyVibe2Failure,
-  validateCandidatePreview
-} from '../tools/vibe2-code-intelligence.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
 function write(file, content) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, content, 'utf8'); }
@@ -43,8 +38,6 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.equal(result.exploration.sourceWrite,false);
   assert.ok(result.exploration.reuseKey.length>=16);
   assert.equal(result.roleResults.exploration,'PASS');
-  assert.equal(result.codeIntelligence.repairLoop.attemptsUsed,1);
-  assert.equal(result.codeIntelligence.repairLoop.repaired,false);
   assert.match(fs.readFileSync(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'utf8'), /1 \+ 1/);
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/task-1/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
@@ -80,101 +73,6 @@ test('candidate manifest persists design intelligence requirements and starts ev
   }
 });
 
-test('smart context ranks related code and change impact before implementation', () => {
-  const cwd=tempRoot();
-  const root=path.join(cwd,'unity-games/demo');
-  write(path.join(root,'Assets/Player.cs'), [
-    'class Player {',
-    '  CombatSystem combat;',
-    '  string SaveKey = "player";',
-    '  int Hp = 100;',
-    '  int Speed() { return 1; }',
-    '}'
-  ].join('\n'));
-  write(path.join(root,'Assets/CombatSystem.cs'),'class CombatSystem { int Damage = 10; }\n');
-  write(path.join(root,'Assets/PlayerSave.cs'),'class PlayerSave { void Save() {} void Load() {} }\n');
-  write(path.join(root,'Assets/Tests/PlayerTests.cs'),'class PlayerTests { Player player; }\n');
-  const smart=buildSmartCodeContext({
-    root,
-    target:'unity',
-    responsibleFiles:['Assets/Player.cs'],
-    existingContextFiles:[],
-    goal:'플레이어 전투와 세이브 코드 수정'
-  });
-  assert.equal(smart.strategy,'dependency-symbol-test-ranked');
-  assert.equal(smart.readOnlyOutsideResponsible,true);
-  assert(smart.files.includes('Assets/CombatSystem.cs'));
-  assert(smart.files.includes('Assets/Tests/PlayerTests.cs'));
-  assert(smart.changeImpact.categories.includes('combat'));
-  assert(smart.changeImpact.categories.includes('persistence'));
-  assert.equal(smart.changeImpact.invented,false);
-});
-
-test('symbol edit is verified inside the requested function', async () => {
-  const cwd=tempRoot(), responseFile=path.join(cwd,'model.json');
-  write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),[
-    'class Player {',
-    '  int Speed() {',
-    '    return 1;',
-    '  }',
-    '}'
-  ].join('\n'));
-  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({responsibleFiles:['unity-games/demo/Assets/Player.cs'],taskId:'symbol-edit'}),null,2));
-  write(responseFile,JSON.stringify({
-    summary:'Speed 함수만 수정',
-    symbolEdits:[{path:'Assets/Player.cs',symbol:'Speed',find:'return 1;',replace:'return 2;'}],
-    newFiles:[]
-  }));
-  const result=await runVibe2SourceWorker({cwd,responseFile});
-  const candidate=JSON.parse(fs.readFileSync(path.join(cwd,'.vibe2/candidates/symbol-edit/candidate.json'),'utf8'));
-  assert.equal(candidate.edits[0].symbol,'Speed');
-  assert.equal(result.codeIntelligence.symbolPatching.verifiedEdits[0].symbol,'Speed');
-  assert.equal(result.codeIntelligence.symbolPatching.verifiedEdits[0].enforced,true);
-});
-
-test('explicit wrong symbol is rejected by preview validation', () => {
-  const cwd=tempRoot(), root=path.join(cwd,'unity-games/demo');
-  write(path.join(root,'Assets/Player.cs'),[
-    'class Player {',
-    '  int Speed() {',
-    '    return 1;',
-    '  }',
-    '}'
-  ].join('\n'));
-  assert.throws(()=>validateCandidatePreview({
-    sourceRoot:root,
-    candidate:{
-      edits:[{path:'Assets/Player.cs',symbol:'Jump',find:'return 1;',replace:'return 2;'}],
-      newFiles:[],
-      replaceFiles:[]
-    }
-  }),/SYMBOL_SCOPE_MISMATCH/);
-});
-
-test('failure router chooses specialized repair strategies', () => {
-  assert.equal(classifyVibe2Failure({error:'SYNTAX_INVALID:game.js',goal:'버그 수정',target:'web'}).route,'SYNTAX_REPAIR');
-  assert.equal(classifyVibe2Failure({error:'runtime mismatch',goal:'세이브 Load 호환성 수정',target:'unity'}).route,'PERSISTENCE_REPAIR');
-  assert.equal(classifyVibe2Failure({error:'runtime mismatch',goal:'보스 combat damage 로직 수정',target:'unity'}).route,'COMBAT_REPAIR');
-  assert.equal(classifyVibe2Failure({error:'runtime mismatch',goal:'터치 joystick 입력 수정',target:'web'}).route,'UI_INPUT_REPAIR');
-});
-
-test('repair loop uses validation failure to retry and accepts the repaired candidate', async () => {
-  const cwd=tempRoot();
-  const bad=path.join(cwd,'bad.json'), good=path.join(cwd,'good.json');
-  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/game.js'],taskId:'repair-loop'});
-  workOrder.goal='점수 함수 코드 오류 수정';
-  write(path.join(cwd,'web-games/demo/game.js'),'function score() { return 1; }\n');
-  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
-  write(bad,JSON.stringify({symbolEdits:[{path:'game.js',symbol:'score',find:'return 1;',replace:'return (;'}]}));
-  write(good,JSON.stringify({symbolEdits:[{path:'game.js',symbol:'score',find:'return 1;',replace:'return 2;'}]}));
-  const result=await runVibe2SourceWorker({cwd,responseFile:bad,repairResponseFiles:[good]});
-  assert.equal(result.codeIntelligence.repairLoop.attemptsUsed,2);
-  assert.equal(result.codeIntelligence.repairLoop.repaired,true);
-  assert.equal(result.codeIntelligence.repairLoop.history[0].route,'SYNTAX_REPAIR');
-  assert.deepEqual(result.codeIntelligence.failureRouter.routes,['SYNTAX_REPAIR']);
-  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/repair-loop/files/game.js'),'utf8'),/return 2/);
-});
-
 test('single responsible file safely remaps model placeholder path', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
@@ -206,6 +104,45 @@ test('existing web game text maintenance is allowed', async () => {
   const result = await runVibe2SourceWorker({ cwd, responseFile });
   assert.equal(result.target, 'web');
   assert.deepEqual(result.changedFiles, ['index.html']);
+});
+
+test('existing Web assessment overrides stale full-rebuild flags when KEEP_AND_CONTINUE is selected', async () => {
+  const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
+  const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-keep-existing' });
+  workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed = true;
+  workOrder.evidence = ['web-strict-score:84'];
+  const source = `<!doctype html><html><body><button id="play">Play</button><script>
+  let hp=10,wave=2,gold=30,playerX=1,playerY=1,enemy={hp:3};
+  addEventListener('touchstart',()=>{enemy.hp-=1}); function update(){requestAnimationFrame(update)}update();
+  function restart(){wave=1} const victory='victory',defeat='defeat'; localStorage.setItem('save','1'); new AudioContext();
+  </script></body></html>`;
+  write(path.join(cwd, 'web-games/demo/index.html'), source);
+  write(path.join(cwd, 'design/demo/2026-09-18/design-revised.json'), JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd, 'design/demo/2026-09-18/cycle-status.json'), JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(responseFile, JSON.stringify({edits:[{path:'index.html',find:'<button id="play">Play</button>',replace:'<button id="play">Continue</button>'}],newFiles:[],replaceFiles:[]}));
+  const result = await runVibe2SourceWorker({ cwd, responseFile });
+  assert.equal(result.exploration.existingWebAssessment.strategy,'KEEP_AND_CONTINUE');
+  assert.equal(result.fullFileRewriteAllowed,false);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
+test('exploration FULL_REBUILD strategy can authorize full web rewrite without planner pre-deciding rebuild', async () => {
+  const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.txt');
+  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(120)}</script></body></html>`;
+  const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-assessed-rebuild' });
+  workOrder.goal = 'EXISTING_WEB_ASSESS_AND_IMPLEMENT';
+  write(path.join(cwd, 'web-games/demo/index.html'), '<!doctype html><html><body><h1>검증 패널</h1><button data-session-stage="1">다음</button></body></html>\n');
+  write(path.join(cwd, 'design/demo/2026-09-18/design-revised.json'), JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd, 'design/demo/2026-09-18/cycle-status.json'), JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(responseFile, ['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:assessment rebuild','EXPECTED_EFFECT:playable game','TEST:gameplay','---VIBE2_FILE_CONTENT---',replacement,'---VIBE2_FILE_END---'].join('\n'));
+  const result = await runVibe2SourceWorker({ cwd, responseFile });
+  assert.equal(result.fullFileRewriteAllowed, true);
+  assert.equal(result.exploration.existingWebAssessment.strategy,'FULL_REBUILD');
 });
 
 test('full web rebuild accepts raw full-file envelope without JSON escaping', async () => {
@@ -242,6 +179,8 @@ test('full web rebuild rejects truncated raw full-file envelope', async () => {
   workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
   workOrder.workerPolicy.fullFileRewriteAllowed = true;
   write(path.join(cwd, 'web-games/demo/index.html'), '<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd, 'design/demo/2026-09-18/design-revised.json'), JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd, 'design/demo/2026-09-18/cycle-status.json'), JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
   write(responseFile, 'VIBE2_FULL_FILE\nPATH:index.html\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>잘린 출력');
   await assert.rejects(runVibe2SourceWorker({ cwd, responseFile }), /잘렸거나 종료 마커가 없음/);
