@@ -46,7 +46,7 @@ test('fan-in controller contract directly verifies design intelligence stages an
 });
 
 test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
-  assert.equal(runtime.version,7);
+  assert.equal(runtime.version,8);
   assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,20);
   assert.equal(runtime.continuous.unityReleaseFocusSlots,1);
