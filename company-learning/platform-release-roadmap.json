@@ -1,8 +1,8 @@
 {
-  "version": 7,
+  "version": 8,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "COMPANY_FLOW.md",
-  "recordedAt": "2026-09-14",
+  "recordedAt": "2026-09-18",
   "priority": [
     "ROBLOX",
     "UNITY",
@@ -229,7 +229,28 @@
       ],
       "platformAdaptationAllowed": true,
       "silentScopeDropForbidden": true,
-      "webEvidenceCannotReplaceNativeRuntimeEvidence": true
+      "webEvidenceCannotReplaceNativeRuntimeEvidence": true,
+      "manifestVersion": 1,
+      "queueField": "webPlatformHandoff",
+      "producer": ".github/workflows/company-development-confirmed-runtime.yml",
+      "requiredQueueFields": [
+        "webSourcePath",
+        "webValidationEvidencePath",
+        "webSourceIndexSha256",
+        "webDesignBaselineSha256",
+        "webValidationSchemaVersion",
+        "webStrictScore",
+        "webPromotionRevalidationPassed"
+      ],
+      "requiredConsumerChecks": [
+        "WEB_HANDOFF_PRESENT",
+        "WEB_HANDOFF_SOURCE_BOUND",
+        "WEB_HANDOFF_BASELINE_BOUND",
+        "WEB_HANDOFF_PROMOTION_REVALIDATED",
+        "WEB_HANDOFF_SCOPE_CARRY_FORWARD_REQUIRED"
+      ],
+      "consumer": "tools/company-development-roblox-bootstrap.mjs",
+      "evidenceDoesNotTransferAsNativePass": true
     },
     "targetPlatformDevelopment": {
       "allowedPlatforms": [
@@ -288,7 +309,41 @@
       "ownerHoldOrKillStopsFocus": true,
       "noSafeWorkAction": "REASSESS_AND_CREATE_NEXT_VERIFIED_GAP",
       "newTrainerForbidden": true,
-      "shadowPipelineForbidden": true
+      "shadowPipelineForbidden": true,
+      "feeder": "tools/vibe2-post-release-focus.mjs",
+      "feederInputs": [
+        "company-learning/platform-release-roadmap.json",
+        "company-runtime:development-queue.json",
+        "main:roblox-games/<gameId>",
+        "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        ".vibe2/queue.json"
+      ],
+      "generatedTaskContract": {
+        "postReleaseFocused": true,
+        "target": "roblox",
+        "releaseState": "release-confirmed",
+        "packageLongWorkProtected": true,
+        "packageRole": "implementation-owner",
+        "priority": "high",
+        "directMainWrite": false
+      },
+      "taskIdentity": "GAME_ID_PLUS_CURRENT_ROBLOX_SOURCE_TREE_SHA",
+      "refillCondition": "ONLY_WHEN_EXACT_PUBLISHED_RELEASE_EVIDENCE_MATCHES_CURRENT_RELEASE_SOURCE_AND_NO_SAME_SOURCE_FOCUS_TASK_EXISTS",
+      "nextCycleCondition": "NEW_MAIN_ROBLOX_SOURCE_TREE_AFTER_VERIFIED_PROMOTION",
+      "protectedSlotEnforcer": "assets/vibe-continuous-queue.js",
+      "protectedSlotCount": 1
+    },
+    "executionBindings": {
+      "webValidationProducer": ".github/workflows/company-development-confirmed-runtime.yml",
+      "webToPlatformQueueProducer": ".github/workflows/company-development-confirmed-runtime.yml",
+      "webToRobloxConsumer": ".github/workflows/company-development-roblox-runtime.yml",
+      "robloxBootstrapConsumer": "tools/company-development-roblox-bootstrap.mjs",
+      "postReleaseFocusFeeder": "tools/vibe2-post-release-focus.mjs",
+      "postReleaseScheduler": ".github/workflows/vibe2-24h-runner.yml",
+      "postReleaseWorker": ".github/workflows/vibe2-continuous-core.yml",
+      "postReleaseQueue": ".vibe2/queue.json",
+      "companyRuntimeQueue": "development-queue.json",
+      "centralPolicyFile": "company-learning/platform-release-roadmap.json"
     }
   }
 }
