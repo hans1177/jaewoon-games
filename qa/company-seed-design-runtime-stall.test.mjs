@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
 const bootstrap=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+const artbookPipeline=fs.readFileSync('tools/artbook-production-pipeline.mjs','utf8');
 const prepareOllama=fs.readFileSync('.github/actions/prepare-ollama/action.yml','utf8');
 
 test('seed design runtime preserves the active fanout and revalidates matrix targets before model setup',()=>{
@@ -207,4 +208,14 @@ test('Gemini quota governor retries transient quota failures after provider retr
   assert.match(workflow,/Date\.now\(\)<updated\+providerRetryMs\(row\)/);
   assert.ok((workflow.match(/modelUnavailable\(row\)/g)||[]).length>=3);
   assert.doesNotMatch(workflow,/const unavailableModel=\/GenerateRequestsPerDayPerProjectPerModel-FreeTier/);
+});
+
+
+test('design engine expires checkpointed 429 quarantine at provider retry window and does not retry from timeout telemetry',()=>{
+  assert.match(design,/function geminiProviderRetryWindowMs\(error\)/);
+  assert.match(design,/function geminiQuotaRetryWindowActive\(row\)/);
+  assert.match(design,/GEMINI_MODEL_QUARANTINE_EXPIRED=/);
+  assert.match(design,/status===429&&!geminiQuotaRetryWindowActive\(row\)/);
+  assert.match(artbookPipeline,/aborted due to timeout\|timed out\|AbortError\|TimeoutError/);
+  assert.doesNotMatch(artbookPipeline,/aborted due to timeout\|timeout\|timed out/);
 });
