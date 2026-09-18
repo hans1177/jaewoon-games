@@ -4,15 +4,20 @@
   "date": "2026-09-19",
   "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
+  "currentStage": "DEPARTMENT_REVIEWS",
+  "percent": 67,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
+  ],
+  "completedPhaseCount": 4,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
-  "failedPhase": "designer_draft",
-  "failedTask": null,
-  "lastError": "GEMINI_CALL_FAILED gemini-3.5-flash-lite: gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+  "lastSuccessfulModelCallAt": "2026-09-18T19:52:05.772Z",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 2,
@@ -114,17 +119,17 @@
       "updatedAt": "2026-09-18T19:33:01.858Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 5,
-      "successes": 0,
-      "failures": 5,
+      "calls": 8,
+      "successes": 2,
+      "failures": 6,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 351604,
-      "lastMs": 18081,
-      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=3343",
-      "updatedAt": "2026-09-18T19:51:40.007Z"
+      "totalMs": 395534,
+      "lastMs": 6866,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"The service is currently unavailable.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T19:52:05.772Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T19:51:40.008Z"
+  "updatedAt": "2026-09-18T19:52:05.798Z"
 }
