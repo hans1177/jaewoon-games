@@ -21,7 +21,7 @@ const ROBLOX_PUBLISH_BUSY_RETRY_DELAYS_MS=Object.freeze([30_000,60_000,120_000])
 export const ROBLOX_PLATFORM_POLICY=Object.freeze({
   version:1,
   platform:'ROBLOX',
-  roadmapPhase:'ROBLOX_FAST_RELEASE_STABILIZATION',
+  roadmapPhase:'ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE',
   pipeline:'V3-PUMP',
   parallelPipeline:false,
   sourceRoot:'roblox-games/',
