@@ -3,8 +3,8 @@
   "gameId": "seed-casual-realm-weaver",
   "date": "2026-09-18",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-CASUAL-REALM-WEAVER-20260917",
-  "fingerprint": "fe05be96ecc32590939567b766d40135b8434e1c658a8f667e33b0d914b761ff",
-  "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
+  "fingerprint": "a09d35be0da8c5c7073ea9b08a11715dd09542180ed11fbb97aa88ccf25efd9a",
+  "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "fb2b00edf10176134b826d2907c717aaf0be71dc49a565c44484b6447d2e737c",
   "status": "IN_PROGRESS",
   "completedPhases": [
@@ -13,131 +13,129 @@
   ],
   "phases": {
     "designer_draft": {
-      "identity": "세계의 직조자는 플레이어가 모바일 환경에서 한 손가락 터치와 스와이프 입력을 통해 다양한 자원 타일을 연결하고 조합하여 자신만의 세계를 창조하는 캐주얼 퍼즐 육성 게임이다. coreLoop와 signatureSystems는 단순한 점수 반복을 넘어, 자원 타일 배치 선택이 지형 상태 변화와 생태계 활성화로 즉각 이어지게 만들어 이 게임만의 고유한 선택과 상태 변화를 구축한다.",
-      "playerFantasy": "플레이어는 신비로운 세계의 직조자가 되어 황폐해진 대지에 생명의 실을 잇고, 자연과 문명이 조화롭게 공존하는 찬란한 판타지 세계를 손끝으로 직접 빚어내는 성취감과 창조의 즐거움을 느낀다.",
-      "coreFun": "플레이어가 타일을 선택해 배치할 때마다 지형이 즉각적으로 변화하고 자원이 생산되는 인과관계를 관찰하며, 제한된 자원 안에서 최적의 조합을 찾아내어 더 큰 보상과 새로운 영지를 해제하는 즉각적이고 반복적인 전략적 재미를 제공한다.",
+      "identity": "세계의 직조자는 플레이어가 실시간으로 지형과 자원을 엮어 새로운 생태계를 창조하고 유지하는 캐주얼 전략 시뮬레이션 게임입니다. coreLoop를 통해 자원을 수집하고 맵을 확장하며, signatureSystems를 통해 독특한 지형 조합과 날씨 조작이라는 선택적 상태 변화를 이끌어냅니다.",
+      "playerFantasy": "플레이어는 잊혀진 세계의 신비로운 직조자가 되어, 손가락 끝의 간단한 터치와 드래그로 황폐한 대지를 생명력이 넘치는 아름다운 낙원으로 재탄생시키는 성취감을 경험합니다.",
+      "coreFun": "자원 조각을 슬롯에 드래그하여 배치하는 반복적인 선택을 통해, 지형이 즉각적으로 변하고 새로운 자원이 생산되는 관찰 가능한 상태 변화를 유도하며, 짧은 시간 안에 즉각적인 시각적 보상을 제공하는 재미를 선사합니다.",
       "coreLoop": [
-        "한 손가락 터치와 스와이프로 보드 위에 기본 자원 타일을 배치하고 즉각적인 지형 변화를 확인한다.",
-        "배치된 타일들의 상호작용으로 생성된 에너지를 수집하고, 다음 배치에 영향을 주는 위험 요소나 보상 선택지를 마주한다.",
-        "획득한 재화로 새로운 영지 해제 및 패시브 능력을 업그레이드한 후 더 높은 난이도의 다음 세션으로 빠르게 진입한다."
+        "플레이어는 한 손 터치와 드래그 입력으로 화면에 무작위로 생성되는 지형 조각을 선택합니다.",
+        "선택한 조각을 게임판 위에 배치하여 기존 지형과 결합시키고, 자원 생산량과 인구수라는 상태 변화를 발생시킵니다.",
+        "획득한 자원을 활용해 새로운 지형 레시피를 해제하고, 다음 세션을 위한 보상과 위험 요소를 관리하며 빠르게 재도전합니다."
       ],
       "signatureSystems": [
         {
-          "name": "타일 위브 시스템",
-          "purpose": "플레이어가 보유한 자원 타일을 보드에 배치하여 주변 타일과 상호작용을 일으키고 새로운 지형 효과를 창출한다.",
-          "playerChoice": "어떤 종류의 타일을 어느 위치에 배치하여 인접 효과를 극대화할지 결정하며, 제한된 공간 속에서 최적의 조합 경로를 선택한다."
+          "name": "지형 직조 시스템",
+          "purpose": "서로 다른 속성의 지형 조각들을 교차 배치하여 상호작용을 일으키고 고유의 생태계 점수를 산출합니다.",
+          "playerChoice": "플레이어는 한정된 자원 속에서 어떤 지형을 먼저 연결할지 결정하여 자원 생산 효율을 극대화하거나 위험을 회피할 수 있습니다."
         },
         {
-          "name": "생태계 공명 시스템",
-          "purpose": "완성된 지형 조합에 따라 세계의 생명력 수치가 변화하고, 특정 임계점에 도달하면 특별한 돌발 이벤트나 보상이 발동된다.",
-          "playerChoice": "안정적인 자원 수급을 위해 균형 잡힌 타일을 놓을지, 아니면 고위험 고수익의 특수 지형 공명을 노릴지 선택한다."
+          "name": "원소 기후 조작",
+          "purpose": "주기적으로 변하는 기후 상태를 플레이어가 직접 개입해 조절함으로써 지형의 생산성과 안정성에 직접적인 영향을 줍니다.",
+          "playerChoice": "플레이어는 가뭄이나 폭우 타이밍에 맞춰 특정 원소 에너지를 소비해 재앙을 막고 추가 보너스 자원을 획득할 수 있습니다."
         }
       ],
       "systemInterconnections": [
         {
-          "fromSystem": "타일 위브 시스템",
-          "toSystem": "생태계 공명 시스템",
-          "trigger": "플레이어가 보드 위에 속성 타일을 연속으로 배치하여 인접 조건 만족",
-          "stateChange": "생태계 공명 게이지가 상승하고 세계의 전반적인 활성도 상태가 변화함"
+          "fromSystem": "지형 직조 시스템",
+          "toSystem": "원소 기후 조작",
+          "trigger": "지형 조합이 완성되어 특정 생태계 밀도가 임계점에 도달할 때",
+          "stateChange": "원소 에너지 충전 속도가 증가하고 기후 조작 스킬의 쿨타임이 감소합니다."
         },
         {
-          "fromSystem": "생태계 공명 시스템",
-          "toSystem": "진행 및 경제 균형",
-          "trigger": "생태계 공명 수치가 최대치에 도달하여 이벤트 성공 판정",
-          "stateChange": "추가 재화 보상이 지급되고 다음 단계의 영지 확장 권한이 해제됨"
+          "fromSystem": "원소 기후 조작",
+          "toSystem": "진행 경제 균형",
+          "trigger": "플레이어가 기후 조작을 성공적으로 사용하여 재앙을 극복했을 때",
+          "stateChange": "추가 보상 자원이 지급되며 다음 단계의 지형 레시피 해제 비용이 할인됩니다."
         },
         {
-          "fromSystem": "진행 및 경제 균형",
-          "toSystem": "타일 위브 시스템",
-          "trigger": "획득한 재화로 신규 타일 종류 및 패시브 슬롯 업그레이드 완료",
-          "stateChange": "다음 플레이 세션에서 사용할 수 있는 타일 풀과 선택지가 확장됨"
+          "fromSystem": "진행 경제 균형",
+          "toSystem": "지형 직조 시스템",
+          "trigger": "새로운 레시피가 해제되고 플레이어가 상위 자원을 보유하게 될 때",
+          "stateChange": "더 복잡하고 강력한 상위 지형 조각이 드랍 풀에 추가되어 선택지가 확장됩니다."
         }
       ],
-      "progressionDirection": "플레이어는 짧은 세션을 반복하며 자원을 모으고 새로운 타일과 지형 테마를 해제한다. 초반에는 단순한 숲과 물 타일 조합으로 시작하지만, 점차 복잡한 속성 타일과 연계 규칙이 도입되면서 더 깊이 있는 전략적 배치와 영지 확장 영구 성장을 경험하게 된다.",
+      "progressionDirection": "플레이어는 초반부의 단순한 지형 연결 학습을 거쳐, 중반부에는 복잡한 원소 조합과 기후 위기 극복을 경험하고, 후반부에는 자신만의 거대한 낙원을 완성하며 지속적인 업적과 새로운 맵 테마를 해제하는 방향으로 진행됩니다.",
       "progressionEconomyBalance": {
-        "progressionLoop": "세션 플레이를 통해 획득한 직조 재화로 영구적인 타일 해제 및 효율 업그레이드를 진행하고, 더 높은 난이도의 월드로 진입한다.",
-        "resourceFlow": "일일 플레이와 세션 내 타일 조합으로 재화가 유입되며, 상위 타일 해제 및 특별 세션 입장 비용으로 재화가 소모된다.",
-        "balanceRules": "세션당 평균 플레이 타임을 5분 내외로 유지하면서 보상 인플레이션을 억제하고, 실력과 전략적 선택에 따른 보상 차등을 부여한다."
+        "progressionLoop": "맵을 확장하고 생태계 점수를 높여 레벨을 올리고, 보상으로 얻는 직조 실타래를 사용해 영구적인 패시브 능력을 강화합니다.",
+        "resourceFlow": "기본 지형 배치를 통해 자원을 수급하고, 특수 기후 이벤트를 통해 추가 자원을 획득하며, 이를 상위 지형 잠금 해제와 스킬 업그레이드에 소모합니다.",
+        "balanceRules": "세션당 플레이 타임이 길어질수록 난이도가 점진적으로 상승하되, 빠른 재도전 시 보정 버프를 제공하여 이탈을 방지합니다."
       },
       "contentExpansionPlan": [
         {
-          "milestone": "시즌 1: 얼어붙은 대지의 서곡",
-          "newGameplay": "한파와 얼음 타일 기믹이 추가되어 인접 타일을 냉각시키거나 해동하는 신규 조합 규칙 도입.",
-          "systemImpact": "기존 타일 위브 시스템에 온도 변수와 특수 해동 선택지가 추가되어 전략의 깊이가 확장됨."
+          "milestone": "시즌 1: 얼어붙은 영지",
+          "newGameplay": "얼음 속성을 가진 새로운 지형 조각과 해동 메커니즘을 도입하여 기존의 따뜻한 생태계와 다른 동결 관리 플레이를 제공합니다.",
+          "systemImpact": "지형 직조 시스템에 온도 게이지가 추가되며, 원소 기후 조작 시스템의 활용 폭이 넓어집니다."
         },
         {
-          "milestone": "시즌 2: 고대 유적의 비밀",
-          "newGameplay": "무작위로 등장하는 고대 유적 타일에 자원을 공명시켜 강력한 일회성 버프를 획득하는 모험 요소 추가.",
-          "systemImpact": "생태계 공명 시스템과 연계되어 돌발 상황 대처 능력과 자원 관리의 중요성이 대폭 증가함."
+          "milestone": "시즌 2: 공중의 섬",
+          "newGameplay": "중력을 무시하고 공중에 지형을 띄우는 브릿지 연결 메커니즘과 새로운 3차원 배치 선택지를 추가합니다.",
+          "systemImpact": "시스템 연결 구조에 고도 레이어가 추가되어 기존 2차원 배치 전략에 입체적인 변화를 유도합니다."
         },
         {
-          "milestone": "시즌 3: 하늘섬의 영지 확장",
-          "newGameplay": "공중에 떠 있는 다층 구조의 보드 도입으로 상하좌우 입체적 타일 연결 및 층간 에너지 전송 메커니즘 제공.",
-          "systemImpact": "시스템 간 연결 구조가 입체적으로 확장되며 고도화된 자원 흐름 설계 능력이 요구됨."
+          "milestone": "시즌 3: 심해의 기원",
+          "newGameplay": "물 자원을 관리하고 해양 생태계를 육성하는 수중 직조 미션과 압력 게이지 리스크 시스템을 도입합니다.",
+          "systemImpact": "자원 순환 루프에 수분 관리 요소가 통합되어 자원 경제 균형에 새로운 제약과 보상을 부여합니다."
         }
       ],
       "failureRetryRisk": {
         "failureStates": [
-          "보드판의 빈 공간이 모두 소진되어 더 이상 타일을 배치할 수 없는 상태",
-          "생태계 안정도가 0으로 떨어져 현재 세션의 월드가 붕괴된 상태"
+          "생태계 안정도가 0으로 떨어져 대지가 황폐화되는 상태",
+          "제한 시간 내에 목표 자원을 수집하지 못해 세션이 종료되는 상태"
         ],
-        "retryFlow": "실패 즉시 결과 화면에서 획득한 자원의 일부를 정산받고, 3초 이내에 메인 화면이나 재도전 버튼으로 복귀하여 즉시 다음 판을 시작한다.",
-        "riskPressure": "세션 후반부로 갈수록 좁아지는 보드와 까다로워지는 타일 조합 조건으로 인해 순간의 실수로 실패할 수 있는 긴장감을 유지한다.",
-        "recoveryRules": "실패하더라도 이번 세션에서 수집한 직조 재화의 80%를 보존하여 영구 업그레이드에 즉시 사용할 수 있도록 보장한다."
+        "retryFlow": "실패 즉시 결과 화면이 노출되며, 획득한 자원의 일부를 보존한 채 즉시 메인 화면이나 재도전 버튼으로 가볍게 복귀합니다.",
+        "riskPressure": "연속된 실패 시 난이도가 완화되는 구제 장치를 제공하여 플레이어의 피로감과 좌절감을 최소화합니다.",
+        "recoveryRules": "재도전 시 이전 세션에서 모은 직조 실타래를 이용해 초기 보너스 자원이나 보호막을 장착하고 시작할 수 있습니다."
       },
       "platformFitPlan": {
         "targetPlatform": "UNITY",
-        "inputModel": "모바일 터치스크린 환경에 최적화된 원 핸드 탭 및 스와이프 인터페이스로 누구나 직관적인 조작 가능",
-        "performanceBudget": "모바일 저사양 기기에서도 60프레임을 유지하도록 가벼운 2D 벡터 그래픽과 최적화된 파티클 효과 사용",
-        "sessionConstraints": "한 판당 3분에서 5분의 짧은 플레이 타임을 보장하여 언제 어디서나 가볍게 즐길 수 있는 세션 구조 설계"
+        "inputModel": "모바일 터치스크린과 PC 마우스 클릭을 모두 지원하는 원클릭 드래그 앤 드롭 방식을 적용하여 직관적인 조작감을 제공합니다.",
+        "performanceBudget": "로우엔드 모바일 기기에서도 60프레임을 유지할 수 있도록 가벼운 로우폴리곤 그래픽과 최적화된 텍스처 아틀라스를 사용합니다.",
+        "sessionConstraints": "한 판의 플레이 타임을 3분에서 5분 내외로 설계하여 언제 어디서나 가볍게 즐길 수 있는 세션 구조를 보장합니다."
       },
-      "visualDirection": "따뜻하고 아기자기한 파스텔톤 컬러와 부드러운 애니메이션을 바탕으로, 타일이 놓이고 생태계가 살아날 때 시각적으로 큰 만족감을 주는 감성적인 판타지 비주얼 스타일을 지향한다.",
-      "mobileUx": "한 손으로 스마트폰을 쥔 상태에서도 엄지손가락 동선 내에 모든 주요 인터페이스와 타일 선택 버튼이 위치하도록 배치하여 조작 피로도를 최소화한다.",
+      "visualDirection": "따뜻하고 파스텔 톤의 색감을 바탕으로, 지형이 조립될 때 아기자기한 애니메이션과 빛나는 파티클 효과를 주어 시각적 만족감을 극대화합니다.",
+      "mobileUx": "엄지손가락 한 손으로 모든 조작이 가능하도록 핵심 UI 버튼을 하단 영역에 배치하고, 텍스트보다는 직관적인 아이콘 위주로 구성합니다.",
       "uxAccessibilityPlan": {
-        "hudPriorities": "핵심 재화 현황, 남은 보드 공간, 생태계 공명 게이지를 화면 상단에 직관적으로 고정 배치한다.",
-        "touchAndInput": "모바일 환경에서 오인식을 줄이기 위해 충분한 터치 영역과 명확한 햅틱/시각 피드백을 제공한다.",
-        "readability": "색맹 및 저시력 플레이어도 타일 속성을 쉽게 구분할 수 있도록 아이콘 형태와 패턴을 병행 표기한다.",
-        "accessibility": "UI 텍스트 크기 조절 옵션과 화면 흔들림 효과 ON/OFF 기능을 제공하여 다양한 플레이어 환경을 지원한다."
+        "hudPriorities": "핵심 자원 수치, 생태계 안정도 게이지, 현재 턴 또는 남은 시간을 화면 최상단에 항상 명확하게 노출합니다.",
+        "touchAndInput": "작은 화면에서도 터치 미스를 방지하기 위해 터치 영역을 넉넉하게 설정하고 햅틱 피드백을 지원합니다.",
+        "readability": "색약 모드를 지원하여 지형 속성을 색상 외에 패턴과 아이콘으로도 쉽게 구별할 수 있도록 가독성을 높입니다.",
+        "accessibility": "게임 속도 조절 기능과 자막 크기 변경 옵션을 제공하여 다양한 플레이어 환경을 배려합니다."
       },
       "artAudioDirection": {
-        "visualIdentity": "손으로 그린 듯한 따뜻한 동화풍 일러스트와 깔끔한 UI 디자인의 조화.",
-        "audioIdentity": "마음이 편안해지는 어쿠스틱 기타와 오르골 기반의 배경음악 및 타일 배치 시 청량한 효과음.",
-        "gameplayFeedbackSync": "타일이 배치될 때마다 음의 높낮이가 달라지는 사운드 연출로 플레이어의 행동에 즉각적인 청각적 쾌감 부여."
+        "visualIdentity": "동화 속 아기자기한 디오라마를 연상시키는 부드러운 형태와 따뜻한 조명 효과의 아트 스타일을 구축합니다.",
+        "audioIdentity": "마음이 편안해지는 어쿠스틱 기타와 앰비언트 사운드를 중심으로 구성하여 힐링되는 청각적 경험을 제공합니다.",
+        "gameplayFeedbackSync": "지형이 배치될 때마다 기분 좋은 타악기 소리와 물방울 소리가 즉각적으로 동기화되어 조작의 즐거움을 배가시킵니다."
       },
-      "marketTargetDirection": "글로벌 캐주얼 퍼즐 및 시뮬레이션 게이머를 타겟으로 하며, 남녀노소 누구나 쉽게 이해할 수 있는 직관적인 규칙과 깊이 있는 중독성을 동시에 제공한다.",
-      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후, PC 환경에 맞춘 와이드 화면 지원과 마우스 드래그 조작 최적화를 거쳐 스팀 플랫폼으로 확장 출시를 검토한다.",
+      "marketTargetDirection": "출퇴근길이나 휴식 시간에 가볍게 즐기기 좋은 캐주얼 힐링 게임을 선호하는 글로벌 모바일 게이머층을 집중 공략합니다.",
+      "steamExpansionDecision": "모바일 버빌리티 검증 완료 후, 더 넓은 화면과 정밀한 컨트롤을 지원하는 스팀 플랫폼으로 확장하여 UI를 PC 환경에 맞게 리마스터링합니다.",
       "multiplayerMode": "SINGLE",
-      "multiplayerExpansionDecision": "향후 업데이트를 통해 친구와 함께 보드를 협력해서 채우거나 주간 점수를 경쟁하는 비동기 멀티플레이어 모드 도입을 고려한다.",
+      "multiplayerExpansionDecision": "추후 업데이트를 통해 다른 플레이어의 낙원과 자원을 교류하는 비동기식 방문 및 협력 이벤트를 검토합니다.",
       "technicalAssumptions": [
-        "C# 기반의 컴포넌트 구조를 활용하여 모바일 플랫폼에서 끊김 없는 60프레임 렌더링 성능을 안정적으로 보장한다.",
-        "JSON 기반의 데이터 구조를 채택하여 타일 조합 규칙과 시즌별 신규 콘텐츠를 클라이언트 패치 없이 유연하게 확장한다.",
-        "로컬 세이브 데이터 암호화 및 자동 백업 시스템을 구축하여 플레이어의 자원 손실 문제를 원천적으로 방지한다."
+        "유니티 엔진의 UI 시스템과 커스텀 2D/3D 그리드 매니저를 활용하여 부드러운 지형 배치와 스냅핑을 구현합니다.",
+        "세션 데이터는 로컬 저장소와 클라우드에 주기적으로 자동 백업되어 데이터 손실 위험을 방지합니다."
       ],
       "validationQuestions": [
-        "플레이어가 첫 1분 안에 타일 배치와 지형 변화의 인과관계를 직관적으로 이해하고 흥미를 느끼는가?",
-        "세션 플레이 타임이 5분을 넘지 않으면서도 충분한 성취감과 재도전 동기를 유발하는가?",
-        "영구 업그레이드와 자원 경제 루프가 플레이어에게 지루함 없이 장기적인 몰입감을 제공하는가?"
+        "플레이어가 첫 3분 이내에 지형 배치와 자원 수집의 인과관계를 직관적으로 이해하고 몰입하는가?",
+        "반복되는 세션 속에서 지형 직조와 기후 조작 시스템의 유기적 연결이 충분한 재미를 유발하는가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "타일 위브 시스템의 인접 판정",
-          "responsibleSystem": "TileWeaveController.cs",
-          "validationEvidence": "유닛 테스트를 통해 타일 배치 시 인접 타일 속성에 따른 상태 변화와 점수 계산이 정확히 이루어지는지 검증함."
+          "designElement": "한 손 터치 지형 배치 선택",
+          "responsibleSystem": "책임 시스템: 지형 직조 시스템",
+          "validationEvidence": "사용자 테스트를 통해 터치 후 0.2초 이내에 지형 스냅과 시각적 피드백이 정상 작동하는지 로그로 검증합니다."
         },
         {
-          "designElement": "생태계 공명 게이지 연동",
-          "responsibleSystem": "EcosystemResonanceManager.cs",
-          "validationEvidence": "시뮬레이션 로그를 통해 타일 상호작용 횟수에 따라 공명 게이지가 정확히 상승하고 보상이 지급되는지 확인함."
+          "designElement": "기후 원소 게이지 연동",
+          "responsibleSystem": "책임 시스템: 원소 기후 조작",
+          "validationEvidence": "생태계 점수 변화에 따라 기후 게이지가 실시간으로 증감하는지 유닛 테스트를 통해 수치적 정확성을 검증합니다."
         },
         {
-          "designElement": "모바일 터치 및 입력 최적화",
-          "responsibleSystem": "TouchInputHandler.cs",
-          "validationEvidence": "다양한 모바일 기기 해상도에서 엄지손가락 터치 영역 오인식률이 1% 미만으로 유지되는지 UX 테스트를 통해 검증함."
+          "designElement": "세션 실패 후 빠른 재도전",
+          "responsibleSystem": "실패 및 재시도 리스크",
+          "validationEvidence": "게임 오버 발생 후 메인 화면 복귀 및 재시작까지 소요되는 로딩 시간이 1초를 넘지 않는지 성능 지표로 확인합니다."
         }
       ],
       "openQuestions": [
-        "비동기 협력 모드 도입 시 서버 부하를 최소화하기 위한 데이터 동기화 주기는 어느 정도로 설정하는 것이 가장 이상적인가?",
-        "향후 대규모 시즌 업데이트 시 기존 플레이어의 숙련도 격차를 해소하기 위해 어떤 온보딩 완화 장치가 필요한가?"
+        "비동기 멀티플레이어 모드를 도입할 때 서버 부하를 최소화하면서 공유할 수 있는 데이터의 범위는 어디까지인가?",
+        "향후 추가될 신규 테마에서 기존 지형과의 밸런스를 유지하기 위한 최적의 자원 교환비는 무엇인가?"
       ]
     },
     "deterministic_pre_gate": {
@@ -172,7 +170,7 @@
         "CORE_LOOP_DESIGN": 80,
         "SYSTEM_INTERCONNECTION_DESIGN": 80,
         "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 80,
+        "CONTENT_EXPANSION_PLAN": 60,
         "FAILURE_RETRY_RISK_DESIGN": 80,
         "PLATFORM_FIT_DESIGN": 80,
         "UX_AND_ACCESSIBILITY_PLAN": 80,
@@ -185,176 +183,66 @@
         "CORE_LOOP_DESIGN": 11.2,
         "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
         "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 8,
+        "CONTENT_EXPANSION_PLAN": 6,
         "FAILURE_RETRY_RISK_DESIGN": 6.4,
         "PLATFORM_FIT_DESIGN": 6.4,
         "UX_AND_ACCESSIBILITY_PLAN": 4.8,
         "ART_AUDIO_DIRECTION": 4,
         "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
       },
-      "totalScore": 80,
-      "criticalAxisFailures": [],
-      "hardFailures": [],
-      "rejectionReasons": [],
+      "totalScore": 78,
+      "criticalAxisFailures": [
+        "CONTENT_EXPANSION_PLAN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "CONTENT_EXPANSION_PLAN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 6,
+            "axisWeight": 10
+          },
+          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
     }
   },
-  "tasks": {
-    "five_lead_reviews::development": {
-      "keep": [
-        "JSON 기반 데이터 구조를 활용한 타일 조합 규칙 관리로 클라이언트 업데이트 없는 유연한 콘텐츠 확장성 유지"
-      ],
-      "fix": [
-        "TileWeaveController의 인접 판정 로직을 공간 쿼리 대신 그리드 인덱스 기반 참조로 변경하여 연산 부하 최소화"
-      ],
-      "add": [
-        "저사양 기기 대응을 위해 EcosystemResonanceManager의 파티클 연산을 오브젝트 풀링 시스템과 연동하여 구현"
-      ],
-      "risks": [
-        "타일 배치 시 발생하는 연쇄 상호작용이 재귀적으로 호출될 경우 모바일 CPU 점유율 급증 및 프레임 드랍 위험"
-      ],
-      "evidence": [
-        "Subway Surfers 등 글로벌 캐주얼 게임의 60fps 유지 사례는 저사양 기기 최적화가 리텐션의 핵심임을 증명함"
-      ],
-      "questions": [
-        "세션 종료 시 80% 재화 보존을 위한 로컬 세이브 암호화 시점이 성능에 미치는 영향이 검토되었는가?"
-      ]
-    },
-    "five_lead_reviews::graphics": {
-      "keep": [
-        "따뜻한 파스텔톤 동화풍 일러스트와 2D 벡터 그래픽 기반의 시각적 정체성 유지"
-      ],
-      "fix": [
-        "저사양 기기 최적화를 위해 파티클 효과의 오버드로우를 방지하는 셰이더 최적화 가이드라인 수립"
-      ],
-      "add": [
-        "타일 배치 시 지형 변화를 명확히 인지할 수 있는 시각적 강조(Highlight) 및 피드백 애니메이션 시스템 추가"
-      ],
-      "risks": [
-        "복잡한 생태계 공명 효과 발생 시 화면 밀집도가 높아져 가독성이 저하될 가능성"
-      ],
-      "evidence": [
-        "Crossy Road의 단순하고 명확한 시각적 피드백이 모바일 세션 유지율에 미치는 긍정적 영향"
-      ],
-      "questions": [
-        "생태계 공명 시 발생하는 시각적 이펙트가 게임 플레이의 가독성을 해치지 않도록 하는 구체적인 레이어링 규칙은 무엇인가?"
-      ]
-    },
-    "five_lead_reviews::planning": {
-      "keep": [
-        "한 손가락 터치와 스와이프를 활용한 직관적인 타일 배치 및 즉각적인 피드백 구조를 유지한다."
-      ],
-      "fix": [
-        "세션 반복의 피로감을 줄이기 위해 실패 시 자원 보존율 및 재도전 동선을 구체적으로 단축하라."
-      ],
-      "add": [
-        "초반 세션에서 타일 상호작용의 인과관계를 단 1분 안에 체감할 수 있는 튜토리얼 단계를 추가하라."
-      ],
-      "risks": [
-        "후반부 보드가 좁아질 때 타일 조합 조건이 과도하게 복잡해지면 캐주얼 유저의 이탈이 발생할 수 있다."
-      ],
-      "evidence": [
-        "글로벌 캐주얼 벤치마크에 부합하는 4분 내외의 세션 길이와 빠른 반복 플레이 구조를 확인했다."
-      ],
-      "questions": [
-        "다층 구조의 보드 도입 시 모바일 화면에서의 시인성을 어떻게 확보할 것인가?"
-      ]
-    }
-  },
+  "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 2,
-      "successes": 2,
-      "failures": 0,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 14288,
-      "lastMs": 1392,
-      "lastError": null,
-      "updatedAt": "2026-09-18T08:43:36.641Z"
-    },
-    "gemini:gemini-3.5-flash": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 90,
-      "lastMs": 90,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 32.64169945s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"32s\" } ] } }",
-      "updatedAt": "2026-09-18T08:43:27.368Z"
-    },
-    "gemini:gemini-3-flash-preview": {
       "calls": 1,
       "successes": 1,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 2256,
-      "lastMs": 2256,
+      "totalMs": 13058,
+      "lastMs": 13058,
       "lastError": null,
-      "updatedAt": "2026-09-18T08:43:29.535Z"
-    },
-    "gemini:gemini-3.1-flash-lite": {
-      "calls": 2,
-      "successes": 1,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 9138,
-      "lastMs": 5711,
-      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=29",
-      "updatedAt": "2026-09-18T08:43:35.247Z"
-    },
-    "gemini:gemini-3.6-flash": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 79,
-      "lastMs": 79,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 23.288770916s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"23s\" } ] } }",
-      "updatedAt": "2026-09-18T08:43:36.721Z"
-    },
-    "gemini:gemini-3.7-flash": {
-      "calls": 2,
-      "successes": 0,
-      "failures": 2,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 31429,
-      "lastMs": 16060,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 16.67223056s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.7-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"16s\" } ] } }",
-      "updatedAt": "2026-09-18T08:43:43.338Z"
-    },
-    "gemini:gemini-2.5-flash": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
-      "timeouts": 0,
-      "jsonFailures": 0,
-      "totalMs": 16126,
-      "lastMs": 16126,
-      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
-      "updatedAt": "2026-09-18T08:43:43.404Z"
+      "updatedAt": "2026-09-18T15:01:13.305Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DEPARTMENT_REVIEWS",
-  "createdAt": "2026-09-18T08:43:14.357Z",
-  "updatedAt": "2026-09-18T08:43:44.822Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T08:43:36.641Z",
+  "currentPhase": "PRE_GATE_REPAIR",
+  "createdAt": "2026-09-18T15:01:00.245Z",
+  "updatedAt": "2026-09-18T15:01:13.309Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:01:13.305Z",
   "geminiModelResolution": {
-    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
-    "gemini-3-flash-preview": "gemini-3-flash-preview",
-    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite"
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": "five_lead_reviews",
-  "failedTask": "balance",
-  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash"
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null
 }
