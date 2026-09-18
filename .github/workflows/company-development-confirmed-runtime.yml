@@ -125,6 +125,7 @@ jobs:
           const q=JSON.parse(fs.readFileSync('/tmp/development-queue.json','utf8'));
           const catalog=JSON.parse(fs.readFileSync('/tmp/game-catalog.json','utf8'));
           const seedState=JSON.parse(fs.readFileSync('/tmp/game-seed-state.json','utf8'));
+          const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
           const ownerResetIds=new Set(Array.isArray(seedState?.ownerAllGamesDesignReset?.gameIds)?seedState.ownerAllGamesDesignReset.gameIds.map(String):[]);
           const ownerResetAt=Date.parse(seedState?.ownerAllGamesDesignReset?.updatedAt||'')||0;
           const resetPassIds=new Set((seedState.seeds||[]).filter(seed=>{
@@ -763,6 +764,8 @@ jobs:
           fi
           echo 'WEB_RUNTIME_PERSIST=PASS'
           echo 'PUBLIC_MAIN_WRITE=NO'
+          echo 'FORTNITE_UEFN_DEVELOPMENT=OWNER_HOLD'
+          echo 'FORTNITE_UEFN_LEARNING=CONTINUES'
 
       - name: Dispatch Vibe Web implementation and repair
         if: needs.web-plan.outputs.target_count != '0' && steps.runtime_binding.outputs.fresh == 'true'
@@ -1050,6 +1053,11 @@ jobs:
             if(!pending&&!legacyActive&&!waiting&&!retrySourceBind)continue;
             const game=(catalog.games||[]).find(x=>x.id===item.gameId)||{};
             const platform=resolveSelectedPlatform(item,game);
+            const access=String(roadmap?.developmentAccess?.[platform]||'ALWAYS_ALLOWED').toUpperCase();
+            if(access==='OWNER_HOLD'){
+              console.log(`DEVELOPMENT_ROUTE_OWNER_HOLD=${item.gameId}:${platform}`);
+              continue;
+            }
             const adapter=adapterForPlatform(platform);
             const oldTarget=String(item.targetSourcePath||'').replaceAll('\\','/');
             const canonicalTarget=adapter?`${adapter.sourceRoot}${item.gameId}`:'';
