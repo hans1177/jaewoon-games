@@ -108,7 +108,7 @@ test('release workflow publishes only retained exact artifact and keeps transien
   assert.match(workflow,/gh workflow run '\.github\/workflows\/company-development-roblox-release-promotion\.yml'/);
   assert.match(workflow,/deferred=true/);
   assert.match(workflow,/steps\.publish\.outputs\.deferred != 'true'/);
-  assert.match(workflow,/ROBLOX_RELEASE_PROMOTION=RETRY_QUEUED:ROBLOX_409_SERVER_BUSY/);
+  assert.match(workflow,/ROBLOX_RELEASE_PROMOTION=MANUAL_RETRY_REQUIRED:ROBLOX_409_SERVER_BUSY/);
   assert.match(workflow,/item\.robloxReleaseClaim=true/);
   assert.match(workflow,/steps\.publish\.outcome == 'success'/);
   assert.match(workflow,/ROBLOX_RUNTIME_RERUN=NO/);
