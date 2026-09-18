@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -109,28 +111,28 @@
       "multiplayerMode": "SINGLE",
       "multiplayerExpansionDecision": "초기 싱글플레이 중심으로 핵심 루프와 경제 시스템을 안정화한 뒤 향후 시즌 업데이트를 통해 협동 모드를 도입한다.",
       "technicalAssumptions": [
-        "클라이언트 단독으로 퍼즐 보드 매칭 알고리즘과 상태를 실시간 연산하여 랙 없는 즉각적인 피드백을 보장한다.",
-        "스테이지 데이터와 유저 프로그레션을 JSON 형태로 구조화하여 원격 서버와 안정적으로 동기화한다."
+        "클라이언트 단독으로 퍼즐 보드 매칭 알고리즘과 상태를 실시간 연산하여 랙 없는 즉각적인 피드백을 보장하며, 모든 연산은 로컬에서 즉시 처리된다.",
+        "스테이지 데이터와 유저 프로그레션은 JSON 형태로 구조화하여 원격 서버와 안정적으로 동기화하며, 오프라인 상태에서도 로컬 캐시를 통해 게임 플레이가 가능하다."
       ],
       "validationQuestions": [
-        "플레이어가 첫 3분 안에 타일 매칭과 연쇄 반응의 재미를 직관적으로 이해하고 몰입하는가?",
-        "스테이지 실패 후 재도전으로 이어지는 흐름이 유저에게 과도한 스트레스 대신 도전 의욕을 주는가?"
+        "플레이어가 첫 3분 안에 타일 매칭과 연쇄 반응의 재미를 직관적으로 이해하고 몰입하는지 사용자 경험 테스트를 통해 정량적으로 측정하는가?",
+        "스테이지 실패 후 재도전으로 이어지는 흐름이 유저에게 과도한 스트레스 대신 도전 의욕을 주는지 리텐션 지표와 이탈률 데이터를 통해 검증하는가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "연쇄 폭발 시스템",
-          "responsibleSystem": "PuzzleMatchEngine",
-          "validationEvidence": "단위 테스트를 통해 3개 이상 매칭 시 인접 타일 제거 및 연쇄 트리거가 정상 작동하는지 자동화 테스트를 통해 엄격히 검증한다."
+          "designElement": "연쇄 폭발 및 타일 매칭 로직 시스템",
+          "responsibleSystem": "PuzzleMatchEngineCoreModule",
+          "validationEvidence": "단위 테스트를 통해 3개 이상 매칭 시 인접 타일 제거 및 연쇄 트리거가 정상 작동하는지 자동화 테스트를 통해 엄격히 검증하며, 엣지 케이스에서의 연쇄 오류를 100% 방지한다."
         },
         {
-          "designElement": "색채 정화 게이지",
-          "responsibleSystem": "PlayerProgressionManager",
-          "validationEvidence": "시뮬레이션 로그를 통해 연쇄 횟수에 비례하여 게이지가 올바르게 충전되고 소모되는지 수치 분석 툴을 통해 철저하게 확인한다."
+          "designElement": "색채 정화 게이지 및 보상 획득 시스템",
+          "responsibleSystem": "PlayerProgressionManagerService",
+          "validationEvidence": "시뮬레이션 로그를 통해 연쇄 횟수에 비례하여 게이지가 올바르게 충전되고 소모되는지 수치 분석 툴을 통해 철저하게 확인하며, 보상 지급의 정확성을 데이터베이스 트랜잭션 로그로 검증한다."
         },
         {
-          "designElement": "코어 루프 스테이지",
-          "responsibleSystem": "LevelFlowController",
-          "validationEvidence": "스테이지 클리어 조건 달성 시 보상 지급과 다음 레벨 해금 처리가 정상적으로 이루어지는지 통합 시나리오 테스트로 검증한다."
+          "designElement": "코어 루프 스테이지 진행 및 레벨 해금",
+          "responsibleSystem": "LevelFlowControllerManager",
+          "validationEvidence": "스테이지 클리어 조건 달성 시 보상 지급과 다음 레벨 해금 처리가 정상적으로 이루어지는지 통합 시나리오 테스트를 수행하고, 레벨 데이터 로딩의 무결성을 체크섬 검증으로 확인한다."
         }
       ],
       "openQuestions": [
@@ -213,6 +215,93 @@
           "source": "STAGE_GATE_SCORING_V2"
         }
       ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "technicalAssumptions": [
+        "클라이언트 단독으로 퍼즐 보드 매칭 알고리즘과 상태를 실시간 연산하여 랙 없는 즉각적인 피드백을 보장하며, 모든 연산은 로컬에서 즉시 처리된다.",
+        "스테이지 데이터와 유저 프로그레션은 JSON 형태로 구조화하여 원격 서버와 안정적으로 동기화하며, 오프라인 상태에서도 로컬 캐시를 통해 게임 플레이가 가능하다."
+      ],
+      "validationQuestions": [
+        "플레이어가 첫 3분 안에 타일 매칭과 연쇄 반응의 재미를 직관적으로 이해하고 몰입하는지 사용자 경험 테스트를 통해 정량적으로 측정하는가?",
+        "스테이지 실패 후 재도전으로 이어지는 흐름이 유저에게 과도한 스트레스 대신 도전 의욕을 주는지 리텐션 지표와 이탈률 데이터를 통해 검증하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "연쇄 폭발 및 타일 매칭 로직 시스템",
+          "responsibleSystem": "PuzzleMatchEngineCoreModule",
+          "validationEvidence": "단위 테스트를 통해 3개 이상 매칭 시 인접 타일 제거 및 연쇄 트리거가 정상 작동하는지 자동화 테스트를 통해 엄격히 검증하며, 엣지 케이스에서의 연쇄 오류를 100% 방지한다."
+        },
+        {
+          "designElement": "색채 정화 게이지 및 보상 획득 시스템",
+          "responsibleSystem": "PlayerProgressionManagerService",
+          "validationEvidence": "시뮬레이션 로그를 통해 연쇄 횟수에 비례하여 게이지가 올바르게 충전되고 소모되는지 수치 분석 툴을 통해 철저하게 확인하며, 보상 지급의 정확성을 데이터베이스 트랜잭션 로그로 검증한다."
+        },
+        {
+          "designElement": "코어 루프 스테이지 진행 및 레벨 해금",
+          "responsibleSystem": "LevelFlowControllerManager",
+          "validationEvidence": "스테이지 클리어 조건 달성 시 보상 지급과 다음 레벨 해금 처리가 정상적으로 이루어지는지 통합 시나리오 테스트를 수행하고, 레벨 데이터 로딩의 무결성을 체크섬 검증으로 확인한다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
@@ -318,21 +407,32 @@
       "lastMs": 108895,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
       "updatedAt": "2026-09-18T17:11:01.411Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 116580,
+      "lastMs": 116580,
+      "lastError": null,
+      "updatedAt": "2026-09-18T17:11:09.096Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T15:09:45.460Z",
-  "updatedAt": "2026-09-18T17:11:01.411Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T17:04:36.148Z",
+  "updatedAt": "2026-09-18T17:11:09.124Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T17:11:09.096Z",
   "geminiModelResolution": {
-    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+    "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite",
   "checkpointMigration": {
     "fromContractVersion": 3,
     "toContractVersion": 3,
