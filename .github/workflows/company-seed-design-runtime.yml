@@ -2,6 +2,13 @@ name: Company Seed DESIGN_ONLY Runtime
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/company-design-gate-scoring-v2.mjs'
+      - 'tools/company-strict-production-review.mjs'
+      - '.github/workflows/company-seed-design-runtime.yml'
   schedule:
     - cron: '0 16 * * *' # 01:00 KST fallback; event chain remains primary
 
@@ -11,7 +18,7 @@ permissions:
 
 concurrency:
   group: company-seed-design-runtime
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
