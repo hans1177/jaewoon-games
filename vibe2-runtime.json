@@ -188,8 +188,12 @@
       "sourceWrite": false
     },
     "analysis": {
-      "configured": false,
-      "reason": "general-analysis-worker-not-connected-yet"
+      "configured": true,
+      "tool": "tools/vibe2-learning-practice-worker.mjs",
+      "sourceWrite": false,
+      "practiceOnly": true,
+      "productionPass": false,
+      "productionWorkPreempts": true
     }
   },
   "coordination": {
