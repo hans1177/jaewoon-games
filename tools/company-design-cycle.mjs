@@ -70,10 +70,16 @@ if(designerPolicy.externalProvidersAllowed===true&&openaiApiKey)cloudDesignerRou
 if(designerPolicy.externalProvidersAllowed===true&&geminiApiKey)cloudDesignerRoutes.push({provider:'GEMINI',model:geminiDesignerModel,id:`gemini:${geminiDesignerModel}`});
 const localDesignerModel=localDesignerPool[hash(`${gameId}:designer-local`)%localDesignerPool.length];
 const localDesignerRoute={provider:'OLLAMA',model:localDesignerModel,id:`ollama:${localDesignerModel}`};
-const designerRoute=cloudDesignerRoutes.length?cloudDesignerRoutes[hash(`${gameId}:designer-cloud`)%cloudDesignerRoutes.length]:localDesignerRoute;
+const designerProviderHint=clean(process.env.COMPANY_DESIGNER_PROVIDER_HINT).toUpperCase();
+const hintedDesignerRoute=cloudDesignerRoutes.find(route=>route.provider===designerProviderHint)||null;
+const designerRoute=hintedDesignerRoute||cloudDesignerRoutes[0]||localDesignerRoute;
+const designerFailoverRoutes=uniq([designerRoute.id,...cloudDesignerRoutes.map(route=>route.id),localDesignerRoute.id]).map(id=>[...cloudDesignerRoutes,localDesignerRoute].find(route=>route.id===id)).filter(Boolean);
+let activeDesignerRoute=designerRoute;
 const designerModel=designerRoute.id;
+console.log(`GAME_DESIGNER_PROVIDER_HINT=${designerProviderHint||'NONE'}`);
 console.log(`GAME_DESIGNER_PROVIDER=${designerRoute.provider}`);
 console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
+console.log(`GAME_DESIGNER_FAILOVER_ROUTES=${designerFailoverRoutes.map(route=>route.id).join('>')}`);
 console.log(`GAME_DESIGNER_BANNED_MODELS=${[...designerBannedModels].join(',')||'NONE'}`);
 console.log(`GAME_DESIGNER_CLOUD_CONFIGURED=${cloudDesignerRoutes.length?'YES':'NO'}`);
 const coordinatorModel=pool[hash(`${gameId}:coordinator`)%pool.length];
@@ -653,8 +659,25 @@ async function callExternalDesignerModel(route,system,user,schema,{predict=1100,
   }
 }
 async function callDesignerModel(system,user,schema,options={}){
-  if(designerRoute.provider==='OLLAMA')return callModel(designerRoute.model,system,user,schema,options);
-  return callExternalDesignerModel(designerRoute,system,user,schema,options);
+  const ordered=[activeDesignerRoute,...designerFailoverRoutes.filter(route=>route.id!==activeDesignerRoute.id)];
+  let lastError=null;
+  for(const route of ordered){
+    try{
+      const value=route.provider==='OLLAMA'
+        ?await callModel(route.model,system,user,schema,options)
+        :await callExternalDesignerModel(route,system,user,schema,options);
+      if(activeDesignerRoute.id!==route.id)console.log(`GAME_DESIGNER_FAILOVER_ACTIVE=${activeDesignerRoute.id}->${route.id}`);
+      activeDesignerRoute=route;
+      designCheckpoint.effectiveDesignerModel=route.id;
+      designCheckpoint.effectiveDesignerProvider=route.provider;
+      persistDesignCheckpoint();
+      return value;
+    }catch(error){
+      lastError=error;
+      console.log(`GAME_DESIGNER_ROUTE_FAILED=${route.id}|reason=${clean(error?.message||error)}`);
+    }
+  }
+  throw new Error(`GAME_DESIGNER_ALL_ROUTES_FAILED: ${clean(lastError?.message||lastError)}`);
 }
 
 async function generateDesignerDraft(){
@@ -692,7 +715,7 @@ for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++)
   writeJson(path.join(base,'design-pre-gate.json'),{version:2,gameId,date,attempt:repairAttempt,pass:preGatePass(preGate),repairPacket:repairPacket(preGate),score:preGate,history:preGateHistory.map(row=>({totalScore:row.totalScore,hardFailures:row.hardFailures,criticalAxisFailures:row.criticalAxisFailures}))});
   persistDesignCheckpoint();
 }
-writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
+writeJson(path.join(base,'design-draft.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,gameSeedSource:'game-seed-state.json',authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,singleAuthor:true,preGate:{pass:preGatePass(preGate),totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,criticalAxisFailures:preGate.criticalAxisFailures,attempts:preGateHistory.length-1},content:designDraft});
 if(!preGatePass(preGate)){
   designCheckpoint.status='PRE_GATE_BLOCKED';
   designCheckpoint.lastError=`DESIGN_PRE_GATE_BLOCKED score=${preGate.totalScore} hard=${(preGate.hardFailures||[]).join(',')||'NONE'}`;
@@ -784,7 +807,7 @@ const revisedDesign=await runPhase('designer_revision',generateDesignerRevision)
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
 writeJson(path.join(base,'design-revised.json'),{
   version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
-  gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,
+  gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:activeDesignerRoute.id,
   sameModelAsDraft:true,reviewMode:'FIVE_LEAD_DIRECT_NO_MEETING',
   status:'DESIGN_BASELINE_CANDIDATE',
   postRevisionPreGate:{
@@ -845,7 +868,7 @@ writeJson(path.join(base,'cycle-status.json'),{
   version:6,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
   status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',
   gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true},
-  designer:{role:'GAME_DESIGNER_AI',model:designerModel,singleAuthor:true,sameModelRevised:true},
+  designer:{role:'GAME_DESIGNER_AI',model:activeDesignerRoute.id,singleAuthor:true,sameModelRevised:true},
   departments:{
     count:ROLES.length,roles:ROLES,leadModels,distinctLeadModels,
     distinctLeadModelCount:distinctLeadModels.length,leadModelsDistinct:distinctLeadModels.length===ROLES.length,
