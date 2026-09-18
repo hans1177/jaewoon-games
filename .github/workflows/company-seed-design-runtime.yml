@@ -19,7 +19,8 @@ permissions:
   actions: write
 
 concurrency:
-  group: company-seed-design-runtime-${{ github.sha }}
+  # Keep the active pinned engine alive, but collapse all queued engine revisions to the newest run.
+  group: company-seed-design-runtime
   cancel-in-progress: false
 
 env:
