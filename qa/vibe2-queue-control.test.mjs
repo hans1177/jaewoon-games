@@ -11,7 +11,9 @@ import {
   releaseVibeTaskExecutionSlot,
   settleVibeTask,
   applyVibeFanInResults,
-  recoverFixedFullWebTransportFailures
+  recoverFixedFullWebTransportFailures,
+  recoverStaleRunningReservations,
+  recoverFanInRegressionFailure
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 
@@ -196,6 +198,50 @@ test('output-budget repair requeues capped owner full-web rebuild failures once 
   assert.equal(first.queue.tasks.find(t=>t.id==='normal-web').status,'failed');
   const second=recoverFixedFullWebTransportFailures(first.queue);
   assert.equal(second.recovered,0);
+});
+
+test('stale running development reservation is requeued without consuming a retry', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'stale',gameId:'stale',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/stale',goal:'implementation',status:'running',retries:1,maxRetries:2
+  }]});
+  const recovered=recoverStaleRunningReservations(queue,{nowMs:Date.parse('2026-09-18T10:00:00Z')});
+  assert.equal(recovered.recovered,1);
+  assert.equal(recovered.queue.tasks[0].status,'queued');
+  assert.equal(recovered.queue.tasks[0].retries,1);
+  assert.equal(recovered.queue.tasks[0].lastOutcome,'STALE_RESERVATION_RECOVERED');
+  assert.ok(recovered.queue.tasks[0].evidence.includes('recovery:stale-running-reservation-v1'));
+});
+
+test('fresh running reservation is preserved', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'fresh',gameId:'fresh',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/fresh',goal:'implementation',status:'running',
+    reservationId:'run-1',reservedAt:'2026-09-18T09:40:00Z'
+  }]});
+  const recovered=recoverStaleRunningReservations(queue,{nowMs:Date.parse('2026-09-18T10:00:00Z')});
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.queue.tasks[0].status,'running');
+  assert.equal(recovered.queue.tasks[0].reservationId,'run-1');
+});
+
+test('fan-in regression failure requeues only worker-pass tasks without bypassing QA', () => {
+  const queue=createVibeContinuousQueue({tasks:[
+    {id:'pass-worker',gameId:'a',target:'web',department:'development',type:'implementation',sourceRoot:'web-games/a',goal:'a',status:'running',blocker:'candidate-awaiting-qa-and-deployment',retries:1,maxRetries:2,reservationId:'run-1',reservedAt:'2026-09-18T09:00:00Z'},
+    {id:'failed-worker',gameId:'b',target:'web',department:'development',type:'implementation',sourceRoot:'web-games/b',goal:'b',status:'queued',retries:1,maxRetries:2}
+  ]});
+  const recovered=recoverFanInRegressionFailure(queue,[
+    {taskId:'pass-worker',outcome:'PASS'},
+    {taskId:'failed-worker',outcome:'FAIL'}
+  ]);
+  const passTask=recovered.queue.tasks.find(t=>t.id==='pass-worker');
+  const failedTask=recovered.queue.tasks.find(t=>t.id==='failed-worker');
+  assert.equal(recovered.recovered,1);
+  assert.equal(passTask.status,'queued');
+  assert.equal(passTask.retries,1);
+  assert.equal(passTask.lastOutcome,'RETRY_AFTER_FAN_IN_REGRESSION_FAILURE');
+  assert.equal(passTask.reservationId,null);
+  assert.equal(failedTask.status,'queued');
 });
 
 test('protected or paid autonomous work remains ineligible', () => {
