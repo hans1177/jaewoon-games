@@ -185,8 +185,8 @@ test('RELEASE_CONFIRMED targets the project selected platform',()=>{
 test('platform priority is focus order only and cannot create entry gates',()=>{
   const strategy=directive.platformStrategy;
   assert.equal(strategy.primaryPlatform,'ROBLOX');
-  assert.deepEqual(strategy.priority,['ROBLOX','UNITY','FORTNITE_UEFN']);
-  assert.equal(strategy.priorityMeaning,'DEFAULT_FOCUS_AND_EXPERIENCE_ACCUMULATION_ORDER_ONLY');
+  assert.deepEqual(strategy.priority,['UNITY','ROBLOX','FORTNITE_UEFN']);
+  assert.equal(strategy.priorityMeaning,'UNITY_ROBLOX_EQUAL_FIRST_TIER_READINESS_AND_EXECUTION_EFFICIENCY_TIEBREAK');
   assert.deepEqual(strategy.developmentAccess,{ROBLOX:'ALWAYS_ALLOWED',UNITY:'ALWAYS_ALLOWED',FORTNITE_UEFN:'ALWAYS_ALLOWED'});
   assert.equal(strategy.allThreePlatformsMayBeDevelopedConcurrently,true);
   assert.equal(strategy.priorityDoesNotCreatePlatformLock,true);
@@ -195,6 +195,8 @@ test('platform priority is focus order only and cannot create entry gates',()=>{
   assert.equal(strategy.platformReleaseMayProceedWhenItsOwnEvidenceGatesPass,true);
   assert.equal(strategy.focusMilestones.ROBLOX_UNITY_CONCURRENT_RELEASE_EXPERIENCE.entryGate,false);
   assert.equal(strategy.focusMilestones.FORTNITE_UEFN_EXPANSION.entryGate,false);
+  assert.deepEqual(strategy.primaryPlatforms,['UNITY','ROBLOX']);
+  assert.equal(strategy.primaryPlatformLegacyCompatibilityOnly,true);
   assert.equal(strategy.UNITY.existingPathPreserved,true);
   assert.equal(strategy.UNITY.robloxDoesNotReplaceUnity,true);
   assert.match(flow,/allThreePlatformsMayBeDevelopedConcurrently: true/);
