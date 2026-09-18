@@ -148,6 +148,16 @@ function normalizeSchemaValue(value,schema,label='root',repairs=[]){
   if(!schema||typeof schema!=='object')return value;
   if(schema.type==='object'){
     if(!value||Array.isArray(value)||typeof value!=='object')return value;
+    const required=schema.required||[];
+    if(required.length===1&&!Object.prototype.hasOwnProperty.call(value,required[0])){
+      const child=schema.properties?.[required[0]];
+      const childKeys=new Set(Object.keys(child?.properties||{}));
+      const valueKeys=Object.keys(value);
+      if(child?.type==='object'&&valueKeys.length>0&&valueKeys.every(key=>childKeys.has(key))){
+        repairs.push(`wrap-required-object:${label}.${required[0]}`);
+        value={[required[0]]:value};
+      }
+    }
     const normalized={};
     for(const [key,child] of Object.entries(schema.properties||{})){
       if(Object.prototype.hasOwnProperty.call(value,key))normalized[key]=normalizeSchemaValue(value[key],child,`${label}.${key}`,repairs);
