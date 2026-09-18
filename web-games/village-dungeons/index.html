@@ -269,8 +269,9 @@ function addBox(x,y,z,sx,sy,sz,color){
   var m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat(color));
   m.position.set(x,y,z);world.add(m);return m;
 }
-function addGround(color){
-  var g=new THREE.Mesh(new THREE.PlaneGeometry(76,76,1,1),mat(color));
+function addGround(color,size){
+  var groundSize=size||76;
+  var g=new THREE.Mesh(new THREE.PlaneGeometry(groundSize,groundSize,1,1),mat(color));
   g.rotation.x=-Math.PI/2;g.position.y=-.01;world.add(g);
 }
 function addTree(x,z,scale){
@@ -310,7 +311,7 @@ function clearWorld(){
 
 function buildTown(){
   clearWorld();
-  scene.background.set(0x8fc8e4);scene.fog.color.set(0x8fc8e4);
+  scene.background.set(0x8fc8e4);scene.fog.color.set(0x8fc8e4);scene.fog.near=28;scene.fog.far=72;
   addGround(0x6c9849);
   addHouse(-13,-10,0xd2b66d);addHouse(13,-10,0xbfc8d6);addHouse(-14,11,0xc79b72);addHouse(14,11,0xa4c7a4);
   for(var i=0;i<14;i++){
@@ -370,38 +371,38 @@ function createEnemy(type,name,x,z,hp,atk,speed,color,boss){
     g.add(torso2,head2);
   }
   g.position.set(x,0,z);world.add(g);
-  var e={type:type,name:name,mesh:g,hp:hp,maxHp:hp,atk:atk,speed:speed,boss:!!boss,dead:false,nextAttack:0,aggroUntil:0};
+  var e={type:type,name:name,mesh:g,hp:hp,maxHp:hp,atk:atk,speed:speed,boss:!!boss,dead:false,nextAttack:0,aggroUntil:0,homeX:x,homeZ:z,returning:false};
   enemies.push(e);return e;
 }
 
 function buildArea(idx){
   clearWorld();
   var d=AREA_DATA[idx];
-  scene.background.set(d.sky);scene.fog.color.set(d.sky);
-  addGround(d.ground);
+  scene.background.set(d.sky);scene.fog.color.set(d.sky);scene.fog.near=48;scene.fog.far=145;
+  addGround(d.ground,152);
   if(idx===1){
-    for(var i=0;i<16;i++)addTree(-31+(i%8)*9,-30+Math.floor(i/8)*58,.8);
+    for(var i=0;i<16;i++)addTree(-62+(i%8)*18,-60+Math.floor(i/8)*116,.8);
   }else if(idx===2){
-    for(var j=0;j<22;j++){var x=-31+(j%6)*12;var z=-30+Math.floor(j/6)*18;addTree(x,z,1.15);}
+    for(var j=0;j<22;j++){var x=-62+(j%6)*24;var z=-60+Math.floor(j/6)*36;addTree(x,z,1.15);}
   }else if(idx===3){
-    for(var r=0;r<14;r++){var ang=r/14*Math.PI*2;addBox(Math.cos(ang)*17,1.3,Math.sin(ang)*17,1.1,2.6,1.1,0x857a66);}
-    addBox(0,.5,0,9,1,9,0x8f846e);
+    for(var r=0;r<14;r++){var ang=r/14*Math.PI*2;addBox(Math.cos(ang)*34,1.3,Math.sin(ang)*34,1.1,2.6,1.1,0x857a66);}
+    addBox(0,.5,0,16,1,16,0x8f846e);
   }else if(idx===4){
-    for(var k=0;k<16;k++){var gx=-27+(k%4)*18;var gz=-26+Math.floor(k/4)*17;addBox(gx,.65,gz,.9,1.3,.35,0x9b9c91);}
+    for(var k=0;k<16;k++){var gx=-54+(k%4)*36;var gz=-52+Math.floor(k/4)*34;addBox(gx,.65,gz,.9,1.3,.35,0x9b9c91);}
   }else{
-    for(var m=0;m<24;m++){var rx=-30+(m%6)*12;var rz=-30+Math.floor(m/6)*19;addRock(rx,rz,.8+(m%3)*.35,0x766e65);}
+    for(var m=0;m<24;m++){var rx=-60+(m%6)*24;var rz=-60+Math.floor(m/6)*38;addRock(rx,rz,.8+(m%3)*.35,0x766e65);}
   }
 
   var ring=Math.max(8,d.count);
   for(var n=0;n<d.count;n++){
     var an=n/ring*Math.PI*2;
-    var rad=10+(n%3)*6;
+    var rad=20+(n%3)*12;
     createEnemy(d.type,d.name,Math.cos(an)*rad,Math.sin(an)*rad,d.hp,d.atk,d.speed,d.color,false);
   }
   if(idx===3){
     createEnemy("boss","고대 수호자",0,0,420,24,1.9,0x9b632f,true);
   }
-  player.position.set(0,0,27);
+  player.position.set(0,0,54);
   state.zone=idx;
   save();
   setBGM(ZONES[idx].music);
@@ -424,13 +425,13 @@ var musicTimer=0;
 var musicBeat=0;
 var currentMusic="none";
 var TRACKS={
-  general:{label:"일반 BGM",tempo:520,wave:"sine",notes:[261.6,329.6,392,329.6,293.7,349.2,440,349.2]},
-  town:{label:"마을 BGM",tempo:610,wave:"triangle",notes:[261.6,329.6,392,523.3,392,329.6,293.7,349.2]},
-  hunt1:{label:"사냥터 BGM 1",tempo:430,wave:"triangle",notes:[196,246.9,293.7,246.9,220,261.6,329.6,261.6]},
-  hunt2:{label:"사냥터 BGM 2",tempo:390,wave:"sawtooth",notes:[174.6,220,261.6,220,196,246.9,293.7,246.9]},
-  battle1:{label:"전투 BGM 1",tempo:220,wave:"square",notes:[196,196,246.9,293.7,196,329.6,293.7,246.9]},
-  battle2:{label:"전투 BGM 2",tempo:205,wave:"sawtooth",notes:[164.8,220,164.8,246.9,185,277.2,220,329.6]},
-  boss:{label:"보스 BGM",tempo:180,wave:"square",notes:[130.8,155.6,196,130.8,174.6,207.7,246.9,155.6]}
+  general:{label:"일반 BGM",tempo:360,wave:"triangle",notes:[523.3,659.3,784,659.3,587.3,698.5,880,698.5],bass:[130.8,164.8,196,164.8]},
+  town:{label:"마을 BGM",tempo:390,wave:"sine",notes:[523.3,659.3,784,1046.5,880,784,659.3,698.5],bass:[130.8,164.8,196,174.6]},
+  hunt1:{label:"사냥터 BGM 1",tempo:330,wave:"triangle",notes:[392,493.9,587.3,659.3,587.3,493.9,440,523.3],bass:[98,123.5,146.8,130.8]},
+  hunt2:{label:"사냥터 BGM 2",tempo:315,wave:"sine",notes:[349.2,440,523.3,659.3,523.3,440,392,493.9],bass:[87.3,110,130.8,123.5]},
+  battle1:{label:"전투 BGM 1",tempo:235,wave:"triangle",notes:[392,493.9,587.3,784,659.3,587.3,493.9,659.3],bass:[98,123.5,146.8,130.8]},
+  battle2:{label:"전투 BGM 2",tempo:220,wave:"triangle",notes:[349.2,466.2,523.3,698.5,587.3,523.3,466.2,622.3],bass:[87.3,116.5,130.8,103.8]},
+  boss:{label:"보스 BGM",tempo:205,wave:"triangle",notes:[293.7,392,440,587.3,523.3,440,392,523.3],bass:[73.4,98,110,87.3]}
 };
 function initAudio(){
   if(audioStarted)return;
@@ -440,16 +441,17 @@ function initAudio(){
   musicGain.gain.value=.045;
   musicGain.connect(audioCtx.destination);
 }
-function note(freq,duration,wave){
+function note(freq,duration,wave,volume){
   if(!audioCtx||muted||!freq)return;
   var o=audioCtx.createOscillator();
   var g=audioCtx.createGain();
   o.type=wave||"triangle";
   o.frequency.value=freq;
+  var peak=volume||.18;
   g.gain.setValueAtTime(.0001,audioCtx.currentTime);
-  g.gain.exponentialRampToValueAtTime(.26,audioCtx.currentTime+.02);
+  g.gain.exponentialRampToValueAtTime(peak,audioCtx.currentTime+.025);
   g.gain.exponentialRampToValueAtTime(.0001,audioCtx.currentTime+duration);
-  o.connect(g);g.connect(musicGain);o.start();o.stop(audioCtx.currentTime+duration+.04);
+  o.connect(g);g.connect(musicGain);o.start();o.stop(audioCtx.currentTime+duration+.05);
 }
 function setBGM(name){
   if(name===currentMusic)return;
@@ -461,8 +463,11 @@ function setBGM(name){
   if(audioCtx&&audioCtx.state==="suspended")audioCtx.resume().catch(function(){});
   function beat(){
     var f=t.notes[musicBeat%t.notes.length];
-    note(f,Math.max(.11,t.tempo/1000*.72),t.wave);
-    if(name==="town"||name==="general")note(f/2,Math.max(.12,t.tempo/1000*.9),"sine");
+    var bass=t.bass[musicBeat%t.bass.length];
+    var duration=Math.max(.14,t.tempo/1000*.82);
+    note(f,duration,t.wave,.16);
+    note(bass,Math.max(.18,t.tempo/1000*1.5),"sine",.08);
+    if(musicBeat%2===0)note(f*1.5,Math.max(.11,t.tempo/1000*.55),"sine",.045);
     musicBeat++;
   }
   beat();
@@ -549,11 +554,12 @@ function updateCombat(now){
   var fighting=false,bossFight=false;
   if(state.zone!==0){
     enemies.forEach(function(e){
-      if(e.dead)return;
+      if(e.dead||e.returning)return;
       var dx=player.position.x-e.mesh.position.x,dz=player.position.z-e.mesh.position.z;
       var dist=Math.hypot(dx,dz);
-      if(dist<7.5||e.aggroUntil>now)fighting=true;
-      if(e.boss&&(dist<13||e.aggroUntil>now))bossFight=true;
+      var aggro=e.boss?16:12;
+      if(dist<aggro||e.aggroUntil>now)fighting=true;
+      if(e.boss&&(dist<aggro||e.aggroUntil>now))bossFight=true;
     });
   }
   if(fighting!==inCombat||bossFight!==bossCombat){
@@ -569,9 +575,35 @@ function enemyAI(dt,now){
     if(e.dead)return;
     var dx=player.position.x-e.mesh.position.x,dz=player.position.z-e.mesh.position.z;
     var dist=Math.hypot(dx,dz);
+    var homeDx=e.homeX-e.mesh.position.x,homeDz=e.homeZ-e.mesh.position.z;
+    var homeDist=Math.hypot(homeDx,homeDz);
     var aggro=e.boss?16:12;
-    if(dist<aggro||e.aggroUntil>now){
-      e.aggroUntil=now+1800;
+    var dropDistance=e.boss?30:22;
+    var leashDistance=e.boss?34:24;
+    var engaged=dist<aggro||e.aggroUntil>now;
+
+    if(engaged&&(dist>dropDistance||homeDist>leashDistance)){
+      e.aggroUntil=0;
+      e.returning=true;
+      engaged=false;
+    }
+
+    if(e.returning||(!engaged&&homeDist>.35)){
+      if(homeDist>.35){
+        var homeInv=1/Math.max(.001,homeDist);
+        e.mesh.position.x+=homeDx*homeInv*e.speed*1.15*dt;
+        e.mesh.position.z+=homeDz*homeInv*e.speed*1.15*dt;
+        e.mesh.rotation.y=Math.atan2(homeDx,homeDz);
+      }else{
+        e.mesh.position.x=e.homeX;
+        e.mesh.position.z=e.homeZ;
+        e.returning=false;
+      }
+      return;
+    }
+
+    if(engaged){
+      if(dist<aggro)e.aggroUntil=now+1800;
       if(dist>1.7){
         var inv=1/Math.max(.001,dist);
         e.mesh.position.x+=dx*inv*e.speed*dt;
@@ -804,8 +836,9 @@ function movePlayer(dt){
     var speed=7.6;
     player.position.x+=mx*speed*dt;
     player.position.z+=mz*speed*dt;
-    player.position.x=Math.max(-33,Math.min(33,player.position.x));
-    player.position.z=Math.max(-33,Math.min(33,player.position.z));
+    var moveLimit=state.zone===0?33:66;
+    player.position.x=Math.max(-moveLimit,Math.min(moveLimit,player.position.x));
+    player.position.z=Math.max(-moveLimit,Math.min(moveLimit,player.position.z));
     player.rotation.y=Math.atan2(mx,mz);
   }
 }
