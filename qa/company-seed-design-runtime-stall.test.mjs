@@ -78,6 +78,9 @@ test('engine pushes cancel stale DESIGN_ONLY work while normal dispatch remains 
   assert.match(bootstrap,/ACTIVE_DESIGN_ONLY_STALE_HEAD_RUNS=/);
   assert.match(bootstrap,/GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE/);
   assert.match(bootstrap,/GAME_SEED_STALE_DESIGN_RUN_CANCEL_REQUESTED=/);
+  const staleCancelIndex=bootstrap.indexOf('GAME_SEED_STALE_DESIGN_RUN_CANCEL_REQUESTED=');
+  const currentHeadGuardIndex=bootstrap.indexOf("GAME_SEED_DESIGN_CONTINUATION=SKIP_CURRENT_HEAD_ACTIVE");
+  assert.ok(staleCancelIndex>=0&&currentHeadGuardIndex>staleCancelIndex,'stale design runs must be cancelled before the current-head early return');
   assert.match(bootstrap,/gh workflow run company-seed-design-runtime\.yml --ref main/);
 });
 
