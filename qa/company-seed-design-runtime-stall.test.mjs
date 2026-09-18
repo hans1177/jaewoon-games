@@ -5,9 +5,10 @@ import fs from 'node:fs';
 const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
 const bootstrap=fs.readFileSync('.github/workflows/company-game-seed-bootstrap.yml','utf8');
 const design=fs.readFileSync('tools/company-design-cycle.mjs','utf8');
+const prepareOllama=fs.readFileSync('.github/actions/prepare-ollama/action.yml','utf8');
 
 test('seed design runtime preserves the active fanout and revalidates matrix targets before model setup',()=>{
-  assert.match(workflow,/group: company-seed-design-runtime\s+cancel-in-progress: false/);
+  assert.match(workflow,/group: company-seed-design-runtime\s+cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
   assert.equal((workflow.match(/ref: \$\{\{ github\.sha \}\}/g)||[]).length,4);
   const checkoutIndex=workflow.indexOf('- name: Checkout isolated company runtime branch');
   const revalidateIndex=workflow.indexOf('- name: Revalidate current seed target');
@@ -41,19 +42,27 @@ test('seed design runtime uses the central WIP cap and avoids repeated Ollama se
   assert.doesNotMatch(workflow,/https:\/\/ollama\.com\/install\.sh/);
 });
 
-test('restored model cache skips unnecessary network pulls',()=>{
+test('restored model cache skips unnecessary network pulls and transient model pulls retry',()=>{
   assert.match(workflow,/ollama list \| awk 'NR>1 \{print \$1\}' > \/tmp\/ollama-present-models\.txt/);
   assert.match(workflow,/grep -Fxq \"\$model\" \/tmp\/ollama-present-models\.txt/);
   assert.match(workflow,/OLLAMA_MODEL_CACHE_HIT=\$model/);
   assert.match(workflow,/OLLAMA_MODEL_CACHE_MISS=\$model/);
   assert.match(workflow,/OLLAMA_MODEL_PULL_COUNT=\$pulls/);
+  assert.match(prepareOllama,/OLLAMA_MODEL_PULL_SKIPPED=YES/);
+  assert.match(prepareOllama,/for attempt in 1 2 3 4 5/);
+  assert.match(prepareOllama,/OLLAMA_MODEL_PULL_ATTEMPT=\$attempt\/5/);
+  assert.match(prepareOllama,/OLLAMA_MODEL_PULL_RETRY_TRANSIENT=YES/);
 });
 
-test('main engine changes are serialized through bootstrap before one DESIGN_ONLY dispatch',()=>{
+test('engine pushes cancel stale DESIGN_ONLY work while normal dispatch remains protected',()=>{
   const triggerSection=workflow.slice(0,workflow.indexOf('\npermissions:'));
-  assert.doesNotMatch(triggerSection,/\n\s*push:/);
   assert.match(triggerSection,/workflow_dispatch:/);
+  assert.match(triggerSection,/push:[\s\S]*branches: \[main\]/);
+  assert.match(triggerSection,/\.github\/actions\/prepare-ollama\/action\.yml/);
+  assert.match(triggerSection,/tools\/company-design-cycle\.mjs/);
+  assert.match(triggerSection,/tools\/company-design-gate-scoring-v2\.mjs/);
   assert.match(triggerSection,/schedule:/);
+  assert.match(workflow,/cancel-in-progress: \$\{\{ github\.event_name == 'push' \}\}/);
   assert.match(bootstrap,/push:\s+branches: \[main\]\s+paths:/);
   for(const path of [
     '.github/workflows/company-seed-design-runtime.yml',
@@ -96,9 +105,11 @@ test('parallel seed jobs persist only generated target paths on the latest compa
 });
 
 test('structured Ollama design calls preserve JSON budget and reuse loaded models briefly',()=>{
-  assert.match(design,/JSON\.stringify\(\{model,stream:false,think:false,keep_alive:modelKeepAlive,format:schema/);
+  assert.match(design,/const payload=\{model,stream:false,think:false,keep_alive:modelKeepAlive/);
+  assert.match(design,/if\(!deepSeek&&attempt===1\)payload\.format=schema/);
   assert.match(design,/const modelKeepAlive=clean\(process\.env\.COMPANY_MODEL_KEEP_ALIVE\|\|'2m'\)/);
-  assert.match(design,/if\(!text\)throw new Error\('empty model response'\)/);
+  assert.match(design,/MODEL_EMPTY_CONTENT_WITH_THINKING=/);
+  assert.match(design,/empty model response \(\$\{mode\}\)/);
 });
 
 test('independent review generation keeps one department-model task per required review lane',()=>{
