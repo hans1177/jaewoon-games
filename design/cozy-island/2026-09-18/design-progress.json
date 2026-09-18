@@ -3,27 +3,34 @@
   "gameId": "cozy-island",
   "date": "2026-09-18",
   "engineDigest": "34a98a789f30289dddb9b5ae2d43337ab9be6bdd569306c12f184743f8f1fd8c",
-  "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
+  "status": "PRE_GATE_BLOCKED",
+  "currentStage": "PRE_GATE_REPAIR",
+  "percent": 50,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
+  ],
+  "completedPhaseCount": 6,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": null,
+  "lastSuccessfulModelCallAt": "2026-09-18T07:14:50.272Z",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null,
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=74.6 hard=CRITICAL_AXIS_MINIMUM_FAIL",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 1,
-      "successes": 0,
-      "failures": 1,
+      "calls": 7,
+      "successes": 4,
+      "failures": 3,
       "timeouts": 0,
-      "jsonFailures": 1,
-      "totalMs": 10028,
-      "lastMs": 10028,
-      "lastError": "Expected ',' or ']' after array element in JSON at position 4039 (line 1 column 4040)",
-      "updatedAt": "2026-09-18T07:10:30.777Z"
+      "jsonFailures": 3,
+      "totalMs": 44659,
+      "lastMs": 2697,
+      "lastError": "Expected ',' or '}' after property value in JSON at position 1627 (line 1 column 1628)",
+      "updatedAt": "2026-09-18T07:14:50.272Z"
     },
     "gemini:gemini-2.5-flash": {
       "calls": 1,
@@ -46,8 +53,142 @@
       "lastMs": 10272,
       "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
       "updatedAt": "2026-09-18T07:10:31.020Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 3,
+      "successes": 0,
+      "failures": 3,
+      "timeouts": 0,
+      "jsonFailures": 3,
+      "totalMs": 56820,
+      "lastMs": 22105,
+      "lastError": "Expected ',' or '}' after property value in JSON at position 1492 (line 1 column 1493)",
+      "updatedAt": "2026-09-18T07:13:29.225Z"
+    },
+    "gemini:gemini-2.5-pro": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 18907,
+      "lastMs": 18907,
+      "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+      "updatedAt": "2026-09-18T07:10:39.655Z"
+    },
+    "gemini:gemini-3.8-flash": {
+      "calls": 3,
+      "successes": 0,
+      "failures": 3,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 75372,
+      "lastMs": 27814,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T07:13:34.934Z"
+    },
+    "gemini:gemini-3.7-flash": {
+      "calls": 3,
+      "successes": 0,
+      "failures": 3,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 206331,
+      "lastMs": 58651,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T07:14:05.771Z"
+    },
+    "gemini:gemini-3.6-flash": {
+      "calls": 3,
+      "successes": 0,
+      "failures": 3,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 229312,
+      "lastMs": 64347,
+      "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+      "updatedAt": "2026-09-18T07:14:11.467Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 3,
+      "successes": 0,
+      "failures": 3,
+      "timeouts": 0,
+      "jsonFailures": 3,
+      "totalMs": 277726,
+      "lastMs": 85547,
+      "lastError": "Expected ',' or '}' after property value in JSON at position 3862 (line 1 column 3863)",
+      "updatedAt": "2026-09-18T07:14:32.667Z"
+    },
+    "gemini:gemini-3.1-pro-preview": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 280040,
+      "lastMs": 162109,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 57.160693329s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\" }",
+      "updatedAt": "2026-09-18T07:13:02.857Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T07:10:31.020Z"
+  "updatedAt": "2026-09-18T07:14:50.275Z",
+  "blocked": true,
+  "preGateScore": 74.6,
+  "hardFailures": [
+    "CRITICAL_AXIS_MINIMUM_FAIL"
+  ],
+  "repairPacket": {
+    "source": "DETERMINISTIC_PRE_GATE_V2",
+    "bypassAllowed": false,
+    "totalScore": 74.6,
+    "passMinimum": 80,
+    "hardFailures": [
+      "CRITICAL_AXIS_MINIMUM_FAIL"
+    ],
+    "failedAxes": [
+      "SYSTEM_INTERCONNECTION_DESIGN",
+      "CONTENT_EXPANSION_PLAN",
+      "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
+    ],
+    "reasons": [
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+        "evidenceLevel": 60,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 7.2,
+          "axisWeight": 12
+        },
+        "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+        "bypassAllowed": false
+      },
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "CONTENT_EXPANSION_PLAN",
+        "evidenceLevel": 60,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 6,
+          "axisWeight": 10
+        },
+        "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
+        "bypassAllowed": false
+      },
+      {
+        "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+        "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+        "evidenceLevel": 60,
+        "minimumRequired": 75,
+        "evidence": {
+          "axisScore": 3,
+          "axisWeight": 5
+        },
+        "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
+        "bypassAllowed": false
+      }
+    ]
+  }
 }
