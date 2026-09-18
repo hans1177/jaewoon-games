@@ -20,7 +20,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          run_id=35312988820
+          run_id=35313263863
           state="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status')"
           echo "SUPERSEDED_RUN_STATUS=$state"
           if [[ "$state" =~ ^(queued|in_progress|pending|waiting|requested)$ ]]; then
