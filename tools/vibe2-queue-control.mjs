@@ -443,6 +443,7 @@ export function runQueueCommand(args = {}) {
       queueFile:file,
       knowledgeFile:clean(args.knowledge)||'.vibe2/game-study-knowledge.json',
       experienceFile:clean(args.experience)||'.vibe2/experience.json',
+      externalAiKnowledgeFile:clean(args['external-ai-knowledge'])||'.vibe2/external-ai-distilled-knowledge.json',
       runtimeEvidenceRoot:clean(args['runtime-evidence-root'])||'.vibe2/runtime-evidence'
     });
     queue=createVibeContinuousQueue(gameStudyPlanner.queue);
@@ -457,6 +458,7 @@ export function runQueueCommand(args = {}) {
       queueFile:file,
       knowledgeFile:clean(args.knowledge)||'.vibe2/game-study-knowledge.json',
       experienceFile:clean(args.experience)||'.vibe2/experience.json',
+      externalAiKnowledgeFile:clean(args['external-ai-knowledge'])||'.vibe2/external-ai-distilled-knowledge.json',
       runtimeEvidenceRoot:clean(args['runtime-evidence-root'])||'.vibe2/runtime-evidence'
     });
     queue=createVibeContinuousQueue(gameStudyPlanner.queue);

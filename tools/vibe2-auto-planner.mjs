@@ -300,13 +300,14 @@ export function planVibe2AutonomousTasks({status={},catalog={},queue:queueInput=
 export function planVibe2AutonomousTask(args={}){return planVibe2AutonomousTasks(args);}
 export function runVibe2AutoPlanner({
   statusFile='.vibe2/main-company-status.json', catalogFile='.vibe2/main-game-catalog.json', queueFile='', runtimeFile='vibe2-runtime.json',
-  controlFile='', experienceFile='', knowledgeFile='', runtimeEvidenceRoot='', recombinationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
+  controlFile='', experienceFile='', knowledgeFile='', externalAiKnowledgeFile='', runtimeEvidenceRoot='', recombinationFile='', repoRoot=process.cwd(), maxConcurrentTasks=process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS
 }={}) {
   const runtime=readJson(runtimeFile,{});
   const resolvedQueueFile=clean(queueFile)||clean(runtime.sources?.queue)||'.vibe2/queue.json';
   const resolvedControlFile=clean(controlFile)||clean(runtime.sources?.parallelism)||clean(runtime.adaptiveBackpressure?.stateFile)||'.vibe2/parallelism-control.json';
   const resolvedExperienceFile=clean(experienceFile)||clean(runtime.sources?.experience)||'.vibe2/experience.json';
   const resolvedKnowledgeFile=clean(knowledgeFile)||clean(runtime.sources?.gameStudyKnowledge)||clean(runtime.gameStudy?.knowledgeState)||'.vibe2/game-study-knowledge.json';
+  const resolvedExternalAiKnowledgeFile=clean(externalAiKnowledgeFile)||clean(runtime.sources?.externalAiDistilledKnowledge)||'.vibe2/external-ai-distilled-knowledge.json';
   const resolvedRuntimeEvidenceRoot=clean(runtimeEvidenceRoot)||clean(runtime.gameStudy?.runtimeEvidenceRoot)||'.vibe2/runtime-evidence';
   const handoff=generateVibe2Handoff({runtimeFile,queueFile:resolvedQueueFile,controlFile:resolvedControlFile,experienceFile:resolvedExperienceFile});
   const machineHandoff={used:true,kind:handoff.kind,sourceOfTruth:handoff.sourceOfTruth,consistency:handoff.consistency,currentPersistentMax:handoff.parallelism.currentPersistentMax,lastDecision:handoff.parallelism.lastDecision};
@@ -324,6 +325,7 @@ export function runVibe2AutoPlanner({
     queueFile:resolvedQueueFile,
     knowledgeFile:resolvedKnowledgeFile,
     experienceFile:resolvedExperienceFile,
+    externalAiKnowledgeFile:resolvedExternalAiKnowledgeFile,
     runtimeEvidenceRoot:resolvedRuntimeEvidenceRoot
   });
   return{...result,queueSynchronized,machineHandoff,effectivePlannerMax,learningContext:Object.freeze({
@@ -335,7 +337,7 @@ export function runVibe2AutoPlanner({
   }),recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
-  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),knowledgeFile:clean(args.knowledge),runtimeEvidenceRoot:clean(args['runtime-evidence-root']),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
+  const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),knowledgeFile:clean(args.knowledge),externalAiKnowledgeFile:clean(args['external-ai-knowledge']),runtimeEvidenceRoot:clean(args['runtime-evidence-root']),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
   console.log(`VIBE2_MACHINE_HANDOFF=${result.machineHandoff?.used?'USED':'NOT_USED'}`);
   console.log(`VIBE2_MACHINE_STATE=${result.machineHandoff?.consistency?.ok?'CONSISTENT':'INCONSISTENT'}`);
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);

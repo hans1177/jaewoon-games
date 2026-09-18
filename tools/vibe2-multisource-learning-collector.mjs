@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { isTrustedDistilledExternalAiEntry } from './vibe2-external-ai-distillation.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const unique = (values = []) => [...new Set((values || []).map(clean).filter(Boolean))];
@@ -181,10 +182,36 @@ function collectCrossGameHypotheses(map, knowledgeInput = {}, goalSystems = []) 
   }
 }
 
+function collectExternalAiDistilled(map, externalAiInput = {}, goalSystems = []) {
+  for (const row of externalAiInput?.entries || []) {
+    if (!isTrustedDistilledExternalAiEntry(row)) continue;
+    const engine = clean(row.engine).toLowerCase() || 'cross-engine';
+    const gameId = clean(row.gameId) || 'cross-game';
+    for (const raw of row.patterns || []) {
+      const pattern = normalizeReusablePattern(raw);
+      if (!pattern) continue;
+      const matchedSystems = unique([...systemMatches(pattern), ...(row.domains || []).map(clean)]).filter((system) => goalSystems.includes(system));
+      if (!matchedSystems.length) continue;
+      addMaterial(map, {
+        sourceType: 'external-ai-distilled-verified',
+        engine,
+        gameId,
+        pattern: `distilled-external-ai:${pattern}`,
+        matchedSystems,
+        confirmations: 1,
+        confidence: 0.7,
+        verified: true,
+        reusable: true
+      });
+    }
+  }
+}
+
 export function collectMultiSourceLearningMaterials({
   experienceInput = {},
   knowledgeInput = {},
   runtimeEvidenceInput = [],
+  externalAiInput = {},
   task = {},
   maxMaterials = MAX_MATERIALS
 } = {}) {
@@ -202,6 +229,7 @@ export function collectMultiSourceLearningMaterials({
   collectExperience(map, experienceInput, goalSystems);
   collectRuntime(map, runtimeEvidenceInput, goalSystems);
   collectCrossGameHypotheses(map, knowledgeInput, goalSystems);
+  collectExternalAiDistilled(map, externalAiInput, goalSystems);
 
   const materials = [...map.values()]
     .filter((row) => row.verified === true && row.reusable === true && row.matchedSystems.length > 0)
@@ -213,7 +241,8 @@ export function collectMultiSourceLearningMaterials({
         'verified-experience-failure': 4,
         'verified-qa-regression': 3,
         'play-telemetry': 3,
-        'cross-game-hypothesis': 2
+        'cross-game-hypothesis': 2,
+        'external-ai-distilled-verified': 1
       }[row.sourceType] || 1;
       const relevance = row.matchedSystems.length * 10 + (sameEngine ? 4 : 0) + sourceWeight + Math.min(5, row.confirmations / 2) + row.confidence;
       return Object.freeze({
