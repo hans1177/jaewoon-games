@@ -13,7 +13,10 @@
     "designer_pre_gate_repair_1",
     "deterministic_pre_gate_after_repair_1",
     "designer_pre_gate_repair_2",
-    "deterministic_pre_gate_after_repair_2"
+    "deterministic_pre_gate_after_repair_2",
+    "designer_pre_gate_repair_3",
+    "deterministic_pre_gate_after_repair_3",
+    "five_lead_reviews"
   ],
   "phases": {
     "designer_draft": {
@@ -65,19 +68,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "챕터 1 완료",
-          "newGameplay": "새로운 지형 효과와 원거리 공격형 기물 추가",
-          "systemImpact": "배치 단계에서의 위치 선점 중요도 상승 및 전술 그리드 배치 시스템의 선택 폭 확장"
+          "milestone": "챕터 1 완료 - 전술 확장",
+          "newGameplay": "새로운 지형 효과(함정 및 엄폐물)와 원거리 공격형 기물(아처) 추가로 전장 복잡성 증대",
+          "systemImpact": "배치 단계에서의 위치 선점 중요도 상승 및 전술 그리드 배치 시스템의 선택 폭 확장, 턴당 자원 소모 로직 수정"
         },
         {
-          "milestone": "챕터 2 완료",
-          "newGameplay": "턴 제한 내 거점 점령 모드 도입",
-          "systemImpact": "단순 섬멸전에서 탈피한 기동성 중심의 전술 요구 및 클래스별 고유 기물 능력 활용도 변화"
+          "milestone": "챕터 2 완료 - 기동전 도입",
+          "newGameplay": "턴 제한 내 거점 점령 모드 도입 및 이동력 강화 아이템 드롭 메커니즘 활성화",
+          "systemImpact": "단순 섬멸전에서 탈피한 기동성 중심의 전술 요구 및 클래스별 고유 기물 이동 거리 계산 알고리즘 갱신"
         },
         {
-          "milestone": "챕터 3 완료",
-          "newGameplay": "보스 기물과의 다단계 전술 전투 개방",
-          "systemImpact": "특수 패턴 대응형 기물 조합 시스템 활성화 및 코어로프 전반의 난이도 곡선 재정립"
+          "milestone": "챕터 3 완료 - 보스 레이드",
+          "newGameplay": "보스 기물과의 다단계 전술 전투 개방, 광역 패턴 회피 페이즈 추가",
+          "systemImpact": "특수 패턴 대응형 기물 조합 시스템 활성화 및 코어로프 전반의 난이도 곡선 재정립, 보상 지급 체계 확장"
         }
       ],
       "failureRetryRisk": {
@@ -519,9 +522,291 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "designer_pre_gate_repair_3": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "챕터 1 완료 - 전술 확장",
+          "newGameplay": "새로운 지형 효과(함정 및 엄폐물)와 원거리 공격형 기물(아처) 추가로 전장 복잡성 증대",
+          "systemImpact": "배치 단계에서의 위치 선점 중요도 상승 및 전술 그리드 배치 시스템의 선택 폭 확장, 턴당 자원 소모 로직 수정"
+        },
+        {
+          "milestone": "챕터 2 완료 - 기동전 도입",
+          "newGameplay": "턴 제한 내 거점 점령 모드 도입 및 이동력 강화 아이템 드롭 메커니즘 활성화",
+          "systemImpact": "단순 섬멸전에서 탈피한 기동성 중심의 전술 요구 및 클래스별 고유 기물 이동 거리 계산 알고리즘 갱신"
+        },
+        {
+          "milestone": "챕터 3 완료 - 보스 레이드",
+          "newGameplay": "보스 기물과의 다단계 전술 전투 개방, 광역 패턴 회피 페이즈 추가",
+          "systemImpact": "특수 패턴 대응형 기물 조합 시스템 활성화 및 코어로프 전반의 난이도 곡선 재정립, 보상 지급 체계 확장"
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_3": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "five_lead_reviews": {
+      "balance": {
+        "keep": [
+          "기물 이동 규칙과 전술 그리드 배치 시스템의 유기적 결합 구조"
+        ],
+        "fix": [
+          "적의 성장 곡선과 유닛 해금 속도의 동기화 오차 구간을 재조정하라"
+        ],
+        "add": [
+          "턴당 자원 소모 로직 및 이동 거리 계산 알고리즘에 대한 수치적 허용 오차"
+        ],
+        "risks": [
+          "초반 스테이지 난이도 급등으로 인한 이탈 및 성장 체감 지연 가능성"
+        ],
+        "evidence": [
+          "퍼즐 세션 지속 시간과 턴 기반 전략 게임의 평균 플레이어 피로도 기준"
+        ],
+        "questions": [
+          "챕터별 적 유닛의 성장 곡선과 플레이어 자원 획득량이 완벽하게 동기화되는가?"
+        ]
+      },
+      "development": {
+        "keep": [
+          "체스 기물 이동 규칙을 활용한 그리드 전술 배틀 루프"
+        ],
+        "fix": [
+          "클라이언트 중심 턴제 로직 처리 시 서버 검증 레이어 보완"
+        ],
+        "add": [
+          "네트워크 지연 대응을 위한 낙관적 UI 업데이트 구현"
+        ],
+        "risks": [
+          "모바일 터치 환경에서 정밀한 그리드 선택 오류 가능성"
+        ],
+        "evidence": [
+          "GridPlacementController 및 UnitAbilityManager 구조 확인 완료"
+        ],
+        "questions": [
+          "멀티플레이 확장 시 턴 타임아웃 처리는 서버 권한으로 처리하는가?"
+        ]
+      },
+      "graphics": {
+        "keep": [
+          "클래식 체스 미학을 현대적 캐주얼 로블록스 스타일에 맞춘 시각 방향성 유지"
+        ],
+        "fix": [
+          "모바일 화면에서 3D 기물 모델링의 가독성을 높이기 위해 폴리곤을 단순화하고 하이라이트 명확화"
+        ],
+        "add": [
+          "기물 이동 및 타격 시각 효과와 사운드의 정확한 동기화를 위한 피드백 레이어 추가"
+        ],
+        "risks": [
+          "복잡한 3D 기물과 이펙트로 인해 로블록스 모바일 환경에서 프레임 드랍 발생 가능성"
+        ],
+        "evidence": [
+          "로블록스 클라이언트 최적화를 위한 가벼운 폴리곤 최소화 및 턴제 로직 처리 구조 설계"
+        ],
+        "questions": [
+          "모바일 화면에서 색맹 사용자를 위한 형태와 심볼 병기 시각 디자인 가이드가 확정되었는가?"
+        ]
+      },
+      "planning": {
+        "keep": [
+          "체스의 공간 읽기와 말별 전투 능력을 결합한 전술 배틀 코어로프를 유지한다."
+        ],
+        "fix": [
+          "전술 그리드 배치 시스템의 선택지와 턴 제한 조건을 구체적 수치로 수정하라."
+        ],
+        "add": [
+          "초반 스테이지 이탈률 방지를 위한 실시간 피드백 지표 수집 로직을 추가하라."
+        ],
+        "risks": [
+          "턴제 전략과 퍼즐의 결합이 캐주얼 유저에게 진입 장벽으로 작용할 위험이 있다."
+        ],
+        "evidence": [
+          "글로벌 퍼즐 세션 평균 시간과 시장 상위 게임 리포트를 기획에 반영했다."
+        ],
+        "questions": [
+          "멀티플레이 도입 시 턴 제한 시간에 따른 이탈률을 어떻게 최소화할 것인가?"
+        ]
+      },
+      "qa": {
+        "keep": [
+          "그리드 기반 전술 스테이지와 턴제 로직 처리 구조의 명확성 유지"
+        ],
+        "fix": [
+          "기물 이동 경로 확인 버튼의 오동작 방지 로직을 엄격히 검증하도록 수정 지시"
+        ],
+        "add": [
+          "스테이지 실패 시 원인 분석 화면의 실효성 검증을 위한 자동 테스트 케이스 추가"
+        ],
+        "risks": [
+          "복잡한 체스 변형 규칙으로 인한 초기 5분 내 유저 이탈 리스크 존재"
+        ],
+        "evidence": [
+          "GameAnalytics 2025 퍼즐 세션 벤치마크 및 로블록스 클라이언트 최적화 기준 준수"
+        ],
+        "questions": [
+          "첫 5분 내에 체스 변형 규칙을 검증할 자동화된 온보딩 테스트 시나리오가 마련되어 있는가?"
+        ]
+      }
     }
   },
-  "tasks": {},
+  "tasks": {
+    "five_lead_reviews::development": {
+      "keep": [
+        "체스 기물 이동 규칙을 활용한 그리드 전술 배틀 루프"
+      ],
+      "fix": [
+        "클라이언트 중심 턴제 로직 처리 시 서버 검증 레이어 보완"
+      ],
+      "add": [
+        "네트워크 지연 대응을 위한 낙관적 UI 업데이트 구현"
+      ],
+      "risks": [
+        "모바일 터치 환경에서 정밀한 그리드 선택 오류 가능성"
+      ],
+      "evidence": [
+        "GridPlacementController 및 UnitAbilityManager 구조 확인 완료"
+      ],
+      "questions": [
+        "멀티플레이 확장 시 턴 타임아웃 처리는 서버 권한으로 처리하는가?"
+      ]
+    },
+    "five_lead_reviews::balance": {
+      "keep": [
+        "기물 이동 규칙과 전술 그리드 배치 시스템의 유기적 결합 구조"
+      ],
+      "fix": [
+        "적의 성장 곡선과 유닛 해금 속도의 동기화 오차 구간을 재조정하라"
+      ],
+      "add": [
+        "턴당 자원 소모 로직 및 이동 거리 계산 알고리즘에 대한 수치적 허용 오차"
+      ],
+      "risks": [
+        "초반 스테이지 난이도 급등으로 인한 이탈 및 성장 체감 지연 가능성"
+      ],
+      "evidence": [
+        "퍼즐 세션 지속 시간과 턴 기반 전략 게임의 평균 플레이어 피로도 기준"
+      ],
+      "questions": [
+        "챕터별 적 유닛의 성장 곡선과 플레이어 자원 획득량이 완벽하게 동기화되는가?"
+      ]
+    },
+    "five_lead_reviews::planning": {
+      "keep": [
+        "체스의 공간 읽기와 말별 전투 능력을 결합한 전술 배틀 코어로프를 유지한다."
+      ],
+      "fix": [
+        "전술 그리드 배치 시스템의 선택지와 턴 제한 조건을 구체적 수치로 수정하라."
+      ],
+      "add": [
+        "초반 스테이지 이탈률 방지를 위한 실시간 피드백 지표 수집 로직을 추가하라."
+      ],
+      "risks": [
+        "턴제 전략과 퍼즐의 결합이 캐주얼 유저에게 진입 장벽으로 작용할 위험이 있다."
+      ],
+      "evidence": [
+        "글로벌 퍼즐 세션 평균 시간과 시장 상위 게임 리포트를 기획에 반영했다."
+      ],
+      "questions": [
+        "멀티플레이 도입 시 턴 제한 시간에 따른 이탈률을 어떻게 최소화할 것인가?"
+      ]
+    },
+    "five_lead_reviews::graphics": {
+      "keep": [
+        "클래식 체스 미학을 현대적 캐주얼 로블록스 스타일에 맞춘 시각 방향성 유지"
+      ],
+      "fix": [
+        "모바일 화면에서 3D 기물 모델링의 가독성을 높이기 위해 폴리곤을 단순화하고 하이라이트 명확화"
+      ],
+      "add": [
+        "기물 이동 및 타격 시각 효과와 사운드의 정확한 동기화를 위한 피드백 레이어 추가"
+      ],
+      "risks": [
+        "복잡한 3D 기물과 이펙트로 인해 로블록스 모바일 환경에서 프레임 드랍 발생 가능성"
+      ],
+      "evidence": [
+        "로블록스 클라이언트 최적화를 위한 가벼운 폴리곤 최소화 및 턴제 로직 처리 구조 설계"
+      ],
+      "questions": [
+        "모바일 화면에서 색맹 사용자를 위한 형태와 심볼 병기 시각 디자인 가이드가 확정되었는가?"
+      ]
+    },
+    "five_lead_reviews::qa": {
+      "keep": [
+        "그리드 기반 전술 스테이지와 턴제 로직 처리 구조의 명확성 유지"
+      ],
+      "fix": [
+        "기물 이동 경로 확인 버튼의 오동작 방지 로직을 엄격히 검증하도록 수정 지시"
+      ],
+      "add": [
+        "스테이지 실패 시 원인 분석 화면의 실효성 검증을 위한 자동 테스트 케이스 추가"
+      ],
+      "risks": [
+        "복잡한 체스 변형 규칙으로 인한 초기 5분 내 유저 이탈 리스크 존재"
+      ],
+      "evidence": [
+        "GameAnalytics 2025 퍼즐 세션 벤치마크 및 로블록스 클라이언트 최적화 기준 준수"
+      ],
+      "questions": [
+        "첫 5분 내에 체스 변형 규칙을 검증할 자동화된 온보딩 테스트 시나리오가 마련되어 있는가?"
+      ]
+    }
+  },
   "modelHealth": {
     "gemini:gemini-3.8-flash": {
       "calls": 1,
@@ -568,24 +853,39 @@
       "updatedAt": "2026-09-18T06:32:31.334Z"
     },
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
-      "failures": 0,
+      "calls": 10,
+      "successes": 9,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 1,
+      "totalMs": 29331,
+      "lastMs": 5995,
+      "lastError": "Expected ',' or ']' after array element in JSON at position 4295 (line 1 column 4296)",
+      "updatedAt": "2026-09-18T06:32:57.239Z"
+    },
+    "gemini:gemini-3.1-pro-preview": {
+      "calls": 2,
+      "successes": 0,
+      "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 14153,
-      "lastMs": 2581,
-      "lastError": null,
-      "updatedAt": "2026-09-18T06:32:44.961Z"
+      "totalMs": 17279,
+      "lastMs": 11193,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\nPlease retry in 57.581160384s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerDay-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\"",
+      "updatedAt": "2026-09-18T06:33:02.436Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DESIGNER_REVISION",
   "createdAt": "2026-09-18T06:32:30.788Z",
-  "updatedAt": "2026-09-18T06:32:44.964Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:32:44.961Z",
+  "updatedAt": "2026-09-18T06:33:02.436Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:32:51.237Z",
   "geminiModelResolution": {
-    "gemini-3.8-flash": "gemini-3.5-flash-lite"
+    "gemini-3.8-flash": "gemini-3.5-flash-lite",
+    "gemini-3.6-flash": "gemini-3.5-flash-lite",
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
+    "gemini-3.7-flash": "gemini-3.5-flash-lite",
+    "gemini-3.5-flash": "gemini-3.5-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.8-flash",
   "effectiveDesignerProvider": "GEMINI",
