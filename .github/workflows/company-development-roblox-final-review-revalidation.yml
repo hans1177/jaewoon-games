@@ -16,6 +16,7 @@ on:
       - 'qa/company-development-roblox-multiplayer-qa.test.mjs'
       - 'qa/company-development-roblox-release-promotion.test.mjs'
       - 'qa/vibe3-roblox-platform.test.mjs'
+      - 'company-learning/platform-release-roadmap.json'
   workflow_run:
     workflows: ["Company DEVELOPMENT_CONFIRMED Roblox Multiplayer QA"]
     types: [completed]
@@ -132,11 +133,19 @@ jobs:
         run: |
           set -euo pipefail
           automatic_publish_paused="$(node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8'));process.stdout.write(p?.roblox?.deploymentControl?.automaticPublishPaused===false?'false':'true')")"
+          automatic_release_dispatch_allowed="$(node -e "const fs=require('fs');const p=JSON.parse(fs.readFileSync('main/company-learning/platform-release-roadmap.json','utf8'));process.stdout.write(p?.roblox?.deploymentControl?.automaticReleaseDispatchAllowed===true?'true':'false')")"
           if [ "$automatic_publish_paused" = 'true' ]; then
             echo 'ROBLOX_AUTOMATIC_PUBLISH_PAUSED=YES'
             echo 'ROBLOX_RELEASE_PROMOTION_DISPATCHED=NO'
             exit 0
           fi
+          if [ "$automatic_release_dispatch_allowed" != 'true' ]; then
+            echo 'ROBLOX_AUTOMATIC_RELEASE_DISPATCH_ALLOWED=NO'
+            echo 'ROBLOX_RELEASE_PROMOTION_DISPATCHED=NO'
+            exit 0
+          fi
+          echo 'ROBLOX_AUTOMATIC_PUBLISH_PAUSED=NO'
+          echo 'ROBLOX_AUTOMATIC_RELEASE_DISPATCH_ALLOWED=YES'
           mapfile -t ids < <(node -e "for (const id of JSON.parse(process.env.RELEASE_IDS_JSON || '[]')) console.log(id)")
           for id in "${ids[@]}"; do
             test -n "$id"
