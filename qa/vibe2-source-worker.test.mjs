@@ -145,6 +145,50 @@ test('exploration FULL_REBUILD strategy can authorize full web rewrite without p
   assert.equal(result.exploration.existingWebAssessment.strategy,'FULL_REBUILD');
 });
 
+test('full web rebuild recovers complete direct HTML when the model omits the envelope', async () => {
+  const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.html');
+  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(120)}</script></body></html>`;
+  const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-direct-html-recovery' });
+  workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed = true;
+  write(path.join(cwd, 'web-games/demo/index.html'), '<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd, 'design/demo/2026-09-18/design-revised.json'), JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd, 'design/demo/2026-09-18/cycle-status.json'), JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(responseFile, replacement);
+  const result = await runVibe2SourceWorker({ cwd, responseFile });
+  assert.equal(result.fullFileRewriteAllowed, true);
+  assert.deepEqual(result.changedFiles, ['index.html']);
+  assert.equal(fs.readFileSync(path.join(cwd, '.vibe2/candidates/web-direct-html-recovery/files/index.html'), 'utf8').trim(), replacement);
+});
+
+test('full web rebuild accepts fenced complete HTML but rejects prose or truncation', async () => {
+  const cwd = tempRoot();
+  const good = path.join(cwd, 'good.html');
+  const bad = path.join(cwd, 'bad.html');
+  const truncated = path.join(cwd, 'truncated.html');
+  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(120)}</script></body></html>`;
+  const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-fenced-html-recovery' });
+  workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed = true;
+  write(path.join(cwd, 'web-games/demo/index.html'), '<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd, 'design/demo/2026-09-18/design-revised.json'), JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd, 'design/demo/2026-09-18/cycle-status.json'), JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(good, `\`\`\`html\n${replacement}\n\`\`\``);
+  const result = await runVibe2SourceWorker({ cwd, responseFile: good });
+  assert.deepEqual(result.changedFiles, ['index.html']);
+  workOrder.taskId = 'web-direct-html-prose-reject';
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(bad, `Here is the game:\n${replacement}`);
+  await assert.rejects(runVibe2SourceWorker({ cwd, responseFile: bad }), /JSON 시작을 찾지 못함/);
+  workOrder.taskId = 'web-direct-html-truncated-reject';
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(workOrder, null, 2));
+  write(truncated, '<!doctype html><html><body><canvas id="game"></canvas>');
+  await assert.rejects(runVibe2SourceWorker({ cwd, responseFile: truncated }), /JSON 시작을 찾지 못함/);
+});
+
 test('full web rebuild accepts raw full-file envelope without JSON escaping', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.txt');
