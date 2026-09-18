@@ -19,9 +19,22 @@ const directive=readJson('company-directive.json',{});
 const ai=directive.ai||{};
 const geminiApiKey=clean(process.env.GEMINI_API_KEY);
 if(!geminiApiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
-const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||'gemini-3.8-flash');
-const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite').split(','));
-const geminiFallbackModelList=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-3-flash-preview').split(','));
+const authorizedLeadModelPool=uniq(ai.modelPool||[]);
+const policyLeadModelList=ROLES.map(role=>clean(ai.departmentLeadModels?.[role]));
+if(policyLeadModelList.some(model=>!model)||new Set(policyLeadModelList).size!==ROLES.length)throw new Error('GEMINI_POLICY_LEAD_MODELS_INVALID');
+if(policyLeadModelList.some(model=>!authorizedLeadModelPool.includes(model)))throw new Error('GEMINI_POLICY_LEAD_MODEL_OUTSIDE_POOL');
+const configuredLeadModels=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'').split(','));
+const geminiLeadModelList=configuredLeadModels.length?configuredLeadModels:policyLeadModelList;
+if(geminiLeadModelList.some(model=>!authorizedLeadModelPool.includes(model)))throw new Error('GEMINI_UNAUTHORIZED_LEAD_MODEL');
+const authorizedDesignerModels=uniq([
+  clean(ai.gameDesigner?.geminiModel),
+  ...(ai.gameDesigner?.geminiFallbackModels||[])
+]);
+const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||ai.gameDesigner?.geminiModel||'gemini-3.8-flash');
+if(!authorizedDesignerModels.includes(geminiDesignerModel))throw new Error('GEMINI_UNAUTHORIZED_DESIGNER_MODEL');
+const configuredDesignerFallbacks=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'').split(','));
+const geminiFallbackModelList=configuredDesignerFallbacks.length?configuredDesignerFallbacks:authorizedDesignerModels;
+if(geminiFallbackModelList.some(model=>!authorizedDesignerModels.includes(model)))throw new Error('GEMINI_UNAUTHORIZED_DESIGNER_FALLBACK_MODEL');
 const geminiLeadFallbackLaneSpec=clean(process.env.COMPANY_GEMINI_LEAD_FALLBACK_LANES||'');
 const geminiUnavailableModels=new Map();
 function isDailyGeminiQuotaError(error){
@@ -76,7 +89,7 @@ for(const entry of geminiLeadFallbackLaneSpec.split(';').map(clean).filter(Boole
   if(at<1)continue;
   const role=clean(entry.slice(0,at));
   if(!ROLES.includes(role))continue;
-  configuredLeadFallbackModels[role]=uniq(entry.slice(at+1).split('|')).filter(model=>geminiFallbackModelList.includes(model)&&!primaryLeadModelSet.has(model));
+  configuredLeadFallbackModels[role]=uniq(entry.slice(at+1).split('|')).filter(model=>authorizedLeadModelPool.includes(model)&&!primaryLeadModelSet.has(model));
 }
 const leadCandidateModels=Object.fromEntries(ROLES.map(role=>[role,uniq([leadModels[role],...configuredLeadFallbackModels[role]])]));
 const leadCandidateOwner=new Map();
