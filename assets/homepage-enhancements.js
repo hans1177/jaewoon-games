@@ -205,6 +205,39 @@ function buildShelf(hub,id,title,description,rows,{ranked=false}={}){
   wrapper.innerHTML=`<div class="top30Head"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div><span class="top30Count">${rows.length}${ranked?` / ${TOP_LIMIT}`:'개'}</span></div><div class="top30Grid">${rows.length?rows.map((row,i)=>buildCard(row,ranked?i+1:'')).join(''):'<div class="foldGameMeta">현재 표시 가능한 검증 게임이 없어.</div>'}</div>`;
   hub.insertBefore(wrapper,document.getElementById('gameGrid')||null);
 }
+function buildDevelopmentPipeline(catalog,status,testManifest={}){
+  const section=document.getElementById('developmentPipeline');
+  const lead=document.getElementById('pipelineLead');
+  if(!section||!lead)return;
+  const games=(Array.isArray(catalog?.games)?catalog.games:[]).filter(activeLifecycle);
+  const webReady=games.filter(game=>game?.homepageWebPlayable===true&&String(game?.webPath||'').trim());
+  const selected=games.filter(game=>normalizePlatform(selectedPlatform(game)));
+  const development=games.filter(game=>productionClassOf(game)==='DEVELOPMENT_CONFIRMED');
+  const released=games.filter(game=>productionClassOf(game)==='RELEASE_CONFIRMED');
+  const validated=Array.isArray(testManifest?.candidates)?testManifest.candidates.filter(row=>Number(row?.strictScore??row?.reviewScore??row?.totalScore??row?.score)>=80):[];
+  const focus=[...released,...development,...webReady].sort((a,b)=>(Date.parse(updatedAt(b)||'')||0)-(Date.parse(updatedAt(a)||'')||0))[0]||null;
+  const runnerCount=Number(status?.postReleaseFocusedDevelopment?.runningCount??status?.postReleaseFocusRunner?.runningCount??0);
+  const runnerActive=Number.isFinite(runnerCount)&&runnerCount>0;
+  if(focus){
+    const platform=platformLabel(selectedPlatform(focus));
+    lead.innerHTML=`<b>현재 진행 · ${esc(focus.name||gameIdOf(focus))}</b><br>${esc(classState(focus))} · ${esc(platform)} · ${esc(latestWork(focus))}`;
+  }else{
+    lead.innerHTML='<b>현재 진행 상태</b><br>중앙 runtime에서 표시 가능한 개발 프로젝트를 기다리는 중이야.';
+  }
+  const badges=section.querySelectorAll('.pipelineStep strong');
+  const values=[
+    `ACTIVE ${games.length}`,
+    `WEB ${webReady.length}`,
+    `PASS ${validated.length}`,
+    `PLATFORM ${selected.length}`,
+    runnerActive?`LIVE RUNNER ${runnerCount}`:`RELEASE ${released.length}`
+  ];
+  badges.forEach((node,index)=>{if(values[index])node.textContent=values[index]});
+  section.dataset.runtimeAuthority=String(catalog?.runtimeInfoAuthority||catalog?.runtimeAuthority||'none');
+  section.dataset.selectedPlatformCount=String(selected.length);
+  section.dataset.releaseCount=String(released.length);
+  section.dataset.focusRunnerActive=runnerActive?'true':'false';
+}
 function buildGameCenter(catalog,status,testManifest={}){
   const hub=document.getElementById('gameHub');
   if(!hub)return;
@@ -270,7 +303,7 @@ async function refresh(){
     const [catalog,status,testManifest]=await Promise.all([getJson('/game-catalog.json'),getJson('/company-status.json'),getJson('/test-game-candidates.json')]);
     if(catalog?.runtimeInfoAuthority!=='company-runtime'||status?.runtimeAuthority!=='company-runtime')return;
     const sig=JSON.stringify([catalog,status,testManifest]);
-    if(sig!==lastSignature){buildFocus(catalog,status,testManifest||{});buildGameCenter(catalog,status,testManifest||{});lastSignature=sig;}
+    if(sig!==lastSignature){buildFocus(catalog,status,testManifest||{});buildDevelopmentPipeline(catalog,status,testManifest||{});buildGameCenter(catalog,status,testManifest||{});lastSignature=sig;}
     document.documentElement.dataset.homeSyncAt=new Date().toISOString();
     document.documentElement.dataset.homeProgressAuthority='company-runtime';
   }finally{refreshInFlight=false;}
