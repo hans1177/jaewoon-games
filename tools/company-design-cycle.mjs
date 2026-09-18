@@ -22,7 +22,18 @@ if(!geminiApiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
 const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||'gemini-3.8-flash');
 const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite').split(','));
 const geminiFallbackModelList=uniq(clean(process.env.COMPANY_GEMINI_FALLBACK_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-pro-preview,gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-3.1-flash-lite').split(','));
-const geminiCandidatesFor=primary=>uniq([primary,...geminiFallbackModelList]);
+const geminiUnavailableModels=new Map();
+function geminiCandidatesFor(primary){
+  const ordered=uniq([primary,...geminiFallbackModelList]);
+  const available=ordered.filter(model=>!geminiUnavailableModels.has(model));
+  if(available.length)return available;
+  throw new Error(`GEMINI_NO_AVAILABLE_MODELS ${[...geminiUnavailableModels.entries()].map(([model,status])=>`${model}:${status}`).join(',')}`);
+}
+function quarantineGeminiModel(model,status){
+  if(![403,404,429].includes(Number(status)))return;
+  geminiUnavailableModels.set(model,Number(status));
+  console.log(`GEMINI_MODEL_QUARANTINED=${model}|status=${status}`);
+}
 if(geminiLeadModelList.length<ROLES.length)throw new Error(`GEMINI_LEAD_MODEL_GATE: ${geminiLeadModelList.length}/${ROLES.length}`);
 const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadModelList[index]]));
 const distinctLeadModels=uniq(Object.values(leadModels));
@@ -572,7 +583,8 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
         persistDesignCheckpoint();
         const status=Number(error?.geminiStatus||0);
         if(status===429||status===404||status===403){
-          const nextCandidate=candidates[candidates.indexOf(candidateModel)+1]||null;
+          quarantineGeminiModel(candidateModel,status);
+          const nextCandidate=candidates.slice(candidates.indexOf(candidateModel)+1).find(model=>!geminiUnavailableModels.has(model))||null;
           console.log(`GEMINI_MODEL_FAILOVER=${requestedModel}|${candidateModel}->${nextCandidate||'NONE'}|status=${status}`);
           break;
         }
