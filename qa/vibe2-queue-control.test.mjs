@@ -205,6 +205,22 @@ test('twenty independent tasks can fill all 20 slots', () => {
   assert.equal(reserved.selection.effectiveMaxConcurrentTasks,20);
 });
 
+test('Gemini quota wait releases worker capacity while preserving source lock', () => {
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
+    {id:'quota-wait',gameId:'game-a',target:'web',sourceRoot:'web-games/game-a',goal:'model-bound review',status:'running',blocker:'WAITING_FOR_GEMINI_QUOTA',responsibleFiles:['shared.js']},
+    {id:'same-root',gameId:'game-a',target:'web',sourceRoot:'web-games/game-a',goal:'same root work',status:'queued',responsibleFiles:['shared.js']},
+    {id:'independent',gameId:'game-b',target:'web',sourceRoot:'web-games/game-b',goal:'independent implementation',status:'queued',responsibleFiles:['game.js']}
+  ]});
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:2});
+  assert.equal(batch.capacityRunning.length,0);
+  assert.deepEqual(batch.quotaWaiting.map(task=>task.id),['quota-wait']);
+  assert.equal(batch.freeSlots,2);
+  assert.equal(batch.selected.some(task=>task.id==='same-root'),false);
+  assert.equal(batch.selected.some(task=>task.id==='independent'),true);
+  const summary=createVibeContinuousQueue(batch.selected.length?queue:queue);
+  assert.equal(summary.tasks.length,3);
+});
+
 test('awaiting QA backpressure does not consume worker slots twice', () => {
   const awaiting=Array.from({length:8},(_,i)=>({
     id:`await-${i}`,gameId:`await-${i}`,target:'web',sourceRoot:`web-games/await-${i}`,goal:'await',
