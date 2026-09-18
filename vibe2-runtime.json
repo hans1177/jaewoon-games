@@ -103,7 +103,7 @@
     "dynamicBackpressure": true,
     "speculativeParallelism": {
       "enabled": true,
-      "variants": 2,
+      "variants": 3,
       "highRiskOptInOnly": true,
       "unityBuildCandidatesExcluded": true
     },
@@ -149,7 +149,13 @@
     "experience": ".vibe2/experience.json",
     "workOrder": ".vibe2/work-order.json",
     "parallelism": ".vibe2/parallelism-control.json",
-    "developmentLifecyclePolicy": "company-learning/platform-release-roadmap.json"
+    "developmentLifecyclePolicy": "company-learning/platform-release-roadmap.json",
+    "learningMotorPolicy": "company-learning/vibe2-learning-motor.json",
+    "learningMotorState": ".vibe2/learning-motor-state.json",
+    "benchmarkLadder": ".vibe2/benchmark-ladder.json",
+    "idlePracticeQueue": ".vibe2/idle-practice-queue.json",
+    "webRobloxHandoffs": ".vibe2/web-roblox-handoffs.json",
+    "verifiedCodePatterns": ".vibe2/code-pattern-library.json"
   },
   "workers": {
     "exploration": {
@@ -182,8 +188,12 @@
       "sourceWrite": false
     },
     "analysis": {
-      "configured": false,
-      "reason": "general-analysis-worker-not-connected-yet"
+      "configured": true,
+      "tool": "tools/vibe2-learning-practice-worker.mjs",
+      "sourceWrite": false,
+      "practiceOnly": true,
+      "productionPass": false,
+      "productionWorkPreempts": true
     }
   },
   "coordination": {
@@ -504,7 +514,19 @@
       "cross-game-reuse-success"
     ],
     "verifiedEvidenceRequired": true,
-    "learningMayOverrideFixedRules": false
+    "learningMayOverrideFixedRules": false,
+    "vibeImplementationOwner": true,
+    "webDirectAuthoring": [
+      "SVG",
+      "CSS",
+      "CANVAS",
+      "PROCEDURAL_JS",
+      "WEB_AUDIO",
+      "MOTION_ENGINE"
+    ],
+    "binaryAuthoringRoute": "AUTHORING_GENERATOR_REQUEST",
+    "existingAssetReuseIsCandidateNotMandatory": true,
+    "generatorRequestIsCompletion": false
   },
   "engineEditors": {
     "roblox": {
@@ -634,5 +656,27 @@
       "maxMinWorkUnitsPerPackage": 6,
       "neverReduceSafetyOrQa": true
     }
+  },
+  "learningMotor": {
+    "enabled": true,
+    "tool": "tools/vibe2-learning-motor.mjs",
+    "positiveMasteryEvidence": "VERIFIED_ONLY",
+    "legacyLevelReplacement": false,
+    "productionPreemptsPractice": true,
+    "sameGameHighestRetrievalWeight": true,
+    "webPracticeFeedsCrossPlatformMastery": true,
+    "robloxNativeDomainsRequireRobloxEvidence": true,
+    "candidateTournament": {
+      "normal": 1,
+      "highRisk": 3,
+      "repeatedFailure": 3,
+      "max": 5
+    },
+    "repeatedFailure": {
+      "second": "FORCE_RETRIEVAL",
+      "third": "ADD_REPRO_DRILL"
+    },
+    "modelTrainingThresholdsUnchanged": true,
+    "gateBypass": false
   }
 }

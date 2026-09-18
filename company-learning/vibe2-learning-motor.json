@@ -1,0 +1,192 @@
+{
+  "version": 1,
+  "authority": "MACHINE_EXECUTION_CONTRACT",
+  "purpose": "Turn verified Web and Roblox development outcomes into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
+  "principles": {
+    "vibeImplementationOwner": "VIBE2_VIBE3",
+    "webRole": [
+      "EXECUTABLE_GAMEPLAY_BLUEPRINT",
+      "PRACTICE_AND_VERIFIED_LEARNING_SOURCE"
+    ],
+    "robloxRole": [
+      "SELECTED_PLATFORM_NATIVE_IMPLEMENTATION",
+      "PRIMARY_NATIVE_LEARNING_STAGE"
+    ],
+    "noGateWeakening": true,
+    "noAutoPass": true,
+    "verifiedEvidenceOnlyForPositiveMastery": true,
+    "verifiedFailureMayTeachAvoidPatterns": true,
+    "authorityNeverExpandsWithMastery": true
+  },
+  "mastery": {
+    "replacesDepartmentLevel": false,
+    "departmentLevelRemainsOverallExperience": true,
+    "maxLegacyDepartmentLevel": 10,
+    "domains": [
+      "CORE_LOOP",
+      "STATE_MACHINE",
+      "COMBAT",
+      "AI",
+      "PROGRESSION",
+      "ECONOMY",
+      "SAVE",
+      "MOBILE_INPUT",
+      "UI_STATE",
+      "DEBUGGING",
+      "PERFORMANCE",
+      "ASSET_PRODUCTION",
+      "WEB_RUNTIME",
+      "ROBLOX_STUDIO",
+      "ROBLOX_DATASTORE",
+      "ROBLOX_REMOTE_SECURITY",
+      "ROBLOX_REPLICATION",
+      "ROBLOX_MULTIPLAYER"
+    ],
+    "verifiedSuccessXp": 12,
+    "verifiedFailureLessonXp": 5,
+    "repeatedVerificationBonusCap": 8,
+    "crossPlatformTransfer": {
+      "WEB_TO_ROBLOX": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "COMBAT",
+        "AI",
+        "PROGRESSION",
+        "ECONOMY",
+        "SAVE",
+        "MOBILE_INPUT",
+        "UI_STATE",
+        "DEBUGGING",
+        "PERFORMANCE"
+      ],
+      "ROBLOX_NATIVE_ONLY": [
+        "ROBLOX_STUDIO",
+        "ROBLOX_DATASTORE",
+        "ROBLOX_REMOTE_SECURITY",
+        "ROBLOX_REPLICATION",
+        "ROBLOX_MULTIPLAYER"
+      ]
+    }
+  },
+  "retrieval": {
+    "priority": [
+      "SAME_GAME_VERIFIED",
+      "SAME_ENGINE_VERIFIED",
+      "SAME_GENRE_OR_SYSTEM_VERIFIED",
+      "CROSS_GAME_VERIFIED",
+      "GENERAL_PLAYBOOK"
+    ],
+    "sameGameMustBeHighestWeight": true,
+    "sources": [
+      ".vibe2/experience.json",
+      ".vibe2/game-study-knowledge.json",
+      "company-learning/vibe3-memory-index.json",
+      "company-learning/vibe3-recombination-memory.json",
+      "company-learning/vibe3-task-playbooks.json",
+      "company-learning/vibe2-code-pattern-library.json",
+      "assets/asset-manifest.json",
+      "assets/prototype-asset-presets.json"
+    ],
+    "rawUnauthorizedSourceReuseForbidden": true,
+    "verifiedInternalCodePatternReuseAllowed": true
+  },
+  "webPracticeMotor": {
+    "implementationIsPractice": true,
+    "onlyVerifiedOutcomeImprovesPositiveMastery": true,
+    "verifiedFailureBecomesAvoidLesson": true,
+    "autoPlayerAndFuzz": {
+      "enabled": true,
+      "cases": [
+        "RAPID_INPUT",
+        "RESTART_SPAM",
+        "SAVE_RELOAD",
+        "LOW_HEALTH_ACTION",
+        "DUPLICATE_UI_INPUT",
+        "LONG_SESSION",
+        "SEEDED_REPLAY",
+        "SOFTLOCK_SEARCH"
+      ],
+      "evidenceRequiredBeforeLearning": true
+    },
+    "repeatFailureReview": {
+      "secondOccurrence": "FORCE_RETRIEVAL",
+      "thirdOccurrence": "ADD_REPRO_DRILL",
+      "neverCountsAsPass": true
+    }
+  },
+  "benchmarkLadder": {
+    "enabled": true,
+    "domains": [
+      "CODING",
+      "BUGFIX",
+      "WEB_GAMEPLAY",
+      "ROBLOX_NATIVE",
+      "AI",
+      "SAVE",
+      "PERFORMANCE",
+      "ASSET_PRODUCTION"
+    ],
+    "levels": 10,
+    "runOn": [
+      "NEW_VERIFIED_EXPERIENCE",
+      "MASTERY_LEVEL_UP",
+      "NEW_VERIFIED_FAILURE_PATTERN"
+    ],
+    "benchmarkResultIsTrainingEvidence": false,
+    "onlyVerifiedPromotedResultMayEnterCanonicalDistillation": true
+  },
+  "candidateTournament": {
+    "defaultCandidates": 1,
+    "difficultOrRepeatedFailureCandidates": 3,
+    "highRiskCandidates": 3,
+    "maxCandidates": 5,
+    "winnerRule": "VERIFIED_QA_PLUS_LOWEST_REGRESSION_RISK",
+    "losingCandidatesMayTeachOnlyWhenFailureReasonVerified": true
+  },
+  "idleTraining": {
+    "enabled": true,
+    "productionWorkAlwaysPreemptsPractice": true,
+    "usesOnlyFreeCapacity": true,
+    "drills": [
+      "VERIFIED_FAILURE_REPLAY",
+      "BENCHMARK_LADDER",
+      "MINI_GAME_SYSTEM_DRILL",
+      "ROBLOX_PATTERN_REVIEW",
+      "SAVE_AND_RETRY_DRILL"
+    ],
+    "practiceNeverClaimsProductionPass": true
+  },
+  "webToRobloxHandoff": {
+    "requiredWhenSelectedPlatform": "ROBLOX",
+    "requiredFields": [
+      "CORE_LOOP",
+      "STATE_MODEL",
+      "COMBAT_AI_INTENT",
+      "PROGRESSION_MODEL",
+      "ECONOMY_MEANING",
+      "UI_FLOW",
+      "INPUT_INTENT",
+      "SAVE_MEANING",
+      "CONTENT_STRUCTURE",
+      "BALANCE_INTENT",
+      "VERIFIED_FAILURES",
+      "VERIFIED_FIXES",
+      "WEB_RUNTIME_EVIDENCE"
+    ],
+    "discardAsImplementation": [
+      "DOM_STRUCTURE",
+      "CSS_IMPLEMENTATION",
+      "WEB_RENDERING_HACKS",
+      "WEB_ONLY_STORAGE_CODE"
+    ],
+    "robloxMustReimplementNatively": true,
+    "webEvidenceCannotSubstituteRobloxRuntimeQa": true
+  },
+  "modelTraining": {
+    "canonicalPipelineOnly": true,
+    "thresholdsUnchanged": true,
+    "practiceAdapterMayNotAutoPromote": true,
+    "promotion": "FIXED_HOLDOUT_AB_THEN_CANARY",
+    "target": "Increase verified multi-project sample production rather than lower thresholds."
+  }
+}
