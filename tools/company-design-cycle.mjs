@@ -34,6 +34,9 @@ function quarantineGeminiModel(model,status){
   geminiUnavailableModels.set(model,Number(status));
   console.log(`GEMINI_MODEL_QUARANTINED=${model}|status=${status}`);
 }
+function geminiThinkingConfigFor(model){
+  return String(model).startsWith('gemini-2.5-')?{thinkingBudget:512}:{thinkingLevel:'low'};
+}
 if(geminiLeadModelList.length<ROLES.length)throw new Error(`GEMINI_LEAD_MODEL_GATE: ${geminiLeadModelList.length}/${ROLES.length}`);
 const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadModelList[index]]));
 const distinctLeadModels=uniq(Object.values(leadModels));
@@ -64,6 +67,7 @@ let activeDesignerRoute=designerRoute;
 const designerModel=designerRoute.id;
 const coordinatorModel=geminiDesignerModel;
 console.log('AI_PROVIDER=GEMINI_ONLY');
+console.log('GEMINI_THINKING_LEVEL=LOW');
 console.log(`GAME_DESIGNER_PROVIDER=GEMINI`);
 console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
 console.log(`GEMINI_LEAD_MODELS=${Object.entries(leadModels).map(([role,model])=>`${role}:${model}`).join(',')}`);
@@ -544,7 +548,8 @@ async function callModel(model,system,user,schema,{predict=1100,temperature=0.25
               temperature:attempt===1?temperature:0,
               maxOutputTokens:Math.min(8192,Math.max(512,Number(predict||1100))),
               responseMimeType:'application/json',
-              responseJsonSchema:schema
+              responseJsonSchema:schema,
+              thinkingConfig:geminiThinkingConfigFor(candidateModel)
             }
           }),
           signal:AbortSignal.timeout(effectiveTimeoutMs)
