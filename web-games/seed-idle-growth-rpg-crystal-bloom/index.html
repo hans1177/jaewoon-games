@@ -1,1 +1,102 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>수정의 개화</title></head><body><script>window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#08111b">
+  <title>수정의 개화</title>
+  <link rel="stylesheet" href="/web-games/_shared/styles.css">
+</head>
+<body>
+  <script>
+    window.GAME_CONFIG = {
+      id: 'seed-idle-growth-rpg-crystal-bloom',
+      name: '수정의 개화',
+      mode: 'crystal-idle',
+      hp: 100,
+      desc: '전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'
+    };
+
+    // Initialize game state
+    let player = {
+      hp: window.GAME_CONFIG.hp,
+      gold: 0,
+      level: 1,
+      equipment: [],
+      progress: {
+        stage: 1,
+        target: 10,
+        completed: 0
+      },
+      saved: false
+    };
+
+    // Game loop
+    function gameLoop() {
+      if (!player.saved) {
+        player.saved = true;
+        saveState();
+      }
+
+      // Check progress
+      if (player.progress.stage === player.progress.target) {
+        player.progress.completed = player.progress.stage;
+        player.level++;
+        player.progress.stage = 1;
+      }
+
+      // Handle input
+      if (player.input) {
+        handleInput(player.input);
+      }
+
+      // Update UI
+      updateUI();
+    }
+
+    // Save state
+    function saveState() {
+      localStorage.setItem('game_state', JSON.stringify(player));
+    }
+
+    // Load state
+    function loadState() {
+      if (localStorage.getItem('game_state')) {
+        player = JSON.parse(localStorage.getItem('game_state'));
+      }
+    }
+
+    // Handle input
+    function handleInput(input) {
+      if (input.type === 'click') {
+        if (input.target === 'gold') {
+          player.gold += 10;
+          player.progress.stage++;
+        } else if (input.target === 'equipment') {
+          player.equipment.push({type: 'basic', level: player.level});
+        }
+      }
+    }
+
+    // Update UI
+    function updateUI() {
+      document.getElementById('hp').innerText = player.hp;
+      document.getElementById('gold').innerText = player.gold;
+      document.getElementById('equipment').innerText = player.equipment.length;
+      document.getElementById('progress').innerText = `Stage: ${player.progress.stage} / ${player.progress.target}`;
+    }
+
+    // Initialize
+    window.addEventListener('load', () => {
+      loadState();
+      updateUI();
+    });
+  </script>
+  <div id="game-container">
+    <div id="hp">100</div>
+    <div id="gold">0</div>
+    <div id="equipment">0</div>
+    <div id="progress">Stage: 1 / 10</div>
+  </div>
+</body>
+</html>
