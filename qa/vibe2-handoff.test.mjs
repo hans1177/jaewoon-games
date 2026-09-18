@@ -1,5 +1,5 @@
 // 파일명: qa/vibe2-handoff.test.mjs
-// 역할: Vibe2 인간 문서 1개 정책과 기계 상태 기반 자동 인수인계 생성을 검증한다.
+// 역할: Vibe2 인간 문서 0개 정책과 기계 상태 기반 자동 인수인계 생성을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -72,12 +72,13 @@ test('machine handoff summarizes queue, adaptive state, and game study knowledge
   assert.equal(first.gameStudyKnowledge.supportedHypothesisCount, 1);
 });
 
-test('repository uses exactly one Vibe2 human document and legacy Vibe2 docs are removed', () => {
+test('repository uses no Vibe2 human documents and legacy Vibe2 docs are removed', () => {
   const runtime = JSON.parse(fs.readFileSync('vibe2-runtime.json', 'utf8'));
-  assert.deepEqual(runtime.documentation?.humanDocuments, ['VIBE2.md']);
-  assert.equal(runtime.documentation?.humanDocumentLimit, 1);
+  assert.equal(runtime.documentation?.humanDocumentRequired, false);
+  assert.deepEqual(runtime.documentation?.humanDocuments, []);
+  assert.equal(runtime.documentation?.humanDocumentLimit, 0);
   assert.equal(runtime.documentation?.manualHandoffDocumentsAllowed, false);
-  assert.equal(fs.existsSync('VIBE2.md'), true);
+  assert.equal(fs.existsSync('VIBE2.md'), false);
   assert.equal(fs.existsSync(runtime.documentation?.runtimeState?.gameStudyKnowledge), true);
 
   for (const file of runtime.documentation?.legacyHumanDocumentsRemoved || []) {
@@ -107,12 +108,11 @@ test('repository machine state is internally consistent and no extra Vibe2 human
   assert.equal(snapshot.consistency.ok, true, snapshot.consistency.errors.join(','));
   assert.deepEqual(snapshot.consistency.errors, []);
   const actual = fs.readdirSync('.').filter((file) => /^VIBE2.*\.md$/i.test(file)).sort();
-  assert.deepEqual(actual, ['VIBE2.md']);
+  assert.deepEqual(actual, []);
 });
 
 test('consistency gate rejects an unlisted Vibe2 markdown file and divergent adaptive state', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-consistency-'));
-  fs.writeFileSync(path.join(tempRoot, 'VIBE2.md'), '# Vibe2\n');
   fs.writeFileSync(path.join(tempRoot, 'VIBE2_STALE.md'), '# stale\n');
   fs.mkdirSync(path.join(tempRoot, 'tools'), { recursive: true });
   fs.mkdirSync(path.join(tempRoot, '.github/workflows'), { recursive: true });
