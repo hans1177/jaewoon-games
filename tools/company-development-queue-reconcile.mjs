@@ -5,6 +5,7 @@ import path from 'node:path';
 import {pathToFileURL} from 'node:url';
 
 const ACTIVE_STATES=new Set(['ACTIVE','REBUILD']);
+const MACHINE_POLICY_SOURCE='company-learning/platform-release-roadmap.json';
 const readJson=(file,fallback)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');
 const clean=value=>String(value??'').trim();
@@ -193,14 +194,16 @@ export function reconcileDevelopmentQueue({root='.'}={}){
 
   const before=JSON.stringify(queue.items);
   const after=JSON.stringify(next);
-  const changed=before!==after||duplicateRemoved>0;
+  const policyChanged=clean(queue.routerPolicy)!==MACHINE_POLICY_SOURCE;
+  const changed=before!==after||duplicateRemoved>0||policyChanged;
   if(changed){
     queue.items=next;
+    queue.routerPolicy=MACHINE_POLICY_SOURCE;
     queue.updatedAt=stamp;
     queue.reconciliationPolicy='CATALOG_ACTIVE_REBUILD_DEVELOPMENT_CONFIRMED_AUTO_GUARANTEE';
     writeJson(queuePath,queue);
   }
-  return {changed,created,removed,reset,duplicateRemoved,preserved,queueCount:next.length};
+  return {changed,created,removed,reset,duplicateRemoved,preserved,queueCount:next.length,routerPolicy:MACHINE_POLICY_SOURCE};
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
@@ -211,4 +214,5 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DEVELOPMENT_QUEUE_WEB_RESET=${result.reset.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_QUEUE_DUPLICATES_REMOVED=${result.duplicateRemoved}`);
   console.log(`DEVELOPMENT_QUEUE_COUNT=${result.queueCount}`);
+  console.log(`DEVELOPMENT_QUEUE_ROUTER_POLICY=${result.routerPolicy}`);
 }
