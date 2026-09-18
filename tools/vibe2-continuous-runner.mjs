@@ -10,6 +10,8 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
+import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy } from './vibe2-learning-motor.mjs';
+import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\', '/');
@@ -124,7 +126,7 @@ function incrementalQaPlan(task, target, responsibleFiles) {
   });
 }
 
-export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '' } = {}) {
+export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', learningMotorState = {}, codePatterns = {}, playbooks = {} } = {}) {
   const normalizedQueue = createVibeContinuousQueue(queue);
   const resolved = resolveTask(normalizedQueue, taskId);
   const base = {
@@ -175,6 +177,17 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const releaseState = clean(task.releaseState) || 'other';
   const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState) && ['roblox','web','unity'].includes(plan.target) && task.requiresOwnerDecision !== true && task.protectedChange !== true;
   const learningGuidance = buildLearningGuidance(plan.learning);
+  const unifiedLearning = retrieveUnifiedLearning({
+    task:{ ...task, target:plan.target, taskType:task.type },
+    experienceInput:experience,
+    codePatternsInput:codePatterns,
+    playbooksInput:playbooks,
+    masteryInput:learningMotorState
+  });
+  const unifiedLearningGuidance = buildMotorGuidance(unifiedLearning);
+  const assetProduction = buildVibeAssetProductionPlan({ task, target:plan.target, repoRoot:process.cwd() });
+  const assetGuidance = assetProductionGuidance(assetProduction);
+  const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
   const reusedContexts = reusableContextsForTask(handoff || {}, task);
   const reusedGuidance = buildReusableHandoffGuidance(reusedContexts);
   const workPackage=freeze({
@@ -205,11 +218,14 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     `역할 분리=${Object.entries(workPackage.rolePlan).map(([k,v])=>`${k}:${v}`).join(' | ')}`,
     workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
   ].filter(Boolean).join('\n'):'';
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, designIntelligence.guidance, learningGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const qa = freezeList([
     ...(plan.qa || []),
     'design-intelligence-contract',
+    'verified-learning-motor-contract',
+    'asset-production-plan-contract',
+    'asset-runtime-visual-qa-required',
     'exploration-handoff-required-before-implementation',
     'auto-player-evidence-after-implementation',
     'telemetry-evidence-after-implementation',
@@ -232,28 +248,39 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     workPackage,
     reusedMachineContext:freeze({used:reusedContexts.length>0,count:reusedContexts.length,contexts:freeze(reusedContexts)}),
     designIntelligence,
-    learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance), motion:plan.motion, executionGate:plan.executionGate,
+    unifiedLearning,
+    assetProduction,
+    candidateTournament:tournament,
+    learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance||unifiedLearningGuidance), motion:plan.motion, executionGate:plan.executionGate,
     deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
     workerPolicy:freeze({
       isolatedCandidateBranch:true, directMainWrite:false, verifiedCommitRequired:true, retryLimit:task.maxRetries,
       paidAIAllowed:false, paidRunnerAllowed:false, engineMustResolveGameplayResults:true, protectedGameplayMutationAutomatic:false,
       binaryAssetsDirectTextEditForbidden:true, textWorkerAllowed:route.route==='text-source-worker',
+      vibeOwnsAssetProductionDecision:true,
+      webDirectAssetAuthoringAllowed:plan.target==='web',
+      companyAssetReuseCandidateOnly:true,
+      authoringGeneratorRequestAllowed:true,
+      authoringGeneratorRequestIsNotCompletion:true,
       explorationRequired:true, explorationWorker:'tools/vibe2-exploration-worker.mjs', explorationSourceWrite:false,
       roleSeparation:true, sameFileParallelWrite:false,
-      speculativeParallelism:task.speculativeEligible && task.estimatedRisk==='high', speculativeVariants:task.speculativeEligible && task.estimatedRisk==='high'?2:1
+      speculativeParallelism:tournament.candidateCount>1, speculativeVariants:tournament.candidateCount
     })
   });
 }
 
-export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', outputFile='', taskId='' } = {}) {
+export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', outputFile='', taskId='', learningMotorStateFile='', codePatternsFile='', playbooksFile='' } = {}) {
   const runtime = readJson(runtimeFile, {});
   const resolvedQueueFile = clean(queueFile) || clean(runtime?.sources?.queue) || '.vibe2/queue.json';
   const resolvedControlFile = clean(controlFile) || clean(runtime?.sources?.parallelism) || clean(runtime?.adaptiveBackpressure?.stateFile) || '.vibe2/parallelism-control.json';
   const resolvedExperienceFile = clean(experienceFile) || clean(runtime?.sources?.experience) || '.vibe2/experience.json';
   const resolvedOutputFile = clean(outputFile) || clean(runtime?.sources?.workOrder) || '.vibe2/work-order.json';
   const handoff = generateVibe2Handoff({ runtimeFile, queueFile:resolvedQueueFile, controlFile:resolvedControlFile, experienceFile:resolvedExperienceFile });
-  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId });
+  const learningMotorState = readJson(clean(learningMotorStateFile)||'.vibe2/learning-motor-state.json', {});
+  const codePatterns = readJson(clean(codePatternsFile)||'.vibe2/code-pattern-library.json', readJson('company-learning/vibe2-code-pattern-library.json',{patterns:[]}));
+  const playbooks = readJson(clean(playbooksFile)||'company-learning/vibe3-task-playbooks.json', {taskTypes:{}});
+  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, learningMotorState, codePatterns, playbooks });
   writeJson(resolvedOutputFile, order);
   return order;
 }
@@ -261,7 +288,8 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = parseArgs();
   const order = runVibeContinuousRunner({
-    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), outputFile:clean(args.output), taskId:clean(args['task-id'])
+    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), outputFile:clean(args.output), taskId:clean(args['task-id']),
+    learningMotorStateFile:clean(args['learning-motor-state']), codePatternsFile:clean(args['code-patterns']), playbooksFile:clean(args.playbooks)
   });
   console.log(`VIBE2_CONTINUOUS_RUN=${order.run?'YES':'NO'}`);
   console.log(`VIBE2_CONTINUOUS_REASON=${order.reason}`);

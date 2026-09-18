@@ -199,7 +199,7 @@ test('active source root is skipped while another project can be planned',()=>{
   assert.equal(result.tasks.some(t=>t.gameId==='dev-web'),true);
 });
 
-test('development web without TODO uses deterministic diagnostics as task feeder',()=>{
+test('development web is assessed before deterministic diagnostics',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
   fs.mkdirSync(webRoot,{recursive:true});
@@ -211,22 +211,23 @@ test('development web without TODO uses deterministic diagnostics as task feeder
   });
   assert.equal(result.planned,true);
   assert.equal(result.task.gameId,'diag-web');
-  assert.match(result.task.id,/diagnostic-bundle/);
+  assert.equal(result.task.id,'diag-web-existing-web-assessment-v1');
   assert.deepEqual([...result.task.responsibleFiles],['web-games/diag-web/index.html']);
-  assert.equal(result.task.evidence.includes('diagnostic:MISSING_VIEWPORT'),true);
-  assert.equal(result.task.packageWorkUnits>=3,true);
-  assert.equal(result.task.completionCriteria.includes('full-core-regression-once-at-fan-in'),true);
-  assert.equal(result.task.evidence.includes('repair-mode:RULE_PATCH'),true);
+  assert.equal(result.task.evidence.includes('existing-web-assessment-required'),true);
+  assert.equal(result.task.evidence.includes('strategy-decision:EXPLORATION'),true);
+  assert.equal(result.task.ownerDirective,true);
 });
 
-test('planner groups real disjoint related candidates into one work package',()=>{
+test('planner groups disjoint post-assessment candidates into one work package',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/dev-web');
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Dev</title></head><body><button>Play</button></body></html>\n','utf8');
+  fs.writeFileSync(path.join(webRoot,'extra.js'),'// TODO: harden secondary UI path\n','utf8');
+  const assessed={id:'dev-web-existing-web-assessment-v1',gameId:'dev-web',target:'web',sourceRoot:'web-games/dev-web',status:'done',goal:'assessment complete',evidence:['existing-web-assessment-required']};
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
     catalog:{games:[{id:'dev-web',webPath:'/web-games/dev-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]},
-    queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4
+    queue:{tasks:[assessed]},repoRoot:root,maxConcurrentTasks:4
   });
   assert.equal(result.planned,true);
   assert.equal(result.packages.length,1);
@@ -236,18 +237,19 @@ test('planner groups real disjoint related candidates into one work package',()=
   assert.equal(responsible[0].some(file=>responsible[1].includes(file)),false);
 });
 
-test('completed diagnostic package is never recreated after completion',()=>{
+test('completed diagnostic package is never recreated after assessment and completion',()=>{
   const root=tempRepo();
   const webRoot=path.join(root,'web-games/diag-web');
   fs.mkdirSync(webRoot,{recursive:true});
   fs.writeFileSync(path.join(webRoot,'index.html'),'<!doctype html><html><head><title>Diag</title></head><body><button>Play</button></body></html>','utf8');
   const diagCatalog={games:[{id:'diag-web',webPath:'/web-games/diag-web/',hasWebArchive:true,homepageWebPlayable:true,homepageCategory:'development-confirmed'}]};
-  const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[]},repoRoot:root,maxConcurrentTasks:4});
+  const assessed={id:'diag-web-existing-web-assessment-v1',gameId:'diag-web',target:'web',sourceRoot:'web-games/diag-web',status:'done',goal:'assessment complete',evidence:['existing-web-assessment-required']};
+  const first=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[assessed]},repoRoot:root,maxConcurrentTasks:4});
   assert.equal(first.planned,true);
   const firstKeys=first.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
   assert.equal(firstKeys.length>0,true);
   const done={...first.task,status:'done',result:'PASS'};
-  const second=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[done]},repoRoot:root,maxConcurrentTasks:4});
+  const second=planVibe2AutonomousTask({status:{projects:[]},catalog:diagCatalog,queue:{tasks:[assessed,done]},repoRoot:root,maxConcurrentTasks:4});
   if(second.planned){
     assert.notEqual(second.task.id,first.task.id);
     const secondKeys=second.task.evidence.filter(x=>x.startsWith('diagnostic-key:'));
