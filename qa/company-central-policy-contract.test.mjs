@@ -332,7 +332,7 @@ test('development WIP capacity is 20 while gates remain fail-closed',()=>{
   assert.equal(roadmap.platformRepresentativeSets.implementationWipTarget,20);
   assert.equal(roadmap.platformRepresentativeSets.implementationWipMax,20);
   assert.equal(roadmap.developmentSpeedExecution.globalSelectedPlatformDevelopmentWipMax,20);
-  assert.equal(roadmap.developmentLifecycleMachine.autonomousRecovery.invariants.noGateBypass,true);
+  assert.equal(roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.invariants.noGateBypass,true);
   assert.equal(directive.executionPause.strictDesignGateMustRemainUnchanged,true);
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
   assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
