@@ -186,20 +186,20 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
   });
 }
 
-export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null } = {}) {
+export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservationId = '', reservedAt = '' } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
   const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks });
   const selected = selection.selected[0];
   if (!selected) return { reserved: false, queue, selection, recovered: recovered.recovered };
-  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservationId: clean(arguments[1]?.reservationId), reservedAt: clean(arguments[1]?.reservedAt) || new Date().toISOString() });
+  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservationId: clean(reservationId), reservedAt: clean(reservedAt) || new Date().toISOString() });
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
-export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null } = {}) {
+export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservationId = '', reservedAt = '' } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservationId: clean(arguments[1]?.reservationId), reservedAt: clean(arguments[1]?.reservedAt) || new Date().toISOString() });
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservationId: clean(reservationId), reservedAt: clean(reservedAt) || new Date().toISOString() });
   return {
     reserved: started.started,
     tasks: started.tasks || [],
