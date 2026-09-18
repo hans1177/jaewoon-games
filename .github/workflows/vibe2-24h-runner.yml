@@ -84,7 +84,7 @@ jobs:
 
           for attempt in 1 2 3; do
             echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/3"
-            git fetch origin main vibe2-unreal-core --quiet
+            git fetch origin main vibe2-unreal-core company-runtime --quiet
             git fetch origin '+refs/heads/vibe2-learning-runtime:refs/remotes/origin/vibe2-learning-runtime' --quiet || true
             git reset --hard origin/vibe2-unreal-core
             rm -rf /tmp/vibe2-main
@@ -97,6 +97,15 @@ jobs:
               printf '%s\n' '{"version":1,"recipes":[]}' > /tmp/vibe2-recombination-memory.json
               echo 'VIBE2_RECOMBINATION_MEMORY=EMPTY'
             fi
+
+            git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json
+            node --check /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs
+            node /tmp/vibe2-main/tools/vibe2-post-release-focus.mjs \
+              --roadmap=/tmp/vibe2-main/company-learning/platform-release-roadmap.json \
+              --company-runtime-queue=/tmp/vibe2-company-runtime-queue.json \
+              --queue=.vibe2/queue.json \
+              --recombination=/tmp/vibe2-recombination-memory.json \
+              --root=/tmp/vibe2-main | tee /tmp/vibe2-post-release-focus.log
 
             node /tmp/vibe2-main/tools/vibe2-authorized-source-memory.mjs \
               --summary=/tmp/vibe2-main/company-learning/authorized-source/block-blast/authorized-learning-summary.json \
@@ -145,9 +154,264 @@ jobs:
               exit 0
             fi
 
-            if grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$' /tmp/vibe2-authorized-source-memory.log; then
+            if grep -q '^VIBE2_POST_RELEASE_FOCUS_ADDED=YES              commit_message='vibe2: queue release baseline implementation gap [skip ci]'
+            elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
+              commit_message='vibe2: plan next machine-state work [skip ci]'
+            else
+              commit_message='vibe2: persist twenty-slot adaptive parallel queue state [skip ci]'
+            fi
+
+            git commit -m "$commit_message"
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
+              echo 'VIBE2_AUTOPLAN_WRITE=YES'
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 2))
+          done
+
+          echo 'VIBE2_AUTOPLAN_PUSH=FAILED' >&2
+          exit 1
+
+      - name: Read queue continuation state
+        id: queue_state
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-plan-summary.log
+          continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-plan-summary.log | tail -n1)"
+          case "${continue_required:-NO}" in
+            YES|NO) ;;
+            *) echo "invalid VIBE2_QUEUE_CONTINUE=${continue_required:-}" >&2; exit 1 ;;
+          esac
+          echo "continue_required=${continue_required:-NO}" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
+
+      - name: Upload generated machine handoff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-plan-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-before-plan.json
+            /tmp/vibe2-handoff-before-attempt.json
+            /tmp/vibe2-handoff-after-plan.json
+            /tmp/vibe2-autoplan.log
+            /tmp/vibe2-release-baseline-plan.log
+            /tmp/vibe2-authorized-source-memory.log
+            /tmp/vibe2-post-release-focus.log
+            /tmp/vibe2-plan-summary.log
+          if-no-files-found: warn
+          retention-days: 7
+
+  continuous:
+    needs: plan
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    permissions:
+      contents: write
+      actions: write
+
+  game_study:
+    needs: plan
+    if: ${{ always() && needs.plan.result == 'success' }}
+    uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
+    permissions:
+      contents: write
+      actions: write
+
+  refill:
+    needs: [plan, continuous]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.continue_required == 'YES' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Dispatch next 24H Runner cycle
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-24h-runner.yml/dispatches" \
+            --data '{"ref":"main"}'
+          echo 'VIBE2_24H_REFILL=WORKFLOW_DISPATCH'
+ /tmp/vibe2-post-release-focus.log; then
+              commit_message='vibe2: queue Roblox post-release focused development [skip ci]'
+            elif grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES              commit_message='vibe2: queue release baseline implementation gap [skip ci]'
+            elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
+              commit_message='vibe2: plan next machine-state work [skip ci]'
+            else
+              commit_message='vibe2: persist twenty-slot adaptive parallel queue state [skip ci]'
+            fi
+
+            git commit -m "$commit_message"
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
+              echo 'VIBE2_AUTOPLAN_WRITE=YES'
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 2))
+          done
+
+          echo 'VIBE2_AUTOPLAN_PUSH=FAILED' >&2
+          exit 1
+
+      - name: Read queue continuation state
+        id: queue_state
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-plan-summary.log
+          continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-plan-summary.log | tail -n1)"
+          case "${continue_required:-NO}" in
+            YES|NO) ;;
+            *) echo "invalid VIBE2_QUEUE_CONTINUE=${continue_required:-}" >&2; exit 1 ;;
+          esac
+          echo "continue_required=${continue_required:-NO}" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
+
+      - name: Upload generated machine handoff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-plan-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-before-plan.json
+            /tmp/vibe2-handoff-before-attempt.json
+            /tmp/vibe2-handoff-after-plan.json
+            /tmp/vibe2-autoplan.log
+            /tmp/vibe2-release-baseline-plan.log
+            /tmp/vibe2-authorized-source-memory.log
+            /tmp/vibe2-plan-summary.log
+          if-no-files-found: warn
+          retention-days: 7
+
+  continuous:
+    needs: plan
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    permissions:
+      contents: write
+      actions: write
+
+  game_study:
+    needs: plan
+    if: ${{ always() && needs.plan.result == 'success' }}
+    uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
+    permissions:
+      contents: write
+      actions: write
+
+  refill:
+    needs: [plan, continuous]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.continue_required == 'YES' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Dispatch next 24H Runner cycle
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-24h-runner.yml/dispatches" \
+            --data '{"ref":"main"}'
+          echo 'VIBE2_24H_REFILL=WORKFLOW_DISPATCH'
+ /tmp/vibe2-authorized-source-memory.log; then
               commit_message='vibe2: ingest authorized Block Blast learning memory [skip ci]'
-            elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$' /tmp/vibe2-release-baseline-plan.log; then
+            elif grep -q '^VIBE2_RELEASE_BASELINE_GAP_PLAN=YES              commit_message='vibe2: queue release baseline implementation gap [skip ci]'
+            elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
+              commit_message='vibe2: plan next machine-state work [skip ci]'
+            else
+              commit_message='vibe2: persist twenty-slot adaptive parallel queue state [skip ci]'
+            fi
+
+            git commit -m "$commit_message"
+            if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
+              echo 'VIBE2_AUTOPLAN_WRITE=YES'
+              exit 0
+            fi
+            git rebase --abort 2>/dev/null || true
+            sleep $((attempt * 2))
+          done
+
+          echo 'VIBE2_AUTOPLAN_PUSH=FAILED' >&2
+          exit 1
+
+      - name: Read queue continuation state
+        id: queue_state
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-plan-summary.log
+          continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-plan-summary.log | tail -n1)"
+          case "${continue_required:-NO}" in
+            YES|NO) ;;
+            *) echo "invalid VIBE2_QUEUE_CONTINUE=${continue_required:-}" >&2; exit 1 ;;
+          esac
+          echo "continue_required=${continue_required:-NO}" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
+
+      - name: Upload generated machine handoff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vibe2-machine-handoff-plan-${{ github.run_id }}
+          path: |
+            /tmp/vibe2-handoff-before-plan.json
+            /tmp/vibe2-handoff-before-attempt.json
+            /tmp/vibe2-handoff-after-plan.json
+            /tmp/vibe2-autoplan.log
+            /tmp/vibe2-release-baseline-plan.log
+            /tmp/vibe2-authorized-source-memory.log
+            /tmp/vibe2-plan-summary.log
+          if-no-files-found: warn
+          retention-days: 7
+
+  continuous:
+    needs: plan
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    permissions:
+      contents: write
+      actions: write
+
+  game_study:
+    needs: plan
+    if: ${{ always() && needs.plan.result == 'success' }}
+    uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
+    permissions:
+      contents: write
+      actions: write
+
+  refill:
+    needs: [plan, continuous]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.continue_required == 'YES' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Dispatch next 24H Runner cycle
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header 'Accept: application/vnd.github+json' \
+            --header "Authorization: Bearer $GITHUB_TOKEN" \
+            --header 'X-GitHub-Api-Version: 2022-11-28' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/vibe2-24h-runner.yml/dispatches" \
+            --data '{"ref":"main"}'
+          echo 'VIBE2_24H_REFILL=WORKFLOW_DISPATCH'
+ /tmp/vibe2-release-baseline-plan.log; then
               commit_message='vibe2: queue release baseline implementation gap [skip ci]'
             elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
               commit_message='vibe2: plan next machine-state work [skip ci]'
