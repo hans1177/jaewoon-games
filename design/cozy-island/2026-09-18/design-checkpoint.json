@@ -114,8 +114,7 @@
       "multiplayerExpansionDecision": "친구의 섬에 놀러가서 함께 낚시를 하거나 자원을 교환하는 비동기 및 가벼운 동기식 협동 플레이 지원",
       "technicalAssumptions": [
         "서버 부하를 최소화하기 위한 클라이언트 중심의 상태 관리 및 세션 데이터 처리 구조 유지",
-        "모바일 환경에서의 최적화된 리소스 로딩과 4분 내외 평균 세션 지속 시간을 지원하는 비동기 렌더링",
-        "안정적인 데이터 저장을 위한 클라우드 세이브 시스템과 네트워크 단절 시 오프라인 동기화 보장"
+        "모바일 환경에서의 최적화된 리소스 로딩과 4분 내외 평균 세션 지속 시간을 지원하는 비동기 렌더링"
       ],
       "validationQuestions": [
         "플레이어가 5분 이내의 첫 세션에서 뚜렷한 성취감과 빠른 재도전 기회를 얻는가?",
@@ -175,7 +174,7 @@
         "CORE_LOOP_DESIGN": 80,
         "SYSTEM_INTERCONNECTION_DESIGN": 80,
         "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 60,
+        "CONTENT_EXPANSION_PLAN": 80,
         "FAILURE_RETRY_RISK_DESIGN": 80,
         "PLATFORM_FIT_DESIGN": 80,
         "UX_AND_ACCESSIBILITY_PLAN": 80,
@@ -188,36 +187,21 @@
         "CORE_LOOP_DESIGN": 11.2,
         "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
         "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 6,
+        "CONTENT_EXPANSION_PLAN": 8,
         "FAILURE_RETRY_RISK_DESIGN": 6.4,
         "PLATFORM_FIT_DESIGN": 6.4,
         "UX_AND_ACCESSIBILITY_PLAN": 4.8,
         "ART_AUDIO_DIRECTION": 4,
         "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
       },
-      "totalScore": 77,
+      "totalScore": 79,
       "criticalAxisFailures": [
-        "CONTENT_EXPANSION_PLAN",
         "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
       ],
       "hardFailures": [
         "CRITICAL_AXIS_MINIMUM_FAIL"
       ],
       "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "CONTENT_EXPANSION_PLAN",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 6,
-            "axisWeight": 10
-          },
-          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
         {
           "code": "CRITICAL_AXIS_MINIMUM_FAIL",
           "kind": "HARD_GATE",
@@ -241,15 +225,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 7,
-      "successes": 4,
+      "calls": 9,
+      "successes": 6,
       "failures": 3,
       "timeouts": 0,
       "jsonFailures": 3,
-      "totalMs": 44129,
-      "lastMs": 1627,
+      "totalMs": 47776,
+      "lastMs": 1852,
       "lastError": "Expected ',' or '}' after property value in JSON at position 1752 (line 1 column 1753)",
-      "updatedAt": "2026-09-18T06:46:44.957Z"
+      "updatedAt": "2026-09-18T06:48:08.886Z"
     },
     "gemini:gemini-2.5-flash": {
       "calls": 1,
@@ -354,8 +338,8 @@
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T06:44:19.909Z",
-  "updatedAt": "2026-09-18T06:46:44.960Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:46:44.957Z",
+  "updatedAt": "2026-09-18T06:48:08.891Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T06:48:08.886Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
