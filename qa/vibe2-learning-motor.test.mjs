@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {
   createMasteryState,
   applyVerifiedExperienceToMastery,
+  applyVerifiedCodePatternsToMastery,
   retrieveUnifiedLearning,
   candidateTournamentPolicy,
   buildBenchmarkLadder,
@@ -79,4 +80,17 @@ test('idle practice is enqueued only when production work is absent',()=>{
   const busy=injectIdlePracticeTask({tasks:[{id:'prod',status:'queued',type:'implementation',evidence:[]}]},idle);
   assert.equal(busy.added,false);
   assert.equal(busy.reason,'PRODUCTION_WORK_PRESENT');
+});
+
+
+test('verified internal code patterns raise mastery without raw code',()=>{
+  const result=applyVerifiedCodePatternsToMastery({}, {patterns:[
+    {id:'save1',verified:true,rawCodeStored:false,independentQa:'PASS',system:'SAVE_PERSISTENCE',engine:'web',pattern:'VERIFIED_SAVE_PERSISTENCE_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION'}
+  ]});
+  assert.equal(result.added,1);
+  assert.ok(result.state.domains.SAVE.xp>0);
+  const rejected=applyVerifiedCodePatternsToMastery({}, {patterns:[
+    {id:'bad',verified:true,rawCodeStored:true,independentQa:'PASS',system:'SAVE_PERSISTENCE'}
+  ]});
+  assert.equal(rejected.added,0);
 });
