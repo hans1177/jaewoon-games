@@ -6,6 +6,7 @@ const roadmap=JSON.parse(read('company-learning/platform-release-roadmap.json'))
 const webRuntime=read('.github/workflows/company-development-confirmed-runtime.yml');
 const robloxRuntime=read('.github/workflows/company-development-roblox-runtime.yml');
 const bootstrap=read('tools/company-development-roblox-bootstrap.mjs');
+const reconcile=read('tools/company-development-roblox-source-reconcile.mjs');
 const feeder=read('tools/vibe2-post-release-focus.mjs');
 const runner=read('.github/workflows/vibe2-24h-runner.yml');
 const queue=read('assets/vibe-continuous-queue.js');
@@ -42,6 +43,8 @@ assert.match(bootstrap,/ROBLOX_WEB_HANDOFF_FAILED/);
 assert.match(bootstrap,/WebBaseline = \{/);
 assert.match(bootstrap,/NativeRuntimePassTransferred = false/);
 assert.match(bootstrap,/ROBLOX_WEB_HANDOFF=PASS/);
+assert.match(reconcile,/validateWebPlatformHandoff/);
+assert.match(reconcile,/web-platform-handoff-invalid/);
 
 const focus=lifecycle.postReleaseFocusedDevelopment;
 assert.equal(focus.enabled,true);
