@@ -85,10 +85,18 @@ jobs:
           for attempt in 1 2 3; do
             echo "VIBE2_AUTOPLAN_ATTEMPT=$attempt/3"
             git fetch origin main vibe2-unreal-core --quiet
+            git fetch origin '+refs/heads/vibe2-learning-runtime:refs/remotes/origin/vibe2-learning-runtime' --quiet || true
             git reset --hard origin/vibe2-unreal-core
             rm -rf /tmp/vibe2-main
             git worktree prune
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
+
+            if git show origin/vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json > /tmp/vibe2-recombination-memory.json 2>/dev/null; then
+              echo 'VIBE2_RECOMBINATION_MEMORY=LOADED'
+            else
+              printf '%s\n' '{"version":1,"recipes":[]}' > /tmp/vibe2-recombination-memory.json
+              echo 'VIBE2_RECOMBINATION_MEMORY=EMPTY'
+            fi
 
             node /tmp/vibe2-main/tools/vibe2-authorized-source-memory.mjs \
               --summary=/tmp/vibe2-main/company-learning/authorized-source/block-blast/authorized-learning-summary.json \
@@ -108,6 +116,7 @@ jobs:
               --queue=.vibe2/queue.json \
               --control=.vibe2/parallelism-control.json \
               --experience=.vibe2/experience.json \
+              --recombination=/tmp/vibe2-recombination-memory.json \
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
 
