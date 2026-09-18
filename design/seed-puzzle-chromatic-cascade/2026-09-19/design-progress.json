@@ -2,7 +2,7 @@
   "version": 2,
   "gameId": "seed-puzzle-chromatic-cascade",
   "date": "2026-09-19",
-  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "engineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
   "status": "PRE_GATE_BLOCKED",
   "currentStage": "PRE_GATE_REPAIR",
   "percent": 50,
@@ -16,25 +16,25 @@
   ],
   "completedPhaseCount": 6,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-18T15:10:00.711Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:43:02.176Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 15240,
-      "lastMs": 1873,
+      "totalMs": 19187,
+      "lastMs": 1961,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:10:00.711Z"
+      "updatedAt": "2026-09-18T15:43:02.176Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-18T15:18:46.986Z",
+  "updatedAt": "2026-09-18T15:43:02.179Z",
   "blocked": true,
   "preGateScore": 79,
   "hardFailures": [

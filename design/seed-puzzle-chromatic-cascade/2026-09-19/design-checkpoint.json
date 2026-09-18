@@ -3,9 +3,9 @@
   "gameId": "seed-puzzle-chromatic-cascade",
   "date": "2026-09-19",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-PUZZLE-CHROMATIC-CASCADE-20260917",
-  "fingerprint": "151930d2ff3f857c498005009af19201743b301748cd891683ecb0715c971d0e",
+  "fingerprint": "c4cb355833c0fbe0e7d688489b404bf921cb26183e91db3b7a6b0fd285c4c8da",
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
-  "engineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+  "engineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
   "status": "PRE_GATE_BLOCKED",
   "completedPhases": [
     "designer_draft",
@@ -234,17 +234,17 @@
         {
           "designElement": "연쇄 폭발 시스템",
           "responsibleSystem": "PuzzleMatchEngine",
-          "validationEvidence": "단위 테스트를 통해 3개 이상 매칭 시 인접 타일 제거 및 연쇄 트리거가 정상 작동하는지 검증한다."
+          "validationEvidence": "단위 테스트를 통해 3개 이상 매칭 시 인접 타일 제거 및 연쇄 트리거가 정상 작동하는지 자동화 테스트를 통해 엄격히 검증한다."
         },
         {
           "designElement": "색채 정화 게이지",
           "responsibleSystem": "PlayerProgressionManager",
-          "validationEvidence": "시뮬레이션 로그를 통해 연쇄 횟수에 비례하여 게이지가 올바르게 충전되고 소모되는지 확인한다."
+          "validationEvidence": "시뮬레이션 로그를 통해 연쇄 횟수에 비례하여 게이지가 올바르게 충전되고 소모되는지 수치 분석 툴을 통해 철저하게 확인한다."
         },
         {
           "designElement": "코어 루프 스테이지",
           "responsibleSystem": "LevelFlowController",
-          "validationEvidence": "스테이지 클리어 조건 달성 시 보상 지급과 다음 레벨 해금 처리가 정상적으로 이루어지는지 테스트한다."
+          "validationEvidence": "스테이지 클리어 조건 달성 시 보상 지급과 다음 레벨 해금 처리가 정상적으로 이루어지는지 통합 시나리오 테스트로 검증한다."
         }
       ]
     },
@@ -437,22 +437,22 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 3,
+      "calls": 5,
+      "successes": 5,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 15240,
-      "lastMs": 1873,
+      "totalMs": 19187,
+      "lastMs": 1961,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:10:00.711Z"
+      "updatedAt": "2026-09-18T15:43:02.176Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T15:09:45.460Z",
-  "updatedAt": "2026-09-18T15:18:46.985Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T15:10:00.711Z",
+  "updatedAt": "2026-09-18T15:43:02.179Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:43:02.176Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
@@ -460,5 +460,15 @@
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL"
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=79 hard=CRITICAL_AXIS_MINIMUM_FAIL",
+  "checkpointMigration": {
+    "fromContractVersion": 3,
+    "toContractVersion": 3,
+    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
+    "previousEngineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+    "preservedPhaseCount": 6,
+    "preservedTaskCount": 0,
+    "migratedAt": "2026-09-18T15:42:58.213Z"
+  },
+  "preGateRepairGeneration": 1
 }
