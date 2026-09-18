@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": 47,
+  "revision": 48,
   "updatedAt": "2026-09-19",
   "priority": "owner-immediate",
   "policyDocument": "company-learning/platform-release-roadmap.json",
@@ -104,6 +104,18 @@
       "scoreRequiresCurrentSourceAndBaselineBindingWhenAvailable": true,
       "reworkOrRevalidationScoresNotShownAsCurrent": true,
       "scoreRequiresSchema15": true
+    },
+    "autoClassification": {
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json#catalogNormalization.autoClassification",
+      "enabled": true,
+      "webGameOnly": true,
+      "explicitOwnerOrCatalogValueWins": true,
+      "overwriteExplicitValue": false,
+      "missingPlatform": "VIBE_AUTO_CLASSIFY",
+      "missingGenre": "VIBE_AUTO_CLASSIFY",
+      "executionPath": "tools/game-catalog-normalization.mjs",
+      "runsInsideExistingCompanyStatusSync": true,
+      "humanDocumentRequired": false
     }
   },
   "production": {
