@@ -17,6 +17,10 @@ on:
       - 'tools/company-game-seed-semantic-normalize.mjs'
       - 'tools/company-game-seed-quality-gate.mjs'
       - 'tools/company-strict-production-review.mjs'
+      - 'tools/company-design-cycle.mjs'
+      - 'tools/artbook-production-pipeline.mjs'
+      - 'tools/company-baseline-gate.mjs'
+      - 'tools/company-design-artbook.mjs'
       - '.github/workflows/company-game-seed-bootstrap.yml'
       - '.github/workflows/company-seed-design-runtime.yml'
 
