@@ -9,7 +9,9 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1"
   ],
   "phases": {
     "designer_draft": {
@@ -61,19 +63,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "신규 지형 테마 도입",
-          "newGameplay": "물, 용암 등 새로운 지형 속성이 추가되어 적의 이동과 타워 공격에 환경적 변수를 도입합니다.",
-          "systemImpact": "지형 변형 시스템이 확장되어 기존 지형과 상호작용하는 새로운 전략적 선택지가 추가됩니다."
+          "milestone": "천상의 보루: 지형 변형 및 속성 상호작용 확장",
+          "newGameplay": "플레이어는 전장 곳곳에 존재하는 지형 타일을 직접 변형하여 적의 이동 경로를 강제로 변경하거나, 특정 속성 타일을 생성하여 타워의 공격력을 증폭시키는 능동적 전술을 수행합니다.",
+          "systemImpact": "기존의 고정된 경로 탐색 시스템을 실시간 동적 경로 탐색 시스템으로 교체하며, 타워의 공격 로직에 지형 속성 보너스 계산 모듈을 추가하여 전략적 깊이를 심화시킵니다."
         },
         {
-          "milestone": "정예 적 유닛 추가",
-          "newGameplay": "지형을 무시하거나 타워를 무력화하는 특수 능력을 가진 적들이 등장하여 방어 전략의 변화를 강제합니다.",
-          "systemImpact": "속성 공명 타워 시스템의 중요도가 높아지며, 특정 속성 조합을 강제하는 메타가 형성됩니다."
+          "milestone": "정예 적 유닛 및 속성 공명 시스템 도입",
+          "newGameplay": "특수 보호막을 가진 정예 유닛이 등장하며, 이들을 처치하기 위해서는 특정 속성 타워를 조합하여 공명 효과를 발생시켜야 하는 퍼즐형 방어 전투가 핵심이 됩니다.",
+          "systemImpact": "적 유닛의 상태 관리 시스템에 속성 저항 및 보호막 로직을 통합하고, 타워 간의 시너지 효과를 계산하는 공명 엔진을 핵심 전투 시스템에 이식합니다."
         },
         {
-          "milestone": "무한 방어 모드",
-          "newGameplay": "끝없이 밀려오는 적을 상대로 얼마나 오래 버티는지 겨루는 생존형 콘텐츠입니다.",
-          "systemImpact": "기존의 자원 경제 시스템이 무한 모드에 맞춰 재조정되며, 장기적인 전략 수립이 핵심이 됩니다."
+          "milestone": "무한 방어 모드 및 자원 경제 재설계",
+          "newGameplay": "웨이브가 끝없이 이어지는 무한 모드에서 플레이어는 획득한 자원을 사용하여 일시적인 타워 강화나 전장 환경을 영구적으로 수정하는 고위험 고수익 선택을 반복합니다.",
+          "systemImpact": "기존의 스테이지 기반 자원 밸런싱을 무한 모드에 맞춘 점진적 난이도 상승 곡선으로 재설계하고, 세션 데이터 저장 및 랭킹 시스템을 연동합니다."
         }
       ],
       "failureRetryRisk": {
@@ -118,19 +120,19 @@
       ],
       "implementationTraceability": [
         {
-          "designElement": "지형 변형 시스템",
-          "responsibleSystem": "책임 시스템: 지형 변형 시스템",
-          "validationEvidence": "플레이 테스트를 통해 지형 수정이 적의 경로에 즉각적인 영향을 미치는지와 그에 따른 전략적 만족도를 측정합니다."
+          "designElement": "지형 변형 및 동적 경로 탐색 시스템",
+          "responsibleSystem": "지형 관리 및 경로 탐색 엔진",
+          "validationEvidence": "지형 변경 시 적 유닛이 즉각적으로 최단 경로를 재계산하여 이동하는지 유닛 테스트를 수행하고, 경로 탐색 연산 시간이 프레임 드랍을 유발하지 않는지 프로파일링을 통해 검증합니다."
         },
         {
-          "designElement": "속성 공명 타워",
-          "responsibleSystem": "속성 공명 타워 시스템",
-          "validationEvidence": "다양한 타워 조합을 시도했을 때 전투 효율이 유의미하게 변화하는지 수치적으로 검증합니다."
+          "designElement": "속성 공명 타워 시너지 로직",
+          "responsibleSystem": "전투 연산 및 속성 공명 시스템",
+          "validationEvidence": "다양한 타워 조합 시뮬레이션을 통해 속성 공명 효과가 의도한 데미지 증폭 수치만큼 정확하게 적용되는지 로그 분석을 통해 수치적으로 검증합니다."
         },
         {
-          "designElement": "모바일 조작 편의성",
-          "responsibleSystem": "책임 시스템: 모바일 UX",
-          "validationEvidence": "사용성 테스트를 통해 타워 배치 시 오터치 비율과 조작 시간을 측정하여 최적화 수준을 확인합니다."
+          "designElement": "무한 모드 자원 경제 밸런스",
+          "responsibleSystem": "게임 경제 및 난이도 조절 시스템",
+          "validationEvidence": "무한 모드 플레이 데이터를 수집하여 웨이브 진행에 따른 자원 획득량과 타워 업그레이드 비용의 비율이 플레이어의 생존 시간과 비례하는지 통계적으로 검증합니다."
         }
       ],
       "openQuestions": [
@@ -228,6 +230,110 @@
           "source": "STAGE_GATE_SCORING_V2"
         }
       ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "contentExpansionPlan": [
+        {
+          "milestone": "천상의 보루: 지형 변형 및 속성 상호작용 확장",
+          "newGameplay": "플레이어는 전장 곳곳에 존재하는 지형 타일을 직접 변형하여 적의 이동 경로를 강제로 변경하거나, 특정 속성 타일을 생성하여 타워의 공격력을 증폭시키는 능동적 전술을 수행합니다.",
+          "systemImpact": "기존의 고정된 경로 탐색 시스템을 실시간 동적 경로 탐색 시스템으로 교체하며, 타워의 공격 로직에 지형 속성 보너스 계산 모듈을 추가하여 전략적 깊이를 심화시킵니다."
+        },
+        {
+          "milestone": "정예 적 유닛 및 속성 공명 시스템 도입",
+          "newGameplay": "특수 보호막을 가진 정예 유닛이 등장하며, 이들을 처치하기 위해서는 특정 속성 타워를 조합하여 공명 효과를 발생시켜야 하는 퍼즐형 방어 전투가 핵심이 됩니다.",
+          "systemImpact": "적 유닛의 상태 관리 시스템에 속성 저항 및 보호막 로직을 통합하고, 타워 간의 시너지 효과를 계산하는 공명 엔진을 핵심 전투 시스템에 이식합니다."
+        },
+        {
+          "milestone": "무한 방어 모드 및 자원 경제 재설계",
+          "newGameplay": "웨이브가 끝없이 이어지는 무한 모드에서 플레이어는 획득한 자원을 사용하여 일시적인 타워 강화나 전장 환경을 영구적으로 수정하는 고위험 고수익 선택을 반복합니다.",
+          "systemImpact": "기존의 스테이지 기반 자원 밸런싱을 무한 모드에 맞춘 점진적 난이도 상승 곡선으로 재설계하고, 세션 데이터 저장 및 랭킹 시스템을 연동합니다."
+        }
+      ],
+      "technicalAssumptions": [
+        "유니티 엔진의 2D/3D 하이브리드 렌더링을 사용하여 모바일 성능 최적화와 시각적 품질을 동시에 확보합니다.",
+        "적의 경로 탐색 알고리즘은 지형 변형 시 실시간으로 업데이트되어야 하며, 이를 위해 효율적인 A* 알고리즘을 최적화하여 구현합니다."
+      ],
+      "validationQuestions": [
+        "플레이어가 지형 변형을 통해 적의 경로를 바꾸는 전략적 재미를 충분히 느끼고 있는가?",
+        "모바일 환경에서 타워 배치와 지형 조작이 직관적이고 피로감 없이 수행되는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "지형 변형 및 동적 경로 탐색 시스템",
+          "responsibleSystem": "지형 관리 및 경로 탐색 엔진",
+          "validationEvidence": "지형 변경 시 적 유닛이 즉각적으로 최단 경로를 재계산하여 이동하는지 유닛 테스트를 수행하고, 경로 탐색 연산 시간이 프레임 드랍을 유발하지 않는지 프로파일링을 통해 검증합니다."
+        },
+        {
+          "designElement": "속성 공명 타워 시너지 로직",
+          "responsibleSystem": "전투 연산 및 속성 공명 시스템",
+          "validationEvidence": "다양한 타워 조합 시뮬레이션을 통해 속성 공명 효과가 의도한 데미지 증폭 수치만큼 정확하게 적용되는지 로그 분석을 통해 수치적으로 검증합니다."
+        },
+        {
+          "designElement": "무한 모드 자원 경제 밸런스",
+          "responsibleSystem": "게임 경제 및 난이도 조절 시스템",
+          "validationEvidence": "무한 모드 플레이 데이터를 수집하여 웨이브 진행에 따른 자원 획득량과 타워 업그레이드 비용의 비율이 플레이어의 생존 시간과 비례하는지 통계적으로 검증합니다."
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
@@ -335,28 +441,28 @@
       "updatedAt": "2026-09-18T18:24:00.711Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 165939,
-      "lastMs": 18788,
+      "totalMs": 184090,
+      "lastMs": 18151,
       "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=1889",
-      "updatedAt": "2026-09-18T18:24:38.967Z"
+      "updatedAt": "2026-09-18T18:31:05.823Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T18:22:00.381Z",
-  "updatedAt": "2026-09-18T18:31:00.869Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T18:24:20.175Z",
+  "updatedAt": "2026-09-18T18:31:05.846Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T18:31:05.823Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }
