@@ -172,10 +172,11 @@ jobs:
           if(Object.hasOwn(focusPolicy,'optionalWebGameplayTestbedAllowedAlongsideReleaseFocus'))throw new Error('legacy optional Web focus policy remains');
           if(Object.hasOwn(focusPolicy,'developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus'))throw new Error('legacy Web prototype focus policy remains');
           const categoryByClass={RELEASE_CONFIRMED:'release-confirmed',DEVELOPMENT_CONFIRMED:'development-confirmed',DESIGN_ONLY:'design-only'};
+          const historicalDeploymentShelfAllowed=g=>g.productionClass==='DESIGN_ONLY'&&g.homepageCategory==='historical-deployed'&&g.selectedPlatform==='ROBLOX'&&g.robloxPublicationTarget?.verified===true&&g.robloxPublicationTarget?.historical===true&&g.robloxPublicationTarget?.currentReleaseClaim===false&&g.robloxReleaseEvidence?.historicalPublicationTargetVerified===true;
           for(const g of catalog.games||[]){
             if(!valid.has(g.productionClass))throw new Error(`invalid catalog class: ${g.id}`);
             if(Object.hasOwn(g,'productionTier')||Object.hasOwn(g,'productionTierSource'))throw new Error(`legacy catalog production tier remains: ${g.id}`);
-            if(g.homepageCategory!==categoryByClass[g.productionClass])throw new Error(`catalog category mismatch: ${g.id}`);
+            if(g.homepageCategory!==categoryByClass[g.productionClass]&&!historicalDeploymentShelfAllowed(g))throw new Error(`catalog category mismatch: ${g.id}`);
             if(g.productionClass!=='DESIGN_ONLY'&&g.productionTarget==='web-first-playable')throw new Error(`legacy Web-first target remains: ${g.id}`);
           }
           const state=portfolio.productionClassState||{};
