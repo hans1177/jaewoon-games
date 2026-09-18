@@ -106,6 +106,27 @@ test('development-confirmed Web enters Vibe planning before homepage publication
   assert.doesNotMatch(result.task.goal,/FULL_WEB_GAME_REBUILD/);
 });
 
+test('central DESIGN_ONLY authority cancels stale production implementation without touching study work',()=>{
+  const root=tempRepo();
+  const stale={id:'stale-dev',gameId:'crystal-defense',target:'web',department:'development',type:'implementation',sourceRoot:'web-games/crystal-defense',goal:'old development work',releaseState:'development-confirmed',status:'running',reservationId:'run-1',reservationRunId:'run-1',reservationRunAttempt:1,reservedAt:'2026-09-18T10:00:00Z'};
+  const study={id:'study-external',gameId:'external-tictactoe',target:'web',department:'learning',type:'game-study',goal:'study',status:'running'};
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:'crystal-defense',name:'Crystal Defense',webPath:'/web-games/crystal-defense/',hasWebArchive:true,homepageWebPlayable:true,productionClass:'DESIGN_ONLY',homepageCategory:'design-only',lifecycleState:'ACTIVE'}]},
+    queue:{tasks:[stale,study]},repoRoot:root,maxConcurrentTasks:4
+  });
+  const cancelled=result.queue.tasks.find(t=>t.id==='stale-dev');
+  const preserved=result.queue.tasks.find(t=>t.id==='study-external');
+  assert.equal(result.planned,false);
+  assert.equal(cancelled.status,'cancelled');
+  assert.equal(cancelled.blocker,'production-authority-inactive:DESIGN_ONLY');
+  assert.equal(cancelled.lastOutcome,'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY');
+  assert.equal(cancelled.reservationId,null);
+  assert.ok(cancelled.evidence.includes('production-authority-sync:DESIGN_ONLY'));
+  assert.equal(preserved.status,'running');
+  assert.equal(preserved.blocker,null);
+});
+
 test('historical baseline policy metadata remains reusable under current roadmap authority',()=>{
   const root=tempRepo();
   const evidence=latestDevelopmentBaselineEvidence('demo',root);

@@ -31,7 +31,37 @@ const CANONICAL_POLICY_PATH='company-learning/platform-release-roadmap.json';
 const GAME_LIFECYCLE_STATES=new Set(['ACTIVE','PAUSED','REBUILD','RETIRED','REMOVED']);
 export function gameLifecycleState(game={}){const raw=clean(game.lifecycleState||game.lifecycle?.state||'ACTIVE').toUpperCase();return GAME_LIFECYCLE_STATES.has(raw)?raw:'ACTIVE';}
 function lifecycleAllowsDevelopment(game={}){return ['ACTIVE','REBUILD'].includes(gameLifecycleState(game));}
-function synchronizeQueueLifecycle(queueInput={},catalog={}){const byId=catalogById(catalog),tasks=(Array.isArray(queueInput?.tasks)?queueInput.tasks:[]).map(item=>{const game=byId.get(clean(item.gameId));if(!game||!lifecycleAllowsDevelopment(game)){const state=game?gameLifecycleState(game):'MISSING_FROM_CATALOG';if(item.status==='queued')return{...item,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...(item.evidence||[]),`lifecycle-sync:${state}`]};if(item.status==='running')return{...item,blocker:`lifecycle-stop-requested:${state}`,evidence:[...(item.evidence||[]),`lifecycle-stop-requested:${state}`]};}return item;});return{...(queueInput||{}),tasks};}
+function isProductionImplementationTask(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
+function synchronizeQueueLifecycle(queueInput={},catalog={}){
+  const byId=catalogById(catalog);
+  const tasks=(Array.isArray(queueInput?.tasks)?queueInput.tasks:[]).map(item=>{
+    if(!isProductionImplementationTask(item))return item;
+    const game=byId.get(clean(item.gameId));
+    if(!game||!lifecycleAllowsDevelopment(game)){
+      const state=game?gameLifecycleState(game):'MISSING_FROM_CATALOG';
+      if(item.status==='queued')return{...item,status:'cancelled',blocker:`lifecycle-inactive:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-sync:${state}`])]};
+      if(item.status==='running')return{...item,blocker:`lifecycle-stop-requested:${state}`,evidence:[...new Set([...(item.evidence||[]),`lifecycle-stop-requested:${state}`])]};
+      return item;
+    }
+    const currentReleaseState=stateFromCatalog(game);
+    if(!['release-confirmed','development-confirmed'].includes(currentReleaseState)&&['queued','running','blocked'].includes(clean(item.status).toLowerCase())){
+      const authority=clean(game.productionClass).toUpperCase()||currentReleaseState.toUpperCase()||'OTHER';
+      return{
+        ...item,
+        status:'cancelled',
+        blocker:`production-authority-inactive:${authority}`,
+        reservationId:null,
+        reservationRunId:null,
+        reservationRunAttempt:0,
+        reservedAt:null,
+        lastOutcome:'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY',
+        evidence:[...new Set([...(item.evidence||[]),`production-authority-sync:${authority}`])]
+      };
+    }
+    return item;
+  });
+  return{...(queueInput||{}),tasks};
+}
 
 export function latestDevelopmentBaselineEvidence(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={ready:false,reason:'DEVELOPMENT_BASELINE_REQUIRED',source:null,gate:null,policySource:CANONICAL_POLICY_PATH};if(!id||!fs.existsSync(root))return missing;const policy=readJson(path.join(repoRoot,CANONICAL_POLICY_PATH),null);if(policy&&(clean(policy.authority)!=='MACHINE_EXECUTION_CONTRACT'||clean(policy.machineSourceOfTruth)!==CANONICAL_POLICY_PATH||policy.humanDocumentRequired!==false))return{...missing,reason:'CENTRAL_MACHINE_POLICY_INVALID'};let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){const file=path.join(root,date,'cycle-status.json'),status=readJson(file,null),gate=status?.baselineGate;if(!gate||gate.state!=='DEVELOPMENT_BASELINE_READY'||gate.ready!==true)continue;const e=gate.evidence||{};if(e.webGameplay?.pass!==true||e.unityProject?.present!==true||e.unityTechnical?.pass!==true)continue;return{ready:true,reason:'DEVELOPMENT_BASELINE_READY',source:posix(path.relative(repoRoot,file)),gate,policySource:CANONICAL_POLICY_PATH,historicalPolicyDocument:clean(gate.policyDocument)||null};}return missing;}
 function latestDevelopmentValidationStatus(gameId,repoRoot=process.cwd()){const id=clean(gameId),root=path.join(repoRoot,'design',id),missing={state:'MISSING',score:null,blockers:[],path:null,evidence:null};if(!id||!fs.existsSync(root))return missing;let dates=[];try{dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();}catch{return missing;}for(const date of dates){for(const name of ['development-validation-status.json','cycle-status.json']){const file=path.join(root,date,name);if(!fs.existsSync(file))continue;const data=readJson(file,null);if(!data||clean(data.gameId)!==id)continue;const score=Number(data.webStrictScore??data?.evidence?.web?.webStrictScore);return{state:clean(data.state).toUpperCase()||'MISSING',score:Number.isFinite(score)?score:null,blockers:Array.isArray(data.blockers)?data.blockers.map(clean).filter(Boolean):[],path:posix(path.relative(repoRoot,file)),evidence:data?.evidence||null,nextAction:clean(data.nextAction)};}}return missing;}
@@ -281,9 +311,12 @@ export function runVibe2AutoPlanner({
   const effectivePlannerMax=Math.min(parallelLimit(maxConcurrentTasks),parallelLimit(handoff.parallelism.currentPersistentMax));
   const resolvedRecombinationFile=clean(recombinationFile)||path.join(repoRoot,'company-learning','vibe3-recombination-memory.json');
   const recombinationMemory=readJson(resolvedRecombinationFile,{version:1,recipes:[]});
-  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:readJson(resolvedQueueFile,{tasks:[]}),repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{},recombinationMemory});
-  if(result.planned)writeJson(resolvedQueueFile,result.queue);
-  return{...result,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length}};
+  const queueBefore=readJson(resolvedQueueFile,{tasks:[]});
+  const result=planVibe2AutonomousTasks({status:readJson(statusFile,{}),catalog:readJson(catalogFile,{}),queue:queueBefore,repoRoot,maxConcurrentTasks:effectivePlannerMax,workPackagePolicy:runtime.workPackages||{},recombinationMemory});
+  const normalizedBefore=createVibeContinuousQueue(queueBefore);
+  const queueSynchronized=JSON.stringify(normalizedBefore.tasks)!==JSON.stringify(result.queue?.tasks||[]);
+  if(result.planned||queueSynchronized)writeJson(resolvedQueueFile,result.queue);
+  return{...result,queueSynchronized,machineHandoff,effectivePlannerMax,recombinationContext:{file:posix(resolvedRecombinationFile),recipes:Array.isArray(recombinationMemory?.recipes)?recombinationMemory.recipes.length:0,applied:(result.tasks||[]).filter(task=>(task.evidence||[]).some(value=>clean(value).startsWith('recombination-recipe:'))).length}};
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs(),result=runVibe2AutoPlanner({statusFile:clean(args.status)||'.vibe2/main-company-status.json',catalogFile:clean(args.catalog)||'.vibe2/main-game-catalog.json',queueFile:clean(args.queue),runtimeFile:clean(args.runtime)||'vibe2-runtime.json',controlFile:clean(args.control),experienceFile:clean(args.experience),recombinationFile:clean(args.recombination),repoRoot:clean(args.root)||process.cwd(),maxConcurrentTasks:clean(args.max)||process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS||DEFAULT_MAX_CONCURRENT_TASKS});
@@ -292,6 +325,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_PLANNER_PERSISTENT_MAX=${result.machineHandoff?.currentPersistentMax||0}`);
   console.log(`VIBE2_PLANNER_EFFECTIVE_MAX=${result.effectivePlannerMax||0}`);
   console.log(`VIBE2_AUTO_PLAN=${result.planned?'YES':'NO'}`);
+  console.log(`VIBE2_AUTO_PLAN_QUEUE_SYNC=${result.queueSynchronized?'YES':'NO'}`);
   console.log(`VIBE2_AUTO_PLAN_REASON=${result.reason}`);
   console.log(`VIBE2_AUTO_PLAN_COUNT=${result.count||0}`);
   console.log(`VIBE2_AUTO_PLAN_PROJECT=${result.projectId||'NONE'}`);
