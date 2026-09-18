@@ -60,10 +60,11 @@ function readContext(root,target,responsibleFiles=[],ignored=[],smartFiles=[]){c
 
 function extractJson(raw){const text=clean(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();try{return JSON.parse(text);}catch{}const starts=['{','['].map(c=>text.indexOf(c)).filter(i=>i>=0);if(!starts.length)throw new Error('모델 JSON 시작을 찾지 못함');const start=Math.min(...starts),opening=text[start],closing=opening==='{'?'}':']';let depth=0,quoted=false,escape=false;for(let i=start;i<text.length;i++){const ch=text[i];if(quoted){if(escape)escape=false;else if(ch==='\\')escape=true;else if(ch==='"')quoted=false;continue;}if(ch==='"'){quoted=true;continue;}if(ch===opening)depth++;else if(ch===closing&&--depth===0)return JSON.parse(text.slice(start,i+1));}throw new Error('모델 JSON 파싱 실패');}
 
-function fullSourceRewriteAllowed(order,target,responsibleFiles=[]){
+function fullSourceRewriteAllowed(order,target,responsibleFiles=[],exploration={}){
   const goal=clean(order?.goal);
   const policyAllowed=order?.workerPolicy?.fullFileRewriteAllowed===true;
-  if(target==='web')return policyAllowed||/FULL_WEB_GAME_REBUILD|실제 웹게임|프로토타입.*웹게임/i.test(goal);
+  const webStrategy=clean(exploration?.existingWebAssessment?.strategy).toUpperCase();
+  if(target==='web')return webStrategy==='FULL_REBUILD'||policyAllowed||/FULL_WEB_GAME_REBUILD|실제 웹게임|프로토타입.*웹게임/i.test(goal);
   if(target!=='roblox')return false;
   const task=order?.selectedTask&&typeof order.selectedTask==='object'?order.selectedTask:{};
   const ownerAuthorized=task.ownerDirective===true||order?.ownerDirective===true;
@@ -240,7 +241,7 @@ export async function runVibe2SourceWorker({
   });
   const context=readContext(sourceRoot,target,responsibleFiles,order?.source?.ignoredPaths||[],smartContext.files||[]);
   if(!context.files.length)throw new Error('worker context 파일 없음');
-  const allowFullRewrite=fullSourceRewriteAllowed(order,target,responsibleFiles);
+  const allowFullRewrite=fullSourceRewriteAllowed(order,target,responsibleFiles,exploration);
 
   let candidate=null,preview=null,attemptsUsed=0,lastFailure=null;
   const repairHistory=[];
