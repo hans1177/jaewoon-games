@@ -68,7 +68,7 @@ test('development final release evidence fails closed on final review, peer or a
   assert.equal(assembleRobloxDevelopmentReleaseEvidence(artifactMismatch).exactRevision,false);
 });
 
-test('release workflow publishes only retained exact artifact and keeps transient Roblox busy recovery manual while automatic publishing is paused',()=>{
+test('release workflow publishes only retained exact artifact, uses the owner-pinned test target only as a fail-closed fallback, and keeps transient Roblox busy recovery manual',()=>{
   assert.match(workflow,/robloxFinalReviewPassed===true/);
   assert.match(workflow,/ROBLOX_RELEASE_PROMOTION_PENDING/);
   assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
@@ -80,6 +80,12 @@ test('release workflow publishes only retained exact artifact and keeps transien
   assert.match(workflow,/company-runtime-publication-target/);
   assert.match(workflow,/company-runtime-prior-release/);
   assert.match(workflow,/known-good-runtime-evidence\.json/);
+  assert.match(workflow,/ownerPinnedPublicationTarget/);
+  assert.match(workflow,/owner-pinned-open-cloud-target/);
+  assert.match(workflow,/OWNER_SECRET_UNIVERSE_ID: \$\{\{ secrets\.ROBLOX_UNIVERSE_ID \}\}/);
+  assert.match(workflow,/OWNER_SECRET_PLACE_ID: \$\{\{ secrets\.ROBLOX_PLACE_ID \}\}/);
+  assert.match(workflow,/ROBLOX_RELEASE_OWNER_PINNED_SECRET_ID_MISMATCH/);
+  assert.match(workflow,/exactCandidates\.length\?exactCandidates/);
   assert.match(workflow,/row\.gameId===gameId/);
   assert.match(workflow,/row\.sourceRevision===revision/);
   assert.match(workflow,/row\.artifactIdentity===artifact/);
