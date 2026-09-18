@@ -1083,7 +1083,10 @@
       "duplicateVerifiedRobloxUniverseIdsForbidden": true,
       "publicationIdentityMustStayBoundToGameId": true,
       "historicalDeploymentMustNotBecomeCurrentReleaseClaim": true,
-      "gameRemovalRequiresExplicitLifecycleChange": true
+      "gameRemovalRequiresExplicitLifecycleChange": true,
+      "homepageCategoryDerivedFromProductionClass": true,
+      "legacyHistoricalCategoryMigratesToDisplayMode": true,
+      "catalogOrderMustBeContiguous": true
     },
     "homepageBinding": {
       "renderer": "assets/homepage-enhancements.js",
@@ -1095,7 +1098,16 @@
       "robloxPublicationFrom": "canonical.publication.roblox",
       "presentationFrom": "canonical.homepage",
       "legacyFallbackAllowed": true,
-      "publicationRequiresNormalizedCatalog": true
+      "publicationRequiresNormalizedCatalog": true,
+      "canonicalOrderField": "catalogOrder",
+      "independentManualOrderingForbidden": true,
+      "shelves": {
+        "RELEASE_CONFIRMED": "CATALOG_ORDER_ASC",
+        "WEB_PUBLISHED": "CATALOG_ORDER_ASC",
+        "ROBLOX_HISTORICAL_DEPLOYMENT": "CATALOG_ORDER_ASC",
+        "DEVELOPMENT_CONFIRMED": "CURRENT_SCORE_DESC_THEN_CATALOG_ORDER_ASC",
+        "TOP30": "STRICT_IMPLEMENTATION_SCORE_DESC"
+      }
     },
     "execution": {
       "normalizerRunsInsideExistingCompanyStatusSync": true,
@@ -1103,6 +1115,40 @@
       "shadowCatalogForbidden": true,
       "runtimeMirror": "company-runtime:game-catalog.json",
       "homepagePublicationUsesExistingHomepageManager": true
+    },
+    "ordering": {
+      "mode": "CANONICAL_STABLE",
+      "outputField": "catalogOrder",
+      "contiguousFrom": 1,
+      "keys": [
+        "lifecycleRank ASC",
+        "productionClassRank ASC",
+        "featuredRank ASC",
+        "platformRank ASC",
+        "gameId ASC"
+      ],
+      "lifecycleRank": {
+        "ACTIVE": 0,
+        "REBUILD": 1,
+        "PAUSED": 2,
+        "RETIRED": 3,
+        "REMOVED": 4
+      },
+      "productionClassRank": {
+        "RELEASE_CONFIRMED": 0,
+        "DEVELOPMENT_CONFIRMED": 1,
+        "DESIGN_ONLY": 2
+      },
+      "featuredRank": {
+        "true": 0,
+        "false": 1
+      },
+      "platformRank": {
+        "ROBLOX": 0,
+        "UNITY": 1,
+        "FORTNITE_UEFN": 2,
+        "UNSELECTED": 3
+      }
     }
   },
   "updatedAt": "2026-09-19"
