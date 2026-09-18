@@ -13,22 +13,24 @@
   "representativeAuthoredByLead": true,
   "representative": {
     "keep": [
-      "game_design_concept_details"
+      "game_design_reference",
+      "action-survival-benchmark"
     ],
     "fix": [
-      "visual_style_consistency"
+      "Player can choose to focus on survival needs or craft it",
+      "Player can choose to focus on survival needs or craft items to improve their chances of survival."
     ],
     "add": [
-      "color_palette_consistency"
+      "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
     ],
     "risks": [
-      "enemy_design_consistency"
+      "action-survival-benchmark"
     ],
     "evidence": [
-      "game_mechanics_consistency"
+      "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
     ],
     "questions": [
-      "user_experience_consistency"
+      "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their?"
     ]
   }
 }

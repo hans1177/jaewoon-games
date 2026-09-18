@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "game_design_concept_details"
+          "game_design_reference"
         ],
         "fix": [
-          "visual_style_consistency"
+          "action-survival-benchmark"
         ],
         "add": [
-          "color_palette_consistency"
+          "mobile-gaming-benchmarks"
         ],
         "risks": [
-          "enemy_design_consistency"
+          "action-survival-benchmark"
         ],
         "evidence": [
-          "game_mechanics_consistency"
+          "vampire-survivors"
         ],
         "questions": [
-          "user_experience_consistency"
+          "owner full rebuild"
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라. 각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
+          "Survival Needs are the basic requirements for survival in the game world. Player can choose to focus on survival needs or craft it"
         ],
         "fix": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "Player can choose to focus on survival needs or craft items to improve their chances of survival."
         ],
         "add": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
         ],
         "risks": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "Player can use items to survive in the game world."
         ],
         "evidence": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
         ],
         "questions": [
-          "graphics 부서만 검토하라. 다른 부서 출력은 만들지 마라."
+          "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "ASSIGNED_DEPARTMENT=graphics"
+          "ASSIGNED_DEPARTMENT = graphics"
         ],
         "fix": [
-          "GAME_SEED={\"version\":2,\"seedId\":\"OWNER-FULL-REBUILD-SURVIVAL-20260916\",\"gameId\":\"survival\",\"gameName\":\"나의 생존기\",\"status\":\"ACTIVE\",\""
+          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
         ],
         "add": [
-          "GAME_CATEGORY=\"ACTION_SURVIVAL_ROGUELITE\""
+          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
         ],
         "risks": [
-          "CORE_FUN_TO_LEARN=[\"readable survival needs\",\"resource-to-crafting decisions\",\"exploration risk and recovery\"]"
+          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
         ],
         "evidence": [
-          "MARKET_EVIDENCE_SUMMARY={\"role\":\"TARGET_DESIGN_REFERENCE\",\"targetMarketScope\":\"GLOBAL\",\"hardPassFailGate\":false,\"available\":true,\""
+          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
         ],
         "questions": [
-          "validationQuestions=[\"Is the survival system suitable for the target audience?\",\"Is the core loop engaging and challenging?\",\"Are"
+          "GAME_SEED = {'version': 2, 'seedId': 'OWNER-FULL-REBUILD-SURVIVAL-20260916', 'gameId': 'survival', 'gameName': '나의 생존기', 'status':"
         ]
       }
     }

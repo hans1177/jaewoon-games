@@ -15,80 +15,79 @@
   "rebuttals": {
     "planning": {
       "accept": [
-        "core loop",
-        "market data analysis",
-        "gameplay loop refinement"
+        "keep",
+        "fix",
+        "add"
       ],
       "challenge": [
-        "gameplay balance",
-        "vampire survivors benchmark"
+        "risks",
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "gameplay design consistency",
-        "visual style consistency",
-        "color palette consistency"
+        "keep",
+        "fix",
+        "add"
       ],
-      "reason": "The core loop and market data analysis suggest a focus on gameplay mechanics, while the evidence points to a balance between survival and gameplay. The challenges and revisions indicate a need for consistency in visual and design elements."
+      "reason": "The current structure is already aligned with the requirements. The key points are well-organized and the evidence and questions are consistent with the original input."
     },
     "graphics": {
       "accept": [
-        "game_design_concept_details"
+        "fix",
+        "Player can choose to focus on survival needs or craft it",
+        "Player can choose to focus on survival needs or craft items to improve their chances of survival."
       ],
       "challenge": [
-        "enemy_design_consistency"
+        "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
       ],
       "revision": [
-        "visual_style_consistency"
+        "GAME_SEED"
       ],
-      "reason": "game_mechanics_consistency"
+      "reason": "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
     },
     "development": {
       "accept": [
-        "OWN",
-        "OTHERS",
-        "graphics"
+        "keep",
+        "fix",
+        "add"
       ],
       "challenge": [
-        "OWN",
-        "OTHERS",
-        "graphics"
+        "risks",
+        "evidence",
+        "questions"
       ],
       "revision": [
-        "OWN",
-        "OTHERS",
-        "graphics"
+        "keep",
+        "fix",
+        "add"
       ],
-      "reason": "own"
+      "reason": "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
     },
     "qa": {
       "accept": [
-        "qa"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "challenge": [
-        "qa"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
       "revision": [
-        "qa"
+        "ASSIGNED_DEPARTMENT=qa"
       ],
-      "reason": "qa 부서의 책임범위를 수용합니다."
+      "reason": "QA 부서의 책임범위를 수용합니다."
     },
     "balance": {
       "accept": [
-        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
-        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
-        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+        "Survival needs are the basic requirements for survival in the game world. Players can choose to focus on survival needs or craft items to improve their chances of survival.",
+        "Survival needs → Upgrade System"
       ],
       "challenge": [
-        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
-        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
-        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+        "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their chances of survival?"
       ],
       "revision": [
-        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
-        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to",
-        "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base.",
+        "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
       ],
-      "reason": "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+      "reason": "Survival needs → Upgrade System"
     }
   }
 }

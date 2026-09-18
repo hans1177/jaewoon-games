@@ -20,22 +20,22 @@
       "memberRole": "LEAD",
       "review": {
         "keep": [
-          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+          "Survival needs are the basic requirements for survival in the game world. Player can choose to focus on survival needs or craft an"
         ],
         "fix": [
-          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+          "Upgrades are items that can be used to improve the player's chances of survival. Player can choose to upgrade their equipment, "
         ],
         "add": [
-          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+          "Player can choose to upgrade their equipment, skills, or other items to improve their chances of survival. "
         ],
         "risks": [
-          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+          "Survival needs → Upgrade System"
         ],
         "evidence": [
-          "Survival needs are readable and can be crafted into a stronger build. The player can choose upgrades, perks, weapons, or skills to"
+          "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
         ],
         "questions": [
-          "What are the key features that make the survival system unique?"
+          "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their "
         ]
       }
     },
@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "Survival system design that prioritizes player engagement and progression through a single-player narrative, ensuring a clear path"
+          "Survival needs are the basic requirements for survival in the game world. Players can choose to focus on survival needs or craft a"
         ],
         "fix": [
-          "Addressing the core loop's engagement and challenge, ensuring it's both challenging and rewarding"
+          "Player can choose to focus on survival needs or craft items to improve their chances of survival."
         ],
         "add": [
-          "Enhancing the progression system with clear, actionable features that support player growth"
+          "Survival needs → Upgrade System"
         ],
         "risks": [
-          "Ensuring the survival system is tailored to the target audience, with a focus on mobile and real-time gameplay"
+          "Player can use items to survive in the game world."
         ],
         "evidence": [
-          "Providing evidence from various sources, including market benchmarks and player feedback"
+          "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
         ],
         "questions": [
-          "What are the key features that make the survival system unique? How does it handle player progression and upgrades?"
+          "Is the player's survival needs the primary goal of the game?"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+          "game_seed_market_evidence.json"
         ],
         "fix": [
-          "가장 중요한 근거 한 건만 짧고 구체적으로 작성하라"
+          "game-seed-market-evidence.json"
         ],
         "add": [
-          "게임의 핵심적인 특징을 명확하게 정의합니다."
+          "game-seed-platform-profiles.json"
         ],
         "risks": [
-          "생존에 대한 위험을 최소화하고, 플레이어가 안전하게 게임을 즐길 수 있도록 합니다."
+          "game-seed-market-evidence.json"
         ],
         "evidence": [
-          "게임의 핵심적인 특징을 명확하게 정의합니다."
+          "game-seed-market-evidence.json"
         ],
         "questions": [
-          "게임의 목표는 무엇인가요?"
+          "game-seed-market-evidence.json"
         ]
       }
     }

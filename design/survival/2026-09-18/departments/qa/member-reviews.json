@@ -44,22 +44,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+          "Survival Needs"
         ],
         "fix": [
-          "유명게임 표현 복제를 요구하지 않는다"
+          "Upgrade System"
         ],
         "add": [
-          "나의 생존기에서 유명게임 표현을 추가하는 것이 좋은 것으로 생각된다"
+          "Upgrade System"
         ],
         "risks": [
-          "나의 생존기에서 유명게임 표현을 추가하는 것이 좋은 것으로 생각된다"
+          "Survival Needs"
         ],
         "evidence": [
-          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+          "Upgrade System"
         ],
         "questions": [
-          "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 처음부터 다시 설계한다"
+          "Is the player's survival needs the primary goal of the game? Is the player's upgrade system the primary way to improve their odds?"
         ]
       }
     },
@@ -68,22 +68,22 @@
       "memberRole": "ASSISTANT",
       "review": {
         "keep": [
-          "지정된 QA 부서만 검토하라. 다른 부서는 제시되지 않다."
+          "지정된 QA 부서만 검토하라. 다른 부서는 제외하라."
         ],
         "fix": [
-          "기존 게임 개발 기록을 반영하여 구체적 근거를 추가하세요."
+          "각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라."
         ],
         "add": [
-          "상세 설정을 통해 중요한 요소를 명확히 하세요."
+          "ASSIGNED_DEPARTMENT=qa"
         ],
         "risks": [
-          "GAME_SEED에 없는 유명 게임 표현을 제시하지 않도록 주의."
+          "GAME_SEED={...}"
         ],
         "evidence": [
-          "Vampire Survivors, Brotato, Survivor.io, Sensor Tower, Newzoo, GameAnalytics 등으로 기존 게임 데이터를 활용하세요."
+          "REFERENCE_GAMES=[...]"
         ],
         "questions": [
-          "Survival System의 목적과 기능을 명확히 하세요."
+          "MARKET_EVIDENCE_SUMMARY={...}"
         ]
       }
     }

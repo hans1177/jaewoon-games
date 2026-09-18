@@ -9,7 +9,7 @@
   "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "llama3.2:1b",
   "sameModelAsDraft": true,
-  "appliedConsensusCount": 4,
+  "appliedConsensusCount": 1,
   "unresolvedConflictCount": 0,
   "heldCount": 0,
   "status": "DESIGN_BASELINE_CANDIDATE",
@@ -24,63 +24,38 @@
     ],
     "signatureSystems": [
       {
-        "name": "Survival System",
-        "purpose": "Survival",
-        "playerChoice": "Player"
+        "name": "Survival Needs",
+        "purpose": "Survival needs are the basic requirements for survival in the game world.",
+        "playerChoice": "Player can choose to focus on survival needs or craft items to improve their chances of survival."
+      },
+      {
+        "name": "Upgrade System",
+        "purpose": "Upgrades are items that can be used to improve the player's chances of survival.",
+        "playerChoice": "Player can choose to upgrade their equipment, skills, or other items to improve their chances of survival."
       }
     ],
-    "progressionDirection": "SINGLE_PLAYER",
-    "visualDirection": "SINGLE_PLAYER",
-    "mobileUx": "SINGLE_PLAYER",
-    "marketTargetDirection": "SINGLE_PLAYER",
-    "steamExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
+    "progressionDirection": "Survival Needs → Upgrade System",
+    "visualDirection": "Survival Needs → Upgrade System",
+    "mobileUx": "Mobile UX",
+    "marketTargetDirection": "Survival Needs → Upgrade System",
+    "steamExpansionDecision": "Survival Needs → Upgrade System",
     "multiplayerMode": "SINGLE",
-    "multiplayerExpansionDecision": "REVIEW_IN_DESIGN_CYCLE",
+    "multiplayerExpansionDecision": "Survival Needs → Upgrade System",
     "technicalAssumptions": [
-      "Unity",
-      "C#"
+      "Player can use items to survive in the game world.",
+      "Player can upgrade their equipment, skills, or other items to improve their chances of survival."
     ],
     "validationQuestions": [
-      "Is the survival system suitable for the target audience?",
-      "Is the core loop engaging and challenging?",
-      "Are the progression systems clear and easy to understand?"
+      "Is the player's survival needs the primary goal of the game?",
+      "Is the player's upgrade system the primary way to improve their chances of survival?",
+      "Is the player's survival needs the primary goal of the game?",
+      "Is the player's upgrade system the primary way to improve their chances of survival?"
     ],
     "openQuestions": [
-      "What are the key features that make the survival system unique?",
-      "How does the survival system handle player progression and upgrades?",
-      "What are the key challenges and opportunities for the survival system?"
-    ],
-    "robloxBuildProfile": {
-      "version": 1,
-      "targetPlatform": "ROBLOX",
-      "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "declaredGameCategory": "ACTION_SURVIVAL_ROGUELITE",
-      "genre": "Obby & platformer",
-      "genreLabelKo": "오비·플랫포머",
-      "subgenre": "Classic Obby",
-      "subgenreLabelKo": "클래식 오비",
-      "playMode": "SINGLE",
-      "playModeLabelKo": "싱글",
-      "multiplayerRequired": false,
-      "coopImplementationRequired": false,
-      "competitiveImplementationRequired": false,
-      "networkingRequired": false,
-      "multiplayerQaRequired": false,
-      "minimumParticipantsForRequiredQa": 1,
-      "displayLabelKo": "오비·플랫포머 · 클래식 오비 · 싱글"
-    }
-  },
-  "prePromotionRepair": {
-    "phase": "REVIEW_FEEDBACK",
-    "repairs": [
-      {
-        "field": "robloxBuildProfile",
-        "source": "GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY"
-      }
-    ],
-    "groundedOnly": true,
-    "legacyMultiplayerNormalization": false,
-    "strictScoreOrVerdictModified": false,
-    "repairedAt": "2026-09-17T23:47:19.771Z"
+      "Is the player's survival needs the primary goal of the game?",
+      "Is the player's upgrade system the primary way to improve their chances of survival?",
+      "Is the player's survival needs the primary goal of the game?",
+      "Is the player's upgrade system the primary way to improve their chances of survival?"
+    ]
   }
 }
