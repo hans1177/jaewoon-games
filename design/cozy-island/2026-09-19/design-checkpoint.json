@@ -3,9 +3,9 @@
   "gameId": "cozy-island",
   "date": "2026-09-19",
   "seedId": "OWNER-FULL-REBUILD-COZY-ISLAND-20260916",
-  "fingerprint": "d50e33a20a3a805ef38a320e4104be5fd62efbb8e42166a4bc795aeb72ebe8de",
+  "fingerprint": "0ace03f64d87fbea22db06edaf6a86f6eb6e8473e654e854b61df9d0b8e242d2",
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
-  "engineDigest": "f68ddee220ae7925a69c65632fd3aa799027a32bf5e806dba5491a15eee9d861",
+  "engineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
@@ -13,129 +13,129 @@
   ],
   "phases": {
     "designer_draft": {
-      "identity": "포근한 작은 섬에서 낚시와 채집, 자원 수집을 통해 섬의 풍경을 바꾸고 고유의 생활 루프를 완성하는 힐링 시뮬레이션 게임입니다. 핵심 루프와 시그니처 시스템은 플레이어의 반복적인 채집 선택이 섬의 지형과 외형을 가시적으로 변화시키며 다음 활동의 방향성을 완전히 새롭게 유도합니다.",
-      "playerFantasy": "플레이어는 번잡한 일상을 벗어나 아늑한 섬의 유일한 주민이 되어, 자연 속에서 조용히 낚시와 채집을 즐기고 섬을 아름답게 꾸미며 마음의 평안과 성취감을 얻는 힐링 판타지를 경험합니다.",
-      "coreFun": "반복되는 채집과 낚시 조작을 통해 즉각적인 자원을 획득하고, 이 자원으로 섬의 건물을 세우거나 지형을 꾸미며 실시간으로 변화하는 섬의 모습을 관찰하는 직관적이고 편안한 재미를 제공합니다.",
+      "identity": "포근섬은 작은 섬에서 낚시와 채집을 통해 자원을 모으고, 플레이어의 행동 흔적에 따라 섬의 지형과 생태가 점진적으로 변화하여 다음 활동의 선택지를 확장하는 고유의 힐링 생활 게임입니다. coreLoop는 자원 수집과 섬 커스텀마이징의 반복을 통해 플레이어에게 지속적인 성취감을 부여하며, signatureSystems인 날씨 생태계와 섬 발전 시스템은 매번 새로운 채집 루트와 상호작용 상태변화를 만들어냅니다.",
+      "playerFantasy": "플레이어는 고요하고 포근한 무인도에 도착하여 자신만의 안식처를 가꾸는 섬의 유일한 주민이 됩니다. 자연과 교감하며 물고기를 낚고 희귀한 식물을 채집해 섬을 아름답게 꾸미고, 시시각각 변하는 섬의 풍경 속에서 진정한 휴식과 성취의 판타지를 경험합니다.",
+      "coreFun": "플레이어는 짧고 직관적인 조작으로 낚시와 채집을 반복하며, 채집한 자원으로 섬의 건물을 짓고 지형을 꾸미는 관찰 가능한 상태변화를 즉각적으로 체감합니다. 이 과정에서 얻는 수집의 즐거움과 섬이 발전하는 시각적 보상이 어우러져 강력한 몰입감을 선사합니다.",
       "coreLoop": [
-        "섬의 특정 장소로 이동하여 터치 및 스와이프 입력으로 낚시나 채집을 시작합니다.",
-        "미니게임 혹은 타이밍 조작을 통해 물고기나 재화 같은 보상을 획득하고 피로도나 시간 상태가 변화합니다.",
-        "획득한 재화를 사용하여 섬의 새로운 시설을 해제하거나 지형을 꾸며 다음 플레이 경로를 선택합니다."
+        "모바일 터치 및 스와이프 조작으로 섬의 해변이나 숲으로 이동하여 낚시 또는 채집 포인트를 선택하고 실행합니다.",
+        "실시간으로 미니게임 형태의 채집을 완료하여 다양한 물고기 및 자원 아이템을 획득하고 경험치를 쌓습니다.",
+        "획득한 자원을 활용해 섬의 새로운 시설을 건설하거나 외형을 변경하여 다음 활동의 효율과 새로운 선택지를 넓힙니다."
       ],
       "signatureSystems": [
         {
-          "name": "포근한 섬 생태 및 채집 시스템",
-          "purpose": "플레이어가 섬 곳곳에서 다양한 자원을 채집하고 생태계를 관리하며 지속적인 자원 수급과 성장의 재미를 느낄 수 있도록 유도합니다.",
-          "playerChoice": "어떤 장소에서 어떤 도구를 사용하여 자원을 채집할지 선택하고, 채집 결과에 따라 섬의 생태 환경과 다음 자원 생성 위치가 달라집니다."
+          "name": "날씨 및 생태계 시스템",
+          "purpose": "섬의 날씨와 시간대에 따라 등장하는 물고기와 채집물의 종류를 변화시켜 매번 다른 플레이 양상을 유도합니다.",
+          "playerChoice": "플레이어는 현재 날씨 상태를 확인하고 비 오는 날에만 잡을 수 있는 희귀 어종을 노리거나 맑은 날에 대규모 채집을 진행할지 전략적으로 선택할 수 있습니다."
         },
         {
-          "name": "실시간 섬 커스텀 및 지형 변화 시스템",
-          "purpose": "수집한 재화를 활용해 건물을 짓고 지형을 꾸밈으로써 플레이어만의 개성 있는 섬을 만들고 시각적 성취감을 극대화합니다.",
-          "playerChoice": "확보한 재화로 어떤 시설을 건설하고 배치를 바꿀지 결정하여 섬의 전체적인 분위기와 방문하는 NPC의 종류를 직접 바꿉니다."
+          "name": "섬 커스텀마이징 및 발전 시스템",
+          "purpose": "수집한 자원을 소모해 섬의 건물을 짓고 편의 시설을 확장하여 플레이어의 영토와 활동 반경을 넓혀줍니다.",
+          "playerChoice": "플레이어는 어떤 건물을 먼저 건설할지 직접 결정하며, 건물의 배치에 따라 섬의 이동 동선과 생산 효율이 완전히 달라지는 결과를 마주합니다."
         }
       ],
       "systemInterconnections": [
         {
-          "fromSystem": "포근한 섬 생태 및 채집 시스템",
-          "toSystem": "실시간 섬 커스텀 및 지형 변화 시스템",
-          "trigger": "플레이어가 채집 활동을 완료하여 자원 화폐를 획득할 때",
-          "stateChange": "사용 가능한 건설 재화 수량이 증가하고 새로운 시설 건설 옵션이 해제됩니다."
+          "fromSystem": "날씨 및 생태계 시스템",
+          "toSystem": "섬 커스텀마이징 및 발전 시스템",
+          "trigger": "특정 기상 조건에서 희귀 자원을 성공적으로 대량 채집했을 때",
+          "stateChange": "섬 발전 시스템에서 상위 등급의 건축물을 해금할 수 있는 특수 재화가 충전됩니다."
         },
         {
-          "fromSystem": "실시간 섬 커스텀 및 지형 변화 시스템",
-          "toSystem": "포근한 섬 생태 및 채집 시스템",
-          "trigger": "새로운 건물이나 장식물이 섬에 설치 완료될 때",
-          "stateChange": "특정 채집물의 리스폰 주기 단축 및 희귀 아이템 등장 확률이 상승합니다."
+          "fromSystem": "섬 커스텀마이징 및 발전 시스템",
+          "toSystem": "날씨 및 생태계 시스템",
+          "trigger": "플레이어가 섬에 새로운 정원이나 연못 건물을 완공했을 때",
+          "stateChange": "해당 구역 주변의 미니 생태계가 활성화되어 특정 곤충이나 물고기의 리스폰 확률이 영구적으로 상승합니다."
         },
         {
-          "fromSystem": "포근한 섬 생태 및 채집 시스템",
-          "toSystem": "진행 및 경제 밸런스 시스템",
-          "trigger": "연속적인 낚시와 채집으로 피로도 게이지가 한계에 도달할 때",
-          "stateChange": "활동 효율이 일시적으로 감소하며 휴식 또는 소비 아이템 사용을 유도합니다."
+          "fromSystem": "날씨 및 생태계 시스템",
+          "toSystem": "핵심 루프 진행 및 보상 시스템",
+          "trigger": "폭풍우나 일몰 등 특수 이벤트 시간이 시작되거나 종료될 때",
+          "stateChange": "플레이어에게 즉시 특별한 긴급 채집 미션이 주어지며 획득 보상 배율이 일시적으로 변동합니다."
         }
       ],
-      "progressionDirection": "초기에는 간단한 낚시와 채집으로 기본 자원을 모으고, 중반부에는 섬 전체의 시설을 확장하며, 후반부에는 희귀 생물 수집과 테마별 섬 꾸미기를 통해 플레이어의 자유도를 극대화하는 방향으로 전개됩니다.",
+      "progressionDirection": "초기에는 간단한 도구로 기본 자원만 채집할 수 있으나, 섬을 가꾸고 주민들과 교류하면서 점차 해저 탐험, 대형 농경, 특수 공예 등 복합적인 콘텐츠로 확장됩니다. 플레이어의 누적 플레이 시간에 비례해 섬의 규모가 커지고 더 풍부한 상호작용이 가능해집니다.",
       "progressionEconomyBalance": {
-        "progressionLoop": "채집 수행 -> 재화 획득 -> 시설 건설 및 섬 확장 -> 새로운 채집 지역 해제 및 효율 증가로 이어지는 유기적 성장 구조를 유지합니다.",
-        "resourceFlow": "일일 채집을 통해 기초 재화가 유입되며, 시설 투자를 통해 자원 생산량이 증가하고 꾸미기 아이템이나 희귀 수집품으로 소비됩니다.",
-        "balanceRules": "세션당 피로도 제한을 두어 지나친 반복 노동을 방지하고, 적절한 휴식과 전략적 자원 분배가 항상 유리하도록 설계합니다."
+        "progressionLoop": "자원 채집 -> 시설 건설 -> 생산 효율 증가 -> 상위 자원 해금 및 영토 확장으로 이어지는 선순환 구조를 유지합니다.",
+        "resourceFlow": "기본 자원은 쉽게 수급되나 상위 업그레이드 재화는 시간과 특정 날씨 조건을 만족해야만 얻을 수 있도록 유통량을 조절합니다.",
+        "balanceRules": "무분별한 파밍으로 인한 인플레이션을 방지하기 위해 일일 채집 피로도와 건조물 유지 비용 개념을 최소화하고 성취감 위주로 밸런스를 설계합니다."
       },
       "contentExpansionPlan": [
         {
-          "milestone": "계절별 자연 환경 및 날씨 시스템 도입",
-          "newGameplay": "봄, 여름, 가을, 겨울에 따라 등장하는 특수 물고기와 채집물이 달라지며 계절 한정 퀘스트를 수행할 수 있습니다.",
-          "systemImpact": "기존 채집 시스템에 날씨 가변성이 추가되어 플레이어의 일일 동선 선택에 전략적 다양성을 부여합니다."
+          "milestone": "마일스톤 1: 해저 탐험대 업데이트",
+          "newGameplay": "플레이어가 섬 부두를 확장하여 잠수함을 건조하고 바닷속 신비로운 생물들을 채집하는 신규 잠수 미니게임을 플레이할 수 있습니다.",
+          "systemImpact": "기존 지상 중심의 채집 루프에 수중 압력과 산소 관리라는 새로운 변수가 추가되어 전체적인 자원 경제에 깊이를 더합니다."
         },
         {
-          "milestone": "방문객 NPC 및 무역 거래 시스템 확장",
-          "newGameplay": "특정 조건을 만족하면 섬에 찾아오는 여행자 NPC와 거래하고 그들의 숨겨진 이야기나 도감 미션을 진행합니다.",
-          "systemImpact": "단순 자원 수집을 넘어 NPC 관계도 시스템과 연계되어 추가적인 보상과 특별 꾸미기 해제를 이끌어냅니다."
+          "milestone": "마일스톤 2: 계절 축제 이벤트 시스템",
+          "newGameplay": "현실 시간 또는 게임 내 주기에 따라 봄, 여름, 가을, 겨울의 계절별 대형 축제가 개최되어 한정판 의상과 가구를 제작할 수 있습니다.",
+          "systemImpact": "날씨 및 생태계 시스템과 연계되어 특정 시즌에만 나타나는 특별한 동식물 자원이 대거 추가되며 커뮤니티 활성화를 유도합니다."
         },
         {
-          "milestone": "멀티플레이어 이웃 섬 방문 기능 추가",
-          "newGameplay": "다른 플레이어의 섬으로 놀러가 서로의 수확물을 구경하고 협동 이벤트나 선물을 주고받을 수 있습니다.",
-          "systemImpact": "싱글 중심의 힐링 경험이 소셜 확장 모드로 연결되며 커뮤니티 활성화와 리텐션 상승을 유도합니다."
+          "milestone": "마일스톤 3: 이웃 방문 및 무역 시스템",
+          "newGameplay": "다른 플레이어의 포근섬을 방문하거나 NPC 상인과 물물을 교환하여 희귀한 씨앗과 장식을 얻는 소셜 무역 콘텐츠가 도입됩니다.",
+          "systemImpact": "싱글 플레이 위주의 자급자족 경제에 외부 무역 가치가 반영되어 자원 수급처가 다양해지고 섬 커스텀마이징의 선택지가 확장됩니다."
         }
       ],
       "failureRetryRisk": {
         "failureStates": [
-          "낚시 미니게임 중 입력 타이밍 실패로 대상 물고기를 놓치는 상황",
-          "피로도 관리 소홀로 인해 채집 효율이 급격히 저하되는 상황"
+          "채집 미션 도중 시간 초과 또는 실수로 목표 물고기를 놓쳤을 때",
+          "위험 지역에서 체력이나 산소가 바닥나 강제로 안전지대로 이동할 때"
         ],
-        "retryFlow": "실패 시 패널티로 자원이 소모되는 대신 소소한 대화나 즉시 재시도 버튼을 제공하여 좌절감을 최소화하고 곧바로 다음 행동으로 진입합니다.",
-        "riskPressure": "시간 제한이나 경쟁적 압박 대신 편안한 분위기를 유지하며, 자원의 효율적 분배를 고민하게 만드는 가벼운 긴장감을 제공합니다.",
-        "recoveryRules": "휴식용 벤치에 앉거나 간단한 요리 아이템을 섭취하면 피로도가 빠르게 회복되어 즉시 정상적인 채집 활동으로 복귀할 수 있습니다."
+        "retryFlow": "실패 시 즉시 섬의 메인 광장으로 부드럽게 귀환하며, 별도의 재화 손실 없이 곧바로 다음 채집 활동을 재개할 수 있습니다.",
+        "riskPressure": "자원의 완전한 소멸보다는 시간적 지연과 채집 효율 감소라는 가벼운 패널티를 부여하여 힐링 게임의 분위기를 유지합니다.",
+        "recoveryRules": "짧은 휴식이나 간단한 아이템 사용을 통해 즉시 상태를 회복하고 플레이어의 리듬에 맞춰 다시 도전할 수 있도록 설계했습니다."
       },
       "platformFitPlan": {
         "targetPlatform": "ROBLOX",
-        "inputModel": "모바일 터치 및 PC 마우스 클릭을 모두 지원하는 직관적인 원버튼 중심 조작계로 설계하여 누구나 쉽게 플레이할 수 있습니다.",
-        "performanceBudget": "저사양 모바일 기기에서도 60프레임을 유지할 수 있도록 섬의 폴리곤 수를 최적화하고 에셋 로딩을 경량화합니다.",
-        "sessionConstraints": "한 번의 플레이 세션을 5분에서 15분 내외로 구성하여 언제 어디서나 부담 없이 접속하여 즐길 수 있도록 합니다."
+        "inputModel": "모바일 화면에 최적화된 가상 조이스틱과 단일 터치 인터랙션 버튼을 제공하여 누구나 한 손으로 편안하게 조작할 수 있습니다.",
+        "performanceBudget": "로블록스 플랫폼의 저사양 모바일 기기 환경을 고려하여 폴리곤 수를 최적화하고 텍스처 메모리를 엄격하게 관리합니다.",
+        "sessionConstraints": "한 번의 플레이 세션을 평균 5분에서 10분 내외로 구성하여 언제 어디서나 가볍게 접속해 성취를 느낄 수 있게 합니다."
       },
-      "visualDirection": "따뜻하고 부드러운 파스텔톤 컬러와 아기자기한 로우폴리곤 스타일을 적용하여 시각적 피로감을 낮추고 포근한 감성을 전달합니다.",
-      "mobileUx": "엄지손가락 한 손으로 조작하기 편하도록 주요 인터랙션 버튼을 하단 영역에 배치하고 시인성을 높인 UI를 제공합니다.",
+      "visualDirection": "따뜻하고 부드러운 파스텔톤 컬러 팔레트를 사용하여 시각적인 편안함을 극대화하고, 아기자기한 로우폴리곤 스타일로 포근한 섬의 감성을 전달합니다.",
+      "mobileUx": "엄지손가락이 닿기 쉬운 화면 하단에 주요 상호작용 버튼을 배치하고, 직관적인 아이콘과 애니메이션을 통해 복잡한 텍스트 없이도 상태를 쉽게 이해할 수 있습니다.",
       "uxAccessibilityPlan": {
-        "hudPriorities": "현재 피로도, 소지 재화, 보유 도구 상태를 화면 상단에 직관적으로 배치하여 한눈에 파악할 수 있게 합니다.",
-        "touchAndInput": "모바일 터치 영역을 넉넉하게 설계하고 제스처 오류를 방지하는 입력 보정 시스템을 적용합니다.",
-        "readability": "가독성이 높은 둥근 서체를 사용하고 배경과 UI의 명암 대비를 확실하게 주어 시인성을 확보합니다.",
-        "accessibility": "색약 모드 지원 및 시각/청각 피드백을 동시에 제공하여 모든 플레이어가 편안하게 즐길 수 있도록 합니다."
+        "hudPriorities": "현재 체력, 소지한 주요 자원, 미니맵을 화면 모서리에 최소한으로 배치하여 아름다운 섬 풍경을 가리지 않도록 합니다.",
+        "touchAndInput": "오동작을 방지하기 위해 터치 영역을 넉넉하게 설정하고 햅틱 피드백을 통해 버튼 입력의 직관성을 높입니다.",
+        "readability": "가독성이 높은 둥근 고딕 계열의 폰트를 사용하고 배경과의 명도 대비를 확실하게 주어 야외에서도 텍스트가 잘 보이도록 합니다.",
+        "accessibility": "색각 이상 플레이어를 위한 시각적 패턴 구별 옵션과 배경음악 및 효과음 볼륨을 독립적으로 조절할 수 있는 기능을 제공합니다."
       },
       "artAudioDirection": {
-        "visualIdentity": "햇살이 비치는 아늑한 바다와 흔들리는 야자수, 파스텔 감성의 아기자기한 건물들로 시각적 정체성을 구축합니다.",
-        "audioIdentity": "잔잔한 파도 소리와 부드러운 어쿠스틱 기타 선율, 채집 시 들리는 청량한 효과음으로 힐링 분위기를 극대화합니다.",
-        "gameplayFeedbackSync": "낚시 입질이나 채집 성공 시 시각적 파티클 효과와 부드러운 햅틱 피드백을 동시에 동기화하여 몰입감을 높입니다."
+        "visualIdentity": "아기자기하고 따뜻한 조명 효과와 부드러운 바람에 흔들리는 풀숲 애니메이션으로 평화로운 섬의 분위기를 시각화합니다.",
+        "audioIdentity": "감미로운 어쿠스틱 기타 선율과 파도 소리, 새소리가 어우러진 앰비언트 사운드로 청각적 힐링을 선사합니다.",
+        "gameplayFeedbackSync": "낚싯대를 던지거나 물고기가 낚일 때 경쾌한 효과음과 미세한 진동 피드백을 동시 출력하여 손맛을 극대화합니다."
       },
-      "marketTargetDirection": "바쁜 일상 속에서 힐링과 가벼운 성취를 원하는 글로벌 캐주얼 게이머층을 타겟으로 하며, 특히 모바일 플랫폼에서의 높은 접근성을 활용합니다.",
-      "steamExpansionDecision": "모바일 및 로블록스 플랫폼에서 충분한 유저 반응과 밸런스 검증을 거친 후, 향후 스팀 플랫폼으로의 확장 가능성을 긍정적으로 검토합니다.",
+      "marketTargetDirection": "글로벌 모바일 캐주얼 시장을 타겟으로 하며, 복잡한 스트레스 없이 짧은 시간 동안 깊은 휴식과 성취감을 얻고자 하는 유저층을 공략합니다.",
+      "steamExpansionDecision": "모바일 버전의 성공적인 안착 이후, 고해상도 그래픽과 대형 디스플레이 조작계에 맞춘 PC 스팀 플랫폼 확장을 긍정적으로 검토합니다.",
       "multiplayerMode": "HYBRID",
-      "multiplayerExpansionDecision": "기본적인 섬 생활은 싱글 플레이로 깊이 있게 즐기되, 원할 때 이웃 섬을 방문하고 자원을 교환하는 하이브리드 확장 방식을 채택합니다.",
+      "multiplayerExpansionDecision": "기본적으로는 혼자서 섬을 가꾸는 싱글 힐링 경험을 제공하되, 원할 때 친구의 섬을 방문해 서로 선물을 교환하는 하이브리드 확장성을 지원합니다.",
       "technicalAssumptions": [
-        "클라이언트와 서버 간의 자원 상태 동기화는 주기적인 세이브 포인트를 통해 데이터 손실을 방지한다.",
-        "모바일 웹 및 로블록스 환경에서 원활한 렌더링을 위해 동적 로드 및 컬링 최적화 기법을 적용한다."
+        "클라이언트 측에서 섬의 지형 데이터와 커스텀마이징 상태를 로컬 저장소와 서버에 안전하게 동기화할 수 있어야 합니다.",
+        "모바일 기기의 발열과 배터리 소모를 최소화하기 위해 렌더링 최적화와 프레임 레이트 제한 기술을 적용해야 합니다."
       ],
       "validationQuestions": [
-        "플레이어가 첫 5분 이내에 낚시와 채집 루프를 자연스럽게 이해하고 첫 번째 보상을 획득하는가?",
-        "섬 꾸미기 시스템이 플레이어의 장기적인 리텐션과 자원 소비에 충분한 동기 부여를 제공하는가?"
+        "플레이어가 첫 5분 이내에 낚시와 채집의 핵심 루프를 자연스럽고 직관적으로 이해할 수 있는가?",
+        "섬 커스텀마이징 시스템이 플레이어에게 지속적인 동기를 부여하고 다음 세션으로 자연스럽게 이어지는가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "포근한 섬 생태 및 채집 시스템",
-          "responsibleSystem": "ResourceCollectionManager",
-          "validationEvidence": "유저가 채집 행동을 수행할 때마다 인벤토리에 자원이 정확히 추가되고 생태계 카운터가 올바르게 갱신되는지 테스트 코드로 검증합니다."
+          "designElement": "한 손 터치 기반의 낚시 및 채집 미니게임 조작",
+          "responsibleSystem": "모바일 플랫폼 입력 및 핵심 루프 시스템",
+          "validationEvidence": "다양한 모바일 기기 테스트를 통해 터치 오작동률이 2퍼센트 미만으로 유지되고 세션 이탈률이 낮아지는지 검증합니다."
         },
         {
-          "designElement": "실시간 섬 커스텀 및 지형 변화 시스템",
-          "responsibleSystem": "IslandCustomizationGrid",
-          "validationEvidence": "건설 재화 소모 후 오브젝트가 지정된 그리드 위치에 정상적으로 생성되고 시각적 외형이 즉시 반영되는지 확인합니다."
+          "designElement": "날씨 변화에 따른 물고기 리스폰 확률 변동",
+          "responsibleSystem": "날씨 및 생태계 시스템",
+          "validationEvidence": "시뮬레이션 로그 분석을 통해 날씨 전환 시점에 맞춰 희귀 어종의 획득 빈도가 의도된 확률 범위 내에서 작동하는지 확인합니다."
         },
         {
-          "designElement": "계절별 자연 환경 및 날씨 시스템",
-          "responsibleSystem": "EnvironmentManager",
-          "validationEvidence": "날씨 상태 변경 시 전체 화면의 라이팅과 특정 채집물의 드랍 테이블이 조건에 맞게 올바르게 전환되는지 검증합니다."
+          "designElement": "건물 건설에 따른 섬의 외형 및 이동 동선 변화",
+          "responsibleSystem": "섬 커스텀마이징 및 발전 시스템",
+          "validationEvidence": "플레이어 테스트를 통해 건물의 배치에 따라 이동 시간이 달라지고 자원 수급 효율이 유의미하게 체감되는지 관찰합니다."
         }
       ],
       "openQuestions": [
-        "멀티플레이 방문 시 호스트의 섬 상태를 다른 클라이언트에게 어느 수준까지 실시간 동기화할 것인가?",
-        "플레이어가 오프라인 상태일 때도 자원이 수급되는 방치형 요소를 어느 정도까지 허용할 것인가?"
+        "멀티플레이 방문 시 방문객이 채집할 수 있는 자원의 양과 권한을 어디까지 허용해야 쾌적한가?",
+        "장기 플레이어들을 위해 섬의 확장 한계치와 새로운 차원의 탐험 요소를 어떻게 구성할 것인가?"
       ]
     },
     "deterministic_pre_gate": {
@@ -207,54 +207,56 @@
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 23051,
-      "lastMs": 23051,
+      "totalMs": 14299,
+      "lastMs": 14299,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:05:12.897Z"
+      "updatedAt": "2026-09-18T15:44:38.046Z"
     },
     "gemini:gemini-3.5-flash": {
-      "calls": 7,
+      "calls": 1,
       "successes": 0,
-      "failures": 7,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 47584,
-      "lastMs": 46318,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 56.888024654s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.5-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"56s\" } ] } }",
-      "updatedAt": "2026-09-18T15:30:03.130Z"
+      "totalMs": 140,
+      "lastMs": 140,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.5-flash\\nPlease retry in 21.81319263s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.5-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"21s\" } ] } }",
+      "updatedAt": "2026-09-18T15:44:38.209Z"
     },
     "gemini:gemini-3-flash-preview": {
-      "calls": 10,
+      "calls": 1,
       "successes": 0,
-      "failures": 10,
+      "failures": 1,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 148333,
-      "lastMs": 102489,
-      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 678.320651ms.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"0s\" } ] } }",
-      "updatedAt": "2026-09-18T15:30:59.341Z"
+      "totalMs": 170,
+      "lastMs": 170,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 21.783280665s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"21s\" } ] } }",
+      "updatedAt": "2026-09-18T15:44:38.240Z"
+    },
+    "gemini:gemini-3.7-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 247,
+      "lastMs": 247,
+      "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 21.706059418s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.7-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"21s\" } ] } }",
+      "updatedAt": "2026-09-18T15:44:38.316Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
-  "createdAt": "2026-09-18T15:04:49.843Z",
-  "updatedAt": "2026-09-18T15:30:59.344Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T15:05:12.897Z",
+  "createdAt": "2026-09-18T15:44:23.744Z",
+  "updatedAt": "2026-09-18T15:44:38.317Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:44:38.046Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": "five_lead_reviews",
-  "failedTask": "development",
-  "lastError": "GEMINI_CALL_FAILED gemini-3-flash-preview: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3-flash\\nPlease retry in 678.320651ms.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"0s\" } ] } }",
-  "checkpointMigration": {
-    "fromContractVersion": 3,
-    "toContractVersion": 3,
-    "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
-    "previousEngineDigest": "2ee13c831a912a1446b625b0b30f5e2fd64a6acf6fa19754420ecde80b0abc5f",
-    "preservedPhaseCount": 2,
-    "preservedTaskCount": 0,
-    "migratedAt": "2026-09-18T15:29:16.781Z"
-  }
+  "failedTask": "balance",
+  "lastError": "GEMINI_CALL_FAILED gemini-3.5-flash: gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.7-flash\\nPlease retry in 21.706059418s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"model\": \"gemini-3.7-flash\", \"location\": \"global\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"21s\" } ] } }"
 }
