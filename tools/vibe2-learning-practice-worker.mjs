@@ -3,6 +3,7 @@
 // 안전: 게임 소스 write 0, production PASS 0, 배포/승격 증거로 사용할 수 없다.
 
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 
@@ -26,6 +27,7 @@ export function buildPracticePrompt(order={}){
   return [
     'You are the Vibe learning practice worker. This is PRACTICE_ONLY.',
     'Do not edit files. Do not claim production pass. Do not invent runtime evidence.',
+    'Your answer is untrusted practice knowledge until independently verified and distilled; do not claim it is reusable canonical knowledge.',
     'Return one strict JSON object only. No markdown and no prose outside JSON.',
     'Required keys: diagnosis, strategy, tests, avoidPatterns, reusablePatterns.',
     'diagnosis and strategy must each be specific enough to exceed 12 characters.',
@@ -81,12 +83,13 @@ export function buildPracticeRetryPrompt(prompt,evaluation={}){
 export async function runLearningPractice({workOrderFile='.vibe2/work-order.json',outputFile='/tmp/vibe2-learning-practice-result.json',model=DEFAULT_MODEL,responseFile=''}={}){
   const order=readJson(workOrderFile);
   const basePrompt=buildPracticePrompt(order);
-  let evaluation=null,attempts=0,lastError=null;
+  let evaluation=null,attempts=0,lastError=null,rawModelOutputSha256='';
   for(let attempt=1;attempt<=MAX_ATTEMPTS;attempt++){
     attempts=attempt;
     const prompt=attempt===1?basePrompt:buildPracticeRetryPrompt(basePrompt,evaluation||{});
     try{
       const raw=await requestModel(prompt,{model,responseFile});
+      rawModelOutputSha256=crypto.createHash('sha256').update(String(raw)).digest('hex');
       evaluation=evaluatePracticeAnswer(parseJson(raw));
       if(evaluation.pass)break;
       lastError=new Error(`practice evaluation failed: ${evaluation.reasons.join(',')}`);
@@ -97,8 +100,11 @@ export async function runLearningPractice({workOrderFile='.vibe2/work-order.json
   }
   evaluation=evaluation||evaluatePracticeAnswer({});
   const result={
-    version:2,kind:'vibe2-learning-practice-result',taskId:clean(order.taskId)||null,
+    version:3,kind:'vibe2-learning-practice-result',taskId:clean(order.taskId)||null,
     practiceOnly:true,productionPass:false,sourceWrite:false,model,
+    knowledgeState:'UNTRUSTED_PRACTICE_OUTPUT',rawModelOutputSha256,rawModelOutputStored:false,
+    candidateLessonsVerified:false,retrievalEligible:false,masteryCreditEligible:false,canonicalTrainingEligible:false,
+    independentVerificationRequired:true,distillationRequiredBeforeReuse:true,
     attempts,recoveryUsed:attempts>1,
     evaluation:evaluation.pass?'PASS':'FAIL',...evaluation,
     authority:'practice-only-no-production-promotion'
