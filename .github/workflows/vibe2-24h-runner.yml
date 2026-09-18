@@ -11,6 +11,7 @@ on:
       - '.github/workflows/vibe2-roblox-candidate-runtime.yml'
       - 'tools/vibe2-roblox-skyline-runtime-smoke.mjs'
       - 'tools/vibe2-authorized-source-memory.mjs'
+      - 'tools/vibe2-web-experience-ingest.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'company-learning/platform-release-roadmap.json'
@@ -117,6 +118,12 @@ jobs:
             node /tmp/vibe2-main/tools/vibe2-authorized-source-memory.mjs \
               --summary=/tmp/vibe2-main/company-learning/authorized-source/block-blast/authorized-learning-summary.json \
               --experience=.vibe2/experience.json | tee /tmp/vibe2-authorized-source-memory.log
+
+            node --check /tmp/vibe2-main/tools/vibe2-web-experience-ingest.mjs
+            node /tmp/vibe2-main/tools/vibe2-web-experience-ingest.mjs \
+              --queue=/tmp/vibe2-company-runtime-queue.json \
+              --experience=.vibe2/experience.json \
+              --company-runtime-ref=origin/company-runtime | tee /tmp/vibe2-web-experience-ingest.log
 
             node --check /tmp/vibe2-main/tools/vibe2-code-pattern-ingest.mjs
             node /tmp/vibe2-main/tools/vibe2-code-pattern-ingest.mjs \
@@ -229,6 +236,7 @@ jobs:
             /tmp/vibe2-autoplan.log
             /tmp/vibe2-release-baseline-plan.log
             /tmp/vibe2-authorized-source-memory.log
+            /tmp/vibe2-web-experience-ingest.log
             /tmp/vibe2-code-pattern-ingest.log
             /tmp/vibe2-learning-motor.log
             /tmp/vibe2-post-release-focus.log
