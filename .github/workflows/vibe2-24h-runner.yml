@@ -244,7 +244,7 @@ jobs:
       actions: write
 
   game_study:
-    needs: plan
+    needs: [plan, continuous]
     if: ${{ always() && needs.plan.result == 'success' }}
     uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
     permissions:
