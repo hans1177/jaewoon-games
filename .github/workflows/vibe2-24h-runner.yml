@@ -114,6 +114,11 @@ jobs:
               --summary=/tmp/vibe2-main/company-learning/authorized-source/block-blast/authorized-learning-summary.json \
               --experience=.vibe2/experience.json | tee /tmp/vibe2-authorized-source-memory.log
 
+            node --check /tmp/vibe2-main/tools/vibe2-code-pattern-ingest.mjs
+            node /tmp/vibe2-main/tools/vibe2-code-pattern-ingest.mjs \
+              --samples=/tmp/vibe2-main/company-learning/training-samples \
+              --output=.vibe2/code-pattern-library.json | tee /tmp/vibe2-code-pattern-ingest.log
+
             node --check /tmp/vibe2-main/tools/vibe2-learning-motor.mjs
             node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
               --experience=.vibe2/experience.json \
@@ -162,7 +167,7 @@ jobs:
 
             node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-plan.json >/tmp/vibe2-handoff-after-plan.log
 
-            git add .vibe2/queue.json .vibe2/experience.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
+            git add .vibe2/queue.json .vibe2/experience.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
             if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
               exit 0
@@ -219,6 +224,7 @@ jobs:
             /tmp/vibe2-autoplan.log
             /tmp/vibe2-release-baseline-plan.log
             /tmp/vibe2-authorized-source-memory.log
+            /tmp/vibe2-code-pattern-ingest.log
             /tmp/vibe2-learning-motor.log
             /tmp/vibe2-post-release-focus.log
             /tmp/vibe2-plan-summary.log
