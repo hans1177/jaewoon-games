@@ -495,8 +495,11 @@ jobs:
           const designer=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
           const designerBlocked=!Object.prototype.hasOwnProperty.call(phases,'designer_draft')&&exhausted.has(designer);
           const currentFailureQuota=retryableQuota.test(clean(cp.lastError));
-          if(currentFailureQuota)console.error('DESIGN_CURRENT_FAILURE_CLASS=EXTERNAL_MODEL_CAPACITY');
-          process.stdout.write(currentFailureQuota||roleBlocked||(!leadPhaseActive&&designerBlocked)?'true':'false');
+          const aggregateCapacityFailure=/GEMINI_NO_AVAILABLE_(?:CANDIDATES|MODELS)\b/i.test(clean(cp.lastError));
+          const checkpointHasQuotaEvidence=Object.values(cp.modelHealth||{}).some(row=>retryableQuota.test(clean(row?.lastError)));
+          const currentFailureAggregateCapacity=aggregateCapacityFailure&&checkpointHasQuotaEvidence;
+          if(currentFailureQuota||currentFailureAggregateCapacity)console.error('DESIGN_CURRENT_FAILURE_CLASS=EXTERNAL_MODEL_CAPACITY');
+          process.stdout.write(currentFailureQuota||currentFailureAggregateCapacity||roleBlocked||(!leadPhaseActive&&designerBlocked)?'true':'false');
           NODE
             )"
           fi
