@@ -46,8 +46,8 @@ function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='
 
 function transformativeTaskEligible(taskInput={}){
   const evidence=new Set((taskInput.evidence||[]).map(clean));
-  if(evidence.has('full-web-game-rebuild')||evidence.has('existing-web-continuation'))return true;
-  return /FULL_WEB_GAME_REBUILD|EXISTING_WEB_DEVELOPMENT_CONTINUATION|REBUILD_EXISTING_GAME|NEW_GAME_IMPLEMENTATION/i.test(clean(taskInput.goal));
+  if(evidence.has('full-web-game-rebuild')||evidence.has('existing-web-continuation')||evidence.has('existing-web-assessment-required'))return true;
+  return /FULL_WEB_GAME_REBUILD|EXISTING_WEB_ASSESS_AND_IMPLEMENT|EXISTING_WEB_DEVELOPMENT_CONTINUATION|REBUILD_EXISTING_GAME|NEW_GAME_IMPLEMENTATION/i.test(clean(taskInput.goal));
 }
 function selectTransformativeRecipe(memory={},taskInput={}){
   const recipes=Array.isArray(memory?.recipes)?memory.recipes.filter(recipe=>Array.isArray(recipe?.sourceProjects)&&new Set(recipe.sourceProjects.map(clean).filter(Boolean)).size>=2):[];
@@ -84,8 +84,18 @@ function applyTransformativeRecombination(taskInput={},memory={}){
   };
 }
 
-function looksLikeValidationPrototype(text=''){return /검증 루프:|STATUS:\s*준비|FULL APPROVED WEB COMPANION|DEVELOPMENT_CONFIRMED\s*·/i.test(text)&&(/data-action=|class=["'][^"']*action|scope-action|승인 분량 전체 구현/i.test(text));}
-function findWebFullGameTask(project,repoRoot,queue){if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),text=readText(file),missing=!fs.existsSync(file);if(!missing&&!looksLikeValidationPrototype(text))return null;const id=missing?`${project.gameId}-web-base-implementation-v1`:`${project.gameId}-owner-full-web-game-rebuild-v1`;if(hasTask(queue,id))return null;const goal=missing?`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n중앙 MACHINE_EXECUTION_CONTRACT에서 DEVELOPMENT_CONFIRMED된 게임의 Web 1차 구현이다. 승인된 게임 정체성·설계·scope를 유지해 실제 플레이 가능한 모바일 Web baseline을 구현한다. 실제 입력→게임 상태 변화→핵심 루프→진행/보상→위험/실패→재시작이 연결되어야 한다. 검증 패널·가짜 진행·외부 네트워크 의존은 금지한다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않고 새 코드와 새 표현으로 구현한다. 회사/홈페이지 정책 파일은 수정하지 않는다.`:`[OWNER_IMMEDIATE_WEB_FIRST] FULL_WEB_GAME_REBUILD\n게임: ${project.name||project.gameId}\n현재 index.html은 검증용 프로토타입이다. 이 파일을 실제 플레이 가능한 모바일 웹게임으로 완전히 재구축한다. 장르와 현재 게임 정체성은 유지하되 검증 버튼/숫자 변화 화면을 게임으로 취급하지 않는다. 실제 직접 조작, 실제 게임 상태 변화, 반복 가능한 핵심 루프, 난이도 또는 진행 상승, 실패/성공 또는 생존/점수 목표, 재시작을 구현한다. 모바일 터치 우선, 화면 잘림 금지, 외부 네트워크/유료 API 없이 단일 기존 Web 루트에서 실행한다. 필요하면 index.html 전체 교체를 사용한다. 홈페이지나 회사 파일은 수정하지 않는다. 완료 후 실제 플레이 QA를 통과한 후보만 main에 올린다.`;const evidence=missing?['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','source-root-bootstrap-required','full-web-game-rebuild','prototype-completion-forbidden']:['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','full-web-game-rebuild','prototype-completion-forbidden'];const out=task(id,project,goal,[relative],'owner-immediate','medium',evidence);out.ownerDirective=true;out.speculativeEligible=false;return out;}
+function findWebAssessmentTask(project,repoRoot,queue){
+  if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
+  const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),missing=!fs.existsSync(file);
+  if(missing){
+    const id=`${project.gameId}-web-base-implementation-v1`;if(hasTask(queue,id))return null;
+    const goal=`[WEB_BASE_IMPLEMENTATION] FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED\n게임: ${project.name||project.gameId}\n승인 설계와 scope를 기준으로 Vibe가 실제 플레이 가능한 모바일 Web 1차 baseline을 새로 구현한다. 검증된 경험과 transformative recombination context는 참고하되 원본 코드·원본 에셋·식별자를 복사하지 않는다. 회사/홈페이지 정책 파일은 수정하지 않는다.`;
+    const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','source-root-bootstrap-required','full-web-game-rebuild','existing-web-source:MISSING']);out.ownerDirective=true;out.speculativeEligible=false;return out;
+  }
+  const id=`${project.gameId}-existing-web-assessment-v1`;if(hasTask(queue,id))return null;
+  const goal=`[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: ${project.name||project.gameId}\n기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.`;
+  const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_BASE_IMPLEMENTATION','existing-web-assessment-required','strategy-decision:EXPLORATION','prototype-marker-alone-cannot-force-rebuild']);out.ownerDirective=true;out.speculativeEligible=false;return out;
+}
 function findUnityTask(project,repoRoot,queue){const projectPath=posix(project.projectPath),runtimeRel=`${projectPath}/Assets/Scripts/RuntimeBootstrap.cs`,coreRel=`${projectPath}/Assets/Scripts/GameCore.cs`,motionRel=`${projectPath}/Assets/Scripts/PrototypeAnimatedVisuals.cs`,runtime=readText(sourceFile(repoRoot,runtimeRel)),core=readText(sourceFile(repoRoot,coreRel)),motion=readText(sourceFile(repoRoot,motionRel));if(runtime&&core&&core.includes('["field-4"]')&&!runtime.includes('FIELD 4')&&!hasTask(queue,`${project.gameId}-region-controls-4-7`))return task(`${project.gameId}-region-controls-4-7`,project,'GameCatalog에 이미 존재하는 field-4, field-5, field-6, jungle 지역을 RuntimeBootstrap 이동 UI에 연결한다. 기존 RegionDefinition.recommendedLevelMin을 사용하고 전투 수치·보상·세이브·지역 데이터는 변경하지 않는다.',[runtimeRel],'high');if(core&&core.includes('public List<string> ownedWeapons')&&!core.includes('Player.ownedWeapons ??=')&&!hasTask(queue,`${project.gameId}-save-null-guards`))return task(`${project.gameId}-save-null-guards`,project,'GameCore.Load 직후 오래되거나 불완전한 JSON 세이브에서 ownedWeapons, ownedArmors, completedHiddenQuests가 null이면 빈 목록으로 복구한다. SaveKey, 데이터 버전, 수치와 소유 의미는 변경하지 않는다.',[coreRel]);if(motion&&motion.includes('public void PlayTravelToBattle()')&&!/PlayTravelToBattle\(\)[\s\S]{0,500}StopCoroutine\(_combatRoutine\)/.test(motion)&&!hasTask(queue,`${project.gameId}-motion-routine-safety`))return task(`${project.gameId}-motion-routine-safety`,project,'PrototypeAnimatedVisuals에서 전투 코루틴 중 새 이동 모션을 시작할 때 이전 combat routine을 안전하게 중지해 애니메이션 상태 덮어쓰기를 막는다. 전투 판정 타이밍·데미지·보상·에셋은 변경하지 않는다.',[motionRel]);return null;}
 function diagnosticKey(issue,micro){return`${clean(issue?.type)||'UNKNOWN'}:${posix(micro?.file)||'unknown'}`;}
 function diagnosticSeen(queue,key){return queue.tasks.some(item=>(item.evidence||[]).some(e=>clean(e)===`diagnostic-key:${key}`));}
@@ -159,7 +169,7 @@ function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='roblox')return uniqueTaskCandidates([scanExplicitMarkerTask(project,repoRoot,queue)]);
   if(project.engine==='unity')return uniqueTaskCandidates([findUnityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   if(project.engine==='web'){
-    const owner=findWebFullGameTask(project,repoRoot,queue);
+    const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
     return uniqueTaskCandidates([findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
