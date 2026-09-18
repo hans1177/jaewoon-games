@@ -41,10 +41,7 @@ const independentReviewTasks=Object.fromEntries(ROLES.flatMap(role=>departmentRe
 const independentReviewOrder=Object.keys(independentReviewTasks).sort((a,b)=>independentReviewTasks[a].model.localeCompare(independentReviewTasks[b].model)||independentReviewTasks[a].role.localeCompare(independentReviewTasks[b].role));
 const modelPhaseConcurrency=Math.min(4,Math.max(1,Number(process.env.COMPANY_MODEL_PHASE_CONCURRENCY||4)));
 const phaseConcurrency={
-  independent_department_reviews:modelPhaseConcurrency,
-  department_representatives:Math.min(3,modelPhaseConcurrency),
-  lead_rebuttals:Math.min(3,modelPhaseConcurrency),
-  five_lead_fatal_review:Math.min(3,modelPhaseConcurrency)
+  five_lead_reviews:Math.min(5,modelPhaseConcurrency)
 };
 const maxLoadedModelLanes=Math.min(2,Math.max(1,Number(process.env.COMPANY_MAX_ACTIVE_MODEL_LANES||2)));
 const modelKeepAlive=clean(process.env.COMPANY_MODEL_KEEP_ALIVE||'5m');
@@ -135,7 +132,7 @@ if(!checkpointReusable){
   writeJson(checkpointPath,designCheckpoint);
   console.log(`DESIGN_CHECKPOINT_RESUME=YES|phases=${designCheckpoint.completedPhases.length}|tasks=${Object.keys(designCheckpoint.tasks).length}`);
 }
-const PROGRESS_STAGE_ORDER=['BOOTSTRAP','DESIGNER_DRAFT','PRE_GATE','PRE_GATE_REPAIR','DEPARTMENT_REVIEWS','LEAD_CONSENSUS','CROSS_DEPARTMENT_MEETING','DESIGNER_REVISION','FINAL_LEAD_REVIEW','COMPLETE'];
+const PROGRESS_STAGE_ORDER=['BOOTSTRAP','DESIGNER_DRAFT','PRE_GATE','PRE_GATE_REPAIR','DEPARTMENT_REVIEWS','DESIGNER_REVISION','COMPLETE'];
 function writeProgress(stage=designCheckpoint.currentPhase||'BOOTSTRAP',extra={}){
   const index=Math.max(0,PROGRESS_STAGE_ORDER.indexOf(stage));
   const percent=stage==='COMPLETE'?100:Math.round(index/(PROGRESS_STAGE_ORDER.length-1)*100);
@@ -624,84 +621,172 @@ writeProgress('DEPARTMENT_REVIEWS',{preGateScore:preGate.totalScore,preGatePass:
 console.log(`DESIGN_PRE_GATE=PASS|${preGate.totalScore}`);
 
 
-const healthAwareIndependentReviewOrder=[...independentReviewOrder].sort((a,b)=>modelHealthPenalty(independentReviewTasks[a].model)-modelHealthPenalty(independentReviewTasks[b].model)||independentReviewTasks[a].model.localeCompare(independentReviewTasks[b].model)||independentReviewTasks[a].role.localeCompare(independentReviewTasks[b].role));
-console.log(`MODEL_HEALTH_SCHEDULING_ORDER=${healthAwareIndependentReviewOrder.map(key=>independentReviewTasks[key].model).join(',')}`);
-const independentReviews=await runPhase('independent_department_reviews',()=>adaptiveParallel('independent_department_reviews',phaseConcurrency.independent_department_reviews,concurrency=>parallelObjectByLane(healthAwareIndependentReviewOrder,key=>independentReviewTasks[key].model,async key=>{
-  const {role,model}=independentReviewTasks[key];
-  return runCheckpointTask('independent_department_reviews',key,async()=>{
-    const leadReview=model===leadModels[role];
-    const result=await callModel(model,`너는 ${role} 부서 관점의 독립 검토 모델이다. 같은 상세 설계를 이 전문부서 관점으로만 검토하고 GAME_SEED에 없는 유명게임 표현 복제를 요구하지 않는다.`,`지정된 ${role} 부서만 검토하라. 다른 부서 출력은 만들지 마라. 각 필드는 가장 중요한 근거 한 건만 짧고 구체적으로 작성하라.\nASSIGNED_DEPARTMENT=${role}\nGAME_SEED=${clip(seed,3000)}\nDESIGN=${clip(departmentDesignContext(role,designDraft),6500)}`,reviewsSchemaFor([role]),{predict:420,numCtx:leadReview?6144:4096,timeoutMs:leadReview?120000:90000});
-    return result[role];
-  });
-},concurrency,{maxLanes:maxLoadedModelLanes,perLane:2})));
-const memberReviews=Object.fromEntries(ROLES.map(role=>[role,departmentReviewModels[role].map(model=>{const review=independentReviews[`${role}::${model}`];if(!review)throw new Error(`DEPARTMENT_REVIEW_MISSING: ${role}:${model}`);return{model,memberRole:model===leadModels[role]?'LEAD':'ASSISTANT',review};})]));
-for(const role of ROLES){const models=uniq(memberReviews[role].map(x=>x.model));writeJson(path.join(base,'departments',role,'member-reviews.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',department:role,leadModel:leadModels[role],assistantModels:models.filter(m=>m!==leadModels[role]),models,reviews:memberReviews[role]});}
+const leadReviewOrder=[...ROLES].sort((a,b)=>modelHealthPenalty(leadModels[a])-modelHealthPenalty(leadModels[b])||a.localeCompare(b));
+console.log(`DESIGN_ONLY_REVIEW_MODE=FIVE_LEAD_DIRECT`);
+console.log(`DESIGN_ONLY_MEETING=DISABLED`);
+console.log(`DESIGN_ONLY_REBUTTAL=DISABLED`);
+console.log(`LEAD_REVIEW_ORDER=${leadReviewOrder.map(role=>leadModels[role]).join(',')}`);
 
-const representatives=await runPhase('department_representatives',()=>adaptiveParallel('department_representatives',phaseConcurrency.department_representatives,concurrency=>parallelObject(ROLES,role=>runCheckpointTask('department_representatives',role,()=>{
+const leadReviews=await runPhase('five_lead_reviews',()=>adaptiveParallel(
+  'five_lead_reviews',
+  phaseConcurrency.five_lead_reviews,
+  concurrency=>parallelObjectByLane(
+    leadReviewOrder,
+    role=>leadModels[role],
+    async role=>runCheckpointTask('five_lead_reviews',role,async()=>{
+      const model=leadModels[role];
+      const result=await callModel(
+        model,
+        `너는 ${role} 부서 Lead AI다. DESIGN_ONLY 설계를 자기 전문영역에서 직접 검토한다. 회의·반박·다른 부서 대리 판단은 하지 않는다.`,
+        `가장 중요한 KEEP/FIX/ADD/RISK/EVIDENCE만 짧고 구체적으로 작성하라. 수정 가능한 문제는 실제 수정 지시로 표현하고 점수나 관문을 조작하지 마라.\nASSIGNED_DEPARTMENT=${role}\nGAME_SEED=${clip(seed,3000)}\nDESIGN=${clip(departmentDesignContext(role,designDraft),6500)}`,
+        reviewsSchemaFor([role]),
+        {predict:420,numCtx:5120,timeoutMs:90000}
+      );
+      return result[role];
+    }),
+    concurrency,
+    {maxLanes:maxLoadedModelLanes,perLane:1}
+  )
+));
+
+for(const role of ROLES){
   const lead=leadModels[role];
-  return callModel(lead,`너는 ${role} 부서 Lead AI다. Lead와 보조 모델의 독립검토를 비교해 부서 대표 의견 하나를 확정한다.`,`${role} 내부 검토를 KEEP/FIX/ADD/RISK/EVIDENCE로 통합하라.\nREVIEWS=${clip(memberReviews[role],8500)}`,REVIEW,{predict:800,numCtx:6144,timeoutMs:120000});
-}),concurrency)));
-for(const role of ROLES){const lead=leadModels[role];writeJson(path.join(base,'departments',role,'representative.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',department:role,representativeModel:lead,leadModel:lead,assistantModels:departmentReviewModels[role].filter(m=>m!==lead),representativeAuthoredByLead:true,representative:representatives[role]});}
-const rebuttals=await runPhase('lead_rebuttals',()=>adaptiveParallel('lead_rebuttals',phaseConcurrency.lead_rebuttals,concurrency=>parallelObject(ROLES,role=>runCheckpointTask('lead_rebuttals',role,()=>{
-  const other=Object.fromEntries(ROLES.filter(r=>r!==role).map(r=>[r,representatives[r]]));
-  return callModel(leadModels[role],`너는 ${role} 부서 Lead AI다. 다른 네 부서 대표 의견을 읽고 자기 책임범위에서 한 번만 수용/반박/수정한다.`,`OWN=${clip(representatives[role],4200)}\nOTHERS=${clip(other,8000)}`,REBUTTAL,{predict:600,numCtx:5120,timeoutMs:120000});
-}),concurrency)));
-writeJson(path.join(base,'meeting-rebuttal-round.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',round:1,departmentLeadModels:leadModels,rebuttalAuthoredByDepartmentLeads:true,rebuttals});
-const meeting=await runPhase('cross_department_meeting',()=>callModel(coordinatorModel,'너는 5부서 회의 조정 AI다. 새 기능을 창작하지 않고 대표의견과 각 Lead의 1회 반박을 안건별 CONSENSUS/CONFLICT/HOLD로만 정리한다.',`CONSENSUS만 자동 수정에 사용한다.\nREPRESENTATIVES=${clip(representatives,12000)}\nREBUTTALS=${clip(rebuttals,11000)}`,MEETING,{predict:1100,temperature:0.15,numCtx:6144,timeoutMs:150000}));
-const consensus=meeting.decisions.filter(x=>x.status==='CONSENSUS');const conflicts=meeting.decisions.filter(x=>x.status==='CONFLICT');const holds=meeting.decisions.filter(x=>x.status==='HOLD');
-writeJson(path.join(base,'department-meeting.json'),{version:4,gameId,date,productionClass:'DESIGN_ONLY',coordinatorModel,departmentLeadModels:leadModels,distinctLeadModels,distinctLeadModelCount:distinctLeadModels.length,representatives,rebuttalRound:1,rebuttalAuthoredByDepartmentLeads:true,...meeting,counts:{consensus:consensus.length,conflict:conflicts.length,hold:holds.length}});
+  const review=leadReviews[role];
+  writeJson(path.join(base,'departments',role,'lead-review.json'),{
+    version:5,gameId,date,productionClass:'DESIGN_ONLY',department:role,
+    leadModel:lead,reviewMode:'DIRECT_LEAD_ONLY',review
+  });
+  writeJson(path.join(base,'departments',role,'representative.json'),{
+    version:5,gameId,date,productionClass:'DESIGN_ONLY',department:role,
+    representativeModel:lead,leadModel:lead,assistantModels:[],
+    representativeAuthoredByLead:true,syntheticCompatibilityRecord:true,representative:review
+  });
+}
+writeJson(path.join(base,'department-lead-reviews.json'),{
+  version:5,gameId,date,productionClass:'DESIGN_ONLY',
+  reviewMode:'FIVE_DISTINCT_LEAD_PARALLEL_REVIEW',
+  meetingRequired:false,rebuttalRounds:0,leadModels,reviews:leadReviews
+});
 
 async function generateDesignerRevision(){
-  const system='너는 초안을 작성한 동일 Game Designer AI다. CONSENSUS만 반영하고 CONFLICT/HOLD는 openQuestions에 남긴다. GAME_SEED 정체성·플레이 모드·이미 통과한 deterministic 설계축을 보존한다.';
-  const user=`수정된 전체 상세 설계를 한 번에 반환하라. 이전 하드관문 실패를 삭제·재명명·무시하지 말고 실제 설계 변경으로 해결한다.\nGAME_SEED=${clip(seed,4500)}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4000)}\nCURRENT_DESIGN=${clip(designDraft,11500)}\nCONSENSUS=${clip(consensus,5000)}\nCONFLICT=${clip(conflicts,2500)}\nHOLD=${clip(holds,2500)}`;
+  const system='너는 초안을 작성한 동일 Game Designer AI다. 5개 부서 Lead의 직접 검토를 받아 실제 설계를 한 번 수정한다. 회의 합의 절차는 없으며 서로 충돌하는 조언은 GAME_SEED와 strict 기준을 기준으로 판단한다.';
+  const user=`수정된 전체 상세 설계를 한 번에 반환하라. 이전 하드관문 실패를 삭제·재명명·무시하지 말고 실제 설계 변경으로 해결한다.\nGAME_SEED=${clip(seed,4500)}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4000)}\nCURRENT_DESIGN=${clip(designDraft,11000)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,9000)}`;
   try{
-    const full=await callModel(designerModel,system,user,DESIGN,{predict:2200,temperature:0.16,numCtx:8192,timeoutMs:180000,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})});
+    const full=await callModel(designerModel,system,user,DESIGN,{predict:2200,temperature:0.14,numCtx:8192,timeoutMs:150000,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'REVISION'})});
     console.log('DESIGNER_REVISION_GENERATION=ONE_CALL');
     return full;
   }catch(error){
     console.log(`DESIGNER_REVISION_ONE_CALL_FALLBACK=SPLIT|reason=${clean(error?.message||error)}`);
     const baseSeed=Object.fromEntries(DESIGN_BASE_FIELDS.map(field=>[field,designDraft[field]]));
     const gateSeed=Object.fromEntries(DESIGN_GATE_FIELDS.map(field=>[field,designDraft[field]]));
-    const basePart=await callModel(designerModel,system,`기본 설계 필드만 수정하라.\nBASE_DRAFT=${clip(baseSeed,8500)}\nCONSENSUS=${clip(consensus,5000)}\nCONFLICT=${clip(conflicts,2500)}\nHOLD=${clip(holds,2500)}`,DESIGN_BASE,{predict:1000,temperature:0.18,numCtx:8192,timeoutMs:150000});
-    const gatePart=await callModel(designerModel,'너는 같은 Game Designer AI다. 수정된 기본 설계에 맞춰 하드관문 상세 필드만 수정한다.',`REVISED_BASE=${clip(basePart,8500)}\nPREVIOUS_GATE_DETAIL=${clip(gateSeed,7500)}\nCONSENSUS=${clip(consensus,4500)}`,DESIGN_GATE,{predict:1000,temperature:0.12,numCtx:8192,timeoutMs:150000});
+    const basePart=await callModel(
+      designerModel,
+      system,
+      `기본 설계 필드만 수정하라.\nBASE_DRAFT=${clip(baseSeed,8200)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,7000)}`,
+      DESIGN_BASE,
+      {predict:1000,temperature:0.16,numCtx:7168,timeoutMs:120000}
+    );
+    const gatePart=await callModel(
+      designerModel,
+      '너는 같은 Game Designer AI다. 수정된 기본 설계에 맞춰 하드관문 상세 필드만 수정한다.',
+      `REVISED_BASE=${clip(basePart,8200)}\nPREVIOUS_GATE_DETAIL=${clip(gateSeed,7000)}\nFIVE_LEAD_REVIEWS=${clip(leadReviews,6000)}`,
+      DESIGN_GATE,
+      {predict:1000,temperature:0.1,numCtx:7168,timeoutMs:120000}
+    );
     return mergeDesignerDesign(basePart,gatePart,'REVISION');
   }
 }
+
+writeProgress('DESIGNER_REVISION',{leadReviewsComplete:5});
 const revisedDesign=await runPhase('designer_revision',generateDesignerRevision);
 const postRevisionPreGate=deterministicPreGate(revisedDesign);
-writeJson(path.join(base,'design-revised.json'),{version:5,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,sameModelAsDraft:true,appliedConsensusCount:consensus.length,unresolvedConflictCount:conflicts.length,heldCount:holds.length,status:'DESIGN_BASELINE_CANDIDATE',postRevisionPreGate:{totalScore:postRevisionPreGate.totalScore,hardFailures:postRevisionPreGate.hardFailures,criticalAxisFailures:postRevisionPreGate.criticalAxisFailures},content:revisedDesign});
+writeJson(path.join(base,'design-revised.json'),{
+  version:6,gameId,date,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
+  gameSeedId:seed.seedId,authorRole:'GAME_DESIGNER_AI',authorModel:designerModel,
+  sameModelAsDraft:true,reviewMode:'FIVE_LEAD_DIRECT_NO_MEETING',
+  status:'DESIGN_BASELINE_CANDIDATE',
+  postRevisionPreGate:{
+    totalScore:postRevisionPreGate.totalScore,
+    hardFailures:postRevisionPreGate.hardFailures,
+    criticalAxisFailures:postRevisionPreGate.criticalAxisFailures
+  },
+  content:revisedDesign
+});
 
-
-const meetingImpactRoles=uniq((meeting.decisions||[]).flatMap(decision=>Array.isArray(decision?.departments)?decision.departments:[]).filter(role=>ROLES.includes(role)));
-const scoreImpactRoles=impactedRolesFromScores(preGateHistory.length>1?preGateHistory[preGateHistory.length-2]:null,postRevisionPreGate);
-const impactRoles=uniq([...meetingImpactRoles,...scoreImpactRoles]);
-console.log(`DESIGN_REVIEW_IMPACT_ROLES=${impactRoles.join(',')||'NONE'}`);
-const fatalReviews=await runPhase('five_lead_fatal_review',()=>adaptiveParallel('five_lead_fatal_review',phaseConcurrency.five_lead_fatal_review,concurrency=>parallelObject(ROLES,role=>runCheckpointTask('five_lead_fatal_review',role,()=>{
-  const impacted=impactRoles.includes(role);
-  const context=departmentDesignContext(role,revisedDesign);
-  return callModel(
-    leadModels[role],
-    `너는 ${role} 부서 Lead AI다. Game Designer 수정 이후 폐기 안전 재검토를 한다. DISCARD는 중앙정책 fatalCriteria가 실제 설계 근거로 확인될 때만 가능하다.`,
-    impacted
-      ?`변경 영향 부서로서 수정 설계를 상세 재검토하라. ACTIVE/REDESIGN/DISCARD와 핵심 근거를 반환한다.\nVALID_FATAL_CRITERIA=${JSON.stringify(FATAL_CRITERIA)}\nREVISED_DESIGN=${clip(context,7500)}\nINITIAL_MEETING=${clip(meeting,3200)}`
-      :`직접 변경 영향이 없는 부서다. 수정으로 기존 책임범위가 깨졌는지만 경량 회귀 확인하라. 문제가 없으면 ACTIVE를 권고한다.\nVALID_FATAL_CRITERIA=${JSON.stringify(FATAL_CRITERIA)}\nREVISED_DESIGN=${clip(context,4200)}`,
-    FATAL_REVIEW,
-    {predict:impacted?450:240,temperature:0.08,numCtx:impacted?5120:3072,timeoutMs:impacted?120000:90000}
-  );
-}),concurrency)));
-const discardVotes=ROLES.filter(role=>fatalReviews[role].recommendedState==='DISCARD');
-const commonFatal=FATAL_CRITERIA.filter(criterion=>ROLES.every(role=>(fatalReviews[role].fatalCriteria||[]).includes(criterion)));
-const unanimousFatalDiscard=discardVotes.length===ROLES.length&&commonFatal.length>0;
-let disposition='ACTIVE';
-if(unanimousFatalDiscard)disposition='DISCARDED';
-else if(conflicts.length||holds.length||ROLES.some(role=>fatalReviews[role].recommendedState!=='ACTIVE'))disposition='REDESIGN';
-const dispositionEvidence={version:1,gameId,date,state:disposition,sameDesignerRevisionAttempted:true,repeatedFiveDepartmentReview:true,allFiveLeadModelsReviewed:ROLES.every(role=>Boolean(fatalReviews[role])),discardVotes:discardVotes.length,commonFatalCriteria:commonFatal,unanimousFatalDiscard,fatalReviews,marketMetricAloneUsedForDiscard:false};
+const disposition=preGatePass(postRevisionPreGate)?'ACTIVE':'REDESIGN';
+const dispositionEvidence={
+  version:2,gameId,date,state:disposition,
+  sameDesignerRevisionAttempted:true,
+  fiveDepartmentLeadReviewCompleted:ROLES.every(role=>Boolean(leadReviews[role])),
+  repeatedFiveDepartmentReview:false,
+  meetingRequired:false,rebuttalRounds:0,
+  automaticDiscardAllowed:false,
+  discardVotes:0,commonFatalCriteria:[],unanimousFatalDiscard:false,
+  strictGateStillAuthoritative:true,
+  marketMetricAloneUsedForDiscard:false
+};
 writeJson(path.join(base,'design-disposition.json'),dispositionEvidence);
 
-const modelAudit=Object.fromEntries(ROLES.map(role=>{const models=uniq(memberReviews[role].map(x=>x.model));return[role,{leadModel:leadModels[role],assistantModels:models.filter(m=>m!==leadModels[role]),models,count:models.length,required:reviewModelCount,pass:models.length>=reviewModelCount&&models.includes(leadModels[role]),representativeModel:leadModels[role],representativeAuthoredByLead:true,rebuttalModel:leadModels[role],rebuttalAuthoredByLead:true}];}));
-const runtimeMetrics={phaseMs,phaseBudgetMs,totalModelCalls:modelCallStats.length,totalModelCallMs:modelCallStats.reduce((sum,item)=>sum+item.elapsedMs,0),modelPhaseConcurrency,phaseConcurrency,maxLoadedModelLanes,modelKeepAlive,fastAssistantPool,modelHealth:designCheckpoint.modelHealth,impactRoles,preGate:{attempts:preGateHistory.length-1,totalScore:preGate.totalScore,hardFailures:preGate.hardFailures,postRevisionScore:postRevisionPreGate.totalScore},checkpoint:{contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,engineDigest,reused:checkpointReusable,completedPhases:designCheckpoint.completedPhases.length,cachedTasks:Object.keys(designCheckpoint.tasks).length},modelCenteredReviewOrder:true,modelHealthScheduling:true,adaptiveConcurrency:true,departmentScopedContext:true,impactBasedFinalReview:true,independentReviewOutputs:ROLES.reduce((sum,role)=>sum+departmentReviewModels[role].length,0),fullPoolReviewOutputs:pool.length*ROLES.length};
-writeJson(path.join(base,'cycle-status.json'),{version:5,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true},designer:{role:'GAME_DESIGNER_AI',model:designerModel,singleAuthor:true,sameModelRevised:true},departments:{count:ROLES.length,roles:ROLES,leadModels,distinctLeadModels,distinctLeadModelCount:distinctLeadModels.length,leadModelsDistinct:distinctLeadModels.length===ROLES.length,reviewModelCount,modelAudit,rebuttalRounds:1,rebuttalAuthoredByDepartmentLeads:true,repeatedFatalReview:true},meeting:{consensusCount:consensus.length,conflictCount:conflicts.length,holdCount:holds.length,coordinatorModel},disposition:dispositionEvidence,runtimeMetrics,designLearning:{candidateCount:designLearningEvents.length,usedAsDesignContext:designLearningEvents.length>0,positiveTrainingEligible:false,validatedRuntimeRequiredForPositiveTraining:true,strictGateFeedbackSource:strictDesignerFeedback.source,strictGateHardFailures:strictDesignerFeedback.hardFailures,strictGateBypassAllowed:false},artbook:{created:false,reason:'DESIGN_BASELINE_GATE_MUST_RUN_FIRST'},vibe2Used:false,vibe2LearningContextUsed:designLearningEvents.length>0,paidApi:false});
-designCheckpoint.status='COMPLETE';designCheckpoint.currentPhase='COMPLETE';designCheckpoint.completedAt=new Date().toISOString();designCheckpoint.failedPhase=null;designCheckpoint.failedTask=null;designCheckpoint.lastError=null;persistDesignCheckpoint();writeProgress('COMPLETE',{preGateScore:preGate.totalScore,postRevisionPreGateScore:postRevisionPreGate.totalScore,impactRoles});
+const modelAudit=Object.fromEntries(ROLES.map(role=>[role,{
+  leadModel:leadModels[role],
+  assistantModels:[],
+  models:[leadModels[role]],
+  count:1,required:1,pass:Boolean(leadModels[role]),
+  reviewMode:'DIRECT_LEAD_ONLY'
+}]));
+const runtimeMetrics={
+  phaseMs,phaseBudgetMs,
+  totalModelCalls:modelCallStats.length,
+  totalModelCallMs:modelCallStats.reduce((sum,item)=>sum+item.elapsedMs,0),
+  modelPhaseConcurrency,phaseConcurrency,maxLoadedModelLanes,modelKeepAlive,
+  modelHealth:designCheckpoint.modelHealth,
+  preGate:{
+    attempts:preGateHistory.length-1,
+    totalScore:preGate.totalScore,
+    hardFailures:preGate.hardFailures,
+    postRevisionScore:postRevisionPreGate.totalScore,
+    postRevisionHardFailures:postRevisionPreGate.hardFailures
+  },
+  checkpoint:{
+    contractVersion:DESIGN_CHECKPOINT_CONTRACT_VERSION,engineDigest,
+    reused:checkpointReusable,completedPhases:designCheckpoint.completedPhases.length,
+    cachedTasks:Object.keys(designCheckpoint.tasks).length
+  },
+  simplifiedLeadOnlyReview:true,
+  aiMeetingCalls:0,
+  rebuttalCalls:0,
+  representativeSynthesisCalls:0,
+  leadReviewCalls:ROLES.length,
+  departmentScopedContext:true
+};
+writeJson(path.join(base,'cycle-status.json'),{
+  version:6,date,gameId,gameName:game.name,productionClass:'DESIGN_ONLY',tierAlias:3,tier:3,
+  status:'COMPLETE',policyDocument:'COMPANY_FLOW.md',flow:'GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE',
+  gameSeed:{seedId:seed.seedId,category:seed.GAME_CATEGORY,source:'game-seed-state.json',complete:true},
+  designer:{role:'GAME_DESIGNER_AI',model:designerModel,singleAuthor:true,sameModelRevised:true},
+  departments:{
+    count:ROLES.length,roles:ROLES,leadModels,distinctLeadModels,
+    distinctLeadModelCount:distinctLeadModels.length,leadModelsDistinct:distinctLeadModels.length===ROLES.length,
+    reviewModelCount:1,modelAudit,rebuttalRounds:0,repeatedFatalReview:false,
+    reviewMode:'FIVE_DISTINCT_LEAD_PARALLEL_REVIEW'
+  },
+  meeting:{required:false,crossDepartmentMeeting:false,rebuttalRounds:0},
+  disposition:dispositionEvidence,runtimeMetrics,
+  designLearning:{
+    candidateCount:designLearningEvents.length,usedAsDesignContext:designLearningEvents.length>0,
+    positiveTrainingEligible:false,validatedRuntimeRequiredForPositiveTraining:true,
+    strictGateFeedbackSource:strictDesignerFeedback.source,
+    strictGateHardFailures:strictDesignerFeedback.hardFailures,strictGateBypassAllowed:false
+  },
+  artbook:{created:false,reason:'DESIGN_BASELINE_GATE_MUST_RUN_FIRST'},
+  vibe2Used:false,vibe2LearningContextUsed:designLearningEvents.length>0,paidApi:false
+});
+designCheckpoint.status='COMPLETE';
+designCheckpoint.currentPhase='COMPLETE';
+designCheckpoint.completedAt=new Date().toISOString();
+designCheckpoint.failedPhase=null;designCheckpoint.failedTask=null;designCheckpoint.lastError=null;
+persistDesignCheckpoint();
+writeProgress('COMPLETE',{preGateScore:preGate.totalScore,postRevisionPreGateScore:postRevisionPreGate.totalScore});
 console.log('DESIGN_CHECKPOINT_STATUS=COMPLETE');
 console.log('COMPANY_DESIGN_CYCLE=COMPLETE');
 console.log(`GAME_ID=${gameId}`);
@@ -709,9 +794,15 @@ console.log(`GAME_SEED_ID=${seed.seedId}`);
 console.log('PRODUCTION_CLASS=DESIGN_ONLY');
 console.log(`DISTINCT_DEPARTMENT_LEADS=${distinctLeadModels.length}`);
 console.log(`DESIGN_DISPOSITION=${disposition}`);
-console.log(`INDEPENDENT_REVIEW_OUTPUTS=${runtimeMetrics.independentReviewOutputs}/${runtimeMetrics.fullPoolReviewOutputs}`);
+console.log('DESIGN_ONLY_REVIEW_MODE=FIVE_LEAD_DIRECT_NO_MEETING');
+console.log('AI_MEETING_CALLS=0');
+console.log('AI_REBUTTAL_CALLS=0');
+console.log(`LEAD_REVIEW_CALLS=${ROLES.length}`);
 console.log(`TOTAL_MODEL_CALLS=${runtimeMetrics.totalModelCalls}`);
-console.log(`MODEL_PHASE_CONCURRENCY=${runtimeMetrics.modelPhaseConcurrency}`);console.log(`MODEL_PHASE_CONCURRENCY_PROFILE=${JSON.stringify(phaseConcurrency)}`);console.log(`MAX_ACTIVE_MODEL_LANES=${maxLoadedModelLanes}`);console.log('MODEL_ADAPTIVE_CONCURRENCY=YES');console.log('DEPARTMENT_SCOPED_CONTEXT=YES');console.log('MODEL_CENTERED_REVIEW_ORDER=YES');console.log(`DESIGN_CHECKPOINT_PHASES=${designCheckpoint.completedPhases.length}`);console.log(`DESIGN_CHECKPOINT_TASKS=${Object.keys(designCheckpoint.tasks).length}`);
+console.log(`MODEL_PHASE_CONCURRENCY=${runtimeMetrics.modelPhaseConcurrency}`);
+console.log(`MAX_ACTIVE_MODEL_LANES=${maxLoadedModelLanes}`);
+console.log(`DESIGN_CHECKPOINT_PHASES=${designCheckpoint.completedPhases.length}`);
+console.log(`DESIGN_CHECKPOINT_TASKS=${Object.keys(designCheckpoint.tasks).length}`);
 console.log('DESIGN_ONLY_ARTBOOK_CREATED=NO');
 console.log('DESIGN_ONLY_VIBE2_USED=NO');
 console.log(`DESIGN_LEARNING_CONTEXT_CANDIDATES=${designLearningEvents.length}`);
