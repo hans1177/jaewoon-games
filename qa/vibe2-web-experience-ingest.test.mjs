@@ -50,6 +50,7 @@ test('formal Web evidence builds design-aware verified experience',()=>{
   const built=buildFormalWebExperienceReview({item:validItem(),report:validReport(),evidencePath:'design/g1/web-gameplay-validation.json'});
   assert.equal(built.valid,true);
   assert.equal(built.review.designIntelligenceRequired,true);
+  assert.equal(built.review.designReviewDecision,'PASS');
   assert.equal(built.review.reviewVerified,true);
   assert.equal(built.review.engineQaVerified,true);
   assert.ok(built.review.reusablePatterns.includes('deterministic-replay-stable'));
