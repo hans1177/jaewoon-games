@@ -1,0 +1,32 @@
+name: Cancel Pre-Gemini Design Runtime
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/temp-cancel-pre-gemini-design.yml'
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cancel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel pre-Gemini DESIGN_ONLY run 1014
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          run_id=35311593456
+          state="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run_id" --jq '.status')"
+          echo "PRE_GEMINI_RUN_STATUS=$state"
+          if [[ "$state" =~ ^(queued|in_progress|pending|waiting|requested)$ ]]; then
+            gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$run_id/cancel" >/dev/null
+            echo 'PRE_GEMINI_RUN_CANCEL_REQUESTED=YES'
+          else
+            echo 'PRE_GEMINI_RUN_CANCEL_REQUESTED=NO_ALREADY_TERMINAL'
+          fi
+          echo 'KEEP_GEMINI_RUN_ID=35312557559'
