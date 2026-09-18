@@ -9,7 +9,6 @@ on:
       - 'tools/company-design-seed-normalize.mjs'
       - 'tools/company-design-gate-scoring-v2.mjs'
       - 'tools/company-strict-production-review.mjs'
-      - '.github/actions/prepare-ollama/action.yml'
       - '.github/workflows/company-seed-design-runtime.yml'
   schedule:
     - cron: '0 16 * * *' # 01:00 KST fallback; event chain remains primary
@@ -25,15 +24,10 @@ concurrency:
 
 env:
   COMPANY_RUNTIME_BRANCH: company-runtime
-  OLLAMA_HOST: 127.0.0.1:11434
-  OLLAMA_VERSION: '0.33.3'
-  OLLAMA_MAX_LOADED_MODELS: '2'
-  COMPANY_MODEL_PHASE_CONCURRENCY: '4'
-  COMPANY_MAX_ACTIVE_MODEL_LANES: '2'
-  COMPANY_MODEL_KEEP_ALIVE: '5m'
-  COMPANY_MODEL_CALL_TIMEOUT_MS: '150000'
-  COMPANY_DESIGNER_OPENAI_MODEL: 'gpt-5'
-  COMPANY_DESIGNER_GEMINI_MODEL: 'gemini-3.8-flash'
+  COMPANY_MODEL_PHASE_CONCURRENCY: '5'
+  COMPANY_MODEL_CALL_TIMEOUT_MS: '90000'
+  COMPANY_GEMINI_DESIGNER_MODEL: 'gemini-3.8-flash'
+  COMPANY_GEMINI_LEAD_MODELS: 'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-2.5-pro'
 
 jobs:
   resolve-seed-targets:
@@ -116,7 +110,7 @@ jobs:
           const selected=canaryVerified?pending:pending.slice(0,2);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
-          const targets=selected.map((seed,index)=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30),designer_provider:index%2===0?'OPENAI':'GEMINI'}));
+          const targets=selected.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
           const parallelMax=Math.max(1,Math.min(canaryVerified?5:2,targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
@@ -216,47 +210,14 @@ jobs:
           node --check tools/company-strict-production-review.mjs
           node --check tools/company-design-prepromotion-repair.mjs
           node --check tools/company-design-cycle.mjs
-      - name: Restore Ollama model cache
-        if: steps.target.outputs.should_run == 'true'
-        uses: actions/cache@v4
-        with:
-          path: ~/.ollama/models
-          key: ollama-seed-design-${{ runner.os }}-${{ hashFiles('company-directive.json') }}
-          restore-keys: |
-            ollama-seed-design-${{ runner.os }}-
-      - name: Resolve configured free department models
-        id: models
-        if: steps.target.outputs.should_run == 'true'
-        shell: bash
-        run: |
-          node --input-type=module <<'NODE' > /tmp/models.txt
-          import fs from 'node:fs';const d=JSON.parse(fs.readFileSync('company-directive.json','utf8'));const roles=['planning','graphics','development','qa','balance'];const pool=[...new Set((d.ai?.modelPool||[]).map(String).map(x=>x.trim()).filter(Boolean))];const leads=roles.map(role=>String(d.ai?.departmentLeadModels?.[role]||'').trim());if(pool.length<Number(d.ai?.minDistinctModelsPerDepartment||3))throw new Error('model pool too small');if(new Set(leads).size<5)throw new Error('five distinct lead models required');for(const lead of leads)if(!pool.includes(lead))throw new Error(`lead not in pool: ${lead}`);for(const model of pool)console.log(model);
-          NODE
-          primary="$(head -n 1 /tmp/models.txt)"; test -n "$primary"; echo "primary_model=$primary" >> "$GITHUB_OUTPUT"
-      - name: Prepare cached local Ollama runtime
-        if: steps.target.outputs.should_run == 'true'
-        uses: ./.github/actions/prepare-ollama
-        with:
-          model: ${{ steps.models.outputs.primary_model }}
-          version: ${{ env.OLLAMA_VERSION }}
-          pull-model: 'true'
-      - name: Pull only missing configured free department models
-        if: steps.target.outputs.should_run == 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          ollama list | awk 'NR>1 {print $1}' > /tmp/ollama-present-models.txt
-          while IFS= read -r model; do [ -z "$model" ] && continue; grep -Fxq "$model" /tmp/ollama-present-models.txt || { ollama pull "$model"; printf '%s\n' "$model" >> /tmp/ollama-present-models.txt; }; done < /tmp/models.txt
-          echo 'LOCAL_DEPARTMENT_MODEL_RUNTIME=YES'
-          echo 'DESIGNER_EXTERNAL_API=OPTIONAL_SECRET_GATED'
+          test -n "${{ secrets.GEMINI_API_KEY }}" || { echo 'GEMINI_API_KEY_REQUIRED' >&2; exit 1; }
+          echo 'DESIGN_AI_PROVIDER=GEMINI_ONLY'
       - name: Run seed-backed DESIGN_ONLY pipeline without artbook
         if: steps.target.outputs.should_run == 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
           ARTBOOK_DATE: ${{ matrix.target.date }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          COMPANY_DESIGNER_PROVIDER_HINT: ${{ matrix.target.designer_provider }}
         shell: bash
         run: |
           set -euo pipefail
