@@ -762,6 +762,7 @@ jobs:
           node tools/vibe2-queue-control.mjs fan-in --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
           # Per-candidate test/performance roles already ran. Regression runs once at fan-in.
+          set +e
           node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
@@ -776,6 +777,28 @@ jobs:
             qa/vibe2-candidate-reconcile.test.mjs \
             qa/vibe2-experience-control.test.mjs \
             qa/vibe2-handoff.test.mjs
+          regression_rc=$?
+          set -e
+          if [ "$regression_rc" -ne 0 ]; then
+            node tools/vibe2-queue-control.mjs fan-in-regression-fail \
+              --input=/tmp/vibe2-fan-in.json \
+              --blocker=fan-in-regression-failed
+            git add .vibe2/queue.json .vibe2/parallelism-control.json
+            if ! git diff --cached --quiet; then
+              git commit -m "vibe2: requeue after fan-in regression failure [skip ci]"
+              pushed=0
+              for attempt in 1 2 3; do
+                if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
+                git rebase --abort 2>/dev/null || true
+                git fetch origin vibe2-unreal-core --quiet
+                sleep $((attempt * 2))
+              done
+              test "$pushed" = 1
+            fi
+            echo 'VIBE2_REGRESSION_ROLE=FAIL_REQUEUED'
+            echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
+            exit "$regression_rc"
+          fi
           echo 'VIBE2_REGRESSION_ROLE=PASS'
           echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
 
