@@ -310,18 +310,79 @@
       "materialContractOk": true
     }
   },
-  "tasks": {},
+  "tasks": {
+    "five_lead_reviews::development": {
+      "keep": [
+        "2차원 배열 기반의 보드 데이터 관리 구조는 연산 효율성이 뛰어나며 ROBLOX 환경에서 데이터 동기화 비용을 최소화함."
+      ],
+      "fix": [
+        "연속 실패 시 적의 공격력을 상승시키는 설계는 난이도 곡선을 파괴하므로, 대신 적의 배치 패턴을 단순화하도록 수정할 것."
+      ],
+      "add": [
+        "기물 각성 시 발생하는 광역 지형 변화 연출을 위해 파티클 인스턴스 풀링 시스템을 추가하여 모바일 프레임 드랍을 방지함."
+      ],
+      "risks": [
+        "턴 종료 시점에만 동기화할 경우, 이동 애니메이션 중 발생하는 클라이언트-서버 간의 시각적 위치 불일치 위험이 존재함."
+      ],
+      "evidence": [
+        "GameAnalytics 2025 보고서에 따르면 퍼즐 세션은 평균 5.7분이며, 3분 이내의 설계는 ROBLOX 유저 유지에 적합함."
+      ],
+      "questions": [
+        "기물 각성 시 변화하는 타일 속성이 서버 연산에 포함되는지, 아니면 단순 클라이언트 연출인지 정의가 필요함."
+      ]
+    },
+    "five_lead_reviews::graphics": {
+      "keep": [
+        "클래식 체스의 정제된 미학을 현대적인 로우폴리 스타일로 재해석하여 가독성과 타격감을 확보하는 방향성을 유지함."
+      ],
+      "fix": [
+        "황금빛과 남색의 메인 컬러는 고급스럽지만, 전장 타일 버프와 기물 각성 이펙트의 시각적 위계가 모호해질 수 있음."
+      ],
+      "add": [
+        "기물 이동 경로와 타일 버프 효과를 색상뿐만 아니라 패턴(점선, 실선, 발광 강도)으로 구분하는 시각적 보조 장치 추가."
+      ],
+      "risks": [
+        "로블록스 엔진 환경에서 다수의 마법 이펙트와 실시간 타일 조명 효과가 중첩될 경우 모바일 저사양 기기 프레임 드랍 발생."
+      ],
+      "evidence": [
+        "Royal Match와 Block Blast!의 성공 사례는 복잡한 전술 정보를 직관적인 시각적 피드백으로 단순화한 UI/UX에 기인함."
+      ],
+      "questions": [
+        "기물 각성 시 캐릭터 모델링의 외형 변화(스킨 변경)가 로블록스 최적화 예산 내에서 실시간으로 구현 가능한가?"
+      ]
+    },
+    "five_lead_reviews::planning": {
+      "keep": [
+        "체스의 공간적 읽기와 말별 전술 능력을 결합한 전략적 퍼즐 배틀 콘셉트를 유지하라."
+      ],
+      "fix": [
+        "실패 시 재시도 플로우에서 패널티가 없으므로 난이도 곡선 조정 지표를 구체화하라."
+      ],
+      "add": [
+        "전장 타일 버프와 기물 각성 시스템의 구체적인 수치 연동 규칙을 추가하라."
+      ],
+      "risks": [
+        "싱글 퍼즐 중심에서 멀티플레이 확장 시 턴 제한 시간으로 인한 이탈 위험이 존재한다."
+      ],
+      "evidence": [
+        "글로벌 퍼즐 세션 평균 시간과 대중적인 퍼즐-전략 장르 시장 지표를 반영했다."
+      ],
+      "questions": [
+        "기물 추가 시 기존 체스 룰의 직관성을 유지하면서 차별화할 기준은 무엇인가?"
+      ]
+    }
+  },
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 6,
-      "successes": 6,
+      "calls": 7,
+      "successes": 7,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 22048,
-      "lastMs": 2119,
+      "totalMs": 23426,
+      "lastMs": 1378,
       "lastError": null,
-      "updatedAt": "2026-09-18T07:43:30.719Z"
+      "updatedAt": "2026-09-18T07:44:13.272Z"
     },
     "gemini:gemini-3.5-flash": {
       "calls": 1,
@@ -333,15 +394,39 @@
       "lastMs": 26612,
       "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
       "updatedAt": "2026-09-18T07:43:57.471Z"
+    },
+    "gemini:gemini-3-flash-preview": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 38041,
+      "lastMs": 38041,
+      "lastError": null,
+      "updatedAt": "2026-09-18T07:44:08.901Z"
+    },
+    "gemini:gemini-3.1-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 2891,
+      "lastMs": 2891,
+      "lastError": null,
+      "updatedAt": "2026-09-18T07:44:11.893Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-18T07:38:28.184Z",
-  "updatedAt": "2026-09-18T07:43:57.471Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T07:43:30.719Z",
+  "updatedAt": "2026-09-18T07:44:13.272Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T07:44:13.272Z",
   "geminiModelResolution": {
-    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
+    "gemini-3.5-flash-lite": "gemini-3.5-flash-lite",
+    "gemini-3-flash-preview": "gemini-3-flash-preview",
+    "gemini-3.1-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
