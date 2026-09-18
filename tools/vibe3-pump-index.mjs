@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildVibeVerifiedMemoryIndex, retrieveVibeVerifiedPatterns, createVibeTaskPlaybook } from '../assets/vibe-v3-engine.js';
+import { buildTransformativeRecombination } from './vibe3-transformative-recombination.mjs';
 
 const TASK_TYPES=Object.freeze(['coding','bugfix','qa','unity','roblox','graphics','planning','general']);
 const PORTABLE_WEB_QUERY='webgame touch input mobile ui save load resume performance responsive regression core loop';
@@ -14,7 +15,7 @@ function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true})
 function parseArgs(argv){const args={};for(let i=0;i<argv.length;i+=1){const arg=argv[i];if(!arg.startsWith('--'))continue;const [key,inline]=arg.slice(2).split('=',2);args[key]=inline??argv[++i];}return args;}
 function taskForFailure(entry){const type=clean(entry.taskType).toLowerCase();return TASK_TYPES.includes(type)?type:'general';}
 
-export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchmarks=64}={}){
+export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchmarks=64,maxRecombinationRecipes=64}={}){
   const failures=[];
   for(const trajectory of trajectories){
     for(const candidate of trajectory?.candidates||[]){
@@ -39,15 +40,17 @@ export function buildPumpArtifacts({trainingSamples=[],trajectories=[],maxBenchm
   const dedup=new Map();for(const item of benchmarkSeeds)if(!dedup.has(item.id))dedup.set(item.id,item);
   const cases=[...dedup.values()].sort((a,b)=>a.id.localeCompare(b.id)).slice(0,Math.max(1,Math.floor(Number(maxBenchmarks)||64))).map(item=>({...item,state:'READY_FOR_CANDIDATE_EXECUTION',candidateCount:5,maxRepairAttempts:3,countsAsTrainingSample:false,requiredVerification:['RESPONSIBLE_SOURCE','CHECKPOINT','SYNTAX','TESTS','RUNTIME','INDEPENDENT_QA','REGRESSION','EXACT_REVISION'],promotionRule:'ONLY_VERIFIED_RESULT_MAY_ENTER_CANONICAL_DISTILLATION'}));
   const benchmark={version:1,generation:'V3-PUMP',state:'READY',hourlyRefresh:true,executionAuthority:'EXISTING_VIBE_DEVELOPMENT_PIPELINE_ONLY',localWeightTrainingRequired:false,countsAsTrainingSample:false,cases,policy:{noAutoSuccess:true,noFabricatedEvidence:true,noParallelPipeline:true,noPaidApi:true,noGitHubHostedModelTraining:true}};
-  return {index,playbooks,benchmark};
+  const recombination=buildTransformativeRecombination({trainingSamples,maxRecipes:maxRecombinationRecipes});
+  playbooks.transformativeRecombination={enabled:true,materialCount:recombination.materials.length,recipeCount:recombination.recipes.length,minimumDistinctProjects:2,originalModifierRequired:true,rawSourceOutputAllowed:false,rawAssetOutputAllowed:false,authority:'transformative-recombination-context-only'};
+  return {index,playbooks,benchmark,recombination};
 }
 
-export function refreshPumpFiles({sampleDir='company-learning/training-samples',trajectoryDir='company-learning/vibe3-trajectories',memoryOut='company-learning/vibe3-memory-index.json',playbooksOut='company-learning/vibe3-task-playbooks.json',benchmarkOut='company-learning/vibe3-benchmark-queue.json',maxBenchmarks=64}={}){
-  const sampleItems=listJson(sampleDir),trajectoryItems=listJson(trajectoryDir),artifacts=buildPumpArtifacts({trainingSamples:sampleItems.map(item=>item.record),trajectories:trajectoryItems.map(item=>item.record),maxBenchmarks});
+export function refreshPumpFiles({sampleDir='company-learning/training-samples',trajectoryDir='company-learning/vibe3-trajectories',memoryOut='company-learning/vibe3-memory-index.json',playbooksOut='company-learning/vibe3-task-playbooks.json',benchmarkOut='company-learning/vibe3-benchmark-queue.json',recombinationOut='company-learning/vibe3-recombination-memory.json',maxBenchmarks=64,maxRecombinationRecipes=64}={}){
+  const sampleItems=listJson(sampleDir),trajectoryItems=listJson(trajectoryDir),artifacts=buildPumpArtifacts({trainingSamples:sampleItems.map(item=>item.record),trajectories:trajectoryItems.map(item=>item.record),maxBenchmarks,maxRecombinationRecipes});
   const memory={...artifacts.index,sourceFiles:{trainingSamples:sampleItems.map(item=>item.file),trajectories:trajectoryItems.map(item=>item.file)},refresh:{mode:'HOURLY_24H',workflow:'Vibe2 Distillation Sample Ingest',localWeightTrainingRequired:false}};
-  writeJson(memoryOut,memory);writeJson(playbooksOut,artifacts.playbooks);writeJson(benchmarkOut,artifacts.benchmark);
-  return {version:1,state:'PASS',trainingSamplesExamined:sampleItems.length,trajectoriesExamined:trajectoryItems.length,verifiedPositiveMemory:memory.positive.length,failureWarnings:memory.failureWarnings.length,playbooks:Object.keys(artifacts.playbooks.taskTypes).length,benchmarks:artifacts.benchmark.cases.length,outputs:{memoryOut,playbooksOut,benchmarkOut}};
+  writeJson(memoryOut,memory);writeJson(playbooksOut,artifacts.playbooks);writeJson(benchmarkOut,artifacts.benchmark);writeJson(recombinationOut,artifacts.recombination);
+  return {version:1,state:'PASS',trainingSamplesExamined:sampleItems.length,trajectoriesExamined:trajectoryItems.length,verifiedPositiveMemory:memory.positive.length,failureWarnings:memory.failureWarnings.length,playbooks:Object.keys(artifacts.playbooks.taskTypes).length,benchmarks:artifacts.benchmark.cases.length,recombinationMaterials:artifacts.recombination.materials.length,recombinationRecipes:artifacts.recombination.recipes.length,outputs:{memoryOut,playbooksOut,benchmarkOut,recombinationOut}};
 }
 
-function main(){const a=parseArgs(process.argv.slice(2));const result=refreshPumpFiles({sampleDir:a['sample-dir'],trajectoryDir:a['trajectory-dir'],memoryOut:a['memory-out'],playbooksOut:a['playbooks-out'],benchmarkOut:a['benchmark-out'],maxBenchmarks:a['max-benchmarks']});console.log(JSON.stringify(result));}
+function main(){const a=parseArgs(process.argv.slice(2));const result=refreshPumpFiles({sampleDir:a['sample-dir'],trajectoryDir:a['trajectory-dir'],memoryOut:a['memory-out'],playbooksOut:a['playbooks-out'],benchmarkOut:a['benchmark-out'],recombinationOut:a['recombination-out'],maxBenchmarks:a['max-benchmarks'],maxRecombinationRecipes:a['max-recombination-recipes']});console.log(JSON.stringify(result));}
 const isMain=process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url);if(isMain){try{main();}catch(error){console.error(error.stack||error.message);process.exitCode=1;}}
