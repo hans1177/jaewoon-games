@@ -141,11 +141,11 @@ test('adaptive backpressure steps 20 down through 16 12 8 4 as pressure rises', 
   }
 });
 
-test('high-risk opt-in task creates two speculative worker variants', () => {
+test('high-risk opt-in task creates three speculative worker variants', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risky','risky','web',{estimatedRisk:'high',speculativeEligible:true});
   const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
-  assert.equal(reserved.matrix[0].speculativeVariants,2);
+  assert.equal(reserved.matrix[0].speculativeVariants,3);
 });
 
 test('fan-in accepts first passing speculative variant and keeps task awaiting full QA', () => {
