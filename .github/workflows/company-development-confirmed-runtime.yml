@@ -248,36 +248,26 @@ jobs:
       - name: Fetch current company runtime
         run: git fetch --no-tags --depth=1 origin "$COMPANY_RUNTIME_BRANCH"
 
-      - name: Confirm Web compiler contract
+      - name: Confirm Web implementation ownership contract
         run: |
           set -euo pipefail
-          grep -q "VIBE_DEVELOPMENT_CONTEXT" tools/company-development-web-bootstrap.mjs
-          grep -q "SOURCE_REPAIRED=" tools/company-development-web-bootstrap.mjs
-          grep -q "PRE_WEB_ARTBOOK_REQUIRED=NO" tools/company-development-web-bootstrap.mjs
-          echo 'WEB_VIBE2_DEVELOPER=CANONICAL_BOOTSTRAP'
-          echo 'WEB_VIBE2_PATCH_PLANNER=REQUIRED'
+          grep -q "GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3" tools/company-development-web-bootstrap.mjs
+          grep -q "NON_VIBE_GAME_SOURCE_WRITE=NO" tools/company-development-web-bootstrap.mjs
+          grep -q "VIBE_WEB_IMPLEMENTATION_REQUIRED" tools/company-development-web-bootstrap.mjs
+          echo 'WEB_IMPLEMENTATION_OWNER=VIBE2_VIBE3'
+          echo 'COMPANY_WEB_ROLE=VALIDATE_ROUTE_FAN_IN'
+          echo 'NON_VIBE_GAME_SOURCE_WRITE=NO'
           echo 'PRE_WEB_ARTBOOK_REQUIRED=NO'
           echo 'WEB_PAID_AI=NO'
           echo 'WEB_PAID_RUNNER=NO'
-
-      - name: Confirm lazy optional AI runtime policy
-        if: matrix.runtimeStage == 'initial-cycle' && matrix.existingWebValidated != true
-        run: |
-          grep -q "DETERMINISTIC_FIRST=YES" tools/company-development-web-bootstrap.mjs
-          grep -q "AI_OPTIONAL=YES" tools/company-development-web-bootstrap.mjs
-          echo 'WEB_AI_MODE=LAZY_OPTIONAL_GEMINI_ONLY'
-          echo 'WEB_MODEL_PREP=DEFERRED_UNTIL_REQUIRED'
-          echo 'WEB_LOCAL_OLLAMA_ALLOWED=NO'
 
       - name: Install isolated browser runtime
         run: |
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Build and validate one required Web companion
+      - name: Validate one Vibe-built Web companion
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          COMPANY_GEMINI_WEB_MODEL: 'gemini-3.5-flash-lite'
           GAME_ID: ${{ matrix.gameId }}
           GAME_NAME: ${{ matrix.gameName }}
           DESIGN_BASELINE_SOURCE: ${{ matrix.designBaselineSource }}
