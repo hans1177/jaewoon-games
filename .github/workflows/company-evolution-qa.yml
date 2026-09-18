@@ -32,6 +32,7 @@ on:
       - qa/company-release-production-cycle.test.mjs
       - qa/release-stale-artifact-guard.test.mjs
       - qa/tier1-development-baseline-gate.test.mjs
+      - qa/company-design-pre-gate-resume.test.mjs
       - .github/workflows/artbook-free-department-bots.yml
       - .github/workflows/company-release-artifact-safety-qa.yml
       - .github/workflows/vibe2-24h-runner.yml
@@ -68,6 +69,7 @@ jobs:
           node --check tools/artbook-production-pipeline.mjs
           node --check qa/company-release-production-cycle.test.mjs
           node --check qa/release-stale-artifact-guard.test.mjs
+          node --check qa/company-design-pre-gate-resume.test.mjs
           node --check qa/tier1-development-baseline-gate.test.mjs
 
       - name: Validate centralized production policy contract
@@ -169,6 +171,7 @@ jobs:
           node --test qa/company-release-production-cycle.test.mjs
           node --test qa/release-stale-artifact-guard.test.mjs
           node --test qa/tier1-development-baseline-gate.test.mjs
+          node --test qa/company-design-pre-gate-resume.test.mjs
           if grep -Eq 'OPENAI_API_KEY|ANTHROPIC_API_KEY|GROQ_API_KEY|MISTRAL_API_KEY' .github/workflows/artbook-free-department-bots.yml tools/company-design-cycle.mjs tools/company-development-validation-cycle.mjs tools/company-release-production-cycle.mjs tools/company-baseline-gate.mjs tools/artbook-production-pipeline.mjs; then
             echo 'paid/external AI key leaked into free multimodel path' >&2
             exit 1
