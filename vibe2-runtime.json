@@ -162,7 +162,8 @@
     "webRobloxHandoffs": ".vibe2/web-roblox-handoffs.json",
     "verifiedCodePatterns": ".vibe2/code-pattern-library.json",
     "gameStudyKnowledge": ".vibe2/game-study-knowledge.json",
-    "webExperienceIngest": "tools/vibe2-web-experience-ingest.mjs"
+    "webExperienceIngest": "tools/vibe2-web-experience-ingest.mjs",
+    "externalAiDistilledKnowledge": ".vibe2/external-ai-distilled-knowledge.json"
   },
   "workers": {
     "exploration": {
@@ -585,7 +586,14 @@
     "binaryAssetsDirectTextEditForbidden": true,
     "sharedWorkLockRequired": false,
     "queueSourceRootLeaseRequired": true,
-    "homepagePublicationAutomatic": false
+    "homepagePublicationAutomatic": false,
+    "externalAiDirectDevelopmentAllowed": false,
+    "externalAiKnowledgeMode": "VERIFIED_DISTILLATION_ONLY",
+    "externalAiRawOutputMayReachSourceWorker": false,
+    "externalAiRawOutputMayCountAsLearningEvidence": false,
+    "externalAiDistilledKnowledgeMayExpandAuthority": false,
+    "externalAiDirectMasteryCredit": false,
+    "externalAiDirectCanonicalTrainingSample": false
   },
   "workPackages": {
     "enabled": true,
