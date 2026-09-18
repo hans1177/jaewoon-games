@@ -3,9 +3,9 @@
   "gameId": "seed-puzzle-chromatic-cascade",
   "date": "2026-09-19",
   "seedId": "OWNER-ALL-DESIGN-RESET-SEED-PUZZLE-CHROMATIC-CASCADE-20260917",
-  "fingerprint": "c4cb355833c0fbe0e7d688489b404bf921cb26183e91db3b7a6b0fd285c4c8da",
+  "fingerprint": "d61c8b372287cf0585e6444a46acd706639291d841ec6e1b712b1454a1b5bb92",
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
-  "engineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
+  "engineDigest": "58ddddcb79561146964fff554cabff4f694396f61d65e92ca0d90b67187d1e1c",
   "status": "PRE_GATE_BLOCKED",
   "completedPhases": [
     "designer_draft",
@@ -437,22 +437,22 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 7,
-      "successes": 7,
+      "calls": 9,
+      "successes": 9,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 22234,
-      "lastMs": 1519,
+      "totalMs": 25627,
+      "lastMs": 1614,
       "lastError": null,
-      "updatedAt": "2026-09-18T15:47:23.180Z"
+      "updatedAt": "2026-09-18T15:57:08.938Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T15:09:45.460Z",
-  "updatedAt": "2026-09-18T15:47:23.182Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T15:47:23.180Z",
+  "updatedAt": "2026-09-18T15:57:08.941Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T15:57:08.938Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
@@ -465,10 +465,10 @@
     "fromContractVersion": 3,
     "toContractVersion": 3,
     "reason": "QUOTA_VIBE_REPAIR_COMPATIBLE_ENGINE_CHANGE_NO_REPLAY",
-    "previousEngineDigest": "24c3c41118092b683ffd377cd948df67544a935d6871fa290e985263cf5f3c03",
+    "previousEngineDigest": "84ba02b00c0f6c91c9731f1ecabc12b55accadd2f2673cabdf5badc742e64dbf",
     "preservedPhaseCount": 6,
     "preservedTaskCount": 0,
-    "migratedAt": "2026-09-18T15:42:58.213Z"
+    "migratedAt": "2026-09-18T15:57:05.533Z"
   },
-  "preGateRepairGeneration": 2
+  "preGateRepairGeneration": 3
 }
