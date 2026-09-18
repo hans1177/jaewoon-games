@@ -135,7 +135,7 @@ test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate 
   assert.ok(designRuntime.includes("const maxMatch=policy.match(/concurrentGameWipMax:\\s*(\\d+)/);"));
   assert.match(designRuntime,/slice\(0,designWipMax\)/);
   assert.match(designRuntime,/const selected=canaryVerified\?pending:pending\.slice\(0,2\)/);
-  assert.match(designRuntime,/const parallelMax=Math\.max\(1,Math\.min\(canaryVerified\?5:2,targets\.length\|\|1\)\)/);
+  assert.match(designRuntime,/const parallelMax=Math\.max\(1,Math\.min\(canaryVerified\?2:1,targets\.length\|\|1\)\)/);
   assert.match(designRuntime,/parallel_max=\$\{parallelMax\}/);
   assert.match(designRuntime,/GAME_DESIGN_EXECUTION_LANES=\$\{parallelMax\}/);
   assert.match(designRuntime,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
