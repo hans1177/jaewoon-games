@@ -168,7 +168,7 @@
         "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
       },
       "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 0,
+        "IDEA_AND_DISTINCTNESS": 80,
         "CATEGORY_IDENTITY": 80,
         "CORE_LOOP_DESIGN": 80,
         "SYSTEM_INTERCONNECTION_DESIGN": 80,
@@ -181,7 +181,7 @@
         "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
       },
       "scores": {
-        "IDEA_AND_DISTINCTNESS": 0,
+        "IDEA_AND_DISTINCTNESS": 9.6,
         "CATEGORY_IDENTITY": 8,
         "CORE_LOOP_DESIGN": 11.2,
         "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
@@ -193,47 +193,15 @@
         "ART_AUDIO_DIRECTION": 4,
         "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
       },
-      "totalScore": 67.4,
+      "totalScore": 77,
       "criticalAxisFailures": [
-        "IDEA_AND_DISTINCTNESS",
         "CONTENT_EXPANSION_PLAN",
         "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
       ],
       "hardFailures": [
-        "CORE_FUN_WEAK",
         "CRITICAL_AXIS_MINIMUM_FAIL"
       ],
       "rejectionReasons": [
-        {
-          "code": "CORE_FUN_WEAK",
-          "kind": "HARD_GATE",
-          "axis": "CORE_LOOP_DESIGN",
-          "evidenceLevel": 0,
-          "minimumRequired": 60,
-          "evidence": {
-            "ideaAndDistinctness": 0,
-            "coreLoopDesign": 80,
-            "coreLoopCount": 3,
-            "signatureSystemCount": 2
-          },
-          "requiredAction": "핵심 재미를 정체성·core loop·signature system의 실제 선택과 상태변화로 강화한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IDEA_AND_DISTINCTNESS",
-          "evidenceLevel": 0,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 0,
-            "axisWeight": 12
-          },
-          "requiredAction": "정체성·플레이어 판타지·coreFun을 구체화하고 coreLoop와 최소 2개 signature system에 직접 연결한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
         {
           "code": "CRITICAL_AXIS_MINIMUM_FAIL",
           "kind": "HARD_GATE",
@@ -271,15 +239,15 @@
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 19,
-      "successes": 7,
+      "calls": 21,
+      "successes": 9,
       "failures": 12,
       "timeouts": 0,
       "jsonFailures": 12,
-      "totalMs": 132992,
-      "lastMs": 2367,
+      "totalMs": 137477,
+      "lastMs": 2057,
       "lastError": "Expected ',' or '}' after property value in JSON at position 3732 (line 1 column 3733)",
-      "updatedAt": "2026-09-18T06:58:20.314Z"
+      "updatedAt": "2026-09-18T07:07:18.548Z"
     },
     "gemini:gemini-2.5-flash": {
       "calls": 4,
@@ -384,8 +352,8 @@
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T06:53:33.250Z",
-  "updatedAt": "2026-09-18T06:58:20.317Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T06:58:20.314Z",
+  "updatedAt": "2026-09-18T07:07:18.551Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T07:07:18.548Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
