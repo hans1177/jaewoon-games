@@ -20,7 +20,7 @@ const ai=directive.ai||{};
 const geminiApiKey=clean(process.env.GEMINI_API_KEY);
 if(!geminiApiKey)throw new Error('GEMINI_API_KEY_REQUIRED');
 const geminiDesignerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL||'gemini-3.8-flash');
-const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-2.5-pro').split(','));
+const geminiLeadModelList=uniq(clean(process.env.COMPANY_GEMINI_LEAD_MODELS||'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite').split(','));
 if(geminiLeadModelList.length<ROLES.length)throw new Error(`GEMINI_LEAD_MODEL_GATE: ${geminiLeadModelList.length}/${ROLES.length}`);
 const leadModels=Object.fromEntries(ROLES.map((role,index)=>[role,geminiLeadModelList[index]]));
 const distinctLeadModels=uniq(Object.values(leadModels));
