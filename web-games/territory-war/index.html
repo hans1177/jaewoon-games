@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vibe2</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="scripts.js"></script>
+</head>
+<body>
+  <main id="game"></main>
+  <script>
+    // Game initialization
+    const game = {
+      map: {
+        width: 10,
+        height: 10,
+        tiles: new Array(10).fill(0)
+      },
+      player: {
+        x: 0,
+        y: 0,
+        health: 100,
+        inventory: []
+      },
+      enemies: [],
+      ai: {
+        behavior: "basic",
+        targets: []
+      },
+      ui: {
+        display: "basic",
+        elements: []
+      },
+      save: {
+        data: {
+          map: JSON.stringify(game.map),
+          player: JSON.stringify(game.player),
+          enemies: JSON.stringify(game.enemies),
+          ai: JSON.stringify(game.ai),
+          ui: JSON.stringify(game.ui)
+        },
+        version: 1
+      }
+    };
+
+    // Initialize game
+    function initGame() {
+      // Initialize map
+      game.map = new Array(10).fill(0);
+      for (let i = 0; i < 10; i++) {
+        game.map[i] = {
+          type: "empty",
+          owner: 0,
+          tiles: new Array(10).fill(0)
+        };
+      }
+
+      // Initialize player
+      game.player = {
+        x: 0,
+        y: 0,
+        health: 100,
+        inventory: []
+      };
+
+      // Initialize enemies
+      game.enemies = [];
+
+      // Initialize AI
+      game.ai = {
+        behavior: "basic",
+        targets: []
+      };
+
+      // Initialize UI
+      game.ui = {
+        display: "basic",
+        elements: []
+      };
+
+      // Start game loop
+      startGameLoop();
+    }
+
+    // Start game loop
+    function startGameLoop() {
+      // Game loop
+      const loop = () => {
+        // Update game state
+        updateGame();
+
+        // Check for game over
+        if (game.player.health <= 0) {
+          endGame();
+          return;
+        }
+
+        // Check for win condition
+        if (game.player.health >= 100) {
+          endGame();
+          return;
+        }
+
+        // Update UI
+        updateUI();
+
+        // Request next frame
+        requestAnimationFrame(loop);
+      };
+
+      loop();
+    }
+
+    // Update game state
+    function updateGame() {
+      // Move player
+      movePlayer();
+
+      // Update enemies
+      updateEnemies();
+
+      // Update AI
+      updateAI();
+
+      // Check for collisions
+      checkCollisions();
+    }
+
+    // Move player
+    function movePlayer() {
+      // Basic movement
+      game.player.x += 1;
+      game.player.y += 1;
+    }
+
+    // Update enemies
+    function updateEnemies() {
+      // Basic enemy movement
+      for (let i = 0; i < game.enemies.length; i++) {
+        game.enemies[i].x += 1;
+        game.enemies[i].y += 1;
+      }
+    }
+
+    // Update AI
+    function updateAI() {
+      // Basic AI behavior
+      if (game.ai.behavior === "basic") {
+        // Basic AI logic
+      }
+    }
+
+    // Check for collisions
+    function checkCollisions() {
+      // Basic collision detection
+    }
+
+    // Update UI
+    function updateUI() {
+      // Basic UI update
+    }
+
+    // End game
+    function endGame() {
+      // End game logic
+    }
+
+    // Initialize game
+    initGame();
+  </script>
+</body>
+</html>
