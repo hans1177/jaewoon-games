@@ -31,14 +31,15 @@ for(const [index,game] of catalog.games.entries()){
   assert.equal(c.homepage.category,game.homepageCategory);
 }
 
-const skyline=catalog.games.find(game=>game.id==='seed-roblox-obby-party-minigam-tower-of-hell');
-const vector=catalog.games.find(game=>game.id==='seed-roblox-battleground-fight-welcome-to-bloxburg');
-assert(skyline&&vector);
-assert.equal(skyline.canonical.identity.name,'Skyline Rush');
-assert.equal(skyline.canonical.publication.roblox.placeId,'129342889720619');
-assert.equal(vector.canonical.publication.roblox.placeId,'120787429678729');
-assert.notEqual(skyline.canonical.publication.roblox.placeId,vector.canonical.publication.roblox.placeId);
-assert.notEqual(skyline.canonical.publication.roblox.universeId,vector.canonical.publication.roblox.universeId);
+const permanentlyRemoved=[
+  'seed-roblox-battleground-fight-welcome-to-bloxburg',
+  'seed-roblox-obby-party-minigam-tower-of-hell'
+];
+assert.deepEqual(catalog.permanentRemovalPolicy?.ids,permanentlyRemoved);
+assert.equal(catalog.permanentRemovalPolicy?.reentryAllowed,false);
+assert.equal(catalog.permanentRemovalPolicy?.automaticRecoveryAllowed,false);
+assert.equal(catalog.permanentRemovalPolicy?.automaticMaintenanceAllowed,false);
+for(const gameId of permanentlyRemoved)assert.equal(catalog.games.some(game=>game.id===gameId),false);
 
 const policy=roadmap.catalogNormalization;
 assert.equal(policy?.authority,'MACHINE_EXECUTION_CONTRACT');
