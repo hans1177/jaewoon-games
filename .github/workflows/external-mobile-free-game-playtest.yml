@@ -114,10 +114,11 @@ jobs:
           const manifest=JSON.parse(fs.readFileSync('company-learning/external-game-playtest/mobile-free-seed-games.json','utf8'));
           const count=Array.isArray(manifest.games)?manifest.games.length:0;
           if(count<1)throw new Error('Google Play reference catalog is empty');
-          const maxRaw=process.env.INPUT_MAX_GAMES||'3';
+          const pushSmoke=process.env.GITHUB_EVENT_NAME==='push'&&!process.env.INPUT_MAX_GAMES&&!process.env.INPUT_START_INDEX;
+          const maxRaw=pushSmoke?'1':(process.env.INPUT_MAX_GAMES||'3');
           const max=Number(maxRaw);
           if(!Number.isInteger(max)||max<1||max>12)throw new Error('max_games must be an integer from 1 to 12');
-          const requested=(process.env.INPUT_START_INDEX||'auto').trim();
+          const requested=pushSmoke?'0':(process.env.INPUT_START_INDEX||'auto').trim();
           let start;
           if(!requested||requested==='auto'){
             start=Number(process.env.GITHUB_RUN_NUMBER||0)%count;
@@ -126,6 +127,7 @@ jobs:
             if(!Number.isInteger(parsed)||parsed<0)throw new Error('start_index must be auto or a non-negative integer');
             start=parsed%count;
           }
+          console.log('GOOGLE_PLAY_PUSH_SMOKE='+(pushSmoke?'YES':'NO'));
           fs.appendFileSync(process.env.GITHUB_ENV,'PLAYTEST_MAX_GAMES='+max+'\nPLAYTEST_START_INDEX='+start+'\n');
           console.log('GOOGLE_PLAY_REFERENCE_CATALOG_COUNT='+count);
           console.log('GOOGLE_PLAY_REFERENCE_BATCH_SIZE='+max);
