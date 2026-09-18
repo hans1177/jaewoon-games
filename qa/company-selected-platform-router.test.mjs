@@ -70,8 +70,8 @@ test('global selected-platform development window is deterministic, capped at tw
   const window=selectTargetPlatformDevelopmentWindow(rows);
   assert.equal(window.length,20);
   assert.deepEqual(window.map(x=>x.gameId),[
-    'g01','g03','g05','g07','g09','g11','g13','g15','g17','g19','g21',
-    'g02','g04','g06','g08','g10','g12','g14','g16','g18'
+    'g02','g04','g06','g08','g10','g12','g14','g16','g18','g20','g22',
+    'g01','g03','g05','g07','g09','g11','g13','g15','g17'
   ]);
   assert.equal(window.filter(x=>x.selectedPlatform==='ROBLOX').length,11);
   assert.equal(window.filter(x=>x.selectedPlatform==='UNITY').length,9);
