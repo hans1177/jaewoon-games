@@ -68,7 +68,7 @@ test('development final release evidence fails closed on final review, peer or a
   assert.equal(assembleRobloxDevelopmentReleaseEvidence(artifactMismatch).exactRevision,false);
 });
 
-test('release workflow publishes only retained exact artifact and keeps transient Roblox busy recovery automatic',()=>{
+test('release workflow publishes only retained exact artifact and keeps transient Roblox busy recovery manual while automatic publishing is paused',()=>{
   assert.match(workflow,/robloxFinalReviewPassed===true/);
   assert.match(workflow,/ROBLOX_RELEASE_PROMOTION_PENDING/);
   assert.match(workflow,/git diff --quiet "\$SOURCE_REVISION" HEAD -- "\$SOURCE_ROOT"/);
