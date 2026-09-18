@@ -9,6 +9,7 @@ const PLATFORM_TASK_TYPES = new Set(['unity', 'roblox', 'fortnite_uefn']);
 const ALLOWED_TASK_TYPES = new Set(['coding', 'bugfix', ...PLATFORM_TASK_TYPES, 'qa', 'planning', 'general']);
 const INVALID_TRACE_STATES = new Set(['FAIL', 'STALLED', 'NO_ACTIONABLE_WORK', 'INCOMPLETE_PROGRESS', 'FLAKY', 'STALE', 'SHA_MISMATCH']);
 const EXTERNAL_BLACK_BOX_QA_MARKER = 'BLACK_BOX_EVIDENCE_PASS';
+const AUTHORIZED_SOURCE_QA_MARKER = 'AUTHORIZED_SOURCE_EVIDENCE_PASS';
 
 const clean = (value) => String(value ?? '').trim();
 const clamp01 = (value) => Math.max(0, Math.min(1, Number(value) || 0));
@@ -65,8 +66,10 @@ function buildOutput(evidence, patch) {
     .filter((line, index, rows) => line || (index > 0 && rows[index - 1])).join('\n').trim();
 }
 
-export function qaRequirementsForTask(taskType) {
+export function qaRequirementsForTask(taskType, sourceKind = '') {
   const type = clean(taskType).toLowerCase();
+  const source = clean(sourceKind).toLowerCase();
+  if (source === 'authorized-source') return { independentQa: AUTHORIZED_SOURCE_QA_MARKER, browserQa: 'NOT_APPLICABLE', runtime: 'STATIC_VERIFIED', authorizedSourceEvidenceRequired: true, androidRuntimeRequired: false, robloxRuntimeRequired: false, uefnRuntimeRequired: false };
   if (type === 'unity') return { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: true, robloxRuntimeRequired: false, uefnRuntimeRequired: false };
   if (type === 'roblox') return { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: true, uefnRuntimeRequired: false };
   if (type === 'fortnite_uefn') return { independentQa: 'PASS', browserQa: 'NOT_APPLICABLE', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: false, uefnRuntimeRequired: true };
@@ -81,11 +84,13 @@ export function qaRequirementsForTask(taskType) {
   return { independentQa: 'PASS', browserQa: 'PASS', runtime: 'PASS', androidRuntimeRequired: false, robloxRuntimeRequired: false, uefnRuntimeRequired: false };
 }
 
-export function qaEvidencePasses({ taskType, independentQa, browserQa, runtime }) {
+export function qaEvidencePasses({ taskType, independentQa, browserQa, runtime, sourceKind = '' }) {
   const type = clean(taskType).toLowerCase();
+  const source = clean(sourceKind).toLowerCase();
   const independent = upper(independentQa);
   const browser = upper(browserQa);
   const runtimeState = upper(runtime);
+  if (source === 'authorized-source') return independent === AUTHORIZED_SOURCE_QA_MARKER && browser === 'NOT_APPLICABLE' && runtimeState === 'STATIC_VERIFIED';
   if (runtimeState !== 'PASS') return false;
   if (type === 'qa' && independent === EXTERNAL_BLACK_BOX_QA_MARKER && browser === 'NOT_APPLICABLE') return true;
   if (independent !== 'PASS') return false;
@@ -154,4 +159,4 @@ function main() {
 }
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) { try { main(); } catch (error) { console.error(error.message); process.exitCode = 1; } }
-export { TRAINING_SAMPLE_VERSION, MAX_PATCH_BYTES, EXTERNAL_BLACK_BOX_QA_MARKER, PLATFORM_TASK_TYPES };
+export { TRAINING_SAMPLE_VERSION, MAX_PATCH_BYTES, EXTERNAL_BLACK_BOX_QA_MARKER, AUTHORIZED_SOURCE_QA_MARKER, PLATFORM_TASK_TYPES };
