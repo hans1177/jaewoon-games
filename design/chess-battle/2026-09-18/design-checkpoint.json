@@ -6,12 +6,14 @@
   "fingerprint": "b27d452df0c2b490a6e4f8070ed00182592b775698b62d66a6d38adc49eaebb7",
   "policyDigest": "6e787f7c73b44f2f64b094cc31895153970c34b97342d8c8661ece9bb57a2325",
   "engineDigest": "1678961c9ca98d0c0a1ff143cc5cae0bcbed44bcdefc197e0d16960e75858422",
-  "status": "IN_PROGRESS",
+  "status": "PRE_GATE_BLOCKED",
   "completedPhases": [
     "designer_draft",
     "deterministic_pre_gate",
     "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1"
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
   ],
   "phases": {
     "designer_draft": {
@@ -64,18 +66,18 @@
       "contentExpansionPlan": [
         {
           "milestone": "신규 지형 및 장애물 추가",
-          "newGameplay": "이동을 제한하거나 유닛을 강화하는 특수 타일이 도입되어 기존의 정형화된 배치에서 벗어난 새로운 퍼즐형 전술을 제공한다.",
-          "systemImpact": "전술 배치 시스템에 공간적 제약을 추가하여 플레이어가 기존보다 더 신중한 위치 선택을 하도록 강제한다."
+          "newGameplay": "이동을 제한하거나 유닛을 강화하는 특수 타일이 도입되어 기존의 정형화된 배치에서 벗어난 새로운 퍼즐형 전술을 제공합니다.",
+          "systemImpact": "전술 배치 시스템에 공간적 제약을 추가하여 플레이어가 기존보다 더 신중한 위치 선택을 하도록 강제합니다."
         },
         {
           "milestone": "엘리트 적 유닛 및 보스전 도입",
-          "newGameplay": "특정 패턴으로 반격하거나 매턴 능력을 변경하는 강력한 보스 유닛과 전투를 벌이게 됩니다.",
-          "systemImpact": "능력 연계 시스템의 중요성을 높여 단순한 유닛 우위가 아닌 스킬 타이밍 조절을 유도합니다."
+          "newGameplay": "특정 패턴으로 반격하거나 매턴 능력을 변경하는 강력한 보스 유닛과 전투를 벌이며 새로운 승리 조건을 달성합니다.",
+          "systemImpact": "능력 연계 시스템의 중요성을 높여 단순한 유닛 우위가 아닌 스킬 타이밍 조절을 유도하며 기존 전투 루프에 깊이를 더합니다."
         },
         {
           "milestone": "무한 도전 모드 오픈",
-          "newGameplay": "끝없이 몰려오는 적들을 제한된 유닛으로 얼마나 오래 방어하는지 겨루는 생존형 콘텐츠입니다.",
-          "systemImpact": "진행 및 경제 시스템의 자원 가치를 재조정하고 장기적인 메타 성장 요소와 연결합니다."
+          "newGameplay": "끝없이 몰려오는 적들을 제한된 유닛으로 얼마나 오래 방어하는지 겨루는 생존형 퍼즐 기반 서바이벌 콘텐츠를 제공합니다.",
+          "systemImpact": "진행 및 경제 시스템의 자원 가치를 재조정하고 장기적인 메타 성장 요소와 연결하여 리텐션을 강화합니다."
         }
       ],
       "failureRetryRisk": {
@@ -122,17 +124,17 @@
         {
           "designElement": "직관적인 유닛 배치 기능",
           "responsibleSystem": "전술 배치 시스템",
-          "validationEvidence": "사용자가 터치 및 드래그로 유닛을 보드에 올렸을 때 0.1초 이내에 배치 가능 여부가 시각적으로 표시되는지 테스트"
+          "validationEvidence": "사용자가 터치 및 드래그로 유닛을 보드에 올렸을 때 0.1초 이내에 배치 가능 여부가 시각적으로 표시되는지 유저 테스트를 통해 검증한다."
         },
         {
           "designElement": "유닛 간 스킬 연계 효과",
           "responsibleSystem": "능력 연계 시스템",
-          "validationEvidence": "조건을 만족하는 유닛들이 인접했을 때 보너스 데미지와 이펙트가 정확히 발동하는지 로그로 검증"
+          "validationEvidence": "조건을 만족하는 유닛들이 인접했을 때 보너스 데미지와 이펙트가 정확히 발동하는지 자동화 테스트 케이스와 로그로 검증한다."
         },
         {
           "designElement": "스테이지 클리어 및 재화 지급",
           "responsibleSystem": "진행 및 경제 시스템",
-          "validationEvidence": "목표 달성 즉시 자화가 누적되고 상점에서 올바르게 소모되는지 상태값 변화 확인"
+          "validationEvidence": "목표 달성 즉시 재화가 누적되고 상점에서 올바르게 소모되는지 데이터베이스 상태값 변화를 모니터링하여 검증한다."
         }
       ],
       "openQuestions": [
@@ -233,165 +235,27 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
-    },
-    "designer_pre_gate_repair_1": {
-      "contentExpansionPlan": [
-        {
-          "milestone": "신규 지형 및 장애물 추가",
-          "newGameplay": "이동을 제한하거나 유닛을 강화하는 특수 타일이 도입되어 기존의 정형화된 배치에서 벗어난 새로운 퍼즐형 전술을 제공한다.",
-          "systemImpact": "전술 배치 시스템에 공간적 제약을 추가하여 플레이어가 기존보다 더 신중한 위치 선택을 하도록 강제한다."
-        },
-        {
-          "milestone": "엘리트 적 유닛 및 보스전 도입",
-          "newGameplay": "특정 패턴으로 반격하거나 매턴 능력을 변경하는 강력한 보스 유닛과 전투를 벌이게 됩니다.",
-          "systemImpact": "능력 연계 시스템의 중요성을 높여 단순한 유닛 우위가 아닌 스킬 타이밍 조절을 유도합니다."
-        },
-        {
-          "milestone": "무한 도전 모드 오픈",
-          "newGameplay": "끝없이 몰려오는 적들을 제한된 유닛으로 얼마나 오래 방어하는지 겨루는 생존형 콘텐츠입니다.",
-          "systemImpact": "진행 및 경제 시스템의 자원 가치를 재조정하고 장기적인 메타 성장 요소와 연결합니다."
-        }
-      ],
-      "technicalAssumptions": [
-        "서버 부하를 줄이기 위해 보드 위의 유닛 이동과 상태 계산은 클라이언트 측에서 우선 처리하고 결과만 검증한다.",
-        "모바일과 PC 환경 모두에서 동일한 조작감을 제공하기 위해 입력 이벤트를 추상화하여 관리한다."
-      ],
-      "validationQuestions": [
-        "플레이어가 첫 5분 이내에 게임의 핵심 루프와 승리 조건을 직관적으로 이해할 수 있는가?",
-        "전술 배치와 능력 연계 시스템 간의 연결이 플레이어에게 유의미한 상태 변화로 체감되는가?"
-      ],
-      "implementationTraceability": [
-        {
-          "designElement": "직관적인 유닛 배치 기능",
-          "responsibleSystem": "전술 배치 시스템",
-          "validationEvidence": "사용자가 터치 및 드래그로 유닛을 보드에 올렸을 때 0.1초 이내에 배치 가능 여부가 시각적으로 표시되는지 테스트"
-        },
-        {
-          "designElement": "유닛 간 스킬 연계 효과",
-          "responsibleSystem": "능력 연계 시스템",
-          "validationEvidence": "조건을 만족하는 유닛들이 인접했을 때 보너스 데미지와 이펙트가 정확히 발동하는지 로그로 검증"
-        },
-        {
-          "designElement": "스테이지 클리어 및 재화 지급",
-          "responsibleSystem": "진행 및 경제 시스템",
-          "validationEvidence": "목표 달성 즉시 자화가 누적되고 상점에서 올바르게 소모되는지 상태값 변화 확인"
-        }
-      ]
-    },
-    "deterministic_pre_gate_after_repair_1": {
-      "scoreSystem": "STAGE_GATE_SCORING_V2",
-      "version": 2,
-      "passMinimum": 80,
-      "criticalAxisMinimumPercent": 75,
-      "directScoreLevels": [
-        0,
-        20,
-        40,
-        60,
-        80,
-        100
-      ],
-      "weights": {
-        "IDEA_AND_DISTINCTNESS": 12,
-        "CATEGORY_IDENTITY": 10,
-        "CORE_LOOP_DESIGN": 14,
-        "SYSTEM_INTERCONNECTION_DESIGN": 12,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
-        "CONTENT_EXPANSION_PLAN": 10,
-        "FAILURE_RETRY_RISK_DESIGN": 8,
-        "PLATFORM_FIT_DESIGN": 8,
-        "UX_AND_ACCESSIBILITY_PLAN": 6,
-        "ART_AUDIO_DIRECTION": 5,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
-      },
-      "evidenceLevels": {
-        "IDEA_AND_DISTINCTNESS": 80,
-        "CATEGORY_IDENTITY": 80,
-        "CORE_LOOP_DESIGN": 80,
-        "SYSTEM_INTERCONNECTION_DESIGN": 80,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
-        "CONTENT_EXPANSION_PLAN": 60,
-        "FAILURE_RETRY_RISK_DESIGN": 80,
-        "PLATFORM_FIT_DESIGN": 80,
-        "UX_AND_ACCESSIBILITY_PLAN": 80,
-        "ART_AUDIO_DIRECTION": 80,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 60
-      },
-      "scores": {
-        "IDEA_AND_DISTINCTNESS": 9.6,
-        "CATEGORY_IDENTITY": 8,
-        "CORE_LOOP_DESIGN": 11.2,
-        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
-        "CONTENT_EXPANSION_PLAN": 6,
-        "FAILURE_RETRY_RISK_DESIGN": 6.4,
-        "PLATFORM_FIT_DESIGN": 6.4,
-        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
-        "ART_AUDIO_DIRECTION": 4,
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 3
-      },
-      "totalScore": 77,
-      "criticalAxisFailures": [
-        "CONTENT_EXPANSION_PLAN",
-        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY"
-      ],
-      "hardFailures": [
-        "CRITICAL_AXIS_MINIMUM_FAIL"
-      ],
-      "rejectionReasons": [
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "CONTENT_EXPANSION_PLAN",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 6,
-            "axisWeight": 10
-          },
-          "requiredAction": "최소 3개 확장 마일스톤에 새 gameplay와 기존 시스템 영향까지 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        },
-        {
-          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
-          "kind": "HARD_GATE",
-          "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-          "evidenceLevel": 60,
-          "minimumRequired": 75,
-          "evidence": {
-            "axisScore": 3,
-            "axisWeight": 5
-          },
-          "requiredAction": "설계요소→책임시스템→검증증거 추적성을 최소 3개 이상 명시한다.",
-          "bypassAllowed": false,
-          "source": "STAGE_GATE_SCORING_V2"
-        }
-      ],
-      "revalidated": false,
-      "thirtyMinuteHardGateApplied": false,
-      "materialContractOk": true
     }
   },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 2,
-      "successes": 2,
+      "calls": 3,
+      "successes": 3,
       "failures": 0,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 14617,
-      "lastMs": 2386,
+      "totalMs": 17187,
+      "lastMs": 2570,
       "lastError": null,
-      "updatedAt": "2026-09-18T08:09:51.280Z"
+      "updatedAt": "2026-09-18T08:09:53.853Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "PRE_GATE_REPAIR",
   "createdAt": "2026-09-18T08:09:36.655Z",
-  "updatedAt": "2026-09-18T08:09:51.283Z",
-  "lastSuccessfulModelCallAt": "2026-09-18T08:09:51.280Z",
+  "updatedAt": "2026-09-18T08:09:53.857Z",
+  "lastSuccessfulModelCallAt": "2026-09-18T08:09:53.853Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.5-flash-lite"
   },
@@ -399,5 +263,5 @@
   "effectiveDesignerProvider": "GEMINI",
   "failedPhase": null,
   "failedTask": null,
-  "lastError": null
+  "lastError": "DESIGN_PRE_GATE_BLOCKED score=77 hard=CRITICAL_AXIS_MINIMUM_FAIL"
 }
