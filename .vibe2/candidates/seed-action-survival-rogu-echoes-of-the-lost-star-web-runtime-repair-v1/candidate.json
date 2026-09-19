@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<div class=\"tip\">왼쪽 조이스틱 이동 · 자동 공격 · 오른쪽 대시</div>",
+      "replace": "<div class=\"actions\"><button id=\"dashBtn\" class=\"btn dash\">대시<br><small id=\"dashState\">READY</small></button></div><div class=\"tip\">왼쪽 조이스틱 이동 · 자동 공격 · 오른쪽 대시</div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
