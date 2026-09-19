@@ -461,7 +461,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const fullWebTargetMax=Math.min(MAX_FILE_BYTES,Number(fullWebTargetMatch?.[2]||FULL_WEB_GENERATION_TARGET_MAX_BYTES));
   const previousFullWeb=allowFullRewrite&&String(previousOutput||'').trim()?String(previousOutput):'';
   const previousFullWebBytes=previousFullWeb?Buffer.byteLength(previousFullWeb,'utf8'):0;
-  const previousFullWebExcerpt=previousFullWeb?boundedLargeExcerpt(previousFullWeb,4000).content:'';
+  const previousFullWebExcerpt=previousFullWeb?boundedLargeExcerpt(previousFullWeb,Math.min(12000,Math.max(4000,fullWebTargetMin))).content:'';
   let retryBase=rawPrompt;
   if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||(attempt>=3&&timeoutFailure))){
     const marker='\n=== FILE ';
@@ -554,11 +554,12 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   for(let attempt=1;attempt<=maxAttempts;attempt++){
     const retry=attempt>1;
     const focusedFinal=!allowFullRewrite&&attempt>=3;
-    const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
+    const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1&&attempt<maxAttempts;
     const remainingStages=Math.max(1,maxAttempts-attempt+1);
+    const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode?accumulatedFullWeb.content:lastRaw;
     const attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
-      :(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:lastRaw}):prompt);
+      :(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput}):prompt);
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
