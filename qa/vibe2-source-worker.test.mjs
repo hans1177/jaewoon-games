@@ -39,6 +39,11 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.equal(result.exploration.sourceWrite,false);
   assert.ok(result.exploration.reuseKey.length>=16);
   assert.equal(result.roleResults.exploration,'PASS');
+  assert.equal(result.codingMethod.version,1);
+  assert.equal(result.codingMethod.generationAttempts,1);
+  assert.equal(result.codingMethod.candidateProducedFirstAttempt,true);
+  assert.equal(result.codingMethod.writableScopeExpansionAllowed,false);
+  assert.equal(result.codingMethod.learningAuthorityExpanded,false);
   assert.equal(result.developmentAuthority.owner,'VIBE2_VIBE3');
   assert.equal(result.developmentAuthority.provider,'LOCAL_OLLAMA');
   assert.equal(result.developmentAuthority.codexGameSourceWrite,'FORBIDDEN');
@@ -92,13 +97,16 @@ test('candidate manifest persists design intelligence requirements and starts ev
   write(responseFile, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 1;', replace: 'return 2;' }], newFiles: [] }));
   const result = await runVibe2SourceWorker({ cwd, responseFile });
   const persisted = JSON.parse(fs.readFileSync(path.join(cwd, '.vibe2/candidates/design-contract/manifest.json'), 'utf8'));
-  assert.equal(result.version, 5);
+  assert.equal(result.version, 6);
   assert.equal(result.designIntelligence.required, true);
   assert.equal(result.designIntelligence.implementationGate.allowed, true);
   assert.equal(result.designIntelligence.authorityExpanded, false);
   assert.equal(result.designIntelligence.evidenceRequirements.autoPlayer, 'verified-runtime-play-evidence-required');
   assert.deepEqual(result.designIntelligence.pipeline, workOrder.designIntelligence.pipeline);
   assert.equal(persisted.exploration.sourceWrite,false);
+  assert.equal(persisted.codingMethod.version,1);
+  assert.equal(persisted.codingMethod.strategy,result.exploration.editContract.strategyHint);
+  assert.equal(persisted.codingMethod.semanticDiffBudget.unrelatedSystemMutationForbidden,true);
   assert.equal(persisted.roleResults.implementation,'PASS');
   for (const key of ['autoPlayer', 'telemetry', 'designReview', 'qa']) {
     assert.equal(result.designEvidence[key].verified, false);
