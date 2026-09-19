@@ -86,7 +86,7 @@ test('active 20-worker wave does not block plan-only development backlog expansi
 test('release-wait candidates do not consume runnable development planning backlog capacity',()=>{
   const root=tempRepo();
   const waiting=Array.from({length:60},(_,i)=>({
-    id:`release-wait-${i}`,gameId:`wait-${i}`,sourceRoot:`web-games/wait-${i}`,responsibleFiles:['index.html'],
+    id:`release-wait-${i}`,gameId:'dev-web',sourceRoot:`web-games/dev-web-wait-${i}`,responsibleFiles:['index.html'],
     department:'development',type:'implementation',status:'running',goal:'await release',target:'web',
     blocker:'candidate-awaiting-qa-and-deployment'
   }));
@@ -103,7 +103,7 @@ test('release-wait candidates do not consume runnable development planning backl
 test('planning backlog target stops plan expansion without changing persistent queue max',()=>{
   const root=tempRepo();
   const queued=Array.from({length:60},(_,i)=>({
-    id:`planned-${i}`,gameId:`planned-${i}`,sourceRoot:`web-games/planned-${i}`,responsibleFiles:['index.html'],
+    id:`planned-${i}`,gameId:'dev-web',sourceRoot:`web-games/dev-web-planned-${i}`,responsibleFiles:['index.html'],
     department:'development',type:'implementation',status:'queued',goal:'planned game work',target:'web'
   }));
   const result=planVibe2AutonomousTasks({
