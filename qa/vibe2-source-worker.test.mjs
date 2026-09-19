@@ -685,6 +685,31 @@ test('exact edit still rejects materially different source text', () => {
 });
 
 
+test('edit-match recovery immediately narrows to one exact writable snippet', () => {
+  const base=[
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<button id="play">Play</button>',
+    '<div id="status">Ready</div>',
+    '',
+    '=== FILE config.js [READ-ONLY IMPACT CONTEXT] ===',
+    'window.CONFIG={x:1};'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(base,{
+    allowFullRewrite:false,
+    error:new Error('edit find 불일치: index.html'),
+    responsibleFiles:['index.html'],
+    attempt:2
+  });
+  assert.match(retry,/previous edits\[\]\.find text did not match the writable source/);
+  assert.match(retry,/ONLY writable path is "index\.html"/);
+  assert.match(retry,/one short, unique find snippet copied character-for-character/);
+  assert.match(retry,/Do not paraphrase, normalize, reconstruct, or guess source text/);
+  assert.doesNotMatch(retry,/config\.js/);
+  assert.match(retry,/do not bypass responsible-file boundaries/);
+});
+
 test('invalid edit path recovery requires an exact allowed path', () => {
   const error=new Error('텍스트 worker 허용 확장자 아님: exact allowed path');
   assert.equal(shouldRetryGenerationError(error),true);
