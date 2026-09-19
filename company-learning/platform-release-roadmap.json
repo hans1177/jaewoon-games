@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1318,7 +1318,19 @@
         "REVALIDATE_AFFECTED_PLATFORM_GATES",
         "CARETAKER_CONTINUES_FROM_NEW_BASELINE"
       ],
-      "ambiguousExpansion": "PRESERVE_EDIT_AND_DO_NOT_INVENT_NEW_GAME_RULES"
+      "ambiguousExpansion": "PRESERVE_EDIT_AND_DO_NOT_INVENT_NEW_GAME_RULES",
+      "directUploadRoots": [
+        "web-games/**"
+      ],
+      "directOwnerWebUploadSupported": true,
+      "existingGameUploadAction": "PROTECT_AS_NEW_WEB_BASELINE_AND_REVALIDATE_AFFECTED_EVIDENCE",
+      "newGameUploadAction": "AUTO_INGEST_MINIMAL_WEB_CATALOG_RECORD_THEN_SERVER_SYNC",
+      "staleAutomationMayOverwriteOwnerSource": false,
+      "autoCatalogIngestTool": "tools/game-catalog-normalization.mjs",
+      "autoCatalogIngestWorkflow": ".github/workflows/company-status-sync.yml",
+      "homepageExposureAfterCatalogSync": true,
+      "releasePromotionStillRequiresExistingGates": true,
+      "saveCompatibilityCheckRequiredOnAffectedGame": true
     },
     "robloxStudioUsage": {
       "version": 1,
@@ -1378,6 +1390,29 @@
         "ALTERNATE_REPAIR_STRATEGY",
         "DEEP_CAUSAL_DIAGNOSIS",
         "MODULE_REWORK_WHEN_EVIDENCE_SUPPORTS"
+      ]
+    },
+    "saveNormalization": {
+      "version": 1,
+      "authority": "MACHINE_EXECUTION_CONTRACT",
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+      "canonicalWebModule": "assets/save-versioning.js",
+      "webRestoreEvidenceEvaluator": "tools/company-web-save-restore-evidence.mjs",
+      "webRuntimeValidator": "tools/company-development-web-gameplay-validation.mjs",
+      "preserveExistingCompatibleSaveMeaning": true,
+      "destructiveResetWithoutExplicitOwnerDirectiveForbidden": true,
+      "schemaIncreaseRequiresExplicitMigrationChain": true,
+      "missingMigrationIsGateFailure": true,
+      "newerUnsupportedSaveVersionIsGateFailure": true,
+      "saveGameIdMismatchIsGateFailure": true,
+      "reloadRestoreEvidenceRequiredWhenSaveContractDetected": true,
+      "webToNativeHandoffCarriesSaveMeaning": true,
+      "nativeStorageMechanismMayAdaptButSaveMeaningMustPersist": true,
+      "requiredQueueFields": [
+        "saveNormalizationRequired",
+        "saveMeaningPreservationRequired",
+        "saveVersioningContract",
+        "saveRestoreEvidenceContract"
       ]
     }
   },
@@ -1504,10 +1539,9 @@
       "independentManualOrderingForbidden": true,
       "shelves": {
         "RELEASE_CONFIRMED": "CATALOG_ORDER_ASC",
-        "WEB_PUBLISHED": "CATALOG_ORDER_ASC",
+        "WEB_PUBLISHED": "CATALOG_ORDER_ASC_UNBOUNDED",
         "ROBLOX_HISTORICAL_DEPLOYMENT": "CATALOG_ORDER_ASC",
-        "DEVELOPMENT_CONFIRMED": "CURRENT_SCORE_DESC_THEN_CATALOG_ORDER_ASC",
-        "TOP30": "STRICT_IMPLEMENTATION_SCORE_DESC"
+        "DEVELOPMENT_CONFIRMED": "CURRENT_SCORE_DESC_THEN_CATALOG_ORDER_ASC"
       }
     },
     "execution": {
@@ -1609,6 +1643,19 @@
           "canonical.homepage.runtime.genreLabel"
         ]
       }
+    },
+    "ownerWebAutoIngest": {
+      "enabled": true,
+      "authority": "MACHINE_EXECUTION_CONTRACT",
+      "root": "web-games",
+      "requiredEntryFile": "index.html",
+      "minimumEntryBytes": 512,
+      "missingCatalogAction": "CREATE_DESIGN_ONLY_WEB_PUBLISHED_RECORD",
+      "existingCatalogAction": "PRESERVE_IDENTITY_AND_REFRESH_WEB_SOURCE",
+      "homepageWebPlayable": true,
+      "hasWebArchive": true,
+      "releasePromotionImplicit": false,
+      "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
   "updatedAt": "2026-09-19",
@@ -1643,5 +1690,75 @@
     "automaticMaintenanceAllowed": false,
     "sourceDeletionRequired": true,
     "reason": "INACCESSIBLE_HISTORICALLY_DEPLOYED_GAMES_REMOVED_BY_OWNER_2026-09-19"
+  },
+  "homepagePresentation": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "webGameShelf": {
+      "enabled": true,
+      "source": "CANONICAL_CATALOG_WEB_PUBLISHED",
+      "visibleLimit": null,
+      "unbounded": true,
+      "mustExposeAllEligible": true,
+      "eligibility": [
+        "ACTIVE_OR_REBUILD",
+        "WEB_PLAYABLE_TRUE",
+        "WEB_ARCHIVE_TRUE",
+        "WEB_PATH_PRESENT"
+      ],
+      "ordering": "CATALOG_ORDER_ASC",
+      "duplicatePerGameForbidden": true,
+      "exactFileBinding": {
+        "gameIdDirectoryTemplate": "web-games/<gameId>",
+        "entryFile": "index.html",
+        "canonicalHrefTemplate": "/web-games/<gameId>/",
+        "cardAndWebButtonMustUseSameCanonicalHref": true,
+        "catalogPathMustEqualGameIdDirectory": true,
+        "missingEntryFileIsGateFailure": true,
+        "mismatchedPathIsGateFailure": true,
+        "directCardLaunchMustUseCanonicalHref": true
+      }
+    },
+    "top30Shelf": {
+      "enabled": false,
+      "removalReason": "DUPLICATE_OF_UNBOUNDED_WEB_GAME_SHELF",
+      "mustNotRender": true,
+      "testCandidateManifestRetainedForValidationEvidence": true,
+      "testCandidateManifestIsHomepageShelf": false
+    }
+  },
+  "serverHomepageIntegration": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "serverRuntimeBranch": "company-runtime",
+    "publicSourceBranch": "main",
+    "runtimeInputs": [
+      "game-catalog.json",
+      "company-status.json"
+    ],
+    "homepageManagerWorkflow": ".github/workflows/homepage-manager.yml",
+    "homepageManagerTool": "tools/homepage-manager.mjs",
+    "renderer": "assets/homepage-enhancements.js",
+    "successfulRuntimeEventMustBindCompanyRuntime": true,
+    "staleMainFallbackAfterSuccessfulRuntimeEventForbidden": true,
+    "publicHomepageMustReflectVerifiedRuntimeState": true,
+    "directUnsupervisedPublicWriteForbidden": true,
+    "publicationFlow": [
+      "COMPANY_RUNTIME_STATE_CHANGE",
+      "HOMEPAGE_RUNTIME_SNAPSHOT_BIND",
+      "HOMEPAGE_SELF_QA",
+      "DIRECTOR_SUPERVISION",
+      "MAIN_PUBLICATION"
+    ],
+    "ownerWebUpload": {
+      "triggerRoot": "web-games/**",
+      "changedGameIdsOnly": true,
+      "ingestViaExistingStatusSync": true,
+      "autoRegisterNewWebGameAs": "DESIGN_ONLY_WEB_PUBLISHED",
+      "preserveExistingIdentity": true,
+      "publishAfterRuntimeSyncAndHomepageQa": true
+    }
   }
 }

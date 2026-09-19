@@ -1,5 +1,6 @@
 import { pathToFileURL } from 'node:url';
 import fs from 'node:fs';
+import crypto from 'node:crypto';
 import {
   homepageCategoryForProductionClass,
   normalizeProductionClass,
@@ -144,6 +145,102 @@ function normalizationPolicy(){
   }catch{
     return{};
   }
+}
+
+function webTreeFingerprint(filesystem,root){
+  const files=[];
+  const walk=(dir,relative='')=>{
+    for(const entry of filesystem.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){
+      const full=dir+'/'+entry.name;
+      const rel=relative?relative+'/'+entry.name:entry.name;
+      if(entry.isDirectory())walk(full,rel);
+      else if(entry.isFile())files.push({full,rel});
+    }
+  };
+  walk(root);
+  const hash=crypto.createHash('sha256');
+  for(const file of files){
+    hash.update(file.rel);hash.update('\0');
+    hash.update(filesystem.readFileSync(file.full));hash.update('\0');
+  }
+  return hash.digest('hex');
+}
+function ownerWebTitle(filesystem,indexFile,fallback){
+  try{
+    const html=filesystem.readFileSync(indexFile,'utf8');
+    const title=html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.replace(/\s+/g,' ').trim();
+    return title||fallback;
+  }catch{return fallback;}
+}
+export function ingestOwnerWebGameIds(catalog={},gameIds=[],{filesystem=fs,rootDir=''}={}){
+  if(!Array.isArray(catalog.games))throw new Error('catalog.games must be an array');
+  const policy=normalizationPolicy()?.ownerWebAutoIngest||{};
+  if(policy.enabled!==true)return{catalog,added:[],updated:[],disabled:[],ignored:[]};
+  const canonicalRoot=clean(policy.root||'web-games').replace(/^\/+|\/+$/g,'');
+  const diskRoot=clean(rootDir||canonicalRoot).replace(/\/+$/g,'');
+  const entryFile=clean(policy.requiredEntryFile)||'index.html';
+  const minBytes=Math.max(1,Number(policy.minimumEntryBytes)||512);
+  const removed=new Set((catalog?.permanentRemovalPolicy?.ids||[]).map(clean));
+  const byId=new Map(catalog.games.map(game=>[clean(game?.id),game]).filter(([id])=>id));
+  const added=[],updated=[],disabled=[],ignored=[];
+  for(const rawId of list(gameIds)){
+    const id=clean(rawId);
+    if(!/^[a-z0-9][a-z0-9-]*$/i.test(id)||removed.has(id)){ignored.push(id);continue;}
+    const dir=diskRoot+'/'+id;
+    const indexFile=dir+'/'+entryFile;
+    const existing=byId.get(id)||null;
+    let valid=false;
+    try{valid=filesystem.existsSync(indexFile)&&filesystem.statSync(indexFile).isFile()&&filesystem.statSync(indexFile).size>=minBytes;}catch{valid=false;}
+    if(!valid){
+      if(existing){
+        existing.homepageWebPlayable=false;
+        existing.hasWebArchive=false;
+        existing.ownerWebSourceState='ENTRY_MISSING_OR_INVALID';
+        disabled.push(id);
+      }else ignored.push(id);
+      continue;
+    }
+    const canonicalPath=`/${canonicalRoot}/${id}/`;
+    const fingerprint=webTreeFingerprint(filesystem,dir);
+    if(existing){
+      const prior=clean(existing.ownerWebSourceRevision);
+      existing.webPath=canonicalPath;
+      existing.hasWebArchive=true;
+      existing.homepageWebPlayable=true;
+      existing.homepageDisplayMode='WEB_PUBLISHED';
+      existing.ownerDirectWebUpload=true;
+      existing.ownerWebSourceState='CURRENT_OWNER_BASELINE';
+      existing.ownerWebSourceRevision=fingerprint;
+      existing.ownerWebEntryFile=`${canonicalRoot}/${id}/${entryFile}`;
+      if(prior!==fingerprint)existing.webDevelopmentResetRequired=true;
+      updated.push(id);
+      continue;
+    }
+    const game={
+      id,
+      name:ownerWebTitle(filesystem,indexFile,id),
+      description:'사용자 직접 업로드 웹게임',
+      genre:[],
+      image:'',
+      webPath:canonicalPath,
+      hasWebArchive:true,
+      homepageWebPlayable:true,
+      homepageOfficialCard:false,
+      homepageTestCandidate:false,
+      homepageDisplayMode:'WEB_PUBLISHED',
+      lifecycleState:'ACTIVE',
+      productionClass:'DESIGN_ONLY',
+      productionClassSource:'OWNER_WEB_DIRECT_UPLOAD',
+      homepageCategory:'design-only',
+      ownerDirectWebUpload:true,
+      ownerWebSourceState:'CURRENT_OWNER_BASELINE',
+      ownerWebSourceRevision:fingerprint,
+      ownerWebEntryFile:`${canonicalRoot}/${id}/${entryFile}`,
+      webDevelopmentResetRequired:false
+    };
+    catalog.games.push(game);byId.set(id,game);added.push(id);
+  }
+  return{catalog,added,updated,disabled,ignored};
 }
 
 export function normalizePlatform(value){

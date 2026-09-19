@@ -55,7 +55,7 @@ test('verified runtime status and catalog join the same supervised publication c
   assert.ok(manage.includes('HOMEPAGE_PUBLIC_STATUS_SYNC=YES'));
 });
 
-test('homepage renders canonical verified server shelves from one current enhancement entry',()=>{
+test('homepage renders one unbounded canonical Web shelf and no duplicate Top30 shelf',()=>{
   assert.equal(fs.existsSync('assets/homepage-enhancements-core.js'),false);
   assert.match(homepage,/const SYNC_INTERVAL_MS=5000/);
   assert.match(homepage,/getJson\('\/game-catalog\.json'\)/);
@@ -63,22 +63,23 @@ test('homepage renders canonical verified server shelves from one current enhanc
   assert.match(homepage,/getJson\('\/test-game-candidates\.json'\)/);
   assert.match(homepage,/runtimeInfoAuthority!=='company-runtime'/);
   assert.match(homepage,/runtimeAuthority!=='company-runtime'/);
-  assert.match(homepage,/const displayEligible=row=>\['RELEASE_CONFIRMED','DEVELOPMENT_CONFIRMED'\]/);
   assert.match(homepage,/function releaseRows\(catalog,status\)/);
   assert.match(homepage,/function developmentRows\(catalog,status\)/);
-  assert.match(homepage,/function homepageRows\(catalog,status,testManifest=\{\}\)/);
-  assert.match(homepage,/testManifest\?\.candidates/);
-  assert.match(homepage,/TOP30_STRICT_IMPLEMENTATION_SCORE/);
-  assert.match(homepage,/const scoreState=row=>/);
-  assert.match(homepage,/function buildFocus\(catalog,status,testManifest=\{\}\)/);
-  assert.match(homepage,/function buildGameCenter\(catalog,status,testManifest=\{\}\)/);
+  assert.match(homepage,/function webPublishedRows\(catalog\)/);
+  assert.match(homepage,/function canonicalWebHref\(row\)/);
+  assert.match(homepage,/function buildFocus\(catalog,status\)/);
+  assert.match(homepage,/function buildGameCenter\(catalog,status\)/);
   assert.match(homepage,/buildShelf\(hub,'homeReleaseGameCenter'/);
-  assert.match(homepage,/buildShelf\(hub,'homeTop30GameCenter'/);
+  assert.match(homepage,/buildShelf\(hub,'homeWebGameCenter'/);
   assert.match(homepage,/buildShelf\(hub,'homeDevelopmentGameCenter'/);
-  assert.match(homepage,/const TOP_LIMIT=30/);
+  assert.doesNotMatch(homepage,/homeTop30GameCenter/);
+  assert.doesNotMatch(homepage,/const TOP_LIMIT=/);
+  assert.match(homepage,/dataset\.homeWebGameCount/);
   assert.match(homepage,/homeServerAuthority/);
   assert.match(homepage,/homeSupportedPlatforms/);
   assert.match(homepage,/homeProgressAuthority='company-runtime'/);
+  assert.equal(roadmap.homepagePresentation?.webGameShelf?.unbounded,true);
+  assert.equal(roadmap.homepagePresentation?.top30Shelf?.enabled,false);
 });
 
 test('homepage exposes current Web to selected-platform to live-focus development flow',()=>{
@@ -99,6 +100,10 @@ test('homepage exposes current Web to selected-platform to live-focus developmen
 });
 
 test('homepage platform and touch launch paths stay bound to verified runtime data',()=>{
+  assert.match(homepage,/function canonicalWebHref\(row\)/);
+  assert.match(homepage,/const expected=`web-games\/\$\{id\}`/);
+  assert.match(homepage,/data-web-path=/);
+  assert.match(homepage,/card\.dataset\.directPlay=target/);
   assert.match(homepage,/function latestVerifiedUnityBuilds\(status\)/);
   assert.match(homepage,/signatureVerified!==true/);
   assert.match(homepage,/runtimePassed/);
@@ -123,7 +128,7 @@ test('post-Web artbook binding follows current Web validation schema without blo
   assert.match(development,/POST_WEB_ARTBOOK_FAILURE_NATIVE_BLOCK=NO/);
 });
 
-test('Top30 canonical sync remains semantic-idempotent and current-schema evidence bound',()=>{
+test('validation candidate evidence sync remains semantic-idempotent and is not a homepage shelf',()=>{
   assert.match(testSync,/const minimumValidationSchema=WEB_VALIDATION_SCHEMA_VERSION/);
   assert.match(testSync,/evaluateWebValidationEvidence/);
   assert.match(testSync,/requireFinalContentDepth:true/);
@@ -132,6 +137,16 @@ test('Top30 canonical sync remains semantic-idempotent and current-schema eviden
   assert.match(testSync,/const writeJsonIfSemanticChanged=/);
   assert.match(testSync,/HOMEPAGE_TEST_SYNC_NOOP=/);
   assert.match(testSync,/HOMEPAGE_TEST_SYNC_CHANGED=/);
+  assert.equal(roadmap.homepagePresentation?.top30Shelf?.testCandidateManifestIsHomepageShelf,false);
+  assert.doesNotMatch(homepage,/homeTop30GameCenter/);
+});
+
+test('successful runtime events must bind company-runtime before homepage publication',()=>{
+  const manage=section('  manage-and-self-qa:','  director-supervision:');
+  assert.match(manage,/HOMEPAGE_PUBLIC_STATUS_SYNC=YES/);
+  assert.match(manage,/Successful runtime workflow could not bind company-runtime/);
+  assert.match(manage,/exit 1/);
+  assert.equal(roadmap.serverHomepageIntegration?.staleMainFallbackAfterSuccessfulRuntimeEventForbidden,true);
 });
 
 test('PR creation failure remains a blocking publication failure',()=>{

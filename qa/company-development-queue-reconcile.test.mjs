@@ -17,7 +17,7 @@ test('guarantees active confirmed games, preserves progress, removes inactive an
       {id:'design-only',productionClass:'DESIGN_ONLY',lifecycleState:'ACTIVE'}
     ]});
     write(root,'web-games/cozy-island/index.html','<!doctype html><canvas></canvas>');
-    write(root,'company-learning/platform-release-roadmap.json',{developmentSpeedExecution:{globalSelectedPlatformDevelopmentWipMax:20}});
+    write(root,'company-learning/platform-release-roadmap.json',{developmentSpeedExecution:{globalSelectedPlatformDevelopmentWipMax:20},developmentLifecycleMachine:{saveNormalization:{authority:'MACHINE_EXECUTION_CONTRACT',preserveExistingCompatibleSaveMeaning:true,canonicalWebModule:'assets/save-versioning.js',webRestoreEvidenceEvaluator:'tools/company-web-save-restore-evidence.mjs'}}});
     write(root,'development-queue.json',{version:1,routerPolicy:'COMPANY_FLOW.md',developmentGameWipMax:6,items:[
       {gameId:'progressed',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'WEB_CONTENT_EXPANSION',canonicalState:'RETURN_TO_WEB_DEVELOPMENT_FOR_CONTENT_EXPANSION',customEvidence:'KEEP'},
       {gameId:'progressed',gameName:'중복'},
@@ -39,6 +39,11 @@ test('guarantees active confirmed games, preserves progress, removes inactive an
     assert.equal(cozy.existingGameContinuation,true);
     assert.equal(cozy.webValidationRequired,true);
     assert.equal(cozy.musicValidationRequired,true);
+    assert.equal(cozy.saveNormalizationRequired,true);
+    assert.equal(cozy.saveMeaningPreservationRequired,true);
+    assert.equal(cozy.saveVersioningContract,'assets/save-versioning.js');
+    assert.equal(cozy.saveRestoreEvidenceContract,'tools/company-web-save-restore-evidence.mjs');
+    assert.equal(progressed.saveNormalizationRequired,true);
     assert.equal(queue.routerPolicy,'company-learning/platform-release-roadmap.json');
     assert.equal(queue.developmentGameWipMax,20);
     assert.equal(result.routerPolicy,'company-learning/platform-release-roadmap.json');
