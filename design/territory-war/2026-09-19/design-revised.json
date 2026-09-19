@@ -1,0 +1,190 @@
+{
+  "version": 5,
+  "gameId": "territory-war",
+  "date": "2026-09-19",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+  "authorRole": "DESIGN_AUTHOR_CHECKPOINT",
+  "authorModel": "gemini:gemini-3.5-flash-lite",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 0,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "영토전쟁은 짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임입니다. 플레이어는 제한된 자원을 활용해 적의 침공 경로를 예측하고 방어 타워를 배치하며, 영토를 확장하는 과정에서 매 순간 발생하는 전술적 선택이 전장의 상태를 즉각적으로 변화시키는 경험을 제공합니다. 이는 단순한 반복이 아닌, 매 웨이브마다 달라지는 적의 구성에 대응하는 전략적 깊이를 보장하며, 타워 배치와 자원 관리라는 핵심 루프가 유기적으로 연결되어 플레이어에게 매번 새로운 도전과 성취감을 제공합니다.",
+    "playerFantasy": "플레이어는 위기에 처한 영토의 사령관이 되어, 몰려오는 적군을 막아내고 전선을 확장하는 영웅적 방어 전략을 수행합니다. 자신의 판단으로 배치한 방어선이 적의 공세를 완벽히 차단하고, 영토를 넓혀가며 승리의 쾌감을 느끼는 전술적 지배자로서의 판타지를 경험합니다.",
+    "coreFun": "적의 웨이브 정보를 미리 읽고 최적의 방어 위치를 선정하는 전략적 판단, 배치된 타워가 적을 격퇴하며 자원을 획득하는 즉각적인 피드백, 그리고 획득한 자원으로 더 강력한 타워를 건설하거나 영토를 확장하는 성장 과정에서 발생하는 선택의 즐거움이 핵심입니다.",
+    "coreLoop": [
+      "적의 웨이브 정보를 분석하고 침공 경로를 예측하여 방어 타워를 전략적으로 배치하거나 기존 타워를 강화합니다.",
+      "배치된 타워가 적을 격퇴하여 자원을 획득하고, 전장의 상태가 방어 성공 또는 영토 점유율 상승으로 변화합니다.",
+      "획득한 자원을 사용하여 새로운 타워를 건설하거나 특수 스킬을 해금하여 다음 웨이브의 증가하는 난이도에 대응합니다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "전선 압박 시스템",
+        "purpose": "적의 침공 강도와 플레이어의 방어 효율을 시각화하여 긴장감을 유지하고 전략적 배치를 유도합니다.",
+        "playerChoice": "플레이어는 적의 경로를 차단할지, 아니면 자원을 모아 더 강력한 타워를 건설할지 결정하며, 이 선택은 전선의 밀고 당기는 상태를 즉각적으로 변화시킵니다."
+      },
+      {
+        "name": "영토 확장 및 강화 시스템",
+        "purpose": "방어 성공을 통해 확보한 영토를 기반으로 플레이어의 전략적 선택지를 넓히고 장기적인 성장을 지원합니다.",
+        "playerChoice": "플레이어는 점령한 영토에 특수 타워를 건설하거나 방어 보너스를 활성화하는 등, 영토의 지형적 이점을 활용한 다양한 전술적 업그레이드를 선택할 수 있습니다."
+      }
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "전선 압박 시스템",
+        "toSystem": "영토 확장 및 강화 시스템",
+        "trigger": "웨이브 방어 성공 시",
+        "stateChange": "플레이어의 영토 점유율이 상승하고, 새로운 타워 건설이 가능한 영토 타일이 해금되어 전략적 선택지가 확장됩니다."
+      },
+      {
+        "fromSystem": "영토 확장 및 강화 시스템",
+        "toSystem": "전선 압박 시스템",
+        "trigger": "타워 업그레이드 완료 시",
+        "stateChange": "방어 타워의 사거리나 공격력이 증가하여 적의 침공 속도를 늦추고 전선 압박 수치를 낮추는 상태로 변화합니다."
+      },
+      {
+        "fromSystem": "전선 압박 시스템",
+        "toSystem": "게임 오버/재시도",
+        "trigger": "적의 방어선 돌파 시",
+        "stateChange": "영토 점유율이 감소하고 게임 오버 상태로 진입하며, 플레이어는 현재 영토 상태를 유지한 채 재도전할지 결정해야 합니다."
+      }
+    ],
+    "progressionDirection": "플레이어는 초기 단계에서 기본적인 방어 타워를 운용하며 게임의 메커니즘을 익히고, 점차 난이도가 높은 웨이브를 클리어하며 더 넓은 영토를 확보합니다. 영토가 확장될수록 지형적 특성이 다른 지역이 등장하며, 플레이어는 기존 타워의 조합을 변경하거나 새로운 타워를 연구하여 변화하는 전장에 적응해야 합니다. 성장은 단순한 수치 증가가 아닌, 전략적 선택지의 확장과 새로운 전술적 가능성을 발견하는 과정으로 설계됩니다.",
+    "progressionEconomyBalance": {
+      "progressionLoop": "적 처치 -> 자원 획득 -> 타워 배치/업그레이드 -> 웨이브 클리어 -> 영토 확장 -> 자원 생산량 증가의 선순환 구조를 가집니다.",
+      "resourceFlow": "자원은 적 처치 시 즉각적으로 공급되며, 영토 확장을 통해 지속적인 자원 생산 보너스를 얻어 후반부의 고비용 타워 건설을 지원합니다.",
+      "balanceRules": "웨이브가 진행될수록 적의 체력과 물량이 증가하며, 플레이어의 자원 획득 효율과 타워 성능이 이를 따라가지 못하면 방어선이 붕괴되도록 설계하여 긴장감을 유지합니다."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "지형 특화 전장 및 환경 상호작용 도입",
+        "newGameplay": "사막, 설원, 화산 등 각기 다른 지형적 특성을 가진 전장을 추가합니다. 특정 지형에서는 타워의 사거리나 공격력이 변화하며, 플레이어는 지형에 맞는 타워 배치와 유닛 조합을 실시간으로 변경해야 합니다.",
+        "systemImpact": "기존 타워 배치 시스템에 지형 속성 데이터 레이어를 추가합니다. 타워의 스탯 계산 로직에 지형 보너스 계수를 반영하여, 단순 배치가 아닌 지형지물을 활용한 전략적 깊이를 강화합니다."
+      },
+      {
+        "milestone": "엘리트 적 유닛 및 카운터 스킬 시스템",
+        "newGameplay": "단순 물량 공세에서 벗어나, 방어막을 가진 적이나 특정 타워를 무력화하는 엘리트 유닛을 도입합니다. 플레이어는 이를 저지하기 위해 타워의 속성을 변경하거나 전용 카운터 스킬을 적절한 타이밍에 사용해야 합니다.",
+        "systemImpact": "적 AI 행동 트리 시스템을 확장하여 엘리트 유닛의 특수 패턴을 구현합니다. 또한, 플레이어의 스킬 쿨다운 및 자원 소모 시스템을 연동하여 전략적 자원 관리의 중요성을 높입니다."
+      },
+      {
+        "milestone": "영토 점령 및 전선 확장 모드",
+        "newGameplay": "고정된 방어 라인을 넘어, 적의 기지를 역으로 공격하여 영토를 넓히는 점령전 모드를 추가합니다. 플레이어는 방어 타워를 전진 배치하며 전선을 밀어내고, 점령한 지역에서 자원을 추가로 획득합니다.",
+        "systemImpact": "기존의 단일 방어 로직을 확장하여, 점령 가능한 영토 노드 시스템과 전선 이동 로직을 구현합니다. 경제 시스템에 영토 점령에 따른 자원 수급량 변화를 반영하여 성장 곡선을 재설계합니다."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "방어선 돌파로 인한 영토 점유율 감소",
+        "자원 고갈로 인한 타워 건설 불가 상태",
+        "보스 웨이브 방어 실패"
+      ],
+      "retryFlow": "실패 시 즉시 해당 웨이브의 시작 지점으로 복귀하거나, 이전 체크포인트에서 자원을 일부 보존한 채 재도전할 수 있습니다.",
+      "riskPressure": "실패는 영토 점유율의 손실을 의미하며, 이는 장기적인 자원 생산량 감소로 이어져 플레이어에게 즉각적인 위기감을 줍니다.",
+      "recoveryRules": "재도전 시 이전 실패의 원인을 분석할 수 있도록 적의 경로를 시각적으로 표시해주며, 소량의 보너스 자원을 제공하여 재기를 돕습니다."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "ROBLOX",
+      "inputModel": "터치 및 마우스 클릭을 통한 직관적인 타워 배치와 드래그 앤 드롭 방식의 영토 관리 인터페이스를 제공합니다.",
+      "performanceBudget": "모바일 환경을 고려하여 동시 화면 내 유닛 수를 제한하고, 최적화된 타워 모델링과 이펙트를 사용하여 프레임 드랍을 방지합니다.",
+      "sessionConstraints": "30분 내외의 세션을 목표로 하며, 짧은 웨이브 단위로 끊어서 플레이할 수 있도록 설계하여 모바일 환경에 최적화합니다."
+    },
+    "visualDirection": "깔끔하고 가독성이 높은 로우 폴리곤 스타일을 채택하여, 복잡한 전장 상황에서도 적의 경로와 타워의 상태를 한눈에 파악할 수 있도록 합니다. 색상 대비를 활용하여 아군과 적군을 명확히 구분하고, 타워의 공격 범위나 효과를 시각적으로 강조합니다.",
+    "mobileUx": "모바일 화면의 제약을 고려하여 인터페이스를 화면 가장자리로 배치하고, 타워 배치 시 확대/축소 기능을 지원하여 정밀한 조작이 가능하도록 합니다. 주요 정보는 HUD에 간결하게 표시하여 게임 플레이를 방해하지 않도록 합니다.",
+    "uxAccessibilityPlan": {
+      "hudPriorities": "자원 현황, 현재 웨이브 정보, 영토 점유율을 상단에 배치하여 항상 확인할 수 있도록 합니다.",
+      "touchAndInput": "터치 조작의 오입력을 방지하기 위해 타워 배치 시 확인 버튼을 추가하고, 드래그 조작을 직관적으로 설계합니다.",
+      "readability": "색약 모드를 지원하고, 적의 이동 경로를 명확한 선으로 표시하여 시각적 정보를 쉽게 인지할 수 있도록 합니다.",
+      "accessibility": "게임 속도 조절 기능을 제공하여 반응 속도가 느린 플레이어도 전략을 충분히 고민할 수 있도록 배려합니다."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "밝고 경쾌한 색감을 사용하되, 전장의 긴박함을 표현하기 위해 적의 등장 시 붉은색 경고 효과를 활용합니다.",
+      "audioIdentity": "전투의 긴장감을 높이는 빠른 템포의 배경음악과 타워 공격 시의 타격감 있는 효과음을 사용하여 몰입감을 높입니다.",
+      "gameplayFeedbackSync": "타워가 적을 처치할 때마다 발생하는 효과음과 시각적 이펙트를 동기화하여 플레이어에게 즉각적인 보상감을 제공합니다."
+    },
+    "marketTargetDirection": "짧은 전략 세션을 선호하는 모바일 게이머를 타겟으로 하며, 영토 확장이라는 명확한 목표를 통해 지속적인 플레이 동기를 부여합니다.",
+    "steamExpansionDecision": "초기 모바일 성공 이후, 더 정교한 컨트롤과 대규모 전장을 지원하는 PC 버전으로의 확장을 고려합니다.",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "싱글 플레이의 완성도를 먼저 확보한 후, 향후 협동 방어 모드나 비동기식 영토 경쟁 모드 도입을 검토합니다.",
+    "technicalAssumptions": [
+      "클라이언트 측에서 타워 배치 및 적 이동 경로를 실시간으로 계산하여 서버 부하를 최소화하고 반응성을 확보합니다.",
+      "데이터 직렬화 기술을 사용하여 플레이어의 영토 상태, 타워 업그레이드 정보, 점령 데이터를 효율적으로 저장하고 로드합니다."
+    ],
+    "validationQuestions": [
+      "플레이어가 매 웨이브마다 변화하는 전장 상황에 맞춰 자신의 전략을 수정하고 개선하는 과정이 충분히 도전적이고 재미있게 느껴지는가?",
+      "영토 확장이라는 보상 체계가 플레이어에게 다음 스테이지로 나아가게 만드는 강력한 동기 부여 요소로 작용하는가?"
+    ],
+    "implementationTraceability": [
+      {
+        "designElement": "전선 압박 및 지형 상호작용 시스템",
+        "responsibleSystem": "웨이브 관리 및 타워 배치 엔진",
+        "validationEvidence": "플레이 테스트를 통해 적의 물량 증가와 지형 변화에 따른 플레이어의 타워 배치 변경 빈도를 측정하고, 전략적 의사결정의 유효성을 데이터로 검증합니다."
+      },
+      {
+        "designElement": "영토 점령 및 경제 성장 시스템",
+        "responsibleSystem": "경제 밸런싱 및 영토 관리 모듈",
+        "validationEvidence": "플레이어의 자원 획득량과 타워 업그레이드 비용의 밸런스를 시뮬레이션하여, 영토 점령이 성장에 미치는 영향력을 수치적으로 검증합니다."
+      },
+      {
+        "designElement": "모바일 환경 최적화 및 터치 인터페이스",
+        "responsibleSystem": "UI/UX 시스템 및 입력 처리 엔진",
+        "validationEvidence": "다양한 모바일 기기에서 터치 조작 반응 속도와 가독성을 테스트하고, 사용자 경험 지표를 통해 조작 편의성을 검증합니다."
+      }
+    ],
+    "openQuestions": [
+      "영토 확장 시 플레이어에게 제공할 수 있는 시각적 보상은 무엇인가?",
+      "난이도 조절을 위해 적의 유형을 얼마나 다양하게 설계할 것인가?"
+    ],
+    "robloxBuildProfile": {
+      "version": 1,
+      "targetPlatform": "ROBLOX",
+      "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "declaredGameCategory": "SINGLE_DEFENSE_STRATEGY",
+      "genre": "Obby & platformer",
+      "genreLabelKo": "오비·플랫포머",
+      "subgenre": "Tower Obby",
+      "subgenreLabelKo": "타워 오비",
+      "playMode": "SINGLE",
+      "playModeLabelKo": "싱글",
+      "multiplayerRequired": false,
+      "coopImplementationRequired": false,
+      "competitiveImplementationRequired": false,
+      "networkingRequired": false,
+      "multiplayerQaRequired": false,
+      "minimumParticipantsForRequiredQa": 1,
+      "displayLabelKo": "오비·플랫포머 · 타워 오비 · 싱글"
+    }
+  },
+  "recovery": {
+    "source": "design-checkpoint.json",
+    "checkpointFingerprint": "280b45d64bff94e67677daa957be4efcd888f9242343e70e016e8d4e1998dfa2",
+    "deterministicPhase": "deterministic_pre_gate_after_repair_1",
+    "deterministicScore": 80,
+    "deterministicPassMinimum": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": [],
+    "appliedRepairs": [
+      "designer_pre_gate_repair_1"
+    ],
+    "aiReviewUsed": false,
+    "aiVerdictUsed": false,
+    "materializedAt": "2026-09-19T03:29:00.035Z"
+  },
+  "prePromotionRepair": {
+    "phase": "PRE_REVIEW",
+    "repairs": [
+      {
+        "field": "robloxBuildProfile",
+        "source": "GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY"
+      }
+    ],
+    "groundedOnly": true,
+    "legacyMultiplayerNormalization": false,
+    "strictScoreOrVerdictModified": false,
+    "repairedAt": "2026-09-19T03:29:00.116Z"
+  }
+}
