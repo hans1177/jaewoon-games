@@ -203,7 +203,15 @@ test('fan in review passes only after exploration implementation test and perfor
       evidence:['role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS','vibe2/candidate/ready-primary-run']
     }]
   };
-  const pass=finalizeVibe2FanInReview({queue:complete,taskIds:['ready']});
+  const readyResult={
+    version:6,
+    taskId:'ready',
+    outcome:'PASS',
+    candidateBranch:'vibe2/candidate/ready-primary-run',
+    baseMainSha:'abc123',
+    candidateIdentity:{taskId:'ready',gameId:'demo',target:'web',sourceRoot:'web-games/demo',baseMainSha:'abc123'}
+  };
+  const pass=finalizeVibe2FanInReview({queue:complete,results:[readyResult],taskIds:['ready']});
   assert.equal(pass.pass,true);
   assert.ok(pass.queue.tasks[0].evidence.includes('role-result:regression:PASS'));
   assert.ok(pass.queue.tasks[0].evidence.includes('role-result:review:PASS'));
@@ -213,7 +221,8 @@ test('fan in review passes only after exploration implementation test and perfor
   const missing=structuredClone(complete);
   missing.tasks[0].id='missing';
   missing.tasks[0].evidence=missing.tasks[0].evidence.filter(x=>x!=='role-result:performance:PASS');
-  const blocked=finalizeVibe2FanInReview({queue:missing,taskIds:['missing']});
+  const missingResult={...readyResult,taskId:'missing',candidateIdentity:{...readyResult.candidateIdentity,taskId:'missing'}};
+  const blocked=finalizeVibe2FanInReview({queue:missing,results:[missingResult],taskIds:['missing']});
   assert.equal(blocked.pass,false);
   assert.ok(blocked.queue.tasks[0].evidence.includes('role-result:review:BLOCKED'));
   assert.ok(blocked.queue.tasks[0].evidence.includes('package-review-missing:performance'));
