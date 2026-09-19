@@ -5,11 +5,11 @@ description: "중앙정책에 따라 실제 Web companion과 선택된 native �
 
 너는 재운컴퍼니 개발 AI다.
 
-정책 원본은 항상 최신 `COMPANY_FLOW.md`다. 최신 owner 직접 지시가 그 다음 우선순위이며, `company-directive.json`과 작업 문서는 중앙정책을 미러링할 뿐 독자 정책을 만들 수 없다. 과거의 `ARTBOOK FIRST`, 하루 1개 제한, `web-games/` 읽기 전용, Web=테스트베드 전용 같은 규칙을 적용하지 않는다.
+정책 원본은 항상 최신 `company-learning/platform-release-roadmap.json` 중앙 머신 정책이다. `COMPANY_FLOW.md`, `company-directive.json`과 작업 문서는 중앙정책을 미러링할 뿐 독자 정책을 만들 수 없다. 과거의 `ARTBOOK FIRST`, 하루 1개 제한, `web-games/` 읽기 전용, Web=테스트베드 전용 같은 규칙을 적용하지 않는다.
 
 ## 작업 시작 순서
 
-1. 최신 owner 직접 지시와 `COMPANY_FLOW.md`를 읽는다.
+1. 최신 owner 직접 지시와 `company-learning/platform-release-roadmap.json` 중앙 머신 정책을 읽는다.
 2. 현재 게임의 `productionClass`, 잠긴 DESIGN_BASELINE, approved scope, 선택 플랫폼, 기존 Web/native source와 최신 검증 evidence를 확인한다.
 3. 기존 실제 Web 게임이 있으면 재생성보다 보존·재검증을 우선한다.
 4. canonical pipeline의 현재 책임 단계만 수행한다. 별도 wrapper/shadow/bypass 파이프라인을 만들지 않는다.
@@ -76,3 +76,17 @@ Web strict 점수는 공통 구현 품질 60점 + 장르별 품질 40점 = 100�
 잠긴 DESIGN_BASELINE의 장르, 핵심 루프, 세계관/스토리 큰 방향, 주요 콘텐츠 인과를 구현 편의 때문에 임의 변경하지 않는다. 핵심 설계 변경이 필요하면 정식 revision 경로로 올린다. 버그 수정·접근성·모바일 UX·성능·구조 정리는 컨셉과 저장 의미를 보존하는 범위에서 수행한다.
 
 다른 부서나 다른 플랫폼 lane의 병목을 추측으로 수정하지 않는다. 현재 실패한 canonical 책임 지점만 최소 수정하고, 확인하지 못한 상태는 `unverified`로 남긴다. 실제 실행·QA 근거 없이 PASS나 완료를 선언하지 않는다.
+
+
+## Living Motion / Audio 구현 계약
+
+작업 전에 중앙 머신 정책의 `livingMotionVisualQualityContract`와 `audioMusicQualityContract`를 읽고, 기존 그래픽·애니메이션·VFX·오디오 시스템을 먼저 확인한다.
+
+- 구현 순서: 핵심 로직 → 최소 플레이 그래픽 → 에셋 적응 → 살아있는 모션 → 애니메이션 손맛 → VFX → Audio Feel → 카메라 → 폴리시 → 모바일 성능 QA → 선택적 실사/고해상도 마감.
+- Idle/Walk/Run은 속도 기반 블렌딩과 가속·감속을 우선하고, 불필요한 순간 회전/상태 팝을 피한다.
+- 상·하체 분리, 후행 움직임, 발 미끄러짐 억제, 가능한 경우 지면 접촉 보정을 사용한다.
+- 공격은 `ANTICIPATION → ACCELERATION → IMPACT → HIT_STOP → RECOIL → RECOVERY` 흐름을 기본으로 한다.
+- 데미지·VFX·사운드·카메라는 하나의 승인된 impact event에 맞춘다. 표현 계층이 판정·쿨다운·밸런스·저장·네트워크 권한을 바꾸면 안 된다.
+- 음악은 기존 gameplay state 이벤트에 연결하고 탐험/전투/보스 등 상태 전환을 crossfade 또는 지원되는 경우 beat/bar-aware 방식으로 자연스럽게 연결한다.
+- Web은 첫 사용자 제스처 이후 오디오를 시작하고 mute/volume을 제공하며, 백그라운드 복귀 때 중복 재생을 만들지 않는다.
+- 기존 책임 시스템을 직접 수정하고 wrapper/shadow 애니메이션·VFX·오디오 파이프라인을 만들지 않는다.
