@@ -19,6 +19,11 @@ env:
   VIBE2_MODEL_TIMEOUT_MS: '240000'
   VIBE2_MAX_CONCURRENT_GAME_TASKS: '30'
   OLLAMA_HOST: 127.0.0.1:11434
+  VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
+  VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
+  VIBE2_CODEX_ROLE: SYSTEM_TOOLING_CI_TEST_INFRA_ONLY
+  VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
+  VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
 
 jobs:
   reserve:
@@ -503,6 +508,13 @@ jobs:
             --output=/tmp/vibe2-free-budget.json
           echo 'VIBE2_PAID_API=NO'
           echo 'VIBE2_PAID_RUNNER=NO'
+          test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3"
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA"
+          test "$VIBE2_CODEX_ROLE" = "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY"
+          test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN"
+          test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false"
+          echo 'VIBE2_GAME_SOURCE_AUTHORITY=PASS'
+          echo 'VIBE2_CODEX_ROLE=SYSTEM_TOOLING_CI_TEST_INFRA_ONLY'
 
       - name: Generate isolated candidate from current main
         id: candidate
@@ -525,6 +537,14 @@ jobs:
           mkdir -p "$candidate_dir/.vibe2"
           cp /tmp/vibe2-work-order.json "$candidate_dir/.vibe2/work-order.json"
           cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
+
+          test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3" || { echo "GAME_DEVELOPMENT_OWNER_INVALID=$VIBE2_GAME_DEVELOPMENT_OWNER" >&2; exit 1; }
+          test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA" || { echo "GAME_SOURCE_PROVIDER_INVALID=$VIBE2_GAME_SOURCE_PROVIDER" >&2; exit 1; }
+          test "$VIBE2_CODEX_GAME_SOURCE_WRITE" = "FORBIDDEN" || { echo "CODEX_GAME_SOURCE_WRITE_FORBIDDEN=$VIBE2_CODEX_GAME_SOURCE_WRITE" >&2; exit 1; }
+          test "$VIBE2_OPENAI_PAID_API_ALLOWED" = "false" || { echo "OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN=$VIBE2_OPENAI_PAID_API_ALLOWED" >&2; exit 1; }
+          echo 'VIBE2_GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3'
+          echo 'VIBE2_GAME_SOURCE_PROVIDER=LOCAL_OLLAMA'
+          echo 'VIBE2_CODEX_GAME_SOURCE_WRITE=FORBIDDEN'
 
           command -v ollama >/dev/null
           nohup ollama serve > "/tmp/ollama-${SAFE_TASK}-${VARIANT}.log" 2>&1 &
