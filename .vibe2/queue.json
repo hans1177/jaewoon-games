@@ -1,7 +1,7 @@
 {
   "version": 5,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 256,
+  "maxConcurrentTasks": 30,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -10397,7 +10397,10 @@
         "reservation-id:35434899351:1",
         "workload:prep-ms:11301",
         "workload:cycle-ms:177006",
-        "exploration-reuse:94caa451983899bd65b50d79"
+        "exploration-reuse:94caa451983899bd65b50d79",
+        "release-dispatch-recovery-requested:vibe2/candidate/seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1-primary-35434899351-1",
+        "release-dispatch-recovery-at:1789811384705",
+        "release-dispatch-recovery-candidate-sha:1d3a7134a5ffd8860606817321d71478bd483dd3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35434899351:1",
