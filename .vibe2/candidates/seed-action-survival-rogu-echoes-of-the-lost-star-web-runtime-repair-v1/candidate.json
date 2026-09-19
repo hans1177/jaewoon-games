@@ -1,0 +1,14 @@
+{
+  "summary": "WEB_REPAIR: 잃어버린 별의 메아리 게임의 기존 소스를 승인 설계와 검증 근거에 맞춰 수리",
+  "expectedEffect": "WEB_REPAIR: 잃어버린 별의 메아리 게임의 기존 소스를 승인 설계와 검증 근거에 맞춰 수리",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "wave=1,kills=0,boss=null,audio=null;",
+      "replace": "wave=1,kills=0,boss=null,audio=null; player={x:0,y:0,r:14,hp:100,maxHp:100,speed:210,level:1,xp:0,nextXp:8,damage:16,fireRate:.48,fireTimer:0,bulletSpeed:520,multi:1,pickup:76,armor:0,dashCd:0,dashMax:3,dashTime:0,inv:0};"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

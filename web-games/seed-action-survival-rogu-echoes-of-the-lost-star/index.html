@@ -37,7 +37,7 @@
 'use strict';
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
 const ui={wave:document.getElementById('wave'),level:document.getElementById('level'),kills:document.getElementById('kills'),time:document.getElementById('time'),hpText:document.getElementById('hpText'),hpBar:document.getElementById('hpBar'),xpText:document.getElementById('xpText'),xpBar:document.getElementById('xpBar'),bossHud:document.getElementById('bossHud'),bossHpText:document.getElementById('bossHpText'),bossHpBar:document.getElementById('bossHpBar'),dashState:document.getElementById('dashState')};
-let W=innerWidth,H=innerHeight,DPR=1,last=performance.now(),running=false,paused=true,elapsed=0,spawnTimer=0,waveTimer=0,wave=1,kills=0,boss=null,audio=null;
+let W=innerWidth,H=innerHeight,DPR=1,last=performance.now(),running=false,paused=true,elapsed=0,spawnTimer=0,waveTimer=0,wave=1,kills=0,boss=null,audio=null; player={x:0,y:0,r:14,hp:100,maxHp:100,speed:210,level:1,xp:0,nextXp:8,damage:16,fireRate:.48,fireTimer:0,bulletSpeed:520,multi:1,pickup:76,armor:0,dashCd:0,dashMax:3,dashTime:0,inv:0};
 const keys=new Set(),enemies=[],bullets=[],gems=[],particles=[],stars=[];
 const joy={id:null,x:0,y:0,dx:0,dy:0};
 const player={x:0,y:0,r:14,hp:100,maxHp:100,speed:210,level:1,xp:0,nextXp:8,damage:16,fireRate:.48,fireTimer:0,bulletSpeed:520,multi:1,pickup:76,armor:0,dashCd:0,dashMax:3,dashTime:0,inv:0};
