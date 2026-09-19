@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "for(let i=0;i<5;i++)$('#a'+i).onclick=()=>act(i);",
+      "replace": "async function act(i){if(S.ended)return;await ensureAudio();switch(C.mode){case'insect-survival':case'survival':return actSurvival(i);case'bug-defense':case'celestial-defense':return actDefense(i);case'chromatic':return actPuzzle(i);case'realm':return actRealm(i);case'crystal-idle':return actIdle(i);case'eldoria':return actStory(i)};for(let i=0;i<5;i++)$('#a'+i).onclick=()=>act(i);function render(){switch(C.mode){case'insect-survival':case'survival':renderSurvival();break;case'bug-defense':case'celestial-defense':renderDefense();break;case'chromatic':renderPuzzle();break;case'realm':renderRealm();break;case'crystal-idle':renderIdle();break;case'eldoria':renderStory();break}syncGameState();if(S.ended)document.querySelectorAll('[data-gameplay-action]').forEach(b=>b.disabled=true);$('.save').onclick=()=>{save();log('현재 진행을 이 기기에 저장했다.','win')};$('.reset').onclick=()=>{if(confirm('진행을 초기화할까요?')){localStorage.removeItem(key);location.reload()}};}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
