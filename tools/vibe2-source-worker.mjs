@@ -222,7 +222,7 @@ allowFullRewrite?'The replacement must be self-contained enough to run from the 
 sourceText
 ].filter(Boolean).join('\n');}
 const SEMANTIC_SYSTEM_PATTERNS=Object.freeze({
-  INPUT:/\b(pointer(?:down|up|move)?|touch(?:start|end|move)?|keydown|keyup|mousedown|mouseup|click|playerintent|inputstate)\b/i,
+  INPUT:/\b(pointer(?:down|up|move)?|touch(?:start|end|move)?|keydown|keyup|mousedown|mouseup|click|playerintent|inputstate|handlepointer|normalizepointer)\b/i,
   SAVE:/\b(localstorage|sessionstorage|indexeddb|save(?:game|state)?|load(?:game|state)?|serialize|deserialize)\b/i,
   ECONOMY:/\b(gold|coins?|currency|price|cost|shop|buy|sell|purchase|transaction)\b/i,
   COMBAT:/\b(damage|attack|combat|weapon|health|hp|kill|death|cooldown)\b/i,
