@@ -903,7 +903,12 @@
       "strictImplementationScore": null,
       "webStrictScore": null,
       "formalImplementationPassed": false,
-      "formalImplementationVerdict": "REVISE"
+      "formalImplementationVerdict": "REVISE",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "survival2",
@@ -938,7 +943,12 @@
       "strictImplementationScore": null,
       "webStrictScore": null,
       "formalImplementationPassed": false,
-      "formalImplementationVerdict": "REVISE"
+      "formalImplementationVerdict": "REVISE",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "crystal-defense",
@@ -966,7 +976,12 @@
       "sourcePath": "web-games/crystal-defense",
       "currentStep": "WEB_PLAYABLE_BOOTSTRAP",
       "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
-      "webValidationQueuedAt": "2026-09-19T04:19:35.223Z"
+      "webValidationQueuedAt": "2026-09-19T04:19:35.223Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "territory-war",
@@ -994,7 +1009,12 @@
       "sourcePath": "web-games/territory-war",
       "currentStep": "WEB_PLAYABLE_BOOTSTRAP",
       "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
-      "webValidationQueuedAt": "2026-09-19T04:19:35.223Z"
+      "webValidationQueuedAt": "2026-09-19T04:19:35.223Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "island-village",
@@ -1022,7 +1042,12 @@
       "sourcePath": "web-games/island-village",
       "currentStep": "WEB_PLAYABLE_BOOTSTRAP",
       "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
-      "webValidationQueuedAt": "2026-09-19T04:20:03.391Z"
+      "webValidationQueuedAt": "2026-09-19T04:20:03.391Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "egg-heist",
@@ -1050,10 +1075,15 @@
       "sourcePath": "web-games/egg-heist",
       "currentStep": "WEB_PLAYABLE_BOOTSTRAP",
       "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
-      "webValidationQueuedAt": "2026-09-19T04:20:03.391Z"
+      "webValidationQueuedAt": "2026-09-19T04:20:03.391Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-09-19T04:20:37.010Z",
+  "updatedAt": "2026-09-19T04:21:29.080Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
