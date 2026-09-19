@@ -3971,7 +3971,16 @@
         "evidencePath": "design/survival/2026-09-19/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T03:30:29.591Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T03:30:29.591Z",
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:35:58.085Z"
     },
     {
       "version": 2,
@@ -4797,16 +4806,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "ROBLOX_GENRE": "Obby & platformer",
-      "ROBLOX_SUBGENRE": "Tower Obby",
-      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
-      "ROBLOX_SUBGENRE_LABEL_KO": "타워 오비",
-      "ROBLOX_PLAY_MODE": "SINGLE",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
-      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:35:56.245Z"
+      }
     },
     {
       "version": 2,
@@ -16649,25 +16649,22 @@
         "recordedAt": "2026-09-19T03:34:48.528Z"
       },
       {
-        "gameId": "crystal-defense",
-        "seedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
+        "gameId": "survival",
+        "seedId": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
         "reviewStage": "DESIGN_STRICT_REVIEW",
         "runtimeTarget": null,
         "verdict": "PASS",
-        "totalScore": 91.80000000000001,
-        "previousScore": null,
-        "scoreDelta": null,
+        "totalScore": 94.6,
+        "previousScore": 18.4,
+        "scoreDelta": 76.19999999999999,
         "hardFailures": [],
-        "resolvedHardFailures": [],
+        "resolvedHardFailures": [
+          "CORE_FUN_WEAK",
+          "CRITICAL_AXIS_MINIMUM_FAIL"
+        ],
         "addedHardFailures": [],
         "rejectionReasons": [],
         "improvementTargets": [
-          {
-            "dimension": "CORE_LOOP_DESIGN",
-            "current": 11.2,
-            "maxScore": 14,
-            "gap": 2.8000000000000007
-          },
           {
             "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
             "current": 9.6,
@@ -16679,13 +16676,19 @@
             "current": 8,
             "maxScore": 10,
             "gap": 2
+          },
+          {
+            "dimension": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+            "current": 4,
+            "maxScore": 5,
+            "gap": 1
           }
         ],
         "learningSignal": "UNVALIDATED",
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
-        "recordedAt": "2026-09-19T03:35:56.245Z"
+        "recordedAt": "2026-09-19T03:35:58.085Z"
       }
     ],
     "causeCounts": {
@@ -16711,7 +16714,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T03:35:56.246Z"
+    "updatedAt": "2026-09-19T03:35:58.086Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
