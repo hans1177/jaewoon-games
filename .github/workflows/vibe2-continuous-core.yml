@@ -689,6 +689,9 @@ jobs:
           drift_risk="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_RISK=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           drift_score="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_SCORE=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           drift_signals="$(sed -n 's/^VIBE2_ARCHITECTURE_DRIFT_SIGNALS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          presentation_status="$(sed -n 's/^VIBE2_PRESENTATION_QA_STATUS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          presentation_pass="$(sed -n 's/^VIBE2_PRESENTATION_QA_PASS=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
+          presentation_runtime_required="$(sed -n 's/^VIBE2_PRESENTATION_RUNTIME_REQUIRED=//p' /tmp/vibe2-incremental-qa.log | tail -n1)"
           echo "hash=$hash" >> "$GITHUB_OUTPUT"
           echo "cache=$cache" >> "$GITHUB_OUTPUT"
           echo "causal_replay_status=$replay_status" >> "$GITHUB_OUTPUT"
@@ -697,6 +700,9 @@ jobs:
           echo "architecture_drift_risk=$drift_risk" >> "$GITHUB_OUTPUT"
           echo "architecture_drift_score=$drift_score" >> "$GITHUB_OUTPUT"
           echo "architecture_drift_signals=$drift_signals" >> "$GITHUB_OUTPUT"
+          echo "presentation_status=$presentation_status" >> "$GITHUB_OUTPUT"
+          echo "presentation_pass=$presentation_pass" >> "$GITHUB_OUTPUT"
+          echo "presentation_runtime_required=$presentation_runtime_required" >> "$GITHUB_OUTPUT"
           qa_finished="$(date +%s%3N)"
           echo "duration_ms=$((qa_finished-qa_started))" >> "$GITHUB_OUTPUT"
           echo 'VIBE2_TEST_ROLE=PASS'
@@ -751,6 +757,9 @@ jobs:
           IQA_ARCHITECTURE_DRIFT_RISK: ${{ steps.incremental_qa.outputs.architecture_drift_risk }}
           IQA_ARCHITECTURE_DRIFT_SCORE: ${{ steps.incremental_qa.outputs.architecture_drift_score }}
           IQA_ARCHITECTURE_DRIFT_SIGNALS: ${{ steps.incremental_qa.outputs.architecture_drift_signals }}
+          IQA_PRESENTATION_STATUS: ${{ steps.incremental_qa.outputs.presentation_status }}
+          IQA_PRESENTATION_PASS: ${{ steps.incremental_qa.outputs.presentation_pass }}
+          IQA_PRESENTATION_RUNTIME_REQUIRED: ${{ steps.incremental_qa.outputs.presentation_runtime_required }}
           PERFORMANCE_OUTCOME: ${{ steps.performance.outcome }}
           PRACTICE_OUTCOME: ${{ steps.practice.outcome }}
           SAFE_TASK: ${{ matrix.safeTask }}
@@ -821,6 +830,13 @@ jobs:
             learningAuthorityExpanded:false
           }:null;
           const baseCodingMethod=manifest?.codingMethod||fallbackCodingMethod;
+          const presentationQuality=manifest?.presentationQuality&&typeof manifest.presentationQuality==='object'?{
+            ...manifest.presentationQuality,
+            staticQaStatus:clean(process.env.IQA_PRESENTATION_STATUS)||'NOT_REQUIRED',
+            staticQaPass:clean(process.env.IQA_PRESENTATION_PASS)||null,
+            runtimeQaRequired:clean(process.env.IQA_PRESENTATION_RUNTIME_REQUIRED).toUpperCase()==='YES',
+            authorityExpanded:false
+          }:null;
           const roleResults={
             exploration:exploration?.reuseKey?'PASS':'FAIL',
             implementation:candidateOk?'PASS':'FAIL',
@@ -841,6 +857,9 @@ jobs:
             clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)&&`architecture-drift-risk:${clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)&&`architecture-drift-score:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SCORE)}`,
             clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS)&&`architecture-drift-signals:${clean(process.env.IQA_ARCHITECTURE_DRIFT_SIGNALS)}`,
+            clean(process.env.IQA_PRESENTATION_STATUS)&&`presentation-static-qa-status:${clean(process.env.IQA_PRESENTATION_STATUS)}`,
+            clean(process.env.IQA_PRESENTATION_PASS)&&clean(process.env.IQA_PRESENTATION_PASS)!=='NONE'&&`presentation-pass-verified:${clean(process.env.IQA_PRESENTATION_PASS)}`,
+            clean(process.env.IQA_PRESENTATION_RUNTIME_REQUIRED).toUpperCase()==='YES'?'presentation-runtime-qa-required:YES':'',
             ['MEDIUM','HIGH'].includes(clean(process.env.IQA_ARCHITECTURE_DRIFT_RISK).toUpperCase())?'architecture-drift-focused-review-required:YES':'',
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             candidateFailureClass&&`source-generation-failure:${candidateFailureClass}`,
@@ -944,7 +963,7 @@ jobs:
             },
             telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'
           }:null;
-          const result={version:8,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,roleResults,practiceDistillation,durationMs:metrics.workerTotalMs,metrics};
+          const result={version:9,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,presentationQuality,roleResults,practiceDistillation,durationMs:metrics.workerTotalMs,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
