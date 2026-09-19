@@ -267,7 +267,7 @@ assert.equal(recovery.bindings.releaseDispatchRecovery,'tools/vibe2-release-disp
 assert.equal(recovery.bindings.robloxRunnerSelfHeal,'.github/workflows/roblox-runner-self-heal.yml');
 assert.equal(recovery.automaticRecovery.externalModelQuota,'CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK');
 assert.equal(recovery.automaticRecovery.waitingForVerifiedSamples,'CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE');
-assert.deepEqual(recovery.bottleneckPolicy.adaptiveSteps,[256,128,64,32,16,8,4]);
+assert.deepEqual(recovery.bottleneckPolicy.adaptiveSteps,[256,128,64,32,20,16,8,4]);
 assert.equal(recovery.bottleneckPolicy.maxStepChangesPerRun,1);
 assert.equal(recovery.bottleneckPolicy.productionWorkPreemptsPractice,true);
 assert.equal(recovery.bottleneckPolicy.postReleaseProtectedRunnerSlots,1);
@@ -280,7 +280,7 @@ for(const key of ['noGateBypass','noTrainingThresholdReduction','noVerifiedLearn
 assert.match(queueControl,/recoverStaleRunningReservations/);
 assert.match(queueControl,/recoverFanInRegressionFailure/);
 assert.match(queue,/isExternalQuotaWaitingTask/);
-assert.match(adaptiveBackpressure,/ADAPTIVE_PARALLELISM_STEPS = Object\.freeze\(\[4, 8, 16, 32, 64, 128, 256\]\)/);
+assert.match(adaptiveBackpressure,/ADAPTIVE_PARALLELISM_STEPS = Object\.freeze\(\[4, 8, 16, 20, 32, 64, 128, 256\]\)/);
 assert.match(adaptiveBackpressure,/HEALTHY_FAST_RAMP/);
 assert.match(parallelismTelemetry,/RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION/);
 assert.match(parallelismTelemetry,/INCREMENTAL_QA/);
