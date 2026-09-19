@@ -865,6 +865,7 @@ test('first timeout escalates attempt two directly to compact focused retry',()=
   assert.match(retry,/FINAL FOCUSED RETRY/);
   assert.doesNotMatch(retry,/config\.js/);
   assert.match(retry,/Recovery context intentionally contains only writable FILE blocks/);
+  assert.match(retry,/Start the JSON with the edits array/);
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT'/);
   assert.match(workerSource,/focusedFinal\?JSON_FINAL_RETRY_MAX_PREDICT/);
@@ -975,6 +976,18 @@ test('timeout partial edit recovery handles braces and escapes inside JSON strin
   assert.equal(recovered.edits[0].replace,'if (state.hp) { log("{ok}"); state.ready=true; }');
   assert.equal(recoverPartialJsonEdit('{"edits":[{"path":"index.html","find":"a","replace":"b"'),null);
   assert.equal(recoverPartialJsonEdit('{"summary":"no edits yet"'),null);
+});
+
+test('focused timeout streaming can stop after one complete edit object',()=>{
+  const partial='{"edits":[{"path":"index.html","find":">Play<","replace":">Continue<"}],"tests":["still generating"';
+  assert.equal(modelResponseComplete(partial,'JSON_EDIT'),false);
+  assert.equal(modelResponseComplete(partial,'JSON_EDIT_PARTIAL'),true);
+  assert.equal(modelResponseComplete('{"edits":[{"path":"index.html","find":">Play<","replace":">Cont','JSON_EDIT_PARTIAL'),false);
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/timeoutFastEscalation\?'JSON_EDIT_PARTIAL':'JSON_EDIT'/);
+  assert.match(workerSource,/streamedPartialEditRecovery:Boolean\(streamedPartialEdit\)/);
+  assert.match(workflowSource,/coding-streamed-partial-edit-recovery:YES/);
 });
 
 test('model response completion stops only at a complete candidate boundary', () => {
