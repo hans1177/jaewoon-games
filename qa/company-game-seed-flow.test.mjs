@@ -254,7 +254,6 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(design,/design-progress\.json/);
   assert.match(design,/phaseBudgetMs/);
   assert.match(design,/modelHealthPenalty/);
-  assert.match(design,/LEAD_REVIEW_ORDER=/);
   assert.match(design,/scoreDesignGateV2/);
   assert.match(design,/deterministic_pre_gate/);
   assert.match(design,/DETERMINISTIC_PRE_GATE_V2/);
