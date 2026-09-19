@@ -11,6 +11,7 @@ import {
   platformRepresentativeGaps,
   ensureSeedMaterialPool,
 } from '../tools/game-seed-state.mjs';
+import {GAME_SEED_POLICY,GAME_SEED_REQUIRED_FIELDS} from '../tools/company-game-seed-contract.mjs';
 
 const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -44,6 +45,19 @@ test('central machine policy preserves historical bootstrap while latest owner p
   assert.equal(directive.gameSeed.bootstrap.mode,'HISTORICAL_SINGLE_BOOTSTRAP_BATCH');
   assert.equal(directive.gameSeed.bootstrap.historicalInitialSeedBatchOnly,true);
   assert.equal(directive.gameSeed.bootstrap.productionQuota,false);
+  assert.equal(directive.gameSeed.selectionMode,GAME_SEED_POLICY.selectionMode);
+  assert.deepEqual(directive.gameSeed.transformationModes,[...GAME_SEED_POLICY.transformationModes]);
+  assert.equal(directive.gameSeed.seedMaterialPoolTarget,GAME_SEED_POLICY.seedMaterialPoolTarget);
+  assert.equal(directive.gameSeed.seedMaterialCombineMin,GAME_SEED_POLICY.seedMaterialCombineMin);
+  assert.equal(directive.gameSeed.seedMaterialCombineMax,GAME_SEED_POLICY.seedMaterialCombineMax);
+  assert.equal(directive.gameSeed.materialMustBeExistingGame,GAME_SEED_POLICY.materialMustBeExistingGame);
+  assert.equal(directive.gameSeed.targetSessionMinutes,GAME_SEED_POLICY.targetSessionMinutes);
+  assert.equal(directive.gameSeed.gameplaySketchRequired,GAME_SEED_POLICY.gameplaySketchRequired);
+  assert.deepEqual(directive.gameSeed.multiplayerModes,[...GAME_SEED_POLICY.multiplayerModes]);
+  assert.equal(directive.gameSeed.requiredFieldsSource,'tools/company-game-seed-contract.mjs#GAME_SEED_REQUIRED_FIELDS');
+  assert.deepEqual(directive.gameSeed.requiredFields,[...GAME_SEED_REQUIRED_FIELDS]);
+  assert.ok(directive.gameSeed.requiredFields.includes('REFERENCE_INPUTS'));
+  assert.ok(!directive.gameSeed.requiredFields.includes('REFERENCE_GAMES'));
   assert.match(flow,/poolTarget: 100/);
   assert.match(flow,/materialIsGame: false/);
   assert.match(flow,/legacySixRepresentativeSetsAreHistoricalOnlyForScheduling: true/);
@@ -230,6 +244,8 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(designSeedNormalize,/DESIGN_SEED_REFERENCE_GAMES_OPTIONAL_EMPTY=/);
   assert.match(designSeedNormalize,/ENSURE_REFERENCE_INPUTS_WITHOUT_INVENTING_REFERENCE_GAME/);
   assert.match(designSeedNormalize,/assertGameSeed\(seed\)/);
+  assert.match(gate,/GAME_SEED_REQUIRED_FIELDS/);
+  assert.doesNotMatch(gate,/directive\.gameSeed\?\.requiredFields/);
 
   assert.match(design,/DESIGN_CHECKPOINT_CONTRACT_VERSION=3/);
   assert.match(design,/DESIGN_CHECKPOINT_MIGRATED=\$\{previousContractVersion===2\?'V2_TO_V3':'V3_COMPATIBLE_ENGINE'\}/);
