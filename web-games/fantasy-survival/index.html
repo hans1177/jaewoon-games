@@ -393,10 +393,10 @@ function attack(){
  if(hit)state.dirty=true;updateHud()
 }
 function knockoutPlayer(message='쓰러져 숲 중앙에서 부활했어'){
- const p=state.player;p.hp=p.maxHp;p.x=START.x;p.y=START.y;state.area='surface';p.wood=Math.max(0,p.wood-2);p.stone=Math.max(0,p.stone-2);p.fiber=Math.max(0,p.fiber-2);p.ironOre=Math.max(0,p.ironOre-1);p.goldOre=Math.max(0,p.goldOre-1);p.burnTicks=0;p.lavaSince=0;p.lavaTickAt=0;showNotice(message);state.dirty=true;updateHud()
+ const p=state.player;p.hp=p.maxHp;p.x=START.x;p.y=START.y;state.area='surface';p.wood=Math.max(0,p.wood-2);p.stone=Math.max(0,p.stone-2);p.fiber=Math.max(0,p.fiber-2);p.ironOre=Math.max(0,p.ironOre-1);p.goldOre=Math.max(0,p.goldOre-1);p.burnTicks=0;p.lavaSince=0;p.lavaTickAt=0;p.stunnedUntil=0;showNotice(message);state.dirty=true;updateHud()
 }
-function damagePlayer(n){
- const p=state.player,now=performance.now();if(now<p.invuln)return;const armor=item(p.armor);n*=1-(armor?.reduce||0);p.hp=Math.max(0,p.hp-n);p.invuln=now+520;ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
+function damagePlayer(n,force=false){
+ const p=state.player,now=performance.now();if(!force&&now<p.invuln)return;const armor=item(p.armor);n*=1-(armor?.reduce||0);p.hp=Math.max(0,p.hp-n);p.invuln=now+520;ui.flash.classList.add('on');setTimeout(()=>ui.flash.classList.remove('on'),100);if(p.hp<=0){knockoutPlayer()}else{state.dirty=true;updateHud()}
 }
 function applyBurn(){const p=state.player;p.burnTicks=4;p.burnNext=performance.now()+1000;showNotice('화염 상태 · 4초')}
 function smeltDuration(kind){return kind==='gold'?10000:5000}
@@ -560,11 +560,11 @@ function updateCrystalBoarSpecial(e,p,now){
    if(now<s.endAt){
      const d=dist(e.x,e.y,p.x,p.y);
      if(d<e.type.r+27){
-       damagePlayer(68);p.stunnedUntil=now+3000;e.special=null;showNotice('기절 돌진 적중 · 3초 기절');return{vx:0,vy:0,active:true}
+       damagePlayer(68,true);if(p.x!==START.x||p.y!==START.y)p.stunnedUntil=now+3000;e.attackAt=now;e.special=null;showNotice('기절 돌진 적중 · 3초 기절');return{vx:0,vy:0,active:true}
      }
      return{vx:(p.x-e.x)/(d||1)*e.type.speed*2.5,vy:(p.y-e.y)/(d||1)*e.type.speed*2.5,active:true}
    }
-   e.special=null;return null
+   e.attackAt=now;e.special=null;return null
  }
  return null
 }
