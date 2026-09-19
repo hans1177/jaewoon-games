@@ -1,5 +1,5 @@
 {
-  "version": 127,
+  "version": 128,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -56,6 +56,279 @@
     ],
     "releaseRequiresFreshCompetitiveRevalidation": true,
     "singleWebPassCannotTriggerRelease": true
+  },
+  "livingMotionVisualQualityContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "objective": "LIVING_CONTINUOUS_MOTION_STRONG_GAME_FEEL_STYLE_ADAPTABLE_ASSETS_BEFORE_OPTIONAL_HIGH_FIDELITY_REALISM",
+    "appliesToStages": [
+      "WEB_BASE_IMPLEMENTATION",
+      "WEB_RUNTIME_VALIDATION",
+      "TARGET_PLATFORM_SOURCE_BIND",
+      "TARGET_PLATFORM_RUNTIME",
+      "TARGET_PLATFORM_INDEPENDENT_QA",
+      "TARGET_PLATFORM_REGRESSION",
+      "POST_RELEASE_FOCUSED_DEVELOPMENT"
+    ],
+    "priorityOrder": [
+      "CORE_GAMEPLAY_LOGIC",
+      "MINIMUM_PLAYABLE_GRAPHICS",
+      "ASSET_ADAPTATION",
+      "LIVING_MOTION",
+      "ANIMATION_FEEL",
+      "VFX",
+      "CAMERA_LANGUAGE",
+      "POLISH",
+      "MOBILE_PERFORMANCE_QA",
+      "OPTIONAL_HIGH_FIDELITY_REALISM"
+    ],
+    "principles": {
+      "gameplayLogicAndPresentationSeparated": true,
+      "visualLayerMustNotChangeBalanceSaveProgressionOrHitSemantics": true,
+      "smoothContinuityBeforeHighFidelityAssetDetail": true,
+      "existingWorkingGameplayAndSaveStructurePreserved": true,
+      "highFidelityRealismDeferredUntilLivingMotionBaselinePasses": true,
+      "platformSpecificPresentationAdaptationAllowed": true,
+      "approvedGameplayMeaningMustRemainStableAcrossPresentationChanges": true
+    },
+    "assetAdaptation": {
+      "originalAssetMustRemainPreserved": true,
+      "gameSpecificDerivedAssetPreferred": true,
+      "modularPartsPreferredWhenPractical": [
+        "HEAD",
+        "BODY",
+        "HANDS",
+        "HAIR",
+        "CLOTHING",
+        "EQUIPMENT",
+        "WEAPON",
+        "DECORATION"
+      ],
+      "allowedTransformationsWhenLicenseAllows": [
+        "COLOR",
+        "MATERIAL",
+        "ROUGHNESS",
+        "GLOSS",
+        "EMISSION",
+        "OUTLINE",
+        "SCALE",
+        "PROPORTION",
+        "PART_REPLACEMENT",
+        "TEXTURE_REWORK",
+        "RIG_COMPATIBLE_ANIMATION_REUSE"
+      ],
+      "stylePresetExamples": [
+        "FANTASY",
+        "DARK_FANTASY",
+        "CUTE_CARTOON",
+        "LOW_POLY",
+        "ANIME",
+        "REALISTIC_LATER"
+      ],
+      "existingRepositoryAssetsPreferred": true,
+      "externalAssetPolicy": "CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED",
+      "unclearLicenseForbidden": true,
+      "nonCommercialLicenseForbidden": true,
+      "licenseEvidenceRequired": true
+    },
+    "styleLock": {
+      "requiredPerGame": true,
+      "lockedAxes": [
+        "PALETTE",
+        "LIGHTING",
+        "OUTLINE",
+        "SHADOW",
+        "MATERIAL_RESPONSE",
+        "VFX_DENSITY",
+        "MOTION_EXAGGERATION",
+        "UI_MOTION_LANGUAGE"
+      ],
+      "newAssetsMustConformToGameStyleLock": true,
+      "styleLockMayChangeOnlyByApprovedDesignOrArtRevision": true
+    },
+    "livingMotion": {
+      "alwaysAliveIdleRequired": true,
+      "breathingIncludes": [
+        "CHEST_SHOULDER_MICRO_MOTION",
+        "TORSO_MICRO_SWAY",
+        "HEAD_DELAYED_FOLLOW",
+        "HAND_WEAPON_MICRO_FOLLOW"
+      ],
+      "breathingPeriodMustAvoidPerfectMechanicalUniformity": true,
+      "locomotionBlendRequired": true,
+      "locomotionStates": [
+        "IDLE",
+        "WALK",
+        "RUN"
+      ],
+      "speedBasedBlendPreferred": true,
+      "accelerationAndDecelerationRequired": true,
+      "instantDirectionSnapForbiddenUnlessDesignRequiresIt": true,
+      "turnSmoothingRequired": true,
+      "turnFollowOrderPreferred": [
+        "PELVIS_OR_ROOT",
+        "TORSO",
+        "HEAD",
+        "WEAPON_OR_ACCESSORY"
+      ],
+      "footSlidingMustBeMinimized": true,
+      "groundContactCorrectionPreferredWhenSupported": true,
+      "upperLowerBodyLayeringPreferred": true,
+      "secondaryMotionPreferredFor": [
+        "HEAD",
+        "ARMS",
+        "WEAPON",
+        "HAIR",
+        "CLOTH",
+        "ACCESSORY",
+        "FOLIAGE_WHEN_RELEVANT"
+      ],
+      "proceduralMotionMayAugmentAuthoredAnimation": true,
+      "hardAnimationStatePopForbiddenWhenBlendIsPractical": true
+    },
+    "animationFeel": {
+      "canonicalImpactSequence": [
+        "ANTICIPATION",
+        "ACCELERATION",
+        "IMPACT",
+        "HIT_STOP",
+        "RECOIL",
+        "RECOVERY"
+      ],
+      "smearOrTrailPreferredForFastAttacks": true,
+      "overshootAndSettlePreferredForHeavyOrElasticMotion": true,
+      "landingCompressionAndRecoveryPreferred": true,
+      "attackerRecoilPreferredWhenAppropriate": true,
+      "targetDirectionalHitReactionPreferred": true,
+      "hitStopDefaultMillisecondsRange": [
+        30,
+        80
+      ],
+      "hitStopMustNotCorruptSimulationOrNetworkAuthority": true,
+      "strongAttackMayUseLongerPresentationImpactWithinPerformanceBudget": true,
+      "poseReadabilityOverExcessIntermediateFrames": true
+    },
+    "animationEventSync": {
+      "singleImpactEventPreferred": true,
+      "damageVfxAudioAndCameraMustReferenceSameImpactMoment": true,
+      "visualAnimationMustNotApplyDamageBeforeApprovedHitEvent": true,
+      "presentationRecoveryMustNotChangeCooldownOrCombatBalance": true,
+      "networkedAuthorityMustRemainGameplayOwned": true
+    },
+    "cameraLanguage": {
+      "requiredPerGame": true,
+      "normalAttack": "SUBTLE_RESPONSE",
+      "heavyAttack": "SHORT_STRONG_RESPONSE",
+      "bossOrHeroMoment": "CONTROLLED_CINEMATIC_RESPONSE",
+      "cameraShakeMustRemainReadableOnMobile": true,
+      "cameraMotionMayNotObscureCriticalInputOrHazardInformation": true
+    },
+    "vfx": {
+      "feedbackTypes": [
+        "HIT_FLASH",
+        "TRAIL",
+        "AFTERIMAGE",
+        "PARTICLE",
+        "IMPACT_WAVE",
+        "CRITICAL_FEEDBACK",
+        "DANGER_TELEGRAPH",
+        "LANDING_DUST",
+        "REWARD_EMPHASIS"
+      ],
+      "budgetTiers": {
+        "S": "BOSS_OR_ULTIMATE",
+        "A": "HEAVY_ATTACK_OR_MAJOR_REWARD",
+        "B": "NORMAL_COMBAT",
+        "C": "AMBIENT_OR_PERSISTENT"
+      },
+      "poolingPreferred": true,
+      "unboundedParticleGrowthForbidden": true,
+      "perFrameTransientAllocationMustBeMinimized": true,
+      "vfxMustNotHideGameplayReadability": true
+    },
+    "heroMoment": {
+      "eligibleMoments": [
+        "BOSS_ENTRY",
+        "RARE_ITEM",
+        "LEVEL_UP",
+        "ULTIMATE_OR_FINISHER",
+        "MAJOR_STORY_REVEAL_WHEN_DESIGNED"
+      ],
+      "mayCombine": [
+        "TIME_EMPHASIS",
+        "CAMERA_ZOOM",
+        "LIGHT_EMPHASIS",
+        "VFX",
+        "AUDIO",
+        "UI_EMPHASIS"
+      ],
+      "mustRemainShortAndNonBlockingUnlessDesignedAsCinematic": true
+    },
+    "motionPresetReuse": {
+      "preferred": true,
+      "examples": [
+        "POP_IN",
+        "SPRING_SETTLE",
+        "HEAVY_LANDING",
+        "FAST_SLASH",
+        "HIT_REACTION",
+        "UI_POP",
+        "SMOOTH_FOLLOW"
+      ],
+      "presetReuseMustAllowPerGameTimingWeightAndExaggerationTuning": true,
+      "oneGlobalPresetMustNotFlattenGameIdentity": true
+    },
+    "polishAndComparison": {
+      "beforeAfterComparisonRequiredForMaterialPresentationChanges": true,
+      "compareAxes": [
+        "READABILITY",
+        "MOTION_CONTINUITY",
+        "IMPACT_FEEL",
+        "SCREEN_CLUTTER",
+        "FRAME_STABILITY"
+      ],
+      "audioVfxAnimationImpactTimingMustBeCheckedTogether": true,
+      "animationStartEndPoppingMustBeRemoved": true
+    },
+    "mobilePerformance": {
+      "targetFpsWhenDeviceAndPlatformAllow": 60,
+      "gracefulDegradationRequired": true,
+      "particleAndTrailCapsRequired": true,
+      "objectPoolingPreferred": true,
+      "unnecessaryPerFrameObjectCreationForbidden": true,
+      "visualQualityScalingMayReducePresentationCostButNotGameplayMeaning": true,
+      "touchReadabilityAndInputResponsivenessTakePriorityOverDecorativeEffects": true
+    },
+    "qa": {
+      "mustCheck": [
+        "IDLE_BREATHING_CONTINUITY",
+        "IDLE_WALK_RUN_BLEND",
+        "ACCELERATION_DECELERATION",
+        "TURN_SMOOTHING",
+        "FOOT_SLIDING",
+        "UPPER_LOWER_BODY_LAYERING_WHEN_APPLICABLE",
+        "SECONDARY_MOTION",
+        "ATTACK_IMPACT_EVENT_SYNC",
+        "HIT_STOP_AND_RECOIL",
+        "CAMERA_READABILITY",
+        "VFX_CLUTTER",
+        "MOBILE_TOUCH_DURING_EFFECTS",
+        "FRAME_STABILITY",
+        "SAVE_AND_GAMEPLAY_SEMANTICS_UNCHANGED"
+      ],
+      "visualPassCannotOverrideGameplayOrRuntimeFailure": true,
+      "highFidelityAssetQualityCannotCompensateForBrokenMotionOrInput": true
+    },
+    "implementationReadiness": {
+      "centralMachinePolicyMustBeReadBeforeWork": true,
+      "approvedDesignAndCurrentSourceMustBeReadBeforeModification": true,
+      "existingMotionVfxAssetSystemsMustBeReusedBeforeAddingDuplicates": true,
+      "wrapperOrShadowPresentationPipelineForbidden": true,
+      "directResponsibleSystemModificationPreferred": true,
+      "implementationOrderMustFollowPriorityOrderUnlessEvidenceRequiresException": true,
+      "documentationMustStaySynchronizedWithCentralMachinePolicy": true
+    }
   },
   "platformRepresentativeSets": {
     "representativeSetSizePerPlatform": 6,
