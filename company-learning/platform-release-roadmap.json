@@ -1,5 +1,5 @@
 {
-  "version": 110,
+  "version": 111,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,49 +3069,36 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FULL_WEB_FINAL_SYNTHESIS_REACHABILITY_2026-09-19",
+    "id": "VIBE2_GENERATION_STRUCTURAL_FAILURE_CLASSIFICATION_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_BLOCKED_WORKER_FAILURE_ATTRIBUTION_CONTRACT_2026-09-19",
-    "reason": "RESTORE_REACHABLE_FINAL_FULL_WEB_SYNTHESIS_AFTER_ADDITIVE_SEED_EXPANSION_WITHOUT_LOWERING_12KB_GAMEPLAY_GATE",
+    "previousChangeRecordId": "VIBE2_FULL_WEB_FINAL_SYNTHESIS_REACHABILITY_2026-09-19",
+    "reason": "CLASSIFY_DUPLICATE_EDIT_NEW_REPLACE_OUTPUT_AS_MALFORMED_OUTPUT_INSTEAD_OF_OTHER_AND_KEEP_RECOVERY_CAUSAL",
     "implementationState": "DOCUMENTED_CODE_PENDING",
     "evidence": {
       "liveRunId": 35442308252,
-      "liveWorkerJobId": 105895325384,
-      "machineState": "CONSISTENT",
-      "failureClass": "FULL_REWRITE_SIZE",
-      "accumulatedBytes": [
-        481,
-        857,
-        1243,
-        1963
-      ],
-      "targetMinBytes": 12000,
-      "observedBug": "ACCUMULATED_SEED_FORCES_EXPANSION_MODE_THROUGH_FINAL_ATTEMPT"
+      "liveWorkerJobId": 105895325429,
+      "observedFailure": "같은 파일에 edit/new/replace 중복 작업 금지",
+      "previousClass": "OTHER",
+      "intendedClass": "MALFORMED_OUTPUT"
     },
     "contract": {
-      "fullWebGateMinBytes": 12000,
-      "qualityGateLoweringForbidden": true,
-      "attempts": 4,
-      "attemptsTwoThroughPenultimateMayUseAdditiveExpansion": true,
-      "finalAttemptMustUseCompleteFullWebSynthesis": true,
-      "finalAttemptMustCarryAccumulatedPlayableSeed": true,
-      "finalAttemptMaxPredict": 6144,
-      "finalAttemptTimeoutMs": 360000,
-      "directMainGameSourceWriteForbidden": true
+      "duplicateOperationOnSameFile": "MALFORMED_OUTPUT",
+      "retryable": true,
+      "otherClassReservedForTrulyUnknownFailures": true,
+      "qualityGateLoweringForbidden": true
     },
     "pending": [
-      "PATCH_SOURCE_WORKER_FINAL_SYNTHESIS_MODE",
-      "ADD_FINAL_SYNTHESIS_REGRESSION_TEST",
-      "CORE_QA",
-      "LIVE_20_WAVE_REVALIDATION"
+      "PATCH_FAILURE_CLASSIFIER",
+      "PATCH_RETRY_MATCHER",
+      "ADD_REGRESSION_ASSERTION",
+      "CORE_QA"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
-      "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "qualityGatesNotWeakened": true
+      "directMainGameSourceWriteForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
