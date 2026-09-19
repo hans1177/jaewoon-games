@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial malformed edit",
+  "expectedEffect": "recovered complete edit from bounded malformed output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "            <div id=\"player\"></div>",
+      "replace": "            <div id=\"player\">Player</div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
