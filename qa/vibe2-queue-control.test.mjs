@@ -3,6 +3,9 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import {
   enqueueVibeTask,
   reserveNextVibeTask,
@@ -14,13 +17,53 @@ import {
   recoverFixedFullWebTransportFailures,
   recoverFixedSourceCandidateGenerationFailures,
   recoverStaleRunningReservations,
-  recoverFanInRegressionFailure
+  recoverFanInRegressionFailure,
+  runQueueCommand
 } from '../tools/vibe2-queue-control.mjs';
 import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-continuous-queue.js';
 
 function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
+
+test('learning-idle lane reservation uses its own cap instead of game adaptive cap',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-lane-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  fs.writeFileSync(queueFile,JSON.stringify({maxConcurrentTasks:256,tasks:[
+    {id:'game',gameId:'g',target:'web',department:'development',type:'implementation',goal:'game',status:'queued',sourceRoot:'web-games/g',responsibleFiles:['index.html']},
+    ...Array.from({length:4},(_,i)=>({id:`learn-${i}`,gameId:`learn-${i}`,target:'web',department:'development',type:'research',goal:'practice',status:'queued',evidence:['learning-practice-only']}))
+  ]},null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD'},null,2));
+  const result=runQueueCommand({command:'reserve-batch',queue:queueFile,control:controlFile,lane:'learning-idle',max:'4',min:'1'});
+  assert.equal(result.executionLane,'learning-idle');
+  assert.equal(result.reservationMaxConcurrentTasks,4);
+  assert.equal(result.adaptiveControl.currentMax,20);
+  assert.equal(result.tasks.length,4);
+  assert.ok(result.tasks.every(task=>task.executionLane==='LEARNING_IDLE'));
+  assert.equal(result.tasks.some(task=>task.id==='game'),false);
+});
+
+test('auxiliary fan-in never mutates game-primary adaptive control',()=>{
+  const dir=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-aux-fanin-'));
+  const queueFile=path.join(dir,'queue.json');
+  const controlFile=path.join(dir,'control.json');
+  const inputFile=path.join(dir,'results.json');
+  const reservation={id:'aux-run:1',runId:'aux-run',runAttempt:1,reservedAt:'2026-09-19T10:00:00Z'};
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:256,tasks:[
+    {id:'learn',gameId:'learn',target:'web',department:'development',type:'research',goal:'practice',status:'queued',evidence:['learning-practice-only']}
+  ]});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:1,lane:'learning-idle',reservation});
+  fs.writeFileSync(queueFile,JSON.stringify(reserved.queue,null,2));
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:20,lastDecision:'HOLD',lastReason:'TEST'},null,2));
+  fs.writeFileSync(inputFile,JSON.stringify({results:[{taskId:'learn',reservationId:'aux-run:1',variant:'primary',outcome:'PASS',evidence:['practice-pass'],metrics:{requestedMax:1,effectiveMax:1,workerStartedAt:1,workerFinishedAt:2}}]},null,2));
+  const before=fs.readFileSync(controlFile,'utf8');
+  const result=runQueueCommand({command:'fan-in',queue:queueFile,control:controlFile,input:inputFile,lane:'learning-idle',min:'1'});
+  const after=fs.readFileSync(controlFile,'utf8');
+  assert.equal(result.executionLane,'learning-idle');
+  assert.equal(result.adaptiveEligible,false);
+  assert.equal(after,before);
+});
 
 test('queue normalization exposes explicit execution lanes and release wait is dynamic',()=>{
   let queue=createVibeContinuousQueue({tasks:[
