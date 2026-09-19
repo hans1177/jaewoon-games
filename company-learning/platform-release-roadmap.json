@@ -1,5 +1,5 @@
 {
-  "version": 35,
+  "version": 36,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1589,7 +1589,7 @@
       }
     },
     "sharedWorkerContext": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-19",
       "requiredForAllWorkers": true,
       "appliesTo": [
@@ -1607,7 +1607,8 @@
       "loadOrder": [
         "company-learning/platform-release-roadmap.json",
         "company-learning/company-log-map.json",
-        "company-learning/company-architecture-map.json"
+        "company-learning/company-architecture-map.json",
+        "company-learning/security-immune-system.json"
       ],
       "beforeWorkRequired": true,
       "afterWorkRequired": true,
@@ -1618,11 +1619,53 @@
       "staleContextMayNotCompleteWork": true,
       "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
       "requiredLogMarkers": [
+        "WORKER_CONTEXT_POLICY_VERSION",
         "WORKER_CONTEXT_POLICY_SHA256",
         "WORKER_CONTEXT_LOG_MAP_SHA256",
         "WORKER_CONTEXT_ARCHITECTURE_SHA256",
+        "WORKER_CONTEXT_SECURITY_POLICY_SHA256",
         "WORKER_CONTEXT_SYNC=PASS"
-      ]
+      ],
+      "securityPolicy": "company-learning/security-immune-system.json",
+      "documentIsCode": true,
+      "roadmapIsExecutableContract": true,
+      "workerLauncherSyncRequired": true,
+      "workerLauncherWorkflows": [
+        ".github/workflows/vibe2-continuous-core.yml",
+        ".github/workflows/vibe2-24h-runner.yml",
+        ".github/workflows/company-system-ai-workers.yml",
+        ".github/workflows/company-security-immune.yml",
+        ".github/workflows/artbook-free-department-bots.yml",
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        ".github/workflows/company-development-unity-runtime.yml",
+        ".github/workflows/company-development-roblox-runtime.yml",
+        ".github/workflows/company-seed-design-runtime.yml",
+        ".github/workflows/director-supervisor.yml",
+        ".github/workflows/homepage-manager.yml"
+      ],
+      "staleContextMayNotStartWork": true,
+      "syncMode": "ROADMAP_FIRST_FAIL_CLOSED",
+      "changeRecord": {
+        "id": "ROADMAP_ALL_WORKERS_SYNC_2026-09-19",
+        "documentedAt": "2026-09-19",
+        "rule": "DOCUMENT_EQUALS_CODE",
+        "summary": "All canonical worker launcher workflows must validate the same roadmap-first shared context before executing worker work.",
+        "codeBindings": [
+          "tools/company-shared-context.mjs",
+          "qa/company-shared-context.test.mjs",
+          ".github/workflows/vibe2-continuous-core.yml",
+          ".github/workflows/vibe2-24h-runner.yml",
+          ".github/workflows/company-system-ai-workers.yml",
+          ".github/workflows/company-security-immune.yml",
+          ".github/workflows/artbook-free-department-bots.yml",
+          ".github/workflows/company-development-confirmed-runtime.yml",
+          ".github/workflows/company-development-unity-runtime.yml",
+          ".github/workflows/company-development-roblox-runtime.yml",
+          ".github/workflows/company-seed-design-runtime.yml",
+          ".github/workflows/director-supervisor.yml",
+          ".github/workflows/homepage-manager.yml"
+        ]
+      }
     },
     "primaryAiOrchestration": {
       "version": 2,
@@ -1823,6 +1866,26 @@
         "contentHashQaCacheRequired": true,
         "sharedPreparationSinglePass": true
       }
+    },
+    "securityImmuneSystem": {
+      "version": 1,
+      "policyFile": "company-learning/security-immune-system.json",
+      "steward": "tools/company-security-steward.mjs",
+      "incidentTool": "tools/company-security-incident.mjs",
+      "recoveryQueue": "vibe2-unreal-core:.vibe2/recovery-queue.json",
+      "incidentStore": "vibe2-unreal-core:.vibe2/security-incidents.json",
+      "learningDistiller": "tools/company-security-learning.mjs",
+      "sharedWorkerContextRequired": true,
+      "lifecycle": [
+        "EXTERNAL_AI_OR_PR_CANDIDATE",
+        "SECURITY_STEWARD_SCAN",
+        "QUARANTINE_AFFECTED_CHANGE",
+        "RECOVERY_QUEUE",
+        "VERIFIED_REMEDIATION",
+        "PRIMARY_AI_DIRECT_REVIEW",
+        "VERIFIED_SECURITY_IMMUNE_LEARNING"
+      ],
+      "rawSecretsOrMalwareMayEnterLearning": false
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",

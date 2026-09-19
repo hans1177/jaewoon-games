@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -88,5 +88,28 @@
   "limits": {
     "repositoryAndCiSecurityOnlyUnlessAdditionalInfrastructureTelemetryIsConnected": true,
     "doesNotClaimHostNetworkFirewallVisibilityWithoutTelemetry": true
+  },
+  "centralRoadmapBinding": {
+    "centralPolicy": "company-learning/platform-release-roadmap.json",
+    "documentIsCode": true,
+    "sharedContextValidator": "tools/company-shared-context.mjs",
+    "allWorkerLaunchersMustValidateBeforeWork": true,
+    "staleRoadmapExecutionForbidden": true
+  },
+  "workerSynchronization": {
+    "launcherWorkflows": [
+      ".github/workflows/vibe2-continuous-core.yml",
+      ".github/workflows/vibe2-24h-runner.yml",
+      ".github/workflows/company-system-ai-workers.yml",
+      ".github/workflows/company-security-immune.yml",
+      ".github/workflows/artbook-free-department-bots.yml",
+      ".github/workflows/company-development-confirmed-runtime.yml",
+      ".github/workflows/company-development-unity-runtime.yml",
+      ".github/workflows/company-development-roblox-runtime.yml",
+      ".github/workflows/company-seed-design-runtime.yml",
+      ".github/workflows/director-supervisor.yml",
+      ".github/workflows/homepage-manager.yml"
+    ],
+    "securityAndRecoveryWorkersUseSameRoadmapContext": true
   }
 }

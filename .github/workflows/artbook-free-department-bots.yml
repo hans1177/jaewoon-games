@@ -61,6 +61,12 @@ jobs:
           ref: main
           fetch-depth: 2
 
+      - name: Synchronize central roadmap context (artbook)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/worker-shared-context.json
+
       - name: Resolve direct and resumable targets
         id: targets
         shell: bash
@@ -176,6 +182,12 @@ jobs:
         with:
           ref: main
           fetch-depth: 2
+
+      - name: Synchronize central roadmap context (artbook)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/worker-shared-context.json
 
       - name: Install local Ollama
         shell: bash

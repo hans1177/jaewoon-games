@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -52,9 +52,11 @@
     }
   },
   "requiredMarkers": [
+    "WORKER_CONTEXT_POLICY_VERSION",
     "WORKER_CONTEXT_POLICY_SHA256",
     "WORKER_CONTEXT_LOG_MAP_SHA256",
     "WORKER_CONTEXT_ARCHITECTURE_SHA256",
+    "WORKER_CONTEXT_SECURITY_POLICY_SHA256",
     "WORKER_CONTEXT_SYNC=PASS"
   ],
   "failureContract": {
@@ -118,5 +120,14 @@
     "primaryAiReviewMayAcceptReworkReopenOrRedirect": true,
     "workerWaveMax": 32,
     "focusedRecruitmentEvidenceRequired": true
+  },
+  "securityPolicy": "company-learning/security-immune-system.json",
+  "workerContextLogContract": {
+    "version": 1,
+    "documentIsCode": true,
+    "roadmapPolicyHashRequired": true,
+    "securityPolicyHashRequired": true,
+    "launcherValidationRequired": true,
+    "completionMustUseSameValidatedContext": true
   }
 }

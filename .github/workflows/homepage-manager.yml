@@ -102,6 +102,12 @@ jobs:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'main' }}
           fetch-depth: 0
 
+      - name: Synchronize central roadmap context (homepage)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/worker-shared-context.json
+
       - name: Bind synchronized server runtime snapshot
         shell: bash
         run: |
@@ -304,6 +310,12 @@ jobs:
           ref: ${{ needs.manage-and-self-qa.outputs.base_sha }}
           fetch-depth: 1
 
+      - name: Synchronize central roadmap context (homepage)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/worker-shared-context.json
+
       - name: Download exact self-QA candidate
         uses: actions/download-artifact@v4
         with:
@@ -378,6 +390,12 @@ jobs:
         with:
           ref: ${{ needs.manage-and-self-qa.outputs.base_sha }}
           fetch-depth: 0
+
+      - name: Synchronize central roadmap context (homepage)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/worker-shared-context.json
 
       - name: Download Director-approved candidate
         uses: actions/download-artifact@v4

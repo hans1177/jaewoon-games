@@ -47,6 +47,12 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Synchronize central roadmap context (director)
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/company-shared-context.mjs --output=/tmp/worker-shared-context.json
+
       - name: Verify central policy authority
         shell: bash
         run: |

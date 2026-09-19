@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 6,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -72,12 +72,13 @@
   "sharedContextLoadOrder": [
     "company-learning/platform-release-roadmap.json",
     "company-learning/company-log-map.json",
-    "company-learning/company-architecture-map.json"
+    "company-learning/company-architecture-map.json",
+    "company-learning/security-immune-system.json"
   ],
   "synchronization": {
-    "beforeWork": "LOAD_AND_VALIDATE_ALL_THREE",
+    "beforeWork": "LOAD_AND_VALIDATE_ROADMAP_LOG_ARCHITECTURE_SECURITY_POLICY",
     "duringWork": "DO_NOT_CREATE_POLICY_OUTSIDE_CENTRAL_POLICY",
-    "afterWork": "REVALIDATE_ALL_THREE_AND_BIND_OUTPUT_EVIDENCE",
+    "afterWork": "REVALIDATE_SHARED_CONTEXT_AND_BIND_OUTPUT_EVIDENCE",
     "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE"
   },
   "forbidden": [
@@ -159,5 +160,27 @@
     "independentTaskParallelism": true,
     "maxExternalExecutionWave": 32,
     "recruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK"
+  },
+  "securityPolicy": "company-learning/security-immune-system.json",
+  "workerSynchronization": {
+    "version": 1,
+    "documentIsCode": true,
+    "roadmapFirst": true,
+    "validator": "tools/company-shared-context.mjs",
+    "launcherWorkflows": [
+      ".github/workflows/vibe2-continuous-core.yml",
+      ".github/workflows/vibe2-24h-runner.yml",
+      ".github/workflows/company-system-ai-workers.yml",
+      ".github/workflows/company-security-immune.yml",
+      ".github/workflows/artbook-free-department-bots.yml",
+      ".github/workflows/company-development-confirmed-runtime.yml",
+      ".github/workflows/company-development-unity-runtime.yml",
+      ".github/workflows/company-development-roblox-runtime.yml",
+      ".github/workflows/company-seed-design-runtime.yml",
+      ".github/workflows/director-supervisor.yml",
+      ".github/workflows/homepage-manager.yml"
+    ],
+    "launcherValidationRequired": true,
+    "staleRoadmapExecutionForbidden": true
   }
 }

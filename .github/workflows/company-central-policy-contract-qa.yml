@@ -6,6 +6,15 @@ on:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'tools/company-shared-context.mjs'
+      - 'qa/company-shared-context.test.mjs'
+      - '.github/workflows/vibe2-continuous-core.yml'
+      - '.github/workflows/company-system-ai-workers.yml'
+      - '.github/workflows/company-security-immune.yml'
+      - '.github/workflows/artbook-free-department-bots.yml'
       - 'AGENTS.md'
       - '.github/agents/planning.agent.md'
       - '.github/agents/graphics.agent.md'
@@ -78,6 +87,15 @@ on:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
       - 'company-learning/platform-release-roadmap.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/security-immune-system.json'
+      - 'tools/company-shared-context.mjs'
+      - 'qa/company-shared-context.test.mjs'
+      - '.github/workflows/vibe2-continuous-core.yml'
+      - '.github/workflows/company-system-ai-workers.yml'
+      - '.github/workflows/company-security-immune.yml'
+      - '.github/workflows/artbook-free-department-bots.yml'
       - 'AGENTS.md'
       - '.github/agents/planning.agent.md'
       - '.github/agents/graphics.agent.md'
@@ -157,6 +175,9 @@ jobs:
           node-version: '22'
       - name: Verify central policy and selected-platform production authority
         run: |
+          node --check tools/company-shared-context.mjs
+          node --test qa/company-shared-context.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/company-shared-context.json
           node --check tools/production-classification.mjs
           node --check tools/design-only-promotion-sync.mjs
           node --check tools/company-selected-platform-router.mjs
