@@ -11,7 +11,7 @@ const writeJson=(file,value)=>fs.writeFileSync(file,JSON.stringify(value,null,2)
 const clean=value=>String(value??'').trim();
 const upper=value=>clean(value).toUpperCase();
 const webSourcePathOf=gameId=>`web-games/${gameId}`;
-const webResetTokenOf=game=>clean(game?.productionClassSource||game?.lifecycleReason||'OWNER_WEB_DEVELOPMENT_RESET');
+const webResetTokenOf=game=>clean(game?.ownerWebSourceRevision||game?.productionClassSource||game?.lifecycleReason||'OWNER_WEB_DEVELOPMENT_RESET');
 
 function latestDesignBaseline(root,gameId){
   const gameRoot=path.join(root,'design',gameId);
@@ -81,6 +81,14 @@ export function reconcileDevelopmentQueue({root='.'}={}){
   const queue=readJson(queuePath,{version:1,items:[]});
   const roadmap=readJson(path.join(root,MACHINE_POLICY_SOURCE),{});
   const developmentGameWipMax=Number(roadmap?.developmentSpeedExecution?.globalSelectedPlatformDevelopmentWipMax||0);
+  const savePolicy=roadmap?.developmentLifecycleMachine?.saveNormalization||{};
+  const bindSaveContract=item=>{
+    item.saveNormalizationRequired=savePolicy.authority==='MACHINE_EXECUTION_CONTRACT';
+    item.saveMeaningPreservationRequired=savePolicy.preserveExistingCompatibleSaveMeaning===true;
+    item.saveVersioningContract=clean(savePolicy.canonicalWebModule)||'assets/save-versioning.js';
+    item.saveRestoreEvidenceContract=clean(savePolicy.webRestoreEvidenceEvaluator)||'tools/company-web-save-restore-evidence.mjs';
+    return item;
+  };
   catalog.games ||= [];
   queue.items ||= [];
 
@@ -116,6 +124,7 @@ export function reconcileDevelopmentQueue({root='.'}={}){
     item.sourcePath=item.sourcePath||item.webSourcePath;
     item.webValidationRequired=true;
     item.musicValidationRequired=true;
+    bindSaveContract(item);
     item.homepageTestCandidate=item.homepageTestCandidate===true;
     if(item.postPromotionArtbookRequired===undefined)item.postPromotionArtbookRequired=false;
     if(item.postWebArtbookRequired===undefined)item.postWebArtbookRequired=true;
@@ -185,6 +194,10 @@ export function reconcileDevelopmentQueue({root='.'}={}){
       resumeStage:forceWebDevelopment?'FULL_APPROVED_SCOPE_WEB_COMPANION_BOOTSTRAP':null,
       failureCount:0,
       routingBlockers:[],
+      saveNormalizationRequired:savePolicy.authority==='MACHINE_EXECUTION_CONTRACT',
+      saveMeaningPreservationRequired:savePolicy.preserveExistingCompatibleSaveMeaning===true,
+      saveVersioningContract:clean(savePolicy.canonicalWebModule)||'assets/save-versioning.js',
+      saveRestoreEvidenceContract:clean(savePolicy.webRestoreEvidenceEvaluator)||'tools/company-web-save-restore-evidence.mjs',
       ownerWebDevelopmentResetAppliedFor:forceWebDevelopment?webResetTokenOf(game):null,
       ownerWebDevelopmentResetAppliedAt:forceWebDevelopment?stamp:null
     };
