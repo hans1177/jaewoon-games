@@ -307,7 +307,7 @@ function recoverFullWebExpansionDocumentSeed(raw,{target,responsibleFiles=[],sou
       endAt=htmlEnd+7;
     }
     let content=text.slice(contentAt+FULL_WEB_EXPANSION_CONTENT_MARKER.length,endAt).trim();
-    if(/^\`\`\`(?:html)?\s*/i.test(content))content=content.replace(/^\`\`\`(?:html)?\s*/i,'').replace(/\s*\`\`\`$/,'').trim();
+    if(/^```(?:html)?\s*/i.test(content))content=content.replace(/^```(?:html)?\s*/i,'').replace(/\s*```$/,'').trim();
     const direct=parseDirectFullHtml(content,{responsibleFiles});
     if(!direct||direct.replaceFiles.length!==1)return null;
     const file=direct.replaceFiles[0],relative=normalizeModelPath(file?.path||responsibleFiles[0],{target,responsibleFiles,sourceRootRelative});
