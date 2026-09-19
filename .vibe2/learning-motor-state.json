@@ -19,11 +19,11 @@
       "lastEvidence": "exp_security_policy_review_authorized_v1"
     },
     "COMBAT": {
-      "xp": 48,
+      "xp": 60,
       "level": 2,
-      "verifiedSuccesses": 4,
+      "verifiedSuccesses": 5,
       "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_i00mwv"
+      "lastEvidence": "exp_security_b72c29be3a79e4c5a56017dd"
     },
     "AI": {
       "xp": 120,
@@ -47,11 +47,11 @@
       "lastEvidence": "exp_rg6lvy"
     },
     "SAVE": {
-      "xp": 96,
+      "xp": 108,
       "level": 3,
-      "verifiedSuccesses": 11,
+      "verifiedSuccesses": 12,
       "verifiedFailureLessons": 0,
-      "lastEvidence": "pat_u4i70c"
+      "lastEvidence": "exp_security_b72c29be3a79e4c5a56017dd"
     },
     "MOBILE_INPUT": {
       "xp": 132,
@@ -68,25 +68,25 @@
       "lastEvidence": "pat_zf15dc"
     },
     "DEBUGGING": {
-      "xp": 80,
+      "xp": 88,
       "level": 3,
-      "verifiedSuccesses": 10,
+      "verifiedSuccesses": 11,
       "verifiedFailureLessons": 0,
-      "lastEvidence": "pat_security_policy_review_authorized_v1"
+      "lastEvidence": "pat_security_b72c29be3a79e4c5a56017dd"
     },
     "RECOVERY": {
-      "xp": 0,
+      "xp": 12,
       "level": 1,
-      "verifiedSuccesses": 0,
+      "verifiedSuccesses": 1,
       "verifiedFailureLessons": 0,
-      "lastEvidence": null
+      "lastEvidence": "exp_security_b72c29be3a79e4c5a56017dd"
     },
     "SECURITY": {
-      "xp": 20,
-      "level": 1,
-      "verifiedSuccesses": 2,
+      "xp": 40,
+      "level": 2,
+      "verifiedSuccesses": 4,
       "verifiedFailureLessons": 0,
-      "lastEvidence": "pat_security_policy_review_authorized_v1"
+      "lastEvidence": "pat_security_b72c29be3a79e4c5a56017dd"
     },
     "PERFORMANCE": {
       "xp": 24,
@@ -151,7 +151,8 @@
     "exp_pg739o",
     "exp_i00mwv",
     "exp_rg6lvy",
-    "exp_security_policy_review_authorized_v1"
+    "exp_security_policy_review_authorized_v1",
+    "exp_security_b72c29be3a79e4c5a56017dd"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -199,7 +200,8 @@
     "pat_83szfq",
     "pat_8vynqw",
     "pat_bl3edd",
-    "pat_security_policy_review_authorized_v1"
+    "pat_security_policy_review_authorized_v1",
+    "pat_security_b72c29be3a79e4c5a56017dd"
   ],
   "failureSignatures": {
     "fail_173wlx": {
@@ -225,7 +227,18 @@
         "STATE_MACHINE",
         "SECURITY"
       ]
+    },
+    "fail_r0zxub": {
+      "count": 1,
+      "lastEvidence": "exp_security_b72c29be3a79e4c5a56017dd",
+      "example": "OWNER_AUTHORIZED_LONG_TERM_VIBE_VISION_AND_CAPABILITY_GUARDRAIL_POLICY_CHANGE",
+      "domains": [
+        "COMBAT",
+        "SAVE",
+        "RECOVERY",
+        "SECURITY"
+      ]
     }
   },
-  "updatedAt": "2026-09-19T06:15:00.173Z"
+  "updatedAt": "2026-09-19T06:21:37.538Z"
 }

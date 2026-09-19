@@ -725,6 +725,66 @@
       "createdAt": "2026-09-19T06:14:04.436Z",
       "lastVerifiedAt": "2026-09-19T06:14:04.436Z",
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "exp_security_b72c29be3a79e4c5a56017dd",
+      "fingerprint": "security_b72c29be3a79e4c5a56017dd",
+      "gameId": null,
+      "engine": "system",
+      "departments": [
+        "security",
+        "infrastructure",
+        "qa",
+        "learning"
+      ],
+      "taskType": "security-recovery",
+      "problem": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+      "goal": "detect contain recover and prevent recurrence without storing attack payload",
+      "change": "DIRECT_REVIEW_CONFIRMED_CAPABILITY_EXPANSION_WITHOUT_AUTHORITY_EXPANSION_AND_PRESERVED_SECURITY_GATES",
+      "outcome": "PASS",
+      "failureCause": "OWNER_AUTHORIZED_LONG_TERM_VIBE_VISION_AND_CAPABILITY_GUARDRAIL_POLICY_CHANGE",
+      "qa": [
+        "owner-directive:LONG_TERM_VIBE_VISION_2026-09-19",
+        "source-commit:3c53f2dc2edd2233bbae2d6033f663b90c95b0a0",
+        "central-policy-qa:35426147380:PASS",
+        "security-immune:35426147387:PASS",
+        "authorized-policy-review:PASS",
+        "authority-expansion:FORBIDDEN",
+        "security-gate-bypass:FORBIDDEN",
+        "regression:PASS",
+        "primary-ai-security-review:PASS"
+      ],
+      "build": null,
+      "evidence": [
+        "owner-directive:LONG_TERM_VIBE_VISION_2026-09-19",
+        "source-commit:3c53f2dc2edd2233bbae2d6033f663b90c95b0a0",
+        "central-policy-qa:35426147380:PASS",
+        "security-immune:35426147387:PASS",
+        "authorized-policy-review:PASS",
+        "authority-expansion:FORBIDDEN",
+        "security-gate-bypass:FORBIDDEN",
+        "regression:PASS",
+        "primary-ai-security-review:PASS",
+        "security-evidence-sha256:21a8c049a00d470f476d36425439a38d713965bdfa1fd12aa70209038ad3d493"
+      ],
+      "reusablePatterns": [
+        "SECURITY_REVIEW_REQUIRED:CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+        "SECURITY_PRESERVE_GATE:NO_BYPASS",
+        "SECURITY_AUTHORIZED_REVIEW:DIRECT_REVIEW_CONFIRMED_CAPABILITY_EXPANSION_WITHOUT_AUTHORITY_EXPANSION_AND_PRESERVED_SECURITY_GATES"
+      ],
+      "avoidPatterns": [
+        "SECURITY_AVOID:POLICY_REVIEW_BYPASS"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SECURITY_IMMUNE_LEARNING",
+      "rawSecretStored": false,
+      "rawMalwareStored": false,
+      "sourceSecurityIncidentId": "sec_4bb9cfed0e7d5e59b727f1fe",
+      "createdAt": "2026-09-19T06:21:37.388Z",
+      "lastVerifiedAt": "2026-09-19T06:21:37.388Z"
     }
   ]
 }
