@@ -172,7 +172,9 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
   const preflight=workflow.slice(start,end);
   assert(preflight.includes('git fetch --depth=1 --no-tags origin main --quiet'));
   assert(preflight.includes('contract_sha="$(git rev-parse FETCH_HEAD)"'));
-  assert(preflight.includes('git worktree add --detach /tmp/vibe2-main "$contract_sha"'));
+  assert(preflight.includes('git archive "$contract_sha" | tar -x -C /tmp/vibe2-main'));
+  assert(preflight.includes('VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'));
+  assert.equal(preflight.includes('git worktree add --detach /tmp/vibe2-main'),false);
   assert(preflight.includes('echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"'));
   assert(preflight.includes('node --check "/tmp/vibe2-main/$file"'));
   assert(preflight.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
