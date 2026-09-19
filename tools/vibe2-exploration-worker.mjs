@@ -87,6 +87,27 @@ function taskFailureEvidence(order={}){
   return unique(values).slice(0,16);
 }
 
+function compileCausalReplayPlan({order={},failures=[],testTargets=[]}={}){
+  const evidence=unique([
+    ...failures,
+    ...(order?.workPackage?.sharedContext?.diagnosticEvidence||[]),
+    ...(order?.selectedTask?.evidence||[])
+  ]);
+  const prePatchReproduced=evidence.some(value=>/causal-replay-prepatch:(?:FAIL_REPRODUCED|PASS)|reproduction:(?:CONFIRMED|PASS)|prepatch-repro:(?:PASS|CONFIRMED)/i.test(clean(value)))
+    ||order?.workPackage?.sharedContext?.causalReplay?.prePatchReproduced===true;
+  const declaredTargets=unique([
+    ...(testTargets||[]),
+    ...(order?.workPackage?.sharedContext?.causalReplay?.nodeTestTargets||[])
+  ]).filter(value=>/(?:test|spec|qa)/i.test(value)&&/\.(?:mjs|cjs|js)$/i.test(value)).slice(0,8);
+  const required=failures.length>0;
+  const executable=required&&prePatchReproduced&&declaredTargets.length>0;
+  return{
+    version:1,required,prePatchReproduced,nodeTestTargets:declaredTargets,executable,
+    mode:executable?'NODE_TEST_TARGETS':'PLAN_ONLY',
+    status:!required?'NOT_REQUIRED':executable?'READY_FOR_POSTPATCH_REPLAY':prePatchReproduced?'NO_SUPPORTED_TEST_TARGET':'NO_VERIFIED_PREPATCH_REPRODUCTION',
+    identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false
+  };
+}
 function compilePatchRecipe({order={},failures=[],primaryTargets=[],dependentSymbols=[],ownedState=[],requiredFocusedChecks=[],preserveSemantics=[]}={}){
   const failureFingerprint=clean(order?.unifiedLearning?.failureFingerprint)||null;
   const verifiedMemory=(order?.unifiedLearning?.failureLocalMemory||[])
@@ -170,10 +191,12 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     'HOTSPOT_RECHECK:'+clean(row?.kind).toUpperCase()+':'+clean(row?.name),
     clean(row?.kind).toUpperCase()==='SYSTEM'?'DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED':''
   ]).filter(Boolean);
+  const causalReplay=compileCausalReplayPlan({order,failures,testTargets});
   const requiredFocusedChecks=unique([
     ...impactRows.flatMap(row=>row.requiredChecks||[]),
     ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
     ...hotspotChecks,
+    ...(causalReplay.executable?['CAUSAL_REPLAY_POSTPATCH_REQUIRED']:[]),
     ...(testTargets||[]).map(value=>'TEST_TARGET:'+value)
   ]).slice(0,24);
   const strategyHint=failures.length&&primaryTargets.length?'CAUSAL_TRACE_FIRST'
@@ -224,6 +247,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
       saveKeysMustRemainCompatible:sourceAnalysis.storageKeys||[]
     },
     requiredFocusedChecks,
+    causalReplay,
     patchRecipe,
     codingArchitecture:{
       developmentMode:codingArchitecture?.developmentMode||null,
@@ -260,6 +284,7 @@ function bootstrapEditContract(order={},responsibleFiles=[]){
     requiredObservableResult:clean(order?.originalGoal||order?.goal)||'IMPLEMENT_COMPLETE_PLAYABLE_BASELINE',
     semanticDiffBudget:{allowedSystems:[],preferredPrimarySymbols:[],maxSystemCount:0,unrelatedSystemMutationForbidden:false,saveKeysMustRemainCompatible:[]},
     requiredFocusedChecks:['MOBILE_GAMEPLAY','REAL_INPUT','STATE_CHANGE','RESTART','RUNTIME'],
+    causalReplay:{version:1,required:false,prePatchReproduced:false,nodeTestTargets:[],executable:false,mode:'PLAN_ONLY',status:'NOT_REQUIRED',identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false},
     patchRecipe:{version:1,mode:'REQUIREMENT_RECIPE',failureFingerprint:null,verifiedMemoryIds:[],verifiedMemoryCount:0,reusePatterns:[],avoidPatterns:[],steps:['CONFIRM_REQUIREMENT_AGAINST_CURRENT_SOURCE','IMPLEMENT_COMPLETE_PLAYABLE_BASELINE','RUN_TASK_LOCAL_INCREMENTAL_QA'],primaryTargets:[],dependentSymbolsOrSystems:[],ownedState:[],focusedChecks:['MOBILE_GAMEPLAY','REAL_INPUT','STATE_CHANGE','RESTART','RUNTIME'],protectedSemantics:['APPROVED_GAMEPLAY_VALUES','SAVE_MEANING'],verifiedMemoryOnly:true,scopeExpansionAllowed:false,qaBypassAllowed:false,authorityExpanded:false},
     codingArchitecture:{developmentMode:'GREENFIELD',stateOwnershipSystems:[],apiNames:[],invariantIds:[],impactRule:'ARCHITECTURE_FIRST_THEN_IMPLEMENT'},
     responsibilityGraph:{nodeCount:0,relevantNodes:[],relevantEdges:[]},behaviorChains:[],seniorReview:{score:null,hardBlockers:[],issues:[]},
