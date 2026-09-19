@@ -469,8 +469,8 @@ test('undersized full web output gets one final bounded third retry without lowe
   const result=await runVibe2SourceWorker({cwd,responseFiles:[small1,small2,good]});
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.focusedFinalRetry,true);
-  assert.equal(result.generation.timeoutMs,240000);
-  assert.equal(result.generation.maxPredict,4096);
+  assert.equal(result.generation.timeoutMs,360000);
+  assert.equal(result.generation.maxPredict,6144);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -498,9 +498,13 @@ test('generation recovery remains bounded and keeps strict output contracts', ()
   const full = buildGenerationRetryPrompt('base', { allowFullRewrite:true, error:new Error('전체 교체 파일 크기 오류: index.html') });
   assert.match(full, /MUST begin with VIBE2_FULL_FILE/);
   assert.match(full, /MUST end with ---VIBE2_FILE_END---/);
-  assert.match(full, /at least 1800 UTF-8 bytes/);
-  assert.match(full, /no more than 260000 bytes/);
-  assert.match(full, /validator-rejected tiny shell/);
+  assert.match(full, /12000-24000 UTF-8 bytes/);
+  assert.match(full, /hard safety range remains 1800-260000 UTF-8 bytes/);
+  assert.match(full, /MUST reach at least 12000 bytes/);
+  assert.match(full, /substantial executable JavaScript/);
+  const raised = buildGenerationRetryPrompt('Full Web generation target: 18000-36000 UTF-8 bytes.', { allowFullRewrite:true, error:new Error('전체 교체 파일 크기 오류: index.html') });
+  assert.match(raised, /MUST reach at least 18000 bytes/);
+  assert.match(raised, /no more than 36000 bytes/);
   const json = buildGenerationRetryPrompt('base', { allowFullRewrite:false, error:new Error('JSON') });
   assert.match(json, /strict JSON object only/);
   assert.match(json, /No markdown/);
