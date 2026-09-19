@@ -152,6 +152,7 @@ function isAutonomousProductionTarget(project={}){if(project.engine==='roblox')r
 function sourceFile(root,relative){return path.join(root,...posix(relative).split('/'));}
 function readText(file){try{return fs.readFileSync(file,'utf8');}catch{return'';}}
 function hasTask(queue,id){return queue.tasks.some(item=>item.id===id);}
+function taskDone(queue,id){return queue.tasks.some(item=>item.id===id&&clean(item.status).toLowerCase()==='done');}
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
 function isDevelopmentImplementation(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
 function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(clean(item.blocker));}
@@ -302,6 +303,42 @@ function findWebDiagnosticTask(project,repoRoot,queue){
   out.workUnits=Math.max(3,Math.min(6,rows.length+1));
   return out;
 }
+function findWebPresentationQualityTask(project,repoRoot,queue){
+  if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
+  const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative);
+  if(!fs.existsSync(file))return null;
+  const stages=[
+    {key:'asset-adaptation',pass:'ASSET_ADAPTATION',goal:'[PRESENTATION_PASS:ASSET_ADAPTATION] 기존 게임 로직·저장·밸런스·진행 의미를 그대로 보존하면서 현재 그래픽 표현을 게임 정체성에 맞게 정리한다. 기존 에셋/도형/텍스처/색/재질 표현을 우선 재사용하고 Style Lock을 일관되게 적용한다. 원본 의미를 덮어쓰는 임시 wrapper나 중복 렌더 파이프라인을 만들지 않는다.'},
+    {key:'living-motion',pass:'LIVING_MOTION',goal:'[PRESENTATION_PASS:LIVING_MOTION] 캐릭터와 주요 엔티티가 정지 상태에서도 살아 움직이도록 미세 호흡/자세 변화를 넣고, Idle↔Walk↔Run 또는 현재 게임의 등가 이동 상태를 속도 기반으로 부드럽게 연결한다. 가속·감속·회전 후행·무기/장식 secondary motion을 적용하고 순간 스냅과 끊긴 상태 전환을 줄인다. 판정·이동속도·밸런스는 변경하지 않는다.'},
+    {key:'animation-feel',pass:'ANIMATION_FEEL',goal:'[PRESENTATION_PASS:ANIMATION_FEEL] 주요 공격/상호작용 하나 이상을 준비→가속→impact→짧은 표현용 hit-stop→반동→복귀 흐름으로 다듬는다. 빠른 동작은 smear/trail, 무거운 동작은 overshoot/settle을 검토한다. 실제 데미지/쿨다운/판정 시점은 기존 authoritative gameplay event를 보존하고 표현만 동기화한다.'},
+    {key:'vfx',pass:'VFX',goal:'[PRESENTATION_PASS:VFX] 핵심 행동의 시각 피드백을 hit flash, trail/afterimage, impact wave/particle, danger telegraph, reward emphasis 중 게임에 맞는 방식으로 강화한다. 효과는 모바일 입력과 위험 정보를 가리지 않게 제한하고 무제한 파티클 생성이나 매 프레임 불필요한 객체 생성을 피한다.'},
+    {key:'audio-feel',pass:'AUDIO_FEEL',goal:'[PRESENTATION_PASS:AUDIO_FEEL] 기존 오디오 구조를 먼저 재사용해서 탐험/긴장/전투/보스/보상 중 실제 필요한 상태의 음악 전환과 핵심 효과음을 자연스럽게 연결한다. Web은 첫 사용자 제스처 이후 오디오를 시작하고 mute/volume을 유지하며 백그라운드 복귀 중복 재생을 막는다. 타격음은 기존 impact event와 맞추고 반복음은 기계적인 반복감을 줄인다.'},
+    {key:'camera-language',pass:'CAMERA_LANGUAGE',goal:'[PRESENTATION_PASS:CAMERA_LANGUAGE] 일반 행동은 미세한 카메라 반응, 강한 행동은 짧고 강한 반응, 보스/중요 순간은 통제된 hero moment가 되도록 카메라 언어를 정리한다. 줌/흔들림/추적은 모바일 가독성과 조작을 해치지 않고 멀미를 유발할 정도로 지속되지 않게 한다.'},
+    {key:'polish-mobile',pass:'POLISH_MOBILE',goal:'[PRESENTATION_PASS:POLISH_MOBILE] 모션 시작/끝 팝, 이펙트 과밀, 오디오 끊김, UI 모션 불일치, 모바일 프레임/터치 간섭을 최종 정리한다. 가능한 기기에서 60FPS를 목표로 하고 저사양에서는 표현 비용만 낮추며 게임 의미·입력·저장·밸런스는 그대로 유지한다.'}
+  ];
+  let previousId=null;
+  for(const stage of stages){
+    const id=`${project.gameId}-presentation-${stage.key}-v1`;
+    if(hasTask(queue,id)){
+      if(!taskDone(queue,id))return null;
+      previousId=id;
+      continue;
+    }
+    if(previousId&&!taskDone(queue,previousId))return null;
+    const out=task(id,project,stage.goal,[relative],'normal','medium',[
+      'presentation-quality-pipeline:v1',
+      `presentation-pass:${stage.pass}`,
+      'quality-contract:livingMotionVisualQualityContract',
+      'quality-contract:audioMusicQualityContract',
+      'presentation-preserve-gameplay-semantics',
+      'presentation-runtime-qa-required',
+      'mobile-performance-qa-required'
+    ]);
+    out.workUnits=4;
+    return out;
+  }
+  return null;
+}
 function scanExplicitMarkerTask(project,repoRoot,queue){
   const root=sourceFile(repoRoot,project.projectPath);if(!fs.existsSync(root))return null;
   const extensions=project.engine==='roblox'?new Set(['.luau','.lua','.json']):project.engine==='web'?new Set(['.html','.css','.js','.mjs','.json']):project.engine==='unity'?new Set(['.cs']):project.engine==='unreal'?new Set(['.cpp','.h','.hpp','.ini']):new Set(['.gd']);
@@ -364,7 +401,7 @@ function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='web'){
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
-    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
+    return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findWebPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
 }
