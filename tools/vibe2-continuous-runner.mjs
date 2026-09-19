@@ -277,13 +277,13 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   });
 }
 
-export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', outputFile='', taskId='', learningMotorStateFile='', codePatternsFile='', playbooksFile='', practiceDistilledFile='' } = {}) {
+export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', projectLifecycleFile='', outputFile='', taskId='', learningMotorStateFile='', codePatternsFile='', playbooksFile='', practiceDistilledFile='' } = {}) {
   const runtime = readJson(runtimeFile, {});
   const resolvedQueueFile = clean(queueFile) || clean(runtime?.sources?.queue) || '.vibe2/queue.json';
   const resolvedControlFile = clean(controlFile) || clean(runtime?.sources?.parallelism) || clean(runtime?.adaptiveBackpressure?.stateFile) || '.vibe2/parallelism-control.json';
   const resolvedExperienceFile = clean(experienceFile) || clean(runtime?.sources?.experience) || '.vibe2/experience.json';
   const resolvedOutputFile = clean(outputFile) || clean(runtime?.sources?.workOrder) || '.vibe2/work-order.json';
-  const handoff = generateVibe2Handoff({ runtimeFile, queueFile:resolvedQueueFile, controlFile:resolvedControlFile, experienceFile:resolvedExperienceFile });
+  const handoff = generateVibe2Handoff({ runtimeFile, queueFile:resolvedQueueFile, controlFile:resolvedControlFile, experienceFile:resolvedExperienceFile, projectLifecycleFile:clean(projectLifecycleFile) });
   const learningMotorState = readJson(clean(learningMotorStateFile)||'.vibe2/learning-motor-state.json', {});
   const codePatterns = readJson(clean(codePatternsFile)||'.vibe2/code-pattern-library.json', readJson('company-learning/vibe2-code-pattern-library.json',{patterns:[]}));
   const playbooks = readJson(clean(playbooksFile)||'company-learning/vibe3-task-playbooks.json', {taskTypes:{}});
@@ -297,7 +297,7 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = parseArgs();
   const order = runVibeContinuousRunner({
-    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), outputFile:clean(args.output), taskId:clean(args['task-id']),
+    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), projectLifecycleFile:clean(args['project-lifecycle']), outputFile:clean(args.output), taskId:clean(args['task-id']),
     learningMotorStateFile:clean(args['learning-motor-state']), codePatternsFile:clean(args['code-patterns']), playbooksFile:clean(args.playbooks), practiceDistilledFile:clean(args['practice-distilled'])
   });
   console.log(`VIBE2_CONTINUOUS_RUN=${order.run?'YES':'NO'}`);
