@@ -46,25 +46,45 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Prepare latest main machine contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --depth=1 origin main:refs/remotes/origin/main --quiet
+          rm -rf /tmp/vibe2-main
+          git worktree prune
+          git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
+          echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$(git rev-parse origin/main)"
+
       - name: Fast scheduler preflight
         shell: bash
         run: |
           set -euo pipefail
-          node --check assets/vibe-continuous-queue.js
-          node --check tools/vibe2-auto-planner.mjs
-          node --check tools/vibe2-continuous-runner.mjs
-          node --check tools/vibe2-exploration-worker.mjs
-          node --check tools/vibe2-source-worker.mjs
-          node --check tools/vibe2-performance-sanity.mjs
-          node --check tools/vibe2-fan-in-review.mjs
-          node --check tools/vibe2-queue-control.mjs
-          node --check tools/vibe2-work-package.mjs
-          node --check tools/vibe2-incremental-qa.mjs
-          node --check tools/vibe2-parallelism-telemetry.mjs
-          node --check tools/vibe2-adaptive-backpressure.mjs
-          node --check tools/vibe2-handoff.mjs
-          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log
-          echo 'VIBE2_RESERVE_PREFLIGHT=SYNTAX_AND_MACHINE_STATE_ONLY'
+          control_root="$GITHUB_WORKSPACE"
+          for file in \
+            assets/vibe-continuous-queue.js \
+            tools/vibe2-auto-planner.mjs \
+            tools/vibe2-continuous-runner.mjs \
+            tools/vibe2-exploration-worker.mjs \
+            tools/vibe2-source-worker.mjs \
+            tools/vibe2-performance-sanity.mjs \
+            tools/vibe2-fan-in-review.mjs \
+            tools/vibe2-queue-control.mjs \
+            tools/vibe2-work-package.mjs \
+            tools/vibe2-incremental-qa.mjs \
+            tools/vibe2-parallelism-telemetry.mjs \
+            tools/vibe2-adaptive-backpressure.mjs \
+            tools/vibe2-handoff.mjs; do
+            node --check "/tmp/vibe2-main/$file"
+          done
+          node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
+            --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --experience="$control_root/.vibe2/experience.json" \
+            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+            --output=/tmp/vibe2-handoff-preflight.json >/tmp/vibe2-handoff-preflight.log
+          echo 'VIBE2_RESERVE_PREFLIGHT=MAIN_CONTRACT_CONTROL_STATE'
 
       - name: Reserve conflict-free DAG batch
         id: batch
@@ -75,6 +95,7 @@ jobs:
           git config user.email 'vibe2-scheduler@users.noreply.github.com'
           git fetch origin vibe2-unreal-core --quiet
           git reset --hard origin/vibe2-unreal-core
+          control_root="$PWD"
 
           callback_ref="${GITHUB_REF_NAME:-}"
           callback_kind='none'
@@ -86,7 +107,9 @@ jobs:
           if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ] && [ "$dispatch_type" = 'vibe2-slot-refill' ]; then
             task_id="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.client_payload?.task_id||''))")"
             test -n "$task_id"
-            node tools/vibe2-queue-control.mjs release-slot \
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs release-slot \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
               --id="$task_id" \
               --blocker=slot-released-awaiting-fan-in \
               --evidence="slot-dispatch:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}" | tee /tmp/vibe2-slot-release.log
@@ -103,7 +126,9 @@ jobs:
           NODECB
           )"
             test -n "$task_id"
-            node tools/vibe2-queue-control.mjs release-slot \
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs release-slot \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
               --id="$task_id" \
               --blocker=slot-released-awaiting-fan-in \
               --evidence="slot-callback:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}" | tee /tmp/vibe2-slot-release.log
@@ -116,17 +141,31 @@ jobs:
             echo 'VIBE2_SLOT_CALLBACK_FANIN=YES'
           fi
 
-          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
+          node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
+            --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --experience="$control_root/.vibe2/experience.json" \
+            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+            --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
           reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          node tools/vibe2-queue-control.mjs reserve-batch \
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
             --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" \
             --reservation-id="$reservation_id" \
             --reservation-run="$GITHUB_RUN_ID" \
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
             --reserved-at="$reserved_at" \
             --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
-          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-reserve.json >/tmp/vibe2-handoff-after-reserve.log
+          node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
+            --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --experience="$control_root/.vibe2/experience.json" \
+            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+            --output=/tmp/vibe2-handoff-after-reserve.json >/tmp/vibe2-handoff-after-reserve.log
 
           if git diff --quiet -- .vibe2/queue.json; then
             echo 'VIBE2_BATCH_RESERVATION_WRITE=NO'
