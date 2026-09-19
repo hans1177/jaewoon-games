@@ -1,5 +1,5 @@
 {
-  "version": 150,
+  "version": 151,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3585,13 +3585,15 @@
     }
   },
   "changeRecord": {
-    "id": "OWNER_PRESERVATION_DESIGN_AUX_LANE_2026-09-20",
+    "id": "OWNER_PRESERVATION_DESIGN_CONTRACT_2026-09-20",
     "documentIsCode": true,
-    "reason": "REMOVE_THE_DESIGN_ONLY_STARVATION_BOTTLENECK_FOR_EXISTING_GAME_PRESERVATION_PILOTS_WHILE_KEEPING_GAME_PRIMARY_20_WAVE_AND_ALL_DESIGN_PROMOTION_QA_GATES_UNCHANGED",
+    "reason": "ENSURE_EXISTING_GAME_VIBE_PILOTS_CANNOT_PASS_DESIGN_OR_PROMOTION_BY_INVENTING_NEW_GAMEPLAY_RULES_WHILE_PRESENTATION_QUALITY_IS_UPGRADED",
     "files": [
-      "company-learning/platform-release-roadmap.json",
-      ".github/workflows/company-seed-design-runtime.yml",
-      "qa/company-game-seed-flow.test.mjs"
+      "tools/company-design-cycle.mjs",
+      "tools/company-design-gate-scoring-v2.mjs",
+      "tools/company-baseline-gate.mjs",
+      "qa/company-game-seed-flow.test.mjs",
+      "company-learning/platform-release-roadmap.json"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -3745,6 +3747,40 @@
       "strictDesignGateUnchanged": true,
       "developmentPromotionGateUnchanged": true,
       "purpose": "ALLOW_ONE_EXISTING_GAME_PRESERVATION_DESIGN_PILOT_TO_ADVANCE_WITHOUT_CONSUMING_OR_DELAYING_THE_20_WAVE_GAME_PRIMARY_IMPLEMENTATION_LANE"
+    },
+    "ownerPreservationDesignContract": {
+      "version": 1,
+      "authority": "OWNER_PRESERVATION_VIBE_PILOT_2026-09-20",
+      "sourceOfTruth": "EXISTING_IMPLEMENTATION_AND_OWNER_SEED",
+      "requiredSeedSignals": [
+        "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION=true",
+        "OWNER_REBUILD_MODE=PRESERVATION_PRESENTATION_UPGRADE"
+      ],
+      "lockedSemantics": [
+        "WORLD_AND_REGIONS",
+        "STORY_AND_QUESTS",
+        "COMBAT_RULES",
+        "CRAFTING_RECIPES_AND_COSTS",
+        "SAVE_KEY_AND_SCHEMA_MEANING",
+        "PROGRESSION",
+        "BALANCE_VALUES",
+        "DROPS_AND_REWARDS",
+        "HIT_AND_COOLDOWN_SEMANTICS",
+        "MULTIPLAYER_MODE"
+      ],
+      "allowedPresentationPasses": [
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE",
+        "POLISH_MOBILE"
+      ],
+      "gameplayRule": "NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE",
+      "designGeneratorEnforced": true,
+      "deterministicHardGateEnforced": true,
+      "baselinePromotionGateEnforced": true
     }
   },
   "vibeCodingMethodSelfImprovement": {
