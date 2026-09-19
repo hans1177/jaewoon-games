@@ -1179,12 +1179,20 @@
         "failureClassBeforeAfter": true
       },
       "verification": {
-        "state": "STAGE_TARGETING_VERIFIED_LIVE_REVALIDATION_PENDING",
-        "head": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99",
-        "coreQaRunId": 35441514826,
-        "vibeQaRunId": 35441514838,
-        "integratedRegressionRunId": 35441514837,
+        "state": "CONTEXT_EFFICIENCY_LEARNING_VERIFIED_LIVE_REVALIDATION_PENDING",
+        "head": "dfa87b82780f304fc15b0be6938ec7022dad1832",
+        "coreQaRunId": 35441804484,
+        "vibeQaRunId": 35441804337,
+        "integratedRegressionRunId": 35441804365,
         "baselineRunId": 35438982255
+      },
+      "contextEfficiencyLearning": {
+        "enabled": true,
+        "verifiedOnly": true,
+        "minimumSamples": 3,
+        "appliesPreferredContextMode": true,
+        "writableScopeExpansionAllowed": false,
+        "qaWeakeningAllowed": false
       }
     },
     "phase4": {
