@@ -1,0 +1,147 @@
+{
+  "version": 5,
+  "gameId": "survival",
+  "date": "2026-09-19",
+  "productionClass": "DESIGN_ONLY",
+  "gameSeedId": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
+  "authorRole": "DESIGN_AUTHOR_CHECKPOINT",
+  "authorModel": "gemini:gemini-3.5-flash-lite",
+  "status": "DESIGN_DRAFT_RECOVERED_FROM_VERIFIED_CHECKPOINT",
+  "content": {
+    "identity": "나의 생존기는 극한의 환경에서 매일의 생존 기록을 남기는 액션 서바이벌 로그라이트 게임입니다. 플레이어는 매일 밤 몰려오는 적들을 막아내며, 낮 동안 수집한 자원으로 장비를 제작하고 생존 전략을 수정하여 다음 날의 생존 가능성을 높여가는 '기록과 선택의 순환'을 경험합니다.",
+    "playerFantasy": "황무지의 고독한 생존자가 되어, 매일 밤 쏟아지는 위협을 나만의 독창적인 장비 조합으로 돌파하고, 다음 날을 위한 자원을 확보하며 점차 강해지는 성취감을 느낍니다.",
+    "coreFun": "실시간 액션의 긴박함과 자원 관리의 전략적 선택이 결합된 재미입니다. 적의 파상공세를 버텨내는 피지컬과, 어떤 장비를 제작하고 어떤 스킬을 선택할지 결정하는 빌드 구성의 쾌감이 핵심입니다.",
+    "coreLoop": [
+      "낮 시간 동안 제한된 구역을 탐색하여 자원을 채집하고 생존에 필요한 도구와 무기를 제작합니다.",
+      "밤이 되면 몰려오는 적의 파상공세를 실시간 액션으로 방어하며 생존합니다.",
+      "전투 종료 후 획득한 경험치와 자원으로 캐릭터의 능력치를 강화하거나 새로운 제작법을 해금합니다.",
+      "생존 기록을 바탕으로 다음 날의 탐색 우선순위와 제작 전략을 재설정합니다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "일일 생존 기록 시스템",
+        "purpose": "플레이어의 매일 생존 결과를 데이터화하여 다음 날의 난이도와 자원 배치를 조정하고, 장기적인 성장 목표를 제시합니다.",
+        "playerChoice": "어제 실패했던 구역을 다시 도전할지, 새로운 자원을 찾아 위험한 지역으로 이동할지 결정합니다."
+      },
+      {
+        "name": "즉석 제작 및 개조 시스템",
+        "purpose": "전투 중 획득한 자원을 즉시 사용하여 무기를 강화하거나 일회성 함정을 설치하여 전술적 우위를 점하게 합니다.",
+        "playerChoice": "공격력을 높이는 무기 강화에 집중할지, 방어적인 함정 설치에 자원을 투자할지 선택합니다."
+      }
+    ],
+    "progressionDirection": "로그라이트 요소인 영구적 능력치 강화와 매 세션의 빌드 최적화를 병행합니다. 생존 일수가 늘어날수록 더 희귀한 자원과 강력한 적이 등장하며, 플레이어는 점차 복잡한 제작 트리를 해금하여 자신만의 생존 스타일을 구축합니다.",
+    "visualDirection": "황폐하지만 매력적인 로우 폴리곤 스타일의 환경과, 적들의 압박감을 시각적으로 명확히 전달하는 대비 높은 컬러 팔레트를 사용합니다. UI는 생존자의 일기장 컨셉을 차용하여 직관적이고 몰입감을 높입니다.",
+    "mobileUx": "한 손 조작이 가능한 가상 조이스틱 기반의 이동과, 자동 공격/수동 스킬 발동의 하이브리드 방식을 채택합니다. 짧은 세션(5-10분)에 최적화된 UI 배치로 이동 중에도 쾌적한 플레이를 지원합니다.",
+    "marketTargetDirection": "글로벌 시장의 액션 로그라이트 팬층을 타겟으로 하며, 특히 짧은 세션 시간을 선호하는 모바일 게이머와 전략적 빌드 구성을 즐기는 하드코어 유저를 동시에 공략합니다.",
+    "steamExpansionDecision": "모바일 버전의 성공적인 안착 후, 더 정교한 조작과 고해상도 그래픽, 그리고 커뮤니티 모드 지원을 포함한 PC 버전으로 확장합니다.",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "싱글 플레이의 완성도를 우선 확보한 뒤, 비동기식 경쟁 요소인 '생존 기록 공유' 및 '주간 생존 챌린지' 모드를 추후 업데이트로 고려합니다.",
+    "technicalAssumptions": [
+      "실시간 오브젝트 풀링을 통한 대규모 적 개체 처리 최적화",
+      "데이터 기반의 절차적 맵 생성 및 자원 배치 알고리즘",
+      "클라우드 세이브를 통한 일일 생존 기록의 안정적 동기화",
+      "모바일 기기 발열 및 배터리 소모를 고려한 렌더링 최적화"
+    ],
+    "validationQuestions": [
+      "낮의 채집 활동이 밤의 전투 난이도에 충분히 유의미한 전략적 영향을 미치는가?",
+      "매일의 생존 기록이 플레이어에게 다음 날을 기대하게 만드는 동기부여 요소로 작동하는가?",
+      "모바일 환경에서 복잡한 제작 시스템이 직관적으로 이해되는가?"
+    ],
+    "openQuestions": [
+      "생존 실패 시의 페널티를 어느 정도로 설정해야 로그라이트의 긴장감과 지속적인 플레이 욕구를 동시에 만족시킬 수 있는가?",
+      "다양한 제작 아이템 간의 시너지를 어떻게 시각적으로 명확하게 전달할 것인가?"
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "Exploration/Gathering System",
+        "toSystem": "Crafting/Modification System",
+        "trigger": "Player collects resources during the day phase.",
+        "stateChange": "Updates available resource inventory and unlocks new crafting recipes based on gathered materials."
+      },
+      {
+        "fromSystem": "Crafting/Modification System",
+        "toSystem": "Combat/Survival System",
+        "trigger": "Player crafts or modifies weapons/traps before nightfall.",
+        "stateChange": "Modifies player's attack power, attack speed, or defensive capabilities for the upcoming wave."
+      },
+      {
+        "fromSystem": "Combat/Survival System",
+        "toSystem": "Daily Survival Log System",
+        "trigger": "Night wave ends (success or failure).",
+        "stateChange": "Records survival duration, kills, and resource usage to calculate the next day's difficulty and resource spawn rates."
+      }
+    ],
+    "progressionEconomyBalance": {
+      "progressionLoop": "Daytime exploration yields raw materials; Nighttime survival yields XP and rare blueprints. Players spend XP on permanent stat upgrades and materials on temporary gear, creating a cycle of increasing power.",
+      "resourceFlow": "Raw materials are consumed for immediate survival (traps/ammo). Rare materials are saved for permanent gear upgrades. XP is the primary currency for meta-progression.",
+      "balanceRules": "Difficulty scales based on survival day count and previous day's performance. Resource scarcity increases as the player progresses to force strategic choices between hoarding and spending."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "Early Survival (Days 1-7)",
+        "newGameplay": "Basic movement, simple melee weapon crafting, and wave defense.",
+        "systemImpact": "Establishes core loop and baseline resource economy."
+      },
+      {
+        "milestone": "Mid-Game Expansion (Days 8-20)",
+        "newGameplay": "Introduction of ranged weapons, trap synergies, and elite enemy types.",
+        "systemImpact": "Requires balancing of crafting complexity and combat difficulty."
+      },
+      {
+        "milestone": "Late-Game Challenge (Days 21+)",
+        "newGameplay": "Boss waves, complex environmental hazards, and advanced skill trees.",
+        "systemImpact": "Introduces high-tier resource sinks and meta-progression depth."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "Player HP reaches zero during night wave.",
+        "Failure to secure enough resources for essential defense.",
+        "Over-extension leading to resource depletion."
+      ],
+      "retryFlow": "Upon death, the current run ends. Player retains a portion of XP for meta-upgrades but loses current day's gathered resources, forcing a restart of the daily cycle.",
+      "riskPressure": "The 'Daily Survival Log' creates pressure by showing the player how close they were to a new record, making each death feel like a loss of potential progress.",
+      "recoveryRules": "Players can use 'Survival Points' earned from previous successful days to mitigate some loss upon death, providing a safety net for long-term progression."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "UNITY",
+      "inputModel": "Virtual joystick for movement; auto-aim with manual skill/trap activation buttons for combat.",
+      "performanceBudget": "Targeting 60 FPS on mid-range mobile devices; aggressive object pooling for enemy hordes and texture atlas optimization.",
+      "sessionConstraints": "Designed for 5-10 minute sessions; save state occurs at the end of each day to allow quick exits."
+    },
+    "uxAccessibilityPlan": {
+      "hudPriorities": "Health bar, current wave timer, and quick-craft button are prioritized for high visibility.",
+      "touchAndInput": "Large, responsive touch zones for movement and skill buttons to prevent mis-taps.",
+      "readability": "High-contrast color palette to distinguish enemies from the environment; clear icons for resource types.",
+      "accessibility": "Adjustable text size for log entries and color-blind friendly indicators for enemy threat levels."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "Low-poly aesthetic with a desaturated, gritty color palette that shifts to high-contrast neon/warning colors during combat.",
+      "audioIdentity": "Ambient, lonely wind sounds during the day; intense, rhythmic percussive music during night waves.",
+      "gameplayFeedbackSync": "Audio cues for low health and enemy proximity; visual screen shakes and flashes on successful trap triggers."
+    },
+    "implementationTraceability": [
+      {
+        "designElement": "Daily Survival Log",
+        "responsibleSystem": "Data Persistence System",
+        "validationEvidence": "Check if player stats persist across sessions and influence next day's difficulty."
+      },
+      {
+        "designElement": "Immediate Crafting",
+        "responsibleSystem": "Inventory/Crafting System",
+        "validationEvidence": "Verify if crafting UI is accessible during combat without interrupting flow."
+      },
+      {
+        "designElement": "Horde Combat",
+        "responsibleSystem": "Combat/AI System",
+        "validationEvidence": "Test frame rate stability with 50+ active enemies on screen."
+      }
+    ]
+  },
+  "recovery": {
+    "source": "design-checkpoint.json",
+    "checkpointFingerprint": "b7a1f082c3fb90689dc18d9c5bb940327bcdc032912e9c845a58786b55e87bbd",
+    "aiVerdictUsed": false,
+    "materializedAt": "2026-09-19T03:29:13.727Z"
+  }
+}
