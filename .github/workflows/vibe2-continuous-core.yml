@@ -159,18 +159,45 @@ jobs:
             --experience="$control_root/.vibe2/experience.json" \
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-before-reserve.json >/tmp/vibe2-handoff-before-reserve.log
+          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim());process.stdout.write(String(rows.length))" "$control_root/.vibe2/queue.json")"
+          echo "VIBE2_ACTIVE_WORKER_RESERVATIONS_BEFORE_RESERVE=${active_worker_reservations:-0}"
           reservation_id="${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           reserved_at="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
-            --queue="$control_root/.vibe2/queue.json" \
-            --control="$control_root/.vibe2/parallelism-control.json" \
-            --max="$VIBE2_EXTERNAL_MATRIX_BATCH_MAX" \
-            --min="$VIBE2_OWNER_MINIMUM_WAVE" \
-            --reservation-id="$reservation_id" \
-            --reservation-run="$GITHUB_RUN_ID" \
-            --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
-            --reserved-at="$reserved_at" \
-            --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+          if [ "${active_worker_reservations:-0}" -gt 0 ]; then
+            export VIBE2_GUARD_RESERVED_AT="$reserved_at"
+            node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const control=JSON.parse(fs.readFileSync('.vibe2/parallelism-control.json','utf8'));
+          const requested=Number(process.env.VIBE2_EXTERNAL_MATRIX_BATCH_MAX||256);
+          const effective=Math.max(1,Number(control.currentMax||20));
+          const out={
+            version:1,
+            createdAt:process.env.VIBE2_GUARD_RESERVED_AT||new Date().toISOString(),
+            matrix:[],
+            scheduler:{
+              requestedMaxConcurrentTasks:requested,
+              effectiveMaxConcurrentTasks:effective,
+              reservedTaskCount:0,
+              workerCount:0,
+              guard:'ACTIVE_WORKER_RESERVATION_PRESENT'
+            }
+          };
+          fs.writeFileSync('/tmp/vibe2-batch.json',JSON.stringify(out,null,2)+'\n');
+          NODE
+            : > /tmp/vibe2-reserve.log
+            echo 'VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'
+          else
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --max="$VIBE2_EXTERNAL_MATRIX_BATCH_MAX" \
+              --min="$VIBE2_OWNER_MINIMUM_WAVE" \
+              --reservation-id="$reservation_id" \
+              --reservation-run="$GITHUB_RUN_ID" \
+              --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
+              --reserved-at="$reserved_at" \
+              --output=/tmp/vibe2-batch.json | tee /tmp/vibe2-reserve.log
+          fi
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
             --queue="$control_root/.vibe2/queue.json" \
