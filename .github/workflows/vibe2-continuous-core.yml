@@ -406,6 +406,7 @@ jobs:
             --experience="$GITHUB_WORKSPACE/.vibe2/experience.json" \
             --project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json" \
             --task-id="$TASK_ID" \
+            --variant="$VARIANT" \
             --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
           node <<'NODE'
           const fs=require('fs');
