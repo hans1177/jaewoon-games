@@ -788,6 +788,37 @@ test('tiny copied expansion skeleton is rejected before a real additive fragment
   assert.match(output,/data-gameplay-system="input-progress"/);
 });
 
+test('full web expansion whole-document response can become a larger seed before final acceptance', async()=>{
+  const cwd=tempRoot();
+  const seedFile=path.join(cwd,'seed-whole-expansion.txt');
+  const wholeDocFile=path.join(cwd,'whole-doc-expansion.txt');
+  const fragmentFile=path.join(cwd,'fragment-after-whole-doc.txt');
+  const seedBody=Array.from({length:45},(_,i)=>`function seedBase${i}(s){s.score=(s.score||0)+${i%3};return s}`).join('');
+  const seed=`<!doctype html><html><body><button id="start">Start</button><script>let state={score:0,hp:20,wave:1};${seedBody}</script></body></html>`;
+  const largerBody=Array.from({length:105},(_,i)=>`function recoveredSystem${i}(s){s.score=(s.score||0)+1;s.wave=(s.wave||1)+${i%2};return s}`).join('');
+  const larger=`<!doctype html><html><body><button id="start">Start</button><canvas></canvas><script>let state={score:0,hp:20,wave:1};${largerBody}addEventListener('pointerdown',()=>recoveredSystem1(state));</script></body></html>`;
+  const fragment=`<section data-gameplay-system="progression"></section><script>(()=>{${Array.from({length:95},(_,i)=>`function extraProgress${i}(s){s.score+=1;s.wave+=1;s.gold=(s.gold||0)+${i%4};return s}`).join('')}function finish(){if(state.score>80)document.body.dataset.result='win';if(state.hp<=0)document.body.dataset.result='loss';localStorage.setItem('vibe2-whole-doc-recovery',JSON.stringify(state))}addEventListener('touchstart',finish,{passive:true});})();</script>`;
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-web-whole-expansion-seed'});
+  workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed=true;
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd,'design/demo/2026-09-18/design-revised.json'),JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(seedFile,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:seed','---VIBE2_FILE_CONTENT---',seed,'---VIBE2_FILE_END---'].join('\n'));
+  write(wholeDocFile,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',larger,'---VIBE2_EXPANSION_END---'].join('\n'));
+  write(fragmentFile,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment,'---VIBE2_EXPANSION_END---'].join('\n'));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[seedFile,wholeDocFile,fragmentFile]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.fullWebExpansionDocumentSeedRecoveries,1);
+  assert.equal(result.codingMethod.fullWebExpansionDocumentSeedRecoveries,1);
+  assert.deepEqual(result.changedFiles,['index.html']);
+  const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-whole-expansion-seed/files/index.html'),'utf8');
+  assert.ok(Buffer.byteLength(output,'utf8')>=12000);
+  assert.match(output,/recoveredSystem104/);
+  assert.match(output,/extraProgress94/);
+});
+
 test('full web expansion that redefines html body is classified and retried from the accumulated seed', async()=>{
   const cwd=tempRoot();
   const seedFile=path.join(cwd,'seed-invalid-expansion.txt');
@@ -1059,6 +1090,12 @@ test('full web retry compacts oversized guidance and reuses the largest prior pa
   assert.doesNotMatch(retry,/VERIFIED_MEMORY_BLOB/);
   assert.doesNotMatch(retry,/config\.js/);
   assert.ok(Buffer.byteLength(retry,'utf8')<20000);
+});
+
+test('full web expansion whole-document recovery is observable in coding telemetry',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/VIBE2_FULL_WEB_EXPANSION_DOCUMENT_SEED_RECOVERED/);
+  assert.match(workerSource,/fullWebExpansionDocumentSeedRecoveries:Number\(generation\.fullWebExpansionDocumentSeedRecoveries\|\|0\)/);
 });
 
 test('full web retry prompt compaction is observable in source telemetry',()=>{
