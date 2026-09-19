@@ -1,9 +1,9 @@
 # Vibe3 Engine + Pump Mode
 
 Status: OWNER-DIRECT V3 IMPLEMENTATION — PUMP MODE LOCKED
-Recorded: 2026-09-12
+Recorded: 2026-09-19
 
-`COMPANY_FLOW.md` is the sole policy source of truth. This file documents V3 implementation behavior only and must not create independent company, platform, portfolio-size, or release-order policy.
+`company-learning/platform-release-roadmap.json` is the machine policy source of truth. `COMPANY_FLOW.md` is a legacy mirror. This file documents V3 implementation behavior only and must not create independent company, platform, portfolio-size, release-order, or learning policy.
 
 Vibe3 is an intelligence-layer upgrade inside the existing Vibe2/company development and learning pipelines. It is not a parallel pipeline. It reuses the existing checkpoint, source-apply, runtime observation, QA, regression, distillation, local-training, holdout, canary and rollback gates.
 
@@ -31,7 +31,7 @@ Files:
 - `company-learning/vibe3-benchmark-queue.json` — deterministic practice cases;
 - `tools/vibe3-pump-index.mjs` — canonical refresh tool invoked by the existing hourly ingest workflow;
 - `tools/vibe3-roblox-platform.mjs` — Roblox source/runtime/publishing adapter inside V3 Pump;
-- `company-learning/platform-release-roadmap.json` — execution contract mirror only; policy authority remains `COMPANY_FLOW.md`.
+- `company-learning/platform-release-roadmap.json` — canonical machine policy authority.
 
 A benchmark case is **not** a training sample. It can enter the canonical learning chain only after execution through the existing Vibe development path and independently verified runtime/QA/regression/exact-revision evidence.
 
@@ -53,13 +53,81 @@ V3 builds a source graph from files, symbols, imports/calls, tests and asset ref
 
 Verified V3 trajectories live under `company-learning/vibe3-trajectories/`. `tools/vibe3-trajectory-ingest.mjs` accepts only a verified winner bound to runtime PASS, QA PASS, regression PASS, protected-state preservation and exact source revision. The existing distillation-status, deterministic training-request, local self-hosted training, fixed holdout A/B, canary and rollback stages remain authoritative.
 
+## Causal Coding Learning
+
+V3 must treat coding itself as a continuous learning episode, not as a production step followed by a separate classification step. The canonical policy is `causalCodingLearning` in `company-learning/platform-release-roadmap.json`.
+
+For every meaningful code change, V3 should preserve an observable causal episode:
+
+`OBSERVATION → CURRENT STRUCTURE → HYPOTHESIS → PROPOSED MECHANISM → INTERVENTION → PREDICTED EFFECTS/NON-EFFECTS → ACTUAL EFFECTS/NON-EFFECTS → CONFIRM/REFUTE/REVISE → NEXT INTERVENTION → QA/REGRESSION → DISTILLATION`
+
+This does not require or persist hidden chain-of-thought. It stores only observable hypotheses, code interventions, predictions, results, revision-bound evidence and verified conclusions.
+
+### Candidate tournament as causal experimentation
+
+When root cause is uncertain, the existing 3–5 independent candidates should be causally diverse where useful. Candidates may test different root-cause hypotheses, or different interventions for the same hypothesis. Near-duplicate candidates that do not separate hypotheses provide less diagnostic value. Obvious deterministic repairs must not fabricate artificial hypothesis diversity.
+
+Candidate selection still uses the existing deterministic runtime, QA, regression, protected-state and exact-revision gates. Causal learning cannot weaken completion criteria.
+
+### Prediction before intervention
+
+A candidate should state observable predictions before execution, including both what should change and what should remain unchanged. Learning quality is then measured partly by the agreement between prediction and result.
+
+A successful patch with no reliable attribution is a production success but incomplete causal learning. A failed prediction can still be valuable evidence when it falsifies a hypothesis or narrows the responsible mechanism.
+
+### Active diagnosis
+
+Before a broad repair, V3 should prefer the lowest-risk intervention that separates competing hypotheses when such an experiment is safe and cheaper than a broad patch. Production safety, owner directives, protected gameplay rules and save/progression compatibility always outrank information gain.
+
+### Counterfactual and ablation
+
+When safe and economical, V3 may strengthen causal evidence by replaying the failure without a proposed change, reverting a patch in isolation, or ablating parts of a successful multi-change patch. The goal is to distinguish the actual causal change from correlated or unnecessary edits.
+
+Unsafe, destructive or authority-expanding counterfactuals are forbidden. Counterfactual experiments never replace canonical QA.
+
+### Learning causality graph
+
+The existing causality graph in `assets/vibe-quality-intelligence.js` should evolve from static weighted influence propagation into evidence-updated causal memory. Verified interventions may strengthen an edge; contradictory verified episodes must weaken or invalidate it.
+
+Useful edge evidence includes cause, effect, conditions, direction, confidence, supporting episodes, contradicting episodes, exact verified revision, project scope and transferability. Correlation-only observations are not strong causal proof.
+
+### Failure memory
+
+Failure memory should distinguish ordinary execution failure from falsified hypotheses, partial mechanism support, confounded results, environment/infrastructure failures and responsibility misattribution. A falsified hypothesis is reusable negative knowledge, not merely a failed candidate.
+
+Environment failures must not be learned as code causes.
+
+### Continuous within-task learning
+
+Learning happens after every meaningful attempt inside the same coding task. The next attempt should consume the newly observed evidence and revise the active hypothesis or intervention. Repeating the same attempt without new evidence or a changed hypothesis is discouraged.
+
+Within-task beliefs are temporary. They enter canonical memory only after the existing runtime, QA, regression, protected-state and exact-revision gates pass.
+
+### Distillation depth
+
+Verified lessons should be distilled at three levels:
+
+1. local project fact;
+2. mechanism-level rule;
+3. general transferable principle.
+
+Maturity may progress through `OBSERVED → CANDIDATE → VALIDATED → DISTILLED → CORE`, while stale or contradicted rules become `DEPRECATED`.
+
+The positive memory must preserve not only that a patch passed, but why the verified mechanism explains the result and under which conditions the lesson applies.
+
+### Learning-ability evaluation
+
+V3 learning quality should be evaluated separately from raw task success. Relevant metrics include prediction accuracy/calibration, verified root-cause rate, first-candidate pass rate, average attempts, repeated-failure recurrence, time to verified cause, cross-project mechanism transfer, regression after learned reuse and false causal-belief rate.
+
+Matched before/after task classes should be used when evaluating whether learning improved. A higher success count alone does not prove better causal understanding.
+
 ## Platform implementation bindings
 
-Platform policy is defined only in `COMPANY_FLOW.md`.
+Platform policy is defined by `company-learning/platform-release-roadmap.json`; `COMPANY_FLOW.md` is a legacy mirror.
 
 Implementation invariants:
 - Roblox, Unity, and Fortnite/UEFN may all be developed whenever a project targets them; V3 must not create a platform-entry lock from focus order.
-- Roblox is the default primary focus because `COMPANY_FLOW.md` says so; this is routing priority, not permission gating.
+- Platform routing and focus follow `company-learning/platform-release-roadmap.json`; focus priority never becomes an unauthorized platform-entry gate.
 - existing Unity/Android source, build, runtime, QA and release knowledge remains preserved and extendable;
 - Fortnite/UEFN implementation may be added without waiting for Roblox or Unity completion;
 - success evidence is platform-local: one platform's PASS cannot certify another platform;
