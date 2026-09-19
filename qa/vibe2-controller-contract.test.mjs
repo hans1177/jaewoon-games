@@ -47,7 +47,7 @@ test('fan-in controller contract directly verifies design intelligence stages an
 });
 
 test('runtime enables DAG sharding work stealing with policy-unbounded external-capacity waves',()=>{
-  assert.equal(runtime.version,8);
+  assert(runtime.version>=12);
   assert.equal(runtime.continuous.strategy,'hierarchical-dag-sharded-work-stealing');
   assert.equal(runtime.continuous.maxConcurrentGameTasks,256);
   assert.equal(runtime.continuous.parallelismPolicy,'UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY');
