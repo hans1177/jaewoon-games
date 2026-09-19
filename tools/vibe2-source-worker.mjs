@@ -681,7 +681,11 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
   if(mode==='FULL_WEB_EXPANSION')return trimmed.startsWith(FULL_WEB_EXPANSION_PREFIX)&&text.includes(FULL_WEB_EXPANSION_END_MARKER);
   if(mode==='JSON_EDIT_PARTIAL'&&recoverPartialJsonEdit(text,{reason:'timeout'}))return true;
   if(mode==='FULL_WEB'){
-    if(trimmed.startsWith(FULL_FILE_PREFIX))return text.includes(FULL_FILE_END_MARKER);
+    if(trimmed.startsWith(FULL_FILE_PREFIX)){
+      if(text.includes(FULL_FILE_END_MARKER))return true;
+      const contentAt=text.indexOf(FULL_FILE_CONTENT_MARKER);
+      return contentAt>=0&&/<\/html>\s*$/i.test(text.slice(contentAt+FULL_FILE_CONTENT_MARKER.length));
+    }
     if(/^\`\`\`(?:html)?\s*/i.test(trimmed))return /<\/html>\s*\`\`\`\s*$/i.test(trimmed);
     return /^(?:<!doctype\s+html\b|<html\b)/i.test(trimmed)&&/<\/html>\s*$/i.test(trimmed);
   }
