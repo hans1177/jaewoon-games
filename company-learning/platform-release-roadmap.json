@@ -1,5 +1,5 @@
 {
-  "version": 116,
+  "version": 117,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -4303,6 +4303,290 @@
       "tools/vibe3-trajectory-ingest.mjs",
       "tools/vibe3-pump-index.mjs",
       "company-learning/canonical-learning-pipeline.json"
+    ]
+  },
+  "unifiedLearningFabric": {
+    "version": 1,
+    "status": "OWNER_DIRECT_DOCUMENTED_IMPLEMENTATION_PENDING",
+    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "objective": "CONNECT_ALL_EXISTING_LEARNING_CHANNELS_THROUGH_ONE_SHARED_CAUSAL_EVIDENCE_AND_DISTILLATION_FABRIC_WITHOUT_DELETING_SPECIALIZED_LEARNERS",
+    "architecture": {
+      "specializedLearnersRemainIndependentAtCapture": true,
+      "sharedNormalizationRequiredBeforeCrossLearning": true,
+      "canonicalPromotionStillUsesExistingPipeline": true,
+      "noShadowTrainerOrParallelCanonicalPipeline": true,
+      "learningSources": [
+        "REAL_DEVELOPMENT_EXPERIENCE",
+        "BUG_AND_FAILURE_MEMORY",
+        "RECOVERY_AND_BOTTLENECK_LEARNING",
+        "DEPARTMENT_LEARNING",
+        "PRACTICE_AND_BENCHMARK_LEARNING",
+        "TEACHER_CURRICULUM",
+        "EXTERNAL_AI_DISTILLED_ADVISORY",
+        "EXTERNAL_GAME_BLACK_BOX_OBSERVATION",
+        "AUTHORIZED_SOURCE_LEARNING",
+        "CROSS_GAME_TRANSFORMATIVE_RECOMBINATION",
+        "SECURITY_IMMUNE_LEARNING",
+        "COMPANY_DNA_LONG_HORIZON_LEARNING",
+        "CAUSAL_CODING_EPISODES"
+      ]
+    },
+    "sharedLearningRecord": [
+      "SOURCE_CHANNEL",
+      "OBSERVATION",
+      "CURRENT_CONTEXT_AND_STRUCTURE",
+      "KNOWN_FACTS",
+      "UNCERTAINTIES",
+      "HYPOTHESES",
+      "ALTERNATIVE_HYPOTHESES",
+      "PREDICTIONS",
+      "INTERVENTION_OR_OBSERVATION_ACTION",
+      "ACTUAL_RESULT",
+      "PREDICTION_ERROR",
+      "CAUSAL_VERDICT",
+      "CONTRADICTING_EVIDENCE",
+      "APPLICABILITY_CONDITIONS",
+      "REGRESSION_OR_SIDE_EFFECTS",
+      "EXACT_REVISION_OR_EVIDENCE_ID",
+      "LOCAL_FACT",
+      "MECHANISM_RULE",
+      "TRANSFERABLE_PRINCIPLE",
+      "CONFIDENCE",
+      "MATURITY"
+    ],
+    "flow": [
+      "CAPTURE_SPECIALIZED_EVIDENCE",
+      "NORMALIZE_TO_SHARED_LEARNING_RECORD",
+      "SEPARATE_FACT_FROM_INFERENCE",
+      "LINK_TO_CAUSAL_MODEL",
+      "CHECK_CONTRADICTIONS_AND_STALENESS",
+      "DISTILL_LOCAL_MECHANISM_GENERAL_LEVELS",
+      "MAKE_VERIFIED_KNOWLEDGE_RETRIEVABLE",
+      "REVALIDATE_ON_TRANSFER_OR_RELEVANT_STRUCTURE_CHANGE",
+      "PROMOTE_ONLY_THROUGH_EXISTING_CANONICAL_GATES"
+    ],
+    "routingPriority": [
+      "SAME_GAME_VERIFIED_CAUSAL_KNOWLEDGE",
+      "SAME_SYSTEM_OR_ENGINE_VERIFIED_MECHANISM",
+      "CROSS_GAME_VERIFIED_TRANSFERABLE_PRINCIPLE",
+      "VERIFIED_FAILURE_AND_NEGATIVE_KNOWLEDGE",
+      "TEACHER_AND_PRACTICE_DISTILLED_KNOWLEDGE",
+      "EXTERNAL_AI_VERIFIED_DISTILLED_ADVISORY"
+    ],
+    "crossLearningRules": {
+      "specializedEvidenceMayTeachOtherChannels": true,
+      "rawUnverifiedOutputMayNotCrossTeach": true,
+      "platformSpecificPassCannotTransferAsAnotherPlatformPass": true,
+      "transferableMechanismMayCrossProjectsAfterApplicabilityCheck": true,
+      "contradictionsMustBePreservedNotSilenced": true,
+      "repeatedContradictionMustReduceConfidenceOrDeprecateRule": true
+    },
+    "implementationTargets": [
+      "company-learning/vibe2-learning-motor.json",
+      "assets/vibe-v3-engine.js",
+      "assets/vibe-quality-intelligence.js",
+      "tools/vibe2-multisource-learning-collector.mjs",
+      "tools/vibe3-pump-index.mjs",
+      "tools/vibe3-trajectory-ingest.mjs",
+      "company-learning/canonical-learning-pipeline.json"
+    ]
+  },
+  "vibeCognitiveCore": {
+    "version": 1,
+    "status": "OWNER_DIRECT_DOCUMENTED_IMPLEMENTATION_PENDING",
+    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "objective": "ADD_HUMAN_LIKE_FUNCTIONAL_OBSERVATION_ATTENTION_METACOGNITION_INSIGHT_AND_SELF_CORRECTION_TO_VIBE_DEVELOPMENT_WITHOUT_CLAIMING_SENTIENCE",
+    "interpretation": {
+      "consciousnessMeaning": "FUNCTIONAL_METACOGNITIVE_WORKSPACE_AND_SELF_MONITORING_ONLY",
+      "sentienceClaimed": false,
+      "subjectiveConsciousnessClaimed": false,
+      "purpose": "TRACK_WHAT_MATTERS_WHAT_IS_KNOWN_WHAT_IS_UNCERTAIN_WHAT_IS_SURPRISING_AND_WHY_THE_NEXT_ACTION_IS_SELECTED"
+    },
+    "cognitiveLoop": [
+      "OBSERVE",
+      "ALLOCATE_ATTENTION",
+      "DETECT_ANOMALY_OR_MISSING_SIGNAL",
+      "BUILD_SITUATION_MODEL",
+      "SEPARATE_KNOWN_UNKNOWN_AND_CONFLICTING_BELIEFS",
+      "GENERATE_PRIMARY_AND_ALTERNATIVE_HYPOTHESES",
+      "PREDICT_OUTCOMES_AND_NON_OUTCOMES",
+      "MENTALLY_SIMULATE_OR_SANDBOX_SAFE_OPTIONS",
+      "SELECT_HIGHEST_INFORMATION_LOWEST_RISK_ACTION",
+      "ACT_OR_INTERVENE",
+      "MEASURE_SURPRISE_AND_PREDICTION_ERROR",
+      "UPDATE_WORLD_MODEL_AND_SELF_MODEL",
+      "EXTRACT_INSIGHT",
+      "DISTILL_AND_REVALIDATE"
+    ],
+    "globalWorkspace": {
+      "enabled": true,
+      "boundedFocus": true,
+      "defaultActiveItemsRange": [
+        3,
+        7
+      ],
+      "itemTypes": [
+        "CURRENT_GOAL",
+        "CRITICAL_OBSERVATION",
+        "HIGH_VALUE_ANOMALY",
+        "TOP_HYPOTHESES",
+        "KEY_UNCERTAINTY",
+        "MAJOR_RISK",
+        "MOST_RELEVANT_VERIFIED_MEMORY"
+      ],
+      "lowValueNoiseMustBeSummarizedOrEvicted": true,
+      "workspaceDoesNotExpandAuthority": true
+    },
+    "attentionSystem": {
+      "enabled": true,
+      "signals": [
+        "USER_IMPORTANCE",
+        "PREDICTION_ERROR",
+        "UNEXPECTED_CHANGE",
+        "REPEATED_FAILURE",
+        "BLAST_RADIUS",
+        "NOVELTY",
+        "MISSING_EXPECTED_SIGNAL",
+        "HIGH_CAUSAL_UNCERTAINTY",
+        "HIGH_REGRESSION_RISK",
+        "TIME_DEPENDENT_RISK"
+      ],
+      "objective": "FOCUS_COMPUTE_ON_HIGH_INFORMATION_HIGH_IMPACT_UNCERTAINTY",
+      "attentionDoesNotEqualTruth": true
+    },
+    "surpriseEngine": {
+      "enabled": true,
+      "definition": "DIFFERENCE_BETWEEN_PREDECLARED_OBSERVABLE_PREDICTION_AND_ACTUAL_RESULT",
+      "highSurpriseTriggers": [
+        "REOPEN_CAUSAL_MODEL",
+        "SEARCH_FOR_HIDDEN_VARIABLE",
+        "GENERATE_ALTERNATIVE_HYPOTHESIS",
+        "CHECK_OBSERVATION_OR_TELEMETRY_GAP",
+        "REDUCE_CONFIDENCE_IN_PRIOR_RULE"
+      ],
+      "successWithUnexpectedSideEffectAlsoCountsAsSurprise": true
+    },
+    "epistemicLedger": {
+      "enabled": true,
+      "beliefStates": [
+        "VERIFIED_FACT",
+        "STRONGLY_SUPPORTED",
+        "WORKING_HYPOTHESIS",
+        "WEAK_HYPOTHESIS",
+        "UNKNOWN",
+        "CONFLICTED",
+        "FALSIFIED",
+        "STALE_REQUIRES_REVALIDATION"
+      ],
+      "inferenceMustNotBeStoredAsFact": true,
+      "confidenceMustTrackEvidenceAndContradictions": true
+    },
+    "falsificationAndAlternativeHypotheses": {
+      "enabled": true,
+      "seekDisconfirmingEvidenceBeforeStrongBelief": true,
+      "alternativeHypothesesRequiredWhenRootCauseUncertain": true,
+      "cheapestSafeDiscriminatingExperimentPreferred": true,
+      "confirmationOnlySearchDiscouraged": true
+    },
+    "temporalReasoning": {
+      "enabled": true,
+      "horizons": [
+        "IMMEDIATE",
+        "NEXT_STATE_TRANSITION",
+        "RESTART_OR_REJOIN",
+        "SAVE_LOAD_CYCLE",
+        "LONG_SESSION",
+        "NEXT_STAGE_OR_RELEASE"
+      ],
+      "stateThatPassesNowMayStillFailLater": true
+    },
+    "missingObservationDetection": {
+      "enabled": true,
+      "rule": "EXPECTED_BUT_ABSENT_EVIDENCE_IS_ITSELF_AN_OBSERVATION",
+      "examples": [
+        "SAVE_LOG_WITHOUT_LOAD_VALIDATION",
+        "INPUT_EVENT_WITHOUT_STATE_CHANGE",
+        "RUNTIME_START_WITHOUT_REAL_GAMEPLAY_ENTRY",
+        "SUCCESS_WITHOUT_EXPECTED_TELEMETRY"
+      ]
+    },
+    "conceptCompression": {
+      "enabled": true,
+      "objective": "COMPRESS_MANY_EPISODES_INTO_MINIMAL_MECHANISM_LEVEL_CONCEPTS_WITHOUT_ERASING_EXCEPTIONS",
+      "outputs": [
+        "LOCAL_PATTERN",
+        "MECHANISM_CONCEPT",
+        "GENERAL_PRINCIPLE",
+        "KNOWN_EXCEPTIONS"
+      ]
+    },
+    "analogyAndInsight": {
+      "analogyEnabled": true,
+      "insightTriggerEnabled": true,
+      "analogyRule": "MATCH_CAUSAL_STRUCTURE_NOT_SURFACE_WORDING",
+      "insightTrigger": "WHEN_TWO_OR_MORE_SEEMINGLY_DIFFERENT_EPISODES_SHARE_A_VERIFIED_MECHANISM_CREATE_A_HIGHER_LEVEL_CANDIDATE_PRINCIPLE",
+      "insightMustRemainCandidateUntilRevalidated": true,
+      "crossDomainTransferRequiresApplicabilityCheck": true
+    },
+    "mentalSimulationAndSandbox": {
+      "enabled": true,
+      "preferReplaySandboxMockOrSimulationBeforeRiskyProductionIntervention": true,
+      "simulationPredictionMustBeComparedWithRealEvidenceWhenAvailable": true,
+      "simulationNeverCountsAsNativeRuntimePass": true
+    },
+    "selfModel": {
+      "enabled": true,
+      "tracks": [
+        "DOMAIN_STRENGTH",
+        "DOMAIN_ERROR_RATE",
+        "COMMON_MISDIAGNOSIS_PATTERN",
+        "CALIBRATION_BY_TASK_CLASS",
+        "AVERAGE_ROOT_CAUSE_DEPTH",
+        "TRANSFER_SUCCESS_RATE",
+        "REPEATED_FAILURE_RATE"
+      ],
+      "weakDomainMayTriggerMoreEvidenceOrReview": true,
+      "selfModelMayNotLowerGatesOrExpandAuthority": true
+    },
+    "consolidation": {
+      "enabled": true,
+      "idleReplayAllowed": true,
+      "counterfactualReviewAllowed": true,
+      "crossEpisodeRecombinationAllowed": true,
+      "generatedInsightAuthority": "HYPOTHESIS_ONLY_UNTIL_REVALIDATED",
+      "dreamLikeSimulationMayNotCreateVerifiedFact": true,
+      "productionWorkPreemptsConsolidation": true
+    },
+    "insightEvaluationMetrics": [
+      "OBSERVATION_MISS_RATE",
+      "PREDICTION_ERROR",
+      "CALIBRATION_ERROR",
+      "TIME_TO_FALSIFY_WRONG_HYPOTHESIS",
+      "ROOT_CAUSE_DEPTH",
+      "HIDDEN_VARIABLE_DISCOVERY_RATE",
+      "MISSING_SIGNAL_DETECTION_RATE",
+      "ANALOGY_TRANSFER_SUCCESS_RATE",
+      "INSIGHT_REVALIDATION_RATE",
+      "FALSE_INSIGHT_RATE",
+      "REPEATED_MISTAKE_RATE"
+    ],
+    "safeguards": {
+      "hiddenChainOfThoughtPersistenceRequired": false,
+      "storeOnlyObservableHypothesesPredictionsActionsAndEvidence": true,
+      "noSentienceClaim": true,
+      "noAuthorityExpansion": true,
+      "noGateWeakening": true,
+      "noFabricatedObservation": true,
+      "noFabricatedInsight": true,
+      "contradictionPreservationRequired": true,
+      "uncertaintyMustBeRepresentable": true
+    },
+    "implementationTargets": [
+      "assets/vibe-quality-intelligence.js",
+      "assets/vibe-v3-engine.js",
+      "tools/vibe3-trajectory-ingest.mjs",
+      "tools/vibe3-pump-index.mjs",
+      "company-learning/vibe2-learning-motor.json"
     ]
   }
 }
