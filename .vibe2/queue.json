@@ -33,9 +33,7 @@
     "speculativeParallelism": "high-risk-opt-in-only",
     "workPackageAware": true,
     "longWorkPackagePriority": true,
-    "minimumWorkloadGate": true,
-    "parallelismPolicy": "UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_WAVES",
-    "externalMatrixBatchMax": 256
+    "minimumWorkloadGate": true
   },
   "defaultMaxRetries": 2,
   "tasks": [
@@ -4147,14 +4145,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -4206,17 +4204,21 @@
         "actions-run:35422105182",
         "reservation-id:35422105182:1",
         "workload:prep-ms:8380",
-        "workload:cycle-ms:208620"
+        "workload:cycle-ms:208620",
+        "system-steward:retry-exhausted-regenerated:generation-1",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+        "system-steward:failure-signature:source-candidate-generation-failed",
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
       "reservedAt": null,
       "companyContext": null,
       "sourceRoot": "web-games/bug-defense",
-      "speculativeEligible": false,
-      "estimatedRisk": "medium",
+      "speculativeEligible": true,
+      "estimatedRisk": "high",
       "taskWorkUnits": 6,
       "packageId": "bug-defense-wp-1j07pu0",
       "packageGoal": "곤충 디펜스: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.",
@@ -4230,7 +4232,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 0,
+      "recoveryGeneration": 1,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -4502,14 +4504,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "running",
+      "status": "queued",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "slot-released-awaiting-fan-in",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -4547,13 +4549,14 @@
         "failure-cause:MACHINE_STATE_INCONSISTENT:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED",
         "system-steward:stale-machine-state-blocker-recovered",
         "system-steward:machine-state-revalidated:v3-queue30",
-        "slot-dispatch:35421325371:1"
+        "slot-dispatch:35421325371:1",
+        "system-steward:stale-running-reservation-recovered"
       ],
-      "lastOutcome": "SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED",
-      "reservationId": "35421132870:1",
-      "reservationRunId": "35421132870",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-19T04:23:16Z",
+      "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "companyContext": null,
       "sourceRoot": "web-games/daechung-rpg",
       "speculativeEligible": false,
@@ -4844,7 +4847,7 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "running",
+      "status": "queued",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
@@ -4888,13 +4891,14 @@
         "workload:cycle-ms:33975",
         "failure-cause:MACHINE_STATE_INCONSISTENT:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED",
         "system-steward:stale-machine-state-blocker-recovered",
-        "system-steward:machine-state-revalidated:v3-queue30"
+        "system-steward:machine-state-revalidated:v3-queue30",
+        "system-steward:stale-running-reservation-recovered"
       ],
-      "lastOutcome": "SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED",
-      "reservationId": "35421132870:1",
-      "reservationRunId": "35421132870",
-      "reservationRunAttempt": 1,
-      "reservedAt": "2026-09-19T04:23:16Z",
+      "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
+      "reservationId": null,
+      "reservationRunId": null,
+      "reservationRunAttempt": 0,
+      "reservedAt": null,
       "companyContext": null,
       "sourceRoot": "web-games/survival",
       "speculativeEligible": false,
@@ -5071,14 +5075,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -5155,9 +5159,11 @@
         "workload:prep-ms:4692",
         "workload:cycle-ms:179601",
         "workload:prep-ms:5256",
-        "workload:cycle-ms:222284"
+        "workload:cycle-ms:222284",
+        "system-steward:retry-exhausted-regenerated:generation-2",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_2"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -5179,7 +5185,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 1,
+      "recoveryGeneration": 2,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -5349,14 +5355,14 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -5427,9 +5433,11 @@
         "workload:prep-ms:4106",
         "workload:cycle-ms:195279",
         "workload:prep-ms:5298",
-        "workload:cycle-ms:223998"
+        "workload:cycle-ms:223998",
+        "system-steward:retry-exhausted-regenerated:generation-2",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_2"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -5451,7 +5459,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 1,
+      "recoveryGeneration": 2,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -5500,14 +5508,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -5583,9 +5591,11 @@
         "workload:prep-ms:4405",
         "workload:cycle-ms:183280",
         "workload:prep-ms:5172",
-        "workload:cycle-ms:182524"
+        "workload:cycle-ms:182524",
+        "system-steward:retry-exhausted-regenerated:generation-2",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_2"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -5607,7 +5617,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 1,
+      "recoveryGeneration": 2,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -5653,14 +5663,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -5735,9 +5745,11 @@
         "workload:prep-ms:5334",
         "workload:cycle-ms:203116",
         "workload:prep-ms:4512",
-        "workload:cycle-ms:184424"
+        "workload:cycle-ms:184424",
+        "system-steward:retry-exhausted-regenerated:generation-2",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_2"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -5759,7 +5771,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 1,
+      "recoveryGeneration": 2,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -5904,7 +5916,8 @@
         "workload:cycle-ms:284862",
         "variant:speculative-2",
         "workload:prep-ms:5589",
-        "workload:cycle-ms:275712"
+        "workload:cycle-ms:275712",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -5974,14 +5987,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -6057,9 +6070,11 @@
         "workload:prep-ms:9818",
         "workload:cycle-ms:327290",
         "workload:prep-ms:9684",
-        "workload:cycle-ms:369493"
+        "workload:cycle-ms:369493",
+        "system-steward:retry-exhausted-regenerated:generation-2",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_2"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -6081,7 +6096,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 1,
+      "recoveryGeneration": 2,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -6127,14 +6142,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -6209,9 +6224,11 @@
         "workload:prep-ms:5215",
         "workload:cycle-ms:210020",
         "workload:prep-ms:9403",
-        "workload:cycle-ms:328289"
+        "workload:cycle-ms:328289",
+        "system-steward:retry-exhausted-regenerated:generation-2",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_2"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -6233,7 +6250,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 1,
+      "recoveryGeneration": 2,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -6279,14 +6296,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -6362,9 +6379,11 @@
         "workload:prep-ms:4590",
         "workload:cycle-ms:190244",
         "workload:prep-ms:3845",
-        "workload:cycle-ms:210926"
+        "workload:cycle-ms:210926",
+        "system-steward:retry-exhausted-regenerated:generation-2",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_2"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
@@ -6386,7 +6405,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 1,
+      "recoveryGeneration": 2,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
@@ -6796,7 +6815,7 @@
         "no-production-pass",
         "verification-checks-proposed"
       ],
-      "shard": "support"
+      "shard": "verification"
     },
     {
       "id": "supervisor-fanin-regression-20260919",
@@ -6857,7 +6876,7 @@
         "no-production-pass",
         "verification-checks-proposed"
       ],
-      "shard": "support"
+      "shard": "verification"
     },
     {
       "id": "supervisor-release-readiness-20260919",
@@ -6918,7 +6937,7 @@
         "no-production-pass",
         "verification-checks-proposed"
       ],
-      "shard": "support"
+      "shard": "verification"
     },
     {
       "id": "supervisor-homepage-surface-20260919",
@@ -6979,7 +6998,7 @@
         "no-production-pass",
         "verification-checks-proposed"
       ],
-      "shard": "support"
+      "shard": "verification"
     },
     {
       "id": "supervisor-ollama-loading-20260919",
@@ -7040,7 +7059,7 @@
         "no-production-pass",
         "verification-checks-proposed"
       ],
-      "shard": "support"
+      "shard": "verification"
     },
     {
       "id": "supervisor-machine-state-consistency-20260919",
@@ -7101,7 +7120,7 @@
         "no-production-pass",
         "verification-checks-proposed"
       ],
-      "shard": "support"
+      "shard": "verification"
     }
   ]
 }
