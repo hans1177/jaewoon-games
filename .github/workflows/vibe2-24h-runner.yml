@@ -419,7 +419,7 @@ jobs:
 
           stamp="$(date +%s%3N)"
           while IFS=$'\t' read -r task_id candidate_branch candidate_sha; do
-            node tools/vibe2-queue-control.mjs await \
+            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs await \
               --id="$task_id" \
               --blocker=candidate-awaiting-qa-and-deployment \
               --evidence="release-dispatch-recovery-requested:$candidate_branch,release-dispatch-recovery-at:$stamp,release-dispatch-recovery-candidate-sha:$candidate_sha"
