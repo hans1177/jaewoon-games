@@ -118,6 +118,8 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     existingWeb.queueStrictImplementationHardFailures=(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,4);
     existingWeb.queueWebValidationLastAttemptAt=clean(item?.webValidationLastAttemptAt||item?.webFinalContentDepthLastAttemptAt);
     existingWeb.saveNormalizationRequired=item?.saveNormalizationRequired===true;
+    existingWeb.ownerPreservationPresentationUpgrade=item?.ownerPreservationPresentationUpgrade===true;
+    existingWeb.presentationFirstPass=clean(item?.presentationFirstPass);
     existingWeb.companyDevelopmentQueueSource=true;
     continue;
   }
@@ -401,9 +403,9 @@ function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='roblox')return uniqueTaskCandidates([scanExplicitMarkerTask(project,repoRoot,queue)]);
   if(project.engine==='unity')return uniqueTaskCandidates([findUnityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   if(project.engine==='web'){
+    if(project.ownerPreservationPresentationUpgrade===true)return uniqueTaskCandidates([findWebPresentationQualityTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
-    if(project.ownerPreservationPresentationUpgrade===true)return uniqueTaskCandidates([findWebPresentationQualityTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findWebPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
