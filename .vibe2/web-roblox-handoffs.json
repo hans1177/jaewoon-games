@@ -162,7 +162,7 @@
     },
     {
       "gameId": "monster-adventure",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PROJECT_PHASE": "WEB_BASE_IMPLEMENTATION",
       "PLATFORM": "UNITY",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -207,7 +207,7 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "PLAN_OR_RESUME_WEB_BASE_IMPLEMENTATION_FROM_CANONICAL_DEVELOPMENT_QUEUE"
     },
     {
       "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -652,7 +652,7 @@
     },
     {
       "gameId": "chess-battle",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PROJECT_PHASE": "WEB_BASE_IMPLEMENTATION",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -701,11 +701,11 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "REVALIDATE_DEVELOPMENT_CONFIRMED_THEN_RECOVER_STALE_CANCELLED_WEB_BOOTSTRAP"
     },
     {
       "gameId": "survival2",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PROJECT_PHASE": "WEB_BASE_IMPLEMENTATION",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -754,11 +754,11 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "PLAN_OR_RESUME_WEB_BASE_IMPLEMENTATION_FROM_CANONICAL_DEVELOPMENT_QUEUE"
     },
     {
       "gameId": "crystal-defense",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PROJECT_PHASE": "WEB_BASE_IMPLEMENTATION",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -807,11 +807,11 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "REVALIDATE_DEVELOPMENT_CONFIRMED_THEN_RECOVER_STALE_CANCELLED_WEB_BOOTSTRAP"
     },
     {
       "gameId": "territory-war",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PROJECT_PHASE": "WEB_BASE_IMPLEMENTATION",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -860,11 +860,11 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "REVALIDATE_DEVELOPMENT_CONFIRMED_THEN_RECOVER_STALE_CANCELLED_WEB_BOOTSTRAP"
     },
     {
       "gameId": "island-village",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PROJECT_PHASE": "WEB_BASE_IMPLEMENTATION",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -913,11 +913,11 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "REVALIDATE_DEVELOPMENT_CONFIRMED_THEN_RECOVER_STALE_CANCELLED_WEB_BOOTSTRAP"
     },
     {
       "gameId": "egg-heist",
-      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PROJECT_PHASE": "WEB_BASE_IMPLEMENTATION",
       "PLATFORM": "ROBLOX",
       "GENRE": null,
       "WEB_BASELINE": {
@@ -966,10 +966,94 @@
         "gateBypass": false,
         "continuousLearning": true
       },
-      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+      "NEXT_MACHINE_ACTION": "REVALIDATE_DEVELOPMENT_CONFIRMED_THEN_RECOVER_STALE_CANCELLED_WEB_BOOTSTRAP"
     }
   ],
   "handoffs": [],
   "gateBypass": false,
-  "authority": "verified-handoff-context-only"
+  "authority": "verified-handoff-context-only",
+  "ownerSessionHandoff": {
+    "version": 1,
+    "recordedAt": "2026-09-19T13:35:30+09:00",
+    "authority": "OWNER_DIRECT_MACHINE_HANDOFF",
+    "purpose": "CONTINUE_IN_NEW_CHAT_WITHOUT_RESTARTING_OR_REDISCOVERING_COMPLETED_WORK",
+    "sourceOfTruth": {
+      "mainHead": "a3969aafa495a8762de32c463f991887c798a99a",
+      "centralPolicy": "company-learning/platform-release-roadmap.json",
+      "centralPolicyVersion": 28,
+      "companyRuntimeQueue": "company-runtime:development-queue.json",
+      "vibeQueue": "vibe2-unreal-core:.vibe2/queue.json",
+      "parallelismControl": "vibe2-unreal-core:.vibe2/parallelism-control.json"
+    },
+    "completedBeforeHandoff": [
+      "REMOVE_DUPLICATE_TOP30_HOMEPAGE_SHELF",
+      "UNBOUNDED_WEB_GAME_SHELF",
+      "EXACT_GAMEID_TO_WEB_GAMES_INDEX_HTML_BINDING",
+      "DIRECT_OWNER_WEB_UPLOAD_TO_EXISTING_SERVER_SYNC",
+      "SAVE_NORMALIZATION_BOUND_TO_DEVELOPMENT_QUEUE",
+      "GUARDED_STALE_MACHINE_STATE_BLOCKER_RECOVERY",
+      "CANONICAL_DEVELOPMENT_QUEUE_FED_INTO_VIBE_PLANNER",
+      "GUARDED_MISSING_WEB_SOURCE_BOOTSTRAP_PLANNER_TO_EXPLORATION_TO_SOURCE_WORKER"
+    ],
+    "currentSnapshot": {
+      "developmentActiveCount": 19,
+      "vibeQueueMax": 30,
+      "adaptiveCurrentMax": 24,
+      "adaptiveControlVersion": 3,
+      "vibeStatuses": {
+        "cancelled": 35,
+        "done": 21,
+        "running": 13,
+        "queued": 1
+      },
+      "activeDevelopmentWithoutQueuedOrRunningTask": [
+        "monster-adventure",
+        "chess-battle",
+        "survival2",
+        "crystal-defense",
+        "territory-war",
+        "island-village",
+        "egg-heist"
+      ],
+      "staleCancelledBootstrapGameIds": [
+        "chess-battle",
+        "crystal-defense",
+        "egg-heist",
+        "island-village",
+        "territory-war"
+      ],
+      "catalogAuthorityForAllListedGames": "DEVELOPMENT_CONFIRMED_ACTIVE"
+    },
+    "immediateWorkOrder": [
+      "READ_LATEST_MAIN_AND_RUNTIME_STATE_FIRST",
+      "CONFIRM_LISTED_GAMES_STILL_DEVELOPMENT_CONFIRMED_ACTIVE",
+      "RECOVER_STALE_PRODUCTION_AUTHORITY_CANCELLED_BOOTSTRAP_TASKS_ONLY_WHERE_AUTHORITY_NOW_MATCHES",
+      "CREATE_OR_RESUME_WEB_BASE_IMPLEMENTATION_FOR_MONSTER_ADVENTURE_AND_SURVIVAL2_IF_NO_ACTIVE_TASK",
+      "RUN_VIBE2_PLANNER_WITH_COMPANY_RUNTIME_DEVELOPMENT_QUEUE_INPUT",
+      "VERIFY_SOURCE_ROOT_BOOTSTRAP_AUTHORITY_REMAINS_WEB_ONLY_EXPLICIT_AND_ISOLATED_CANDIDATE_ONLY",
+      "VERIFY_ALL_19_ACTIVE_DEVELOPMENT_ITEMS_HAVE_ACTIVE_NEXT_STAGE_OR_EXPLICIT_EXTERNAL_WAIT",
+      "PROCESS_GATE_FAILURES_BY_EXACT_FAILURE_SIGNATURE_AND_RESUME_EXACT_FAILED_STAGE",
+      "KEEP_ADAPTIVE_PARALLELISM_AND_WORK_STEALING_ACTIVE_WITHOUT_FORCING_30_WHEN_PRESSURE_REQUIRES_24",
+      "RECHECK_HOMEPAGE_ONLY_AFTER_INDEX_HTML_EXISTS_AND_QA_PASSES"
+    ],
+    "invariants": [
+      "NO_GATE_LOWERING",
+      "NO_DIRECT_WORKER_WRITE_TO_MAIN",
+      "NO_RESTART_FROM_BLANK_WHEN_VALID_CHECKPOINT_EXISTS",
+      "NO_PUBLIC_WEB_CARD_WITHOUT_EXACT_WEB_GAMES_GAMEID_INDEX_HTML",
+      "NO_TOP30_HOMEPAGE_SHELF",
+      "NO_SAVE_MEANING_RESET",
+      "SAVE_NORMALIZATION_REQUIRED",
+      "OWNER_DIRECT_UPLOAD_MUST_NOT_BE_OVERWRITTEN_BY_STALE_AUTOMATION",
+      "EXTERNAL_RUNNER_CAPACITY_WAIT_IS_NOT_A_GATE_FAILURE"
+    ],
+    "completionCondition": [
+      "ACTIVE_DEVELOPMENT_WITHOUT_VALID_NEXT_STAGE_EQUALS_0",
+      "STALE_DESIGN_ONLY_BOOTSTRAP_CANCELLATIONS_EQUALS_0",
+      "NO_NEW_SOURCE_CANDIDATE_RETRY_GRAVEYARD",
+      "RELEVANT_CORE_CENTRAL_REGRESSION_QA_PASS",
+      "WEB_CARDS_ONLY_FOR_EXACT_EXISTING_ENTRY_FILES"
+    ],
+    "newChatInstruction": "READ ownerSessionHandoff FROM vibe2-unreal-core:.vibe2/web-roblox-handoffs.json AND CONTINUE immediateWorkOrder WITHOUT RESTARTING COMPLETED WORK"
+  }
 }
