@@ -847,6 +847,8 @@ jobs:
             clean(baseCodingMethod?.strategy)&&`coding-strategy:${clean(baseCodingMethod.strategy)}`,
             clean(baseCodingMethod?.responsibilityConfidence)&&`coding-responsibility-confidence:${clean(baseCodingMethod.responsibilityConfidence)}`,
             Number(baseCodingMethod?.generationAttempts)>0&&`coding-generation-attempts:${Number(baseCodingMethod.generationAttempts)}`,
+            Number(baseCodingMethod?.generationAttemptBudget)>0&&`coding-generation-attempt-budget:${Number(baseCodingMethod.generationAttemptBudget)}`,
+            baseCodingMethod?.speculativeAttemptBudgetApplied===true?'coding-speculative-attempt-budget:YES':'',
             baseCodingMethod?.partialTimeoutRecovery===true?'coding-timeout-partial-recovery:YES':'',
             baseCodingMethod?.partialMalformedRecovery===true?'coding-malformed-partial-recovery:YES':'',
             baseCodingMethod?.streamedPartialEditRecovery===true?'coding-streamed-partial-edit-recovery:YES':'',
