@@ -165,6 +165,72 @@ function checkNodeSyntax(text, ext, file) {
   try { runNodeSyntax(text,'commonjs'); return; }
   catch { throw syntaxFailure(file,moduleError); }
 }
+function presentationContract(data = {}) {
+  const contract=data?.presentationQuality;
+  return contract&&contract.required===true?contract:null;
+}
+function presentationSourceText(root, changed = []) {
+  const rows=[];
+  for(const relative of changed){
+    const file=assertInside(root,relative);
+    if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
+    if(!/\.(?:html?|js|mjs|cjs|css|svg|cs|gd|cpp|cc|cxx|h|hpp)$/i.test(relative))continue;
+    rows.push(fs.readFileSync(file,'utf8'));
+  }
+  return rows.join('\n\n');
+}
+function patternHits(text='',patterns=[]){
+  return patterns.reduce((count,re)=>count+(re.test(text)?1:0),0);
+}
+function runPresentationStaticQa({root,data={},changed=[]}={}){
+  const contract=presentationContract(data);
+  if(!contract)return{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false};
+  const pass=clean(contract.pass).toUpperCase();
+  const text=presentationSourceText(root,changed);
+  if(!text.trim())throw new Error(`PRESENTATION_QA_SOURCE_REQUIRED:${pass}`);
+  const checks=[],issues=[];
+  const require=(name,ok)=>{checks.push({name,pass:Boolean(ok)});if(!ok)issues.push(name);};
+  if(pass==='ASSET_ADAPTATION'){
+    require('STYLE_SURFACE',/(?:fillStyle|strokeStyle|classList|style\.|--[\w-]+\s*:|background|linear-gradient|radial-gradient|material|texture|sprite)/i.test(text));
+    require('RENDER_OR_VISUAL_OWNER',/(?:canvas|getContext\(|render|draw|sprite|mesh|visual|style)/i.test(text));
+  }else if(pass==='LIVING_MOTION'){
+    require('CONTINUOUS_UPDATE',/(?:requestAnimationFrame|setInterval|Update\s*\(|_process\s*\(|Heartbeat|RenderStepped)/i.test(text));
+    require('SMOOTH_INTERPOLATION',/(?:lerp|damp|spring|ease|interpol|Math\.sin|smoothstep|velocity|accel|decel)/i.test(text));
+    require('MOTION_STATE',/(?:idle|walk|run|speed|velocity|rotation|turn|breath|bob|sway)/i.test(text));
+  }else if(pass==='ANIMATION_FEEL'){
+    const hit=patternHits(text,[/anticipat/i,/hit.?stop|freeze.?frame/i,/recoil/i,/recover(?:y)?/i,/overshoot|settle/i,/smear|trail|afterimage/i,/squash|stretch/i]);
+    require('IMPACT_SEQUENCE_SIGNALS',hit>=2);
+    require('IMPACT_OR_ACTION_EVENT',/(?:impact|hit|attack|interact|damage|collision)/i.test(text));
+  }else if(pass==='VFX'){
+    const hit=patternHits(text,[/particle/i,/trail/i,/afterimage/i,/flash/i,/shake/i,/impact/i,/glow/i,/shockwave/i,/spark/i,/dust/i,/telegraph/i]);
+    require('VFX_FEEDBACK_VARIETY',hit>=2);
+    require('BOUNDED_EFFECT_LIFETIME',/(?:life|ttl|duration|remove|splice|filter|pool|maxParticles|maxEffects|cap)/i.test(text));
+  }else if(pass==='AUDIO_FEEL'){
+    require('AUDIO_RUNTIME',/(?:AudioContext|webkitAudioContext|new\s+Audio\s*\(|createGain|createOscillator)/i.test(text));
+    require('USER_GESTURE_UNLOCK',/(?:pointerdown|touchstart|click|keydown|mousedown)/i.test(text));
+    require('MUTE_CONTROL',/(?:mute|muted)/i.test(text));
+    require('VOLUME_CONTROL',/(?:volume|gain)/i.test(text));
+    require('DUPLICATE_RESUME_GUARD',/(?:visibilitychange|pagehide|pageshow|resume|suspend|audioState|musicState|currentTrack)/i.test(text));
+  }else if(pass==='CAMERA_LANGUAGE'){
+    require('CAMERA_OWNER',/(?:camera|viewport|viewOffset|screenShake|cameraShake)/i.test(text));
+    require('SMOOTH_CAMERA_RESPONSE',/(?:shake|zoom|lerp|ease|damp|offset|scale|follow)/i.test(text));
+  }else if(pass==='POLISH_MOBILE'){
+    require('MOBILE_INPUT',/(?:pointer|touch|virtual.?stick|joystick)/i.test(text));
+    require('FRAME_LOOP_OR_STABLE_RENDER',/(?:requestAnimationFrame|RenderStepped|Update\s*\(|_process\s*\()/i.test(text));
+    require('PRESENTATION_BUDGET_OR_LIFECYCLE',/(?:pool|maxParticles|maxEffects|devicePixelRatio|visibilitychange|pagehide|cleanup|dispose|remove|ttl|duration)/i.test(text));
+  }
+  if(issues.length)throw new Error(`PRESENTATION_STATIC_QA_FAILED:${pass}:${issues.join('|')}`);
+  return{
+    status:'STATIC_PASS',
+    pass,
+    checks,
+    runtimeStillRequired:true,
+    runtimeChecks:Array.isArray(contract.runtimeChecks)?contract.runtimeChecks.map(clean).filter(Boolean):[],
+    gameplaySemanticsPreservationRequired:true,
+    authorityExpanded:false
+  };
+}
+
 function deterministicCheck(root, relative) {
   const file = assertInside(root, relative);
   if (!fs.existsSync(file) || !fs.statSync(file).isFile()) throw new Error(`changed file missing: ${relative}`);
@@ -200,7 +266,8 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const replayPlan=causalReplayPlan(data);
   const replayTargets=replayPlan?.executable===true?resolveReplayTargets(root,data,replayPlan):[];
   const architectureBaseline=data?.exploration?.editContract?.architectureSnapshot||null;
-  const payload = ['vibe2-incremental-qa-v5', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline)];
+  const presentation=presentationContract(data);
+  const payload = ['vibe2-incremental-qa-v6', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline), JSON.stringify(presentation||null)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -212,17 +279,18 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const cache = cachePath ? readJson(cachePath,{version:3,entries:{}}) : {version:3,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
-    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, presentationQa:cached.presentationQa||{status:'NOT_REQUIRED',pass:null,checks:[],runtimeStillRequired:false,authorityExpanded:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
   execFileSync('git',['diff','--check'],{cwd:root,stdio:'pipe'});
   const causalReplay=runCausalReplay({root,data});
   const architectureDrift=runArchitectureDrift({root,data});
-  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, architectureDrift, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const presentationQa=runPresentationStaticQa({root,data,changed});
+  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, architectureDrift, presentationQa, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.version=3; cache.entries=cache.entries||{};
-    cache.version=4; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, architectureDrift, savedAt:new Date().toISOString() };
+    cache.version=5; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, architectureDrift, presentationQa, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
@@ -246,5 +314,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_ARCHITECTURE_DRIFT_RISK=${result.architectureDrift?.riskLevel||'LOW'}`);
   console.log(`VIBE2_ARCHITECTURE_DRIFT_SCORE=${Number(result.architectureDrift?.score||0)}`);
   console.log(`VIBE2_ARCHITECTURE_DRIFT_SIGNALS=${(result.architectureDrift?.signals||[]).join(',')||'NONE'}`);
+  console.log(`VIBE2_PRESENTATION_QA_STATUS=${result.presentationQa?.status||'NOT_REQUIRED'}`);
+  console.log(`VIBE2_PRESENTATION_QA_PASS=${result.presentationQa?.pass||'NONE'}`);
+  console.log(`VIBE2_PRESENTATION_RUNTIME_REQUIRED=${result.presentationQa?.runtimeStillRequired===true?'YES':'NO'}`);
   console.log('VIBE2_FULL_REGRESSION_REQUIRED=YES');
 }
