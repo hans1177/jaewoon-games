@@ -154,11 +154,21 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   const sourceRoot=path.join(root,'web-games',gameId);
   fs.mkdirSync(sourceRoot,{recursive:true});
   fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main>existing game</main></body></html>','utf8');
+  const staleAssessment={
+    id:`${gameId}-existing-web-assessment-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'stale generic assessment',
+    releaseState:'development-confirmed',status:'failed',retries:3,maxRetries:2,blocker:'source-candidate-generation-failed',evidence:['existing-web-assessment-required']
+  };
+  const staleDiagnostic={
+    id:`${gameId}-diagnostic-bundle-old-index-html`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'stale diagnostic',
+    releaseState:'development-confirmed',status:'queued',retries:0,maxRetries:2,blocker:null,evidence:['diagnostic-key:OLD:index.html']
+  };
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
     catalog:{games:[{id:gameId,name:'Repair Web Runtime',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
-    developmentQueue:{items:[{gameId,gameName:'Repair Web Runtime',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`}]},
-    queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4
+    developmentQueue:{items:[{gameId,gameName:'Repair Web Runtime',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`}]},
+    queue:{maxConcurrentTasks:4,tasks:[staleAssessment,staleDiagnostic]},repoRoot:root,maxConcurrentTasks:4
   });
   assert.equal(result.planned,true);
   const task=result.tasks.find(row=>row.gameId===gameId);
@@ -168,6 +178,13 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   assert.ok(task.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
   assert.ok(task.evidence.includes('recovery-exact-stage:WEB_REPAIR'));
   assert.match(task.goal,/\[WEB_REPAIR\]/);
+  for(const staleId of [staleAssessment.id,staleDiagnostic.id]){
+    const stale=result.queue.tasks.find(row=>row.id===staleId);
+    assert.equal(stale.status,'cancelled');
+    assert.equal(stale.blocker,'superseded-by:VIBE_WEB_REPAIR');
+    assert.equal(stale.lastOutcome,'SUPERSEDED_BY_EXACT_WEB_REPAIR');
+    assert.ok(stale.evidence.includes('superseded-by:VIBE_WEB_REPAIR'));
+  }
 });
 
 test('central DESIGN_ONLY authority cancels stale production implementation without touching study work',()=>{
