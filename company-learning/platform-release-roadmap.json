@@ -1,5 +1,5 @@
 {
-  "version": 31,
+  "version": 32,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1552,28 +1552,33 @@
       ]
     },
     "primaryAiOrchestration": {
-      "version": 1,
+      "version": 2,
       "authority": "OWNER_DIRECTIVE_2026-09-19",
       "orchestrator": "CHATGPT_PRIMARY_AI",
-      "role": "PRIMARY_AI_SYSTEM_ORCHESTRATOR_AND_REVIEWER",
+      "role": "PRIMARY_AI_NON_BLOCKING_SUPERVISOR",
       "scope": [
         "ROADMAP_IMPLEMENTATION",
-        "SYSTEM_BOTTLENECK_RESOLUTION",
-        "WORKFLOW_AND_CI_CHANGES",
-        "QUEUE_AND_PLANNER_CHANGES",
-        "ARCHITECTURE_CHANGES",
-        "COMMON_TOOLING",
+        "PORTFOLIO_WIDE_BOTTLENECKS",
+        "GAME_DEVELOPMENT_PIPELINE",
+        "RELEASE_PIPELINE",
+        "HOMEPAGE_AND_PUBLIC_SURFACE",
+        "PLATFORM_RUNTIME_AND_BUILD",
+        "QA_AND_REGRESSION",
+        "QUEUE_PLANNER_AND_WORKFLOW",
+        "LEARNING_AND_FREE_AI_UTILIZATION",
         "SYSTEM_PERFORMANCE_AND_LOADING_OPTIMIZATION"
       ],
       "responsibilities": [
         "READ_CENTRAL_POLICY_LOG_MAP_ARCHITECTURE_FIRST",
-        "SELECT_HIGHEST_IMPACT_BOTTLENECK",
-        "DECOMPOSE_WORK_INTO_INDEPENDENT_TASKS",
-        "ISSUE_EXPLICIT_TASK_CONTRACTS_TO_EXTERNAL_AI_WORKERS",
-        "REVIEW_WORKER_OUTPUT_AND_VERIFIED_EVIDENCE",
-        "ISSUE_REWORK_INSTRUCTIONS_WHEN_REVIEW_FAILS",
-        "AUTHORIZE_SYSTEM_TASK_COMPLETION_ONLY_AFTER_REVIEW_PASS",
-        "SYNC_CENTRAL_POLICY_LOG_MAP_ARCHITECTURE_AFTER_ACCEPTED_CHANGE"
+        "OBSERVE_AUTONOMOUS_24H_WORK_WITHOUT_BLOCKING_IT",
+        "IDENTIFY_HIGHEST_IMPACT_CURRENT_AND_LONG_TERM_BOTTLENECKS",
+        "JUDGE_PRIORITY_ACROSS_DEVELOPMENT_RELEASE_HOMEPAGE_INFRA_AND_ROADMAP",
+        "DECOMPOSE_HIGH_IMPACT_WORK_INTO_INDEPENDENT_TASKS",
+        "ISSUE_EXPLICIT_TASK_AND_REWORK_DIRECTIVES_TO_AVAILABLE_EXTERNAL_AI",
+        "REVIEW_COMPLETED_WORK_AND_VERIFIED_EVIDENCE",
+        "REOPEN_OR_REQUEUE_WORK_WHEN_VERIFIED_GAPS_REMAIN",
+        "KEEP_ROADMAP_IMPLEMENTATION_MOVING_OVER_LONG_HORIZONS",
+        "SYNC_CENTRAL_POLICY_LOG_MAP_ARCHITECTURE_AFTER_ACCEPTED_SYSTEM_CHANGES"
       ],
       "gameSourceAuthoring": false,
       "gameImplementationOwner": [
@@ -1581,7 +1586,7 @@
         "VIBE3"
       ],
       "externalAiWorkerPolicy": {
-        "role": "ASSIGNED_TASK_EXECUTOR_ONLY",
+        "role": "ASSIGNED_TASK_EXECUTOR_OR_AUTONOMOUS_CENTRAL_CONTRACT_WORKER",
         "maySelfPromoteToOrchestrator": false,
         "mayCreatePolicy": false,
         "mayExpandOwnScope": false,
@@ -1589,25 +1594,93 @@
         "mustLoadSharedContext": true,
         "mustReturnChangedScope": true,
         "mustReturnVerificationEvidence": true,
-        "mustReturnFailureStageAndSignatureOnFailure": true
+        "mustReturnFailureStageAndSignatureOnFailure": true,
+        "centralContractIsDefaultAuthorityWhenNoSupervisorDirective": true,
+        "mayWorkWithoutSupervisorPresent": true,
+        "deterministicQaMayCompleteAssignedWorkWithoutSupervisorReview": true
       },
       "reviewLoop": [
-        "PRIMARY_AI_PLAN_AND_ASSIGN",
-        "EXTERNAL_AI_EXECUTE",
-        "DETERMINISTIC_QA_AND_EVIDENCE",
-        "PRIMARY_AI_REVIEW",
-        "PRIMARY_AI_REWORK_OR_ACCEPT",
-        "REPEAT_UNTIL_ACCEPTED_OR_OWNER_STOP"
+        "AUTONOMOUS_WORKERS_CONTINUE_FROM_CENTRAL_CONTRACT",
+        "PRIMARY_AI_OBSERVES_AND_PRIORITIZES",
+        "PRIMARY_AI_ASSIGN_OR_REWORK_WHERE_HIGH_IMPACT",
+        "WORKERS_EXECUTE_IN_PARALLEL",
+        "DETERMINISTIC_QA_AND_EVIDENCE_COMPLETE_OR_REQUEUE_WORK",
+        "PRIMARY_AI_REVIEWS_RESULTS_ASYNCHRONOUSLY",
+        "PRIMARY_AI_REOPENS_REPRIORITIZES_OR_ACCEPTS_DIRECTION",
+        "REPEAT_CONTINUOUSLY"
       ],
       "reworkLimit": "NO_INTERNAL_FIXED_LIMIT",
       "stopConditions": [
         "OWNER_STOP",
         "SAFETY_OR_AUTHORITY_BLOCK",
-        "EXTERNAL_PROVIDER_UNAVAILABLE_WITH_NO_SAFE_FALLBACK",
-        "NO_VERIFIABLE_PROGRESS"
+        "NO_SAFE_EXECUTABLE_WORK"
       ],
-      "finalSystemAcceptanceAuthority": "PRIMARY_AI_AFTER_VERIFIED_EVIDENCE",
-      "ordinaryGameDevelopmentContinuesUnderVibeAndDeterministicQa": true
+      "finalSystemAcceptanceAuthority": "DETERMINISTIC_EVIDENCE_AUTONOMOUS_PRIMARY_AI_MAY_REOPEN_REPRIORITIZE_OR_REWORK",
+      "ordinaryGameDevelopmentContinuesUnderVibeAndDeterministicQa": true,
+      "longTermMission": "SUPERVISE_AND_DRIVE_ROADMAP_IMPLEMENTATION_WITHOUT_BECOMING_A_RUNTIME_GATE",
+      "presenceRequiredForAutonomousWork": false,
+      "absenceBlocksWorkerProgress": false,
+      "workersContinue24hFromCentralContract": true,
+      "reviewRequiredForWorkerCompletion": false,
+      "deterministicEvidenceOwnsTaskCompletion": true,
+      "priorityPolicy": {
+        "mode": "DYNAMIC_IMPACT_AND_URGENCY",
+        "ownerDirectiveAlwaysFirst": true,
+        "factors": [
+          "PUBLIC_OR_RELEASE_IMPACT",
+          "NUMBER_OF_WORKERS_OR_PROJECTS_BLOCKED",
+          "CRITICAL_PATH_TO_RELEASE",
+          "HOMEPAGE_OR_PUBLIC_SURFACE_BREAKAGE",
+          "RUNTIME_OR_QA_FAILURE_SEVERITY",
+          "RECURRENCE_AND_COMMON_FAILURE_SIGNATURE",
+          "ROADMAP_DEPENDENCY_FANOUT",
+          "ESTIMATED_FIX_COST",
+          "AVAILABLE_PARALLEL_CAPACITY"
+        ],
+        "defaultEscalationOrder": [
+          "OWNER_OR_SAFETY_CRITICAL",
+          "RELEASE_OR_PUBLIC_PRODUCTION_BLOCKER",
+          "PORTFOLIO_WIDE_COMMON_BOTTLENECK",
+          "HOMEPAGE_PUBLIC_SURFACE_REGRESSION",
+          "DEVELOPMENT_CRITICAL_PATH_BLOCKER",
+          "CI_RUNTIME_QUEUE_INFRASTRUCTURE_BLOCKER",
+          "ROADMAP_MILESTONE_DEPENDENCY",
+          "ROUTINE_QUALITY_AND_OPTIMIZATION"
+        ],
+        "fixedOrderMayBeOverriddenByVerifiedImpactEvidence": true
+      },
+      "managementDomains": {
+        "development": {
+          "manage": true,
+          "issueDirectives": true,
+          "watchCommonBlockers": true
+        },
+        "release": {
+          "manage": true,
+          "issueDirectives": true,
+          "watchPromotionAndPublication": true
+        },
+        "homepage": {
+          "manage": true,
+          "issueDirectives": true,
+          "watchAvailabilityAndFreshEvidence": true
+        },
+        "roadmap": {
+          "manage": true,
+          "issueDirectives": true,
+          "longTermSupervisor": true
+        },
+        "infrastructure": {
+          "manage": true,
+          "issueDirectives": true,
+          "watchRunnerQueuePlannerAndCaches": true
+        },
+        "quality": {
+          "manage": true,
+          "issueDirectives": true,
+          "watchQaRegressionAndEvidence": true
+        }
+      }
     },
     "freeAiExecution": {
       "version": 1,
