@@ -235,6 +235,42 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   }
 });
 
+test('existing queued exact Web repair refreshes its goal from latest company runtime evidence',()=>{
+  const root=tempRepo();
+  const gameId='refresh-web-runtime';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main>existing game</main></body></html>','utf8');
+  const exact={
+    id:`${gameId}-web-runtime-repair-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],
+    goal:'old generic repair goal',releaseState:'development-confirmed',status:'queued',retries:1,maxRetries:2,blocker:null,
+    evidence:['company-runtime-state:WEB_VIBE_REPAIR_REQUIRED']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Refresh Web Runtime',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Refresh Web Runtime',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,
+      vibeWebRequestedStage:'WEB_REPAIR',
+      vibeWebImplementationReason:'REAL_GAME_MECHANIC_COUNT_TOO_LOW',
+      routingBlockers:['vibe-web-implementation-required:WEB_REPAIR:REAL_GAME_MECHANIC_COUNT_TOO_LOW:2:5'],
+      webValidationLastAttemptAt:'2026-09-19T07:50:00.000Z'
+    }]},
+    queue:{maxConcurrentTasks:20,tasks:[exact]},repoRoot:root,maxConcurrentTasks:20
+  });
+  const refreshed=result.queue.tasks.find(row=>row.id===exact.id);
+  assert.ok(refreshed);
+  assert.equal(refreshed.status,'queued');
+  assert.match(refreshed.goal,/\[COMPANY_RUNTIME_FAILURE_EVIDENCE\]/);
+  assert.match(refreshed.goal,/implementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW/);
+  assert.match(refreshed.goal,/routing-blocker=vibe-web-implementation-required:WEB_REPAIR:REAL_GAME_MECHANIC_COUNT_TOO_LOW:2:5/);
+  assert.match(refreshed.goal,/last-validation-at=2026-09-19T07:50:00.000Z/);
+  assert.ok(refreshed.evidence.includes('company-runtime-failure-evidence:refreshed'));
+});
+
 test('central DESIGN_ONLY authority cancels stale production implementation without touching study work',()=>{
   const root=tempRepo();
   const stale={id:'stale-dev',gameId:'crystal-defense',target:'web',department:'development',type:'implementation',sourceRoot:'web-games/crystal-defense',goal:'old development work',releaseState:'development-confirmed',status:'running',reservationId:'run-1',reservationRunId:'run-1',reservationRunAttempt:1,reservedAt:'2026-09-18T10:00:00Z'};
