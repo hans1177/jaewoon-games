@@ -34,6 +34,12 @@ test('cooldown prevents duplicate recovery dispatch but later retry is allowed',
   assert.equal(selectReviewedWinnerRecoveries({tasks:[recent]},{nowMs:1_100_001,cooldownMs:100_000}).count,1);
 });
 
+test('default cooldown retries stranded reviewed winners after two minutes',()=>{
+  const recent=winner(['release-dispatch-recovery-at:1000000']);
+  assert.equal(selectReviewedWinnerRecoveries({tasks:[recent]},{nowMs:1_119_999}).count,0);
+  assert.equal(selectReviewedWinnerRecoveries({tasks:[recent]},{nowMs:1_120_001}).count,1);
+});
+
 test('done tasks never re-enter release gate recovery',()=>{
   const row={...winner(),status:'done'};
   assert.equal(selectReviewedWinnerRecoveries({tasks:[row]}).count,0);
