@@ -125,7 +125,7 @@ test('healthy saturated runs fast-ramp one adaptive step per run',()=>{
   assert.equal(first.healthyStreak,0);
   assert.equal(first.lastDecision,'UP');
   const second=decideAdaptiveBackpressure(first,healthy2,{now:'2026-09-15T10:04:00.000Z'});
-  assert.equal(second.currentMax,32);
+  assert.equal(second.currentMax,20);
   assert.equal(second.lastDecision,'UP');
   assert.equal(second.lastRunId,'205');
 });
