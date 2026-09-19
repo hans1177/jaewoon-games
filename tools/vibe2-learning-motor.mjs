@@ -310,19 +310,21 @@ export function failureFingerprintForTask(task={}){
   const classes=FAILURE_FINGERPRINT_CLASSES.filter(([,re])=>re.test(text)).map(([name])=>name);
   const domains=inferDomains(text,task.target).filter(domain=>!['DEBUGGING','RECOVERY'].includes(domain)).sort();
   if(!explicit.length&&!classes.length&&!/fail|failure|block|repair|error|bug|오류|실패|누락/i.test(text))return null;
-  return [lower(task.target)||'any',...explicit,...classes,...domains].filter(Boolean).join('|');
+  if(explicit.length)return [lower(task.target)||'any',...explicit].filter(Boolean).join('|');
+  return [lower(task.target)||'any',...classes,...domains].filter(Boolean).join('|');
 }
 function failureFingerprintForExperience(record={}){
   const values=[
-    record.failureCause,record.problem,record.goal,record.change,
-    ...(record.evidence||[]),...(record.avoidPatterns||[]),...(record.reusablePatterns||[])
+    record.failureCause,record.problem,record.goal,
+    ...(record.evidence||[])
   ].map(clean).filter(Boolean);
   const text=values.join(' ');
   const explicit=explicitFailureCodes(values);
   const classes=FAILURE_FINGERPRINT_CLASSES.filter(([,re])=>re.test(text)).map(([name])=>name);
   const domains=inferDomains(text,record.engine).filter(domain=>!['DEBUGGING','RECOVERY'].includes(domain)).sort();
   if(!explicit.length&&!classes.length&&!clean(record.failureCause))return null;
-  return [lower(record.engine)||'any',...explicit,...classes,...domains].filter(Boolean).join('|');
+  if(explicit.length)return [lower(record.engine)||'any',...explicit].filter(Boolean).join('|');
+  return [lower(record.engine)||'any',...classes,...domains].filter(Boolean).join('|');
 }
 
 export function retrieveUnifiedLearning({task={},experienceInput={},codePatternsInput={},playbooksInput={},practiceDistilledInput={},masteryInput={}}={}){
