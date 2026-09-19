@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "    <main id=\"game\"></main>",
+      "replace": "    <main id=\"game\"><script>\n        // Simulated game logic\n        const game = {\n            board: [],\n            currentPlayer: 'player1',\n            winner: null\n        };\n\n        function startGame() {\n            game.board = [\n                ['','','','',''],\n                ['','','','',''],\n                ['','','','',''],\n                ['','','','',''],\n                ['','','','',''],\n                ['','','','',''],\n                ['','','','',''],\n                ['','','','','']\n            ];\n            console.log('Game started');\n        }\n\n        startGame();\n    </script></main>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}

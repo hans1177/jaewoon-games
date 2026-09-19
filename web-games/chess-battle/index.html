@@ -44,7 +44,30 @@
     </style>
 </head>
 <body>
-    <main id="game"></main>
+    <main id="game"><script>
+        // Simulated game logic
+        const game = {
+            board: [],
+            currentPlayer: 'player1',
+            winner: null
+        };
+
+        function startGame() {
+            game.board = [
+                ['','','','',''],
+                ['','','','',''],
+                ['','','','',''],
+                ['','','','',''],
+                ['','','','',''],
+                ['','','','',''],
+                ['','','','',''],
+                ['','','','','']
+            ];
+            console.log('Game started');
+        }
+
+        startGame();
+    </script></main>
     <script>
         // Simulated game logic
         const game = document.getElementById('game');
