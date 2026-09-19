@@ -361,9 +361,12 @@ test('generation recovery remains bounded and keeps strict output contracts', ()
   assert.equal(shouldRetryGenerationError(new Error('Ollama 응답 시간 초과: 540000ms')), true);
   assert.equal(shouldRetryGenerationError(new Error('모델 JSON 파싱 실패')), true);
   assert.equal(shouldRetryGenerationError(new Error('unsupported target')), false);
-  const full = buildGenerationRetryPrompt('base', { allowFullRewrite:true, error:new Error('timeout') });
+  const full = buildGenerationRetryPrompt('base', { allowFullRewrite:true, error:new Error('전체 교체 파일 크기 오류: index.html') });
   assert.match(full, /MUST begin with VIBE2_FULL_FILE/);
   assert.match(full, /MUST end with ---VIBE2_FILE_END---/);
+  assert.match(full, /at least 1800 UTF-8 bytes/);
+  assert.match(full, /no more than 260000 bytes/);
+  assert.match(full, /validator-rejected tiny shell/);
   const json = buildGenerationRetryPrompt('base', { allowFullRewrite:false, error:new Error('JSON') });
   assert.match(json, /strict JSON object only/);
   assert.match(json, /No markdown/);
