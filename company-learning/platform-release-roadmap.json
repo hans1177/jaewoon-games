@@ -1,5 +1,5 @@
 {
-  "version": 55,
+  "version": 56,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1380,7 +1380,9 @@
             "RUN_35425782021_RESERVED_TASKS=19",
             "RUN_35425782021_WORKER_FAN_OUT=41",
             "VIBE2_CORE_QA_PREVIOUS=PASS",
-            "CENTRAL_POLICY_CONTRACT_QA_PREVIOUS=PASS"
+            "CENTRAL_POLICY_CONTRACT_QA_PREVIOUS=PASS",
+            "OWNER_WAVE_20_CONTROL_PERSISTED",
+            "VIBE2_CORE_QA_RUN_35426882175=PASS"
           ],
           "codeBindings": [
             "tools/vibe2-queue-control.mjs",
@@ -1406,7 +1408,8 @@
           "currentLargestBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
           "adaptiveWave": 20,
           "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
-          "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST_SPARE_SPECULATION_ONLY"
+          "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST_SPARE_SPECULATION_ONLY",
+          "vibe2CoreQa": "PASS_RUN_35426882175"
         },
         "incidentHistory": [
           {
