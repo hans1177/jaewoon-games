@@ -168,6 +168,28 @@ test('company status Web rows retain exact repair state from company runtime que
   assert.ok(task.evidence.includes('recovery-exact-stage:WEB_REPAIR'));
 });
 
+test('cancelled exact Web base task is restored when company runtime still requires source bootstrap',()=>{
+  const root=tempRepo();
+  const gameId='restore-missing-web-base';
+  const stale={
+    id:`${gameId}-web-base-implementation-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'[WEB_BASE_IMPLEMENTATION] source bootstrap',
+    releaseState:'development-confirmed',status:'cancelled',retries:0,maxRetries:2,blocker:'superseded-by:VIBE_WEB_REPAIR',
+    evidence:['source-root-bootstrap-required','superseded-by:VIBE_WEB_REPAIR']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Restore Missing Web Base',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:false}]},
+    developmentQueue:{items:[{gameId,gameName:'Restore Missing Web Base',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`}]},
+    queue:{maxConcurrentTasks:20,tasks:[stale]},repoRoot:root,maxConcurrentTasks:20
+  });
+  const restored=result.queue.tasks.find(row=>row.id===stale.id);
+  assert.equal(restored.status,'queued');
+  assert.equal(restored.blocker,null);
+  assert.equal(restored.lastOutcome,'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION');
+  assert.ok(restored.evidence.includes('restored-exact-stage:WEB_BASE_IMPLEMENTATION'));
+});
+
 test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source into one exact-stage repair task',()=>{
   const root=tempRepo();
   const gameId='repair-web-runtime';
