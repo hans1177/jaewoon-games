@@ -62,7 +62,7 @@ const TARGET_EXTENSIONS=Object.freeze({
   godot:new Set(['.gd','.tscn','.tres','.godot','.cfg','.json'])
 });
 const BINARY_EXTENSIONS=new Set(['.rbxl','.rbxlx','.uasset','.umap','.controller','.anim','.avatar','.fbx','.blend','.png','.jpg','.jpeg','.webp','.wav','.mp3','.ogg']);
-const PLACEHOLDER_PATHS=new Set(['relative/to/source/root','relative/path','path/to/file','relative/to/file']);
+const PLACEHOLDER_PATHS=new Set(['relative/to/source/root','relative/path','path/to/file','relative/to/file','exact allowed path','allowed edit path']);
 
 function readJson(file,fallback=null){if(!file||!fs.existsSync(file))return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
@@ -118,10 +118,29 @@ export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|prediction aborted|token repeat limit/i.test(message);
 }
-export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null}={}){
+export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[]}={}){
   const reason=clean(error?.message||error).slice(0,240)||'malformed candidate';
   const zeroChange=/실제 source 변경/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
+  const exactResponsible=unique(responsibleFiles);
+  let retryBase=String(prompt??'');
+  if(!allowFullRewrite&&(zeroChange||invalidPath)){
+    const marker='\n=== FILE ';
+    const starts=[];
+    for(let at=retryBase.indexOf(marker);at>=0;at=retryBase.indexOf(marker,at+marker.length))starts.push(at);
+    if(starts.length){
+      const prefix=retryBase.slice(0,starts[0]).trimEnd();
+      const editable=[];
+      for(let i=0;i<starts.length;i++){
+        const start=starts[i]+1;
+        const end=i+1<starts.length?starts[i+1]:retryBase.length;
+        const section=retryBase.slice(start,end).trimEnd();
+        if(section.split('\n',1)[0].includes('[EDITABLE]'))editable.push(section);
+      }
+      if(editable.length)retryBase=[prefix,...editable].join('\n\n');
+    }
+  }
+  const exactPath=exactResponsible.length===1?exactResponsible[0]:'';
   const correction=allowFullRewrite
     ? [
         'RECOVERY RETRY: the previous generation did not finish or violated the full-file envelope.',
@@ -133,10 +152,11 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         `Previous failure: ${reason}`,
         'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
-        zeroChange?'You MUST produce at least one edits[] entry on an exact Allowed edit path. Copy find character-for-character from the matching FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':invalidPath?'Use one path copied exactly from Allowed edit paths. Never output placeholders such as "exact allowed path", labels, globs, or a guessed filename.':'Prefer the smallest responsible edit that satisfies the work order.',
-        zeroChange||invalidPath?'Do not widen scope, do not invent a new file, and do not bypass responsible-file boundaries.':''
+        exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
+        zeroChange?'You MUST produce at least one edits[] entry. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':invalidPath?'Use only the exact writable path above. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
+        zeroChange||invalidPath?'Recovery context intentionally contains only writable FILE blocks. Do not widen scope, invent a new file, or bypass responsible-file boundaries.':''
       ].filter(Boolean).join('\n');
-  return `${prompt}\n\n${correction}`;
+  return `${retryBase}\n\n${correction}`;
 }
 function responseFileForAttempt(responseFile,responseFiles=[],attempt=1){
   const rows=Array.isArray(responseFiles)?responseFiles.map(clean).filter(Boolean):[];
@@ -146,7 +166,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let lastError=null;
   for(let attempt=1;attempt<=MAX_GENERATION_ATTEMPTS;attempt++){
     const retry=attempt>1;
-    const attemptPrompt=retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError}):prompt;
+    const attemptPrompt=retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles}):prompt;
     const maxPredict=allowFullRewrite
       ? (retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT)
       : (retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT);
