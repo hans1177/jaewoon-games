@@ -9,6 +9,7 @@ import path from 'node:path';
 import { createVibeEngineAdapter } from '../assets/vibe-engine-adapter.js';
 import { classifyVibeExecutionRoute, runVibeContinuousRunner } from '../tools/vibe2-continuous-runner.mjs';
 import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tools/vibe2-design-intelligence.mjs';
+import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
@@ -253,6 +254,64 @@ test('worker Ollama cache includes the runtime sidecar and rejects binary-only c
   assert(workflow.includes("find \"$cached_lib\" -type f -name 'llama-server'"));
   assert(workflow.includes('sudo cp -a "$cached_lib/." /usr/local/lib/ollama/'));
   assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
+});
+
+test('fan-in release requires exact candidate manifest identity',()=>{
+  const branch='vibe2/candidate/demo/primary';
+  const baseTask={
+    id:'demo-task',
+    gameId:'demo',
+    target:'web',
+    sourceRoot:'web-games/demo',
+    status:'running',
+    blocker:'candidate-awaiting-qa-and-deployment',
+    evidence:[
+      branch,
+      'role-result:exploration:PASS',
+      'role-result:implementation:PASS',
+      'role-result:test:PASS',
+      'role-result:performance:PASS'
+    ]
+  };
+  const valid={
+    version:6,
+    taskId:'demo-task',
+    outcome:'PASS',
+    candidateBranch:branch,
+    baseMainSha:'abc123',
+    candidateIdentity:{
+      taskId:'demo-task',
+      gameId:'demo',
+      target:'web',
+      sourceRoot:'web-games/demo',
+      baseMainSha:'abc123',
+      manifestPath:'.vibe2/candidates/demo-task/manifest.json'
+    },
+    evidence:[branch]
+  };
+  const pass=finalizeVibe2FanInReview({queue:{tasks:[baseTask]},results:[valid]});
+  assert.equal(pass.pass,true);
+  assert.equal(pass.releaseCandidates.length,1);
+  assert.ok(pass.queue.tasks[0].evidence.includes('candidate-identity:PASS'));
+
+  const stale=structuredClone(valid);
+  stale.candidateIdentity.sourceRoot='web-games/other-game';
+  const blocked=finalizeVibe2FanInReview({queue:{tasks:[baseTask]},results:[stale]});
+  assert.equal(blocked.pass,false);
+  assert.equal(blocked.releaseCandidates.length,0);
+  assert.ok(blocked.reviewed[0].missing.includes('candidate-identity-source-root'));
+  assert.ok(blocked.queue.tasks[0].evidence.includes('role-result:review:BLOCKED'));
+});
+
+test('worker result exposes exact candidate identity for fan-in review',()=>{
+  const start=workflow.indexOf('- name: Build immutable worker result');
+  const end=workflow.indexOf('- name: Upload worker result for fan-in');
+  const resultStep=workflow.slice(start,end);
+  assert(resultStep.includes('candidateIdentity=candidateOk?'));
+  assert(resultStep.includes('taskId:clean(manifest.taskId)'));
+  assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
+  assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
+  assert(resultStep.includes('version:6'));
 });
 
 test('worker result keeps throughput and actual workload telemetry inputs in the immutable result step',()=>{
