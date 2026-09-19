@@ -115,11 +115,12 @@ sourceText
 ].filter(Boolean).join('\n');}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message);
 }
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null}={}){
   const reason=clean(error?.message||error).slice(0,240)||'malformed candidate';
   const zeroChange=/실제 source 변경/i.test(reason);
+  const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const correction=allowFullRewrite
     ? [
         'RECOVERY RETRY: the previous generation did not finish or violated the full-file envelope.',
@@ -128,11 +129,11 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         'The response MUST begin with VIBE2_FULL_FILE and MUST end with ---VIBE2_FILE_END---. Finish the game before the limit rather than adding optional polish.'
       ].join('\n')
     : [
-        zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
+        zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         `Previous failure: ${reason}`,
         'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
-        zeroChange?'You MUST produce at least one edits[] entry on an exact Allowed edit path. Copy find character-for-character from the matching FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':'Prefer the smallest responsible edit that satisfies the work order.',
-        zeroChange?'Do not widen scope, do not invent a new file, and do not bypass responsible-file boundaries.':''
+        zeroChange?'You MUST produce at least one edits[] entry on an exact Allowed edit path. Copy find character-for-character from the matching FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':invalidPath?'Use one path copied exactly from Allowed edit paths. Never output placeholders such as "exact allowed path", labels, globs, or a guessed filename.':'Prefer the smallest responsible edit that satisfies the work order.',
+        zeroChange||invalidPath?'Do not widen scope, do not invent a new file, and do not bypass responsible-file boundaries.':''
       ].filter(Boolean).join('\n');
   return `${prompt}\n\n${correction}`;
 }
