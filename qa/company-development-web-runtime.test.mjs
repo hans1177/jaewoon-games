@@ -5,6 +5,7 @@ import os from 'node:os';
 import path from 'node:path';
 import {validateBootstrapHtml,buildContractSafePlayable,buildFirstPlayable,inferDevelopmentGenre,classifyApprovedScope,applyPreservedSourceEdits} from '../tools/company-development-web-bootstrap.mjs';
 import {deriveApprovedScopeInventory,runtimeApprovedScopeCoverage,staticApprovedScopeCoverage} from '../tools/company-approved-scope-contract.mjs';
+import {summarizePresentationRuntimeSamples,buildRuntimeValidationEvidence} from '../tools/company-development-web-gameplay-validation.mjs';
 
 const basePlayable='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body data-audio-state="locked"><button id="act">Act</button><button data-audio-control="mute">Mute</button><input data-audio-control="volume" type="range"><script>let score=0;const AC=window.AudioContext||window.webkitAudioContext;document.querySelector("#act").addEventListener("click",()=>{score++});</script></body></html>';
 
@@ -324,4 +325,45 @@ test('owner pause keeps DEVELOPMENT_CONFIRMED at pre-Web boundary',()=>{
   assert.match(workflow,/WEB_DEVELOPMENT_TARGET_COUNT=0/);
   assert.match(workflow,/printf 'target_count=0\\n' >> "\$GITHUB_OUTPUT"/);
   assert.match(workflow,/printf 'matrix=%s\\n' '\{"include":\[\]\}' >> "\$GITHUB_OUTPUT"/);
+});
+
+
+test('presentation runtime observation measures frame continuity and living motion',()=>{
+  const frameDeltas=Array.from({length:29},()=>16.7);
+  const samples=Array.from({length:7},(_,i)=>({
+    playerPresent:true,
+    playerVisual:{x:10,y:20+i*0.3,w:20,h:30,transform:`matrix(1,0,0,1,0,${i*0.2})`,opacity:'1'},
+    canvasState:[],
+    activeAnimationCount:1,
+    playerAnimationCount:1,
+    motionState:'idle',
+    vfxActiveCount:0,
+    cameraResponse:''
+  }));
+  const evidence=summarizePresentationRuntimeSamples({samples,frameDeltas});
+  assert.equal(evidence.frameTiming.pass,true);
+  assert.equal(evidence.frameTiming.target60FpsObserved,true);
+  assert.equal(evidence.livingMotionObserved,true);
+  assert.equal(evidence.pass,true);
+});
+
+test('presentation runtime observation rejects frozen presentation despite healthy frame timing',()=>{
+  const frameDeltas=Array.from({length:29},()=>16.7);
+  const sample={playerPresent:true,playerVisual:{x:10,y:20,w:20,h:30,transform:'none',opacity:'1'},canvasState:['320x180:same'],activeAnimationCount:0,playerAnimationCount:0,motionState:'',vfxActiveCount:0,cameraResponse:''};
+  const evidence=summarizePresentationRuntimeSamples({samples:Array.from({length:7},()=>sample),frameDeltas});
+  assert.equal(evidence.frameTiming.pass,true);
+  assert.equal(evidence.livingMotionObserved,false);
+  assert.equal(evidence.pass,false);
+});
+
+test('final presentation marker turns runtime presentation evidence into a gate',()=>{
+  const base={before:{},after:{},reloadAfter:{},footprint:{presentationQualityVersion:1,saveContract:false,economyContract:false,difficultyContract:false},runtimeFeatureEvidence:{},featureRequirements:{},movementProbe:{},presentationRuntime:{pass:false,frameTiming:{pass:true},livingMotionObserved:false}};
+  const failed=buildRuntimeValidationEvidence(base);
+  assert.equal(failed.presentation.required,true);
+  assert.equal(failed.presentation.pass,false);
+  assert.equal(failed.presentation.status,'FAIL');
+  const passed=buildRuntimeValidationEvidence({...base,presentationRuntime:{pass:true,frameTiming:{pass:true},livingMotionObserved:true}});
+  assert.equal(passed.presentation.required,true);
+  assert.equal(passed.presentation.pass,true);
+  assert.equal(passed.presentation.status,'PASS');
 });
