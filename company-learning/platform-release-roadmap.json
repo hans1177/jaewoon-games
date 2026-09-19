@@ -1,5 +1,5 @@
 {
-  "version": 21,
+  "version": 22,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1066,7 +1066,45 @@
         "irrecoverable-machine-state-invariant-violation",
         "required-secret-or-human-authentication-missing",
         "platform-policy-block-that-cannot-be-routed-around"
-      ]
+      ],
+      "automaticGateRepairLoop": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-19",
+        "enabled": true,
+        "scope": "ALL_AUTOMATED_DESIGN_DEVELOPMENT_QA_RUNTIME_REGRESSION_AND_RELEASE_GATES",
+        "perGameIndependent": true,
+        "maxParallelGames": 20,
+        "portfolioWidePassBarrier": false,
+        "loop": [
+          "RUN_CURRENT_GATE",
+          "ON_PASS_ADVANCE_TO_NEXT_CANONICAL_STAGE",
+          "ON_FAIL_CAPTURE_EXACT_FAILURE_EVIDENCE",
+          "AUTOMATICALLY_REPAIR_ONLY_THE_FAILED_OR_CAUSAL_SCOPE",
+          "PRESERVE_ALREADY_VERIFIED_STATE_AND_CHECKPOINTS",
+          "RERUN_THE_SAME_FAILED_GATE",
+          "REPEAT_REPAIR_AND_SAME_GATE_RETEST_UNTIL_PASS"
+        ],
+        "retryLimit": "UNLIMITED_UNTIL_PASS_OR_EXPLICIT_STOP_CONDITION",
+        "advanceOnFailure": false,
+        "skipFailedGateAllowed": false,
+        "lowerThresholdAllowed": false,
+        "fabricatePassAllowed": false,
+        "restartFromBlankAllowedOnlyWhenEvidenceProvesCheckpointInvalid": true,
+        "externalCapacityWait": {
+          "countsAsGateFailure": false,
+          "consumesDevelopmentSlot": false,
+          "preserveCheckpoint": true,
+          "resumeExactFailedGate": true,
+          "busyLoopForbidden": true
+        },
+        "stopConditions": [
+          "OWNER_HOLD",
+          "OWNER_KILL",
+          "IRRECOVERABLE_MACHINE_STATE_INVARIANT_VIOLATION",
+          "REQUIRED_SECRET_OR_HUMAN_AUTHENTICATION_MISSING",
+          "PLATFORM_POLICY_BLOCK_THAT_CANNOT_BE_ROUTED_AROUND"
+        ]
+      }
     },
     "webIterationPolicy": {
       "continuouslyEditable": true,
