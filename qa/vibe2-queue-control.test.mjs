@@ -200,13 +200,13 @@ test('stale slot-release callback never overwrites a real awaiting-QA blocker', 
   assert.equal(released.queue.tasks[0].blocker,'candidate-awaiting-qa-and-deployment');
 });
 
-test('adaptive backpressure steps 20 down through 16 12 8 4 as pressure rises', () => {
-  const expected=new Map([[0,20],[2,16],[4,12],[6,8],[8,4]]);
-  for(const [count,limit] of expected){
+test('queue-local waiting QA pressure does not globally collapse unrelated lanes', () => {
+  for(const count of [0,2,4,6,8]){
     const tasks=Array.from({length:count},(_,i)=>({id:`run-${i}`,gameId:`g-${i}`,target:'web',sourceRoot:`web-games/g-${i}`,goal:'run',status:'running',blocker:'candidate-awaiting-qa-and-deployment'}));
-    const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks});
-    const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:20});
-    assert.equal(batch.effectiveMaxConcurrentTasks,limit);
+    const queue=createVibeContinuousQueue({maxConcurrentTasks:30,tasks});
+    const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:30});
+    assert.equal(batch.effectiveMaxConcurrentTasks,30);
+    assert.equal(batch.capacityRunning.length,0);
   }
 });
 
@@ -425,14 +425,14 @@ test('awaiting QA backpressure does not consume worker slots twice', () => {
   const queued=Array.from({length:10},(_,i)=>({
     id:`next-${i}`,gameId:`next-${i}`,target:'web',sourceRoot:`web-games/next-${i}`,goal:'next',status:'queued'
   }));
-  const queue=createVibeContinuousQueue({maxConcurrentTasks:20,tasks:[...awaiting,...queued]});
-  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:20});
-  assert.equal(batch.effectiveMaxConcurrentTasks,4);
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:30,tasks:[...awaiting,...queued]});
+  const batch=selectVibeQueueBatch(queue,{maxConcurrentTasks:30});
+  assert.equal(batch.effectiveMaxConcurrentTasks,30);
   assert.equal(batch.running.length,8);
   assert.equal(batch.capacityRunning.length,0);
   assert.equal(batch.awaitingQa.length,8);
-  assert.equal(batch.freeSlots,4);
-  assert.equal(batch.selected.length,4);
+  assert.equal(batch.freeSlots,30);
+  assert.equal(batch.selected.length,10);
 });
 
 test('per-run request cannot exceed persisted queue cap', () => {

@@ -199,7 +199,7 @@ function scoreTask(task, index) {
     + Math.min(6, Number(task.packageWorkUnits || task.taskWorkUnits || 0))
     + (task.packageLongWorkProtected ? 3 : 0)
     + (task.systemSteward ? 8000 : 0)
-    + (task.postReleaseFocused ? 1200 : 0)
+    + (isPostReleaseFocused(task) ? 1200 : 0)
     + (task.ownerFocusedCaretaker ? 900 : 0)
     - index / 1000;
 }
@@ -328,10 +328,13 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
     }
   }
 
+  const postReleasePhysicalSlotBusy=()=>capacityRunning.some(isPostReleaseFocused)||selected.some(isPostReleaseFocused);
+
   let longWorkProtectedSlotUsed = false;
   let longWorkOwnerTaskId = null;
   if (freeSlots > 0 && !capacityRunning.some(isProtectedLongOwner)) {
     for (const protectedRow of candidates.filter((row) => isProtectedLongOwner(row.task))) {
+      if(isPostReleaseFocused(protectedRow.task)&&postReleasePhysicalSlotBusy())continue;
       const conflict = conflictsWith(protectedRow.task, active);
       if (conflict) {
         if (!deferredConflicts.some((item) => item.task.id === protectedRow.task.id)) deferredConflicts.push(freeze({ task: protectedRow.task, reason: conflict }));
@@ -349,6 +352,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
   for (const row of candidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
+    if(isPostReleaseFocused(row.task)&&postReleasePhysicalSlotBusy())continue;
     const baseSlots = BASE_SHARD_SLOTS[row.task.shard] || 1;
     if ((shardUse[row.task.shard] || 0) >= baseSlots) continue;
     const conflict = conflictsWith(row.task, active);
@@ -358,6 +362,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null } =
   for (const row of candidates) {
     if (selected.length >= freeSlots) break;
     if (selected.some((task) => task.id === row.task.id)) continue;
+    if(isPostReleaseFocused(row.task)&&postReleasePhysicalSlotBusy())continue;
     const conflict = conflictsWith(row.task, active);
     if (conflict) { if (!deferredConflicts.some((item) => item.task.id === row.task.id)) deferredConflicts.push(freeze({ task: row.task, reason: conflict })); continue; }
     selected.push(row.task); active.push(row.task); shardUse[row.task.shard] = (shardUse[row.task.shard] || 0) + 1;

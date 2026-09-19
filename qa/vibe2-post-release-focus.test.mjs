@@ -43,7 +43,7 @@ function setup(){
   assert.equal(first.queue.tasks.length,1);
   const second=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,queueFile,recombinationFile:memoryFile,repoRoot:root});
   assert.equal(second.added,false);
-  assert.equal(second.reason,'PROTECTED_SLOT_OCCUPIED');
+  assert.equal(second.reason,'CARETAKER_ALREADY_ACTIVE_FOR_GAME');
   assert.equal(JSON.parse(fs.readFileSync(queueFile,'utf8')).tasks.length,1);
 }
 
@@ -122,12 +122,12 @@ function setup(){
   assert.equal(first.task.historicalDeploymentRecovery,true);
   const occupied=feedPostReleaseFocus({roadmapFile,companyRuntimeQueueFile:runtimeFile,historicalRegistryFile:registryFile,queueFile,recombinationFile:memoryFile,repoRoot:root});
   assert.equal(occupied.added,false);
-  assert.equal(occupied.reason,'PROTECTED_SLOT_OCCUPIED');
+  assert.equal(occupied.reason,'CARETAKER_ALREADY_ACTIVE_FOR_GAME');
 }
 
 {
   const runner=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
-  assert.equal((runner.match(/VIBE2_24H_REFILL=WORKFLOW_DISPATCH/g)||[]).length,1);
+  assert.equal((runner.match(/VIBE2_24H_REFILL=DISPATCHED/g)||[]).length,1);
   const post=runner.indexOf(`VIBE2_POST_RELEASE_FOCUS_ADDED=YES$`);
   const memory=runner.indexOf(`VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$`);
   const baseline=runner.indexOf(`VIBE2_RELEASE_BASELINE_GAP_PLAN=YES$`);
