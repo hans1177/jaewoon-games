@@ -237,16 +237,19 @@ test('central runtime keeps exploration reuse long slot and six separated roles 
   assert.equal(runtime.workers.exploration.sourceWrite,false);
   assert.equal(runtime.workers.performance.sourceWrite,false);
   assert.equal(runtime.workers.review.sourceWrite,false);
-  assert.equal(runtime.workPackages.explorationMode,'dedicated-exploration-worker-handoff');
+  assert.equal(runtime.workPackages.explorationMode,'task-local-exploration-handoff');
   assert.equal(runtime.workPackages.reusableMachineHandoff,true);
   for(const role of ['read-only-exploration-worker','source-write-implementation-worker','incremental-qa-worker','performance-sanity-worker','single-fan-in-regression-worker','fan-in-package-review-worker'])assert.ok(runtime.workPackages.parallelRoles.includes(role),role);
 });
 
-test('continuous workflow executes exploration before implementation and review after regression',()=>{
-  assert.match(workflow,/\n  exploration:\n/);
-  assert(workflow.includes('Upload reusable exploration handoff'));
-  assert(workflow.includes('needs: [reserve, model_cache, exploration]'));
+test('continuous workflow executes task-local exploration before implementation and review after regression',()=>{
+  assert.equal(/\n  exploration:\n/.test(workflow),false);
+  assert(workflow.includes('Build task-local exploration handoff'));
+  assert(workflow.includes('needs: [reserve, model_cache]'));
+  assert.equal(workflow.includes('needs: [reserve, model_cache, exploration]'),false);
+  assert(workflow.includes('VIBE2_TASK_LOCAL_EXPLORATION=PASS'));
   assert(workflow.includes('VIBE2_EXPLORATION_FILE=.vibe2/exploration.json'));
+  assert(workflow.indexOf('Build task-local exploration handoff') < workflow.indexOf('Generate isolated candidate from pinned main contract'));
   assert(workflow.includes('Run impact-first incremental QA role'));
   assert(workflow.includes('Run read-only performance sanity role'));
   assert(workflow.includes('VIBE2_REGRESSION_ROLE=PASS'));
