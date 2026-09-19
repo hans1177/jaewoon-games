@@ -13,6 +13,7 @@ import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
+const coreQaWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-core-qa.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
 
@@ -154,9 +155,10 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert.equal(workflow.includes('find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit'),false);
   assert(workflow.includes('incremental-qa-hash:'));
   assert(workflow.includes('Merge outcomes run regression and package review'));
-  assert(workflow.includes('Per-candidate test/performance roles already ran. Regression runs once at fan-in against the exact reserved main contract.'));
+  assert(workflow.includes('Candidate regression runs once at fan-in against the exact reserved main contract.'));
   assert(workflow.includes('node --test --test-concurrency=4'));
-  assert(workflow.includes('qa/vibe2-controller-contract.test.mjs'));
+  assert.equal(workflow.includes('            qa/vibe2-controller-contract.test.mjs \\\n'),false);
+  assert(coreQaWorkflow.includes('qa/vibe2-controller-contract.test.mjs'));
   assert(workflow.includes('qa/vibe2-source-worker.test.mjs'));
   assert(workflow.includes('qa/vibe2-work-package.test.mjs'));
   assert(workflow.includes('qa/vibe2-adaptive-backpressure.test.mjs'));
