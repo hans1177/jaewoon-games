@@ -1,5 +1,5 @@
 {
-  "version": 138,
+  "version": 139,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -328,7 +328,13 @@
       "wrapperOrShadowPresentationPipelineForbidden": true,
       "directResponsibleSystemModificationPreferred": true,
       "implementationOrderMustFollowPriorityOrderUnlessEvidenceRequiresException": true,
-      "documentationMustStaySynchronizedWithCentralMachinePolicy": true
+      "documentationMustStaySynchronizedWithCentralMachinePolicy": true,
+      "enginePipelineWired": true,
+      "implementationStatus": "CODE_WIRED_CI_VALIDATION_REQUIRED",
+      "plannerStageGeneration": "tools/vibe2-auto-planner.mjs",
+      "workOrderContract": "tools/vibe2-continuous-runner.mjs",
+      "staticQa": "tools/vibe2-incremental-qa.mjs",
+      "verifiedLearningFeedback": "tools/vibe2-learning-motor.mjs"
     }
   },
   "platformRepresentativeSets": {
@@ -5135,7 +5141,12 @@
       "centralMachinePolicyMustBeReadBeforeWork": true,
       "currentSourceAndExistingAudioSystemMustBeInspectedFirst": true,
       "gameStyleAndDesignBaselineMustBeReadFirst": true,
-      "documentationMustStaySynchronizedWithCentralMachinePolicy": true
+      "documentationMustStaySynchronizedWithCentralMachinePolicy": true,
+      "enginePipelineWired": true,
+      "implementationStatus": "CODE_WIRED_CI_VALIDATION_REQUIRED",
+      "stagedPass": "AUDIO_FEEL",
+      "staticQa": "tools/vibe2-incremental-qa.mjs",
+      "verifiedLearningFeedback": "tools/vibe2-learning-motor.mjs"
     }
   },
   "narrativeStorytellingContract": {
@@ -5245,5 +5256,46 @@
       "narrativeChangesMustPreserveLockedWorldAndStoryFacts": true,
       "documentationMustStaySynchronizedWithCentralMachinePolicy": true
     }
+  },
+  "presentationPipelineImplementation": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "status": "CODE_WIRED_CI_VALIDATION_REQUIRED",
+    "canonicalPassOrder": [
+      "ASSET_ADAPTATION",
+      "LIVING_MOTION",
+      "ANIMATION_FEEL",
+      "VFX",
+      "AUDIO_FEEL",
+      "CAMERA_LANGUAGE",
+      "POLISH_MOBILE"
+    ],
+    "planner": "tools/vibe2-auto-planner.mjs",
+    "workOrderCompiler": "tools/vibe2-continuous-runner.mjs",
+    "sourceWorker": "tools/vibe2-source-worker.mjs",
+    "incrementalQa": "tools/vibe2-incremental-qa.mjs",
+    "fanInEvidence": ".github/workflows/vibe2-continuous-core.yml",
+    "masteryMotor": "tools/vibe2-learning-motor.mjs",
+    "practiceDistillation": "tools/vibe2-practice-distillation.mjs",
+    "learningPolicy": "company-learning/vibe2-learning-motor.json",
+    "playbooks": "company-learning/vibe3-task-playbooks.json",
+    "rules": {
+      "passesMustBeSequentialPerWebGame": true,
+      "currentPassOnlyMayBeImplemented": true,
+      "gameplaySaveProgressionHitSemanticsPreserved": true,
+      "staticQaRequired": true,
+      "runtimeMobileQaStillRequired": true,
+      "staticQaCannotClaimProductionCompletion": true,
+      "verifiedProjectOutcomeRequiredForPositiveMastery": true,
+      "existingResponsibleSystemDirectModificationPreferred": true,
+      "wrapperShadowPresentationPipelineForbidden": true
+    },
+    "verificationTests": [
+      "qa/vibe2-auto-planner.test.mjs",
+      "qa/vibe2-source-worker.test.mjs",
+      "qa/vibe2-incremental-qa.test.mjs",
+      "qa/vibe2-learning-motor.test.mjs",
+      "qa/vibe2-practice-distillation.test.mjs"
+    ]
   }
 }
