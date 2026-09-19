@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T08:20:33.605Z"
+      "updatedAt": "2026-09-19T08:38:23.502Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1454,7 +1454,22 @@
         "system-steward:failure-signature:source-candidate-generation-failed",
         "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "recovery-queue:recovery-7f578ec759bfde044675",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE",
+        "vibe2/candidate/chess-battle-web-base-implementation-v1-primary-35431717289-1",
+        "candidate-sha:306c970f62deb0c07c69805cbd9594320c0affdf",
+        "base-main:1fb8276f767ec79003d3794413e2fe60e4fd2395",
+        "incremental-qa-cache:HIT",
+        "actions-run:35431717289",
+        "reservation-id:35431717289:1",
+        "shared-context-policy:1b9428404088ec3a41af36feb89c9d051aeb3bd31a7f36c5947ab11b966d37e7",
+        "workload:changed-lines:129",
+        "workload:prep-ms:7941",
+        "workload:cycle-ms:471867",
+        "exploration-reuse:a533f82ebad8252c328fb7ce",
+        "exploration-impact:index.html"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1470,11 +1485,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T08:20:33.605Z",
-      "updatedAt": "2026-09-19T08:20:33.640Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-19T08:20:33.640Z"
-      ]
+      "updatedAt": "2026-09-19T08:38:23.501Z"
     }
   ]
 }
