@@ -24,7 +24,7 @@
     "machineStateVersions": {
       "runtime": 8,
       "queue": 5,
-      "parallelism": 2,
+      "parallelism": 3,
       "experience": 3,
       "handoff": 3,
       "gameStudyKnowledge": 1
@@ -62,7 +62,7 @@
       "worker",
       "fan-in"
     ],
-    "postReleaseFocusedDevelopment": "owner-directive-next-priority-single-protected-slot"
+    "postReleaseFocusedDevelopment": "machine-policy-driven-per-game-persistent-caretaker"
   },
   "continuous": {
     "enabled": true,
@@ -80,16 +80,18 @@
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,
     "ownerDirectivePreemptsAutonomy": true,
-    "maxConcurrentGameTasks": 20,
+    "maxConcurrentGameTasks": 30,
     "unityReleaseFocusSlots": 1,
     "longWorkProtectedSlots": 1,
     "priorityOrder": [
       "owner-directive",
-      "post-release-focused-development",
-      "release-confirmed",
-      "development-confirmed",
-      "reviewing",
-      "other"
+      "critical-production-incident",
+      "system-reliability",
+      "released-game-caretaker",
+      "owner-focused-game-caretaker",
+      "release-candidate",
+      "general-development",
+      "learning-practice"
     ],
     "sameTierEngineOrder": [
       "existing-roblox",
@@ -123,13 +125,17 @@
     "slotRefillSourceLocksHeldUntilFanIn": true,
     "postReleaseFocusedRunnerSlots": 1,
     "postReleaseFocusedRefill": true,
-    "legacySlotRefillBranchCompatibility": true
+    "legacySlotRefillBranchCompatibility": true,
+    "systemStewardProtectedSlots": 1,
+    "systemStewardSlotBorrowableWhenIdle": true
   },
   "adaptiveBackpressure": {
     "enabled": true,
     "mode": "persistent-next-run-cap-plus-immediate-current-batch-protection",
     "stateFile": ".vibe2/parallelism-control.json",
     "steps": [
+      30,
+      24,
       20,
       16,
       12,
@@ -144,13 +150,17 @@
     ],
     "strongPressureDownAfterRuns": 1,
     "mediumPressureDownAfterRuns": 2,
-    "healthySaturatedUpAfterRuns": 2,
+    "healthySaturatedUpAfterRuns": 1,
     "lowWorkloadChangesPersistentCap": false,
     "lowWorkloadBuildsRecoveryStreak": false,
     "immediateDynamicCapMayAlsoDownshiftPersistentCap": false,
     "duplicateRunMayChangePersistentCap": false,
-    "missingStateFallbackMax": 20,
-    "corruptStateFallbackMax": 20
+    "missingStateFallbackMax": 30,
+    "corruptStateFallbackMax": 30,
+    "fastHealthyRamp": true,
+    "staleTelemetryTtlMinutes": 90,
+    "staleTelemetryResetsToMax": true,
+    "laneSpecificPressurePreferred": true
   },
   "sources": {
     "queue": ".vibe2/queue.json",
@@ -243,7 +253,7 @@
   "parallelismTelemetry": {
     "enabled": true,
     "tool": "tools/vibe2-parallelism-telemetry.mjs",
-    "requestedMax": 20,
+    "requestedMax": 30,
     "artifact": "vibe2-parallelism-telemetry",
     "metrics": [
       "actualPeakConcurrency",
@@ -265,8 +275,10 @@
       "preparationRatioPct",
       "bottleneck"
     ],
-    "loadProbeTargetWorkers": 20,
+    "loadProbeTargetWorkers": 30,
     "backpressureSteps": [
+      30,
+      24,
       20,
       16,
       12,
@@ -833,6 +845,8 @@
     },
     "bottleneckRelief": {
       "adaptiveSteps": [
+        30,
+        24,
         20,
         16,
         12,
@@ -840,7 +854,7 @@
         4
       ],
       "singleStepPerRun": true,
-      "healthyRecoveryRequiresConsecutiveSaturatedRuns": 2,
+      "healthyRecoveryRequiresConsecutiveSaturatedRuns": 1,
       "disjointWorkContinuesWhenOneRouteBlocked": true,
       "learningCollectionContinuesWhenDevelopmentRouteBlocked": true,
       "waitingForVerifiedSamplesIsFailure": false
