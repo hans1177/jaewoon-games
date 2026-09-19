@@ -967,6 +967,55 @@
         "continuousLearning": true
       },
       "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
+    },
+    {
+      "gameId": "fantasy-survival",
+      "PROJECT_PHASE": "AWAITING_PLATFORM_AND_GENRE_LOCK",
+      "PLATFORM": "UNITY",
+      "GENRE": null,
+      "WEB_BASELINE": {
+        "required": true,
+        "state": "PENDING",
+        "sourcePath": "web-games/fantasy-survival",
+        "evidencePath": null,
+        "sourceIndexSha256": null,
+        "designBaselineSha256": null,
+        "validationSchemaVersion": null,
+        "strictScore": null,
+        "promotionRevalidationPassed": false,
+        "CORE_LOOP": null,
+        "STATE_MODEL": null,
+        "PROGRESSION_MODEL": null,
+        "UI_FLOW": null,
+        "INPUT_INTENT": null,
+        "SAVE_MEANING": null,
+        "CONTENT_STRUCTURE": null,
+        "BALANCE_INTENT": null
+      },
+      "ROBLOX_HANDOFF": null,
+      "POST_RELEASE_FOCUS_RUNNER": {
+        "eligibleAfterRelease": false,
+        "assigned": false,
+        "state": "WAITING_FOR_VERIFIED_RELEASE",
+        "logicalRunnerPerProject": 1,
+        "activeTaskMaxPerProject": 1,
+        "sharedProtectedRunnerSlots": 1,
+        "scheduler": "vibe2-24h-runner",
+        "worker": "vibe2-continuous-core",
+        "continuousRefill": true
+      },
+      "LEARNING_CONTEXT": {
+        "authority": "VERIFIED_PLUS_TRANSFORMATIVE_RECOMBINATION_CONTEXT",
+        "verifiedSemanticExperienceIds": [],
+        "canonicalDistillation": "vibe2-learning-runtime:company-learning/distillation-status.json",
+        "transformativeRecombination": "vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json",
+        "webBaselinePortableToRoblox": true,
+        "rawSourceCopyAllowed": false,
+        "rawAssetCopyAllowed": false,
+        "gateBypass": false,
+        "continuousLearning": true
+      },
+      "NEXT_MACHINE_ACTION": "LOCK_PLATFORM_AND_GENRE_AFTER_VERIFICATION"
     }
   ],
   "handoffs": [],
