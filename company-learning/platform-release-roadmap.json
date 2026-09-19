@@ -1,5 +1,5 @@
 {
-  "version": 84,
+  "version": 85,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -145,6 +145,13 @@
     "parallelismMode": "UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_WAVES",
     "externalMatrixBatchMax": 256,
     "immediateWaveRefill": true,
+    "candidateReleaseConcurrency": {
+      "scope": "CANDIDATE_BRANCH",
+      "crossCandidateSerializationForbidden": true,
+      "sameCandidateDuplicateDispatchSharesGroup": true,
+      "cancelInProgress": false,
+      "reason": "RELEASE_GATE_PENDING_RUNS_MUST_NOT_CANCEL_OTHER_CANDIDATES_OR_REDUCE_PRIMARY_WAVE_REFILL"
+    },
     "freeAiCapacityMustBeMaximized": true,
     "internalArtificialConcurrencyCapsForbidden": true
   },
