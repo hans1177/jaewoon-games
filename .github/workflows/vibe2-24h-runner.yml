@@ -23,6 +23,8 @@ on:
       - 'qa/company-recovery-learning.test.mjs'
       - 'qa/company-security-steward.test.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
+      - 'tools/vibe2-system-steward.mjs'
+      - 'qa/vibe2-system-steward.test.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-shared-context.test.mjs'
@@ -128,6 +130,13 @@ jobs:
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-before-plan.json | tee /tmp/vibe2-shared-context-before-plan.log
             )
 
+            # Repair canonical queue/parallelism state before fail-closed handoff validation.
+            node --check /tmp/vibe2-main/tools/vibe2-system-steward.mjs
+            node --test /tmp/vibe2-main/qa/vibe2-system-steward.test.mjs
+            node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-system-steward.log
+
             node --check /tmp/vibe2-main/tools/vibe2-handoff.mjs
             node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
               --runtime=/tmp/vibe2-main/vibe2-runtime.json \
@@ -180,12 +189,6 @@ jobs:
               --benchmark=.vibe2/benchmark-ladder.json \
               --practice=.vibe2/idle-practice-queue.json \
               --handoff=.vibe2/web-roblox-handoffs.json | tee /tmp/vibe2-learning-motor.log
-
-            node --check /tmp/vibe2-main/tools/vibe2-system-steward.mjs
-            node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
-              --queue=.vibe2/queue.json \
-              --control=.vibe2/parallelism-control.json | tee /tmp/vibe2-system-steward.log
-
 
             node --check /tmp/vibe2-main/tools/company-recovery-queue.mjs
             node --check /tmp/vibe2-main/tools/company-recovery-escalation.mjs
