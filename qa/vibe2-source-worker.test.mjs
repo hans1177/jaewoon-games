@@ -713,7 +713,7 @@ test('undersized full web output keeps a bounded full-file fallback while expans
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.focusedFinalRetry,false);
   assert.equal(result.generation.fullWebExpansionStages,0);
-  assert.equal(result.generation.timeoutMs,300000);
+  assert.equal(result.generation.timeoutMs,240000);
   assert.equal(result.generation.maxPredict,4096);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
@@ -822,6 +822,8 @@ test('full web initial generation asks for a complete bounded seed before staged
   assert.match(workerSource,/FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES=4200/);
   assert.match(workerSource,/FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES=6500/);
   assert.match(workerSource,/const FULL_WEB_TIMEOUT_MS=360000/);
+  assert.match(workerSource,/const FULL_WEB_EXPANSION_TIMEOUT_MS=240000/);
+  assert.match(workerSource,/const FULL_WEB_FINAL_RETRY_TIMEOUT_MS=300000/);
   assert.match(workerSource,/const FULL_WEB_MAX_PREDICT=4096/);
   assert.match(workerSource,/INITIAL SEED STRATEGY: on this first response, prioritize a COMPLETE CLOSED playable seed/);
   assert.match(workerSource,/final acceptance still requires at least \$\{fullWebTarget\.minBytes\} bytes/);
@@ -861,7 +863,7 @@ test('final full web attempt synthesizes the accumulated seed instead of staying
   assert.equal(result.generation.fullWebExpansionStages,2);
   assert.equal(result.generation.completionMode,'FULL_WEB');
   assert.equal(result.generation.maxPredict,6144);
-  assert.equal(result.generation.timeoutMs,360000);
+  assert.equal(result.generation.timeoutMs,300000);
   assert.deepEqual(result.changedFiles,['index.html']);
   const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-final-synthesis/files/index.html'),'utf8');
   assert.ok(Buffer.byteLength(output,'utf8')>=12000);
