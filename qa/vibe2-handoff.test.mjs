@@ -41,7 +41,7 @@ test('machine handoff summarizes queue and adaptive state deterministically', ()
     lastDecision: 'HOLD',
     lastReason: 'HEALTHY_STREAK_1'
   };
-  const experience = { version: 1, records: [{ id: 'x' }] };
+  const experience = { version: 3, records: [{ id: 'x' }] };
   const projectLifecycle = {
     version:1,projectStateVersion:1,
     projects:[{
@@ -97,7 +97,7 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.equal(snapshot.generatedFrom.runtimeVersion, 8);
   assert.equal(snapshot.generatedFrom.queueVersion, 5);
   assert.equal(snapshot.generatedFrom.parallelismVersion, 3);
-  assert.equal(snapshot.generatedFrom.experienceVersion, 1);
+  assert.equal(snapshot.generatedFrom.experienceVersion, 3);
   assert.equal(snapshot.workPolicy.humanMaintainedHandoff, false);
   assert.equal(snapshot.parallelism.configuredMax, 30);
   assert.deepEqual(snapshot.parallelism.steps, [30, 24, 20, 16, 12, 8, 4]);
@@ -126,7 +126,7 @@ test('consistency gate rejects an unlisted Vibe2 markdown file and divergent ada
   const runtime = JSON.parse(fs.readFileSync('vibe2-runtime.json', 'utf8'));
   const queue = { version: 5, maxConcurrentTasks: 20, tasks: [] };
   const parallelism = { version: 2, currentMax: 10 };
-  const experience = { version: 1, records: [] };
+  const experience = { version: 3, records: [] };
   const consistency = validateVibe2MachineState({ runtime, queue, parallelism, experience, repoRoot: tempRoot });
   assert.equal(consistency.ok, false);
   assert.equal(consistency.errors.some((x) => x.startsWith('UNLISTED_VIBE2_MARKDOWN:')), true);
@@ -142,7 +142,7 @@ test('planner and worker work-order consume generated machine handoff instead of
   const catalogFile = path.join(tempRoot, 'catalog.json');
   fs.writeFileSync(queueFile, JSON.stringify({ version:5, maxConcurrentTasks:30, tasks:[] }));
   fs.writeFileSync(controlFile, JSON.stringify({ version:3, currentMax:8, healthyStreak:0, pressureStreak:0 }));
-  fs.writeFileSync(experienceFile, JSON.stringify({ version:1, records:[] }));
+  fs.writeFileSync(experienceFile, JSON.stringify({ version:3, records:[] }));
   fs.writeFileSync(statusFile, JSON.stringify({ projects:[] }));
   fs.writeFileSync(catalogFile, JSON.stringify({ games:[] }));
   const planned = runVibe2AutoPlanner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, statusFile, catalogFile, repoRoot:tempRoot, maxConcurrentTasks:30 });
@@ -174,7 +174,7 @@ test('machine-state E2E reserves work, builds worker order, fans in pressure, an
   });
   fs.writeFileSync(queueFile, JSON.stringify({ version:5, mode:'hierarchical-dag-sharded-work-stealing-queue', maxConcurrentTasks:30, tasks }, null, 2));
   fs.writeFileSync(controlFile, JSON.stringify({ version:3, currentMax:30, healthyStreak:0, pressureStreak:0, lastDecision:'INIT', lastReason:'DEFAULT_30', lastRunId:null, lastUpdatedAt:null, lastTelemetry:null }, null, 2));
-  fs.writeFileSync(experienceFile, JSON.stringify({ version:1, records:[] }, null, 2));
+  fs.writeFileSync(experienceFile, JSON.stringify({ version:3, records:[] }, null, 2));
 
   const before = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(before.consistency.ok, true);
