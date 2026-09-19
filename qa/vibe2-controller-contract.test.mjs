@@ -165,9 +165,12 @@ test('candidate release gate isolates candidates and requires the affected Web d
   assert(!webReleaseBlock.includes('git pull --rebase origin vibe2-unreal-core'));
   assert(!candidateReleaseWorkflow.includes('git pull --rebase origin vibe2-unreal-core'));
   assert(candidateReleaseWorkflow.includes('git reset --hard origin/vibe2-unreal-core'));
-  assert(!workflow.includes('git pull --rebase origin vibe2-unreal-core'));
-  assert(workflow.includes('release-dispatch-recovery-requested:'));
-  assert(workflow.includes('git reset --hard origin/vibe2-unreal-core'));
+  const releaseRecoveryStart=workflow.indexOf('Recover reviewed winners stranded before release dispatch');
+  const releaseRecoveryEnd=workflow.indexOf('Upload generated machine handoff',releaseRecoveryStart);
+  const releaseRecoveryBlock=workflow.slice(releaseRecoveryStart,releaseRecoveryEnd);
+  assert(!releaseRecoveryBlock.includes('git pull --rebase origin vibe2-unreal-core'));
+  assert(releaseRecoveryBlock.includes('release-dispatch-recovery-requested:'));
+  assert(releaseRecoveryBlock.includes('git reset --hard origin/vibe2-unreal-core'));
 });
 
 test('controller runs content-hash incremental QA per worker and one parallel full regression at fan-in',()=>{
