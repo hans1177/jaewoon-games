@@ -251,7 +251,27 @@ jobs:
           git push origin "HEAD:$release_branch"
           pr_url="$(gh pr create --repo "$GITHUB_REPOSITORY" --base main --head "$release_branch" --title "vibe2: deploy ${TASK_ID}" --body "Verified Web release candidate. Direct main write: NO. Release PASS requires this PR's CI and merge.")"
           sleep 5
-          gh pr checks "$pr_url" --watch --fail-fast --interval 10
+          # The candidate boundary above guarantees this PR only changes SOURCE_ROOT.
+          # Require the actual Web deployment target check, not unrelated external services
+          # (for example the jaewoon-multiplayer Worker check triggered repository-wide).
+          for attempt in $(seq 1 60); do
+            pages_state="$(gh api -H 'Accept: application/vnd.github+json' \
+              "repos/$GITHUB_REPOSITORY/commits/$release_commit/check-runs?per_page=100" \
+              --jq '[.check_runs[] | select(.name=="Cloudflare Pages")] | sort_by(.started_at) | last | if . == null then "missing:" else (.status + ":" + (.conclusion // "")) end')"
+            echo "VIBE2_RELEASE_PAGES_CHECK=$pages_state"
+            case "$pages_state" in
+              completed:success) break ;;
+              completed:*)
+                echo "Cloudflare Pages preview check failed: $pages_state" >&2
+                exit 1
+                ;;
+            esac
+            if [ "$attempt" -ge 60 ]; then
+              echo "Cloudflare Pages preview check did not complete successfully" >&2
+              exit 1
+            fi
+            sleep 10
+          done
           git fetch origin main --quiet
           [ -z "$(git diff --name-only "$BASE_SHA" origin/main -- "$SOURCE_ROOT")" ] || { echo 'main source changed before merge; replan required' >&2; exit 1; }
           gh pr merge "$pr_url" --repo "$GITHUB_REPOSITORY" --squash --delete-branch
