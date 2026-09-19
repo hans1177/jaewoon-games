@@ -117,6 +117,33 @@ jobs:
             if(designScheduling.mode!=='ROBLOX_FIRST_THEN_OTHER_PLATFORMS')return 0;
             return String(seed?.INITIAL_TARGET_PLATFORM||'').trim().toUpperCase()==='ROBLOX'?0:1;
           };
+          const deterministicCheckpointPriority=seed=>{
+            const gameRoot=path.join('design',String(seed?.gameId||''));
+            if(!fs.existsSync(gameRoot))return 1;
+            try{
+              const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(x=>x.isDirectory()).map(x=>x.name).sort().reverse();
+              for(const date of dates){
+                const checkpointPath=path.join(gameRoot,date,'design-checkpoint.json');
+                if(!fs.existsSync(checkpointPath))continue;
+                const checkpoint=JSON.parse(fs.readFileSync(checkpointPath,'utf8'));
+                const checkpointAt=Date.parse(checkpoint.updatedAt||checkpoint.lastSuccessfulModelCallAt||checkpoint.createdAt||'')||0;
+                if(resetAt){
+                  if(checkpointAt&&checkpointAt<resetAt)continue;
+                  if(!checkpointAt&&date<=resetDate)continue;
+                }
+                if(!checkpoint?.phases?.designer_draft)return 1;
+                const rows=Object.entries(checkpoint.phases||{}).filter(([name,value])=>/^deterministic_pre_gate(?:_after_repair_\d+)?$/.test(name)&&value&&typeof value==='object');
+                const pass=rows.some(([,value])=>{
+                  const threshold=Math.max(80,Number(value.passMinimum||80));
+                  const hard=Array.isArray(value.hardFailures)?value.hardFailures:[];
+                  const critical=Array.isArray(value.criticalAxisFailures)?value.criticalAxisFailures:[];
+                  return Number(value.totalScore)>=threshold&&hard.length===0&&critical.length===0;
+                });
+                return pass?0:1;
+              }
+            }catch{}
+            return 1;
+          };
           const checkpointResumePriority=seed=>{
             const gameRoot=path.join('design',String(seed?.gameId||''));
             if(!fs.existsSync(gameRoot))return 1;
@@ -141,6 +168,7 @@ jobs:
           };
           const pending=active.filter(seed=>!strictPassFor(seed)).sort((a,b)=>
             platformPriority(a)-platformPriority(b)||
+            deterministicCheckpointPriority(a)-deterministicCheckpointPriority(b)||
             checkpointResumePriority(a)-checkpointResumePriority(b)||
             String(a.createdAt||'').localeCompare(String(b.createdAt||''))||
             String(a.gameId||'').localeCompare(String(b.gameId||''))
@@ -162,6 +190,7 @@ jobs:
           console.error(`GAME_DESIGN_ENGINE_DIGEST=${engineDigest}`);
           console.error(`GAME_DESIGN_WIP_MAX=${designWipMax}`);
           console.error(`GAME_DESIGN_EXECUTION_LANES=${parallelMax}`);
+          console.error('GAME_DESIGN_DETERMINISTIC_CHECKPOINT_PRIORITY=FIRST');
           console.error('GAME_DESIGN_GATE_BYPASS=NO');
           console.error('GAME_DESIGN_ONLY_STRICT_PASS_REQUIRED=YES');
           console.error('GAME_DESIGN_WIP_SOURCE=CANONICAL_ROADMAP');
