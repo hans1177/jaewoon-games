@@ -1,5 +1,5 @@
 {
-  "version": 98,
+  "version": 99,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,31 +3069,17 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_AUXILIARY_LANES_AND_FAILURE_LOCAL_VERIFIED_V97_2026-09-19",
+    "id": "VIBE2_SEMANTIC_DIFF_CALIBRATION_HOTSPOT_PHASE3_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FAILURE_CONTEXTUAL_STRATEGY_PHASE3_V97_2026-09-19",
-    "reason": "SYNC_VERIFIED_AUXILIARY_EXECUTION_LANES_AND_CAUSAL_FAILURE_LOCAL_MEMORY_WITHOUT_WEAKENING_GAME_PRIMARY_FANIN_OR_QA",
-    "implementationState": "PHASE_2_VERIFIED",
-    "implemented": [
-      "GAME_PRIMARY_AND_LEARNING_IDLE_USE_SEPARATE_LANE_RESERVATION_CAPACITY",
-      "LEARNING_IDLE_MAX4_DOES_NOT_READ_OR_WRITE_GAME_ADAPTIVE_DECISIONS",
-      "AUXILIARY_FANIN_CANNOT_DISPATCH_PRODUCTION_RELEASE",
-      "RECOVERY_FAST_REUSES_EXISTING_RECOVERY_TOOLS_AND_DOES_NOT_DIRECTLY_START_GAME_WORKERS",
-      "SYSTEM_AI_RECOVERY_MAY_DISPATCH_IMMEDIATELY_ON_ITS_INDEPENDENT_LANE",
-      "EXPLICIT_FAILURE_CODE_DEFINES_FAILURE_IDENTITY_BEFORE_LESSON_TEXT",
-      "CORE_QA_TRIGGER_COVERS_LEARNING_MOTOR_AND_RECOVERY_FAST"
-    ],
-    "verification": {
-      "head": "b57f4afaadd36ff1cc3b7954e269ea28087282d7",
-      "vibeQa": "PASS",
-      "coreQa": "PASS",
-      "integratedRegression": "PASS"
-    },
+    "previousChangeRecordId": "VIBE2_AUXILIARY_LANES_AND_FAILURE_LOCAL_VERIFIED_V97_2026-09-19",
+    "reason": "DOCUMENT_CONFIDENCE_GATED_SEMANTIC_DIFF_ENFORCEMENT_AND_VERIFIED_CONFIDENCE_HOTSPOT_LEARNING_BEFORE_CODE",
+    "implementationState": "PHASE_3_DOCUMENTED_PENDING_CODE",
     "pending": [
-      "LIVE_LEARNING_IDLE_OBSERVATION",
-      "LIVE_RECOVERY_FAST_LATENCY_TELEMETRY",
-      "CONTROL_FAST_LATENCY_TELEMETRY"
+      "SEMANTIC_DIFF_HARD_GATE_FOR_HIGH_CONFIDENCE_PRESERVE_PATCH",
+      "CONFIDENCE_CALIBRATION_MEMORY",
+      "REGRESSION_HOTSPOT_MEMORY_AND_WORK_ORDER_GUIDANCE",
+      "CAUSAL_REPLAY_EXECUTION_WHEN_DETERMINISTIC_REPLAY_IS_AVAILABLE"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3102,22 +3088,11 @@
       "fanInOnlyRefill": true,
       "qualityGatesNotWeakened": true,
       "verifiedLearningOnly": true,
-      "failureContextStrategyIsAdvisoryOnly": true,
       "writableScopeExpansionAllowed": false,
       "qaBypassAllowed": false,
       "authorityExpanded": false,
       "protectedGameplayAndSaveSemanticsPreserved": true,
-      "planningBacklogMinimum": 40,
-      "planningBacklogTarget": 60,
-      "persistentQueueMax": 256,
-      "nonDevelopmentLanesDoNotConsumeGamePrimarySlots": true,
-      "auxiliaryFanInCannotMutateGameAdaptiveControl": true,
-      "learningIdleMaxActiveWorkers": 4,
-      "recoveryFastDoesNotDispatchGameWorker": true,
-      "systemAiRecoveryMayDispatchIndependently": true,
-      "failureFingerprintIgnoresLessonTextWhenExplicitCodeExists": true,
-      "learningMotorChangesTriggerCoreQa": true,
-      "recoveryFastChangesTriggerCoreQa": true,
+      "ambiguousSemanticClassificationObserveOnly": true,
       "directMainGameSourceWriteForbidden": true,
       "sourceWriteOnlyOnCandidateBranch": true
     }
@@ -3803,54 +3778,84 @@
       }
     },
     "phase3": {
-      "id": "FAILURE_CONTEXTUAL_CODING_STRATEGY_SELECTION",
-      "state": "DOCUMENTED_IMPLEMENTATION_PENDING",
-      "objective": "LEARN_WHICH_VERIFIED_CODING_STRATEGY_WORKS_BEST_FOR_EACH_FAILURE_FINGERPRINT_WITHOUT_LOSING_GLOBAL_SAFETY_GATES",
-      "strategyMemoryDimensions": [
-        "STRATEGY",
-        "GAME_ID",
-        "TARGET",
-        "FAILURE_FINGERPRINT",
-        "FIRST_CANDIDATE_PASS",
-        "GENERATION_ATTEMPTS"
-      ],
-      "selectionPriority": [
-        "PREFERRED_STRATEGY_WITH_SAME_GAME_AND_SAME_FAILURE_FINGERPRINT",
-        "PREFERRED_STRATEGY_WITH_SAME_FAILURE_FINGERPRINT",
-        "PREFERRED_STRATEGY_WITH_SAME_GAME",
-        "PREFERRED_STRATEGY_WITH_SAME_TARGET",
-        "GLOBAL_PREFERRED_STRATEGY"
-      ],
-      "promotionGuard": {
-        "globalPreferredRequiresVerifiedApplications": 5,
-        "globalPreferredRequiresIndependentGames": 2,
-        "globalPreferredMinimumFirstPassRatePct": 60,
-        "contextualEvidenceCannotPromoteUnverifiedStrategy": true,
-        "contextualSelectionIsAdvisoryOnly": true,
-        "writableScopeExpansionAllowed": false,
-        "qaBypassAllowed": false,
-        "authorityExpanded": false
+      "status": "DOCUMENTED_IMPLEMENTATION_PENDING",
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "objective": "ENFORCE_HIGH_CONFIDENCE_SEMANTIC_SCOPE_AND_LEARN_WHERE_CODING_CONFIDENCE_CAUSES_REGRESSION",
+      "semanticDiffEnforcement": {
+        "mode": "CONFIDENCE_GATED_HARD_ENFORCEMENT",
+        "hardGateWhen": [
+          "PRESERVE_PATCH",
+          "RESPONSIBILITY_CONFIDENCE_HIGH",
+          "PRIMARY_TARGET_PRESENT",
+          "NON_FULL_REWRITE"
+        ],
+        "observeOnlyWhen": [
+          "RESPONSIBILITY_CONFIDENCE_MEDIUM_OR_LOW",
+          "GREENFIELD",
+          "FULL_RECONSTRUCTION",
+          "BOOTSTRAP"
+        ],
+        "hardRules": [
+          "EDIT_MUST_TOUCH_PRIMARY_DEPENDENT_OR_OWNED_STATE_MARKER",
+          "EXPLICIT_HIGH_SPECIFICITY_UNRELATED_SYSTEM_MUTATION_REJECTED",
+          "SAVE_KEYS_IN_PRESERVE_CONTRACT_MUST_NOT_BE_REMOVED_OR_RENAMED_WITHOUT_AUTHORITY",
+          "SEMANTIC_SCOPE_CANNOT_EXPAND_WRITABLE_FILES"
+        ],
+        "falsePositiveSafety": "AMBIGUOUS_CLASSIFICATION_MUST_OBSERVE_NOT_REJECT",
+        "qualityGateBypassAllowed": false
       },
-      "negativeLearning": {
-        "recordVerifiedFailureByFailureFingerprint": true,
-        "repeatedContextualFailureLowersSelectionScore": true,
-        "oneFailureCannotGloballyDeprecateStrategy": true
+      "confidenceCalibration": {
+        "enabled": true,
+        "learnFrom": "IMMUTABLE_WORKER_AND_FAN_IN_OUTCOMES",
+        "contexts": [
+          "TARGET",
+          "GAME_ID",
+          "FAILURE_FINGERPRINT"
+        ],
+        "signals": [
+          "RAW_RESPONSIBILITY_CONFIDENCE",
+          "REGRESSION_PASS_FAIL",
+          "REVIEW_PASS_FAIL",
+          "FIRST_CANDIDATE_PASS"
+        ],
+        "repeatedHighConfidenceRegressionMustLowerFutureEffectiveConfidence": true,
+        "lowConfidenceMayRequestExtraReadOnlyExploration": true,
+        "lowConfidenceMayNotExpandWritableScope": true
       },
-      "expectedTelemetry": [
-        "CODING_STRATEGY",
-        "CODING_FAILURE_FINGERPRINT",
-        "FIRST_CANDIDATE_PASS",
-        "GENERATION_ATTEMPTS",
-        "GAME_ID",
-        "TARGET"
-      ],
-      "implementationOrder": [
-        "EXTEND_CODING_STRATEGY_MEMORY_WITH_FAILURE_FINGERPRINT_COUNTS",
-        "UPDATE_VERIFIED_OUTCOME_INGEST",
-        "RANK_PREFERRED_STRATEGY_BY_FAILURE_CONTEXT",
-        "EXPOSE_SELECTION_REASON_AND_CONTEXTUAL_EVIDENCE",
-        "TEST_SAME_FAILURE_STRATEGY_WINS_WITHOUT_SCOPE_OR_QA_AUTHORITY"
-      ]
+      "regressionHotspotMap": {
+        "enabled": true,
+        "keys": [
+          "GAME_ID",
+          "PRIMARY_SYMBOL",
+          "PRIMARY_SYSTEM"
+        ],
+        "positiveEvidence": "FAN_IN_REGRESSION_FAIL_OR_VERIFIED_REWORK",
+        "decay": "RECENT_VERIFIED_SUCCESS_MAY_REDUCE_RISK_BUT_HISTORY_IS_RETAINED",
+        "behavior": [
+          "HOTSPOT_RISK_ADDED_TO_WORK_ORDER",
+          "HOTSPOT_REQUIRES_FOCUSED_DEPENDENT_QA",
+          "HOTSPOT_PREFERS_VERIFIED_STRATEGY",
+          "HIGH_HOTSPOT_RISK_INCREASES_SPECULATIVE_DIVERSITY_WITHOUT_SCOPE_EXPANSION"
+        ]
+      },
+      "causalReplay": {
+        "enabled": true,
+        "executableOnlyWhenDeterministicReplayCommandOrStructuredScenarioExists": true,
+        "otherwise": "COMPILE_REPLAY_PLAN_AS_REQUIRED_EVIDENCE_BUT_DO_NOT_CLAIM_EXECUTION",
+        "identicalOrEquivalentInputStateRequired": true,
+        "canonicalQaStillRequired": true
+      },
+      "invariants": {
+        "gamePrimaryWave20": true,
+        "planningBacklogMinimum40Target60": true,
+        "taskLocalExploration": true,
+        "fanInOnlyRefill": true,
+        "verifiedLearningOnly": true,
+        "directMainGameSourceWriteForbidden": true,
+        "sourceWriteOnlyOnCandidateBranch": true,
+        "protectedGameplayAndSaveSemanticsPreserved": true,
+        "ambiguousSemanticClassificationFailsOpenToObserveOnlyNotFalseReject": true
+      }
     }
   },
   "vibeRecoveryLearningLoop": {
