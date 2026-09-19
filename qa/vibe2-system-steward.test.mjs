@@ -41,3 +41,31 @@ test('steward does not consume a repair on external wait work',()=>{
   const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:30,tasks:[{id:'wait',gameId:'r',target:'roblox',goal:'runtime',status:'running',blocker:'roblox-dedicated-runner-offline-deferred',reservedAt:'2026-09-19T09:00:00Z'}]},controlInput:{currentMax:30,lastUpdatedAt:'2026-09-19T11:50:00Z'}});
   assert.equal(result.action,'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL');
 });
+
+
+test('steward requeues stale machine-state blockers only after raw state is normalized',()=>{
+  const healthy=runSystemStewardState({
+    now:'2026-09-19T12:00:00Z',
+    queueInput:{maxConcurrentTasks:30,tasks:[
+      {id:'stale-machine',gameId:'g',target:'web',goal:'x',status:'blocked',blocker:'MACHINE_STATE_INCONSISTENT:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED'}
+    ]},
+    controlInput:{version:3,currentMax:30,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+  });
+  const recovered=healthy.queue.tasks[0];
+  assert.equal(healthy.action,'RECOVER_STALE_MACHINE_STATE_BLOCKER');
+  assert.equal(recovered.status,'queued');
+  assert.equal(recovered.blocker,null);
+  assert.equal(recovered.lastOutcome,'SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED');
+  assert(recovered.evidence.includes('system-steward:machine-state-revalidated:v3-queue30'));
+
+  const unhealthy=runSystemStewardState({
+    now:'2026-09-19T12:00:00Z',
+    queueInput:{maxConcurrentTasks:20,tasks:[
+      {id:'real-machine-block',gameId:'g',target:'web',goal:'x',status:'blocked',blocker:'MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED'}
+    ]},
+    controlInput:{version:2,currentMax:20,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+  });
+  assert.equal(unhealthy.queue.tasks[0].status,'blocked');
+  assert.equal(unhealthy.queue.tasks[0].blocker,'MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED');
+  assert.equal(unhealthy.actions.includes('RECOVER_STALE_MACHINE_STATE_BLOCKER'),false);
+});
