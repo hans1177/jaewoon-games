@@ -596,7 +596,7 @@ function updateGuests(dt,now){
   state.buildings.forEach(function(b){
     var d=BUILD_DEFS[b.type],rt=runtime[b.id];
     if(!rt||!(d.kind==="ride"||d.kind==="food"||d.kind==="toilet"))return;
-    var cap=capacity(b);
+var cap=capacity(b); while(rt.active.length<cap&&rt.queue.length){ var gid=rt.queue.shift(); g=guests.find(function(x){return x.id===gid;});
     while(rt.active.length<cap&&rt.queue.length){
       var gid=rt.queue.shift(),g=guests.find(function(x){return x.id===gid;});
       if(!g)continue;

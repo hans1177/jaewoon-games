@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "    var cap=capacity(b);",
+      "replace": "var cap=capacity(b); while(rt.active.length<cap&&rt.queue.length){ var gid=rt.queue.shift(); g=guests.find(function(x){return x.id===gid;});"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
