@@ -244,7 +244,7 @@ function markerTouched(text='',markers=[]){
     return needle.length>=3&&lower.includes(needle);
   });
 }
-export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFullRewrite=false,bootstrap=false}={}){
+export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFullRewrite=false,bootstrap=false,sourceRoot=''}={}){
   const confidence=clean(editContract?.responsibilityConfidence).toUpperCase()||'LOW';
   const developmentMode=clean(editContract?.codingArchitecture?.developmentMode).toUpperCase();
   const primaryTargets=unique(editContract?.primaryTargets||[]);
@@ -261,7 +261,21 @@ export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFu
   const unexpectedSystems=touchedSystems.filter(system=>allowedSystems.size>0&&!allowedSystems.has(system));
   const editScopeRows=edits.map(edit=>{
     const text=[edit.find,edit.replace].join('\n');
-    return{path:clean(edit.path),touchesAllowedMarker:markerTouched(text,markers),systems:semanticSystemsForText(text)};
+    let touchesAllowedMarker=markerTouched(text,markers);
+    if(!touchesAllowedMarker&&clean(sourceRoot)&&clean(edit.path)){
+      try{
+        const file=path.resolve(sourceRoot,clean(edit.path));
+        if(fs.existsSync(file)){
+          const source=fs.readFileSync(file,'utf8');
+          const at=source.indexOf(String(edit.find||''));
+          if(at>=0){
+            const nearby=source.slice(Math.max(0,at-1600),Math.min(source.length,at+String(edit.find||'').length+1600));
+            touchesAllowedMarker=markerTouched(nearby,markers);
+          }
+        }
+      }catch{}
+    }
+    return{path:clean(edit.path),touchesAllowedMarker,systems:semanticSystemsForText(text)};
   });
   const unprovenEdits=hardGate&&markers.length?editScopeRows.filter(row=>!row.touchesAllowedMarker):[];
   const protectedSaveKeys=unique(budget.saveKeysMustRemainCompatible||[]);
@@ -531,7 +545,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
   const editContract=exploration?.editContract||{};
-  const semanticDiffEnforcement=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap});
+  const semanticDiffEnforcement=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap,sourceRoot});
   if(!semanticDiffEnforcement.pass)throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:'+semanticDiffEnforcement.violations.join('|'));
   const taskId=safeId(order.taskId);
   const candidateRoot=path.resolve(cwd,outputRoot,taskId);
