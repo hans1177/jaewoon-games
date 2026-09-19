@@ -275,6 +275,11 @@ function sellItem(name){if((inv[name]||0)<=0)return;inv[name]--;p.g+=SELL_PRICE[
 function sellEverything(){let t=0;for(const [n,pr] of Object.entries(SELL_PRICE)){t+=(inv[n]||0)*pr;inv[n]=0}if(!t){toastMsg('판매할 아이템이 없다');return}p.g+=t;sfx('sell');toastMsg(`전부 판매 +${t}G`);renderSellShop();hud()}
 
 function getAction(){
+  if(zone==='f2'&&Math.hypot(p.x-CAVE.entrance.x,p.y-CAVE.entrance.y)<85)return {label:'들어가기',kind:'enterCave'};
+  if(zone==='f5'&&Math.hypot(p.x-TOMB.x,p.y-TOMB.y)<90&&hq===0)return {label:'비석 조사',kind:'tomb'};
+  if(zone==='cave'&&!chestOpened&&Math.hypot(p.x-CAVE.chest.x,p.y-CAVE.chest.y)<85)return {label:guardianDead?'상자 열기':'상자 잠김',kind:'chest'};
+  if(zone==='cave'&&Math.hypot(p.x-CAVE.exit.x,p.y-CAVE.exit.y)<85)return {label:'나가기',kind:'exitCave'};return null
+}
  if(zone==='f2'&&Math.hypot(p.x-CAVE.entrance.x,p.y-CAVE.entrance.y)<85)return {label:'들어가기',kind:'enterCave'};
  if(zone==='f5'&&Math.hypot(p.x-TOMB.x,p.y-TOMB.y)<90&&hq===0)return {label:'비석 조사',kind:'tomb'};
  if(zone==='cave'&&!chestOpened&&Math.hypot(p.x-CAVE.chest.x,p.y-CAVE.chest.y)<85)return {label:guardianDead?'상자 열기':'상자 잠김',kind:'chest'};

@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "rpg.html",
+      "find": "function getAction(){",
+      "replace": "function getAction(){\n  if(zone==='f2'&&Math.hypot(p.x-CAVE.entrance.x,p.y-CAVE.entrance.y)<85)return {label:'들어가기',kind:'enterCave'};\n  if(zone==='f5'&&Math.hypot(p.x-TOMB.x,p.y-TOMB.y)<90&&hq===0)return {label:'비석 조사',kind:'tomb'};\n  if(zone==='cave'&&!chestOpened&&Math.hypot(p.x-CAVE.chest.x,p.y-CAVE.chest.y)<85)return {label:guardianDead?'상자 열기':'상자 잠김',kind:'chest'};\n  if(zone==='cave'&&Math.hypot(p.x-CAVE.exit.x,p.y-CAVE.exit.y)<85)return {label:'나가기',kind:'exitCave'};return null\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
