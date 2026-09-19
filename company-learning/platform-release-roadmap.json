@@ -1,5 +1,5 @@
 {
-  "version": 118,
+  "version": 119,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,46 +3069,56 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_TIMEOUT_PARTIAL_EDIT_RECOVERY_2026-09-19",
+    "id": "VIBE2_TIMEOUT_RECOVERY_VERIFIED_LIVE_PENDING_2026-09-19",
     "documentIsCode": true,
-    "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_TIMEOUT_FAST_ESCALATION_2026-09-19",
-    "reason": "LIVE_TIMEOUTS_CONTAIN_KILOBYTES_OF_PARTIAL_JSON;RECOVER_ONLY_COMPLETE_EDIT_OBJECTS_AND_RUN_THEM_THROUGH_EXISTING_EXACT_MATCH_SEMANTIC_AND_QA_GATES",
-    "implementationState": "DOCUMENTED_CODE_PENDING",
-    "evidence": {
-      "validationRunId": 35443243108,
-      "completedFocusedRepairSamples": 6,
-      "focusedRepairPasses": 0,
-      "observedTimeoutPartialBytes": [
-        2564,
-        2582,
-        2845,
-        2915,
-        2865,
-        1574
-      ],
-      "repeatedFailureClass": "TIMEOUT"
+    "documentationFirst": false,
+    "previousChangeRecordId": "VIBE2_TIMEOUT_PARTIAL_EDIT_RECOVERY_2026-09-19",
+    "reason": "PROMOTE_TIMEOUT_FAST_ESCALATION_AND_SAFE_PARTIAL_EDIT_RECOVERY_AFTER_CORE_VIBE_AND_INTEGRATED_QA_PASS;KEEP_LIVE_WAVE_AS_FINAL_EFFECTIVENESS_GATE",
+    "implementationState": "VERIFIED_MAIN_LIVE_REVALIDATION_PENDING",
+    "verification": {
+      "timeoutFastEscalationCommit": "f8043f9da604659faa83b35a3ed6ef428829069c",
+      "partialEditRecoveryCommit": "9de8dd68889e6b81c19f1a8b37343272769c7518",
+      "partialRecoveryTestCommit": "5128902b84dbaba7a77a7cc75f7711ecd5dcebb6",
+      "coreQaRunId": 35444044835,
+      "coreQa": "PASS",
+      "vibeQaRunId": 35444044826,
+      "vibeQa": "PASS",
+      "integratedRegressionRunId": 35444044839,
+      "integratedRegression": "PASS"
     },
-    "contract": {
-      "recoverySource": "TIMEOUT_PARTIAL_OUTPUT_ONLY",
-      "recoverCompleteEditsObjectOnly": true,
-      "incompleteObjectRejected": true,
-      "exactWritablePathStillRequired": true,
-      "exactFindDryRunStillRequired": true,
-      "semanticDiffGateStillRequired": true,
-      "qaGateStillRequired": true,
-      "maxGenerationAttemptsUnchanged": 3,
-      "authorityExpansion": false
+    "implemented": [
+      "ATTEMPT2_COMPACT_EXACT_EDIT_AFTER_FIRST_TIMEOUT",
+      "TIMEOUT_PARTIAL_COMPLETE_EDIT_OBJECT_RECOVERY",
+      "INCOMPLETE_PARTIAL_OBJECT_REJECTION",
+      "EXACT_WRITABLE_PATH_AND_FIND_DRY_RUN_PRESERVED",
+      "SEMANTIC_DIFF_VALIDATION_PRESERVED",
+      "CANONICAL_QA_GATES_PRESERVED"
+    ],
+    "baseline": {
+      "runId": 35442308252,
+      "overallFailureRatePct": 95,
+      "focusedRepairFailureRatePct": 100,
+      "focusedRepairTimeoutFailures": 7,
+      "fullWebFailureRatePct": 91.7,
+      "fullWebPrimaryFailureClasses": [
+        "FULL_REWRITE_SIZE",
+        "TIMEOUT",
+        "MALFORMED_OUTPUT"
+      ]
     },
     "pending": [
-      "PATCH_PARTIAL_JSON_EDIT_RECOVERY",
-      "ADD_PARTIAL_TIMEOUT_RECOVERY_TESTS",
-      "CORE_QA",
-      "NEXT_LIVE_WAVE_REVALIDATION"
+      "FINISH_F496_COMPARISON_WAVE",
+      "START_LATEST_MAIN_PINNED_20_WAVE",
+      "MEASURE_TIMEOUT_PARTIAL_RECOVERY_PASS_RATE",
+      "COMPARE_FOCUSED_REPAIR_AND_FULL_WEB_FAILURE_RATES",
+      "PROMOTE_OR_REVISE_FROM_LIVE_EVIDENCE"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
+      "taskLocalExploration": true,
+      "fanInOnlyRefill": true,
+      "maxGenerationAttemptsUnchanged": 3,
       "writableScopeUnchanged": true,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true
