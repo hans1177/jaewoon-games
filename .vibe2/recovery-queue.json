@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "kind": "company-recovery-queue",
+  "policy": "REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING",
+  "tasks": [
+    {
+      "id": "recovery-web-source-candidate-generation-portfolio-v1",
+      "status": "queued",
+      "priority": "critical",
+      "sourceQueue": "vibe2",
+      "sourceTaskId": "bug-defense-existing-web-assessment-v1",
+      "relatedTaskIds": [
+        "bug-defense-existing-web-assessment-v1",
+        "amusement-tycoon-existing-web-assessment-v1",
+        "bug-defense-diagnostic-bundle-TOUCH-ACTION-UNSPECIFIED-index-html",
+        "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+        "line-defense-existing-web-assessment-v1",
+        "seed-action-survival-rogu-echoes-of-the-lost-star-existing-web-assessment-v1",
+        "seed-casual-realm-weaver-existing-web-assessment-v1",
+        "seed-idle-growth-rpg-crystal-bloom-existing-web-assessment-v1",
+        "seed-puzzle-chromatic-cascade-existing-web-assessment-v1",
+        "seed-single-defense-strat-celestial-bastion-existing-web-assessment-v1",
+        "seed-story-complete-rpg-chronicles-of-eldoria-existing-web-assessment-v1",
+        "village-dungeons-existing-web-assessment-v1"
+      ],
+      "failureStage": "SOURCE_CANDIDATE_GENERATION",
+      "failureSignature": "source-candidate-generation-failed",
+      "blastRadius": "portfolio:12",
+      "checkpoint": null,
+      "evidence": [
+        "system-steward:failure-signature:source-candidate-generation-failed",
+        "recovery-route:VIBE2_VIBE3",
+        "primary-ai-escalation:portfolio-wide-common-source-candidate-generation"
+      ],
+      "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+      "verificationPlan": [
+        "RERUN_EXACT_FAILED_STAGE",
+        "INDEPENDENT_QA_WHEN_APPLICABLE",
+        "REGRESSION_WHEN_APPLICABLE",
+        "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "VIBE2_VIBE3",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "retries": 0,
+      "maxRetries": 5,
+      "createdAt": "2026-09-19T05:41:00.000Z",
+      "updatedAt": "2026-09-19T05:41:00.000Z"
+    },
+    {
+      "id": "recovery-system-ai-core-implementation-v1",
+      "status": "queued",
+      "priority": "critical",
+      "sourceQueue": "system-ai",
+      "sourceTaskId": "sys-web-bootstrap-signal-routing-v1",
+      "relatedTaskIds": [
+        "sys-web-bootstrap-signal-routing-v1",
+        "sys-vibe-planner-web-repair-routing-v1",
+        "sys-vibe-web-source-bootstrap-boundary-v1",
+        "sys-web-vibe-handoff-e2e-contract-v1"
+      ],
+      "failureStage": "SYSTEM_AI_IMPLEMENTATION",
+      "failureSignature": "repeated-system-ai-implementation-failed",
+      "blastRadius": "portfolio-system:4",
+      "checkpoint": null,
+      "evidence": [
+        "actions-run:35424046606",
+        "actions-run:35424229113",
+        "primary-ai-escalation:repeated-system-ai-implementation-failure",
+        "recovery-route:SYSTEM_AI"
+      ],
+      "recoveryStrategy": "ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
+      "verificationPlan": [
+        "VERIFY_JSON_MODE_AND_OUTPUT_PARSER",
+        "RERUN_EXACT_SYSTEM_AI_IMPLEMENTATION_STEP",
+        "REQUIRE_DETERMINISTIC_VERIFICATION_STEP",
+        "REQUIRE_CANDIDATE_PR_BEFORE_REVIEW"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "retries": 0,
+      "maxRetries": 5,
+      "createdAt": "2026-09-19T05:41:00.000Z",
+      "updatedAt": "2026-09-19T05:41:00.000Z"
+    },
+    {
+      "id": "recovery-system-ai-supervision-loop-v1",
+      "status": "queued",
+      "priority": "high",
+      "sourceQueue": "system-ai",
+      "sourceTaskId": "sys-verify-system-ai-supervision-loop-v1",
+      "relatedTaskIds": [
+        "sys-verify-system-ai-supervision-loop-v1"
+      ],
+      "failureStage": "SYSTEM_AI_SUPERVISION_VERIFICATION",
+      "failureSignature": "system-ai-supervision-loop-implementation-failed",
+      "blastRadius": "system-supervision",
+      "checkpoint": null,
+      "evidence": [
+        "actions-run:35424229113",
+        "primary-ai-escalation:supervision-loop-failure",
+        "recovery-route:SYSTEM_AI"
+      ],
+      "recoveryStrategy": "REPAIR_SUPERVISION_CONTRACT_TEST_AND_RERUN_WORKER_VERIFY_PR_FANIN_PATH",
+      "verificationPlan": [
+        "RERUN_SUPERVISION_LOOP_CONTRACT_TEST",
+        "CONFIRM_VERIFY_CANNOT_SKIP_AFTER_IMPLEMENTATION_SUCCESS",
+        "CONFIRM_WORKER_SELF_ACCEPTANCE_FORBIDDEN",
+        "CONFIRM_PRIMARY_AI_REVIEW_STATE"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "retries": 0,
+      "maxRetries": 5,
+      "createdAt": "2026-09-19T05:41:00.000Z",
+      "updatedAt": "2026-09-19T05:41:00.000Z"
+    }
+  ]
+}
