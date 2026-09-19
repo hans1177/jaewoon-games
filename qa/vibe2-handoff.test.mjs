@@ -197,12 +197,12 @@ test('machine-state E2E reserves work, builds worker order, fans in pressure, an
   }));
   fs.writeFileSync(resultFile, JSON.stringify({ version:1, results:rows }, null, 2));
   const fanIn = runQueueCommand({ command:'fan-in', queue:queueFile, control:controlFile, input:resultFile });
-  assert.equal(fanIn.adaptiveControl.currentMax, 16);
+  assert.equal(fanIn.adaptiveControl.currentMax, 20);
   assert.equal(fanIn.adaptiveControl.lastDecision, 'DOWN');
 
   const after = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(after.consistency.ok, true);
-  assert.equal(after.parallelism.currentPersistentMax, 16);
+  assert.equal(after.parallelism.currentPersistentMax, 20);
   assert.equal(after.workState.queuedCount, 0);
   assert.equal(after.workState.blockedCount, 31);
 });
