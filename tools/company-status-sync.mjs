@@ -289,6 +289,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     const seedClass=clean(seed?.productionClass).toUpperCase();
     const queueClass=clean(queue?.productionClass).toUpperCase();
     if(seedClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED)return {productionClass:PRODUCTION_CLASSES.RELEASE_CONFIRMED,source:'COMPANY_RUNTIME_RELEASE_SEED'};
+    if(seedClass===PRODUCTION_CLASSES.DESIGN_ONLY)return {productionClass:PRODUCTION_CLASSES.DESIGN_ONLY,source:clean(seed?.productionClassSource)||'COMPANY_RUNTIME_DESIGN_SEED'};
     if(seedClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
       return {
         productionClass:PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED,
