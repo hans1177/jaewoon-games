@@ -59,6 +59,7 @@ const FULL_WEB_EXPANSION_CONTEXT_WINDOW=24576;
 const FULL_WEB_MAX_GENERATION_ATTEMPTS=4;
 const FULL_WEB_MAX_ADDITIVE_ATTEMPTS=6;
 const SPECULATIVE_FULL_WEB_MAX_ADDITIVE_ATTEMPTS=4;
+const FULL_WEB_PROGRESSIVE_ADDITIVE_ATTEMPT_CAP=8;
 const JSON_RETRY_TIMEOUT_MS=240000;
 const JSON_RETRY_MAX_PREDICT=1536;
 const FOCUSED_WEB_REPAIR_MAX_PREDICT=1024;
@@ -796,6 +797,18 @@ export function generationAttemptBudget({allowFullRewrite=false,variant='primary
   return speculative?SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS:MAX_GENERATION_ATTEMPTS;
 }
 
+export function fullWebProgressCreditEligible({accumulatedBytes=0,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,growthBytes=[],repeatedOutputs=0,currentMax=0,attempt=0,fakeResponseCount=0,cap=FULL_WEB_PROGRESSIVE_ADDITIVE_ATTEMPT_CAP}={}){
+  const recent=(Array.isArray(growthBytes)?growthBytes:[]).slice(-2).map(Number);
+  const healthyGrowth=recent.length===2&&recent.every(value=>Number.isFinite(value)&&value>=1200);
+  const fakeCanContinue=Number(fakeResponseCount||0)===0||Number(fakeResponseCount||0)>Number(attempt||0);
+  return Number(accumulatedBytes||0)>=FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES
+    &&Number(accumulatedBytes||0)<Number(minBytes||FULL_WEB_GENERATION_TARGET_MIN_BYTES)
+    &&healthyGrowth
+    &&Number(repeatedOutputs||0)===0
+    &&Number(currentMax||0)<Number(cap||FULL_WEB_PROGRESSIVE_ADDITIVE_ATTEMPT_CAP)
+    &&fakeCanContinue;
+}
+
 export function modelResponseComplete(output,mode='JSON_EDIT'){
   const text=String(output??''),trimmed=text.trimStart();
   if(!trimmed)return false;
@@ -832,6 +845,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let focusedReplaceAnchorCursor=0;
   let focusedReplaceAnchorRotations=0;
   let focusedReplaceNoOpCreditUsed=false;
+  let fullWebProgressCreditCount=0;
   const baseMaxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
   let maxAttempts=baseMaxAttempts;
   let additiveAttemptCreditUsed=false;
@@ -925,7 +939,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -1020,6 +1034,29 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
           }
         }
       }
+      let progressiveFullWebCreditRetry=false;
+      if(allowFullRewrite&&accumulatedFullWeb&&attempt>=maxAttempts){
+        const accumulatedBytes=Buffer.byteLength(accumulatedFullWeb.content,'utf8');
+        if(fullWebProgressCreditEligible({
+          accumulatedBytes,
+          minBytes:minFullRewriteBytes,
+          growthBytes:intermediateGrowthBytes,
+          repeatedOutputs:repeatedIntermediateOutputs,
+          currentMax:maxAttempts,
+          attempt,
+          fakeResponseCount,
+          cap:FULL_WEB_PROGRESSIVE_ADDITIVE_ATTEMPT_CAP
+        })){
+          const before=maxAttempts;
+          maxAttempts=Math.min(FULL_WEB_PROGRESSIVE_ADDITIVE_ATTEMPT_CAP,maxAttempts+1);
+          fullWebProgressCreditCount+=1;
+          progressiveFullWebCreditRetry=maxAttempts>before;
+          if(progressiveFullWebCreditRetry){
+            const lastGrowth=Number(intermediateGrowthBytes.at(-1)||0);
+            console.log(`VIBE2_FULL_WEB_PROGRESS_CREDIT=${before}->${maxAttempts}:bytes=${accumulatedBytes}:last-growth=${lastGrowth}`);
+          }
+        }
+      }
       const attemptOutputBytes=lastRaw?Buffer.byteLength(String(lastRaw),'utf8'):0;
       console.log(`VIBE2_GENERATION_ATTEMPT_FAILURE=${attempt}:${failureClass}:${clean(error?.message||error).replace(/\s+/g,' ').slice(0,360)}`);
       console.log(`VIBE2_GENERATION_ATTEMPT_OUTPUT_BYTES=${attempt}:${attemptOutputBytes}`);
@@ -1030,7 +1067,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
       const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
-      const hasAnother=ordinaryRetry||focusedRetry||focusedNoOpCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
+      const hasAnother=ordinaryRetry||focusedRetry||focusedNoOpCreditRetry||progressiveFullWebCreditRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
@@ -1145,6 +1182,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     fullWebClosedHtmlEarlyStop:generation.fullWebClosedHtmlEarlyStop===true,
     fullWebFinalAdditiveExpansion:generation.fullWebFinalAdditiveExpansion===true,
     fullWebAdditiveAttemptCreditUsed:generation.fullWebAdditiveAttemptCreditUsed===true,
+    fullWebProgressCreditCount:Number(generation.fullWebProgressCreditCount||0),
+    fullWebProgressCreditUsed:generation.fullWebProgressCreditUsed===true,
     baseAttemptBudget:Number(generation.baseAttemptBudget||generation.attemptBudget||0),
     effectiveAttemptBudget:Number(generation.effectiveAttemptBudget||generation.attemptBudget||0),
     fullWebRetryPromptCompacted:generation.fullWebRetryPromptCompacted===true,
