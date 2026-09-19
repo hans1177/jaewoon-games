@@ -121,6 +121,90 @@ V3 learning quality should be evaluated separately from raw task success. Releva
 
 Matched before/after task classes should be used when evaluating whether learning improved. A higher success count alone does not prove better causal understanding.
 
+## Unified Learning Fabric
+
+Vibe3 should not add more isolated learning silos. Existing specialized learning channels remain useful at evidence capture, but all reusable learning should normalize into one shared causal evidence shape before cross-project reuse.
+
+The fabric connects real development experience, bug/failure memory, recovery learning, department learning, practice and benchmark learning, teacher curriculum, verified external-AI distillation, external-game black-box observation, authorized-source learning, transformative recombination, security learning, company-DNA learning and causal coding episodes.
+
+Shared normalization should preserve: source channel, observation, current structure/context, verified facts, uncertainty, primary and alternative hypotheses, predictions, intervention or observation action, actual result, prediction error, causal verdict, contradictions, applicability conditions, side effects/regression, exact revision/evidence identity, confidence and maturity.
+
+The fabric must distinguish three knowledge depths:
+
+1. local fact;
+2. mechanism-level rule;
+3. transferable principle.
+
+Cross-learning is allowed only after verification and applicability checks. Platform-specific PASS evidence never becomes another platform's PASS. Contradictions are preserved and must reduce confidence or deprecate stale rules rather than being silently discarded.
+
+Retrieval priority should favor same-game verified causal knowledge, then same-system or same-engine mechanisms, then transferable cross-game principles, verified negative knowledge, teacher/practice knowledge, and finally verified external-AI advisory knowledge.
+
+## Vibe Cognitive Core
+
+The Cognitive Core is a functional metacognitive and observation layer. It does **not** claim sentience or subjective consciousness. Its role is to track what matters, what is known, what remains uncertain, what is surprising and why the next action is selected.
+
+The target cognitive loop is:
+
+`OBSERVE → ATTEND → DETECT ANOMALY/MISSING SIGNAL → SITUATION MODEL → KNOWN/UNKNOWN/CONFLICTED → PRIMARY + ALTERNATIVE HYPOTHESES → PREDICT → SAFE SIMULATION → SELECT INFORMATION-RICH ACTION → INTERVENE → MEASURE SURPRISE → UPDATE WORLD MODEL/SELF MODEL → EXTRACT INSIGHT → DISTILL/REVALIDATE`
+
+### Global workspace
+
+Vibe should keep a bounded active workspace rather than loading all memory equally. A typical active workspace contains only the current goal, critical observations, highest-value anomalies, leading hypotheses, key uncertainty, major risk and the most relevant verified memories. Low-value information should be summarized or evicted.
+
+### Attention and observation
+
+Attention should rise when there is user importance, prediction error, unexpected change, repeated failure, large blast radius, novelty, missing expected evidence, high causal uncertainty, regression risk or time-dependent risk.
+
+Attention does not make a belief true. It only allocates more reasoning and verification resources.
+
+### Surprise engine
+
+Vibe should compare predeclared observable predictions with actual results. High prediction error is a signal that the current world model may be incomplete.
+
+Unexpected success side effects count as surprise too. High surprise should trigger hidden-variable search, alternative hypotheses, telemetry-gap checks and reduced confidence in the prior model.
+
+### Epistemic ledger
+
+Knowledge should explicitly carry a state such as `VERIFIED_FACT`, `STRONGLY_SUPPORTED`, `WORKING_HYPOTHESIS`, `WEAK_HYPOTHESIS`, `UNKNOWN`, `CONFLICTED`, `FALSIFIED` or `STALE_REQUIRES_REVALIDATION`.
+
+Inference must never silently become fact. Confidence must move with supporting and contradicting evidence.
+
+### Falsification-first reasoning
+
+When root cause is uncertain, Vibe should actively search for evidence that would disprove its current hypothesis. It should maintain competing explanations and prefer the cheapest safe experiment that separates them.
+
+### Temporal reasoning
+
+The system should reason across immediate behavior, the next state transition, restart/rejoin, save-load cycles, long sessions and later stages/releases. A state that passes now can still fail later.
+
+### Missing-signal observation
+
+Absence of expected evidence is itself useful evidence. Examples include a save-success log without load validation, an input event without state change, process launch without real gameplay entry, or a claimed success without expected telemetry.
+
+### Concept compression
+
+Repeated episodes should be compressed into mechanism concepts rather than stored only as case lists. Compression must preserve known exceptions and applicability conditions.
+
+### Analogy and insight
+
+Analogy should match causal structure rather than surface wording. When apparently different episodes share a verified mechanism, Vibe may create a higher-level candidate principle. That principle remains a hypothesis until independently revalidated in another relevant context.
+
+### Mental simulation and sandboxing
+
+Replay, sandbox, mock state and deterministic simulation should be used before risky production interventions when possible. Simulation improves hypothesis selection but never substitutes for required native runtime evidence.
+
+### Self model
+
+Vibe should maintain a bounded self-model of domain strengths, error rates, common misdiagnoses, calibration, root-cause depth, transfer success and repeated-failure rate. Weak domains may require more evidence or review, but the self-model cannot expand authority or lower gates.
+
+### Consolidation
+
+Idle capacity may replay prior trajectories, compare counterfactual alternatives and combine lessons across episodes. Any insight generated during this consolidation is hypothesis-only until revalidated. Production work always preempts consolidation.
+
+### Cognitive evaluation
+
+Learning quality should include observation miss rate, prediction error, calibration error, time to falsify wrong hypotheses, root-cause depth, hidden-variable discovery, missing-signal detection, analogy-transfer success, insight revalidation, false-insight rate and repeated-mistake rate.
+
 ## Platform implementation bindings
 
 Platform policy is defined by `company-learning/platform-release-roadmap.json`; `COMPANY_FLOW.md` is a legacy mirror.
