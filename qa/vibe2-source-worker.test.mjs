@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, generationAttemptBudget } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, generationAttemptBudget, exactRetryAnchorSuggestions } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -939,6 +939,56 @@ test('timeout partial recovery is persisted in coding method and immutable worke
   const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
   assert.match(workerSource,/partialTimeoutRecovery:generation\.partialTimeoutRecovery===true/);
   assert.match(workflowSource,/baseCodingMethod\?\.partialTimeoutRecovery===true\?'coding-timeout-partial-recovery:YES'/);
+});
+
+test('focused retry derives exact unique find anchors from writable source',()=>{
+  const base=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: web',
+    'Goal: repair play interaction',
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<main id="game">',
+    '  <button id="play">Play</button>',
+    '  <canvas id="stage"></canvas>',
+    '</main>',
+    '<script>',
+    'const playButton=document.getElementById("play");',
+    'playButton.addEventListener("click",()=>startGame());',
+    'function startGame(){ state.running=true; }',
+    '</script>'
+  ].join('\n');
+  const anchors=exactRetryAnchorSuggestions(base,{max:3});
+  assert.ok(anchors.length>=1);
+  assert.ok(anchors.every(value=>base.includes(value)));
+  assert.ok(anchors.includes('const playButton=document.getElementById("play");')||anchors.includes('playButton.addEventListener("click",()=>startGame());'));
+  const retry=buildGenerationRetryPrompt(base,{
+    allowFullRewrite:false,
+    error:new Error('edit find 불일치: index.html'),
+    responsibleFiles:['index.html'],
+    attempt:2
+  });
+  assert.match(retry,/EXACT FIND ANCHOR OPTIONS/);
+  assert.match(retry,/ANCHOR_1:/);
+  assert.match(retry,/use one EXACT FIND ANCHOR OPTION/i);
+});
+
+test('exact retry anchors exclude repeated and structural-only lines',()=>{
+  const base=[
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<div>',
+    'same();',
+    'same();',
+    '</div>',
+    'const uniqueHandler=()=>{ state.ready=true; };'
+  ].join('\n');
+  const anchors=exactRetryAnchorSuggestions(base,{max:3});
+  assert.doesNotContain?.(anchors,'same();');
+  assert.equal(anchors.includes('same();'),false);
+  assert.equal(anchors.includes('const uniqueHandler=()=>{ state.ready=true; };'),true);
 });
 
 test('focused retry prompt never references focusedFinal before it is initialized',()=>{
