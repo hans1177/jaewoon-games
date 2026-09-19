@@ -124,6 +124,73 @@ function readContext(root,target,responsibleFiles=[],ignored=[],explorationFiles
   }
   return{files,bytes:total};
 }
+function regexEscape(value){return String(value??'').replace(/[.*+?^$()|[\]\\{}]/g,'\\function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){');}
+function sourceWindowRange(text,index,{before=900,after=4200}={}){
+  const raw=String(text??'');
+  let start=Math.max(0,index-before),end=Math.min(raw.length,index+after);
+  const lineStart=raw.lastIndexOf('\n',start);
+  if(lineStart>=0)start=lineStart+1;
+  const lineEnd=raw.indexOf('\n',end);
+  if(lineEnd>=0)end=lineEnd;
+  return{start,end};
+}
+function mergeSourceWindowRanges(ranges=[]){
+  const rows=(ranges||[]).filter(row=>Number.isFinite(row?.start)&&Number.isFinite(row?.end)&&row.end>row.start).sort((a,b)=>a.start-b.start||a.end-b.end);
+  const merged=[];
+  for(const row of rows){
+    const last=merged.at(-1);
+    if(last&&row.start<=last.end+240){
+      last.end=Math.max(last.end,row.end);
+      last.labels=unique([...(last.labels||[]),...(row.labels||[])]);
+    }else merged.push({start:row.start,end:row.end,labels:unique(row.labels||[])});
+  }
+  return merged;
+}
+function focusedSymbolContext(root,target,responsibleFiles=[],exploration={}){
+  const contract=exploration?.editContract||{};
+  const confidence=clean(contract.responsibilityConfidence).toUpperCase();
+  const symbolCandidates=unique([
+    ...(contract.primaryTargets||[]),
+    ...(contract.responsibilityGraph?.relevantNodes||[]).map(row=>row?.name),
+    ...(contract.allowedDependentSymbolsOrSystems||[])
+  ]).filter(name=>/^[A-Za-z_$][\w$]{1,80}$/.test(name));
+  if(!responsibleFiles.length||!symbolCandidates.length||!['HIGH','MEDIUM'].includes(confidence))return null;
+  const files=[];
+  let total=0,matchedSymbolCount=0;
+  for(const relative of responsibleFiles){
+    const full=path.join(root,relative);
+    if(!fs.existsSync(full)||!fs.statSync(full).isFile())continue;
+    const text=fs.readFileSync(full,'utf8');
+    const ranges=[];
+    const matched=new Set();
+    for(const symbol of symbolCandidates.slice(0,16)){
+      const re=new RegExp('\\b'+regexEscape(symbol)+'\\b','g');
+      let match,count=0;
+      while((match=re.exec(text))&&count<3){
+        const range=sourceWindowRange(text,match.index);
+        ranges.push({...range,labels:[symbol]});
+        matched.add(symbol);
+        count+=1;
+      }
+    }
+    const preserveKeys=unique(contract.semanticDiffBudget?.saveKeysMustRemainCompatible||[]);
+    for(const key of preserveKeys.slice(0,8)){
+      const at=text.indexOf(key);
+      if(at>=0)ranges.push({...sourceWindowRange(text,at,{before:650,after:1800}),labels:['SAVE_KEY:'+key]});
+    }
+    if(!ranges.length)continue;
+    matchedSymbolCount+=matched.size;
+    const merged=mergeSourceWindowRanges(ranges).slice(0,8);
+    for(const row of merged){
+      const content=text.slice(row.start,row.end);
+      if(!content.trim())continue;
+      files.push({path:relative,content,truncated:true,editable:true,exactSourceWindow:true,windowLabel:(row.labels||[]).join('+')||'responsibility'});
+      total+=Buffer.byteLength(content,'utf8');
+    }
+  }
+  if(!files.length)return null;
+  return{files,bytes:total,mode:'PRIMARY_SYMBOL_WINDOWS',focusedSymbolCount:matchedSymbolCount,exactSourceWindows:true,fullFileFallback:false};
+}
 function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
   if(target!=='web'||allowFullRewrite||responsibleFiles.length!==1||!responsibleFiles[0].toLowerCase().endsWith('.html'))return false;
   const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
@@ -202,13 +269,14 @@ function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_
 }
 function normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES}){const envelope=typeof raw==='string'&&allowFullRewrite?parseFullFileEnvelope(raw):null;const directHtml=typeof raw==='string'&&allowFullRewrite&&!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null;const parsed=envelope||directHtml||(typeof raw==='string'?extractJson(raw):raw);if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('모델 후보는 JSON 객체 또는 허용된 전체 파일 응답이어야 함');const edits=(Array.isArray(parsed.edits)?parsed.edits:[]).map(item=>({path:normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),find:String(item?.find??''),replace:String(item?.replace??'')}));for(const edit of edits){if(!edit.find)throw new Error(`edit find 비어 있음: ${edit.path}`);if(edit.find===edit.replace)throw new Error(`변경 없는 edit: ${edit.path}`);}const newFiles=(Array.isArray(parsed.newFiles)?parsed.newFiles:[]).map(item=>{if(responsibleFiles.length)throw new Error('책임 파일이 지정된 작업은 새 파일 자동 생성 금지');const relative=normalizeModelPath(item?.path,{target,responsibleFiles:[],sourceRootRelative}),content=String(item?.content??'');if(!content||Buffer.byteLength(content,'utf8')>MAX_FILE_BYTES)throw new Error(`새 파일 크기 오류: ${relative}`);return{path:relative,content};});if(newFiles.length>MAX_NEW_FILES)throw new Error(`새 파일은 최대 ${MAX_NEW_FILES}개`);const requiredFullRewriteBytes=Math.max(MIN_FULL_REWRITE_BYTES,Math.min(MAX_FILE_BYTES,Number(minFullRewriteBytes)||MIN_FULL_REWRITE_BYTES));const replaceFiles=(Array.isArray(parsed.replaceFiles)?parsed.replaceFiles:[]).map(item=>{if(!allowFullRewrite)throw new Error('전체 파일 교체는 명시된 Web 재구축 작업에서만 허용');const relative=normalizeModelPath(item?.path,{target,responsibleFiles,sourceRootRelative}),content=String(item?.content??''),bytes=Buffer.byteLength(content,'utf8');if(!content||bytes<requiredFullRewriteBytes||bytes>MAX_FILE_BYTES)throw new Error(`전체 교체 파일 크기 오류: ${relative}:bytes=${bytes}:min=${requiredFullRewriteBytes}:max=${MAX_FILE_BYTES}`);return{path:relative,content};});const touched=[...edits.map(x=>x.path),...newFiles.map(x=>x.path),...replaceFiles.map(x=>x.path)];const touchedCount=new Set(touched).size;if(!touched.length)throw new Error('후보가 실제 source 변경을 생성하지 않음');if(touchedCount>MAX_CHANGED_FILES)throw new Error(`변경 파일 수가 최대 ${MAX_CHANGED_FILES}개를 초과함`);if(touchedCount!==touched.length)throw new Error('같은 파일에 edit/new/replace 중복 작업 금지');return{summary:clean(parsed.summary)||'Vibe2 source candidate',expectedEffect:clean(parsed.expectedEffect),edits,newFiles,replaceFiles,tests:(Array.isArray(parsed.tests)?parsed.tests:[]).map(clean).filter(Boolean).slice(0,8)};}
 function fullWebGenerationTarget(order={}){const requirements=[...clean(order?.goal).matchAll(/REAL_GAME_FOOTPRINT_TOO_SMALL:\\d+:(\\d+)/gi)].map(match=>Number(match[1])).filter(Number.isFinite);const minBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MIN_BYTES,...requirements));const maxBytes=Math.min(MAX_FILE_BYTES,Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minBytes*2));return{minBytes,maxBytes};}
-function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);return[
+function buildPrompt(order,context,responsibleFiles,{allowFullRewrite=false,exploration=null,sourceRootBootstrap=false}={}){const sourceText=context.files.map(file=>`\n=== FILE ${file.path}${file.editable?' [EDITABLE]':' [READ-ONLY IMPACT CONTEXT]'}${file.exactSourceWindow?' [EXACT SOURCE WINDOW:'+String(file.windowLabel||'responsibility')+']':''}${file.truncated?' [TRUNCATED]':''} ===\n${file.content}`).join('\n');const allowed=responsibleFiles.length?responsibleFiles.join(', '):context.files.filter(file=>file.editable!==false).map(file=>file.path).join(', ');const fullWebTarget=fullWebGenerationTarget(order);return[
 allowFullRewrite?'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON. Do not use markdown fences.':'You are the Vibe2 game source worker. Return JSON only.',
 `Engine: ${order.target}`,
 `Goal: ${order.goal}`,
 `Department: ${order.department||'development'}`,
 explorationGuidance(exploration),
 `Allowed edit paths: ${allowed}`,
+context.exactSourceWindows?'CONTEXT MODE: exact responsibility windows. Each FILE window contains exact source text but separate windows are not contiguous. Any edits[].find MUST be copied wholly from one exact window; never span two windows or invent omitted text.':'',
 allowFullRewrite?(sourceRootBootstrap?'OWNER AUTHORIZATION: create the first complete playable Web baseline at the exact responsible index.html path. This is an approved missing-source bootstrap. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, save compatibility scaffolding where required, and no external network dependency.':'OWNER AUTHORIZATION: this existing Web prototype must be rebuilt into a real playable game. Replace the responsible existing file completely. Do not return a validation dashboard, fake state buttons, or a thin prototype. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, and no external network dependency.'):'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
 allowFullRewrite?'The PATH line MUST be one exact path from Allowed edit paths. Everything between the content and end markers is written verbatim as the replacement file. The end marker is mandatory; never omit it.':'Every edits[].path and replaceFiles[].path MUST be one exact path from Allowed edit paths.',
 allowFullRewrite?`Full Web generation target: ${fullWebTarget.minBytes}-${fullWebTarget.maxBytes} UTF-8 bytes. The parser hard safety gate remains ${MIN_FULL_REWRITE_BYTES}-${MAX_FILE_BYTES} bytes, but do not target that floor. Before finishing, implement all of these as real runtime behavior: direct pointer/touch input, mutable persistent-capable game state, a repeating update/render or equivalent state-transition loop, at least one progression or resource system, an explicit win/loss/result condition, restart/reset, and responsive mobile layout. Use substantial executable JavaScript and do not pad with filler text. Do not return a tiny shell, placeholder dashboard, validation buttons, or static mock UI. Reserve the final output for </html> followed by VIBE2_FILE_END.`:'Do not expand unrelated code.',
@@ -528,16 +596,23 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const allowFullRewrite=fullWebRewriteAllowed(order,target,exploration);
   const focusedWebRepair=isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite);
   const bootstrapHtml='<!doctype html><html><head><meta charset="utf-8"><title>Approved Web Bootstrap</title></head><body><main id="game"></main><script></script></body></html>';
+  const focusedContext=sourceRootExists&&focusedWebRepair?focusedSymbolContext(sourceRoot,target,responsibleFiles,exploration):null;
   const context=!sourceRootExists&&bootstrap
-    ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8')}
-    :readContext(
+    ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
+    :(focusedContext||{
+      ...readContext(
         sourceRoot,
         target,
         responsibleFiles,
         order?.source?.ignoredPaths||[],
         focusedWebRepair?(exploration.contextFiles||[]).slice(0,FOCUSED_WEB_REPAIR_CONTEXT_FILES):(exploration.contextFiles||[]),
         focusedWebRepair?{maxFiles:FOCUSED_WEB_REPAIR_CONTEXT_FILES,maxBytes:FOCUSED_WEB_REPAIR_CONTEXT_BYTES}:{}
-      );
+      ),
+      mode:focusedWebRepair?'BOUNDED_FILE_EXCERPT_FALLBACK':'STANDARD_CONTEXT',
+      focusedSymbolCount:0,
+      exactSourceWindows:false,
+      fullFileFallback:focusedWebRepair
+    });
   if(!context.files.length)throw new Error('worker context 파일 없음');
   const fullWebTarget=allowFullRewrite?fullWebGenerationTarget(order):null;
   const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap});
@@ -550,7 +625,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator});
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
-  const generation={...generated.generation,contextFiles:context.files.length,contextBytes:context.bytes};
+  const generation={...generated.generation,contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true};
   if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
@@ -582,6 +657,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     verifiedFailureLocalMemoryIds:Array.isArray(editContract?.patchRecipe?.verifiedMemoryIds)?editContract.patchRecipe.verifiedMemoryIds.slice(0,8):[],
     contextFiles:context.files.length,
     contextBytes:context.bytes,
+    contextMode:generation.contextMode||'STANDARD_CONTEXT',
+    focusedSymbolCount:Number(generation.focusedSymbolCount||0),
+    exactSourceWindows:generation.exactSourceWindows===true,
+    fullFileContextFallback:generation.fullFileContextFallback===true,
     generationAttempts:Number(generation.attempts||0),
     generationRecoveryUsed:generation.recoveryUsed===true,
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
