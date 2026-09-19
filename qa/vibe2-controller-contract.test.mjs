@@ -14,6 +14,7 @@ import { finalizeVibe2FanInReview } from '../tools/vibe2-fan-in-review.mjs';
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
 const coreQaWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-core-qa.yml',import.meta.url),'utf8');
+const candidateReleaseWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
 
@@ -141,9 +142,21 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
   assert(reserveBlock.indexOf('tools/vibe2-system-steward.mjs') < reserveBlock.indexOf('tools/vibe2-handoff.mjs --check'));
   assert(reserveBlock.includes('git add .vibe2/queue.json .vibe2/parallelism-control.json'));
   assert(workflow.includes('(cd "$contract_root" && node --test --test-concurrency=4'));
-  assert(workflow.includes('Regression runs once at fan-in against the exact reserved main contract.'));
+  assert(workflow.includes('Candidate regression runs once at fan-in against the exact reserved main contract.'));
   assert.match(continuousRunnerSource,/projectLifecycleFile=''/);
   assert.match(continuousRunnerSource,/projectLifecycleFile:clean\(args\['project-lifecycle'\]\)/);
+});
+
+test('candidate release gate isolates candidates and requires the affected Web deployment check',()=>{
+  assert(candidateReleaseWorkflow.includes('group: vibe2-release-${{ github.event.inputs.candidate_branch || github.ref_name }}'));
+  assert(candidateReleaseWorkflow.includes('cancel-in-progress: false'));
+  assert(!candidateReleaseWorkflow.includes('group: vibe2-release-serial'));
+  assert(candidateReleaseWorkflow.includes('select(.name=="Cloudflare Pages")'));
+  assert(candidateReleaseWorkflow.includes('VIBE2_RELEASE_PAGES_CHECK='));
+  const webReleaseStart=candidateReleaseWorkflow.indexOf('- name: Promote approved web source root through reviewed PR');
+  const robloxReleaseStart=candidateReleaseWorkflow.indexOf('  roblox-release:');
+  const webReleaseBlock=candidateReleaseWorkflow.slice(webReleaseStart,robloxReleaseStart);
+  assert(!webReleaseBlock.includes('gh pr checks "$pr_url" --watch --fail-fast'));
 });
 
 test('controller runs content-hash incremental QA per worker and one parallel full regression at fan-in',()=>{
