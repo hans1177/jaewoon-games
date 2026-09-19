@@ -221,6 +221,18 @@
       "releaseDispatchRecoveryUsesLatestResetReplay": true,
       "releaseDispatchRecoveryCooldownMs": 120000,
       "releaseDispatchRecoveryControlRebaseForbidden": true
+    },
+    "parallelismContractValidation": {
+      "version": 1,
+      "authority": "CENTRAL_QUEUE_MAX_WAVE_CAP_SEPARATION",
+      "persistentQueueMax": 256,
+      "externalMatrixBatchMax": 256,
+      "ownerMinimumWave": 20,
+      "currentAdaptiveWaveStateSource": "vibe2-unreal-core:.vibe2/parallelism-control.json",
+      "fanInOnlyRefillRequired": true,
+      "taskLocalExplorationRequired": true,
+      "test": "qa/vibe2-parallelism-main-contract.test.mjs",
+      "staleGlobalThirtySlotExpectationRemoved": true
     }
   },
   "phases": [
