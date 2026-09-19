@@ -146,6 +146,10 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
 test('controller runs content-hash incremental QA per worker and one parallel full regression at fan-in',()=>{
   assert(workflow.includes('actions/cache@v4'));
   assert(workflow.includes('tools/vibe2-incremental-qa.mjs'));
+  assert(workflow.includes('VIBE2_CANDIDATE_MANIFEST='));
+  assert(workflow.includes('candidate_manifest_rel='));
+  assert(workflow.includes('CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}'));
+  assert.equal(workflow.includes('find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit'),false);
   assert(workflow.includes('incremental-qa-hash:'));
   assert(workflow.includes('Merge outcomes run regression and package review'));
   assert(workflow.includes('Per-candidate test/performance roles already ran. Regression runs once at fan-in against the exact reserved main contract.'));
@@ -256,6 +260,7 @@ test('worker result keeps throughput and actual workload telemetry inputs in the
   const end=workflow.indexOf('- name: Upload worker result for fan-in');
   assert(start>=0 && end>start);
   const resultStep=workflow.slice(start,end);
+  assert(resultStep.includes('CANDIDATE_MANIFEST:'));
   for(const key of ['RESERVED_AT:','REQUESTED_MAX:','EFFECTIVE_MAX:','WORKER_STARTED_AT_FILE:','CHECKOUT_MS:','MODEL_PREP_MS:','CANDIDATE_MS:','QA_MS:','CHANGED_FILE_COUNT:','ADDED_LINE_COUNT:','DELETED_LINE_COUNT:']) {
     assert(resultStep.includes(key),`missing result telemetry env ${key}`);
   }
