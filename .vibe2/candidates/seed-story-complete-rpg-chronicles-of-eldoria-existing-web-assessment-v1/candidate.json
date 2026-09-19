@@ -1,0 +1,18 @@
+{
+  "summary": "Index.html 수정",
+  "expectedEffect": "게임 구성 요소 및 설정을 보존하면서, 웹 게임의 구조와 기능을 유지하고, 필요한 경우 최신 기능을 추가",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script>",
+      "replace": "<script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script><script src=\"/web-games/_shared/vibe2-final.js\"></script>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "GAME_CONFIG should match original",
+    "script tag should be present",
+    "game config should not be modified unless authorized"
+  ]
+}
