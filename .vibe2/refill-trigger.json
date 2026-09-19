@@ -1,0 +1,23 @@
+{
+  "kind": "focused-replace-clean-wave",
+  "source": "main",
+  "mainSha": "4a5c5fb45094bd38736fcd15fcc8f27dc1ae9bfe",
+  "baseline": {
+    "pass": 5,
+    "fail": 15,
+    "successRatePct": 25
+  },
+  "priorClean": {
+    "runId": 35454893941,
+    "pass": 3,
+    "fail": 17,
+    "successRatePct": 15,
+    "failures": {
+      "TIMEOUT": 8,
+      "NO_OP": 6,
+      "OTHER": 1,
+      "MALFORMED_OUTPUT": 2
+    }
+  },
+  "objective": "verify replace-only focused retry on clean 20-wave"
+}
