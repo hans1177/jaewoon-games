@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "    function progress() {",
+      "replace": "    function progress() {\\n        if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {\\n            progression += 1;\\n            if (progression >= 3) {\\n                alert('You won!');\\n            }\\n        }\\n    }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
