@@ -20,6 +20,7 @@ import { adaptiveRequestedMax, createParallelismControl, decideAdaptiveBackpress
 
 const clean = (value) => String(value ?? '').trim();
 const FULL_WEB_OUTPUT_BUDGET_REPAIR_EVIDENCE = 'repair-retry:vibe2-full-web-output-budget-v2';
+const SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE = 'repair-retry:vibe2-source-generation-context-v3';
 const STALE_RUNNING_RECOVERY_EVIDENCE = 'recovery:stale-running-reservation-v1';
 const DEFAULT_STALE_RUNNING_MS = 45 * 60 * 1000;
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
@@ -104,6 +105,38 @@ export function recoverFixedFullWebTransportFailures(queueInput) {
   };
 }
 
+export function recoverFixedSourceCandidateGenerationFailures(queueInput) {
+  const queue = createVibeContinuousQueue(queueInput);
+  let recovered = 0;
+  const tasks = queue.tasks.map((task) => {
+    const evidence = Array.isArray(task.evidence) ? task.evidence : [];
+    const blocker = clean(task.blocker);
+    const retryExhausted = Number(task.retries || 0) > Number(task.maxRetries ?? 2);
+    const eligible = task.status === 'failed'
+      && clean(task.department).toLowerCase() === 'development'
+      && clean(task.type).toLowerCase() === 'implementation'
+      && clean(task.target).toLowerCase() === 'web'
+      && retryExhausted
+      && ['source-candidate-generation-failed','parallel-candidate-generation-failed'].includes(blocker)
+      && !evidence.includes(SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE);
+    if (!eligible) return task;
+    recovered += 1;
+    return {
+      ...task,
+      ...clearedReservation(),
+      status:'queued',
+      retries:0,
+      blocker:null,
+      lastOutcome:'RETRY_AFTER_SOURCE_GENERATION_INFRA_REPAIR',
+      evidence:[...new Set([...evidence, SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE])]
+    };
+  });
+  return {
+    recovered,
+    queue: recovered ? createVibeContinuousQueue({ tasks, maxConcurrentTasks: queue.maxConcurrentTasks }) : queue
+  };
+}
+
 function isWorkerCapacityReleasedBlocker(value = '') {
   const blocker = clean(value);
   return /awaiting.*qa|qa.*awaiting|slot-released.*fan-in|WAITING_FOR_GEMINI_QUOTA|gemini.*quota|external.*model.*quota/i.test(blocker);
@@ -142,11 +175,13 @@ export function recoverStaleRunningReservations(queueInput, { nowMs = Date.now()
 
 function recoverRunnableInfrastructureState(queueInput) {
   const transport = recoverFixedFullWebTransportFailures(queueInput);
-  const stale = recoverStaleRunningReservations(transport.queue);
+  const sourceGeneration = recoverFixedSourceCandidateGenerationFailures(transport.queue);
+  const stale = recoverStaleRunningReservations(sourceGeneration.queue);
   return {
     queue:stale.queue,
-    recovered:transport.recovered + stale.recovered,
+    recovered:transport.recovered + sourceGeneration.recovered + stale.recovered,
     transportRecovered:transport.recovered,
+    sourceGenerationRecovered:sourceGeneration.recovered,
     staleRecovered:stale.recovered
   };
 }
