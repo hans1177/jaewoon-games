@@ -182,21 +182,21 @@ test('controller allows approved source root but enforces candidate boundary',()
   assert(workflow.includes('candidate escaped approved boundary'));
 });
 
-test('worker completion uses repository dispatch to refill slots before batch fan-in',()=>{
+test('workers complete the current wave before one fan-in refill dispatch',()=>{
   assert(workflow.includes('repository_dispatch:'));
-  assert(workflow.includes('types: [vibe2-slot-refill, vibe2-fanin-refill]'));
-  assert(workflow.includes("- 'vibe2/refill/**'"));
-  assert(workflow.includes('release-slot'));
-  assert(workflow.includes('slot-released-awaiting-fan-in'));
-  assert(workflow.includes('Signal immediate slot refill after single-variant worker completion'));
-  assert(workflow.includes("event_type:'vibe2-slot-refill'"));
-  assert(workflow.includes('VIBE2_EARLY_SLOT_REFILL_SIGNAL=REPOSITORY_DISPATCH'));
-  assert(workflow.includes('earlyRefill'));
+  assert(workflow.includes('types: [vibe2-fanin-refill]'));
+  assert(workflow.includes("- 'vibe2/refill/fanin/**'"));
+  assert.equal(workflow.includes('Signal immediate slot refill after single-variant worker completion'),false);
+  assert.equal(workflow.includes("event_type:'vibe2-slot-refill'"),false);
+  assert.equal(workflow.includes('VIBE2_EARLY_SLOT_REFILL_SIGNAL=REPOSITORY_DISPATCH'),false);
+  assert.equal(workflow.includes('earlyRefill'),false);
   assert.equal(runtime.continuous.refillRef,'vibe2-unreal-core');
-  assert.equal(runtime.continuous.refillMode,'per-worker-repository-dispatch-with-fan-in-fallback');
-  assert.equal(runtime.continuous.slotRefillTrigger,'repository-dispatch');
-  assert.equal(runtime.continuous.legacySlotRefillBranchCompatibility,true);
-  assert.equal(runtime.continuous.slotRefillSingleVariantOnly,true);
+  assert.equal(runtime.continuous.refillMode,'fan-in-repository-dispatch-with-hourly-safety-net');
+  assert.equal(runtime.continuous.slotRefillTrigger,'disabled');
+  assert.equal(runtime.continuous.legacySlotRefillBranchCompatibility,false);
+  assert.equal(runtime.continuous.slotRefillSingleVariantOnly,false);
+  assert.equal(runtime.continuous.perWorkerSlotRefillEnabled,false);
+  assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
 });
@@ -222,7 +222,7 @@ test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
 });
 
-test('worker never writes queue or parallelism state directly during early refill signaling',()=>{
+test('worker never mutates shared queue state or dispatches refill runs',()=>{
   const start=workflow.indexOf('  worker:');
   const end=workflow.indexOf('  fan_in:');
   assert(start>=0 && end>start);
@@ -230,8 +230,8 @@ test('worker never writes queue or parallelism state directly during early refil
   assert(!workerPart.includes('vibe2-queue-control.mjs release-slot'));
   assert(!workerPart.includes('git push origin HEAD:vibe2-unreal-core'));
   assert(!workerPart.includes('HEAD:refs/heads/vibe2/refill/'));
-  assert(workerPart.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"'));
-  assert(workerPart.includes("event_type:'vibe2-slot-refill'"));
+  assert(!workerPart.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"'));
+  assert(!workerPart.includes("event_type:'vibe2-slot-refill'"));
 });
 
 test('worker Ollama cache includes the runtime sidecar and rejects binary-only cache hits',()=>{
