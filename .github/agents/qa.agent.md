@@ -125,3 +125,10 @@ Web 90+는 independent revalidation까지 통과해야 선택된 native 플랫�
 - 과도한 설명으로 실제 gameplay pacing이 무너지는지
 
 스토리 품질이 좋아 보여도 런타임·저장·퀘스트 상태 검증 실패를 PASS로 덮지 않는다.
+
+## Canonical Presentation Runtime Gate
+
+- `data-presentation-quality-version="1"`이 실제 DOM에 노출된 Web 게임은 `tools/company-development-web-gameplay-validation.mjs`의 canonical Playwright 검증을 통과해야 한다.
+- 검증은 모바일 390×844 touch 환경에서 프레임 간격, 실제 시각 변화/살아있는 모션, 기존 음악·입력·카메라·성능 증거를 함께 본다.
+- 소스 문자열에 표시만 넣거나 정적 QA만 통과한 결과는 완료 근거가 아니다.
+- 런타임 표현 품질이 실패하면 `PRESENTATION_RUNTIME_QUALITY_REQUIRED`로 차단한다.
