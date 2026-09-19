@@ -673,8 +673,10 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const exploration=exploreVibe2WorkOrder({cwd,order});
   const allowFullRewrite=fullWebRewriteAllowed(order,target,exploration);
   const focusedWebRepair=isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite);
+  const preferredContextMode=clean(order?.codingStrategyPreference?.preferredContextMode).toUpperCase();
+  const preferBoundedContext=sourceRootExists&&focusedWebRepair&&preferredContextMode==='BOUNDED_FILE_EXCERPT_FALLBACK';
   const bootstrapHtml='<!doctype html><html><head><meta charset="utf-8"><title>Approved Web Bootstrap</title></head><body><main id="game"></main><script></script></body></html>';
-  const focusedContext=sourceRootExists&&focusedWebRepair?focusedSymbolContext(sourceRoot,target,responsibleFiles,exploration):null;
+  const focusedContext=sourceRootExists&&focusedWebRepair&&!preferBoundedContext?focusedSymbolContext(sourceRoot,target,responsibleFiles,exploration):null;
   const context=!sourceRootExists&&bootstrap
     ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8'),mode:'BOOTSTRAP_SHELL',focusedSymbolCount:0,exactSourceWindows:false,fullFileFallback:false}
     :(focusedContext||{
@@ -703,7 +705,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator});
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
-  const generation={...generated.generation,contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true};
+  const generation={...generated.generation,contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
   if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
@@ -736,6 +738,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     contextFiles:context.files.length,
     contextBytes:context.bytes,
     contextMode:generation.contextMode||'STANDARD_CONTEXT',
+    contextPreferenceRequested:generation.contextPreferenceRequested||null,
+    contextPreferenceApplied:generation.contextPreferenceApplied===true,
     focusedSymbolCount:Number(generation.focusedSymbolCount||0),
     exactSourceWindows:generation.exactSourceWindows===true,
     fullFileContextFallback:generation.fullFileContextFallback===true,
