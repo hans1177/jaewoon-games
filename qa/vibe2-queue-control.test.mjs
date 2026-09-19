@@ -224,6 +224,24 @@ test('high-risk opt-in task creates three speculative worker variants', () => {
   assert.equal(reserved.matrix[0].speculativeVariants,3);
 });
 
+test('primary task coverage consumes the worker budget before speculative variants', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
+  for(let i=0;i<4;i++) queue=add(queue,`primary-first-${i}`,`primary-first-${i}`,'web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  assert.equal(reserved.tasks.length,4);
+  assert.deepEqual(reserved.matrix.map(row=>row.speculativeVariants),[1,1,1,1]);
+  assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),4);
+});
+
+test('spare adaptive worker slots are shared across high-risk tasks before a third variant', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
+  queue=add(queue,'risk-a','risk-a','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
+  queue=add(queue,'risk-b','risk-b','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4});
+  assert.deepEqual(reserved.matrix.map(row=>row.speculativeVariants),[2,2]);
+  assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),4);
+});
+
 test('fan-in accepts first passing speculative variant and keeps task awaiting full QA', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risky','risky','web',{estimatedRisk:'high',speculativeEligible:true});
