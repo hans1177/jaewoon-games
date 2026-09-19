@@ -1,5 +1,5 @@
 {
-  "version": 114,
+  "version": 115,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -4118,5 +4118,168 @@
     "failureLocalRetrievalImplemented": true,
     "patchRecipeCompilerImplemented": true,
     "sameGameSameFailurePriority": true
+  },
+  "causalCodingLearning": {
+    "version": 1,
+    "status": "OWNER_DIRECT_DOCUMENTED_IMPLEMENTATION_PENDING",
+    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "objective": "MAKE_CODING_ITSELF_A_CONTINUOUS_CAUSAL_LEARNING PROCESS INSTEAD OF A SEPARATE POSTHOC CLASSIFICATION STEP",
+    "learningDefinition": "LEARNING_MEANS_IMPROVING_THE_SYSTEM_MODEL_OF_WHY_CODE_CHANGES_CAUSE_OBSERVED_BEHAVIOR_AND_USING_THAT_MODEL_TO_IMPROVE_THE_NEXT_CHANGE",
+    "principles": {
+      "codingIsLearningEpisode": true,
+      "meaningfulCodeChangeIsIntervention": true,
+      "classifyOnlyLearningIsInsufficient": true,
+      "successfulPatchWithoutCausalAttributionIsIncompleteLearning": true,
+      "failedPredictionMayProduceHighValueLearning": true,
+      "existingCanonicalLearningPipelineRemainsAuthoritative": true,
+      "newShadowTrainerOrCronForbidden": true
+    },
+    "causalCodingLoop": [
+      "OBSERVE_PROBLEM_OR_GOAL",
+      "LOAD_CURRENT_SOURCE_STRUCTURE_AND_PROTECTED_STATE",
+      "BUILD_OR_UPDATE_CAUSAL_HYPOTHESES",
+      "PREDICT_EXPECTED_EFFECTS_AND_EXPECTED_NON_EFFECTS",
+      "SELECT_LOWEST_RISK_HIGHEST_INFORMATION_INTERVENTION",
+      "APPLY_ISOLATED_CODE_CHANGE",
+      "RUN_TARGETED_RUNTIME_OR_TEST_OBSERVATION",
+      "COMPARE_PREDICTION_WITH_ACTUAL_RESULT",
+      "CONFIRM_REFUTE_OR_REVISE_CAUSAL_HYPOTHESIS",
+      "UPDATE_WITHIN_TASK_CAUSAL_MODEL",
+      "USE_UPDATED_MODEL_FOR_NEXT_CODE_CHANGE",
+      "RUN_CANONICAL_QA_REGRESSION_AND_EXACT_REVISION_GATES",
+      "DISTILL_VERIFIED_CAUSAL_LESSON"
+    ],
+    "causalEpisodeMinimumRecord": [
+      "OBSERVATION",
+      "CURRENT_STRUCTURE",
+      "HYPOTHESIS",
+      "PROPOSED_MECHANISM",
+      "INTERVENTION",
+      "PREDICTED_EFFECTS",
+      "PREDICTED_NON_EFFECTS",
+      "ACTUAL_EFFECTS",
+      "ACTUAL_NON_EFFECTS",
+      "HYPOTHESIS_VERDICT",
+      "COUNTER_EVIDENCE",
+      "RESPONSIBLE_SOURCE",
+      "EXACT_SOURCE_REVISION",
+      "QA_AND_REGRESSION_EVIDENCE",
+      "REUSABLE_PRINCIPLE"
+    ],
+    "candidateTournamentEvolution": {
+      "existingCandidateCountPreserved": true,
+      "uncertainRootCauseShouldPreferDistinctCausalHypotheses": true,
+      "duplicateMechanismCandidatesShouldBePenalizedWhenDiagnosisIsUncertain": true,
+      "candidateMayRepresentDifferentRootCauseHypothesis": true,
+      "candidateMayRepresentDifferentInterventionForSameHypothesis": true,
+      "obviousDeterministicFixDoesNotRequireFabricatedHypothesisDiversity": true,
+      "winnerSelectionStillRequiresExistingRuntimeQaRegressionEvidence": true
+    },
+    "activeLearning": {
+      "enabled": true,
+      "selectionObjective": "MAXIMIZE_CAUSAL_INFORMATION_GAIN_PER_SAFE_CODE_INTERVENTION",
+      "preferSmallScopedIntervention": true,
+      "preferExperimentThatSeparatesCompetingHypotheses": true,
+      "avoidBroadPatchBeforeCauseNarrowingWhenSafeDiagnosticExperimentExists": true,
+      "productionSafetyAndOwnerLocksOverrideInformationGain": true
+    },
+    "counterfactualAndAblation": {
+      "enabledWhenSafeAndEconomical": true,
+      "counterfactualQuestion": "WOULD_THE_FAILURE_OR_BEHAVIOR_PERSIST_WITHOUT_THIS_CHANGE",
+      "patchRevertReplayMayStrengthenCausalEvidence": true,
+      "multiChangeSuccessfulPatchShouldBeAblatedWhenCausalAttributionIsAmbiguous": true,
+      "destructiveOrUnsafeCounterfactualForbidden": true,
+      "canonicalQaCannotBeSkippedForCounterfactualTesting": true
+    },
+    "causalGraphEvolution": {
+      "existingGraphMustBeReused": "assets/vibe-quality-intelligence.js",
+      "staticInfluenceGraphAloneIsInsufficient": true,
+      "verifiedInterventionMayUpdateEdgeConfidence": true,
+      "correlationOnlyObservationMustNotBeTreatedAsStrongCausalProof": true,
+      "edgeEvidenceFields": [
+        "CAUSE",
+        "EFFECT",
+        "CONDITIONS",
+        "DIRECTION",
+        "CONFIDENCE",
+        "SUPPORTING_EPISODES",
+        "CONTRADICTING_EPISODES",
+        "LAST_VERIFIED_REVISION",
+        "PROJECT_SCOPE",
+        "TRANSFERABILITY"
+      ],
+      "contradictionsMustReduceOrInvalidateConfidence": true,
+      "staleMechanismMustBeRevalidatedAfterRelevantStructuralChange": true
+    },
+    "failureLearningClasses": [
+      "EXECUTION_FAILURE",
+      "FALSIFIED_HYPOTHESIS",
+      "PARTIAL_MECHANISM_SUPPORT",
+      "CONFOUNDED_RESULT",
+      "ENVIRONMENT_OR_INFRA_FAILURE",
+      "RESPONSIBILITY_MISATTRIBUTION"
+    ],
+    "withinTaskLearning": {
+      "updateAfterEveryMeaningfulAttempt": true,
+      "nextAttemptMustConsumeNewObservableEvidence": true,
+      "repeatedAttemptWithoutNewEvidenceOrChangedHypothesisDiscouraged": true,
+      "temporaryWithinTaskBeliefsAreNotCanonicalMemory": true,
+      "canonicalPromotionRequiresExistingVerificationGates": true
+    },
+    "distillation": {
+      "levels": [
+        "LOCAL_PROJECT_FACT",
+        "MECHANISM_LEVEL_RULE",
+        "GENERAL_TRANSFERABLE_PRINCIPLE"
+      ],
+      "maturity": [
+        "OBSERVED",
+        "CANDIDATE",
+        "VALIDATED",
+        "DISTILLED",
+        "CORE",
+        "DEPRECATED"
+      ],
+      "generalizationRequiresMultiContextEvidenceWhenApplicable": true,
+      "failedAndRefutedHypothesesRemainNegativeKnowledge": true,
+      "successMemoryMustStoreWhyItWorkedNotOnlyThatItPassed": true,
+      "canonicalOutputRoute": "EXISTING_VIBE3_TRAJECTORY_TO_CANONICAL_DISTILLATION_CHAIN"
+    },
+    "learningAbilityEvaluation": {
+      "evaluateLearningItselfNotOnlyTaskSuccess": true,
+      "metrics": [
+        "PREDICTION_ACCURACY",
+        "PREDICTION_CALIBRATION",
+        "ROOT_CAUSE_VERIFICATION_RATE",
+        "FIRST_CANDIDATE_PASS_RATE",
+        "AVERAGE_GENERATION_OR_REPAIR_ATTEMPTS",
+        "REPEATED_FAILURE_RECURRENCE_RATE",
+        "TIME_TO_VERIFIED_ROOT_CAUSE",
+        "CAUSAL_ATTRIBUTION_CONFIDENCE_VS_REVALIDATION",
+        "CROSS_PROJECT_MECHANISM_TRANSFER_SUCCESS",
+        "REGRESSION_RATE_AFTER_LEARNED_REUSE",
+        "FALSE_CAUSAL_BELIEF_RATE"
+      ],
+      "compareBeforeAfterOnMatchedTaskClasses": true,
+      "successWithoutPredictionImprovementDoesNotAloneProveLearningImprovement": true
+    },
+    "safeguards": {
+      "hiddenChainOfThoughtPersistenceRequired": false,
+      "observableEvidenceOnly": true,
+      "noAuthorityExpansionFromLearning": true,
+      "noGateWeakening": true,
+      "noThresholdLowering": true,
+      "noFabricatedCausalEvidence": true,
+      "protectedSaveProgressionBalanceRulesRemainLocked": true,
+      "exactRevisionBindingRequiredForCanonicalPromotion": true,
+      "environmentFailureMustNotBeMislearnedAsCodeCause": true
+    },
+    "implementationTargets": [
+      "assets/vibe-v3-engine.js",
+      "assets/vibe-quality-intelligence.js",
+      "tools/vibe3-trajectory-ingest.mjs",
+      "tools/vibe3-pump-index.mjs",
+      "company-learning/canonical-learning-pipeline.json"
+    ]
   }
 }
