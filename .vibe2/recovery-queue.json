@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T20:42:09.729Z"
+      "updatedAt": "2026-09-19T20:57:42.209Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1027,7 +1027,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:10",
-      "checkpoint": "2026-09-19T18:03:07Z",
+      "checkpoint": "2026-09-19T20:42:35Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1528,7 +1528,18 @@
         "speculative-variants:3",
         "release-dispatch-recovery-requested:vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-1-35459918874-1",
         "release-dispatch-recovery-at:1789841664774",
-        "release-dispatch-recovery-candidate-sha:f9403fa781c810bc19933efc6545f8bd03c46208"
+        "release-dispatch-recovery-candidate-sha:f9403fa781c810bc19933efc6545f8bd03c46208",
+        "vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-1-35468182508-1",
+        "candidate-sha:5bd7908eb85d7c026b6bdcead0ba708d3efc7759",
+        "base-main:dadf65c13cb6cb183969b2bd1e5c2afb347c73f3",
+        "incremental-qa-hash:e20dd5d31703cfeaf5030fa05aa95988e3700148821f7b727ebe23dde519e534",
+        "coding-context-bytes:27812",
+        "actions-run:35468182508",
+        "reservation-id:35468182508:1",
+        "workload:changed-lines:4",
+        "workload:prep-ms:6371",
+        "workload:cycle-ms:293198",
+        "exploration-reuse:3eaafae2ed5a10712dedceb6"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1544,7 +1555,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-19T20:42:09.728Z"
+      "updatedAt": "2026-09-19T20:57:42.209Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
