@@ -398,11 +398,24 @@ jobs:
           cd /tmp/vibe2-control
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
-          node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
-          git add .vibe2/queue.json
-          git commit -m "vibe2: recover Unity dispatch failure ${TASK_ID} [skip ci]"
-          git pull --rebase origin vibe2-unreal-core
-          git push origin HEAD:vibe2-unreal-core
+          settled=0
+          for attempt in 1 2 3; do
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=unity-build-dispatch-failed --evidence="actions-run-${GITHUB_RUN_ID}"
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            git commit -m "vibe2: recover Unity dispatch failure ${TASK_ID} [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$settled" = 1
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
           exit 1
 
@@ -539,19 +552,28 @@ jobs:
           cd /tmp/vibe2-control
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
-          if [ "$result" = PASS ]; then
-            node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,actions-run-${GITHUB_RUN_ID}"
-          else
-            node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
-          fi
-          git add .vibe2/queue.json
-          git commit -m "vibe2: settle Roblox task ${TASK_ID} ${result} [skip ci]"
+          settled=0
           for attempt in 1 2 3; do
-            git pull --rebase origin vibe2-unreal-core
-            git push origin HEAD:vibe2-unreal-core && break
-            test "$attempt" -lt 3
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            if [ "$result" = PASS ]; then
+              node tools/vibe2-queue-control.mjs pass --id="$TASK_ID" --evidence="roblox-exact-evidence-pass,main-pr-merged,roblox-open-cloud-published,actions-run-${GITHUB_RUN_ID}"
+            else
+              node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker=roblox-release-or-evidence-failed --evidence="roblox-validate-${VALIDATE_OUTCOME},promotion-${PROMOTE_OUTCOME},publish-${PUBLISH_OUTCOME},actions-run-${GITHUB_RUN_ID}"
+            fi
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            git commit -m "vibe2: settle Roblox task ${TASK_ID} ${result} [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
             sleep $((attempt * 2))
           done
+          test "$settled" = 1
           if [ "$result" = PASS ]; then gh workflow run public-game-health.yml --repo "$GITHUB_REPOSITORY" --ref main; fi
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
           echo "VIBE2_ROBLOX_AUTO_DEPLOY=$result"
@@ -582,9 +604,22 @@ jobs:
           cd /tmp/vibe2-control
           git config user.name 'jaewoon-vibe2-release'
           git config user.email 'vibe2-release@users.noreply.github.com'
-          node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker="$REASON" --evidence="candidate-release-rejected,actions-run-${GITHUB_RUN_ID}"
-          git add .vibe2/queue.json
-          git commit -m "vibe2: reject candidate ${TASK_ID} [skip ci]"
-          git pull --rebase origin vibe2-unreal-core
-          git push origin HEAD:vibe2-unreal-core
+          settled=0
+          for attempt in 1 2 3; do
+            git fetch origin vibe2-unreal-core --quiet
+            git reset --hard origin/vibe2-unreal-core
+            node tools/vibe2-queue-control.mjs fail --id="$TASK_ID" --blocker="$REASON" --evidence="candidate-release-rejected,actions-run-${GITHUB_RUN_ID}"
+            git add .vibe2/queue.json
+            if git diff --cached --quiet; then
+              settled=1
+              break
+            fi
+            git commit -m "vibe2: reject candidate ${TASK_ID} [skip ci]"
+            if git push origin HEAD:vibe2-unreal-core; then
+              settled=1
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          test "$settled" = 1
           gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main
