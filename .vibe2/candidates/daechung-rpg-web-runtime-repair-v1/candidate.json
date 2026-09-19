@@ -1,0 +1,17 @@
+{
+  "summary": "index.html 수정",
+  "expectedEffect": "index.html 내용 수정",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "RPG 최신판 로딩중...",
+      "replace": "RPG 최신 버전 로딩 중..."
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "index.html 내용 수정 확인",
+    "RPG 로딩 오류 검증"
+  ]
+}
