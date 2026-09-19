@@ -1,5 +1,5 @@
 {
-  "version": 86,
+  "version": 87,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3066,31 +3066,36 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FOCUSED_FINAL_TIMEOUT_AND_FULL_WEB_RECOVERY_2026-09-19",
+    "id": "VIBE2_BOUNDED_WEB_EXPANSION_AND_FANIN_ONLY_WAVE_GUARD_2026-09-19",
     "documentIsCode": true,
-    "reason": "REMOVE_MEASURED_FINAL_FOCUSED_WEB_REPAIR_TIMEOUT_BOTTLENECK_WHILE_PRESERVING_VALIDATOR_SCALE_FULL_WEB_ACCEPTANCE_EDIT_APPLICABILITY_RETRY_AND_FAN_IN_DRIFT_ISOLATION",
+    "reason": "REMOVE_SOURCE_CANDIDATE_GENERATION_STALLS_BY_ACCUMULATING_MODEL_GENERATED_FULL_WEB_EXPANSIONS_DEDUPING_RUNTIME_FAILURE_CONTEXT_AND_PREVENTING_PUSH_TRIGGERED_WAVES_FROM_OVERLAPPING_AN_ACTIVE_FAN_IN_CYCLE",
     "files": [
       "tools/vibe2-source-worker.mjs",
       "qa/vibe2-source-worker.test.mjs",
+      "tools/vibe2-auto-planner.mjs",
+      "qa/vibe2-auto-planner.test.mjs",
+      ".github/workflows/vibe2-24h-runner.yml",
+      ".github/workflows/vibe2-continuous-core.yml",
+      "qa/vibe2-controller-contract.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ],
     "commits": [
-      "3f87d282cbcee15851d38e32bd166f550804457f",
-      "dde979b3e4a633ddb4bf04fabee28cbebcecda26",
-      "42366528543fece2da21f40b2803fc840f6f79a5",
-      "6ae476a24b3b88130b457912b0221b16fec0772a",
-      "ab3a6cd0274e89eabc2b0f57147fce950048f917",
-      "51aff34d15636a116f2256d8072682e8cfad7416",
-      "dad83ace3496d1eb62c94c13a133eb714422710d",
-      "de7d9cbf25704658e9ae9c9012d6476666358c0a",
-      "602638718118c2a800df5f4acf41282cfb02c5da",
-      "8371c550790f1d731783053c3057dff895412dcb"
+      "c8d7dbce1b38d6c59d9fe76198ae9accc8f44414",
+      "9c36485eee6dc43f027ddccd84051a5b57e29002",
+      "d4caaec19061d2b9e7ed7706b03600e1655f7e92",
+      "12499e1329d80fb6bfaef58e9e7e06812ded613c",
+      "27c2521d795a950390734c75982e45556e4eed04",
+      "67004518af11edadfac63fc737dba81781e541c1",
+      "1fc8a4c35ed6e0c06fc7e3354c93b8e4ad90f08e",
+      "fa06240adc920a438ca12cbc7cc791133dadd449",
+      "118c796ef8d5aedc9c121bf12e0dc16656cfd577"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
+      "singleActiveWorkerWave": true,
       "systemAiNonblocking": true,
       "qualityGatesNotWeakened": true,
       "parserFullWebMinimumBytes": 1800,
@@ -3098,44 +3103,71 @@
       "directMainGameSourceWriteForbidden": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "candidateRegressionPinnedToReserveContract": true,
-      "controllerOrchestrationQaLatestMain": true
+      "controllerOrchestrationQaLatestMain": true,
+      "candidateReleaseConcurrencyScopedPerCandidate": true
     },
-    "timeoutContract": {
-      "focusedRepairAttempt1Ms": 240000,
-      "focusedRepairAttempt2Ms": 240000,
-      "compactFinalRetryMs": 150000,
-      "compactFinalRetryContextWindow": 16384,
-      "compactFinalRetryMaxPredict": 768,
-      "reason": "FOUR_FRESH_WORKERS_EXHAUSTED_240S_240S_90S_AND_FAILED_AT_THE_COMPACT_FINAL_TIMEOUT_BOUNDARY"
+    "sourceGenerationContract": {
+      "provider": "LOCAL_OLLAMA",
+      "model": "qwen3:1.7b",
+      "fullWebInitialGeneration": true,
+      "undersizedSeedPreserved": true,
+      "additiveExpansionMode": true,
+      "maxFullWebGenerationAttempts": 4,
+      "expansionTimeoutMs": 300000,
+      "expansionMaxPredict": 4096,
+      "expansionContextWindow": 24576,
+      "expansionWholeHtmlBodyRedefinitionForbidden": true,
+      "monkeyPatchAndFunctionOverrideForbidden": true,
+      "fillerAndValidatorOnlyExpansionForbidden": true,
+      "finalAcceptanceMinBytes": 12000
     },
-    "fullWebRecoveryContract": {
-      "validatorScaleGenerationAcceptance": true,
-      "defaultGenerationMinBytes": 12000,
-      "defaultGenerationMaxBytes": 24000,
-      "previousUndersizedCandidateCarriedIntoRetry": true,
-      "attemptOutputByteTelemetry": true
+    "runtimeFailureEvidenceContract": {
+      "duplicateRoutingBlockerRemovedWhenEquivalentToImplementationReason": true,
+      "distinctRoutingBlockersPreserved": true,
+      "requestedStagePreserved": true,
+      "implementationReasonPreserved": true,
+      "lastValidationAtPreserved": true
+    },
+    "waveReservationContract": {
+      "activeWorkerReservationDefinition": "status=running,reservationRunId present,blocker empty",
+      "twentyFourHourPlanWaveReadyGuard": true,
+      "coreReserveSecondRaceGuard": true,
+      "pushTriggeredOverlapForbidden": true,
+      "refillRequiresSuccessfulContinuousFanIn": true,
+      "awaitingQaBlockedTasksDoNotConsumeActiveWorkerWaveGuard": true
     },
     "liveEvidence": {
-      "runId": "35432498255",
-      "pinnedContractSha": "414aa2ef484ed51c86786127565e3c8b53014804",
-      "completedSample": 16,
-      "resultCounts": {
-        "pass": 5,
-        "timeout": 4,
-        "fullRewriteSize": 4,
+      "measuredRun": "35434036370",
+      "measuredPeakConcurrency": 20,
+      "measuredFailureRatePct": 85,
+      "measuredFanIn": "PASS",
+      "measuredResultCounts": {
+        "pass": 3,
+        "timeout": 8,
+        "fullRewriteSize": 6,
         "noOp": 2,
-        "editMatch": 1
+        "malformedOutput": 1,
+        "editMatch": 0
       },
-      "timedOutWorkers": [
-        "line-defense-web-runtime-repair-v1",
-        "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
-        "amusement-tycoon-web-runtime-repair-v1",
-        "village-dungeons-web-runtime-repair-v1"
-      ],
-      "timedOutCandidateMsRange": "548827-570721",
-      "finalObservedTimeoutMs": 90000,
-      "currentWavePredatesTimeoutFix": true,
-      "nextFreshContractMustIncludeAtLeast": "dde979b3e4a633ddb4bf04fabee28cbebcecda26"
+      "fullWebObservedOutputBytesRange": "1475-3879",
+      "repeatedWholeFileRetryProblem": "SAME_OR_NEAR_IDENTICAL_UNDERSIZED_OUTPUT_REPEATED_ACROSS_ATTEMPTS",
+      "editMatchRepairEffect": "ZERO_EDIT_MATCH_FAILURES_IN_MEASURED_RUN",
+      "overlapEvidence": {
+        "directCoreRun": "35434899351",
+        "directCoreContractSha": "574c18acaf1f1b78120e718c1ae14bb5bc40c25c",
+        "directCoreReservedTasks": 17,
+        "directCoreFanOutWorkers": 20,
+        "overlapping24hRun": "35434903664",
+        "overlapping24hContractSha": "b36ee0d2c3760b0e9355d98c32858f0c38241742",
+        "overlappingReservedTasks": 1,
+        "overlappingFanOutWorkers": 3,
+        "rootCause": "MAIN_PUSH_TRIGGERED_24H_RUNNER_RESERVED_REMAINING_WORK_WHILE_DIRECT_FANIN_REFILL_WAVE_ALREADY_ACTIVE",
+        "fixedBy": [
+          "27c2521d795a950390734c75982e45556e4eed04",
+          "67004518af11edadfac63fc737dba81781e541c1"
+        ]
+      },
+      "nextFreshContractMustIncludeAtLeast": "1fc8a4c35ed6e0c06fc7e3354c93b8e4ad90f08e"
     }
   }
 }
