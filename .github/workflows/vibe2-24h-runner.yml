@@ -140,6 +140,12 @@ jobs:
               node --check tools/company-shared-context.mjs
               node --test qa/company-shared-context.test.mjs
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-before-plan.json | tee /tmp/vibe2-shared-context-before-plan.log
+              node --check tools/vibe2-learning-motor.mjs
+              node --check tools/vibe2-practice-distillation.mjs
+              node --check tools/vibe2-design-intelligence.mjs
+              node --test qa/vibe2-learning-motor.test.mjs
+              node --test qa/vibe2-practice-distillation.test.mjs
+              node --test qa/vibe2-design-intelligence.test.mjs
             )
 
             # Repair canonical queue/parallelism state before fail-closed handoff validation.
