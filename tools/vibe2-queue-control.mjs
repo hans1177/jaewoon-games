@@ -279,11 +279,19 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
     Math.floor(Number(started.selection?.effectiveMaxConcurrentTasks ?? maxConcurrentTasks ?? queue.maxConcurrentTasks) || tasks.length || 1)
   );
   const speculativeVariants = new Map(tasks.map((task) => [task.id, 1]));
+  const speculativePriority = (task) => {
+    const text=`${clean(task?.id)} ${clean(task?.goal)} ${clean(task?.packageRole)}`.toLowerCase();
+    if (/runtime[-_ ]?repair|diagnostic|cleanup|targeted[-_ ]?repair|bug[-_ ]?fix/.test(text)) return 0;
+    if (/web[-_ ]?base[-_ ]?implementation|full[_ -]?web|full[_ -]?rebuild|full_web_game_rebuild/.test(text)) return 2;
+    return task?.packageLongWorkProtected===true?2:1;
+  };
   const speculativeEligible = tasks.filter((task) =>
     task.target !== 'unity' &&
     task.estimatedRisk === 'high' &&
     (task.speculativeEligible || task.priority === 'critical')
-  );
+  ).map((task,index)=>({task,index,priority:speculativePriority(task)}))
+    .sort((a,b)=>a.priority-b.priority||a.index-b.index)
+    .map(row=>row.task);
   let spareWorkerSlots = Math.max(0, workerBudget - tasks.length);
   for (let round = 0; round < 2 && spareWorkerSlots > 0; round += 1) {
     for (const task of speculativeEligible) {
@@ -308,7 +316,8 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
       reservationRunId: task.reservationRunId || null,
       reservationRunAttempt: task.reservationRunAttempt || 0,
       reservedAt: task.reservedAt || null,
-      speculativeVariants: speculativeVariants.get(task.id) || 1
+      speculativeVariants: speculativeVariants.get(task.id) || 1,
+      speculativePriority: speculativePriority(task)
     }))
   };
 }
