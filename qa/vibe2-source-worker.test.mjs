@@ -296,6 +296,46 @@ test('malformed JSON candidate gets one bounded strict-JSON recovery retry', asy
   assert.deepEqual(result.changedFiles, ['Assets/Player.cs']);
 });
 
+test('zero-change candidate gets one bounded recovery retry that produces a real responsible-file edit', async () => {
+  const cwd = tempRoot();
+  const empty = path.join(cwd, 'empty.json');
+  const good = path.join(cwd, 'good.json');
+  write(path.join(cwd, 'web-games/demo/index.html'), '<button id="play">Play</button>\n');
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({
+    target: 'web',
+    root: 'web-games/demo',
+    responsibleFiles: ['web-games/demo/index.html'],
+    taskId: 'zero-change-retry'
+  }), null, 2));
+  write(empty, JSON.stringify({ summary:'looked okay', expectedEffect:'none', edits:[], newFiles:[], replaceFiles:[], tests:[] }));
+  write(good, JSON.stringify({
+    summary:'make the existing control actionable',
+    expectedEffect:'visible implementation progress',
+    edits:[{ path:'index.html', find:'>Play<', replace:'>Continue<' }],
+    newFiles:[],
+    replaceFiles:[],
+    tests:['button label']
+  }));
+  const result = await runVibe2SourceWorker({ cwd, responseFiles:[empty,good] });
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.mode,'JSON_EDIT');
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
+test('zero-change recovery prompt requires a concrete bounded edit', () => {
+  const prompt = buildGenerationRetryPrompt('Allowed edit paths: index.html\n=== FILE index.html ===\n<button>Play</button>', {
+    allowFullRewrite:false,
+    error:new Error('후보가 실제 source 변경을 생성하지 않음')
+  });
+  assert.match(prompt,/zero actual source changes/);
+  assert.match(prompt,/MUST produce at least one edits\[\] entry/);
+  assert.match(prompt,/exact Allowed edit path/);
+  assert.match(prompt,/Copy find character-for-character/);
+  assert.match(prompt,/do not bypass responsible-file boundaries/);
+  assert.equal(shouldRetryGenerationError(new Error('후보가 실제 source 변경을 생성하지 않음')),true);
+});
+
 test('truncated FULL_REBUILD gets one compact raw-envelope recovery retry', async () => {
   const cwd = tempRoot();
   const bad = path.join(cwd, 'bad.txt');
