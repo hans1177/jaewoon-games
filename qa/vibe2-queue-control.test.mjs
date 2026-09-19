@@ -347,6 +347,26 @@ test('primary task coverage consumes the worker budget before speculative varian
   assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),4);
 });
 
+test('spare speculative slot prefers short repair over long full web rebuild without dropping either primary',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:3,tasks:[
+    {
+      id:'alpha-web-base-implementation-v1',gameId:'alpha',target:'web',department:'development',type:'implementation',
+      goal:'FULL_WEB_GAME_REBUILD actual game',status:'queued',priority:'critical',estimatedRisk:'high',speculativeEligible:true,
+      packageLongWorkProtected:true,responsibleFiles:['index.html']
+    },
+    {
+      id:'beta-web-runtime-repair-v1',gameId:'beta',target:'web',department:'development',type:'implementation',
+      goal:'targeted runtime repair',status:'queued',priority:'critical',estimatedRisk:'high',speculativeEligible:true,
+      packageLongWorkProtected:true,responsibleFiles:['index.html']
+    }
+  ]});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:3});
+  assert.equal(reserved.tasks.length,2);
+  assert.deepEqual(reserved.matrix.map(row=>row.speculativeVariants),[1,2]);
+  assert.deepEqual(reserved.matrix.map(row=>row.speculativePriority),[2,0]);
+  assert.equal(reserved.matrix.reduce((sum,row)=>sum+row.speculativeVariants,0),3);
+});
+
 test('spare adaptive worker slots are shared across high-risk tasks before a third variant', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'risk-a','risk-a','web',{priority:'critical',estimatedRisk:'high',speculativeEligible:true});
