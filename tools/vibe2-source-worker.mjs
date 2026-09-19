@@ -625,7 +625,7 @@ export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFile
       'Do NOT return path or find. The worker will apply them exactly.',
       'Return exactly one JSON object with one key: {"replace":"COMPLETE_REPLACEMENT_SOURCE_SNIPPET"}',
       'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
-      'Returning the exact find anchor unchanged is invalid. Change at least one behaviorally meaningful source token while preserving unrelated behavior.'
+      'Returning the exact find anchor unchanged is invalid. Change at least one behaviorally meaningful source token while preserving unrelated behavior.',
       'Preserve save keys, gameplay values, existing behavior, and unrelated systems unless the Goal explicitly requires changing them.',
       'No markdown, prose, comments outside source, extra keys, placeholders, ellipsis, or unchanged copy.',
       'SOURCE CONTEXT AROUND FIXED ANCHOR:',
