@@ -39,6 +39,10 @@ on:
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/company-speed-sequence-workflow.test.mjs'
       - 'company-learning/platform-release-roadmap.json'
+      - 'qa/company-shared-context.test.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/company-log-map.json'
       - 'company-directive.json'
   workflow_dispatch:
   schedule:
@@ -77,6 +81,9 @@ jobs:
 
       - name: Verify Web and promotion contracts
         run: |
+          node --check tools/company-shared-context.mjs
+          node --test qa/company-shared-context.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/company-shared-context-web-plan.json
           node --check tools/company-development-web-bootstrap.mjs
           node --check tools/company-vibe2-gameplay-intelligence.mjs
           node --check tools/company-vibe2-coding-architecture.mjs
@@ -679,6 +686,9 @@ jobs:
           pattern: development-web-result-*
           path: /tmp/web-batch
           merge-multiple: true
+
+      - name: Revalidate shared worker context before Web persistence
+        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-web-persist.json
 
       - name: Persist parallel Web evidence and queue state
         if: needs.web-plan.outputs.target_count != '0' && steps.runtime_binding.outputs.fresh == 'true'
