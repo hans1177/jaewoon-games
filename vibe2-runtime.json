@@ -1,5 +1,5 @@
 {
-  "version": 12,
+  "version": 13,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 12,
+      "runtime": 13,
       "queue": 5,
       "parallelism": 3,
       "experience": 3,
@@ -200,7 +200,8 @@
     "projectLifecycleState": ".vibe2/web-roblox-handoffs.json",
     "centralPolicy": "company-learning/platform-release-roadmap.json",
     "logMap": "company-learning/company-log-map.json",
-    "architectureMap": "company-learning/company-architecture-map.json"
+    "architectureMap": "company-learning/company-architecture-map.json",
+    "systemAiQueue": ".vibe2/system-ai-queue.json"
   },
   "workers": {
     "exploration": {
@@ -247,6 +248,19 @@
       "practiceOnly": true,
       "productionPass": false,
       "productionWorkPreempts": true
+    },
+    "systemAi": {
+      "configured": true,
+      "provider": "LOCAL_OLLAMA",
+      "model": "qwen3:1.7b",
+      "queue": ".vibe2/system-ai-queue.json",
+      "queueTool": "tools/company-system-ai-queue.mjs",
+      "workerTool": "tools/company-system-ai-worker.mjs",
+      "workflow": ".github/workflows/company-system-ai-workers.yml",
+      "candidateBranchPrefix": "system-ai/candidate/",
+      "directMainWrite": false,
+      "gameSourceWrite": false,
+      "primaryAiReviewRequiredAfterVerifiedCandidate": true
     }
   },
   "coordination": {
