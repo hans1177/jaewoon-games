@@ -1,5 +1,5 @@
 {
-  "version": 36,
+  "version": 37,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1108,7 +1108,7 @@
         "robloxRunnerFailure": "USE_EXISTING_AUTHENTICATED_RUNNER_SELF_HEAL",
         "externalModelQuota": "CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK",
         "waitingForVerifiedSamples": "CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE",
-        "staleMachineStateBlockerAfterStateNormalization": "REVALIDATE_RAW_CONTROL_V3_QUEUE30_THEN_CLEAR_STALE_BLOCKER_AND_REQUEUE"
+        "staleMachineStateBlockerAfterStateNormalization": "REPAIR_QUEUE_TO_EXTERNAL_WAVE_256_AND_INVALID_V3_PARALLELISM_STEP_BEFORE_STRICT_HANDOFF_CHECK_THEN_REVALIDATE_AND_CLEAR_ONLY_KNOWN_STALE_MACHINE_BLOCKERS"
       },
       "bottleneckPolicy": {
         "adaptiveSteps": [
@@ -1259,7 +1259,10 @@
           ],
           "clearOnlyKnownMachineStateInconsistentBlockers": true,
           "actualMachineMismatchMustRemainBlocked": true,
-          "machineContractMeaning": "EXTERNAL_WAVE_BOUND_NOT_INTERNAL_POLICY_CAP"
+          "machineContractMeaning": "EXTERNAL_WAVE_BOUND_NOT_INTERNAL_POLICY_CAP",
+          "repairBeforeStrictHandoffValidation": true,
+          "invalidV3CurrentMaxStepRepair": "RESET_TO_EXTERNAL_WAVE_256",
+          "samePassStaleBlockerRequeueAfterSuccessfulRepair": true
         }
       },
       "recoveryQueue": {
@@ -1327,6 +1330,43 @@
         "rawModelOutputMayNotBecomeCanonicalLearning": true,
         "primaryAiReviewRequiredForSystemRecoveryPromotion": true,
         "gameRuntimeEvidenceStillRequiredForGameLearning": true
+      },
+      "developmentBottleneckFocus": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-19",
+        "enabled": true,
+        "priority": "DEVELOPMENT_AND_RELEASE_BOTTLENECK_FIRST",
+        "activation": "ANY_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK",
+        "objective": "RESTORE_REAL_GAME_DEVELOPMENT_THROUGHPUT_BEFORE_NON_CRITICAL_AUXILIARY_WORK",
+        "workerRouting": {
+          "VIBE2_VIBE3": "GAME_SOURCE_IMPLEMENTATION_AND_EXACT_STAGE_RESUME",
+          "SYSTEM_AI": "ORCHESTRATION_CI_QUEUE_PLANNER_AND_COMMON_BOTTLENECK_REPAIR",
+          "QA_REVIEW": "VERIFY_CAUSAL_REPAIR_AND_UNBLOCK_NEXT_DEVELOPMENT_STAGE",
+          "DIRECTOR": "KEEP_ALL_ELIGIBLE_WORKERS_ALIGNED_TO_HIGHEST_IMPACT_DEVELOPMENT_BOTTLENECK",
+          "LEARNING": "USE_ONLY_IDLE_CAPACITY_WHILE_ACTIONABLE_DEVELOPMENT_BOTTLENECK_EXISTS"
+        },
+        "productionPreempts": [
+          "IDLE_LEARNING",
+          "NON_CRITICAL_DIAGNOSTICS",
+          "NON_CRITICAL_HOMEPAGE_MAINTENANCE"
+        ],
+        "mustContinue": [
+          "SECURITY_GATES",
+          "DETERMINISTIC_QA",
+          "RUNTIME_EVIDENCE_INTEGRITY",
+          "RELEASE_SAFETY_GATES"
+        ],
+        "currentIncident": {
+          "signature": "VIBE2_MACHINE_STATE_QUEUE_MAX_DIVERGED_INVALID_V3_PARALLELISM_STEP",
+          "symptom": "GAME_DEVELOPMENT_WORKERS_NOT_RESERVED",
+          "repair": "SYSTEM_STEWARD_BEFORE_HANDOFF_PLUS_SAME_PASS_REQUEUE",
+          "codeBindings": [
+            "tools/vibe2-system-steward.mjs",
+            "qa/vibe2-system-steward.test.mjs",
+            ".github/workflows/vibe2-24h-runner.yml"
+          ]
+        },
+        "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS"
       }
     },
     "webIterationPolicy": {
@@ -1865,7 +1905,9 @@
         "workerPullOnlyOnCacheMiss": true,
         "contentHashQaCacheRequired": true,
         "sharedPreparationSinglePass": true
-      }
+      },
+      "actionableDevelopmentBottleneckPreemptsIdleWork": true,
+      "actionableDevelopmentBottleneckRouting": "MAXIMIZE_ELIGIBLE_FREE_AI_ON_CAUSAL_UNBLOCKING_AND_GAME_DEVELOPMENT"
     },
     "securityImmuneSystem": {
       "version": 1,
