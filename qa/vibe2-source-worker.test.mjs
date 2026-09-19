@@ -902,6 +902,31 @@ test('full web recovery carries the previous undersized candidate forward for ex
   assert.match(retry,/---END_PREVIOUS_FULL_WEB_CANDIDATE---/);
 });
 
+test('malformed JSON with one complete exact edit recovers without widening scope', async()=>{
+  const cwd=tempRoot();
+  const malformed=path.join(cwd,'malformed-partial.json');
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({
+    target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'malformed-partial-recovery'
+  }),null,2));
+  write(malformed,'{"summary":"repair","edits":[{"path":"index.html","find":">Play<","replace":">Continue<"}],"tests":["unfinished"');
+  const result=await runVibe2SourceWorker({cwd,responseFile:malformed});
+  assert.equal(result.generation.attempts,1);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.codingMethod.partialMalformedRecovery,true);
+  assert.equal(result.codingMethod.partialTimeoutRecovery,false);
+  assert.deepEqual(result.changedFiles,['index.html']);
+  const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/malformed-partial-recovery/files/index.html'),'utf8');
+  assert.match(output,/>Continue</);
+});
+
+test('malformed partial recovery evidence is exported to immutable worker telemetry',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/partialMalformedRecovery:generation\.partialMalformedRecovery===true/);
+  assert.match(workflowSource,/coding-malformed-partial-recovery:YES/);
+});
+
 test('timeout partial edit recovery accepts only one fully closed edit object',()=>{
   const complete='{"summary":"partial","edits":[{"path":"index.html","find":"const state={hp:10};","replace":"const state={hp:10,ready:true};"},{"path":"index.html","find":"unfinished"';
   const recovered=recoverPartialJsonEdit(complete);
