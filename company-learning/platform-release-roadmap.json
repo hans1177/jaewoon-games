@@ -217,7 +217,10 @@
       ],
       "candidateBranchConcurrencyPreserved": true,
       "cancelInProgress": false,
-      "qualityGateWeakening": false
+      "qualityGateWeakening": false,
+      "releaseDispatchRecoveryUsesLatestResetReplay": true,
+      "releaseDispatchRecoveryCooldownMs": 120000,
+      "releaseDispatchRecoveryControlRebaseForbidden": true
     }
   },
   "phases": [
