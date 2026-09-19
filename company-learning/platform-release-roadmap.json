@@ -1,5 +1,5 @@
 {
-  "version": 53,
+  "version": 54,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1116,6 +1116,7 @@
           128,
           64,
           32,
+          20,
           16,
           8,
           4
@@ -1148,7 +1149,9 @@
           "priorWorkerFanOut": 41,
           "priorReservedTasks": 19,
           "recoveryAdaptiveStep": 16
-        }
+        },
+        "ownerPreferredCurrentWave": 20,
+        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-19"
       },
       "invariants": {
         "noGateBypass": true,
@@ -1371,7 +1374,7 @@
           "symptom": "19_RESERVED_DEVELOPMENT_TASKS_EXPANDED_TO_41_WORKERS_WHILE_MEASURED_RUNNER_PEAK_WAS_12",
           "status": "MITIGATION_APPLIED_NEXT_WAVE_PENDING_VERIFICATION",
           "rootCause": "SPECULATIVE_VARIANTS_CONSUMED_RUNNER_QUEUE_BEFORE_ALL_PRIMARY_GAME_WORK_COULD_COMPLETE",
-          "repair": "PRIMARY_COVERAGE_FIRST_SPECULATION_ONLY_FROM_SPARE_ADAPTIVE_CAPACITY_AND_LIVE_CONTROL_STEP_16",
+          "repair": "PRIMARY_COVERAGE_FIRST_SPECULATION_ONLY_FROM_SPARE_ADAPTIVE_CAPACITY_AND_OWNER_WAVE_20",
           "verifiedEvidence": [
             "RUN_35425782021_ACTUAL_PEAK_CONCURRENCY=12",
             "RUN_35425782021_RESERVED_TASKS=19",
@@ -1389,7 +1392,8 @@
             "NEXT_WAVE_WORKER_COUNT_MUST_NOT_EXCEED_ADAPTIVE_WAVE",
             "PRIMARY_GAME_TASK_COVERAGE_MUST_PRECEDE_SPECULATIVE_VARIANTS",
             "RUNNER_QUEUE_WAIT_AND_ACTUAL_PEAK_CONCURRENCY_MUST_IMPROVE_OR_TRIGGER_NEXT_ADAPTIVE_STEP"
-          ]
+          ],
+          "ownerWaveOverride": 20
         },
         "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
@@ -1400,8 +1404,9 @@
           "qaContract": "PASS",
           "centralPolicyContract": "PASS",
           "currentLargestBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
-          "adaptiveWave": 16,
-          "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE"
+          "adaptiveWave": 20,
+          "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
+          "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST_SPARE_SPECULATION_ONLY"
         },
         "incidentHistory": [
           {
