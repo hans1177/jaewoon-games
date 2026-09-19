@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web and Roblox development outcomes into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -46,7 +46,13 @@
       "NARRATIVE_STRUCTURE",
       "QUEST_DESIGN",
       "CHARACTER_ARC",
-      "DIALOGUE"
+      "DIALOGUE",
+      "ASSET_ADAPTATION",
+      "LIVING_MOTION",
+      "ANIMATION_FEEL",
+      "VFX",
+      "AUDIO_FEEL",
+      "CAMERA_LANGUAGE"
     ],
     "verifiedSuccessXp": 12,
     "verifiedFailureLessonXp": 5,
@@ -68,7 +74,13 @@
         "NARRATIVE_STRUCTURE",
         "QUEST_DESIGN",
         "CHARACTER_ARC",
-        "DIALOGUE"
+        "DIALOGUE",
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE"
       ],
       "ROBLOX_NATIVE_ONLY": [
         "ROBLOX_STUDIO",
@@ -166,7 +178,13 @@
       "NARRATIVE_STRUCTURE",
       "QUEST_DESIGN",
       "CHARACTER_ARC",
-      "DIALOGUE"
+      "DIALOGUE",
+      "ASSET_ADAPTATION",
+      "LIVING_MOTION",
+      "ANIMATION_FEEL",
+      "VFX",
+      "AUDIO_FEEL",
+      "CAMERA_LANGUAGE"
     ],
     "levels": 10,
     "runOn": [
@@ -198,7 +216,13 @@
       "NARRATIVE_STRUCTURE_DRILL",
       "QUEST_CAUSALITY_DRILL",
       "CHARACTER_ARC_DRILL",
-      "DIALOGUE_SCENE_DRILL"
+      "DIALOGUE_SCENE_DRILL",
+      "ASSET_ADAPTATION_DRILL",
+      "MOTION_CONTINUITY_DRILL",
+      "ANIMATION_FEEL_DRILL",
+      "VFX_READABILITY_DRILL",
+      "AUDIO_FEEL_DRILL",
+      "CAMERA_LANGUAGE_DRILL"
     ],
     "practiceNeverClaimsProductionPass": true,
     "knowledgeBoundary": {
@@ -356,5 +380,50 @@
         "GENERAL_PLAYBOOK"
       ]
     }
+  },
+  "presentationLearning": {
+    "enabled": true,
+    "policyRefs": [
+      "company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract",
+      "company-learning/platform-release-roadmap.json#audioMusicQualityContract"
+    ],
+    "domains": [
+      "ASSET_ADAPTATION",
+      "LIVING_MOTION",
+      "ANIMATION_FEEL",
+      "VFX",
+      "AUDIO_FEEL",
+      "CAMERA_LANGUAGE"
+    ],
+    "existingLearningMotorOnly": true,
+    "shadowTrainerForbidden": true,
+    "positiveMasteryRequiresVerifiedProjectOutcome": true,
+    "verifiedFailureMayTeachAvoidPattern": true,
+    "runtimeQaRequiredForProductionCompletion": true,
+    "staticQaDoesNotReplaceRuntime": true,
+    "stagedPassOrder": [
+      "ASSET_ADAPTATION",
+      "LIVING_MOTION",
+      "ANIMATION_FEEL",
+      "VFX",
+      "AUDIO_FEEL",
+      "CAMERA_LANGUAGE",
+      "POLISH_MOBILE"
+    ],
+    "practiceDistillation": {
+      "enabled": true,
+      "tool": "tools/vibe2-practice-distillation.mjs",
+      "rawCandidateTextStored": false,
+      "minimumIndependentCorroboration": 2,
+      "directMasteryCredit": false,
+      "directCanonicalTrainingSample": false
+    },
+    "invariants": [
+      "GAMEPLAY_BALANCE_UNCHANGED",
+      "SAVE_MEANING_UNCHANGED",
+      "PROGRESSION_UNCHANGED",
+      "HIT_SEMANTICS_UNCHANGED",
+      "NETWORK_AUTHORITY_UNCHANGED"
+    ]
   }
 }
