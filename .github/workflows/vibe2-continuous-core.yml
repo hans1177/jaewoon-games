@@ -61,10 +61,12 @@ jobs:
           git fetch --depth=1 --no-tags origin main --quiet
           contract_sha="$(git rev-parse FETCH_HEAD)"
           rm -rf /tmp/vibe2-main
-          git worktree prune
-          git worktree add --detach /tmp/vibe2-main "$contract_sha" >/dev/null
+          mkdir -p /tmp/vibe2-main
+          git archive "$contract_sha" | tar -x -C /tmp/vibe2-main
+          test -f /tmp/vibe2-main/vibe2-runtime.json
           echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"
           echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
+          echo 'VIBE2_MAIN_CONTRACT_SNAPSHOT=ARCHIVE'
 
       - name: Fast scheduler preflight
         shell: bash
