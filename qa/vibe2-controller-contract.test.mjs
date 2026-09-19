@@ -85,6 +85,8 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
   assert(workflow.includes('strategy:'));
   assert.equal(workflow.includes('max-parallel: 30'),false);
   assert(workflow.includes("VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'"));
+  assert(workflow.includes("VIBE2_OWNER_MINIMUM_WAVE: '20'"));
+  assert.equal((workflow.match(/--min="\$VIBE2_OWNER_MINIMUM_WAVE"/g)||[]).length,2);
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
   assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
