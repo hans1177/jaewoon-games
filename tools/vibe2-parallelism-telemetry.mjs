@@ -43,6 +43,7 @@ function actionRunIds(rows){
 }
 function evidenceValues(row,prefix){return(Array.isArray(row?.evidence)?row.evidence:[]).map(clean).filter(value=>value.startsWith(prefix)).map(value=>value.slice(prefix.length)).filter(Boolean);}
 function sourceGenerationFailureClass(row={}){
+  if(clean(row?.outcome).toUpperCase()!=='FAIL')return'';
   const direct=clean(row?.candidateFailure?.class).toUpperCase();
   if(direct)return direct;
   const evidence=evidenceValues(row,'source-generation-failure:').map(value=>clean(value).toUpperCase()).filter(Boolean);
