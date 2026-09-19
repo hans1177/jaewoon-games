@@ -437,3 +437,8 @@ test('invalid edit path recovery requires an exact allowed path', () => {
   assert.match(prompt,/copied exactly from Allowed edit paths/);
   assert.match(prompt,/Never output placeholders/);
 });
+
+
+test('token-repeat abort is retryable infrastructure output failure', () => {
+  assert.equal(shouldRetryGenerationError(new Error('Ollama 오류: prediction aborted, token repeat limit reached')),true);
+});
