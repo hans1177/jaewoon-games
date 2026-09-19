@@ -584,3 +584,16 @@ test('generic Web source failure stays superseded instead of reopening', () => {
   assert.equal(recovered.recovered,0);
   assert.equal(recovered.queue.tasks[0].status,'failed');
 });
+
+
+test('exact Web base source generation failure can recover once', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'game-web-base-implementation-v1',gameId:'game',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/game',goal:'[WEB_BASE_IMPLEMENTATION] source bootstrap',status:'failed',retries:3,maxRetries:2,
+    blocker:'source-candidate-generation-failed',reservationId:null,evidence:['source-root-bootstrap-required']
+  }]});
+  const recovered=recoverFixedSourceCandidateGenerationFailures(queue);
+  assert.equal(recovered.recovered,1);
+  assert.equal(recovered.queue.tasks[0].status,'queued');
+  assert.equal(recovered.queue.tasks[0].lastOutcome,'RETRY_AFTER_SOURCE_GENERATION_INFRA_REPAIR');
+});
