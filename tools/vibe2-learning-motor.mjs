@@ -67,6 +67,20 @@ function masteryLevel(xp=0){
   return Math.min(10,level);
 }
 
+
+function normalizeCodingStrategyMemory(input={}){
+  const source=input&&typeof input==='object'?input:{};
+  const strategies={};
+  for(const [name,rowRaw] of Object.entries(source.strategies||{})){
+    const row=rowRaw&&typeof rowRaw==='object'?rowRaw:{};
+    const games={};for(const [k,v] of Object.entries(row.games||{}))games[clean(k)]=Math.max(0,Number(v)||0);
+    const targets={};for(const [k,v] of Object.entries(row.targets||{}))targets[clean(k)]=Math.max(0,Number(v)||0);
+    const applications=Math.max(0,Number(row.verifiedApplications)||0);
+    const firstPasses=Math.max(0,Math.min(applications,Number(row.firstCandidatePasses)||0));
+    strategies[clean(name)]={verifiedApplications:applications,firstCandidatePasses:firstPasses,totalGenerationAttempts:Math.max(0,Number(row.totalGenerationAttempts)||0),games,targets,state:clean(row.state)||'CANDIDATE',lastEvidence:clean(row.lastEvidence)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null};
+  }
+  return{version:1,seenOutcomeIds:uniq(source.seenOutcomeIds||[]),strategies};
+}
 export function createMasteryState(seed={}){
   const domains={};
   for(const d of MASTERY_DOMAINS){
@@ -83,6 +97,7 @@ export function createMasteryState(seed={}){
     seenExperienceIds:uniq(seed.seenExperienceIds||[]),
     seenCodePatternIds:uniq(seed.seenCodePatternIds||[]),
     failureSignatures:{...(seed.failureSignatures||{})},
+    codingStrategyMemory:normalizeCodingStrategyMemory(seed.codingStrategyMemory),
     updatedAt:clean(seed.updatedAt)||null
   };
 }
@@ -177,6 +192,90 @@ export function applyVerifiedExperienceToMastery(stateInput={},experienceInput={
   state.seenExperienceIds=[...seen].slice(-5000);
   state.updatedAt=new Date().toISOString();
   return {state,added};
+}
+
+
+function lastEvidenceMarker(evidence=[],prefix=''){
+  const rows=(evidence||[]).map(clean).filter(value=>value.startsWith(prefix));
+  return rows.length?rows.at(-1).slice(prefix.length):'';
+}
+function codingOutcomeIdentity(task={},strategy=''){
+  const evidence=(task.evidence||[]).map(clean);
+  const candidate=evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+  return 'coding_'+hash([clean(task.id),clean(strategy),candidate].join('|'));
+}
+function strategyLifecycle(row={}){
+  const applications=Math.max(0,Number(row.verifiedApplications)||0);
+  const games=Object.keys(row.games||{}).filter(Boolean).length;
+  const firstPassRate=applications?Number(row.firstCandidatePasses||0)/applications:0;
+  if(applications>=5&&games>=2&&firstPassRate>=0.6)return'PREFERRED';
+  if(applications>=3)return'VERIFIED';
+  if(applications>=1)return'OBSERVED';
+  return'CANDIDATE';
+}
+export function applyVerifiedCodingStrategyOutcomes(stateInput={},queueInput={}){
+  const state=createMasteryState(stateInput);
+  const memory=normalizeCodingStrategyMemory(state.codingStrategyMemory);
+  const seen=new Set(memory.seenOutcomeIds||[]);
+  let added=0;
+  for(const task of queueInput?.tasks||[]){
+    const evidence=(task?.evidence||[]).map(clean).filter(Boolean);
+    if(!evidence.includes('role-result:regression:PASS')||!evidence.includes('role-result:review:PASS')||!evidence.includes('candidate-identity:PASS'))continue;
+    const strategy=lastEvidenceMarker(evidence,'coding-strategy:');
+    if(!strategy)continue;
+    const id=codingOutcomeIdentity(task,strategy);
+    if(seen.has(id))continue;
+    const firstAttempt=lastEvidenceMarker(evidence,'coding-candidate-first-attempt:')==='YES';
+    const attempts=Math.max(1,Number(lastEvidenceMarker(evidence,'coding-generation-attempts:'))||1);
+    const gameId=clean(task.gameId)||'unknown';
+    const target=lower(task.target)||'unknown';
+    const row=memory.strategies[strategy]||{verifiedApplications:0,firstCandidatePasses:0,totalGenerationAttempts:0,games:{},targets:{},state:'CANDIDATE',lastEvidence:null,lastUpdatedAt:null};
+    row.verifiedApplications+=1;
+    if(firstAttempt)row.firstCandidatePasses+=1;
+    row.totalGenerationAttempts+=attempts;
+    row.games[gameId]=(row.games[gameId]||0)+1;
+    row.targets[target]=(row.targets[target]||0)+1;
+    row.state=strategyLifecycle(row);
+    row.lastEvidence=id;
+    row.lastUpdatedAt=new Date().toISOString();
+    memory.strategies[strategy]=row;
+    seen.add(id);
+    added+=1;
+  }
+  memory.seenOutcomeIds=[...seen].slice(-5000);
+  state.codingStrategyMemory=memory;
+  state.updatedAt=new Date().toISOString();
+  return{state,added};
+}
+
+export function preferredCodingStrategyForTask({task={},stateInput={}}={}){
+  const state=createMasteryState(stateInput);
+  const rows=Object.entries(state.codingStrategyMemory?.strategies||{}).map(([strategy,row])=>({strategy,...row}));
+  const eligible=rows.filter(row=>row.state==='PREFERRED');
+  if(!eligible.length)return{strategy:null,state:'NO_PREFERRED_STRATEGY',evidenceApplications:0,advisoryOnly:true,authorityExpanded:false};
+  const gameId=clean(task.gameId),target=lower(task.target);
+  eligible.sort((a,b)=>{
+    const score=row=>Number(row.games?.[gameId]||0)*20+Number(row.targets?.[target]||0)*5+Number(row.firstCandidatePasses||0)*2+Number(row.verifiedApplications||0);
+    return score(b)-score(a)||String(a.strategy).localeCompare(String(b.strategy));
+  });
+  const winner=eligible[0];
+  return{
+    strategy:winner.strategy,state:winner.state,evidenceApplications:Number(winner.verifiedApplications||0),
+    firstCandidatePassRatePct:winner.verifiedApplications?Number(((winner.firstCandidatePasses/winner.verifiedApplications)*100).toFixed(1)):0,
+    sameGameApplications:Number(winner.games?.[gameId]||0),sameTargetApplications:Number(winner.targets?.[target]||0),
+    advisoryOnly:true,authorityExpanded:false
+  };
+}
+export function codingStrategyGuidance(preference={}){
+  if(!clean(preference?.strategy))return'';
+  return[
+    '[VERIFIED CODING STRATEGY PREFERENCE - advisory inside reserved scope]',
+    'strategy='+clean(preference.strategy),
+    'verifiedApplications='+Number(preference.evidenceApplications||0),
+    'firstCandidatePassRatePct='+Number(preference.firstCandidatePassRatePct||0),
+    'sameGameApplications='+Number(preference.sameGameApplications||0),
+    'This preference may change patch ordering but MUST NOT expand writable scope, bypass the compiled edit contract, weaken QA, or alter protected gameplay/save semantics.'
+  ].join('\n');
 }
 
 function words(value=''){return new Set(lower(value).match(/[a-z0-9가-힣_]{2,}/g)||[]);}
@@ -662,14 +761,16 @@ export function buildWebRobloxHandoffs(companyQueueInput={},experienceInput={},q
 export function refreshLearningMotor({stateInput={},experienceInput={},codePatternsInput={},companyQueueInput={},queueInput={},roadmapInput={}}={}){
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
   const patternApplied=applyVerifiedCodePatternsToMastery(applied.state,codePatternsInput);
-  const benchmark=buildBenchmarkLadder(patternApplied.state);
-  const idlePractice=buildIdlePracticeQueue(patternApplied.state);
-  const tournament=enrichQueueForCandidateTournaments(queueInput,patternApplied.state);
+  const strategyApplied=applyVerifiedCodingStrategyOutcomes(patternApplied.state,queueInput);
+  const benchmark=buildBenchmarkLadder(strategyApplied.state);
+  const idlePractice=buildIdlePracticeQueue(strategyApplied.state);
+  const tournament=enrichQueueForCandidateTournaments(queueInput,strategyApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
-    state:patternApplied.state,
+    state:strategyApplied.state,
     addedExperience:applied.added,
     addedCodePatterns:patternApplied.added,
+    addedCodingStrategyOutcomes:strategyApplied.added,
     benchmark,
     idlePractice,
     handoffs:buildWebRobloxHandoffs(companyQueueInput,experienceInput,practice.queue,roadmapInput),
@@ -701,6 +802,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_LEARNING_MOTOR=PASS`);
   console.log(`VIBE2_MASTERY_NEW_EXPERIENCE=${result.addedExperience}`);
   console.log(`VIBE2_MASTERY_NEW_CODE_PATTERNS=${result.addedCodePatterns}`);
+  console.log(`VIBE2_CODING_STRATEGY_OUTCOMES_ADDED=${result.addedCodingStrategyOutcomes||0}`);
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
