@@ -18531,7 +18531,7 @@
         "web-games/fantasy-survival/index.html"
       ],
       "dependencies": [],
-      "priority": "normal",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -18644,7 +18644,10 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:performance-sanity-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "recovery-queue:recovery-edb0c96ef284dc4e51dc",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35477474356:1",
