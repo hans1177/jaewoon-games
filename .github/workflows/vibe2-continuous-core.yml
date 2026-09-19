@@ -383,6 +383,13 @@ jobs:
           ref: vibe2-unreal-core
           fetch-depth: 1
 
+      - name: Checkout pinned main contract
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.reserve.outputs.contract_sha }}
+          path: vibe2-contract
+          fetch-depth: 1
+
       - name: Measure worker checkout
         id: checkout_metrics
         shell: bash
@@ -455,7 +462,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/vibe2-continuous-runner.mjs --task-id="$TASK_ID" --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          node "$contract_root/tools/vibe2-continuous-runner.mjs" \
+            --runtime="$contract_root/vibe2-runtime.json" \
+            --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \
+            --control="$GITHUB_WORKSPACE/.vibe2/parallelism-control.json" \
+            --experience="$GITHUB_WORKSPACE/.vibe2/experience.json" \
+            --project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json" \
+            --task-id="$TASK_ID" \
+            --output=/tmp/vibe2-work-order.json | tee /tmp/vibe2-order.log
           node <<'NODE'
           const fs=require('fs');
           const order=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
@@ -541,7 +556,7 @@ jobs:
           echo 'VIBE2_GAME_SOURCE_AUTHORITY=PASS'
           echo 'VIBE2_CODEX_ROLE=SYSTEM_TOOLING_CI_TEST_INFRA_ONLY'
 
-      - name: Generate isolated candidate from current main
+      - name: Generate isolated candidate from pinned main contract
         id: candidate
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
         continue-on-error: true
@@ -550,15 +565,18 @@ jobs:
           SAFE_TASK: ${{ matrix.safeTask }}
           SOURCE_ROOT: ${{ steps.order.outputs.source_root }}
           VARIANT: ${{ matrix.variant }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
         shell: bash
         run: |
           set -euo pipefail
           candidate_started="$(date +%s%3N)"
-          git fetch --depth=1 origin main:refs/remotes/origin/main --quiet
-          base_sha="$(git rev-parse origin/main)"
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          base_sha="$CONTRACT_SHA"
+          test -n "$base_sha"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$base_sha"
           candidate_branch="vibe2/candidate/${SAFE_TASK}-${VARIANT}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           candidate_dir="/tmp/vibe2-candidate-${SAFE_TASK}-${VARIANT}-${GITHUB_RUN_ID}"
-          git worktree add -b "$candidate_branch" "$candidate_dir" origin/main
+          git -C "$contract_root" worktree add -b "$candidate_branch" "$candidate_dir" "$base_sha"
           mkdir -p "$candidate_dir/.vibe2"
           cp /tmp/vibe2-work-order.json "$candidate_dir/.vibe2/work-order.json"
           cp /tmp/vibe2-exploration/vibe2-exploration.json "$candidate_dir/.vibe2/exploration.json"
@@ -591,7 +609,7 @@ jobs:
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
           export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
-          node "$GITHUB_WORKSPACE/tools/vibe2-source-worker.mjs" --apply-source=true
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-source-worker.mjs" --apply-source=true
           node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           git diff --check
           node --check tools/company-security-steward.mjs
@@ -654,7 +672,7 @@ jobs:
           mkdir -p /tmp/vibe2-qa-cache
           manifest="$(find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit)"
           test -n "$manifest"
-          node "$GITHUB_WORKSPACE/tools/vibe2-incremental-qa.mjs" \
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-incremental-qa.mjs" \
             --root="$CANDIDATE_DIR" \
             --manifest="$manifest" \
             --cache=/tmp/vibe2-qa-cache/cache.json \
@@ -680,7 +698,7 @@ jobs:
           set -euo pipefail
           manifest="$(find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit)"
           test -n "$manifest"
-          node "$GITHUB_WORKSPACE/tools/vibe2-performance-sanity.mjs" \
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-performance-sanity.mjs" \
             --root="$CANDIDATE_DIR" \
             --manifest="$manifest" \
             --output=/tmp/vibe2-performance.json | tee /tmp/vibe2-performance.log
