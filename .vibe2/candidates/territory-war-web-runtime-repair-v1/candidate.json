@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "    // Game state management\n    let gameState = {\n        playerHealth: 100,\n        enemyHealth: 100,\n        playerAttack: 10,\n        enemyAttack: 10,\n        gameWon: false,\n        gameLost: false\n    };",
+      "replace": "    // Game state management\n    let gameState = {\n        playerHealth: 100,\n        enemyHealth: 100,\n        playerAttack: 10,\n        enemyAttack: 10,\n        gameWon: false,\n        gameLost: false,\n        currentLevel: 1,\n        levelProgression: [\n            { level: 1, requiredHealth: 50 },\n            { level: 2, requiredHealth: 75 },\n            { level: 3, requiredHealth: 100 }\n        ]\n    };"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
