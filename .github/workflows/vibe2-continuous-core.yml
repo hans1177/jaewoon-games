@@ -858,6 +858,7 @@ jobs:
             Number(baseCodingMethod?.contextBytes)>0&&`coding-context-bytes:${Number(baseCodingMethod.contextBytes)}`,
             Number(baseCodingMethod?.focusedSymbolCount)>0&&`coding-focused-symbol-count:${Number(baseCodingMethod.focusedSymbolCount)}`,
             Number(baseCodingMethod?.fullWebExpansionStages)>0&&`coding-full-web-expansion-stages:${Number(baseCodingMethod.fullWebExpansionStages)}`,
+            Number(baseCodingMethod?.fullWebFallbackBestPartialBytes)>0&&`coding-full-web-fallback-best-partial-bytes:${Number(baseCodingMethod.fullWebFallbackBestPartialBytes)}`,
             Number(baseCodingMethod?.intermediateGrowthTotalBytes)>0&&`coding-intermediate-growth-total:${Number(baseCodingMethod.intermediateGrowthTotalBytes)}`,
             Number(baseCodingMethod?.repeatedIntermediateOutputs)>0&&`coding-repeated-intermediate:${Number(baseCodingMethod.repeatedIntermediateOutputs)}`,
             Array.isArray(baseCodingMethod?.expansionStageTargets)&&baseCodingMethod.expansionStageTargets.length&&`coding-expansion-stage-targets:${encodeURIComponent(JSON.stringify(baseCodingMethod.expansionStageTargets.slice(0,8)))}`,
