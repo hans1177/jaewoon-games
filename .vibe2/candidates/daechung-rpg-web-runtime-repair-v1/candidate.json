@@ -1,0 +1,18 @@
+{
+  "summary": "index.html 파일에서 로딩 실패 메시지와 게임 iframe의 경로를 수정하여 로딩 문제를 해결합니다.",
+  "expectedEffect": "게임 iframe의 경로를 'patch-v18.js'로 변경하고, 로딩 실패 메시지를 제거합니다.",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "src=\"./rpg.html?v=18e\"",
+      "replace": "src=\"./patch-v18.js?v=18e\""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "RPG iframe 경로 수정 후 로딩 실패 메시지 제거 확인",
+    "게임 로딩 상태 확인",
+    "프로세스 로그에서 로딩 실패 메시지 없음 확인"
+  ]
+}
