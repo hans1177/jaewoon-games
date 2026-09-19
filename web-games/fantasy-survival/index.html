@@ -636,7 +636,7 @@ function drawBackground(cx,cy,w,h){
  ctx.fillStyle='#51231f';ctx.fillRect(3000,2000,12000,3200);
  // 서쪽: 오래된 황무지와 오아시스
  ctx.fillStyle='#8a6239';ctx.fillRect(WASTELAND.x,WASTELAND.y,WASTELAND.w,WASTELAND.h);
- ctx.fillStyle='#d5aa65';ctx.font='bold 22px system-ui';ctx.textAlign='center';ctx.fillText('오래된 황무지',WASTELAND.x+WASTELAND.w/2,420);
+ ctx.fillStyle='#d5aa65';ctx.font='bold 22px system-ui';ctx.textAlign='center';ctx.fillText('오래된 황무지',WASTELAND.x+WASTELAND.w/2,WASTELAND.y+240);
  ctx.fillStyle='#2f7a73';ctx.beginPath();ctx.arc(OASIS.x,OASIS.y,OASIS.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#cbb56a';ctx.lineWidth=45;ctx.stroke();ctx.fillStyle='#d7f5e8';ctx.font='bold 15px system-ui';ctx.fillText('오아시스 · 서쪽',OASIS.x,OASIS.y);
  // 북쪽: 부서진 콜로세움
  ctx.fillStyle='#6c3527';ctx.fillRect(COLOSSEUM.x,COLOSSEUM.y,COLOSSEUM.w,COLOSSEUM.h);
@@ -647,8 +647,8 @@ function drawBackground(cx,cy,w,h){
  ctx.fillStyle='#343437';ctx.fillRect(LAB.x-260,LAB.y-150,520,210);ctx.fillStyle='#6b7478';ctx.fillRect(LAB.x-210,LAB.y-110,420,135);ctx.fillStyle='#b9d3cf';ctx.font='bold 14px system-ui';ctx.fillText('연구소',LAB.x,LAB.y-55);ctx.fillStyle='#9ee6d0';ctx.beginPath();ctx.arc(LAB_RECORDER.x,LAB_RECORDER.y,22,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 10px system-ui';ctx.fillText('녹음기 · 두 번 누르기',LAB_RECORDER.x,LAB_RECORDER.y+45);
  // 가운데: 거대한 화산
  ctx.fillStyle='#6a251d';ctx.fillRect(VOLCANO_CORE.x,VOLCANO_CORE.y,VOLCANO_CORE.w,VOLCANO_CORE.h);
- ctx.fillStyle='#2c1715';ctx.beginPath();ctx.moveTo(4850,2220);ctx.lineTo(6200,1160);ctx.lineTo(7550,2220);ctx.closePath();ctx.fill();
- ctx.fillStyle='#ff6d32';ctx.beginPath();ctx.ellipse(6200,1280,360,115,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffb04d';ctx.font='bold 24px system-ui';ctx.fillText('거대한 화산 · 가운데',6200,1600);
+ ctx.fillStyle='#2c1715';ctx.beginPath();ctx.moveTo(7850,4220);ctx.lineTo(9200,3160);ctx.lineTo(10550,4220);ctx.closePath();ctx.fill();
+ ctx.fillStyle='#ff6d32';ctx.beginPath();ctx.ellipse(9200,3280,360,115,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#ffb04d';ctx.font='bold 24px system-ui';ctx.fillText('거대한 화산 · 가운데',9200,3600);
  // 남쪽: 부서진 공사장
  ctx.fillStyle='#4b4038';ctx.fillRect(CONSTRUCTION.x,CONSTRUCTION.y,CONSTRUCTION.w,CONSTRUCTION.h);ctx.fillStyle='#86715d';ctx.font='bold 22px system-ui';ctx.fillText('부서진 공사장 · 남쪽',CONSTRUCTION.x+CONSTRUCTION.w/2,CONSTRUCTION.y+90);
  for(let i=0;i<16;i++){const x=CONSTRUCTION.x+140+(i*193)%3200,y=CONSTRUCTION.y+150+(i*113)%430;ctx.fillStyle=i%4===0?'#3a2724':'#75675e';ctx.fillRect(x,y,55+(i%3)*20,18+(i%2)*15)}
