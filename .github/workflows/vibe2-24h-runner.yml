@@ -13,6 +13,12 @@ on:
       - 'tools/vibe2-authorized-source-memory.mjs'
       - 'tools/vibe2-web-experience-ingest.mjs'
       - 'tools/vibe2-auto-planner.mjs'
+      - 'tools/vibe2-continuous-runner.mjs'
+      - 'tools/vibe2-source-worker.mjs'
+      - 'tools/vibe2-incremental-qa.mjs'
+      - 'qa/vibe2-auto-planner.test.mjs'
+      - 'qa/vibe2-source-worker.test.mjs'
+      - 'qa/vibe2-incremental-qa.test.mjs'
       - 'tools/vibe2-learning-motor.mjs'
       - 'tools/vibe2-practice-distillation.mjs'
       - 'tools/vibe2-design-intelligence.mjs'
@@ -141,9 +147,16 @@ jobs:
               node --test qa/company-shared-context.test.mjs
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-before-plan.json | tee /tmp/vibe2-shared-context-before-plan.log
               node --check tools/vibe2-learning-motor.mjs
+              node --check tools/vibe2-auto-planner.mjs
+              node --check tools/vibe2-continuous-runner.mjs
+              node --check tools/vibe2-source-worker.mjs
+              node --check tools/vibe2-incremental-qa.mjs
               node --check tools/vibe2-practice-distillation.mjs
               node --check tools/vibe2-design-intelligence.mjs
               node --test qa/vibe2-learning-motor.test.mjs
+              node --test qa/vibe2-auto-planner.test.mjs
+              node --test qa/vibe2-source-worker.test.mjs
+              node --test qa/vibe2-incremental-qa.test.mjs
               node --test qa/vibe2-practice-distillation.test.mjs
               node --test qa/vibe2-design-intelligence.test.mjs
             )
