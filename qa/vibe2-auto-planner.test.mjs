@@ -210,7 +210,7 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
     catalog:{games:[{id:gameId,name:'Repair Web Runtime',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
-    developmentQueue:{items:[{gameId,gameName:'Repair Web Runtime',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`}]},
+    developmentQueue:{items:[{gameId,gameName:'Repair Web Runtime',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'MOBILE_TOUCH_ACTION_NOT_CONNECTED',routingBlockers:['vibe-web-implementation-required:WEB_REPAIR:MOBILE_TOUCH_ACTION_NOT_CONNECTED'],webValidationLastAttemptAt:'2026-09-19T07:40:00.000Z'}]},
     queue:{maxConcurrentTasks:4,tasks:[staleAssessment,staleDiagnostic]},repoRoot:root,maxConcurrentTasks:4
   });
   assert.equal(result.planned,true);
@@ -221,6 +221,11 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   assert.ok(task.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
   assert.ok(task.evidence.includes('recovery-exact-stage:WEB_REPAIR'));
   assert.match(task.goal,/\[WEB_REPAIR\]/);
+  assert.match(task.goal,/\[COMPANY_RUNTIME_FAILURE_EVIDENCE\]/);
+  assert.match(task.goal,/requested-stage=WEB_REPAIR/);
+  assert.match(task.goal,/implementation-reason=MOBILE_TOUCH_ACTION_NOT_CONNECTED/);
+  assert.match(task.goal,/routing-blocker=vibe-web-implementation-required:WEB_REPAIR:MOBILE_TOUCH_ACTION_NOT_CONNECTED/);
+  assert.match(task.goal,/no-op 수정은 금지/);
   for(const staleId of [staleAssessment.id,staleDiagnostic.id]){
     const stale=result.queue.tasks.find(row=>row.id===staleId);
     assert.equal(stale.status,'cancelled');
