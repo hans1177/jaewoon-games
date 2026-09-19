@@ -55,3 +55,18 @@ test('queue reserves disjoint tasks and sends passing work to supervisor review'
   const reworked=requeueSystemAiTask({...next,tasks:next.tasks.map(x=>x.id==='a'?{...x,status:'awaiting-supervisor'}:x)},{id:'a',reason:'missing-regression'});
   assert.equal(reworked.tasks.find(x=>x.id==='a').status,'queued');
 });
+
+
+test('system AI may read central policy as context but cannot write it',async()=>{
+  const cwd=root(),prev=process.cwd();process.chdir(cwd);
+  try{
+    write('tools/demo.mjs',"export const value=1;\n");
+    write('company-learning/platform-release-roadmap.json','{}\n');
+    write('task.json',JSON.stringify({id:'read-policy',status:'running',goal:'read policy and update tool',responsibleFiles:['tools/demo.mjs'],contextFiles:['company-learning/platform-release-roadmap.json']}));
+    write('response.json',JSON.stringify({summary:'update tool',edits:[{path:'tools/demo.mjs',find:'value=1',replace:'value=2'}],newFiles:[],recommendedTests:[],risks:[]}));
+    const result=await runSystemAiWorker({taskFile:'task.json',outputFile:'result.json',responseFile:'response.json'});
+    assert.equal(result.centralPolicyWrite,false);
+    write('bad-task.json',JSON.stringify({id:'write-policy',status:'running',goal:'bad',responsibleFiles:['company-learning/platform-release-roadmap.json']}));
+    await assert.rejects(runSystemAiWorker({taskFile:'bad-task.json',responseFile:'response.json'}),/SYSTEM_AI_POLICY_WRITE_FORBIDDEN/);
+  }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
+});
