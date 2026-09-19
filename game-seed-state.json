@@ -3131,7 +3131,7 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:31:07.850Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:34:48.528Z",
       "strictDesignReview": {
         "verdict": "PASS",
         "totalScore": 94.6,
@@ -16593,6 +16593,45 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-19T03:34:32.353Z"
+      },
+      {
+        "gameId": "bug-defense",
+        "seedId": "OWNER-FULL-REBUILD-BUG-DEFENSE-20260916",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "PASS",
+        "totalScore": 94.6,
+        "previousScore": 94.6,
+        "scoreDelta": 0,
+        "hardFailures": [],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [],
+        "rejectionReasons": [],
+        "improvementTargets": [
+          {
+            "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          },
+          {
+            "dimension": "CONTENT_EXPANSION_PLAN",
+            "current": 8,
+            "maxScore": 10,
+            "gap": 2
+          },
+          {
+            "dimension": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+            "current": 4,
+            "maxScore": 5,
+            "gap": 1
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-19T03:34:48.528Z"
       }
     ],
     "causeCounts": {
@@ -16618,7 +16657,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T03:34:32.354Z"
+    "updatedAt": "2026-09-19T03:34:48.528Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
