@@ -199,7 +199,7 @@ test('verified architecture drift outcomes become reusable risk only after cross
 });
 
 test('coding constitution promotes only repeated contextual preferred strategy evidence and remains advisory',()=>{
-  const fingerprint='web|MOBILE_PLACEMENT_INPUT_MISSING|MOBILE_INPUT|PLACEMENT';
+  const fingerprint='web|MOBILE_PLACEMENT_INPUT_MISSING';
   const state=createMasteryState({codingStrategyMemory:{strategies:{RESPONSIBILITY_FIRST:{
     verifiedApplications:7,firstCandidatePasses:6,verifiedFailures:0,games:{g1:4,g2:3},targets:{web:7},state:'PREFERRED',
     failureFingerprints:{[fingerprint]:{verifiedApplications:4,verifiedFailures:0,games:{g1:2,g2:2},failureGames:{},targets:{web:4}}}
