@@ -15,7 +15,7 @@ const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace
 const unique=values=>[...new Set((values||[]).map(clean).filter(Boolean))];
 const safeId=value=>clean(value).replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,80)||'task';
 const MAX_CONTEXT_FILES=12;
-const MAX_CONTEXT_BYTES=360000;
+const MAX_CONTEXT_BYTES=96000;
 const MAX_CHANGED_FILES=4;
 const MAX_NEW_FILES=2;
 const MAX_FILE_BYTES=260000;
@@ -47,6 +47,7 @@ const FULL_WEB_RETRY_TIMEOUT_MS=360000;
 const FULL_WEB_RETRY_MAX_PREDICT=6144;
 const JSON_RETRY_TIMEOUT_MS=180000;
 const JSON_RETRY_MAX_PREDICT=1536;
+const JSON_CONTEXT_WINDOW=32768;
 const FULL_WEB_CONTEXT_WINDOW=32768;
 const MAX_GENERATION_ATTEMPTS=2;
 const FULL_FILE_PREFIX='VIBE2_FULL_FILE';
@@ -82,7 +83,7 @@ function sourceRootBootstrapAllowed(order,target,root,responsibleFiles){
 }
 function normalizeModelPath(value,{target,responsibleFiles=[],sourceRootRelative=''}={}){let normalized=posix(value);if(normalized.startsWith(`${sourceRootRelative}/`))normalized=normalized.slice(sourceRootRelative.length+1);if(PLACEHOLDER_PATHS.has(normalized.toLowerCase())){if(responsibleFiles.length!==1)throw new Error(`모델 예시 경로를 실제 파일로 결정할 수 없음: ${value}`);normalized=responsibleFiles[0];}normalized=assertRelativeSourcePath(normalized,target);if(responsibleFiles.length&&!responsibleFiles.includes(normalized))throw new Error(`책임 파일 범위 밖 수정 금지: ${normalized}`);return normalized;}
 function listContextFiles(root,target,ignored=[]){const ignore=ignored.map(posix).filter(Boolean),rows=[];const walk=current=>{if(rows.length>=MAX_CONTEXT_FILES)return;for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(rows.length>=MAX_CONTEXT_FILES)return;if(['.git','node_modules','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache'].includes(entry.name))continue;const full=path.join(current,entry.name),relative=posix(path.relative(root,full));if(ignore.some(v=>relative===v||relative.startsWith(`${v}/`)))continue;if(entry.isDirectory())walk(full);else{const ext=path.extname(entry.name).toLowerCase();if(targetExtensions(target).has(ext)&&!BINARY_EXTENSIONS.has(ext))rows.push({full,relative});}}};walk(root);return rows;}
-function readContext(root,target,responsibleFiles=[],ignored=[],explorationFiles=[]){const preferred=unique([...responsibleFiles,...explorationFiles]).slice(0,MAX_CONTEXT_FILES);const rows=preferred.length?preferred.map(relative=>({full:path.join(root,relative),relative})):listContextFiles(root,target,ignored);const files=[];let total=0;for(const row of rows.slice(0,MAX_CONTEXT_FILES)){const relative=assertRelativeSourcePath(row.relative,target);if(!fs.existsSync(row.full)||!fs.statSync(row.full).isFile())continue;const excerpt=boundedLargeExcerpt(fs.readFileSync(row.full,'utf8'));let content=excerpt.content,remaining=MAX_CONTEXT_BYTES-total;while(Buffer.byteLength(content,'utf8')>remaining&&content.length>100)content=content.slice(0,Math.floor(content.length*.8));if(!content||remaining<=0)break;files.push({path:relative,content,truncated:excerpt.truncated||content.length<excerpt.content.length,editable:responsibleFiles.includes(relative)});total+=Buffer.byteLength(content,'utf8');}return{files,bytes:total};}
+function readContext(root,target,responsibleFiles=[],ignored=[],explorationFiles=[]){const preferred=unique([...responsibleFiles,...explorationFiles]).slice(0,MAX_CONTEXT_FILES);const rows=(preferred.length?preferred.map(relative=>({full:path.join(root,relative),relative})):listContextFiles(root,target,ignored)).slice(0,MAX_CONTEXT_FILES);const files=[];let total=0;const perFileBudget=Math.max(9000,Math.floor(MAX_CONTEXT_BYTES/Math.max(1,rows.length)));const excerptChunk=Math.max(3000,Math.floor(perFileBudget/3));for(const row of rows){const relative=assertRelativeSourcePath(row.relative,target);if(!fs.existsSync(row.full)||!fs.statSync(row.full).isFile())continue;const excerpt=boundedLargeExcerpt(fs.readFileSync(row.full,'utf8'),excerptChunk);let content=excerpt.content,remaining=MAX_CONTEXT_BYTES-total;if(remaining<=0)break;while(Buffer.byteLength(content,'utf8')>remaining&&content.length>100)content=content.slice(0,Math.floor(content.length*.8));if(!content)continue;files.push({path:relative,content,truncated:excerpt.truncated||content.length<excerpt.content.length,editable:responsibleFiles.includes(relative)});total+=Buffer.byteLength(content,'utf8');}return{files,bytes:total};}
 function extractJson(raw){const text=clean(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();try{return JSON.parse(text);}catch{}const starts=['{','['].map(c=>text.indexOf(c)).filter(i=>i>=0);if(!starts.length)throw new Error('모델 JSON 시작을 찾지 못함');const start=Math.min(...starts),opening=text[start],closing=opening==='{'?'}':']';let depth=0,quoted=false,escape=false;for(let i=start;i<text.length;i++){const ch=text[i];if(quoted){if(escape)escape=false;else if(ch==='\\')escape=true;else if(ch==='"')quoted=false;continue;}if(ch==='"'){quoted=true;continue;}if(ch===opening)depth++;else if(ch===closing&&--depth===0)return JSON.parse(text.slice(start,i+1));}throw new Error('모델 JSON 파싱 실패');}
 function fullWebRewriteAllowed(order,target,exploration={}){
   if(target!=='web')return false;
@@ -115,7 +116,7 @@ sourceText
 ].filter(Boolean).join('\n');}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
-  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message);
+  return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|prediction aborted|token repeat limit/i.test(message);
 }
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null}={}){
   const reason=clean(error?.message||error).slice(0,240)||'malformed candidate';
@@ -154,7 +155,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       : (retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS);
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     try{
-      const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow:allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:0});
+      const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow:allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW});
       const candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite});
       return {candidate,generation:{attempts:attempt,recoveryUsed:retry,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs}};
     }catch(error){
