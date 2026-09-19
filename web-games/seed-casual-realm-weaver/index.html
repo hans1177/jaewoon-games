@@ -1,1 +1,22 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>세계의 직조자</title></head><body><script>window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'}</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#08111b"><title>세계의 직조자</title></head><body><script>window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'};
+
+// Direct authorable types for game assets
+const DIRECT_AUTHORABLE_TYPES = ['svg-final-art', 'canvas-art-and-effects', 'motion-engine-animation'];
+
+// Game asset production plan
+const ASSET_PRODUCTION_PLAN = {
+  types: DIRECT_AUTHORABLE_TYPES,
+  reuse: {
+    character: 'oga-adventurer-slime|github-pixel-snapped-pirate-skeleton',
+    enemy: 'oga-animated-monsters|oga-adventurer-slime|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton',
+    boss: 'oga-animated-monsters|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton',
+    background: 'survival2-atlas',
+    item: 'survival2-atlas|survival2-mushroom',
+    prop: 'survival2-atlas|survival2-tree|survival2-rock|survival2-plant',
+    effect: 'survival2-atlas|oga-basic-pixel-spells',
+    ui: 'survival2-atlas',
+    animation: 'oga-animated-monsters|oga-adventurer-slime|oga-basic-pixel-spells|oga-unity-slime-12'
+  },
+  direct: DIRECT_AUTHORABLE_TYPES,
+  fallback: 'AUTHORING_GENERATOR_REQUEST'
+};</script><script src="/web-games/_shared/vibe2-final.js"></script></body></html>
