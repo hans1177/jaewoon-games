@@ -225,7 +225,7 @@ assert.match(seedDesignRuntime,/Resolve checkpoint-aware Gemini quota lanes/);
 assert.match(seedDesignRuntime,/WAITING_FOR_GEMINI_QUOTA/);
 assert.match(seedDesignRuntime,/GEMINI_QUOTA_FULL_CYCLE_RESTART=NO/);
 assert.match(seedDesignRuntime,/GEMINI_QUOTA_CURRENT_PHASE=/);
-assert.match(seedDesignRuntime,/GEMINI_QUOTA_LEAD_PHASE_ACTIVE=/);
+assert.match(seedDesignRuntime,/GEMINI_QUOTA_LEAD_PHASE_BLOCKING=NO/);
 assert.match(seedDesignRuntime,/const leadPhaseActive=currentPhase==='DEPARTMENT_REVIEWS'\|\|missingRoles\.length<roles\.length/);
 assert.match(seedDesignRuntime,/DESIGN_GATE_REPAIR_LOOP_DISPATCH=WAITING_FOR_GEMINI_QUOTA/);
 assert.match(queue,/WAITING_FOR_GEMINI_QUOTA/);
