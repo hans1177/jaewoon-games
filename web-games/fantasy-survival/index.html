@@ -21,14 +21,15 @@
 (()=>{'use strict';
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');
 const ui={hpfill:document.getElementById('hpfill'),hptext:document.getElementById('hptext'),weapon:document.getElementById('weapon'),tool:document.getElementById('tool'),armor:document.getElementById('armor'),zone:document.getElementById('zone'),kills:document.getElementById('kills'),wood:document.getElementById('wood'),stone:document.getElementById('stone'),fiber:document.getElementById('fiber'),ironOre:document.getElementById('ironOre'),ironIngot:document.getElementById('ironIngot'),goldOre:document.getElementById('goldOre'),goldIngot:document.getElementById('goldIngot'),notice:document.getElementById('notice'),sheet:document.getElementById('sheet'),sheetBody:document.getElementById('sheetBody'),handTab:document.getElementById('handTab'),benchTab:document.getElementById('benchTab'),ironBenchTab:document.getElementById('ironBenchTab'),goldBenchTab:document.getElementById('goldBenchTab'),inventoryTab:document.getElementById('inventoryTab'),mapTab:document.getElementById('mapTab'),mapBtn:document.getElementById('map'),attack:document.getElementById('attack'),flash:document.getElementById('flash'),smeltPanel:document.getElementById('smeltPanel'),smeltText:document.getElementById('smeltText'),smeltBtn:document.getElementById('smeltBtn'),goldSmeltBtn:document.getElementById('goldSmeltBtn'),smeltProgress:document.getElementById('smeltProgress'),bestiaryBtn:document.getElementById('bestiary'),bossBanner:document.getElementById('bossBanner')};
-const WORLD={w:12000,h:8000},START={x:6000,y:4000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=12,RESOURCE_RESPAWN_MS=300000;
-const CANYON_POLY=[{x:9150,y:3100},{x:11500,y:4000},{x:11500,y:6500},{x:9850,y:6500},{x:8750,y:5000}];
-const WORLD_TREE_POLY=[{x:3180,y:7150},{x:8820,y:7150},{x:8820,y:8000},{x:3180,y:8000}],WORLD_TREE={x:6000,y:7650},MAP_CELL=400;
-const VOLCANO_POLY=[{x:0,y:0},{x:12000,y:0},{x:12000,y:3200},{x:0,y:3200}];
-const COLOSSEUM={x:4400,y:120,w:3600,h:900},CONSTRUCTION={x:4400,y:2380,w:3600,h:700},WASTELAND={x:180,y:180,w:3800,h:2820},VOLCANO_CORE={x:4800,y:1120,w:2800,h:1100};
-const OASIS={x:1900,y:1650,r:470},LAB={x:6200,y:900},LAB_RECORDER={x:6200,y:845},CONSTRUCTION_DIARY={x:6200,y:2710};
-const ROOT_NODE={x:10100,y:4750},TREE_HOLE={x:6000,y:7890},CAVE_ENTRY={x:3000,y:3200},CAVE_EXIT={x:3000,y:3380},BOSS_ALTAR={x:3000,y:1900};
-const LAVA_POOLS=[{x:5000,y:1450,r:120},{x:5550,y:2050,r:140},{x:6250,y:1320,r:105},{x:6900,y:1950,r:145},{x:7450,y:1500,r:115},{x:8250,y:2350,r:135},{x:9000,y:1650,r:125},{x:10300,y:2350,r:150}];
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=13,RESOURCE_RESPAWN_MS=300000;
+const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
+const CANYON_POLY=[{x:12150,y:5100},{x:14500,y:6000},{x:14500,y:8500},{x:12850,y:8500},{x:11750,y:7000}];
+const WORLD_TREE_POLY=[{x:6180,y:9150},{x:11820,y:9150},{x:11820,y:10000},{x:6180,y:10000}],WORLD_TREE={x:9000,y:9650},MAP_CELL=400;
+const VOLCANO_POLY=[{x:3000,y:2000},{x:15000,y:2000},{x:15000,y:5200},{x:3000,y:5200}];
+const COLOSSEUM={x:7400,y:2120,w:3600,h:900},CONSTRUCTION={x:7400,y:4380,w:3600,h:700},WASTELAND={x:3180,y:2180,w:3800,h:2820},VOLCANO_CORE={x:7800,y:3120,w:2800,h:1100};
+const OASIS={x:4900,y:3650,r:470},LAB={x:9200,y:2900},LAB_RECORDER={x:9200,y:2845},CONSTRUCTION_DIARY={x:9200,y:4710};
+const ROOT_NODE={x:13100,y:6750},TREE_HOLE={x:9000,y:9890},CAVE_ENTRY={x:3000,y:3200},CAVE_EXIT={x:3000,y:3380},BOSS_ALTAR={x:3000,y:1900};
+const LAVA_POOLS=[{x:8000,y:3450,r:120},{x:8550,y:4050,r:140},{x:9250,y:3320,r:105},{x:9900,y:3950,r:145},{x:10450,y:3500,r:115},{x:11250,y:4350,r:135},{x:12000,y:3650,r:125},{x:13300,y:4350,r:150}];
 const recipes=[
 {id:'bench',name:'제작대',where:'hand',cost:{wood:10,stone:6,fiber:4},desc:'상위 제작을 위한 기본 제작대',kind:'structure'},
 {id:'wood-spear',name:'나무창',where:'hand',cost:{wood:6,fiber:3},desc:'공격력 10 · 긴 사거리',kind:'weapon',power:10,range:96,cooldown:480},
@@ -115,9 +116,9 @@ function pointInRect(x,y,r){return x>=r.x&&x<=r.x+r.w&&y>=r.y&&y<=r.y+r.h}
 function pointInVolcano(x,y){return pointInPoly(x,y,VOLCANO_POLY)}
 function inLava(x,y){return LAVA_POOLS.some(l=>dist(x,y,l.x,l.y)<=l.r)}
 function randomInRect(r,margin=70){return{x:rand(r.x+margin,r.x+r.w-margin),y:rand(r.y+margin,r.y+r.h-margin)}}
-function randomWorldTreePoint(){return{x:rand(3260,8740),y:rand(7230,7940)}}
+function randomWorldTreePoint(){return{x:rand(6260,11740),y:rand(9230,9940)}}
 function randomVolcanoPoint(zone='volcano'){
- let r=zone==='colosseum'?COLOSSEUM:zone==='wasteland'?WASTELAND:zone==='core'?VOLCANO_CORE:{x:0,y:0,w:12000,h:3200};
+ let r=zone==='colosseum'?COLOSSEUM:zone==='wasteland'?WASTELAND:zone==='core'?VOLCANO_CORE:{x:3000,y:2000,w:12000,h:3200};
  let p,guard=0;do{p=randomInRect(r,90);guard++}while((inLava(p.x,p.y)||dist(p.x,p.y,OASIS.x,OASIS.y)<OASIS.r*.35||(zone==='volcano'&&(pointInRect(p.x,p.y,COLOSSEUM)||pointInRect(p.x,p.y,CONSTRUCTION)||pointInRect(p.x,p.y,WASTELAND)||pointInRect(p.x,p.y,VOLCANO_CORE))))&&guard<300);return p
 }
 function regionAt(x,y){if(pointInWorldTree(x,y))return'worldtree';if(pointInPoly(x,y,CANYON_POLY))return'canyon';if(pointInVolcano(x,y))return'volcano';return'forest'}
@@ -133,9 +134,9 @@ function discoverRegion(){
   if(r==='canyon'&&!state.discovered.canyon){state.discovered.canyon=true;state.dirty=true;showNotice('발견함 협곡')}
   if(r==='worldtree'&&!state.discovered.worldtree){state.discovered.worldtree=true;state.dirty=true;showNotice('발견함 세계수')}if(r==='volcano'&&!state.discovered.volcano){state.discovered.volcano=true;state.dirty=true;showNotice('발견함 화산')}
 }
-function randomCanyonPoint(){let x,y,guard=0;do{x=rand(8750,11520);y=rand(3050,6520);guard++}while((!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y))&&guard<400);return{x,y}}
+function randomCanyonPoint(){let x,y,guard=0;do{x=rand(11750,14520);y=rand(5050,8520);guard++}while((!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y))&&guard<400);return{x,y}}
 function makeNode(kind,i){let x,y;if(kind==='iron'){const p=randomCanyonPoint();x=p.x;y=p.y}else if(kind==='gold'){const p=randomVolcanoPoint('core');x=p.x;y=p.y}else{do{x=rand(110,WORLD.w-110);y=rand(110,WORLD.h-110)}while(dist(x,y,START.x,START.y)<170||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y))}const maxHp=kind==='tree'?3:kind==='rock'?4:kind==='iron'?3:kind==='gold'?6:2;return{id:kind+i,kind,x,y,hp:maxHp,maxHp,dead:false,respawnAt:0}}
-function spawnCreature(type,index=0,anchor=null,packId=null){let x,y;if(type.volcanoZone){const p=randomVolcanoPoint(type.volcanoZone);x=p.x;y=p.y}else if(type.worldtree){const p=randomWorldTreePoint();x=p.x;y=p.y}else if(type.canyon){if(anchor){x=clamp(anchor.x+rand(-55,55),8760,11520);y=clamp(anchor.y+rand(-55,55),3070,6480);if(!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)){x=anchor.x;y=anchor.y}}else{const p=randomCanyonPoint();x=p.x;y=p.y}}else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y))&&tries<300)}else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0}}
+function spawnCreature(type,index=0,anchor=null,packId=null){let x,y;if(type.volcanoZone){const p=randomVolcanoPoint(type.volcanoZone);x=p.x;y=p.y}else if(type.worldtree){const p=randomWorldTreePoint();x=p.x;y=p.y}else if(type.canyon){if(anchor){x=clamp(anchor.x+rand(-55,55),11760,14520);y=clamp(anchor.y+rand(-55,55),5070,8480);if(!pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)){x=anchor.x;y=anchor.y}}else{const p=randomCanyonPoint();x=p.x;y=p.y}}else if(type.mood==='aggressive'){let band=0,tries=0;do{x=rand(80,WORLD.w-80);y=rand(80,WORLD.h-80);const nx=Math.abs(x-START.x)/(WORLD.w/2),ny=Math.abs(y-START.y)/(WORLD.h/2);band=Math.max(nx,ny);tries++}while((band<.38||band>.92||pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y))&&tries<300)}else{const a=index*2.399+rand(-.7,.7),d=type.mood==='neutral'?rand(420,2600):rand(250,1800);x=clamp(START.x+Math.cos(a)*d,60,WORLD.w-60);y=clamp(START.y+Math.sin(a)*d,60,WORLD.h-60);if(pointInPoly(x,y,CANYON_POLY)||pointInWorldTree(x,y)||pointInVolcano(x,y)){x=START.x+rand(-1000,1000);y=START.y+rand(-900,900)}}return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0}}
 function spawnAt(type,x,y,packId=null){return{type,hp:type.hp,maxHp:type.hp,x,y,spawnX:x,spawnY:y,packId,area:type.area||'surface',enemyTarget:null,stunnedUntil:0,bossState:null,emerged:!type.burrower,emergeAt:0,attackAt:0,hitAt:0,hostile:type.mood==='aggressive',wander:packId===null?rand(0,Math.PI*2):packId*1.73,wanderAt:0}}
 function initWorld(){
   state.trees=Array.from({length:420},(_,i)=>makeNode('tree',i));
@@ -144,12 +145,11 @@ function initWorld(){
   state.irons=Array.from({length:19},(_,i)=>makeNode('iron',i));
   state.golds=Array.from({length:13},(_,i)=>makeNode('gold',i));
   state.enemies=[];
-  const counts={mossboar:18,golem:10,goblin:18,shadowwolf:15,fairy:8};
+  const counts={mossboar:18,goblin:18,shadowwolf:15,fairy:8};
   for(const [id,count] of Object.entries(counts))for(let i=0;i<count;i++)state.enemies.push(spawnCreature(creatures[id],i));
   const starter=[
     ['mossboar',START.x-260,START.y-130],
     ['mossboar',START.x+310,START.y+90],
-    ['golem',START.x-390,START.y+260],
     ['goblin',START.x+450,START.y-210],
     ['goblin',START.x-490,START.y-310],
     ['shadowwolf',START.x+575,START.y+325]
@@ -158,13 +158,13 @@ function initWorld(){
   const bearCount=3+Math.floor(Math.random()*3);
   for(let i=0;i<bearCount;i++){
     const p=randomWorldTreePoint();
-    if(dist(p.x,p.y,WORLD_TREE.x,WORLD_TREE.y)<180){p.x=clamp(p.x+300,3260,8740)}
+    if(dist(p.x,p.y,WORLD_TREE.x,WORLD_TREE.y)<180){p.x=clamp(p.x+300,6260,11740)}
     state.enemies.push(spawnAt(creatures.worldtreebear,p.x,p.y,null));
   }
   const canyonPacks=[
-    {x:9300,y:3800},
-    {x:10200,y:5000},
-    {x:10900,y:5900}
+    {x:12300,y:5800},
+    {x:13200,y:7000},
+    {x:13900,y:7900}
   ];
   canyonPacks.forEach((anchor,pack)=>{
     const a=pointInPoly(anchor.x,anchor.y,CANYON_POLY)&&!pointInWorldTree(anchor.x,anchor.y)?anchor:randomCanyonPoint();
@@ -174,9 +174,14 @@ function initWorld(){
       state.enemies.push(spawnAt(creatures.ironspirit,x,y,pack));
     }
   });
+  const canyonGolemCount=3+Math.floor(Math.random()*3);
+  const canyonBorderSpots=[{x:11920,y:6750},{x:12280,y:5350},{x:14320,y:6200},{x:14250,y:8200},{x:12880,y:8350}];
+  for(let i=0;i<canyonGolemCount;i++){const b=canyonBorderSpots[i%canyonBorderSpots.length];state.enemies.push(spawnAt(creatures.golem,b.x+rand(-70,70),b.y+rand(-70,70),null))}
+  const treeGolemCount=3+Math.floor(Math.random()*3);
+  for(let i=0;i<treeGolemCount;i++){const a=i*Math.PI*2/treeGolemCount,r=130+rand(0,140);state.enemies.push(spawnAt(creatures.golem,WORLD_TREE.x+Math.cos(a)*r,WORLD_TREE.y+Math.sin(a)*r,null))}
   for(let i=0;i<4;i++){const p=randomCanyonPoint();state.enemies.push(spawnAt(creatures.ironibex,p.x,p.y,null))}
   for(let i=0;i<5;i++){const p=randomWorldTreePoint();state.enemies.push(spawnAt(creatures.sapdeer,p.x,p.y,null))}
-  const wolfSpots=[{x:4700,y:420},{x:6200,y:520},{x:7700,y:430}];
+  const wolfSpots=[{x:7700,y:2420},{x:9200,y:2520},{x:10700,y:2430}];
   for(const p of wolfSpots)state.enemies.push(spawnAt(creatures.firewolf,p.x,p.y));
   const burrowCount=2+Math.floor(Math.random()*3);
   for(let i=0;i<burrowCount;i++){const p=randomVolcanoPoint('wasteland');state.enemies.push(spawnAt(creatures.giantburrower,p.x,p.y))}
@@ -227,9 +232,9 @@ function drawMap(){
    m.fillStyle=r==='worldtree'?'#173d24':r==='canyon'?'#523824':r==='volcano'?'#5a251f':'#1d392b';
    m.fillRect(wx*sx,wy*sy,MAP_CELL*sx+1,MAP_CELL*sy+1)
  }
- if(state.discovered.volcano){m.strokeStyle='#d55b3c';m.lineWidth=2;m.strokeRect(0,0,12000*sx,3200*sy);m.fillStyle='#ff9a69';m.font='bold 11px system-ui';m.fillText('화산',10300*sx,500*sy)}
- if(state.discovered.canyon){m.strokeStyle='#a27750';m.lineWidth=2;m.beginPath();m.moveTo(CANYON_POLY[0].x*sx,CANYON_POLY[0].y*sy);for(let i=1;i<CANYON_POLY.length;i++)m.lineTo(CANYON_POLY[i].x*sx,CANYON_POLY[i].y*sy);m.closePath();m.stroke();m.fillStyle='#e0b990';m.font='bold 11px system-ui';m.fillText('협곡',10100*sx,5000*sy)}
- if(state.discovered.worldtree){m.strokeStyle='#3d7c4c';m.lineWidth=2;m.strokeRect(3180*sx,7150*sy,5640*sx,850*sy);m.fillStyle='#9bd09e';m.font='bold 11px system-ui';m.fillText('세계수',WORLD_TREE.x*sx-16,WORLD_TREE.y*sy-8);m.fillStyle='#78b96f';m.beginPath();m.arc(WORLD_TREE.x*sx,WORLD_TREE.y*sy,6,0,Math.PI*2);m.fill()}
+ if(state.discovered.volcano){m.strokeStyle='#d55b3c';m.lineWidth=2;m.strokeRect(3000*sx,2000*sy,12000*sx,3200*sy);m.fillStyle='#ff9a69';m.font='bold 11px system-ui';m.fillText('화산',13300*sx,2500*sy)}
+ if(state.discovered.canyon){m.strokeStyle='#a27750';m.lineWidth=2;m.beginPath();m.moveTo(CANYON_POLY[0].x*sx,CANYON_POLY[0].y*sy);for(let i=1;i<CANYON_POLY.length;i++)m.lineTo(CANYON_POLY[i].x*sx,CANYON_POLY[i].y*sy);m.closePath();m.stroke();m.fillStyle='#e0b990';m.font='bold 11px system-ui';m.fillText('협곡',13100*sx,7000*sy)}
+ if(state.discovered.worldtree){m.strokeStyle='#3d7c4c';m.lineWidth=2;m.strokeRect(6180*sx,9150*sy,5640*sx,850*sy);m.fillStyle='#9bd09e';m.font='bold 11px system-ui';m.fillText('세계수',WORLD_TREE.x*sx-16,WORLD_TREE.y*sy-8);m.fillStyle='#78b96f';m.beginPath();m.arc(WORLD_TREE.x*sx,WORLD_TREE.y*sy,6,0,Math.PI*2);m.fill()}
  m.fillStyle='#ffffff';m.beginPath();m.arc(state.player.x*sx,state.player.y*sy,4,0,Math.PI*2);m.fill()
 }
 function renderMap(){tabState();ui.sheetBody.innerHTML='<div class="info"><b>지도</b><br>직접 가본 곳만 표시돼. 아직 탐험하지 않은 곳은 비어 있어.</div><canvas id="mapCanvas" class="mapCanvas" width="360" height="240"></canvas>';drawMap()}
@@ -628,7 +633,7 @@ function drawBackground(cx,cy,w,h){
  ctx.fillStyle='#1d392b';ctx.fillRect(0,0,w,h);
  ctx.save();ctx.translate(-cx,-cy);
  // 화산 전체 2/5
- ctx.fillStyle='#51231f';ctx.fillRect(0,0,12000,3200);
+ ctx.fillStyle='#51231f';ctx.fillRect(3000,2000,12000,3200);
  // 서쪽: 오래된 황무지와 오아시스
  ctx.fillStyle='#8a6239';ctx.fillRect(WASTELAND.x,WASTELAND.y,WASTELAND.w,WASTELAND.h);
  ctx.fillStyle='#d5aa65';ctx.font='bold 22px system-ui';ctx.textAlign='center';ctx.fillText('오래된 황무지',WASTELAND.x+WASTELAND.w/2,420);
@@ -652,7 +657,7 @@ function drawBackground(cx,cy,w,h){
  // 용암 웅덩이
  for(const l of LAVA_POOLS){ctx.fillStyle='#ff5229';ctx.beginPath();ctx.arc(l.x,l.y,l.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#ffb03f';ctx.lineWidth=13;ctx.stroke()}
  // 협곡
- ctx.beginPath();ctx.moveTo(CANYON_POLY[0].x,CANYON_POLY[0].y);for(let i=1;i<CANYON_POLY.length;i++)ctx.lineTo(CANYON_POLY[i].x,CANYON_POLY[i].y);ctx.closePath();ctx.fillStyle='#523824';ctx.fill();ctx.strokeStyle='#a27750';ctx.lineWidth=18;ctx.stroke();ctx.fillStyle='#d0ad85';ctx.font='bold 24px system-ui';ctx.fillText('동쪽 철 협곡',10100,4850);
+ ctx.beginPath();ctx.moveTo(CANYON_POLY[0].x,CANYON_POLY[0].y);for(let i=1;i<CANYON_POLY.length;i++)ctx.lineTo(CANYON_POLY[i].x,CANYON_POLY[i].y);ctx.closePath();ctx.fillStyle='#523824';ctx.fill();ctx.strokeStyle='#a27750';ctx.lineWidth=18;ctx.stroke();ctx.fillStyle='#d0ad85';ctx.font='bold 24px system-ui';ctx.fillText('동쪽 철 협곡',13100,6850);
  // 세계수 지역
  ctx.beginPath();ctx.moveTo(WORLD_TREE_POLY[0].x,WORLD_TREE_POLY[0].y);for(let i=1;i<WORLD_TREE_POLY.length;i++)ctx.lineTo(WORLD_TREE_POLY[i].x,WORLD_TREE_POLY[i].y);ctx.closePath();ctx.fillStyle='#163820';ctx.fill();ctx.strokeStyle='#315d39';ctx.lineWidth=18;ctx.stroke();
  ctx.fillStyle='#8fc78e';ctx.fillText('세계수',WORLD_TREE.x,WORLD_TREE.y-250);ctx.fillStyle='#6b4930';ctx.fillRect(WORLD_TREE.x-60,WORLD_TREE.y-70,120,300);ctx.fillStyle='#24572f';ctx.beginPath();ctx.arc(WORLD_TREE.x,WORLD_TREE.y-150,240,0,Math.PI*2);ctx.fill();ctx.fillStyle='#2f6b39';ctx.beginPath();ctx.arc(WORLD_TREE.x-155,WORLD_TREE.y-70,165,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(WORLD_TREE.x+165,WORLD_TREE.y-60,175,0,Math.PI*2);ctx.fill();
@@ -701,16 +706,26 @@ function ensureEquippedInInventory(){const p=state.player;for(const id of [p.wea
 function loadGame(){
  try{
   const s=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!s||!s.player)return;
-  const o=s.player,p=state.player,version=Number(s.v)||1,legacyScale=version<3,scale=legacyScale?5:(version<6?1:(version<8?2:1)),ox=Number(o.x),oy=Number(o.y);
-  p.x=clamp((Number.isFinite(ox)?ox:(legacyScale?1200:START.x))*scale,25,WORLD.w-25);p.y=clamp((Number.isFinite(oy)?oy:(legacyScale?800:START.y))*scale,25,WORLD.h-25);
+  const o=s.player,p=state.player,version=Number(s.v)||1,legacyScale=version<3,scale=legacyScale?5:(version<6?1:(version<8?2:1)),ox=Number(o.x),oy=Number(o.y),oldSurface=s.area!=='underground',shiftX=version<13?3000:0,shiftY=version<13?2000:0;
+  const px=(Number.isFinite(ox)?ox:(legacyScale?1200:6000))*scale+(oldSurface?shiftX:0),py=(Number.isFinite(oy)?oy:(legacyScale?800:4000))*scale+(oldSurface?shiftY:0);
+  p.x=clamp(px,25,WORLD.w-25);p.y=clamp(py,25,WORLD.h-25);
   p.wood=Math.max(0,Number(o.wood)||0);p.stone=Math.max(0,Number(o.stone)||0);p.fiber=Math.max(0,Number(o.fiber)||0);p.ironOre=Math.max(0,Number(o.ironOre)||0);p.ironIngot=Math.max(0,Number(o.ironIngot)||0);p.goldOre=Math.max(0,Number(o.goldOre)||0);p.goldIngot=Math.max(0,Number(o.goldIngot)||0);p.wolfHide=Math.max(0,Number(o.wolfHide)||0);p.walkerClaw=Math.max(0,Number(o.walkerClaw)||0);p.bearClaw=Math.max(0,Number(o.bearClaw)||0);p.bearHide=Math.max(0,Number(o.bearHide)||0);p.bearFang=Math.max(0,Number(o.bearFang)||0);p.loot=o.loot&&typeof o.loot==='object'?{...o.loot}:{};for(const k of NEW_LOOT_KEYS)p.loot[k]=Math.max(0,Number(p.loot[k])||0);p.kills=Math.max(0,Number(o.kills)||0);
   p.inventory=o.inventory&&typeof o.inventory==='object'?{...o.inventory}:{};p.weapon=item(o.weapon)?.kind==='weapon'?o.weapon:(o.weapon==='wood-sword'?'wood-spear':null);p.tool=item(o.tool)?.kind==='tool'?o.tool:(item(o.axe)?.kind==='tool'?o.axe:(item(o.pick)?.kind==='tool'?o.pick:null));p.armor=item(o.armor)?.kind==='armor'?o.armor:(o.shield==='stone-shield'?'rune-shield':null);p.torch=!!o.torch;p.map=!!o.map;p.root=Math.max(0,Number(o.root)||0);p.maxHp=100+(item(p.armor)?.maxHp||0);p.hp=clamp(Number(o.hp)||p.maxHp,1,p.maxHp);ensureEquippedInInventory();
-  const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale,35,WORLD.w-35),y:clamp(Number(obj.y)*scale,35,WORLD.h-35)}};
+  const loadPos=obj=>{if(!obj||!Number.isFinite(Number(obj.x))||!Number.isFinite(Number(obj.y)))return null;return{x:clamp(Number(obj.x)*scale+shiftX,35,WORLD.w-35),y:clamp(Number(obj.y)*scale+shiftY,35,WORLD.h-35)}};
   state.bench=loadPos(s.bench);state.furnace=loadPos(s.furnace);state.ironBench=loadPos(s.ironBench);state.goldBench=loadPos(s.goldBench);
   if(s.smelting&&Number(s.smelting.endAt)>0){state.smelting={endAt:Number(s.smelting.endAt),type:s.smelting.type||'iron',duration:Number(s.smelting.duration)||(s.smelting.type==='gold'?10000:5000),queue:Array.isArray(s.smelting.queue)?s.smelting.queue.filter(x=>x==='iron'||x==='gold'):[]}}
   state.discovered={canyon:!!s.discovered?.canyon,worldtree:!!s.discovered?.worldtree,volcano:!!s.discovered?.volcano};
-  if(version<8&&s.explored&&typeof s.explored==='object'){state.explored={};for(const key of Object.keys(s.explored)){const [gx,gy]=key.split(',').map(Number),nx=Math.floor(((gx*300+150)*2)/MAP_CELL),ny=Math.floor(((gy*300+150)*2)/MAP_CELL);state.explored[nx+','+ny]=1}}else state.explored=s.explored&&typeof s.explored==='object'?{...s.explored}:{};
-  state.area=s.area==='underground'?'underground':'surface';state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale,25,WORLD.h-25)}:{x:START.x,y:START.y};
+  if(s.explored&&typeof s.explored==='object'){
+   state.explored={};
+   for(const key of Object.keys(s.explored)){
+     const [gx,gy]=key.split(',').map(Number);
+     let wx,wy;
+     if(version<8){wx=(gx*300+150)*2;wy=(gy*300+150)*2}else{wx=gx*MAP_CELL+MAP_CELL/2;wy=gy*MAP_CELL+MAP_CELL/2}
+     if(version<13){wx+=3000;wy+=2000}
+     state.explored[Math.floor(wx/MAP_CELL)+','+Math.floor(wy/MAP_CELL)]=1
+   }
+  }else state.explored={};
+  state.area=s.area==='underground'?'underground':'surface';state.surfacePos=s.surfacePos&&Number.isFinite(Number(s.surfacePos.x))?{x:clamp(Number(s.surfacePos.x)*scale+shiftX,25,WORLD.w-25),y:clamp(Number(s.surfacePos.y)*scale+shiftY,25,WORLD.h-25)}:{x:START.x,y:START.y};
   state.rootTaken=!!s.rootTaken;state.altarUsed=!!s.altarUsed;state.bossSummoned=!!s.bossSummoned;state.bossDefeated=!!s.bossDefeated;state.bossExitAt=Math.max(0,Number(s.bossExitAt)||0);state.bestiary=s.bestiary&&typeof s.bestiary==='object'?{...s.bestiary}:{};state.records=s.records&&typeof s.records==='object'?{lab:!!s.records.lab,construction:!!s.records.construction}:{lab:false,construction:false};
   if(state.bossSummoned&&!state.bossDefeated){const boss=spawnAt(creatures.rootsovereign,3000,1550,null);boss.area='underground';boss.bossState={mode:'idle',nextAt:performance.now()+1000,telegraphUntil:0,hitIndex:0,nextHitAt:0};state.enemies.push(boss)}
   if(version<SAVE_VERSION)state.dirty=true;finishSmeltIfReady()
