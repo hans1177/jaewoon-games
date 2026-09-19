@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "authority": "MACHINE_EXECUTION_LOG_MAP",
+  "sourceOfTruth": "company-learning/company-log-map.json",
+  "centralPolicy": "company-learning/platform-release-roadmap.json",
+  "architectureMap": "company-learning/company-architecture-map.json",
+  "purpose": "ALL_AI_AND_WORKERS_SHARE_ONE_LOG_LOCATION_AND_CORRELATION_CONTRACT",
+  "requiredForAllWorkers": true,
+  "canonicalCorrelationKeys": [
+    "GITHUB_RUN_ID",
+    "GITHUB_RUN_ATTEMPT",
+    "TASK_ID",
+    "GAME_ID",
+    "CANDIDATE_SHA",
+    "SOURCE_REVISION",
+    "FAILURE_STAGE",
+    "FAILURE_SIGNATURE"
+  ],
+  "logChannels": {
+    "githubActions": {
+      "role": "PRIMARY_EXECUTION_LOG",
+      "location": "GITHUB_ACTIONS_JOB_LOG",
+      "retentionDaysMinimum": 7,
+      "duplicatePersistentLogForbidden": true
+    },
+    "artifacts": {
+      "role": "STRUCTURED_EVIDENCE_ONLY",
+      "locations": [
+        "/tmp/*-evidence.json",
+        "/tmp/*-result.json",
+        "/tmp/*-telemetry.json",
+        "/tmp/*-handoff.json"
+      ],
+      "retentionDaysDefault": 7
+    },
+    "companyRuntime": {
+      "role": "DURABLE_MACHINE_STATE_NOT_RAW_LOG",
+      "branch": "company-runtime",
+      "allowedStateFiles": [
+        "development-queue.json",
+        "game-seed-state.json",
+        "game-catalog.json",
+        "company-status.json"
+      ]
+    },
+    "vibeControl": {
+      "role": "DURABLE_VIBE_MACHINE_STATE_NOT_RAW_LOG",
+      "branch": "vibe2-unreal-core",
+      "allowedStateRoots": [
+        ".vibe2/"
+      ]
+    }
+  },
+  "requiredMarkers": [
+    "WORKER_CONTEXT_POLICY_SHA256",
+    "WORKER_CONTEXT_LOG_MAP_SHA256",
+    "WORKER_CONTEXT_ARCHITECTURE_SHA256",
+    "WORKER_CONTEXT_SYNC=PASS"
+  ],
+  "failureContract": {
+    "exactStageRequired": true,
+    "exactSignatureRequired": true,
+    "repeatedFailureDedupeRequired": true,
+    "staleFailureMayNotOverrideCurrentRawState": true
+  },
+  "completionContract": {
+    "structuredEvidenceBeforeCompletion": true,
+    "rawLogAloneCannotProvePass": true,
+    "centralPolicyAndArchitectureMustMatchExecution": true
+  }
+}
