@@ -251,3 +251,27 @@ test('stale persistent pressure expires back to external wave boundary before ne
   assert.equal(next.currentMax,256);
   assert.equal(next.lastReason,'AT_MAX_HEALTHY');
 });
+
+
+test('owner minimum wave clamps reserve and pressure decisions at 20', () => {
+  const below=createParallelismControl({currentMax:8});
+  assert.equal(adaptiveRequestedMax(below,256,{minimumMax:20}),20);
+
+  const recovered=decideAdaptiveBackpressure(
+    below,
+    pressuredTelemetry({runId:'owner-floor-recover',workerCount:20,effectiveMax:20}),
+    {minimumMax:20}
+  );
+  assert.equal(recovered.currentMax,20);
+  assert.equal(recovered.lastDecision,'UP');
+  assert.equal(recovered.lastReason,'OWNER_MINIMUM_WAVE_20');
+
+  const held=decideAdaptiveBackpressure(
+    createParallelismControl({currentMax:20}),
+    pressuredTelemetry({runId:'owner-floor-hold',workerCount:20,effectiveMax:20}),
+    {minimumMax:20}
+  );
+  assert.equal(held.currentMax,20);
+  assert.equal(held.lastDecision,'HOLD');
+  assert.equal(held.lastReason,'OWNER_MINIMUM_WAVE_20');
+});
