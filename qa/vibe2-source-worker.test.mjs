@@ -417,6 +417,32 @@ test('focused Web repair composes exact primary-symbol windows instead of broad 
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
+test('focused symbol context matches JavaScript identifiers containing regex metacharacters',async()=>{
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'focused-dollar-symbol.json');
+  const filler='const decoration=1;\n'.repeat(2800);
+  const source='<!doctype html><html><body><script>\n'+filler+
+    'let pointerState=null,placedEntities=[];\n'+
+    'function place$Tower(slot){placedEntities.push(slot);return true;}\n'+
+    'function handle$Pointer(event){pointerState={x:event.clientX,y:event.clientY};return place$Tower(pointerState);}\n'+
+    'addEventListener("pointerdown",handle$Pointer);\n'+filler+'</script></body></html>\n';
+  write(path.join(cwd,'web-games/demo/index.html'),source);
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'focused-dollar-symbol'});
+  workOrder.originalGoal='모바일 pointer 입력을 placement state에 연결한다';
+  workOrder.goal='[WEB_REPAIR] runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING 수정';
+  workOrder.selectedTask={evidence:['web-stage:WEB_REPAIR','runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
+  workOrder.workPackage={id:'focused-dollar-wp',sharedContext:{diagnosticEvidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING']}};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const find='function handle$Pointer(event){pointerState={x:event.clientX,y:event.clientY};return place$Tower(pointerState);}';
+  write(responseFile,JSON.stringify({edits:[{path:'index.html',find,replace:'function handle$Pointer(event){pointerState={x:Math.round(event.clientX),y:Math.round(event.clientY)};return place$Tower(pointerState);}'}],newFiles:[],replaceFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.contextMode,'PRIMARY_SYMBOL_WINDOWS');
+  assert.equal(result.generation.exactSourceWindows,true);
+  assert.ok(result.generation.focusedSymbolCount>=1);
+  assert.ok(result.generation.contextBytes<48000);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
 test('zero-change candidate gets one bounded recovery retry that produces a real responsible-file edit', async () => {
   const cwd = tempRoot();
   const empty = path.join(cwd, 'empty.json');
