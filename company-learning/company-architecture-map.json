@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -65,7 +65,9 @@
     "CODEX": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
     "DETERMINISTIC_QA": "PASS_FAIL_EVIDENCE_AUTHORITY",
     "OLLAMA": "LOCAL_GAME_SOURCE_GENERATION_PROVIDER",
-    "COMPANY_RUNTIME": "STATE_PERSISTENCE_ONLY"
+    "COMPANY_RUNTIME": "STATE_PERSISTENCE_ONLY",
+    "PRIMARY_AI_ORCHESTRATOR": "SYSTEM_ROADMAP_BOTTLENECK_ASSIGNMENT_REVIEW_AND_ACCEPTANCE_AUTHORITY",
+    "EXTERNAL_AI_WORKERS": "ASSIGNED_TASK_EXECUTORS_NO_POLICY_NO_FINAL_ACCEPTANCE"
   },
   "sharedContextLoadOrder": [
     "company-learning/platform-release-roadmap.json",
@@ -85,5 +87,41 @@
     "CODEX_WRITES_GAME_SOURCE",
     "RAW_LOG_AS_PASS_EVIDENCE",
     "CENTRAL_POLICY_BYPASS"
-  ]
+  ],
+  "orchestrationTopology": {
+    "systemWork": [
+      "PRIMARY_AI_READ_POLICY_LOG_ARCHITECTURE",
+      "PRIMARY_AI_SELECT_HIGHEST_IMPACT_BOTTLENECK",
+      "PRIMARY_AI_DECOMPOSE_AND_ASSIGN",
+      "EXTERNAL_AI_EXECUTE_ASSIGNED_SCOPE",
+      "DETERMINISTIC_QA_AND_EVIDENCE",
+      "PRIMARY_AI_REVIEW",
+      "PRIMARY_AI_REWORK_OR_ACCEPT",
+      "SYNC_POLICY_LOG_ARCHITECTURE"
+    ],
+    "gameWork": [
+      "VIBE2_VIBE3_IMPLEMENT",
+      "DETERMINISTIC_QA",
+      "RUNTIME_EVIDENCE",
+      "REGRESSION",
+      "PROMOTION"
+    ]
+  },
+  "primaryAiReviewRequiredFor": [
+    "CENTRAL_POLICY_CHANGE",
+    "ARCHITECTURE_CHANGE",
+    "LOG_MAP_CHANGE",
+    "ROADMAP_IMPLEMENTATION",
+    "SYSTEM_BOTTLENECK_REPAIR",
+    "WORKFLOW_OR_PLANNER_AUTHORITY_CHANGE"
+  ],
+  "externalAiRules": {
+    "executeAssignedScopeOnly": true,
+    "selfOrchestrationForbidden": true,
+    "policyCreationForbidden": true,
+    "finalSystemAcceptanceForbidden": true,
+    "parallelExecutionAllowed": true,
+    "workerCountLimit": null,
+    "externalProviderCapacityOnly": true
+  }
 }
