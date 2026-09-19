@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly, fullWebProgressCreditEligible } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -975,6 +975,13 @@ test('focused retry derives exact unique find anchors from writable source',()=>
   assert.match(retry,/Use exactly one EXACT FIND ANCHOR OPTION/i);
 });
 
+test('full web progressive credit requires sustained real growth and keeps 12KB gate',()=>{
+  assert.equal(fullWebProgressCreditEligible({accumulatedBytes:5915,minBytes:12000,growthBytes:[1736,1736,1736],repeatedOutputs:0,currentMax:4,attempt:4,fakeResponseCount:0}),true);
+  assert.equal(fullWebProgressCreditEligible({accumulatedBytes:12000,minBytes:12000,growthBytes:[1736,1736],repeatedOutputs:0,currentMax:4,attempt:4,fakeResponseCount:0}),false);
+  assert.equal(fullWebProgressCreditEligible({accumulatedBytes:5915,minBytes:12000,growthBytes:[900,1736],repeatedOutputs:0,currentMax:4,attempt:4,fakeResponseCount:0}),false);
+  assert.equal(fullWebProgressCreditEligible({accumulatedBytes:5915,minBytes:12000,growthBytes:[1736,1736],repeatedOutputs:1,currentMax:4,attempt:4,fakeResponseCount:0}),false);
+  assert.equal(fullWebProgressCreditEligible({accumulatedBytes:5915,minBytes:12000,growthBytes:[1736,1736],repeatedOutputs:0,currentMax:8,attempt:8,fakeResponseCount:0}),false);
+});
 test('focused replace-only pins exact path and anchor while model emits only replacement',()=>{
   const base=[
     'Goal: repair play interaction',
