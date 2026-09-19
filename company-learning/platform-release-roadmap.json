@@ -1,5 +1,5 @@
 {
-  "version": 144,
+  "version": 145,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -330,11 +330,14 @@
       "implementationOrderMustFollowPriorityOrderUnlessEvidenceRequiresException": true,
       "documentationMustStaySynchronizedWithCentralMachinePolicy": true,
       "enginePipelineWired": true,
-      "implementationStatus": "CODE_WIRED_CI_VALIDATION_REQUIRED",
+      "implementationStatus": "CENTRAL_CI_PENDING",
       "plannerStageGeneration": "tools/vibe2-auto-planner.mjs",
       "workOrderContract": "tools/vibe2-continuous-runner.mjs",
       "staticQa": "tools/vibe2-incremental-qa.mjs",
-      "verifiedLearningFeedback": "tools/vibe2-learning-motor.mjs"
+      "verifiedLearningFeedback": "tools/vibe2-learning-motor.mjs",
+      "canonicalWebRuntimeQaConnected": true,
+      "runtimeContractMarker": "data-presentation-quality-version=\"1\"",
+      "runtimeValidation": "tools/company-development-web-gameplay-validation.mjs"
     }
   },
   "platformRepresentativeSets": {
@@ -5194,10 +5197,13 @@
       "gameStyleAndDesignBaselineMustBeReadFirst": true,
       "documentationMustStaySynchronizedWithCentralMachinePolicy": true,
       "enginePipelineWired": true,
-      "implementationStatus": "CODE_WIRED_CI_VALIDATION_REQUIRED",
+      "implementationStatus": "CENTRAL_CI_PENDING",
       "stagedPass": "AUDIO_FEEL",
       "staticQa": "tools/vibe2-incremental-qa.mjs",
-      "verifiedLearningFeedback": "tools/vibe2-learning-motor.mjs"
+      "verifiedLearningFeedback": "tools/vibe2-learning-motor.mjs",
+      "canonicalWebRuntimeQaConnected": true,
+      "canonicalMusicRuntimeValidationReused": true,
+      "runtimeValidation": "tools/company-development-web-gameplay-validation.mjs"
     }
   },
   "narrativeStorytellingContract": {
@@ -5309,9 +5315,9 @@
     }
   },
   "presentationPipelineImplementation": {
-    "version": 1,
+    "version": 2,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
-    "status": "CODE_WIRED_CI_VALIDATION_REQUIRED",
+    "status": "CODE_WIRED_CANONICAL_RUNTIME_QA_CONNECTED_CENTRAL_CI_PENDING",
     "canonicalPassOrder": [
       "ASSET_ADAPTATION",
       "LIVING_MOTION",
@@ -5346,7 +5352,21 @@
       "qa/vibe2-source-worker.test.mjs",
       "qa/vibe2-incremental-qa.test.mjs",
       "qa/vibe2-learning-motor.test.mjs",
-      "qa/vibe2-practice-distillation.test.mjs"
-    ]
+      "qa/vibe2-practice-distillation.test.mjs",
+      "qa/company-development-web-runtime.test.mjs"
+    ],
+    "runtimeValidator": "tools/company-development-web-gameplay-validation.mjs",
+    "runtimeContractMarker": "data-presentation-quality-version=\"1\"",
+    "runtimeObservation": {
+      "mobileViewport": "390x844 touch",
+      "frameTiming": true,
+      "livingVisualMotion": true,
+      "liveDomContractExposure": true,
+      "canonicalPlaywrightValidator": true,
+      "separateShadowValidator": false
+    },
+    "runtimeHardGate": "PRESENTATION_RUNTIME_QUALITY_REQUIRED",
+    "centralCi": ".github/workflows/company-evolution-qa.yml",
+    "centralCiRunForIntegration": 35448282718
   }
 }
