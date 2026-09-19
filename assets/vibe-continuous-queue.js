@@ -199,14 +199,20 @@ function taskBlockedReasons(task, completed) {
   return freezeList(reasons);
 }
 function scoreTask(task, index) {
+  const department=clean(task.department).toLowerCase();
+  const type=clean(task.type).toLowerCase();
+  const developmentImplementation=department==='development'&&!['inspect','research','qa'].includes(type);
+  const nonBlockingSupervisionResearch=department==='system-supervision'&&['inspect','research','qa'].includes(type);
   return (task.ownerDirective ? 10000 : 0)
+    + (task.systemSteward ? 8000 : 0)
+    + (developmentImplementation ? 2000 : 0)
+    + (isPostReleaseFocused(task) ? 1200 : 0)
+    + (task.ownerFocusedCaretaker ? 900 : 0)
     + (RELEASE_STATE_SCORE[task.releaseState] || 0)
     + (PRIORITY_SCORE[task.priority] || 0)
     + Math.min(6, Number(task.packageWorkUnits || task.taskWorkUnits || 0))
     + (task.packageLongWorkProtected ? 3 : 0)
-    + (task.systemSteward ? 8000 : 0)
-    + (isPostReleaseFocused(task) ? 1200 : 0)
-    + (task.ownerFocusedCaretaker ? 900 : 0)
+    - (nonBlockingSupervisionResearch ? 1000 : 0)
     - index / 1000;
 }
 function fileLocks(task) {
