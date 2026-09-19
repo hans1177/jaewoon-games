@@ -1,0 +1,89 @@
+{
+  "version": 1,
+  "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
+  "sourceOfTruth": "company-learning/company-architecture-map.json",
+  "centralPolicy": "company-learning/platform-release-roadmap.json",
+  "logMap": "company-learning/company-log-map.json",
+  "purpose": "ALL_AI_AND_WORKERS_SHARE_CURRENT_EXECUTION_TOPOLOGY",
+  "requiredForAllWorkers": true,
+  "branches": {
+    "main": {
+      "role": "CANONICAL_CODE_AND_MACHINE_POLICY",
+      "directGameWorkerWrite": false
+    },
+    "company-runtime": {
+      "role": "COMPANY_RUNTIME_STATE",
+      "policyCreationForbidden": true
+    },
+    "vibe2-unreal-core": {
+      "role": "VIBE_QUEUE_AND_CONTROL_STATE",
+      "policyCreationForbidden": true
+    },
+    "vibe2-learning-runtime": {
+      "role": "VERIFIED_LEARNING_MEMORY",
+      "policyCreationForbidden": true
+    }
+  },
+  "authorityOrder": [
+    "OWNER_DIRECTIVE",
+    "company-learning/platform-release-roadmap.json",
+    "company-learning/company-architecture-map.json",
+    "company-learning/company-log-map.json",
+    "VERIFIED_RUNTIME_EVIDENCE",
+    "RUNTIME_STATE"
+  ],
+  "executionTopology": {
+    "design": [
+      "COMPANY_DESIGN_RUNTIME",
+      "DETERMINISTIC_DESIGN_GATE",
+      "BASELINE_PROMOTION"
+    ],
+    "web": [
+      "VIBE2_VIBE3_GAME_IMPLEMENTATION",
+      "WEB_RUNTIME_VALIDATION",
+      "STRICT_REVIEW",
+      "PROMOTION_REVALIDATION"
+    ],
+    "selectedPlatform": [
+      "SOURCE_BIND",
+      "BUILD_OR_PACKAGE",
+      "TARGET_RUNTIME",
+      "INDEPENDENT_QA",
+      "REGRESSION",
+      "RELEASE_PROMOTION"
+    ],
+    "sustainedDevelopment": [
+      "VIBE_PLANNER",
+      "VIBE_SOURCE_WORKER",
+      "INCREMENTAL_QA",
+      "PERFORMANCE_SANITY",
+      "FAN_IN_REGRESSION"
+    ]
+  },
+  "workerRoles": {
+    "VIBE2_VIBE3": "GAME_SOURCE_IMPLEMENTATION_OWNER",
+    "CODEX": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
+    "DETERMINISTIC_QA": "PASS_FAIL_EVIDENCE_AUTHORITY",
+    "OLLAMA": "LOCAL_GAME_SOURCE_GENERATION_PROVIDER",
+    "COMPANY_RUNTIME": "STATE_PERSISTENCE_ONLY"
+  },
+  "sharedContextLoadOrder": [
+    "company-learning/platform-release-roadmap.json",
+    "company-learning/company-log-map.json",
+    "company-learning/company-architecture-map.json"
+  ],
+  "synchronization": {
+    "beforeWork": "LOAD_AND_VALIDATE_ALL_THREE",
+    "duringWork": "DO_NOT_CREATE_POLICY_OUTSIDE_CENTRAL_POLICY",
+    "afterWork": "REVALIDATE_ALL_THREE_AND_BIND_OUTPUT_EVIDENCE",
+    "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE"
+  },
+  "forbidden": [
+    "WORK_WITHOUT_SHARED_CONTEXT",
+    "RUNTIME_STATE_CREATES_POLICY",
+    "AI_ROLE_EXPANDS_OWN_AUTHORITY",
+    "CODEX_WRITES_GAME_SOURCE",
+    "RAW_LOG_AS_PASS_EVIDENCE",
+    "CENTRAL_POLICY_BYPASS"
+  ]
+}
