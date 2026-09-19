@@ -24,7 +24,7 @@ const STUDY_RESERVATION_GRACE_MS = 10 * 60 * 1000;
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`, 'utf8'); }
 function parseArgs(argv = process.argv.slice(2)) { const [command = 'summary', ...rest] = argv; const args = { command }; for (const raw of rest) { if (!raw.startsWith('--')) continue; const body = raw.slice(2); const at = body.indexOf('='); if (at < 0) args[body] = true; else args[body.slice(0, at)] = body.slice(at + 1); } return args; }
-function clamp(value, min = 1, max = 20) { return Math.max(min, Math.min(max, Math.floor(Number(value) || min))); }
+function clamp(value, min = 1, max = 30) { return Math.max(min, Math.min(max, Math.floor(Number(value) || min))); }
 function safeId(value) { return clean(value).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 72) || 'study'; }
 function booleanFlag(value, fallback = false) {
   const normalized = clean(value).toLowerCase();
@@ -105,7 +105,7 @@ export function loadGameStudyTargets(input = {}) {
   return Object.freeze({
     version: 1,
     mode: clean(input?.mode) || 'server-hourly-24h-parallel-study',
-    maxConcurrentTasks: clamp(input?.maxConcurrentTasks || 20),
+    maxConcurrentTasks: clamp(input?.maxConcurrentTasks || 30),
     targets: Object.freeze(targets),
     runnable: Object.freeze(targets.filter((target) => target.valid && target.runnerReady)),
     invalid: Object.freeze(targets.filter((target) => !target.valid))
@@ -192,12 +192,12 @@ export function prepareGameStudyQueue(queueInput = {}, targetInput = {}, { nowMs
   };
 }
 
-export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, controlInput = {}, { maxConcurrentTasks = 20, nowMs = Date.now(), robloxRunnerReady = true } = {}) {
+export function reserveGameStudyBatch(queueInput = {}, targetInput = {}, controlInput = {}, { maxConcurrentTasks = 30, nowMs = Date.now(), robloxRunnerReady = false } = {}) {
   const prepared = prepareGameStudyQueue(queueInput, targetInput, { nowMs });
-  const persistentMax = clamp(prepared.queue.maxConcurrentTasks || 20);
+  const persistentMax = clamp(prepared.queue.maxConcurrentTasks || 30);
   const controlMax = clamp(controlInput?.currentMax || persistentMax);
   const targetMax = clamp(prepared.targets.maxConcurrentTasks || persistentMax);
-  const requestedMax = Math.min(clamp(maxConcurrentTasks || 20), persistentMax, controlMax, targetMax);
+  const requestedMax = Math.min(clamp(maxConcurrentTasks || 30), persistentMax, controlMax, targetMax);
   const runtimeRobloxReady = robloxRunnerReady === true;
   const runtimeDeferredIds = new Set(prepared.queue.tasks
     .filter((task) => {
@@ -367,7 +367,7 @@ export function applyGameStudyFanIn({ queueInput = {}, experienceInput = {}, kno
   });
 }
 
-export function reserveGameStudyFiles({ queueFile = '.vibe2/queue.json', targetsFile = '.vibe2/game-study-targets.json', controlFile = '.vibe2/parallelism-control.json', outputFile = '', maxConcurrentTasks = 20, robloxRunnerReady = true } = {}) {
+export function reserveGameStudyFiles({ queueFile = '.vibe2/queue.json', targetsFile = '.vibe2/game-study-targets.json', controlFile = '.vibe2/parallelism-control.json', outputFile = '', maxConcurrentTasks = 30, robloxRunnerReady = false } = {}) {
   const result = reserveGameStudyBatch(
     readJson(queueFile, { tasks: [] }),
     readJson(targetsFile, { targets: [] }),
@@ -403,8 +403,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       targetsFile: clean(args.targets) || '.vibe2/game-study-targets.json',
       controlFile: clean(args.control) || '.vibe2/parallelism-control.json',
       outputFile: clean(args.output),
-      maxConcurrentTasks: Number(args.max) || 20,
-      robloxRunnerReady: booleanFlag(args['roblox-ready'], true)
+      maxConcurrentTasks: Number(args.max) || 30,
+      robloxRunnerReady: booleanFlag(args['roblox-ready'], false)
     });
     console.log(`VIBE2_GAME_STUDY_EXECUTION=SERVER`);
     console.log(`VIBE2_GAME_STUDY_RESERVED=${result.selectedCount}`);

@@ -21,17 +21,19 @@
     "longWorkProtectedSlots": 1,
     "roleSeparation": true,
     "baseShardSlots": {
-      "roblox": 8,
-      "unity": 3,
-      "web": 7,
-      "verification": 5,
-      "support": 5
+      "unity": 5,
+      "web": 11,
+      "verification": 7,
+      "support": 7
     },
     "dynamicBackpressure": true,
     "speculativeParallelism": "high-risk-opt-in-only",
     "workPackageAware": true,
     "longWorkPackagePriority": true,
-    "minimumWorkloadGate": true
+    "minimumWorkloadGate": true,
+    "postReleaseCaretakerMode": "per-game-persistent",
+    "systemStewardProtectedSlots": 1,
+    "systemStewardSlotBorrowableWhenIdle": true
   },
   "defaultMaxRetries": 2,
   "tasks": [

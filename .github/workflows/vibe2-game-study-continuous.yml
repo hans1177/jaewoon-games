@@ -37,7 +37,7 @@ jobs:
         id: batch
         shell: bash
         env:
-          VIBE2_ROBLOX_DEDICATED_RUNNER_READY: ${{ vars.VIBE2_ROBLOX_STUDIO_RUNNER_READY }}
+          VIBE2_ROBLOX_DEDICATED_RUNNER_READY: 'false'
         run: |
           set -euo pipefail
           git config user.name 'jaewoon-vibe2-study-scheduler'
@@ -53,7 +53,7 @@ jobs:
             --queue=.vibe2/queue.json \
             --targets=.vibe2/game-study-targets.json \
             --control=.vibe2/parallelism-control.json \
-            --max=20 \
+            --max=30 \
             --roblox-ready="${VIBE2_ROBLOX_DEDICATED_RUNNER_READY:-false}" \
             --output=/tmp/vibe2-game-study-batch.json | tee /tmp/vibe2-game-study-reserve.log
           node <<'NODE'
@@ -94,7 +94,7 @@ jobs:
     timeout-minutes: 15
     strategy:
       fail-fast: false
-      max-parallel: 20
+      max-parallel: 30
       matrix: ${{ fromJSON(needs.reserve.outputs.web_matrix) }}
     steps:
       - name: Checkout Vibe2 study code
@@ -146,15 +146,15 @@ jobs:
 
   roblox:
     needs: reserve
-    if: needs.reserve.outputs.roblox_count != '0'
+    if: ${{ false }} # 24H learning: Roblox Studio use forbidden by central machine contract
     runs-on: [self-hosted, Windows, vibe2-roblox]
     timeout-minutes: 20
     env:
-      VIBE2_ROBLOX_DEDICATED_RUNNER_READY: ${{ vars.VIBE2_ROBLOX_STUDIO_RUNNER_READY }}
+      VIBE2_ROBLOX_DEDICATED_RUNNER_READY: 'false'
       VIBE2_ROBLOX_STUDY_ISOLATED_SESSION: 'true'
     strategy:
       fail-fast: false
-      max-parallel: 20
+      max-parallel: 30
       matrix: ${{ fromJSON(needs.reserve.outputs.roblox_matrix) }}
     steps:
       - name: Checkout Vibe2 study code

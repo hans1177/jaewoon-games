@@ -1,7 +1,7 @@
 {
   "version": 1,
   "mode": "server-hourly-24h-parallel-study",
-  "maxConcurrentTasks": 20,
+  "maxConcurrentTasks": 30,
   "policy": {
     "execution": "server-only",
     "learningState": ".vibe2/experience.json",
@@ -12,7 +12,7 @@
     "mayExpandAuthority": false,
     "robloxPublicExperienceDownload": false,
     "robloxAuthorizedCopyDownloadLearning": true,
-    "robloxAuthorizedCopyStudioLearning": true,
+    "robloxAuthorizedCopyStudioLearning": false,
     "robloxAuthorizedCopyPermission": "creator-enabled-place-copying",
     "robloxAuthorizedDownloadAuthority": "vibe2-roblox-authorized-download",
     "robloxAuthorizedStudioAuthority": "vibe2-roblox-studio-runtime",
@@ -23,7 +23,7 @@
     "externalCopyEnabledRobloxAutomation": true,
     "clientLocalLearning": false,
     "learningInputs": {
-      "studioRuntime": true,
+      "studioRuntime": false,
       "ownedOrAuthorizedSourceStructure": true,
       "webRuntimeObservation": true,
       "ciQaRegressionEvidence": true,
@@ -32,7 +32,7 @@
       "rawExternalSourceMemory": false
     },
     "robloxMaterialCollector": {
-      "enabled": true,
+      "enabled": false,
       "tool": "tools/vibe2-game-study-planner-context.mjs",
       "targetEngine": "roblox",
       "verifiedCrossGamePatternsOnly": true,
@@ -45,7 +45,7 @@
     "runtimeReadinessScheduling": {
       "robloxReadinessVariable": "VIBE2_ROBLOX_STUDIO_RUNNER_READY",
       "offlineBehavior": "preserve-queue-without-consuming-study-slot",
-      "onlineBehavior": "reserve-on-dedicated-vibe2-roblox-runner",
+      "onlineBehavior": "studio-learning-forbidden-use-non-studio-evidence-only",
       "productionRunnerFallback": false,
       "productionStudioUntouched": true
     },
@@ -119,14 +119,14 @@
     },
     {
       "id": "external-roblox-potion-shop-flow-a",
-      "enabled": true,
+      "enabled": false,
       "origin": "external-public-copy-enabled",
       "engine": "roblox",
       "gameId": "external-roblox-potion-shop-demo",
       "scenarioFile": ".vibe2/game-study-scenarios/external-roblox-potion-shop-flow-a.json",
       "sourceAccess": "owned-or-authorized-server-workspace",
       "sourceRoot": ".vibe2/authorized-roblox-source/potion-shop-demo",
-      "runnerReady": true,
+      "runnerReady": false,
       "command": "node",
       "commandArgs": [
         "tools/vibe2-roblox-studio-cli-runner.mjs",
@@ -145,7 +145,8 @@
         "studio-cli-runtime",
         "authorized-source-distillation",
         "production-priority-session-safe"
-      ]
+      ],
+      "disabledReason": "24h-learning-roblox-studio-forbidden"
     }
   ]
 }
