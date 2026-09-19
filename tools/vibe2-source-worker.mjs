@@ -476,8 +476,27 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   let changedFiles,branch=null;
   if(applySource){branch=assertCandidateBranch(cwd);changedFiles=[...applyExactEdits(sourceRoot,candidate.edits),...applyNewFiles(sourceRoot,candidate.newFiles),...applyReplaceFiles(sourceRoot,candidate.replaceFiles,{allowCreate:bootstrap})];}
   else changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate);
+  const editContract=exploration?.editContract||{};
+  const codingMethod={
+    version:1,
+    strategy:clean(editContract.strategyHint)||'UNCLASSIFIED',
+    responsibilityConfidence:clean(editContract.responsibilityConfidence)||'LOW',
+    primaryTargets:Array.isArray(editContract.primaryTargets)?editContract.primaryTargets.slice(0,8):[],
+    primarySystems:Array.isArray(editContract.primarySystems)?editContract.primarySystems.slice(0,12):[],
+    dependentSystems:Array.isArray(editContract.dependentSystems)?editContract.dependentSystems.slice(0,12):[],
+    ownedState:Array.isArray(editContract.ownedState)?editContract.ownedState.slice(0,24):[],
+    semanticDiffBudget:editContract.semanticDiffBudget||null,
+    requiredFocusedChecks:Array.isArray(editContract.requiredFocusedChecks)?editContract.requiredFocusedChecks.slice(0,24):[],
+    contextFiles:context.files.length,
+    contextBytes:context.bytes,
+    generationAttempts:Number(generation.attempts||0),
+    generationRecoveryUsed:generation.recoveryUsed===true,
+    candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
+    writableScopeExpansionAllowed:false,
+    learningAuthorityExpanded:false
+  };
   const manifest={
-    version:5,
+    version:6,
     taskId:order.taskId,
     gameId:order.gameId||null,
     target,
@@ -499,6 +518,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     expectedEffect:candidate.expectedEffect,
     tests:candidate.tests,
     exploration,
+    codingMethod,
     roleResults:{exploration:'PASS',implementation:'PASS',test:'WAITING_INCREMENTAL_QA',performance:'WAITING_SANITY',regression:'WAITING_FAN_IN',review:'WAITING_FAN_IN'},
     designIntelligence:designManifestContract(order),
     designEvidence:waitingDesignEvidence(),
