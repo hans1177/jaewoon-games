@@ -1,0 +1,23 @@
+{
+  "summary": "Index.html 수정",
+  "expectedEffect": "게임 구성 요소 재구성",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script>",
+      "replace": "<script>window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}</script><script src=\"/web-games/_shared/vibe2-final.js\"></script>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "변경 전 원본 일치",
+    "변경 diff 확인",
+    "보호 대상 값/키 변경 검사",
+    "문법/구조 QA",
+    "실행 회귀 QA",
+    "모바일 UI QA",
+    "Web source 구조 확인",
+    "브라우저 런타임"
+  ]
+}

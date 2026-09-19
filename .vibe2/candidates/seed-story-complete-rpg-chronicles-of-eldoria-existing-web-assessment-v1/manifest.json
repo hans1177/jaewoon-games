@@ -1,0 +1,173 @@
+{
+  "version": 5,
+  "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-existing-web-assessment-v1",
+  "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+  "target": "web",
+  "sourceRoot": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+  "releaseState": "development-confirmed",
+  "priority": "owner-immediate",
+  "generation": {
+    "attempts": 2,
+    "recoveryUsed": true,
+    "mode": "JSON_EDIT",
+    "maxPredict": 1024,
+    "timeoutMs": 180000
+  },
+  "baseMainSha": "bb590b55f1a1bcc7a2543764c5340f738de76456",
+  "goal": "[WORK PACKAGE seed-story-complete-rpg-chronicles-of-eldoria-wp-lgex3i]\n엘도리아 연대기: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.\n역할=implementation-owner; taskWorkUnits=6; packageWorkUnits=6\n공유 준비 범위=web-games/seed-story-complete-rpg-chronicles-of-eldoria/index.html\n역할 분리=exploration:read-only-exploration-worker | implementation:source-worker-exclusive-write | test:incremental-qa-worker-read-only | performance:performance-sanity-worker-read-only | regression:single-fan-in-regression-worker-read-only | review:fan-in-package-review-worker-read-only\n완료 기준=exploration-handoff-produced-and-reused | functional-scope-implemented | all-package-task-incremental-qa-pass | performance-sanity-pass | full-core-regression-once-at-fan-in | fan-in-package-review-pass | machine-contract-and-central-doc-synced-when-architecture-changes\n\n[REUSABLE MACHINE HANDOFF - do not rediscover already known facts]\n- task=seed-story-complete-rpg-chronicles-of-eldoria-existing-web-assessment-v1; package=seed-story-complete-rpg-chronicles-of-eldoria-wp-lgex3i; files=web-games/seed-story-complete-rpg-chronicles-of-eldoria/index.html; evidence=role-result:exploration:FAIL | role-result:implementation:FAIL | role-result:test:FAIL | role-result:performance:FAIL | role-result:regression:WAITING_FAN_IN | role-result:review:WAITING_FAN_IN | workload:changed-files:0 | workload:changed-lines:0 | workload:prep-ms:4660 | workload:cycle-ms:265270 | failure-cause:source-candidate-generation-failed | workload:prep-ms:3595 | workload:cycle-ms:243965 | workload:prep-ms:7623 | workload:cycle-ms:351905 | repair-mode:CAUSAL_REGENERATION_GENERATION_1 | incremental-qa-hash:57e924d9934a3106e61f923ef2acf2c2388baf3f5fc0d850ad2b1c6e230b05cf | incremental-qa-cache:MISS | role-result:exploration:PASS | role-result:implementation:PASS | role-result:test:PASS | role-result:performance:PASS | workload:changed-files:1 | workload:changed-lines:2 | workload:prep-ms:8587 | workload:cycle-ms:176693 | exploration-reuse:d11911aa6ccf95fa1b11c38b | exploration-impact:server/Game.server.luau|client/Game.client.luau|roblox-source-bootstrap.json|shared/GameConfig.luau | speculative-result:primary:FAIL | speculative-result:speculative-1:PASS | speculative-result:speculative-2:FAIL | speculative-winner:speculative-1 | failure-cause:fan-in-regression-failed | workload:prep-ms:4020 | workload:cycle-ms:253286 | workload:prep-ms:4990 | workload:cycle-ms:266198 | workload:prep-ms:4093 | workload:cycle-ms:271442; lastOutcome=FAIL\n\n[EXISTING_WEB_ASSESS_AND_IMPLEMENT]\n게임: 엘도리아 연대기\n기존 Web 소스를 먼저 읽고 승인 설계와 비교한다. exploration의 EXISTING_WEB_STRATEGY가 KEEP_AND_CONTINUE면 현재 구조를 보존하며 필요한 개발만 이어가고, PARTIAL_REPAIR면 문제 책임 영역만 수정하고, MAJOR_REWORK면 쓸 수 있는 시스템·세이브·핵심 루프를 보존한 채 큰 결함을 재구성한다. FULL_REBUILD는 exploration이 실제 게임성 신호와 승인 scope 근거가 부족하다고 판정한 경우에만 허용한다. 파일 존재 여부나 프로토타입 문구 하나만으로 전체 재구축을 결정하지 않는다. 검증된 학습은 새 코드·새 에셋 표현으로 재조합하고 기존 게임 정체성과 승인 설계를 유지한다.\n[TRANSFORMATIVE_RECOMBINATION_CONTEXT]\nrecipe=recombine_87df590552a28b93\nsource_projects=block-blast,external-commercial-pk-xd\nfeature_blend=board-grid-placement,score-combo-reward,input-drag-touch,progression-difficulty,save-state-persistence,ads-monetization,avatar-state,world-interaction\ntransformation=change-visual-language\nUse these as abstract design/implementation references only.\nCreate a new project-specific mechanic/constraint and new code/asset expression.\nDo not emit raw source files, raw asset bytes, logos, source-specific identifiers, or verbatim implementation.\nPreserve the current game identity, approved design, gameplay authority, save meaning, and all existing QA/runtime/regression gates.\n\n[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]\n설계 분석은 승인 권한을 확대하지 않는다. 잠긴 아트북/보호 규칙/세이브 의미/게임 수치는 명시 승인 없이 바꾸지 않는다.\n명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.\n비평 경고: ACCEPTANCE_CRITERIA_MISSING\n인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.\n수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.\n구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.\n\n[VERIFIED EXPERIENCE MEMORY - advisory only]\n다음 기록은 검증된 과거 경험이다. 관련될 때만 패치 전략/회피 패턴으로 참고하고 승인 권한, 보호 규칙, 게임 수치를 자동 변경하지 않는다.\n- 경험 exp_4odofx; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | verified-play-observation:restart | study-tag:external-reference | study-tag:turn-based | study-ta; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:verified-play-observation:restart | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:turn\n- 경험 exp_pg739o; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:difficulty-selection | study-tag:turn-feedback | study-tag:player-action | study-tag:ai-respon; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:difficulty-selection | GAME_STUDY:study-tag:turn-feedback | GAME_STUDY:study-tag:player-action | GA\n- 경험 exp_1oonbi8; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:movement | verified-play-observation:progression | verified-play-observation:ui | study-tag:external-reference | study-tag:memory-game | study-tag:board-size-selection | study-tag:; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:movement | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:study-tag:external-reference | GAME_STUDY:study-tag:memory-game | GAME_STUDY:study-tag:board-size-selec\n- 경험 exp_rg6lvy; 결과=PASS; 문제=Reuse verified implementation knowledge from an authorized Block Blast source-derived learning pack.; 검증변경=package=fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c; domains=board-grid-placement,score-combo-reward,input-drag-touch,progression-difficulty,save-state-persistence,ads-monetization,session-retry-gameover,tutorial-onboar; 재사용=AUTHORIZED_SOURCE:board-grid-placement | AUTHORIZED_SOURCE:score-combo-reward | AUTHORIZED_SOURCE:input-drag-touch | AUTHORIZED_SOURCE:progression-difficulty | AUTHORIZED_SOURCE:save-state-persistence | AUTHORIZED_SOURCE:ads-monetization | AUTHORIZED_SOURCE:session-retry-gameover | AUTHORIZED_SOURCE; 회피=do-not-treat-static-analysis-as-runtime-pass | do-not-bypass-current-project-qa | do-not-expand-authority-beyond-owner-authorized-scope\n- 경험 exp_i00mwv; 결과=PASS; 문제=reference-game-structure-and-play-observation; 검증변경=verified-play-observation:input | verified-play-observation:economy | verified-play-observation:progression | verified-play-observation:ui | authorized-source-pattern:frame-loop | study-intelligence:mechanic:economy | study-intelligence:mec; 재사용=GAME_STUDY:verified-play-observation:input | GAME_STUDY:verified-play-observation:economy | GAME_STUDY:verified-play-observation:progression | GAME_STUDY:verified-play-observation:ui | GAME_STUDY:authorized-source-pattern:frame-loop | GAME_STUDY:study-intelligence:mechanic:economy | GAME_STUDY:study\n\n[VIBE VERIFIED LEARNING MOTOR]\n우선순위=same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.\n- experience=exp_1oonbi8; game=external-memory-game; engine=web; relevance=50; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference; avoid=none\n- experience=exp_4odofx; game=external-tictactoe; engine=web; relevance=50; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:movement|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:verified-play-observation:restart; avoid=none\n- experience=exp_pg739o; game=external-tictactoe; engine=web; relevance=50; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:study-tag:external-reference|GAME_STUDY:study-tag:difficulty-selection; avoid=none\n- experience=exp_i00mwv; game=external-roblox-potion-shop-demo; engine=roblox; relevance=22; reuse=GAME_STUDY:verified-play-observation:input|GAME_STUDY:verified-play-observation:economy|GAME_STUDY:verified-play-observation:progression|GAME_STUDY:verified-play-observation:ui|GAME_STUDY:authorized-source-pattern:frame-loop; avoid=none\n- experience=exp_rg6lvy; game=block-blast; engine=android; relevance=22; reuse=AUTHORIZED_SOURCE:board-grid-placement|AUTHORIZED_SOURCE:score-combo-reward|AUTHORIZED_SOURCE:input-drag-touch|AUTHORIZED_SOURCE:progression-difficulty|AUTHORIZED_SOURCE:save-state-persistence; avoid=do-not-treat-static-analysis-as-runtime-pass|do-not-bypass-current-project-qa|do-not-expand-authority-beyond-owner-authorized-scope\n- verified-code-pattern=pat_130jf9c; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_1avbmmv; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_1vgfuno; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_3f780w; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_9pwgix; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-code-pattern=pat_m3ipio; system=AI_INTENT; relevance=39; pattern=VERIFIED_AI_INTENT_SMALLEST_RESPONSIBLE_CHANGE_WITH_REGRESSION\n- verified-practice-distilled=MOBILE_INPUT; confirmations=1; evidence=code-pattern:pat_14v79w7:3aa6a50ad14f3d0620d4b894660645b92137d708|code-pattern:pat_1lx9uhh:669aa231ae5291c89ab60eb528c4d357d5671c68|code-pattern:pat_1xg0er9:a2467c071d3fd3436fadefab7a3919c6e178d5f6\n- verified-practice-distilled=PROGRESSION; confirmations=1; evidence=experience:exp_rg6lvy:block-blast|game-study:external-memory-game:architecture:progression|game-study:external-roblox-potion-shop-demo:architecture:progression\n- mastery=STATE_MACHINE:LV3 | PROGRESSION:LV2 | ECONOMY:LV1 | SAVE:LV3 | MOBILE_INPUT:LV4 | DEBUGGING:LV3 | ASSET_PRODUCTION:LV1 | WEB_RUNTIME:LV2\n\n[VIBE ASSET PRODUCTION - implementation owner decision]\nVibe2/Vibe3가 게임 구현 주체이며 현재 게임 정체성과 실제 화면 품질을 기준으로 필요한 에셋 방식을 직접 선택한다.\n선택 순서 후보: 검증된 회사 에셋 재사용 / Vibe 직접 제작 / 별도 authoring generator 요청. 기존 에셋 재사용은 강제가 아니다.\nWeb에서 SVG/CSS/Canvas/절차적 JavaScript/WebAudio/Motion Engine으로 최종 품질을 만들 수 있으면 Vibe가 직접 제작한다.\n이모지/단순 도형/검증용 임시 그래픽을 최종 에셋으로 사용하지 않는다.\nPNG/WebP 스프라이트시트, 고품질 음원, 3D 모델처럼 binary authoring이 필요한데 현재 worker가 만들 수 없으면 가짜 파일을 쓰지 말고 authoring generator 요청으로 분리한다.\n에셋 이유로 게임 규칙, 세이브 의미, 진행, 경제 수치를 바꾸지 않는다.\npreset=set-e-ui-minimal; reuseCandidateTypes=9; directAuthorableTypes=9; missingTypes=none\n- type=character; reuse=oga-adventurer-slime|github-pixel-snapped-pirate-skeleton; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=enemy; reuse=oga-animated-monsters|oga-adventurer-slime|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=boss; reuse=oga-animated-monsters|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=background; reuse=survival2-atlas; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=item; reuse=survival2-atlas|survival2-mushroom; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=prop; reuse=survival2-atlas|survival2-tree|survival2-rock|survival2-plant; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=effect; reuse=survival2-atlas|oga-basic-pixel-spells; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=ui; reuse=survival2-atlas; direct=svg-final-art|css-presentation|canvas-art-and-effects|procedural-javascript-visuals|web-audio-sfx|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST\n- type=animation; reuse=oga-animated-monsters|oga-adventurer-slime|oga-basic-pixel-spells|oga-unity-slime-12; direct=svg-final-art|canvas-art-and-effects|motion-engine-animation; fallback=AUTHORING_GENERATOR_REQUEST",
+  "generatedAt": "2026-09-19T04:56:55.212Z",
+  "mode": "isolated-candidate-branch-source-write",
+  "branch": "vibe2/candidate/seed-story-complete-rpg-chronicles-of-eldoria-existing-web-a-speculative-2-35422105182-1",
+  "model": "qwen3:1.7b",
+  "changedFiles": [
+    "index.html"
+  ],
+  "summary": "Index.html 수정",
+  "expectedEffect": "게임 구성 요소 재구성",
+  "tests": [
+    "변경 전 원본 일치",
+    "변경 diff 확인",
+    "보호 대상 값/키 변경 검사",
+    "문법/구조 QA",
+    "실행 회귀 QA",
+    "모바일 UI QA",
+    "Web source 구조 확인",
+    "브라우저 런타임"
+  ],
+  "exploration": {
+    "version": 1,
+    "role": "exploration",
+    "sourceWrite": false,
+    "reused": true,
+    "taskId": "seed-story-complete-rpg-chronicles-of-eldoria-existing-web-assessment-v1",
+    "packageId": "seed-story-complete-rpg-chronicles-of-eldoria-wp-lgex3i",
+    "target": "web",
+    "sourceRoot": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+    "baseMainSha": "7cde6c0523b5b68da8105fc927b893f58c63bf73",
+    "responsibleFiles": [
+      "index.html"
+    ],
+    "impactFiles": [
+      "index.html"
+    ],
+    "contextFiles": [
+      "index.html"
+    ],
+    "relatedFiles": [],
+    "testTargets": [],
+    "protectedScopeSignals": [
+      "combat-number"
+    ],
+    "diagnosticEvidence": [],
+    "existingWebAssessment": {
+      "version": 1,
+      "strategy": "MAJOR_REWORK",
+      "confidence": "MEDIUM",
+      "reasons": [
+        "REUSABLE_SOURCE_EXISTS",
+        "SUBSTANTIAL_GAMEPLAY_OR_SCOPE_GAPS",
+        "APPROVED_DESIGN_GATE_NOT_PROVEN_IN_LOCAL_SOURCE"
+      ],
+      "preserveExistingSource": true,
+      "fullRewriteAllowed": false,
+      "evidence": {
+        "sourceBytes": 694,
+        "sourceSha256": "31c6b074af581645e6128de2da70d7388294d24ee36fdb932710bd904904af7f",
+        "validationScore": 0,
+        "approvedDesign": false,
+        "gameplaySignalCount": 4,
+        "gameplaySignals": {
+          "input": false,
+          "runtimeLoop": false,
+          "mutableState": true,
+          "gameplayOutcome": false,
+          "progression": true,
+          "combat": true,
+          "spatial": false,
+          "persistence": false,
+          "mobile": true,
+          "audio": false
+        },
+        "prototypeMarkerCount": 0,
+        "approvedScopeRequiredCount": 0,
+        "approvedScopeBoundCount": 0,
+        "approvedScopeSemanticCount": 0,
+        "approvedScopeCoveragePct": 100
+      },
+      "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
+      "sourceRoot": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+      "sourcePath": "web-games/seed-story-complete-rpg-chronicles-of-eldoria/index.html",
+      "designBaselinePath": null
+    },
+    "fileDigests": [
+      {
+        "path": "index.html",
+        "hash": "31c6b074af581645",
+        "bytes": 694
+      }
+    ],
+    "reuseKey": "5dd1b3fdd3507edbaaebc734",
+    "generatedAt": "2026-09-19T04:45:46.845Z",
+    "reusedFrom": ".vibe2/exploration.json"
+  },
+  "roleResults": {
+    "exploration": "PASS",
+    "implementation": "PASS",
+    "test": "WAITING_INCREMENTAL_QA",
+    "performance": "WAITING_SANITY",
+    "regression": "WAITING_FAN_IN",
+    "review": "WAITING_FAN_IN"
+  },
+  "designIntelligence": {
+    "required": true,
+    "version": 1,
+    "pipeline": [
+      "DESIGNER",
+      "CONSTRAINT_ENGINE",
+      "CRITIC",
+      "CAUSALITY_GRAPH",
+      "PLAYER_MODEL",
+      "COMBAT_ECONOMY_SIMULATOR",
+      "IMPLEMENTATION",
+      "AUTO_PLAYER",
+      "TELEMETRY",
+      "DESIGN_REVIEW",
+      "EXPERIENCE_MEMORY"
+    ],
+    "implementationGate": {
+      "allowed": true,
+      "blockers": []
+    },
+    "evidenceRequirements": {
+      "autoPlayer": "verified-runtime-play-evidence-required",
+      "telemetry": "verified-observed-metrics-required",
+      "designReview": "verified-pass-required-before-experience-memory",
+      "qa": "verified-qa-evidence-required"
+    },
+    "authorityExpanded": false
+  },
+  "designEvidence": {
+    "autoPlayer": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "telemetry": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    },
+    "designReview": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false,
+      "decision": null
+    },
+    "qa": {
+      "status": "WAITING_EVIDENCE",
+      "verified": false
+    }
+  },
+  "fullFileRewriteAllowed": false,
+  "protectedGameplayMutationAutomatic": false,
+  "binaryAssetsDirectTextEditForbidden": true,
+  "directMainWrite": false,
+  "verifiedBeforePromotion": false
+}
