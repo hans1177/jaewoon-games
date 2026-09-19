@@ -80,7 +80,7 @@ export function runRecoveryQueue(args={}){
       id:args.id,priority:args.priority,sourceQueue:args['source-queue'],sourceTaskId:args['source-task'],
       relatedTaskIds:clean(args.related).split(','),failureStage:args.stage,failureSignature:args.signature,
       blastRadius:args['blast-radius'],checkpoint:args.checkpoint,evidence:clean(args.evidence).split(','),
-      recoveryStrategy:args.strategy,verificationPlan:clean(args.verify).split(',')
+      recoveryStrategy:args.strategy,verificationPlan:clean(args.verify).split(','),recoveryOwner:args.owner
     });queue=result.queue;writeJson(file,queue);return{cmd,...result};
   }
   if(cmd==='reserve'){const result=reserveRecovery(queue,{max:args.max});writeJson(file,result.queue);return{cmd,...result};}
