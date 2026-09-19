@@ -208,7 +208,7 @@ function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
     || evidence.has('recovery-exact-stage:SOURCE_CANDIDATE_GENERATION');
 }
 function extractJson(raw){const text=clean(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();try{return JSON.parse(text);}catch{}const starts=['{','['].map(c=>text.indexOf(c)).filter(i=>i>=0);if(!starts.length)throw new Error('모델 JSON 시작을 찾지 못함');const start=Math.min(...starts),opening=text[start],closing=opening==='{'?'}':']';let depth=0,quoted=false,escape=false;for(let i=start;i<text.length;i++){const ch=text[i];if(quoted){if(escape)escape=false;else if(ch==='\\')escape=true;else if(ch==='"')quoted=false;continue;}if(ch==='"'){quoted=true;continue;}if(ch===opening)depth++;else if(ch===closing&&--depth===0)return JSON.parse(text.slice(start,i+1));}throw new Error('모델 JSON 파싱 실패');}
-export function recoverPartialJsonEdit(raw){
+export function recoverPartialJsonEdit(raw,{reason='timeout'}={}){
   const text=String(raw??'');
   const match=/"edits"\s*:\s*\[/.exec(text);
   if(!match)return null;
@@ -229,9 +229,10 @@ export function recoverPartialJsonEdit(raw){
       try{
         const edit=JSON.parse(text.slice(start,i+1));
         if(!edit||typeof edit!=='object'||Array.isArray(edit))return null;
+        const recoveryReason=clean(reason).toLowerCase()==='malformed'?'malformed':'timeout';
         return{
-          summary:'Vibe2 recovered partial timeout edit',
-          expectedEffect:'recovered complete edit from bounded timeout output',
+          summary:`Vibe2 recovered partial ${recoveryReason} edit`,
+          expectedEffect:`recovered complete edit from bounded ${recoveryReason} output`,
           edits:[edit],
           newFiles:[],
           replaceFiles:[],
@@ -658,21 +659,25 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
       const failureClass=generationFailureClass(error);
-      if(!allowFullRewrite&&failureClass==='TIMEOUT'&&partialOutput.trim()){
-        const recoveredPartial=recoverPartialJsonEdit(partialOutput);
+      const partialRecoveryClass=!allowFullRewrite&&['TIMEOUT','MALFORMED_OUTPUT'].includes(failureClass)?failureClass:'';
+      const partialRecoveryOutput=partialRecoveryClass==='TIMEOUT'?partialOutput:(partialRecoveryClass==='MALFORMED_OUTPUT'?lastRaw:'');
+      if(partialRecoveryClass&&partialRecoveryOutput.trim()){
+        const recoveredPartial=recoverPartialJsonEdit(partialRecoveryOutput,{reason:partialRecoveryClass==='MALFORMED_OUTPUT'?'malformed':'timeout'});
         if(recoveredPartial){
           try{
             const candidate=normalizeCandidate(recoveredPartial,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes});
             if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
             lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-            console.log(`VIBE2_TIMEOUT_PARTIAL_EDIT_RECOVERED=${attempt}:${candidate.edits[0]?.path||''}`);
+            const recoveryMarker=partialRecoveryClass==='MALFORMED_OUTPUT'?'VIBE2_MALFORMED_PARTIAL_EDIT_RECOVERED':'VIBE2_TIMEOUT_PARTIAL_EDIT_RECOVERED';
+            console.log(`${recoveryMarker}=${attempt}:${candidate.edits[0]?.path||''}`);
             return{
               candidate,
               candidateValidation:lastCandidateValidation,
               generation:{
                 attempts:attempt,
                 recoveryUsed:true,
-                partialTimeoutRecovery:true,
+                partialTimeoutRecovery:partialRecoveryClass==='TIMEOUT',
+                partialMalformedRecovery:partialRecoveryClass==='MALFORMED_OUTPUT',
                 focusedFinalRetry:focusedFinal,
                 focusedWebRepair,
                 fullWebExpansionStages:expansionStages,
@@ -688,7 +693,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
               }
             };
           }catch(recoveryError){
-            console.log(`VIBE2_TIMEOUT_PARTIAL_EDIT_REJECTED=${attempt}:${generationFailureClass(recoveryError)}:${clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240)}`);
+            const rejectMarker=partialRecoveryClass==='MALFORMED_OUTPUT'?'VIBE2_MALFORMED_PARTIAL_EDIT_REJECTED':'VIBE2_TIMEOUT_PARTIAL_EDIT_REJECTED';
+            console.log(`${rejectMarker}=${attempt}:${generationFailureClass(recoveryError)}:${clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240)}`);
           }
         }
       }
@@ -827,6 +833,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     generationAttempts:Number(generation.attempts||0),
     generationRecoveryUsed:generation.recoveryUsed===true,
     partialTimeoutRecovery:generation.partialTimeoutRecovery===true,
+    partialMalformedRecovery:generation.partialMalformedRecovery===true,
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
