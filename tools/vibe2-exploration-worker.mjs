@@ -7,6 +7,9 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs';
+import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
+import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
+import { buildExpertDevelopmentAnalysis, traceFailureResponsibility } from './company-vibe2-expert-development.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -60,6 +63,138 @@ function reusableArtifact(cwd,order){
   return{...cached,reused:true,reusedFrom:posix(path.relative(cwd,resolved))||path.basename(resolved)};
 }
 
+
+function taskGameplaySketch(order={},sourceAnalysis={}){
+  const text=clean([order?.originalGoal,order?.goal,...(order?.selectedTask?.evidence||[])].filter(Boolean).join(' ')).toLowerCase();
+  const has=re=>re.test(text);
+  return{
+    worldModel:{requiresPlayableSpace:Boolean(sourceAnalysis?.capabilities?.collision||sourceAnalysis?.areaIds?.length||has(/world|map|area|zone|region|route|path|placement|배치|맵|지역/))},
+    actors:{playerRequired:true,enemyBehaviorRequired:has(/enemy|boss|combat|attack|ai|적|보스|전투|공격/)},
+    interactionGraph:{required:Boolean(sourceAnalysis?.capabilities?.interactions||has(/interact|npc|dialog|chest|door|pickup|상호작용|npc|상자|문/))},
+    combatModel:{required:has(/combat|attack|damage|weapon|skill|enemy|boss|전투|공격|데미지|무기|스킬|적|보스/),strategicOutcomeDifferenceRequired:has(/strategy|choice|build|loadout|전략|선택|빌드/)},
+    economyModel:{required:Boolean(sourceAnalysis?.capabilities?.economy||has(/gold|coin|currency|shop|buy|sell|cost|reward|골드|코인|상점|구매|판매|비용|보상/))},
+    progressionModel:{required:has(/progress|quest|objective|unlock|level|stage|wave|진행|퀘스트|목표|해금|레벨|스테이지|웨이브/),objectives:[]},
+    placementModel:{required:has(/place|placement|tower|build|deploy|slot|grid|배치|타워|건설/)},
+  };
+}
+function taskFailureEvidence(order={}){
+  const values=[
+    ...(order?.workPackage?.sharedContext?.diagnosticEvidence||[]),
+    order?.selectedTask?.blocker,
+    order?.selectedTask?.lastOutcome,
+    ...(order?.selectedTask?.evidence||[]).filter(value=>/fail|failure|blocker|runtime|hard|invalid|missing|no.?op|edit.?match|timeout|repair|recovery|실패|누락|오류/i.test(clean(value)))
+  ];
+  return unique(values).slice(0,16);
+}
+function compileEditContract({order={},sourceText='',responsibleFiles=[],protectedScopeSignals=[],testTargets=[]}={}){
+  const sourceAnalysis=analyzeExistingGameSource(sourceText);
+  const gameplaySketch=taskGameplaySketch(order,sourceAnalysis);
+  const codingArchitecture=buildCodingArchitecture({
+    gameId:clean(order?.gameId),
+    genre:clean(order?.designIntelligence?.genre||order?.selectedTask?.genre),
+    baseline:{},
+    gameplaySketch,
+    sourceAnalysis,
+    explicitDevelopmentMode:sourceAnalysis.present?'PRESERVE_PATCH':'GREENFIELD'
+  });
+  const failures=taskFailureEvidence(order);
+  const expertDevelopment=buildExpertDevelopmentAnalysis({source:sourceText,sourceAnalysis,gameplaySketch,failures});
+  const graph=expertDevelopment?.responsibilityGraph||{nodes:[],edges:[]};
+  const requirementText=clean(order?.originalGoal||order?.selectedTask?.goal||order?.goal);
+  const requirementTrace=requirementText?traceFailureResponsibility({failure:requirementText,responsibilityGraph:graph}):null;
+  const traces=[...(expertDevelopment?.causalDebug?.traces||[]),...(requirementTrace?[requirementTrace]:[])];
+  const primaryTargets=unique(traces.map(row=>row?.primaryTarget)).slice(0,8);
+  const primarySet=new Set(primaryTargets);
+  const primaryNodes=(graph.nodes||[]).filter(node=>primarySet.has(node.name));
+  const primarySystems=unique(primaryNodes.flatMap(node=>node.systems||[]));
+  const directDependentSymbols=unique(primaryNodes.flatMap(node=>[...(node.calls||[]),...(node.calledBy||[])])).slice(0,16);
+  const impactRows=(codingArchitecture?.impactPrediction||[]).filter(row=>primarySystems.includes(row.system));
+  const dependentSystems=unique(impactRows.flatMap(row=>row.likelyAffected||[])).slice(0,12);
+  const allowedSystems=unique([...primarySystems,...dependentSystems]).slice(0,16);
+  const ownedState=unique(primaryNodes.flatMap(node=>node.stateWrites||[])).slice(0,24);
+  const readState=unique(primaryNodes.flatMap(node=>node.stateReads||[])).slice(0,24);
+  const preserveSemantics=unique([
+    'EXISTING_WORKING_BEHAVIOR',
+    'APPROVED_GAMEPLAY_VALUES',
+    'SAVE_MEANING',
+    ...(sourceAnalysis.storageKeys||[]).map(key=>'SAVE_KEY:'+key),
+    ...(protectedScopeSignals||[]).map(value=>'PROTECTED_SIGNAL:'+value)
+  ]);
+  const requiredFocusedChecks=unique([
+    ...impactRows.flatMap(row=>row.requiredChecks||[]),
+    ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
+    ...(testTargets||[]).map(value=>'TEST_TARGET:'+value)
+  ]).slice(0,24);
+  const strategyHint=failures.length&&primaryTargets.length?'CAUSAL_TRACE_FIRST'
+    :primaryTargets.length?'RESPONSIBILITY_FIRST'
+    :sourceAnalysis.present?'PRESERVE_PATCH_RESPONSIBLE_SCOPE'
+    :'ARCHITECTURE_FIRST_GREENFIELD';
+  const confidence=primaryTargets.length&&graph.nodeCount>0?'HIGH':graph.nodeCount>0?'MEDIUM':'LOW';
+  const relevantEdges=(graph.edges||[]).filter(edge=>primarySet.has(edge.from)||primarySet.has(edge.to)||directDependentSymbols.includes(edge.from)||directDependentSymbols.includes(edge.to)).slice(0,40);
+  return{
+    version:1,
+    mode:'COMPILED_EDIT_CONTRACT',
+    strategyHint,
+    responsibilityConfidence:confidence,
+    primaryTargets,
+    allowedResponsibleFiles:responsibleFiles,
+    allowedDependentSymbolsOrSystems:unique([...directDependentSymbols,...dependentSystems]).slice(0,24),
+    primarySystems,
+    dependentSystems,
+    ownedState,
+    readState,
+    preserveSemantics,
+    failureOrRequirementCausalChain:unique(traces.flatMap(row=>row?.causalChain||[])).slice(0,32),
+    requiredObservableResult:requirementText||'IMPLEMENT_WORK_ORDER_WITH_OBSERVABLE_GAMEPLAY_EFFECT',
+    semanticDiffBudget:{
+      allowedSystems,
+      preferredPrimarySymbols:primaryTargets,
+      maxSystemCount:Math.max(1,allowedSystems.length||primarySystems.length||1),
+      unrelatedSystemMutationForbidden:true,
+      saveKeysMustRemainCompatible:sourceAnalysis.storageKeys||[]
+    },
+    requiredFocusedChecks,
+    codingArchitecture:{
+      developmentMode:codingArchitecture?.developmentMode||null,
+      stateOwnershipSystems:(codingArchitecture?.stateOwnership||[]).map(row=>row.system),
+      apiNames:(codingArchitecture?.apiContracts||[]).map(row=>row.api),
+      invariantIds:(codingArchitecture?.invariants||[]).map(row=>row.id),
+      impactRule:'PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED'
+    },
+    responsibilityGraph:{
+      nodeCount:Number(graph.nodeCount||0),
+      relevantNodes:(graph.nodes||[]).filter(node=>primarySet.has(node.name)||directDependentSymbols.includes(node.name)).slice(0,24).map(node=>({
+        name:node.name,systems:node.systems||[],calls:node.calls||[],calledBy:node.calledBy||[],
+        stateReads:node.stateReads||[],stateWrites:node.stateWrites||[],storageKeys:node.storageKeys||[],events:node.events||[]
+      })),
+      relevantEdges
+    },
+    behaviorChains:expertDevelopment?.behaviorChains?.chains||[],
+    seniorReview:{
+      score:expertDevelopment?.seniorCodeReview?.score??null,
+      hardBlockers:expertDevelopment?.seniorCodeReview?.hardBlockers||[],
+      issues:(expertDevelopment?.seniorCodeReview?.issues||[]).slice(0,12)
+    },
+    failureEvidence:failures,
+    writableScopeExpansionAllowed:false,
+    learningAuthorityExpanded:false
+  };
+}
+function bootstrapEditContract(order={},responsibleFiles=[]){
+  return{
+    version:1,mode:'COMPILED_EDIT_CONTRACT',strategyHint:'ARCHITECTURE_FIRST_GREENFIELD',responsibilityConfidence:'LOW',
+    primaryTargets:[],allowedResponsibleFiles:responsibleFiles,allowedDependentSymbolsOrSystems:[],primarySystems:[],dependentSystems:[],
+    ownedState:[],readState:[],preserveSemantics:['APPROVED_GAMEPLAY_VALUES','SAVE_MEANING'],
+    failureOrRequirementCausalChain:['SOURCE_ROOT_MISSING','APPROVED_BOOTSTRAP','IMPLEMENT_COMPLETE_PLAYABLE_BASELINE'],
+    requiredObservableResult:clean(order?.originalGoal||order?.goal)||'IMPLEMENT_COMPLETE_PLAYABLE_BASELINE',
+    semanticDiffBudget:{allowedSystems:[],preferredPrimarySymbols:[],maxSystemCount:0,unrelatedSystemMutationForbidden:false,saveKeysMustRemainCompatible:[]},
+    requiredFocusedChecks:['MOBILE_GAMEPLAY','REAL_INPUT','STATE_CHANGE','RESTART','RUNTIME'],
+    codingArchitecture:{developmentMode:'GREENFIELD',stateOwnershipSystems:[],apiNames:[],invariantIds:[],impactRule:'ARCHITECTURE_FIRST_THEN_IMPLEMENT'},
+    responsibilityGraph:{nodeCount:0,relevantNodes:[],relevantEdges:[]},behaviorChains:[],seniorReview:{score:null,hardBlockers:[],issues:[]},
+    failureEvidence:taskFailureEvidence(order),writableScopeExpansionAllowed:false,learningAuthorityExpanded:false
+  };
+}
+
 export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}={}){
   if(!order||typeof order!=='object')throw new Error('exploration work order 필요');
   const cached=reusableArtifact(cwd,order);
@@ -84,7 +219,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
       version:1,role:'exploration',sourceWrite:false,reused:false,bootstrap:true,
       taskId:clean(order.taskId)||null,packageId:clean(order?.workPackage?.id)||null,target,sourceRoot:rootRelative,baseMainSha,
       responsibleFiles:responsible,impactFiles:responsible,contextFiles:[],relatedFiles:[],testTargets:[],
-      protectedScopeSignals:[],diagnosticEvidence,existingWebAssessment,fileDigests:[],reuseKey,generatedAt:new Date().toISOString()
+      protectedScopeSignals:[],diagnosticEvidence,existingWebAssessment,fileDigests:[],editContract:bootstrapEditContract(order,responsible),reuseKey,generatedAt:new Date().toISOString()
     };
     if(outputFile)writeJson(path.resolve(cwd,outputFile),handoff);
     return handoff;
@@ -104,7 +239,9 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const fileDigests=[...responsibilityRows,...related.slice(0,6)].map(compactFile);
   const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
   const existingWebAssessment=target==='web'?assessExistingWebRepository({cwd,gameId:order.gameId,sourceRoot:rootRelative,order}):null;
-  const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence,existingWebAssessment})).slice(0,24);
+  const sourceText=responsibilityRows.map(row=>row.text).filter(Boolean).join('\n\n');
+  const editContract=compileEditContract({order,sourceText,responsibleFiles:responsible,protectedScopeSignals,testTargets});
+  const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,fileDigests,diagnosticEvidence,existingWebAssessment,goal:clean(order?.originalGoal||order?.goal),editContract})).slice(0,24);
   const handoff={
     version:1,
     role:'exploration',
@@ -124,6 +261,7 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
     diagnosticEvidence,
     existingWebAssessment,
     fileDigests,
+    editContract,
     reuseKey,
     generatedAt:new Date().toISOString()
   };
@@ -140,6 +278,20 @@ export function explorationGuidance(handoff={}){
     `검증 후보=${(handoff.testTargets||[]).join(', ')||'NONE'}`,
     `보호 신호=${(handoff.protectedScopeSignals||[]).join(', ')||'NONE'}`,
     ...(handoff.existingWebAssessment?[`[EXISTING WEB STRATEGY] ${handoff.existingWebAssessment.strategy}`,`판단 근거=${(handoff.existingWebAssessment.reasons||[]).join(', ')||'NONE'}`,`설계 scope coverage=${handoff.existingWebAssessment.evidence?.approvedScopeCoveragePct??0}% · gameplay signals=${handoff.existingWebAssessment.evidence?.gameplaySignalCount??0}`,handoff.existingWebAssessment.strategy==='KEEP_AND_CONTINUE'?'기존 구조·세이브·작동 시스템을 보존하고 필요한 개발만 이어간다.':handoff.existingWebAssessment.strategy==='PARTIAL_REPAIR'?'기존 구조를 보존하고 확인된 결함 책임 영역만 수정한다.':handoff.existingWebAssessment.strategy==='MAJOR_REWORK'?'사용 가능한 시스템과 세이브 의미는 보존하고 큰 결함 영역을 재구성한다.':'전체 재구축은 허용되지만 승인 설계·게임 정체성·보존 가능한 세이브 의미는 유지한다.']:[]),
+    ...(handoff.editContract?[
+      '[COMPILED EDIT CONTRACT]',
+      `코딩 전략=${handoff.editContract.strategyHint||'NONE'} · 책임 확신=${handoff.editContract.responsibilityConfidence||'LOW'}`,
+      `주 책임 심볼=${(handoff.editContract.primaryTargets||[]).join(', ')||'NONE'}`,
+      `허용 의존 심볼/시스템=${(handoff.editContract.allowedDependentSymbolsOrSystems||[]).join(', ')||'NONE'}`,
+      `소유 상태=${(handoff.editContract.ownedState||[]).join(', ')||'NONE'}`,
+      `보존 계약=${(handoff.editContract.preserveSemantics||[]).join(' | ')||'NONE'}`,
+      `인과 체인=${(handoff.editContract.failureOrRequirementCausalChain||[]).join(' -> ')||'NONE'}`,
+      `관찰 결과=${handoff.editContract.requiredObservableResult||'NONE'}`,
+      `Semantic diff 허용 시스템=${(handoff.editContract.semanticDiffBudget?.allowedSystems||[]).join(', ')||'NONE'}; unrelated mutation=${handoff.editContract.semanticDiffBudget?.unrelatedSystemMutationForbidden===true?'FORBIDDEN':'CONDITIONAL'}`,
+      `필수 집중 검증=${(handoff.editContract.requiredFocusedChecks||[]).join(', ')||'NONE'}`,
+      `불변조건=${(handoff.editContract.codingArchitecture?.invariantIds||[]).join(', ')||'NONE'}`,
+      '주 책임 심볼부터 수정하고 의존 심볼은 요구사항 충족에 꼭 필요할 때만 수정한다. 책임 파일/예약 범위 확대는 금지한다.'
+    ]:[]),
     '영향 파일은 참고용이다. Allowed edit paths 밖 파일은 수정하지 않는다.'
   ].join('\n');
 }
