@@ -1,0 +1,39 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+const worker=fs.readFileSync('tools/company-system-ai-worker.mjs','utf8');
+const queue=fs.readFileSync('tools/company-system-ai-queue.mjs','utf8');
+
+test('System AI supervision is reserve then implementation then verification then PR then fan-in',()=>{
+  const reserve=workflow.indexOf('- name: Reserve disjoint supervised assignments');
+  const implement=workflow.indexOf('- name: Execute external AI assignment');
+  const verify=workflow.indexOf('- name: Verify external AI candidate');
+  const publish=workflow.indexOf('- name: Publish verified candidate PR');
+  const fanIn=workflow.indexOf('- name: Persist results for primary AI supervision');
+  assert.ok(reserve>=0&&implement>reserve&&verify>implement&&publish>verify&&fanIn>publish);
+  assert.match(workflow,/id: verify[\s\S]{0,180}if: steps\.implement\.outcome == 'success'/);
+  assert.match(workflow,/id: publish[\s\S]{0,220}if: steps\.implement\.outcome == 'success' && steps\.verify\.outcome == 'success'/);
+  assert.match(workflow,/gh pr create --base main --head "\$SYSTEM_AI_BRANCH"/);
+  assert.match(workflow,/primary AI review still required/);
+  assert.match(workflow,/--command=fan-in/);
+});
+
+test('System AI cannot self-accept and malformed JSON uses strict retry',()=>{
+  assert.match(worker,/STRICT RETRY: return exactly one valid JSON object only/);
+  assert.match(worker,/workerSelfAcceptance:false/);
+  assert.match(worker,/supervisorReviewRequired:true/);
+  assert.match(workflow,/worker-self-acceptance:NO/);
+  assert.match(workflow,/primary-ai-review-required:YES/);
+  assert.match(queue,/awaiting-supervisor/);
+  assert.match(queue,/primaryAiReview/);
+});
+
+test('cached local model and security scan remain mandatory before PR publication',()=>{
+  assert.match(workflow,/uses: actions\/cache@v4/);
+  assert.match(workflow,/\.cache\/company-system-ai-ollama\/bin\/ollama/);
+  assert.match(workflow,/nohup "\$ollama_bin" serve/);
+  assert.match(workflow,/node tools\/company-security-steward\.mjs --output=\/tmp\/system-ai-security-report\.json/);
+  assert.match(workflow,/COMPANY_SYSTEM_AI_VERIFICATION=PASS/);
+});

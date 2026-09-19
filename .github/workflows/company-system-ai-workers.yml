@@ -13,6 +13,7 @@ on:
       - 'tools/company-system-ai-queue.mjs'
       - 'tools/company-recovery-dispatch.mjs'
       - 'qa/company-system-ai-worker.test.mjs'
+      - 'qa/company-system-ai-supervision-loop.test.mjs'
       - 'company-learning/platform-release-roadmap.json'
       - '.github/workflows/company-system-ai-workers.yml'
 
@@ -53,7 +54,7 @@ jobs:
           node --check tools/company-system-ai-worker.mjs
           node --check tools/company-system-ai-queue.mjs
           node --check tools/company-recovery-dispatch.mjs
-          node --test qa/company-system-ai-worker.test.mjs
+          node --test qa/company-system-ai-worker.test.mjs qa/company-system-ai-supervision-loop.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/system-ai-shared-context.json
 
       - name: Reserve disjoint supervised assignments

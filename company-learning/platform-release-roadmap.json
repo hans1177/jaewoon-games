@@ -1,5 +1,5 @@
 {
-  "version": 59,
+  "version": 60,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -2604,12 +2604,14 @@
     }
   },
   "changeRecord": {
-    "id": "WEB_BOOTSTRAP_SIGNAL_TO_VIBE_HANDOFF_2026-09-19",
+    "id": "WEB_HANDOFF_AND_SYSTEM_AI_SUPERVISION_E2E_2026-09-19",
     "documentIsCode": true,
-    "reason": "TURN_EXPECTED_BOOTSTRAP_IMPLEMENTATION_SIGNALS_INTO_EXACT_ACTIONABLE_VIBE_HANDOFF_WITHOUT_MASKING_UNEXPECTED_ERRORS",
+    "reason": "BIND_INDEPENDENT_MACHINE_CONTRACTS_TO_EXISTING_PREFLIGHTS_AFTER_REPEATED_NO_CHANGE_EXTERNAL_AI_ATTEMPTS",
     "files": [
       ".github/workflows/company-development-confirmed-runtime.yml",
-      "qa/company-development-web-runtime.test.mjs",
+      ".github/workflows/company-system-ai-workers.yml",
+      "qa/company-web-vibe-handoff-e2e.test.mjs",
+      "qa/company-system-ai-supervision-loop.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ]
   }
