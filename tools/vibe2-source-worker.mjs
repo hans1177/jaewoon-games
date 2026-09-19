@@ -658,6 +658,7 @@ export function normalizeFocusedReplaceOnly(raw,spec={}){
   if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('focused replace 응답은 JSON 객체여야 함');
   const replace=String(parsed.replace??'');
   if(!replace.trim())throw new Error('focused replace 비어 있음');
+  if(/COMPLETE_REPLACEMENT_SOURCE_SNIPPET|MINIMAL_REAL_REPLACEMENT|REPLACEMENT_SOURCE_SNIPPET/i.test(replace))throw new Error('focused replace placeholder 금지: '+clean(spec.path));
   if(replace===String(spec.find??''))throw new Error('변경 없는 edit: '+clean(spec.path));
   return{
     summary:'Vibe2 focused replace-only recovery',
