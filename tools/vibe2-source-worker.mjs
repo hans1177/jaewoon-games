@@ -861,6 +861,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     partialTimeoutRecovery:generation.partialTimeoutRecovery===true,
     partialMalformedRecovery:generation.partialMalformedRecovery===true,
     streamedPartialEditRecovery:generation.streamedPartialEditRecovery===true,
+    focusedFinalRetry:generation.focusedFinalRetry===true,
+    focusedMinimalJsonContract:generation.focusedFinalRetry===true&&!allowFullRewrite,
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
