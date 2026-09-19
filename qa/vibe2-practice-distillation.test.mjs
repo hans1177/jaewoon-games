@@ -105,3 +105,30 @@ test('narrative practice distills technique domains without storing candidate pr
   assert.doesNotMatch(serialized,/cause and effect narrative structure/);
   assert.doesNotMatch(serialized,/fake choice without consequence/);
 });
+
+
+test('presentation practice distills only verified quality domains without storing candidate prose',()=>{
+  const presentationResult={
+    ...result,
+    taskId:'LEARNING-PRACTICE-presentation-l1',
+    diagnosis:'Living motion needs locomotion blend, animation feel hit stop, bounded VFX, audio feel crossfade and camera language.',
+    strategy:'Use asset adaptation style lock, secondary motion, recoil recovery, particle lifetime, first gesture audio unlock and controlled camera shake.',
+    tests:['motion continuity','vfx readability','audio transition','camera mobile readability'],
+    reusablePatterns:['asset adaptation living motion animation feel vfx audio feel camera language'],
+    avoidPatterns:['unbounded particles','duplicate audio owner','camera obscures touch input']
+  };
+  const presentationOrder={originalGoal:'[VIBE_LEARNING_PRACTICE]\nkind=MOTION_CONTINUITY_DRILL\ndomains=ASSET_ADAPTATION,LIVING_MOTION,ANIMATION_FEEL,VFX,AUDIO_FEEL,CAMERA_LANGUAGE'};
+  const experienceInput={records:[
+    {id:'p1',gameId:'present-a',taskType:'presentation',verified:true,reusable:true,problem:'living motion vfx audio feel',goal:'asset adaptation camera language',change:'animation feel locomotion blend particle crossfade camera shake',reusablePatterns:['asset adaptation living motion animation feel vfx audio feel camera language']},
+    {id:'p2',gameId:'present-b',taskType:'presentation',verified:true,reusable:true,problem:'style lock motion continuity',goal:'vfx audio feel camera language',change:'asset adaptation hit stop recoil trail audio context camera zoom',reusablePatterns:['living motion animation feel vfx audio feel camera language']}
+  ]};
+  const distilled=distillPracticeResult({result:presentationResult,order:presentationOrder,experienceInput});
+  const domains=distilled.accepted.map(row=>row.domain);
+  for(const domain of ['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE']){
+    assert.ok(domains.includes(domain),domain);
+  }
+  assert.equal(distilled.accepted.every(row=>row.rawModelOutputStored===false&&row.candidateTextStored===false),true);
+  const serialized=JSON.stringify(distilled);
+  assert.doesNotMatch(serialized,/secondary motion/);
+  assert.doesNotMatch(serialized,/duplicate audio owner/);
+});
