@@ -155,6 +155,40 @@ test('exploration compiles responsibility graph coding architecture and semantic
   assert.ok(guidance.includes('verified reuse=trace pointer input to placement state'));
 });
 
+test('exploration downgrades repeated overconfident responsibility and adds matched hotspot focused QA without widening scope',()=>{
+  const cwd=tempRoot();
+  const web=path.join(cwd,'web-games/hot-demo/index.html');
+  write(web,'<!doctype html><html><body><script>\n'+
+    'let pointerState=null, placedEntities=[];\n'+
+    'function renderPlacement(){ document.body.dataset.count=String(placedEntities.length); }\n'+
+    'function placeTower(slot){ placedEntities.push(slot); renderPlacement(); return true; }\n'+
+    'function handlePointer(event){ pointerState={x:event.clientX,y:event.clientY}; return placeTower(pointerState); }\n'+
+    'addEventListener("pointerdown",handlePointer);\n'+
+    '</script></body></html>');
+  const base={
+    run:true,taskId:'hot-base',gameId:'hot-demo',target:'web',
+    originalGoal:'pointer 입력을 placement state와 연결한다',goal:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING 수정',
+    source:{root:'web-games/hot-demo',responsibleFiles:['web-games/hot-demo/index.html'],ignoredPaths:[]},
+    selectedTask:{evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'},
+    workPackage:{id:'hot-wp',sharedContext:{diagnosticEvidence:['MOBILE_PLACEMENT_INPUT_MISSING']}}
+  };
+  const first=exploreVibe2WorkOrder({cwd,order:base});
+  assert.equal(first.editContract.responsibilityConfidence,'HIGH');
+  const symbol=first.editContract.primaryTargets[0];
+  const system=first.editContract.primarySystems[0];
+  const calibrated={...base,taskId:'hot-calibrated',responsibilityCalibration:{recommendation:'DOWNGRADE_HIGH_TO_MEDIUM',extraReadOnlyExploration:true},regressionHotspotRisk:{riskLevel:'HIGH',entries:[
+    {gameId:'hot-demo',kind:'SYMBOL',name:symbol,verifiedRegressionFailures:3,verifiedPasses:0},
+    ...(system?[{gameId:'hot-demo',kind:'SYSTEM',name:system,verifiedRegressionFailures:3,verifiedPasses:0}]:[])
+  ]}};
+  const result=exploreVibe2WorkOrder({cwd,order:calibrated});
+  assert.equal(result.editContract.rawResponsibilityConfidence,'HIGH');
+  assert.equal(result.editContract.responsibilityConfidence,'MEDIUM');
+  assert.equal(result.editContract.responsibilityCalibration.applied,true);
+  assert.equal(result.editContract.responsibilityCalibration.extraReadOnlyExploration,true);
+  assert.ok(result.editContract.regressionHotspotRisk.matched.some(row=>row.kind==='SYMBOL'&&row.name===symbol));
+  assert.ok(result.editContract.requiredFocusedChecks.some(check=>check==='HOTSPOT_RECHECK:SYMBOL:'+symbol));
+  assert.equal(result.editContract.writableScopeExpansionAllowed,false);
+});
 test('performance sanity is read only and requires exploration evidence',()=>{
   const cwd=tempRoot();
   write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player {}\n');
