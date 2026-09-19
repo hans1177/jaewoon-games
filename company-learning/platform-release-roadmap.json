@@ -1,5 +1,5 @@
 {
-  "version": 78,
+  "version": 79,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3053,23 +3053,17 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_GAME_PRIMARY_SLOT_AND_SOURCE_COMPLETENESS_2026-09-19",
+    "id": "VIBE2_FULL_WEB_GENERATION_GATE_ALIGNMENT_2026-09-19",
     "documentIsCode": true,
-    "reason": "PROTECT_GAME_PRIMARY_RUNNER_CAPACITY_AND_IMPROVE_LOCAL_MODEL_REPAIR_AND_FULL_WEB_BASE_REBUILD_SUCCESS_WITHOUT_WEAKENING_GATES",
+    "reason": "ALIGN_FULL_WEB_GENERATION_TARGET_WITH_DOWNSTREAM_REAL_GAME_VALIDATION_AND_REMOVE_REPEATED_UNDERSIZED_REBUILD_FAILURES_WITHOUT_WEAKENING_PARSER_QA_OR_GAME_PRIMARY_EXECUTION",
     "files": [
-      ".github/workflows/external-mobile-free-game-playtest.yml",
-      "tools/vibe2-auto-planner.mjs",
       "tools/vibe2-source-worker.mjs",
-      "qa/vibe2-auto-planner.test.mjs",
       "qa/vibe2-source-worker.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ],
     "commits": [
-      "17d5568072941b7b5c60216b8fe6e3dce6e92da9",
-      "9793d5c5b4f0860644d0f7abb2f77a206a3e00fb",
-      "6c115212bb788c9c27f69037e6d0d7a489da155b",
-      "9a27754de06d814f3b7db2971887657866d87c7a",
-      "91bc4d6872761830b1f0528cb423eeba712bb7ec"
+      "08280d7657070b77c9b704ca0c6bf6271879e1b5",
+      "076659f63d7cd8570e18e38bd9379dc21009ef17"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3077,19 +3071,43 @@
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
       "systemAiNonblocking": true,
-      "externalReferencePlaytestSpareCapacityOnly": true,
-      "rawValidationEvidencePreserved": true,
       "fullRegressionNotWeakened": true,
-      "minimumFullRewriteBytes": 1800
+      "parserFullWebMinimumBytes": 1800,
+      "parserFullWebMaximumBytes": 260000,
+      "downstreamQualityGatesNotWeakened": true,
+      "directMainGameSourceWriteForbidden": true
+    },
+    "generationContract": {
+      "defaultTargetMinBytes": 12000,
+      "defaultTargetMaxBytes": 24000,
+      "downstreamFootprintRequirementMayRaiseTarget": true,
+      "finalRetryMaxPredict": 6144,
+      "finalRetryTimeoutMs": 360000,
+      "parserSafetyFloorStill1800": true,
+      "fillerPaddingForbidden": true,
+      "requiredPlayableSignals": [
+        "direct-pointer-touch-input",
+        "mutable-persistent-capable-game-state",
+        "update-render-or-equivalent-state-transition-loop",
+        "progression-or-resource-system",
+        "explicit-win-loss-or-result-state",
+        "restart-reset",
+        "responsive-mobile-controls"
+      ]
     },
     "liveEvidence": {
-      "waveRun": "35431717289",
-      "reservedTasks": 20,
-      "observedCompletedSample": 12,
-      "observedPass": 5,
-      "observedFail": 7,
-      "externalPlaytestGate": "DEFER_TO_GAME_PRIMARY",
-      "latestRepairQa": "PASS"
+      "runId": "35431717289",
+      "contractSha": "1fb8276f767ec79003d3794413e2fe60e4fd2395",
+      "completedWorkerSample": 19,
+      "pass": 5,
+      "failures": {
+        "timeout": 5,
+        "fullRewriteSize": 4,
+        "noOp": 2,
+        "malformedOutput": 2,
+        "editMatch": 1
+      },
+      "note": "THIS_LIVE_WAVE_PRECEDES_THE_NEW_GENERATION_TARGET_CONTRACT; USE_NEXT_FRESH_CONTRACT_WAVE_TO_MEASURE_EFFECT"
     }
   }
 }
