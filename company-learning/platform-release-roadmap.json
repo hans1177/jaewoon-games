@@ -1,5 +1,5 @@
 {
-  "version": 46,
+  "version": 47,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1370,7 +1370,11 @@
             "VIBE2_MACHINE_STATE=CONSISTENT",
             "VIBE2_ACTIVE_WORKERS=19",
             "VIBE2_RESERVED_TASK_COUNT=19",
-            "VIBE2_HIERARCHICAL_FAN_OUT=41"
+            "VIBE2_HIERARCHICAL_FAN_OUT=41",
+            "VIBE2_CORE_QA=PASS",
+            "CENTRAL_POLICY_CONTRACT_QA=PASS",
+            "VIBE2_RETRY_RESERVATION_RUN=35426081736",
+            "SYSTEM_AI_ROOT_TASKS_RUNNING=5"
           ],
           "secondaryRepairs": [
             {
@@ -1395,15 +1399,23 @@
                 ".vibe2/queue.json",
                 ".vibe2/parallelism-control.json"
               ]
+            },
+            {
+              "signature": "SYSTEM_AI_TRANSIENT_MODEL_ABORT",
+              "symptom": "LOCAL_MODEL_REQUEST_ABORTS_ON_TOKEN_REPEAT_BEFORE_SCOPED_EDIT_RESULT",
+              "repair": "ONE_COMPACT_SCOPED_REQUEST_RETRY_BEFORE_IMPLEMENTATION_FAILURE",
+              "binding": "tools/company-system-ai-worker.mjs"
             }
           ]
         },
         "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
-          "gameDevelopment": "VIBE2_VIBE3_RUNNING",
-          "systemBottleneckWorkers": "SYSTEM_AI_RUNNING",
+          "gameDevelopment": "VIBE2_VIBE3_RUNNING_RETRY_WAVE",
+          "systemBottleneckWorkers": "SYSTEM_AI_ROOT_TASKS_RUNNING_WITH_NEXT_WAVE_RETRY_FIX_READY",
           "nonCriticalIdleWork": "PREEMPTED_WHILE_ACTIONABLE_DEVELOPMENT_WORK_EXISTS",
-          "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS"
+          "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS",
+          "qaContract": "PASS",
+          "centralPolicyContract": "PASS"
         }
       }
     },
