@@ -1,0 +1,18 @@
+{
+  "summary": "index.html 수정",
+  "expectedEffect": "게임 설정 파일의 텍스트를 업데이트하여 게임의 기본 설정을 반영",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.'}",
+      "replace": "window.GAME_CONFIG={id:'seed-story-complete-rpg-chronicles-of-eldoria',name:'엘도리아 연대기',mode:'eldoria',hp:100,desc:'회색 숲에서 엘도리아의 심장까지 5개 장을 탐험하고 전투·휴식·장비 강화를 선택하는 완결형 RPG.',story:'탐색과 전투로 골드를 모으고 장비를 강화해 다섯 장의 이야기를 끝내라.',combat:'전투에서 100의 점수를 얻고, 휴식에서는 50의 점수를 얻고, 장비 강화에서는 75의 점수를 얻는다.'}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "GAME_CONFIG should have combat property",
+    "GAME_CONFIG should have combat value",
+    "GAME_CONFIG should have hp, desc, and story properties"
+  ]
+}
