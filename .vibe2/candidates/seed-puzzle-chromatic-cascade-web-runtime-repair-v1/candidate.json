@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const clamp=(v,a,b)=>Math.max(a,Math.min(b,v))",
+      "replace": "function clamp=(v,a,b)=>Math.max(a,Math.min(b,v))"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
