@@ -1,0 +1,22 @@
+{
+  "kind": "post-fix-validation-wave",
+  "source": "main",
+  "mainSha": "e5f8eef340575ffdacee298201e61064dcd17200",
+  "priorDiagnostic": {
+    "runId": 35457018697,
+    "fanOut": 12,
+    "sourceFailures": 10,
+    "classes": {
+      "OTHER": 2,
+      "NO_OP": 6,
+      "TIMEOUT": 1,
+      "FULL_REWRITE_SIZE": 1
+    }
+  },
+  "fixes": [
+    "FOCUSED_REPLACE_ANCHOR_ROTATION",
+    "FOCUSED_NOOP_TARGETED_CREDIT",
+    "FULL_WEB_HEALTHY_GROWTH_CREDIT"
+  ],
+  "objective": "validate reserve regression and execute next eligible wave"
+}
