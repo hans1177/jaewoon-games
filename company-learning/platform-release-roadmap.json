@@ -1,8 +1,8 @@
 {
-  "version": 147,
+  "version": 148,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
-  "recordedAt": "2026-09-19",
+  "recordedAt": "2026-09-20",
   "priority": [
     "UNITY",
     "ROBLOX",
@@ -2005,6 +2005,30 @@
               "jobId": "105910478736",
               "failureClass": "MALFORMED_OUTPUT",
               "attempts": 4
+            },
+            "completedWave35452958416": {
+              "pass": 2,
+              "fail": 18,
+              "passRatePct": 10,
+              "failureDistribution": {
+                "TIMEOUT": 6,
+                "NO_OP": 2,
+                "EDIT_MATCH": 6,
+                "FULL_REWRITE_SIZE": 3,
+                "MALFORMED_OUTPUT": 1
+              },
+              "fanIn": "PASS",
+              "bottleneck": "SOURCE_CANDIDATE_GENERATION"
+            },
+            "focusedExactFindAnchorCommits": [
+              "523f68d5346461279e078cdfc106ddb8d821573d",
+              "dcfc7acd7303fe75703141838bf504bb85aee45a",
+              "934dcea674c0702660080ee999c0fd1977818e4c"
+            ],
+            "focusedExactFindAnchorEffectiveFromNextRefill": true,
+            "currentRun35453739103": {
+              "pinnedContractSha": "c6853fe008d149a34089b20e7a905eff9cc455a1",
+              "includesFocusedExactAnchorFix": false
             }
           },
           "repairs": [
@@ -3556,82 +3580,104 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FULL_WEB_FINAL_ADDITIVE_ACCUMULATION_2026-09-19",
+    "id": "VIBE2_FOCUSED_EXACT_FIND_ANCHORS_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_RESERVE_FULL_REGRESSION_PREFLIGHT_2026-09-19",
-    "reason": "FIRST_CLEAN_WAVE_RESULT_SHOWED_SHORT_BUT_REAL_WEB_GENERATION_BEING_DISCARDED_OR_RESET:539B_SEED,1006B_VALID_EXPANSION_REJECTED_BY_1200B_FLOOR,1322B_GROWTH_ACCEPTED,THEN_FINAL_FULL_FILE_REGENERATION_RETURNED_A_TRUNCATED_2183B_DOCUMENT. KEEP_ALL_RETRIES_ADDITIVE_ONCE_A_VALID_SEED_EXISTS,ACCEPT_COHERENT_800B_PLUS_FRAGMENTS,AND_STOP_FULL_WEB_STREAM_WHEN_A_COMPLETE_CLOSED_HTML_DOCUMENT_IS_ALREADY_AVAILABLE.",
-    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_EFFECT_PENDING_NEXT_CLEAN_WAVE",
+    "previousChangeRecordId": "VIBE2_FULL_WEB_FINAL_ADDITIVE_ACCUMULATION_2026-09-19",
+    "reason": "LATEST_COMPLETED_WAVE_35452958416_SHIFTED_THE_DOMINANT_FAILURE_MIX_FROM_TIMEOUT_ONLY_TO_EDIT_MATCH_AND_NO_OP:EDIT_MATCH_6,NO_OP_2,TIMEOUT_6,FULL_REWRITE_SIZE_3,MALFORMED_OUTPUT_1. REPRESENTATIVE_FOCUSED_RETRIES_ENDED_WITH_~100_BYTE_JSON_PATCHES_WHOSE_FIND_TEXT_DID_NOT_MATCH_OR_WITH_EMPTY_EDITS. REMOVE_FIND_GUESSING_BY_DERIVING_SHORT_SOURCE_LINES_THAT_OCCUR_EXACTLY_ONCE_IN_WRITABLE_CONTEXT_AND_PUBLISHING_THEM_AS_VERBATIM_EXACT_FIND_ANCHOR_OPTIONS.",
+    "implementationState": "CODE_AND_REGRESSION_TEST_COMMITTED_NEXT_REFILL_EFFECT_PENDING",
     "evidence": {
-      "observedCleanRun": 35447976923,
-      "pinnedContractSha": "af623808436c3f0b470bfac5fac9a06d1337d82f",
-      "representativeJobId": 105910478736,
-      "observedOutcome": "FAIL",
-      "observedFailureClass": "MALFORMED_OUTPUT",
-      "attemptSequence": [
-        "FULL_REWRITE_SIZE:seed=539",
-        "MALFORMED_OUTPUT:expansion_growth=1006:min=1200",
-        "FULL_REWRITE_SIZE:accumulated=1861:growth=1322",
-        "MALFORMED_OUTPUT:final_regeneration_truncated=2183"
+      "completedWave": {
+        "runId": 35452958416,
+        "fanInJobId": 105925196307,
+        "fanInRegression": "PASS",
+        "workerCount": 20,
+        "pass": 2,
+        "fail": 18,
+        "passRatePct": 10,
+        "failureRatePct": 90,
+        "failureDistribution": {
+          "TIMEOUT": 6,
+          "NO_OP": 2,
+          "EDIT_MATCH": 6,
+          "FULL_REWRITE_SIZE": 3,
+          "MALFORMED_OUTPUT": 1
+        },
+        "actualPeakConcurrency": 20,
+        "cacheHitRatePct": 100,
+        "preparationRatioPct": 1.88,
+        "packageCycleAvgMs": 520534.36,
+        "bottleneck": "SOURCE_CANDIDATE_GENERATION"
+      },
+      "representativeFocusedFailures": [
+        {
+          "jobId": 105923309390,
+          "sequence": [
+            "MALFORMED_OUTPUT",
+            "MALFORMED_OUTPUT",
+            "EDIT_MATCH"
+          ],
+          "finalOutputBytes": 104
+        },
+        {
+          "jobId": 105923309533,
+          "sequence": [
+            "TIMEOUT",
+            "EDIT_MATCH"
+          ],
+          "finalOutputBytes": 102
+        },
+        {
+          "jobId": 105923309426,
+          "sequence": [
+            "MALFORMED_OUTPUT",
+            "NO_OP"
+          ],
+          "finalOutputBytes": 51
+        }
       ],
-      "retryPromptBytes": [
-        3291,
-        3256,
-        4291
-      ],
-      "conclusion": "TIME_BUDGET_IMPROVED_BUT_OUTPUT_ACCUMULATION_WAS_RESET_OR_OVER_REJECTED"
+      "currentRun": {
+        "runId": 35453739103,
+        "pinnedContractSha": "c6853fe008d149a34089b20e7a905eff9cc455a1",
+        "hierarchicalFanOut": 20,
+        "includesExactAnchorFix": false,
+        "use": "DIAGNOSTIC_ONLY_FOR_THIS_FIX"
+      }
     },
     "contract": {
-      "expansionModeAfterSeed": "ALL_REMAINING_ATTEMPTS",
-      "finalWholeFileRegenerationAfterSeed": false,
-      "minimumAcceptedExpansionGrowthBytes": 800,
-      "finalAcceptanceMinimumBytes": 12000,
-      "finalAcceptanceGateLowered": false,
-      "completeBalancedFragmentStillRequired": true,
-      "completeClosedHtmlMayEndFullWebStreamWithoutExplicitEndMarker": true,
-      "truncatedHtmlStillRejected": true,
-      "qaGateUnchanged": true,
+      "exactAnchorSource": "WRITABLE_EDITABLE_SOURCE_ONLY",
+      "exactAnchorOccurrenceRequirement": 1,
+      "maxAnchorOptions": 3,
+      "maxAnchorLengthChars": 180,
+      "repeatedLinesRejected": true,
+      "structuralOnlyLinesRejected": true,
+      "htmlDocumentBoundaryLinesRejected": true,
+      "anchorValueMustBeCopiedVerbatim": true,
+      "exactEditDryRunStillRequired": true,
+      "semanticCandidateValidatorStillRequired": true,
       "writableScopeUnchanged": true,
-      "authorityExpansion": false,
-      "immutableEvidence": [
-        "coding-full-web-final-additive-expansion:YES",
-        "coding-full-web-closed-html-early-stop:YES"
-      ]
+      "qaGateUnchanged": true,
+      "authorityExpansion": false
     },
     "implementationCommits": {
-      "closedHtmlEarlyStopSource": "f75d974042c8383df12a05a1f649db84dd143d8f",
-      "closedHtmlEarlyStopTelemetrySource": "47f72be5d42fda451d45ad1bd484e872e7344305",
-      "closedHtmlEarlyStopTest": "fbad79cf0d70402445bb914fbe09e3679551ddbb",
-      "closedHtmlEarlyStopWorkflowTelemetry": "8b4e8ef37c8e52639a8d29d08dd08707b86e50c1",
-      "finalAdditiveSource": "5762c8b620081db6ba05dad2ab9a6fd2b6095551",
-      "finalAdditiveTest": "c8a3a38e710af8333dbb9b89e6227c5d0c02c92e",
-      "finalAdditiveTelemetrySource": "2547378f19cdc4148dcb7fd967eb46cb2d47232c",
-      "finalAdditiveWorkflowTelemetry": "31ae76086c35fee48aefd6049387db601229d28f",
-      "finalAdditiveEvidenceTest": "790e3a4b45fb529672265d32e6f4301ce994030f"
-    },
-    "relatedBottleneckFixes": {
-      "fullReserveRegressionPreflight": [
-        "60fc75e3714e6252dc3c56c2c854e1c6806971c4",
-        "8d7725b3759eb9950d24dbfae51d92caec8a08b3"
-      ],
-      "seedFirst": "9ef7994739ea552f4b4c90283a9a3b246e3af2f4",
-      "expansionDocumentSeedRecovery": "24368a6f7f9d368c30273e1789f9007aba76390c"
+      "source": "523f68d5346461279e078cdfc106ddb8d821573d",
+      "regressionTest": "dcfc7acd7303fe75703141838bf504bb85aee45a",
+      "regressionCleanup": "934dcea674c0702660080ee999c0fd1977818e4c"
     },
     "pending": [
-      "CURRENT_35447976923_COMPLETE_FOR_BASELINE_OBSERVATION",
-      "NEXT_CLEAN_WAVE_PIN_5762C8B6_2547378F_F75D9740_OR_LATER",
-      "MEASURE_ACCEPTED_800_TO_1199_BYTE_EXPANSION_COUNT",
-      "MEASURE_FINAL_ADDITIVE_EXPANSION_SUCCESS_COUNT",
-      "MEASURE_CLOSED_HTML_EARLY_STOP_COUNT",
-      "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
-      "VERIFY_FULL_RESERVE_REGRESSION_PREFLIGHT_ON_NEXT_RUN"
+      "CURRENT_35453739103_COMPLETE_FOR_DIAGNOSTIC_ONLY",
+      "NEXT_REFILL_PIN_523F68D5_AND_934DCEA6_OR_LATER",
+      "MEASURE_EDIT_MATCH_RATE_AGAINST_6_OF_20_BASELINE",
+      "MEASURE_NO_OP_RATE_AGAINST_2_OF_20_BASELINE",
+      "COMPARE_FOCUSED_RETRY_SUCCESS_RATE",
+      "VERIFY_FAN_IN_REGRESSION"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
       "hierarchicalParallelism": true,
-      "fullWebMinimumBytesUnchanged": 12000,
-      "fullRegressionPreflightRequiredFromNextRun": true,
       "qualityGatesNotWeakened": true,
+      "exactEditRequired": true,
+      "semanticBudgetRequired": true,
       "directMainGameSourceWriteForbidden": true,
       "shadowPipelineForbidden": true
     }
