@@ -131,6 +131,30 @@ test('system steward protection still preempts ordinary development implementati
   assert.equal(selectVibeQueueBatch(queue,{maxConcurrentTasks:1}).selected[0].id,'steward-repair');
 });
 
+test('game-primary reserve lane excludes recovery control and learning tasks from the 20-wave budget',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
+    {id:'control-fast',gameId:'system-steward',target:'web',department:'system-supervision',type:'research',goal:'repair control',status:'queued',priority:'critical',systemSteward:true},
+    {id:'learning-idle',gameId:'learning',target:'web',department:'development',type:'research',goal:'practice',status:'queued',priority:'low',evidence:['learning-practice-only']},
+    {id:'game-a',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'implement a',sourceRoot:'web-games/game-a',responsibleFiles:['index.html'],status:'queued'},
+    {id:'game-b',gameId:'game-b',target:'web',department:'development',type:'implementation',goal:'implement b',sourceRoot:'web-games/game-b',responsibleFiles:['index.html'],status:'queued'}
+  ]});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2});
+  assert.deepEqual(new Set(reserved.tasks.map(task=>task.id)),new Set(['game-a','game-b']));
+  assert.equal(reserved.selection.lane,'game-primary');
+  assert.deepEqual(new Set(reserved.selection.laneDeferred.map(task=>task.id)),new Set(['control-fast','learning-idle']));
+});
+
+test('running nondevelopment lane work does not consume game-primary worker capacity',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
+    {id:'control-running',gameId:'system-control',target:'web',department:'system-supervision',type:'research',goal:'control',status:'running',priority:'critical'},
+    {id:'game-a',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'implement a',sourceRoot:'web-games/game-a',responsibleFiles:['index.html'],status:'queued'},
+    {id:'game-b',gameId:'game-b',target:'web',department:'development',type:'implementation',goal:'implement b',sourceRoot:'web-games/game-b',responsibleFiles:['index.html'],status:'queued'}
+  ]});
+  const reserved=reserveVibeTaskBatch(queue,{maxConcurrentTasks:2});
+  assert.equal(reserved.selection.capacityRunning.length,0);
+  assert.equal(reserved.tasks.length,2);
+});
+
 test('independent source roots fan out in one reservation batch', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'u1','u1','unity',{releaseState:'release-confirmed'});
