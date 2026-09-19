@@ -872,6 +872,30 @@ test('first timeout escalates attempt two directly to compact focused retry',()=
   assert.match(workerSource,/focusedFinal\?JSON_FINAL_RETRY_TIMEOUT_MS/);
 });
 
+test('timeout retry drops oversized guidance prefix and keeps only execution-critical context',()=>{
+  const base=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: web',
+    'Goal: repair the play button',
+    'VERIFIED_MEMORY_BLOB:'+ 'x'.repeat(20000),
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<button id="play">Play</button>',
+    '',
+    '=== FILE config.js [READ-ONLY IMPACT CONTEXT] ===',
+    'window.CONFIG={x:1};'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(base,{allowFullRewrite:false,error:new Error('Ollama 응답 시간 초과: 240000ms'),responsibleFiles:['index.html'],attempt:2});
+  assert.match(retry,/Engine: web/);
+  assert.match(retry,/Goal: repair the play button/);
+  assert.match(retry,/Allowed edit paths: index\.html/);
+  assert.match(retry,/=== FILE index\.html \[EDITABLE\] ===/);
+  assert.doesNotMatch(retry,/VERIFIED_MEMORY_BLOB/);
+  assert.doesNotMatch(retry,/config\.js/);
+  assert.ok(Buffer.byteLength(retry,'utf8')<9000);
+});
+
 test('timeout final retry prompt strips read-only context and asks for one compact real edit',()=>{
   const base=[
     'Allowed edit paths: index.html',
