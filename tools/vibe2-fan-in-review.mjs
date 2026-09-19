@@ -29,7 +29,7 @@ function candidateIdentityFailures(task={},row={},candidateBranch=null){
   return failures;
 }
 function rolePass(evidence,role){return evidence.has(`role-result:${role}:PASS`);}
-function reviewReady(task={}){return clean(task.status)==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*fan-in|awaiting.*qa/i.test(clean(task.blocker));}
+function reviewReady(task={}){return clean(task.status)==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*fan-in|awaiting.*qa|awaiting.*supervised-review/i.test(clean(task.blocker));}
 function releaseCandidateFromEvidence(evidence=new Set()){
   const branches=[...evidence].map(clean).filter(value=>value.startsWith('vibe2/candidate/'));
   return branches.at(-1)||null;
@@ -64,7 +64,16 @@ export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
       evidence.add('candidate-identity:PASS');
-      reviewed.push({taskId:task.id,pass:true,missing:[]});
+      const supervised=task?.supervisionContract?.required===true;
+      const supervisionApproved=!supervised||task?.supervisionApproved===true;
+      if(supervised&&!supervisionApproved){
+        evidence.add('supervised-promotion:BLOCKED');
+        evidence.add('supervised-review:REQUIRED');
+        reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:true,releaseBlocker:'SUPERVISED_APPROVAL_REQUIRED'});
+        return{...task,status:'running',blocker:'candidate-awaiting-supervised-review',evidence:[...evidence]};
+      }
+      evidence.add(supervised?'supervised-promotion:PASS':'supervised-promotion:NOT_REQUIRED');
+      reviewed.push({taskId:task.id,pass:true,missing:[],releaseBlocked:false,releaseBlocker:null});
       releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
     return{...task,evidence:[...evidence]};
