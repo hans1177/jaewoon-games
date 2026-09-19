@@ -396,7 +396,7 @@ function buildArea(idx){
   var ring=Math.max(8,d.count);
   for(var n=0;n<d.count;n++){
     var an=n/ring*Math.PI*2;
-    var rad=20+(n%3)*12;
+var rad=20+(n%3)*12+14;
     createEnemy(d.type,d.name,Math.cos(an)*rad,Math.sin(an)*rad,d.hp,d.atk,d.speed,d.color,false);
   }
   if(idx===3){
