@@ -741,3 +741,13 @@ test('exact Web base source generation failure can recover once', () => {
   assert.equal(recovered.queue.tasks[0].status,'queued');
   assert.equal(recovered.queue.tasks[0].lastOutcome,'RETRY_AFTER_SOURCE_GENERATION_INFRA_REPAIR');
 });
+
+
+test('continuous reserve runs fast regression before reserving expensive workers', () => {
+  const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
+  const preflightAt=workflow.indexOf('VIBE2_RESERVE_FAST_REGRESSION=PASS');
+  const reserveAt=workflow.indexOf('- name: Reserve conflict-free DAG batch');
+  assert.ok(preflightAt>0);
+  assert.ok(reserveAt>preflightAt);
+  assert.match(workflow,/node --test --test-concurrency=4 \\\n\s+qa\/vibe2-source-worker\.test\.mjs \\\n\s+qa\/vibe2-queue-control\.test\.mjs \\\n\s+qa\/vibe2-parallelism-telemetry\.test\.mjs/);
+});
