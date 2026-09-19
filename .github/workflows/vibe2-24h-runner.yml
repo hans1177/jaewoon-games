@@ -78,6 +78,8 @@ jobs:
       continue_required: ${{ steps.queue_state.outputs.continue_required }}
       wave_ready: ${{ steps.queue_state.outputs.wave_ready }}
       active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}
+      game_primary_queued: ${{ steps.queue_state.outputs.game_primary_queued }}
+      learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}
     concurrency:
       group: vibe2-control-state-vibe2-unreal-core
       cancel-in-progress: false
@@ -353,18 +355,34 @@ jobs:
             YES|NO) ;;
             *) echo "invalid VIBE2_QUEUE_CONTINUE=${continue_required:-}" >&2; exit 1 ;;
           esac
-          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim());process.stdout.write(String(rows.length))")"
-          if [ "${active_worker_reservations:-0}" -eq 0 ]; then
-            wave_ready='YES'
-          else
-            wave_ready='NO'
-          fi
           echo "continue_required=${continue_required:-NO}" >> "$GITHUB_OUTPUT"
-          echo "wave_ready=$wave_ready" >> "$GITHUB_OUTPUT"
-          echo "active_worker_reservations=${active_worker_reservations:-0}" >> "$GITHUB_OUTPUT"
+          node <<'NODE'
+          const fs=require('fs');
+          const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));
+          const lane=t=>{
+            const status=String(t.status||'').toLowerCase(),blocker=String(t.blocker||''),dep=String(t.department||'').toLowerCase(),type=String(t.type||'implementation').toLowerCase(),ev=(t.evidence||[]).map(String);
+            if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return'RELEASE_WAIT';
+            if(ev.includes('learning-practice-only')||dep==='learning'||(dep==='development'&&type==='research'))return'LEARNING_IDLE';
+            if(dep==='development'&&type==='implementation')return'GAME_PRIMARY';
+            if(t.systemSteward===true)return'RECOVERY_FAST';
+            return'CONTROL_FAST';
+          };
+          const tasks=q.tasks||[];
+          const activeGame=tasks.filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim()&&lane(t)==='GAME_PRIMARY').length;
+          const gameQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='GAME_PRIMARY').length;
+          const learningQueued=tasks.filter(t=>String(t.status||'').toLowerCase()==='queued'&&lane(t)==='LEARNING_IDLE').length;
+          const waveReady=activeGame===0?'YES':'NO';
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,
+            'wave_ready='+waveReady+'\n'+
+            'active_worker_reservations='+activeGame+'\n'+
+            'game_primary_queued='+gameQueued+'\n'+
+            'learning_idle_queued='+learningQueued+'\n');
+          console.log('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='+activeGame);
+          console.log('VIBE2_24H_GAME_PRIMARY_QUEUED='+gameQueued);
+          console.log('VIBE2_24H_LEARNING_IDLE_QUEUED='+learningQueued);
+          console.log('VIBE2_24H_WAVE_READY='+waveReady);
+          NODE
           echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
-          echo "VIBE2_24H_ACTIVE_WORKER_RESERVATIONS=${active_worker_reservations:-0}"
-          echo "VIBE2_24H_WAVE_READY=$wave_ready"
 
       - name: Recover reviewed winners stranded before release dispatch
         env:
@@ -458,23 +476,37 @@ jobs:
 
   continuous:
     needs: plan
-    if: ${{ needs.plan.outputs.continue_required == 'YES' && needs.plan.outputs.wave_ready == 'YES' }}
+    if: ${{ needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued != '0' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
+    with:
+      execution_lane: game-primary
+      lane_max: '256'
+    permissions:
+      contents: write
+      actions: write
+
+  learning_idle:
+    needs: plan
+    if: ${{ needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' }}
+    uses: ./.github/workflows/vibe2-continuous-core.yml
+    with:
+      execution_lane: learning-idle
+      lane_max: '4'
     permissions:
       contents: write
       actions: write
 
   game_study:
-    needs: [plan, continuous]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.continue_required != 'YES' }}
+    needs: [plan, continuous, learning_idle]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued == '0' }}
     uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
     permissions:
       contents: write
       actions: write
 
   refill:
-    needs: [plan, continuous, game_study]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.continue_required == 'YES' && needs.continuous.result == 'success' }}
+    needs: [plan, continuous, learning_idle, game_study]
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && ((needs.plan.outputs.game_primary_queued != '0' && needs.continuous.result == 'success') || (needs.plan.outputs.game_primary_queued == '0' && needs.plan.outputs.learning_idle_queued != '0' && needs.learning_idle.result == 'success')) }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
