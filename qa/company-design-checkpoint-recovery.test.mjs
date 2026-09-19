@@ -61,6 +61,25 @@ test('deterministic PASS checkpoint materializes a candidate without synthesizin
   }finally{fs.rmSync(root,{recursive:true,force:true});}
 });
 
+test('preservation checkpoint without locked contract is not recovered',()=>{
+  const root=fixture();
+  try{
+    const state=JSON.parse(fs.readFileSync(path.join(root,'game-seed-state.json'),'utf8'));
+    Object.assign(state.seeds[0],{
+      REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION:true,
+      OWNER_REBUILD_MODE:'PRESERVATION_PRESENTATION_UPGRADE',
+      TARGET_SESSION_MINUTES:30,
+      MULTIPLAYER_DESIGN_MODE:'HYBRID'
+    });
+    fs.writeFileSync(path.join(root,'game-seed-state.json'),JSON.stringify(state,null,2)+'\n');
+    assert.throws(
+      ()=>materializeDeterministicCheckpointCandidate({gameId:'g',date:'2026-09-19',root}),
+      /PRESERVATION_CONTRACT_STALE/
+    );
+    assert.equal(fs.existsSync(path.join(root,'design/g/2026-09-19/design-revised.json')),false);
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+});
+
 test('checkpoint with hard failures cannot be promoted by deterministic recovery',()=>{
   const root=fixture({score:90,hard:['HARD_FAIL'],critical:[]});
   try{
