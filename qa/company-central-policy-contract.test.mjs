@@ -354,3 +354,31 @@ test('development WIP capacity is 20 while gates remain fail-closed',()=>{
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
   assert.equal(directive.stageGateScoringV2.currentThresholds.web,80);
 });
+
+
+test('all automated gates repair and retest the same failed gate until PASS',()=>{
+  const loop=roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticGateRepairLoop;
+  assert.equal(loop.enabled,true);
+  assert.equal(loop.perGameIndependent,true);
+  assert.equal(loop.maxParallelGames,20);
+  assert.equal(loop.portfolioWidePassBarrier,false);
+  assert.equal(loop.retryLimit,'UNLIMITED_UNTIL_PASS_OR_EXPLICIT_STOP_CONDITION');
+  assert.equal(loop.advanceOnFailure,false);
+  assert.equal(loop.skipFailedGateAllowed,false);
+  assert.equal(loop.lowerThresholdAllowed,false);
+  assert.equal(loop.fabricatePassAllowed,false);
+  assert.deepEqual(loop.loop,[
+    'RUN_CURRENT_GATE',
+    'ON_PASS_ADVANCE_TO_NEXT_CANONICAL_STAGE',
+    'ON_FAIL_CAPTURE_EXACT_FAILURE_EVIDENCE',
+    'AUTOMATICALLY_REPAIR_ONLY_THE_FAILED_OR_CAUSAL_SCOPE',
+    'PRESERVE_ALREADY_VERIFIED_STATE_AND_CHECKPOINTS',
+    'RERUN_THE_SAME_FAILED_GATE',
+    'REPEAT_REPAIR_AND_SAME_GATE_RETEST_UNTIL_PASS',
+  ]);
+  assert.equal(loop.externalCapacityWait.countsAsGateFailure,false);
+  assert.equal(loop.externalCapacityWait.consumesDevelopmentSlot,false);
+  assert.equal(loop.externalCapacityWait.preserveCheckpoint,true);
+  assert.equal(loop.externalCapacityWait.resumeExactFailedGate,true);
+  assert.equal(loop.externalCapacityWait.busyLoopForbidden,true);
+});
