@@ -4854,7 +4854,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -4892,7 +4892,8 @@
         "failure-cause:MACHINE_STATE_INCONSISTENT:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED",
         "system-steward:stale-machine-state-blocker-recovered",
         "system-steward:machine-state-revalidated:v3-queue30",
-        "system-steward:stale-running-reservation-recovered"
+        "system-steward:stale-running-reservation-recovered",
+        "slot-dispatch:35424721874:1"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": "35424567715:1",
@@ -5355,7 +5356,7 @@
       "dependencies": [],
       "priority": "normal",
       "releaseState": "development-confirmed",
-      "status": "queued",
+      "status": "running",
       "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
@@ -5438,10 +5439,10 @@
         "repair-mode:CAUSAL_REGENERATION_GENERATION_2"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
-      "reservationId": null,
-      "reservationRunId": null,
-      "reservationRunAttempt": 0,
-      "reservedAt": null,
+      "reservationId": "35424721874:1",
+      "reservationRunId": "35424721874",
+      "reservationRunAttempt": 1,
+      "reservedAt": "2026-09-19T05:44:00Z",
       "companyContext": null,
       "sourceRoot": "web-games/daechung-rpg",
       "speculativeEligible": true,
