@@ -49,7 +49,7 @@ permissions:
 env:
   VIBE2_PRIORITY_POLICY: owner-release-development
   VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '0'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '256'
   VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
@@ -212,7 +212,7 @@ jobs:
           const beforeText = fs.readFileSync(file, 'utf8');
           const before = JSON.parse(beforeText);
           const configured = Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS);
-          const maxConcurrentTasks = Number.isFinite(configured) && configured > 0 ? Math.floor(configured) : Number.MAX_SAFE_INTEGER;
+          const maxConcurrentTasks = Number.isFinite(configured) && configured > 0 ? Math.floor(configured) : 256;
           const normalized = createVibeContinuousQueue({ ...before, maxConcurrentTasks });
           const afterText = `${JSON.stringify(normalized, null, 2)}\n`;
           if (beforeText !== afterText) {
