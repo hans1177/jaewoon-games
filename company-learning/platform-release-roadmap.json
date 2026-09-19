@@ -1,5 +1,5 @@
 {
-  "version": 27,
+  "version": 28,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1446,7 +1446,15 @@
       "entryFile": "index.html",
       "bootstrapAllowed": true,
       "homepageExposureBeforeEntryExists": false,
-      "saveNormalizationContractMustRemainAttached": true
+      "saveNormalizationContractMustRemainAttached": true,
+      "workerAuthorityField": "workerPolicy.sourceRootBootstrapAllowed",
+      "workerAuthorityEvidence": "source-root-bootstrap-required",
+      "workerAuthorityGoalMarker": "SOURCE_ROOT_BOOTSTRAP_ALLOWED",
+      "explorationMayUseSyntheticReadOnlyBootstrapContext": true,
+      "sourceWorkerMayCreateMissingRootOnlyOnIsolatedCandidateBranch": true,
+      "sourceWorkerBootstrapFileLimit": 1,
+      "sourceWorkerBootstrapEntryFile": "index.html",
+      "missingRootWithoutExplicitBootstrapAuthority": "BLOCK"
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
