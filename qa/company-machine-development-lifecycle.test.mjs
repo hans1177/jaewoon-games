@@ -280,8 +280,8 @@ for(const key of ['noGateBypass','noTrainingThresholdReduction','noVerifiedLearn
 assert.match(queueControl,/recoverStaleRunningReservations/);
 assert.match(queueControl,/recoverFanInRegressionFailure/);
 assert.match(queue,/isExternalQuotaWaitingTask/);
-assert.match(adaptiveBackpressure,/ADAPTIVE_PARALLELISM_STEPS = Object\.freeze\(\[4, 8, 12, 16, 20\]\)/);
-assert.match(adaptiveBackpressure,/HEALTHY_STREAK_2/);
+assert.match(adaptiveBackpressure,/ADAPTIVE_PARALLELISM_STEPS = Object\.freeze\(\[4, 8, 12, 16, 20, 24, 30\]\)/);
+assert.match(adaptiveBackpressure,/HEALTHY_FAST_RAMP/);
 assert.match(parallelismTelemetry,/RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION/);
 assert.match(parallelismTelemetry,/INCREMENTAL_QA/);
 assert.match(parallelismTelemetry,/CHECKOUT_NETWORK/);
