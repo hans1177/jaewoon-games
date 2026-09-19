@@ -427,3 +427,13 @@ test('exact edit still rejects materially different source text', () => {
     replace: 'int Speed() {\n    return 2;\n}'
   }]), /edit find 불일치/);
 });
+
+
+test('invalid edit path recovery requires an exact allowed path', () => {
+  const error=new Error('텍스트 worker 허용 확장자 아님: exact allowed path');
+  assert.equal(shouldRetryGenerationError(error),true);
+  const prompt=buildGenerationRetryPrompt('Allowed edit paths: web-games/demo/index.html\n=== FILE web-games/demo/index.html ===\n<button>Play</button>',{error});
+  assert.match(prompt,/invalid edit path/);
+  assert.match(prompt,/copied exactly from Allowed edit paths/);
+  assert.match(prompt,/Never output placeholders/);
+});
