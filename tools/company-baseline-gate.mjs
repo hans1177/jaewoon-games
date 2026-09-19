@@ -13,11 +13,34 @@ function kstDate(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul
 function explicitPass(data,gameId){if(!data||typeof data!=='object'||Array.isArray(data))return false;if(clean(data.gameId)&&clean(data.gameId)!==gameId)return false;const state=clean(data.status||data.result||data.decision).toUpperCase();return data.pass===true||data.validated===true||['PASS','PASSED','VALIDATED','READY'].includes(state);}
 function latestDesignValidation(gameId,fileName){const root=path.join('design',gameId);if(!fs.existsSync(root))return{path:null,data:null,pass:false};const dates=fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(e.name)).map(e=>e.name).sort().reverse();for(const date of dates){const file=path.join(root,date,fileName);if(!fs.existsSync(file))continue;const data=readJson(file,null);return{path:file.replaceAll('\\','/'),data,pass:explicitPass(data,gameId)};}return{path:null,data:null,pass:false};}
 function hasValue(v){return Array.isArray(v)?v.length>0:v!==null&&v!==undefined&&clean(v)!=='';}
+function deterministicCheckpointEvidence(gameId,date){
+  const checkpointPath=path.join('design',gameId,date,'design-checkpoint.json');
+  const checkpoint=readJson(checkpointPath,null);
+  if(!checkpoint)return{pass:false,path:checkpointPath.replaceAll('\\\\','/'),phase:null,totalScore:null,passMinimum:null,hardFailures:['CHECKPOINT_MISSING'],criticalAxisFailures:[]};
+  const rows=Object.entries(checkpoint.phases||{})
+    .filter(([name,value])=>/^deterministic_pre_gate(?:_after_repair_\d+)?$/.test(name)&&value&&typeof value==='object')
+    .map(([name,value],index)=>({name,value,index,repair:Number(name.match(/_after_repair_(\d+)$/)?.[1]||0)}))
+    .sort((a,b)=>a.repair-b.repair||a.index-b.index);
+  const selected=[...rows].reverse().find(row=>{
+    const hard=Array.isArray(row.value.hardFailures)?row.value.hardFailures:[];
+    const critical=Array.isArray(row.value.criticalAxisFailures)?row.value.criticalAxisFailures:[];
+    const threshold=Math.max(80,Number(row.value.passMinimum||80));
+    return Number(row.value.totalScore)>=threshold&&hard.length===0&&critical.length===0;
+  })||rows.at(-1)||null;
+  const value=selected?.value||{};
+  const hard=Array.isArray(value.hardFailures)?value.hardFailures:[];
+  const critical=Array.isArray(value.criticalAxisFailures)?value.criticalAxisFailures:[];
+  const threshold=Math.max(80,Number(value.passMinimum||80));
+  const pass=Boolean(selected&&Number(value.totalScore)>=threshold&&hard.length===0&&critical.length===0);
+  return{pass,path:checkpointPath.replaceAll('\\\\','/'),phase:selected?.name||null,totalScore:Number.isFinite(Number(value.totalScore))?Number(value.totalScore):null,passMinimum:threshold,hardFailures:hard,criticalAxisFailures:critical};
+}
 
 const gameId=clean(process.env.ARTBOOK_GAME_ID||process.env.GAME_ID||process.argv.find(x=>x.startsWith('--game='))?.split('=')[1]);
 const date=clean(process.env.ARTBOOK_DATE||process.env.DESIGN_DATE||kstDate());
 if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
-const directive=readJson('company-directive.json',{});const numericLabels=directive.production?.numericLabels||{};
+const directive=readJson('company-directive.json',{});const roadmap=readJson('company-learning/platform-release-roadmap.json',{});const numericLabels=directive.production?.numericLabels||{};
+const deterministicGatePolicy=roadmap?.developmentLifecycleMachine?.deterministicGateAuthority||{};
+const deterministicDesignGateEnabled=deterministicGatePolicy.enabled===true&&deterministicGatePolicy.aiMayDecidePassFail===false;
 const catalog=readJson('game-catalog.json',{games:[]});const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||null;
 const seedState=loadSeedState();const seedAny=seedForGame(seedState,gameId);const seedActive=activeSeedForGame(seedState,gameId);
 if(!catalogGame&&!seedAny)throw new Error(`Unknown game or GAME_SEED: ${gameId}`);
@@ -38,7 +61,7 @@ const webGameplay=latestDesignValidation(gameId,'web-gameplay-validation.json');
 const webApprovedScopePass=Boolean(webGameplay.pass&&webGameplay.data?.approvedScopeFullyImplemented===true&&webGameplay.data?.scopeCoverage?.pass===true&&Number(webGameplay.data?.scopeCoverage?.declaredCount||0)>0);
 const revalidation=latestDesignValidation(gameId,'development-revalidation.json');
 const meetingConflicts=Number(status.meeting?.conflictCount||0);const meetingHolds=Number(status.meeting?.holdCount||0);const blockers=[];let state='NOT_APPLICABLE';let ready=false;
-let advisoryDisposition=null;let unanimousFatalDiscard=false;let designMultiplayerMode=null;let designMultiplayerModeValid=false;
+let advisoryDisposition=null;let unanimousFatalDiscard=false;let designMultiplayerMode=null;let designMultiplayerModeValid=false;let deterministicDesignEvidence=null;
 
 if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
   if(status.status!=='COMPLETE')throw new Error('DESIGN_ONLY cycle must complete before baseline gate');
@@ -62,11 +85,17 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
   if(!clean(revised?.steamExpansionDecision))blockers.push('steam-expansion-decision-required');
   if(!designMultiplayerModeValid)blockers.push('multiplayer-design-mode-required:SINGLE|COOP|COMPETITIVE|HYBRID');
   if(!clean(revised?.multiplayerExpansionDecision))blockers.push('multiplayer-expansion-decision-required');
-  if(Number(status.departments?.distinctLeadModelCount||0)<5)blockers.push('five-distinct-lead-models-required');
-  const audits=Object.values(status.departments?.modelAudit||{});if(audits.length!==5||audits.some(a=>a?.pass!==true))blockers.push('per-department-multimodel-review-pass-required');
-  const directFiveLeadReviewComplete=status.disposition?.fiveDepartmentLeadReviewCompleted===true&&status.meeting?.required===false;
-  const legacyRepeatedFiveLeadReviewComplete=status.departments?.repeatedFatalReview===true&&status.disposition?.repeatedFiveDepartmentReview===true;
-  if(!directFiveLeadReviewComplete&&!legacyRepeatedFiveLeadReviewComplete)blockers.push('post-revision-five-department-review-required');
+  if(deterministicDesignGateEnabled){
+    deterministicDesignEvidence=deterministicCheckpointEvidence(gameId,date);
+    if(!deterministicDesignEvidence.pass)blockers.push('deterministic-design-pre-gate-pass-required');
+    if(status?.deterministicRecovery?.enabled!==true&&status?.departments?.reviewMode!=='DETERMINISTIC_EVIDENCE')blockers.push('deterministic-design-recovery-provenance-required');
+  }else{
+    if(Number(status.departments?.distinctLeadModelCount||0)<5)blockers.push('five-distinct-lead-models-required');
+    const audits=Object.values(status.departments?.modelAudit||{});if(audits.length!==5||audits.some(a=>a?.pass!==true))blockers.push('per-department-multimodel-review-pass-required');
+    const directFiveLeadReviewComplete=status.disposition?.fiveDepartmentLeadReviewCompleted===true&&status.meeting?.required===false;
+    const legacyRepeatedFiveLeadReviewComplete=status.departments?.repeatedFatalReview===true&&status.disposition?.repeatedFiveDepartmentReview===true;
+    if(!directFiveLeadReviewComplete&&!legacyRepeatedFiveLeadReviewComplete)blockers.push('post-revision-five-department-review-required');
+  }
   if(meetingConflicts>0)blockers.push(`meeting-conflicts:${meetingConflicts}`);if(meetingHolds>0)blockers.push(`meeting-holds:${meetingHolds}`);
   if(state==='NOT_APPLICABLE'&&blockers.length===0){state='DESIGN_BASELINE_READY';ready=true;}
   else if(state==='NOT_APPLICABLE')state=meetingConflicts>0?'DESIGN_BASELINE_PENDING_CONFLICT_RESOLUTION':meetingHolds>0?'DESIGN_BASELINE_PENDING_MEETING_HOLD':'DESIGN_BASELINE_REDESIGN_REQUIRED';
@@ -86,6 +115,7 @@ const developmentRequired=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFI
 const evidence={
   gameSeed:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY,present:Boolean(seedActive),seedId:seedActive?.seedId||null,source:seedActive?'game-seed-state.json':null},
   designMultiplayer:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY,mode:designMultiplayerMode,valid:designMultiplayerModeValid,decisionStage:'GAME_DESIGN',allowedModes:[...MULTIPLAYER_MODES]},
+  deterministicDesignGate:{required:productionClass===PRODUCTION_CLASSES.DESIGN_ONLY&&deterministicDesignGateEnabled,authority:deterministicDesignGateEnabled?'DETERMINISTIC_EVIDENCE':null,...(deterministicDesignEvidence||{pass:null,path:null,phase:null,totalScore:null,passMinimum:null,hardFailures:[],criticalAxisFailures:[]})},
   webSmoke:{supportingOnly:true,pass:webSmokePass,source:webSmoke?'company-qa-runtime-evidence.json':null},
   webGameplay:{required:developmentRequired,pass:webGameplay.pass,approvedScopeFullyImplemented:webApprovedScopePass,approvedScopeCount:Number(webGameplay.data?.scopeCoverage?.declaredCount||0),source:webGameplay.path},
   targetPlatformProject:{required:developmentRequired,platform:selectedPlatform,present:targetProjectPresent,path:targetProjectPath||null,projectField:platformAdapter?.projectField||null},
@@ -96,11 +126,11 @@ if(selectedPlatform==='UNITY'){
   evidence.unityProject={required:developmentRequired,present:targetProjectPresent,path:targetProjectPath||null};
   evidence.unityTechnical={required:developmentRequired,pass:targetTechnical.pass,source:targetTechnical.path};
 }
-status.baselineGate={policyDocument:'COMPANY_FLOW.md',productionClass,tierAlias,tier:tierAlias,state,ready,blockers,advisoryDisposition,unanimousFatalDiscard,meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds,allResolved:meetingConflicts===0&&meetingHolds===0},evidence,contracts:{aiMeetingCompletionDoesNotEqualBaselineApproval:true,gameSeedRequiredBeforeDesignBaseline:true,multiplayerModeRequiredAtGameDesign:true,marketEvidenceIsTargetReferenceNotHardGate:true,meetingHoldBlocksDesignBaseline:true,meetingConflictBlocksDesignBaseline:true,minorityLeadRedesignOrDiscardIsAdvisoryOnly:true,unanimousFatalDiscardRequiredToDiscard:true,postRevisionFiveDepartmentReviewRequiredBeforeDiscard:true,designArtbookOnlyAfterBaselineReady:true,designOnlyVibe2Forbidden:true,webSmokeDoesNotEqualGameplayValidation:true,developmentConfirmedIsGatedDirect:true,developmentConfirmedResumesFromLatestEvidence:true,developmentConfirmedRequiresExplicitWebGameplayValidation:true,developmentConfirmedRequiresFullApprovedWebScope:true,developmentConfirmedRequiresSelectedPlatformTechnicalValidation:true,developmentArtbookOnlyAfterBaselineReady:true,releaseConfirmedBaselineOwnedByReleasePipeline:true,numericTierIsCompatibilityAliasOnly:true},checkedAt:new Date().toISOString()};
+status.baselineGate={policyDocument:'COMPANY_FLOW.md',productionClass,tierAlias,tier:tierAlias,state,ready,blockers,advisoryDisposition,unanimousFatalDiscard,meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds,allResolved:meetingConflicts===0&&meetingHolds===0},evidence,contracts:{aiMeetingCompletionDoesNotEqualBaselineApproval:true,gameSeedRequiredBeforeDesignBaseline:true,multiplayerModeRequiredAtGameDesign:true,marketEvidenceIsTargetReferenceNotHardGate:true,meetingHoldBlocksDesignBaseline:true,meetingConflictBlocksDesignBaseline:true,minorityLeadRedesignOrDiscardIsAdvisoryOnly:true,unanimousFatalDiscardRequiredToDiscard:true,postRevisionFiveDepartmentReviewRequiredBeforeDiscard:!deterministicDesignGateEnabled,deterministicEvidenceGateRequired:deterministicDesignGateEnabled,aiReviewIsGateAuthority:false,designArtbookOnlyAfterBaselineReady:true,designOnlyVibe2Forbidden:true,webSmokeDoesNotEqualGameplayValidation:true,developmentConfirmedIsGatedDirect:true,developmentConfirmedResumesFromLatestEvidence:true,developmentConfirmedRequiresExplicitWebGameplayValidation:true,developmentConfirmedRequiresFullApprovedWebScope:true,developmentConfirmedRequiresSelectedPlatformTechnicalValidation:true,developmentArtbookOnlyAfterBaselineReady:true,releaseConfirmedBaselineOwnedByReleasePipeline:true,numericTierIsCompatibilityAliasOnly:true},checkedAt:new Date().toISOString()};
 
 let uiStatus='WAITING';if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY&&ready)uiStatus='WRITING';else if(productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&ready&&status.artbook)uiStatus='COMPLETE';
 const uiLabel={WRITING:'작성중',WAITING:'대기중',COMPLETE:'완료'}[uiStatus];const publicStatusPath=path.join('artbook-submissions',gameId,'status.json');writeJson(publicStatusPath,{version:3,gameId,gameName:game.name,date,productionClass,tierAlias,tier:tierAlias,uiStatus,uiLabel,baselineGateState:state,baselineReady:ready,selectedPlatform:developmentRequired?selectedPlatform:null,meeting:{conflictCount:meetingConflicts,holdCount:meetingHolds},artbookPublished:Boolean(status.artbookPublication?.published),currentPublicationRetained:true,nextAction:status.nextAction||null,updatedAt:new Date().toISOString()});
 status.artbookUi={status:uiStatus,label:uiLabel,path:publicStatusPath.replaceAll('\\','/')};
 if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY)status.artbookPublication={published:false,path:null,baselineGateState:state,reason:ready?'awaiting-post-baseline-artbook-editor':'baseline-not-ready'};
 writeJson(statusPath,status);
-console.log(`BASELINE_GATE_CLASS=${productionClass}`);console.log(`BASELINE_GATE_TIER_ALIAS=${tierAlias??'NONE'}`);console.log(`BASELINE_GATE_STATE=${state}`);console.log(`BASELINE_GATE_READY=${ready?'YES':'NO'}`);console.log(`ARTBOOK_UI_STATUS=${uiStatus}`);if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){console.log(`DESIGN_ADVISORY_DISPOSITION=${advisoryDisposition||'NONE'}`);console.log(`DESIGN_UNANIMOUS_FATAL_DISCARD=${unanimousFatalDiscard?'YES':'NO'}`);console.log(`DESIGN_MULTIPLAYER_MODE=${designMultiplayerMode||'MISSING'}`);console.log(`DESIGN_MULTIPLAYER_MODE_VALID=${designMultiplayerModeValid?'YES':'NO'}`);console.log('DESIGN_ARTBOOK_CREATED_BY_GATE=NO');console.log(`GAME_SEED_GATE=${seedActive?'PASS':'FAIL'}`);}console.log(`WEB_SMOKE_SUPPORT=${webSmokePass?'PASS':'NO_PASS_EVIDENCE'}`);if(developmentRequired){console.log(`WEB_GAMEPLAY_VALIDATION=${webGameplay.pass?'PASS':'PENDING'}`);console.log(`WEB_APPROVED_SCOPE=${webApprovedScopePass?'PASS':'PENDING'}`);console.log(`SELECTED_PLATFORM=${selectedPlatform||'MISSING'}`);console.log(`TARGET_PLATFORM_PROJECT=${targetProjectPresent?'PRESENT':'PENDING'}`);console.log(`TARGET_PLATFORM_TECHNICAL_VALIDATION=${targetTechnical.pass?'PASS':'PENDING'}`);console.log(`DEVELOPMENT_DIRECT_STATE=${state}`);}
+console.log(`BASELINE_GATE_CLASS=${productionClass}`);console.log(`BASELINE_GATE_TIER_ALIAS=${tierAlias??'NONE'}`);console.log(`BASELINE_GATE_STATE=${state}`);console.log(`BASELINE_GATE_READY=${ready?'YES':'NO'}`);console.log(`ARTBOOK_UI_STATUS=${uiStatus}`);if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){console.log(`DESIGN_GATE_AUTHORITY=${deterministicDesignGateEnabled?'DETERMINISTIC_EVIDENCE':'LEGACY_REVIEW_CONTRACT'}`);if(deterministicDesignEvidence)console.log(`DESIGN_DETERMINISTIC_PRE_GATE=${deterministicDesignEvidence.pass?'PASS':'FAIL'}|score=${deterministicDesignEvidence.totalScore??'NONE'}|phase=${deterministicDesignEvidence.phase||'NONE'}`);console.log(`DESIGN_ADVISORY_DISPOSITION=${advisoryDisposition||'NONE'}`);console.log(`DESIGN_UNANIMOUS_FATAL_DISCARD=${unanimousFatalDiscard?'YES':'NO'}`);console.log(`DESIGN_MULTIPLAYER_MODE=${designMultiplayerMode||'MISSING'}`);console.log(`DESIGN_MULTIPLAYER_MODE_VALID=${designMultiplayerModeValid?'YES':'NO'}`);console.log('DESIGN_ARTBOOK_CREATED_BY_GATE=NO');console.log(`GAME_SEED_GATE=${seedActive?'PASS':'FAIL'}`);}console.log(`WEB_SMOKE_SUPPORT=${webSmokePass?'PASS':'NO_PASS_EVIDENCE'}`);if(developmentRequired){console.log(`WEB_GAMEPLAY_VALIDATION=${webGameplay.pass?'PASS':'PENDING'}`);console.log(`WEB_APPROVED_SCOPE=${webApprovedScopePass?'PASS':'PENDING'}`);console.log(`SELECTED_PLATFORM=${selectedPlatform||'MISSING'}`);console.log(`TARGET_PLATFORM_PROJECT=${targetProjectPresent?'PRESENT':'PENDING'}`);console.log(`TARGET_PLATFORM_TECHNICAL_VALIDATION=${targetTechnical.pass?'PASS':'PENDING'}`);console.log(`DEVELOPMENT_DIRECT_STATE=${state}`);}
