@@ -93,6 +93,23 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
   if(!clean(revised?.steamExpansionDecision))blockers.push('steam-expansion-decision-required');
   if(!designMultiplayerModeValid)blockers.push('multiplayer-design-mode-required:SINGLE|COOP|COMPETITIVE|HYBRID');
   if(!clean(revised?.multiplayerExpansionDecision))blockers.push('multiplayer-expansion-decision-required');
+  const ownerPreservationSeed=seedActive?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
+    &&clean(seedActive?.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
+  if(ownerPreservationSeed){
+    const preservation=revised?.preservationContract;
+    const requiredLocked=['WORLD_AND_REGIONS','STORY_AND_QUESTS','COMBAT_RULES','CRAFTING_RECIPES_AND_COSTS','SAVE_KEY_AND_SCHEMA_MEANING','PROGRESSION','BALANCE_VALUES','DROPS_AND_REWARDS','HIT_AND_COOLDOWN_SEMANTICS','MULTIPLAYER_MODE'];
+    const requiredPasses=['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE'];
+    const locked=new Set(Array.isArray(preservation?.lockedSemantics)?preservation.lockedSemantics:[]);
+    const passes=new Set(Array.isArray(preservation?.presentationPasses)?preservation.presentationPasses:[]);
+    const preservationReady=preservation?.mode==='PRESERVATION_PRESENTATION_UPGRADE'
+      &&preservation?.sourceOfTruth==='EXISTING_IMPLEMENTATION_AND_OWNER_SEED'
+      &&preservation?.gameplayRule==='NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE'
+      &&Number(preservation?.targetSessionMinutes)===Number(seedActive?.TARGET_SESSION_MINUTES||30)
+      &&requiredLocked.every(value=>locked.has(value))
+      &&requiredPasses.length===passes.size&&requiredPasses.every(value=>passes.has(value))
+      &&designMultiplayerMode===clean(seedActive?.MULTIPLAYER_DESIGN_MODE).toUpperCase();
+    if(!preservationReady)blockers.push('owner-preservation-design-contract-required');
+  }
   if(deterministicDesignGateEnabled){
     deterministicDesignEvidence=deterministicCheckpointEvidence(gameId,date);
     if(!deterministicDesignEvidence.pass)blockers.push('deterministic-design-pre-gate-pass-required');
