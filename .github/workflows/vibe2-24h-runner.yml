@@ -264,6 +264,7 @@ jobs:
               --runtime=/tmp/vibe2-main/vibe2-runtime.json \
               --status=/tmp/vibe2-main/company-status.json \
               --catalog=/tmp/vibe2-main/game-catalog.json \
+              --development-queue=/tmp/vibe2-company-runtime-queue.json \
               --queue="$control_root/.vibe2/queue.json" \
               --control="$control_root/.vibe2/parallelism-control.json" \
               --experience="$control_root/.vibe2/experience.json" \
