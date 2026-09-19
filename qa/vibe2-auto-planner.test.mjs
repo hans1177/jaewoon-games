@@ -169,6 +169,54 @@ test('central DESIGN_ONLY authority cancels stale production implementation with
   assert.equal(preserved.blocker,null);
 });
 
+test('central production-authority cancellation revives only after catalog authority is restored',()=>{
+  const root=tempRepo();
+  const task={
+    id:'crystal-defense-web-base-implementation-v1',gameId:'crystal-defense',target:'web',
+    department:'development',type:'implementation',sourceRoot:'web-games/crystal-defense',
+    goal:'bootstrap web baseline',releaseState:'development-confirmed',status:'cancelled',
+    blocker:'production-authority-inactive:DESIGN_ONLY',
+    reservationId:'stale-reservation',reservationRunId:'stale-run',reservationRunAttempt:2,
+    reservedAt:'2026-09-18T10:00:00Z',lastOutcome:'CANCELLED_BY_CENTRAL_PRODUCTION_AUTHORITY',
+    evidence:['production-authority-sync:DESIGN_ONLY']
+  };
+  const catalog={games:[{
+    id:'crystal-defense',name:'Crystal Defense',productionClass:'DEVELOPMENT_CONFIRMED',
+    homepageCategory:'development-confirmed',lifecycleState:'ACTIVE'
+  }]};
+  const result=planVibe2AutonomousTasks({status:{projects:[]},catalog,queue:{tasks:[task]},repoRoot:root,maxConcurrentTasks:4});
+  const revived=result.queue.tasks.find(row=>row.id===task.id);
+  assert.equal(revived.status,'queued');
+  assert.equal(revived.blocker,null);
+  assert.equal(revived.reservationId,null);
+  assert.equal(revived.reservationRunId,null);
+  assert.equal(revived.reservationRunAttempt,0);
+  assert.equal(revived.reservedAt,null);
+  assert.equal(revived.lastOutcome,'SYSTEM_STEWARD_PRODUCTION_AUTHORITY_RESTORED');
+  assert.ok(revived.evidence.includes('production-authority-restored:DEVELOPMENT_CONFIRMED'));
+  assert.ok(revived.evidence.includes('self-recovery:PRODUCTION_AUTHORITY_RESTORED'));
+});
+
+test('owner-cancelled task is never revived by production-authority restoration',()=>{
+  const root=tempRepo();
+  const task={
+    id:'owner-cancelled',gameId:'crystal-defense',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/crystal-defense',goal:'owner stopped work',releaseState:'development-confirmed',
+    status:'cancelled',blocker:'production-authority-inactive:DESIGN_ONLY',
+    lastOutcome:'CANCELLED_BY_OWNER',evidence:['owner-cancelled:yes']
+  };
+  const catalog={games:[{
+    id:'crystal-defense',name:'Crystal Defense',productionClass:'DEVELOPMENT_CONFIRMED',
+    homepageCategory:'development-confirmed',lifecycleState:'ACTIVE'
+  }]};
+  const result=planVibe2AutonomousTasks({status:{projects:[]},catalog,queue:{tasks:[task]},repoRoot:root,maxConcurrentTasks:4});
+  const preserved=result.queue.tasks.find(row=>row.id===task.id);
+  assert.equal(preserved.status,'cancelled');
+  assert.equal(preserved.blocker,'production-authority-inactive:DESIGN_ONLY');
+  assert.equal(preserved.lastOutcome,'CANCELLED_BY_OWNER');
+  assert.equal(preserved.evidence.includes('self-recovery:PRODUCTION_AUTHORITY_RESTORED'),false);
+});
+
 test('registered historical Roblox maintenance survives catalog absence and revives stale lifecycle cancellation',()=>{
   const root=tempRepo();
   const task={
