@@ -417,6 +417,35 @@ test('focused Web repair composes exact primary-symbol windows instead of broad 
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
+test('verified context preference can choose bounded Web repair context without changing write scope',async()=>{
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'preferred-bounded-context.json');
+  const filler='const backgroundDecoration=1;\n'.repeat(3500);
+  const source='<!doctype html><html><body><script>\n'+filler+
+    'let pointerState=null,placedEntities=[];\n'+
+    'function placeTower(slot){placedEntities.push(slot);return true;}\n'+
+    'function handlePointer(event){pointerState={x:event.clientX,y:event.clientY};return placeTower(pointerState);}\n'+
+    'addEventListener("pointerdown",handlePointer);\n'+filler+'</script></body></html>\n';
+  write(path.join(cwd,'web-games/demo/index.html'),source);
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'preferred-bounded-context'});
+  workOrder.originalGoal='모바일 pointer 입력을 placement state에 연결한다';
+  workOrder.goal='[WEB_REPAIR] runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING 수정';
+  workOrder.selectedTask={evidence:['web-stage:WEB_REPAIR','runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
+  workOrder.workPackage={id:'preferred-bounded-wp',sharedContext:{diagnosticEvidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING']}};
+  workOrder.codingStrategyPreference={strategy:'RESPONSIBILITY_FIRST',preferredContextMode:'BOUNDED_FILE_EXCERPT_FALLBACK',preferredContextModeSamples:3};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const find='function handlePointer(event){pointerState={x:event.clientX,y:event.clientY};return placeTower(pointerState);}';
+  write(responseFile,JSON.stringify({edits:[{path:'index.html',find,replace:'function handlePointer(event){pointerState={x:Math.round(event.clientX),y:Math.round(event.clientY)};return placeTower(pointerState);}'}],newFiles:[],replaceFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.contextMode,'BOUNDED_FILE_EXCERPT_FALLBACK');
+  assert.equal(result.generation.contextPreferenceRequested,'BOUNDED_FILE_EXCERPT_FALLBACK');
+  assert.equal(result.generation.contextPreferenceApplied,true);
+  assert.equal(result.generation.exactSourceWindows,false);
+  assert.equal(result.generation.fullFileContextFallback,true);
+  assert.equal(result.codingMethod.contextPreferenceApplied,true);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
 test('focused symbol context matches JavaScript identifiers containing regex metacharacters',async()=>{
   const cwd=tempRoot();
   const responseFile=path.join(cwd,'focused-dollar-symbol.json');
