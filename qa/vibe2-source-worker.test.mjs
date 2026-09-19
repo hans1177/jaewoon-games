@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -337,6 +337,33 @@ test('zero-change recovery prompt requires a concrete bounded edit', () => {
   assert.equal(shouldRetryGenerationError(new Error('후보가 실제 source 변경을 생성하지 않음')),true);
 });
 
+test('second no-op receives one short focused third retry', async () => {
+  const cwd=tempRoot();
+  const noop1=path.join(cwd,'noop1.json');
+  const noop2=path.join(cwd,'noop2.json');
+  const good=path.join(cwd,'good3.json');
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'focused-third-retry'}),null,2));
+  const noop=JSON.stringify({edits:[{path:'index.html',find:'>Play<',replace:'>Play<'}],newFiles:[],replaceFiles:[]});
+  write(noop1,noop);
+  write(noop2,noop);
+  write(good,JSON.stringify({edits:[{path:'index.html',find:'>Play<',replace:'>Continue<'}],newFiles:[],replaceFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[noop1,noop2,good]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedFinalRetry,true);
+  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.maxPredict,768);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
+test('generation failure classification keeps causal retry reasons distinct',()=>{
+  assert.equal(generationFailureClass(new Error('변경 없는 edit: index.html')),'NO_OP');
+  assert.equal(generationFailureClass(new Error('Ollama 응답 시간 초과: 240000ms')),'TIMEOUT');
+  assert.equal(generationFailureClass(new Error('책임 파일 범위 밖 수정 금지: config.js')),'INVALID_PATH');
+  assert.equal(generationFailureClass(new Error('전체 교체 파일 크기 오류: index.html')),'FULL_REWRITE_SIZE');
+  assert.equal(generationFailureClass(new Error('모델 JSON 파싱 실패')),'MALFORMED_OUTPUT');
+});
 test('truncated FULL_REBUILD gets one compact raw-envelope recovery retry', async () => {
   const cwd = tempRoot();
   const bad = path.join(cwd, 'bad.txt');
