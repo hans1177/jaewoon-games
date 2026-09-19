@@ -153,6 +153,17 @@ test('seed material pool is fixed at 100 and composed seeds use mixed material i
   assert.match(platformProfileTool,/ANDROID_MOBILE.*UNITY/s);
 });
 
+test('owner preservation pilots materialize through canonical GAME_SEED bootstrap',()=>{
+  assert.match(seedWorkflow,/owner-design-reset-queue\.json/);
+  assert.match(bootstrap,/OWNER_DESIGN_RESET_QUEUE_FILE/);
+  assert.match(bootstrap,/PRESERVATION_PRESENTATION_UPGRADE/);
+  assert.match(bootstrap,/REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true/);
+  assert.match(bootstrap,/materializeOwnerPreservationSeeds/);
+  assert.match(bootstrap,/assertGameSeed\(seed\)/);
+  assert.match(bootstrap,/OWNER_PRESERVATION_ACTIVE_SEED_CONFLICT/);
+  assert.match(bootstrap,/ownerPreservationIntake/);
+});
+
 test('workflow uses canonical trigger for 24h idle unlimited-total production with bounded WIP',()=>{
   assert.match(seedWorkflow,/IDLE_24H_AUTONOMOUS_PRODUCTION/);
   assert.match(seedWorkflow,/GAME_SEED_IDLE_TARGET_COUNT/);
