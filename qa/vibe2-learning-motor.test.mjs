@@ -279,7 +279,7 @@ test('repeated verified failure escalates tournament and idle drill without bypa
 
 test('benchmark ladder includes narrative tracks and never counts directly as training sample',()=>{
   const ladder=buildBenchmarkLadder({});
-  assert.equal(ladder.cases.length,12);
+  assert.equal(ladder.cases.length,18);
   assert.ok(ladder.cases.some(x=>x.track==='STORYTELLING'));
   assert.ok(ladder.cases.some(x=>x.track==='QUEST_DESIGN'));
   assert.ok(ladder.cases.some(x=>x.track==='CHARACTER_ARC'));
@@ -636,4 +636,41 @@ test('narrative policy forbids raw unlicensed novel ingestion and direct trainin
   assert.equal(policy.narrativeLearning?.practiceDistillation?.directCanonicalTrainingSample,false);
   assert.equal(policy.narrativeLearning?.sourcePolicy?.unlicensedCopyrightedFullTextPersistentIngestionForbidden,true);
   assert.equal(policy.narrativeLearning?.sourcePolicy?.rawPassageReuseForbidden,true);
+});
+
+
+test('verified presentation experience raises presentation mastery domains',()=>{
+  const learned=applyVerifiedExperienceToMastery({}, {records:[{
+    id:'presentation-exp-1',gameId:'motion-game',engine:'web',verified:true,reusable:true,outcome:'PASS',
+    goal:'asset adaptation living motion animation feel VFX audio feel camera language polish',
+    change:'style lock idle breath locomotion blend anticipation hit stop recoil particle trail adaptive music crossfade camera shake',
+    reusablePatterns:['asset adaptation living motion animation feel vfx audio feel camera language']
+  }]});
+  assert.equal(learned.added,1);
+  for(const domain of ['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE']){
+    assert.ok(learned.state.domains[domain].xp>0,domain);
+  }
+});
+
+test('presentation mastery gaps create dedicated practice drills',()=>{
+  const idle=buildIdlePracticeQueue({});
+  const byDomain=new Map(idle.drills.filter(row=>Array.isArray(row.domains)&&row.domains.length===1).map(row=>[row.domains[0],row]));
+  assert.equal(byDomain.get('ASSET_ADAPTATION')?.kind,'ASSET_ADAPTATION_DRILL');
+  assert.equal(byDomain.get('LIVING_MOTION')?.kind,'MOTION_CONTINUITY_DRILL');
+  assert.equal(byDomain.get('ANIMATION_FEEL')?.kind,'ANIMATION_FEEL_DRILL');
+  assert.equal(byDomain.get('VFX')?.kind,'VFX_READABILITY_DRILL');
+  assert.equal(byDomain.get('AUDIO_FEEL')?.kind,'AUDIO_FEEL_DRILL');
+  assert.equal(byDomain.get('CAMERA_LANGUAGE')?.kind,'CAMERA_LANGUAGE_DRILL');
+});
+
+test('presentation learning policy requires verified runtime outcome and preserves gameplay semantics',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe2-learning-motor.json',import.meta.url),'utf8'));
+  assert.equal(policy.presentationLearning?.enabled,true);
+  assert.equal(policy.presentationLearning?.existingLearningMotorOnly,true);
+  assert.equal(policy.presentationLearning?.shadowTrainerForbidden,true);
+  assert.equal(policy.presentationLearning?.positiveMasteryRequiresVerifiedProjectOutcome,true);
+  assert.equal(policy.presentationLearning?.runtimeQaRequiredForProductionCompletion,true);
+  assert.equal(policy.presentationLearning?.staticQaDoesNotReplaceRuntime,true);
+  assert.ok(policy.presentationLearning?.invariants?.includes('SAVE_MEANING_UNCHANGED'));
+  assert.ok(policy.presentationLearning?.invariants?.includes('HIT_SEMANTICS_UNCHANGED'));
 });
