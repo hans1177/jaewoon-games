@@ -1,5 +1,5 @@
 {
-  "version": 28,
+  "version": 29,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1455,6 +1455,60 @@
       "sourceWorkerBootstrapFileLimit": 1,
       "sourceWorkerBootstrapEntryFile": "index.html",
       "missingRootWithoutExplicitBootstrapAuthority": "BLOCK"
+    },
+    "developmentToolAuthority": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+      "gameDevelopmentOwner": [
+        "VIBE2",
+        "VIBE3"
+      ],
+      "gameSourceGenerationProvider": "LOCAL_OLLAMA",
+      "gameSourceGenerationModel": "qwen3:1.7b",
+      "gameSourceWritePolicy": {
+        "allowedWorker": "tools/vibe2-source-worker.mjs",
+        "isolatedCandidateBranchRequired": true,
+        "branchPattern": "vibe2/candidate/*",
+        "directMainWrite": false,
+        "externalPaidApiRequired": false,
+        "openAiPaidApiAllowed": false
+      },
+      "codex": {
+        "role": "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY",
+        "allowedScopes": [
+          "WORKFLOW_AND_CI_TOOLING",
+          "QUEUE_AND_PLANNER_TOOLING",
+          "TEST_INFRASTRUCTURE",
+          "BOTTLENECK_DIAGNOSIS",
+          "COMMON_DEVELOPER_TOOLING",
+          "READ_ONLY_GAME_SOURCE_INSPECTION"
+        ],
+        "forbiddenScopes": [
+          "DIRECT_GAME_SOURCE_AUTHORING",
+          "GAMEPLAY_IMPLEMENTATION",
+          "GAME_BALANCE_MUTATION",
+          "GAME_CONTENT_AUTHORING",
+          "DESIGN_GATE_VERDICT",
+          "RUNTIME_QA_PASS_FAIL_VERDICT",
+          "REGRESSION_PASS_FAIL_VERDICT"
+        ],
+        "gameSourceWriteAllowed": false,
+        "unattendedGitHubActionsGameSourceUse": false,
+        "paidApiRequired": false
+      },
+      "deterministicVerdictAuthority": "DETERMINISTIC_RULES_PLUS_VERIFIED_RUNTIME_QA_REGRESSION_EVIDENCE",
+      "enforcement": {
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "worker": "tools/vibe2-source-worker.mjs",
+        "qa": "qa/vibe2-source-worker.test.mjs",
+        "requiredEnvironment": {
+          "VIBE2_GAME_DEVELOPMENT_OWNER": "VIBE2_VIBE3",
+          "VIBE2_GAME_SOURCE_PROVIDER": "LOCAL_OLLAMA",
+          "VIBE2_CODEX_GAME_SOURCE_WRITE": "FORBIDDEN",
+          "VIBE2_OPENAI_PAID_API_ALLOWED": "false"
+        }
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
