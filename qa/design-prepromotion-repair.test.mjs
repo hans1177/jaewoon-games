@@ -77,6 +77,21 @@ test('Roblox pre-review generated build profile satisfies the exact required sch
   assert.deepEqual(validation.blockers,['networkingRequired']);
 });
 
+test('explicit revised multiplayer mode drives the Roblox build profile even when the seed default differs',()=>{
+  const result=repairDesignRequiredFields({
+    identity:'기존 협동 설계',coreFun:'함께 생존하는 재미',coreLoop:['a','b','c'],multiplayerMode:'COOP'
+  },{seed,phase:'PRE_REVIEW'});
+  assert.equal(result.value.multiplayerMode,'COOP');
+  assert.equal(result.value.robloxBuildProfile.playMode,'COOP');
+  assert.equal(result.value.robloxBuildProfile.multiplayerRequired,true);
+  assert.equal(result.value.robloxBuildProfile.networkingRequired,true);
+  assert.equal(result.value.robloxBuildProfile.multiplayerQaRequired,true);
+  assert.equal(result.value.robloxBuildProfile.coopImplementationRequired,true);
+  assert.equal(result.value.robloxBuildProfile.minimumParticipantsForRequiredQa,2);
+  assert.deepEqual(result.robloxBuildProfileBlockers,[]);
+  assert.equal(result.unresolved.some(value=>value.startsWith('robloxBuildProfile.')),false);
+});
+
 test('non-Roblox pre-review does not require or synthesize Roblox build profile',()=>{
   const unitySeed={...seed,INITIAL_TARGET_PLATFORM:'UNITY'};
   const result=repairDesignRequiredFields({identity:'기존 설계',coreFun:'기존 재미',coreLoop:['a','b','c']},{seed:unitySeed,phase:'PRE_REVIEW'});
