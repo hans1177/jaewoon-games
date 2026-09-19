@@ -145,6 +145,32 @@ function normalizeRegressionHotspots(input={}){
   }
   return{version:1,seenEventIds:uniq(source.seenEventIds||[]),entries};
 }
+
+function normalizeArchitectureDriftMemory(input={}){
+  const source=input&&typeof input==='object'?input:{};
+  const signals={};
+  for(const [name,rowRaw] of Object.entries(source.signals||{})){
+    const row=rowRaw&&typeof rowRaw==='object'?rowRaw:{};
+    const games={};for(const [k,v] of Object.entries(row.games||{}))games[clean(k)]=Math.max(0,Number(v)||0);
+    const failureGames={};for(const [k,v] of Object.entries(row.failureGames||{}))failureGames[clean(k)]=Math.max(0,Number(v)||0);
+    const passGames={};for(const [k,v] of Object.entries(row.passGames||{}))passGames[clean(k)]=Math.max(0,Number(v)||0);
+    signals[clean(name)]={observations:Math.max(0,Number(row.observations)||0),verifiedRegressionFailures:Math.max(0,Number(row.verifiedRegressionFailures)||0),verifiedPasses:Math.max(0,Number(row.verifiedPasses)||0),games,failureGames,passGames,state:clean(row.state)||'CANDIDATE',lastEvidence:clean(row.lastEvidence)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null};
+  }
+  return{version:1,seenEventIds:uniq(source.seenEventIds||[]),signals};
+}
+function normalizeCodingConstitution(input={}){
+  const source=input&&typeof input==='object'?input:{};
+  const rules=(source.rules||[]).filter(row=>row&&typeof row==='object').map(row=>({
+    id:clean(row.id),failureFingerprint:clean(row.failureFingerprint),strategy:clean(row.strategy),state:clean(row.state)||'CANDIDATE',
+    globalVerifiedApplications:Math.max(0,Number(row.globalVerifiedApplications)||0),
+    contextualVerifiedApplications:Math.max(0,Number(row.contextualVerifiedApplications)||0),
+    globalGameCount:Math.max(0,Number(row.globalGameCount)||0),contextualGameCount:Math.max(0,Number(row.contextualGameCount)||0),
+    firstCandidatePassRatePct:Math.max(0,Number(row.firstCandidatePassRatePct)||0),
+    contextualFailureRatePct:Math.max(0,Number(row.contextualFailureRatePct)||0),
+    advisoryOnly:true,authorityExpanded:false
+  })).filter(row=>row.id&&row.failureFingerprint&&row.strategy);
+  return{version:1,rules,advisoryOnly:true,authorityExpanded:false,lastBuiltAt:clean(source.lastBuiltAt)||null};
+}
 export function createMasteryState(seed={}){
   const domains={};
   for(const d of MASTERY_DOMAINS){
@@ -164,6 +190,8 @@ export function createMasteryState(seed={}){
     codingStrategyMemory:normalizeCodingStrategyMemory(seed.codingStrategyMemory),
     codingCalibration:normalizeCodingCalibration(seed.codingCalibration),
     regressionHotspots:normalizeRegressionHotspots(seed.regressionHotspots),
+    architectureDriftMemory:normalizeArchitectureDriftMemory(seed.architectureDriftMemory),
+    codingConstitution:normalizeCodingConstitution(seed.codingConstitution),
     updatedAt:clean(seed.updatedAt)||null
   };
 }
@@ -463,6 +491,117 @@ export function codingRiskGuidance({calibration={},hotspot={}}={}){
   }
   return rows.join('\n');
 }
+
+function architectureDriftEvidence(evidence=[]){
+  const status=upper(lastEvidenceMarker(evidence,'architecture-drift-status:'));
+  if(status!=='ANALYZED')return null;
+  const riskLevel=upper(lastEvidenceMarker(evidence,'architecture-drift-risk:'))||'LOW';
+  const signals=clean(lastEvidenceMarker(evidence,'architecture-drift-signals:')).split(',').map(clean).filter(value=>value&&value!=='NONE');
+  const score=Math.max(0,Number(lastEvidenceMarker(evidence,'architecture-drift-score:'))||0);
+  return{riskLevel,signals:uniq(signals),score};
+}
+export function applyVerifiedArchitectureDriftOutcomes(stateInput={},queueInput={}){
+  const state=createMasteryState(stateInput);
+  const memory=normalizeArchitectureDriftMemory(state.architectureDriftMemory);
+  const seen=new Set(memory.seenEventIds||[]);
+  let added=0;
+  for(const task of queueInput?.tasks||[]){
+    const evidence=(task?.evidence||[]).map(clean).filter(Boolean);
+    const drift=architectureDriftEvidence(evidence);
+    const outcome=codingVerificationOutcome(task);
+    if(!drift||!outcome||!drift.signals.length)continue;
+    const gameId=clean(task.gameId)||'unknown';
+    const run=evidence.find(value=>value.startsWith('actions-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+    const eventId='architecture_drift_'+hash([clean(task.id),run,outcome,drift.riskLevel,drift.signals.join(',')].join('|'));
+    if(seen.has(eventId))continue;
+    for(const signal of drift.signals){
+      const row=memory.signals[signal]||{observations:0,verifiedRegressionFailures:0,verifiedPasses:0,games:{},failureGames:{},passGames:{},state:'CANDIDATE',lastEvidence:null,lastUpdatedAt:null};
+      row.observations+=1;
+      row.games[gameId]=(row.games[gameId]||0)+1;
+      if(outcome==='REGRESSION_FAIL'){row.verifiedRegressionFailures+=1;row.failureGames[gameId]=(row.failureGames[gameId]||0)+1;}
+      else{row.verifiedPasses+=1;row.passGames[gameId]=(row.passGames[gameId]||0)+1;}
+      const failureGameCount=Object.keys(row.failureGames||{}).filter(Boolean).length;
+      row.state=row.verifiedRegressionFailures>=2&&failureGameCount>=2?'VERIFIED_RISK':row.observations>=2?'OBSERVED':'CANDIDATE';
+      row.lastEvidence=eventId;row.lastUpdatedAt=new Date().toISOString();
+      memory.signals[signal]=row;
+    }
+    seen.add(eventId);added+=1;
+  }
+  memory.seenEventIds=[...seen].slice(-5000);
+  state.architectureDriftMemory=memory;state.updatedAt=new Date().toISOString();
+  return{state,added};
+}
+export function architectureDriftRiskForTask({task={},stateInput={}}={}){
+  const state=createMasteryState(stateInput),gameId=clean(task.gameId)||'unknown';
+  const rows=Object.entries(state.architectureDriftMemory?.signals||{}).map(([signal,row])=>({
+    signal,state:clean(row.state)||'CANDIDATE',verifiedRegressionFailures:Number(row.verifiedRegressionFailures||0),verifiedPasses:Number(row.verifiedPasses||0),
+    sameGameFailures:Number(row.failureGames?.[gameId]||0),sameGamePasses:Number(row.passGames?.[gameId]||0),
+    failureGameCount:Object.keys(row.failureGames||{}).filter(Boolean).length
+  })).filter(row=>row.state==='VERIFIED_RISK'||row.sameGameFailures>0);
+  rows.sort((a,b)=>Number(b.state==='VERIFIED_RISK')-Number(a.state==='VERIFIED_RISK')||b.sameGameFailures-a.sameGameFailures||b.verifiedRegressionFailures-a.verifiedRegressionFailures);
+  const top=rows.slice(0,8);
+  const riskLevel=top.some(row=>row.state==='VERIFIED_RISK'&&row.sameGameFailures>0)?'HIGH':top.length?'MEDIUM':'LOW';
+  return{riskLevel,signals:top,observeOnly:true,hardReject:false,focusedReviewRequired:riskLevel!=='LOW',writableScopeExpansionAllowed:false,authorityExpanded:false};
+}
+export function architectureDriftGuidance(risk={}){
+  if(!risk||clean(risk.riskLevel)==='LOW')return'';
+  const lines=['[VERIFIED ARCHITECTURE DRIFT MEMORY - observe-first]','risk='+clean(risk.riskLevel)];
+  for(const row of risk.signals||[])lines.push(row.signal+' state='+row.state+' verifiedRegressionFailures='+row.verifiedRegressionFailures+' sameGameFailures='+row.sameGameFailures);
+  lines.push('Avoid repeating correlated drift when choosing the patch shape. Run focused review for affected responsibilities. This memory is observe-first and MUST NOT expand scope or bypass canonical QA.');
+  return lines.join('\n');
+}
+export function buildCodingConstitution(stateInput={}){
+  const state=createMasteryState(stateInput);
+  const rules=[];
+  for(const [strategy,row] of Object.entries(state.codingStrategyMemory?.strategies||{})){
+    const globalApplications=Number(row.verifiedApplications||0),globalGames=Object.keys(row.games||{}).filter(Boolean).length;
+    const globalFirstPassRate=globalApplications?Number(row.firstCandidatePasses||0)/globalApplications:0;
+    if(clean(row.state)!=='PREFERRED'||globalApplications<5||globalGames<2||globalFirstPassRate<0.6)continue;
+    for(const [fingerprint,context] of Object.entries(row.failureFingerprints||{})){
+      const apps=Number(context.verifiedApplications||0),failures=Number(context.verifiedFailures||0),games=Object.keys(context.games||{}).filter(Boolean).length;
+      const total=apps+failures,failureRate=total?failures/total:0;
+      if(apps<3||games<2||failureRate>0.25)continue;
+      rules.push({
+        id:'constitution_'+hash([strategy,fingerprint].join('|')),
+        failureFingerprint:fingerprint,
+        strategy,
+        state:'PREFERRED',
+        globalVerifiedApplications:globalApplications,
+        contextualVerifiedApplications:apps,
+        globalGameCount:globalGames,
+        contextualGameCount:games,
+        firstCandidatePassRatePct:Number((globalFirstPassRate*100).toFixed(1)),
+        contextualFailureRatePct:Number((failureRate*100).toFixed(1)),
+        advisoryOnly:true,
+        authorityExpanded:false
+      });
+    }
+  }
+  rules.sort((a,b)=>b.contextualVerifiedApplications-a.contextualVerifiedApplications||b.globalVerifiedApplications-a.globalVerifiedApplications||a.id.localeCompare(b.id));
+  return{version:1,rules,lastBuiltAt:new Date().toISOString(),advisoryOnly:true,authorityExpanded:false};
+}
+export function codingConstitutionRuleForTask({task={},stateInput={}}={}){
+  const state=createMasteryState(stateInput);
+  const fingerprint=failureFingerprintForTask(task);
+  const constitution=state.codingConstitution?.rules?.length?normalizeCodingConstitution(state.codingConstitution):buildCodingConstitution(state);
+  const rows=(constitution.rules||[]).filter(row=>row.failureFingerprint===fingerprint&&row.state==='PREFERRED');
+  rows.sort((a,b)=>b.contextualVerifiedApplications-a.contextualVerifiedApplications||b.globalVerifiedApplications-a.globalVerifiedApplications);
+  const rule=rows[0]||null;
+  return rule?{...rule,matched:true,writableScopeExpansionAllowed:false,qaBypassAllowed:false,authorityExpanded:false}:{matched:false,failureFingerprint:fingerprint,advisoryOnly:true,writableScopeExpansionAllowed:false,qaBypassAllowed:false,authorityExpanded:false};
+}
+export function codingConstitutionGuidance(rule={}){
+  if(rule?.matched!==true)return'';
+  return[
+    '[CODING CONSTITUTION - verified contextual advisory rule]',
+    'failureFingerprint='+clean(rule.failureFingerprint),
+    'preferredStrategy='+clean(rule.strategy),
+    'contextualVerifiedApplications='+Number(rule.contextualVerifiedApplications||0),
+    'contextualGameCount='+Number(rule.contextualGameCount||0),
+    'contextualFailureRatePct='+Number(rule.contextualFailureRatePct||0),
+    'Use this rule to order the coding method only. It MUST NOT expand writable scope, weaken QA, change protected gameplay/save semantics, or override owner/central policy.'
+  ].join('\n');
+}
+
 export function preferredCodingStrategyForTask({task={},stateInput={}}={}){
   const state=createMasteryState(stateInput);
   const rows=Object.entries(state.codingStrategyMemory?.strategies||{}).map(([strategy,row])=>({strategy,...row}));
@@ -1071,18 +1210,24 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const patternApplied=applyVerifiedCodePatternsToMastery(applied.state,codePatternsInput);
   const strategyApplied=applyVerifiedCodingStrategyOutcomes(patternApplied.state,queueInput);
   const calibrationApplied=applyVerifiedCodingCalibration(strategyApplied.state,queueInput);
-  const benchmark=buildBenchmarkLadder(calibrationApplied.state);
-  const idlePractice=buildIdlePracticeQueue(calibrationApplied.state);
-  const tournament=enrichQueueForCandidateTournaments(queueInput,calibrationApplied.state);
+  const driftApplied=applyVerifiedArchitectureDriftOutcomes(calibrationApplied.state,queueInput);
+  const constitution=buildCodingConstitution(driftApplied.state);
+  driftApplied.state.codingConstitution=constitution;
+  driftApplied.state.updatedAt=new Date().toISOString();
+  const benchmark=buildBenchmarkLadder(driftApplied.state);
+  const idlePractice=buildIdlePracticeQueue(driftApplied.state);
+  const tournament=enrichQueueForCandidateTournaments(queueInput,driftApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
-    state:calibrationApplied.state,
+    state:driftApplied.state,
     addedExperience:applied.added,
     addedCodePatterns:patternApplied.added,
     addedCodingStrategyOutcomes:strategyApplied.added,
     addedCodingStrategyNegativeOutcomes:strategyApplied.negativeAdded||0,
     addedCodingCalibrationOutcomes:calibrationApplied.added||0,
     addedRegressionHotspotEvents:calibrationApplied.hotspotEventsAdded||0,
+    addedArchitectureDriftOutcomes:driftApplied.added||0,
+    codingConstitutionRuleCount:constitution.rules.length,
     benchmark,
     idlePractice,
     handoffs:buildWebRobloxHandoffs(companyQueueInput,experienceInput,practice.queue,roadmapInput),
@@ -1118,6 +1263,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_CODING_STRATEGY_NEGATIVE_OUTCOMES_ADDED=${result.addedCodingStrategyNegativeOutcomes||0}`);
   console.log(`VIBE2_CODING_CALIBRATION_OUTCOMES_ADDED=${result.addedCodingCalibrationOutcomes||0}`);
   console.log(`VIBE2_REGRESSION_HOTSPOT_EVENTS_ADDED=${result.addedRegressionHotspotEvents||0}`);
+  console.log(`VIBE2_ARCHITECTURE_DRIFT_OUTCOMES_ADDED=${result.addedArchitectureDriftOutcomes||0}`);
+  console.log(`VIBE2_CODING_CONSTITUTION_RULES=${result.codingConstitutionRuleCount||0}`);
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
