@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "generation": "V3-PUMP",
   "generatedFrom": "VERIFIED_MEMORY_PLUS_LOCKED_BASE_CHECKLISTS",
   "taskTypes": {
@@ -151,6 +151,64 @@
         "knowledge-leak",
         "voice-collapse",
         "choice-without-state-consequence"
+      ],
+      "authority": "verified-task-playbook"
+    },
+    "presentation": {
+      "taskType": "presentation",
+      "checklist": [
+        "read-central-living-motion-and-audio-contracts",
+        "preserve-gameplay-save-progression-hit-semantics",
+        "modify-existing-responsible-presentation-system-directly",
+        "avoid-wrapper-shadow-presentation-pipeline",
+        "implement-only-current-presentation-pass",
+        "run-presentation-static-qa",
+        "require-runtime-mobile-qa-before-completion"
+      ],
+      "reuse": [],
+      "avoid": [
+        "gameplay-balance-drift",
+        "save-semantic-drift",
+        "animation-state-pop",
+        "unbounded-effects",
+        "input-obscuring-camera"
+      ],
+      "authority": "verified-task-playbook"
+    },
+    "vfx": {
+      "taskType": "vfx",
+      "checklist": [
+        "bind-vfx-to-existing-gameplay-impact-event",
+        "keep-effect-lifetime-bounded",
+        "preserve-danger-and-touch-readability",
+        "avoid-per-frame-transient-growth",
+        "run-mobile-clutter-and-performance-qa"
+      ],
+      "reuse": [],
+      "avoid": [
+        "unbounded-particles",
+        "effect-over-gameplay-readability",
+        "vfx-driven-gameplay-state"
+      ],
+      "authority": "verified-task-playbook"
+    },
+    "audio": {
+      "taskType": "audio",
+      "checklist": [
+        "reuse-existing-audio-owner",
+        "unlock-web-audio-after-first-user-gesture",
+        "preserve-mute-and-volume-controls",
+        "bind-impact-sound-to-existing-impact-event",
+        "use-smooth-state-transition-or-crossfade",
+        "prevent-background-resume-duplicate-playback",
+        "run-mobile-speaker-and-transition-qa"
+      ],
+      "reuse": [],
+      "avoid": [
+        "autoplay-before-user-gesture",
+        "duplicate-music-owner",
+        "resume-duplicate-playback",
+        "audio-changing-gameplay-state"
       ],
       "authority": "verified-task-playbook"
     }
