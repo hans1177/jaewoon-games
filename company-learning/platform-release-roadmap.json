@@ -1,5 +1,5 @@
 {
-  "version": 155,
+  "version": 156,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -447,9 +447,9 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
     "sourceCandidateGenerationBottleneckMitigation": {
-      "version": 3,
+      "version": 4,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "CAUSAL_FAST_PATH_WIRED_PLACEHOLDER_GUARDED_CENTRAL_REVALIDATION_REQUESTED",
+      "status": "CAUSAL_FAST_PATH_EFFECTIVENESS_VERIFIED_SPEED_OPTIMIZATION_VALIDATING",
       "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
       "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
@@ -458,15 +458,14 @@
       "minifiedLongLineAnchorFallback": true,
       "focusedAnchorContextRadiusChars": 1400,
       "baselineSuccessRatePercent": 25,
-      "latestDiagnosticRun": 35475020163,
-      "latestDiagnosticSuccessRatePercent": 33.33,
+      "latestDiagnosticRun": 35476177742,
+      "latestDiagnosticSuccessRatePercent": 80,
       "latestDiagnosticFailureClasses": {
-        "EDIT_MATCH": 5,
-        "TIMEOUT": 1
+        "MALFORMED_OUTPUT": 4
       },
-      "diagnosticRunIsClean20Wave": false,
-      "currentEvaluationRun": 35475446210,
-      "clean20WaveRequiredForEffectivenessDecision": true,
+      "diagnosticRunIsClean20Wave": true,
+      "currentEvaluationRun": 35476818311,
+      "clean20WaveRequiredForEffectivenessDecision": false,
       "sourceCommit": "f9fab12ef9f26a7c2dad425bf4f611d493954fa3",
       "testCommits": [
         "7aec400eb5e46e01978c683585e35f8f383c145e",
@@ -528,7 +527,60 @@
         },
         "centralPolicyContract": {
           "state": "RETRIGGERED_BY_THIS_DOCUMENT_SYNC_AFTER_GAME_RESTORE"
+        },
+        "vibe2CoreQa": {
+          "runId": 35476535607,
+          "conclusion": "success",
+          "head": "a066a13071bbefbc195edcde6e2b39c834330ddd"
         }
+      },
+      "verifiedEffectivenessWave": {
+        "runId": 35476177742,
+        "contractSha": "5aedde856690c89e72252fcaedcbcd88c6f9fa8d",
+        "candidateCount": 25,
+        "peakParallel": 20,
+        "cacheHitRatePercent": 100,
+        "baselineSuccessRatePercent": 25,
+        "observedSuccessRatePercent": 80,
+        "observedFailureRatePercent": 20,
+        "sourceGenerationFailures": 4,
+        "sourceGenerationFailureClasses": {
+          "MALFORMED_OUTPUT": 4
+        },
+        "editMatchFinalFailures": 0,
+        "fullRewriteSizeFinalFailures": 0,
+        "fanIn": "PASS",
+        "regression": "PASS",
+        "releaseCandidates": 7,
+        "packageCycleAverageMs": 470094.11,
+        "preparationRatioPercent": 2.54,
+        "workloadFeaturesCompleted": 7,
+        "workloadChangedFiles": 21,
+        "workloadChangedLines": 54,
+        "telemetryBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
+        "observedLongRunningWorkerStage": "SOURCE_CANDIDATE_GENERATION",
+        "clean20ConcurrencyWaveSatisfied": true,
+        "effectivenessDecision": "PASS_ABOVE_25_PERCENT_BASELINE"
+      },
+      "firstCompleteEditEarlyStop": {
+        "enabled": true,
+        "sourceCommit": "9e07112fb9a49bad49328981a00a01d8eaddf845",
+        "testCommit": "179d4de63a0759c864db39d3099c20ecbae2ae80",
+        "telemetryCommit": "72e35fb9ff24d4e91f7bd1a72e813d22f932a7e1",
+        "contractTestAlignmentCommit": "a066a13071bbefbc195edcde6e2b39c834330ddd",
+        "mode": "RESPONSIBILITY_SELECTED_FIRST_COMPLETE_EDIT_EARLY_STOP",
+        "timeoutBudgetShortened": false,
+        "targetSelectionPreserved": true,
+        "evaluationRun": 35476818311,
+        "evaluationContractSha": "58d1030ff2e09b968acdbf59eeca487c560d6519"
+      },
+      "reserveQaOptimization": {
+        "duplicateFullRegressionRemoved": true,
+        "workflowCommit": "8de42ed22bead6feae8ffee915968b2264d15fd7",
+        "controllerSchemaTestCommit": "d8a00253f6d3fed5c3ae7f707fbe376ab8942e28",
+        "queuePolicyTestCommit": "cd1274152c27d5e858cbfbc674322ae73217b378",
+        "reservePreflight": "SYNTAX_AND_MACHINE_STATE_ONLY",
+        "fullCoreRegression": "FAN_IN_ONLY"
       }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
