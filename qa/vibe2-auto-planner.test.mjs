@@ -174,8 +174,8 @@ test('cancelled exact Web base task is restored when company runtime still requi
   const stale={
     id:`${gameId}-web-base-implementation-v1`,gameId,target:'web',department:'development',type:'implementation',
     sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'[WEB_BASE_IMPLEMENTATION] source bootstrap',
-    releaseState:'development-confirmed',status:'cancelled',retries:0,maxRetries:2,blocker:'superseded-by:VIBE_WEB_REPAIR',
-    evidence:['source-root-bootstrap-required','superseded-by:VIBE_WEB_REPAIR']
+    releaseState:'development-confirmed',status:'cancelled',retries:0,maxRetries:2,blocker:'production-authority-inactive:DESIGN_ONLY',
+    evidence:['source-root-bootstrap-required','production-authority-sync:DESIGN_ONLY']
   };
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
@@ -188,6 +188,7 @@ test('cancelled exact Web base task is restored when company runtime still requi
   assert.equal(restored.blocker,null);
   assert.equal(restored.lastOutcome,'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION');
   assert.ok(restored.evidence.includes('restored-exact-stage:WEB_BASE_IMPLEMENTATION'));
+  assert.ok(restored.evidence.includes('restored-from:production-authority-inactive:DESIGN_ONLY'));
 });
 
 test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source into one exact-stage repair task',()=>{
@@ -519,4 +520,25 @@ test('creative rebuild receives verified multi-project transformative recombinat
   assert.equal(result.task.evidence.includes('recombination-recipe:recombine-demo'),true);
   assert.equal(result.task.evidence.includes('recombination-copy-mode:NO'),true);
   assert.equal(result.task.evidence.includes('recombination-original-modifier-required:YES'),true);
+});
+
+
+test('stale runtime repair state cannot reopen source work when catalog authority is no longer development confirmed',()=>{
+  const root=tempRepo();
+  const gameId='stale-runtime-state';
+  const stale={
+    id:`${gameId}-web-base-implementation-v1`,gameId,target:'web',department:'development',type:'implementation',
+    sourceRoot:`web-games/${gameId}`,responsibleFiles:[`web-games/${gameId}/index.html`],goal:'[WEB_BASE_IMPLEMENTATION] old bootstrap',
+    releaseState:'development-confirmed',status:'cancelled',retries:0,maxRetries:2,blocker:'production-authority-inactive:DESIGN_ONLY',
+    evidence:['source-root-bootstrap-required']
+  };
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Stale Runtime State',productionClass:'DESIGN_ONLY',homepageCategory:'design-only',lifecycleState:'ACTIVE'}]},
+    developmentQueue:{items:[{gameId,gameName:'Stale Runtime State',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`}]},
+    queue:{maxConcurrentTasks:20,tasks:[stale]},repoRoot:root,maxConcurrentTasks:20
+  });
+  const preserved=result.queue.tasks.find(row=>row.id===stale.id);
+  assert.equal(preserved.status,'cancelled');
+  assert.equal(preserved.blocker,'production-authority-inactive:DESIGN_ONLY');
 });
