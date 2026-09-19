@@ -1,0 +1,189 @@
+{
+  "version": 5,
+  "gameId": "crystal-defense",
+  "date": "2026-09-19",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "gameSeedId": "OWNER-ENROLL-CRYSTAL-DEFENSE-20260913",
+  "authorRole": "DESIGN_AUTHOR_CHECKPOINT",
+  "authorModel": "gemini:gemini-3.5-flash-lite",
+  "sameModelAsDraft": true,
+  "appliedConsensusCount": 0,
+  "unresolvedConflictCount": 0,
+  "heldCount": 0,
+  "status": "DESIGN_BASELINE_CANDIDATE",
+  "content": {
+    "identity": "수정 디펜스는 중앙의 수정을 보호하기 위해 공명 타워를 배치하고 연결하여 강력한 에너지 체인을 구축하는 전략 디펜스 게임입니다. 기존의 고정된 타워 배치와 달리, 타워 간의 연결을 통해 공격 범위를 확장하고 데미지를 증폭시키는 독창적인 공명 시스템을 핵심으로 합니다. 플레이어는 매 웨이브마다 변화하는 적의 경로와 속성에 맞춰 타워를 재배치하고, 한정된 자원을 효율적으로 사용하여 최적의 방어망을 설계하는 전략적 선택을 반복하게 됩니다.",
+    "playerFantasy": "플레이어는 고대 수정의 마지막 수호자인 '수정 건축가'가 되어, 몰려오는 적들로부터 수정을 지켜내는 역할을 수행합니다. 타워를 전략적으로 배치하고 연결하여 화려한 에너지 공명 효과를 만들어내며, 자신의 설계가 적들을 순식간에 소멸시키는 것을 보며 전술적 성취감을 느낍니다.",
+    "coreFun": "핵심 재미는 '공명 퍼즐'에 있습니다. 플레이어는 적의 이동 경로를 관찰하고 타워를 배치하여 에너지 체인을 형성합니다. 타워가 연결될 때 발생하는 즉각적인 시각적 피드백과 적들이 체인에 닿아 파괴되는 상태 변화를 통해, 자신의 전략이 성공했음을 즉각적으로 확인하고 다음 웨이브를 위한 더 나은 배치를 고민하게 됩니다.",
+    "coreLoop": [
+      "다가오는 적의 웨이브 패턴과 이동 경로를 분석하여 방어 전략을 수립합니다.",
+      "보유한 에너지 자원을 사용하여 타워를 배치하고 공명 체인을 연결하여 방어망을 구축합니다.",
+      "웨이브를 시작하여 적을 처치하고, 획득한 에너지 파편을 사용하여 타워 업그레이드 및 새로운 공명 유형을 잠금 해제합니다."
+    ],
+    "signatureSystems": [
+      {
+        "name": "공명 체인 시스템",
+        "purpose": "타워 간의 연결을 통해 공격력을 증폭시키고 방어 범위를 동적으로 확장하여 전략적 깊이를 제공합니다.",
+        "playerChoice": "플레이어는 여러 개의 짧은 독립적인 체인을 만들어 넓은 범위를 커버할지, 아니면 하나의 긴 체인을 만들어 강력한 보스 적을 처치할지 선택해야 합니다."
+      },
+      {
+        "name": "수정 에너지 경제",
+        "purpose": "한정된 자원을 통해 즉각적인 방어와 장기적인 성장을 선택하게 하여 게임의 긴장감을 유지합니다.",
+        "playerChoice": "플레이어는 현재 웨이브를 막기 위해 타워를 추가로 배치할지, 아니면 미래의 웨이브를 위해 타워의 성능을 영구적으로 업그레이드할지 결정해야 합니다."
+      }
+    ],
+    "systemInterconnections": [
+      {
+        "fromSystem": "공명 체인 시스템",
+        "toSystem": "수정 에너지 경제",
+        "trigger": "적들이 공명 체인에 의해 처치됨",
+        "stateChange": "에너지 파편 드랍률이 증가하여 플레이어의 자원 획득 속도가 빨라짐"
+      },
+      {
+        "fromSystem": "수정 에너지 경제",
+        "toSystem": "공명 체인 시스템",
+        "trigger": "플레이어가 타워 업그레이드를 구매함",
+        "stateChange": "타워의 연결 가능 거리나 데미지 배율이 상승하여 방어 효율이 강화됨"
+      },
+      {
+        "fromSystem": "웨이브 관리 시스템",
+        "toSystem": "공명 체인 시스템",
+        "trigger": "새로운 웨이브가 시작되어 적의 속성이 변경됨",
+        "stateChange": "플레이어는 기존의 체인 배치를 수정하거나 새로운 타워를 배치하여 대응해야 함"
+      }
+    ],
+    "progressionDirection": "플레이어는 초기 단계에서 기본적인 타워 배치와 연결을 배우고, 점차 다양한 속성을 가진 타워와 복잡한 맵 구조를 경험하게 됩니다. 성장은 새로운 타워 유형의 해금과 기존 타워의 업그레이드 경로를 통해 이루어지며, 후반부로 갈수록 더 정교한 공명 체인 설계가 요구되는 난이도 곡선을 가집니다.",
+    "progressionEconomyBalance": {
+      "progressionLoop": "웨이브 클리어 -> 자원 획득 -> 타워 업그레이드 및 신규 타워 해금 -> 더 어려운 웨이브 도전의 순환 구조를 가집니다.",
+      "resourceFlow": "적 처치를 통해 얻는 에너지 파편은 타워 배치 비용과 업그레이드 비용으로 사용되며, 웨이브가 진행될수록 획득량과 소모량이 함께 증가합니다.",
+      "balanceRules": "웨이브 난이도 상승폭에 맞춰 타워의 업그레이드 효율을 조정하여, 플레이어가 항상 자원 관리의 압박을 느끼면서도 성장의 재미를 경험하도록 설계합니다."
+    },
+    "contentExpansionPlan": [
+      {
+        "milestone": "원소 공명 타워 및 속성 시너지 시스템 확장",
+        "newGameplay": "불, 얼음, 번개 속성을 가진 타워를 배치하여 인접한 타워와 공명 시 추가 데미지나 상태 이상 효과를 부여하는 속성 조합 전략을 도입합니다.",
+        "systemImpact": "기존의 단순 연결 기반 공명 시스템에 속성 타입 체크 로직과 시너지 계산 모듈이 추가되어 타워 배치 시 고려해야 할 전략적 변수가 대폭 증가합니다."
+      },
+      {
+        "milestone": "동적 맵 환경 및 장애물 상호작용 도입",
+        "newGameplay": "맵 내에 주기적으로 위치가 변경되는 장애물을 배치하여 플레이어가 기존에 구축한 공명 체인 경로를 실시간으로 수정하고 재배치해야 하는 상황을 유도합니다.",
+        "systemImpact": "타워 배치 로직에 실시간 경로 탐색 및 장애물 회피 알고리즘이 통합되어 방어망 설계의 난이도와 유연성이 시스템적으로 강화됩니다."
+      },
+      {
+        "milestone": "무한 도전 모드 및 경제 밸런스 확장",
+        "newGameplay": "끝없이 몰려오는 적의 웨이브를 상대로 얼마나 오래 버티는지 겨루는 서바이벌 모드를 추가하여, 고레벨 타워 업그레이드와 자원 관리의 한계를 시험합니다.",
+        "systemImpact": "기존 경제 시스템에 무한 모드 전용 자원 획득 곡선과 타워 업그레이드 비용 스케일링 로직이 추가되어 장기적인 플레이 세션의 밸런스를 재조정합니다."
+      }
+    ],
+    "failureRetryRisk": {
+      "failureStates": [
+        "중앙 수정의 체력이 0이 됨",
+        "웨이브 제한 시간을 초과하여 적이 수정을 파괴함"
+      ],
+      "retryFlow": "실패 시 즉시 현재 웨이브를 재시작할 수 있으며, 이전 웨이브에서 획득한 자원의 일부를 보존하여 재도전의 부담을 줄입니다.",
+      "riskPressure": "적의 물량과 속도가 점진적으로 증가하여, 효율적인 타워 배치를 하지 않으면 자원이 고갈되어 방어에 실패하게 됩니다.",
+      "recoveryRules": "플레이어는 웨이브 도중에도 타워를 판매하여 자원을 일부 회복할 수 있으며, 이를 통해 잘못된 배치를 즉각적으로 수정할 수 있습니다."
+    },
+    "platformFitPlan": {
+      "targetPlatform": "ROBLOX",
+      "inputModel": "터치 및 클릭을 통한 직관적인 타워 배치와 드래그를 통한 타워 간 연결 방식을 채택합니다.",
+      "performanceBudget": "모바일 환경을 고려하여 타워와 적의 개체 수를 최적화하고, 공명 효과는 셰이더를 사용하여 부하를 최소화합니다.",
+      "sessionConstraints": "한 웨이브당 3~5분 내외로 구성하여 모바일 환경에서 짧고 강렬한 플레이 경험을 제공합니다."
+    },
+    "visualDirection": "깔끔하고 미니멀한 로우 폴리곤 스타일을 채택하여 타워와 적의 구분을 명확히 하고, 공명 체인은 화려한 네온 효과를 사용하여 시각적 만족감을 극대화합니다.",
+    "mobileUx": "모든 UI 요소는 엄지손가락이 닿기 쉬운 화면 하단에 배치하고, 타워 배치 시 그리드 가이드를 제공하여 모바일 환경에서도 정밀한 조작이 가능하도록 합니다.",
+    "uxAccessibilityPlan": {
+      "hudPriorities": "현재 에너지 잔량, 다음 웨이브 정보, 수정 체력을 최우선으로 표시합니다.",
+      "touchAndInput": "드래그 앤 드롭 방식을 기본으로 하며, 실수 방지를 위해 배치 취소 버튼을 항상 노출합니다.",
+      "readability": "색약 모드를 지원하여 공명 체인의 속성을 색상뿐만 아니라 패턴으로도 구분할 수 있게 합니다.",
+      "accessibility": "게임 속도 조절 기능을 제공하여 반응 속도가 느린 플레이어도 전략을 충분히 고민할 수 있도록 합니다."
+    },
+    "artAudioDirection": {
+      "visualIdentity": "기하학적인 형태의 타워와 수정, 그리고 에너지가 흐르는 듯한 네온 스타일의 이펙트를 사용하여 미래지향적인 분위기를 조성합니다.",
+      "audioIdentity": "타워가 연결될 때마다 경쾌한 전자음이 추가되어 화음을 이루는 사운드 디자인을 적용합니다.",
+      "gameplayFeedbackSync": "적 처치 시 발생하는 타격음과 공명 체인 활성화 시의 효과음을 동기화하여 플레이어의 행동에 즉각적인 청각적 보상을 제공합니다."
+    },
+    "marketTargetDirection": "전략 디펜스 장르를 선호하는 글로벌 모바일 게이머를 타겟으로 하며, 특히 짧은 세션 내에서 성취감을 느끼고 싶은 캐주얼 전략 플레이어를 주 고객층으로 합니다.",
+    "steamExpansionDecision": "모바일 버전의 성공 이후, 더 정교한 컨트롤과 고해상도 그래픽을 지원하는 PC 버전으로의 확장을 고려합니다.",
+    "multiplayerMode": "SINGLE",
+    "multiplayerExpansionDecision": "현재는 싱글 플레이어 경험에 집중하며, 향후 협동 모드나 경쟁 모드 도입 여부는 커뮤니티 피드백을 바탕으로 결정합니다.",
+    "technicalAssumptions": [
+      "타워 간의 연결 상태를 관리하기 위해 그래프 데이터 구조를 사용하여 효율적인 경로 탐색을 구현합니다.",
+      "모바일 기기의 성능을 고려하여 오브젝트 풀링 기법을 사용하여 타워와 적 개체를 관리합니다."
+    ],
+    "validationQuestions": [
+      "플레이어가 타워를 배치할 때 공명 효과를 직관적으로 이해하고 전략적으로 활용하는가?",
+      "웨이브 난이도와 자원 획득량의 밸런스가 플레이어에게 적절한 도전과 성취감을 제공하는가?"
+    ],
+    "implementationTraceability": [
+      {
+        "designElement": "원소 공명 체인 시스템 구현",
+        "responsibleSystem": "그래프 기반 연결 로직 및 속성 시너지 엔진",
+        "validationEvidence": "다양한 속성 타워 배치 시나리오에서 체인 연결이 의도한 속성 보너스를 정확히 계산하는지 단위 테스트와 시뮬레이션을 통해 검증합니다."
+      },
+      {
+        "designElement": "동적 맵 장애물 관리 시스템",
+        "responsibleSystem": "웨이브 스포너 및 실시간 경로 탐색기",
+        "validationEvidence": "장애물 이동 시 타워의 연결이 끊어지거나 재연결되는 과정을 로그로 추적하여, 경로 탐색 알고리즘이 최적의 효율을 유지하는지 확인합니다."
+      },
+      {
+        "designElement": "수정 에너지 경제 밸런싱",
+        "responsibleSystem": "자원 관리 및 업그레이드 비용 스케일러",
+        "validationEvidence": "30분 이상의 플레이 세션 데이터를 수집하여 자원 획득과 소모의 흐름을 시뮬레이션하고, 경제 밸런스가 무너지지 않는지 통계적으로 분석합니다."
+      }
+    ],
+    "openQuestions": [
+      "공명 체인의 최대 길이를 제한하는 것이 전략적 다양성을 높이는가?",
+      "플레이어가 직접 타워의 속성을 커스터마이징할 수 있는 기능을 추가할 것인가?"
+    ],
+    "robloxBuildProfile": {
+      "version": 1,
+      "targetPlatform": "ROBLOX",
+      "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "declaredGameCategory": "SINGLE_DEFENSE_STRATEGY",
+      "genre": "Obby & platformer",
+      "genreLabelKo": "오비·플랫포머",
+      "subgenre": "Tower Obby",
+      "subgenreLabelKo": "타워 오비",
+      "playMode": "SINGLE",
+      "playModeLabelKo": "싱글",
+      "multiplayerRequired": false,
+      "coopImplementationRequired": false,
+      "competitiveImplementationRequired": false,
+      "networkingRequired": false,
+      "multiplayerQaRequired": false,
+      "minimumParticipantsForRequiredQa": 1,
+      "displayLabelKo": "오비·플랫포머 · 타워 오비 · 싱글"
+    }
+  },
+  "recovery": {
+    "source": "design-checkpoint.json",
+    "checkpointFingerprint": "b71a873982985c39801677b3c68c4f22717ab8a09a0c4f9ec01e771d63487bed",
+    "deterministicPhase": "deterministic_pre_gate_after_repair_1",
+    "deterministicScore": 80,
+    "deterministicPassMinimum": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": [],
+    "appliedRepairs": [
+      "designer_pre_gate_repair_1"
+    ],
+    "aiReviewUsed": false,
+    "aiVerdictUsed": false,
+    "materializedAt": "2026-09-19T03:35:56.033Z"
+  },
+  "prePromotionRepair": {
+    "phase": "PRE_REVIEW",
+    "repairs": [
+      {
+        "field": "robloxBuildProfile",
+        "source": "GAME_SEED+REVISED_DESIGN+ROBLOX_GENRE_TAXONOMY"
+      }
+    ],
+    "groundedOnly": true,
+    "legacyMultiplayerNormalization": false,
+    "strictScoreOrVerdictModified": false,
+    "repairedAt": "2026-09-19T03:35:56.120Z"
+  }
+}
