@@ -278,95 +278,9 @@ jobs:
           ollama pull "$VIBE2_LOCAL_MODEL"
           echo 'VIBE2_MODEL_PREWARM=PASS'
 
-  exploration:
-    needs: reserve
-    if: needs.reserve.outputs.exploration_count != '0'
-    runs-on: ubuntu-latest
-    timeout-minutes: 8
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.reserve.outputs.exploration_matrix) }}
-    steps:
-      - name: Checkout Vibe2 control line
-        uses: actions/checkout@v4
-        with:
-          ref: vibe2-unreal-core
-          fetch-depth: 1
-
-      - name: Checkout pinned main contract
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ needs.reserve.outputs.contract_sha }}
-          path: vibe2-contract
-          fetch-depth: 1
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      - name: Build exploration work order
-        id: order
-        continue-on-error: true
-        env:
-          TASK_ID: ${{ matrix.taskId }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
-          node "$contract_root/tools/vibe2-continuous-runner.mjs" \
-            --runtime="$contract_root/vibe2-runtime.json" \
-            --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \
-            --control="$GITHUB_WORKSPACE/.vibe2/parallelism-control.json" \
-            --experience="$GITHUB_WORKSPACE/.vibe2/experience.json" \
-            --project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json" \
-            --task-id="$TASK_ID" \
-            --output=/tmp/vibe2-work-order.json
-          node <<'NODE'
-          const fs=require('fs');
-          const x=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${x.run?'true':'false'}\nroute=${x.executionRoute||''}\n`);
-          NODE
-
-      - name: Explore pinned main contract read-only
-        id: explore
-        continue-on-error: true
-        if: steps.order.outcome == 'success' && steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
-        env:
-          TASK_ID: ${{ matrix.taskId }}
-          SAFE_TASK: ${{ matrix.safeTask }}
-          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
-          base_sha="$CONTRACT_SHA"
-          test -n "$base_sha"
-          test "$(git -C "$contract_root" rev-parse HEAD)" = "$base_sha"
-          explore_dir="/tmp/vibe2-explore-${SAFE_TASK}-${GITHUB_RUN_ID}"
-          git -C "$contract_root" worktree add --detach "$explore_dir" "$base_sha"
-          mkdir -p "$explore_dir/.vibe2"
-          cp /tmp/vibe2-work-order.json "$explore_dir/.vibe2/work-order.json"
-          cd "$explore_dir"
-          export VIBE2_BASE_MAIN_SHA="$base_sha"
-          node "$contract_root/tools/vibe2-exploration-worker.mjs" \
-            --order=.vibe2/work-order.json \
-            --output=/tmp/vibe2-exploration.json | tee /tmp/vibe2-exploration.log
-          test -s /tmp/vibe2-exploration.json
-          echo 'VIBE2_EXPLORATION_ROLE=PASS'
-          echo 'VIBE2_EXPLORATION_SOURCE_WRITE=NO'
-
-      - name: Upload reusable exploration handoff
-        if: steps.explore.outcome == 'success'
-        uses: actions/upload-artifact@v4
-        with:
-          name: vibe2-exploration-${{ matrix.safeTask }}
-          path: /tmp/vibe2-exploration.json
-          if-no-files-found: error
-          retention-days: 1
-
   worker:
-    needs: [reserve, model_cache, exploration]
-    if: always() && needs.reserve.outputs.worker_count != '0' && needs.exploration.result == 'success'
+    needs: [reserve, model_cache]
+    if: always() && needs.reserve.outputs.worker_count != '0'
     runs-on: ubuntu-latest
     timeout-minutes: 22
     strategy:
@@ -525,12 +439,32 @@ jobs:
           echo 'VIBE2_PRACTICE_PRODUCTION_PASS=NO'
           echo 'VIBE2_PRACTICE_RAW_CANDIDATE_PERSISTED=NO'
 
-      - name: Download reusable exploration handoff
+      - name: Build task-local exploration handoff
+        id: local_exploration
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
-        uses: actions/download-artifact@v4
-        with:
-          name: vibe2-exploration-${{ matrix.safeTask }}
-          path: /tmp/vibe2-exploration
+        env:
+          TASK_ID: ${{ steps.order.outputs.task_id }}
+          SAFE_TASK: ${{ matrix.safeTask }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          base_sha="$CONTRACT_SHA"
+          test -n "$base_sha"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$base_sha"
+          explore_dir="/tmp/vibe2-worker-explore-${SAFE_TASK}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          git -C "$contract_root" worktree add --detach "$explore_dir" "$base_sha"
+          mkdir -p "$explore_dir/.vibe2" /tmp/vibe2-exploration
+          cp /tmp/vibe2-work-order.json "$explore_dir/.vibe2/work-order.json"
+          cd "$explore_dir"
+          export VIBE2_BASE_MAIN_SHA="$base_sha"
+          node "$contract_root/tools/vibe2-exploration-worker.mjs" \
+            --order=.vibe2/work-order.json \
+            --output=/tmp/vibe2-exploration/vibe2-exploration.json | tee /tmp/vibe2-exploration.log
+          test -s /tmp/vibe2-exploration/vibe2-exploration.json
+          echo 'VIBE2_TASK_LOCAL_EXPLORATION=PASS'
+          echo "VIBE2_BASE_MAIN_SHA=$base_sha"
 
       - name: Verify free execution budget
         if: steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
