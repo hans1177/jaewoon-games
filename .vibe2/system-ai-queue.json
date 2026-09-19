@@ -290,6 +290,360 @@
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
       "updatedAt": "2026-09-19T05:28:49.088Z"
+    },
+    {
+      "id": "sys-verify-web-bootstrap-signal-v1",
+      "priority": "high",
+      "goal": "Independently verify the Web bootstrap expected-signal contract after the signal-routing implementation is accepted. Add a focused black-box contract test that proves VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_BASE_IMPLEMENTATION:SOURCE_MISSING and VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_REPAIR:* remain actionable control signals, while unrelated bootstrap exceptions remain real failures. Do not modify implementation files.",
+      "responsibleFiles": [
+        "qa/company-web-bootstrap-signal-classifier.test.mjs"
+      ],
+      "contextFiles": [
+        "tools/company-development-web-bootstrap.mjs",
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "acceptanceCriteria": [
+        "expected implementation-required signals are explicitly distinguishable from unexpected failures",
+        "test is independent of worker self-assessment",
+        "no production implementation files changed"
+      ],
+      "verificationCommands": [
+        "node --test qa/company-web-bootstrap-signal-classifier.test.mjs"
+      ],
+      "dependencies": [
+        "sys-web-bootstrap-signal-routing-v1"
+      ],
+      "status": "queued",
+      "department": "system-supervision",
+      "type": "independent-verification",
+      "focusPatterns": {},
+      "retries": 0,
+      "maxRetries": 2,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "primary-ai-recruitment:focused-web-bottleneck",
+        "worker-role:independent-verifier"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:32:24.208Z",
+      "updatedAt": "2026-09-19T05:32:24.208Z"
+    },
+    {
+      "id": "sys-verify-vibe-planner-repair-fixtures-v1",
+      "priority": "high",
+      "goal": "Independently verify Vibe planner handling of WEB_VIBE_REPAIR_REQUIRED and missing Web source states after the planner implementation is accepted. Create fixture-driven tests for repair task creation, missing-root bootstrap evidence, exact-stage preservation, and duplicate suppression. Do not modify planner implementation.",
+      "responsibleFiles": [
+        "qa/vibe2-planner-web-repair-fixtures.test.mjs"
+      ],
+      "contextFiles": [
+        "tools/vibe2-auto-planner.mjs",
+        "qa/vibe2-auto-planner.test.mjs",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "acceptanceCriteria": [
+        "repair fixture yields one actionable task",
+        "missing root fixture requires explicit bootstrap evidence",
+        "duplicate planning yields no duplicate task",
+        "exact failure stage is preserved"
+      ],
+      "verificationCommands": [
+        "node --test qa/vibe2-planner-web-repair-fixtures.test.mjs"
+      ],
+      "dependencies": [
+        "sys-vibe-planner-web-repair-routing-v1"
+      ],
+      "status": "queued",
+      "department": "system-supervision",
+      "type": "independent-verification",
+      "focusPatterns": {},
+      "retries": 0,
+      "maxRetries": 2,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "primary-ai-recruitment:focused-web-bottleneck",
+        "worker-role:independent-verifier"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:32:24.208Z",
+      "updatedAt": "2026-09-19T05:32:24.208Z"
+    },
+    {
+      "id": "sys-verify-source-bootstrap-safety-v1",
+      "priority": "high",
+      "goal": "Independently verify the Vibe Web source bootstrap boundary after the source-worker implementation is accepted. Add contract tests proving authorized candidate-only creation is bounded to assigned index.html, unauthorized source-root creation is rejected, existing-source repair remains responsible-file bounded, and direct main writes remain forbidden.",
+      "responsibleFiles": [
+        "qa/vibe2-web-bootstrap-boundary-contract.test.mjs"
+      ],
+      "contextFiles": [
+        "tools/vibe2-source-worker.mjs",
+        "tools/vibe2-continuous-runner.mjs",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "acceptanceCriteria": [
+        "candidate-only bootstrap invariant is tested",
+        "unauthorized bootstrap rejection is tested",
+        "responsible-file boundary is tested",
+        "direct-main-write prohibition is tested"
+      ],
+      "verificationCommands": [
+        "node --test qa/vibe2-web-bootstrap-boundary-contract.test.mjs"
+      ],
+      "dependencies": [
+        "sys-vibe-web-source-bootstrap-boundary-v1"
+      ],
+      "status": "queued",
+      "department": "system-supervision",
+      "type": "independent-verification",
+      "focusPatterns": {},
+      "retries": 0,
+      "maxRetries": 2,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "primary-ai-recruitment:focused-web-bottleneck",
+        "worker-role:independent-verifier"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:32:24.208Z",
+      "updatedAt": "2026-09-19T05:32:24.208Z"
+    },
+    {
+      "id": "sys-verify-web-handoff-e2e-second-opinion-v1",
+      "priority": "high",
+      "goal": "Provide a second independent end-to-end verifier after the first E2E verifier is accepted. Validate bootstrap signal -> workflow routing -> development queue state -> planner task -> candidate-only Vibe source worker -> QA/regression chain. Fail if any stage becomes a generic terminal web-gameplay-music dead end.",
+      "responsibleFiles": [
+        "qa/company-web-vibe-handoff-second-opinion.test.mjs"
+      ],
+      "contextFiles": [
+        "tools/company-development-web-bootstrap.mjs",
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        "tools/vibe2-auto-planner.mjs",
+        "tools/vibe2-continuous-runner.mjs",
+        "tools/vibe2-source-worker.mjs",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "acceptanceCriteria": [
+        "full handoff chain is independently checked",
+        "generic dead-end routing is forbidden",
+        "candidate-only safety and QA/regression presence are asserted"
+      ],
+      "verificationCommands": [
+        "node --test qa/company-web-vibe-handoff-second-opinion.test.mjs"
+      ],
+      "dependencies": [
+        "sys-web-vibe-handoff-e2e-contract-v1",
+        "sys-web-bootstrap-signal-routing-v1",
+        "sys-vibe-planner-web-repair-routing-v1",
+        "sys-vibe-web-source-bootstrap-boundary-v1"
+      ],
+      "status": "queued",
+      "department": "system-supervision",
+      "type": "independent-verification",
+      "focusPatterns": {},
+      "retries": 0,
+      "maxRetries": 2,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "primary-ai-recruitment:focused-web-bottleneck",
+        "worker-role:independent-verifier"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:32:24.208Z",
+      "updatedAt": "2026-09-19T05:32:24.208Z"
+    },
+    {
+      "id": "sys-verify-web-strict-gate-integrity-v1",
+      "priority": "normal",
+      "goal": "Verify that fixes for the common Web bottleneck do not weaken strict review, runtime validation, gameplay validation, regression, or promotion gates. Add a machine contract test that inspects central policy and workflows for all required gates and fails if any are bypassed or changed to unconditional pass.",
+      "responsibleFiles": [
+        "qa/company-web-strict-gate-integrity.test.mjs"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        "tools/company-development-web-bootstrap.mjs"
+      ],
+      "acceptanceCriteria": [
+        "strict/runtime/gameplay/regression/promotion gates are all asserted",
+        "no catch-and-ignore or fake pass pattern is accepted",
+        "central gate thresholds remain referenced"
+      ],
+      "verificationCommands": [
+        "node --test qa/company-web-strict-gate-integrity.test.mjs"
+      ],
+      "dependencies": [
+        "sys-web-bootstrap-signal-routing-v1"
+      ],
+      "status": "queued",
+      "department": "system-supervision",
+      "type": "independent-verification",
+      "focusPatterns": {},
+      "retries": 0,
+      "maxRetries": 2,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "primary-ai-recruitment:focused-web-bottleneck",
+        "worker-role:independent-verifier"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:32:24.208Z",
+      "updatedAt": "2026-09-19T05:32:24.208Z"
+    },
+    {
+      "id": "sys-verify-development-queue-transition-v1",
+      "priority": "normal",
+      "goal": "Verify development queue state transitions for the repaired Web path. Add tests that ensure WEB_VIBE_REPAIR_REQUIRED transitions only through actionable Vibe work, successful repair resumes the exact failed validation stage, and stale generic web-gameplay-music blockers cannot override newer raw success evidence.",
+      "responsibleFiles": [
+        "qa/company-development-queue-web-transition.test.mjs"
+      ],
+      "contextFiles": [
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        "tools/vibe2-auto-planner.mjs",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "acceptanceCriteria": [
+        "repair-required state has actionable transition",
+        "exact-stage resume is asserted",
+        "stale blocker cannot override current success evidence"
+      ],
+      "verificationCommands": [
+        "node --test qa/company-development-queue-web-transition.test.mjs"
+      ],
+      "dependencies": [
+        "sys-web-bootstrap-signal-routing-v1",
+        "sys-vibe-planner-web-repair-routing-v1"
+      ],
+      "status": "queued",
+      "department": "system-supervision",
+      "type": "independent-verification",
+      "focusPatterns": {},
+      "retries": 0,
+      "maxRetries": 2,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "primary-ai-recruitment:focused-web-bottleneck",
+        "worker-role:independent-verifier"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:32:24.208Z",
+      "updatedAt": "2026-09-19T05:32:24.208Z"
+    },
+    {
+      "id": "sys-verify-web-platform-handoff-v1",
+      "priority": "normal",
+      "goal": "Verify that a Web game which clears repaired validation remains eligible for both Roblox and Unity downstream consumers according to the equal-first-tier central contract. Add a contract test for required web-to-platform handoff fields and consumer presence; do not alter release policy.",
+      "responsibleFiles": [
+        "qa/company-web-platform-handoff-contract.test.mjs"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        ".github/workflows/company-development-roblox-runtime.yml",
+        ".github/workflows/company-development-unity-runtime.yml",
+        ".github/workflows/company-development-confirmed-runtime.yml"
+      ],
+      "acceptanceCriteria": [
+        "Roblox and Unity downstream consumer contracts are both asserted",
+        "required handoff fields are checked",
+        "no platform gate is weakened"
+      ],
+      "verificationCommands": [
+        "node --test qa/company-web-platform-handoff-contract.test.mjs"
+      ],
+      "dependencies": [
+        "sys-web-vibe-handoff-e2e-contract-v1"
+      ],
+      "status": "queued",
+      "department": "system-supervision",
+      "type": "independent-verification",
+      "focusPatterns": {},
+      "retries": 0,
+      "maxRetries": 2,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "primary-ai-recruitment:focused-web-bottleneck",
+        "worker-role:independent-verifier"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:32:24.208Z",
+      "updatedAt": "2026-09-19T05:32:24.208Z"
+    },
+    {
+      "id": "sys-verify-system-ai-supervision-loop-v1",
+      "priority": "normal",
+      "goal": "Verify the supervised free system AI workflow itself so implementation success can never skip deterministic verification and no candidate can self-merge. Add a workflow contract test for reserve -> worker -> verify -> PR -> fan-in -> primary-AI-review states, cached Ollama direct binary execution, malformed JSON retry, and worker-self-acceptance prohibition.",
+      "responsibleFiles": [
+        "qa/company-system-ai-supervision-loop.test.mjs"
+      ],
+      "contextFiles": [
+        ".github/workflows/company-system-ai-workers.yml",
+        "tools/company-system-ai-worker.mjs",
+        "tools/company-system-ai-queue.mjs",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "acceptanceCriteria": [
+        "verification step is mandatory after successful implementation",
+        "candidate PR is mandatory before supervisor review",
+        "worker self acceptance remains forbidden",
+        "cached Ollama binary execution and JSON retry are asserted"
+      ],
+      "verificationCommands": [
+        "node --test qa/company-system-ai-supervision-loop.test.mjs"
+      ],
+      "dependencies": [],
+      "status": "queued",
+      "department": "system-supervision",
+      "type": "independent-verification",
+      "focusPatterns": {},
+      "retries": 0,
+      "maxRetries": 2,
+      "reservationId": null,
+      "reservedAt": null,
+      "candidateBranch": null,
+      "pullRequestUrl": null,
+      "lastOutcome": null,
+      "blocker": null,
+      "evidence": [
+        "primary-ai-recruitment:focused-web-bottleneck",
+        "worker-role:independent-verifier"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:32:24.208Z",
+      "updatedAt": "2026-09-19T05:32:24.208Z"
     }
   ]
 }
