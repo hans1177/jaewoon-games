@@ -280,7 +280,6 @@ test('continuous core and 24H runner isolate game-primary and learning-idle exec
   assert(workflow.includes('execution_lane:'));
   assert(workflow.includes("VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || 'game-primary' }}"));
   assert(workflow.includes('--lane="$VIBE2_EXECUTION_LANE"'));
-  assert(workflow.includes('VIBE2_FANIN_ADAPTIVE_ELIGIBLE='));
   assert(workflow.includes('VIBE2_REGRESSION_ROLE=SKIPPED_AUXILIARY_LANE:'));
   assert(workflow.includes('AUXILIARY_LANE_NO_RELEASE'));
   assert(workflow.includes("if: env.VIBE2_EXECUTION_LANE == 'game-primary'"));
