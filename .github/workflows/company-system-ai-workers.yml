@@ -209,6 +209,9 @@ jobs:
         run: |
           set -euo pipefail
           git diff --check
+          node --check tools/company-security-steward.mjs
+          node tools/company-security-steward.mjs --output=/tmp/system-ai-security-report.json
+          echo 'COMPANY_SYSTEM_AI_SECURITY=PASS'
           node - <<'NODE'
           const fs=require('fs'),cp=require('child_process');
           const result=JSON.parse(fs.readFileSync('/tmp/system-ai-worker-result.json','utf8'));
