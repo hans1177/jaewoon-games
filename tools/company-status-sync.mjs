@@ -302,8 +302,12 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     const catalogPresent=bySlug.has(project.slug);
     const game=bySlug.get(project.slug)||{};
     const lifecycleState=catalogPresent?gameLifecycleState(game):'REMOVED';
+    const runtimeClass=runtimeClassFor(project.slug);
+    const productionClass=runtimeClass?.productionClass||productionClassOf(project,game);
+    const runtimeDevelopment=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&Boolean(runtimeClass);
+    const recoverableMissingSourceHold=runtimeDevelopment&&clean(project?.mode).toUpperCase()==='HOLD'&&clean(project?.profileStatus).toUpperCase()==='HOLD_MISSING_SOURCE';
     const sourceReady=Boolean(clean(project.sourcePath)&&filesystem?.existsSync?.(project.sourcePath));
-    const hold=isHold(project)||!sourceReady||!catalogPresent||!lifecycleAllowsDevelopment(game);
+    const hold=(isHold(project)&&!recoverableMissingSourceHold)||(!sourceReady&&!runtimeDevelopment)||!catalogPresent||!lifecycleAllowsDevelopment(game);
     const book=latestBook(artbooks,project.slug);
     const baseline=baselineRank(book);
     const targetPlatform=selectedPlatformOf(project,game);
@@ -311,8 +315,6 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     const playable=game?.homepageWebPlayable===true;
     const score=focusScore(project);
     const family=gameplayFamily(game);
-    const runtimeClass=runtimeClassFor(project.slug);
-    const productionClass=runtimeClass?.productionClass||productionClassOf(project,game);
     const productionClassSource=runtimeClass?.source||clean(game?.productionClassSource||project?.productionClassSource)||'CURRENT_EVIDENCE_STATE';
     const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(platformReady?6:0)+(playable?3:0)+(game?.hasWebArchive===true?1:0);
     return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,hold,catalogPresent,lifecycleState,evidenceScore,gameplayFamily:family,productionClass,productionClassSource};
@@ -332,7 +334,8 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     delete project.productionTierSource;
     if(targetPlatform)project.selectedPlatform=targetPlatform;
     project.targetPlatformReady=row.targetPlatformReady;
-    if(isHold(project))continue;
+    const recoverableMissingSourceHold=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&clean(project?.mode).toUpperCase()==='HOLD'&&clean(project?.profileStatus).toUpperCase()==='HOLD_MISSING_SOURCE';
+    if(isHold(project)&&!recoverableMissingSourceHold)continue;
     if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
       project.profileStatus='RELEASE_CONFIRMED';
       if(targetPlatform){
