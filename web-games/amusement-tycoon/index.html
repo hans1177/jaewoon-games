@@ -339,7 +339,7 @@ function connectedPathKeys(){
   var c=counter(),seen={};
   if(!c)return seen;
   var seeds=adjacentCells(c.gx,c.gz).map(function(p){return key(p[0],p[1]);}).filter(function(k){return paths[k];});
-  var q=seeds.slice();
+var q=seeds.slice();
   seeds.forEach(function(k){seen[k]=true;});
   while(q.length){
     var cur=q.shift(),a=cur.split(",").map(Number);
