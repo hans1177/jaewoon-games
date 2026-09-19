@@ -122,7 +122,6 @@ const designerFailoverRoutes=[designerRoute];
 let activeDesignerRoute=designerRoute;
 const designerModel=designerRoute.id;
 const coordinatorModel=geminiDesignerModel;
-console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK'}`);
 console.log('GEMINI_THINKING_LEVEL=LOW');
 console.log(`GAME_DESIGNER_PROVIDER=GEMINI`);
 console.log(`GAME_DESIGNER_MODEL=${designerModel}`);
