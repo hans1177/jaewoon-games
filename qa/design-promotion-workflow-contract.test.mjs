@@ -79,3 +79,19 @@ test('canonical deterministic gate policy is overlaid when promotion recalculate
   assert.match(promotion,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
   assert.doesNotMatch(promotion,/git add --[^\n]*company-learning\/platform-release-roadmap\.json/);
 });
+
+
+test('promotion refresh pins the completed DESIGN_ONLY cycle without weakening current development gates',()=>{
+  const promotionSource=fs.readFileSync('tools/design-only-promotion-sync.mjs','utf8');
+  const gate=fs.readFileSync('tools/company-baseline-gate.mjs','utf8');
+  assert.match(promotionSource,/BASELINE_GATE_REFRESH_MODE:'DESIGN_EVIDENCE'/);
+  assert.match(gate,/refreshMode==='DESIGN_EVIDENCE'/);
+  assert.match(gate,/DESIGN_EVIDENCE_REFRESH_REQUIRES_DESIGN_ONLY_CYCLE/);
+  assert.match(gate,/DESIGN_EVIDENCE_REFRESH_REQUIRES_COMPLETE_CYCLE/);
+  assert.match(gate,/DESIGN_EVIDENCE_REFRESH_REQUIRES_REVISED_DESIGN/);
+  assert.match(gate,/designEvidenceRefresh\?PRODUCTION_CLASSES\.DESIGN_ONLY/);
+  assert.match(gate,/deterministic-design-pre-gate-pass-required/);
+  assert.match(gate,/multiplayer-design-mode-required:SINGLE\|COOP\|COMPETITIVE\|HYBRID/);
+  assert.match(gate,/meetingConflicts>0/);
+  assert.match(gate,/meetingHolds>0/);
+});
