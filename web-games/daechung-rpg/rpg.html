@@ -92,7 +92,13 @@ const SFX_NAMES=[
 ];
 const SFX_INDEX=Object.fromEntries(SFX_NAMES.map((n,i)=>[n,i]));
 const AUDIO={ctx:null,master:null,sfxBus:null,musicBus:null,aggroBus:null,muted:false,started:false,musicStep:0,timer:null,aggro:false,lastAggro:false};
+const AUDIO={ctx:null,master:null,sfxBus:null,musicBus:null,aggroBus:null,muted:false,started:false,musicStep:0,timer:null,aggro:false,lastAggro:false};
+
 function initAudio(){
+ if(AUDIO.started)return;
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+ AC.createMediaElementSource(document.getElementById('audio-element')).connect(AUDIO.master);
+}
  if(AUDIO.started)return;
  const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
  const ac=new AC();AUDIO.ctx=ac;
