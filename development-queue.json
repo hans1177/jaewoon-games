@@ -914,7 +914,14 @@
       "sourcePath": "web-games/island-village",
       "currentStep": "WEB_PLAYABLE_BOOTSTRAP",
       "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
-      "webValidationQueuedAt": "2026-09-19T04:10:49.340Z"
+      "webValidationQueuedAt": "2026-09-19T04:10:49.340Z",
+      "webValidationPassedAt": null,
+      "musicValidationPassed": false,
+      "webValidationEvidencePath": null,
+      "strictImplementationScore": null,
+      "webStrictScore": null,
+      "formalImplementationPassed": false,
+      "formalImplementationVerdict": "REVISE"
     },
     {
       "gameId": "territory-war",
@@ -942,15 +949,22 @@
       "sourcePath": "web-games/territory-war",
       "currentStep": "WEB_PLAYABLE_BOOTSTRAP",
       "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
-      "webValidationQueuedAt": "2026-09-19T04:11:10.615Z"
+      "webValidationQueuedAt": "2026-09-19T04:11:10.615Z",
+      "webValidationPassedAt": null,
+      "musicValidationPassed": false,
+      "webValidationEvidencePath": null,
+      "strictImplementationScore": null,
+      "webStrictScore": null,
+      "formalImplementationPassed": false,
+      "formalImplementationVerdict": "REVISE"
     }
   ],
-  "updatedAt": "2026-09-19T04:11:30.370Z",
+  "updatedAt": "2026-09-19T04:12:02.500Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
   "executionContract": "CHANGE_DETECTION>CHEAP_PRECHECK>REPRESENTATIVE_CANARY>SINGLE_BUILD_OR_PACKAGE>IMMUTABLE_ARTIFACT_BIND>TARGET_PLATFORM_RUNTIME>INDEPENDENT_QA>REGRESSION>IMMEDIATE_NEXT_STAGE_DISPATCH>RESUME_EXACT_FAILURE_POINT",
-  "webValidationPolicy": "WEB_80_FOR_HOMEPAGE_90_PLUS_INDEPENDENT_REVALIDATION_FOR_PLATFORM",
+  "webValidationPolicy": "REQUIRED_WEB_STRICT_REVIEW_BEFORE_POST_WEB_ARTBOOK_AND_TARGET_PLATFORM",
   "webValidationContractVersion": 4,
   "webGateRequired": true,
   "webValidationParallelism": 20,
