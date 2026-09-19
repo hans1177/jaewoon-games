@@ -1322,3 +1322,28 @@ test('no-op edit gets one focused causal retry', () => {
   assert.match(retry,/=== FILE index\.html \[EDITABLE\] ===/);
   assert.doesNotMatch(retry,/scripts\/config\.js/);
 });
+
+
+test('candidate manifest carries presentation quality contract without expanding authority', async()=>{
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'presentation.json');
+  const workOrder=order({responsibleFiles:['unity-games/demo/Assets/Player.cs'],taskId:'presentation-contract'});
+  workOrder.presentationQuality={
+    required:true,
+    version:1,
+    pass:'LIVING_MOTION',
+    preserve:['GAMEPLAY_BALANCE','SAVE_MEANING','HIT_SEMANTICS'],
+    staticChecks:['idle-alive-motion','turn-smoothing'],
+    runtimeChecks:['idle-walk-run-or-equivalent-runtime-continuity'],
+    authorityExpanded:false
+  };
+  write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player { int Speed() { return 1; } }\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,JSON.stringify({edits:[{path:'Assets/Player.cs',find:'return 1;',replace:'return 2;'}],newFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  const persisted=JSON.parse(fs.readFileSync(path.join(cwd,'.vibe2/candidates/presentation-contract/manifest.json'),'utf8'));
+  assert.equal(result.presentationQuality.required,true);
+  assert.equal(result.presentationQuality.pass,'LIVING_MOTION');
+  assert.equal(result.presentationQuality.authorityExpanded,false);
+  assert.deepEqual(persisted.presentationQuality.preserve,workOrder.presentationQuality.preserve);
+});
