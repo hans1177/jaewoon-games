@@ -168,9 +168,9 @@ jobs:
           for(const token of ['productionClass','DEVELOPMENT_BASELINE_READY','development-baseline-required'])if(!candidate.includes(token))throw new Error(`candidate release baseline guard missing: ${token}`);
           for(const token of ['PARTIAL_BUILD_VERIFIED','developmentBaselineImplemented:false','INDEPENDENT_RELEASE_QA=NOT_ASSERTED','DEVICE_VALIDATION=NOT_ASSERTED','gh run download','apk_sha256'])if(!unityResult.includes(token))throw new Error(`Unity result evidence separation missing: ${token}`);
           if(unityResult.includes('--independent-qa=PASS'))throw new Error('APK build workflow must not claim independent release QA PASS');
-          const baselinePlan=vibeRunner.indexOf('tools/vibe2-release-baseline-queue.mjs');
-          const genericPlan=vibeRunner.indexOf('tools/vibe2-auto-planner.mjs');
-          if(baselinePlan<0||genericPlan<=baselinePlan)throw new Error('Vibe2 release-baseline queue must run before generic autoplan');
+          const baselineExec=vibeRunner.indexOf('node /tmp/vibe2-main/tools/vibe2-release-baseline-queue.mjs');
+          const genericExec=vibeRunner.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \\\\');
+          if(baselineExec<0||genericExec<=baselineExec)throw new Error('Vibe2 release-baseline queue execution must run before generic autoplan execution');
           if(!vibeRunner.includes("'unity-games/**'"))throw new Error('Vibe2 runner must resume after Unity source changes');
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
           const release=directive.classes?.RELEASE_CONFIRMED||{};

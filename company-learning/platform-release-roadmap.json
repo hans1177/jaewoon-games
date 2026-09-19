@@ -1,5 +1,5 @@
 {
-  "version": 44,
+  "version": 45,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -2499,5 +2499,18 @@
       "capabilityExpansionDoesNotGrantAuthorityExpansion": true,
       "securityImmuneSystemMayNotBeBypassedForLongTermVision": true
     }
+  },
+  "changeRecord": {
+    "id": "DEVELOPMENT_RESUME_EVOLUTION_QA_ORDER_FIX_2026-09-19",
+    "documentIsCode": true,
+    "reason": "REMOVE_FALSE_COMMON_QA_BLOCKER_WITHOUT_WEAKENING_RELEASE_BASELINE_ORDER",
+    "files": [
+      ".github/workflows/company-evolution-qa.yml",
+      "company-learning/platform-release-roadmap.json"
+    ],
+    "expectedEvidence": [
+      "COMPANY_EVOLUTION_QA=PASS",
+      "RELEASE_BASELINE_EVIDENCE_CONTRACT=PASS"
+    ]
   }
 }
