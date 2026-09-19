@@ -114,6 +114,14 @@ jobs:
             tools/vibe2-system-steward.mjs; do
             node --check "/tmp/vibe2-main/$file"
           done
+          (
+            cd /tmp/vibe2-main
+            node --test --test-concurrency=4 \
+              qa/vibe2-source-worker.test.mjs \
+              qa/vibe2-queue-control.test.mjs \
+              qa/vibe2-parallelism-telemetry.test.mjs
+          ) | tee /tmp/vibe2-reserve-fast-regression.log
+          echo 'VIBE2_RESERVE_FAST_REGRESSION=PASS'
           node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-reserve-preflight-steward.log
