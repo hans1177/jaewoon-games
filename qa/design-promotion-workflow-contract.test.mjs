@@ -41,7 +41,7 @@ test('promotion persistence retries only against the newest runtime state and ne
   assert.match(promotion,/DESIGN_PROMOTION_RUNTIME_PERSIST_CONFLICT=RETRY_LATEST_RUNTIME/);
   assert.match(promotion,/DESIGN_PROMOTION_RUNTIME_PERSIST=FAILED_AFTER_3_ATTEMPTS/);
   assert.doesNotMatch(promotion,/cp \/tmp\/design-promotion-runtime\/game-seed-state\.json/);
-  assert.match(promotion,/git checkout origin\/main -- company-directive\.json tools\/design-only-promotion-sync\.mjs tools\/company-baseline-gate\.mjs tools\/company-game-seed-contract\.mjs/);
+  assert.match(promotion,/git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json tools\/design-only-promotion-sync\.mjs tools\/company-baseline-gate\.mjs tools\/company-game-seed-contract\.mjs/);
   assert.match(promotion,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
 });
 
