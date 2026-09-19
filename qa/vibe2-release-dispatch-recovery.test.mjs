@@ -56,17 +56,17 @@ test('24H recovery verifies exact candidate SHA before marking and dispatching',
   const mark=section.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs await');
   const dispatch=section.indexOf('vibe2-candidate-release.yml/dispatches');
   assert.ok(shaCheck>0&&shaCheck<mark&&mark<dispatch);
-  assert.match(section,/release-dispatch-recovery/);
-  assert.doesNotMatch(section,/queue-control\\.mjs pass/);
-  assert.doesNotMatch(section,/node tools\\/vibe2-queue-control\\.mjs/);
-  assert.match(section,/node \/tmp\/vibe2-main\/tools\/vibe2-queue-control\\.mjs await/);
+  assert.ok(section.includes('release-dispatch-recovery'));
+  assert.equal(section.includes('queue-control.mjs pass'),false);
+  assert.equal(section.includes('node tools/vibe2-queue-control.mjs'),false);
+  assert.ok(section.includes('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs await'));
 });
 
 test('24H runner reads and mutates control queue only through latest main tooling',()=>{
   const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
-  assert.doesNotMatch(workflow,/node tools\\/vibe2-queue-control\\.mjs/);
-  assert.match(workflow,/node \/tmp\/vibe2-main\/tools\/vibe2-queue-control\\.mjs summary/);
-  assert.match(workflow,/node \/tmp\/vibe2-main\/tools\/vibe2-queue-control\\.mjs await/);
+  assert.equal(workflow.includes('node tools/vibe2-queue-control.mjs'),false);
+  assert.ok(workflow.includes('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs summary'));
+  assert.ok(workflow.includes('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs await'));
 });
 
 test('release result workflows mutate control state only through latest main queue tooling',()=>{
@@ -76,12 +76,12 @@ test('release result workflows mutate control state only through latest main que
   ];
   for(const file of files){
     const workflow=fs.readFileSync(file,'utf8');
-    assert.doesNotMatch(workflow,/node tools\\/vibe2-queue-control\\.mjs/);
-    assert.match(workflow,/main-contract\/tools\/vibe2-queue-control\\.mjs/);
+    assert.equal(workflow.includes('node tools/vibe2-queue-control.mjs'),false);
+    assert.ok(workflow.includes('main-contract/tools/vibe2-queue-control.mjs'));
   }
   for(const file of ['.github/workflows/vibe2-roblox-candidate-result.yml','.github/workflows/vibe2-unity-candidate-result.yml']){
     const workflow=fs.readFileSync(file,'utf8');
-    assert.doesNotMatch(workflow,/node tools\\/vibe2-candidate-reconcile\\.mjs/);
-    assert.match(workflow,/vibe2-main-contract\/tools\/vibe2-candidate-reconcile\\.mjs/);
+    assert.equal(workflow.includes('node tools/vibe2-candidate-reconcile.mjs'),false);
+    assert.ok(workflow.includes('vibe2-main-contract/tools/vibe2-candidate-reconcile.mjs'));
   }
 });
