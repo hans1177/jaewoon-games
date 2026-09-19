@@ -486,14 +486,6 @@ test('central runtime enables functional work packages and adaptive workload tel
   assert.equal(runtime.workPackages.efficiencyAdaptation.lowEfficiencyStreakThreshold,2);
   assert.equal(runtime.workPackages.efficiencyAdaptation.neverReduceSafetyOrQa,true);
 });
-"));
-  assert(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_recovery_dispatched != '0'"));
-  assert.equal(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_queued != '0'"),false);
-  assert.equal(recoveryFastWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'),false);
-  assert.equal(recoveryFastWorkflow.includes('vibe2-fanin-refill'),false);
-  assert.equal(recoveryFastWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
-});
-
 test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
   assert(workflow.includes('Event-driven fan-in refill fallback'));
   assert(workflow.includes("event_type:'vibe2-fanin-refill'"));
