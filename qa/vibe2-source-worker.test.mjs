@@ -540,7 +540,7 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.timeoutMs,150000);
   assert.equal(result.generation.maxPredict,384);
-  assert.equal(result.generation.temperature,0.22);
+  assert.equal(result.generation.temperature,0.26);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -746,7 +746,7 @@ test('undersized full web seed accumulates additive model expansions until valid
   assert.deepEqual(result.generation.fullWebInitialSeedTargetBytes,[4200,6500]);
   assert.equal(result.codingMethod.fullWebInitialSeedStrategy,true);
   assert.deepEqual(result.codingMethod.fullWebInitialSeedTargetBytes,[4200,6500]);
-  assert.equal(result.generation.temperature,0.22);
+  assert.equal(result.generation.temperature,0.26);
   assert.equal(result.generation.repeatedIntermediateOutputs,0);
   assert.deepEqual(result.generation.expansionStageTargets,['REAL_INPUT','UPDATE_OR_STATE_TRANSITION_LOOP']);
   assert.deepEqual(result.codingMethod.expansionStageTargets,['REAL_INPUT','UPDATE_OR_STATE_TRANSITION_LOOP']);
@@ -986,9 +986,14 @@ test('focused replace-only pins exact path and anchor while model emits only rep
     'function startGame(){ state.running=true; }'
   ].join('\n');
   const spec=focusedReplaceOnlySpec(base,{responsibleFiles:['index.html']});
+  const alternate=focusedReplaceOnlySpec(base,{responsibleFiles:['index.html'],anchorIndex:1});
   assert.ok(spec);
+  assert.ok(alternate);
   assert.equal(spec.path,'index.html');
+  assert.equal(alternate.path,'index.html');
   assert.ok(base.includes(spec.find));
+  assert.ok(base.includes(alternate.find));
+  assert.notEqual(alternate.find,spec.find);
   const focused=buildFocusedReplaceOnlyPrompt(base,{error:new Error('timeout'),responsibleFiles:['index.html']});
   assert.ok(focused);
   assert.match(focused.prompt,/Do NOT return path or find/);
@@ -1000,6 +1005,13 @@ test('focused replace-only pins exact path and anchor while model emits only rep
   assert.notEqual(normalized.edits[0].replace,focused.spec.find);
 });
 
+test('focused no-op retry keeps speculative base budget but grants only targeted credit in worker loop',()=>{
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),2);
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/VIBE2_FOCUSED_REPLACE_NOOP_CREDIT/);
+  assert.match(workerSource,/focusedReplaceAnchorCursor\+=1/);
+  assert.match(workerSource,/focusedReplaceNoOpCreditUsed=true/);
+});
 test('focused replace-only rejects unchanged replacement and supports early completion',()=>{
   const spec={path:'index.html',find:'const state={running:false};'};
   assert.throws(()=>normalizeFocusedReplaceOnly(JSON.stringify({replace:spec.find}),spec),/변경 없는 edit/);
@@ -1342,7 +1354,7 @@ test('second malformed JSON receives the bounded focused third retry', async () 
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.temperature,0.22);
+  assert.equal(result.generation.temperature,0.26);
   assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
   assert.deepEqual(result.changedFiles,['index.html']);
 });
