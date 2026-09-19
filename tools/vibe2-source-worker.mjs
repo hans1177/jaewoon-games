@@ -740,6 +740,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     try{
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode});
       lastRaw=raw;
+      const fullWebClosedHtmlEarlyStop=completionMode==='FULL_WEB'
+        && String(raw).trimStart().startsWith(FULL_FILE_PREFIX)
+        && !String(raw).includes(FULL_FILE_END_MARKER)
+        && String(raw).includes(FULL_FILE_CONTENT_MARKER)
+        && /<\/html>\s*$/i.test(String(raw).slice(String(raw).indexOf(FULL_FILE_CONTENT_MARKER)+FULL_FILE_CONTENT_MARKER.length));
       const streamedPartialEdit=completionMode==='JSON_EDIT_PARTIAL'?recoverPartialJsonEdit(raw,{reason:'timeout'}):null;
       let candidate;
       if(expansionMode){
@@ -773,7 +778,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -962,6 +967,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     fullFileContextFallback:generation.fullFileContextFallback===true,
     fullWebExpansionStages:Number(generation.fullWebExpansionStages||0),
     fullWebExpansionDocumentSeedRecoveries:Number(generation.fullWebExpansionDocumentSeedRecoveries||0),
+    fullWebClosedHtmlEarlyStop:generation.fullWebClosedHtmlEarlyStop===true,
     fullWebRetryPromptCompacted:generation.fullWebRetryPromptCompacted===true,
     fullWebRetryPromptBytes:Number(generation.fullWebRetryPromptBytes||0),
     fullWebFallbackBestPartialBytes:Number(generation.fullWebFallbackBestPartialBytes||0),
