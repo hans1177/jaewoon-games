@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T11:40:42.149Z"
+      "updatedAt": "2026-09-19T11:46:03.627Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1549,7 +1549,24 @@
         "workload:cycle-ms:1203375",
         "exploration-reuse:261ed07fe183636fbfa7c69f",
         "workload:prep-ms:6258",
-        "workload:cycle-ms:569963"
+        "workload:cycle-ms:569963",
+        "base-main:b89889714557aa00ad4189b6b6f1e057a43426ee",
+        "coding-strategy:PRIMARY_RESPONSIBILITY_MINIMAL",
+        "coding-responsibility-confidence:LOW",
+        "coding-candidate-first-attempt:NO",
+        "coding-failure-fingerprint:web|FULL_REWRITE_SIZE|TIMEOUT",
+        "coding-patch-recipe:REQUIREMENT_RECIPE",
+        "actions-run:35440037532",
+        "reservation-id:35440037532:1",
+        "workload:prep-ms:6895",
+        "workload:cycle-ms:933895",
+        "exploration-reuse:a5ab91434c4621fa8fa9e3d8",
+        "coding-strategy:DEPENDENCY_SAFE_COHERENT_PATCH",
+        "workload:prep-ms:6614",
+        "workload:cycle-ms:642104",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CTIMEOUT%22%2C%22failureClass%22%3A%22FULL_REWRITE_SIZE%22%2C%22runEvidence%22%3A%22actions-run%3A35440037532%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "system-steward:retry-exhausted-regenerated:generation-4",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_4"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1565,7 +1582,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T08:20:33.605Z",
-      "updatedAt": "2026-09-19T11:40:42.149Z"
+      "updatedAt": "2026-09-19T11:46:03.627Z"
     },
     {
       "id": "recovery-c9cbc89486453076c641",
