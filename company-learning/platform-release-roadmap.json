@@ -1,5 +1,5 @@
 {
-  "version": 32,
+  "version": 33,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1680,6 +1680,40 @@
           "issueDirectives": true,
           "watchQaRegressionAndEvidence": true
         }
+      },
+      "externalAiWorkerPool": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-19",
+        "enabled": true,
+        "executionModel": "SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORKERS",
+        "provider": "LOCAL_OLLAMA",
+        "defaultModel": "qwen3:1.7b",
+        "queueBranch": "vibe2-unreal-core",
+        "queueFile": ".vibe2/system-ai-queue.json",
+        "queueTool": "tools/company-system-ai-queue.mjs",
+        "workerTool": "tools/company-system-ai-worker.mjs",
+        "workflow": ".github/workflows/company-system-ai-workers.yml",
+        "candidateBranchPrefix": "system-ai/candidate/",
+        "candidatePullRequestRequired": true,
+        "directMainWrite": false,
+        "gameSourceWrite": false,
+        "centralPolicyWrite": false,
+        "workerSelfAcceptance": false,
+        "primaryAiReviewAfterVerifiedCandidate": true,
+        "deterministicVerificationBeforeReview": true,
+        "failedCandidateRequeueAllowed": true,
+        "reworkDirectiveRepeatAllowed": true,
+        "maxBatchPerExternalExecutionWave": 16,
+        "parallelismPolicy": "DISJOINT_RESPONSIBLE_FILES_PARALLEL",
+        "runtimeSchedule": "EVENT_PLUS_20_MINUTE_WATCHDOG",
+        "taskSources": [
+          "PRIMARY_AI_PRIORITY_DIRECTIVE",
+          "PORTFOLIO_WIDE_BOTTLENECK",
+          "ROADMAP_IMPLEMENTATION_GAP",
+          "RELEASE_PIPELINE_BLOCKER",
+          "HOMEPAGE_PUBLIC_SURFACE_BLOCKER",
+          "CI_QUEUE_QA_INFRASTRUCTURE_BLOCKER"
+        ]
       }
     },
     "freeAiExecution": {
