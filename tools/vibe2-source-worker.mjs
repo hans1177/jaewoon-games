@@ -67,8 +67,10 @@ const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;
 const FOCUSED_WEB_REPAIR_CONTEXT_WINDOW=12288;
 const JSON_FINAL_RETRY_TIMEOUT_MS=150000;
 const JSON_FINAL_RETRY_MAX_PREDICT=768;
+const JSON_FOCUSED_REPLACE_MAX_PREDICT=384;
 const JSON_CONTEXT_WINDOW=32768;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
+const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
 const FULL_WEB_CONTEXT_WINDOW=32768;
 const MAX_GENERATION_ATTEMPTS=3;
 const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
@@ -578,6 +580,70 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     .slice(0,Math.max(1,Math.min(5,Number(max)||3)));
 }
 
+export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''}={}){
+  const raw=String(prompt??'');
+  const allowedLine=raw.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
+  const allowedPaths=allowedLine
+    ?allowedLine.slice(allowedLine.indexOf(':')+1).split(',').map(clean).filter(Boolean)
+    :[];
+  const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
+  if(exactResponsible.length!==1)return null;
+  const find=exactRetryAnchorSuggestions(raw,{max:1,sourceRoot,responsibleFiles:exactResponsible})[0]||'';
+  if(!find)return null;
+  let context=find;
+  if(clean(sourceRoot)){
+    try{
+      const root=path.resolve(sourceRoot),relative=posix(exactResponsible[0]),file=path.resolve(root,relative);
+      if(file.startsWith(root+path.sep)&&fs.existsSync(file)&&fs.statSync(file).isFile()){
+        const source=fs.readFileSync(file,'utf8'),at=source.indexOf(find);
+        if(at>=0){
+          const before=source.slice(0,at).split('\n').slice(-2);
+          const after=source.slice(at+find.length).split('\n').slice(0,3);
+          context=[...before,find,...after].join('\n').trim();
+        }
+      }
+    }catch{}
+  }
+  return{path:exactResponsible[0],find,context};
+}
+export function buildFocusedReplaceOnlyPrompt(prompt,{error=null,responsibleFiles=[],sourceRoot=''}={}){
+  const spec=focusedReplaceOnlySpec(prompt,{responsibleFiles,sourceRoot});
+  if(!spec)return null;
+  const raw=String(prompt??''),goal=raw.split('\n').find(line=>line.startsWith('Goal:'))||'Goal: make the smallest real implementation change required by the work order';
+  const reason=clean(error?.message||error).replace(/\s+/g,' ').slice(0,240);
+  return{
+    spec,
+    prompt:[
+      'You are the Vibe2 focused source repair worker. Return JSON only.',
+      goal,
+      reason?'Previous failure: '+reason:'',
+      'Exact writable path: '+JSON.stringify(spec.path),
+      'Exact find anchor already fixed by the worker: '+JSON.stringify(spec.find),
+      'Do NOT return path or find. The worker will apply them exactly.',
+      'Return exactly one JSON object with one key: {"replace":"COMPLETE_REPLACEMENT_SOURCE_SNIPPET"}',
+      'replace MUST be materially different from the exact find anchor, syntactically valid in the shown source context, and the smallest coherent behavior change that advances the Goal.',
+      'Preserve save keys, gameplay values, existing behavior, and unrelated systems unless the Goal explicitly requires changing them.',
+      'No markdown, prose, comments outside source, extra keys, placeholders, ellipsis, or unchanged copy.',
+      'SOURCE CONTEXT AROUND FIXED ANCHOR:',
+      spec.context
+    ].filter(Boolean).join('\n')
+  };
+}
+export function normalizeFocusedReplaceOnly(raw,spec={}){
+  const parsed=typeof raw==='string'?extractJson(raw):raw;
+  if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('focused replace 응답은 JSON 객체여야 함');
+  const replace=String(parsed.replace??'');
+  if(!replace.trim())throw new Error('focused replace 비어 있음');
+  if(replace===String(spec.find??''))throw new Error('변경 없는 edit: '+clean(spec.path));
+  return{
+    summary:'Vibe2 focused replace-only recovery',
+    expectedEffect:'bounded exact-anchor source repair',
+    edits:[{path:clean(spec.path),find:String(spec.find??''),replace}],
+    newFiles:[],
+    replaceFiles:[],
+    tests:[]
+  };
+}
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot=''}={}){
   const rawPrompt=String(prompt??'');
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
@@ -730,6 +796,9 @@ export function generationAttemptBudget({allowFullRewrite=false,variant='primary
 export function modelResponseComplete(output,mode='JSON_EDIT'){
   const text=String(output??''),trimmed=text.trimStart();
   if(!trimmed)return false;
+  if(mode==='JSON_REPLACE_ONLY'){
+    try{const parsed=extractJson(text);return Boolean(parsed&&typeof parsed==='object'&&!Array.isArray(parsed)&&typeof parsed.replace==='string'&&parsed.replace.length>0);}catch{return false;}
+  }
   if(mode==='FULL_WEB_EXPANSION')return trimmed.startsWith(FULL_WEB_EXPANSION_PREFIX)&&text.includes(FULL_WEB_EXPANSION_END_MARKER);
   if(mode==='JSON_EDIT_PARTIAL'&&recoverPartialJsonEdit(text,{reason:'timeout'}))return true;
   if(mode==='FULL_WEB'){
@@ -782,18 +851,19 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation);
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
+    const focusedReplaceOnly=focusedFinal?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot}):null;
     const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
       ?accumulatedFullWeb.content
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
     const attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
-      :(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot}):prompt);
+      :(focusedReplaceOnly?.prompt||(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot}):prompt));
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
-        :(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT))));
+        :(focusedReplaceOnly?JSON_FOCUSED_REPLACE_MAX_PREDICT:(focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)))));
     const timeoutMs=expansionMode
       ?FULL_WEB_EXPANSION_TIMEOUT_MS
       :(allowFullRewrite
@@ -801,12 +871,12 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         :(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)));
     const contextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
-      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)));
+      :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:(focusedReplaceOnly?JSON_FOCUSED_REPLACE_CONTEXT_WINDOW:(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
     if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
     const temperature=expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(retry?(attempt>=3?0.22:0.16):0.08);
-    const completionMode=expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(timeoutFastEscalation?'JSON_EDIT_PARTIAL':'JSON_EDIT'));
+    const completionMode=focusedReplaceOnly?'JSON_REPLACE_ONLY':(expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(timeoutFastEscalation?'JSON_EDIT_PARTIAL':'JSON_EDIT')));
     try{
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode});
       lastRaw=raw;
@@ -844,11 +914,12 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
           candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
         }
       }else{
-        candidate=normalizeCandidate(streamedPartialEdit||raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
+        const focusedRaw=focusedReplaceOnly?normalizeFocusedReplaceOnly(raw,focusedReplaceOnly.spec):(streamedPartialEdit||raw);
+        candidate=normalizeCandidate(focusedRaw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -856,6 +927,20 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const failureClass=generationFailureClass(error);
       if(allowFullRewrite&&lastRaw.trim()&&Buffer.byteLength(lastRaw,'utf8')>Buffer.byteLength(bestFullWebFallbackRaw,'utf8')){
         bestFullWebFallbackRaw=lastRaw;
+      }
+      if(focusedReplaceOnly&&['TIMEOUT','MALFORMED_OUTPUT'].includes(failureClass)){
+        const focusedPartial=partialOutput.trim()?partialOutput:lastRaw;
+        if(focusedPartial.trim()&&modelResponseComplete(focusedPartial,'JSON_REPLACE_ONLY')){
+          try{
+            const focusedCandidate=normalizeCandidate(normalizeFocusedReplaceOnly(focusedPartial,focusedReplaceOnly.spec),{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes});
+            if(focusedCandidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,focusedCandidate.edits,{dryRun:true});
+            lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(focusedCandidate):null;
+            console.log('VIBE2_FOCUSED_REPLACE_PARTIAL_RECOVERED='+attempt+':'+focusedReplaceOnly.spec.path);
+            return{candidate:focusedCandidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:true,partialTimeoutRecovery:failureClass==='TIMEOUT',partialMalformedRecovery:failureClass==='MALFORMED_OUTPUT',streamedPartialEditRecovery:false,focusedFinalRetry:focusedFinal,focusedReplaceOnly:true,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+          }catch(recoveryError){
+            console.log('VIBE2_FOCUSED_REPLACE_PARTIAL_REJECTED='+attempt+':'+generationFailureClass(recoveryError)+':'+clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240));
+          }
+        }
       }
       const partialRecoveryClass=!allowFullRewrite&&['TIMEOUT','MALFORMED_OUTPUT'].includes(failureClass)?failureClass:'';
       const partialRecoveryOutput=partialRecoveryClass==='TIMEOUT'?partialOutput:(partialRecoveryClass==='MALFORMED_OUTPUT'?lastRaw:'');
@@ -1055,6 +1140,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     partialMalformedRecovery:generation.partialMalformedRecovery===true,
     streamedPartialEditRecovery:generation.streamedPartialEditRecovery===true,
     focusedFinalRetry:generation.focusedFinalRetry===true,
+    focusedReplaceOnly:generation.focusedReplaceOnly===true,
     focusedMinimalJsonContract:generation.focusedFinalRetry===true&&!allowFullRewrite,
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
     writableScopeExpansionAllowed:false,
