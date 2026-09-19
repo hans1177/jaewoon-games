@@ -46,11 +46,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T05:41:00.000Z",
-      "updatedAt": "2026-09-19T06:08:11.295Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-19T06:08:11.295Z"
-      ]
+      "updatedAt": "2026-09-19T06:08:11.295Z"
     },
     {
       "id": "recovery-system-ai-core-implementation-v1",
@@ -233,11 +229,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.260Z",
-      "updatedAt": "2026-09-19T06:08:11.295Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-19T06:08:11.295Z"
-      ]
+      "updatedAt": "2026-09-19T06:08:11.295Z"
     },
     {
       "id": "recovery-e36314e23ac645b9df25",
@@ -336,6 +328,37 @@
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
       "updatedAt": "2026-09-19T06:08:11.261Z"
+    },
+    {
+      "id": "recovery-6bed1c7e44ca75dceec2",
+      "status": "queued",
+      "priority": "critical",
+      "sourceQueue": "security",
+      "sourceTaskId": "security-run-35425799273",
+      "relatedTaskIds": [],
+      "failureStage": "SECURITY_IMMUNE_SCAN",
+      "failureSignature": "security-quarantine-HIGH",
+      "blastRadius": "affected-change",
+      "checkpoint": null,
+      "evidence": [
+        "security-run:35425799273",
+        "security-report:artifact-35425799273"
+      ],
+      "recoveryStrategy": "SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW",
+      "verificationPlan": [
+        "RERUN_SECURITY_SCAN",
+        "VERIFY_NO_SECRET_OR_MALWARE_PAYLOAD",
+        "REGRESSION_RESCAN",
+        "PRIMARY_AI_SECURITY_REVIEW"
+      ],
+      "deterministicEvidence": [],
+      "recoveryOwner": "SYSTEM_AI",
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING",
+      "retries": 0,
+      "maxRetries": 5,
+      "createdAt": "2026-09-19T06:09:08.320Z",
+      "updatedAt": "2026-09-19T06:09:08.320Z"
     }
   ]
 }

@@ -4,6 +4,28 @@
   "policy": "QUARANTINE_PRESERVE_REDACTED_EVIDENCE_VERIFY_RECOVERY_THEN_DISTILL",
   "incidents": [
     {
+      "id": "sec_3563eb3598d26e7626d705c0",
+      "status": "QUARANTINED",
+      "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+      "severity": "HIGH",
+      "category": "policy-integrity",
+      "file": "company-learning/platform-release-roadmap.json",
+      "line": 1336,
+      "evidenceSha256": "d822e1c2ec0564d71be9d2f037a23fcb5ac62746b641e897428aa1f7d6d89752",
+      "snippet": "\"authority\": \"OWNER_DIRECTIVE_2026-09-19\",",
+      "rawSecretStored": false,
+      "rawMalwareStored": false,
+      "detections": 1,
+      "firstDetectedAt": "2026-09-19T06:09:08.093Z",
+      "lastDetectedAt": "2026-09-19T06:09:08.094Z",
+      "containment": "AFFECTED_CHANGE_QUARANTINED",
+      "rootCause": null,
+      "remediation": null,
+      "verificationEvidence": [],
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING"
+    },
+    {
       "id": "sec_b4978477dca03b6a00a99816",
       "status": "QUARANTINED",
       "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
