@@ -62,6 +62,19 @@ test('active independent work no longer blocks autonomous planning when slots re
   assert.equal(result.queue.tasks.filter(t=>['queued','running'].includes(t.status)).length<=4,true);
 });
 
+test('effective wave cap does not overwrite persistent external queue max',()=>{
+  const root=tempRepo();
+  const result=planVibe2AutonomousTasks({
+    status,catalog,
+    queue:{maxConcurrentTasks:256,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:20,
+    queueMaxConcurrentTasks:256
+  });
+  assert.equal(result.queue.maxConcurrentTasks,256);
+  assert.equal(result.queue.tasks.filter(t=>['queued','running'].includes(t.status)).length<=20,true);
+});
+
 test('owner directive keeps priority while independent free slots continue refilling',()=>{
   const root=tempRepo();
   const result=planVibe2AutonomousTasks({
