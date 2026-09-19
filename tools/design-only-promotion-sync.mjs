@@ -3,6 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {pathToFileURL} from 'node:url';
+import {spawnSync} from 'node:child_process';
 import {resolveSelectedPlatform,adapterForPlatform} from './company-selected-platform-router.mjs';
 import {materializeOwnerDesignResetSeeds} from './owner-design-reset.mjs';
 
@@ -14,6 +15,38 @@ const nowIso=()=>new Date().toISOString();
 const selectedPlatformOf=seed=>resolveSelectedPlatform(seed?.INITIAL_TARGET_PLATFORM||'',seed)||'ROBLOX';
 const targetSourcePathOf=(gameId,platform)=>`${adapterForPlatform(platform)?.sourceRoot||''}${gameId}`;
 const webSourcePathOf=gameId=>`web-games/${gameId}`;
+
+function refreshCompletedDesignBaselineGates({root='.',state={}}={}){
+  const gatePath=path.join(root,'tools/company-baseline-gate.mjs');
+  if(!fs.existsSync(gatePath))return [];
+  const refreshed=[];
+  for(const seed of state.seeds||[]){
+    if(String(seed?.status||'').toUpperCase()!=='ACTIVE')continue;
+    if(String(seed?.productionClass||'DESIGN_ONLY').toUpperCase()!=='DESIGN_ONLY')continue;
+    const gameId=String(seed?.gameId||'').trim();
+    if(!gameId)continue;
+    const gameRoot=path.join(root,'design',gameId);
+    if(!fs.existsSync(gameRoot))continue;
+    const dates=fs.readdirSync(gameRoot,{withFileTypes:true}).filter(entry=>entry.isDirectory()&&/^\d{4}-\d{2}-\d{2}$/.test(entry.name)).map(entry=>entry.name).sort().reverse();
+    for(const date of dates){
+      const base=path.join(gameRoot,date);
+      const status=readJson(path.join(base,'cycle-status.json'),null);
+      if(status?.status!=='COMPLETE'||status?.productionClass!=='DESIGN_ONLY'||!fs.existsSync(path.join(base,'design-revised.json')))continue;
+      const run=spawnSync(process.execPath,[gatePath,`--game=${gameId}`],{
+        cwd:root,
+        env:{...process.env,GAME_ID:gameId,ARTBOOK_GAME_ID:gameId,DESIGN_DATE:date,ARTBOOK_DATE:date},
+        encoding:'utf8'
+      });
+      if(run.status!==0){
+        const detail=[run.stdout,run.stderr].map(value=>String(value||'').trim()).filter(Boolean).join('\n');
+        throw new Error(`DESIGN_BASELINE_GATE_REFRESH_FAILED:${gameId}:${date}${detail?`\n${detail}`:''}`);
+      }
+      refreshed.push({gameId,date});
+      break;
+    }
+  }
+  return refreshed;
+}
 
 function baselineReadyForPromotion(status={}){
   const currentReady=status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true;
@@ -159,6 +192,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
   const queuePath=p('development-queue.json');
   const state=readJson(seedPath,{version:1,seeds:[]});
   const resetResult=materializeOwnerDesignResetSeeds(state,{file:p('owner-design-reset-queue.json')});
+  const baselineGatesRefreshed=refreshCompletedDesignBaselineGates({root,state});
   const portfolio=readJson(portfolioPath,{version:1,projects:[]});
   const catalog=readJson(catalogPath,{version:1,games:[]});
   const queue=readJson(queuePath,{version:1,items:[]});
@@ -302,7 +336,7 @@ export function promoteReadyDesignSeeds({root='.'}={}){
 
   state.updatedAt=stamp;queue.updatedAt=stamp;queue.webValidationPolicy='REQUIRED_WEB_STRICT_REVIEW_BEFORE_POST_WEB_ARTBOOK_AND_TARGET_PLATFORM';
   writeJson(seedPath,state);writeJson(portfolioPath,portfolio);writeJson(catalogPath,catalog);writeJson(queuePath,queue);
-  return {promoted,skipped,reconciledExisting,reconciledPromotedSeeds,queueCount:queue.items.length,ownerResetSeedsMaterialized:resetResult.changed};
+  return {promoted,skipped,reconciledExisting,reconciledPromotedSeeds,queueCount:queue.items.length,ownerResetSeedsMaterialized:resetResult.changed,baselineGatesRefreshed};
 }
 
 if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
@@ -313,6 +347,7 @@ if(import.meta.url===pathToFileURL(process.argv[1]||'').href){
   console.log(`DEVELOPMENT_CONFIRMED_SEED_RECONCILED=${result.reconciledPromotedSeeds.join(',')||'NONE'}`);
   console.log(`DEVELOPMENT_EXISTING_RECONCILED=${result.reconciledExisting.join(',')||'NONE'}`);
   console.log(`OWNER_RESET_SEEDS_MATERIALIZED=${result.ownerResetSeedsMaterialized.join(',')||'NONE'}`);
+  console.log(`DESIGN_BASELINE_GATES_REFRESHED=${result.baselineGatesRefreshed.map(row=>`${row.gameId}:${row.date}`).join(',')||'NONE'}`);
   console.log('LEGACY_DIRECT_LEAD_STALE_GATE_RECONCILE=SUPPORTED');
   if(result.skipped.length)console.log(`DESIGN_PROMOTION_SKIPPED=${JSON.stringify(result.skipped)}`);
 }
