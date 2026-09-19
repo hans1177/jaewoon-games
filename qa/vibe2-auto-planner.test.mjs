@@ -100,6 +100,23 @@ test('release-wait candidates do not consume runnable development planning backl
   assert.equal(result.planningBacklog.capacity,60);
 });
 
+test('supervised review wait also stays outside runnable planning backlog',()=>{
+  const root=tempRepo();
+  const waiting=Array.from({length:60},(_,i)=>({
+    id:`supervised-wait-${i}`,gameId:'dev-web',sourceRoot:`web-games/supervised-wait-${i}`,responsibleFiles:['index.html'],
+    department:'development',type:'implementation',status:'running',goal:'await supervised review',target:'web',
+    blocker:'candidate-awaiting-supervised-review',productionMode:'SUPERVISED_VIBE_COAUTHORING',
+    supervisionContract:{required:true},supervisionApproved:false
+  }));
+  const result=planVibe2AutonomousTasks({
+    status,catalog,queue:{maxConcurrentTasks:256,tasks:waiting},repoRoot:root,
+    maxConcurrentTasks:20,queueMaxConcurrentTasks:256,planningBacklogTarget:60,planningBacklogMinimum:40
+  });
+  assert.equal(result.planned,true);
+  assert.equal(result.planningBacklog.current,0);
+  assert.equal(result.planningBacklog.releaseWaitExcluded,60);
+  assert.equal(result.planningBacklog.capacity,60);
+});
 test('planning backlog target stops plan expansion without changing persistent queue max',()=>{
   const root=tempRepo();
   const queued=Array.from({length:60},(_,i)=>({
