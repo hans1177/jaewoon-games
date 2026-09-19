@@ -774,10 +774,26 @@ jobs:
           let manifest={};
           const candidateManifest=clean(process.env.CANDIDATE_MANIFEST);
           if(candidateManifest&&fs.existsSync(candidateManifest))manifest=JSON.parse(fs.readFileSync(candidateManifest,'utf8'));
+          let workOrder={};
+          if(fs.existsSync('/tmp/vibe2-work-order.json'))workOrder=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
           const explorationFile=clean(process.env.EXPLORATION_FILE);
           const exploration=manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)?JSON.parse(fs.readFileSync(explorationFile,'utf8')):null);
           const candidateFailureClass=clean(process.env.CANDIDATE_FAILURE_CLASS)||null;
           const candidateFailureMessage=clean(process.env.CANDIDATE_FAILURE_MESSAGE)||null;
+          const fallbackCodingMethod=clean(workOrder?.candidateStrategyRole?.strategy)?{
+            version:1,
+            strategy:clean(workOrder.candidateStrategyRole.strategy),
+            candidateVariant:clean(workOrder?.candidateStrategyRole?.variant)||clean(process.env.VARIANT)||'primary',
+            failureFingerprint:clean(workOrder?.unifiedLearning?.failureFingerprint)||null,
+            patchRecipeMode:clean(exploration?.editContract?.patchRecipe?.mode)||null,
+            verifiedFailureLocalMemoryCount:Number(exploration?.editContract?.patchRecipe?.verifiedMemoryCount||0),
+            verifiedFailureLocalMemoryIds:Array.isArray(exploration?.editContract?.patchRecipe?.verifiedMemoryIds)?exploration.editContract.patchRecipe.verifiedMemoryIds.slice(0,8):[],
+            generationAttempts:0,
+            candidateProducedFirstAttempt:false,
+            writableScopeExpansionAllowed:false,
+            learningAuthorityExpanded:false
+          }:null;
+          const baseCodingMethod=manifest?.codingMethod||fallbackCodingMethod;
           const roleResults={
             exploration:exploration?.reuseKey?'PASS':'FAIL',
             implementation:candidateOk?'PASS':'FAIL',
@@ -794,15 +810,15 @@ jobs:
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             candidateFailureClass&&`source-generation-failure:${candidateFailureClass}`,
-            clean(manifest?.codingMethod?.strategy)&&`coding-strategy:${clean(manifest.codingMethod.strategy)}`,
-            clean(manifest?.codingMethod?.responsibilityConfidence)&&`coding-responsibility-confidence:${clean(manifest.codingMethod.responsibilityConfidence)}`,
-            Number(manifest?.codingMethod?.generationAttempts)>0&&`coding-generation-attempts:${Number(manifest.codingMethod.generationAttempts)}`,
-            manifest?.codingMethod?.candidateProducedFirstAttempt===true?'coding-candidate-first-attempt:YES':manifest?.codingMethod?'coding-candidate-first-attempt:NO':'',
-            Number(manifest?.codingMethod?.primaryTargets?.length||0)>0&&`coding-primary-target-count:${Number(manifest.codingMethod.primaryTargets.length)}`,
-            Number(manifest?.codingMethod?.semanticDiffBudget?.allowedSystems?.length||0)>0&&`coding-semantic-system-budget:${Number(manifest.codingMethod.semanticDiffBudget.allowedSystems.length)}`,
-            clean(manifest?.codingMethod?.failureFingerprint)&&`coding-failure-fingerprint:${clean(manifest.codingMethod.failureFingerprint)}`,
-            clean(manifest?.codingMethod?.patchRecipeMode)&&`coding-patch-recipe:${clean(manifest.codingMethod.patchRecipeMode)}`,
-            Number(manifest?.codingMethod?.verifiedFailureLocalMemoryCount||0)>0&&`coding-verified-failure-memory-count:${Number(manifest.codingMethod.verifiedFailureLocalMemoryCount)}`,
+            clean(baseCodingMethod?.strategy)&&`coding-strategy:${clean(baseCodingMethod.strategy)}`,
+            clean(baseCodingMethod?.responsibilityConfidence)&&`coding-responsibility-confidence:${clean(baseCodingMethod.responsibilityConfidence)}`,
+            Number(baseCodingMethod?.generationAttempts)>0&&`coding-generation-attempts:${Number(baseCodingMethod.generationAttempts)}`,
+            baseCodingMethod?.candidateProducedFirstAttempt===true?'coding-candidate-first-attempt:YES':baseCodingMethod?'coding-candidate-first-attempt:NO':'',
+            Number(baseCodingMethod?.primaryTargets?.length||0)>0&&`coding-primary-target-count:${Number(baseCodingMethod.primaryTargets.length)}`,
+            Number(baseCodingMethod?.semanticDiffBudget?.allowedSystems?.length||0)>0&&`coding-semantic-system-budget:${Number(baseCodingMethod.semanticDiffBudget.allowedSystems.length)}`,
+            clean(baseCodingMethod?.failureFingerprint)&&`coding-failure-fingerprint:${clean(baseCodingMethod.failureFingerprint)}`,
+            clean(baseCodingMethod?.patchRecipeMode)&&`coding-patch-recipe:${clean(baseCodingMethod.patchRecipeMode)}`,
+            Number(baseCodingMethod?.verifiedFailureLocalMemoryCount||0)>0&&`coding-verified-failure-memory-count:${Number(baseCodingMethod.verifiedFailureLocalMemoryCount)}`,
             `actions-run:${process.env.GITHUB_RUN_ID}`,
             clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`,
@@ -850,14 +866,15 @@ jobs:
             manifestPath:candidateManifest||null
           }:null;
           const candidateFailure=candidateOk?null:{class:candidateFailureClass||'OTHER',message:candidateFailureMessage};
-          const codingMethod=manifest?.codingMethod?{
-            ...manifest.codingMethod,
+          const codingMethod=baseCodingMethod?{
+            ...baseCodingMethod,
             implementationPass:candidateOk,
             incrementalQaPass:testOk,
             performanceSanityPass:performanceOk,
-            firstCandidatePass:Boolean(candidateOk&&testOk&&performanceOk&&manifest.codingMethod.candidateProducedFirstAttempt===true),
+            firstCandidatePass:Boolean(candidateOk&&testOk&&performanceOk&&baseCodingMethod.candidateProducedFirstAttempt===true),
             fullRegressionVerified:false,
-            reviewVerified:false
+            reviewVerified:false,
+            telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'
           }:null;
           const result={version:8,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,roleResults,practiceDistillation,durationMs:metrics.workerTotalMs,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
