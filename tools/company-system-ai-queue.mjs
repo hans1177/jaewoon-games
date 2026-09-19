@@ -1,0 +1,102 @@
+// 파일명: tools/company-system-ai-queue.mjs
+// 역할: 총괄이 외부 무료 AI에 배정한 시스템 작업을 충돌 없이 예약하고 결과를 감독 대기로 모은다.
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+const clean=v=>String(v??'').trim();
+const unique=xs=>[...new Set((xs||[]).map(clean).filter(Boolean))];
+const now=()=>new Date().toISOString();
+
+function readJson(file,fallback={}){try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}}
+function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n','utf8');}
+function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
+function normalizeTask(row={}){
+  return{
+    id:clean(row.id),status:clean(row.status)||'queued',priority:clean(row.priority)||'normal',
+    goal:clean(row.goal),responsibleFiles:unique(row.responsibleFiles),contextFiles:unique(row.contextFiles),
+    focusPatterns:row.focusPatterns&&typeof row.focusPatterns==='object'?row.focusPatterns:{},
+    acceptanceCriteria:unique(row.acceptanceCriteria),verificationCommands:unique(row.verificationCommands),
+    dependencies:unique(row.dependencies),retries:Math.max(0,Number(row.retries||0)),
+    maxRetries:Math.max(0,Math.min(5,Number(row.maxRetries??2))),reservationId:clean(row.reservationId)||null,
+    reservedAt:clean(row.reservedAt)||null,candidateBranch:clean(row.candidateBranch)||null,
+    pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:clean(row.lastOutcome)||null,
+    blocker:clean(row.blocker)||null,evidence:unique(row.evidence),supervisorReviewRequired:row.supervisorReviewRequired!==false,
+    createdAt:clean(row.createdAt)||now(),updatedAt:clean(row.updatedAt)||now()
+  };
+}
+export function normalizeSystemAiQueue(input={}){
+  return{version:1,kind:'company-system-ai-queue',policy:'PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK',
+    worker:'tools/company-system-ai-worker.mjs',tasks:(input.tasks||[]).map(normalizeTask)};
+}
+function rank(p){return({critical:4,high:3,normal:2,low:1})[clean(p).toLowerCase()]||2;}
+function overlap(a,b){const s=new Set(a.responsibleFiles||[]);return (b.responsibleFiles||[]).some(x=>s.has(x));}
+function dependencyReady(task,queue){
+  const byId=new Map(queue.tasks.map(x=>[x.id,x]));
+  return (task.dependencies||[]).every(id=>byId.get(id)?.status==='done');
+}
+export function reserveSystemAiBatch(queueInput,{max=16,reservationId=''}={}){
+  const queue=normalizeSystemAiQueue(queueInput), active=queue.tasks.filter(t=>t.status==='running');
+  const candidates=queue.tasks.filter(t=>t.status==='queued'&&dependencyReady(t,queue))
+    .sort((a,b)=>rank(b.priority)-rank(a.priority)||a.createdAt.localeCompare(b.createdAt));
+  const chosen=[];
+  for(const task of candidates){
+    if(chosen.length>=Math.max(1,Math.floor(Number(max)||16)))break;
+    if([...active,...chosen].some(other=>overlap(task,other)))continue;
+    chosen.push(task);
+  }
+  const ids=new Set(chosen.map(x=>x.id)),stamp=now();
+  const rid=clean(reservationId)||`system-ai:${Date.now()}`;
+  const tasks=queue.tasks.map(t=>ids.has(t.id)?{...t,status:'running',reservationId:rid,reservedAt:stamp,updatedAt:stamp,blocker:null}:t);
+  return{queue:{...queue,tasks},reserved:tasks.filter(t=>ids.has(t.id)),reservationId:rid};
+}
+export function applySystemAiResults(queueInput,results=[]){
+  let queue=normalizeSystemAiQueue(queueInput);const byResult=new Map((results||[]).map(r=>[clean(r.taskId),r]).filter(([id])=>id));
+  const stamp=now();
+  queue={...queue,tasks:queue.tasks.map(task=>{
+    const row=byResult.get(task.id);if(!row)return task;
+    if(task.status!=='running')return task;
+    const outcome=clean(row.outcome).toUpperCase();
+    const evidence=unique([...(task.evidence||[]),...(row.evidence||[])]);
+    if(outcome==='PASS')return{...task,status:'awaiting-supervisor',candidateBranch:clean(row.candidateBranch)||null,pullRequestUrl:clean(row.pullRequestUrl)||null,lastOutcome:'PASS',blocker:'primary-ai-review-pending',evidence,updatedAt:stamp,reservationId:null,reservedAt:null};
+    const retries=task.retries+1;
+    const retry=retries<=task.maxRetries;
+    return{...task,status:retry?'queued':'failed',retries,lastOutcome:outcome||'FAIL',blocker:clean(row.blocker)||'system-ai-worker-failed',evidence,updatedAt:stamp,reservationId:null,reservedAt:null};
+  })};
+  return queue;
+}
+export function requeueSystemAiTask(queueInput,{id,reason='primary-ai-rework'}={}){
+  const queue=normalizeSystemAiQueue(queueInput),stamp=now();let found=false;
+  const tasks=queue.tasks.map(t=>{if(t.id!==clean(id))return t;found=true;return{...t,status:'queued',blocker:clean(reason),candidateBranch:null,pullRequestUrl:null,reservationId:null,reservedAt:null,updatedAt:stamp,evidence:unique([...(t.evidence||[]),`primary-ai-rework:${clean(reason)}`])};});
+  if(!found)throw new Error(`SYSTEM_AI_TASK_NOT_FOUND:${clean(id)}`);return{...queue,tasks};
+}
+export function acceptSystemAiTask(queueInput,{id,evidence=[]}={}){
+  const queue=normalizeSystemAiQueue(queueInput),stamp=now();let found=false;
+  const tasks=queue.tasks.map(t=>{if(t.id!==clean(id))return t;found=true;if(t.status!=='awaiting-supervisor')throw new Error(`SYSTEM_AI_TASK_NOT_REVIEWABLE:${t.id}:${t.status}`);return{...t,status:'done',blocker:null,lastOutcome:'PRIMARY_AI_ACCEPTED',updatedAt:stamp,evidence:unique([...(t.evidence||[]),...evidence,'primary-ai-review:PASS'])};});
+  if(!found)throw new Error(`SYSTEM_AI_TASK_NOT_FOUND:${clean(id)}`);return{...queue,tasks};
+}
+export function runSystemAiQueue(args={}){
+  const file=clean(args.queue)||'.vibe2/system-ai-queue.json',command=clean(args.command).toLowerCase();
+  let queue=normalizeSystemAiQueue(readJson(file,{tasks:[]}));
+  if(command==='reserve'){
+    const result=reserveSystemAiBatch(queue,{max:Number(args.max||16),reservationId:args.reservation});
+    writeJson(file,result.queue);if(clean(args.output))writeJson(args.output,{version:1,reservationId:result.reservationId,tasks:result.reserved});
+    return{command,...result};
+  }
+  if(command==='fan-in'){
+    const dir=clean(args.results);const rows=[];
+    if(dir&&fs.existsSync(dir))for(const name of fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort())rows.push(readJson(path.join(dir,name),{}));
+    queue=applySystemAiResults(queue,rows);writeJson(file,queue);return{command,queue,results:rows.length};
+  }
+  if(command==='requeue'){queue=requeueSystemAiTask(queue,{id:args.id,reason:args.reason});writeJson(file,queue);return{command,queue};}
+  if(command==='accept'){queue=acceptSystemAiTask(queue,{id:args.id,evidence:unique(clean(args.evidence).split(','))});writeJson(file,queue);return{command,queue};}
+  if(command==='summary')return{command,queue,counts:queue.tasks.reduce((m,t)=>(m[t.status]=(m[t.status]||0)+1,m),{})};
+  throw new Error(`SYSTEM_AI_QUEUE_COMMAND_UNKNOWN:${command}`);
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+  const result=runSystemAiQueue(parseArgs());
+  const counts=result.queue.tasks.reduce((m,t)=>(m[t.status]=(m[t.status]||0)+1,m),{});
+  console.log(`COMPANY_SYSTEM_AI_QUEUE=${result.command.toUpperCase()}`);
+  console.log(`COMPANY_SYSTEM_AI_COUNTS=${JSON.stringify(counts)}`);
+}
