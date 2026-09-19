@@ -630,6 +630,9 @@ test('Ollama transport uses streaming instead of one giant non-streaming respons
   assert.match(workerSource, /stream:true/);
   assert.doesNotMatch(workerSource, /stream:false/);
   assert.match(workerSource, /node:http/);
+  assert.match(workerSource, /vibe2PartialOutput=output/);
+  assert.match(workerSource, /error\?\.vibe2PartialOutput/);
+  assert.match(workerSource, /\['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'\]/);
 });
 
 test('Unreal C++ text source is allowed', async () => {
