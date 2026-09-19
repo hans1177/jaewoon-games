@@ -87,7 +87,7 @@
     "maxWorkMinutes": 22,
     "maxModelCallsPerWorker": 1,
     "dispatchNextWhenCapacityOpens": true,
-    "refillMode": "per-worker-repository-dispatch-with-fan-in-fallback",
+    "refillMode": "fan-in-repository-dispatch-with-hourly-safety-net",
     "refillRef": "vibe2-unreal-core",
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,
@@ -132,14 +132,14 @@
     },
     "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
-    "slotRefillTrigger": "repository-dispatch",
+    "slotRefillTrigger": "disabled",
     "slotRefillBranchPrefix": "vibe2/refill/",
-    "slotRefillSingleVariantOnly": true,
+    "slotRefillSingleVariantOnly": false,
     "slotRefillWorkerDirectControlWrite": false,
     "slotRefillSourceLocksHeldUntilFanIn": true,
     "postReleaseFocusedRunnerSlots": 1,
     "postReleaseFocusedRefill": true,
-    "legacySlotRefillBranchCompatibility": true,
+    "legacySlotRefillBranchCompatibility": false,
     "systemStewardProtectedSlots": 1,
     "systemStewardSlotBorrowableWhenIdle": true,
     "parallelismPolicy": "UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY",
@@ -172,7 +172,10 @@
       "explorationUsesReservedContractSha": true,
       "supervisorExplorationMayNotBlockGameWorkerStart": true,
       "outputPath": "/tmp/vibe2-exploration/vibe2-exploration.json"
-    }
+    },
+    "perWorkerSlotRefillEnabled": false,
+    "fanInRefillTrigger": "repository-dispatch",
+    "refillBatchPolicy": "COMPLETE_CURRENT_20_WAVE_THEN_FAN_IN_THEN_REFILL"
   },
   "adaptiveBackpressure": {
     "enabled": true,
@@ -718,10 +721,10 @@
       "performance-sanity"
     ],
     "sameFileParallelWrite": false,
-    "explorationMode": "dedicated-exploration-worker-handoff",
+    "explorationMode": "task-local-exploration-handoff",
     "explorationRequired": true,
     "reusableMachineHandoff": true,
-    "sharedPreparation": true,
+    "sharedPreparation": false,
     "longWorkSlotProtection": true,
     "longWorkProtectedSlots": 1,
     "parallelRoles": [
@@ -734,7 +737,7 @@
       "fan-in-package-review-worker"
     ],
     "completionCriteria": [
-      "exploration-handoff-produced-and-reused",
+      "task-local-exploration-handoff-produced-and-reused",
       "functional-scope-implemented",
       "all-package-task-incremental-qa-pass",
       "performance-sanity-pass",
