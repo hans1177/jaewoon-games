@@ -552,7 +552,8 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
         zeroChange?'You MUST produce at least one edits[] entry. Use the exact Allowed edit path above. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use the exact Allowed edit path above, copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':editMatchFailure?'Use exactly one short, unique find snippet copied character-for-character from the EDITABLE FILE block. Prefer one distinctive line or the smallest adjacent line group that occurs once. Do not paraphrase, normalize, reconstruct, or guess source text.':semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
-        zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||timeoutFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':''
+        zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||timeoutFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':'',
+        timeoutFailure?'Start the JSON with the edits array and put the single complete edit object first. Do not spend tokens on summary or tests before the edit.':''
       ].filter(Boolean).join('\n');
   const focusedFinal=!allowFullRewrite&&(attempt>=3||(attempt>=2&&timeoutFailure));
   const fullWebFinal=attempt>=3&&allowFullRewrite;
@@ -571,6 +572,7 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
   const text=String(output??''),trimmed=text.trimStart();
   if(!trimmed)return false;
   if(mode==='FULL_WEB_EXPANSION')return trimmed.startsWith(FULL_WEB_EXPANSION_PREFIX)&&text.includes(FULL_WEB_EXPANSION_END_MARKER);
+  if(mode==='JSON_EDIT_PARTIAL'&&recoverPartialJsonEdit(text,{reason:'timeout'}))return true;
   if(mode==='FULL_WEB'){
     if(trimmed.startsWith(FULL_FILE_PREFIX))return text.includes(FULL_FILE_END_MARKER);
     if(/^\`\`\`(?:html)?\s*/i.test(trimmed))return /<\/html>\s*\`\`\`\s*$/i.test(trimmed);
@@ -617,10 +619,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)));
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     const temperature=expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(retry?(attempt>=3?0.22:0.16):0.08);
-    const completionMode=expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':'JSON_EDIT');
+    const completionMode=expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(timeoutFastEscalation?'JSON_EDIT_PARTIAL':'JSON_EDIT'));
     try{
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow,temperature,completionMode});
       lastRaw=raw;
+      const streamedPartialEdit=completionMode==='JSON_EDIT_PARTIAL'?recoverPartialJsonEdit(raw,{reason:'timeout'}):null;
       let candidate;
       if(expansionMode){
         const stageTarget=fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1);
@@ -649,11 +652,11 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
           candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
         }
       }else{
-        candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
+        candidate=normalizeCandidate(streamedPartialEdit||raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite,minFullRewriteBytes});
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -834,6 +837,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     generationRecoveryUsed:generation.recoveryUsed===true,
     partialTimeoutRecovery:generation.partialTimeoutRecovery===true,
     partialMalformedRecovery:generation.partialMalformedRecovery===true,
+    streamedPartialEditRecovery:generation.streamedPartialEditRecovery===true,
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
