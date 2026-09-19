@@ -300,6 +300,9 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(design,/GEMINI_MODEL_QUARANTINED=/);
   assert.match(design,/GEMINI_DISTINCT_LEAD_FAILOVER_LANES=/);
   assert.match(design,/AI_PROVIDER=\$\{designCheckpoint\.effectiveDesignerProvider\|\|'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK'\}/);
+  const checkpointInitialization=design.indexOf('let designCheckpoint=readJson(checkpointPath,null);');
+  const checkpointProviderLog=design.indexOf("console.log(\`AI_PROVIDER=\${designCheckpoint.effectiveDesignerProvider||'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK'}\`);");
+  assert.ok(checkpointInitialization>=0&&checkpointProviderLog>checkpointInitialization,'AI provider logging happens only after checkpoint initialization');
   assert.match(design,/generativelanguage\.googleapis\.com/);
   assert.match(design,/responseJsonSchema:schema/);
   assert.match(design,/VIBE_LOCAL_OLLAMA/);
