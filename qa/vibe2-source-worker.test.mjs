@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -39,7 +39,7 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.equal(result.exploration.sourceWrite,false);
   assert.ok(result.exploration.reuseKey.length>=16);
   assert.equal(result.roleResults.exploration,'PASS');
-  assert.equal(result.codingMethod.version,1);
+  assert.equal(result.codingMethod.version,2);
   assert.equal(result.codingMethod.generationAttempts,1);
   assert.equal(result.codingMethod.candidateProducedFirstAttempt,true);
   assert.equal(result.codingMethod.writableScopeExpansionAllowed,false);
@@ -450,9 +450,60 @@ test('second no-op receives one short focused third retry', async () => {
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
+test('semantic diff hard gate allows primary responsibility edits inside the compiled system budget',()=>{
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'function handlePointer(e){ pointerState=e; return placeTower(pointerState); }',replace:'function handlePointer(e){ pointerState=normalizePointer(e); return placeTower(pointerState); }'}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],allowedDependentSymbolsOrSystems:['placeTower'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','PLACEMENT'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    }
+  });
+  assert.equal(result.mode,'HARD_ENFORCE');
+  assert.equal(result.pass,true);
+  assert.ok(result.touchedSystems.includes('INPUT'));
+});
+
+test('semantic diff hard gate rejects explicit unrelated system mutation even when edit touches the primary symbol',()=>{
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'function handlePointer(e){ pointerState=e; return placeTower(pointerState); }',replace:'function handlePointer(e){ pointerState=e; gold+=999; return placeTower(pointerState); }'}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['handlePointer'],allowedDependentSymbolsOrSystems:['placeTower'],ownedState:['pointerState'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['INPUT','PLACEMENT'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:[]}
+    }
+  });
+  assert.equal(result.pass,false);
+  assert.ok(result.unexpectedSystems.includes('ECONOMY'));
+  assert.match(result.violations.join('|'),/UNRELATED_SYSTEM:ECONOMY/);
+});
+
+test('semantic diff hard gate protects existing save keys from silent removal',()=>{
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'function saveGame(){ localStorage.setItem("demo-save", JSON.stringify(state)); }',replace:'function saveGame(){ localStorage.setItem("new-save", JSON.stringify(state)); }'}],newFiles:[],replaceFiles:[]},
+    editContract:{
+      responsibilityConfidence:'HIGH',primaryTargets:['saveGame'],allowedDependentSymbolsOrSystems:[],ownedState:['serializedProgress'],
+      codingArchitecture:{developmentMode:'PRESERVE_PATCH'},
+      semanticDiffBudget:{allowedSystems:['SAVE'],unrelatedSystemMutationForbidden:true,saveKeysMustRemainCompatible:['demo-save']}
+    }
+  });
+  assert.equal(result.pass,false);
+  assert.match(result.violations.join('|'),/SAVE_KEY_COMPATIBILITY/);
+});
+
+test('ambiguous or low confidence semantic classification is observe-only instead of false rejecting',()=>{
+  const result=evaluateSemanticDiffBudget({
+    candidate:{edits:[{path:'index.html',find:'const value=1;',replace:'const value=2; gold+=1;'}],newFiles:[],replaceFiles:[]},
+    editContract:{responsibilityConfidence:'LOW',primaryTargets:[],codingArchitecture:{developmentMode:'PRESERVE_PATCH'},semanticDiffBudget:{allowedSystems:['INPUT'],unrelatedSystemMutationForbidden:true}}
+  });
+  assert.equal(result.mode,'OBSERVE_ONLY');
+  assert.equal(result.pass,true);
+  assert.equal(result.ambiguousClassificationObserved,true);
+});
 test('generation failure classification keeps causal retry reasons distinct',()=>{
   assert.equal(generationFailureClass(new Error('변경 없는 edit: index.html')),'NO_OP');
   assert.equal(generationFailureClass(new Error('Ollama 응답 시간 초과: 240000ms')),'TIMEOUT');
+  assert.equal(generationFailureClass(new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY')),'SEMANTIC_DIFF_BUDGET');
   assert.equal(generationFailureClass(new Error('책임 파일 범위 밖 수정 금지: config.js')),'INVALID_PATH');
   assert.equal(generationFailureClass(new Error('전체 교체 파일 크기 오류: index.html')),'FULL_REWRITE_SIZE');
   assert.equal(generationFailureClass(new Error('모델 JSON 파싱 실패')),'MALFORMED_OUTPUT');
