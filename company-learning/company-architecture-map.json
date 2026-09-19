@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -100,11 +100,11 @@
     "supervisoryOverlay": [
       "PRIMARY_AI_OBSERVE_PORTFOLIO_AND_RUNTIME",
       "PRIMARY_AI_IDENTIFY_HIGHEST_IMPACT_BOTTLENECK",
-      "PRIMARY_AI_REPRIORITIZE_OR_ASSIGN_HIGH_IMPACT_WORK",
-      "EXTERNAL_AI_EXECUTE_IN_PARALLEL",
-      "DETERMINISTIC_QA_AND_EVIDENCE",
+      "PRIMARY_AI_DECOMPOSE_AND_ENQUEUE_SYSTEM_AI_ASSIGNMENTS",
+      "FREE_EXTERNAL_AI_WORKERS_EXECUTE_DISJOINT_TASKS_IN_PARALLEL",
+      "DETERMINISTIC_QA_AND_CANDIDATE_PR",
       "PRIMARY_AI_ASYNC_REVIEW",
-      "PRIMARY_AI_REWORK_REOPEN_OR_REDIRECT",
+      "PRIMARY_AI_ACCEPT_OR_REQUEUE_WITH_REWORK",
       "LONG_TERM_ROADMAP_PROGRESS_REVIEW"
     ],
     "gameWork": [
@@ -142,5 +142,20 @@
   "primaryAiPresenceRequired": false,
   "autonomous24hWorkersContinueWithoutPrimaryAi": true,
   "completionAuthority": "DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES",
-  "primaryAiMayReopenOrReprioritizeVerifiedWork": true
+  "primaryAiMayReopenOrReprioritizeVerifiedWork": true,
+  "systemAiWorkerPool": {
+    "enabled": true,
+    "queue": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
+    "workflow": ".github/workflows/company-system-ai-workers.yml",
+    "queueTool": "tools/company-system-ai-queue.mjs",
+    "workerTool": "tools/company-system-ai-worker.mjs",
+    "provider": "LOCAL_OLLAMA",
+    "candidateBranchPrefix": "system-ai/candidate/",
+    "directMainWrite": false,
+    "gameSourceWrite": false,
+    "workerSelfAcceptance": false,
+    "deterministicVerificationBeforePrimaryAiReview": true,
+    "primaryAiReworkOrAccept": true,
+    "independentTaskParallelism": true
+  }
 }
