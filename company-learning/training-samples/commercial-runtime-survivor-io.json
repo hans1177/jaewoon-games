@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-survivor-io",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Survivor.io의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=ACTION_SURVIVAL_ROGUELITE; inputProfile=SURVIVAL; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 생존 액션 동작을 Unity로 독립 구현할 때는 이동 입력, 플레이어 상태, 적 스폰 예산, 피해 이벤트, 업그레이드 적용을 서로 분리한다. 대량 적은 풀링하고 매 프레임 전체 탐색을 피하며, 피해와 사망은 중복 적용되지 않는 이벤트 경계로 처리한다. 업그레이드는 현재 런 build에 결정적으로 적용하고 다음 선택에서 같은 효과가 이중 등록되지 않게 소유권을 한 시스템에 둔다.",
+  "sourceRevision": "external-playtest-35427383643-survivor-io",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Survivor.io",
+    "packageId": "com.dxx.firenow",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.dxx.firenow",
+    "playtestRunId": "35427383643",
+    "beforeScreenshotSha256": "12f31b64f0472cf432b05c350428ae0e32b778aecf61560581659f0c932dc432",
+    "afterScreenshotSha256": "82e81b3e09dc810842f6dab00ac29f391200f9c163d019f7cacaa6d42e2e93cc",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-survival-runtime-architecture",
+  "tags": [
+    "horde-pressure",
+    "upgrade-choice",
+    "run-build",
+    "damage-events",
+    "enemy-budget"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-pokemon-go",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Pokémon GO의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=LOCATION_COLLECTION_RPG; inputProfile=LOCATION_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 위치 기반 수집 동작을 독립 구현할 때는 위치 컨텍스트, 지도 표현, 조우 상태, 수집 인벤토리, 성장 상태를 분리한다. 위치 입력과 게임 상태를 직접 결합하지 말고 검증 계층을 두며, 수집/보상 반영은 재시도에도 중복되지 않게 한다.",
+  "sourceRevision": "external-playtest-35428952782-pokemon-go",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Pokémon GO",
+    "packageId": "com.nianticlabs.pokemongo",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.nianticlabs.pokemongo",
+    "playtestRunId": "35428952782",
+    "beforeScreenshotSha256": "3b8b4e7cfe32828e00ca623e64431d8c58b436bcd9e2a86f7cb282406f76e4dc",
+    "afterScreenshotSha256": "36814f7000f6b8565c8a5a2a9bb5e08b880d97cdef8f6fdad04a55df8826c5d5",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-location-collection-runtime-architecture",
+  "tags": [
+    "map-exploration",
+    "collection-loop",
+    "encounter-state",
+    "location-context",
+    "progression"
+  ]
+}

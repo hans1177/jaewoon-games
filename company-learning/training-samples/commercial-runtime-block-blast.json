@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-block-blast",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Block Blast!의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=PUZZLE; inputProfile=BLOCK_PUZZLE; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 퍼즐 동작을 Unity로 독립 구현할 때는 보드 논리 상태를 단일 source of truth로 두고 입력, 매치/클리어 판정, 연쇄 처리, 애니메이션을 분리한다. 입력 중복은 해상 중인 보드 상태에서 gate하고, 애니메이션은 결과 상태를 표현할 뿐 규칙 상태를 직접 바꾸지 않게 한다. 레벨 목표와 진행 저장은 보드 프레임 상태와 분리해 재시작·백그라운드 복귀에서도 동일 규칙으로 복원되게 한다.",
+  "sourceRevision": "external-playtest-35426859878-block-blast",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Block Blast!",
+    "packageId": "com.block.juggle",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.block.juggle",
+    "playtestRunId": "35426859878",
+    "beforeScreenshotSha256": "4452a2bdbaca6cd7a67999905d7ee4accbcaff3390d00bfd5205d8cec3024797",
+    "afterScreenshotSha256": "08aa83aaf05dc229a78be3d0db0ed5ccfdb36dfed9150a4b39e728dbce2d59ca",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-puzzle-runtime-architecture",
+  "tags": [
+    "board-state",
+    "goal-loop",
+    "combo-feedback",
+    "level-progression",
+    "touch-input"
+  ]
+}

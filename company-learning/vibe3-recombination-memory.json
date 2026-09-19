@@ -1,0 +1,4227 @@
+{
+  "version": 1,
+  "generation": "V3-PUMP-TRANSFORMATIVE-RECOMBINATION",
+  "materials": [
+    {
+      "id": "authorized-source-block-blast-fca5cac46174f39d",
+      "project": "block-blast",
+      "gameId": "block-blast",
+      "taskType": "coding",
+      "sourceKind": "authorized-source",
+      "evidenceMode": "AUTHORIZED_SOURCE",
+      "sourceRevision": "sha256:fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c",
+      "domains": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "session-retry-gameover",
+        "tutorial-onboarding",
+        "coding"
+      ],
+      "runtimeSignals": [
+        "runtime:authorizedSourceEvidence",
+        "runtime:ownerReuseAuthority"
+      ],
+      "capabilities": {
+        "sourceStructure": true,
+        "assetStructure": true,
+        "algorithmStructure": true,
+        "runtimeObservation": false
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_7ac0eb5593f4c273",
+      "project": "external-commercial-afk-arena",
+      "gameId": "external-commercial-afk-arena",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35427794246-afk-arena",
+      "domains": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_ce62bbf02cf64b42",
+      "project": "external-commercial-among-us",
+      "gameId": "external-commercial-among-us",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35426386535-among-us",
+      "domains": [
+        "lobby-flow",
+        "role-state",
+        "round-objective",
+        "player-interaction",
+        "vote-or-result",
+        "commercial-social-party-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_d6406686c5fa4641",
+      "project": "external-commercial-angry-birds-2",
+      "gameId": "external-commercial-angry-birds-2",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35428793011-angry-birds-2",
+      "domains": [
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression",
+        "touch-input",
+        "commercial-puzzle-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_00b3875151e806fd",
+      "project": "external-commercial-arknights",
+      "gameId": "external-commercial-arknights",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35430868228-arknights",
+      "domains": [
+        "lane-pressure",
+        "placement",
+        "wave-state",
+        "upgrade-path",
+        "enemy-counter",
+        "commercial-tower-defense-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_c1f37311129b9fcd",
+      "project": "external-commercial-asphalt-legends",
+      "gameId": "external-commercial-asphalt-legends",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35430212865-asphalt-legends",
+      "domains": [
+        "vehicle-control",
+        "race-progress",
+        "speed-feedback",
+        "track-pressure",
+        "upgrade-loop",
+        "commercial-racing-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_5f3e935c70e241c6",
+      "project": "external-commercial-block-blast",
+      "gameId": "external-commercial-block-blast",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35426859878-block-blast",
+      "domains": [
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression",
+        "touch-input",
+        "commercial-puzzle-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_1163f3226ee11528",
+      "project": "external-commercial-brawl-stars",
+      "gameId": "external-commercial-brawl-stars",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35352264048-brawl-stars",
+      "domains": [
+        "short-match",
+        "arena-positioning",
+        "ability-cooldown",
+        "team-role",
+        "combat-feedback",
+        "commercial-action-pvp-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_96c682135852a07f",
+      "project": "external-commercial-candy-crush-saga",
+      "gameId": "external-commercial-candy-crush-saga",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35427589109-candy-crush-saga",
+      "domains": [
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression",
+        "touch-input",
+        "commercial-puzzle-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_0a997b523f002340",
+      "project": "external-commercial-clash-of-clans",
+      "gameId": "external-commercial-clash-of-clans",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35428190268-clash-of-clans",
+      "domains": [
+        "base-layout",
+        "resource-loop",
+        "upgrade-queue",
+        "unit-composition",
+        "attack-defense-cycle",
+        "commercial-base-strategy-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_bd4c5fc8f5a2baba",
+      "project": "external-commercial-efootball",
+      "gameId": "external-commercial-efootball",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35430468035-efootball",
+      "domains": [
+        "team-control",
+        "possession-state",
+        "match-clock",
+        "formation",
+        "action-feedback",
+        "commercial-football-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_07d469e0715b6c49",
+      "project": "external-commercial-gardenscapes",
+      "gameId": "external-commercial-gardenscapes",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35429108736-gardenscapes",
+      "domains": [
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression",
+        "touch-input",
+        "commercial-puzzle-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_e05d752a6599fd9a",
+      "project": "external-commercial-hay-day",
+      "gameId": "external-commercial-hay-day",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35430868228-hay-day",
+      "domains": [
+        "crop-cycle",
+        "production-chain",
+        "order-loop",
+        "inventory",
+        "expansion",
+        "commercial-farm-cozy-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_ede587b68269e0a2",
+      "project": "external-commercial-hill-climb-racing-2",
+      "gameId": "external-commercial-hill-climb-racing-2",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35428635250-hill-climb-racing-2",
+      "domains": [
+        "short-session",
+        "simple-input",
+        "fast-retry",
+        "score-loop",
+        "mobile-feedback",
+        "commercial-casual-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_ee48f3453c5b3752",
+      "project": "external-commercial-homescapes",
+      "gameId": "external-commercial-homescapes",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35429280686-homescapes",
+      "domains": [
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression",
+        "touch-input",
+        "commercial-puzzle-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_071901d91d083d5c",
+      "project": "external-commercial-monopoly-go",
+      "gameId": "external-commercial-monopoly-go",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35428349641-monopoly-go",
+      "domains": [
+        "board-progression",
+        "dice-or-step-loop",
+        "reward-cycle",
+        "collection",
+        "event-layer",
+        "commercial-casual-board-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_83279d4e38096cc1",
+      "project": "external-commercial-piano-fire",
+      "gameId": "external-commercial-piano-fire",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35426721957-piano-fire",
+      "domains": [
+        "timing-window",
+        "note-stream",
+        "input-judgement",
+        "combo-state",
+        "audio-visual-sync",
+        "commercial-rhythm-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_e19c773311e0f6e8",
+      "project": "external-commercial-pizza-ready",
+      "gameId": "external-commercial-pizza-ready",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35429978960-pizza-ready",
+      "domains": [
+        "service-loop",
+        "queue-flow",
+        "income-cycle",
+        "station-upgrade",
+        "capacity-growth",
+        "commercial-idle-tycoon-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_4798ad0b59d7deb1",
+      "project": "external-commercial-pk-xd",
+      "gameId": "external-commercial-pk-xd",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35426558013-pk-xd",
+      "domains": [
+        "avatar-state",
+        "world-interaction",
+        "social-space",
+        "collection",
+        "session-persistence",
+        "commercial-social-sandbox-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_141acea41c2a2e4c",
+      "project": "external-commercial-pokemon-go",
+      "gameId": "external-commercial-pokemon-go",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35428952782-pokemon-go",
+      "domains": [
+        "map-exploration",
+        "collection-loop",
+        "encounter-state",
+        "location-context",
+        "progression",
+        "commercial-location-collection-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_cad6fd2e8d92dd47",
+      "project": "external-commercial-royal-match",
+      "gameId": "external-commercial-royal-match",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35427196750-royal-match",
+      "domains": [
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression",
+        "touch-input",
+        "commercial-puzzle-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_9ab310f8bd269c96",
+      "project": "external-commercial-simcity-buildit",
+      "gameId": "external-commercial-simcity-buildit",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35430868228-simcity-buildit",
+      "domains": [
+        "city-layout",
+        "resource-production",
+        "population-demand",
+        "upgrade-timer",
+        "service-coverage",
+        "commercial-city-builder-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_0b01b1c6ab6030ce",
+      "project": "external-commercial-standoff-2",
+      "gameId": "external-commercial-standoff-2",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35430605778-standoff-2",
+      "domains": [
+        "aim-input",
+        "movement-state",
+        "weapon-state",
+        "round-loop",
+        "combat-feedback",
+        "commercial-tactical-fps-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_d466f454c44896a4",
+      "project": "external-commercial-subway-surfers",
+      "gameId": "external-commercial-subway-surfers",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35427024097-subway-surfers",
+      "domains": [
+        "short-session",
+        "simple-input",
+        "fast-retry",
+        "score-loop",
+        "mobile-feedback",
+        "commercial-casual-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_3714e018b97f98ed",
+      "project": "external-commercial-survivor-io",
+      "gameId": "external-commercial-survivor-io",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35427383643-survivor-io",
+      "domains": [
+        "horde-pressure",
+        "upgrade-choice",
+        "run-build",
+        "damage-events",
+        "enemy-budget",
+        "commercial-survival-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "material_0b57b24b98607755",
+      "project": "external-commercial-whiteout-survival",
+      "gameId": "external-commercial-whiteout-survival",
+      "taskType": "unity",
+      "sourceKind": "commercial-runtime-reference",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "external-playtest-35429678065-whiteout-survival",
+      "domains": [
+        "settlement-growth",
+        "survival-resource",
+        "hero-or-unit-growth",
+        "event-pressure",
+        "alliance-layer",
+        "commercial-survival-strategy-runtime-architecture",
+        "unity"
+      ],
+      "runtimeSignals": [
+        "runtime:teacherReview",
+        "runtime:runtime"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "external-black-box-block-blast-run-30",
+      "project": "block-blast",
+      "gameId": "block-blast",
+      "taskType": "qa",
+      "sourceKind": "external-black-box",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1",
+      "domains": [
+        "qa"
+      ],
+      "runtimeSignals": [
+        "runtime:runtime",
+        "runtime:blackBoxEvidence",
+        "runtime:gameEntry",
+        "runtime:inputResponse",
+        "runtime:processSurvival",
+        "runtime:noFatalCrashOrAnr"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "external-black-box-cavern-cravers-run-47",
+      "project": "cavern-cravers",
+      "gameId": "cavern-cravers",
+      "taskType": "qa",
+      "sourceKind": "external-black-box",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "sha256:53702f0b724d8b6d329b6ac10f0a142eb43fcdc713c14b8950e5b6abaa801d77",
+      "domains": [
+        "qa"
+      ],
+      "runtimeSignals": [
+        "runtime:runtime",
+        "runtime:blackBoxEvidence",
+        "runtime:gameEntry",
+        "runtime:inputResponse",
+        "runtime:processSurvival",
+        "runtime:noFatalCrashOrAnr"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "external-black-box-idle-fantasy-run-42",
+      "project": "idle-fantasy",
+      "gameId": "idle-fantasy",
+      "taskType": "qa",
+      "sourceKind": "external-black-box",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "sha256:a5769861f8079716b7d44ebb33547303381edc2a8a7c1d5bf98f5518bc61455d",
+      "domains": [
+        "qa"
+      ],
+      "runtimeSignals": [
+        "runtime:runtime",
+        "runtime:blackBoxEvidence",
+        "runtime:gameEntry",
+        "runtime:inputResponse",
+        "runtime:processSurvival",
+        "runtime:noFatalCrashOrAnr"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "external-black-box-luanti-run-10",
+      "project": "luanti",
+      "gameId": "luanti",
+      "taskType": "qa",
+      "sourceKind": "external-black-box",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "sha256:523b6eb0021a1685087e8eab7ce29100ffb33d025f91c411f829c4042093ce4c",
+      "domains": [
+        "qa"
+      ],
+      "runtimeSignals": [
+        "runtime:runtime",
+        "runtime:blackBoxEvidence",
+        "runtime:gameEntry",
+        "runtime:inputResponse",
+        "runtime:processSurvival",
+        "runtime:noFatalCrashOrAnr"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "external-black-box-revengate-run-59",
+      "project": "revengate",
+      "gameId": "revengate",
+      "taskType": "qa",
+      "sourceKind": "external-black-box",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "sha256:7ac6cb9aa7bdcfdee1af6df5e409005da42ac597903f8acca8aa0bfc44cb93d9",
+      "domains": [
+        "qa"
+      ],
+      "runtimeSignals": [
+        "runtime:runtime",
+        "runtime:blackBoxEvidence",
+        "runtime:gameEntry",
+        "runtime:inputResponse",
+        "runtime:processSurvival",
+        "runtime:noFatalCrashOrAnr"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "external-black-box-sgtpuzzles-run-29",
+      "project": "sgtpuzzles",
+      "gameId": "sgtpuzzles",
+      "taskType": "qa",
+      "sourceKind": "external-black-box",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "sha256:340f1dbb0fcb989a036709904018fa94698dbc917417280b52da8666d0b35869",
+      "domains": [
+        "qa"
+      ],
+      "runtimeSignals": [
+        "runtime:runtime",
+        "runtime:blackBoxEvidence",
+        "runtime:gameEntry",
+        "runtime:inputResponse",
+        "runtime:processSurvival",
+        "runtime:noFatalCrashOrAnr"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    },
+    {
+      "id": "external-black-box-shattered-pixel-dungeon-run-4",
+      "project": "shattered-pixel-dungeon",
+      "gameId": "shattered-pixel-dungeon",
+      "taskType": "qa",
+      "sourceKind": "external-black-box",
+      "evidenceMode": "BLACK_BOX_RUNTIME",
+      "sourceRevision": "sha256:a4f204496be3b54d90c98e68d1604248910625d4f7daa5341fa0b7e8abbeb5b6",
+      "domains": [
+        "qa"
+      ],
+      "runtimeSignals": [
+        "runtime:runtime",
+        "runtime:blackBoxEvidence",
+        "runtime:gameEntry",
+        "runtime:inputResponse",
+        "runtime:processSurvival",
+        "runtime:noFatalCrashOrAnr"
+      ],
+      "capabilities": {
+        "sourceStructure": false,
+        "assetStructure": false,
+        "algorithmStructure": false,
+        "runtimeObservation": true
+      },
+      "authority": "derived-feature-material-only",
+      "rawSourceOutputAllowed": false,
+      "rawAssetOutputAllowed": false,
+      "directCopyAllowed": false
+    }
+  ],
+  "recipes": [
+    {
+      "id": "recombine_e8289a305276f8e0",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-afk-arena"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_7ac0eb5593f4c273"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency"
+      ],
+      "transformationOperator": "change-core-goal",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_b1cbe02ddf4964bb",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-among-us"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_ce62bbf02cf64b42"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "lobby-flow",
+        "role-state",
+        "round-objective",
+        "player-interaction"
+      ],
+      "transformationOperator": "change-visual-language",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_bd9500f775b503b4",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-angry-birds-2"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_d6406686c5fa4641"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_70251cbc8b613192",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-arknights"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_00b3875151e806fd"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "lane-pressure",
+        "placement",
+        "wave-state",
+        "upgrade-path"
+      ],
+      "transformationOperator": "change-spatial-layout",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_503ab4274de92125",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-asphalt-legends"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_c1f37311129b9fcd"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "vehicle-control",
+        "race-progress",
+        "speed-feedback",
+        "track-pressure"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_f8787715cc31c295",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-block-blast"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_5f3e935c70e241c6"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-visual-language",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_1f33b7f33afb6484",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-brawl-stars"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_1163f3226ee11528"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "short-match",
+        "arena-positioning",
+        "ability-cooldown",
+        "team-role"
+      ],
+      "transformationOperator": "change-risk-reward-relationship",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_ce1e87b12839d96a",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-candy-crush-saga"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_96c682135852a07f"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-input-model",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_cb2208326f31fba0",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-clash-of-clans"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_0a997b523f002340"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "base-layout",
+        "resource-loop",
+        "upgrade-queue",
+        "unit-composition"
+      ],
+      "transformationOperator": "change-progression-cadence",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_10b7ea5c6ab90629",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-efootball"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_bd4c5fc8f5a2baba"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "team-control",
+        "possession-state",
+        "match-clock",
+        "formation"
+      ],
+      "transformationOperator": "change-spatial-layout",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_2a27120feb8730f5",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-gardenscapes"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_07d469e0715b6c49"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_5d143f4e6c93aadd",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-hay-day"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_e05d752a6599fd9a"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "crop-cycle",
+        "production-chain",
+        "order-loop",
+        "inventory"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_e0cdf2a3aa96b995",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-hill-climb-racing-2"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_ede587b68269e0a2"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "short-session",
+        "simple-input",
+        "fast-retry",
+        "score-loop"
+      ],
+      "transformationOperator": "change-risk-reward-relationship",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_529422ae657b7ec5",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-homescapes"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_ee48f3453c5b3752"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_694bb45f474e623d",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-monopoly-go"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_071901d91d083d5c"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "board-progression",
+        "dice-or-step-loop",
+        "reward-cycle",
+        "collection"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_1e1f3af7a80a3ff0",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-piano-fire"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_83279d4e38096cc1"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "timing-window",
+        "note-stream",
+        "input-judgement",
+        "combo-state"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_5e0b865d5e91bfd0",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-pizza-ready"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_e19c773311e0f6e8"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "service-loop",
+        "queue-flow",
+        "income-cycle",
+        "station-upgrade"
+      ],
+      "transformationOperator": "change-visual-language",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_f7d17413f57f0844",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-pk-xd"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_4798ad0b59d7deb1"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "avatar-state",
+        "world-interaction",
+        "social-space",
+        "collection"
+      ],
+      "transformationOperator": "change-risk-reward-relationship",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_edbf897c1c7c860b",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-pokemon-go"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_141acea41c2a2e4c"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "map-exploration",
+        "collection-loop",
+        "encounter-state",
+        "location-context"
+      ],
+      "transformationOperator": "change-spatial-layout",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_9f5525efe06c56e9",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-royal-match"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_cad6fd2e8d92dd47"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_43a68f956a7822ca",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-simcity-buildit"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_9ab310f8bd269c96"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "city-layout",
+        "resource-production",
+        "population-demand",
+        "upgrade-timer"
+      ],
+      "transformationOperator": "change-visual-language",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_721d0951884e4933",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-standoff-2"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_0b01b1c6ab6030ce"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "aim-input",
+        "movement-state",
+        "weapon-state",
+        "round-loop"
+      ],
+      "transformationOperator": "change-input-model",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_6d561628435c78d7",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-subway-surfers"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_d466f454c44896a4"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "short-session",
+        "simple-input",
+        "fast-retry",
+        "score-loop"
+      ],
+      "transformationOperator": "change-core-goal",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_059a1e8b29ae5d30",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-survivor-io"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_3714e018b97f98ed"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "horde-pressure",
+        "upgrade-choice",
+        "run-build",
+        "damage-events"
+      ],
+      "transformationOperator": "change-risk-reward-relationship",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_b7e484ceee9efa46",
+      "sourceProjects": [
+        "block-blast",
+        "external-commercial-whiteout-survival"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "material_0b57b24b98607755"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "settlement-growth",
+        "survival-resource",
+        "hero-or-unit-growth",
+        "event-pressure"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_39c2078c443dbefb",
+      "sourceProjects": [
+        "block-blast",
+        "cavern-cravers"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "external-black-box-cavern-cravers-run-47"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "qa"
+      ],
+      "transformationOperator": "change-spatial-layout",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_5ea6efa53ec18d6d",
+      "sourceProjects": [
+        "block-blast",
+        "idle-fantasy"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "external-black-box-idle-fantasy-run-42"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "qa"
+      ],
+      "transformationOperator": "change-visual-language",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_f9b546ef7e475f78",
+      "sourceProjects": [
+        "block-blast",
+        "luanti"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "external-black-box-luanti-run-10"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "qa"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_d40ec25c1e358a93",
+      "sourceProjects": [
+        "block-blast",
+        "revengate"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "external-black-box-revengate-run-59"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "qa"
+      ],
+      "transformationOperator": "change-spatial-layout",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_45e010eb6bd96532",
+      "sourceProjects": [
+        "block-blast",
+        "sgtpuzzles"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "external-black-box-sgtpuzzles-run-29"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "qa"
+      ],
+      "transformationOperator": "change-risk-reward-relationship",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_1587fbdb7c9f9e98",
+      "sourceProjects": [
+        "block-blast",
+        "shattered-pixel-dungeon"
+      ],
+      "sourceMaterialIds": [
+        "authorized-source-block-blast-fca5cac46174f39d",
+        "external-black-box-shattered-pixel-dungeon-run-4"
+      ],
+      "featureBlend": [
+        "board-grid-placement",
+        "score-combo-reward",
+        "input-drag-touch",
+        "progression-difficulty",
+        "save-state-persistence",
+        "ads-monetization",
+        "qa"
+      ],
+      "transformationOperator": "change-risk-reward-relationship",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": true,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_6ec1c65e2c18f12b",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-among-us"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_ce62bbf02cf64b42"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "lobby-flow",
+        "role-state",
+        "round-objective",
+        "player-interaction"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_4a739df2446d44a1",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-angry-birds-2"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_d6406686c5fa4641"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-progression-cadence",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_0238c330af67ac95",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-arknights"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_00b3875151e806fd"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "lane-pressure",
+        "placement",
+        "wave-state",
+        "upgrade-path"
+      ],
+      "transformationOperator": "change-core-goal",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_15140be67dd46ddd",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-asphalt-legends"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_c1f37311129b9fcd"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "vehicle-control",
+        "race-progress",
+        "speed-feedback",
+        "track-pressure"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_2ef4b0d10627a6ac",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-block-blast"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_5f3e935c70e241c6"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-input-model",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_3c70848a4d54afa5",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-brawl-stars"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_1163f3226ee11528"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "short-match",
+        "arena-positioning",
+        "ability-cooldown",
+        "team-role"
+      ],
+      "transformationOperator": "change-progression-cadence",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_94fc5be95ea1faee",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-candy-crush-saga"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_96c682135852a07f"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-input-model",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_ffd59bfc463e2c06",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-clash-of-clans"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_0a997b523f002340"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "base-layout",
+        "resource-loop",
+        "upgrade-queue",
+        "unit-composition"
+      ],
+      "transformationOperator": "change-spatial-layout",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_38d05f96b3b386a3",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-efootball"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_bd4c5fc8f5a2baba"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "team-control",
+        "possession-state",
+        "match-clock",
+        "formation"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_08d421f00eeb0948",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-gardenscapes"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_07d469e0715b6c49"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-core-goal",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_85f9c40fef7d542a",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-hay-day"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_e05d752a6599fd9a"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "crop-cycle",
+        "production-chain",
+        "order-loop",
+        "inventory"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_8bb681be5a403e13",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-hill-climb-racing-2"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_ede587b68269e0a2"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "short-session",
+        "simple-input",
+        "fast-retry",
+        "score-loop"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_c6397ff55f2a7193",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-homescapes"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_ee48f3453c5b3752"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-visual-language",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_06f30838c594aff6",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-monopoly-go"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_071901d91d083d5c"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "board-progression",
+        "dice-or-step-loop",
+        "reward-cycle",
+        "collection"
+      ],
+      "transformationOperator": "change-core-goal",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_7355aef25800b9e7",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-piano-fire"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_83279d4e38096cc1"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "timing-window",
+        "note-stream",
+        "input-judgement",
+        "combo-state"
+      ],
+      "transformationOperator": "change-progression-cadence",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_67815ca3e4cb72b1",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-pizza-ready"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_e19c773311e0f6e8"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "service-loop",
+        "queue-flow",
+        "income-cycle",
+        "station-upgrade"
+      ],
+      "transformationOperator": "change-risk-reward-relationship",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_a67c2a4a1fd899e4",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-pk-xd"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_4798ad0b59d7deb1"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "avatar-state",
+        "world-interaction",
+        "social-space",
+        "collection"
+      ],
+      "transformationOperator": "change-progression-cadence",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_b67272fce188489f",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-pokemon-go"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_141acea41c2a2e4c"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "map-exploration",
+        "collection-loop",
+        "encounter-state",
+        "location-context"
+      ],
+      "transformationOperator": "change-spatial-layout",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_f02989c69aa93617",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-royal-match"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_cad6fd2e8d92dd47"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_5e82b74f01452f6a",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-simcity-buildit"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_9ab310f8bd269c96"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "city-layout",
+        "resource-production",
+        "population-demand",
+        "upgrade-timer"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_1b4cd6fada79c8f3",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-standoff-2"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_0b01b1c6ab6030ce"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "aim-input",
+        "movement-state",
+        "weapon-state",
+        "round-loop"
+      ],
+      "transformationOperator": "change-progression-cadence",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_ed8f8b4855fd88b6",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-subway-surfers"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_d466f454c44896a4"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "short-session",
+        "simple-input",
+        "fast-retry",
+        "score-loop"
+      ],
+      "transformationOperator": "change-core-goal",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_5f904d2f3a182b15",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-survivor-io"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_3714e018b97f98ed"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "horde-pressure",
+        "upgrade-choice",
+        "run-build",
+        "damage-events"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_87d2f0ae0f4af7e4",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "external-commercial-whiteout-survival"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "material_0b57b24b98607755"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "settlement-growth",
+        "survival-resource",
+        "hero-or-unit-growth",
+        "event-pressure"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_37c3cd1f03877887",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "block-blast"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "external-black-box-block-blast-run-30"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "qa"
+      ],
+      "transformationOperator": "change-feedback-rhythm",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_fb2a664e97ecc672",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "cavern-cravers"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "external-black-box-cavern-cravers-run-47"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "qa"
+      ],
+      "transformationOperator": "change-session-structure",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_88a422d9f7885203",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "idle-fantasy"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "external-black-box-idle-fantasy-run-42"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "qa"
+      ],
+      "transformationOperator": "change-input-model",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_87eed51b7456382d",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "luanti"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "external-black-box-luanti-run-10"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "qa"
+      ],
+      "transformationOperator": "change-risk-reward-relationship",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_5ca085c09fb0e6da",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "revengate"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "external-black-box-revengate-run-59"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "qa"
+      ],
+      "transformationOperator": "change-core-goal",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_f0e922da20477dad",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "sgtpuzzles"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "external-black-box-sgtpuzzles-run-29"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "qa"
+      ],
+      "transformationOperator": "change-progression-cadence",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_8eccb7c55cf690c6",
+      "sourceProjects": [
+        "external-commercial-afk-arena",
+        "shattered-pixel-dungeon"
+      ],
+      "sourceMaterialIds": [
+        "material_7ac0eb5593f4c273",
+        "external-black-box-shattered-pixel-dungeon-run-4"
+      ],
+      "featureBlend": [
+        "idle-reward",
+        "offline-progress",
+        "upgrade-layer",
+        "claim-idempotency",
+        "persistent-growth",
+        "commercial-idle-runtime-architecture",
+        "qa"
+      ],
+      "transformationOperator": "change-visual-language",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_7f9e5a2a6d57ae25",
+      "sourceProjects": [
+        "external-commercial-among-us",
+        "external-commercial-angry-birds-2"
+      ],
+      "sourceMaterialIds": [
+        "material_ce62bbf02cf64b42",
+        "material_d6406686c5fa4641"
+      ],
+      "featureBlend": [
+        "lobby-flow",
+        "role-state",
+        "round-objective",
+        "player-interaction",
+        "vote-or-result",
+        "commercial-social-party-runtime-architecture",
+        "board-state",
+        "goal-loop",
+        "combo-feedback",
+        "level-progression"
+      ],
+      "transformationOperator": "change-progression-cadence",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    },
+    {
+      "id": "recombine_f087c985dbee82b6",
+      "sourceProjects": [
+        "external-commercial-among-us",
+        "external-commercial-arknights"
+      ],
+      "sourceMaterialIds": [
+        "material_ce62bbf02cf64b42",
+        "material_00b3875151e806fd"
+      ],
+      "featureBlend": [
+        "lobby-flow",
+        "role-state",
+        "round-objective",
+        "player-interaction",
+        "vote-or-result",
+        "commercial-social-party-runtime-architecture",
+        "lane-pressure",
+        "placement",
+        "wave-state",
+        "upgrade-path"
+      ],
+      "transformationOperator": "change-visual-language",
+      "internalCreationRequirement": "ADD_PROJECT_SPECIFIC_ORIGINAL_MECHANIC_OR_CONSTRAINT",
+      "assetStrategy": {
+        "newAssetRequired": true,
+        "mayUseAuthorizedAssetStructureAsReference": false,
+        "mayUseCommercialVisualObservationAsReference": true,
+        "outputMustBeNewExpression": true,
+        "rawPixelReuseAllowed": false,
+        "rawAudioReuseAllowed": false,
+        "logoOrSourceIdentityReuseAllowed": false
+      },
+      "codeStrategy": {
+        "newImplementationRequired": true,
+        "architecturePatternsMayBeReinterpreted": true,
+        "verbatimSourceReuseAllowed": false,
+        "sourceSpecificIdentifiersAllowed": false
+      },
+      "noveltyChecks": [
+        "MULTI_PROJECT_BLEND",
+        "ORIGINAL_MODIFIER_REQUIRED",
+        "NO_RAW_SOURCE_OUTPUT",
+        "NO_RAW_ASSET_OUTPUT",
+        "NO_SOURCE_IDENTITY_OUTPUT",
+        "INDEPENDENT_QA_REQUIRED"
+      ],
+      "countsAsTrainingSample": false,
+      "authority": "transformative-recombination-context-only"
+    }
+  ],
+  "policy": {
+    "copyMode": false,
+    "transformativeReinterpretation": true,
+    "multiProjectBlendRequired": true,
+    "minimumDistinctProjects": 2,
+    "originalModifierRequired": true,
+    "rawSourceOutputAllowed": false,
+    "rawAssetOutputAllowed": false,
+    "commercialRuntimeUsesObservationOnly": true,
+    "authorizedSourceMayContributeSourceAssetAlgorithmStructure": true,
+    "finalOutputRequiresExistingQaRuntimeRegressionGates": true,
+    "countsAsTrainingSample": false
+  },
+  "authority": "derived-feature-and-recombination-memory"
+}

@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-pizza-ready",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 Pizza Ready!의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=IDLE_TYCOON; inputProfile=IDLE_RPG; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=OBSERVED",
+  "output": "관찰된 방치형 타이쿤 동작을 독립 구현할 때는 고객/작업 큐, 생산 또는 서비스 상태, 수익 원장, 시설 업그레이드, 수용량 성장을 분리한다. 반복 지급은 단일 경제 서비스가 소유하고 화면 애니메이션과 실제 수익 반영을 분리한다.",
+  "sourceRevision": "external-playtest-35429978960-pizza-ready",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "Pizza Ready!",
+    "packageId": "io.supercent.pizzaidle",
+    "storeUrl": "https://play.google.com/store/apps/details?id=io.supercent.pizzaidle",
+    "playtestRunId": "35429978960",
+    "beforeScreenshotSha256": "9dfaa026e4d49089eabcf8a260eb5146072d1252da51a9e8d76168b8f1a4baea",
+    "afterScreenshotSha256": "1c3c6c38049d56b7d2ea4f6a643c1b06fa53f7c0796c67baa4996bd2dcdd8f3d",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-idle-tycoon-runtime-architecture",
+  "tags": [
+    "service-loop",
+    "queue-flow",
+    "income-cycle",
+    "station-upgrade",
+    "capacity-growth"
+  ]
+}

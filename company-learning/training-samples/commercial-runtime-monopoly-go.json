@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "taskType": "unity",
+  "practiceOnly": true,
+  "runtimePromotionAllowed": false,
+  "authority": "PRACTICE_ONLY",
+  "sourceKind": "commercial-runtime-reference",
+  "synthetic": false,
+  "project": "external-commercial-monopoly-go",
+  "difficulty": "production-reference",
+  "instruction": "실제 상용 모바일 게임 MONOPOLY GO!의 black-box 런타임 관찰을 근거로, 보이는 동작을 Unity에서 독립 구현할 때 필요한 코드 책임 경계를 설명하라. 내부 코드나 에셋을 추출했다고 가정하지 마라.",
+  "input": "category=CASUAL_BOARD; inputProfile=BOARD_TAP; officialStoreInstall=PASS; launch=PASS; foreground=PASS; processAliveAfter=PASS; crashOrANR=NONE; visualChange=NOT_CONFIRMED",
+  "output": "관찰된 캐주얼 보드 진행 동작을 독립 구현할 때는 이동 결과, 보드 칸 효과, 보상 원장, 수집 진행, 이벤트 상태를 분리한다. 보상은 결과 이벤트를 통해 한 번만 반영하고 보드 이동 애니메이션이 실제 경제 상태를 직접 변경하지 않도록 한다.",
+  "sourceRevision": "external-playtest-35428349641-monopoly-go",
+  "provenance": {
+    "sourceKind": "commercial-runtime-reference",
+    "observationKind": "BLACK_BOX_RUNTIME_ONLY",
+    "sourceSeed": "game-seed-market-evidence.json",
+    "gameTitle": "MONOPOLY GO!",
+    "packageId": "com.scopely.monopolygo",
+    "storeUrl": "https://play.google.com/store/apps/details?id=com.scopely.monopolygo",
+    "playtestRunId": "35428349641",
+    "beforeScreenshotSha256": "35be092af8ad08fc306b1d27e59d9113a8415b55e8a88cd139c880abad5a36b8",
+    "afterScreenshotSha256": "35be092af8ad08fc306b1d27e59d9113a8415b55e8a88cd139c880abad5a36b8",
+    "codeExtracted": false,
+    "binaryRedistributed": false,
+    "evidenceRetention": "EPHEMERAL_ARTIFACT_ONLY"
+  },
+  "qa": {
+    "teacherReview": "PASS",
+    "licenseCheck": "NOT_APPLICABLE",
+    "runtime": "PASS",
+    "independentQa": "NOT_APPLICABLE",
+    "browserQa": "NOT_APPLICABLE"
+  },
+  "topic": "commercial-casual-board-runtime-architecture",
+  "tags": [
+    "board-progression",
+    "dice-or-step-loop",
+    "reward-cycle",
+    "collection",
+    "event-layer"
+  ]
+}
