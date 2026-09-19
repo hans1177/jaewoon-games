@@ -241,9 +241,168 @@
     }
   },
   "codingStrategyMemory": {
-    "version": 1,
+    "version": 2,
     "seenOutcomeIds": [],
+    "seenNegativeOutcomeIds": [],
     "strategies": {}
   },
-  "updatedAt": "2026-09-19T11:02:47.111Z"
+  "codingCalibration": {
+    "version": 1,
+    "seenOutcomeIds": [
+      "coding_cal_1be59wa",
+      "coding_cal_12xyk9i",
+      "coding_cal_154na5k",
+      "coding_cal_1lbm9u3",
+      "coding_cal_rgagnf",
+      "coding_cal_1vrpey0",
+      "coding_cal_4llyz2",
+      "coding_cal_1101mg2",
+      "coding_cal_nx9t3",
+      "coding_cal_u7hf6n",
+      "coding_cal_1xrs773",
+      "coding_cal_i6bdom",
+      "coding_cal_1awmhs",
+      "coding_cal_1jkoxl5"
+    ],
+    "contexts": {
+      "target:web": {
+        "verifiedSamples": 14,
+        "highConfidenceSamples": 1,
+        "highConfidenceFailures": 1,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_1jkoxl5",
+        "lastUpdatedAt": "2026-09-19T11:25:25.065Z"
+      },
+      "game:chess-battle": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_1be59wa",
+        "lastUpdatedAt": "2026-09-19T11:25:25.062Z"
+      },
+      "game:crystal-defense": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_12xyk9i",
+        "lastUpdatedAt": "2026-09-19T11:25:25.063Z"
+      },
+      "game:egg-heist": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_154na5k",
+        "lastUpdatedAt": "2026-09-19T11:25:25.063Z"
+      },
+      "game:territory-war": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_1lbm9u3",
+        "lastUpdatedAt": "2026-09-19T11:25:25.063Z"
+      },
+      "game:seed-casual-realm-weaver": {
+        "verifiedSamples": 2,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_1xrs773",
+        "lastUpdatedAt": "2026-09-19T11:25:25.064Z"
+      },
+      "game:seed-story-complete-rpg-chronicles-of-eldoria": {
+        "verifiedSamples": 2,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_1awmhs",
+        "lastUpdatedAt": "2026-09-19T11:25:25.065Z"
+      },
+      "game:bug-defense": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_4llyz2",
+        "lastUpdatedAt": "2026-09-19T11:25:25.063Z"
+      },
+      "game:daechung-rpg": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_1101mg2",
+        "lastUpdatedAt": "2026-09-19T11:25:25.064Z"
+      },
+      "game:monster-adventure": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_nx9t3",
+        "lastUpdatedAt": "2026-09-19T11:25:25.064Z"
+      },
+      "game:seed-action-survival-rogu-echoes-of-the-lost-star": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 1,
+        "highConfidenceFailures": 1,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_u7hf6n",
+        "lastUpdatedAt": "2026-09-19T11:25:25.064Z"
+      },
+      "game:seed-idle-growth-rpg-crystal-bloom": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_i6bdom",
+        "lastUpdatedAt": "2026-09-19T11:25:25.064Z"
+      },
+      "game:survival2": {
+        "verifiedSamples": 1,
+        "highConfidenceSamples": 0,
+        "highConfidenceFailures": 0,
+        "firstCandidatePasses": 0,
+        "semanticHardGatePasses": 0,
+        "lastEvidence": "coding_cal_1jkoxl5",
+        "lastUpdatedAt": "2026-09-19T11:25:25.065Z"
+      }
+    }
+  },
+  "regressionHotspots": {
+    "version": 1,
+    "seenEventIds": [
+      "coding_hotspot_ae7uvg",
+      "coding_hotspot_69fomw",
+      "coding_hotspot_5irwkq",
+      "coding_hotspot_e5x8id",
+      "coding_hotspot_niomol",
+      "coding_hotspot_micyga",
+      "coding_hotspot_zrvzkw",
+      "coding_hotspot_eenhj8",
+      "coding_hotspot_1rczgtt",
+      "coding_hotspot_1dnm8u5",
+      "coding_hotspot_b18jc9",
+      "coding_hotspot_1njzeso",
+      "coding_hotspot_1q63sqa",
+      "coding_hotspot_98anjn"
+    ],
+    "entries": {}
+  },
+  "updatedAt": "2026-09-19T11:25:25.065Z"
 }
