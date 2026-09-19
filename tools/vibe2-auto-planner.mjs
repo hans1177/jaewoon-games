@@ -312,6 +312,22 @@ function releaseUnityFocusBusy(queue){return activeTasks(queue).some(item=>item.
 
 export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={},recombinationMemory={},historicalRegistry={}}={}){
   let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog,historicalRegistry),maxConcurrentTasks:parallelLimit(maxConcurrentTasks)});
+  const exactWebRepairGameIds=new Set((Array.isArray(developmentQueue?.items)?developmentQueue.items:[])
+    .filter(item=>clean(item?.canonicalState).toUpperCase()==='WEB_VIBE_REPAIR_REQUIRED'||clean(item?.currentStep).toUpperCase()==='VIBE_WEB_REPAIR')
+    .map(item=>clean(item?.gameId)).filter(Boolean));
+  if(exactWebRepairGameIds.size){
+    const tasks=queue.tasks.map(item=>{
+      const gameId=clean(item?.gameId);
+      if(!exactWebRepairGameIds.has(gameId)||clean(item?.id)===`${gameId}-web-runtime-repair-v1`)return item;
+      const status=clean(item?.status).toLowerCase();
+      const implementation=clean(item?.target).toLowerCase()==='web'&&clean(item?.department).toLowerCase()==='development'&&clean(item?.type).toLowerCase()==='implementation';
+      const indexPath=`web-games/${gameId}/index.html`;
+      const overlapsIndex=posix(item?.sourceRoot)===`web-games/${gameId}`&&(item?.responsibleFiles||[]).map(posix).includes(indexPath);
+      if(!implementation||!overlapsIndex||!['queued','failed','blocked'].includes(status))return item;
+      return{...item,status:'cancelled',blocker:'superseded-by:VIBE_WEB_REPAIR',reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'SUPERSEDED_BY_EXACT_WEB_REPAIR',evidence:[...new Set([...(item.evidence||[]),'superseded-by:VIBE_WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+    });
+    queue=createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks});
+  }
   const active=activeTasks(queue);
   const ownerActive=active.filter(item=>item.ownerDirective);
   const capacity=Math.max(0,queue.maxConcurrentTasks-active.length);
