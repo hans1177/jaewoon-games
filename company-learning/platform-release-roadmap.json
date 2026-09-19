@@ -1,5 +1,5 @@
 {
-  "version": 109,
+  "version": 110,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,39 +3069,49 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_BLOCKED_WORKER_FAILURE_ATTRIBUTION_CONTRACT_2026-09-19",
+    "id": "VIBE2_FULL_WEB_FINAL_SYNTHESIS_REACHABILITY_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_CONTROL_DATA_MAIN_TOOLING_CONTRACT_2026-09-19",
-    "reason": "STOP_MACHINE_STATE_BLOCKS_FROM_BEING_MISATTRIBUTED_AS_SOURCE_GENERATION_FAILURES_AND_CORRUPTING_FAILURE_CLASS_LEARNING",
+    "previousChangeRecordId": "VIBE2_BLOCKED_WORKER_FAILURE_ATTRIBUTION_CONTRACT_2026-09-19",
+    "reason": "RESTORE_REACHABLE_FINAL_FULL_WEB_SYNTHESIS_AFTER_ADDITIVE_SEED_EXPANSION_WITHOUT_LOWERING_12KB_GAMEPLAY_GATE",
     "implementationState": "DOCUMENTED_CODE_PENDING",
     "evidence": {
-      "affectedRunId": 35441991315,
-      "immutableResultObserved": "BLOCKED",
-      "orderReason": "MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED",
-      "falseCandidateFailureClass": "OTHER",
-      "falseSourceGenerationCount": 20
+      "liveRunId": 35442308252,
+      "liveWorkerJobId": 105895325384,
+      "machineState": "CONSISTENT",
+      "failureClass": "FULL_REWRITE_SIZE",
+      "accumulatedBytes": [
+        481,
+        857,
+        1243,
+        1963
+      ],
+      "targetMinBytes": 12000,
+      "observedBug": "ACCUMULATED_SEED_FORCES_EXPANSION_MODE_THROUGH_FINAL_ATTEMPT"
     },
     "contract": {
-      "candidateFailureRequiresActualTextSourceGenerationAttempt": true,
-      "blockedWorkOrderCandidateFailureMustBeNull": true,
-      "telemetrySourceFailureRequiresFailOutcome": true,
-      "machineStateBlockedIsNotSourceGenerationFailure": true,
-      "verifiedFailureLearningMustNotConsumeInfrastructureBlockAsCodingFailure": true
+      "fullWebGateMinBytes": 12000,
+      "qualityGateLoweringForbidden": true,
+      "attempts": 4,
+      "attemptsTwoThroughPenultimateMayUseAdditiveExpansion": true,
+      "finalAttemptMustUseCompleteFullWebSynthesis": true,
+      "finalAttemptMustCarryAccumulatedPlayableSeed": true,
+      "finalAttemptMaxPredict": 6144,
+      "finalAttemptTimeoutMs": 360000,
+      "directMainGameSourceWriteForbidden": true
     },
     "pending": [
-      "PATCH_IMMUTABLE_WORKER_RESULT_ATTRIBUTION",
-      "PATCH_PARALLELISM_TELEMETRY_ATTRIBUTION",
-      "REGRESSION_TESTS",
+      "PATCH_SOURCE_WORKER_FINAL_SYNTHESIS_MODE",
+      "ADD_FINAL_SYNTHESIS_REGRESSION_TEST",
       "CORE_QA",
       "LIVE_20_WAVE_REVALIDATION"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
+      "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "qualityGatesNotWeakened": true,
-      "directMainGameSourceWriteForbidden": true
+      "qualityGatesNotWeakened": true
     }
   },
   "vibeExecutionLaneContract": {
