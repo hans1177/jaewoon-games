@@ -75,9 +75,25 @@ function normalizeCodingStrategyMemory(input={}){
     const row=rowRaw&&typeof rowRaw==='object'?rowRaw:{};
     const games={};for(const [k,v] of Object.entries(row.games||{}))games[clean(k)]=Math.max(0,Number(v)||0);
     const targets={};for(const [k,v] of Object.entries(row.targets||{}))targets[clean(k)]=Math.max(0,Number(v)||0);
+    const failureFingerprints={};
+    for(const [fingerprint,contextRaw] of Object.entries(row.failureFingerprints||{})){
+      const context=contextRaw&&typeof contextRaw==='object'?contextRaw:{};
+      const contextGames={};for(const [k,v] of Object.entries(context.games||{}))contextGames[clean(k)]=Math.max(0,Number(v)||0);
+      const contextTargets={};for(const [k,v] of Object.entries(context.targets||{}))contextTargets[clean(k)]=Math.max(0,Number(v)||0);
+      const contextApplications=Math.max(0,Number(context.verifiedApplications)||0);
+      failureFingerprints[clean(fingerprint)]={
+        verifiedApplications:contextApplications,
+        firstCandidatePasses:Math.max(0,Math.min(contextApplications,Number(context.firstCandidatePasses)||0)),
+        totalGenerationAttempts:Math.max(0,Number(context.totalGenerationAttempts)||0),
+        games:contextGames,
+        targets:contextTargets,
+        lastEvidence:clean(context.lastEvidence)||null,
+        lastUpdatedAt:clean(context.lastUpdatedAt)||null
+      };
+    }
     const applications=Math.max(0,Number(row.verifiedApplications)||0);
     const firstPasses=Math.max(0,Math.min(applications,Number(row.firstCandidatePasses)||0));
-    strategies[clean(name)]={verifiedApplications:applications,firstCandidatePasses:firstPasses,totalGenerationAttempts:Math.max(0,Number(row.totalGenerationAttempts)||0),games,targets,state:clean(row.state)||'CANDIDATE',lastEvidence:clean(row.lastEvidence)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null};
+    strategies[clean(name)]={verifiedApplications:applications,firstCandidatePasses:firstPasses,totalGenerationAttempts:Math.max(0,Number(row.totalGenerationAttempts)||0),games,targets,failureFingerprints,state:clean(row.state)||'CANDIDATE',lastEvidence:clean(row.lastEvidence)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null};
   }
   return{version:1,seenOutcomeIds:uniq(source.seenOutcomeIds||[]),strategies};
 }
@@ -229,12 +245,25 @@ export function applyVerifiedCodingStrategyOutcomes(stateInput={},queueInput={})
     const attempts=Math.max(1,Number(lastEvidenceMarker(evidence,'coding-generation-attempts:'))||1);
     const gameId=clean(task.gameId)||'unknown';
     const target=lower(task.target)||'unknown';
-    const row=memory.strategies[strategy]||{verifiedApplications:0,firstCandidatePasses:0,totalGenerationAttempts:0,games:{},targets:{},state:'CANDIDATE',lastEvidence:null,lastUpdatedAt:null};
+    const failureFingerprint=clean(lastEvidenceMarker(evidence,'coding-failure-fingerprint:'));
+    const row=memory.strategies[strategy]||{verifiedApplications:0,firstCandidatePasses:0,totalGenerationAttempts:0,games:{},targets:{},failureFingerprints:{},state:'CANDIDATE',lastEvidence:null,lastUpdatedAt:null};
     row.verifiedApplications+=1;
     if(firstAttempt)row.firstCandidatePasses+=1;
     row.totalGenerationAttempts+=attempts;
     row.games[gameId]=(row.games[gameId]||0)+1;
     row.targets[target]=(row.targets[target]||0)+1;
+    row.failureFingerprints=row.failureFingerprints||{};
+    if(failureFingerprint){
+      const contextual=row.failureFingerprints[failureFingerprint]||{verifiedApplications:0,firstCandidatePasses:0,totalGenerationAttempts:0,games:{},targets:{},lastEvidence:null,lastUpdatedAt:null};
+      contextual.verifiedApplications+=1;
+      if(firstAttempt)contextual.firstCandidatePasses+=1;
+      contextual.totalGenerationAttempts+=attempts;
+      contextual.games[gameId]=(contextual.games[gameId]||0)+1;
+      contextual.targets[target]=(contextual.targets[target]||0)+1;
+      contextual.lastEvidence=id;
+      contextual.lastUpdatedAt=new Date().toISOString();
+      row.failureFingerprints[failureFingerprint]=contextual;
+    }
     row.state=strategyLifecycle(row);
     row.lastEvidence=id;
     row.lastUpdatedAt=new Date().toISOString();
@@ -252,17 +281,36 @@ export function preferredCodingStrategyForTask({task={},stateInput={}}={}){
   const state=createMasteryState(stateInput);
   const rows=Object.entries(state.codingStrategyMemory?.strategies||{}).map(([strategy,row])=>({strategy,...row}));
   const eligible=rows.filter(row=>row.state==='PREFERRED');
-  if(!eligible.length)return{strategy:null,state:'NO_PREFERRED_STRATEGY',evidenceApplications:0,advisoryOnly:true,authorityExpanded:false};
-  const gameId=clean(task.gameId),target=lower(task.target);
-  eligible.sort((a,b)=>{
-    const score=row=>Number(row.games?.[gameId]||0)*20+Number(row.targets?.[target]||0)*5+Number(row.firstCandidatePasses||0)*2+Number(row.verifiedApplications||0);
-    return score(b)-score(a)||String(a.strategy).localeCompare(String(b.strategy));
-  });
+  if(!eligible.length)return{strategy:null,state:'NO_PREFERRED_STRATEGY',evidenceApplications:0,failureFingerprint:failureFingerprintForTask(task),selectionReason:'NO_PREFERRED_STRATEGY',advisoryOnly:true,authorityExpanded:false};
+  const gameId=clean(task.gameId),target=lower(task.target),failureFingerprint=failureFingerprintForTask(task);
+  const contextualScore=row=>{
+    const context=failureFingerprint?row.failureFingerprints?.[failureFingerprint]:null;
+    const sameGameSameFailure=Number(context?.games?.[gameId]||0);
+    const sameFailure=Number(context?.verifiedApplications||0);
+    const sameGame=Number(row.games?.[gameId]||0);
+    const sameTarget=Number(row.targets?.[target]||0);
+    return sameGameSameFailure*1000+sameFailure*200+sameGame*20+sameTarget*5+Number(row.firstCandidatePasses||0)*2+Number(row.verifiedApplications||0);
+  };
+  eligible.sort((a,b)=>contextualScore(b)-contextualScore(a)||String(a.strategy).localeCompare(String(b.strategy)));
   const winner=eligible[0];
+  const context=failureFingerprint?winner.failureFingerprints?.[failureFingerprint]:null;
+  const sameGameSameFailureApplications=Number(context?.games?.[gameId]||0);
+  const sameFailureApplications=Number(context?.verifiedApplications||0);
+  const selectionReason=sameGameSameFailureApplications>0?'SAME_GAME_SAME_FAILURE_VERIFIED'
+    :sameFailureApplications>0?'SAME_FAILURE_VERIFIED'
+    :Number(winner.games?.[gameId]||0)>0?'SAME_GAME_VERIFIED'
+    :Number(winner.targets?.[target]||0)>0?'SAME_TARGET_VERIFIED'
+    :'GLOBAL_PREFERRED';
   return{
     strategy:winner.strategy,state:winner.state,evidenceApplications:Number(winner.verifiedApplications||0),
     firstCandidatePassRatePct:winner.verifiedApplications?Number(((winner.firstCandidatePasses/winner.verifiedApplications)*100).toFixed(1)):0,
+    failureFingerprint,
+    sameFailureApplications,
+    sameGameSameFailureApplications,
+    contextualFirstCandidatePassRatePct:context?.verifiedApplications?Number(((context.firstCandidatePasses/context.verifiedApplications)*100).toFixed(1)):0,
     sameGameApplications:Number(winner.games?.[gameId]||0),sameTargetApplications:Number(winner.targets?.[target]||0),
+    selectionReason,
+    contextualScore:contextualScore(winner),
     advisoryOnly:true,authorityExpanded:false
   };
 }
@@ -274,6 +322,10 @@ export function codingStrategyGuidance(preference={}){
     'verifiedApplications='+Number(preference.evidenceApplications||0),
     'firstCandidatePassRatePct='+Number(preference.firstCandidatePassRatePct||0),
     'sameGameApplications='+Number(preference.sameGameApplications||0),
+    'failureFingerprint='+(clean(preference.failureFingerprint)||'NONE'),
+    'sameFailureApplications='+Number(preference.sameFailureApplications||0),
+    'sameGameSameFailureApplications='+Number(preference.sameGameSameFailureApplications||0),
+    'selectionReason='+(clean(preference.selectionReason)||'GLOBAL_PREFERRED'),
     'This preference may change patch ordering but MUST NOT expand writable scope, bypass the compiled edit contract, weaken QA, or alter protected gameplay/save semantics.'
   ].join('\n');
 }
