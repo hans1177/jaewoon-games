@@ -314,11 +314,9 @@
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "ready": false,
-    "blockers": [
-      "post-revision-five-department-review-required"
-    ],
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
     "advisoryDisposition": "ACTIVE",
     "unanimousFatalDiscard": false,
     "meeting": {
@@ -409,17 +407,17 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-18T06:19:42.248Z"
+    "checkedAt": "2026-09-19T02:13:06.688Z"
   },
   "artbookUi": {
-    "status": "WAITING",
-    "label": "대기중",
+    "status": "WRITING",
+    "label": "작성중",
     "path": "artbook-submissions/bug-defense/status.json"
   },
   "artbookPublication": {
     "published": false,
     "path": null,
-    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "reason": "baseline-not-ready"
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
   }
 }

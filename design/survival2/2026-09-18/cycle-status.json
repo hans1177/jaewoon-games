@@ -303,11 +303,9 @@
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "ready": false,
-    "blockers": [
-      "game-seed-field-required:REFERENCE_GAMES"
-    ],
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
     "advisoryDisposition": "REDESIGN",
     "unanimousFatalDiscard": false,
     "meeting": {
@@ -388,17 +386,17 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-18T04:50:15.394Z"
+    "checkedAt": "2026-09-19T02:13:07.002Z"
   },
   "artbookUi": {
-    "status": "WAITING",
-    "label": "대기중",
+    "status": "WRITING",
+    "label": "작성중",
     "path": "artbook-submissions/survival2/status.json"
   },
   "artbookPublication": {
     "published": false,
     "path": null,
-    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "reason": "baseline-not-ready"
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
   }
 }
