@@ -728,7 +728,7 @@ test('tiny copied expansion skeleton is rejected before a real additive fragment
   const seedFile=path.join(cwd,'seed-tiny-expansion.txt');
   const tinyFile=path.join(cwd,'tiny-expansion.txt');
   const realFile=path.join(cwd,'real-expansion.txt');
-  const seedBody=Array.from({length:150},(_,i)=>`function seed${i}(s){s.score=(s.score||0)+${i%5};s.hp=Math.max(0,(s.hp||20)-0);return s}`).join('');
+  const seedBody=Array.from({length:110},(_,i)=>`function seed${i}(s){s.score=(s.score||0)+${i%5};s.hp=Math.max(0,(s.hp||20)-0);return s}`).join('');
   const seed=`<!doctype html><html><body><button id="start">Start</button><canvas id="game"></canvas><script>let state={score:0,hp:20,wave:1};${seedBody}</script></body></html>`;
   const tiny='<section class="game-specific-system">...</section><script>(()=>{ /* real additive gameplay implementation */ })();</script>';
   const real=`<section data-gameplay-system="input-progress"></section><script>(()=>{const extra={};${Array.from({length:45},(_,i)=>`extra.m${i}=()=>{state.score+=${(i%4)+1};state.wave+=1;return state.score};`).join('')}window.addEventListener('pointerdown',()=>extra.m1());window.addEventListener('touchstart',()=>extra.m2(),{passive:true});localStorage.setItem('vibe2-tiny-expansion-test',JSON.stringify(state));})();</script>`;
@@ -774,8 +774,8 @@ test('final full web attempt synthesizes the accumulated seed instead of staying
   write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
   const seed='<!doctype html><html><body><main id="game"><button id="start">Start</button><canvas></canvas></main><script>let state={score:0,hp:10,wave:1};function tick(){state.score+=1}</script></body></html>';
-  const fragment1='<section data-gameplay-system="combat"></section><script>(()=>{window.addEventListener("pointerdown",()=>{state.score+=2;state.hp=Math.max(0,state.hp-1)});})();</script>';
-  const fragment2='<section data-gameplay-system="progression"></section><script>(()=>{window.addEventListener("touchstart",()=>{state.wave+=1;localStorage.setItem("vibe2-final-test",JSON.stringify(state))},{passive:true});})();</script>';
+  const fragment1=`<section data-gameplay-system="combat"></section><script>(()=>{${Array.from({length:35},(_,i)=>`function combat${i}(s){s.score+=${(i%3)+1};s.hp=Math.max(0,s.hp-1);return s}`).join('')}window.addEventListener("pointerdown",()=>{combat1(state)});})();</script>`;
+  const fragment2=`<section data-gameplay-system="progression"></section><script>(()=>{${Array.from({length:35},(_,i)=>`function progress${i}(s){s.wave+=1;s.gold=(s.gold||0)+${i%5};return s}`).join('')}window.addEventListener("touchstart",()=>{progress1(state);localStorage.setItem("vibe2-final-test",JSON.stringify(state))},{passive:true});})();</script>`;
   const finalBody=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}canvas{touch-action:none;width:100%}</style></head><body><button id="start">Start</button><canvas id="game"></canvas><script>let state={score:0,hp:100,wave:1,gold:0,result:"playing"};${'function gameplayStep(){state.score+=1;state.gold+=1;if(state.score>500)state.result="win";if(state.hp<=0)state.result="loss";}'.repeat(220)}function reset(){state={score:0,hp:100,wave:1,gold:0,result:"playing"}}window.addEventListener("pointerdown",()=>gameplayStep());window.addEventListener("touchstart",()=>gameplayStep(),{passive:true});localStorage.setItem("vibe2-final-test",JSON.stringify(state));</script></body></html>`;
   write(seedFile,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:seed','---VIBE2_FILE_CONTENT---',seed,'---VIBE2_FILE_END---'].join('\n'));
   write(expansion1,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment1,'---VIBE2_EXPANSION_END---'].join('\n'));
