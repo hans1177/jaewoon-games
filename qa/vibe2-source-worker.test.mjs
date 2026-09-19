@@ -986,7 +986,6 @@ test('exact retry anchors exclude repeated and structural-only lines',()=>{
     'const uniqueHandler=()=>{ state.ready=true; };'
   ].join('\n');
   const anchors=exactRetryAnchorSuggestions(base,{max:3});
-  assert.doesNotContain?.(anchors,'same();');
   assert.equal(anchors.includes('same();'),false);
   assert.equal(anchors.includes('const uniqueHandler=()=>{ state.ready=true; };'),true);
 });
