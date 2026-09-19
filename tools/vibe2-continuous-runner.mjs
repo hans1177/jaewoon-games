@@ -126,7 +126,15 @@ function incrementalQaPlan(task, target, responsibleFiles, speculativeVariants =
   });
 }
 
-export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', learningMotorState = {}, codePatterns = {}, playbooks = {}, practiceDistilled = {} } = {}) {
+function candidateStrategyRole(variant='primary',preference={}){
+  const normalized=clean(variant)||'primary';
+  if(normalized==='speculative-1')return freeze({variant:normalized,strategy:'DEPENDENCY_SAFE_COHERENT_PATCH',directive:'Patch the primary responsibility plus only the directly required dependent symbols. Prefer a coherent dependency-safe change over an ultra-local patch that leaves the behavior chain broken.'});
+  if(normalized==='speculative-2')return freeze({variant:normalized,strategy:clean(preference?.strategy)||'CAUSAL_TRACE_CROSSCHECK',directive:'Cross-check the full causal chain from input or failure evidence to owned state and observable result. Reuse a verified preferred strategy only when it fits this exact edit contract.'});
+  if(/^speculative-/.test(normalized))return freeze({variant:normalized,strategy:'INVARIANT_PRESERVING_ALTERNATIVE',directive:'Produce a genuinely different invariant-preserving implementation approach inside the exact same writable scope. Do not widen files or bypass the compiled edit contract.'});
+  return freeze({variant:normalized,strategy:'PRIMARY_RESPONSIBILITY_MINIMAL',directive:'Start at the compiled primary responsibility and make the minimum coherent change that produces the required observable result.'});
+}
+
+export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experience = {}, handoff = null, taskId = '', variant = 'primary', learningMotorState = {}, codePatterns = {}, playbooks = {}, practiceDistilled = {} } = {}) {
   const normalizedQueue = createVibeContinuousQueue(queue);
   const resolved = resolveTask(normalizedQueue, taskId);
   const base = {
@@ -191,6 +199,14 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
   const codingStrategyPreference=preferredCodingStrategyForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
   const verifiedCodingStrategyGuidance=codingStrategyGuidance(codingStrategyPreference);
+  const candidateStrategy=candidateStrategyRole(variant,codingStrategyPreference);
+  const candidateStrategyGuidance=[
+    '[CANDIDATE STRATEGY ROLE]',
+    `variant=${candidateStrategy.variant}`,
+    `strategy=${candidateStrategy.strategy}`,
+    candidateStrategy.directive,
+    'This role may change implementation approach only. The task-local compiled edit contract, responsible files, protected semantics, and QA remain authoritative.'
+  ].join('\n');
   const reusedContexts = reusableContextsForTask(handoff || {}, task);
   const reusedGuidance = buildReusableHandoffGuidance(reusedContexts);
   const workPackage=freeze({
@@ -221,7 +237,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     `역할 분리=${Object.entries(workPackage.rolePlan).map(([k,v])=>`${k}:${v}`).join(' | ')}`,
     workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
   ].filter(Boolean).join('\n'):'';
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
@@ -259,6 +275,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     unifiedLearning,
     assetProduction,
     candidateTournament:tournament,
+    candidateStrategyRole:candidateStrategy,
     codingStrategyPreference,
     learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance||unifiedLearningGuidance), motion:plan.motion, executionGate:plan.executionGate,
     deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
@@ -280,7 +297,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   });
 }
 
-export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', projectLifecycleFile='', outputFile='', taskId='', learningMotorStateFile='', codePatternsFile='', playbooksFile='', practiceDistilledFile='' } = {}) {
+export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queueFile='', controlFile='', experienceFile='', projectLifecycleFile='', outputFile='', taskId='', variant='primary', learningMotorStateFile='', codePatternsFile='', playbooksFile='', practiceDistilledFile='' } = {}) {
   const runtime = readJson(runtimeFile, {});
   const resolvedQueueFile = clean(queueFile) || clean(runtime?.sources?.queue) || '.vibe2/queue.json';
   const resolvedControlFile = clean(controlFile) || clean(runtime?.sources?.parallelism) || clean(runtime?.adaptiveBackpressure?.stateFile) || '.vibe2/parallelism-control.json';
@@ -292,7 +309,7 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
   const playbooks = readJson(clean(playbooksFile)||'company-learning/vibe3-task-playbooks.json', {taskTypes:{}});
   const resolvedPracticeDistilledFile=clean(practiceDistilledFile)||clean(runtime?.sources?.practiceDistilledKnowledge)||'.vibe2/practice-distilled-knowledge.json';
   const practiceDistilled=readJson(resolvedPracticeDistilledFile,{entries:[]});
-  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, learningMotorState, codePatterns, playbooks, practiceDistilled });
+  const order = buildVibeContinuousWorkOrder({ runtime, queue:readJson(resolvedQueueFile, { tasks:[] }), experience:readJson(resolvedExperienceFile, { records:[] }), handoff, taskId, variant, learningMotorState, codePatterns, playbooks, practiceDistilled });
   writeJson(resolvedOutputFile, order);
   return order;
 }
@@ -300,7 +317,7 @@ export function runVibeContinuousRunner({ runtimeFile='vibe2-runtime.json', queu
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = parseArgs();
   const order = runVibeContinuousRunner({
-    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), projectLifecycleFile:clean(args['project-lifecycle']), outputFile:clean(args.output), taskId:clean(args['task-id']),
+    runtimeFile:clean(args.runtime)||'vibe2-runtime.json', queueFile:clean(args.queue), controlFile:clean(args.control), experienceFile:clean(args.experience), projectLifecycleFile:clean(args['project-lifecycle']), outputFile:clean(args.output), taskId:clean(args['task-id']), variant:clean(args.variant)||'primary',
     learningMotorStateFile:clean(args['learning-motor-state']), codePatternsFile:clean(args['code-patterns']), playbooksFile:clean(args.playbooks), practiceDistilledFile:clean(args['practice-distilled'])
   });
   console.log(`VIBE2_CONTINUOUS_RUN=${order.run?'YES':'NO'}`);
@@ -327,6 +344,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_SAME_GAME_EXPERIENCE_COUNT=${(order.unifiedLearning?.experience||[]).filter(x=>(x.reasons||[]).includes('same-game')).length}`);
     console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
     console.log(`VIBE2_VERIFIED_PRACTICE_DISTILLED_COUNT=${order.unifiedLearning?.practiceDistilled?.length||0}`);
+    console.log(`VIBE2_CANDIDATE_STRATEGY_ROLE=${order.candidateStrategyRole?.strategy||'NONE'}`);
     console.log(`VIBE2_CODING_STRATEGY_PREFERENCE=${order.codingStrategyPreference?.strategy||'NONE'}`);
     console.log(`VIBE2_CODING_STRATEGY_PREFERENCE_STATE=${order.codingStrategyPreference?.state||'NONE'}`);
     console.log(`VIBE2_ASSET_DECISION_COUNT=${order.assetProduction?.decisions?.length||0}`);
