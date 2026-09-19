@@ -1,0 +1,19 @@
+{
+  "summary": "index.html 수정",
+  "expectedEffect": "게임 설정 파일의 내용을 수정하여 웹 런타임에 영향을 미치는 변경을 수행",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'}",
+      "replace": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.',isCasual: true}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "GAME_CONFIG.id should be 'seed-casual-realm-weaver'",
+    "GAME_CONFIG.name should be '세계의 직조자'",
+    "GAME_CONFIG.mode should be 'realm'",
+    "GAME_CONFIG.desc should be '마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'"
+  ]
+}
