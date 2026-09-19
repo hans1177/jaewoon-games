@@ -763,6 +763,12 @@ jobs:
             clean(process.env.IQA_CACHE)&&`incremental-qa-cache:${clean(process.env.IQA_CACHE)}`,
             ...Object.entries(roleResults).map(([role,status])=>`role-result:${role}:${status}`),
             candidateFailureClass&&`source-generation-failure:${candidateFailureClass}`,
+            clean(manifest?.codingMethod?.strategy)&&`coding-strategy:${clean(manifest.codingMethod.strategy)}`,
+            clean(manifest?.codingMethod?.responsibilityConfidence)&&`coding-responsibility-confidence:${clean(manifest.codingMethod.responsibilityConfidence)}`,
+            Number(manifest?.codingMethod?.generationAttempts)>0&&`coding-generation-attempts:${Number(manifest.codingMethod.generationAttempts)}`,
+            manifest?.codingMethod?.candidateProducedFirstAttempt===true?'coding-candidate-first-attempt:YES':manifest?.codingMethod?'coding-candidate-first-attempt:NO':'',
+            Number(manifest?.codingMethod?.primaryTargets?.length||0)>0&&`coding-primary-target-count:${Number(manifest.codingMethod.primaryTargets.length)}`,
+            Number(manifest?.codingMethod?.semanticDiffBudget?.allowedSystems?.length||0)>0&&`coding-semantic-system-budget:${Number(manifest.codingMethod.semanticDiffBudget.allowedSystems.length)}`,
             `actions-run:${process.env.GITHUB_RUN_ID}`,
             clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`,
@@ -810,7 +816,16 @@ jobs:
             manifestPath:candidateManifest||null
           }:null;
           const candidateFailure=candidateOk?null:{class:candidateFailureClass||'OTHER',message:candidateFailureMessage};
-          const result={version:7,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,roleResults,practiceDistillation,durationMs:metrics.workerTotalMs,metrics};
+          const codingMethod=manifest?.codingMethod?{
+            ...manifest.codingMethod,
+            implementationPass:candidateOk,
+            incrementalQaPass:testOk,
+            performanceSanityPass:performanceOk,
+            firstCandidatePass:Boolean(candidateOk&&testOk&&performanceOk&&manifest.codingMethod.candidateProducedFirstAttempt===true),
+            fullRegressionVerified:false,
+            reviewVerified:false
+          }:null;
+          const result={version:8,taskId:clean(process.env.TASK_ID),reservationId:clean(process.env.RESERVATION_ID),variant:clean(process.env.VARIANT)||'primary',outcome,blocker,candidateBranch,baseMainSha,candidateIdentity,candidateFailure,evidence,exploration,codingMethod,roleResults,practiceDistillation,durationMs:metrics.workerTotalMs,metrics};
           const safe=clean(process.env.SAFE_TASK)||'task';
           const file=`/tmp/vibe2-result/result-${safe}-${result.variant}.json`;
           fs.writeFileSync(file,JSON.stringify(result,null,2)+'\n');
