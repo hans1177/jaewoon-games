@@ -96,7 +96,14 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
   if(deterministicDesignGateEnabled){
     deterministicDesignEvidence=deterministicCheckpointEvidence(gameId,date);
     if(!deterministicDesignEvidence.pass)blockers.push('deterministic-design-pre-gate-pass-required');
-    if(status?.deterministicRecovery?.enabled!==true&&status?.departments?.reviewMode!=='DETERMINISTIC_EVIDENCE')blockers.push('deterministic-design-recovery-provenance-required');
+    const deterministicRecoveryProvenance=status?.deterministicRecovery?.enabled===true
+      ||status?.departments?.reviewMode==='DETERMINISTIC_EVIDENCE'
+      ||(
+        status?.departments?.reviewMode==='DETERMINISTIC_DEPARTMENT_EVIDENCE'
+        &&status?.disposition?.deterministicDepartmentEvidenceCompleted===true
+        &&status?.runtimeMetrics?.deterministicDepartmentEvidence===true
+      );
+    if(!deterministicRecoveryProvenance)blockers.push('deterministic-design-recovery-provenance-required');
   }else{
     if(Number(status.departments?.distinctLeadModelCount||0)<5)blockers.push('five-distinct-lead-models-required');
     const audits=Object.values(status.departments?.modelAudit||{});if(audits.length!==5||audits.some(a=>a?.pass!==true))blockers.push('per-department-multimodel-review-pass-required');
