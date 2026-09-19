@@ -36,8 +36,6 @@ jobs:
 
       - name: Escalate and redispatch recovery from latest control state
         id: recovery
-        env:
-          GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
           set -euo pipefail
@@ -60,17 +58,18 @@ jobs:
             test -f "$control/.vibe2/system-ai-queue.json" || printf '%s\n' '{"version":1,"kind":"company-system-ai-queue","policy":"PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK","tasks":[]}' > "$control/.vibe2/system-ai-queue.json"
             test -f "$control/.vibe2/recovery-queue.json" || printf '%s\n' '{"version":1,"kind":"company-recovery-queue","policy":"REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING","tasks":[]}' > "$control/.vibe2/recovery-queue.json"
 
-            node tools/company-recovery-escalation.mjs               --queue="$control/.vibe2/queue.json"               --system-ai="$control/.vibe2/system-ai-queue.json"               --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/escalation.log
+            node tools/company-recovery-escalation.mjs --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/escalation.log
+            node tools/company-recovery-dispatch.mjs --route=all --queue="$control/.vibe2/queue.json" --system-ai="$control/.vibe2/system-ai-queue.json" --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/dispatch.log
 
-            node tools/company-recovery-dispatch.mjs               --route=all               --queue="$control/.vibe2/queue.json"               --system-ai="$control/.vibe2/system-ai-queue.json"               --recovery="$control/.vibe2/recovery-queue.json" | tee /tmp/vibe2-recovery-fast/dispatch.log
-
-            system_ai_recovery_dispatched="$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*"$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued').length))" "$control/.vibe2/system-ai-queue.json")"
+            system_ai_recovery_dispatched="$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*$' /tmp/vibe2-recovery-fast/dispatch.log || true)"
+            system_ai_queued="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued').length))" "$control/.vibe2/system-ai-queue.json")"
             vibe_requeued="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued'&&(t.evidence||[]).some(e=>String(e).startsWith('recovery-queue:'))).length))" "$control/.vibe2/queue.json")"
 
             cd "$control"
             git config user.name 'jaewoon-vibe2-recovery-fast'
             git config user.email 'vibe2-recovery-fast@users.noreply.github.com'
             git add .vibe2/queue.json .vibe2/system-ai-queue.json .vibe2/recovery-queue.json
+
             if git diff --cached --quiet; then
               echo 'VIBE2_RECOVERY_FAST_WRITE=NO'
               changed=0
@@ -108,61 +107,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail-with-body --silent --show-error             --request POST             --header 'Accept: application/vnd.github+json'             --header "Authorization: Bearer $GH_TOKEN"             --header 'X-GitHub-Api-Version: 2022-11-28'             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"             --data '{"event_type":"company-system-ai-cycle"}'
-          echo 'VIBE2_RECOVERY_FAST_SYSTEM_AI_DISPATCH=YES'
-
-      - name: Upload fast recovery evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: vibe2-recovery-fast-${{ github.run_id }}
-          path: /tmp/vibe2-recovery-fast
-          if-no-files-found: ignore
-          retention-days: 3
- /tmp/vibe2-recovery-fast/dispatch.log || true)"
-            system_ai_queued="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued').length))" "$control/.vibe2/system-ai-queue.json")"
-            vibe_requeued="$(node -e "const q=require(process.argv[1]);process.stdout.write(String((q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='queued'&&(t.evidence||[]).some(e=>String(e).startsWith('recovery-queue:'))).length))" "$control/.vibe2/queue.json")"
-
-            cd "$control"
-            git config user.name 'jaewoon-vibe2-recovery-fast'
-            git config user.email 'vibe2-recovery-fast@users.noreply.github.com'
-            git add .vibe2/queue.json .vibe2/system-ai-queue.json .vibe2/recovery-queue.json
-            if git diff --cached --quiet; then
-              echo 'VIBE2_RECOVERY_FAST_WRITE=NO'
-              changed=0
-              break
-            fi
-
-            git commit -m 'vibe2: fast recovery escalation and redispatch [skip ci]'
-            if git push origin HEAD:vibe2-unreal-core; then
-              changed=1
-              echo 'VIBE2_RECOVERY_FAST_WRITE=YES'
-              break
-            fi
-
-            echo "VIBE2_RECOVERY_FAST_PUSH_RETRY=$attempt"
-            cd "$GITHUB_WORKSPACE"
-            rm -rf /tmp/vibe2-recovery-control
-            sleep $((attempt * 2))
-            test "$attempt" -lt 3
-          done
-
-          cd "$GITHUB_WORKSPACE"
-          echo "changed=$changed" >> "$GITHUB_OUTPUT"
-          echo "system_ai_queued=$system_ai_queued" >> "$GITHUB_OUTPUT"
-          echo "vibe_requeued=$vibe_requeued" >> "$GITHUB_OUTPUT"
-          echo "VIBE2_RECOVERY_FAST_SYSTEM_AI_QUEUED=$system_ai_queued"
-          echo "VIBE2_RECOVERY_FAST_GAME_REQUEUED=$vibe_requeued"
-          echo 'VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFER_TO_GAME_PRIMARY_FANIN'
-
-      - name: Dispatch supervised system-AI recovery immediately
-        if: steps.recovery.outputs.system_ai_queued != '0'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          curl --fail-with-body --silent --show-error             --request POST             --header 'Accept: application/vnd.github+json'             --header "Authorization: Bearer $GH_TOKEN"             --header 'X-GitHub-Api-Version: 2022-11-28'             "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"             --data '{"event_type":"company-system-ai-cycle"}'
+          curl --fail-with-body --silent --show-error --request POST --header 'Accept: application/vnd.github+json' --header "Authorization: Bearer $GH_TOKEN" --header 'X-GitHub-Api-Version: 2022-11-28' "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" --data '{"event_type":"company-system-ai-cycle"}'
           echo 'VIBE2_RECOVERY_FAST_SYSTEM_AI_DISPATCH=YES'
 
       - name: Upload fast recovery evidence
