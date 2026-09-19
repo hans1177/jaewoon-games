@@ -112,6 +112,11 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   if(existingWeb){
     existingWeb.queueCurrentStep=clean(item?.currentStep);
     existingWeb.queueCanonicalState=clean(item?.canonicalState);
+    existingWeb.queueRoutingBlockers=(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,4);
+    existingWeb.queueVibeWebRequestedStage=clean(item?.vibeWebRequestedStage);
+    existingWeb.queueVibeWebImplementationReason=clean(item?.vibeWebImplementationReason);
+    existingWeb.queueStrictImplementationHardFailures=(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,4);
+    existingWeb.queueWebValidationLastAttemptAt=clean(item?.webValidationLastAttemptAt||item?.webFinalContentDepthLastAttemptAt);
     existingWeb.saveNormalizationRequired=item?.saveNormalizationRequired===true;
     existingWeb.companyDevelopmentQueueSource=true;
     continue;
@@ -133,6 +138,11 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     developmentValidation:latestDevelopmentValidationStatus(id,repoRoot),
     queueCurrentStep:clean(item?.currentStep),
     queueCanonicalState:clean(item?.canonicalState),
+    queueRoutingBlockers:(Array.isArray(item?.routingBlockers)?item.routingBlockers:[]).map(clean).filter(Boolean).slice(0,4),
+    queueVibeWebRequestedStage:clean(item?.vibeWebRequestedStage),
+    queueVibeWebImplementationReason:clean(item?.vibeWebImplementationReason),
+    queueStrictImplementationHardFailures:(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,4),
+    queueWebValidationLastAttemptAt:clean(item?.webValidationLastAttemptAt||item?.webFinalContentDepthLastAttemptAt),
     saveNormalizationRequired:item?.saveNormalizationRequired===true
   });
 }
@@ -205,7 +215,18 @@ function findWebAssessmentTask(project,repoRoot,queue){
   const queueState=clean(project.queueCanonicalState).toUpperCase(),queueStep=clean(project.queueCurrentStep).toUpperCase();
   if(queueState==='WEB_VIBE_REPAIR_REQUIRED'||queueStep==='VIBE_WEB_REPAIR'){
     const id=`${project.gameId}-web-runtime-repair-v1`;if(hasTask(queue,id))return null;
-    const goal=`[WEB_REPAIR] 게임: ${project.name||project.gameId}\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.`;
+    const runtimeFailureEvidence=[
+      project.queueVibeWebRequestedStage?`requested-stage=${project.queueVibeWebRequestedStage}`:'',
+      project.queueVibeWebImplementationReason?`implementation-reason=${project.queueVibeWebImplementationReason}`:'',
+      ...(project.queueRoutingBlockers||[]).map(value=>`routing-blocker=${clean(value).slice(0,900)}`),
+      ...(project.queueStrictImplementationHardFailures||[]).map(value=>`strict-hard-failure=${clean(value).slice(0,500)}`),
+      ...(project.developmentValidation?.blockers||[]).slice(0,4).map(value=>`development-validation-blocker=${clean(value).slice(0,500)}`),
+      project.queueWebValidationLastAttemptAt?`last-validation-at=${project.queueWebValidationLastAttemptAt}`:''
+    ].filter(Boolean);
+    const runtimeFailureContext=runtimeFailureEvidence.length
+      ?`\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n${runtimeFailureEvidence.join('\n')}\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.`
+      :'\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n구체 실패 증거가 아직 비어 있으면 현재 Web validation 계약과 index.html을 대조해 실제 검증 실패를 만드는 가장 작은 누락 기능을 찾아 최소 1개 이상 실질 수정한다. no-op 수정은 금지한다.';
+    const goal=`[WEB_REPAIR] 게임: ${project.name||project.gameId}\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.${runtimeFailureContext}`;
     const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','recovery-exact-stage:WEB_REPAIR','preserve-existing-game']);out.ownerDirective=true;out.speculativeEligible=false;return out;
   }
   const id=`${project.gameId}-existing-web-assessment-v1`;if(hasTask(queue,id))return null;
