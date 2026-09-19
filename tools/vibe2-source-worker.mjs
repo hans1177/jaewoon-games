@@ -46,6 +46,8 @@ const FULL_WEB_TIMEOUT_MS=540000;
 const FULL_WEB_MAX_PREDICT=8192;
 const FULL_WEB_RETRY_TIMEOUT_MS=360000;
 const FULL_WEB_RETRY_MAX_PREDICT=6144;
+const FULL_WEB_FINAL_RETRY_TIMEOUT_MS=240000;
+const FULL_WEB_FINAL_RETRY_MAX_PREDICT=4096;
 const JSON_RETRY_TIMEOUT_MS=240000;
 const JSON_RETRY_MAX_PREDICT=1536;
 const JSON_FINAL_RETRY_TIMEOUT_MS=90000;
@@ -128,7 +130,8 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','INVALID_PATH','EDIT_MATCH'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH'].includes(generationFailureClass(error));}
+function fullWebFinalRetryAllowed(error){return generationFailureClass(error)==='FULL_REWRITE_SIZE';}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|prediction aborted|token repeat limit/i.test(message);
@@ -144,10 +147,11 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const reason=clean(error?.message||error).slice(0,240)||'malformed candidate';
   const zeroChange=/실제 source 변경/i.test(reason);
   const noChangeEdit=/변경 없는 edit/i.test(reason);
+  const timeoutFailure=/시간 초과|timeout|prediction aborted|token repeat limit/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const safeReason=invalidPath?'candidate attempted a path outside Allowed edit paths':reason;
   let retryBase=rawPrompt;
-  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath)){
+  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||(attempt>=3&&timeoutFailure))){
     const marker='\n=== FILE ';
     const starts=[];
     for(let at=retryBase.indexOf(marker);at>=0;at=retryBase.indexOf(marker,at+marker.length))starts.push(at);
@@ -185,7 +189,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         'The response MUST begin with VIBE2_FULL_FILE and MUST end with ---VIBE2_FILE_END---. Finish the game before the limit rather than adding optional polish.'
       ].join('\n')
     : [
-        zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
+        zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         `Previous failure: ${safeReason}`,
         'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
@@ -193,9 +197,12 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         zeroChange||noChangeEdit||invalidPath?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':''
       ].filter(Boolean).join('\n');
   const focusedFinal=attempt>=3&&!allowFullRewrite;
+  const fullWebFinal=attempt>=3&&allowFullRewrite;
   const finalInstruction=focusedFinal
     ?'FINAL FOCUSED RETRY: return exactly one edits[] entry on the exact writable path. Use the shortest unique find text visible in the compact EDITABLE excerpt, and make replace materially different. Do not return empty arrays or repeat the original text.'
-    :'';
+    :fullWebFinal
+      ?'FINAL FULL-WEB RETRY: produce one complete playable index.html replacement of at least 2400 UTF-8 bytes. Include direct mobile input, a real update loop, progression, explicit win or loss state, restart, and responsive layout. Finish with </html> and the required end marker.'
+      :'';
   return retryBase+'\n\n'+correction+(finalInstruction?'\n'+finalInstruction:'');
 }
 function responseFileForAttempt(responseFile,responseFiles=[],attempt=1){
@@ -209,12 +216,12 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const focusedFinal=attempt>=3;
     const attemptPrompt=retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt}):prompt;
     const maxPredict=allowFullRewrite
-      ? (retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT)
+      ? (focusedFinal?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
       : (focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT));
     const timeoutMs=allowFullRewrite
-      ? (retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS)
+      ? (focusedFinal?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
       : (focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS));
-    const contextWindow=allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW);
+    const contextWindow=allowFullRewrite?(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:FULL_WEB_CONTEXT_WINDOW):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW);
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     try{
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow});
@@ -224,7 +231,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       lastError=error;
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
-      const hasAnother=ordinaryRetry||focusedRetry;
+      const fullWebFinalRetry=attempt===2&&allowFullRewrite&&fullWebFinalRetryAllowed(error);
+      const hasAnother=ordinaryRetry||focusedRetry||fullWebFinalRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
       if(!hasAnother||(responseFile&&!fakeSequence)){
         error.vibe2GenerationAttempts=attempt;
