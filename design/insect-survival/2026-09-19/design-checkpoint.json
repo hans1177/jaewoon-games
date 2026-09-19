@@ -111,19 +111,21 @@
       "updatedAt": "2026-09-19T03:06:03.676Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 3,
+      "calls": 4,
       "successes": 0,
-      "failures": 3,
+      "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 57976,
-      "lastMs": 11155,
-      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=1261",
-      "updatedAt": "2026-09-19T03:06:45.582Z"
+      "totalMs": 85963,
+      "lastMs": 27987,
+      "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=2025",
+      "updatedAt": "2026-09-19T03:07:02.413Z"
     }
   },
   "slowPhases": {},
   "currentPhase": "DESIGNER_DRAFT",
   "createdAt": "2026-09-19T03:06:02.566Z",
-  "updatedAt": "2026-09-19T03:06:45.582Z"
+  "updatedAt": "2026-09-19T03:07:02.413Z",
+  "failedPhase": "designer_draft",
+  "lastError": "GEMINI_CALL_FAILED gemini-3.5-flash-lite: GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=2025"
 }
