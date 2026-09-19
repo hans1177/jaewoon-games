@@ -3137,7 +3137,8 @@
         "totalScore": 94.6,
         "hardFailures": [],
         "evidencePath": "design/bug-defense/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.198Z",
       "productionTier": 2,
@@ -3990,7 +3991,8 @@
         "totalScore": 94.6,
         "hardFailures": [],
         "evidencePath": "design/survival/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.198Z",
       "productionTier": 2,
@@ -4845,7 +4847,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/crystal-defense/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.198Z",
       "productionTier": 2,
@@ -5712,7 +5715,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/island-village/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.198Z",
       "ROBLOX_GENRE": "Obby & platformer",
@@ -6160,7 +6164,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/egg-heist/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.199Z",
       "productionTier": 2,
@@ -6616,7 +6621,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/chess-battle/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.199Z",
       "productionTier": 2,
@@ -7433,7 +7439,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/territory-war/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.199Z",
       "productionTier": 2,
@@ -7892,7 +7899,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/daechung-rpg/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.199Z",
       "productionTier": 2,
@@ -8258,9 +8266,9 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "updatedAt": "2026-09-18T19:27:39.480Z",
       "REFERENCE_INPUTS": [
         {
@@ -8320,6 +8328,35 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "productionTier": 2,
+      "selectedPlatform": "UNITY",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "UNITY",
+        "targetSourcePath": "unity-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "webSourcePath": "web-games/seed-action-survival-rogu-echoes-of-the-lost-star",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/seed-action-survival-rogu-echoes-of-the-lost-star/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 91.80000000000001,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T03:51:21.331Z"
       }
     },
     {
@@ -9092,9 +9129,9 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "updatedAt": "2026-09-18T19:27:39.480Z",
       "REFERENCE_INPUTS": [
         {
@@ -9154,6 +9191,35 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "productionTier": 2,
+      "selectedPlatform": "UNITY",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/seed-puzzle-chromatic-cascade/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "UNITY",
+        "targetSourcePath": "unity-games/seed-puzzle-chromatic-cascade",
+        "webSourcePath": "web-games/seed-puzzle-chromatic-cascade",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/seed-puzzle-chromatic-cascade/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/seed-puzzle-chromatic-cascade/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/seed-puzzle-chromatic-cascade/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 91.80000000000001,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T03:51:21.331Z"
       }
     },
     {
@@ -9513,9 +9579,9 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "updatedAt": "2026-09-18T19:27:39.480Z",
       "REFERENCE_INPUTS": [
         {
@@ -9575,6 +9641,35 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "productionTier": 2,
+      "selectedPlatform": "UNITY",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 94.6,
+        "hardFailures": [],
+        "evidencePath": "design/seed-casual-realm-weaver/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "UNITY",
+        "targetSourcePath": "unity-games/seed-casual-realm-weaver",
+        "webSourcePath": "web-games/seed-casual-realm-weaver",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/seed-casual-realm-weaver/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/seed-casual-realm-weaver/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/seed-casual-realm-weaver/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 94.6,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T03:51:21.331Z"
       }
     },
     {
@@ -10323,9 +10418,9 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "updatedAt": "2026-09-18T19:27:39.480Z",
       "REFERENCE_INPUTS": [
         {
@@ -10394,7 +10489,36 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:51:08.886Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:51:08.886Z",
+      "productionTier": 2,
+      "selectedPlatform": "UNITY",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "UNITY",
+        "targetSourcePath": "unity-games/seed-story-complete-rpg-chronicles-of-eldoria",
+        "webSourcePath": "web-games/seed-story-complete-rpg-chronicles-of-eldoria",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/seed-story-complete-rpg-chronicles-of-eldoria/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/seed-story-complete-rpg-chronicles-of-eldoria/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 91.80000000000001,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T03:51:21.331Z"
+      }
     },
     {
       "version": 2,
@@ -10830,7 +10954,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/monster-adventure/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.203Z",
       "productionTier": 2,
@@ -11289,7 +11414,8 @@
         "totalScore": 94.6,
         "hardFailures": [],
         "evidencePath": "design/village-dungeons/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.203Z",
       "productionTier": 2,
@@ -11748,7 +11874,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/amusement-tycoon/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.203Z",
       "productionTier": 2,
@@ -12182,7 +12309,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/line-defense/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "strictDesignReviewUpdatedAt": "2026-09-19T03:44:27.203Z",
       "productionTier": 2,
@@ -17375,7 +17503,7 @@
   ],
   "lastRunAt": "2026-09-14T14:23:36.674Z",
   "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
-  "updatedAt": "2026-09-19T03:42:37.352Z",
+  "updatedAt": "2026-09-19T03:51:21.331Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
