@@ -85,6 +85,38 @@ test('verified coding strategy outcomes accumulate, dedupe, and become preferred
   assert.match(codingStrategyGuidance(preferred),/MUST NOT expand writable scope/);
 });
 
+test('verified context mode efficiency selects lower-cost mode and verified failures can change the preference',()=>{
+  const mk=(id,gameId,mode,attempts,bytes)=>({
+    id,gameId,target:'web',evidence:[
+      'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+      'coding-strategy:RESPONSIBILITY_FIRST',`coding-generation-attempts:${attempts}`,`coding-context-mode:${mode}`,`coding-context-bytes:${bytes}`,'coding-candidate-first-attempt:YES',
+      `vibe2/candidate/${id}-primary-run`
+    ]
+  });
+  const positives={tasks:[
+    mk('p1','g1','PRIMARY_SYMBOL_WINDOWS',2,24000),mk('p2','g1','PRIMARY_SYMBOL_WINDOWS',2,24000),mk('p3','g2','PRIMARY_SYMBOL_WINDOWS',2,24000),
+    mk('b1','g1','BOUNDED_FILE_EXCERPT_FALLBACK',1,8000),mk('b2','g2','BOUNDED_FILE_EXCERPT_FALLBACK',1,8000),mk('b3','g2','BOUNDED_FILE_EXCERPT_FALLBACK',1,8000)
+  ]};
+  const learned=applyVerifiedCodingStrategyOutcomes({},positives);
+  let preferred=preferredCodingStrategyForTask({task:{gameId:'g1',target:'web'},stateInput:learned.state});
+  assert.equal(preferred.strategy,'RESPONSIBILITY_FIRST');
+  assert.equal(preferred.preferredContextMode,'BOUNDED_FILE_EXCERPT_FALLBACK');
+  assert.equal(preferred.preferredContextModeSamples,3);
+  assert.equal(preferred.preferredContextModeAverageGenerationAttempts,1);
+  assert.equal(preferred.preferredContextModeAverageContextBytes,8000);
+  const negativePayload=encodeURIComponent(JSON.stringify({version:1,verifiedBy:'IMMUTABLE_WORKER_RESULT',infrastructureFailure:false,variant:'primary',strategy:'RESPONSIBILITY_FIRST',failureFingerprint:'web|TIMEOUT',failureClass:'TIMEOUT',runEvidence:'run-negative'}));
+  const failed={tasks:[{id:'neg-1',gameId:'g1',target:'web',evidence:[
+    'coding-context-mode:BOUNDED_FILE_EXCERPT_FALLBACK',`coding-strategy-negative:${negativePayload}`
+  ]}]};
+  const afterFailure=applyVerifiedCodingStrategyOutcomes(learned.state,failed);
+  const row=afterFailure.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST;
+  assert.equal(row.contextModes.BOUNDED_FILE_EXCERPT_FALLBACK.verifiedFailures,1);
+  preferred=preferredCodingStrategyForTask({task:{gameId:'g1',target:'web'},stateInput:afterFailure.state});
+  assert.equal(preferred.preferredContextMode,'PRIMARY_SYMBOL_WINDOWS');
+  assert.equal(preferred.preferredContextModeVerifiedFailures,0);
+  assert.match(codingStrategyGuidance(preferred),/preferredContextMode=PRIMARY_SYMBOL_WINDOWS/);
+});
+
 test('same verified failure fingerprint outranks same-game history when selecting among globally preferred strategies',()=>{
   const mk=(id,gameId,strategy,fingerprint)=>({
     id,gameId,target:'web',evidence:[
