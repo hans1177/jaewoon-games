@@ -9,9 +9,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
-  id-token: write
 
 concurrency:
   group: magic-forest-pages
@@ -19,30 +18,51 @@ concurrency:
 
 jobs:
   deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Prepare static site
+        shell: bash
         run: |
+          set -euo pipefail
+          rm -rf _site
           mkdir -p _site
           cp web-games/fantasy-survival/index.html _site/index.html
           touch _site/.nojekyll
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
+      - name: Publish gh-pages branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/magic-forest-pages
+          mkdir -p /tmp/magic-forest-pages
+          cp -a _site/. /tmp/magic-forest-pages/
+          git config user.name "jaewoon-pages"
+          git config user.email "pages@users.noreply.github.com"
+          git switch --orphan magic-forest-pages-publish
+          git rm -rf . >/dev/null 2>&1 || true
+          cp -a /tmp/magic-forest-pages/. .
+          git add -A
+          git commit -m "pages: publish magic forest"
+          git push origin HEAD:gh-pages --force
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: _site
+      - name: Enable branch-based GitHub Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh api "repos/${GITHUB_REPOSITORY}/pages" >/dev/null 2>&1; then
+            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
+              gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" --input -
+          else
+            printf '%s\n' '{"source":{"branch":"gh-pages","path":"/"},"build_type":"legacy"}' |
+              gh api --method POST "repos/${GITHUB_REPOSITORY}/pages" --input -
+          fi
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Show play URL
+        run: echo "MAGIC_FOREST_PLAY_URL=https://${GITHUB_REPOSITORY_OWNER}.github.io/jaewoon-games/"
