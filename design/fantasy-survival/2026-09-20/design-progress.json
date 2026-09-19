@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "gameId": "fantasy-survival",
+  "date": "2026-09-20",
+  "engineDigest": "216fe199cb50b83e0fb93bf5fec846a7d56db7433adfa0455da195e1ac8717c0",
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "deterministic_department_evidence"
+  ],
+  "completedPhaseCount": 3,
+  "cachedTaskCount": 0,
+  "lastSuccessfulModelCallAt": "2026-09-19T16:25:50.720Z",
+  "failedPhase": null,
+  "failedTask": null,
+  "lastError": null,
+  "modelHealth": {
+    "gemini:gemini-3.5-flash-lite": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 12538,
+      "lastMs": 12538,
+      "lastError": null,
+      "updatedAt": "2026-09-19T16:25:50.720Z"
+    }
+  },
+  "slowPhases": {},
+  "updatedAt": "2026-09-19T16:25:50.735Z",
+  "preGateScore": 80,
+  "postRevisionPreGateScore": 80
+}
