@@ -33,6 +33,7 @@
       "MOBILE_INPUT",
       "UI_STATE",
       "DEBUGGING",
+      "SECURITY",
       "PERFORMANCE",
       "ASSET_PRODUCTION",
       "WEB_RUNTIME",
@@ -93,7 +94,13 @@
     "rawUnauthorizedSourceReuseForbidden": true,
     "verifiedInternalCodePatternReuseAllowed": true,
     "rawExternalAiOutputReuseForbidden": true,
-    "externalAiDistilledAdvisoryRanksAfterInternalVerified": true
+    "externalAiDistilledAdvisoryRanksAfterInternalVerified": true,
+    "securityBoundary": {
+      "rawSecurityPayloadMayEnterRetrieval": false,
+      "rawSecretMayEnterRetrieval": false,
+      "verifiedSecurityImmunePatternsMayEnterRetrieval": true,
+      "verifiedSecurityPatternsRequireResolvedIncidentAndPrimaryAiReview": true
+    }
   },
   "webPracticeMotor": {
     "implementationIsPractice": true,
@@ -271,5 +278,17 @@
     "laterMasteryOrTrainingRequiresVerifiedProjectOutcome": true,
     "minimumTraceableVerificationEvidenceItems": 2,
     "externalAiAdvisoryAlwaysRanksAfterInternalVerified": true
+  },
+  "securityLearning": {
+    "enabled": true,
+    "incidentStore": ".vibe2/security-incidents.json",
+    "distiller": "tools/company-security-learning.mjs",
+    "scanner": "tools/company-security-steward.mjs",
+    "rawMalwareDirectTraining": false,
+    "rawAttackInstructionDirectTraining": false,
+    "rawSecretDirectTraining": false,
+    "verifiedSecurityOutcomeRequired": true,
+    "existingLearningMotorReused": true,
+    "shadowTrainerForbidden": true
   }
 }
