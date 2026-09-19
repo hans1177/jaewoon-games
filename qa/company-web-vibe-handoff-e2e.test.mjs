@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const read=file=>fs.readFileSync(file,'utf8');
 const bootstrap=read('tools/company-development-web-bootstrap.mjs');
 const confirmed=read('.github/workflows/company-development-confirmed-runtime.yml');
+const scheduler=read('.github/workflows/vibe2-24h-runner.yml');
 const planner=read('tools/vibe2-auto-planner.mjs');
 const runner=read('tools/vibe2-continuous-runner.mjs');
 const worker=read('tools/vibe2-source-worker.mjs');
@@ -18,6 +19,7 @@ test('Web bootstrap expected signals route to exact Vibe work instead of a gener
   assert.match(confirmed,/vibe-web-implementation-required:\$\{vibeRequestedStage\}:\$\{vibeRequestedReason\}/);
   assert.match(confirmed,/sourceRootBootstrapRequired=vibeRequestedStage==='WEB_BASE_IMPLEMENTATION'/);
   assert.match(confirmed,/WEB_VIBE_IMPLEMENTATION_SIGNAL/);
+  assert.match(scheduler,/--development-queue=\/tmp\/vibe2-company-runtime-queue\.json/);
   assert.match(confirmed,/web-gameplay-music/);
 });
 
