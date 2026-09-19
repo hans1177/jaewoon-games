@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T18:02:39.858Z"
+      "updatedAt": "2026-09-19T18:14:16.589Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1026,8 +1026,8 @@
       ],
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
-      "blastRadius": "portfolio:11",
-      "checkpoint": "2026-09-19T16:54:36Z",
+      "blastRadius": "portfolio:10",
+      "checkpoint": "2026-09-19T18:03:07Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1513,7 +1513,19 @@
         "release-dispatch-recovery-requested:vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-1-35456400889-1",
         "release-dispatch-recovery-at:1789838462831",
         "release-dispatch-recovery-candidate-sha:ca57c24a76903d797a1dc7494d9b91d125e4042b",
-        "system-steward:stale-running-reservation-recovered"
+        "system-steward:stale-running-reservation-recovered",
+        "vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-1-35459918874-1",
+        "candidate-sha:f9403fa781c810bc19933efc6545f8bd03c46208",
+        "base-main:24a2e26f269a2bc5438465ef3cfaa1b8e7f5931e",
+        "incremental-qa-hash:fa3420948ffac66ca7d36ea56fe445f6dcab974adfc8156bf4f2349618108b69",
+        "coding-context-bytes:27721",
+        "actions-run:35459918874",
+        "reservation-id:35459918874:1",
+        "workload:prep-ms:7184",
+        "workload:cycle-ms:293736",
+        "exploration-reuse:f94c194ee75a953533f36e4d",
+        "speculative-result:speculative-2:PASS",
+        "speculative-variants:3"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1529,7 +1541,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-19T18:02:39.857Z"
+      "updatedAt": "2026-09-19T18:14:16.589Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
