@@ -183,8 +183,8 @@ jobs:
       - name: Validate homepage manager contract
         run: |
           set -euo pipefail
-          node --test qa/homepage-manager.test.mjs
-          node --test qa/homepage-runtime-source.test.mjs
+          node qa/game-catalog-normalization.test.mjs
+          node --test qa/homepage-manager-publication-order.test.mjs
 
       - name: Validate historical artbook safety
         run: |
