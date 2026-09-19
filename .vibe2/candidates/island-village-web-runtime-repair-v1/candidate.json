@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "    function gameLoop() {",
+      "replace": "function gameLoop() {\n    // Update game state based on player interaction\n    // This is a simplified state transition loop\n    // Add additional game logic here to improve performance\n}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
