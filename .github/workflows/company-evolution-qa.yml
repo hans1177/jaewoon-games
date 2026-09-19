@@ -200,4 +200,4 @@ jobs:
       - name: Validate experience quality-bar integration
         run: |
           set -euo pipefail
-          node --test qa/company-quality-bar.test.mjs
+          node --test qa/company-strict-learning-delta-contract.test.mjs qa/company-platform-score-learning-contract.test.mjs qa/company-native-learning-real-evidence-contract.test.mjs
