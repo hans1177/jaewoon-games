@@ -1,5 +1,5 @@
 {
-  "version": 133,
+  "version": 134,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1899,7 +1899,13 @@
               "c3a8a8cfa96127d6b9f9f9694cf29e5d6ca5252e",
               "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f"
             ],
-            "nextReservationRunId": "35446727233"
+            "nextReservationRunId": "35446727233",
+            "currentRun35446727233": {
+              "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
+              "hierarchicalFanOut": 20,
+              "reservedTaskCount": 14,
+              "state": "RUNNING"
+            }
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3455,7 +3461,7 @@
     "documentationFirst": true,
     "previousChangeRecordId": "VIBE2_FOCUSED_MINIMAL_JSON_RETRY_2026-09-19",
     "reason": "COMPLETED_CBA1A0F_WAVE_IMPROVED_FROM_ZERO_TO_FIVE_PASSES_BUT_FULL_WEB_FAILURES_SHOWED_8_TO_10KB_TIMEOUT_PARTIALS_BEING_DISCARDED_WHEN_NO_RECOVERED_SEED_EXISTED;ALLOW_ONE_BOUNDED_EXTRA_RETRY_AFTER_SECOND_TIMEOUT_OR_MALFORMED_AND_REUSE_THE_LARGEST_PARTIAL_ONLY_AS_RETRY_CONTEXT",
-    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_NEXT_WAVE_RUNNING_EFFECT_PENDING",
+    "implementationState": "LATEST_FIXES_PINNED_IN_NEW_20_WAVE_RUNNING",
     "evidence": {
       "completedWave": {
         "runId": 35445626679,
@@ -3499,7 +3505,15 @@
         5612,
         4168
       ],
-      "nextReservationRunId": 35446727233
+      "nextReservationRunId": 35446727233,
+      "nextWave": {
+        "runId": 35446727233,
+        "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
+        "hierarchicalFanOut": 20,
+        "reservedTaskCount": 14,
+        "state": "MODEL_CACHE_OR_WORKER_START_PENDING_AT_OBSERVATION",
+        "includesLatestFixes": true
+      }
     },
     "contract": {
       "noRecoveredSeedFallbackRetryLimit": "ONE_EXTRA_RETRY_AFTER_ATTEMPT_TWO_ONLY",
@@ -3539,7 +3553,7 @@
       ]
     },
     "pending": [
-      "CONFIRM_RUN_35446727233_PINNED_SHA_INCLUDES_ALL_LATEST_FIXES",
+      "RUN_35446727233_COMPLETE_AND_FAN_IN",
       "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
       "COMPARE_TIMEOUT_FULL_REWRITE_SIZE_AND_EDIT_MATCH_RATES",
       "VERIFY_FAN_IN_REGRESSION_AFTER_944F15DA",
