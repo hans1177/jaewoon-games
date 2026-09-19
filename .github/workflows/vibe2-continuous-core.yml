@@ -17,7 +17,8 @@ env:
   VIBE2_LOCAL_MODEL: qwen3:1.7b
   VIBE2_MODEL_MAX_PREDICT: '1536'
   VIBE2_MODEL_TIMEOUT_MS: '240000'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '30'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '0'
+  VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   OLLAMA_HOST: 127.0.0.1:11434
   VIBE2_GAME_DEVELOPMENT_OWNER: VIBE2_VIBE3
   VIBE2_GAME_SOURCE_PROVIDER: LOCAL_OLLAMA
@@ -159,7 +160,7 @@ jobs:
           node /tmp/vibe2-main/tools/vibe2-queue-control.mjs reserve-batch \
             --queue="$control_root/.vibe2/queue.json" \
             --control="$control_root/.vibe2/parallelism-control.json" \
-            --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" \
+            --max="$VIBE2_EXTERNAL_MATRIX_BATCH_MAX" \
             --reservation-id="$reservation_id" \
             --reservation-run="$GITHUB_RUN_ID" \
             --reservation-attempt="$GITHUB_RUN_ATTEMPT" \
@@ -206,7 +207,7 @@ jobs:
             exploration.push({taskId:row.taskId,safeTask});
             const variantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
             const earlyRefill=variantCount===1;
-            const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||30),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||30)};
+            const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)};
             workers.push({...shared,variant:'primary',earlyRefill});
             for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`,earlyRefill:false});
           }
@@ -216,7 +217,7 @@ jobs:
           fs.appendFileSync(out,`exploration_count=${exploration.length}\n`);
           fs.appendFileSync(out,`task_count=${(batch.matrix||[]).length}\n`);
           fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
-          fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||30)}\n`);
+          fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)}\n`);
           console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
           console.log(`VIBE2_EXPLORATION_FAN_OUT=${exploration.length}`);
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
@@ -280,7 +281,6 @@ jobs:
     timeout-minutes: 8
     strategy:
       fail-fast: false
-      max-parallel: 30
       matrix: ${{ fromJSON(needs.reserve.outputs.exploration_matrix) }}
     steps:
       - name: Checkout Vibe2 control line
@@ -349,7 +349,6 @@ jobs:
     timeout-minutes: 22
     strategy:
       fail-fast: false
-      max-parallel: 30
       matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}
     steps:
       - name: Mark worker start
@@ -509,6 +508,9 @@ jobs:
             --output=/tmp/vibe2-free-budget.json
           echo 'VIBE2_PAID_API=NO'
           echo 'VIBE2_PAID_RUNNER=NO'
+          echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'
+          echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
+          echo 'VIBE2_FREE_AI_SCALE=ONE_WORKER_PER_INDEPENDENT_TASK'
           test "$VIBE2_GAME_DEVELOPMENT_OWNER" = "VIBE2_VIBE3"
           test "$VIBE2_GAME_SOURCE_PROVIDER" = "LOCAL_OLLAMA"
           test "$VIBE2_CODEX_ROLE" = "SYSTEM_TOOLING_CI_TEST_INFRA_ONLY"
@@ -758,7 +760,7 @@ jobs:
           const workerFinishedAt=Date.now();
           const cacheRaw=clean(process.env.OLLAMA_CACHE_HIT).toLowerCase();
           const metrics={
-            requestedMax:Number(process.env.REQUESTED_MAX||30),effectiveMax:Number(process.env.EFFECTIVE_MAX||30),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
+            requestedMax:Number(process.env.REQUESTED_MAX||256),effectiveMax:Number(process.env.EFFECTIVE_MAX||256),reservationId:clean(process.env.RESERVATION_ID),reservedAt:clean(process.env.RESERVED_AT),
             workerStartedAt,workerFinishedAt,checkoutMs:Number(process.env.CHECKOUT_MS||0),modelPrepMs:Number(process.env.MODEL_PREP_MS||0),
             candidateMs:Number(process.env.CANDIDATE_MS||0),qaMs:Number(process.env.QA_MS||0),workerTotalMs:Math.max(0,workerFinishedAt-workerStartedAt),
             changedFileCount:Number(process.env.CHANGED_FILE_COUNT||0),addedLineCount:Number(process.env.ADDED_LINE_COUNT||0),deletedLineCount:Number(process.env.DELETED_LINE_COUNT||0),
@@ -1004,7 +1006,7 @@ jobs:
         if: always()
         continue-on-error: true
         env:
-          REQUESTED_MAX: 30
+          REQUESTED_MAX: 256
           EFFECTIVE_MAX: ${{ needs.reserve.outputs.effective_max }}
           TASK_COUNT: ${{ needs.reserve.outputs.task_count }}
           FAN_CHECKOUT_MS: ${{ steps.fan_checkout_metrics.outputs.ms }}
@@ -1014,7 +1016,7 @@ jobs:
           test -f /tmp/vibe2-fan-in.json || exit 0
           fan_end="$(date +%s%3N)"
           fan_start="$(cat /tmp/vibe2-fan-in-start-ms)"
-          node tools/vibe2-parallelism-telemetry.mjs --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-30}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
+          node tools/vibe2-parallelism-telemetry.mjs --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-256}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
           node - "$FAN_CHECKOUT_MS" "$((fan_end-fan_start))" <<'NODE2'
           const fs=require('fs');const [checkout,total]=process.argv.slice(2).map(Number);const file='/tmp/vibe2-parallelism-telemetry.json';const x=JSON.parse(fs.readFileSync(file,'utf8'));x.fanIn={checkoutMs:checkout||0,totalMs:total||0};fs.writeFileSync(file,JSON.stringify(x,null,2)+'\n');
           NODE2
