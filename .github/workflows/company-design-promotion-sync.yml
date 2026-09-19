@@ -143,9 +143,10 @@ jobs:
             git clean -fd
 
             # Re-run the canonical promotion calculation against the newest runtime state.
-            # Only runtime JSON files are staged; engine files remain main-owned and are never persisted here.
-            git checkout origin/main -- company-directive.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs
-            git reset -- company-directive.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs >/dev/null 2>&1 || true
+            # Canonical machine policy must be overlaid from main too; otherwise the runtime branch can revive legacy AI-review blockers.
+            # Only runtime JSON files are staged; engine/policy files remain main-owned and are never persisted here.
+            git checkout origin/main -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs
+            git reset -- company-directive.json company-learning/platform-release-roadmap.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs >/dev/null 2>&1 || true
             node tools/design-only-promotion-sync.mjs
 
             git add -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json
