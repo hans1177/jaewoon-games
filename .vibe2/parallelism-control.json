@@ -1,11 +1,20 @@
 {
   "version": 3,
-  "currentMax": 256,
+  "currentMax": 16,
   "healthyStreak": 0,
   "pressureStreak": 0,
-  "lastDecision": "RESET",
-  "lastReason": "SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET",
-  "lastRunId": null,
-  "lastUpdatedAt": "2026-09-19T06:21:36.555Z",
-  "lastTelemetry": null
+  "lastDecision": "DOWN",
+  "lastReason": "RUNNER_CAPACITY_MEASURED_PEAK_12_PRIMARY_FIRST_WAVE",
+  "lastRunId": "35425782021",
+  "lastUpdatedAt": "2026-09-19T06:25:04.124Z",
+  "lastTelemetry": {
+    "runId": "35425782021",
+    "workerCount": 41,
+    "effectiveMax": 256,
+    "actualPeakConcurrency": 12,
+    "effectivePeakUtilizationPct": 4.69,
+    "failureRatePct": 100,
+    "pressureLevel": "SEVERE",
+    "bottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION"
+  }
 }
