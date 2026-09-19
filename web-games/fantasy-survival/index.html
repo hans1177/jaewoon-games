@@ -34,7 +34,7 @@ const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
 const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=26,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=27,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -585,7 +585,7 @@ function stopRecorderVoice(){
 function playLabRecorder(){
  unlockRecord('lab');clearTimeout(recorderStopTimer);stopRecorderVoice();
  setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'▶ 저장된 녹음 파일 재생 중 · 다시 두 번 누르면 처음부터');
- const a=new Audio('./audio/lab-recorder.mp3?v=1');recorderAudio=a;a.preload='auto';a.volume=1;
+ const a=new Audio('./audio/lab-recorder.m4a?v=2');recorderAudio=a;a.preload='auto';a.volume=1;
  a.onplay=()=>{duckBgmForRecorder(true);ui.recorderState.textContent='▶ 저장된 녹음 파일 재생 중 · 다시 두 번 누르면 처음부터'};
  a.onended=()=>{if(recorderAudio!==a)return;recorderAudio=null;duckBgmForRecorder(false);ui.recorderState.textContent='■ 녹음 종료';closeRecorderOverlay(3500)};
  a.onerror=()=>{if(recorderAudio!==a)return;recorderAudio=null;duckBgmForRecorder(false);ui.recorderState.textContent='녹음 파일을 불러오지 못했어';closeRecorderOverlay(7000)};

@@ -46,10 +46,10 @@ jobs:
             --write-media /tmp/lab-recorder-raw.mp3
           ffmpeg -y -i /tmp/lab-recorder-raw.mp3 \
             -af "highpass=f=90,lowpass=f=9500,acompressor=threshold=-18dB:ratio=2.2:attack=12:release=150,volume=1.15" \
-            -codec:a libmp3lame -b:a 96k \
-            /tmp/lab-recorder-final.mp3
-          test -s /tmp/lab-recorder-final.mp3
-          ls -lh /tmp/lab-recorder-final.mp3
+            -c:a aac -b:a 96k \
+            /tmp/lab-recorder-final.m4a
+          test -s /tmp/lab-recorder-final.m4a
+          ls -lh /tmp/lab-recorder-final.m4a
       - name: Commit generated audio safely
         run: |
           git config user.name "github-actions[bot]"
@@ -59,8 +59,8 @@ jobs:
             git fetch origin main
             git reset --hard origin/main
             mkdir -p web-games/fantasy-survival/audio
-            cp /tmp/lab-recorder-final.mp3 web-games/fantasy-survival/audio/lab-recorder.mp3
-            git add web-games/fantasy-survival/audio/lab-recorder.mp3
+            cp /tmp/lab-recorder-final.m4a web-games/fantasy-survival/audio/lab-recorder.m4a
+            git add web-games/fantasy-survival/audio/lab-recorder.m4a
             if git diff --cached --quiet; then
               echo "Audio already current"
               exit 0
