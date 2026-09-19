@@ -1075,6 +1075,35 @@ test('focused first-attempt fast path is exported to immutable worker telemetry'
   assert.match(workflowSource,/coding-focused-first-attempt-fast-path:YES/);
 });
 
+test('focused Web repair accepts the first complete edit boundary without marking a timeout recovery',async()=>{
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'focused-first-edit.json');
+  const workOrder=order({
+    target:'web',
+    root:'web-games/demo',
+    responsibleFiles:['web-games/demo/index.html'],
+    taskId:'focused-first-edit-boundary'
+  });
+  workOrder.goal='[WEB_REPAIR] repair the existing play control without changing gameplay balance';
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,'{"edits":[{"path":"index.html","find":">Play<","replace":">Continue<"}]');
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.attempts,1);
+  assert.equal(result.generation.completionMode,'JSON_EDIT_PARTIAL');
+  assert.equal(result.generation.focusedFirstEditEarlyStop,true);
+  assert.equal(result.generation.partialTimeoutRecovery,false);
+  assert.equal(result.codingMethod.focusedFirstEditEarlyStop,true);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-first-edit-boundary/files/index.html'),'utf8'),/Continue/);
+});
+
+test('focused first-edit stream contract is persisted to immutable worker telemetry',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/focusedFirstEditEarlyStop:generation\.focusedFirstEditEarlyStop===true/);
+  assert.match(workflowSource,/coding-focused-first-edit-early-stop:YES/);
+});
+
 test('focused no-op retry keeps speculative base budget but grants only targeted credit in worker loop',()=>{
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),2);
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
