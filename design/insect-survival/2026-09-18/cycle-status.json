@@ -304,6 +304,17 @@
           "HYBRID"
         ]
       },
+      "deterministicDesignGate": {
+        "required": false,
+        "authority": null,
+        "pass": null,
+        "path": null,
+        "phase": null,
+        "totalScore": null,
+        "passMinimum": null,
+        "hardFailures": [],
+        "criticalAxisFailures": []
+      },
       "webSmoke": {
         "supportingOnly": true,
         "pass": true,
@@ -356,6 +367,8 @@
       "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
       "unanimousFatalDiscardRequiredToDiscard": true,
       "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
+      "deterministicEvidenceGateRequired": false,
+      "aiReviewIsGateAuthority": false,
       "designArtbookOnlyAfterBaselineReady": true,
       "designOnlyVibe2Forbidden": true,
       "webSmokeDoesNotEqualGameplayValidation": true,
@@ -368,7 +381,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T03:11:21.094Z"
+    "checkedAt": "2026-09-19T03:19:49.349Z"
   },
   "artbookUi": {
     "status": "WAITING",
