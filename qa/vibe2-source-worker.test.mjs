@@ -829,6 +829,16 @@ test('full web initial generation asks for a complete bounded seed before staged
   assert.match(workerSource,/final acceptance still requires at least \$\{fullWebTarget\.minBytes\} bytes/);
 });
 
+test('full web expansion context keeps only execution-critical prefix fields',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.match(workerSource,/const line=\(label\)=>promptText\.split\('\\n'\)\.find\(row=>row\.startsWith\(label\)\)\|\|''/);
+  assert.match(workerSource,/line\('Engine:'\)/);
+  assert.match(workerSource,/line\('Goal:'\)/);
+  assert.match(workerSource,/line\('Allowed edit paths:'\)/);
+  assert.match(workerSource,/line\('Full Web generation target after automatic expansion:'\)\|\|line\('Full Web generation target:'\)/);
+  assert.doesNotMatch(workerSource,/const prefix=String\(basePrompt\?\?''\)\.split\('\\n=== FILE '\)\[0\]\.trimEnd\(\)/);
+});
+
 test('full web expansion prompt does not contain copyable placeholder implementation and counts only remaining expansion attempts',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.doesNotMatch(workerSource,/<section class="game-specific-system">\.\.\.<\/section>/);
