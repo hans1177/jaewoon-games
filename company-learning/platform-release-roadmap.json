@@ -1,5 +1,5 @@
 {
-  "version": 140,
+  "version": 141,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1947,7 +1947,14 @@
               "545e76b3d51f7828427cf092a43b8eb60b1304f0",
               "88887af40c1ac18580409630e29db56609df7f81"
             ],
-            "fullWebExpansionContextCompactionEffectiveFromNextCleanWave": true
+            "fullWebExpansionContextCompactionEffectiveFromNextCleanWave": true,
+            "fullWebExpansionDocumentSeedRecoveryCommits": [
+              "24368a6f7f9d368c30273e1789f9007aba76390c",
+              "d03ee39935cc1001a80aaeee640e57a8860ecb06",
+              "a87eb6eb340b6cca4ba8919f0cd868bedfc0ac11",
+              "0b4ae4b59c188fcc798332da9cf811ceebcc5ec4"
+            ],
+            "fullWebExpansionDocumentSeedRecoveryEffectiveFromNextCleanWave": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3498,53 +3505,56 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FULL_WEB_EXPANSION_CONTEXT_COMPACTION_2026-09-19",
+    "id": "VIBE2_FULL_WEB_EXPANSION_DOCUMENT_SEED_RECOVERY_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FULL_WEB_INTERNAL_TIMEOUT_BUDGET_ALIGNMENT_2026-09-19",
-    "reason": "STAGED_FULL_WEB_EXPANSION_ALREADY_CARRIES_THE_CURRENT_PLAYABLE_HTML_SEED,BUT_IT_WAS_ALSO_REPLAYING_THE_ENTIRE_PRE_FILE_EXPLORATION_AND_LEARNING_PREFIX. COMPACT_EXPANSION_CONTEXT_TO_EXECUTION_CRITICAL_FIELDS_TO_REDUCE_PREFILL_AND_LONG_TAIL_WITHOUT_REMOVING_THE_ACTUAL_SEED_OR_FINAL_VALIDATION_GATES.",
-    "implementationState": "CODE_AND_REGRESSION_TEST_COMMITTED_NEXT_CLEAN_WAVE_EFFECT_PENDING",
+    "previousChangeRecordId": "VIBE2_FULL_WEB_EXPANSION_CONTEXT_COMPACTION_2026-09-19",
+    "reason": "DIAGNOSTIC_FULL_WEB_WORKERS_REPEATEDLY_RETURNED_COMPLETE_HTML_BODY_DOCUMENTS_DURING_ADDITIVE_EXPANSION. DISCARDING_THESE_RESPONSES_WASTED_1P5_TO_4KB_OF_USEFUL_GENERATION. WHEN_AN_EXPANSION_RESPONSE_CONTAINS_ONE_COMPLETE_CLOSED_HTML_DOCUMENT,RECOVER_IT_ONLY_AS_A_LARGER_STAGED_SEED_AND_CONTINUE_EXISTING_EXPANSION;NEVER_INSERT_THE_WHOLE_DOCUMENT_AS_A_FRAGMENT_OR_BYPASS_FINAL_ACCEPTANCE.",
+    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_NEXT_CLEAN_WAVE_EFFECT_PENDING",
     "evidence": {
-      "currentDiagnosticRun": 35446727233,
-      "baselinePassRatePct": 25,
-      "sourceGenerationBottleneck": true,
-      "cacheHitRatePct": 100,
-      "preparationRatioPct": 0.86
+      "diagnosticRun": 35446727233,
+      "diagnosticPinnedSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
+      "observedFullWebAttemptPatterns": [
+        "FULL_REWRITE_SIZE -> MALFORMED_HTML_BODY_EXPANSION -> TIMEOUT",
+        "FULL_REWRITE_SIZE -> MALFORMED_HTML_BODY_EXPANSION -> FULL_REWRITE_SIZE",
+        "FULL_REWRITE_SIZE -> MALFORMED_HTML_BODY_EXPANSION -> MALFORMED_HTML_BODY_EXPANSION -> TIMEOUT"
+      ],
+      "observedExpansionOutputBytesRange": [
+        1546,
+        4147
+      ],
+      "currentDiagnosticWaveEffectivenessUse": "DIAGNOSTIC_ONLY"
     },
     "contract": {
-      "expansionPrefixFields": [
-        "ENGINE",
-        "GOAL",
-        "ALLOWED_EDIT_PATHS",
-        "FULL_WEB_FINAL_TARGET",
-        "SCOPE_PRESERVATION"
-      ],
-      "currentPlayableHtmlStillIncluded": true,
-      "capabilityTargetStillIncluded": true,
-      "longExplorationGuidanceRemoved": true,
+      "completeClosedHtmlRequired": true,
+      "expansionEnvelopeDocumentMayBecomeSeed": true,
+      "directFragmentInsertionForbiddenForWholeDocument": true,
+      "recoveredDocumentDirectPromotionForbidden": true,
+      "onlyLargerSeedCanReplaceCurrentAccumulatedSeed": true,
+      "stagedExpansionStillRequired": true,
       "finalAcceptanceMinimumBytes": 12000,
-      "qualityGatesNotWeakened": true,
-      "authorityExpansion": false
+      "qaGateUnchanged": true,
+      "writableScopeUnchanged": true,
+      "authorityExpansion": false,
+      "immutableEvidence": "coding-full-web-expansion-document-seed-recoveries:<N>"
     },
     "implementationCommits": {
-      "source": "545e76b3d51f7828427cf092a43b8eb60b1304f0",
-      "regressionTest": "88887af40c1ac18580409630e29db56609df7f81"
+      "sourceRecovery": "24368a6f7f9d368c30273e1789f9007aba76390c",
+      "sourceRegexNormalization": "d03ee39935cc1001a80aaeee640e57a8860ecb06",
+      "regressionTest": "a87eb6eb340b6cca4ba8919f0cd868bedfc0ac11",
+      "workflowTelemetry": "0b4ae4b59c188fcc798332da9cf811ceebcc5ec4"
     },
     "relatedBottleneckFixes": {
-      "timeoutBudgetAlignment": [
-        "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
-        "70f6c5a9541c25e695c75f10c9ace5666d3c9e72"
-      ],
-      "speculativeSlotLatencyPriority": [
-        "3208edd52549bcb45a9b2f8396a9dc47174a3b34",
-        "cf1fd2ef0b5450344c1bad7fc1745581d8e2ec0a"
-      ],
-      "fullWebSeedFirst": "9ef7994739ea552f4b4c90283a9a3b246e3af2f4"
+      "seedFirst": "9ef7994739ea552f4b4c90283a9a3b246e3af2f4",
+      "expansionContextCompaction": "545e76b3d51f7828427cf092a43b8eb60b1304f0",
+      "timeoutBudgetAlignment": "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
+      "speculativeSlotPriority": "3208edd52549bcb45a9b2f8396a9dc47174a3b34"
     },
     "pending": [
       "CURRENT_35446727233_COMPLETE_FOR_DIAGNOSTIC_ONLY",
-      "NEXT_CLEAN_WAVE_PIN_545E76B3_D2D34D2A_3208EDD5_C8F373EF_OR_LATER",
-      "COMPARE_EXPANSION_PROMPT_BYTES",
+      "NEXT_CLEAN_WAVE_PIN_24368A6F_0B4AE4B5_545E76B3_D2D34D2A_OR_LATER",
+      "MEASURE_EXPANSION_DOCUMENT_SEED_RECOVERY_COUNT",
+      "COMPARE_FULL_WEB_TIMEOUT_AND_MALFORMED_RATE",
       "COMPARE_FULL_WEB_P95_DURATION",
       "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
       "VERIFY_FAN_IN_REGRESSION"
@@ -3552,7 +3562,6 @@
     "invariants": {
       "ownerMinimumWave": 20,
       "hierarchicalParallelism": true,
-      "currentSeedNeverDropped": true,
       "fullWebMinimumBytesUnchanged": 12000,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
