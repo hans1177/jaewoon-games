@@ -3069,23 +3069,65 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_CODING_SELF_IMPROVEMENT_PHASE1_VERIFIED_2026-09-19",
+    "id": "VIBE2_CODING_SELF_IMPROVEMENT_CORE_VERIFIED_V95_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_CODING_SELF_IMPROVEMENT_CORE_SYNC_V94_2026-09-19",
-    "reason": "PROMOTE_DOCUMENTED_CODING_METHOD_AND_GAME_PRIMARY_BACKLOG_CORE_AFTER_LATEST_MAIN_QA_PASSED",
+    "previousChangeRecordId": "VIBE2_CODING_SELF_IMPROVEMENT_PHASE1_VERIFIED_2026-09-19",
+    "reason": "PROMOTE_DOCUMENTED_AND_IMPLEMENTED_CORE_AFTER_QA_AND_LIVE_RUNNER_VERIFICATION",
     "implementationState": "CORE_PHASE_1_VERIFIED",
-    "qa": {
-      "head": "e1b9c4061ff472fc3dcac032ca1fb6d35b9877fa",
-      "vibeQa": "PASS",
-      "integratedRegression": "PASS",
-      "coreQa": "PASS"
+    "verification": {
+      "verifiedMainHead": "094c59ed998a5e0b9e6004913d3849eff11b1880",
+      "vibe2CoreQa": {
+        "runId": 35438303132,
+        "conclusion": "success"
+      },
+      "vibeQa": {
+        "runId": 35438303145,
+        "conclusion": "success"
+      },
+      "integratedRegression": {
+        "runId": 35438303179,
+        "conclusion": "success"
+      },
+      "centralPolicyContract": {
+        "runId": 35438303123,
+        "conclusion": "success"
+      },
+      "live24hRunner": {
+        "runId": 35438303278,
+        "conclusion": "success"
+      },
+      "livePlannerEvidence": {
+        "effectiveExecutionWaveMax": 20,
+        "planningBacklogTarget": 60,
+        "planningBacklogCurrentBefore": 18,
+        "planningBacklogAfter": 18,
+        "activeWorkerReservations": 16,
+        "waveReady": "NO",
+        "releaseWaitExcluded": 0,
+        "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK"
+      },
+      "liveControlQueue": {
+        "persistentMaxConcurrentTasks": 256,
+        "activeTasks": 18,
+        "activeGamePrimary": 18,
+        "runningGamePrimary": 16,
+        "queuedGamePrimary": 2,
+        "nonGamePrimaryActive": 0
+      }
     },
-    "nextImplementation": [
-      "PHYSICALLY_SEPARATE_RECOVERY_FAST_CONTROL_FAST_AND_LEARNING_IDLE_DISPATCH_FROM_GAME_PRIMARY_RESERVE",
-      "ADD_AUXILIARY_LANE_LATENCY_AND_PREEMPTION_TELEMETRY",
-      "VERIFY_LIVE_ACTIVE_WAVE_CAN_PLAN_BACKLOG_WITHOUT_RESERVING_NEXT_WAVE",
-      "VERIFY_NONDEVELOPMENT_LANES_NEVER_REDUCE_GAME_PRIMARY_ACTIVE_WAVE"
+    "pending": [
+      "ENFORCE_SYMBOL_LEVEL_SEMANTIC_DIFF_BUDGET_AFTER_GENERATION_NOT_ONLY_PROMPT_CONTRACT",
+      "FAILURE_LOCAL_MEMORY_INDEX",
+      "PATCH_RECIPE_COMPILER",
+      "CONFIDENCE_CALIBRATION_WITH_OBSERVED_ERROR",
+      "REGRESSION_HOTSPOT_MAP",
+      "CAUSAL_REPLAY_SANDBOX",
+      "PATCH_PROVENANCE_GRAPH",
+      "REGRESSION_PREDICTION",
+      "LEARNING_DECAY",
+      "ARCHITECTURE_DRIFT_DETECTOR",
+      "CANONICAL_CODING_CONSTITUTION_PROMOTION"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3097,18 +3139,19 @@
       "directMainGameSourceWriteForbidden": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "planningBacklogContinuesDuringActiveWave": true,
-      "planningBacklogMinimum": 40,
       "planningBacklogTarget": 60,
+      "planningBacklogMinimum": 40,
       "persistentQueueMax": 256,
       "nonDevelopmentLanesDoNotConsumeGamePrimarySlots": true,
       "sourceWorkerReceivesCompiledEditContract": true,
-      "verifiedStrategyLearningOnly": true,
-      "strategyLearningCannotExpandAuthority": true
+      "codingMethodLearningVerifiedOnly": true,
+      "strategyLearningCannotExpandAuthority": true,
+      "candidateReleaseControlJsonRebaseForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
     "version": 1,
-    "status": "GAME_PRIMARY_AND_PLANNING_LANE_VERIFIED_AUXILIARY_DISPATCH_PENDING",
+    "status": "CORE_VERIFIED",
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "documentFirst": true,
     "principle": "GAME_PRIMARY_WAVE_IS_EXECUTION_CAP_NOT_TOTAL_COMPANY_CONCURRENCY",
@@ -3184,6 +3227,16 @@
       "vibeQaRunId": 35438149030,
       "integratedRegressionRunId": 35438149014,
       "coreQaRunId": 35438149010
+    },
+    "liveVerification": {
+      "effectiveExecutionWaveMax": 20,
+      "planningBacklogTarget": 60,
+      "planningBacklogCurrentBefore": 18,
+      "planningBacklogAfter": 18,
+      "activeWorkerReservations": 16,
+      "waveReady": "NO",
+      "releaseWaitExcluded": 0,
+      "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK"
     }
   },
   "vibeCodingMethodSelfImprovement": {
@@ -3603,6 +3656,47 @@
         "machine handoff auxiliary-lane assertion uses existing queuedPreview schema",
         "adaptive queue fixture explicitly declares development implementation lane"
       ]
+    },
+    "verification": {
+      "verifiedMainHead": "094c59ed998a5e0b9e6004913d3849eff11b1880",
+      "vibe2CoreQa": {
+        "runId": 35438303132,
+        "conclusion": "success"
+      },
+      "vibeQa": {
+        "runId": 35438303145,
+        "conclusion": "success"
+      },
+      "integratedRegression": {
+        "runId": 35438303179,
+        "conclusion": "success"
+      },
+      "centralPolicyContract": {
+        "runId": 35438303123,
+        "conclusion": "success"
+      },
+      "live24hRunner": {
+        "runId": 35438303278,
+        "conclusion": "success"
+      },
+      "livePlannerEvidence": {
+        "effectiveExecutionWaveMax": 20,
+        "planningBacklogTarget": 60,
+        "planningBacklogCurrentBefore": 18,
+        "planningBacklogAfter": 18,
+        "activeWorkerReservations": 16,
+        "waveReady": "NO",
+        "releaseWaitExcluded": 0,
+        "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK"
+      },
+      "liveControlQueue": {
+        "persistentMaxConcurrentTasks": 256,
+        "activeTasks": 18,
+        "activeGamePrimary": 18,
+        "runningGamePrimary": 16,
+        "queuedGamePrimary": 2,
+        "nonGamePrimaryActive": 0
+      }
     }
   },
   "vibeRecoveryLearningLoop": {
