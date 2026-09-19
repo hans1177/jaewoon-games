@@ -36,10 +36,11 @@ export function createParallelismControl(input = {}) {
   });
 }
 
-export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX) {
+export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX, { minimumMax = 4 } = {}) {
   const control = createParallelismControl(controlInput);
   const requested = clamp(Math.floor(num(requestedMax) || DEFAULT_ADAPTIVE_MAX), 1, DEFAULT_ADAPTIVE_MAX);
-  return Math.max(1, Math.min(requested, control.currentMax));
+  const floor = clamp(Math.floor(num(minimumMax) || 4), 1, DEFAULT_ADAPTIVE_MAX);
+  return Math.max(1, Math.min(requested, Math.max(control.currentMax, floor)));
 }
 
 function pressureLevel(telemetry = {}) {
@@ -77,7 +78,7 @@ function isHealthy(telemetry = {}) {
     && num(telemetry.checkout?.p95Ms) < 15000;
 }
 
-export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS } = {}) {
+export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS, minimumMax = 4 } = {}) {
   let control = createParallelismControl(controlInput);
   const nowMs = Date.parse(now);
   const previousAt = Date.parse(clean(control.lastUpdatedAt));
@@ -104,7 +105,9 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     });
   }
 
-  const current = control.currentMax;
+  const configuredFloor = clamp(Math.floor(num(minimumMax) || 4), 1, DEFAULT_ADAPTIVE_MAX);
+  const originalCurrent = control.currentMax;
+  const current = Math.max(originalCurrent, configuredFloor);
   const workerCount = Math.max(0, Math.floor(num(telemetry.workerCount)));
   const effectiveMax = Math.max(1, Math.floor(num(telemetry.effectiveMax) || current));
   const saturationFloor = Math.max(1, Math.ceil(current * 0.75));
@@ -161,6 +164,15 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
     healthyStreak = 0;
     pressureStreak = 0;
     reason = 'NEUTRAL';
+  }
+
+  if (next < configuredFloor) next = configuredFloor;
+  if (originalCurrent < configuredFloor && next === configuredFloor) {
+    decision = 'UP';
+    reason = `OWNER_MINIMUM_WAVE_${configuredFloor}`;
+  } else if (originalCurrent === configuredFloor && next === configuredFloor && strongPressure) {
+    decision = 'HOLD';
+    reason = `OWNER_MINIMUM_WAVE_${configuredFloor}`;
   }
 
   return createParallelismControl({
