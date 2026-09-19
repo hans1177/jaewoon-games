@@ -657,6 +657,30 @@ test('stale runtime repair state cannot reopen source work when catalog authorit
 });
 
 
+test('preservation pilot bypasses generic Web assessment and queues ASSET_ADAPTATION first',()=>{
+  const root=tempRepo();
+  const gameId='preservation-web';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><canvas id="game"></canvas></body></html>\n','utf8');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Preservation Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:false}]},
+    developmentQueue:{items:[{
+      gameId,gameName:'Preservation Web',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',
+      webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,
+      ownerPreservationPresentationUpgrade:true,presentationFirstPass:'ASSET_ADAPTATION'
+    }]},
+    queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  const task=result.tasks.find(row=>row.gameId===gameId);
+  assert.ok(task);
+  assert.equal(task.id,`${gameId}-presentation-asset-adaptation-v1`);
+  assert.ok(task.evidence.includes('presentation-pass:ASSET_ADAPTATION'));
+  assert.notEqual(task.id,`${gameId}-existing-web-assessment-v1`);
+  assert.notEqual(task.id,`${gameId}-existing-web-development-continuation-v1`);
+});
+
 test('presentation quality passes are queued in canonical order',()=>{
   const root=tempRepo();
   const gameId='presentation-web';
