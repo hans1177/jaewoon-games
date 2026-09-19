@@ -79,10 +79,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --check tools/vibe2-release-baseline-queue.mjs
-          node --check tools/vibe2-auto-planner.mjs
-          node --check tools/vibe2-handoff.mjs
-          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-plan.json >/tmp/vibe2-handoff-before-plan.log
+          node -e "const fs=require('fs'); for (const file of ['.vibe2/queue.json','.vibe2/parallelism-control.json']) JSON.parse(fs.readFileSync(file,'utf8')); console.log('VIBE2_CONTROL_STATE_JSON=VALID')"
           echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
           echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
           echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
@@ -107,6 +104,16 @@ jobs:
             rm -rf /tmp/vibe2-main
             git worktree prune
             git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
+            control_root="$PWD"
+
+            node --check /tmp/vibe2-main/tools/vibe2-handoff.mjs
+            node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
+              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+              --output=/tmp/vibe2-handoff-before-plan.json >/tmp/vibe2-handoff-before-plan.log
 
             if git show origin/vibe2-learning-runtime:company-learning/vibe3-recombination-memory.json > /tmp/vibe2-recombination-memory.json 2>/dev/null; then
               echo 'VIBE2_RECOMBINATION_MEMORY=LOADED'
@@ -157,28 +164,35 @@ jobs:
               --queue=.vibe2/queue.json \
               --control=.vibe2/parallelism-control.json | tee /tmp/vibe2-system-steward.log
 
-            node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-before-attempt.json >/tmp/vibe2-handoff-before-attempt.log
+            node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
+              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+              --output=/tmp/vibe2-handoff-before-attempt.json >/tmp/vibe2-handoff-before-attempt.log
 
-            node tools/vibe2-release-baseline-queue.mjs \
+            node /tmp/vibe2-main/tools/vibe2-release-baseline-queue.mjs \
               --catalog=/tmp/vibe2-main/game-catalog.json \
-              --queue=.vibe2/queue.json \
+              --queue="$control_root/.vibe2/queue.json" \
               --root=/tmp/vibe2-main | tee /tmp/vibe2-release-baseline-plan.log
 
-            node --check tools/vibe2-auto-planner.mjs
-            node tools/vibe2-auto-planner.mjs \
-              --runtime=vibe2-runtime.json \
+            node --check /tmp/vibe2-main/tools/vibe2-auto-planner.mjs
+            node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \
+              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
               --status=/tmp/vibe2-main/company-status.json \
               --catalog=/tmp/vibe2-main/game-catalog.json \
-              --queue=.vibe2/queue.json \
-              --control=.vibe2/parallelism-control.json \
-              --experience=.vibe2/experience.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --experience="$control_root/.vibe2/experience.json" \
               --recombination=/tmp/vibe2-recombination-memory.json \
+              --historical-registry=/tmp/vibe2-main/company-learning/roblox-sustained-maintenance.json \
               --root=/tmp/vibe2-main \
               --max="$VIBE2_MAX_CONCURRENT_GAME_TASKS" | tee /tmp/vibe2-autoplan.log
 
             node --input-type=module <<'NODE'
           import fs from 'node:fs';
-          import { createVibeContinuousQueue } from './assets/vibe-continuous-queue.js';
+          import { createVibeContinuousQueue } from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js';
           const file = '.vibe2/queue.json';
           const beforeText = fs.readFileSync(file, 'utf8');
           const before = JSON.parse(beforeText);
@@ -193,7 +207,13 @@ jobs:
           }
           NODE
 
-            node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-plan.json >/tmp/vibe2-handoff-after-plan.log
+            node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
+              --runtime=/tmp/vibe2-main/vibe2-runtime.json \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
+              --experience="$control_root/.vibe2/experience.json" \
+              --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+              --output=/tmp/vibe2-handoff-after-plan.json >/tmp/vibe2-handoff-after-plan.log
 
             git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json
             if git diff --cached --quiet; then
