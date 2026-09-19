@@ -70,3 +70,13 @@ test('system AI may read central policy as context but cannot write it',async()=
     await assert.rejects(runSystemAiWorker({taskFile:'bad-task.json',responseFile:'response.json'}),/SYSTEM_AI_POLICY_WRITE_FORBIDDEN/);
   }finally{process.chdir(prev);fs.rmSync(cwd,{recursive:true,force:true});}
 });
+
+test('system AI workflow persists sanitized security quarantine before PR supervision',()=>{
+  const workflow=fs.readFileSync('.github/workflows/company-system-ai-workers.yml','utf8');
+  assert.match(workflow,/system-ai-security-quarantined/);
+  assert.match(workflow,/company-security-incident\.mjs --command=record/);
+  assert.match(workflow,/company-recovery-queue\.mjs --command=enqueue/);
+  assert.match(workflow,/\.vibe2\/security-incidents\.json \.vibe2\/recovery-queue\.json/);
+  assert.doesNotMatch(workflow,/while IFS=\s*$/m);
+  assert.match(workflow,/while read -r task_id verdict highest report_file; do/);
+});

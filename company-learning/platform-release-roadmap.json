@@ -1,5 +1,5 @@
 {
-  "version": 38,
+  "version": 39,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1958,7 +1958,15 @@
         "rawSecretOrMalwarePayloadStored": false
       },
       "authorizedPolicyReviewMode": "AUTHORIZED_POLICY_REVIEW_PASS",
-      "securityRescanMode": "RESCAN_PASS"
+      "securityRescanMode": "RESCAN_PASS",
+      "implementationRevision": {
+        "id": "SECURITY_SYSTEM_AI_QUARANTINE_PERSISTENCE_2026-09-19",
+        "documentIsCode": true,
+        "workflow": ".github/workflows/company-system-ai-workers.yml",
+        "qa": "qa/company-system-ai-worker.test.mjs",
+        "behavior": "SANITIZED_SECURITY_FINDINGS_PERSIST_BEFORE_PR_AND_QUARANTINED_CANDIDATES_ROUTE_TO_RECOVERY_QUEUE",
+        "malformedWorkflowGuard": "QA_BLOCKS_BROKEN_FAN_IN_SECURITY_LOOP"
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
