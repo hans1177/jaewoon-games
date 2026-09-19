@@ -1,5 +1,5 @@
 {
-  "version": 158,
+  "version": 159,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3758,26 +3758,24 @@
     }
   },
   "changeRecord": {
-    "id": "SUPERVISED_WEB_COAUTHORING_LEARNING_LOOP_2026-09-20",
+    "id": "SUPERVISED_WEB_NO_BACKLOG_STALL_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": false,
-    "previousChangeRecordId": "SUPERVISED_WEB_GAME_COAUTHORING_2026-09-20",
-    "reason": "OWNER REQUESTED THAT ASSISTANT SUPERVISION ITSELF BECOME VIBE LEARNING. VERIFIED SUPERVISOR PASS/REVISE/DROP DECISIONS NOW FLOW INTO EXISTING EXPERIENCE MEMORY AS POSITIVE OR NEGATIVE PATTERNS WITHOUT EXPANDING AUTHORITY.",
+    "previousChangeRecordId": "SUPERVISED_WEB_COAUTHORING_LEARNING_LOOP_2026-09-20",
+    "reason": "OWNER REQUIRES ASSISTANT+VIBE COAUTHORING WITHOUT SLOWING THE REST OF DEVELOPMENT. SUPERVISED REVIEW WAIT NOW RELEASES EXECUTION CAPACITY AND IS EXCLUDED FROM RUNNABLE PLANNING BACKLOG WHILE THE SAME SOURCE ROOT REMAINS LOCKED FOR REVIEW SAFETY.",
     "invariants": {
-      "unverifiedSupervisionCannotTeach": true,
-      "candidateGenerationCannotTeachByItself": true,
-      "verifiedFailureMayTeach": true,
-      "verifiedPassMayTeach": true,
-      "learningCannotBypassQa": true,
-      "learningCannotAutoChangeGameplayValues": true,
-      "majorWebAutoPromotionBlockedUntilVerifiedPassApproval": true
+      "unrelatedGamesContinueRunning": true,
+      "microRepairsContinueRunning": true,
+      "supervisorReviewDoesNotConsumeWorkerCapacity": true,
+      "supervisorReviewDoesNotConsumePlanningBacklog": true,
+      "sameGameConcurrentMutationWhileReviewing": false,
+      "verifiedReviewStillRequiredBeforePromotion": true
     },
     "next": [
       "CURRENT_CI_REVALIDATION_PASS",
-      "RUN_FIRST_REAL_SUPERVISED_WEB_BUILD",
-      "RECORD_ASSISTANT_DECOMPOSITION_AND_REVIEW_RATIONALE",
-      "VERIFY_EXPERIENCE_MEMORY_RETRIEVAL_ON_NEXT_SIMILAR_WEB_TASK",
-      "MEASURE_FIRST_CANDIDATE_PASS_AND_REWORK_RATE"
+      "START_FIRST_SUPERVISED_BUG_DEFENSE_BUILD_WITH_PARALLEL_QUEUE_UNBLOCKED",
+      "MEASURE_REVIEW_WAIT_COUNT_VS_CAPACITY_RUNNING",
+      "VERIFY_NEXT_REFILL_KEEPS_FULL_INDEPENDENT_FANOUT"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -5739,6 +5737,27 @@
         "plannerTest": "c652030a115bf00799d393d4a2bd4deba671ea22",
         "releaseLearningTest": "5795faf3ecfdfa67e2a4ad5edc9b27d956c7cb77",
         "experienceLearningTest": "ac5dd717a9bae39184e7fd6be90257c5ef89c885"
+      }
+    },
+    "throughputContract": {
+      "version": 1,
+      "ownerRequirement": "SUPERVISED_COAUTHORING_MUST_NOT_DELAY_UNRELATED_WORK",
+      "supervisedCandidateGenerationContinuesInParallel": true,
+      "unrelatedGameWorkContinuesInParallel": true,
+      "microRepairAutomationContinues": true,
+      "supervisionWaitConsumesWorkerSlot": false,
+      "supervisionWaitConsumesPlanningBacklog": false,
+      "supervisionWaitExecutionLane": "RELEASE_WAIT",
+      "sameSourceRootRemainsLockedDuringReview": true,
+      "reasonForSameRootLock": "PREVENT_CONCURRENT_MUTATION_OF_THE_EXACT_GAME_BEING_REVIEWED",
+      "persistentQueueMayContinueRefill": true,
+      "executionWaveMaxPreserved": true,
+      "noGlobalPauseForSupervisor": true,
+      "implementationCommits": {
+        "queueStatePersistenceAndSlotRelease": "09de5825cc0c123fe22fe68a909a9d9e5ddca456",
+        "planningBacklogExclusion": "e2803d72250cce126a40c35d3f6a2f4a91831b43",
+        "queueRegression": "405dee117dce6a037f621c0fd6ad0a8f09de2c28",
+        "plannerRegression": "7d69dfff8c7c2c08a2ea204d55fd8cd3a109c142"
       }
     }
   }
