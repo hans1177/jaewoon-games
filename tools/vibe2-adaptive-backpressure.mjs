@@ -1,8 +1,8 @@
 // 파일명: tools/vibe2-adaptive-backpressure.mjs
-// 역할: 최근 병렬 실행 텔레메트리를 다음 run의 영속 동시성 cap(30→24→20→16→12→8→4)에 연결하고 오래된 압력을 자동 만료한다.
+// 역할: 정책상 무제한 병렬을 유지하면서 외부 GitHub matrix 배치 용량 안에서 텔레메트리 기반 압력 조절만 수행한다.
 
-export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 12, 16, 20, 24, 30]);
-export const DEFAULT_ADAPTIVE_MAX = 30;
+export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 16, 32, 64, 128, 256]);
+export const DEFAULT_ADAPTIVE_MAX = 256;
 export const DEFAULT_TELEMETRY_TTL_MS = 90 * 60 * 1000;
 
 const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
@@ -10,7 +10,7 @@ const clean = (value) => String(value ?? '').trim();
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function normalizeStep(value = DEFAULT_ADAPTIVE_MAX) {
-  const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_MAX), 4, 30);
+  const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_MAX), 4, DEFAULT_ADAPTIVE_MAX);
   return ADAPTIVE_PARALLELISM_STEPS.reduce((best, step) => Math.abs(step - raw) < Math.abs(best - raw) ? step : best, DEFAULT_ADAPTIVE_MAX);
 }
 function stepDown(current) {
@@ -29,7 +29,7 @@ export function createParallelismControl(input = {}) {
     healthyStreak: Math.max(0, Math.floor(num(input.healthyStreak))),
     pressureStreak: Math.max(0, Math.floor(num(input.pressureStreak))),
     lastDecision: clean(input.lastDecision) || 'INIT',
-    lastReason: clean(input.lastReason) || 'DEFAULT_30',
+    lastReason: clean(input.lastReason) || 'DEFAULT_EXTERNAL_BATCH_MAX',
     lastRunId: clean(input.lastRunId) || null,
     lastUpdatedAt: clean(input.lastUpdatedAt) || null,
     lastTelemetry: input.lastTelemetry && typeof input.lastTelemetry === 'object' ? input.lastTelemetry : null
@@ -38,7 +38,7 @@ export function createParallelismControl(input = {}) {
 
 export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX) {
   const control = createParallelismControl(controlInput);
-  const requested = clamp(Math.floor(num(requestedMax) || DEFAULT_ADAPTIVE_MAX), 1, 30);
+  const requested = clamp(Math.floor(num(requestedMax) || DEFAULT_ADAPTIVE_MAX), 1, DEFAULT_ADAPTIVE_MAX);
   return Math.max(1, Math.min(requested, control.currentMax));
 }
 
