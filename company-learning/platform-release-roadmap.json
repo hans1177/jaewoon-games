@@ -1,5 +1,5 @@
 {
-  "version": 79,
+  "version": 80,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3055,7 +3055,7 @@
   "changeRecord": {
     "id": "VIBE2_FULL_WEB_GENERATION_GATE_ALIGNMENT_2026-09-19",
     "documentIsCode": true,
-    "reason": "ALIGN_FULL_WEB_GENERATION_TARGET_WITH_DOWNSTREAM_REAL_GAME_VALIDATION_AND_REMOVE_REPEATED_UNDERSIZED_REBUILD_FAILURES_WITHOUT_WEAKENING_PARSER_QA_OR_GAME_PRIMARY_EXECUTION",
+    "reason": "ALIGN_FULL_WEB_GENERATION_TARGET_WITH_DOWNSTREAM_REAL_GAME_VALIDATION_AND_KEEP_REGRESSION_ASSERTIONS_EXACTLY_SYNCHRONIZED_WITH_THE_IMPLEMENTED_TARGET_CONTRACT",
     "files": [
       "tools/vibe2-source-worker.mjs",
       "qa/vibe2-source-worker.test.mjs",
@@ -3063,7 +3063,8 @@
     ],
     "commits": [
       "08280d7657070b77c9b704ca0c6bf6271879e1b5",
-      "076659f63d7cd8570e18e38bd9379dc21009ef17"
+      "076659f63d7cd8570e18e38bd9379dc21009ef17",
+      "45d631ea811cbe71c34c53058ae946b90ada8d7c"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3107,7 +3108,9 @@
         "malformedOutput": 2,
         "editMatch": 1
       },
-      "note": "THIS_LIVE_WAVE_PRECEDES_THE_NEW_GENERATION_TARGET_CONTRACT; USE_NEXT_FRESH_CONTRACT_WAVE_TO_MEASURE_EFFECT"
+      "note": "THIS_LIVE_WAVE_PRECEDES_THE_NEW_GENERATION_TARGET_CONTRACT; USE_NEXT_FRESH_CONTRACT_WAVE_TO_MEASURE_EFFECT",
+      "assertionWordingSync": "PASS",
+      "supersedeRunIfPinnedBefore": "45d631ea811cbe71c34c53058ae946b90ada8d7c"
     }
   }
 }
