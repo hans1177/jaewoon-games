@@ -204,6 +204,28 @@ function applyTransformativeRecombination(taskInput={},memory={}){
   };
 }
 
+function webRepairImplementationHints(evidence=[]){
+  const text=(evidence||[]).map(clean).filter(Boolean).join('|').toUpperCase();
+  const hints=[];
+  const add=(pattern,hint)=>{if(pattern.test(text))hints.push(hint);};
+  add(/APPROVED_SCOPE_TOWER_POSITION_INPUT_REQUIRED/,'실제 플레이어의 pointer/touch 좌표를 받아 배치·타워 위치를 결정하고 고정 좌표나 테스트 전용 배치를 사용하지 않는다.');
+  add(/MOBILE_TOUCH_ACTION_NOT_CONNECTED/,'모바일 touch/pointer 입력을 실제 게임 액션 함수와 상태 변화에 직접 연결한다.');
+  add(/APPROVED_SCOPE_REAL_SPATIAL_STATE_REQUIRED/,'카운터나 가짜 상태 대신 실제 엔티티 x/y 위치와 공간 상태를 런타임 게임 루프에 연결한다.');
+  add(/APPROVED_SCOPE_REAL_ENTITY_INTERACTION_REQUIRED/,'실제 런타임 엔티티가 이동·타게팅·충돌·공격 등 승인된 상호작용을 수행하게 연결한다.');
+  add(/REAL_GAME_MECHANIC_COUNT_TOO_LOW/,'누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현하고 라벨·테스트 버튼으로 대체하지 않는다.');
+  add(/REAL_GAME_SYSTEM_COUNT_REQUIRED/,'누락된 런타임 시스템을 실제 핵심 루프에 연결하고 단순 표시용 객체로 추가하지 않는다.');
+  add(/COMPLETE_PLAYABLE_GAMEPLAY_CYCLE_REQUIRED/,'플레이어 입력 → 게임 상태 진행 → 결과·보상 또는 실패 → 재시작·다음 진행으로 이어지는 완전한 플레이 사이클을 만든다.');
+  add(/RUN_RESULT_STATE_REQUIRED/,'런타임에 명시적인 playing/win/loss 결과 상태를 두고 실제 조건에서 전환되게 한다.');
+  add(/WIN_CONDITION_REQUIRED/,'실제 플레이로 도달 가능한 승리 조건과 승리 상태 전환을 구현한다.');
+  add(/LOSS_CONDITION_REQUIRED/,'실제 플레이에서 발생 가능한 패배 조건과 패배 상태 전환을 구현한다.');
+  add(/INITIAL_30_MINUTE_PROXY_FORBIDDEN/,'시간 프록시나 검증용 우회 상태 대신 실제 gameplay 진행 상태로 초기 플레이 구간을 구성한다.');
+  add(/WEB_TEST_HARNESS_FORBIDDEN|TEST_HARNESS_SCOPE_CONTROL_ID_FORBIDDEN/,'테스트 하네스·검증 전용 버튼·scope 제어 ID를 gameplay UI로 쓰지 말고 실제 플레이 입력 UI로 교체한다.');
+  add(/MUSIC_MUTE_CONTROL_REQUIRED/,'실제 오디오 재생 상태에 연결된 mute 토글을 제공한다.');
+  add(/MUSIC_VOLUME_CONTROL_REQUIRED/,'실제 오디오 볼륨에 연결된 사용자 volume control을 제공한다.');
+  add(/SCRIPT_SRC_FORBIDDEN/,'외부 script src 의존을 제거하고 허용된 기존 index.html 내부 런타임 코드로 유지한다.');
+  add(/REAL_GAME_FOOTPRINT_TOO_SMALL|REAL_GAME_LOGIC_TOO_SMALL/,'문자 수를 채우지 말고 위 검증 실패를 해결하는 실제 gameplay 로직·상태·입력 연결을 추가한다.');
+  return [...new Set(hints)].slice(0,8);
+}
 function findWebAssessmentTask(project,repoRoot,queue){
   if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
   const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative),missing=!fs.existsSync(file);
@@ -223,8 +245,10 @@ function findWebAssessmentTask(project,repoRoot,queue){
       ...(project.developmentValidation?.blockers||[]).slice(0,4).map(value=>`development-validation-blocker=${clean(value).slice(0,500)}`),
       project.queueWebValidationLastAttemptAt?`last-validation-at=${project.queueWebValidationLastAttemptAt}`:''
     ].filter(Boolean);
+    const runtimeRepairHints=webRepairImplementationHints(runtimeFailureEvidence);
+    const runtimeHintContext=runtimeRepairHints.length?`\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- ${runtimeRepairHints.join('\n- ')}`:'';
     const runtimeFailureContext=runtimeFailureEvidence.length
-      ?`\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n${runtimeFailureEvidence.join('\n')}\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.`
+      ?`\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n${runtimeFailureEvidence.join('\n')}${runtimeHintContext}\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.`
       :'\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n구체 실패 증거가 아직 비어 있으면 현재 Web validation 계약과 index.html을 대조해 실제 검증 실패를 만드는 가장 작은 누락 기능을 찾아 최소 1개 이상 실질 수정한다. no-op 수정은 금지한다.';
     const goal=`[WEB_REPAIR] 게임: ${project.name||project.gameId}\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.${runtimeFailureContext}`;
     const out=task(id,project,goal,[relative],'owner-immediate','medium',['owner-directive:webgame-first','web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED','recovery-exact-stage:WEB_REPAIR','preserve-existing-game']);out.ownerDirective=true;out.speculativeEligible=false;return out;
@@ -373,8 +397,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
             ...(Array.isArray(runtimeItem?.strictImplementationHardFailures)?runtimeItem.strictImplementationHardFailures:[]).map(value=>`strict-hard-failure=${clean(value).slice(0,500)}`).slice(0,4),
             clean(runtimeItem?.webValidationLastAttemptAt||runtimeItem?.webFinalContentDepthLastAttemptAt)?`last-validation-at=${clean(runtimeItem.webValidationLastAttemptAt||runtimeItem.webFinalContentDepthLastAttemptAt)}`:''
           ].filter(Boolean);
+          const runtimeRepairHints=webRepairImplementationHints(runtimeFailureEvidence);
+          const runtimeHintContext=runtimeRepairHints.length?`\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- ${runtimeRepairHints.join('\n- ')}`:'';
           const runtimeFailureContext=runtimeFailureEvidence.length
-            ?`\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n${runtimeFailureEvidence.join('\n')}\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.`
+            ?`\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n${runtimeFailureEvidence.join('\n')}${runtimeHintContext}\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.`
             :'\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n구체 실패 증거가 아직 비어 있으면 현재 Web validation 계약과 index.html을 대조해 실제 검증 실패를 만드는 가장 작은 누락 기능을 찾아 최소 1개 이상 실질 수정한다. no-op 수정은 금지한다.';
           const refreshedGoal=`[WEB_REPAIR] 게임: ${clean(runtimeItem?.gameName||game?.name||gameId)}\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.${runtimeFailureContext}`;
           if(clean(item.goal)!==clean(refreshedGoal)){
