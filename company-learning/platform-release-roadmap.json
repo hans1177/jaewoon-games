@@ -1,5 +1,5 @@
 {
-  "version": 95,
+  "version": 96,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,57 +3069,64 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_CODING_SELF_IMPROVEMENT_CORE_VERIFIED_V95_2026-09-19",
+    "id": "VIBE2_FAILURE_LOCAL_PATCH_RECIPE_PHASE2_V96_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_CODING_SELF_IMPROVEMENT_PHASE1_VERIFIED_2026-09-19",
-    "reason": "PROMOTE_DOCUMENTED_AND_IMPLEMENTED_CORE_AFTER_QA_AND_LIVE_RUNNER_VERIFICATION",
-    "implementationState": "CORE_PHASE_1_VERIFIED",
-    "verification": {
-      "verifiedMainHead": "094c59ed998a5e0b9e6004913d3849eff11b1880",
-      "vibe2CoreQa": {
-        "runId": 35438303132,
-        "conclusion": "success"
+    "previousChangeRecordId": "VIBE2_CODING_SELF_IMPROVEMENT_CORE_VERIFIED_V95_2026-09-19",
+    "reason": "SYNC_PHASE2_FAILURE_LOCAL_MEMORY_AND_PATCH_RECIPE_AFTER_IMPLEMENTATION_AND_PARTIAL_QA;TRIGGER_CORE_REVALIDATION",
+    "implementationState": "PHASE_2_IMPLEMENTED_CORE_QA_PENDING",
+    "phase2": {
+      "id": "FAILURE_LOCAL_MEMORY_AND_PATCH_RECIPE",
+      "state": "IMPLEMENTED_CORE_QA_PENDING",
+      "objective": "REUSE_VERIFIED_SAME_GAME_SAME_FAILURE_CAUSAL_REPAIR_KNOWLEDGE_BEFORE_RETHINKING_THE_SAME_BUG",
+      "implemented": [
+        "FAILURE_FINGERPRINT_EXTRACTION_FROM_EXPLICIT_FAILURE_CODES_AND_CAUSAL_CLASSES",
+        "VERIFIED_SAME_GAME_SAME_FAILURE_MEMORY_PRIORITY",
+        "VERIFIED_SAME_FAILURE_CROSS_GAME_FALLBACK",
+        "UNVERIFIED_MEMORY_EXCLUDED_FROM_FAILURE_LOCAL_REUSE",
+        "PATCH_RECIPE_COMPILED_INTO_TASK_LOCAL_EDIT_CONTRACT",
+        "PATCH_RECIPE_REUSE_AND_AVOID_PATTERNS_INJECTED_INTO_SOURCE_WORKER_GUIDANCE",
+        "PATCH_RECIPE_CANNOT_EXPAND_WRITABLE_SCOPE_OR_BYPASS_QA",
+        "FAILURE_FINGERPRINT_RECIPE_MODE_AND_VERIFIED_MEMORY_COUNT_PERSISTED_IN_CANDIDATE_TELEMETRY",
+        "FAILURE_RECIPE_TELEMETRY_PRESERVED_IN_IMMUTABLE_FAN_IN_EVIDENCE",
+        "EXPLICIT_FAILURE_CODE_MATCH_OVERRIDES_MINOR_DESCRIPTION_FINGERPRINT_DRIFT_AND_SAME_GAME_REMAINS_HIGHEST_PRIORITY"
+      ],
+      "implementationEvidence": {
+        "failureLocalLearning": "29f81d70bab7f126a795f620ad13b6f2283300dc",
+        "failureLocalTest": "5b6692fc59cd87e7d36a34b38a9766375618b685",
+        "patchRecipeCompiler": "cbdf4873f1f2803af65b6d3f64c9984f8e20014f",
+        "patchRecipeGuidance": "092d02a76f2c48150385143e907e9cd01e62943d",
+        "patchRecipeExplorationTest": "eb44eaa5e857942bdf0c6b15e83e5aa8604d8087",
+        "sourceRecipeTelemetry": "8daaa034810dc305f5c182236bc9c6e7ba6dd7da",
+        "fanInRecipeEvidence": "31bce60d4866a9fef716f1f10c8e1fe1a55b66af",
+        "sourceTelemetryTest": "4ec236c7d8618f2f7662d7f400f375fedeaa171e",
+        "controllerEvidenceTest": "74c0b74836a800839eb328d65689b8d3499a634b",
+        "explicitFailureCodePriorityFix": "24a03005f7c10797ec3e524d777941aa94dfa4c6"
       },
-      "vibeQa": {
-        "runId": 35438303145,
-        "conclusion": "success"
+      "currentVerification": {
+        "vibeQa": {
+          "runId": 35438726116,
+          "conclusion": "success"
+        },
+        "integratedRegression": {
+          "runId": 35438726113,
+          "conclusion": "success"
+        },
+        "coreQa": "PENDING_NEW_DOCUMENT_SYNC_HEAD",
+        "note": "PREVIOUS_CORE_RUN_IDENTIFIED_REAL_FAILURE_FINGERPRINT_DRIFT_BUG;EXPLICIT_FAILURE_CODE_PRIORITY_FIX_APPLIED"
       },
-      "integratedRegression": {
-        "runId": 35438303179,
-        "conclusion": "success"
-      },
-      "centralPolicyContract": {
-        "runId": 35438303123,
-        "conclusion": "success"
-      },
-      "live24hRunner": {
-        "runId": 35438303278,
-        "conclusion": "success"
-      },
-      "livePlannerEvidence": {
-        "effectiveExecutionWaveMax": 20,
-        "planningBacklogTarget": 60,
-        "planningBacklogCurrentBefore": 18,
-        "planningBacklogAfter": 18,
-        "activeWorkerReservations": 16,
-        "waveReady": "NO",
-        "releaseWaitExcluded": 0,
-        "interpretation": "PLANNER_EXECUTES_DURING_ACTIVE_WAVE_BUT_DOES_NOT_INVENT_CONFLICTING_OR_NONINDEPENDENT_WORK"
-      },
-      "liveControlQueue": {
-        "persistentMaxConcurrentTasks": 256,
-        "activeTasks": 18,
-        "activeGamePrimary": 18,
-        "runningGamePrimary": 16,
-        "queuedGamePrimary": 2,
-        "nonGamePrimaryActive": 0
+      "invariants": {
+        "verifiedOnlyPositiveReuse": true,
+        "sameGameSameFailureHighestPriority": true,
+        "unverifiedMemoryReusable": false,
+        "writableScopeExpansionAllowed": false,
+        "qaBypassAllowed": false,
+        "authorityExpanded": false,
+        "protectedGameplayAndSaveSemanticsPreserved": true
       }
     },
     "pending": [
       "ENFORCE_SYMBOL_LEVEL_SEMANTIC_DIFF_BUDGET_AFTER_GENERATION_NOT_ONLY_PROMPT_CONTRACT",
-      "FAILURE_LOCAL_MEMORY_INDEX",
-      "PATCH_RECIPE_COMPILER",
       "CONFIDENCE_CALIBRATION_WITH_OBSERVED_ERROR",
       "REGRESSION_HOTSPOT_MAP",
       "CAUSAL_REPLAY_SANDBOX",
@@ -3134,19 +3141,14 @@
       "ownerMinimumWave": 20,
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "singleActiveWorkerWave": true,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
       "sourceWriteOnlyOnCandidateBranch": true,
-      "planningBacklogContinuesDuringActiveWave": true,
-      "planningBacklogTarget": 60,
-      "planningBacklogMinimum": 40,
-      "persistentQueueMax": 256,
-      "nonDevelopmentLanesDoNotConsumeGamePrimarySlots": true,
-      "sourceWorkerReceivesCompiledEditContract": true,
-      "codingMethodLearningVerifiedOnly": true,
-      "strategyLearningCannotExpandAuthority": true,
-      "candidateReleaseControlJsonRebaseForbidden": true
+      "verifiedFailureLocalMemoryOnly": true,
+      "sameGameSameFailureHighestPriority": true,
+      "patchRecipeCannotExpandScope": true,
+      "patchRecipeCannotBypassQa": true,
+      "strategyLearningCannotExpandAuthority": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -3241,7 +3243,7 @@
   },
   "vibeCodingMethodSelfImprovement": {
     "version": 1,
-    "status": "CORE_PHASE_1_VERIFIED",
+    "status": "PHASE_2_FAILURE_LOCAL_RECIPE_IMPLEMENTED_CORE_QA_PENDING",
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "documentFirst": true,
     "objective": "VIBE_LEARNS_WHICH_CODING_METHOD_PRODUCES_MORE_CORRECT_GAME_FUNCTIONALITY_WITH_FEWER_BAD_EDITS_RETRIES_AND_REGRESSIONS",
@@ -3626,8 +3628,6 @@
     ],
     "pendingVerifiedExtensions": [
       "ENFORCE_SYMBOL_LEVEL_SEMANTIC_DIFF_BUDGET_AFTER_GENERATION_NOT_ONLY_PROMPT_CONTRACT",
-      "FAILURE_LOCAL_MEMORY_INDEX",
-      "PATCH_RECIPE_COMPILER",
       "CONFIDENCE_CALIBRATION_WITH_OBSERVED_ERROR",
       "REGRESSION_HOTSPOT_MAP",
       "CAUSAL_REPLAY_SANDBOX",
@@ -3697,6 +3697,56 @@
         "queuedGamePrimary": 2,
         "nonGamePrimaryActive": 0
       }
+    },
+    "phase2": {
+      "id": "FAILURE_LOCAL_MEMORY_AND_PATCH_RECIPE",
+      "state": "IMPLEMENTED_CORE_QA_PENDING",
+      "objective": "REUSE_VERIFIED_SAME_GAME_SAME_FAILURE_CAUSAL_REPAIR_KNOWLEDGE_BEFORE_RETHINKING_THE_SAME_BUG",
+      "implemented": [
+        "FAILURE_FINGERPRINT_EXTRACTION_FROM_EXPLICIT_FAILURE_CODES_AND_CAUSAL_CLASSES",
+        "VERIFIED_SAME_GAME_SAME_FAILURE_MEMORY_PRIORITY",
+        "VERIFIED_SAME_FAILURE_CROSS_GAME_FALLBACK",
+        "UNVERIFIED_MEMORY_EXCLUDED_FROM_FAILURE_LOCAL_REUSE",
+        "PATCH_RECIPE_COMPILED_INTO_TASK_LOCAL_EDIT_CONTRACT",
+        "PATCH_RECIPE_REUSE_AND_AVOID_PATTERNS_INJECTED_INTO_SOURCE_WORKER_GUIDANCE",
+        "PATCH_RECIPE_CANNOT_EXPAND_WRITABLE_SCOPE_OR_BYPASS_QA",
+        "FAILURE_FINGERPRINT_RECIPE_MODE_AND_VERIFIED_MEMORY_COUNT_PERSISTED_IN_CANDIDATE_TELEMETRY",
+        "FAILURE_RECIPE_TELEMETRY_PRESERVED_IN_IMMUTABLE_FAN_IN_EVIDENCE",
+        "EXPLICIT_FAILURE_CODE_MATCH_OVERRIDES_MINOR_DESCRIPTION_FINGERPRINT_DRIFT_AND_SAME_GAME_REMAINS_HIGHEST_PRIORITY"
+      ],
+      "implementationEvidence": {
+        "failureLocalLearning": "29f81d70bab7f126a795f620ad13b6f2283300dc",
+        "failureLocalTest": "5b6692fc59cd87e7d36a34b38a9766375618b685",
+        "patchRecipeCompiler": "cbdf4873f1f2803af65b6d3f64c9984f8e20014f",
+        "patchRecipeGuidance": "092d02a76f2c48150385143e907e9cd01e62943d",
+        "patchRecipeExplorationTest": "eb44eaa5e857942bdf0c6b15e83e5aa8604d8087",
+        "sourceRecipeTelemetry": "8daaa034810dc305f5c182236bc9c6e7ba6dd7da",
+        "fanInRecipeEvidence": "31bce60d4866a9fef716f1f10c8e1fe1a55b66af",
+        "sourceTelemetryTest": "4ec236c7d8618f2f7662d7f400f375fedeaa171e",
+        "controllerEvidenceTest": "74c0b74836a800839eb328d65689b8d3499a634b",
+        "explicitFailureCodePriorityFix": "24a03005f7c10797ec3e524d777941aa94dfa4c6"
+      },
+      "currentVerification": {
+        "vibeQa": {
+          "runId": 35438726116,
+          "conclusion": "success"
+        },
+        "integratedRegression": {
+          "runId": 35438726113,
+          "conclusion": "success"
+        },
+        "coreQa": "PENDING_NEW_DOCUMENT_SYNC_HEAD",
+        "note": "PREVIOUS_CORE_RUN_IDENTIFIED_REAL_FAILURE_FINGERPRINT_DRIFT_BUG;EXPLICIT_FAILURE_CODE_PRIORITY_FIX_APPLIED"
+      },
+      "invariants": {
+        "verifiedOnlyPositiveReuse": true,
+        "sameGameSameFailureHighestPriority": true,
+        "unverifiedMemoryReusable": false,
+        "writableScopeExpansionAllowed": false,
+        "qaBypassAllowed": false,
+        "authorityExpanded": false,
+        "protectedGameplayAndSaveSemanticsPreserved": true
+      }
     }
   },
   "vibeRecoveryLearningLoop": {
@@ -3721,6 +3771,9 @@
       "NO_GATE_BYPASS"
     ],
     "recoveryLearningMustFeedFutureCodingStrategy": true,
-    "unverifiedRecoveryCannotBecomePreferredStrategy": true
+    "unverifiedRecoveryCannotBecomePreferredStrategy": true,
+    "failureLocalRetrievalImplemented": true,
+    "patchRecipeCompilerImplemented": true,
+    "sameGameSameFailurePriority": true
   }
 }
