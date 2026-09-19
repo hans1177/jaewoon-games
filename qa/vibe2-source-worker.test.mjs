@@ -752,6 +752,35 @@ test('tiny copied expansion skeleton is rejected before a real additive fragment
   assert.match(output,/data-gameplay-system="input-progress"/);
 });
 
+test('full web expansion that redefines html body is classified and retried from the accumulated seed', async()=>{
+  const cwd=tempRoot();
+  const seedFile=path.join(cwd,'seed-invalid-expansion.txt');
+  const invalidFile=path.join(cwd,'invalid-expansion.txt');
+  const realFile=path.join(cwd,'real-expansion.txt');
+  const finalFile=path.join(cwd,'final-invalid-expansion.txt');
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-web-invalid-expansion-retry'});
+  workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed=true;
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd,'design/demo/2026-09-18/design-revised.json'),JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const seed='<!doctype html><html><body><button id="play">Play</button><script>let state={score:0,hp:20,wave:1};</script></body></html>';
+  const invalid='<html><body><section>wrong whole document shape</section></body></html>';
+  const real=`<section data-gameplay-system="progression"></section><script>(()=>{${Array.from({length:55},(_,i)=>`function p${i}(){state.score+=${(i%5)+1};state.wave+=state.score%2;return state.score}`).join('')}window.addEventListener('pointerdown',()=>p1());})();</script>`;
+  const finalBody=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}canvas{touch-action:none;width:100%}</style></head><body><button id="play">Play</button><canvas id="game"></canvas><script>let state={score:0,hp:100,wave:1,gold:0,result:"playing"};${'function step(){state.score+=1;state.gold+=1;if(state.score>400)state.result="win";if(state.hp<=0)state.result="loss";}'.repeat(230)}function reset(){state={score:0,hp:100,wave:1,gold:0,result:"playing"}}addEventListener("pointerdown",step);addEventListener("touchstart",step,{passive:true});localStorage.setItem("vibe2-invalid-expansion",JSON.stringify(state));</script></body></html>`;
+  write(seedFile,['VIBE2_FULL_FILE','PATH:index.html','---VIBE2_FILE_CONTENT---',seed,'---VIBE2_FILE_END---'].join('\n'));
+  write(invalidFile,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',invalid,'---VIBE2_EXPANSION_END---'].join('\n'));
+  write(realFile,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',real,'---VIBE2_EXPANSION_END---'].join('\n'));
+  write(finalFile,['VIBE2_FULL_FILE','PATH:index.html','---VIBE2_FILE_CONTENT---',finalBody,'---VIBE2_FILE_END---'].join('\n'));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[seedFile,invalidFile,realFile,finalFile]});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.fullWebExpansionStages,1);
+  assert.deepEqual(result.changedFiles,['index.html']);
+  assert.equal(generationFailureClass(new Error('Web expansion은 html/body 전체 구조를 재정의할 수 없음')),'MALFORMED_OUTPUT');
+  assert.equal(shouldRetryGenerationError(new Error('Web expansion은 html/body 전체 구조를 재정의할 수 없음')),true);
+});
+
 test('full web expansion prompt does not contain copyable placeholder implementation and counts only remaining expansion attempts',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.doesNotMatch(workerSource,/<section class="game-specific-system">\.\.\.<\/section>/);
