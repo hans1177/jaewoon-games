@@ -305,6 +305,29 @@ export function runExperiencePromotion({
   }
 }
 
+export function runExperiencePromotionBatch({
+  memoryFile = '.vibe2/experience.json',
+  reviewsFile = '',
+  reviews = null,
+  writeMemory = writeJson
+} = {}) {
+  const payload=reviews||(clean(reviewsFile)?readJson(reviewsFile,null):null);
+  const rows=Array.isArray(payload)?payload:(Array.isArray(payload?.experienceReviews)?payload.experienceReviews:[]);
+  let memory=readJson(memoryFile,{records:[]});
+  const results=[];
+  for(const review of rows){
+    const result=promoteVibeReviewedExperience(memory,review);
+    results.push({id:clean(review?.id)||null,promoted:result.promoted,reason:result.reason,validation:result.validation});
+    if(result.promoted)memory=result.memory;
+  }
+  const promotedCount=results.filter(row=>row.promoted).length;
+  if(promotedCount){
+    try{writeMemory(memoryFile,memory);}catch(error){
+      return Object.freeze({promoted:false,persisted:false,promotedCount:0,total:rows.length,results:Object.freeze(results),reason:'experience-storage-failed',storageError:clean(error?.message||error),memory});
+    }
+  }
+  return Object.freeze({promoted:promotedCount>0,persisted:promotedCount>0,promotedCount,total:rows.length,results:Object.freeze(results),reason:promotedCount?'verified-reviewed-experience-batch-promoted':'no-reviewed-experience-promoted',authority:'unchanged',memory});
+}
 export function runRevoteExperiencePromotion({
   memoryFile = '.vibe2/experience.json',
   requestFile = '',
@@ -326,21 +349,28 @@ export function runRevoteExperiencePromotion({
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = parseArgs();
   const autoRevote = String(args['auto-revote'] || '').toLowerCase() === 'true';
-  const result = autoRevote
-    ? runRevoteExperiencePromotion({
+  const batchReview = clean(args['batch-review']);
+  const result = batchReview
+    ? runExperiencePromotionBatch({
         memoryFile: clean(args.memory) || '.vibe2/experience.json',
-        requestFile: clean(args.request),
-        votesRoot: clean(args['votes-root']),
-        directorFile: clean(args.director)
+        reviewsFile: batchReview
       })
-    : runExperiencePromotion({
-        memoryFile: clean(args.memory) || '.vibe2/experience.json',
-        reviewFile: clean(args.review)
-      });
+    : autoRevote
+      ? runRevoteExperiencePromotion({
+          memoryFile: clean(args.memory) || '.vibe2/experience.json',
+          requestFile: clean(args.request),
+          votesRoot: clean(args['votes-root']),
+          directorFile: clean(args.director)
+        })
+      : runExperiencePromotion({
+          memoryFile: clean(args.memory) || '.vibe2/experience.json',
+          reviewFile: clean(args.review)
+        });
   console.log(`VIBE2_EXPERIENCE_PROMOTED=${result.promoted ? 'YES' : 'NO'}`);
   console.log(`VIBE2_EXPERIENCE_PERSISTED=${result.persisted ? 'YES' : 'NO'}`);
   console.log(`VIBE2_EXPERIENCE_REASON=${result.reason}`);
   console.log(`VIBE2_EXPERIENCE_AUTHORITY=${result.authority}`);
+  if(batchReview){console.log(`VIBE2_EXPERIENCE_BATCH_TOTAL=${result.total||0}`);console.log(`VIBE2_EXPERIENCE_BATCH_PROMOTED=${result.promotedCount||0}`);}
   if (result.review) {
     console.log(`VIBE2_EXPERIENCE_REVOTE_DECISION=${result.review.revoteDecision}`);
     console.log(`VIBE2_EXPERIENCE_REVIEW_VERIFIED=${result.review.reviewVerified ? 'YES' : 'NO'}`);
@@ -353,5 +383,5 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     }
   }
   if (result.storageError) console.log(`VIBE2_EXPERIENCE_STORAGE_ERROR=${result.storageError}`);
-  if (!autoRevote && !result.promoted && result.reason !== 'duplicate-experience') process.exitCode = 2;
+  if (!autoRevote && !batchReview && !result.promoted && result.reason !== 'duplicate-experience') process.exitCode = 2;
 }
