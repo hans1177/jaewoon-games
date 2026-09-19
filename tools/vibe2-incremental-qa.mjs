@@ -7,6 +7,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
+import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
+import { buildResponsibilityGraph, summarizeResponsibilityArchitecture, compareResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
 
 const clean = (value) => String(value ?? '').trim();
 const posix = (value) => clean(value).replaceAll('\\','/').replace(/^\.\//,'');
@@ -87,6 +89,35 @@ function runCausalReplay({root,data={}}={}){
   }
   return{status:'EXECUTED_PASS',executed:true,prePatchReproduced:true,targets:results,identicalOrEquivalentInputStateRequired:plan.identicalOrEquivalentInputStateRequired!==false,canonicalQaStillRequired:true};
 }
+function architectureSourceText(root,data={}){
+  const sourceRoot=posix(data.sourceRoot);
+  if(!sourceRoot)return'';
+  const sourceDir=assertInside(root,sourceRoot);
+  const responsible=(data?.exploration?.responsibleFiles||[]).map(posix).filter(Boolean);
+  const rows=[];
+  for(const relative of responsible){
+    const file=path.resolve(sourceDir,relative);
+    const base=path.resolve(sourceDir)+path.sep;
+    if(!((file+path.sep).startsWith(base)&&file!==path.resolve(sourceDir)))continue;
+    if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
+    if(!/\.(?:html?|js|mjs|cjs)$/i.test(relative))continue;
+    rows.push(fs.readFileSync(file,'utf8'));
+  }
+  return rows.join('\n\n');
+}
+function runArchitectureDrift({root,data={}}={}){
+  const before=data?.exploration?.editContract?.architectureSnapshot;
+  if(!before||typeof before!=='object')return{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false,focusedReviewRequired:false};
+  const source=architectureSourceText(root,data);
+  if(!source.trim())return{status:'NO_RESPONSIBLE_TEXT_SOURCE',riskLevel:'LOW',score:0,signals:[],hardReject:false,focusedReviewRequired:false,before};
+  const sourceAnalysis=analyzeExistingGameSource(source);
+  const graph=buildResponsibilityGraph({source,sourceAnalysis});
+  const after=summarizeResponsibilityArchitecture(graph);
+  const comparison=compareResponsibilityArchitecture(before,after);
+  return{status:'ANALYZED',...comparison};
+}
+
+
 function checkConflictMarkers(text, file) {
   if (/^(<<<<<<<|=======|>>>>>>>)/m.test(text)) throw new Error(`merge conflict marker: ${file}`);
   if (text.includes('\u0000')) throw new Error(`NUL byte in text file: ${file}`);
@@ -168,7 +199,8 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const changed = collectFiles({root, files, manifest});
   const replayPlan=causalReplayPlan(data);
   const replayTargets=replayPlan?.executable===true?resolveReplayTargets(root,data,replayPlan):[];
-  const payload = ['vibe2-incremental-qa-v4', namespace, JSON.stringify(replayPlan||null)];
+  const architectureBaseline=data?.exploration?.editContract?.architectureSnapshot||null;
+  const payload = ['vibe2-incremental-qa-v5', namespace, JSON.stringify(replayPlan||null), JSON.stringify(architectureBaseline)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
@@ -180,16 +212,17 @@ export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', ca
   const cache = cachePath ? readJson(cachePath,{version:3,entries:{}}) : {version:3,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
-    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, architectureDrift:cached.architectureDrift||{status:'NOT_AVAILABLE',riskLevel:'LOW',score:0,signals:[],hardReject:false}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
   execFileSync('git',['diff','--check'],{cwd:root,stdio:'pipe'});
   const causalReplay=runCausalReplay({root,data});
-  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const architectureDrift=runArchitectureDrift({root,data});
+  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, architectureDrift, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.version=3; cache.entries=cache.entries||{};
-    cache.version=4; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, savedAt:new Date().toISOString() };
+    cache.version=4; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, architectureDrift, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
@@ -209,5 +242,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_INCREMENTAL_QA_FILES=${result.changedFiles.join(',')}`);
   console.log(`VIBE2_CAUSAL_REPLAY_STATUS=${result.causalReplay?.status||'NOT_REQUIRED'}`);
   console.log(`VIBE2_CAUSAL_REPLAY_EXECUTED=${result.causalReplay?.executed===true?'YES':'NO'}`);
+  console.log(`VIBE2_ARCHITECTURE_DRIFT_STATUS=${result.architectureDrift?.status||'NOT_AVAILABLE'}`);
+  console.log(`VIBE2_ARCHITECTURE_DRIFT_RISK=${result.architectureDrift?.riskLevel||'LOW'}`);
+  console.log(`VIBE2_ARCHITECTURE_DRIFT_SCORE=${Number(result.architectureDrift?.score||0)}`);
+  console.log(`VIBE2_ARCHITECTURE_DRIFT_SIGNALS=${(result.architectureDrift?.signals||[]).join(',')||'NONE'}`);
   console.log('VIBE2_FULL_REGRESSION_REQUIRED=YES');
 }
