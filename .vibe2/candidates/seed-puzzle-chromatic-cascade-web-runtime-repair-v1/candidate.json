@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const root=$('main.app'),statsNode=$('.stats');",
+      "replace": "$('.hero h1').textContent=C.name||'게임';$('.hero p').textContent=C.desc||'';"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
