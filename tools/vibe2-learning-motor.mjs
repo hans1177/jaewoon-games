@@ -18,7 +18,8 @@ const hash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h
 
 export const MASTERY_DOMAINS=freeze([
   'CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE',
-  'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
+  'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN',
+  'CHARACTER_ARC','DIALOGUE','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
   'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER'
 ]);
 
@@ -37,6 +38,11 @@ const DOMAIN_PATTERNS=freeze({
   SECURITY:/security|malware|virus|attack|secret|token|credential|supply.?chain|prompt.?injection|exfiltrat|backdoor|privilege|tamper/i,
   PERFORMANCE:/performance|fps|frame|memory|cpu|jank|pool|latency/i,
   ASSET_PRODUCTION:/asset|sprite|svg|canvas|texture|animation|vfx|audio|model/i,
+  STORYTELLING:/story|storytelling|서사|스토리|세계관|plot|narrative|theme|reveal|foreshadow|복선|반전|payoff|결말/i,
+  NARRATIVE_STRUCTURE:/narrative.?structure|plot.?structure|story.?structure|act.?structure|scene.?structure|사건.?인과|기승전결|도입|전개|클라이맥스|결말|pacing|tension|긴장/i,
+  QUEST_DESIGN:/quest|퀘스트|objective.?chain|mission.?chain|prerequisite|의뢰|선행.?조건|완료.?조건|선택지|choice.?consequence/i,
+  CHARACTER_ARC:/character.?arc|character.?growth|want.?need|motivation|캐릭터.?아크|인물.?변화|욕망|동기|갈등|관계.?변화/i,
+  DIALOGUE:/dialogue|conversation|대화|대사|subtext|말투|화법|scene.?objective/i,
   WEB_RUNTIME:/\bweb\b|browser|html|canvas|dom|css|javascript/i,
   ROBLOX_STUDIO:/roblox|studio|luau|rbxl|rbxlx/i,
   ROBLOX_DATASTORE:/datastore|ordered.?data.?store/i,
@@ -45,7 +51,7 @@ const DOMAIN_PATTERNS=freeze({
   ROBLOX_MULTIPLAYER:/multiplayer|multi.?client|playeradded|players|matchmaking/i
 });
 
-const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','DEBUGGING','PERFORMANCE']);
+const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','DEBUGGING','PERFORMANCE','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE']);
 const ROBLOX_NATIVE_ONLY=new Set(['ROBLOX_STUDIO','ROBLOX_DATASTORE','ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER']);
 const XP_SUCCESS=12;
 const XP_FAILURE=5;
@@ -849,7 +855,7 @@ export function candidateTournamentPolicy({task={},masteryInput={}}={}){
 
 export function buildBenchmarkLadder(masteryInput={}){
   const state=createMasteryState(masteryInput);
-  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION']};
+  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE'],QUEST_DESIGN:['QUEST_DESIGN'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE']};
   const cases=[];
   for(const [track,domains] of Object.entries(mapping)){
     const avg=domains.reduce((n,d)=>n+(state.domains[d]?.level||1),0)/domains.length;
@@ -874,13 +880,29 @@ export function enrichQueueForCandidateTournaments(queueInput={},masteryInput={}
   return {queue:{...queueInput,tasks},changed};
 }
 
+function idleDrillKindForDomain(domain=''){
+  const d=upper(domain);
+  if(d==='STORYTELLING'||d==='NARRATIVE_STRUCTURE')return'NARRATIVE_STRUCTURE_DRILL';
+  if(d==='QUEST_DESIGN')return'QUEST_CAUSALITY_DRILL';
+  if(d==='CHARACTER_ARC')return'CHARACTER_ARC_DRILL';
+  if(d==='DIALOGUE')return'DIALOGUE_SCENE_DRILL';
+  return'MINI_GAME_SYSTEM_DRILL';
+}
+function practiceInstructionForDrill(drill={}){
+  const kind=upper(drill.kind);
+  if(kind==='NARRATIVE_STRUCTURE_DRILL')return'원문 문장이나 특정 작가 표현을 복사하지 않는다. 세계 규칙, 인물 욕망/갈등, 사건 인과, 긴장 상승, 복선과 회수, 결말 보상을 구조 수준에서 분석하고 검증 방법을 제시한다.';
+  if(kind==='QUEST_CAUSALITY_DRILL')return'퀘스트의 선행 조건 → 플레이어 행동 → 상태 변화 → 결과/보상 → 다음 상태를 연결하고 저장/재진입/중복 보상/소프트락 검증을 포함한다.';
+  if(kind==='CHARACTER_ARC_DRILL')return'캐릭터의 욕망, 필요, 갈등, 선택, 결과, 관계 변화가 사건과 연결되는지 분석하고 지식 범위와 동기 일관성을 검증한다.';
+  if(kind==='DIALOGUE_SCENE_DRILL')return'장면 목표, 인물 관계, 알고 있는 정보, 숨은 의도와 말투를 기준으로 대화 구조를 분석한다. 원문 스타일 모사는 금지한다.';
+  return'문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.';
+}
 export function buildIdlePracticeQueue(masteryInput={}){
   const state=createMasteryState(masteryInput);
   const gaps=Object.entries(state.domains).sort((a,b)=>a[1].level-b[1].level||a[0].localeCompare(b[0]));
   const repeated=Object.entries(state.failureSignatures).filter(([,row])=>Number(row.count)>=2).sort((a,b)=>Number(b[1].count)-Number(a[1].count)).slice(0,5);
   const drills=[
     ...repeated.map(([sig,row])=>({id:`review-${sig}`,kind:Number(row.count)>=3?'REPRO_DRILL':'FORCED_RETRIEVAL_REVIEW',priority:'high',productionPreemptible:true,countsAsProductionPass:false,domains:row.domains,sourceFailure:sig})),
-    ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:'MINI_GAME_SYSTEM_DRILL',priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
+    ...gaps.map(([domain,row])=>({id:`gap-${lower(domain)}-l${row.level}`,kind:idleDrillKindForDomain(domain),priority:'low',productionPreemptible:true,countsAsProductionPass:false,domains:[domain]}))
   ];
   return {version:1,kind:'vibe2-idle-practice-queue',productionWorkAlwaysPreemptsPractice:true,drills};
 }
@@ -947,7 +969,7 @@ export function injectIdlePracticeTask(queueInput={},idlePracticeInput={}){
     `kind=${clean(drill.kind)}`,
     `domains=${(drill.domains||[]).join(',')||'GENERAL'}`,
     clean(drill.sourceFailure)?`sourceFailure=${clean(drill.sourceFailure)}`:'',
-    '소스 파일을 수정하지 않는다. 문제 원인, 최소 안전 해결 전략, 검증 테스트, 재사용/회피 패턴을 작성한다.',
+    '소스 파일을 수정하지 않는다. '+practiceInstructionForDrill(drill),
     '이 결과는 연습 전용이며 production PASS, QA PASS, release evidence로 사용할 수 없다.'
   ].filter(Boolean).join('\n');
   const task={
