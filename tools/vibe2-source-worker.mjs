@@ -69,6 +69,7 @@ const FOCUSED_WEB_REPAIR_CONTEXT_WINDOW=12288;
 const JSON_FINAL_RETRY_TIMEOUT_MS=150000;
 const JSON_FINAL_RETRY_MAX_PREDICT=768;
 const JSON_FOCUSED_REPLACE_MAX_PREDICT=384;
+const JSON_FOCUSED_REPLACE_TIMEOUT_MS=90000;
 const JSON_CONTEXT_WINDOW=32768;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const JSON_FOCUSED_REPLACE_CONTEXT_WINDOW=8192;
@@ -561,7 +562,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
     const body=parts.join('\n');
     for(const original of parts){
       const trimmed=original.trim();
-      if(trimmed.length<10||trimmed.length>180)continue;
+      if(trimmed.length<10||trimmed.length>420)continue;
       if(/^(?:[{}()[\];,]|<!--|\/\*|\*|\/\/|#)+$/.test(trimmed))continue;
       if(/^(?:<!doctype|<\/?(?:html|head|body)\b)/i.test(trimmed))continue;
       const occurrenceCorpus=fullSource||body;
@@ -572,6 +573,24 @@ export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsi
       if(trimmed.length>=20&&trimmed.length<=120)score+=2;
       if(/[=(){}<>]/.test(trimmed))score+=1;
       rows.push({value:original,score,length:trimmed.length});
+    }
+  }
+  if(fullSource&&rows.length<Math.max(1,Number(max)||3)){
+    const addFallback=(value,score=5)=>{
+      const original=String(value??''),trimmed=original.trim();
+      if(trimmed.length<10||trimmed.length>700)return;
+      if(fullSource.split(original).length-1!==1)return;
+      rows.push({value:original,score,length:trimmed.length});
+    };
+    const fallbackPatterns=[
+      /window\.GAME_CONFIG\s*=\s*\{[^<]{20,700}?\}(?=<\/script>|;|$)/g,
+      /(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*[^;\n]{10,320};/g,
+      /document\.getElementById\((["'])[^"']+\1\)\.addEventListener\([^;\n]{10,360};/g,
+      /<(?:button|canvas|main|section)\b[^>]{10,320}>/gi
+    ];
+    for(const pattern of fallbackPatterns){
+      for(const match of fullSource.matchAll(pattern))addFallback(match[0],6);
+      if(rows.length>=Math.max(3,Number(max)||3))break;
     }
   }
   return rows
@@ -600,9 +619,10 @@ export function focusedReplaceOnlySpec(prompt,{responsibleFiles=[],sourceRoot=''
       if(file.startsWith(root+path.sep)&&fs.existsSync(file)&&fs.statSync(file).isFile()){
         const source=fs.readFileSync(file,'utf8'),at=source.indexOf(find);
         if(at>=0){
-          const before=source.slice(0,at).split('\n').slice(-2);
-          const after=source.slice(at+find.length).split('\n').slice(0,3);
-          context=[...before,find,...after].join('\n').trim();
+          const radius=1400;
+          const before=source.slice(Math.max(0,at-radius),at);
+          const after=source.slice(at+find.length,Math.min(source.length,at+find.length+radius));
+          context=(before+find+after).trim();
         }
       }
     }catch{}
@@ -872,7 +892,9 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
     const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
-    const focusedReplaceOnly=focusedFinal?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor}):null;
+    const focusedReplaceOnly=(!allowFullRewrite&&(focusedWebRepair||focusedFinal))
+      ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor})
+      :null;
     const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
       ?accumulatedFullWeb.content
@@ -889,7 +911,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?FULL_WEB_EXPANSION_TIMEOUT_MS
       :(allowFullRewrite
         ?(attempt>=maxAttempts?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
-        :(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS)));
+        :(focusedReplaceOnly?JSON_FOCUSED_REPLACE_TIMEOUT_MS:(focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS))));
     const contextWindow=expansionMode
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:(focusedReplaceOnly?JSON_FOCUSED_REPLACE_CONTEXT_WINDOW:(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW))));
@@ -940,7 +962,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedReplaceOnly:focusedReplaceOnly!=null,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1&&focusedReplaceOnly!=null,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebClosedHtmlEarlyStop,fullWebFinalAdditiveExpansion:expansionMode&&attempt===maxAttempts,fullWebAdditiveAttemptCreditUsed:additiveAttemptCreditUsed,fullWebProgressCreditCount,fullWebProgressCreditUsed:fullWebProgressCreditCount>0,baseAttemptBudget:baseMaxAttempts,effectiveAttemptBudget:maxAttempts,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -957,7 +979,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
             if(focusedCandidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,focusedCandidate.edits,{dryRun:true});
             lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(focusedCandidate):null;
             console.log('VIBE2_FOCUSED_REPLACE_PARTIAL_RECOVERED='+attempt+':'+focusedReplaceOnly.spec.path);
-            return{candidate:focusedCandidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:true,partialTimeoutRecovery:failureClass==='TIMEOUT',partialMalformedRecovery:failureClass==='MALFORMED_OUTPUT',streamedPartialEditRecovery:false,focusedFinalRetry:focusedFinal,focusedReplaceOnly:true,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+            return{candidate:focusedCandidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:true,partialTimeoutRecovery:failureClass==='TIMEOUT',partialMalformedRecovery:failureClass==='MALFORMED_OUTPUT',streamedPartialEditRecovery:false,focusedFinalRetry:focusedFinal,focusedReplaceOnly:true,focusedFirstAttemptFastPath:focusedWebRepair&&attempt===1,focusedReplaceAnchorRotations,focusedReplaceNoOpCreditUsed,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
           }catch(recoveryError){
             console.log('VIBE2_FOCUSED_REPLACE_PARTIAL_REJECTED='+attempt+':'+generationFailureClass(recoveryError)+':'+clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240));
           }
@@ -1201,6 +1223,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     streamedPartialEditRecovery:generation.streamedPartialEditRecovery===true,
     focusedFinalRetry:generation.focusedFinalRetry===true,
     focusedReplaceOnly:generation.focusedReplaceOnly===true,
+    focusedFirstAttemptFastPath:generation.focusedFirstAttemptFastPath===true,
     focusedReplaceAnchorRotations:Number(generation.focusedReplaceAnchorRotations||0),
     focusedReplaceNoOpCreditUsed:generation.focusedReplaceNoOpCreditUsed===true,
     focusedMinimalJsonContract:generation.focusedFinalRetry===true&&!allowFullRewrite,
