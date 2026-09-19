@@ -116,7 +116,7 @@ jobs:
 
   record_incident:
     needs: scan
-    if: ${{ always() && needs.scan.outputs.verdict == 'QUARANTINE' && github.event_name != 'pull_request' }}
+    if: ${{ always() && needs.scan.outputs.verdict != 'PASS' && github.event_name != 'pull_request' }}
     runs-on: ubuntu-latest
     timeout-minutes: 8
     permissions:
@@ -139,6 +139,7 @@ jobs:
       - name: Persist quarantined incident and security recovery task
         env:
           HIGHEST: ${{ needs.scan.outputs.highest }}
+          VERDICT: ${{ needs.scan.outputs.verdict }}
         shell: bash
         run: |
           set -euo pipefail
@@ -149,7 +150,11 @@ jobs:
 
           node tools/company-security-incident.mjs             --command=record             --store=/tmp/security-control/.vibe2/security-incidents.json             --report=/tmp/security-report/security-report.json
 
-          node tools/company-recovery-queue.mjs             --command=enqueue             --queue=/tmp/security-control/.vibe2/recovery-queue.json             --priority=critical             --source-queue=security             --source-task="security-run-${GITHUB_RUN_ID}"             --stage=SECURITY_IMMUNE_SCAN             --signature="security-quarantine-${HIGHEST:-UNKNOWN}"             --blast-radius=affected-change             --evidence="security-run:${GITHUB_RUN_ID},security-report:artifact-${GITHUB_RUN_ID}"             --strategy=SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW             --verify=RERUN_SECURITY_SCAN,VERIFY_NO_SECRET_OR_MALWARE_PAYLOAD,REGRESSION_RESCAN,PRIMARY_AI_SECURITY_REVIEW             --owner=SYSTEM_AI
+          if [ "$VERDICT" = 'QUARANTINE' ]; then
+            node tools/company-recovery-queue.mjs             --command=enqueue             --queue=/tmp/security-control/.vibe2/recovery-queue.json             --priority=critical             --source-queue=security             --source-task="security-run-${GITHUB_RUN_ID}"             --stage=SECURITY_IMMUNE_SCAN             --signature="security-quarantine-${HIGHEST:-UNKNOWN}"             --blast-radius=affected-change             --evidence="security-run:${GITHUB_RUN_ID},security-report:artifact-${GITHUB_RUN_ID}"             --strategy=SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW             --verify=RERUN_SECURITY_SCAN,VERIFY_NO_SECRET_OR_MALWARE_PAYLOAD,REGRESSION_RESCAN,PRIMARY_AI_SECURITY_REVIEW             --owner=SYSTEM_AI
+          else
+            echo 'SECURITY_REVIEW_ONLY_RECOVERY_QUEUE=NO'
+          fi
 
           cd /tmp/security-control
           git config user.name 'jaewoon-security-steward'
@@ -177,6 +182,7 @@ jobs:
         env:
           VERDICT: ${{ needs.scan.outputs.verdict }}
           HIGHEST: ${{ needs.scan.outputs.highest }}
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
           echo "VIBE_SECURITY_FINAL=$VERDICT"
@@ -184,5 +190,11 @@ jobs:
           if [ "$VERDICT" = 'QUARANTINE' ]; then
             echo 'VIBE_SECURITY_ACTION=QUARANTINE_AFFECTED_CHANGE'
             exit 1
+          fi
+          if [ "$VERDICT" = 'REVIEW' ]; then
+            echo 'VIBE_SECURITY_ACTION=PRIMARY_AI_DIRECT_REVIEW_REQUIRED'
+            if [ "$EVENT_NAME" = 'pull_request' ]; then exit 1; fi
+            echo 'VIBE_SECURITY_REVIEW_STATE=RECORDED_NONBLOCKING_PUSH'
+            exit 0
           fi
           echo 'VIBE_SECURITY_ACTION=ALLOW'

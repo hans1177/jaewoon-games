@@ -22,14 +22,15 @@ export function recordSecurityReport(storeInput={},report={}){
   for(const finding of report.findings||[]){
     if(!['HIGH','CRITICAL'].includes(clean(finding.severity).toUpperCase()))continue;
     const id=incidentId(finding),existing=byId.get(id);
+    const disposition=clean(finding.disposition).toUpperCase()==='REVIEW'?'REVIEW':'QUARANTINE';
     const row={
-      id,status:'QUARANTINED',rule:clean(finding.rule),severity:clean(finding.severity).toUpperCase(),
+      id,status:disposition==='REVIEW'?'REVIEW_REQUIRED':'QUARANTINED',disposition,rule:clean(finding.rule),severity:clean(finding.severity).toUpperCase(),
       category:clean(finding.category)||'security',file:clean(finding.file)||null,line:Number(finding.line||0),
       evidenceSha256:clean(finding.evidenceSha256),snippet:clean(finding.snippet).slice(0,240),
       rawSecretStored:false,rawMalwareStored:false,
       detections:Math.max(1,Number(existing?.detections||0)+1),
       firstDetectedAt:clean(existing?.firstDetectedAt)||now(),lastDetectedAt:now(),
-      containment:'AFFECTED_CHANGE_QUARANTINED',
+      containment:disposition==='REVIEW'?'AFFECTED_CHANGE_HELD_FOR_REVIEW':'AFFECTED_CHANGE_QUARANTINED',
       rootCause:clean(existing?.rootCause)||null,remediation:clean(existing?.remediation)||null,
       verificationEvidence:uniq(existing?.verificationEvidence),
       primaryAiReview:clean(existing?.primaryAiReview)||'PENDING',
@@ -41,15 +42,22 @@ export function recordSecurityReport(storeInput={},report={}){
   return{store:{...store,incidents:[...byId.values()].sort((a,b)=>String(b.lastDetectedAt).localeCompare(String(a.lastDetectedAt)))},added};
 }
 export function resolveSecurityIncident(storeInput={},{
-  id,rootCause,remediation,evidence=[],securityCheckPass=false,regressionPass=false,primaryAiReview=''
+  id,rootCause,remediation,evidence=[],securityCheckPass=false,regressionPass=false,primaryAiReview='',verificationMode='RESCAN_PASS'
 }={}){
-  const store=normalizeStore(storeInput),target=clean(id);let found=false;
+  const store=normalizeStore(storeInput),target=clean(id),mode=clean(verificationMode).toUpperCase()||'RESCAN_PASS';let found=false;
   const incidents=store.incidents.map(row=>{
     if(clean(row.id)!==target)return row;found=true;
     if(!clean(rootCause)||!clean(remediation))throw new Error('SECURITY_RESOLUTION_CAUSE_AND_REMEDIATION_REQUIRED');
-    if(!securityCheckPass||!regressionPass||clean(primaryAiReview).toUpperCase()!=='PASS')throw new Error('SECURITY_RESOLUTION_VERIFICATION_REQUIRED');
+    if(!regressionPass||clean(primaryAiReview).toUpperCase()!=='PASS')throw new Error('SECURITY_RESOLUTION_VERIFICATION_REQUIRED');
+    const authorizedPolicyReview=mode==='AUTHORIZED_POLICY_REVIEW_PASS';
+    const rescanPass=mode==='RESCAN_PASS';
+    if(!authorizedPolicyReview&&!rescanPass)throw new Error('SECURITY_RESOLUTION_MODE_INVALID:'+mode);
+    if(rescanPass&&!securityCheckPass)throw new Error('SECURITY_RESOLUTION_VERIFICATION_REQUIRED');
+    if(authorizedPolicyReview&&clean(row.rule)!=='CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW')throw new Error('SECURITY_AUTHORIZED_POLICY_REVIEW_RULE_MISMATCH');
+    const modeEvidence=authorizedPolicyReview?'authorized-policy-review:PASS':'security-rescan:PASS';
     return{...row,status:'RESOLVED_VERIFIED',rootCause:clean(rootCause),remediation:clean(remediation),
-      verificationEvidence:uniq([...(row.verificationEvidence||[]),...evidence,'security-rescan:PASS','regression:PASS','primary-ai-security-review:PASS']),
+      verificationMode:mode,
+      verificationEvidence:uniq([...(row.verificationEvidence||[]),...evidence,modeEvidence,'regression:PASS','primary-ai-security-review:PASS']),
       primaryAiReview:'PASS',resolvedAt:now(),learningPromotion:'PENDING'};
   });
   if(!found)throw new Error('SECURITY_INCIDENT_NOT_FOUND:'+target);
@@ -66,7 +74,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     store=resolveSecurityIncident(store,{
       id:args.id,rootCause:args['root-cause'],remediation:args.remediation,
       evidence:clean(args.evidence).split(','),securityCheckPass:clean(args['security-check-pass']).toUpperCase()==='YES',
-      regressionPass:clean(args['regression-pass']).toUpperCase()==='YES',primaryAiReview:args['primary-ai-review']
+      regressionPass:clean(args['regression-pass']).toUpperCase()==='YES',primaryAiReview:args['primary-ai-review'],verificationMode:args['verification-mode']
     });
     writeJson(file,store);console.log('SECURITY_INCIDENT_RESOLVED='+clean(args.id));
   }else throw new Error('SECURITY_INCIDENT_COMMAND_UNKNOWN:'+cmd);

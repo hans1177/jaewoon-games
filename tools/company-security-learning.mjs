@@ -32,7 +32,8 @@ export function distillSecurityLearning({incidentsInput={},experienceInput={},co
     const eligible=clean(incident.status)==='RESOLVED_VERIFIED'&&clean(incident.primaryAiReview).toUpperCase()==='PASS'
       &&clean(incident.learningPromotion).toUpperCase()!=='PROMOTED'&&(incident.verificationEvidence||[]).length>=3;
     if(!eligible)return incident;
-    const sig='security_'+hash([incident.rule,incident.category,incident.rootCause,incident.remediation].join('|'));
+    const reviewMode=clean(incident.verificationMode).toUpperCase()==='AUTHORIZED_POLICY_REVIEW_PASS';
+    const sig='security_'+hash([incident.rule,incident.category,incident.rootCause,incident.remediation,incident.verificationMode].join('|'));
     const expId='exp_'+sig,patId='pat_'+sig;
     if(!expIds.has(expId)){
       experience.records.push({
@@ -41,8 +42,8 @@ export function distillSecurityLearning({incidentsInput={},experienceInput={},co
         change:clean(incident.remediation),outcome:'PASS',failureCause:clean(incident.rootCause),
         qa:uniq(incident.verificationEvidence),build:null,
         evidence:uniq([...(incident.verificationEvidence||[]),'security-evidence-sha256:'+clean(incident.evidenceSha256)]),
-        reusablePatterns:['SECURITY_DETECT:'+clean(incident.rule),'SECURITY_CONTAIN:'+clean(incident.containment),'SECURITY_RECOVER:'+clean(incident.remediation)],
-        avoidPatterns:['SECURITY_AVOID:'+clean(incident.rule)],
+        reusablePatterns:reviewMode?['SECURITY_REVIEW_REQUIRED:'+clean(incident.rule),'SECURITY_PRESERVE_GATE:NO_BYPASS','SECURITY_AUTHORIZED_REVIEW:'+clean(incident.remediation)]:['SECURITY_DETECT:'+clean(incident.rule),'SECURITY_CONTAIN:'+clean(incident.containment),'SECURITY_RECOVER:'+clean(incident.remediation)],
+        avoidPatterns:reviewMode?['SECURITY_AVOID:POLICY_REVIEW_BYPASS']:['SECURITY_AVOID:'+clean(incident.rule)],
         verified:true,reusable:true,independentlyVerified:true,authority:'VERIFIED_SECURITY_IMMUNE_LEARNING',
         rawSecretStored:false,rawMalwareStored:false,sourceSecurityIncidentId:clean(incident.id),createdAt:stamp,lastVerifiedAt:stamp
       });expIds.add(expId);experienceAdded++;
@@ -51,7 +52,7 @@ export function distillSecurityLearning({incidentsInput={},experienceInput={},co
       const system=systemFor(incident.rule);
       library.patterns.push({
         id:patId,gameId:null,engine:'system',taskType:'security',system,
-        problem:clean(incident.rule),pattern:'VERIFIED_SECURITY_'+system+'_DETECT_QUARANTINE_REMEDIATE_RESCAN',
+        problem:clean(incident.rule),pattern:reviewMode?'VERIFIED_SECURITY_'+system+'_REVIEW_AUTHORIZATION_PRESERVE_GATE':'VERIFIED_SECURITY_'+system+'_DETECT_QUARANTINE_REMEDIATE_RESCAN',
         tags:['security','immune-system','verified',system],verified:true,
         sourceRevision:'sha256:'+clean(incident.evidenceSha256).padEnd(64,'0').slice(0,64),
         evidencePath:'vibe2-unreal-core:.vibe2/security-incidents.json',rawCodeStored:false,

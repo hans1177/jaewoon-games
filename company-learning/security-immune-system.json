@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -55,7 +55,11 @@
     "workflow": ".github/workflows/company-security-immune.yml",
     "contractTest": "qa/company-security-steward.test.mjs",
     "incidentStore": "vibe2-unreal-core:.vibe2/security-incidents.json",
-    "recoveryQueue": "vibe2-unreal-core:.vibe2/recovery-queue.json"
+    "recoveryQueue": "vibe2-unreal-core:.vibe2/recovery-queue.json",
+    "reviewStatus": "REVIEW_REQUIRED",
+    "quarantineStatus": "QUARANTINED",
+    "resolvedStatus": "RESOLVED_VERIFIED",
+    "systemAiPrePullRequestPersistence": ".github/workflows/company-system-ai-workers.yml"
   },
   "securityLearning": {
     "verifiedIncidentsAreLearningSources": true,
@@ -111,5 +115,32 @@
       ".github/workflows/homepage-manager.yml"
     ],
     "securityAndRecoveryWorkersUseSameRoadmapContext": true
+  },
+  "verdicts": {
+    "PASS": {
+      "action": "ALLOW"
+    },
+    "REVIEW": {
+      "action": "PRESERVE_EVIDENCE_AND_REQUIRE_PRIMARY_AI_DIRECT_REVIEW",
+      "recoveryQueue": false
+    },
+    "QUARANTINE": {
+      "action": "ISOLATE_AFFECTED_CHANGE_AND_ROUTE_SECURITY_RECOVERY",
+      "recoveryQueue": true
+    }
+  },
+  "centralPolicyMutation": {
+    "defaultDisposition": "REVIEW",
+    "automaticTrust": false,
+    "directReviewRequired": true,
+    "bypassForbidden": true,
+    "authorizedResolutionMode": "AUTHORIZED_POLICY_REVIEW_PASS"
+  },
+  "externalAiCandidateQuarantine": {
+    "persistBeforePullRequest": true,
+    "sanitizedFindingMetadataOnly": true,
+    "rawModelOutputStored": false,
+    "rawSecurityPayloadStored": false,
+    "recoveryOwner": "SYSTEM_AI"
   }
 }

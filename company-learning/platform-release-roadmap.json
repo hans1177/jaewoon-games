@@ -1,5 +1,5 @@
 {
-  "version": 37,
+  "version": 38,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1910,7 +1910,7 @@
       "actionableDevelopmentBottleneckRouting": "MAXIMIZE_ELIGIBLE_FREE_AI_ON_CAUSAL_UNBLOCKING_AND_GAME_DEVELOPMENT"
     },
     "securityImmuneSystem": {
-      "version": 1,
+      "version": 2,
       "policyFile": "company-learning/security-immune-system.json",
       "steward": "tools/company-security-steward.mjs",
       "incidentTool": "tools/company-security-incident.mjs",
@@ -1927,7 +1927,38 @@
         "PRIMARY_AI_DIRECT_REVIEW",
         "VERIFIED_SECURITY_IMMUNE_LEARNING"
       ],
-      "rawSecretsOrMalwareMayEnterLearning": false
+      "rawSecretsOrMalwareMayEnterLearning": false,
+      "verdicts": {
+        "PASS": "NO_HIGH_RISK_OR_REVIEW_ONLY_FINDING",
+        "REVIEW": "POLICY_INTEGRITY_OR_OTHER_EXPLICIT_HUMAN_PRIMARY_AI_REVIEW_REQUIRED_WITHOUT_ATTACK_QUARANTINE",
+        "QUARANTINE": "HIGH_OR_CRITICAL_SECURITY_THREAT_ISOLATE_AFFECTED_CHANGE_AND_ROUTE_RECOVERY"
+      },
+      "centralPolicyMutationDisposition": "REVIEW",
+      "reviewLifecycle": [
+        "DETECT_POLICY_INTEGRITY_CHANGE",
+        "PRESERVE_REDACTED_EVIDENCE",
+        "PRIMARY_AI_DIRECT_REVIEW",
+        "VERIFY_SHARED_CONTEXT_AND_REGRESSION",
+        "RESOLVE_AS_AUTHORIZED_OR_REWORK"
+      ],
+      "quarantineLifecycle": [
+        "DETECT_ATTACK_OR_UNAUTHORIZED_HIGH_RISK_CHANGE",
+        "QUARANTINE_AFFECTED_CHANGE",
+        "PERSIST_SECURITY_INCIDENT",
+        "ROUTE_TO_RECOVERY_QUEUE",
+        "REMEDIATE_AND_RESCAN",
+        "PRIMARY_AI_DIRECT_REVIEW",
+        "PROMOTE_ONLY_VERIFIED_DEFENSIVE_PATTERN"
+      ],
+      "externalAiCandidateQuarantine": {
+        "persistBeforePullRequest": true,
+        "incidentStore": "vibe2-unreal-core:.vibe2/security-incidents.json",
+        "recoveryQueue": "vibe2-unreal-core:.vibe2/recovery-queue.json",
+        "rawModelOutputStored": false,
+        "rawSecretOrMalwarePayloadStored": false
+      },
+      "authorizedPolicyReviewMode": "AUTHORIZED_POLICY_REVIEW_PASS",
+      "securityRescanMode": "RESCAN_PASS"
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",

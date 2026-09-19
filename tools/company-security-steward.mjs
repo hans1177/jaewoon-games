@@ -44,9 +44,9 @@ function redact(text=''){
   if(out.length>220)out=out.slice(0,220)+'…';
   return out;
 }
-function finding({rule,severity,file,line=0,text='',category='security'}){
+function finding({rule,severity,file,line=0,text='',category='security',disposition='QUARANTINE'}){
   return{
-    rule,severity,file,line,category,
+    rule,severity,file,line,category,disposition:clean(disposition).toUpperCase()||'QUARANTINE',
     evidenceSha256:sha256([file,line,text].join('|')),
     snippet:redact(text)
   };
@@ -100,7 +100,7 @@ function scanLine(row){
     out.push(finding({rule:'OIDC_WRITE_PERMISSION_ADDED',severity:'HIGH',file,line,text:t,category:'privilege'}));
   }
   if(/company-learning\/(?:platform-release-roadmap|company-log-map|company-architecture-map)\.json/.test(file)&&/(authority|sourceOfTruth|forbidden|gameSourceWriteAllowed|centralPolicyWrite|workerSelfAcceptance)/i.test(t)){
-    out.push(finding({rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',severity:'HIGH',file,line,text:t,category:'policy-integrity'}));
+    out.push(finding({rule:'CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW',severity:'HIGH',file,line,text:t,category:'policy-integrity',disposition:'REVIEW'}));
   }
   return out;
 }
@@ -121,11 +121,15 @@ export function scanSecurityPatch({patch='',changedFiles=[]}={}){
   for(const x of findings)dedup.set([x.rule,x.file,x.line,x.evidenceSha256].join('|'),x);
   const list=[...dedup.values()].sort((a,b)=>severityRank[b.severity]-severityRank[a.severity]||a.file.localeCompare(b.file)||a.line-b.line);
   const max=list.reduce((m,x)=>Math.max(m,severityRank[x.severity]||0),0);
+  const quarantine=list.some(x=>clean(x.disposition)!=='REVIEW'&&(severityRank[x.severity]||0)>=severityRank[BLOCK_AT]);
+  const review=list.some(x=>clean(x.disposition)==='REVIEW');
   return{
-    version:1,kind:'company-security-report',
-    verdict:max>=severityRank[BLOCK_AT]?'QUARANTINE':'PASS',
+    version:2,kind:'company-security-report',
+    verdict:quarantine?'QUARANTINE':review?'REVIEW':'PASS',
     highestSeverity:Object.keys(severityRank).find(k=>severityRank[k]===max)||'NONE',
     findings:list,
+    reviewFindings:list.filter(x=>clean(x.disposition)==='REVIEW').length,
+    quarantineFindings:list.filter(x=>clean(x.disposition)!=='REVIEW'&&(severityRank[x.severity]||0)>=severityRank[BLOCK_AT]).length,
     rawSecretStored:false,rawMalwareStored:false,
     checkedAt:new Date().toISOString()
   };

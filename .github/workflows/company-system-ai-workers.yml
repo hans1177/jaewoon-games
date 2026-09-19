@@ -267,12 +267,21 @@ jobs:
           mkdir -p /tmp/company-system-ai-results
           node - <<'NODE'
           const fs=require('fs');
-          const ok=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success';
           let worker={};
           if(fs.existsSync('/tmp/system-ai-worker-result.json'))worker=JSON.parse(fs.readFileSync('/tmp/system-ai-worker-result.json','utf8'));
-          const blocker=ok?'':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
+          let security={verdict:'NOT_RUN',highestSeverity:'NONE',findings:[]};
+          if(fs.existsSync('/tmp/system-ai-security-report.json')){
+            const report=JSON.parse(fs.readFileSync('/tmp/system-ai-security-report.json','utf8'));
+            security={
+              verdict:String(report.verdict||'NOT_RUN'),
+              highestSeverity:String(report.highestSeverity||'NONE'),
+              findings:(report.findings||[]).map(x=>({rule:x.rule,severity:x.severity,category:x.category,file:x.file,line:x.line,evidenceSha256:x.evidenceSha256,disposition:x.disposition||'QUARANTINE'}))
+            };
+          }
+          const ok=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success'&&security.verdict==='PASS';
+          const blocker=ok?'':security.verdict==='QUARANTINE'?'system-ai-security-quarantined':security.verdict==='REVIEW'?'system-ai-security-review-required':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
           const row={
-            version:1,taskId:process.env.TASK_ID,outcome:ok?'PASS':'FAIL',blocker,
+            version:2,taskId:process.env.TASK_ID,outcome:ok?'PASS':'FAIL',blocker,security,
             candidateBranch:ok?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:ok?(process.env.PR_URL||null):null,
             evidence:[
               `actions-run:${process.env.GITHUB_RUN_ID}`,
@@ -332,6 +341,50 @@ jobs:
           git worktree prune
           git worktree add /tmp/system-ai-control origin/vibe2-unreal-core
           node tools/company-system-ai-queue.mjs             --command=fan-in             --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json             --results=/tmp/company-system-ai-results
+
+          node - <<'NODE' > /tmp/system-ai-security.tsv
+          const fs=require('fs'),path=require('path');
+          const dir='/tmp/company-system-ai-results';
+          for(const file of fs.readdirSync(dir).filter(x=>x.endsWith('.json')).sort()){
+            const row=JSON.parse(fs.readFileSync(path.join(dir,file),'utf8'));
+            const verdict=String(row.security?.verdict||'PASS').toUpperCase();
+            if(!['QUARANTINE','REVIEW'].includes(verdict))continue;
+            const safe=String(row.taskId||'task').replace(/[^A-Za-z0-9._-]+/g,'-');
+            const report={version:2,kind:'company-security-report',verdict,highestSeverity:String(row.security?.highestSeverity||'HIGH'),findings:row.security?.findings||[],rawSecretStored:false,rawMalwareStored:false};
+            const reportFile='/tmp/system-ai-security-'+safe+'.json';
+            fs.writeFileSync(reportFile,JSON.stringify(report,null,2)+'\n');
+            process.stdout.write([String(row.taskId||''),verdict,report.highestSeverity,reportFile].join('\t')+'\n');
+          }
+          NODE
+
+          while IFS=
+          git config user.name 'jaewoon-system-ai-fanin'
+          git config user.email 'system-ai-fanin@users.noreply.github.com'
+          if ! git diff --quiet -- .vibe2/system-ai-queue.json .vibe2/security-incidents.json .vibe2/recovery-queue.json; then
+            git add .vibe2/system-ai-queue.json .vibe2/security-incidents.json .vibe2/recovery-queue.json
+            git commit -m "system-ai: persist supervised results and security quarantine [skip ci]"
+            for attempt in 1 2 3; do
+              if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then break; fi
+              git rebase --abort 2>/dev/null || true
+              git fetch origin vibe2-unreal-core --quiet
+              sleep $((attempt * 2))
+              test "$attempt" != 3
+            done
+          fi
+
+          node "$GITHUB_WORKSPACE/tools/company-system-ai-queue.mjs"             --command=summary             --queue=.vibe2/system-ai-queue.json | tee /tmp/company-system-ai-summary.log
+          queued="$(node -e "const q=require('./.vibe2/system-ai-queue.json');console.log((q.tasks||[]).filter(x=>x.status==='queued').length)")"
+          if [ "$queued" -gt 0 ]; then
+            curl --fail-with-body --silent --show-error               --request POST               --header 'Accept: application/vnd.github+json'               --header "Authorization: Bearer $GH_TOKEN"               --header 'X-GitHub-Api-Version: 2022-11-28'               "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"               --data '{"event_type":"company-system-ai-cycle"}'
+            echo 'COMPANY_SYSTEM_AI_REFILL=DISPATCHED'
+          fi
+\t' read -r task_id verdict highest report_file; do
+            [ -n "$task_id" ] || continue
+            node tools/company-security-incident.mjs --command=record --store=/tmp/system-ai-control/.vibe2/security-incidents.json --report="$report_file"
+            if [ "$verdict" = 'QUARANTINE' ]; then
+              node tools/company-recovery-queue.mjs --command=enqueue --queue=/tmp/system-ai-control/.vibe2/recovery-queue.json --priority=critical --source-queue=security --source-task="$task_id" --stage=SYSTEM_AI_SECURITY_SCAN --signature="system-ai-security-${highest:-HIGH}" --blast-radius=affected-candidate --evidence="system-ai-task:$task_id,actions-run:${GITHUB_RUN_ID}" --strategy=SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW --verify=RERUN_SECURITY_SCAN,REGRESSION_RESCAN,PRIMARY_AI_SECURITY_REVIEW --owner=SYSTEM_AI
+            fi
+          done < /tmp/system-ai-security.tsv
 
           cd /tmp/system-ai-control
           git config user.name 'jaewoon-system-ai-fanin'
