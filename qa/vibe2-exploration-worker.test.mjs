@@ -189,6 +189,44 @@ test('exploration downgrades repeated overconfident responsibility and adds matc
   assert.ok(result.editContract.requiredFocusedChecks.some(check=>check==='HOTSPOT_RECHECK:SYMBOL:'+symbol));
   assert.equal(result.editContract.writableScopeExpansionAllowed,false);
 });
+test('causal replay remains plan-only without verified prepatch reproduction even when a test target exists',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'web-games/replay-demo');
+  write(path.join(root,'index.js'),'export function placeTower(slot){ return Boolean(slot); }\n');
+  write(path.join(root,'qa/placement.test.mjs'),"import test from 'node:test'; test('placement',()=>{});\n");
+  const order={
+    run:true,taskId:'replay-plan-only',gameId:'replay-demo',target:'web',goal:'runtime-failure:PLACEMENT_BROKEN 수정',
+    source:{root:'web-games/replay-demo',responsibleFiles:['web-games/replay-demo/index.js'],ignoredPaths:[]},
+    selectedTask:{evidence:['runtime-failure:PLACEMENT_BROKEN'],lastOutcome:'FAIL'},
+    workPackage:{id:'replay-wp',sharedContext:{diagnosticEvidence:['runtime-failure:PLACEMENT_BROKEN']}}
+  };
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(result.editContract.causalReplay.required,true);
+  assert.equal(result.editContract.causalReplay.prePatchReproduced,false);
+  assert.equal(result.editContract.causalReplay.executable,false);
+  assert.equal(result.editContract.causalReplay.mode,'PLAN_ONLY');
+  assert.equal(result.editContract.causalReplay.status,'NO_VERIFIED_PREPATCH_REPRODUCTION');
+});
+
+test('causal replay becomes executable only with explicit prepatch reproduction evidence and supported test target',()=>{
+  const cwd=tempRoot();
+  const root=path.join(cwd,'web-games/replay-ready');
+  write(path.join(root,'index.js'),'export function placeTower(slot){ return Boolean(slot); }\n');
+  write(path.join(root,'qa/placement.test.mjs'),"import test from 'node:test'; test('placement',()=>{});\n");
+  const order={
+    run:true,taskId:'replay-ready',gameId:'replay-ready',target:'web',goal:'runtime-failure:PLACEMENT_BROKEN 수정',
+    source:{root:'web-games/replay-ready',responsibleFiles:['web-games/replay-ready/index.js'],ignoredPaths:[]},
+    selectedTask:{evidence:['runtime-failure:PLACEMENT_BROKEN','causal-replay-prepatch:FAIL_REPRODUCED'],lastOutcome:'FAIL'},
+    workPackage:{id:'replay-ready-wp',sharedContext:{diagnosticEvidence:['runtime-failure:PLACEMENT_BROKEN','causal-replay-prepatch:FAIL_REPRODUCED']}}
+  };
+  const result=exploreVibe2WorkOrder({cwd,order});
+  assert.equal(result.editContract.causalReplay.prePatchReproduced,true);
+  assert.equal(result.editContract.causalReplay.executable,true);
+  assert.equal(result.editContract.causalReplay.mode,'NODE_TEST_TARGETS');
+  assert.ok(result.editContract.causalReplay.nodeTestTargets.includes('qa/placement.test.mjs'));
+  assert.ok(result.editContract.requiredFocusedChecks.includes('CAUSAL_REPLAY_POSTPATCH_REQUIRED'));
+  assert.equal(result.editContract.causalReplay.canonicalQaStillRequired,true);
+});
 test('performance sanity is read only and requires exploration evidence',()=>{
   const cwd=tempRoot();
   write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player {}\n');
