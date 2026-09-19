@@ -1,0 +1,14 @@
+{
+  "summary": "완료된 작업: 골목 군단 대전 게임의 관련 구현 및 품질 개선",
+  "expectedEffect": "index.html 파일의 관련 구현 및 품질 개선이 완료됨",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const C=document.getElementById('game'),X=C.getContext('2d'),q=id=>document.getElementById(id),KEY='jaewoon-line-defense-v1';",
+      "replace": "const C=document.getElementById('game'),X=C.getContext('2d'),q=id=>document.getElementById(id),KEY='jaewoon-line-defense-v1';\nconst U={blob:{name:'몽글이',icon:'●',cost:60,hp:85,atk:11,range:28,speed:34,rate:.72,cool:2.2,size:17,kind:'blob'},shield:{name:'방패콩',icon:'▣',cost:120,hp:280,atk:7,range:29,speed:21,rate:1.05,cool:4.5,size:20,kind:'shield'},spear:{name:'창발이',icon:'▲',cost:180,hp:135,atk:36,range:47,speed:27,rate:.82,cool:5,size:18,kind:'spear'},ranger:{name:'새총이',icon:'✦',cost:240,hp:95,atk:28,range:145,speed:22,rate:1.2,cool:6.5,size:17,kind:'ranger'},rush:{name:'돌진멍',icon:'◆',cost:360,hp:165,atk:68,range:34,speed:50,rate:.95,cool:9,size:20,kind:'rush'}};"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
