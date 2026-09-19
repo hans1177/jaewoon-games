@@ -341,7 +341,7 @@ let progression = 0;
     });
 
     // Progression system
-    function progress() {
+function progress() { progression += 1; }
         if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {
             progression += 1;
             resource += 5;
