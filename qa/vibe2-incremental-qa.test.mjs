@@ -149,3 +149,46 @@ test('conflict markers fail fast',()=>{
   fs.writeFileSync(path.join(root,'a.js'),'<<<<<<< ours\nconst a=1;\n=======\nconst a=2;\n>>>>>>> theirs\n','utf8');
   assert.throws(()=>runIncrementalQa({root,files:['a.js'],namespace:'web:demo'}),/conflict marker/);
 });
+
+
+test('presentation living motion static QA requires continuous smooth motion signals',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/presentation-motion');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),[
+    '<!doctype html><html><body><canvas id="game"></canvas><script>',
+    'let speed=0,rotation=0,idle=0;',
+    'function update(){ speed += (1-speed)*0.08; rotation += (0-rotation)*0.1; idle=Math.sin(performance.now()*0.002); requestAnimationFrame(update); }',
+    'requestAnimationFrame(update);',
+    '</script></body></html>'
+  ].join('\n'),'utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/presentation-motion',
+    changedFiles:['index.html'],
+    presentationQuality:{
+      required:true,pass:'LIVING_MOTION',
+      runtimeChecks:['idle-walk-run-or-equivalent-runtime-continuity'],
+      authorityExpanded:false
+    }
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'web:presentation-motion'});
+  assert.equal(result.presentationQa.status,'STATIC_PASS');
+  assert.equal(result.presentationQa.pass,'LIVING_MOTION');
+  assert.equal(result.presentationQa.runtimeStillRequired,true);
+  assert.equal(result.presentationQa.gameplaySemanticsPreservationRequired,true);
+});
+
+test('presentation audio static QA fails closed when controls and unlock path are missing',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/presentation-audio');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><script>const music="silent";</script></body></html>\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/presentation-audio',
+    changedFiles:['index.html'],
+    presentationQuality:{required:true,pass:'AUDIO_FEEL',runtimeChecks:['audio-unlock-runtime'],authorityExpanded:false}
+  },null,2));
+  assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:presentation-audio'}),/PRESENTATION_STATIC_QA_FAILED:AUDIO_FEEL/);
+});
