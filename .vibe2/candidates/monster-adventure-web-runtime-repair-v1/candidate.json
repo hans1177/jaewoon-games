@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial malformed edit",
+  "expectedEffect": "recovered complete edit from bounded malformed output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function gameLoop() { updateGameState(); setTimeout(gameLoop, 16); }",
+      "replace": "function gameLoop() { updateGameState(); setTimeout(gameLoop, 16); } updateGameState(); requestAnimationFrame(gameLoop);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
