@@ -1,5 +1,5 @@
 {
-  "version": 34,
+  "version": 35,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1092,7 +1092,10 @@
         "scheduler": ".github/workflows/vibe2-24h-runner.yml",
         "worker": ".github/workflows/vibe2-continuous-core.yml",
         "releaseDispatchRecovery": "tools/vibe2-release-dispatch-recovery.mjs",
-        "robloxRunnerSelfHeal": ".github/workflows/roblox-runner-self-heal.yml"
+        "robloxRunnerSelfHeal": ".github/workflows/roblox-runner-self-heal.yml",
+        "recoveryQueue": ".vibe2/recovery-queue.json",
+        "recoveryQueueTool": "tools/company-recovery-queue.mjs",
+        "recoveryLearningTool": "tools/company-recovery-learning.mjs"
       },
       "automaticRecovery": {
         "staleRunningReservation": "RELEASE_AND_REQUEUE_WITH_RECOVERY_EVIDENCE",
@@ -1109,11 +1112,11 @@
       },
       "bottleneckPolicy": {
         "adaptiveSteps": [
-          30,
-          24,
-          20,
+          256,
+          128,
+          64,
+          32,
           16,
-          12,
           8,
           4
         ],
@@ -1133,7 +1136,9 @@
         "softReservations": true,
         "waitingWorkConsumesSlot": false,
         "systemStewardProtectedSlots": 1,
-        "systemStewardSlotBorrowableWhenIdle": true
+        "systemStewardSlotBorrowableWhenIdle": true,
+        "policyConcurrencyLimit": null,
+        "externalExecutionWaveMax": 256
       },
       "invariants": {
         "noGateBypass": true,
@@ -1158,7 +1163,7 @@
         "enabled": true,
         "scope": "ALL_AUTOMATED_DESIGN_DEVELOPMENT_QA_RUNTIME_REGRESSION_AND_RELEASE_GATES",
         "perGameIndependent": true,
-        "maxParallelGames": 30,
+        "maxParallelGames": null,
         "portfolioWidePassBarrier": false,
         "loop": [
           "RUN_CURRENT_GATE",
@@ -1188,7 +1193,8 @@
           "IRRECOVERABLE_MACHINE_STATE_INVARIANT_VIOLATION",
           "REQUIRED_SECRET_OR_HUMAN_AUTHENTICATION_MISSING",
           "PLATFORM_POLICY_BLOCK_THAT_CANNOT_BE_ROUTED_AROUND"
-        ]
+        ],
+        "parallelismPolicy": "UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_ONLY"
       },
       "systemSteward": {
         "version": 1,
@@ -1240,20 +1246,87 @@
           "verifiedLearningDeletion": false
         },
         "staleMachineStateRecoveryGuard": {
-          "requiredQueueMax": 30,
+          "requiredQueueMax": 256,
           "requiredParallelismControlVersion": 3,
           "allowedCurrentMaxSteps": [
             4,
             8,
-            12,
             16,
-            20,
-            24,
-            30
+            32,
+            64,
+            128,
+            256
           ],
           "clearOnlyKnownMachineStateInconsistentBlockers": true,
-          "actualMachineMismatchMustRemainBlocked": true
+          "actualMachineMismatchMustRemainBlocked": true,
+          "machineContractMeaning": "EXTERNAL_WAVE_BOUND_NOT_INTERNAL_POLICY_CAP"
         }
+      },
+      "recoveryQueue": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-19",
+        "source": "vibe2-unreal-core:.vibe2/recovery-queue.json",
+        "purpose": "REPEATED_FAILURE_COMMON_BOTTLENECK_AND_RETRY_EXHAUSTION_RECOVERY",
+        "routingRules": {
+          "firstRetry": "SAME_CANONICAL_QUEUE_EXACT_FAILED_STAGE",
+          "repeatedFailureSignature": "RECOVERY_QUEUE",
+          "retryExhausted": "RECOVERY_QUEUE",
+          "portfolioWideCommonBlocker": "RECOVERY_QUEUE",
+          "systemAiRepeatedFailure": "RECOVERY_QUEUE",
+          "staleLeaseOrTelemetry": "SYSTEM_STEWARD_DIRECT_RECOVERY_THEN_RECORD_RESULT",
+          "policyOrOwnerBlock": "DO_NOT_AUTO_RECOVER"
+        },
+        "requiredFields": [
+          "sourceQueue",
+          "sourceTaskId",
+          "failureStage",
+          "failureSignature",
+          "blastRadius",
+          "checkpoint",
+          "evidence",
+          "recoveryStrategy",
+          "verificationPlan"
+        ],
+        "execution": {
+          "primaryAiMayDirect": true,
+          "systemStewardMayEnqueue": true,
+          "externalSystemAiMayExecuteAssignedRecovery": true,
+          "gameSourceRepairStillVibe2Vibe3Only": true,
+          "directMainWrite": false,
+          "candidateIsolationRequired": true,
+          "exactFailedGateRerunRequired": true
+        },
+        "review": {
+          "primaryAiDirectReviewRequiredForSystemRecoveryCandidate": true,
+          "unrelated24hWorkMustNotWaitForReview": true,
+          "workerSelfAcceptanceForbidden": true,
+          "deterministicEvidenceRequiredBeforeReview": true
+        }
+      },
+      "recoveryLearning": {
+        "version": 1,
+        "authority": "VERIFIED_RECOVERY_LEARNING",
+        "classification": "RECOVERY_AND_BOTTLENECK_RELIEF_ARE_LEARNING_SOURCES",
+        "positiveLessonRequires": [
+          "ROOT_CAUSE_IDENTIFIED",
+          "SCOPED_FIX_APPLIED",
+          "EXACT_FAILED_CHECK_PASS",
+          "INDEPENDENT_QA_OR_REGRESSION_WHEN_APPLICABLE",
+          "NO_RECURRENT_FAILURE_IN_CURRENT_VALIDATION_WINDOW"
+        ],
+        "failureLessonRequires": [
+          "FAILURE_SIGNATURE_VERIFIED",
+          "FAILED_STRATEGY_IDENTIFIED",
+          "AVOID_PATTERN_REUSABLE"
+        ],
+        "promotionTarget": ".vibe2/experience.json",
+        "learningMotor": "tools/vibe2-learning-motor.mjs",
+        "positiveOutcomeMayIncreaseMastery": true,
+        "verifiedFailureMayIncreaseAvoidanceMastery": true,
+        "unverifiedAttemptMayNotEnterCanonicalLearning": true,
+        "rawModelOutputMayNotBecomeCanonicalLearning": true,
+        "primaryAiReviewRequiredForSystemRecoveryPromotion": true,
+        "gameRuntimeEvidenceStillRequiredForGameLearning": true
       }
     },
     "webIterationPolicy": {
@@ -1578,7 +1651,10 @@
         "REVIEW_COMPLETED_WORK_AND_VERIFIED_EVIDENCE",
         "REOPEN_OR_REQUEUE_WORK_WHEN_VERIFIED_GAPS_REMAIN",
         "KEEP_ROADMAP_IMPLEMENTATION_MOVING_OVER_LONG_HORIZONS",
-        "SYNC_CENTRAL_POLICY_LOG_MAP_ARCHITECTURE_AFTER_ACCEPTED_SYSTEM_CHANGES"
+        "SYNC_CENTRAL_POLICY_LOG_MAP_ARCHITECTURE_AFTER_ACCEPTED_SYSTEM_CHANGES",
+        "DIRECTLY_REVIEW_SYSTEM_AND_RECOVERY_CANDIDATE_DIFFS_AND_EVIDENCE",
+        "ROUTE_REPEATED_FAILURES_AND_COMMON_BOTTLENECKS_TO_RECOVERY_QUEUE",
+        "PROMOTE_ONLY_VERIFIED_RECOVERY_PATTERNS_TO_CANONICAL_LEARNING"
       ],
       "gameSourceAuthoring": false,
       "gameImplementationOwner": [
@@ -1679,6 +1755,16 @@
           "manage": true,
           "issueDirectives": true,
           "watchQaRegressionAndEvidence": true
+        },
+        "recovery": {
+          "manage": true,
+          "issueDirectives": true,
+          "directReview": true
+        },
+        "learning": {
+          "manage": true,
+          "issueDirectives": true,
+          "verifiedPromotionReview": true
         }
       },
       "externalAiWorkerPool": {
