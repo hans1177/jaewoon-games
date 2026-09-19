@@ -858,6 +858,27 @@ test('full web recovery carries the previous undersized candidate forward for ex
   assert.match(retry,/---END_PREVIOUS_FULL_WEB_CANDIDATE---/);
 });
 
+test('timeout partial edit recovery accepts only one fully closed edit object',()=>{
+  const complete='{"summary":"partial","edits":[{"path":"index.html","find":"const state={hp:10};","replace":"const state={hp:10,ready:true};"},{"path":"index.html","find":"unfinished"';
+  const recovered=recoverPartialJsonEdit(complete);
+  assert.ok(recovered);
+  assert.equal(recovered.edits.length,1);
+  assert.equal(recovered.edits[0].path,'index.html');
+  assert.equal(recovered.edits[0].find,'const state={hp:10};');
+  assert.equal(recovered.edits[0].replace,'const state={hp:10,ready:true};');
+  assert.deepEqual(recovered.newFiles,[]);
+  assert.deepEqual(recovered.replaceFiles,[]);
+});
+
+test('timeout partial edit recovery handles braces and escapes inside JSON strings and rejects incomplete objects',()=>{
+  const escaped='{"edits":[{"path":"index.html","find":"if (state.hp) { log(\\"x\\"); }","replace":"if (state.hp) { log(\\"{ok}\\"); state.ready=true; }"}],"newFiles":[';
+  const recovered=recoverPartialJsonEdit(escaped);
+  assert.ok(recovered);
+  assert.equal(recovered.edits[0].replace,'if (state.hp) { log("{ok}"); state.ready=true; }');
+  assert.equal(recoverPartialJsonEdit('{"edits":[{"path":"index.html","find":"a","replace":"b"'),null);
+  assert.equal(recoverPartialJsonEdit('{"summary":"no edits yet"'),null);
+});
+
 test('model response completion stops only at a complete candidate boundary', () => {
   assert.equal(modelResponseComplete('{"edits":[{"path":"index.html","find":"a","replace":"b"}],"newFiles":[]}', 'JSON_EDIT'), true);
   assert.equal(modelResponseComplete('{"edits":[{"path":"index.html"', 'JSON_EDIT'), false);
