@@ -34,7 +34,7 @@ function refreshCompletedDesignBaselineGates({root='.',state={}}={}){
       if(status?.status!=='COMPLETE'||status?.productionClass!=='DESIGN_ONLY'||!fs.existsSync(path.join(base,'design-revised.json')))continue;
       const run=spawnSync(process.execPath,[gatePath,`--game=${gameId}`],{
         cwd:root,
-        env:{...process.env,GAME_ID:gameId,ARTBOOK_GAME_ID:gameId,DESIGN_DATE:date,ARTBOOK_DATE:date},
+        env:{...process.env,GAME_ID:gameId,ARTBOOK_GAME_ID:gameId,DESIGN_DATE:date,ARTBOOK_DATE:date,BASELINE_GATE_REFRESH_MODE:'DESIGN_EVIDENCE'},
         encoding:'utf8'
       });
       if(run.status!==0){
