@@ -104,14 +104,30 @@ test('24h planner uses latest main contract and tools while control branch store
   assert.equal(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs \\'),false);
 });
 
-test('controller starts isolated candidates from fresh main and never writes main directly',()=>{
+test('controller pins each isolated candidate to the reserve-time main contract and never writes main directly',()=>{
   assert(workflow.includes('git fetch --depth=1 origin main:refs/remotes/origin/main --quiet'));
-  assert(workflow.includes('git worktree add -b "$candidate_branch" "$candidate_dir" origin/main'));
+  assert(workflow.includes('contract_sha: ${{ steps.contract.outputs.sha }}'));
+  assert(workflow.includes('ref: ${{ needs.reserve.outputs.contract_sha }}'));
+  assert(workflow.includes('CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}'));
+  assert(workflow.includes('git -C "$contract_root" worktree add -b "$candidate_branch" "$candidate_dir" "$base_sha"'));
   assert(workflow.includes('export VIBE2_BASE_MAIN_SHA="$base_sha"'));
   assert(workflow.includes('vibe2/candidate/'));
   assert(workflow.includes('candidate-awaiting-qa-and-deployment'));
+  assert(!workflow.includes('git worktree add -b "$candidate_branch" "$candidate_dir" origin/main'));
   assert(!workflow.includes('git push origin HEAD:main'));
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
+});
+
+test('one Vibe2 wave uses the same reserved main contract for exploration worker and fan-in',()=>{
+  assert(workflow.includes('Checkout pinned main contract'));
+  assert(workflow.includes('--project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json"'));
+  assert(workflow.includes('Explore pinned main contract read-only'));
+  assert(workflow.includes('Generate isolated candidate from pinned main contract'));
+  assert(workflow.includes('node "$contract_root/tools/vibe2-queue-control.mjs" fan-in'));
+  assert(workflow.includes('(cd "$contract_root" && node --test --test-concurrency=4'));
+  assert(workflow.includes('Regression runs once at fan-in against the exact reserved main contract.'));
+  assert.match(continuousRunnerSource,/projectLifecycleFile=''/);
+  assert.match(continuousRunnerSource,/projectLifecycleFile:clean\(args\['project-lifecycle'\]\)/);
 });
 
 test('controller runs content-hash incremental QA per worker and one parallel full regression at fan-in',()=>{
@@ -119,7 +135,7 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert(workflow.includes('tools/vibe2-incremental-qa.mjs'));
   assert(workflow.includes('incremental-qa-hash:'));
   assert(workflow.includes('Merge outcomes run regression and package review'));
-  assert(workflow.includes('Per-candidate test/performance roles already ran. Regression runs once at fan-in.'));
+  assert(workflow.includes('Per-candidate test/performance roles already ran. Regression runs once at fan-in against the exact reserved main contract.'));
   assert(workflow.includes('node --test --test-concurrency=4'));
   assert(workflow.includes('qa/vibe2-controller-contract.test.mjs'));
   assert(workflow.includes('qa/vibe2-source-worker.test.mjs'));
@@ -135,7 +151,9 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
   const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');
   assert(start>=0 && end>start);
   const preflight=workflow.slice(start,end);
-  assert(preflight.includes('git worktree add --detach /tmp/vibe2-main origin/main'));
+  assert(preflight.includes('contract_sha="$(git rev-parse origin/main)"'));
+  assert(preflight.includes('git worktree add --detach /tmp/vibe2-main "$contract_sha"'));
+  assert(preflight.includes('echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"'));
   assert(preflight.includes('node --check "/tmp/vibe2-main/$file"'));
   assert(preflight.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
   assert(preflight.includes('--runtime=/tmp/vibe2-main/vibe2-runtime.json'));
