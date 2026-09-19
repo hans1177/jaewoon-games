@@ -1,5 +1,5 @@
 {
-  "version": 141,
+  "version": 142,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1954,7 +1954,17 @@
               "a87eb6eb340b6cca4ba8919f0cd868bedfc0ac11",
               "0b4ae4b59c188fcc798332da9cf811ceebcc5ec4"
             ],
-            "fullWebExpansionDocumentSeedRecoveryEffectiveFromNextCleanWave": true
+            "fullWebExpansionDocumentSeedRecoveryEffectiveFromNextCleanWave": true,
+            "reserveFastRegressionGateCommits": [
+              "de96a9d6fa0a7cd7cdc6ca2a5590e39c69f30761",
+              "cb11104e4c7c51ba7a478a7629923c382767bfbc"
+            ],
+            "reserveFastRegressionGateEffectiveFromNextCleanWave": true,
+            "reserveFastRegressionStaticContract": {
+              "sourceWorkerAssertions": 34,
+              "workflowAssertions": 6,
+              "failing": 0
+            }
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3505,64 +3515,68 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FULL_WEB_EXPANSION_DOCUMENT_SEED_RECOVERY_2026-09-19",
+    "id": "VIBE2_RESERVE_FAST_REGRESSION_GATE_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FULL_WEB_EXPANSION_CONTEXT_COMPACTION_2026-09-19",
-    "reason": "DIAGNOSTIC_FULL_WEB_WORKERS_REPEATEDLY_RETURNED_COMPLETE_HTML_BODY_DOCUMENTS_DURING_ADDITIVE_EXPANSION. DISCARDING_THESE_RESPONSES_WASTED_1P5_TO_4KB_OF_USEFUL_GENERATION. WHEN_AN_EXPANSION_RESPONSE_CONTAINS_ONE_COMPLETE_CLOSED_HTML_DOCUMENT,RECOVER_IT_ONLY_AS_A_LARGER_STAGED_SEED_AND_CONTINUE_EXISTING_EXPANSION;NEVER_INSERT_THE_WHOLE_DOCUMENT_AS_A_FRAGMENT_OR_BYPASS_FINAL_ACCEPTANCE.",
-    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_NEXT_CLEAN_WAVE_EFFECT_PENDING",
+    "previousChangeRecordId": "VIBE2_FULL_WEB_EXPANSION_DOCUMENT_SEED_RECOVERY_2026-09-19",
+    "reason": "RECENT_20_WAVES_SPENT_FULL_WORKER_TIME_BEFORE_FAN_IN_DISCOVERED_STALE_OR_BROKEN_CONTRACT_TESTS. RUN_FAST_SOURCE_QUEUE_PARALLELISM_REGRESSION_ON_THE_PINNED_MAIN_SNAPSHOT_BEFORE_ANY_EXPENSIVE_WORKER_RESERVATION_SO_A_BROKEN_CONTRACT_CANNOT_LAUNCH_A_20_WORKER_WAVE.",
+    "implementationState": "WORKFLOW_AND_REGRESSION_TEST_COMMITTED_NEXT_RESERVE_EFFECT_PENDING",
     "evidence": {
-      "diagnosticRun": 35446727233,
-      "diagnosticPinnedSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
-      "observedFullWebAttemptPatterns": [
-        "FULL_REWRITE_SIZE -> MALFORMED_HTML_BODY_EXPANSION -> TIMEOUT",
-        "FULL_REWRITE_SIZE -> MALFORMED_HTML_BODY_EXPANSION -> FULL_REWRITE_SIZE",
-        "FULL_REWRITE_SIZE -> MALFORMED_HTML_BODY_EXPANSION -> MALFORMED_HTML_BODY_EXPANSION -> TIMEOUT"
+      "observedWasteCases": [
+        {
+          "runId": 35443243108,
+          "fanInRegression": "PASS"
+        },
+        {
+          "runId": 35444351457,
+          "fanInRegression": "FAIL_STALE_FIXTURE"
+        },
+        {
+          "runId": 35445626679,
+          "fanInRegression": "FAIL_STALE_PARTIAL_RECOVERY_ASSERTION"
+        }
       ],
-      "observedExpansionOutputBytesRange": [
-        1546,
-        4147
-      ],
-      "currentDiagnosticWaveEffectivenessUse": "DIAGNOSTIC_ONLY"
+      "currentDiagnosticRun": 35446727233,
+      "currentDiagnosticPinnedSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
+      "currentDiagnosticUse": "DIAGNOSTIC_ONLY",
+      "sourceWorkerStaticAssertions": {
+        "count": 34,
+        "failing": 0
+      },
+      "workflowStaticAssertions": {
+        "count": 6,
+        "failing": 0
+      }
     },
     "contract": {
-      "completeClosedHtmlRequired": true,
-      "expansionEnvelopeDocumentMayBecomeSeed": true,
-      "directFragmentInsertionForbiddenForWholeDocument": true,
-      "recoveredDocumentDirectPromotionForbidden": true,
-      "onlyLargerSeedCanReplaceCurrentAccumulatedSeed": true,
-      "stagedExpansionStillRequired": true,
-      "finalAcceptanceMinimumBytes": 12000,
-      "qaGateUnchanged": true,
-      "writableScopeUnchanged": true,
+      "gatePosition": "BEFORE_RESERVE_CONFLICT_FREE_DAG_BATCH",
+      "fastRegressionFiles": [
+        "qa/vibe2-source-worker.test.mjs",
+        "qa/vibe2-queue-control.test.mjs",
+        "qa/vibe2-parallelism-telemetry.test.mjs"
+      ],
+      "brokenContractMayReserveWorkers": false,
+      "workerWaveMaxUnchanged": 20,
+      "fullFanInRegressionStillRequired": true,
+      "qaGateLowered": false,
+      "sourceWrite": false,
       "authorityExpansion": false,
-      "immutableEvidence": "coding-full-web-expansion-document-seed-recoveries:<N>"
+      "marker": "VIBE2_RESERVE_FAST_REGRESSION=PASS"
     },
     "implementationCommits": {
-      "sourceRecovery": "24368a6f7f9d368c30273e1789f9007aba76390c",
-      "sourceRegexNormalization": "d03ee39935cc1001a80aaeee640e57a8860ecb06",
-      "regressionTest": "a87eb6eb340b6cca4ba8919f0cd868bedfc0ac11",
-      "workflowTelemetry": "0b4ae4b59c188fcc798332da9cf811ceebcc5ec4"
-    },
-    "relatedBottleneckFixes": {
-      "seedFirst": "9ef7994739ea552f4b4c90283a9a3b246e3af2f4",
-      "expansionContextCompaction": "545e76b3d51f7828427cf092a43b8eb60b1304f0",
-      "timeoutBudgetAlignment": "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
-      "speculativeSlotPriority": "3208edd52549bcb45a9b2f8396a9dc47174a3b34"
+      "workflow": "de96a9d6fa0a7cd7cdc6ca2a5590e39c69f30761",
+      "regressionContract": "cb11104e4c7c51ba7a478a7629923c382767bfbc"
     },
     "pending": [
-      "CURRENT_35446727233_COMPLETE_FOR_DIAGNOSTIC_ONLY",
-      "NEXT_CLEAN_WAVE_PIN_24368A6F_0B4AE4B5_545E76B3_D2D34D2A_OR_LATER",
-      "MEASURE_EXPANSION_DOCUMENT_SEED_RECOVERY_COUNT",
-      "COMPARE_FULL_WEB_TIMEOUT_AND_MALFORMED_RATE",
-      "COMPARE_FULL_WEB_P95_DURATION",
-      "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
-      "VERIFY_FAN_IN_REGRESSION"
+      "NEXT_CLEAN_RESERVE_SHOWS_VIBE2_RESERVE_FAST_REGRESSION_PASS_BEFORE_WORKER_MATRIX",
+      "CONFIRM_BROKEN_PRELIGHT_BLOCKS_RESERVATION_WITH_ZERO_WORKERS",
+      "VERIFY_FAN_IN_FULL_REGRESSION_STILL_PASSES",
+      "MEASURE_AVOIDED_REWORK_AFTER_CONTRACT_FAILURE"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
       "hierarchicalParallelism": true,
-      "fullWebMinimumBytesUnchanged": 12000,
+      "fullRegressionAtFanInPreserved": true,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
       "shadowPipelineForbidden": true
