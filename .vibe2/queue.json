@@ -5287,7 +5287,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -5322,7 +5322,8 @@
         "actions-run:35420418523",
         "reservation-id:35420418523:1",
         "workload:prep-ms:5141",
-        "workload:cycle-ms:174018"
+        "workload:cycle-ms:174018",
+        "slot-dispatch:35420955411:1"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35420806885:1",
