@@ -44,13 +44,13 @@ function readParallelismControl(args) {
   try {
     return createParallelismControl(readJson(controlFileFrom(args), {}));
   } catch {
-    return createParallelismControl({ lastReason: 'INVALID_STATE_DEFAULT_20' });
+    return createParallelismControl({ lastReason: 'INVALID_STATE_DEFAULT_30' });
   }
 }
 function priority(value, ownerDirective) { if (ownerDirective) return 'owner-immediate'; return ['critical','high','normal','low'].includes(clean(value)) ? clean(value) : 'normal'; }
 function bool(value) { return value === true || ['1','true','yes','y'].includes(clean(value).toLowerCase()); }
 function list(value) { return clean(value).split(',').map(clean).filter(Boolean); }
-function maxConcurrent(value) { return Math.max(1, Math.min(20, Math.floor(Number(value) || DEFAULT_MAX_CONCURRENT_TASKS))); }
+function maxConcurrent(value) { return Math.max(1, Math.min(30, Math.floor(Number(value) || DEFAULT_MAX_CONCURRENT_TASKS))); }
 function optionalMaxConcurrent(value) { return clean(value) ? maxConcurrent(value) : null; }
 function reservationFromArgs(args = {}) {
   const id=clean(args['reservation-id']);
