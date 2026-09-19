@@ -1,10 +1,10 @@
 {
   "version": 3,
-  "currentMax": 4,
+  "currentMax": 20,
   "healthyStreak": 0,
   "pressureStreak": 0,
-  "lastDecision": "DOWN",
-  "lastReason": "FAILURE_RATE+RUNNER_QUEUE_WAIT",
+  "lastDecision": "RESET",
+  "lastReason": "OWNER_MINIMUM_WAVE_20_RECOVERY_AFTER_PRE_FLOOR_CONTRACT_RUN",
   "lastRunId": "35428356084",
   "lastUpdatedAt": "2026-09-19T07:12:05.322Z",
   "lastTelemetry": {
@@ -16,5 +16,7 @@
     "failureRatePct": 87.5,
     "pressureLevel": "SEVERE",
     "bottleneck": "NONE"
-  }
+  },
+  "recoveredFromRunId": "35428356084",
+  "recoveryEvidence": "RUN_35428356084_PINNED_CONTRACT_1ff436c1_BEFORE_OWNER_WAVE_FLOOR"
 }
