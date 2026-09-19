@@ -67,6 +67,8 @@ const JSON_CONTEXT_WINDOW=32768;
 const JSON_FINAL_CONTEXT_WINDOW=16384;
 const FULL_WEB_CONTEXT_WINDOW=32768;
 const MAX_GENERATION_ATTEMPTS=3;
+const SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS=3;
+const SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS=2;
 const FULL_FILE_PREFIX='VIBE2_FULL_FILE';
 const FULL_FILE_CONTENT_MARKER='---VIBE2_FILE_CONTENT---';
 const FULL_FILE_END_MARKER='---VIBE2_FILE_END---';
@@ -580,6 +582,12 @@ function responseFileForAttempt(responseFile,responseFiles=[],attempt=1){
   const rows=Array.isArray(responseFiles)?responseFiles.map(clean).filter(Boolean):[];
   return rows[attempt-1]||clean(responseFile);
 }
+export function generationAttemptBudget({allowFullRewrite=false,variant='primary'}={}){
+  const speculative=/^speculative-/i.test(clean(variant));
+  if(allowFullRewrite)return speculative?SPECULATIVE_FULL_WEB_MAX_GENERATION_ATTEMPTS:FULL_WEB_MAX_GENERATION_ATTEMPTS;
+  return speculative?SPECULATIVE_JSON_MAX_GENERATION_ATTEMPTS:MAX_GENERATION_ATTEMPTS;
+}
+
 export function modelResponseComplete(output,mode='JSON_EDIT'){
   const text=String(output??''),trimmed=text.trimStart();
   if(!trimmed)return false;
@@ -595,7 +603,7 @@ export function modelResponseComplete(output,mode='JSON_EDIT'){
     return Boolean(parsed&&typeof parsed==='object'&&!Array.isArray(parsed));
   }catch{return false;}
 }
-async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null}={}){
+async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false,minFullRewriteBytes=MIN_FULL_REWRITE_BYTES,candidateValidator=null,candidateVariant='primary'}={}){
   let lastError=null;
   let lastRaw='';
   let accumulatedFullWeb=null;
@@ -604,7 +612,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   const intermediateGrowthBytes=[];
   const expansionStageTargets=[];
   let lastCandidateValidation=null;
-  const maxAttempts=allowFullRewrite?FULL_WEB_MAX_GENERATION_ATTEMPTS:MAX_GENERATION_ATTEMPTS;
+  const maxAttempts=generationAttemptBudget({allowFullRewrite,variant:candidateVariant});
   for(let attempt=1;attempt<=maxAttempts;attempt++){
     const retry=attempt>1;
     const priorFailureClass=generationFailureClass(lastError);
@@ -799,10 +807,11 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     if(!result.pass)throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:'+result.violations.join('|'));
     return result;
   };
-  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator});
+  const candidateVariant=clean(order?.candidateStrategyRole?.variant)||clean(process.env.VIBE2_SPECULATIVE_VARIANT)||'primary';
+  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant});
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
-  const generation={...generated.generation,contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
+  const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
   if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
@@ -818,7 +827,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     version:2,
     strategy:clean(order?.candidateStrategyRole?.strategy)||clean(editContract.strategyHint)||'UNCLASSIFIED',
     compiledStrategyHint:clean(editContract.strategyHint)||null,
-    candidateVariant:clean(order?.candidateStrategyRole?.variant)||'primary',
+    candidateVariant,
+    generationAttemptBudget:Number(generation.attemptBudget||0),
+    speculativeAttemptBudgetApplied:generation.speculativeAttemptBudgetApplied===true,
     responsibilityConfidence:clean(editContract.responsibilityConfidence)||'LOW',
     primaryTargets:Array.isArray(editContract.primaryTargets)?editContract.primaryTargets.slice(0,8):[],
     primarySystems:Array.isArray(editContract.primarySystems)?editContract.primarySystems.slice(0,12):[],
