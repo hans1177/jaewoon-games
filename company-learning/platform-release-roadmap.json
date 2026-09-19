@@ -1,5 +1,5 @@
 {
-  "version": 99,
+  "version": 100,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,30 +3069,40 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_SEMANTIC_DIFF_CALIBRATION_HOTSPOT_PHASE3_2026-09-19",
+    "id": "VIBE2_SEMANTIC_CALIBRATION_HOTSPOT_CORE_IMPLEMENTED_V100_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_AUXILIARY_LANES_AND_FAILURE_LOCAL_VERIFIED_V97_2026-09-19",
-    "reason": "DOCUMENT_CONFIDENCE_GATED_SEMANTIC_DIFF_ENFORCEMENT_AND_VERIFIED_CONFIDENCE_HOTSPOT_LEARNING_BEFORE_CODE",
-    "implementationState": "PHASE_3_DOCUMENTED_PENDING_CODE",
+    "previousChangeRecordId": "VIBE2_SEMANTIC_DIFF_CALIBRATION_HOTSPOT_PHASE3_2026-09-19",
+    "reason": "SYNC_PHASE3_CORE_IMPLEMENTATION_AFTER_DOCUMENT_FIRST_CONTRACT",
+    "implementationState": "PHASE_3_CORE_IMPLEMENTED_QA_PENDING",
+    "implemented": [
+      "HIGH_CONFIDENCE_PRESERVE_PATCH_SEMANTIC_DIFF_HARD_GATE",
+      "AMBIGUOUS_OR_LOW_CONFIDENCE_SEMANTIC_DIFF_OBSERVE_ONLY",
+      "NEARBY_SOURCE_CONTEXT_PREVENTS_FALSE_UNPROVEN_EDIT_REJECTION",
+      "PRESERVED_SAVE_KEY_REMOVAL_IS_REJECTED",
+      "IMMUTABLE_PRIMARY_SYMBOL_SYSTEM_CONFIDENCE_EVIDENCE",
+      "VERIFIED_CONFIDENCE_CALIBRATION_MEMORY",
+      "SAME_GAME_REGRESSION_HOTSPOT_MEMORY",
+      "REPEATED_HIGH_CONFIDENCE_REGRESSION_DOWNGRADES_FUTURE_HIGH_TO_MEDIUM",
+      "MATCHED_HOTSPOT_ADDS_FOCUSED_DEPENDENT_QA",
+      "RISK_MEMORY_CANNOT_EXPAND_WRITABLE_SCOPE_OR_BYPASS_QA"
+    ],
     "pending": [
-      "SEMANTIC_DIFF_HARD_GATE_FOR_HIGH_CONFIDENCE_PRESERVE_PATCH",
-      "CONFIDENCE_CALIBRATION_MEMORY",
-      "REGRESSION_HOTSPOT_MEMORY_AND_WORK_ORDER_GUIDANCE",
-      "CAUSAL_REPLAY_EXECUTION_WHEN_DETERMINISTIC_REPLAY_IS_AVAILABLE"
+      "QA_VERIFY_PHASE3",
+      "CAUSAL_REPLAY_EXECUTOR_ONLY_WHEN_DETERMINISTIC_REPLAY_EVIDENCE_EXISTS",
+      "ARCHITECTURE_DRIFT_DETECTOR",
+      "CODING_CONSTITUTION_PROMOTION"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "qualityGatesNotWeakened": true,
       "verifiedLearningOnly": true,
+      "qualityGatesNotWeakened": true,
       "writableScopeExpansionAllowed": false,
-      "qaBypassAllowed": false,
-      "authorityExpanded": false,
-      "protectedGameplayAndSaveSemanticsPreserved": true,
       "ambiguousSemanticClassificationObserveOnly": true,
+      "protectedGameplayAndSaveSemanticsPreserved": true,
       "directMainGameSourceWriteForbidden": true,
       "sourceWriteOnlyOnCandidateBranch": true
     }
@@ -3778,7 +3788,7 @@
       }
     },
     "phase3": {
-      "status": "DOCUMENTED_IMPLEMENTATION_PENDING",
+      "status": "CORE_IMPLEMENTED_QA_PENDING",
       "authority": "OWNER_DIRECTIVE_2026-09-19",
       "objective": "ENFORCE_HIGH_CONFIDENCE_SEMANTIC_SCOPE_AND_LEARN_WHERE_CODING_CONFIDENCE_CAUSES_REGRESSION",
       "semanticDiffEnforcement": {
@@ -3855,7 +3865,39 @@
         "sourceWriteOnlyOnCandidateBranch": true,
         "protectedGameplayAndSaveSemanticsPreserved": true,
         "ambiguousSemanticClassificationFailsOpenToObserveOnlyNotFalseReject": true
-      }
+      },
+      "implementationEvidence": {
+        "documentationFirst": "a90e15825715bcd5b6a1700c10c77a6958eb1e16",
+        "semanticDiffHardGate": "70b1c863ff6649f659537fff28bab8fc07f4f344",
+        "semanticDiffTests": "c536d463b944779ad5ba4d90c2d7cef13c12b529",
+        "semanticSourceContextSafety": "b0748ba3715396f82a09fcc7c6d8aadde0c3c5d4",
+        "workerResponsibilityEvidence": "b8541b2570fcf42fc34805f90c4efc2211ba9d43",
+        "calibrationAndHotspotLearning": "3fdcfae80de6e040fdaecc2b62ea5b6675bdc0bc",
+        "workOrderRiskInjection": "0de42d166ea56519a9e6bf7746839f6f475d7309",
+        "calibratedEditContract": "f8163b73d80331fa41885b17d827d6ac20e75b23",
+        "calibrationTests": "62e733214e6e580be6a896feba21fd46cb9db5d5",
+        "explorationCalibrationTests": "3d62133dea9b60b0d8f1a08af2f306914888716d",
+        "camelPointerSignalFix": "460f19f16254b01773683abb668bf44e0d07ed3e",
+        "runtime": "90e9d356407b1bfe55301aef12f2eb7a87b8fa32"
+      },
+      "implemented": [
+        "HIGH_CONFIDENCE_PRESERVE_PATCH_SEMANTIC_DIFF_HARD_GATE",
+        "AMBIGUOUS_OR_LOW_CONFIDENCE_SEMANTIC_DIFF_OBSERVE_ONLY",
+        "NEARBY_SOURCE_CONTEXT_PREVENTS_FALSE_UNPROVEN_EDIT_REJECTION",
+        "PRESERVED_SAVE_KEY_REMOVAL_IS_REJECTED",
+        "IMMUTABLE_PRIMARY_SYMBOL_SYSTEM_CONFIDENCE_EVIDENCE",
+        "VERIFIED_CONFIDENCE_CALIBRATION_MEMORY",
+        "SAME_GAME_REGRESSION_HOTSPOT_MEMORY",
+        "REPEATED_HIGH_CONFIDENCE_REGRESSION_DOWNGRADES_FUTURE_HIGH_TO_MEDIUM",
+        "MATCHED_HOTSPOT_ADDS_FOCUSED_DEPENDENT_QA",
+        "RISK_MEMORY_CANNOT_EXPAND_WRITABLE_SCOPE_OR_BYPASS_QA"
+      ],
+      "pending": [
+        "QA_VERIFY_PHASE3",
+        "CAUSAL_REPLAY_EXECUTOR_ONLY_WHEN_DETERMINISTIC_REPLAY_EVIDENCE_EXISTS",
+        "ARCHITECTURE_DRIFT_DETECTOR",
+        "CODING_CONSTITUTION_PROMOTION"
+      ]
     }
   },
   "vibeRecoveryLearningLoop": {
