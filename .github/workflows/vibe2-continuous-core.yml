@@ -518,7 +518,14 @@ jobs:
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
           export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
-          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-source-worker.mjs" --apply-source=true
+          source_worker_log="/tmp/vibe2-source-worker-${SAFE_TASK}-${VARIANT}.log"
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-source-worker.mjs" --apply-source=true | tee "$source_worker_log"
+          candidate_manifest_rel="$(sed -n 's/^VIBE2_CANDIDATE_MANIFEST=//p' "$source_worker_log" | tail -n1)"
+          test -n "$candidate_manifest_rel"
+          candidate_manifest="$candidate_dir/$candidate_manifest_rel"
+          test -f "$candidate_manifest"
+          echo "candidate_manifest=$candidate_manifest" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_CANDIDATE_MANIFEST=$candidate_manifest_rel"
           node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           git diff --check
           node --check tools/company-security-steward.mjs
@@ -573,14 +580,16 @@ jobs:
         continue-on-error: true
         env:
           CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
+          CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
+          CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
           CACHE_NAMESPACE: ${{ steps.order.outputs.cache_namespace }}
         shell: bash
         run: |
           set -euo pipefail
           qa_started="$(date +%s%3N)"
           mkdir -p /tmp/vibe2-qa-cache
-          manifest="$(find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit)"
-          test -n "$manifest"
+          manifest="$CANDIDATE_MANIFEST"
+          test -f "$manifest"
           node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-incremental-qa.mjs" \
             --root="$CANDIDATE_DIR" \
             --manifest="$manifest" \
@@ -605,8 +614,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          manifest="$(find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit)"
-          test -n "$manifest"
+          manifest="$CANDIDATE_MANIFEST"
+          test -f "$manifest"
           node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-performance-sanity.mjs" \
             --root="$CANDIDATE_DIR" \
             --manifest="$manifest" \
@@ -627,6 +636,7 @@ jobs:
           CANDIDATE_BRANCH: ${{ steps.candidate.outputs.candidate_branch }}
           CANDIDATE_SHA: ${{ steps.candidate.outputs.candidate_sha }}
           CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
+          CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
           BASE_SHA: ${{ steps.candidate.outputs.base_sha }}
           CHANGED_FILE_COUNT: ${{ steps.candidate.outputs.changed_file_count }}
           ADDED_LINE_COUNT: ${{ steps.candidate.outputs.added_line_count }}
@@ -673,11 +683,8 @@ jobs:
           }
 
           let manifest={};
-          const candidateDir=clean(process.env.CANDIDATE_DIR);
-          if(candidateDir){
-            const root=path.join(candidateDir,'.vibe2','candidates');
-            if(fs.existsSync(root))for(const dir of fs.readdirSync(root)){const file=path.join(root,dir,'manifest.json');if(fs.existsSync(file)){manifest=JSON.parse(fs.readFileSync(file,'utf8'));break;}}
-          }
+          const candidateManifest=clean(process.env.CANDIDATE_MANIFEST);
+          if(candidateManifest&&fs.existsSync(candidateManifest))manifest=JSON.parse(fs.readFileSync(candidateManifest,'utf8'));
           const exploration=manifest.exploration||null;
           const roleResults={
             exploration:exploration?.reuseKey?'PASS':'FAIL',
