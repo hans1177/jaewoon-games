@@ -6,7 +6,7 @@
   "tasks": [
     {
       "id": "sys-web-bootstrap-signal-routing-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "goal": "Fix the common Web development bottleneck at the workflow responsibility boundary. company-development-web-bootstrap.mjs intentionally emits VIBE_WEB_IMPLEMENTATION_REQUIRED:* when source is missing or needs Vibe repair. Update company-development-confirmed-runtime.yml so those expected signals become structured Vibe implementation/repair handoff states instead of a generic web-gameplay-music failure. Preserve every Web gameplay/runtime/strict/promotion gate; do not catch-and-ignore failures. Add a focused contract test that proves SOURCE_MISSING and WEB_REPAIR signals are routed to Vibe work and ordinary unexpected bootstrap failures still fail normally.",
       "responsibleFiles": [
@@ -45,14 +45,14 @@
         "node --test qa/company-development-confirmed-runtime-contract.test.mjs"
       ],
       "dependencies": [],
-      "retries": 0,
+      "retries": 1,
       "maxRetries": 2,
-      "reservationId": "system-ai:35424046606:1",
-      "reservedAt": "2026-09-19T05:28:49.088Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": "REWORK",
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "primary-ai-priority:portfolio-wide-common-web-blocker",
         "company-runtime:19-of-19-web-gameplay-music",
@@ -68,15 +68,17 @@
         "actions-run:35423569068",
         "actions-run:35423629684",
         "primary-ai-rework:ollama-cache-path-fixed",
-        "supersede-runs:35423569068|35423629684"
+        "supersede-runs:35423569068|35423629684",
+        "actions-run:35424046606",
+        "implementation:failure"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-19T05:28:49.088Z"
+      "updatedAt": "2026-09-19T05:32:34.657Z"
     },
     {
       "id": "sys-vibe-planner-web-repair-routing-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "critical",
       "goal": "Make the Vibe autonomous planner consume company-runtime Web repair/bootstrap states explicitly. When a DEVELOPMENT_CONFIRMED game is WEB_VIBE_REPAIR_REQUIRED or has a missing Web source root that central policy allows to bootstrap, enqueue one deduplicated actionable Vibe task with the correct responsible index.html, source-root-bootstrap-required evidence when applicable, and exact-stage resume semantics. Do not weaken source-root candidate-branch restrictions, QA gates, or direct-main-write prohibitions. Extend existing planner tests for both missing-source and repair-required inputs plus duplicate suppression.",
       "responsibleFiles": [
@@ -114,14 +116,14 @@
         "node --test qa/vibe2-auto-planner.test.mjs"
       ],
       "dependencies": [],
-      "retries": 0,
+      "retries": 1,
       "maxRetries": 2,
-      "reservationId": "system-ai:35424046606:1",
-      "reservedAt": "2026-09-19T05:28:49.088Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": "REWORK",
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "primary-ai-priority:planner-handoff",
         "company-runtime:19-web-repair-required",
@@ -139,15 +141,16 @@
         "implementation:skipped",
         "actions-run:35423629684",
         "primary-ai-rework:ollama-cache-path-fixed",
-        "supersede-runs:35423569068|35423629684"
+        "supersede-runs:35423569068|35423629684",
+        "actions-run:35424046606"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-19T05:28:49.088Z"
+      "updatedAt": "2026-09-19T05:32:34.657Z"
     },
     {
       "id": "sys-vibe-web-source-bootstrap-boundary-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "high",
       "goal": "Audit and harden the Vibe source worker Web source-root bootstrap path so an explicitly authorized WEB_BASE_IMPLEMENTATION task can create only the assigned web-games/<gameId>/index.html on an isolated candidate branch, while ordinary missing roots remain forbidden. Preserve Vibe2/Vibe3 game implementation ownership, direct-main-write=false, Codex game-source-write forbidden, and all existing file/path safety checks. Add or refine tests for authorized bootstrap, unauthorized bootstrap rejection, and repair of an existing Web index.",
       "responsibleFiles": [
@@ -184,14 +187,14 @@
         "node --test qa/vibe2-source-worker.test.mjs"
       ],
       "dependencies": [],
-      "retries": 0,
+      "retries": 1,
       "maxRetries": 2,
-      "reservationId": "system-ai:35424046606:1",
-      "reservedAt": "2026-09-19T05:28:49.088Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": "REWORK",
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "primary-ai-priority:web-source-worker-boundary",
         "primary-ai-review:REWORK",
@@ -207,15 +210,16 @@
         "implementation:skipped",
         "actions-run:35423629684",
         "primary-ai-rework:ollama-cache-path-fixed",
-        "supersede-runs:35423569068|35423629684"
+        "supersede-runs:35423569068|35423629684",
+        "actions-run:35424046606"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-19T05:28:49.088Z"
+      "updatedAt": "2026-09-19T05:32:34.657Z"
     },
     {
       "id": "sys-web-vibe-handoff-e2e-contract-v1",
-      "status": "running",
+      "status": "queued",
       "priority": "high",
       "goal": "Create an independent end-to-end machine contract test for the portfolio Web repair handoff. The test must inspect the current central policy, bootstrap implementation, confirmed-development workflow, Vibe planner, continuous runner, and source worker as text/code contracts and assert: preserve-only bootstrap emits actionable Vibe signals; workflow does not turn those expected signals into a generic terminal web-gameplay-music dead end; planner consumes WEB_VIBE_REPAIR_REQUIRED/missing-source state; authorized bootstrap remains candidate-only; strict runtime/QA/regression gates stay present. This is an independent verifier: do not modify production implementation files.",
       "responsibleFiles": [
@@ -262,14 +266,14 @@
         "node --test qa/company-web-vibe-handoff-e2e.test.mjs"
       ],
       "dependencies": [],
-      "retries": 0,
+      "retries": 1,
       "maxRetries": 2,
-      "reservationId": "system-ai:35424046606:1",
-      "reservedAt": "2026-09-19T05:28:49.088Z",
+      "reservationId": null,
+      "reservedAt": null,
       "candidateBranch": null,
       "pullRequestUrl": null,
-      "lastOutcome": "REWORK",
-      "blocker": null,
+      "lastOutcome": "FAIL",
+      "blocker": "system-ai-implementation-failed",
       "evidence": [
         "primary-ai-independent-verifier:common-web-handoff",
         "primary-ai-review:REWORK",
@@ -285,14 +289,16 @@
         "implementation:skipped",
         "actions-run:35423629684",
         "primary-ai-rework:ollama-cache-path-fixed",
-        "supersede-runs:35423569068|35423629684"
+        "supersede-runs:35423569068|35423629684",
+        "actions-run:35424046606"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-19T05:28:49.088Z"
+      "updatedAt": "2026-09-19T05:32:34.657Z"
     },
     {
       "id": "sys-verify-web-bootstrap-signal-v1",
+      "status": "queued",
       "priority": "high",
       "goal": "Independently verify the Web bootstrap expected-signal contract after the signal-routing implementation is accepted. Add a focused black-box contract test that proves VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_BASE_IMPLEMENTATION:SOURCE_MISSING and VIBE_WEB_IMPLEMENTATION_REQUIRED:WEB_REPAIR:* remain actionable control signals, while unrelated bootstrap exceptions remain real failures. Do not modify implementation files.",
       "responsibleFiles": [
@@ -303,6 +309,7 @@
         ".github/workflows/company-development-confirmed-runtime.yml",
         "company-learning/platform-release-roadmap.json"
       ],
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "expected implementation-required signals are explicitly distinguishable from unexpected failures",
         "test is independent of worker self-assessment",
@@ -314,10 +321,6 @@
       "dependencies": [
         "sys-web-bootstrap-signal-routing-v1"
       ],
-      "status": "queued",
-      "department": "system-supervision",
-      "type": "independent-verification",
-      "focusPatterns": {},
       "retries": 0,
       "maxRetries": 2,
       "reservationId": null,
@@ -336,6 +339,7 @@
     },
     {
       "id": "sys-verify-vibe-planner-repair-fixtures-v1",
+      "status": "queued",
       "priority": "high",
       "goal": "Independently verify Vibe planner handling of WEB_VIBE_REPAIR_REQUIRED and missing Web source states after the planner implementation is accepted. Create fixture-driven tests for repair task creation, missing-root bootstrap evidence, exact-stage preservation, and duplicate suppression. Do not modify planner implementation.",
       "responsibleFiles": [
@@ -346,6 +350,7 @@
         "qa/vibe2-auto-planner.test.mjs",
         "company-learning/platform-release-roadmap.json"
       ],
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "repair fixture yields one actionable task",
         "missing root fixture requires explicit bootstrap evidence",
@@ -358,10 +363,6 @@
       "dependencies": [
         "sys-vibe-planner-web-repair-routing-v1"
       ],
-      "status": "queued",
-      "department": "system-supervision",
-      "type": "independent-verification",
-      "focusPatterns": {},
       "retries": 0,
       "maxRetries": 2,
       "reservationId": null,
@@ -380,6 +381,7 @@
     },
     {
       "id": "sys-verify-source-bootstrap-safety-v1",
+      "status": "queued",
       "priority": "high",
       "goal": "Independently verify the Vibe Web source bootstrap boundary after the source-worker implementation is accepted. Add contract tests proving authorized candidate-only creation is bounded to assigned index.html, unauthorized source-root creation is rejected, existing-source repair remains responsible-file bounded, and direct main writes remain forbidden.",
       "responsibleFiles": [
@@ -390,6 +392,7 @@
         "tools/vibe2-continuous-runner.mjs",
         "company-learning/platform-release-roadmap.json"
       ],
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "candidate-only bootstrap invariant is tested",
         "unauthorized bootstrap rejection is tested",
@@ -402,10 +405,6 @@
       "dependencies": [
         "sys-vibe-web-source-bootstrap-boundary-v1"
       ],
-      "status": "queued",
-      "department": "system-supervision",
-      "type": "independent-verification",
-      "focusPatterns": {},
       "retries": 0,
       "maxRetries": 2,
       "reservationId": null,
@@ -424,6 +423,7 @@
     },
     {
       "id": "sys-verify-web-handoff-e2e-second-opinion-v1",
+      "status": "queued",
       "priority": "high",
       "goal": "Provide a second independent end-to-end verifier after the first E2E verifier is accepted. Validate bootstrap signal -> workflow routing -> development queue state -> planner task -> candidate-only Vibe source worker -> QA/regression chain. Fail if any stage becomes a generic terminal web-gameplay-music dead end.",
       "responsibleFiles": [
@@ -437,6 +437,7 @@
         "tools/vibe2-source-worker.mjs",
         "company-learning/platform-release-roadmap.json"
       ],
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "full handoff chain is independently checked",
         "generic dead-end routing is forbidden",
@@ -451,10 +452,6 @@
         "sys-vibe-planner-web-repair-routing-v1",
         "sys-vibe-web-source-bootstrap-boundary-v1"
       ],
-      "status": "queued",
-      "department": "system-supervision",
-      "type": "independent-verification",
-      "focusPatterns": {},
       "retries": 0,
       "maxRetries": 2,
       "reservationId": null,
@@ -473,6 +470,7 @@
     },
     {
       "id": "sys-verify-web-strict-gate-integrity-v1",
+      "status": "queued",
       "priority": "normal",
       "goal": "Verify that fixes for the common Web bottleneck do not weaken strict review, runtime validation, gameplay validation, regression, or promotion gates. Add a machine contract test that inspects central policy and workflows for all required gates and fails if any are bypassed or changed to unconditional pass.",
       "responsibleFiles": [
@@ -483,6 +481,7 @@
         ".github/workflows/company-development-confirmed-runtime.yml",
         "tools/company-development-web-bootstrap.mjs"
       ],
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "strict/runtime/gameplay/regression/promotion gates are all asserted",
         "no catch-and-ignore or fake pass pattern is accepted",
@@ -494,10 +493,6 @@
       "dependencies": [
         "sys-web-bootstrap-signal-routing-v1"
       ],
-      "status": "queued",
-      "department": "system-supervision",
-      "type": "independent-verification",
-      "focusPatterns": {},
       "retries": 0,
       "maxRetries": 2,
       "reservationId": null,
@@ -516,6 +511,7 @@
     },
     {
       "id": "sys-verify-development-queue-transition-v1",
+      "status": "queued",
       "priority": "normal",
       "goal": "Verify development queue state transitions for the repaired Web path. Add tests that ensure WEB_VIBE_REPAIR_REQUIRED transitions only through actionable Vibe work, successful repair resumes the exact failed validation stage, and stale generic web-gameplay-music blockers cannot override newer raw success evidence.",
       "responsibleFiles": [
@@ -526,6 +522,7 @@
         "tools/vibe2-auto-planner.mjs",
         "company-learning/platform-release-roadmap.json"
       ],
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "repair-required state has actionable transition",
         "exact-stage resume is asserted",
@@ -538,10 +535,6 @@
         "sys-web-bootstrap-signal-routing-v1",
         "sys-vibe-planner-web-repair-routing-v1"
       ],
-      "status": "queued",
-      "department": "system-supervision",
-      "type": "independent-verification",
-      "focusPatterns": {},
       "retries": 0,
       "maxRetries": 2,
       "reservationId": null,
@@ -560,6 +553,7 @@
     },
     {
       "id": "sys-verify-web-platform-handoff-v1",
+      "status": "queued",
       "priority": "normal",
       "goal": "Verify that a Web game which clears repaired validation remains eligible for both Roblox and Unity downstream consumers according to the equal-first-tier central contract. Add a contract test for required web-to-platform handoff fields and consumer presence; do not alter release policy.",
       "responsibleFiles": [
@@ -571,6 +565,7 @@
         ".github/workflows/company-development-unity-runtime.yml",
         ".github/workflows/company-development-confirmed-runtime.yml"
       ],
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "Roblox and Unity downstream consumer contracts are both asserted",
         "required handoff fields are checked",
@@ -582,10 +577,6 @@
       "dependencies": [
         "sys-web-vibe-handoff-e2e-contract-v1"
       ],
-      "status": "queued",
-      "department": "system-supervision",
-      "type": "independent-verification",
-      "focusPatterns": {},
       "retries": 0,
       "maxRetries": 2,
       "reservationId": null,
@@ -604,6 +595,7 @@
     },
     {
       "id": "sys-verify-system-ai-supervision-loop-v1",
+      "status": "queued",
       "priority": "normal",
       "goal": "Verify the supervised free system AI workflow itself so implementation success can never skip deterministic verification and no candidate can self-merge. Add a workflow contract test for reserve -> worker -> verify -> PR -> fan-in -> primary-AI-review states, cached Ollama direct binary execution, malformed JSON retry, and worker-self-acceptance prohibition.",
       "responsibleFiles": [
@@ -615,6 +607,7 @@
         "tools/company-system-ai-queue.mjs",
         "company-learning/platform-release-roadmap.json"
       ],
+      "focusPatterns": {},
       "acceptanceCriteria": [
         "verification step is mandatory after successful implementation",
         "candidate PR is mandatory before supervisor review",
@@ -625,10 +618,6 @@
         "node --test qa/company-system-ai-supervision-loop.test.mjs"
       ],
       "dependencies": [],
-      "status": "queued",
-      "department": "system-supervision",
-      "type": "independent-verification",
-      "focusPatterns": {},
       "retries": 0,
       "maxRetries": 2,
       "reservationId": null,
