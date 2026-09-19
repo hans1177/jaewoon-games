@@ -1,5 +1,5 @@
 {
-  "version": 106,
+  "version": 107,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,26 +3069,27 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_VERIFIED_CONTEXT_EFFICIENCY_LEARNING_NEXT_2026-09-19",
+    "id": "VIBE2_VERIFIED_CONTEXT_EFFICIENCY_LEARNING_IMPLEMENTED_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_PHASE5_STAGE_TARGETING_VERIFIED_LIVE_WAVE_NEXT_2026-09-19",
-    "reason": "CONNECT_VERIFIED_CONTEXT_MODE_OUTCOMES_TO_FUTURE_CODING_METHOD_SELECTION_WITHOUT_WEAKENING_SCOPE_OR_QA",
-    "implementationState": "VERIFIED_CONTEXT_EFFICIENCY_LEARNING_DOCUMENTED_CODE_PENDING_LIVE_REVALIDATION_PENDING",
+    "previousChangeRecordId": "VIBE2_VERIFIED_CONTEXT_EFFICIENCY_LEARNING_NEXT_2026-09-19",
+    "reason": "PROMOTE_VERIFIED_CONTEXT_MODE_EFFICIENCY_LEARNING_AFTER_CORE_VIBE_AND_INTEGRATED_QA_SUCCESS;NEXT_GATE_IS_LIVE_20_WAVE_FAILURE_CLASS_REVALIDATION",
+    "implementationState": "VERIFIED_CONTEXT_EFFICIENCY_LEARNING_VERIFIED_LIVE_REVALIDATION_PENDING",
     "evidence": {
-      "stageTargetVerificationHead": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99",
-      "coreQaRunId": 35441514826,
-      "vibeQaRunId": 35441514838,
-      "integratedRegressionRunId": 35441514837,
+      "learningMotorCommit": "a618c79a2a561f39d1e85a93ad611760d503a6d9",
+      "sourceWorkerCommit": "25697a120e2bb67f5a5ee6724bc4d708b3831e0e",
+      "learningTestCommit": "ac32f87d8c96bc49dc3ccb77399e4490b248b80c",
+      "sourceWorkerTestCommit": "dfa87b82780f304fc15b0be6938ec7022dad1832",
+      "coreQaRunId": 35441804484,
+      "vibeQaRunId": 35441804337,
+      "integratedRegressionRunId": 35441804365,
       "baselineRunId": 35438982255
     },
     "pending": [
-      "CONTEXT_MODE_VERIFIED_FAILURE_ACCOUNTING_CODE",
-      "PREFERRED_CONTEXT_MODE_SELECTION_CODE",
-      "SOURCE_WORKER_CONTEXT_MODE_INJECTION",
-      "CORE_QA",
       "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
-      "FAILURE_CLASS_BEFORE_AFTER_COMPARISON"
+      "FAILURE_CLASS_BEFORE_AFTER_COMPARISON",
+      "CONTEXT_MODE_LIVE_SAMPLE_ACCUMULATION",
+      "NEXT_CODING_METHOD_OPTIMIZATION_FROM_VERIFIED_LIVE_RESULTS"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
@@ -4058,6 +4059,34 @@
           "runId": 35441514837,
           "jobId": 105893002407,
           "result": "SUCCESS"
+        }
+      },
+      "contextEfficiencyLearning": {
+        "state": "VERIFIED",
+        "verifiedOnly": true,
+        "minimumSamples": 3,
+        "learnedMetrics": [
+          "VERIFIED_APPLICATIONS",
+          "VERIFIED_FAILURES",
+          "FIRST_CANDIDATE_PASS_RATE",
+          "AVERAGE_GENERATION_ATTEMPTS",
+          "AVERAGE_CONTEXT_BYTES"
+        ],
+        "selectionOrder": [
+          "LOWER_VERIFIED_FAILURE_RATE",
+          "HIGHER_FIRST_CANDIDATE_PASS_RATE",
+          "LOWER_AVERAGE_GENERATION_ATTEMPTS",
+          "LOWER_AVERAGE_CONTEXT_BYTES"
+        ],
+        "sourceWorkerAppliesPreferredContextMode": true,
+        "preferenceCanChangeContextPackingOnly": true,
+        "writableScopeExpansionAllowed": false,
+        "qaWeakeningAllowed": false,
+        "verification": {
+          "head": "dfa87b82780f304fc15b0be6938ec7022dad1832",
+          "coreQaRunId": 35441804484,
+          "vibeQaRunId": 35441804337,
+          "integratedRegressionRunId": 35441804365
         }
       }
     }
