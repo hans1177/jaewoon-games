@@ -1,5 +1,5 @@
 {
-  "version": 104,
+  "version": 105,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,38 +3069,37 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_PHASE5_CORE_VERIFIED_STAGE_TARGETING_NEXT_2026-09-19",
+    "id": "VIBE2_PHASE5_STAGE_TARGETING_VERIFIED_LIVE_WAVE_NEXT_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_STAGED_SOURCE_SYNTHESIS_PHASE5_CORE_AND_MISSING_CAPABILITY_TARGETING_2026-09-19",
-    "reason": "PROMOTE_PHASE5_CORE_AFTER_FIXED_HEAD_CORE_VIBE_INTEGRATED_QA_SUCCESS_AND_CONTINUE_DOCUMENTED_MISSING_CAPABILITY_STAGE_TARGETING",
-    "implementationState": "PHASE_5_CORE_VERIFIED_STAGE_TARGETING_PENDING_CODE",
+    "previousChangeRecordId": "VIBE2_PHASE5_CORE_VERIFIED_STAGE_TARGETING_NEXT_2026-09-19",
+    "reason": "MISSING_CAPABILITY_FIRST_STAGE_TARGETING_PASSED_CORE_VIBE_AND_INTEGRATED_QA;MOVE_TO_LIVE_20_WAVE_FAILURE_CLASS_REVALIDATION",
+    "implementationState": "PHASE_5_STAGE_TARGETING_VERIFIED_LIVE_REVALIDATION_PENDING",
     "evidence": {
-      "verificationHead": "c945cd94408a91cd050c53dd7107ccce11d3abf2",
-      "coreQaRunId": 35441313591,
-      "vibeQaRunId": 35441313567,
-      "integratedRegressionRunId": 35441313546,
-      "baselineSourceRunId": 35438982255
+      "verificationHead": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99",
+      "coreQaRunId": 35441514826,
+      "vibeQaRunId": 35441514838,
+      "integratedRegressionRunId": 35441514837,
+      "baselineRunId": 35438982255,
+      "baselineFailureClasses": "TIMEOUT:9,EDIT_MATCH:2,FULL_REWRITE_SIZE:7,NO_OP:1,MALFORMED_OUTPUT:1"
     },
     "pending": [
-      "MISSING_CAPABILITY_STAGE_TARGET_PLANNER_CODE",
-      "DISTINCT_STAGE_TARGET_TELEMETRY",
-      "CORE_QA_STAGE_TARGETING",
-      "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION"
+      "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
+      "FAILURE_CLASS_BEFORE_AFTER_COMPARISON",
+      "CONTEXT_MODE_SUCCESS_RATE_LEARNING_UPDATE",
+      "NEXT_CODING_METHOD_OPTIMIZATION_FROM_VERIFIED_RESULTS"
     ],
     "invariants": {
-      "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
+      "gamePrimaryFirst": true,
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
       "sameFileParallelWrite": false,
       "finalWebMinimumNotLowered": true,
       "intermediatePromotionAllowed": false,
       "qualityGatesNotWeakened": true,
-      "impactPredictionCannotGrantWriteAuthority": true,
       "writableScopeExpansionAllowed": false,
-      "directMainGameSourceWriteForbidden": true,
-      "sourceWriteOnlyOnCandidateBranch": true
+      "directMainGameSourceWriteForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
@@ -3924,7 +3923,7 @@
     },
     "stagedSourceSynthesis": {
       "version": 1,
-      "status": "PHASE_5_CORE_VERIFIED_STAGE_TARGETING_PENDING_CODE",
+      "status": "PHASE_5_STAGE_TARGETING_VERIFIED_LIVE_REVALIDATION_PENDING",
       "objective": "REPLACE_GIANT_ONE_SHOT_SOURCE_GENERATION_WITH_RESPONSIBILITY_FOCUSED_CONTEXT_AND_VALIDATED_INTERMEDIATE_BUILD_STAGES",
       "triggerEvidence": {
         "sourceRunId": 35438982255,
@@ -4002,7 +4001,11 @@
         "contextEfficiencyLearning": "1a7c286f98627ccd88fc52f54e5659c82e9052e0",
         "contextEfficiencyLearningTest": "e617f4e872661a46827f3502488a0d00184337ae",
         "symbolRegexCorrection": "5e9554b4ecb3ca86233a4c2ad0812299d94c8841",
-        "symbolRegexRegressionTest": "c945cd94408a91cd050c53dd7107ccce11d3abf2"
+        "symbolRegexRegressionTest": "c945cd94408a91cd050c53dd7107ccce11d3abf2",
+        "missingCapabilityStageTargeting": "e62573e0e987401ff531c60a79caf7a882a29140",
+        "stageTargetingFix": "70780d52dfcc8b772631fd66a74d7ce57ca5448b",
+        "stageTargetingTest": "a4e3815e423b7a90da26cef27561fefbb13d1dfe",
+        "stageTargetImmutableEvidence": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99"
       },
       "pendingVerification": [
         "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
@@ -4033,6 +4036,24 @@
           "FULL_REWRITE_SIZE": 7,
           "NO_OP": 1,
           "MALFORMED_OUTPUT": 1
+        }
+      },
+      "stageTargetVerification": {
+        "head": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99",
+        "coreQa": {
+          "runId": 35441514826,
+          "jobId": 105893006839,
+          "result": "SUCCESS"
+        },
+        "vibeQa": {
+          "runId": 35441514838,
+          "jobId": 105893002119,
+          "result": "SUCCESS"
+        },
+        "integratedRegression": {
+          "runId": 35441514837,
+          "jobId": 105893002407,
+          "result": "SUCCESS"
         }
       }
     }
