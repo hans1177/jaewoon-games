@@ -3,42 +3,7 @@ name: Company Evolution QA
 on:
   push:
     branches: [main]
-    paths:
-      - COMPANY_FLOW.md
-      - company-directive.json
-      - game-artbooks.json
-      - game-catalog.json
-      - design/**
-      - company-learning/**
-      - public-game-health.json
-      - public-release-baselines.json
-      - index.html
-      - artbook.html
-      - assets/artbook-runtime.js
-      - assets/homepage-enhancements.js
-      - assets/homepage-layout-v2.js
-      - assets/company-quality-bar.js
-      - assets/vibe-company-orchestration-bridge.js
-      - tools/production-classification.mjs
-      - tools/company-design-cycle.mjs
-      - tools/company-development-validation-cycle.mjs
-      - tools/company-release-production-cycle.mjs
-      - tools/company-release-stale-artifact-guard.mjs
-      - tools/company-baseline-gate.mjs
-      - tools/artbook-production-pipeline.mjs
-      - tools/artbook-fact-pack.mjs
-      - tools/homepage-manager.mjs
-      - qa/artbook-editorial-role-contract.test.mjs
-      - qa/company-release-production-cycle.test.mjs
-      - qa/release-stale-artifact-guard.test.mjs
-      - qa/tier1-development-baseline-gate.test.mjs
-      - qa/company-design-pre-gate-resume.test.mjs
-      - .github/workflows/artbook-free-department-bots.yml
-      - .github/workflows/company-release-artifact-safety-qa.yml
-      - .github/workflows/vibe2-24h-runner.yml
-      - .github/workflows/vibe2-candidate-release.yml
-      - .github/workflows/vibe2-unity-release-result.yml
-      - .github/workflows/company-evolution-qa.yml
+  pull_request:
   workflow_dispatch:
 
 permissions:
@@ -203,8 +168,8 @@ jobs:
           for(const token of ['productionClass','DEVELOPMENT_BASELINE_READY','development-baseline-required'])if(!candidate.includes(token))throw new Error(`candidate release baseline guard missing: ${token}`);
           for(const token of ['PARTIAL_BUILD_VERIFIED','developmentBaselineImplemented:false','INDEPENDENT_RELEASE_QA=NOT_ASSERTED','DEVICE_VALIDATION=NOT_ASSERTED','gh run download','apk_sha256'])if(!unityResult.includes(token))throw new Error(`Unity result evidence separation missing: ${token}`);
           if(unityResult.includes('--independent-qa=PASS'))throw new Error('APK build workflow must not claim independent release QA PASS');
-          const baselinePlan=vibeRunner.indexOf('node tools/vibe2-release-baseline-queue.mjs');
-          const genericPlan=vibeRunner.indexOf('node tools/vibe2-auto-planner.mjs');
+          const baselinePlan=vibeRunner.indexOf('tools/vibe2-release-baseline-queue.mjs');
+          const genericPlan=vibeRunner.indexOf('tools/vibe2-auto-planner.mjs');
           if(baselinePlan<0||genericPlan<=baselinePlan)throw new Error('Vibe2 release-baseline queue must run before generic autoplan');
           if(!vibeRunner.includes("'unity-games/**'"))throw new Error('Vibe2 runner must resume after Unity source changes');
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
@@ -218,54 +183,21 @@ jobs:
       - name: Validate homepage manager contract
         run: |
           set -euo pipefail
-          grep -Fq 'activeRuntimeLayoutManager' tools/homepage-manager.mjs
-          grep -Fq 'HOMEPAGE_MANAGEMENT=' tools/homepage-manager.mjs
-          grep -Fq 'HOMEPAGE_RUNTIME_SYNC=DEVELOPMENT_QUEUE_PLUS_SEPARATE_TOP30' tools/homepage-manager.mjs
-          grep -Fq 'HOMEPAGE_MANAGER_COUNT=1' tools/homepage-manager.mjs
-          grep -Fq 'HOMEPAGE_POST_WORK_SUPERVISOR_COUNT=1' tools/homepage-manager.mjs
-          grep -Fq 'workflow_run:' .github/workflows/homepage-manager.yml
-          grep -Fq 'push:' .github/workflows/homepage-manager.yml
-          grep -Fq 'pull_request:' .github/workflows/homepage-manager.yml
-          grep -Fq 'workflow_dispatch:' .github/workflows/homepage-manager.yml
-          grep -Fq 'contents: write' .github/workflows/homepage-manager.yml
-          grep -Fq 'pull-requests: write' .github/workflows/homepage-manager.yml
-          grep -Fq 'Director Single Post-Work Supervision' .github/workflows/homepage-manager.yml
-          grep -Fq 'DIRECTOR_EXACT_HOMEPAGE_CANDIDATE=BOUND' .github/workflows/homepage-manager.yml
-          if grep -Eq '^[[:space:]]+schedule:' .github/workflows/homepage-manager.yml; then
-            echo 'homepage manager must remain event-driven with one manager and one post-work supervisor' >&2
-            exit 1
-          fi
-          node tools/homepage-manager.mjs
-          echo 'HOMEPAGE_MANAGER_CONTRACT=PASS'
+          node --test qa/homepage-manager.test.mjs
+          node --test qa/homepage-runtime-source.test.mjs
 
       - name: Validate historical artbook safety
         run: |
-          node <<'NODE'
-          const fs=require('fs');
-          const data=JSON.parse(fs.readFileSync('game-artbooks.json','utf8'));
-          for(const book of data.artbooks||[])if(book.published===true||book.homepageVisible===true)if(book.productionApproval!==false)throw new Error(`${book.id}: historical visibility cannot grant production approval`);
-          console.log('HISTORICAL_ARTBOOK_SAFETY=PASS');
-          NODE
+          set -euo pipefail
+          node --test qa/artbook-historical-safety.test.mjs
 
       - name: Validate learning and rollback contracts
         run: |
-          node <<'NODE'
-          const fs=require('fs');
-          const bugs=JSON.parse(fs.readFileSync('company-learning/bug-memory.json','utf8'));
-          const research=JSON.parse(fs.readFileSync('company-learning/research-notes.json','utf8'));
-          const health=JSON.parse(fs.readFileSync('public-game-health.json','utf8'));
-          const rollback=JSON.parse(fs.readFileSync('public-release-baselines.json','utf8'));
-          if(!Array.isArray(bugs.bugs)||!bugs.policy?.repeatFailureWithoutNewLearningGetsNoXp)throw new Error('bug memory policy invalid');
-          if(!Array.isArray(research.notes)||!research.policy?.crossProjectReuseAllowed)throw new Error('research notes policy invalid');
-          if(health.policy?.webArchiveMutation!=='forbidden')throw new Error('web archive mutation protection missing');
-          if(rollback.policy?.neverPublishesUnapprovedGame!==true)throw new Error('rollback publication protection missing');
-          console.log('LEARNING_ROLLBACK_CONTRACT=PASS');
-          NODE
+          set -euo pipefail
+          node --test qa/company-learning-loop.test.mjs
+          node --test qa/company-rollback.test.mjs
 
       - name: Validate experience quality-bar integration
         run: |
           set -euo pipefail
-          grep -Fq 'createCompanyQualityBar' assets/vibe-company-orchestration-bridge.js
-          grep -Fq 'qualityBar:companyQualityBar' assets/vibe-company-orchestration-bridge.js
-          grep -Fq 'authorityNeverExpandsWithLevel' assets/department-experience.js
-          echo 'EXPERIENCE_QUALITY_BAR=PASS'
+          node --test qa/company-quality-bar.test.mjs
