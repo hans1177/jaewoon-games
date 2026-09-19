@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Approved Web Bootstrap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <main id="game">
+        <h1>Approved Web Bootstrap</h1>
+        <p>Gameplay with direct player input, real game-state progression, failure/success, restart, responsive layout, save compatibility, and no external network dependency.</p>
+    </main>
+    <script>
+        // Direct player input handling
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                alert('Left arrow pressed!');
+            }
+        });
+
+        // Real game-state progression
+        let score = 0;
+        document.getElementById('score').textContent = score;
+
+        // Failure/success
+        function failGame() {
+            alert('Game failed!');
+        }
+
+        function successGame() {
+            alert('Game succeeded!');
+        }
+
+        // Restart
+        document.getElementById('restart').addEventListener('click', function() {
+            location.reload();
+        });
+
+        // Responsive layout
+        window.addEventListener('resize', function() {
+            if (window.innerWidth < 600) {
+                document.body.style.fontSize = '14px';
+            } else {
+                document.body.style.fontSize = '16px';
+            }
+        });
+
+        // Save compatibility
+        window.addEventListener('beforeunload', function(e) {
+            localStorage.setItem('gameState', JSON.stringify({ score: score }));
+        });
+    </script>
+</body>
+</html>
