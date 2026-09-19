@@ -290,8 +290,11 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     const seedClass=clean(seed?.productionClass).toUpperCase();
     const queueClass=clean(queue?.productionClass).toUpperCase();
     if(seedClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED)return {productionClass:PRODUCTION_CLASSES.RELEASE_CONFIRMED,source:'COMPANY_RUNTIME_RELEASE_SEED'};
-    if(seedClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&queueClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
-      return {productionClass:PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED,source:'COMPANY_RUNTIME_DEVELOPMENT_QUEUE'};
+    if(seedClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
+      return {
+        productionClass:PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED,
+        source:queueClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED?'COMPANY_RUNTIME_DEVELOPMENT_QUEUE':'COMPANY_RUNTIME_PROMOTED_SEED'
+      };
     }
     return null;
   };
