@@ -143,7 +143,9 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
     queueVibeWebImplementationReason:clean(item?.vibeWebImplementationReason),
     queueStrictImplementationHardFailures:(Array.isArray(item?.strictImplementationHardFailures)?item.strictImplementationHardFailures:[]).map(clean).filter(Boolean).slice(0,4),
     queueWebValidationLastAttemptAt:clean(item?.webValidationLastAttemptAt||item?.webFinalContentDepthLastAttemptAt),
-    saveNormalizationRequired:item?.saveNormalizationRequired===true
+    saveNormalizationRequired:item?.saveNormalizationRequired===true,
+    ownerPreservationPresentationUpgrade:item?.ownerPreservationPresentationUpgrade===true,
+    presentationFirstPass:clean(item?.presentationFirstPass)
   });
 }
 for(const game of Array.isArray(catalog.games)?catalog.games:[]){const id=clean(game.id);if(removed.has(id)||!lifecycleAllowsDevelopment(game))continue;const state=stateFromCatalog(game),robloxRoot=robloxRootFromCatalog(game);if(id&&robloxRoot&&['release-confirmed','development-confirmed'].includes(state)&&fs.existsSync(path.join(repoRoot,robloxRoot))&&!rows.some(r=>r.gameId===id&&r.engine==='roblox'))rows.push({gameId:id,name:clean(game.name),engine:'roblox',target:'roblox',projectPath:robloxRoot,existing:true,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null});const root=webRootFromCatalog(game),developmentWebEligible=state==='development-confirmed',publishedWebEligible=game.homepageWebPlayable===true;if(!id||!root||game.hasWebArchive!==true||(!developmentWebEligible&&!publishedWebEligible))continue;if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;const exists=fs.existsSync(path.join(repoRoot,root));rows.push({gameId:id,name:clean(game.name),engine:'web',target:'web',projectPath:root,lifecycleState:gameLifecycleState(game),existing:exists,releaseState:state,progress:0,source:'game-catalog',developmentBaseline:null,developmentValidation:latestDevelopmentValidationStatus(id,repoRoot)});}return rows;}
@@ -401,6 +403,7 @@ function findSafeTasks(project,repoRoot,queue){
   if(project.engine==='web'){
     const owner=findWebAssessmentTask(project,repoRoot,queue);
     if(owner)return[owner];
+    if(project.ownerPreservationPresentationUpgrade===true)return uniqueTaskCandidates([findWebPresentationQualityTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
     return uniqueTaskCandidates([findWebStrictImprovementTask(project,repoRoot,queue),findExistingWebDevelopmentContinuationTask(project,repoRoot,queue),findWebDiagnosticTask(project,repoRoot,queue),findWebPresentationQualityTask(project,repoRoot,queue),scanExplicitMarkerTask(project,repoRoot,queue)]);
   }
   return[];
