@@ -18,8 +18,8 @@ const hash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h
 
 export const MASTERY_DOMAINS=freeze([
   'CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE',
-  'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN',
-  'CHARACTER_ARC','DIALOGUE','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
+  'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE',
+  'STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
   'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER'
 ]);
 
@@ -38,6 +38,12 @@ const DOMAIN_PATTERNS=freeze({
   SECURITY:/security|malware|virus|attack|secret|token|credential|supply.?chain|prompt.?injection|exfiltrat|backdoor|privilege|tamper/i,
   PERFORMANCE:/performance|fps|frame|memory|cpu|jank|pool|latency/i,
   ASSET_PRODUCTION:/asset|sprite|svg|canvas|texture|animation|vfx|audio|model/i,
+  ASSET_ADAPTATION:/asset.?adapt|style.?lock|material|roughness|gloss|emission|outline|palette|texture.?rework|파츠|재질|색감|스타일.?락/i,
+  LIVING_MOTION:/living.?motion|idle.?breath|breath|locomotion.?blend|idle.?walk.?run|turn.?smooth|secondary.?motion|foot.?slid|후행.?움직임|숨쉬기|부드러운.?이동/i,
+  ANIMATION_FEEL:/animation.?feel|anticipation|hit.?stop|recoil|recovery|overshoot|settle|smear|squash|stretch|타격감|반동|복귀|예비.?동작/i,
+  VFX:/\bvfx\b|particle|trail|afterimage|hit.?flash|shockwave|impact.?wave|telegraph|glow|이펙트|잔상|파티클|충격파/i,
+  AUDIO_FEEL:/audio.?feel|adaptive.?music|music.?state|crossfade|beat.?aware|mute|volume|audio.?context|sound.?effect|bgm|음악|효과음|사운드/i,
+  CAMERA_LANGUAGE:/camera.?language|camera.?shake|screen.?shake|camera.?zoom|hero.?moment|camera.?follow|카메라|화면.?흔들/i,
   STORYTELLING:/story|storytelling|서사|스토리|세계관|plot|narrative|theme|reveal|foreshadow|복선|반전|payoff|결말/i,
   NARRATIVE_STRUCTURE:/narrative.?structure|plot.?structure|story.?structure|act.?structure|scene.?structure|사건.?인과|기승전결|도입|전개|클라이맥스|결말|pacing|tension|긴장/i,
   QUEST_DESIGN:/quest|퀘스트|objective.?chain|mission.?chain|prerequisite|의뢰|선행.?조건|완료.?조건|선택지|choice.?consequence/i,
@@ -51,7 +57,7 @@ const DOMAIN_PATTERNS=freeze({
   ROBLOX_MULTIPLAYER:/multiplayer|multi.?client|playeradded|players|matchmaking/i
 });
 
-const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','DEBUGGING','PERFORMANCE','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE']);
+const WEB_TRANSFERABLE=new Set(['CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE','DEBUGGING','PERFORMANCE','ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE']);
 const ROBLOX_NATIVE_ONLY=new Set(['ROBLOX_STUDIO','ROBLOX_DATASTORE','ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER']);
 const XP_SUCCESS=12;
 const XP_FAILURE=5;
@@ -855,7 +861,7 @@ export function candidateTournamentPolicy({task={},masteryInput={}}={}){
 
 export function buildBenchmarkLadder(masteryInput={}){
   const state=createMasteryState(masteryInput);
-  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE'],QUEST_DESIGN:['QUEST_DESIGN'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE']};
+  const mapping={CODING:['CORE_LOOP','STATE_MACHINE'],BUGFIX:['DEBUGGING'],WEB_GAMEPLAY:['WEB_RUNTIME','MOBILE_INPUT'],ROBLOX_NATIVE:['ROBLOX_STUDIO','ROBLOX_REPLICATION'],AI:['AI'],SAVE:['SAVE'],PERFORMANCE:['PERFORMANCE'],ASSET_PRODUCTION:['ASSET_PRODUCTION'],ASSET_ADAPTATION:['ASSET_ADAPTATION'],LIVING_MOTION:['LIVING_MOTION'],ANIMATION_FEEL:['ANIMATION_FEEL'],VFX:['VFX'],AUDIO_FEEL:['AUDIO_FEEL'],CAMERA_LANGUAGE:['CAMERA_LANGUAGE'],STORYTELLING:['STORYTELLING','NARRATIVE_STRUCTURE'],QUEST_DESIGN:['QUEST_DESIGN'],CHARACTER_ARC:['CHARACTER_ARC'],DIALOGUE:['DIALOGUE']};
   const cases=[];
   for(const [track,domains] of Object.entries(mapping)){
     const avg=domains.reduce((n,d)=>n+(state.domains[d]?.level||1),0)/domains.length;
@@ -882,6 +888,12 @@ export function enrichQueueForCandidateTournaments(queueInput={},masteryInput={}
 
 function idleDrillKindForDomain(domain=''){
   const d=upper(domain);
+  if(d==='ASSET_ADAPTATION')return'ASSET_ADAPTATION_DRILL';
+  if(d==='LIVING_MOTION')return'MOTION_CONTINUITY_DRILL';
+  if(d==='ANIMATION_FEEL')return'ANIMATION_FEEL_DRILL';
+  if(d==='VFX')return'VFX_READABILITY_DRILL';
+  if(d==='AUDIO_FEEL')return'AUDIO_FEEL_DRILL';
+  if(d==='CAMERA_LANGUAGE')return'CAMERA_LANGUAGE_DRILL';
   if(d==='STORYTELLING'||d==='NARRATIVE_STRUCTURE')return'NARRATIVE_STRUCTURE_DRILL';
   if(d==='QUEST_DESIGN')return'QUEST_CAUSALITY_DRILL';
   if(d==='CHARACTER_ARC')return'CHARACTER_ARC_DRILL';
@@ -890,6 +902,12 @@ function idleDrillKindForDomain(domain=''){
 }
 function practiceInstructionForDrill(drill={}){
   const kind=upper(drill.kind);
+  if(kind==='ASSET_ADAPTATION_DRILL')return'원본 에셋을 보존하면서 색감·재질·외곽선·비율·파츠·텍스처를 게임 Style Lock에 맞게 변형하는 방법과 라이선스/모바일 비용 검증을 분석한다.';
+  if(kind==='MOTION_CONTINUITY_DRILL')return'Idle 생동감, 속도 기반 이동 블렌딩, 가속·감속, 회전 후행, secondary motion, 발 미끄러짐 억제를 게임 수치 변경 없이 구현·검증하는 방법을 분석한다.';
+  if(kind==='ANIMATION_FEEL_DRILL')return'준비→가속→impact→표현용 hit-stop→반동→복귀 흐름과 authoritative hit event 동기화를 분석한다. 게임 판정이나 쿨다운을 표현 계층에서 바꾸지 않는다.';
+  if(kind==='VFX_READABILITY_DRILL')return'타격 피드백·trail·particle·telegraph를 모바일 가독성과 effect budget 안에서 구현하고 무제한 객체 생성을 막는 방법을 분석한다.';
+  if(kind==='AUDIO_FEEL_DRILL')return'상태형 음악 전환, crossfade, 첫 사용자 제스처 오디오 unlock, mute/volume, impact sync, resume 중복재생 방지를 분석한다.';
+  if(kind==='CAMERA_LANGUAGE_DRILL')return'일반/강공격/hero moment 카메라 반응을 구분하고 흔들림·줌·추적이 모바일 조작과 위험 정보를 가리지 않도록 검증하는 방법을 분석한다.';
   if(kind==='NARRATIVE_STRUCTURE_DRILL')return'원문 문장이나 특정 작가 표현을 복사하지 않는다. 세계 규칙, 인물 욕망/갈등, 사건 인과, 긴장 상승, 복선과 회수, 결말 보상을 구조 수준에서 분석하고 검증 방법을 제시한다.';
   if(kind==='QUEST_CAUSALITY_DRILL')return'퀘스트의 선행 조건 → 플레이어 행동 → 상태 변화 → 결과/보상 → 다음 상태를 연결하고 저장/재진입/중복 보상/소프트락 검증을 포함한다.';
   if(kind==='CHARACTER_ARC_DRILL')return'캐릭터의 욕망, 필요, 갈등, 선택, 결과, 관계 변화가 사건과 연결되는지 분석하고 지식 범위와 동기 일관성을 검증한다.';
