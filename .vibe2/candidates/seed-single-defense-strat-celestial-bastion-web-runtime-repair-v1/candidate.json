@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "for(let i=0;i<5;i++)$('#a'+i).onclick=()=>act(i);",
+      "replace": "async function act(i){if(S.ended)return;await ensureAudio();switch(C.mode){case'insect-survival':case'survival':return actSurvival(i);case'bug-defense':case'celestial-defense':return actDefense(i);case'chromatic':return actPuzzle(i);case'realm':return actRealm(i);case'crystal-idle':return actIdle(i);case'eldoria':return actStory(i)}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
