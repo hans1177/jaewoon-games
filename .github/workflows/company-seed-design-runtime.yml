@@ -41,7 +41,51 @@ env:
   COMPANY_VIBE_LOCAL_MODEL: 'qwen3:1.7b'
 
 jobs:
+  game-primary-gate:
+    runs-on: ubuntu-latest
+    outputs:
+      defer: ${{ steps.gate.outputs.defer }}
+      active_game_work: ${{ steps.gate.outputs.active_game_work }}
+    steps:
+      - name: Defer noncritical work while Vibe2 game primary is active
+        id: gate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          queue_api="repos/${GITHUB_REPOSITORY}/contents/.vibe2/queue.json?ref=vibe2-unreal-core"
+          if ! queue_response="$(gh api "$queue_api" 2>/dev/null)"; then
+            echo 'defer=true' >> "$GITHUB_OUTPUT"
+            echo 'active_game_work=unknown' >> "$GITHUB_OUTPUT"
+            echo 'GAME_PRIMARY_GATE=DEFER_QUEUE_UNAVAILABLE'
+            exit 0
+          fi
+          queue_b64="$(jq -r '.content // empty' <<<"$queue_response" | tr -d '\n')"
+          queue_json="$(printf '%s' "$queue_b64" | base64 -d 2>/dev/null || true)"
+          if [ -z "$queue_json" ] || ! jq -e . >/dev/null 2>&1 <<<"$queue_json"; then
+            echo 'defer=true' >> "$GITHUB_OUTPUT"
+            echo 'active_game_work=unknown' >> "$GITHUB_OUTPUT"
+            echo 'GAME_PRIMARY_GATE=DEFER_QUEUE_INVALID'
+            exit 0
+          fi
+          active_game_work="$(jq '[.tasks[]? | select(
+            ((((.status // "") | ascii_downcase) == "queued") or (((.status // "") | ascii_downcase) == "running"))
+            and (((.department // "") | ascii_downcase) == "development")
+            and (((.type // "") | ascii_downcase) == "implementation"))
+          ] | length' <<<"$queue_json")"
+          echo "active_game_work=$active_game_work" >> "$GITHUB_OUTPUT"
+          if [ "$active_game_work" -gt 0 ]; then
+            echo 'defer=true' >> "$GITHUB_OUTPUT"
+            echo "GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK:$active_game_work"
+          else
+            echo 'defer=false' >> "$GITHUB_OUTPUT"
+            echo 'GAME_PRIMARY_GATE=RUN'
+          fi
+
   resolve-seed-targets:
+    needs: game-primary-gate
+    if: needs.game-primary-gate.outputs.defer != 'true'
     runs-on: ubuntu-latest
     outputs:
       run: ${{ steps.targets.outputs.run }}
