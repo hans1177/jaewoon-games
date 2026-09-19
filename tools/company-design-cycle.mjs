@@ -1127,4 +1127,5 @@ console.log(`DESIGN_LEARNING_CONTEXT_CANDIDATES=${designLearningEvents.length}`)
 console.log(`DESIGN_ONLY_VIBE2_LEARNING_CONTEXT=${designLearningEvents.length>0?'YES':'NO'}`);
 console.log('DESIGN_LEARNING_POSITIVE_TRAINING_ELIGIBLE=NO_UNTIL_VALIDATED_RUNTIME');
 console.log('PAID_AI_ALLOWED=NO');
-console.log('AI_PROVIDER=GEMINI_ONLY');
+console.log(`AI_PROVIDER=${designCheckpoint.effectiveDesignerProvider||'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK'}`);
+console.log('DESIGN_GATE_PROVIDER=DETERMINISTIC_EVIDENCE_ENGINE');
