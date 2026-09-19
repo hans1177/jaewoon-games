@@ -1355,7 +1355,7 @@ aiOrganization:
     - balance
   departmentMultimodelStartsAt: DEVELOPMENT_CONFIRMED
   fiveDistinctLeadModelIdsRequiredPerCycle: true
-  designOnlyReviewMode: FIVE_DISTINCT_LEAD_PARALLEL_REVIEW
+  designOnlyReviewMode: DETERMINISTIC_EVIDENCE_NO_AI_VERDICT
   designOnlyModelsPerDepartment: 1
   minDistinctModelsPerDepartment: 1
   structurePerDepartment:
@@ -1366,11 +1366,11 @@ aiOrganization:
   leadModelAssignmentRemappable: true
   paidAiAllowed: false
   paidRunnerAllowed: false
-  providerMode: GEMINI_ONLY
+  providerMode: GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK
   providerSecret: GEMINI_API_KEY
   openAiProviderAllowed: false
-  ollamaProviderAllowed: false
-  localModelFallbackAllowed: false
+  ollamaProviderAllowed: true
+  localModelFallbackAllowed: true
   geminiModels:
     - gemini-3.8-flash
     - gemini-3.7-flash
@@ -1715,8 +1715,8 @@ flows:
       - GAME_DESIGNER_DRAFT
       - DETERMINISTIC_PRE_GATE
       - FAILED_AXIS_DESIGNER_REPAIR_MAX_2
-      - FIVE_DISTINCT_DEPARTMENT_LEAD_PARALLEL_REVIEW
-      - GAME_DESIGNER_REVISION_FROM_DIRECT_LEAD_FEEDBACK
+      - DETERMINISTIC_DEPARTMENT_EVIDENCE
+      - DETERMINISTIC_REVALIDATION
       - STRICT_DESIGN_REVIEW
       - ROBLOX_GENRE_PROFILE_ASSIGNMENT
       - DESIGN_BASELINE_GATE
@@ -1731,8 +1731,8 @@ flows:
       - MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED
       - APPROVED_SCOPE_INVENTORY_RECORDED
       - ROBLOX_GENRE_PROFILE_RECORDED
-      - FIVE_DISTINCT_LEAD_MODELS
-      - FIVE_DEPARTMENT_LEAD_REVIEWS_RECORDED
+      - DETERMINISTIC_DESIGN_PRE_GATE_PASS
+      - DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED
       - STRICT_DESIGN_SCORE_AT_LEAST_80
       - STRICT_DESIGN_HARD_FAILURES_EMPTY
     readyState: DESIGN_BASELINE_READY
