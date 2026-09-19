@@ -53,9 +53,28 @@ test('24H recovery verifies exact candidate SHA before marking and dispatching',
   assert.ok(start>0&&end>start);
   const section=workflow.slice(start,end);
   const shaCheck=section.indexOf('if [ "$remote_sha" != "$candidate_sha" ]; then');
-  const mark=section.indexOf('node tools/vibe2-queue-control.mjs await');
+  const mark=section.indexOf('node /tmp/vibe2-main/tools/vibe2-queue-control.mjs await');
   const dispatch=section.indexOf('vibe2-candidate-release.yml/dispatches');
   assert.ok(shaCheck>0&&shaCheck<mark&&mark<dispatch);
   assert.match(section,/release-dispatch-recovery/);
-  assert.doesNotMatch(section,/queue-control\.mjs pass/);
+  assert.doesNotMatch(section,/queue-control\\.mjs pass/);
+  assert.doesNotMatch(section,/node tools\\/vibe2-queue-control\\.mjs/);
+  assert.match(section,/node \/tmp\/vibe2-main\/tools\/vibe2-queue-control\\.mjs await/);
+});
+
+test('release result workflows mutate control state only through latest main queue tooling',()=>{
+  const files=[
+    '.github/workflows/vibe2-candidate-release.yml',
+    '.github/workflows/vibe2-unity-release-result.yml'
+  ];
+  for(const file of files){
+    const workflow=fs.readFileSync(file,'utf8');
+    assert.doesNotMatch(workflow,/node tools\\/vibe2-queue-control\\.mjs/);
+    assert.match(workflow,/main-contract\/tools\/vibe2-queue-control\\.mjs/);
+  }
+  for(const file of ['.github/workflows/vibe2-roblox-candidate-result.yml','.github/workflows/vibe2-unity-candidate-result.yml']){
+    const workflow=fs.readFileSync(file,'utf8');
+    assert.doesNotMatch(workflow,/node tools\\/vibe2-candidate-reconcile\\.mjs/);
+    assert.match(workflow,/vibe2-main-contract\/tools\/vibe2-candidate-reconcile\\.mjs/);
+  }
 });
