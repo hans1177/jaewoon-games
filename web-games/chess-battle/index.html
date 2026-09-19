@@ -1,0 +1,397 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Approved Web Bootstrap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            padding: 20px;
+        }
+        h1 {
+            margin-top: 0;
+        }
+        #game {
+            width: 300px;
+            height: 300px;
+            background-color: #fff;
+            border: 2px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <main id="game"></main>
+    <script>
+        // Simulated game logic
+        const game = document.getElementById('game');
+        game.innerHTML = 'Chess Battle Game';
+    </script>
+
+<script>
+    // Game state management
+    let gameState = {
+        player1: 'White',
+        player2: 'Black',
+        turn: 'Player1',
+        board: [
+            ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
+            ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
+            ['__', '__', '__', '__', '__', '__', '__'],
+            ['__', '__', '__', '__', '__', '__', '__'],
+            ['__', '__', '__', '__', '__', '__', '__'],
+            ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
+            ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP']
+        ],
+        currentPlayer: 0,
+        gameOver: false
+    };
+
+    // Game logic functions
+    function updateBoard() {
+        const board = gameState.board;
+        const currentPlayer = gameState.currentPlayer;
+        const currentPlayerColor = gameState.player1 === 'White' ? 'White' : 'Black';
+
+        // Update board display
+        const boardElement = document.getElementById('game');
+        boardElement.innerHTML = '';
+
+        for (let row = 0; row < 7; row++) {
+            const rowElement = document.createElement('div');
+            rowElement.style.display = 'flex';
+            rowElement.style.flexWrap = 'wrap';
+            rowElement.style.gap = '10px';
+            rowElement.style.backgroundColor = row % 2 === 0 ? '#e0e0e0' : '#f0f0f0';
+
+            for (let col = 0; col < 7; col++) {
+                const piece = board[row][col];
+                const pieceElement = document.createElement('div');
+                pieceElement.style.width = '60px';
+                pieceElement.style.height = '60px';
+                pieceElement.style.display = 'flex';
+                pieceElement.style.justifyContent = 'center';
+                pieceElement.style.alignItems = 'center';
+                pieceElement.style.border = '2px solid #000';
+                pieceElement.style.backgroundColor = piece === 'WP' ? 'white' : 'black';
+                pieceElement.style.color = piece === 'WP' ? 'black' : 'white';
+                pieceElement.style.fontSize = '20px';
+                pieceElement.style.textAlign = 'center';
+                pieceElement.style.textTransform = 'uppercase';
+
+                if (piece === '__') {
+                    pieceElement.style.backgroundColor = '#ccc';
+                }
+
+                pieceElement.addEventListener('click', () => {
+                    if (gameState.gameOver) return;
+                    if (piece === '__') {
+                        // Simulate a move
+                        const newBoard = JSON.parse(JSON.stringify(gameState.board));
+                        newBoard[row][col] = currentPlayerColor;
+                        gameState.board = newBoard;
+                        gameState.currentPlayer = 1 - gameState.currentPlayer;
+                        gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
+                        updateBoard();
+                    }
+                });
+
+                rowElement.appendChild(pieceElement);
+            }
+
+            boardElement.appendChild(rowElement);
+        }
+    }
+
+    // Handle user input
+    document.addEventListener('click', (event) => {
+        if (event.target && event.target.classList.contains('piece')) {
+            const piece = event.target;
+            const row = Array.from(piece.parentElement).indexOf(piece);
+            const col = Array.from(piece.parentElement.children).indexOf(piece);
+
+            if (gameState.gameOver) return;
+
+            // Check if the move is valid
+            if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {
+                if (row === 0 || row === 6 || col === 0 || col === 6) {
+                    // Invalid move, do nothing
+                    return;
+                }
+            } else if (gameState.currentPlayer === 1 && gameState.player2 === 'Black') {
+                if (row === 0 || row === 6 || col === 0 || col === 6) {
+                    // Invalid move, do nothing
+                    return;
+                }
+            }
+
+            // Simulate a valid move
+            const newBoard = JSON.parse(JSON.stringify(gameState.board));
+            newBoard[row][col] = gameState.currentPlayer === 0 ? 'White' : 'Black';
+            gameState.board = newBoard;
+            gameState.currentPlayer = 1 - gameState.currentPlayer;
+            gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
+            updateBoard();
+        }
+    });
+
+    // Game progression
+    function checkWinCondition() {
+        const board = gameState.board;
+        const currentPlayer = gameState.currentPlayer;
+        const currentPlayerColor = currentPlayer === 0 ? 'White' : 'Black';
+
+        // Check if player1 has won
+        if (board[0][0] === 'White' && board[0][1] === 'White' && board[0][2] === 'White' &&
+            board[0][3] === 'White' && board[0][4] === 'White' && board[0][5] === 'White' &&
+            board[0][6] === 'White') {
+            gameState.gameOver = true;
+            gameState.result = 'Player1 wins!';
+            return true;
+        }
+
+        // Check if player2 has won
+        if (board[6][0] === 'Black' && board[6][1] === 'Black' && board[6][2] === 'Black' &&
+            board[6][3] === 'Black' && board[6][4] === 'Black' && board[6][5] === 'Black' &&
+            board[6][6] === 'Black') {
+            gameState.gameOver = true;
+            gameState.result = 'Player2 wins!';
+            return true;
+        }
+
+        return false;
+    }
+
+    // Game loop
+    function gameLoop() {
+        if (gameState.gameOver) {
+            alert(gameState.result);
+            return;
+        }
+
+        if (checkWinCondition()) {
+            return;
+        }
+
+        // Check for draw
+        const board = gameState.board;
+        let draw = true;
+
+        for (let row = 0; row < 7; row++) {
+            for (let col = 0; col < 7; col++) {
+                if (board[row][col] === '__') {
+                    draw = false;
+                    break;
+                }
+            }
+            if (!draw) break;
+        }
+
+        if (draw) {
+            gameState.gameOver = true;
+            gameState.result = 'It\'s a draw!';
+            return;
+        }
+
+        // Switch players
+        gameState.currentPlayer = 1 - gameState.currentPlayer;
+        gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
+        updateBoard();
+    }
+
+    // Start the game
+    updateBoard();
+    setInterval(gameLoop, 1000);
+</script>
+
+<script>
+    // Progression system
+    let progression = 0;
+    let resource = 0;
+
+    // Game state management
+    let gameState = {
+        player1: 'White',
+        player2: 'Black',
+        turn: 'Player1',
+        board: [
+            ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
+            ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP'],
+            ['__', '__', '__', '__', '__', '__', '__'],
+            ['__', '__', '__', '__', '__', '__', '__'],
+            ['__', '__', '__', '__', '__', '__', '__'],
+            ['WP', 'WP', 'WP', 'WP', 'WP', 'WP', 'WP'],
+            ['BP', 'BP', 'BP', 'BP', 'BP', 'BP', 'BP']
+        ],
+        currentPlayer: 0,
+        gameOver: false,
+        progression: 0,
+        resource: 0
+    };
+
+    // Game logic functions
+    function updateBoard() {
+        const board = gameState.board;
+        const currentPlayer = gameState.currentPlayer;
+        const currentPlayerColor = gameState.player1 === 'White' ? 'White' : 'Black';
+
+        // Update board display
+        const boardElement = document.getElementById('game');
+        boardElement.innerHTML = '';
+
+        for (let row = 0; row < 7; row++) {
+            const rowElement = document.createElement('div');
+            rowElement.style.display = 'flex';
+            rowElement.style.flexWrap = 'wrap';
+            rowElement.style.gap = '10px';
+            rowElement.style.backgroundColor = row % 2 === 0 ? '#e0e0e0' : '#f0f0f0';
+
+            for (let col = 0; col < 7; col++) {
+                const piece = board[row][col];
+                const pieceElement = document.createElement('div');
+                pieceElement.style.width = '60px';
+                pieceElement.style.height = '60px';
+                pieceElement.style.display = 'flex';
+                pieceElement.style.justifyContent = 'center';
+                pieceElement.style.alignItems = 'center';
+                pieceElement.style.border = '2px solid #000';
+                pieceElement.style.backgroundColor = piece === 'WP' ? 'white' : 'black';
+                pieceElement.style.color = piece === 'WP' ? 'black' : 'white';
+                pieceElement.style.fontSize = '20px';
+                pieceElement.style.textAlign = 'center';
+                pieceElement.style.textTransform = 'uppercase';
+
+                if (piece === '__') {
+                    pieceElement.style.backgroundColor = '#ccc';
+                }
+
+                pieceElement.addEventListener('click', () => {
+                    if (gameState.gameOver) return;
+                    if (piece === '__') {
+                        // Simulate a move
+                        const newBoard = JSON.parse(JSON.stringify(gameState.board));
+                        newBoard[row][col] = currentPlayerColor;
+                        gameState.board = newBoard;
+                        gameState.currentPlayer = 1 - gameState.currentPlayer;
+                        gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
+                        updateBoard();
+                    }
+                });
+
+                rowElement.appendChild(pieceElement);
+            }
+
+            boardElement.appendChild(rowElement);
+        }
+    }
+
+    // Handle user input
+    document.addEventListener('click', (event) => {
+        if (event.target && event.target.classList.contains('piece')) {
+            const piece = event.target;
+            const row = Array.from(piece.parentElement).indexOf(piece);
+            const col = Array.from(piece.parentElement.children).indexOf(piece);
+
+            if (gameState.gameOver) return;
+
+            // Check if the move is valid
+            if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {
+                if (row === 0 || row === 6 || col === 0 || col === 6) {
+                    // Invalid move, do nothing
+                    return;
+                }
+            } else if (gameState.currentPlayer === 1 && gameState.player2 === 'Black') {
+                if (row === 0 || row === 6 || col === 0 || col === 6) {
+                    // Invalid move, do nothing
+                    return;
+                }
+            }
+
+            // Simulate a valid move
+            const newBoard = JSON.parse(JSON.stringify(gameState.board));
+            newBoard[row][col] = gameState.currentPlayer === 0 ? 'White' : 'Black';
+            gameState.board = newBoard;
+            gameState.currentPlayer = 1 - gameState.currentPlayer;
+            gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
+            updateBoard();
+        }
+    });
+
+    // Progression system
+    function progress() {
+        if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {
+            progression += 1;
+            resource += 5;
+        } else if (gameState.currentPlayer === 1 && gameState.player2 === 'Black') {
+            progression += 1;
+            resource += 5;
+        }
+
+        if (progression >= 10) {
+            gameState.gameOver = true;
+            gameState.result = 'Progression complete! You have gained 50 resources.';
+        }
+    }
+
+    // Resource system
+    function getResource() {
+        return resource;
+    }
+
+    // Game loop
+    function gameLoop() {
+        if (gameState.gameOver) {
+            alert(gameState.result);
+            return;
+        }
+
+        if (checkWinCondition()) {
+            return;
+        }
+
+        // Check for draw
+        const board = gameState.board;
+        let draw = true;
+
+        for (let row = 0; row < 7; row++) {
+            for (let col = 0; col < 7; col++) {
+                if (board[row][col] === '__') {
+                    draw = false;
+                    break;
+                }
+            }
+            if (!draw) break;
+        }
+
+        if (draw) {
+            gameState.gameOver = true;
+            gameState.result = 'It\'s a draw!';
+            return;
+        }
+
+        // Switch players
+        gameState.currentPlayer = 1 - gameState.currentPlayer;
+        gameState.turn = gameState.currentPlayer === 0 ? 'Player2' : 'Player1';
+        updateBoard();
+    }
+
+    // Start the game
+    updateBoard();
+    setInterval(gameLoop, 1000);
+</script>
+</body>
+</html>
