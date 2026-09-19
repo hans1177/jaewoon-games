@@ -30,6 +30,13 @@ jobs:
           node --check tools/company-development-validation-cycle.mjs
           node --check tools/company-release-production-cycle.mjs
           node --check tools/company-release-stale-artifact-guard.mjs
+          node --check tools/company-development-web-gameplay-validation.mjs
+          node --check tools/vibe2-auto-planner.mjs
+          node --check tools/vibe2-continuous-runner.mjs
+          node --check tools/vibe2-source-worker.mjs
+          node --check tools/vibe2-incremental-qa.mjs
+          node --check tools/vibe2-learning-motor.mjs
+          node --check tools/vibe2-practice-distillation.mjs
           node --check tools/company-baseline-gate.mjs
           node --check tools/artbook-production-pipeline.mjs
           node --check qa/company-release-production-cycle.test.mjs
@@ -196,6 +203,17 @@ jobs:
           set -euo pipefail
           node --test qa/company-recovery-learning.test.mjs qa/vibe2-experience-control.test.mjs
           node --test qa/company-design-checkpoint-recovery.test.mjs qa/vibe2-release-dispatch-recovery.test.mjs
+
+      - name: Validate Vibe presentation pipeline and runtime contract
+        run: |
+          set -euo pipefail
+          node --test qa/company-development-web-runtime.test.mjs
+          node --test qa/vibe2-auto-planner.test.mjs
+          node --test qa/vibe2-source-worker.test.mjs
+          node --test qa/vibe2-incremental-qa.test.mjs
+          node --test qa/vibe2-learning-motor.test.mjs
+          node --test qa/vibe2-practice-distillation.test.mjs
+          echo 'VIBE_PRESENTATION_PIPELINE_QA=PASS'
 
       - name: Validate experience quality-bar integration
         run: |
