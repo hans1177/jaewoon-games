@@ -319,9 +319,14 @@ function releaseUnityFocusBusy(queue){return activeTasks(queue).some(item=>item.
 
 export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={},recombinationMemory={},historicalRegistry={}}={}){
   let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog,historicalRegistry),maxConcurrentTasks:parallelLimit(maxConcurrentTasks)});
+  const catalogGames=catalogById(catalog);
   const exactWebRepairGameIds=new Set((Array.isArray(developmentQueue?.items)?developmentQueue.items:[])
-    .filter(item=>clean(item?.canonicalState).toUpperCase()==='WEB_VIBE_REPAIR_REQUIRED'||clean(item?.currentStep).toUpperCase()==='VIBE_WEB_REPAIR')
-    .map(item=>clean(item?.gameId)).filter(Boolean));
+    .filter(item=>{
+      const gameId=clean(item?.gameId),game=catalogGames.get(gameId);
+      const exactState=clean(item?.canonicalState).toUpperCase()==='WEB_VIBE_REPAIR_REQUIRED'||clean(item?.currentStep).toUpperCase()==='VIBE_WEB_REPAIR';
+      return Boolean(gameId&&game&&exactState&&clean(item?.status).toUpperCase()==='ACTIVE'&&stateFromCatalog(game)==='development-confirmed'&&lifecycleAllowsDevelopment(game));
+    })
+    .map(item=>clean(item?.gameId)));
   if(exactWebRepairGameIds.size){
     const tasks=queue.tasks.map(item=>{
       const gameId=clean(item?.gameId);
@@ -331,8 +336,10 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       const sourceMissing=!fs.existsSync(sourceFile(repoRoot,indexPath));
       const exactTaskId=sourceMissing?`${gameId}-web-base-implementation-v1`:`${gameId}-web-runtime-repair-v1`;
       if(clean(item?.id)===exactTaskId){
-        if(sourceMissing&&status==='cancelled'&&clean(item?.blocker)==='superseded-by:VIBE_WEB_REPAIR'){
-          return{...item,status:'queued',retries:0,blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION',evidence:[...new Set([...(item.evidence||[]),'restored-exact-stage:WEB_BASE_IMPLEMENTATION','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+        const blocker=clean(item?.blocker);
+        const staleExactBaseCancellation=blocker==='superseded-by:VIBE_WEB_REPAIR'||/^production-authority-inactive:/.test(blocker);
+        if(sourceMissing&&status==='cancelled'&&staleExactBaseCancellation){
+          return{...item,status:'queued',retries:0,blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION',evidence:[...new Set([...(item.evidence||[]),'restored-exact-stage:WEB_BASE_IMPLEMENTATION',`restored-from:${blocker}`,'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
         }
         return item;
       }
