@@ -90,7 +90,8 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
   assert.equal(workflow.includes('max-parallel: 30'),false);
   assert(workflow.includes("VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'"));
   assert(workflow.includes("VIBE2_OWNER_MINIMUM_WAVE: '20'"));
-  assert.equal((workflow.match(/--min="\$VIBE2_OWNER_MINIMUM_WAVE"/g)||[]).length,2);
+  assert(workflow.includes("if [ \"$VIBE2_EXECUTION_LANE\" = 'game-primary' ]; then lane_min=\"$VIBE2_OWNER_MINIMUM_WAVE\"; fi"));
+  assert.equal((workflow.match(/--min="\$lane_min"/g)||[]).length,2);
   assert(workflow.includes('matrix: ${{ fromJSON(needs.reserve.outputs.worker_matrix) }}'));
   assert(workflow.includes('group: vibe2-control-state-vibe2-unreal-core'));
   assert(workflow.includes('VIBE2_HIERARCHICAL_FAN_OUT'));
@@ -181,7 +182,7 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert.equal(workflow.includes('find "$CANDIDATE_DIR/.vibe2/candidates" -mindepth 2 -maxdepth 2 -name manifest.json -print -quit'),false);
   assert(workflow.includes('incremental-qa-hash:'));
   assert(workflow.includes('Merge outcomes run regression and package review'));
-  assert(workflow.includes('Candidate regression runs once at fan-in against the exact reserved main contract.'));
+  assert(workflow.includes('Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.'));
   assert(workflow.includes('node --test --test-concurrency=4'));
   assert.equal(workflow.includes('qa/vibe2-controller-contract.test.mjs'),false);
   assert(coreQaWorkflow.includes('qa/vibe2-controller-contract.test.mjs'));
@@ -258,13 +259,13 @@ test('workers complete the current wave before one fan-in refill dispatch',()=>{
 test('24H push and safety-net cannot overlap an active worker wave',()=>{
   assert(safetyNetWorkflow.includes('wave_ready: ${{ steps.queue_state.outputs.wave_ready }}'));
   assert(safetyNetWorkflow.includes('active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}'));
-  assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_WORKER_RESERVATIONS='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_GAME_WORKER_RESERVATIONS='));
   assert(safetyNetWorkflow.includes('VIBE2_24H_WAVE_READY='));
   assert(safetyNetWorkflow.includes("needs.plan.outputs.continue_required == 'YES' && needs.plan.outputs.wave_ready == 'YES'"));
   assert(safetyNetWorkflow.includes("needs.continuous.result == 'success'"));
-  assert(workflow.includes('VIBE2_ACTIVE_WORKER_RESERVATIONS_BEFORE_RESERVE='));
+  assert(workflow.includes('VIBE2_ACTIVE_LANE_RESERVATIONS_BEFORE_RESERVE='));
   assert(workflow.includes('VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'));
-  assert(workflow.includes("guard:'ACTIVE_WORKER_RESERVATION_PRESENT'"));
+  assert(workflow.includes("guard:'ACTIVE_LANE_RESERVATION_PRESENT'"));
 });
 
 test('24H cycle serialization does not reuse the control-state lock',()=>{
@@ -273,7 +274,7 @@ test('24H cycle serialization does not reuse the control-state lock',()=>{
   const gameStudyStart=safetyNetWorkflow.indexOf('  game_study:');
   const refillStart=safetyNetWorkflow.indexOf('  refill:');
   assert(gameStudyStart>=0 && refillStart>gameStudyStart);
-  assert(safetyNetWorkflow.slice(gameStudyStart,refillStart).includes('needs: [plan, continuous]'));
+  assert(safetyNetWorkflow.slice(gameStudyStart,refillStart).includes('needs: [plan, continuous, learning_idle]'));
 });
 
 test('continuous core and 24H runner isolate game-primary and learning-idle execution lanes',()=>{
