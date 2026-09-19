@@ -118,10 +118,14 @@ test('controller pins each isolated candidate to the reserve-time main contract 
   assert(!workflow.includes('vibe2-queue-control.mjs pass'));
 });
 
-test('one Vibe2 wave uses the same reserved main contract for exploration worker and fan-in',()=>{
+test('one Vibe2 wave uses the same reserved main contract without a global exploration barrier',()=>{
   assert(workflow.includes('Checkout pinned main contract'));
   assert(workflow.includes('--project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json"'));
-  assert(workflow.includes('Explore pinned main contract read-only'));
+  assert(workflow.includes('Build task-local exploration handoff'));
+  assert(workflow.includes('VIBE2_TASK_LOCAL_EXPLORATION=PASS'));
+  assert(workflow.includes('needs: [reserve, model_cache]'));
+  assert.equal(workflow.includes('needs: [reserve, model_cache, exploration]'),false);
+  assert.equal(workflow.includes('\n  exploration:\n'),false);
   assert(workflow.includes('Generate isolated candidate from pinned main contract'));
   assert(workflow.includes('node "$contract_root/tools/vibe2-queue-control.mjs" fan-in'));
   assert(workflow.includes('(cd "$contract_root" && node --test --test-concurrency=4'));
