@@ -430,6 +430,7 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.timeoutMs,150000);
   assert.equal(result.generation.maxPredict,768);
+  assert.equal(result.generation.temperature,0.22);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -527,6 +528,7 @@ test('undersized full web seed accumulates additive model expansions until valid
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.fullWebExpansionStages,2);
   assert.equal(result.generation.mode,'FULL_WEB');
+  assert.equal(result.generation.temperature,0.22);
   const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-expansion-accumulate/files/index.html'),'utf8');
   assert.ok(Buffer.byteLength(output,'utf8')>=12000);
   assert.match(output,/data-gameplay-system="combat"/);
