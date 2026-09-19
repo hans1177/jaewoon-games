@@ -402,6 +402,21 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('version:8'));
 });
 
+test('worker immutable result preserves causal replay status without treating plan-only as executed',()=>{
+  const start=workflow.indexOf('- name: Run impact-first incremental QA role');
+  const resultStart=workflow.indexOf('- name: Build immutable worker result');
+  const resultEnd=workflow.indexOf('- name: Upload worker result for fan-in');
+  assert(start>=0&&resultStart>start&&resultEnd>resultStart);
+  const qaStep=workflow.slice(start,resultStart);
+  const resultStep=workflow.slice(resultStart,resultEnd);
+  assert(qaStep.includes('VIBE2_CAUSAL_REPLAY_STATUS='));
+  assert(qaStep.includes('VIBE2_CAUSAL_REPLAY_EXECUTED='));
+  assert(qaStep.includes('causal_replay_status=$replay_status'));
+  assert(qaStep.includes('causal_replay_executed=$replay_executed'));
+  assert(resultStep.includes('causal-replay-status:${clean(process.env.IQA_CAUSAL_REPLAY_STATUS)}'));
+  assert(resultStep.includes('causal-replay-executed:${clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED)}'));
+  assert(resultStep.includes("causalReplayExecuted:clean(process.env.IQA_CAUSAL_REPLAY_EXECUTED).toUpperCase()==='YES'"));
+});
 test('worker result keeps throughput and actual workload telemetry inputs in the immutable result step',()=>{
   const start=workflow.indexOf('- name: Build immutable worker result');
   const end=workflow.indexOf('- name: Upload worker result for fan-in');
