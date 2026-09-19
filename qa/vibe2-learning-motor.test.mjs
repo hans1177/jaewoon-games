@@ -277,9 +277,13 @@ test('repeated verified failure escalates tournament and idle drill without bypa
   assert.equal(idle.drills[0].countsAsProductionPass,false);
 });
 
-test('benchmark ladder measures eight tracks and never counts directly as training sample',()=>{
+test('benchmark ladder includes narrative tracks and never counts directly as training sample',()=>{
   const ladder=buildBenchmarkLadder({});
-  assert.equal(ladder.cases.length,8);
+  assert.equal(ladder.cases.length,12);
+  assert.ok(ladder.cases.some(x=>x.track==='STORYTELLING'));
+  assert.ok(ladder.cases.some(x=>x.track==='QUEST_DESIGN'));
+  assert.ok(ladder.cases.some(x=>x.track==='CHARACTER_ARC'));
+  assert.ok(ladder.cases.some(x=>x.track==='DIALOGUE'));
   assert.ok(ladder.cases.every(x=>x.countsAsTrainingSample===false));
 });
 
@@ -592,4 +596,44 @@ test('authorized external generalized patterns remain retrieval advisory without
   });
   assert.equal(ctx.codePatterns.length,1);
   assert.equal(ctx.codePatterns[0].id,'external-save');
+});
+
+
+test('verified narrative experience raises narrative mastery domains',()=>{
+  const learned=applyVerifiedExperienceToMastery({}, {records:[{
+    id:'story-exp-1',gameId:'magic-forest',engine:'web',verified:true,reusable:true,outcome:'PASS',
+    goal:'스토리 퀘스트와 캐릭터 아크 대화를 개선한다',
+    change:'narrative structure foreshadow payoff quest prerequisite character motivation dialogue subtext',
+    reusablePatterns:['storytelling narrative structure quest design character arc dialogue']
+  }]});
+  assert.equal(learned.added,1);
+  for(const domain of ['STORYTELLING','NARRATIVE_STRUCTURE','QUEST_DESIGN','CHARACTER_ARC','DIALOGUE']){
+    assert.ok(learned.state.domains[domain].xp>0,domain);
+  }
+});
+
+test('narrative mastery gaps create dedicated idle drills',()=>{
+  const idle=buildIdlePracticeQueue({});
+  const byDomain=new Map(idle.drills.filter(row=>Array.isArray(row.domains)&&row.domains.length===1).map(row=>[row.domains[0],row]));
+  assert.equal(byDomain.get('STORYTELLING')?.kind,'NARRATIVE_STRUCTURE_DRILL');
+  assert.equal(byDomain.get('NARRATIVE_STRUCTURE')?.kind,'NARRATIVE_STRUCTURE_DRILL');
+  assert.equal(byDomain.get('QUEST_DESIGN')?.kind,'QUEST_CAUSALITY_DRILL');
+  assert.equal(byDomain.get('CHARACTER_ARC')?.kind,'CHARACTER_ARC_DRILL');
+  assert.equal(byDomain.get('DIALOGUE')?.kind,'DIALOGUE_SCENE_DRILL');
+  const queued=injectIdlePracticeTask({tasks:[]},{drills:[byDomain.get('QUEST_DESIGN')]});
+  assert.equal(queued.added,true);
+  assert.match(queued.task.goal,/선행 조건/);
+  assert.ok(queued.task.evidence.includes('practice-domain:QUEST_DESIGN'));
+});
+
+test('narrative policy forbids raw unlicensed novel ingestion and direct training credit',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/vibe2-learning-motor.json',import.meta.url),'utf8'));
+  assert.equal(policy.narrativeLearning?.enabled,true);
+  assert.equal(policy.narrativeLearning?.existingLearningMotorOnly,true);
+  assert.equal(policy.narrativeLearning?.separateTrainerForbidden,true);
+  assert.equal(policy.narrativeLearning?.practiceDistillation?.rawCandidateTextStored,false);
+  assert.equal(policy.narrativeLearning?.practiceDistillation?.directMasteryCredit,false);
+  assert.equal(policy.narrativeLearning?.practiceDistillation?.directCanonicalTrainingSample,false);
+  assert.equal(policy.narrativeLearning?.sourcePolicy?.unlicensedCopyrightedFullTextPersistentIngestionForbidden,true);
+  assert.equal(policy.narrativeLearning?.sourcePolicy?.rawPassageReuseForbidden,true);
 });
