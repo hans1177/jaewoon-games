@@ -1,0 +1,14 @@
+{
+  "summary": "Bug defense implementation completed with protected state preservation",
+  "expectedEffect": "Index.html updated with protected state preservation and bug defense implementation",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const state={...cfg.initial,turn:0,level:1,enemyHp:100,position:0,cooldown:0,combo:0,energy:100,objective:0};",
+      "replace": "const state={...cfg.initial,turn:0,level:1,enemyHp:100,position:0,cooldown:0,combo:0,energy:100,objective:0,scope:[]};"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
