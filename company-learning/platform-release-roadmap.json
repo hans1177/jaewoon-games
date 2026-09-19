@@ -1,5 +1,5 @@
 {
-  "version": 25,
+  "version": 26,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -475,7 +475,11 @@
       "postReleaseWorker": ".github/workflows/vibe2-continuous-core.yml",
       "postReleaseQueue": ".vibe2/queue.json",
       "companyRuntimeQueue": "development-queue.json",
-      "centralPolicyFile": "company-learning/platform-release-roadmap.json"
+      "centralPolicyFile": "company-learning/platform-release-roadmap.json",
+      "homepageRuntimeBranch": "company-runtime",
+      "homepageManager": ".github/workflows/homepage-manager.yml",
+      "saveVersioningModule": "assets/save-versioning.js",
+      "saveRestoreEvidence": "tools/company-web-save-restore-evidence.mjs"
     },
     "modelQuotaContinuity": {
       "enabled": true,
@@ -1379,6 +1383,54 @@
         "DEEP_CAUSAL_DIAGNOSIS",
         "MODULE_REWORK_WHEN_EVIDENCE_SUPPORTS"
       ]
+    },
+    "saveNormalization": {
+      "version": 1,
+      "authority": "MACHINE_EXECUTION_CONTRACT",
+      "humanDocumentRequired": false,
+      "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+      "objective": "PRESERVE_SAVE_MEANING_ACROSS_WEB_NATIVE_REBUILD_AND_RELEASE",
+      "canonicalWebModule": "assets/save-versioning.js",
+      "webRestoreEvidenceEvaluator": "tools/company-web-save-restore-evidence.mjs",
+      "webRuntimeValidator": "tools/company-development-web-gameplay-validation.mjs",
+      "requiredAt": [
+        "WEB_RUNTIME_VALIDATION",
+        "WEB_DEVELOPMENT_BASELINE_READY",
+        "TARGET_PLATFORM_SOURCE_BIND",
+        "RELEASE_PROMOTION"
+      ],
+      "rules": {
+        "preserveExistingCompatibleSaveMeaning": true,
+        "destructiveResetWithoutExplicitOwnerDirectiveForbidden": true,
+        "schemaVersionRequiredForVersionedSavePayload": true,
+        "schemaIncreaseRequiresExplicitMigrationChain": true,
+        "missingMigrationIsGateFailure": true,
+        "newerUnsupportedSaveVersionIsGateFailure": true,
+        "saveGameIdMismatchIsGateFailure": true,
+        "reloadRestoreEvidenceRequiredWhenSaveContractDetected": true,
+        "saveBytesAndCriticalGameplayStateMustRemainStableAcrossReload": true,
+        "webToNativeHandoffCarriesSaveMeaning": true,
+        "nativePlatformMayAdaptStorageMechanismButNotSilentlyChangeSaveMeaning": true,
+        "rebuildDoesNotAuthorizeSaveDeletion": true
+      },
+      "queueContract": {
+        "requiredFields": [
+          "saveNormalizationRequired",
+          "saveMeaningPreservationRequired",
+          "saveVersioningContract",
+          "saveRestoreEvidenceContract"
+        ],
+        "saveNormalizationRequired": true,
+        "saveMeaningPreservationRequired": true,
+        "saveVersioningContract": "assets/save-versioning.js",
+        "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
+      },
+      "evidence": {
+        "webEvidencePath": "runtimeValidationEvidence.saveRestore",
+        "passRule": "required!=true OR pass=true",
+        "promotionRevalidationMustRepeatSaveRestoreCheck": true,
+        "nativeEvidenceCannotBeReplacedByWebSaveEvidence": true
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
@@ -1611,7 +1663,7 @@
       }
     }
   },
-  "updatedAt": "2026-09-19",
+  "updatedAt": "2026-09-19T12:51:30+09:00",
   "priorityTiers": [
     {
       "tier": 1,
@@ -1643,5 +1695,59 @@
     "automaticMaintenanceAllowed": false,
     "sourceDeletionRequired": true,
     "reason": "INACCESSIBLE_HISTORICALLY_DEPLOYED_GAMES_REMOVED_BY_OWNER_2026-09-19"
+  },
+  "serverHomepageIntegration": {
+    "version": 1,
+    "authority": "MACHINE_EXECUTION_CONTRACT",
+    "humanDocumentRequired": false,
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "contractRole": "EXECUTABLE_SERVER_HOMEPAGE_BINDING",
+    "serverRuntimeBranch": "company-runtime",
+    "publicSourceBranch": "main",
+    "runtimeSnapshot": {
+      "requiredInputs": [
+        "game-catalog.json",
+        "company-status.json"
+      ],
+      "producerWorkflows": [
+        "Company Status Sync",
+        "Company DEVELOPMENT_CONFIRMED Runtime"
+      ],
+      "consumerWorkflow": ".github/workflows/homepage-manager.yml",
+      "successfulRuntimeTriggerMustReadCompanyRuntime": true,
+      "staleMainFallbackAfterSuccessfulRuntimeTriggerForbidden": true
+    },
+    "homepage": {
+      "manager": "tools/homepage-manager.mjs",
+      "workflow": ".github/workflows/homepage-manager.yml",
+      "renderer": "assets/homepage-enhancements.js",
+      "canonicalCatalog": "game-catalog.json",
+      "canonicalStatus": "company-status.json",
+      "publicationCandidatePaths": [
+        "company-status.json",
+        "game-catalog.json",
+        "test-game-candidates.json",
+        "game-artbooks.json",
+        "web-games",
+        "artbook-submissions"
+      ],
+      "selfQaRequired": true,
+      "directorSupervisionRequired": true,
+      "exactCandidatePatchBindingRequired": true,
+      "directUnsupervisedPublicWriteForbidden": true
+    },
+    "eventChain": [
+      "COMPANY_RUNTIME_STATE_CHANGE",
+      "HOMEPAGE_MANAGER_RUNTIME_SNAPSHOT_BIND",
+      "HOMEPAGE_SELF_QA",
+      "DIRECTOR_SINGLE_POST_WORK_SUPERVISION",
+      "MAIN_PUBLICATION_CANDIDATE_APPLY",
+      "HOSTING_DEPLOY_FROM_MAIN"
+    ],
+    "catalogNormalizationBinding": "catalogNormalization",
+    "developmentQueueBinding": "developmentLifecycleMachine.executionBindings.companyRuntimeQueue",
+    "publicHomepageMustReflectVerifiedRuntimeState": true,
+    "developmentOrDesignStateMustNotBeMisrepresentedAsRelease": true,
+    "newShadowHomepagePipelineForbidden": true
   }
 }
