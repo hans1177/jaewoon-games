@@ -450,6 +450,34 @@ test('second no-op receives one short focused third retry', async () => {
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
+test('semantic diff violation retries inside the same worker and succeeds with a narrowed responsible patch',async()=>{
+  const cwd=tempRoot();
+  const bad=path.join(cwd,'semantic-bad.json');
+  const good=path.join(cwd,'semantic-good.json');
+  const source='<!doctype html><html><body><script>\n'+
+    'let pointerState=null, placedEntities=[], gold=100;\n'+
+    'function placeTower(slot){ placedEntities.push(slot); return true; }\n'+
+    'function handlePointer(event){ pointerState={x:event.clientX,y:event.clientY}; return placeTower(pointerState); }\n'+
+    'addEventListener("pointerdown",handlePointer);\n'+
+    '</script></body></html>\n';
+  write(path.join(cwd,'web-games/demo/index.html'),source);
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'semantic-retry'});
+  workOrder.originalGoal='모바일 pointer 입력을 placement state에 연결한다';
+  workOrder.goal='runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING 수정';
+  workOrder.selectedTask={evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
+  workOrder.workPackage={id:'semantic-wp',sharedContext:{diagnosticEvidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING']}};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const find='function handlePointer(event){ pointerState={x:event.clientX,y:event.clientY}; return placeTower(pointerState); }';
+  write(bad,JSON.stringify({edits:[{path:'index.html',find,replace:'function handlePointer(event){ pointerState={x:event.clientX,y:event.clientY}; gold+=999; return placeTower(pointerState); }'}],newFiles:[],replaceFiles:[]}));
+  write(good,JSON.stringify({edits:[{path:'index.html',find,replace:'function handlePointer(event){ pointerState={x:Math.round(event.clientX),y:Math.round(event.clientY)}; return placeTower(pointerState); }'}],newFiles:[],replaceFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.codingMethod.semanticDiffEnforcement.mode,'HARD_ENFORCE');
+  assert.equal(result.codingMethod.semanticDiffEnforcement.pass,true);
+  assert.equal(result.codingMethod.candidateProducedFirstAttempt,false);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
 test('semantic diff hard gate allows primary responsibility edits inside the compiled system budget',()=>{
   const result=evaluateSemanticDiffBudget({
     candidate:{edits:[{path:'index.html',find:'function handlePointer(e){ pointerState=e; return placeTower(pointerState); }',replace:'function handlePointer(e){ pointerState=normalizePointer(e); return placeTower(pointerState); }'}],newFiles:[],replaceFiles:[]},
@@ -504,6 +532,7 @@ test('generation failure classification keeps causal retry reasons distinct',()=
   assert.equal(generationFailureClass(new Error('변경 없는 edit: index.html')),'NO_OP');
   assert.equal(generationFailureClass(new Error('Ollama 응답 시간 초과: 240000ms')),'TIMEOUT');
   assert.equal(generationFailureClass(new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY')),'SEMANTIC_DIFF_BUDGET');
+  assert.equal(shouldRetryGenerationError(new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:UNRELATED_SYSTEM:ECONOMY')),true);
   assert.equal(generationFailureClass(new Error('책임 파일 범위 밖 수정 금지: config.js')),'INVALID_PATH');
   assert.equal(generationFailureClass(new Error('전체 교체 파일 크기 오류: index.html')),'FULL_REWRITE_SIZE');
   assert.equal(generationFailureClass(new Error('모델 JSON 파싱 실패')),'MALFORMED_OUTPUT');
