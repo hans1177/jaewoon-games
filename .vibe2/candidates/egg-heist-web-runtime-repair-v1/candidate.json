@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 source candidate",
+  "expectedEffect": "",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "let winCondition = false; // Check win condition",
+      "replace": "let winCondition = false; // Check win condition\n// Add mobile pointer/touch interaction for mobile devices"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
