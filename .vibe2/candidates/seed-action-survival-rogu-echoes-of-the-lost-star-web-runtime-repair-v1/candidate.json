@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "function dash(){if(paused||player.dashCd>0)return;let dx=joy.dx,dy=joy.dy;if(!dx&&!dy){dx=(keys.has('d')||keys.has('ArrowRight')?1:0)-(keys.has('a')||keys.has('ArrowLeft')?1:0);dy=(keys.has('s')||keys.has('ArrowDown')?1:0)-(keys.has('w')||keys.has('ArrowUp')?1:0)}const len=Math.hypot(dx,dy)||1;if(Math.abs(dx)+Math.abs(dy)<.1){dx=1;dy=0}else{dx/=len;dy/=len}player.x=clamp(player.x+dx*105,player.r,",
+      "replace": ""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
