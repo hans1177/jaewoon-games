@@ -1,5 +1,5 @@
 {
-  "version": 68,
+  "version": 69,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1469,7 +1469,19 @@
           "webVibeRepairPlannerInput": "FIXED_PENDING_LIVE_QUEUE_VERIFICATION",
           "sourceGenerationRepair": "FOCUSED_CONTEXT_AND_ONE_TIME_INFRA_REQUEUE",
           "exactWebRepairSupersession": "ENABLED",
-          "controlWaveState": "RESTORED_TO_OWNER_MINIMUM_20_AFTER_PRE_FLOOR_RUN_35428356084"
+          "controlWaveState": "RESTORED_TO_OWNER_MINIMUM_20_AFTER_PRE_FLOOR_RUN_35428356084",
+          "webVibeRepairLiveCreation": "CONFIRMED_9_EXACT_REPAIR_TASKS_CREATED_AND_RUNNING",
+          "companyStatusRuntimeStateMerge": "FIXED",
+          "missingSourceExactBaseRecovery": "FIXED",
+          "currentLiveWave": {
+            "runId": "35428898216",
+            "contractSha": "e7bf91038776e38f95092f930fae092991f4a44e",
+            "ownerMinimumWave": 20,
+            "reservedTasks": 11,
+            "matrixFanOut": 13,
+            "status": "RUNNING",
+            "note": "PINNED_BEFORE_LATEST_PLANNER_AND_SOURCE_WORKER_REPAIRS"
+          }
         },
         "incidentHistory": [
           {
@@ -1637,6 +1649,54 @@
               "NO_SUPERSEDED_GENERIC_WEB_TASK_REOPENS_BESIDE_EXACT_REPAIR"
             ],
             "ownerWaveOverride": 20
+          },
+          {
+            "signature": "WEB_RUNTIME_STATE_DEDUP_AND_STALE_BASE_AUTHORITY_DEAD_END",
+            "symptom": "COMPANY_RUNTIME_HAD_19_WEB_VIBE_REPAIR_REQUIRED_ITEMS_BUT_STATUS_DEDUPE_AND_STALE_CANCELLED_BASE_TASKS_PREVENTED_ALL_EXACT_STAGES_FROM_BECOMING_RUNNABLE",
+            "status": "REPAIR_APPLIED_PENDING_NEXT_LIVE_FAN_IN_REFILL_VERIFICATION",
+            "rootCauses": [
+              "COLLECT_PROJECTS_DROPPED_COMPANY_RUNTIME_QUEUE_STATE_WHEN_COMPANY_STATUS_ALREADY_CONTAINED_THE_WEB_PROJECT",
+              "CANCELLED_WEB_BASE_IMPLEMENTATION_IDS_FROM_OLD_DESIGN_ONLY_AUTHORITY_BLOCKED_RECREATION_AFTER_CURRENT_DEVELOPMENT_CONFIRMED_AUTHORITY",
+              "GENERIC_SOURCE_RECOVERY_COULD_COMPETE_WITH_EXACT_WEB_REPAIR"
+            ],
+            "repairs": [
+              "MERGE_COMPANY_RUNTIME_QUEUE_STATE_INTO_EXISTING_COMPANY_STATUS_WEB_ROWS",
+              "SUPERSEDE_OVERLAPPING_GENERIC_WEB_WORK_WITH_EXACT_RUNTIME_REPAIR",
+              "PRESERVE_AND_RECOVER_WEB_BASE_IMPLEMENTATION_WHEN_SOURCE_IS_MISSING",
+              "RESTORE_STALE_CANCELLED_EXACT_BASE_TASK_ONLY_WHEN_CURRENT_CATALOG_AND_RUNTIME_AUTHORITY_ARE_ACTIVE_DEVELOPMENT_CONFIRMED",
+              "KEEP_SOURCE_GENERATION_RECOVERY_SCOPED_TO_EXACT_WEB_RUNTIME_OR_BASE_TASKS",
+              "PIN_INVALID_PATH_RETRY_TO_THE_SINGLE_WRITABLE_RESPONSIBLE_FILE"
+            ],
+            "codeBindings": [
+              "tools/vibe2-auto-planner.mjs",
+              "tools/vibe2-queue-control.mjs",
+              "tools/vibe2-source-worker.mjs",
+              "qa/vibe2-auto-planner.test.mjs",
+              "qa/vibe2-queue-control.test.mjs",
+              "qa/vibe2-source-worker.test.mjs"
+            ],
+            "liveEvidence": [
+              "COMPANY_RUNTIME_WEB_VIBE_REPAIR_REQUIRED_COUNT=19",
+              "EXACT_WEB_RUNTIME_REPAIR_TASKS_CREATED=9",
+              "STALE_GENERIC_WEB_TASKS_SUPERSEDED=13",
+              "RUN_35428898216_OWNER_MINIMUM_WAVE=20",
+              "RUN_35428898216_ADAPTIVE_MAX=20",
+              "RUN_35428898216_RESERVED_TASK_COUNT=11",
+              "RUN_35428898216_MATRIX_FAN_OUT=13",
+              "TASK_LOCAL_EXPLORATION=PASS_ON_COMPLETED_WORKERS",
+              "NO_PER_WORKER_REFILL_OBSERVED"
+            ],
+            "currentPinnedContractWorkerFailures": [
+              "MONSTER_ADVENTURE_FULL_REWRITE_MIN_SIZE_VIOLATION_ON_OLD_PINNED_CONTRACT",
+              "SEED_CASUAL_REALM_WEAVER_OUT_OF_RESPONSIBLE_PATH_ON_OLD_PINNED_CONTRACT"
+            ],
+            "nextVerification": [
+              "CURRENT_WAVE_REACHES_SINGLE_FAN_IN",
+              "NEXT_REFILL_USES_POST_REPAIR_MAIN_CONTRACT",
+              "ALL_CURRENT_DEVELOPMENT_CONFIRMED_SOURCE_MISSING_GAMES_GET_EXACT_WEB_BASE_IMPLEMENTATION",
+              "ALL_EXISTING_SOURCE_WEB_VIBE_REPAIR_REQUIRED_GAMES_GET_EXACT_WEB_RUNTIME_REPAIR",
+              "NO_STALE_DESIGN_ONLY_CANCELLATION_BLOCKS_CURRENT_DEVELOPMENT_CONFIRMED_PRIMARY_WORK"
+            ]
           }
         ]
       }
@@ -2735,23 +2795,29 @@
     }
   },
   "changeRecord": {
-    "id": "WEB_VIBE_EXACT_REPAIR_SUPERSESSION_2026-09-19",
+    "id": "WEB_VIBE_PRIMARY_DEAD_END_REMOVAL_2026-09-19",
     "documentIsCode": true,
-    "reason": "EXACT_COMPANY_RUNTIME_WEB_REPAIR_STATE_MUST_OWN_THE_SOURCE_FILE_AND_STALE_GENERIC_RECOVERY_MUST_NOT_COMPETE_FOR_GAME_PRIMARY_CAPACITY",
+    "reason": "KEEP_GAME_PRIMARY_MOVING_BY_PRESERVING_CANONICAL_RUNTIME_REPAIR_STATE_AND_RECOVERING_ONLY_THE_CURRENT_EXACT_WEB_STAGE",
     "files": [
-      ".github/workflows/vibe2-24h-runner.yml",
       "tools/vibe2-auto-planner.mjs",
-      "qa/company-web-vibe-handoff-e2e.test.mjs",
+      "tools/vibe2-queue-control.mjs",
+      "tools/vibe2-source-worker.mjs",
       "qa/vibe2-auto-planner.test.mjs",
-      ".vibe2/parallelism-control.json",
+      "qa/vibe2-queue-control.test.mjs",
+      "qa/vibe2-source-worker.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ],
     "commits": [
-      "63f9a4bd7d317c056a43e7e6db843e3cfa576115",
-      "c230de0955fffed036ab63f5f374c8889aa6e108",
-      "e778b56d133cd3ed31c36ed9c6fdc35fb8d3dde5",
-      "67bd8a0a0df4f92ed3489540c7ebe304b1690489",
-      "ae960b7e60b43a8854aa10d115f287babfc11a01"
+      "7357d99057f17c99b515dac423fd0079aa3cf11d",
+      "617180395aef1a2e922e859e750caab86f51e3ad",
+      "9ed01a448b8c5aad931b1bf61ee8ef5846244702",
+      "684e415c22ba63570c73eaa094686dd49cd5b3ae",
+      "b5b097926b87d4971c1ff8634635659da42145d0",
+      "10b010eee5afd726a942471853376bebcb96d6b2",
+      "0c09038eee89a4af030ca3225866293e423c724b",
+      "f88b47a3ba969d545b17a327fe2efa6481c48a2f",
+      "2c7a53f562190cba2da7cf5bc0a74ea01a6bc2cb",
+      "e16ff0291998c9390e20f22611c7d7d6b45959f2"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -2759,14 +2825,8 @@
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
       "systemAiNonblocking": true,
-      "exactWebRepairSupersedesGenericOverlap": true
-    },
-    "liveEvidence": {
-      "companyRuntimeWebVibeRepairRequired": 19,
-      "preRepairExactTasks": 0,
-      "preFloorRun": "35428356084",
-      "preFloorContractSha": "1ff436c1d5d573edf15f1ed8ac6412bf4a49f7b7",
-      "controlStateRestoredTo": 20
+      "exactStageOwnsOverlappingSource": true,
+      "currentProductionAuthorityRequiredForStaleTaskRestoration": true
     }
   }
 }
