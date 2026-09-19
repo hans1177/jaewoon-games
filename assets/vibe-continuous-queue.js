@@ -40,7 +40,7 @@ function inferExecutionLane(input = {}) {
   const department=clean(input.department).toLowerCase();
   const type=clean(input.type||'implementation').toLowerCase();
   const evidence=(input.evidence||[]).map(clean);
-  if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return 'RELEASE_WAIT';
+  if(status==='running'&&/candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(blocker))return 'RELEASE_WAIT';
   if(evidence.includes('learning-practice-only')||department==='learning'||(department==='development'&&type==='research'))return 'LEARNING_IDLE';
   if(department==='development'&&type==='implementation')return 'GAME_PRIMARY';
   if(input.systemSteward===true||clean(input.executionLane).toUpperCase()==='RECOVERY_FAST'||evidence.some(value=>/^recovery-fast:|^recovery:|^repair-retry:/.test(value)))return 'RECOVERY_FAST';
@@ -108,6 +108,36 @@ function normalizeCompanyContext(input = {}) {
     reviewRequired: source.reviewRequired !== false
   });
 }
+function normalizeSupervisionContract(input=null){
+  if(!input||typeof input!=='object')return null;
+  return freeze({
+    version:clampInt(input.version||1,1,1000),
+    mode:clean(input.mode)||'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',
+    required:input.required===true,
+    status:clean(input.status)||'REVIEW_REQUIRED',
+    candidateGenerationAllowed:input.candidateGenerationAllowed!==false,
+    automaticPromotionAllowed:input.automaticPromotionAllowed===true,
+    approvalField:clean(input.approvalField)||'supervisionApproved',
+    stages:freezeList(input.stages||[]),
+    protectedSemantics:freezeList(input.protectedSemantics||[]),
+    hardReject:freezeList(input.hardReject||[])
+  });
+}
+function normalizeSupervisionReview(input=null){
+  if(!input||typeof input!=='object')return null;
+  return freeze({
+    verified:input.verified===true,
+    decision:clean(input.decision).toUpperCase()||null,
+    rationale:clean(input.rationale||input.reason)||null,
+    problem:clean(input.problem)||null,
+    evidence:freezeList(input.evidence||[]),
+    reusablePatterns:freezeList(input.reusablePatterns||[]),
+    avoidPatterns:freezeList(input.avoidPatterns||[]),
+    qa:freezeList(input.qa||[]),
+    build:clean(input.build)||null,
+    candidateBranch:clean(input.candidateBranch)||null
+  });
+}
 function normalizeTask(input = {}, index = 0) {
   const status = VIBE_QUEUE_STATUSES.includes(clean(input.status)) ? clean(input.status) : 'queued';
   const priority = VIBE_QUEUE_PRIORITIES.includes(clean(input.priority)) ? clean(input.priority) : 'normal';
@@ -130,6 +160,10 @@ function normalizeTask(input = {}, index = 0) {
     requiresOwnerDecision: Boolean(input.requiresOwnerDecision),
     protectedChange: Boolean(input.protectedChange),
     paidResourceRequired: Boolean(input.paidResourceRequired),
+    productionMode: clean(input.productionMode) || 'AUTONOMOUS_VIBE',
+    supervisionApproved: input.supervisionApproved === true,
+    supervisionContract: normalizeSupervisionContract(input.supervisionContract),
+    supervisionReview: normalizeSupervisionReview(input.supervisionReview),
     blocker: clean(input.blocker) || null,
     evidence: freezeList(normalizeEvidence(input.evidence || [])),
     lastOutcome: clean(input.lastOutcome) || null,
@@ -261,7 +295,7 @@ function conflictsWith(task, active) {
   return null;
 }
 function isAwaitingQaTask(task) {
-  return task?.status === 'running' && /awaiting.*qa|qa.*awaiting/i.test(clean(task?.blocker));
+  return task?.status === 'running' && /awaiting.*qa|qa.*awaiting|candidate-awaiting-supervised-review|awaiting.*supervised-review/i.test(clean(task?.blocker));
 }
 function isReleasedWorkerSlotTask(task) {
   return task?.status === 'running' && /slot-released.*fan-in/i.test(clean(task?.blocker));
