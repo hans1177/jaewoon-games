@@ -295,7 +295,7 @@ state.score++; state.lastAction = 'defend';
     } else if (state.move) {
         state.score++;
         state.lastAction = 'move';
-    } else if (state.win) {
+state.score += 100; state.lastAction = 'win';
         state.score += 100;
         state.lastAction = 'win';
     } else if (state.lose) {
