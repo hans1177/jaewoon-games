@@ -4,10 +4,10 @@ on:
   workflow_call:
   workflow_dispatch:
   repository_dispatch:
-    types: [vibe2-slot-refill, vibe2-fanin-refill]
+    types: [vibe2-fanin-refill]
   push:
     branches:
-      - 'vibe2/refill/**'
+      - 'vibe2/refill/fanin/**'
 
 permissions:
   contents: write
@@ -115,37 +115,9 @@ jobs:
           if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ]; then
             dispatch_type="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.action||''))")"
           fi
-          if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ] && [ "$dispatch_type" = 'vibe2-slot-refill' ]; then
-            task_id="$(node -e "const fs=require('fs');const e=JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH,'utf8'));process.stdout.write(String(e.client_payload?.task_id||''))")"
-            test -n "$task_id"
-            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs release-slot \
-              --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" \
-              --id="$task_id" \
-              --blocker=slot-released-awaiting-fan-in \
-              --evidence="slot-dispatch:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}" | tee /tmp/vibe2-slot-release.log
-            callback_kind='task'
-            echo "VIBE2_SLOT_CALLBACK_TASK=$task_id"
-          elif [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ] && [ "$dispatch_type" = 'vibe2-fanin-refill' ]; then
+          if [ "${GITHUB_EVENT_NAME:-}" = 'repository_dispatch' ] && [ "$dispatch_type" = 'vibe2-fanin-refill' ]; then
             callback_kind='fanin'
             echo 'VIBE2_SLOT_CALLBACK_FANIN=YES'
-          elif [ "${GITHUB_EVENT_NAME:-}" = 'push' ] && [[ "$callback_ref" == vibe2/refill/task/*/* ]]; then
-            encoded="${callback_ref##*/}"
-            task_id="$(node - "$encoded" <<'NODECB'
-          const encoded=process.argv[2]||'';
-          process.stdout.write(Buffer.from(encoded,'base64url').toString('utf8'));
-          NODECB
-          )"
-            test -n "$task_id"
-            node /tmp/vibe2-main/tools/vibe2-queue-control.mjs release-slot \
-              --queue="$control_root/.vibe2/queue.json" \
-              --control="$control_root/.vibe2/parallelism-control.json" \
-              --id="$task_id" \
-              --blocker=slot-released-awaiting-fan-in \
-              --evidence="slot-callback:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}" | tee /tmp/vibe2-slot-release.log
-            callback_kind='task'
-            callback_cleanup='yes'
-            echo "VIBE2_SLOT_CALLBACK_TASK=$task_id"
           elif [ "${GITHUB_EVENT_NAME:-}" = 'push' ] && [[ "$callback_ref" == vibe2/refill/fanin/* ]]; then
             callback_kind='fanin'
             callback_cleanup='yes'
@@ -210,10 +182,9 @@ jobs:
             const safeTask=safe(row.taskId);
             exploration.push({taskId:row.taskId,safeTask});
             const variantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
-            const earlyRefill=variantCount===1;
             const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)};
-            workers.push({...shared,variant:'primary',earlyRefill});
-            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`,earlyRefill:false});
+            workers.push({...shared,variant:'primary'});
+            for(let i=1;i<variantCount;i++)workers.push({...shared,variant:`speculative-${i}`});
           }
           fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
           fs.appendFileSync(out,`worker_count=${workers.length}\n`);
@@ -774,24 +745,6 @@ jobs:
           path: ${{ steps.result.outputs.file }}
           if-no-files-found: error
           retention-days: 1
-
-      - name: Signal immediate slot refill after single-variant worker completion
-        if: always() && matrix.earlyRefill == true && steps.result.outputs.file != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
-          TASK_ID: ${{ matrix.taskId }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          payload="$(node -e "process.stdout.write(JSON.stringify({event_type:'vibe2-slot-refill',client_payload:{task_id:process.env.TASK_ID||'',source_run:process.env.GITHUB_RUN_ID||'',source_attempt:process.env.GITHUB_RUN_ATTEMPT||''}}))")"
-          curl --fail-with-body --silent --show-error \
-            --request POST \
-            --header 'Accept: application/vnd.github+json' \
-            --header "Authorization: Bearer $GH_TOKEN" \
-            --header 'X-GitHub-Api-Version: 2022-11-28' \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches" \
-            --data "$payload"
-          echo 'VIBE2_EARLY_SLOT_REFILL_SIGNAL=REPOSITORY_DISPATCH'
 
   fan_in:
     needs: [reserve, worker]
