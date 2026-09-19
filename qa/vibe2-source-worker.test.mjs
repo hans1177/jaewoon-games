@@ -814,6 +814,13 @@ test('timeout partial recovery stays behind existing exact-match and semantic va
   assert.match(workerSource,/VIBE2_TIMEOUT_PARTIAL_EDIT_REJECTED/);
 });
 
+test('timeout partial recovery is persisted in coding method and immutable worker evidence',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/partialTimeoutRecovery:generation\.partialTimeoutRecovery===true/);
+  assert.match(workflowSource,/baseCodingMethod\?\.partialTimeoutRecovery===true\?'coding-timeout-partial-recovery:YES'/);
+});
+
 test('first timeout escalates attempt two directly to compact focused retry',()=>{
   const base=[
     'Allowed edit paths: index.html',
