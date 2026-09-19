@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "rpg.html",
+      "find": "function initAudio(){",
+      "replace": "const AUDIO={ctx:null,master:null,sfxBus:null,musicBus:null,aggroBus:null,muted:false,started:false,musicStep:0,timer:null,aggro:false,lastAggro:false};function initAudio(){if(AUDIO.started)return;const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;AC.createBufferSource();"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
