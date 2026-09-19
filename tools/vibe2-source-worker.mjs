@@ -250,6 +250,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const noChangeEdit=/변경 없는 edit/i.test(reason);
   const timeoutFailure=/시간 초과|timeout|prediction aborted|token repeat limit/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
+  const editMatchFailure=/edit find/i.test(reason);
   const safeReason=invalidPath?'candidate attempted a path outside Allowed edit paths':reason;
   const fullWebTargetLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Full Web generation target:'))||`Full Web generation target: ${FULL_WEB_GENERATION_TARGET_MIN_BYTES}-${FULL_WEB_GENERATION_TARGET_MAX_BYTES} UTF-8 bytes.`;
   const fullWebTargetMatch=fullWebTargetLine.match(/(\d+)-(\d+)\s+UTF-8 bytes/i);
@@ -259,7 +260,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const previousFullWebBytes=previousFullWeb?Buffer.byteLength(previousFullWeb,'utf8'):0;
   const previousFullWebExcerpt=previousFullWeb?boundedLargeExcerpt(previousFullWeb,4000).content:'';
   let retryBase=rawPrompt;
-  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||(attempt>=3&&timeoutFailure))){
+  if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||(attempt>=3&&timeoutFailure))){
     const marker='\n=== FILE ';
     const starts=[];
     for(let at=retryBase.indexOf(marker);at>=0;at=retryBase.indexOf(marker,at+marker.length))starts.push(at);
@@ -303,12 +304,12 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         'The response MUST begin with VIBE2_FULL_FILE and MUST end with ---VIBE2_FILE_END---. Finish the game before the limit rather than adding optional polish.'
       ].join('\n')
     : [
-        zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
+        zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':editMatchFailure?'RECOVERY RETRY: the previous edits[].find text did not match the writable source.':timeoutFailure?'RECOVERY RETRY: the previous model response exceeded the time budget.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
         `Previous failure: ${safeReason}`,
         'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
-        zeroChange?'You MUST produce at least one edits[] entry. Use the exact Allowed edit path above. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use the exact Allowed edit path above, copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
-        zeroChange||noChangeEdit||invalidPath?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':''
+        zeroChange?'You MUST produce at least one edits[] entry. Use the exact Allowed edit path above. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use the exact Allowed edit path above, copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':editMatchFailure?'Use exactly one short, unique find snippet copied character-for-character from the EDITABLE FILE block. Prefer one distinctive line or the smallest adjacent line group that occurs once. Do not paraphrase, normalize, reconstruct, or guess source text.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
+        zeroChange||noChangeEdit||invalidPath||editMatchFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':''
       ].filter(Boolean).join('\n');
   const focusedFinal=attempt>=3&&!allowFullRewrite;
   const fullWebFinal=attempt>=3&&allowFullRewrite;
