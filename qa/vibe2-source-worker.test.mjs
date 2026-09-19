@@ -152,7 +152,7 @@ test('approved missing Web root produces isolated index.html bootstrap candidate
   workOrder.selectedTask={evidence:['source-root-bootstrap-required','existing-web-source:MISSING']};
   workOrder.workerPolicy={directMainWrite:false,sourceRootBootstrapAllowed:true,fullFileRewriteAllowed:true};
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
-  const body='let frame=0;'+ 'frame+=1;'.repeat(220);
+  const body='let frame=0;'+ 'frame+=1;'.repeat(1500);
   const replacement=`<!doctype html><html><body><canvas id="game"></canvas><script>${body}</script></body></html>`;
   write(responseFile,replacement);
   const result=await runVibe2SourceWorker({cwd,responseFile});
@@ -211,7 +211,7 @@ test('existing Web assessment overrides stale full-rebuild flags when KEEP_AND_C
 test('exploration FULL_REBUILD strategy can authorize full web rewrite without planner pre-deciding rebuild', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.txt');
-  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(120)}</script></body></html>`;
+  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(650)}</script></body></html>`;
   const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-assessed-rebuild' });
   workOrder.goal = 'EXISTING_WEB_ASSESS_AND_IMPLEMENT';
   write(path.join(cwd, 'web-games/demo/index.html'), '<!doctype html><html><body><h1>검증 패널</h1><button data-session-stage="1">다음</button></body></html>\n');
@@ -227,7 +227,7 @@ test('exploration FULL_REBUILD strategy can authorize full web rewrite without p
 test('full web rebuild recovers complete direct HTML when the model omits the envelope', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.html');
-  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(120)}</script></body></html>`;
+  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(650)}</script></body></html>`;
   const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-direct-html-recovery' });
   workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
   workOrder.workerPolicy.fullFileRewriteAllowed = true;
@@ -247,7 +247,7 @@ test('full web rebuild accepts fenced complete HTML but rejects prose or truncat
   const good = path.join(cwd, 'good.html');
   const bad = path.join(cwd, 'bad.html');
   const truncated = path.join(cwd, 'truncated.html');
-  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(120)}</script></body></html>`;
+  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(650)}</script></body></html>`;
   const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-fenced-html-recovery' });
   workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
   workOrder.workerPolicy.fullFileRewriteAllowed = true;
@@ -272,7 +272,7 @@ test('full web rebuild accepts raw full-file envelope without JSON escaping', as
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.txt');
   const source = '<!doctype html><html><body>old prototype</body></html>\n';
-  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(120)}</script></body></html>`;
+  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(650)}</script></body></html>`;
   const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'web-full-rebuild' });
   workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
   workOrder.workerPolicy.fullFileRewriteAllowed = true;
@@ -444,7 +444,7 @@ test('truncated FULL_REBUILD gets one compact raw-envelope recovery retry', asyn
   const cwd = tempRoot();
   const bad = path.join(cwd, 'bad.txt');
   const good = path.join(cwd, 'good.txt');
-  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(120)}</script></body></html>`;
+  const replacement = `<!doctype html><html><body><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(650)}</script></body></html>`;
   const workOrder = order({ target: 'web', root: 'web-games/demo', responsibleFiles: ['web-games/demo/index.html'], taskId: 'full-retry' });
   workOrder.goal = 'FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
   workOrder.workerPolicy.fullFileRewriteAllowed = true;
@@ -461,7 +461,7 @@ test('truncated FULL_REBUILD gets one compact raw-envelope recovery retry', asyn
   assert.deepEqual(result.changedFiles, ['index.html']);
 });
 
-test('undersized full web error reports actual bytes without lowering the minimum gate', async () => {
+test('undersized full web error reports validator-scale generation minimum without lowering parser safety gate', async () => {
   const cwd=tempRoot();
   const responseFile=path.join(cwd,'undersized-single.txt');
   const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-size-telemetry'});
@@ -474,7 +474,7 @@ test('undersized full web error reports actual bytes without lowering the minimu
   write(responseFile,'VIBE2_FULL_FILE\nPATH:index.html\nSUMMARY:small\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>tiny</body></html>\n---VIBE2_FILE_END---');
   await assert.rejects(
     runVibe2SourceWorker({cwd,responseFile}),
-    /전체 교체 파일 크기 오류: index\.html:bytes=\d+:min=1800:max=260000/
+    /전체 교체 파일 크기 오류: index\.html:bytes=\d+:min=12000:max=260000/
   );
 });
 
@@ -483,7 +483,7 @@ test('undersized full web output gets one final bounded third retry without lowe
   const small1=path.join(cwd,'small1.txt');
   const small2=path.join(cwd,'small2.txt');
   const good=path.join(cwd,'good3.txt');
-  const replacement=`<!doctype html><html><body><button id="start">Start</button><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(140)}</script></body></html>`;
+  const replacement=`<!doctype html><html><body><button id="start">Start</button><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(650)}</script></body></html>`;
   const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-size-third-retry'});
   workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
   workOrder.workerPolicy.fullFileRewriteAllowed=true;
@@ -537,6 +537,30 @@ test('generation recovery remains bounded and keeps strict output contracts', ()
   const json = buildGenerationRetryPrompt('base', { allowFullRewrite:false, error:new Error('JSON') });
   assert.match(json, /strict JSON object only/);
   assert.match(json, /No markdown/);
+});
+
+test('full web recovery carries the previous undersized candidate forward for expansion', () => {
+  const previous = [
+    'VIBE2_FULL_FILE',
+    'PATH:index.html',
+    '---VIBE2_FILE_CONTENT---',
+    '<!doctype html><html><body><canvas id="game"></canvas><script>let hp=10;</script></body></html>',
+    '---VIBE2_FILE_END---'
+  ].join('\n');
+  const retry = buildGenerationRetryPrompt(
+    'Full Web generation target: 12000-24000 UTF-8 bytes.',
+    {
+      allowFullRewrite:true,
+      error:new Error('전체 교체 파일 크기 오류: index.html:bytes=1262:min=12000:max=260000'),
+      previousOutput:previous,
+      attempt:2
+    }
+  );
+  assert.match(retry,/previous full-Web candidate was \d+ UTF-8 bytes/i);
+  assert.match(retry,/Expand this actual implementation instead of restarting as a smaller shell/);
+  assert.match(retry,/---BEGIN_PREVIOUS_FULL_WEB_CANDIDATE---/);
+  assert.match(retry,/<canvas id="game">/);
+  assert.match(retry,/---END_PREVIOUS_FULL_WEB_CANDIDATE---/);
 });
 
 test('Ollama transport uses streaming instead of one giant non-streaming response', () => {
