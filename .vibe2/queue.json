@@ -7215,7 +7215,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "primary-ai-supervision:assignment",
@@ -7240,7 +7240,8 @@
         "workload:cycle-ms:39932",
         "failure-cause:MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED",
         "system-steward:stale-machine-state-blocker-recovered",
-        "system-steward:machine-state-revalidated:v3-external-wave-256"
+        "system-steward:machine-state-revalidated:v3-external-wave-256",
+        "slot-dispatch:35425966344:1"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED",
       "reservationId": "35425782021:1",
