@@ -882,6 +882,14 @@ test('first timeout escalates attempt two directly to compact focused retry',()=
   assert.match(workerSource,/focusedFinal\?JSON_FINAL_RETRY_TIMEOUT_MS/);
 });
 
+test('focused minimal JSON retry is persisted to immutable worker evidence',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/focusedMinimalJsonContract:generation\.focusedFinalRetry===true&&!allowFullRewrite/);
+  assert.match(workflowSource,/coding-focused-minimal-json:YES/);
+  assert.match(workflowSource,/coding-focused-final-retry:YES/);
+});
+
 test('timeout retry drops oversized guidance prefix and keeps only execution-critical context',()=>{
   const base=[
     'You are the Vibe2 game source worker. Return JSON only.',
