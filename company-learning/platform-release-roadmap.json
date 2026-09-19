@@ -1,5 +1,5 @@
 {
-  "version": 29,
+  "version": 30,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1509,6 +1509,42 @@
           "VIBE2_OPENAI_PAID_API_ALLOWED": "false"
         }
       }
+    },
+    "sharedWorkerContext": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "requiredForAllWorkers": true,
+      "appliesTo": [
+        "ALL_AI_WORKERS",
+        "ALL_AUTOMATION_WORKERS",
+        "ALL_PLANNERS",
+        "ALL_QA_AND_REVIEW_WORKERS",
+        "ALL_RELEASE_AND_RUNTIME_WORKERS"
+      ],
+      "centralPolicy": "company-learning/platform-release-roadmap.json",
+      "logMap": "company-learning/company-log-map.json",
+      "architectureMap": "company-learning/company-architecture-map.json",
+      "validator": "tools/company-shared-context.mjs",
+      "qa": "qa/company-shared-context.test.mjs",
+      "loadOrder": [
+        "company-learning/platform-release-roadmap.json",
+        "company-learning/company-log-map.json",
+        "company-learning/company-architecture-map.json"
+      ],
+      "beforeWorkRequired": true,
+      "afterWorkRequired": true,
+      "bindSha256ToExecutionEvidence": true,
+      "completionRequiresSharedContextSync": true,
+      "runtimeMayNotCreatePolicy": true,
+      "aiMayNotExpandOwnAuthority": true,
+      "staleContextMayNotCompleteWork": true,
+      "mismatchAction": "BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE",
+      "requiredLogMarkers": [
+        "WORKER_CONTEXT_POLICY_SHA256",
+        "WORKER_CONTEXT_LOG_MAP_SHA256",
+        "WORKER_CONTEXT_ARCHITECTURE_SHA256",
+        "WORKER_CONTEXT_SYNC=PASS"
+      ]
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
