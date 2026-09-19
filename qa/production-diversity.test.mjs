@@ -78,6 +78,36 @@ test('owner redesign reset outranks stale runtime project class until canonical 
   assert.equal(productionClassOf({productionClass:'DEVELOPMENT_CONFIRMED'},promotedGame),'DEVELOPMENT_CONFIRMED');
 });
 
+test('runtime promotion survives stale main DESIGN_ONLY mirrors only with matching active seed and queue evidence',()=>{
+  const portfolio={
+    productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
+    developmentFocusPolicy:{maxFocusedGames:1},
+    projects:[{id:'P',slug:'promoted',name:'promoted',sourcePath:'web-games/promoted',productionClass:'DESIGN_ONLY',productionClassSource:'OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17',profileStatus:'DESIGN_ONLY',selectedPlatform:'UNITY',developmentFocus:{total:8}}],
+  };
+  const catalog={games:[{id:'promoted',name:'promoted',genre:['RPG'],productionClass:'DESIGN_ONLY',productionClassSource:'OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17',homepageCategory:'design-only',selectedPlatform:'UNITY',homepageWebPlayable:true,hasWebArchive:true}]};
+  const developmentQueue={items:[{gameId:'promoted',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY',status:'ACTIVE'}]};
+  const seedState={seeds:[{gameId:'promoted',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY'}]};
+  const result=syncProductionClasses({portfolio,catalog,artbooks:{artbooks:[]},developmentQueue,seedState,filesystem:fsStub});
+  assert.deepEqual(result.state.developmentConfirmedGameIds,['P']);
+  assert.equal(portfolio.projects[0].productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(portfolio.projects[0].productionClassSource,'COMPANY_RUNTIME_DEVELOPMENT_QUEUE');
+  assert.equal(portfolio.projects[0].targetEngine,'unity-android');
+  assert.equal(catalog.games[0].productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(catalog.games[0].productionClassSource,'COMPANY_RUNTIME_DEVELOPMENT_QUEUE');
+  assert.equal(catalog.games[0].homepageCategory,'development-confirmed');
+
+  const resetAgain=syncProductionClasses({
+    portfolio,
+    catalog,
+    artbooks:{artbooks:[]},
+    developmentQueue,
+    seedState:{seeds:[{gameId:'promoted',status:'ACTIVE',productionClass:'DESIGN_ONLY'}]},
+    filesystem:fsStub
+  });
+  assert.deepEqual(resetAgain.state.designOnlyGameIds,['P']);
+  assert.equal(portfolio.projects[0].productionClass,'DESIGN_ONLY');
+});
+
 test('selected platform remains final runtime target after mandatory full approved-scope Web companion validation',()=>{
   const portfolio={
     productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
