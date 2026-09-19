@@ -1,5 +1,5 @@
 {
-  "version": 58,
+  "version": 59,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1109,7 +1109,8 @@
         "externalModelQuota": "CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK",
         "waitingForVerifiedSamples": "CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE",
         "staleMachineStateBlockerAfterStateNormalization": "REPAIR_QUEUE_TO_EXTERNAL_WAVE_256_AND_INVALID_V3_PARALLELISM_STEP_BEFORE_STRICT_HANDOFF_CHECK_THEN_REVALIDATE_AND_CLEAR_ONLY_KNOWN_STALE_MACHINE_BLOCKERS",
-        "runContractShaDrift": "PIN_RESERVE_TIME_MAIN_SHA_ACROSS_EXPLORATION_WORKER_FAN_IN_AND_REQUEUE_ONLY_REAL_REGRESSION_FAILURES"
+        "runContractShaDrift": "PIN_RESERVE_TIME_MAIN_SHA_ACROSS_EXPLORATION_WORKER_FAN_IN_AND_REQUEUE_ONLY_REAL_REGRESSION_FAILURES",
+        "globalExplorationBarrier": "MOVE_EXPLORATION_INTO_EACH_WORKER_AND_START_GAME_IMPLEMENTATION_AS_SOON_AS_ITS_OWN_EXPLORATION_IS_READY"
       },
       "bottleneckPolicy": {
         "adaptiveSteps": [
@@ -1158,7 +1159,10 @@
         "ownerAndSystemStewardProtectionPreserved": true,
         "waveContractShaPinnedAtReserve": true,
         "controlBranchCodeExecutionForbiddenForWaveRegression": true,
-        "mainChangesDuringActiveWaveApplyNextWaveOnly": true
+        "mainChangesDuringActiveWaveApplyNextWaveOnly": true,
+        "globalExplorationBarrierForbidden": true,
+        "taskLocalExplorationRequired": true,
+        "supervisorExplorationMayNotBlockGameWorkerStart": true
       },
       "invariants": {
         "noGateBypass": true,
@@ -1377,31 +1381,28 @@
           "RELEASE_SAFETY_GATES"
         ],
         "currentIncident": {
-          "signature": "RUN_CONTRACT_SHA_DRIFT_FANIN_STALE_CONTROL_CODE",
-          "symptom": "RESERVE_AND_WORKERS_USE_MAIN_CONTRACT_WHILE_FAN_IN_REGRESSION_USED_STALE_CONTROL_BRANCH_CODE_CAUSING_SUCCESSFUL_WORK_TO_REQUEUE",
+          "signature": "GLOBAL_EXPLORATION_MATRIX_BARRIER_BLOCKING_GAME_WORKERS",
+          "symptom": "18_OR_MORE_EXPLORATION_ROWS_COMPLETED_BUT_ONE_QUEUED_SUPERVISOR_EXPLORATION_PREVENTED_ALL_GAME_WORKERS_FROM_STARTING",
           "status": "REPAIR_APPLIED_PENDING_LIVE_WAVE_VERIFICATION",
-          "rootCause": "ACTIVE_WAVE_DID_NOT_SHARE_ONE_IMMUTABLE_MAIN_CONTRACT_SHA",
-          "repair": "RESERVE_EXPORTS_CONTRACT_SHA_EXPLORATION_WORKER_AND_FAN_IN_CHECKOUT_EXACT_SHA_CONTROL_BRANCH_STATE_ONLY",
+          "rootCause": "WORKER_JOB_DEPENDED_ON_COMPLETION_OF_ENTIRE_EXPLORATION_MATRIX",
+          "repair": "REMOVE_GLOBAL_EXPLORATION_JOB_AND_BUILD_PINNED_TASK_LOCAL_EXPLORATION_INSIDE_EACH_WORKER",
           "verifiedEvidence": [
-            "PREVIOUS_FAN_IN_REGRESSION_FAILURE_AFTER_SUCCESSFUL_WORKERS",
-            "CONTROL_BRANCH_STORES_RUNTIME_STATE",
-            "MAIN_IS_CODE_AND_MACHINE_CONTRACT_AUTHORITY",
-            "VIBE2_CORE_QA_BEFORE_SHA_PIN=PASS",
-            "CENTRAL_POLICY_CONTRACT_QA_BEFORE_SHA_PIN=PASS"
+            "RUN_35427458752_EXPLORATION_ROWS_COMPLETED_BEFORE_LAST_SUPERVISOR_ROW",
+            "RUN_35427458752_WORKER_COUNT_ZERO_WHILE_ONE_EXPLORATION_ROW_QUEUED",
+            "RESERVE_CONTRACT_SHA_C10924A9307D3E9EB12357E01307B3F46CE5ED16",
+            "VIBE2_CORE_QA_SHA_PIN_CONTRACT=PASS_RUN_35427503309"
           ],
           "codeBindings": [
             ".github/workflows/vibe2-continuous-core.yml",
-            "tools/vibe2-continuous-runner.mjs",
             "qa/vibe2-controller-contract.test.mjs",
             "vibe2-runtime.json"
           ],
           "nextVerification": [
-            "RESERVE_OUTPUT_CONTRACT_SHA_PRESENT",
-            "EXPLORATION_BASE_SHA_EQUALS_CONTRACT_SHA",
-            "WORKER_BASE_SHA_EQUALS_CONTRACT_SHA",
-            "FAN_IN_REGRESSION_EXECUTES_FROM_CONTRACT_SHA",
-            "FAN_IN_REGRESSION_PASS_OR_REQUEUE_ONLY_ON_REAL_CURRENT_CONTRACT_FAILURE",
-            "20_WAVE_REMAINS_PRIMARY_GAME_DEVELOPMENT_FIRST"
+            "WORKER_JOB_HAS_NO_GLOBAL_EXPLORATION_NEED",
+            "TASK_LOCAL_EXPLORATION_BASE_SHA_EQUALS_RESERVED_CONTRACT_SHA",
+            "GAME_WORKERS_START_WITHOUT_WAITING_FOR_SUPERVISOR_EXPLORATION",
+            "FAN_IN_STILL_USES_RESERVED_CONTRACT_SHA",
+            "20_WAVE_LIMIT_AND_PRIMARY_GAME_PRIORITY_REMAIN_ACTIVE"
           ],
           "ownerWaveOverride": 20
         },
@@ -1413,7 +1414,7 @@
           "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS",
           "qaContract": "PASS",
           "centralPolicyContract": "PASS",
-          "currentLargestBottleneck": "RUN_CONTRACT_SHA_DRIFT_FANIN_STALE_CONTROL_CODE",
+          "currentLargestBottleneck": "GLOBAL_EXPLORATION_MATRIX_BARRIER",
           "adaptiveWave": 20,
           "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
           "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST_SPARE_SPECULATION_ONLY",
@@ -1421,7 +1422,8 @@
           "schedulerPriority": "OWNER_OR_STEWARD_CRITICAL_THEN_RELEASE_THEN_GAME_DEVELOPMENT_THEN_NONBLOCKING_SUPERVISION",
           "supervisorCapacityPolicy": "SPARE_CAPACITY_ONLY_WHILE_ACTIONABLE_GAME_DEVELOPMENT_EXISTS",
           "waveContractPolicy": "ONE_RESERVE_TIME_MAIN_SHA_PER_WAVE",
-          "controlBranchRole": "STATE_ONLY"
+          "controlBranchRole": "STATE_ONLY",
+          "explorationPolicy": "TASK_LOCAL_NONBLOCKING"
         },
         "incidentHistory": [
           {
@@ -1475,6 +1477,35 @@
                 "binding": "tools/company-system-ai-worker.mjs"
               }
             ]
+          },
+          {
+            "signature": "RUN_CONTRACT_SHA_DRIFT_FANIN_STALE_CONTROL_CODE",
+            "symptom": "RESERVE_AND_WORKERS_USE_MAIN_CONTRACT_WHILE_FAN_IN_REGRESSION_USED_STALE_CONTROL_BRANCH_CODE_CAUSING_SUCCESSFUL_WORK_TO_REQUEUE",
+            "status": "REPAIR_APPLIED_PENDING_LIVE_WAVE_VERIFICATION",
+            "rootCause": "ACTIVE_WAVE_DID_NOT_SHARE_ONE_IMMUTABLE_MAIN_CONTRACT_SHA",
+            "repair": "RESERVE_EXPORTS_CONTRACT_SHA_EXPLORATION_WORKER_AND_FAN_IN_CHECKOUT_EXACT_SHA_CONTROL_BRANCH_STATE_ONLY",
+            "verifiedEvidence": [
+              "PREVIOUS_FAN_IN_REGRESSION_FAILURE_AFTER_SUCCESSFUL_WORKERS",
+              "CONTROL_BRANCH_STORES_RUNTIME_STATE",
+              "MAIN_IS_CODE_AND_MACHINE_CONTRACT_AUTHORITY",
+              "VIBE2_CORE_QA_BEFORE_SHA_PIN=PASS",
+              "CENTRAL_POLICY_CONTRACT_QA_BEFORE_SHA_PIN=PASS"
+            ],
+            "codeBindings": [
+              ".github/workflows/vibe2-continuous-core.yml",
+              "tools/vibe2-continuous-runner.mjs",
+              "qa/vibe2-controller-contract.test.mjs",
+              "vibe2-runtime.json"
+            ],
+            "nextVerification": [
+              "RESERVE_OUTPUT_CONTRACT_SHA_PRESENT",
+              "EXPLORATION_BASE_SHA_EQUALS_CONTRACT_SHA",
+              "WORKER_BASE_SHA_EQUALS_CONTRACT_SHA",
+              "FAN_IN_REGRESSION_EXECUTES_FROM_CONTRACT_SHA",
+              "FAN_IN_REGRESSION_PASS_OR_REQUEUE_ONLY_ON_REAL_CURRENT_CONTRACT_FAILURE",
+              "20_WAVE_REMAINS_PRIMARY_GAME_DEVELOPMENT_FIRST"
+            ],
+            "ownerWaveOverride": 20
           }
         ]
       }
