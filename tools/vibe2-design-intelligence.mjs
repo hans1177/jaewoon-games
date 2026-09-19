@@ -112,6 +112,51 @@ function evaluateCritic(task = {}, designer = {}) {
   });
 }
 
+function evaluateNarrativeContract(task = {}) {
+  const goal = clean(task.goal);
+  const supplied = task.narrative && typeof task.narrative === 'object' ? task.narrative : {};
+  const required = task.narrativeRequired === true || Object.keys(supplied).length > 0
+    || /story|narrative|quest|dialogue|character|스토리|서사|퀘스트|대화|대사|캐릭터|세계관|복선|반전/.test(goal.toLowerCase());
+  if (!required) return freeze({
+    required:false,
+    status:'NOT_APPLICABLE',
+    issues:freezeList([]),
+    authorityExpanded:false
+  });
+  const worldRules = unique(supplied.worldRules || task.worldRules || []);
+  const characterGoals = unique(supplied.characterGoals || task.characterGoals || []);
+  const plotBeats = unique(supplied.plotBeats || task.plotBeats || []);
+  const questStates = unique(supplied.questStates || task.questStates || []);
+  const foreshadowing = unique(supplied.foreshadowing || task.foreshadowing || []);
+  const payoffs = unique(supplied.payoffs || task.payoffs || []);
+  const dialogueRules = unique(supplied.dialogueRules || task.dialogueRules || []);
+  const issues = [];
+  if (!worldRules.length) issues.push('NARRATIVE_WORLD_RULES_NOT_BOUND');
+  if (!characterGoals.length) issues.push('CHARACTER_WANT_NEED_OR_CONFLICT_NOT_BOUND');
+  if (!plotBeats.length && !questStates.length) issues.push('PLOT_OR_QUEST_CAUSALITY_NOT_BOUND');
+  if (foreshadowing.length && !payoffs.length) issues.push('FORESHADOWING_WITHOUT_TRACKED_PAYOFF');
+  return freeze({
+    required:true,
+    status:issues.length ? 'ADVISORY' : 'READY',
+    worldRules:freezeList(worldRules),
+    characterGoals:freezeList(characterGoals),
+    plotBeats:freezeList(plotBeats),
+    questStates:freezeList(questStates),
+    foreshadowing:freezeList(foreshadowing),
+    payoffs:freezeList(payoffs),
+    dialogueRules:freezeList(dialogueRules),
+    issues:freezeList(unique(issues)),
+    principles:freezeList([
+      'WORLD_RULES_AND_CHARACTER_KNOWLEDGE_MUST_STAY_CONSISTENT',
+      'QUESTS_REQUIRE_PREREQUISITE_ACTION_STATE_CHANGE_AND_CONSEQUENCE',
+      'MEANINGFUL_CHOICES_REQUIRE_OBSERVABLE_CONSEQUENCE',
+      'DIALOGUE_MUST_SERVE_CHARACTER_GOAL_CONTEXT_AND_SCENE_OBJECTIVE',
+      'DISTILL_REFERENCE_TECHNIQUE_NOT_REFERENCE_EXPRESSION'
+    ]),
+    authorityExpanded:false
+  });
+}
+
 function normalizeGraph(task = {}) {
   const graph = task.causalityGraph || task.designCausality || {};
   const nodes = Array.isArray(graph.nodes) ? graph.nodes.map((row) => typeof row === 'string' ? { id:clean(row), label:clean(row) } : { id:clean(row?.id), label:clean(row?.label || row?.id), kind:clean(row?.kind) || null }).filter((row) => row.id) : [];
@@ -232,6 +277,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
   const designer = evaluateDesigner(task);
   const constraints = evaluateConstraints(task);
   const critic = evaluateCritic(task, designer);
+  const narrative = evaluateNarrativeContract(task);
   const causality = evaluateCausality(task);
   const playerModel = evaluatePlayerModel(task);
   const simulation = evaluateSimulation(task);
@@ -252,7 +298,10 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
   const experienceMemory = evaluateExperienceMemory(task, designReview);
   const stages = freezeList([designer,constraints,critic,causality,playerModel,simulation,implementation,autoPlayer,telemetry,designReview,experienceMemory]);
 
-  const advisory = unique(stages.flatMap((row) => row.issues || row.warnings || []).filter(Boolean));
+  const advisory = unique([
+    ...stages.flatMap((row) => row.issues || row.warnings || []).filter(Boolean),
+    ...(narrative.issues || [])
+  ]);
   const constraintText = (constraints.constraints || []).map((row) => `${row.id}: ${row.rule}`).join(' | ');
   const guidance = [
     '[VIBE2 DESIGN INTELLIGENCE - mandatory safety contract]',
@@ -260,6 +309,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     constraintText ? `보존 제약: ${constraintText}` : '명시 제약이 부족하면 기존 코드/게임 규칙을 보수적으로 보존한다.',
     critic.issues.length ? `비평 경고: ${critic.issues.join(', ')}` : '비평 게이트: 명시적 구조 문제 없음.',
     causality.status === 'UNVERIFIED' ? '인과 그래프: 입력 없음. 새로운 스토리/보상 인과를 임의 창작하지 않는다.' : `인과 그래프 상태: ${causality.status}`,
+    narrative.required ? `서사 계약: ${narrative.status}. 세계 규칙/인물 목표/퀘스트 인과/복선 회수/대화 지식 범위를 보존한다.` : '서사 계약: 필요 없음.',
     simulation.status === 'UNVERIFIED' ? '수치 시뮬레이션: 입력 부족. 적정 수치를 추측해서 변경하지 않는다.' : '수치 시뮬레이션: 제공된 입력만 계산했다.',
     '구현 후 AUTO_PLAYER -> TELEMETRY -> DESIGN_REVIEW 증거가 확인되기 전 EXPERIENCE MEMORY 승격 금지.'
   ].join('\n');
@@ -269,6 +319,7 @@ export function buildVibeDesignIntelligence({ task = {}, plan = {}, experience =
     required:true,
     pipeline:DESIGN_INTELLIGENCE_STAGES,
     stages,
+    narrative,
     implementationGate:freeze({ allowed:implementation.allowed, blockers:implementation.blockers }),
     advisory:freezeList(advisory),
     guidance,
