@@ -1,5 +1,5 @@
 {
-  "version": 26,
+  "version": 27,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -475,7 +475,10 @@
       "postReleaseWorker": ".github/workflows/vibe2-continuous-core.yml",
       "postReleaseQueue": ".vibe2/queue.json",
       "companyRuntimeQueue": "development-queue.json",
-      "centralPolicyFile": "company-learning/platform-release-roadmap.json"
+      "centralPolicyFile": "company-learning/platform-release-roadmap.json",
+      "vibePlannerDevelopmentQueueConsumer": "tools/vibe2-auto-planner.mjs",
+      "vibePlannerDevelopmentQueueWorkflow": ".github/workflows/vibe2-24h-runner.yml",
+      "vibePlannerDevelopmentQueueArg": "--development-queue=/tmp/vibe2-company-runtime-queue.json"
     },
     "modelQuotaContinuity": {
       "enabled": true,
@@ -1431,6 +1434,19 @@
         "saveVersioningContract",
         "saveRestoreEvidenceContract"
       ]
+    },
+    "missingWebBaselinePlanning": {
+      "authority": "MACHINE_EXECUTION_CONTRACT",
+      "source": "company-runtime/development-queue.json",
+      "activeDevelopmentConfirmedItemsMustEnterPlanner": true,
+      "existingWebArchiveRequiredForPlanning": false,
+      "missingWebSourceAction": "CREATE_WEB_BASE_IMPLEMENTATION_TASK",
+      "taskIdTemplate": "<gameId>-web-base-implementation-v1",
+      "sourceRootTemplate": "web-games/<gameId>",
+      "entryFile": "index.html",
+      "bootstrapAllowed": true,
+      "homepageExposureBeforeEntryExists": false,
+      "saveNormalizationContractMustRemainAttached": true
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
