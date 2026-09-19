@@ -581,7 +581,6 @@ jobs:
         env:
           CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
           CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
-          CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
           CACHE_NAMESPACE: ${{ steps.order.outputs.cache_namespace }}
         shell: bash
         run: |
@@ -611,6 +610,7 @@ jobs:
         continue-on-error: true
         env:
           CANDIDATE_DIR: ${{ steps.candidate.outputs.candidate_dir }}
+          CANDIDATE_MANIFEST: ${{ steps.candidate.outputs.candidate_manifest }}
         shell: bash
         run: |
           set -euo pipefail
