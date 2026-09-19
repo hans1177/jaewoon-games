@@ -1,5 +1,5 @@
 {
-  "version": 102,
+  "version": 103,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,24 +3069,33 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_STAGED_SOURCE_SYNTHESIS_AND_SYMBOL_CONTEXT_PHASE5_2026-09-19",
+    "id": "VIBE2_STAGED_SOURCE_SYNTHESIS_PHASE5_CORE_AND_MISSING_CAPABILITY_TARGETING_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_ARCHITECTURE_DRIFT_AND_CODING_CONSTITUTION_PHASE4_2026-09-19",
-    "reason": "LIVE_20_WAVE_SHOWED_100_PERCENT_SOURCE_CANDIDATE_FAILURE_DOMINATED_BY_TIMEOUT_AND_FULL_REWRITE_SIZE;DOCUMENT_RESPONSIBILITY_FOCUSED_CONTEXT_AND_VALIDATED_INTERMEDIATE_SYNTHESIS_BEFORE_CODE",
-    "implementationState": "PHASE_5_DOCUMENTED_PENDING_CODE",
+    "previousChangeRecordId": "VIBE2_STAGED_SOURCE_SYNTHESIS_AND_SYMBOL_CONTEXT_PHASE5_2026-09-19",
+    "reason": "SYNC_PHASE5_CORE_IMPLEMENTATION_AND_DOCUMENT_MISSING_CAPABILITY_FIRST_EXPANSION_TARGETING_BEFORE_CODE_TO_REDUCE_REPEAT_OUTPUT_AND_INCREASE_FUNCTIONAL_GROWTH_PER_GENERATION",
+    "implementationState": "PHASE_5_CORE_IMPLEMENTED_QA_PENDING_STAGE_TARGETING_DOCUMENTED",
     "evidence": {
-      "runId": 35438982255,
-      "sourceFailureClasses": "TIMEOUT:9,EDIT_MATCH:2,FULL_REWRITE_SIZE:7,NO_OP:1,MALFORMED_OUTPUT:1"
+      "sourceRunId": 35438982255,
+      "originalFailureClasses": "TIMEOUT:9,EDIT_MATCH:2,FULL_REWRITE_SIZE:7,NO_OP:1,MALFORMED_OUTPUT:1",
+      "phase5ImplementationCommits": [
+        "58caba8b59411260786c5c1286516fe8116fb307",
+        "af147e08cc9190b966623cbc74974a2e12976d76",
+        "27d79f01d07c4486fd83dcf31e1d0e03bb57dd42",
+        "98badfee2c1a9185c868443380425e0a4c401ee8",
+        "f5d5669a5527c19296ee808a7dd08c76ee92ef85",
+        "1a7c286f98627ccd88fc52f54e5659c82e9052e0",
+        "e617f4e872661a46827f3502488a0d00184337ae",
+        "5e9554b4ecb3ca86233a4c2ad0812299d94c8841",
+        "c945cd94408a91cd050c53dd7107ccce11d3abf2"
+      ]
     },
     "pending": [
-      "PRIMARY_SYMBOL_CONTEXT_COMPOSER",
-      "DIRECT_DEPENDENCY_CONTEXT_COMPOSER",
-      "EXACT_SNIPPET_EDIT_MATCH_CONTEXT",
-      "SAFE_LOOSE_WEB_EXPANSION_RECOVERY",
-      "INTERMEDIATE_WEB_GROWTH_DEDUP",
-      "STAGED_SYNTHESIS_TELEMETRY",
-      "CORE_QA_AND_LIVE_WAVE_REVALIDATION"
+      "LATEST_CORE_QA",
+      "LATEST_VIBE_QA",
+      "LATEST_INTEGRATED_REGRESSION",
+      "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
+      "COMPARE_TIMEOUT_EDIT_MATCH_FULL_REWRITE_SIZE_BEFORE_AFTER"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3916,7 +3925,7 @@
     },
     "stagedSourceSynthesis": {
       "version": 1,
-      "status": "DOCUMENTED_IMPLEMENTATION_PENDING",
+      "status": "PHASE_5_CORE_IMPLEMENTED_QA_PENDING",
       "objective": "REPLACE_GIANT_ONE_SHOT_SOURCE_GENERATION_WITH_RESPONSIBILITY_FOCUSED_CONTEXT_AND_VALIDATED_INTERMEDIATE_BUILD_STAGES",
       "triggerEvidence": {
         "sourceRunId": 35438982255,
@@ -3947,7 +3956,28 @@
         "repeatedIdenticalIntermediateOutputRejected": true,
         "looseSafeFragmentRecoveryAllowed": true,
         "finalMinimumFootprintUnchanged": true,
-        "finalCanonicalQaUnchanged": true
+        "finalCanonicalQaUnchanged": true,
+        "stageTargetPlanner": {
+          "enabled": true,
+          "documentFirst": true,
+          "mode": "MISSING_CAPABILITY_FIRST",
+          "deriveFromCurrentAccumulatedSource": true,
+          "capabilityOrder": [
+            "REAL_INPUT",
+            "MUTABLE_GAME_STATE",
+            "UPDATE_OR_STATE_TRANSITION_LOOP",
+            "PROGRESSION_OR_RESOURCE_SYSTEM",
+            "WIN_LOSS_OR_RESULT",
+            "RESTART_RESET",
+            "SAVE_COMPATIBILITY",
+            "MOBILE_RESPONSIVE_CONTROLS"
+          ],
+          "eachExpansionGetsDistinctMissingCapabilityGoal": true,
+          "alreadyPresentCapabilitiesExcluded": true,
+          "repeatedCapabilityStagePenalized": true,
+          "noAuthorityExpansion": true,
+          "finalQualityGateUnchanged": true
+        }
       },
       "telemetry": [
         "FOCUSED_SYMBOL_CONTEXT_BYTES",
@@ -3963,7 +3993,25 @@
         "compareEditMatchRateByContextMode": true,
         "compareFullRewriteGrowthEfficiency": true,
         "verifiedOnly": true
-      }
+      },
+      "implementationEvidence": {
+        "focusedSymbolContext": "58caba8b59411260786c5c1286516fe8116fb307",
+        "stagedWebExpansion": "af147e08cc9190b966623cbc74974a2e12976d76",
+        "phase5Tests": "27d79f01d07c4486fd83dcf31e1d0e03bb57dd42",
+        "synthesisTelemetry": "98badfee2c1a9185c868443380425e0a4c401ee8",
+        "immutableSynthesisEvidence": "f5d5669a5527c19296ee808a7dd08c76ee92ef85",
+        "contextEfficiencyLearning": "1a7c286f98627ccd88fc52f54e5659c82e9052e0",
+        "contextEfficiencyLearningTest": "e617f4e872661a46827f3502488a0d00184337ae",
+        "symbolRegexCorrection": "5e9554b4ecb3ca86233a4c2ad0812299d94c8841",
+        "symbolRegexRegressionTest": "c945cd94408a91cd050c53dd7107ccce11d3abf2"
+      },
+      "pendingVerification": [
+        "LATEST_CORE_QA",
+        "LATEST_VIBE_QA",
+        "LATEST_INTEGRATED_REGRESSION",
+        "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
+        "COMPARE_TIMEOUT_EDIT_MATCH_FULL_REWRITE_SIZE_BEFORE_AFTER"
+      ]
     }
   },
   "vibeRecoveryLearningLoop": {
