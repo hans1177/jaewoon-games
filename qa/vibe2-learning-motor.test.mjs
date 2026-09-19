@@ -106,6 +106,39 @@ test('same verified failure fingerprint outranks same-game history when selectin
   assert.match(guidance,/MUST NOT expand writable scope/);
 });
 
+test('contextual negative evidence lowers selection score without globally deprecating strategy',()=>{
+  const fp='web|MOBILE_PLACEMENT_INPUT_MISSING';
+  const positive=(strategy,prefix,games)=>Array.from({length:5},(_,i)=>({
+    id:`${prefix}-${i}`,gameId:games[i%games.length],target:'web',evidence:[
+      'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+      `coding-strategy:${strategy}`,'coding-generation-attempts:1','coding-candidate-first-attempt:YES',
+      `coding-failure-fingerprint:${fp}`,`vibe2/candidate/${prefix}-${i}-primary-run`
+    ]
+  }));
+  const seeded=applyVerifiedCodingStrategyOutcomes({}, {tasks:[
+    ...positive('RESPONSIBILITY_FIRST','r',['r1','r2']),
+    ...positive('CAUSAL_TRACE_FIRST','c',['c1','c2'])
+  ]});
+  assert.equal(seeded.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.state,'PREFERRED');
+  assert.equal(seeded.state.codingStrategyMemory.strategies.CAUSAL_TRACE_FIRST.state,'PREFERRED');
+  const encodeFailure=(variant,run)=>'coding-strategy-negative:'+encodeURIComponent(JSON.stringify({
+    version:1,variant,strategy:'CAUSAL_TRACE_FIRST',failureFingerprint:fp,failureClass:'EDIT_MATCH',runEvidence:`actions-run:${run}`,verifiedBy:'IMMUTABLE_WORKER_RESULT',infrastructureFailure:false
+  }));
+  const negativeTask={id:'negative-mobile',gameId:'new-game',target:'web',evidence:[encodeFailure('primary','n1'),encodeFailure('speculative-1','n2')]};
+  const learned=applyVerifiedCodingStrategyOutcomes(seeded.state,{tasks:[negativeTask]});
+  assert.equal(learned.negativeAdded,2);
+  const causal=learned.state.codingStrategyMemory.strategies.CAUSAL_TRACE_FIRST;
+  assert.equal(causal.state,'PREFERRED');
+  assert.equal(causal.verifiedFailures,2);
+  assert.equal(causal.failureFingerprints[fp].verifiedFailures,2);
+  const preferred=preferredCodingStrategyForTask({task:{gameId:'new-game',target:'web',goal:'모바일 pointer placement 오류',evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'},stateInput:learned.state});
+  assert.equal(preferred.strategy,'RESPONSIBILITY_FIRST');
+  assert.equal(preferred.sameFailureVerifiedFailures,0);
+  assert.equal(preferred.authorityExpanded,false);
+  const deduped=applyVerifiedCodingStrategyOutcomes(learned.state,{tasks:[negativeTask]});
+  assert.equal(deduped.negativeAdded,0);
+});
+
 test('failure-local retrieval prioritizes verified same-game same-failure memory and ignores unverified records',()=>{
   const task={gameId:'tower-demo',target:'web',goal:'모바일 pointer placement failure를 수정',evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
   const fp=failureFingerprintForTask(task);
