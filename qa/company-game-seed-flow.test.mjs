@@ -155,6 +155,7 @@ test('seed material pool is fixed at 100 and composed seeds use mixed material i
 
 test('owner preservation pilots materialize through canonical GAME_SEED bootstrap',()=>{
   assert.match(seedWorkflow,/owner-design-reset-queue\.json/);
+  assert.match(seedDesignWorkflow,/owner-design-reset-queue\.json/);
   assert.match(bootstrap,/OWNER_DESIGN_RESET_QUEUE_FILE/);
   assert.match(bootstrap,/PRESERVATION_PRESENTATION_UPGRADE/);
   assert.match(bootstrap,/REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true/);
