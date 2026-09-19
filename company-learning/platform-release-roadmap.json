@@ -1,5 +1,5 @@
 {
-  "version": 159,
+  "version": 160,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3758,24 +3758,25 @@
     }
   },
   "changeRecord": {
-    "id": "SUPERVISED_WEB_NO_BACKLOG_STALL_2026-09-20",
+    "id": "SUPERVISED_WEB_FIRST_PILOT_BUG_DEFENSE_2026-09-20",
     "documentIsCode": true,
     "documentationFirst": false,
-    "previousChangeRecordId": "SUPERVISED_WEB_COAUTHORING_LEARNING_LOOP_2026-09-20",
-    "reason": "OWNER REQUIRES ASSISTANT+VIBE COAUTHORING WITHOUT SLOWING THE REST OF DEVELOPMENT. SUPERVISED REVIEW WAIT NOW RELEASES EXECUTION CAPACITY AND IS EXCLUDED FROM RUNNABLE PLANNING BACKLOG WHILE THE SAME SOURCE ROOT REMAINS LOCKED FOR REVIEW SAFETY.",
+    "previousChangeRecordId": "SUPERVISED_WEB_NO_BACKLOG_STALL_2026-09-20",
+    "reason": "START FIRST ASSISTANT+VIBE WEB COAUTHORING PILOT. REJECT THE EXISTING NO-OP BUG-DEFENSE CANDIDATE, RECORD THE FAILURE AS VERIFIED NEGATIVE EXPERIENCE, AND REQUEUE THE SAME TASK AS A NON-PREEMPTIVE SUPERVISED REAL-GAME BUILD.",
     "invariants": {
-      "unrelatedGamesContinueRunning": true,
-      "microRepairsContinueRunning": true,
-      "supervisorReviewDoesNotConsumeWorkerCapacity": true,
-      "supervisorReviewDoesNotConsumePlanningBacklog": true,
-      "sameGameConcurrentMutationWhileReviewing": false,
-      "verifiedReviewStillRequiredBeforePromotion": true
+      "unrelatedWorkContinues": true,
+      "ownerImmediatePreemptionDisabledForPilot": true,
+      "verifiedNegativeLearningRecorded": true,
+      "newCandidateMustBeReviewedBeforePromotion": true,
+      "sameGameSourceLockedDuringReview": true,
+      "qaGatesNotWeakened": true
     },
     "next": [
-      "CURRENT_CI_REVALIDATION_PASS",
-      "START_FIRST_SUPERVISED_BUG_DEFENSE_BUILD_WITH_PARALLEL_QUEUE_UNBLOCKED",
-      "MEASURE_REVIEW_WAIT_COUNT_VS_CAPACITY_RUNNING",
-      "VERIFY_NEXT_REFILL_KEEPS_FULL_INDEPENDENT_FANOUT"
+      "TRIGGER_VIBE2_FROM_THIS_ROADMAP_PUSH",
+      "GENERATE_NEW_BUG_DEFENSE_SUPERVISED_CANDIDATE",
+      "SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW",
+      "LEARN_PASS_OR_REVISE_RESULT",
+      "KEEP_PARALLEL_REFILL_ACTIVE"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -5759,6 +5760,58 @@
         "queueRegression": "405dee117dce6a037f621c0fd6ad0a8f09de2c28",
         "plannerRegression": "7d69dfff8c7c2c08a2ea204d55fd8cd3a109c142"
       }
+    },
+    "firstPilot": {
+      "gameId": "bug-defense",
+      "gameName": "곤충 디펜스",
+      "approvedDesign": {
+        "branch": "company-runtime",
+        "path": "design/bug-defense/2026-09-19/design-revised.json",
+        "strictDesignScore": 94.6
+      },
+      "rejectedCandidate": {
+        "branch": "vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35476177742-1",
+        "candidateSha": "b90fe9c4045635244c320698b90ba869af72b947",
+        "candidateSourceBlob": "9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "mainSourceBlob": "9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "decision": "REVISE",
+        "reason": "CANDIDATE_SOURCE_UNCHANGED_AND_STILL_VALIDATION_HARNESS",
+        "verifiedFindings": [
+          "RESPONSIBLE_SOURCE_BLOB_IDENTICAL_TO_MAIN",
+          "SCOPE_CONTROL_AND_SESSION_PHASE_TEST_HARNESS_REMAINS",
+          "NO_POINTER_OR_TOUCH_PLACEMENT",
+          "NO_REAL_SPATIAL_ENEMY_LOOP",
+          "NO_REACHABLE_WIN_OR_LOSS",
+          "DUPLICATE_SCOPE_HANDLERS"
+        ]
+      },
+      "negativeLearning": {
+        "experienceId": "supervised_bug-defense_35476177742_revise",
+        "runtimeBranchCommit": "1d4bc3b5d1eed59af5c889a7529235255815dd1a",
+        "state": "VERIFIED_NEGATIVE_EXPERIENCE_RECORDED"
+      },
+      "requeue": {
+        "runtimeBranchCommit": "a5d59bef297d7c6cbd09cba00e223fd3a5ac4cdd",
+        "taskId": "bug-defense-web-runtime-repair-v1",
+        "productionMode": "SUPERVISED_VIBE_COAUTHORING",
+        "priority": "critical",
+        "ownerDirective": false,
+        "automaticPromotionAllowed": false,
+        "supervisionApproved": false,
+        "state": "QUEUED"
+      },
+      "nextCandidateRequirements": [
+        "REAL_WAVE_PREVIEW",
+        "REAL_POINTER_TOUCH_SPATIAL_PLACEMENT",
+        "REAL_HABITAT_POSITION_STATE",
+        "REAL_COUNTERPLAY_DAMAGE_AND_STATUS_EFFECTS",
+        "REAL_ENEMY_MOVEMENT_AND_TARGETING",
+        "REAL_POLLEN_ECONOMY_AND_EVOLUTION",
+        "REACHABLE_READY_PLAYING_WIN_LOSS",
+        "RETRY_FLOW",
+        "VERSIONED_SAVE_OR_SETTINGS_PERSISTENCE_WHEN_USED",
+        "MOBILE_ONE_HAND_GAMEPLAY"
+      ]
     }
   }
 }
