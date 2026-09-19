@@ -304,7 +304,10 @@ test('recovery-fast lane is event-driven and never directly consumes a game work
   assert(recoveryFastWorkflow.includes('--route=all'));
   assert(recoveryFastWorkflow.includes('VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFER_TO_GAME_PRIMARY_FANIN'));
   assert(recoveryFastWorkflow.includes('company-system-ai-cycle'));
-  assert(recoveryFastWorkflow.includes("system_ai_recovery_dispatched=\"$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*  assert.equal(recoveryFastWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'),false);
+  assert(recoveryFastWorkflow.includes('system_ai_recovery_dispatched'));
+  assert(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_recovery_dispatched != '0'"));
+  assert.equal(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_queued != '0'"),false);
+  assert.equal(recoveryFastWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'),false);
   assert.equal(recoveryFastWorkflow.includes('vibe2-fanin-refill'),false);
   assert.equal(recoveryFastWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
 });
