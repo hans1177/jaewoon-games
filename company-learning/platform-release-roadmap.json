@@ -1,5 +1,5 @@
 {
-  "version": 152,
+  "version": 153,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -446,6 +446,34 @@
     "freeAiCapacityMustBeMaximized": true,
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
+    "sourceCandidateGenerationBottleneckMitigation": {
+      "version": 1,
+      "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
+      "status": "MAIN_WIRED_AWAITING_CLEAN_20_WAVE",
+      "focusedWebRepairFirstAttemptMode": "WORKER_PINNED_REPLACE_ONLY",
+      "modelGeneratedPathOrFindOnFocusedFirstAttempt": false,
+      "focusedReplaceTimeoutMs": 90000,
+      "focusedReplaceMaxPredict": 384,
+      "focusedReplaceContextWindow": 8192,
+      "minifiedLongLineAnchorFallback": true,
+      "focusedAnchorContextRadiusChars": 1400,
+      "baselineSuccessRatePercent": 25,
+      "latestDiagnosticRun": 35475020163,
+      "latestDiagnosticSuccessRatePercent": 33.33,
+      "latestDiagnosticFailureClasses": {
+        "EDIT_MATCH": 5,
+        "TIMEOUT": 1
+      },
+      "diagnosticRunIsClean20Wave": false,
+      "currentEvaluationRun": 35475446210,
+      "clean20WaveRequiredForEffectivenessDecision": true,
+      "sourceCommit": "f9fab12ef9f26a7c2dad425bf4f611d493954fa3",
+      "testCommits": [
+        "7aec400eb5e46e01978c683585e35f8f383c145e",
+        "a8260bdb4c716934ca491c7c08dea478b75637de"
+      ],
+      "workflowTelemetryCommit": "d897e86d13cf228bb1bdcfff9592c36cc6e60497"
+    },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
     "strategyQualityMayNotTradeAwayQaOrEvidence": true
   },
