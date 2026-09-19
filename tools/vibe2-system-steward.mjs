@@ -17,7 +17,7 @@ const safeTask=t=>t?.requiresOwnerDecision!==true&&t?.protectedChange!==true&&t?
 const activeStatus=s=>['queued','running'].includes(clean(s).toLowerCase());
 const waitBlocker=v=>/WAITING_FOR_GEMINI_QUOTA|external.*model.*quota|roblox.*(?:runner|studio).*(?:offline|deferred|wait)|WAITING_FOR_(?:ROBLOX_)?RUNTIME/i.test(clean(v));
 const failureSignature=t=>clean(t?.blocker)||clean(t?.lastOutcome)||'retry-exhausted';
-const ADAPTIVE_STEPS=new Set([4,8,16,32,64,128,256]);
+const ADAPTIVE_STEPS=new Set([4,8,16,20,32,64,128,256]);
 const staleMachineBlocker=v=>/^MACHINE_STATE_INCONSISTENT:.*(?:PARALLELISM_VERSION_MISMATCH|QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS|PERSISTENT_MAX_ABOVE_CONFIGURED)/i.test(clean(v));
 const rawMachineStateHealthy=({queueInput={},controlInput={}}={})=>
   Number(queueInput?.maxConcurrentTasks)===EXTERNAL_MATRIX_BATCH_MAX&&
