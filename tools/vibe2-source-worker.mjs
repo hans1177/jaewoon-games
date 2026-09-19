@@ -221,10 +221,72 @@ allowFullRewrite?'The replacement must be self-contained enough to run from the 
 `Required QA: ${(order.qa||[]).join(', ')}`,
 sourceText
 ].filter(Boolean).join('\n');}
+const SEMANTIC_SYSTEM_PATTERNS=Object.freeze({
+  INPUT:/\b(pointer(?:down|up|move)?|touch(?:start|end|move)?|keydown|keyup|mousedown|mouseup|click|playerintent|inputstate)\b/i,
+  SAVE:/\b(localstorage|sessionstorage|indexeddb|save(?:game|state)?|load(?:game|state)?|serialize|deserialize)\b/i,
+  ECONOMY:/\b(gold|coins?|currency|price|cost|shop|buy|sell|purchase|transaction)\b/i,
+  COMBAT:/\b(damage|attack|combat|weapon|health|hp|kill|death|cooldown)\b/i,
+  PROGRESSION:/\b(level|xp|quest|objective|unlock|wave|stage|progression)\b/i,
+  PLACEMENT:/\b(placement|placetower|placeentity|placedentities|placementslots|buildtower|deploy|gridslot)\b/i,
+  AI:/\b(enemyintent|enemystate|enemynavigation|pathfind|aggro|agentintent)\b/i,
+  WORLD:/\b(collision|worldentities|worldstate|region|route|worldquery)\b/i,
+  INTERACTION:/\b(interaction|interact|npc|dialog|pickup|chest|interactiontargets)\b/i,
+  GOAL_STATE:/\b(victory|defeat|gameover|runwon|runfailed|goalstate|retrystate)\b/i
+});
+function semanticSystemsForText(value=''){
+  const text=clean(value);
+  return Object.entries(SEMANTIC_SYSTEM_PATTERNS).filter(([,re])=>re.test(text)).map(([system])=>system);
+}
+function markerTouched(text='',markers=[]){
+  const lower=String(text||'').toLowerCase();
+  return markers.some(marker=>{
+    const needle=clean(marker).toLowerCase();
+    return needle.length>=3&&lower.includes(needle);
+  });
+}
+export function evaluateSemanticDiffBudget({candidate={},editContract={},allowFullRewrite=false,bootstrap=false}={}){
+  const confidence=clean(editContract?.responsibilityConfidence).toUpperCase()||'LOW';
+  const developmentMode=clean(editContract?.codingArchitecture?.developmentMode).toUpperCase();
+  const primaryTargets=unique(editContract?.primaryTargets||[]);
+  const dependent=unique(editContract?.allowedDependentSymbolsOrSystems||[]);
+  const ownedState=unique(editContract?.ownedState||[]);
+  const markers=unique([...primaryTargets,...dependent,...ownedState]);
+  const budget=editContract?.semanticDiffBudget||{};
+  const allowedSystems=new Set(unique(budget.allowedSystems||[]).map(x=>x.toUpperCase()));
+  const edits=Array.isArray(candidate.edits)?candidate.edits:[];
+  const newFiles=Array.isArray(candidate.newFiles)?candidate.newFiles:[];
+  const replaceFiles=Array.isArray(candidate.replaceFiles)?candidate.replaceFiles:[];
+  const hardGate=confidence==='HIGH'&&developmentMode==='PRESERVE_PATCH'&&primaryTargets.length>0&&allowFullRewrite!==true&&bootstrap!==true&&newFiles.length===0&&replaceFiles.length===0;
+  const touchedSystems=unique(edits.flatMap(edit=>semanticSystemsForText([edit.find,edit.replace].join('\n'))));
+  const unexpectedSystems=touchedSystems.filter(system=>allowedSystems.size>0&&!allowedSystems.has(system));
+  const editScopeRows=edits.map(edit=>{
+    const text=[edit.find,edit.replace].join('\n');
+    return{path:clean(edit.path),touchesAllowedMarker:markerTouched(text,markers),systems:semanticSystemsForText(text)};
+  });
+  const unprovenEdits=hardGate&&markers.length?editScopeRows.filter(row=>!row.touchesAllowedMarker):[];
+  const protectedSaveKeys=unique(budget.saveKeysMustRemainCompatible||[]);
+  const saveKeyViolations=[];
+  for(const edit of edits){
+    for(const key of protectedSaveKeys){
+      if(String(edit.find||'').includes(key)&&!String(edit.replace||'').includes(key))saveKeyViolations.push(clean(edit.path)+':'+key);
+    }
+  }
+  const violations=[];
+  if(hardGate&&budget.unrelatedSystemMutationForbidden===true&&unexpectedSystems.length)violations.push('UNRELATED_SYSTEM:'+unexpectedSystems.join(','));
+  if(hardGate&&unprovenEdits.length)violations.push('UNPROVEN_EDIT_SCOPE:'+unprovenEdits.map(row=>row.path).join(','));
+  if(hardGate&&saveKeyViolations.length)violations.push('SAVE_KEY_COMPATIBILITY:'+saveKeyViolations.join(','));
+  return{
+    version:1,mode:hardGate?'HARD_ENFORCE':'OBSERVE_ONLY',hardGate,pass:violations.length===0,confidence,developmentMode:developmentMode||null,
+    markerCount:markers.length,editCount:edits.length,touchedSystems,allowedSystems:[...allowedSystems],unexpectedSystems,
+    unprovenEditPaths:unprovenEdits.map(row=>row.path),protectedSaveKeyCount:protectedSaveKeys.length,saveKeyViolations,violations,
+    ambiguousClassificationObserved:!hardGate,writableScopeExpansionAllowed:false,authorityExpanded:false
+  };
+}
 export function generationFailureClass(error){
   const message=clean(error?.message||error);
   if(/실제 source 변경|변경 없는 edit/i.test(message))return'NO_OP';
   if(/시간 초과|timeout|prediction aborted|token repeat limit/i.test(message))return'TIMEOUT';
+  if(/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(message))return'SEMANTIC_DIFF_BUDGET';
   if(/책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message))return'INVALID_PATH';
   if(/전체 교체 파일 크기 오류/i.test(message))return'FULL_REWRITE_SIZE';
   if(/JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답/i.test(message))return'MALFORMED_OUTPUT';
@@ -468,6 +530,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
+  const editContract=exploration?.editContract||{};
+  const semanticDiffEnforcement=evaluateSemanticDiffBudget({candidate,editContract,allowFullRewrite,bootstrap});
+  if(!semanticDiffEnforcement.pass)throw new Error('SEMANTIC_DIFF_BUDGET_VIOLATION:'+semanticDiffEnforcement.violations.join('|'));
   const taskId=safeId(order.taskId);
   const candidateRoot=path.resolve(cwd,outputRoot,taskId);
   const candidateManifestPath=posix(path.relative(cwd,path.join(candidateRoot,'manifest.json')));
@@ -476,9 +541,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   let changedFiles,branch=null;
   if(applySource){branch=assertCandidateBranch(cwd);changedFiles=[...applyExactEdits(sourceRoot,candidate.edits),...applyNewFiles(sourceRoot,candidate.newFiles),...applyReplaceFiles(sourceRoot,candidate.replaceFiles,{allowCreate:bootstrap})];}
   else changedFiles=createCandidateSnapshot(sourceRoot,candidateRoot,candidate);
-  const editContract=exploration?.editContract||{};
   const codingMethod={
-    version:1,
+    version:2,
     strategy:clean(order?.candidateStrategyRole?.strategy)||clean(editContract.strategyHint)||'UNCLASSIFIED',
     compiledStrategyHint:clean(editContract.strategyHint)||null,
     candidateVariant:clean(order?.candidateStrategyRole?.variant)||'primary',
@@ -488,6 +552,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     dependentSystems:Array.isArray(editContract.dependentSystems)?editContract.dependentSystems.slice(0,12):[],
     ownedState:Array.isArray(editContract.ownedState)?editContract.ownedState.slice(0,24):[],
     semanticDiffBudget:editContract.semanticDiffBudget||null,
+    semanticDiffEnforcement,
     requiredFocusedChecks:Array.isArray(editContract.requiredFocusedChecks)?editContract.requiredFocusedChecks.slice(0,24):[],
     failureFingerprint:clean(editContract?.patchRecipe?.failureFingerprint)||clean(order?.unifiedLearning?.failureFingerprint)||null,
     patchRecipeMode:clean(editContract?.patchRecipe?.mode)||null,
