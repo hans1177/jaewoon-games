@@ -169,7 +169,7 @@ jobs:
           for(const token of ['PARTIAL_BUILD_VERIFIED','developmentBaselineImplemented:false','INDEPENDENT_RELEASE_QA=NOT_ASSERTED','DEVICE_VALIDATION=NOT_ASSERTED','gh run download','apk_sha256'])if(!unityResult.includes(token))throw new Error(`Unity result evidence separation missing: ${token}`);
           if(unityResult.includes('--independent-qa=PASS'))throw new Error('APK build workflow must not claim independent release QA PASS');
           const baselineExec=vibeRunner.indexOf('node /tmp/vibe2-main/tools/vibe2-release-baseline-queue.mjs');
-          const genericExec=vibeRunner.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs \\\\');
+          const genericExec=vibeRunner.indexOf('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs');
           if(baselineExec<0||genericExec<=baselineExec)throw new Error('Vibe2 release-baseline queue execution must run before generic autoplan execution');
           if(!vibeRunner.includes("'unity-games/**'"))throw new Error('Vibe2 runner must resume after Unity source changes');
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));

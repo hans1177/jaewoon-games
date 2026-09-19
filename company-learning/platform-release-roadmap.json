@@ -1,5 +1,5 @@
 {
-  "version": 45,
+  "version": 46,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -2511,6 +2511,7 @@
     "expectedEvidence": [
       "COMPANY_EVOLUTION_QA=PASS",
       "RELEASE_BASELINE_EVIDENCE_CONTRACT=PASS"
-    ]
+    ],
+    "matchingMode": "EXECUTION_COMMAND_PREFIX_ONLY"
   }
 }
