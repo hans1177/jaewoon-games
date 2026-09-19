@@ -849,6 +849,8 @@ jobs:
             Number(baseCodingMethod?.generationAttempts)>0&&`coding-generation-attempts:${Number(baseCodingMethod.generationAttempts)}`,
             Number(baseCodingMethod?.generationAttemptBudget)>0&&`coding-generation-attempt-budget:${Number(baseCodingMethod.generationAttemptBudget)}`,
             baseCodingMethod?.speculativeAttemptBudgetApplied===true?'coding-speculative-attempt-budget:YES':'',
+            baseCodingMethod?.fullWebInitialSeedStrategy===true?'coding-full-web-initial-seed:YES':'',
+            Array.isArray(baseCodingMethod?.fullWebInitialSeedTargetBytes)&&baseCodingMethod.fullWebInitialSeedTargetBytes.length===2&&`coding-full-web-initial-seed-target:${baseCodingMethod.fullWebInitialSeedTargetBytes.join('-')}`,
             baseCodingMethod?.partialTimeoutRecovery===true?'coding-timeout-partial-recovery:YES':'',
             baseCodingMethod?.partialMalformedRecovery===true?'coding-malformed-partial-recovery:YES':'',
             baseCodingMethod?.streamedPartialEditRecovery===true?'coding-streamed-partial-edit-recovery:YES':'',
