@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Approved Web Bootstrap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 1em;
+        }
+        button {
+            padding: 0.5em 1em;
+            font-size: 0.9em;
+            margin: 0 0.5em;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <main id="game">
+        <h1>Approved Web Bootstrap</h1>
+        <button onclick="startGame()">Start Game</button>
+    </main>
+    <script>
+        function startGame() {
+            const gameContainer = document.getElementById('game');
+            gameContainer.innerHTML = `
+                <h2>Territory War</h2>
+                <p>Click the button to start the game.</p>
+                <button onclick="playGame()">Play Game</button>
+            `;
+        }
+
+        function playGame() {
+            const gameContainer = document.getElementById('game');
+            gameContainer.innerHTML = `
+                <h2>Territory War</h2>
+                <p>Click the button to play the game.</p>
+                <button onclick="restartGame()">Restart Game</button>
+            `;
+        }
+
+        function restartGame() {
+            const gameContainer = document.getElementById('game');
+            gameContainer.innerHTML = `
+                <h2>Territory War</h2>
+                <p>Click the button to restart the game.</p>
+                <button onclick="startGame()">Start Game</button>
+            `;
+        }
+    </script>
+</body>
+</html>
