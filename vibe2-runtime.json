@@ -1,5 +1,5 @@
 {
-  "version": 8,
+  "version": 9,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -21,7 +21,7 @@
       "VIBE2.md"
     ],
     "machineStateVersions": {
-      "runtime": 8,
+      "runtime": 9,
       "queue": 5,
       "parallelism": 3,
       "experience": 3,
@@ -59,7 +59,12 @@
       "worker",
       "fan-in"
     ],
-    "postReleaseFocusedDevelopment": "machine-policy-driven-per-game-persistent-caretaker"
+    "postReleaseFocusedDevelopment": "machine-policy-driven-per-game-persistent-caretaker",
+    "sharedContextRequired": [
+      "company-learning/platform-release-roadmap.json",
+      "company-learning/company-log-map.json",
+      "company-learning/company-architecture-map.json"
+    ]
   },
   "continuous": {
     "enabled": true,
@@ -77,7 +82,7 @@
     "refillRequiresEligibleWork": true,
     "refillPlannerOnDispatch": false,
     "ownerDirectivePreemptsAutonomy": true,
-    "maxConcurrentGameTasks": 30,
+    "maxConcurrentGameTasks": null,
     "unityReleaseFocusSlots": 1,
     "longWorkProtectedSlots": 1,
     "priorityOrder": [
@@ -108,7 +113,7 @@
     "dynamicBackpressure": true,
     "speculativeParallelism": {
       "enabled": true,
-      "variants": 3,
+      "variants": 5,
       "highRiskOptInOnly": false,
       "unityBuildCandidatesExcluded": true,
       "criticalHighRiskAutomatic": true
@@ -124,18 +129,22 @@
     "postReleaseFocusedRefill": true,
     "legacySlotRefillBranchCompatibility": true,
     "systemStewardProtectedSlots": 1,
-    "systemStewardSlotBorrowableWhenIdle": true
+    "systemStewardSlotBorrowableWhenIdle": true,
+    "parallelismPolicy": "UNBOUNDED_BY_POLICY_EXTERNAL_CAPACITY_ONLY",
+    "externalMatrixBatchMax": 256,
+    "maxFreeAiWorkers": null,
+    "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_IMMEDIATE_WAVE_REFILL"
   },
   "adaptiveBackpressure": {
     "enabled": true,
-    "mode": "persistent-next-run-cap-plus-immediate-current-batch-protection",
+    "mode": "external-capacity-batch-protection-only-policy-remains-unbounded",
     "stateFile": ".vibe2/parallelism-control.json",
     "steps": [
-      30,
-      24,
-      20,
+      256,
+      128,
+      64,
+      32,
       16,
-      12,
       8,
       4
     ],
@@ -152,12 +161,14 @@
     "lowWorkloadBuildsRecoveryStreak": false,
     "immediateDynamicCapMayAlsoDownshiftPersistentCap": false,
     "duplicateRunMayChangePersistentCap": false,
-    "missingStateFallbackMax": 30,
-    "corruptStateFallbackMax": 30,
+    "missingStateFallbackMax": 256,
+    "corruptStateFallbackMax": 256,
     "fastHealthyRamp": true,
     "staleTelemetryTtlMinutes": 90,
     "staleTelemetryResetsToMax": true,
-    "laneSpecificPressurePreferred": true
+    "laneSpecificPressurePreferred": true,
+    "policyConcurrencyLimit": null,
+    "externalBatchMax": 256
   },
   "sources": {
     "queue": ".vibe2/queue.json",
@@ -175,7 +186,10 @@
     "externalAiDistillationPolicy": "company-learning/external-ai-distillation-policy.json",
     "externalAiDistilledKnowledge": ".vibe2/external-ai-distilled-knowledge.json",
     "practiceDistilledKnowledge": ".vibe2/practice-distilled-knowledge.json",
-    "projectLifecycleState": ".vibe2/web-roblox-handoffs.json"
+    "projectLifecycleState": ".vibe2/web-roblox-handoffs.json",
+    "centralPolicy": "company-learning/platform-release-roadmap.json",
+    "logMap": "company-learning/company-log-map.json",
+    "architectureMap": "company-learning/company-architecture-map.json"
   },
   "workers": {
     "exploration": {
@@ -195,7 +209,15 @@
       "tool": "tools/vibe2-source-worker.mjs",
       "model": "qwen3:1.7b",
       "candidateBranchPrefix": "vibe2/candidate/",
-      "directMainWrite": false
+      "directMainWrite": false,
+      "freeCapacityScaling": "UNBOUNDED_BY_POLICY_ONE_WORKER_PER_INDEPENDENT_TASK",
+      "modelLoadOptimization": {
+        "sharedActionsCache": true,
+        "cachedRuntimeSidecar": true,
+        "prewarmOncePerWorkflow": true,
+        "workerPullOnlyOnCacheMiss": true,
+        "duplicateModelDownloadForbidden": true
+      }
     },
     "performance": {
       "configured": true,
@@ -249,7 +271,7 @@
   "parallelismTelemetry": {
     "enabled": true,
     "tool": "tools/vibe2-parallelism-telemetry.mjs",
-    "requestedMax": 30,
+    "requestedMax": 256,
     "artifact": "vibe2-parallelism-telemetry",
     "metrics": [
       "actualPeakConcurrency",
@@ -271,16 +293,17 @@
       "preparationRatioPct",
       "bottleneck"
     ],
-    "loadProbeTargetWorkers": 30,
+    "loadProbeTargetWorkers": 256,
     "backpressureSteps": [
-      30,
-      24,
-      20,
+      256,
+      128,
+      64,
+      32,
       16,
-      12,
       8,
       4
-    ]
+    ],
+    "policyConcurrencyLimit": null
   },
   "contracts": {
     "core": {
@@ -612,7 +635,7 @@
     "targetWorkUnitsPerCycle": 12,
     "targetPackagesPerCycle": 4,
     "targetFeaturePackagesPerCycle": 1,
-    "maxPackagesPerCycle": 30,
+    "maxPackagesPerCycle": 256,
     "maxTasksPerPackage": 5,
     "smallTaskAction": "auto-expand-or-defer",
     "automaticExpansionMode": "real-disjoint-candidates-first-explicit-related-scopes-fallback",
@@ -678,7 +701,7 @@
       "maxMinWorkUnitsPerPackage": 6,
       "neverReduceSafetyOrQa": true
     },
-    "capacityPolicy": "FILL_AVAILABLE_INDEPENDENT_PRODUCTION_SLOTS_UP_TO_GLOBAL_30"
+    "capacityPolicy": "UNBOUNDED_BY_POLICY_FILL_EXTERNAL_PROVIDER_CAPACITY_IN_IMMEDIATE_WAVES"
   },
   "learningMotor": {
     "enabled": true,
