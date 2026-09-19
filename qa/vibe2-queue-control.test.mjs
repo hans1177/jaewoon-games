@@ -22,6 +22,22 @@ function add(queue, id, gameId, target='unity', extra={}) {
   return enqueueVibeTask(queue,{ id, gameId, target, goal:`${id} 작업`, sourceRoot:`${target}-games/${gameId}`, ...extra });
 }
 
+test('queue normalization exposes explicit execution lanes and release wait is dynamic',()=>{
+  let queue=createVibeContinuousQueue({tasks:[
+    {id:'game',gameId:'g',target:'web',department:'development',type:'implementation',goal:'game',status:'queued'},
+    {id:'recovery',gameId:'sys',target:'web',department:'system-supervision',type:'research',goal:'recover',status:'queued',systemSteward:true},
+    {id:'control',gameId:'sys2',target:'web',department:'system-supervision',type:'research',goal:'control',status:'queued'},
+    {id:'learn',gameId:'learn',target:'web',department:'development',type:'research',goal:'learn',status:'queued',evidence:['learning-practice-only']}
+  ]});
+  assert.equal(queue.tasks.find(t=>t.id==='game').executionLane,'GAME_PRIMARY');
+  assert.equal(queue.tasks.find(t=>t.id==='recovery').executionLane,'RECOVERY_FAST');
+  assert.equal(queue.tasks.find(t=>t.id==='control').executionLane,'CONTROL_FAST');
+  assert.equal(queue.tasks.find(t=>t.id==='learn').executionLane,'LEARNING_IDLE');
+  queue={...queue,tasks:queue.tasks.map(t=>t.id==='game'?{...t,status:'running',blocker:'candidate-awaiting-qa-and-deployment'}:t)};
+  queue=createVibeContinuousQueue(queue);
+  assert.equal(queue.tasks.find(t=>t.id==='game').executionLane,'RELEASE_WAIT');
+});
+
 test('legacy central policy evidence is migrated to the roadmap authority during queue normalization', () => {
   const queue=createVibeContinuousQueue({tasks:[{
     id:'legacy-policy',gameId:'legacy',target:'web',sourceRoot:'web-games/legacy',goal:'legacy',
