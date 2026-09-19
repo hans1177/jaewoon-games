@@ -18,7 +18,7 @@ const hash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h
 
 export const MASTERY_DOMAINS=freeze([
   'CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE',
-  'DEBUGGING','PERFORMANCE','ASSET_PRODUCTION','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
+  'DEBUGGING','RECOVERY','PERFORMANCE','ASSET_PRODUCTION','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
   'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER'
 ]);
 
@@ -33,6 +33,7 @@ const DOMAIN_PATTERNS=freeze({
   MOBILE_INPUT:/mobile|touch|pointer|swipe|drag|virtual.?stick|input/i,
   UI_STATE:/\bui\b|hud|menu|panel|feedback|responsive/i,
   DEBUGGING:/debug|failure|bug|repair|causal|responsibility|regression/i,
+  RECOVERY:/recovery|recover|retry|requeue|bottleneck|stale|checkpoint|fallback|repair.?loop|resume.?exact/i,
   PERFORMANCE:/performance|fps|frame|memory|cpu|jank|pool|latency/i,
   ASSET_PRODUCTION:/asset|sprite|svg|canvas|texture|animation|vfx|audio|model/i,
   WEB_RUNTIME:/\bweb\b|browser|html|canvas|dom|css|javascript/i,
@@ -94,7 +95,14 @@ const CODE_PATTERN_MASTERY=Object.freeze({
   ECONOMY_TRANSACTION:['ECONOMY'],
   FRAME_LOOP_PERFORMANCE:['PERFORMANCE'],
   MOBILE_UI_FLOW:['MOBILE_INPUT','UI_STATE'],
-  REGRESSION_REPAIR:['DEBUGGING']
+  REGRESSION_REPAIR:['DEBUGGING','RECOVERY'],
+  EXACT_STAGE_RESUME:['RECOVERY','DEBUGGING','STATE_MACHINE'],
+  QUEUE_RECOVERY:['RECOVERY','DEBUGGING'],
+  CACHE_RUNTIME_RECOVERY:['RECOVERY','DEBUGGING','PERFORMANCE'],
+  PROVIDER_FALLBACK:['RECOVERY','DEBUGGING'],
+  ORCHESTRATION_RECOVERY:['RECOVERY','DEBUGGING'],
+  MACHINE_STATE_RECOVERY:['RECOVERY','DEBUGGING','STATE_MACHINE'],
+  RUNTIME_OBSERVATION_RECOVERY:['RECOVERY','DEBUGGING']
 });
 
 export function applyVerifiedCodePatternsToMastery(stateInput={},libraryInput={}){
@@ -103,6 +111,7 @@ export function applyVerifiedCodePatternsToMastery(stateInput={},libraryInput={}
   let added=0;
   for(const pattern of libraryInput?.patterns||[]){
     if(pattern?.verified!==true||pattern?.rawCodeStored===true)continue;
+    if(pattern?.masteryEligible===false)continue;
     if(upper(pattern.independentQa)!=='PASS')continue;
     const id=clean(pattern.id);if(!id||seen.has(id))continue;
     const domains=CODE_PATTERN_MASTERY[upper(pattern.system)]||inferDomains([pattern.system,pattern.pattern,...(pattern.tags||[])].join(' '),pattern.engine);
