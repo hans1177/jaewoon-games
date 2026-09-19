@@ -1067,6 +1067,14 @@ test('focused Web repair uses replace-only fast path on the first attempt',async
   assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-first-attempt/files/index.html'),'utf8'),/data-ready="true"/);
 });
 
+test('focused first-attempt fast path is exported to immutable worker telemetry',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/focusedFirstAttemptFastPath:generation\.focusedFirstAttemptFastPath===true/);
+  assert.match(workflowSource,/coding-focused-replace-only:YES/);
+  assert.match(workflowSource,/coding-focused-first-attempt-fast-path:YES/);
+});
+
 test('focused no-op retry keeps speculative base budget but grants only targeted credit in worker loop',()=>{
   assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),2);
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
