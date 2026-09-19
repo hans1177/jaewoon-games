@@ -1,5 +1,5 @@
 {
-  "version": 6,
+  "version": 7,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -182,5 +182,24 @@
     ],
     "launcherValidationRequired": true,
     "staleRoadmapExecutionForbidden": true
+  },
+  "longHorizonTopology": {
+    "version": 1,
+    "centralPolicy": "company-learning/platform-release-roadmap.json",
+    "currentExecutableFrontier": "SELF_RECOVERY_SECURITY_IMMUNITY_24H_GAME_CREATION",
+    "chain": [
+      "VERIFIED_LEARNING",
+      "SELF_RECOVERY",
+      "SECURITY_IMMUNITY",
+      "AUTONOMOUS_24H_GAME_CREATION",
+      "VERIFIED_SELF_EXPANSION",
+      "MULTIVERSE_PERSISTENT_WORLDS",
+      "USER_IDENTITY_CONTINUITY",
+      "CONSCIOUSNESS_TRANSFER_RESEARCH_UNPROVEN"
+    ],
+    "authorityExpansionMode": "FORBIDDEN",
+    "capabilityExpansionMode": "VERIFIED_AND_GATED",
+    "simulatedIdentityClaimBoundary": "SIMULATION_OR_DIGITAL_IDENTITY_CONTINUITY_ONLY",
+    "allWorkersMustFollowCentralVision": true
   }
 }

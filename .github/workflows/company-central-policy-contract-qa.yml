@@ -11,6 +11,7 @@ on:
       - 'company-learning/security-immune-system.json'
       - 'tools/company-shared-context.mjs'
       - 'qa/company-shared-context.test.mjs'
+      - 'qa/company-long-horizon-vision.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/company-system-ai-workers.yml'
       - '.github/workflows/company-security-immune.yml'
@@ -177,6 +178,7 @@ jobs:
         run: |
           node --check tools/company-shared-context.mjs
           node --test qa/company-shared-context.test.mjs
+          node --test qa/company-long-horizon-vision.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context.json
           node --check tools/production-classification.mjs
           node --check tools/design-only-promotion-sync.mjs
