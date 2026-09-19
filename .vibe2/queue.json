@@ -1,7 +1,7 @@
 {
   "version": 5,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 256,
+  "maxConcurrentTasks": 30,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
