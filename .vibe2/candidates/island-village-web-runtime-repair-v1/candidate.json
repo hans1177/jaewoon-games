@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "        const soundEffects = [",
+      "replace": "        const soundEffects = [    { id: 1, type: 'damage', effect: 'play sound' },    { id: 2, type: 'heal', effect: 'play sound' }"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
