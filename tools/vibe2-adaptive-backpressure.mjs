@@ -1,15 +1,16 @@
 // 파일명: tools/vibe2-adaptive-backpressure.mjs
-// 역할: 최근 병렬 실행 텔레메트리를 다음 run의 영속 동시성 cap(20→16→12→8→4)에 연결한다.
+// 역할: 최근 병렬 실행 텔레메트리를 다음 run의 영속 동시성 cap(30→24→20→16→12→8→4)에 연결하고 오래된 압력을 자동 만료한다.
 
-export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 12, 16, 20]);
-export const DEFAULT_ADAPTIVE_MAX = 20;
+export const ADAPTIVE_PARALLELISM_STEPS = Object.freeze([4, 8, 12, 16, 20, 24, 30]);
+export const DEFAULT_ADAPTIVE_MAX = 30;
+export const DEFAULT_TELEMETRY_TTL_MS = 90 * 60 * 1000;
 
 const num = (value) => Number.isFinite(Number(value)) ? Number(value) : 0;
 const clean = (value) => String(value ?? '').trim();
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function normalizeStep(value = DEFAULT_ADAPTIVE_MAX) {
-  const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_MAX), 4, 20);
+  const raw = clamp(Math.floor(num(value) || DEFAULT_ADAPTIVE_MAX), 4, 30);
   return ADAPTIVE_PARALLELISM_STEPS.reduce((best, step) => Math.abs(step - raw) < Math.abs(best - raw) ? step : best, DEFAULT_ADAPTIVE_MAX);
 }
 function stepDown(current) {
@@ -23,12 +24,12 @@ function stepUp(current) {
 
 export function createParallelismControl(input = {}) {
   return Object.freeze({
-    version: 2,
+    version: 3,
     currentMax: normalizeStep(input.currentMax),
     healthyStreak: Math.max(0, Math.floor(num(input.healthyStreak))),
     pressureStreak: Math.max(0, Math.floor(num(input.pressureStreak))),
     lastDecision: clean(input.lastDecision) || 'INIT',
-    lastReason: clean(input.lastReason) || 'DEFAULT_20',
+    lastReason: clean(input.lastReason) || 'DEFAULT_30',
     lastRunId: clean(input.lastRunId) || null,
     lastUpdatedAt: clean(input.lastUpdatedAt) || null,
     lastTelemetry: input.lastTelemetry && typeof input.lastTelemetry === 'object' ? input.lastTelemetry : null
@@ -37,7 +38,7 @@ export function createParallelismControl(input = {}) {
 
 export function adaptiveRequestedMax(controlInput = {}, requestedMax = DEFAULT_ADAPTIVE_MAX) {
   const control = createParallelismControl(controlInput);
-  const requested = clamp(Math.floor(num(requestedMax) || DEFAULT_ADAPTIVE_MAX), 1, 20);
+  const requested = clamp(Math.floor(num(requestedMax) || DEFAULT_ADAPTIVE_MAX), 1, 30);
   return Math.max(1, Math.min(requested, control.currentMax));
 }
 
@@ -76,8 +77,23 @@ function isHealthy(telemetry = {}) {
     && num(telemetry.checkout?.p95Ms) < 15000;
 }
 
-export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString() } = {}) {
-  const control = createParallelismControl(controlInput);
+export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { now = new Date().toISOString(), telemetryTtlMs = DEFAULT_TELEMETRY_TTL_MS } = {}) {
+  let control = createParallelismControl(controlInput);
+  const nowMs = Date.parse(now);
+  const previousAt = Date.parse(clean(control.lastUpdatedAt));
+  const stale = Number.isFinite(nowMs) && Number.isFinite(previousAt) && nowMs - previousAt > Math.max(60_000, Number(telemetryTtlMs) || DEFAULT_TELEMETRY_TTL_MS);
+  if (stale && control.currentMax < DEFAULT_ADAPTIVE_MAX) {
+    control = createParallelismControl({
+      currentMax: DEFAULT_ADAPTIVE_MAX,
+      healthyStreak: 0,
+      pressureStreak: 0,
+      lastDecision: 'RESET',
+      lastReason: 'STALE_TELEMETRY_RESET',
+      lastRunId: null,
+      lastUpdatedAt: now,
+      lastTelemetry: null
+    });
+  }
   const runId = clean(telemetry.runId);
   if (runId && control.lastRunId === runId) {
     return createParallelismControl({
@@ -133,13 +149,13 @@ export function decideAdaptiveBackpressure(controlInput = {}, telemetry = {}, { 
   } else if (isHealthy(telemetry)) {
     healthyStreak += 1;
     pressureStreak = 0;
-    if (healthyStreak >= 2) {
+    if (healthyStreak >= 1) {
       next = stepUp(current);
       decision = next > current ? 'UP' : 'HOLD';
-      reason = next > current ? 'HEALTHY_STREAK_2' : 'AT_MAX_HEALTHY';
+      reason = next > current ? 'HEALTHY_FAST_RAMP' : 'AT_MAX_HEALTHY';
       healthyStreak = next > current ? 0 : healthyStreak;
     } else {
-      reason = 'HEALTHY_STREAK_1';
+      reason = 'HEALTHY_RAMP_PENDING';
     }
   } else {
     healthyStreak = 0;
