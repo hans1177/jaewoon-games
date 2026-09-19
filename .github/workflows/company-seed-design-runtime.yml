@@ -770,10 +770,31 @@ jobs:
           cmp -s game-seed-state.json /tmp/company-runtime-seed-state-before.json || seed_changed=1
           git add -- "$game_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true
           git diff --cached --quiet && { echo 'SEED_DESIGN_RUNTIME_CHANGE=NO'; exit 0; }
-          git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}";generated_commit="$(git rev-parse HEAD)";[ "$seed_changed" = 0 ] && rm -f game-seed-state.json || true
+          git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
+          generated_commit="$(git rev-parse HEAD)"
+          runtime_worktree="/tmp/seed-design-persist-${{ matrix.target.game_id }}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           pushed=0
-          for attempt in 1 2 3 4; do git fetch origin "$COMPANY_RUNTIME_BRANCH";git checkout -B seed-design-persist "origin/$COMPANY_RUNTIME_BRANCH";git checkout "$generated_commit" -- "$game_path";[ "$seed_changed" = 1 ] && git checkout "$generated_commit" -- game-seed-state.json || true;git add -- "$game_path";[ "$seed_changed" = 1 ] && git add -- game-seed-state.json || true;if git diff --cached --quiet; then pushed=1;break;fi;git commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}";if git push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1;break;fi;git reset --hard "$generated_commit";sleep $((attempt * 2));done
+          for attempt in 1 2 3 4; do
+            git fetch origin "$COMPANY_RUNTIME_BRANCH"
+            git worktree remove --force "$runtime_worktree" 2>/dev/null || true
+            rm -rf "$runtime_worktree"
+            git worktree prune
+            git worktree add --detach "$runtime_worktree" "origin/$COMPANY_RUNTIME_BRANCH"
+            git -C "$runtime_worktree" config user.name 'jaewoon-seed-design'
+            git -C "$runtime_worktree" config user.email 'seed-design@users.noreply.github.com'
+            git -C "$runtime_worktree" checkout "$generated_commit" -- "$game_path"
+            if [ "$seed_changed" = 1 ]; then git -C "$runtime_worktree" checkout "$generated_commit" -- game-seed-state.json; fi
+            git -C "$runtime_worktree" add -- "$game_path"
+            if [ "$seed_changed" = 1 ]; then git -C "$runtime_worktree" add -- game-seed-state.json; fi
+            if git -C "$runtime_worktree" diff --cached --quiet; then pushed=1; break; fi
+            git -C "$runtime_worktree" commit -m "runtime: DESIGN_ONLY cycle ${{ matrix.target.game_id }} ${{ matrix.target.date }}"
+            if git -C "$runtime_worktree" push origin "HEAD:refs/heads/$COMPANY_RUNTIME_BRANCH"; then pushed=1; break; fi
+            sleep $((attempt * 2))
+          done
+          git worktree remove --force "$runtime_worktree" 2>/dev/null || true
+          git worktree prune
           test "$pushed" = 1
+          echo 'SEED_DESIGN_RUNTIME_PERSIST_WORKTREE=ISOLATED'
           echo 'SEED_DESIGN_RUNTIME_CHANGE=PERSISTED'
           echo 'PUBLIC_MAIN_WRITE=NO'
 
