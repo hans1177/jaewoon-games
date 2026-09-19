@@ -714,13 +714,50 @@ test('undersized full web seed accumulates additive model expansions until valid
   assert.deepEqual(result.generation.expansionStageTargets,['REAL_INPUT','UPDATE_OR_STATE_TRANSITION_LOOP']);
   assert.deepEqual(result.codingMethod.expansionStageTargets,['REAL_INPUT','UPDATE_OR_STATE_TRANSITION_LOOP']);
   assert.equal(result.generation.intermediateGrowthBytes.length,2);
-  assert.ok(result.generation.intermediateGrowthBytes.every(value=>value>120));
+  assert.ok(result.generation.intermediateGrowthBytes.every(value=>value>=1200));
   const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-expansion-accumulate/files/index.html'),'utf8');
   assert.ok(Buffer.byteLength(output,'utf8')>=12000);
   assert.match(output,/data-gameplay-system="combat"/);
   assert.match(output,/data-gameplay-system="progression"/);
   assert.doesNotMatch(output,/VIBE2_WEB_EXPANSION/);
   assert.deepEqual(result.changedFiles,['index.html']);
+});
+
+test('tiny copied expansion skeleton is rejected before a real additive fragment is accepted', async () => {
+  const cwd=tempRoot();
+  const seedFile=path.join(cwd,'seed-tiny-expansion.txt');
+  const tinyFile=path.join(cwd,'tiny-expansion.txt');
+  const realFile=path.join(cwd,'real-expansion.txt');
+  const seedBody=Array.from({length:150},(_,i)=>`function seed${i}(s){s.score=(s.score||0)+${i%5};s.hp=Math.max(0,(s.hp||20)-0);return s}`).join('');
+  const seed=`<!doctype html><html><body><button id="start">Start</button><canvas id="game"></canvas><script>let state={score:0,hp:20,wave:1};${seedBody}</script></body></html>`;
+  const tiny='<section class="game-specific-system">...</section><script>(()=>{ /* real additive gameplay implementation */ })();</script>';
+  const real=`<section data-gameplay-system="input-progress"></section><script>(()=>{const extra={};${Array.from({length:45},(_,i)=>`extra.m${i}=()=>{state.score+=${(i%4)+1};state.wave+=1;return state.score};`).join('')}window.addEventListener('pointerdown',()=>extra.m1());window.addEventListener('touchstart',()=>extra.m2(),{passive:true});localStorage.setItem('vibe2-tiny-expansion-test',JSON.stringify(state));})();</script>`;
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'tiny-expansion-reject'});
+  workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed=true;
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd,'design/demo/2026-09-18/design-revised.json'),JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(seedFile,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:seed','---VIBE2_FILE_CONTENT---',seed,'---VIBE2_FILE_END---'].join('\n'));
+  write(tinyFile,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',tiny,'---VIBE2_EXPANSION_END---'].join('\n'));
+  write(realFile,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',real,'---VIBE2_EXPANSION_END---'].join('\n'));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[seedFile,tinyFile,realFile]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.fullWebExpansionStages,1);
+  assert.equal(result.generation.repeatedIntermediateOutputs,1);
+  assert.ok(result.generation.intermediateGrowthBytes[0]>=1200);
+  const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/tiny-expansion-reject/files/index.html'),'utf8');
+  assert.doesNotMatch(output,/game-specific-system/);
+  assert.match(output,/data-gameplay-system="input-progress"/);
+});
+
+test('full web expansion prompt does not contain copyable placeholder implementation and counts only remaining expansion attempts',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  assert.doesNotMatch(workerSource,/<section class="game-specific-system">\.\.\.<\/section>/);
+  assert.doesNotMatch(workerSource,/\/\* real additive gameplay implementation \*\//);
+  assert.match(workerSource,/const remainingStages=Math\.max\(1,maxAttempts-attempt\);/);
+  assert.match(workerSource,/growth<1200/);
 });
 
 test('final full web attempt synthesizes the accumulated seed instead of staying in expansion mode', async () => {
