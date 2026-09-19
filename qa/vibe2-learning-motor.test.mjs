@@ -345,3 +345,27 @@ test('permanent project removal excludes stale company and control queue lifecyc
   assert.equal(pack.handoffs.length,0);
   assert.equal(pack.gateBypass,false);
 });
+
+
+test('verified recovery code pattern raises recovery mastery while advisory external pattern does not',()=>{
+  const result=applyVerifiedCodePatternsToMastery({}, {patterns:[
+    {id:'recovery1',verified:true,rawCodeStored:false,independentQa:'PASS',masteryEligible:true,system:'QUEUE_RECOVERY',engine:'system',pattern:'VERIFIED_RECOVERY_QUEUE_RECOVERY'},
+    {id:'external1',verified:true,rawCodeStored:false,independentQa:'STATIC_ONLY',masteryEligible:false,system:'SAVE_PERSISTENCE',engine:'external-authorized',pattern:'AUTHORIZED_EXTERNAL_GENERALIZED_SAVE_PERSISTENCE_ADVISORY_ONLY'}
+  ]});
+  assert.equal(result.added,1);
+  assert.ok(result.state.domains.RECOVERY.xp>0);
+  assert.ok(result.state.domains.DEBUGGING.xp>0);
+});
+
+test('authorized external generalized patterns remain retrieval advisory without mastery credit',()=>{
+  const ctx=retrieveUnifiedLearning({
+    task:{gameId:'g1',target:'web',goal:'repair save retry recovery'},
+    codePatternsInput:{patterns:[{
+      id:'external-save',verified:true,rawCodeStored:false,independentQa:'STATIC_ONLY',masteryEligible:false,
+      system:'SAVE_PERSISTENCE',engine:'external-authorized',pattern:'AUTHORIZED_EXTERNAL_GENERALIZED_SAVE_PERSISTENCE_ADVISORY_ONLY',
+      tags:['authorized-external','retrieval-only']
+    }]}
+  });
+  assert.equal(ctx.codePatterns.length,1);
+  assert.equal(ctx.codePatterns[0].id,'external-save');
+});
