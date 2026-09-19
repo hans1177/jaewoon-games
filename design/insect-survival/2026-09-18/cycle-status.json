@@ -276,6 +276,7 @@
     "state": "DESIGN_BASELINE_PENDING_MEETING_HOLD",
     "ready": false,
     "blockers": [
+      "deterministic-design-recovery-provenance-required",
       "meeting-holds:2"
     ],
     "advisoryDisposition": "REDESIGN",
@@ -305,13 +306,13 @@
         ]
       },
       "deterministicDesignGate": {
-        "required": false,
-        "authority": null,
-        "pass": null,
-        "path": null,
-        "phase": null,
-        "totalScore": null,
-        "passMinimum": null,
+        "required": true,
+        "authority": "DETERMINISTIC_EVIDENCE",
+        "pass": true,
+        "path": "design/insect-survival/2026-09-18/design-checkpoint.json",
+        "phase": "deterministic_pre_gate",
+        "totalScore": 80,
+        "passMinimum": 80,
         "hardFailures": [],
         "criticalAxisFailures": []
       },
@@ -366,8 +367,8 @@
       "meetingConflictBlocksDesignBaseline": true,
       "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
       "unanimousFatalDiscardRequiredToDiscard": true,
-      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
-      "deterministicEvidenceGateRequired": false,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
+      "deterministicEvidenceGateRequired": true,
       "aiReviewIsGateAuthority": false,
       "designArtbookOnlyAfterBaselineReady": true,
       "designOnlyVibe2Forbidden": true,
@@ -381,7 +382,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T03:40:17.643Z"
+    "checkedAt": "2026-09-19T03:42:36.382Z"
   },
   "artbookUi": {
     "status": "WAITING",

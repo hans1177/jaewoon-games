@@ -271,9 +271,11 @@
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_READY",
-    "ready": true,
-    "blockers": [],
+    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "ready": false,
+    "blockers": [
+      "deterministic-design-recovery-provenance-required"
+    ],
     "advisoryDisposition": "ACTIVE",
     "unanimousFatalDiscard": false,
     "meeting": {
@@ -301,13 +303,13 @@
         ]
       },
       "deterministicDesignGate": {
-        "required": false,
-        "authority": null,
-        "pass": null,
-        "path": null,
-        "phase": null,
-        "totalScore": null,
-        "passMinimum": null,
+        "required": true,
+        "authority": "DETERMINISTIC_EVIDENCE",
+        "pass": true,
+        "path": "design/cozy-island/2026-09-18/design-checkpoint.json",
+        "phase": "deterministic_pre_gate",
+        "totalScore": 80,
+        "passMinimum": 80,
         "hardFailures": [],
         "criticalAxisFailures": []
       },
@@ -352,8 +354,8 @@
       "meetingConflictBlocksDesignBaseline": true,
       "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
       "unanimousFatalDiscardRequiredToDiscard": true,
-      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
-      "deterministicEvidenceGateRequired": false,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
+      "deterministicEvidenceGateRequired": true,
       "aiReviewIsGateAuthority": false,
       "designArtbookOnlyAfterBaselineReady": true,
       "designOnlyVibe2Forbidden": true,
@@ -367,17 +369,17 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T03:40:17.749Z"
+    "checkedAt": "2026-09-19T03:42:36.462Z"
   },
   "artbookUi": {
-    "status": "WRITING",
-    "label": "작성중",
+    "status": "WAITING",
+    "label": "대기중",
     "path": "artbook-submissions/cozy-island/status.json"
   },
   "artbookPublication": {
     "published": false,
     "path": null,
-    "baselineGateState": "DESIGN_BASELINE_READY",
-    "reason": "awaiting-post-baseline-artbook-editor"
+    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "reason": "baseline-not-ready"
   }
 }
