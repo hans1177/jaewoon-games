@@ -240,6 +240,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   }
   const taskId=safeId(order.taskId);
   const candidateRoot=path.resolve(cwd,outputRoot,taskId);
+  const candidateManifestPath=posix(path.relative(cwd,path.join(candidateRoot,'manifest.json')));
   fs.rmSync(candidateRoot,{recursive:true,force:true});
   fs.mkdirSync(candidateRoot,{recursive:true});
   let changedFiles,branch=null;
@@ -261,6 +262,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     generatedAt:new Date().toISOString(),
     mode:applySource?'isolated-candidate-branch-source-write':'candidate-snapshot-only',
     branch,
+    candidateManifestPath,
     model,
     changedFiles,
     summary:candidate.summary,
@@ -281,4 +283,4 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   return manifest;
 }
 
-if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=parseArgs();const result=await runVibe2SourceWorker({workOrderFile:clean(args.order)||'.vibe2/work-order.json',outputRoot:clean(args.output)||'.vibe2/candidates',model:clean(args.model)||DEFAULT_MODEL,responseFile:clean(args.response),applySource:String(args['apply-source']||'').toLowerCase()==='true'});console.log('VIBE2_SOURCE_WORKER=PASS');console.log(`VIBE2_TASK_ID=${result.taskId}`);console.log(`VIBE2_TARGET=${result.target}`);console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);console.log(`VIBE2_GENERATION_ATTEMPTS=${result.generation?.attempts||1}`);console.log(`VIBE2_GENERATION_RECOVERY=${result.generation?.recoveryUsed?'YES':'NO'}`);console.log(`VIBE2_EXPLORATION_REUSE_KEY=${result.exploration?.reuseKey||'NONE'}`);}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=parseArgs();const result=await runVibe2SourceWorker({workOrderFile:clean(args.order)||'.vibe2/work-order.json',outputRoot:clean(args.output)||'.vibe2/candidates',model:clean(args.model)||DEFAULT_MODEL,responseFile:clean(args.response),applySource:String(args['apply-source']||'').toLowerCase()==='true'});console.log('VIBE2_SOURCE_WORKER=PASS');console.log(`VIBE2_TASK_ID=${result.taskId}`);console.log(`VIBE2_TARGET=${result.target}`);console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);console.log(`VIBE2_CANDIDATE_MANIFEST=${result.candidateManifestPath}`);console.log(`VIBE2_GENERATION_ATTEMPTS=${result.generation?.attempts||1}`);console.log(`VIBE2_GENERATION_RECOVERY=${result.generation?.recoveryUsed?'YES':'NO'}`);console.log(`VIBE2_EXPLORATION_REUSE_KEY=${result.exploration?.reuseKey||'NONE'}`);}
