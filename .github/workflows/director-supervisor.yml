@@ -20,6 +20,7 @@ on:
     paths:
       - 'COMPANY_FLOW.md'
       - 'company-directive.json'
+      - 'company-learning/platform-release-roadmap.json'
       - 'development-queue.json'
       - '.github/workflows/company-seed-design-runtime.yml'
       - '.github/workflows/company-design-promotion-sync.yml'
@@ -52,10 +53,16 @@ jobs:
           set -euo pipefail
           node <<'NODE'
           const fs=require('fs');
+          const machineSource='company-learning/platform-release-roadmap.json';
           const flow=fs.readFileSync('COMPANY_FLOW.md','utf8');
           const directive=JSON.parse(fs.readFileSync('company-directive.json','utf8'));
-          if(directive.policyDocument!=='COMPANY_FLOW.md')throw new Error('central policy source mismatch');
-          if(!/sourceOfTruth:\s*COMPANY_FLOW\.md/.test(flow))throw new Error('COMPANY_FLOW sourceOfTruth missing');
+          const policy=JSON.parse(fs.readFileSync(machineSource,'utf8'));
+          if(directive.policyDocument!==machineSource||directive.machineSourceOfTruth!==machineSource)throw new Error('central policy source mismatch');
+          if(directive.authority!=='MACHINE_EXECUTION_CONTRACT')throw new Error('company directive machine authority mismatch');
+          if(policy.policySource!==machineSource||policy.machineSourceOfTruth!==machineSource||policy.authority!=='MACHINE_EXECUTION_CONTRACT'||policy.humanDocumentRequired!==false)throw new Error('canonical machine policy authority mismatch');
+          for(const token of [`sourceOfTruth: ${machineSource}`,'authority: LEGACY_POLICY_MIRROR','authoritative: false']){
+            if(!flow.includes(token))throw new Error(`legacy policy mirror pointer missing: ${token}`);
+          }
           console.log('CENTRAL_POLICY_AUTHORITY=PASS');
           NODE
 
@@ -134,7 +141,7 @@ jobs:
         run: |
           {
             echo '### Central company supervision'
-            echo '- policy authority: COMPANY_FLOW.md only'
+            echo '- policy authority: company-learning/platform-release-roadmap.json (MACHINE_EXECUTION_CONTRACT)'
             echo '- design pipeline: Company Seed DESIGN_ONLY Runtime'
             echo '- promotion pipeline: Company DESIGN_ONLY Promotion Sync'
             echo '- development pipeline: Company DEVELOPMENT_CONFIRMED Runtime'
