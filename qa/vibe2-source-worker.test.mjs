@@ -882,6 +882,31 @@ test('timeout partial recovery is persisted in coding method and immutable worke
   assert.match(workflowSource,/baseCodingMethod\?\.partialTimeoutRecovery===true\?'coding-timeout-partial-recovery:YES'/);
 });
 
+test('focused retry prompt never references focusedFinal before it is initialized',()=>{
+  const base=[
+    'You are the Vibe2 game source worker. Return JSON only.',
+    'Engine: web',
+    'Goal: repair runtime interaction',
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<button id="play">Play</button>'
+  ].join('\n');
+  assert.doesNotThrow(()=>buildGenerationRetryPrompt(base,{
+    allowFullRewrite:false,
+    error:new Error('Ollama 응답 시간 초과: 240000ms'),
+    responsibleFiles:['index.html'],
+    attempt:2
+  }));
+  const retry=buildGenerationRetryPrompt(base,{
+    allowFullRewrite:false,
+    error:new Error('Ollama 응답 시간 초과: 240000ms'),
+    responsibleFiles:['index.html'],
+    attempt:2
+  });
+  assert.match(retry,/Return exactly one minimal JSON object with only an edits array/);
+});
+
 test('first timeout escalates attempt two directly to compact focused retry',()=>{
   const base=[
     'Allowed edit paths: index.html',
