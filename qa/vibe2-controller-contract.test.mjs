@@ -297,7 +297,7 @@ test('central runtime enables functional work packages and adaptive workload tel
   assert.equal(runtime.workPackages.minRelatedImprovementsPerPackage,3);
   assert.equal(runtime.workPackages.targetFeaturePackagesPerCycle,1);
   assert.equal(runtime.workPackages.sameFileParallelWrite,false);
-  assert.equal(runtime.workPackages.sharedPreparation,true);
+  assert.equal(runtime.workPackages.sharedPreparation,false);
   assert.equal(runtime.workPackages.longWorkSlotProtection,true);
   assert.equal(runtime.workPackages.workloadTelemetry.enabled,true);
   for(const metric of ['completedFeaturePackageCount','actualChangedFileCount','actualChangedLineCount','historicalReworkRatePct','historicalQaDuplicateRatePct','averagePackageCycleTimeMs']) {
