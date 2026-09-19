@@ -84,9 +84,14 @@ jobs:
             tools/vibe2-incremental-qa.mjs \
             tools/vibe2-parallelism-telemetry.mjs \
             tools/vibe2-adaptive-backpressure.mjs \
-            tools/vibe2-handoff.mjs; do
+            tools/vibe2-handoff.mjs \
+            tools/vibe2-system-steward.mjs; do
             node --check "/tmp/vibe2-main/$file"
           done
+          node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-reserve-preflight-steward.log
+          echo 'VIBE2_RESERVE_PREFLIGHT_STEWARD=PASS'
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
             --queue="$control_root/.vibe2/queue.json" \
@@ -123,6 +128,10 @@ jobs:
             echo 'VIBE2_SLOT_CALLBACK_FANIN=YES'
           fi
 
+          node /tmp/vibe2-main/tools/vibe2-system-steward.mjs \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-reserve-steward.log
+          echo 'VIBE2_RESERVE_STEWARD=PASS'
           node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
             --runtime=/tmp/vibe2-main/vibe2-runtime.json \
             --queue="$control_root/.vibe2/queue.json" \
@@ -150,11 +159,11 @@ jobs:
             --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
             --output=/tmp/vibe2-handoff-after-reserve.json >/tmp/vibe2-handoff-after-reserve.log
 
-          if git diff --quiet -- .vibe2/queue.json; then
+          if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json; then
             echo 'VIBE2_BATCH_RESERVATION_WRITE=NO'
           else
-            git add .vibe2/queue.json
-            git commit -m "vibe2: reserve parallel DAG batch [skip ci]"
+            git add .vibe2/queue.json .vibe2/parallelism-control.json
+            git commit -m "vibe2: repair state and reserve parallel DAG batch [skip ci]"
             pushed=0
             for attempt in 1 2 3; do
               if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then pushed=1; break; fi
