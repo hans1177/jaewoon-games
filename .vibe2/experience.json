@@ -681,7 +681,7 @@
     {
       "version": 3,
       "id": "exp_security_policy_review_authorized_v1",
-      "fingerprint": "security_policy_review_authorized_v1",
+      "fingerprint": "fp_axb48i",
       "gameId": null,
       "engine": "system",
       "departments": [
@@ -720,16 +720,11 @@
       ],
       "verified": true,
       "reusable": true,
-      "independentlyVerified": true,
-      "authority": "VERIFIED_SECURITY_IMMUNE_LEARNING",
-      "rawSecretStored": false,
-      "rawMalwareStored": false,
-      "sourceSecurityIncidentIds": [
-        "sec_b4978477dca03b6a00a99816",
-        "sec_3563eb3598d26e7626d705c0"
-      ],
+      "confirmations": 1,
+      "confidence": 0.5,
       "createdAt": "2026-09-19T06:14:04.436Z",
-      "lastVerifiedAt": "2026-09-19T06:14:04.436Z"
+      "lastVerifiedAt": "2026-09-19T06:14:04.436Z",
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
     }
   ]
 }

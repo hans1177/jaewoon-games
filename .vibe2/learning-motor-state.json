@@ -12,11 +12,11 @@
       "lastEvidence": "pat_bl3edd"
     },
     "STATE_MACHINE": {
-      "xp": 96,
+      "xp": 108,
       "level": 3,
-      "verifiedSuccesses": 11,
+      "verifiedSuccesses": 12,
       "verifiedFailureLessons": 0,
-      "lastEvidence": "pat_bl3edd"
+      "lastEvidence": "exp_security_policy_review_authorized_v1"
     },
     "COMBAT": {
       "xp": 48,
@@ -68,11 +68,11 @@
       "lastEvidence": "pat_zf15dc"
     },
     "DEBUGGING": {
-      "xp": 72,
+      "xp": 80,
       "level": 3,
-      "verifiedSuccesses": 9,
+      "verifiedSuccesses": 10,
       "verifiedFailureLessons": 0,
-      "lastEvidence": "pat_yd536l"
+      "lastEvidence": "pat_security_policy_review_authorized_v1"
     },
     "RECOVERY": {
       "xp": 0,
@@ -82,11 +82,11 @@
       "lastEvidence": null
     },
     "SECURITY": {
-      "xp": 0,
+      "xp": 20,
       "level": 1,
-      "verifiedSuccesses": 0,
+      "verifiedSuccesses": 2,
       "verifiedFailureLessons": 0,
-      "lastEvidence": null
+      "lastEvidence": "pat_security_policy_review_authorized_v1"
     },
     "PERFORMANCE": {
       "xp": 24,
@@ -150,7 +150,8 @@
     "exp_4odofx",
     "exp_pg739o",
     "exp_i00mwv",
-    "exp_rg6lvy"
+    "exp_rg6lvy",
+    "exp_security_policy_review_authorized_v1"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -197,7 +198,8 @@
     "pat_7a30sr",
     "pat_83szfq",
     "pat_8vynqw",
-    "pat_bl3edd"
+    "pat_bl3edd",
+    "pat_security_policy_review_authorized_v1"
   ],
   "failureSignatures": {
     "fail_173wlx": {
@@ -214,7 +216,16 @@
         "ASSET_PRODUCTION",
         "WEB_RUNTIME"
       ]
+    },
+    "fail_qhp7yn": {
+      "count": 1,
+      "lastEvidence": "exp_security_policy_review_authorized_v1",
+      "example": "AUTHORIZED_CENTRAL_POLICY_CHANGE_CLASSIFIED_BY_LEGACY_BINARY_QUARANTINE",
+      "domains": [
+        "STATE_MACHINE",
+        "SECURITY"
+      ]
     }
   },
-  "updatedAt": "2026-09-19T06:08:10.849Z"
+  "updatedAt": "2026-09-19T06:15:00.173Z"
 }
