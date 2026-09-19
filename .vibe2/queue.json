@@ -4568,7 +4568,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -4638,7 +4638,8 @@
         "actions-run:35427053570",
         "reservation-id:35427053570:1",
         "workload:prep-ms:9422",
-        "workload:cycle-ms:41563"
+        "workload:cycle-ms:41563",
+        "slot-dispatch:35427406605:1"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED",
       "reservationId": "35427251443:1",
