@@ -743,26 +743,19 @@ test('exact Web base source generation failure can recover once', () => {
 });
 
 
-test('continuous reserve runs full regression before reserving expensive workers', () => {
+test('continuous reserve keeps preflight cheap and defers full core regression to fan-in', () => {
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
-  const preflightAt=workflow.indexOf('VIBE2_RESERVE_FULL_REGRESSION_PREFLIGHT=PASS');
+  const start=workflow.indexOf('- name: Fast scheduler preflight');
   const reserveAt=workflow.indexOf('- name: Reserve conflict-free DAG batch');
-  assert.ok(preflightAt>0);
-  assert.ok(reserveAt>preflightAt);
-  const preflightBlock=workflow.slice(workflow.indexOf('(\n            cd /tmp/vibe2-main'),preflightAt);
-  for(const file of [
-    'qa/vibe2-auto-planner.test.mjs',
-    'qa/vibe2-core-engine-motion.test.mjs',
-    'qa/vibe2-source-worker.test.mjs',
-    'qa/vibe2-exploration-worker.test.mjs',
-    'qa/vibe2-queue-control.test.mjs',
-    'qa/vibe2-work-package.test.mjs',
-    'qa/vibe2-incremental-qa.test.mjs',
-    'qa/vibe2-parallelism-telemetry.test.mjs',
-    'qa/vibe2-adaptive-backpressure.test.mjs',
-    'qa/vibe2-candidate-reconcile.test.mjs',
-    'qa/vibe2-experience-control.test.mjs',
-    'qa/vibe2-handoff.test.mjs',
-    'qa/vibe2-practice-distillation.test.mjs'
-  ]) assert.match(preflightBlock,new RegExp(file.replaceAll('.','\\.')));
+  assert.ok(start>0);
+  assert.ok(reserveAt>start);
+  const preflightBlock=workflow.slice(start,reserveAt);
+  assert.match(preflightBlock,/node --check "\/tmp\/vibe2-main\/\$file"/);
+  assert.match(preflightBlock,/vibe2-handoff\.mjs --check/);
+  assert.doesNotMatch(preflightBlock,/node --test /);
+  assert.doesNotMatch(preflightBlock,/VIBE2_RESERVE_FULL_REGRESSION_PREFLIGHT=PASS/);
+  const runtime=JSON.parse(fs.readFileSync('vibe2-runtime.json','utf8'));
+  assert.equal(runtime.qaOptimization.reservePreflight,'syntax-and-machine-state-only');
+  assert.equal(runtime.qaOptimization.duplicateFullRegressionBeforeReserve,false);
+  assert.equal(runtime.qaOptimization.fullCoreRegressionOnceAtFanIn,true);
 });
