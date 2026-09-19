@@ -374,6 +374,33 @@ function workloadEvidence(row = {}) {
   if(cycleMs>0)evidence.push(`workload:cycle-ms:${cycleMs}`);
   return evidence;
 }
+const CODING_METHOD_FAILURE_CLASSES=new Set(['NO_OP','EDIT_MATCH','MALFORMED_OUTPUT','INVALID_PATH','FULL_REWRITE_SIZE']);
+function codingStrategyFailureEvidence(row = {}) {
+  if(clean(row?.outcome).toUpperCase()!=='FAIL')return[];
+  const coding=row?.codingMethod&&typeof row.codingMethod==='object'?row.codingMethod:{};
+  const strategy=clean(coding.strategy);
+  const failureFingerprint=clean(coding.failureFingerprint);
+  if(!strategy||!failureFingerprint)return[];
+  let failureClass=clean(row?.candidateFailure?.class).toUpperCase();
+  if(!CODING_METHOD_FAILURE_CLASSES.has(failureClass)){
+    if(coding.implementationPass===true&&coding.incrementalQaPass===false)failureClass='INCREMENTAL_QA';
+    else if(coding.implementationPass===true&&coding.incrementalQaPass===true&&coding.performanceSanityPass===false)failureClass='PERFORMANCE_SANITY';
+    else return[];
+  }
+  const evidence=(row?.evidence||[]).map(clean).filter(Boolean);
+  const runEvidence=evidence.find(value=>value.startsWith('actions-run:'))||'';
+  const payload={
+    version:1,
+    variant:clean(row.variant)||'primary',
+    strategy,
+    failureFingerprint,
+    failureClass,
+    runEvidence,
+    verifiedBy:'IMMUTABLE_WORKER_RESULT',
+    infrastructureFailure:false
+  };
+  return[`coding-strategy-negative:${encodeURIComponent(JSON.stringify(payload))}`];
+}
 function reusableWorkerEvidence(row = {}) {
   const evidence=[];
   const exploration=row?.exploration||{};
@@ -421,7 +448,8 @@ export function applyVibeFanInResults(queueInput, results = []) {
     const allEvidence = [...new Set(variants.flatMap((row) => [
       ...(Array.isArray(row.evidence) ? row.evidence : []),
       ...workloadEvidence(row),
-      ...reusableWorkerEvidence(row)
+      ...reusableWorkerEvidence(row),
+      ...codingStrategyFailureEvidence(row)
     ]).map(clean).filter(Boolean))];
     if (passes.length) {
       const practiceWinner=passes.find(row=>{
@@ -445,12 +473,15 @@ export function applyVibeFanInResults(queueInput, results = []) {
         ...workloadEvidence(winner),
         ...reusableWorkerEvidence(winner)
       ];
+      const losingStrategyFailureEvidence=variants
+        .filter(row=>row!==winner&&clean(row?.outcome).toUpperCase()==='FAIL')
+        .flatMap(codingStrategyFailureEvidence);
       const variantSummary = variants.map((row) => `speculative-result:${clean(row.variant) || 'primary'}:${clean(row.outcome).toUpperCase() || 'UNKNOWN'}`);
       queue = markVibeTaskAwaiting(queue, {
         taskId,
         blocker: clean(winner.blocker) || 'candidate-awaiting-qa-and-deployment',
         expectedReservationId,
-        evidence: [...winnerEvidence, ...variantSummary, `speculative-variants:${variants.length}`, `speculative-winner:${clean(winner.variant) || 'primary'}`]
+        evidence: [...winnerEvidence, ...losingStrategyFailureEvidence, ...variantSummary, `speculative-variants:${variants.length}`, `speculative-winner:${clean(winner.variant) || 'primary'}`]
       });
       applied.push({ taskId, outcome:'AWAIT', winner: clean(winner.variant) || 'primary' });
       continue;
