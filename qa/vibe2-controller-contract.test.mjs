@@ -83,13 +83,13 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
 });
 
 test('24h planner uses latest main contract and tools while control branch stores state only',()=>{
-  assert(workflow.includes('VIBE2_CONTROL_STATE_JSON=VALID'));
-  assert(workflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
-  assert(workflow.includes('--runtime=/tmp/vibe2-main/vibe2-runtime.json'));
-  assert(workflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
-  assert(workflow.includes("from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js'"));
-  assert.equal(workflow.includes('node tools/vibe2-handoff.mjs --check'),false);
-  assert.equal(workflow.includes('node tools/vibe2-auto-planner.mjs \\'),false);
+  assert(safetyNetWorkflow.includes('VIBE2_CONTROL_STATE_JSON=VALID'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
+  assert(safetyNetWorkflow.includes('--runtime=/tmp/vibe2-main/vibe2-runtime.json'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+  assert(safetyNetWorkflow.includes("from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js'"));
+  assert.equal(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'),false);
+  assert.equal(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs \\'),false);
 });
 
 test('controller starts isolated candidates from fresh main and never writes main directly',()=>{
@@ -178,8 +178,8 @@ test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
   assert(workflow.includes('VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'));
   assert(!workflow.includes('gh workflow run vibe2-continuous-core.yml'));
   assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
-  assert(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'));
-  assert(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
   assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
   assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
 });
