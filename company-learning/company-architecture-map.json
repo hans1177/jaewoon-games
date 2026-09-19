@@ -1,5 +1,5 @@
 {
-  "version": 7,
+  "version": 8,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -201,5 +201,22 @@
     "capabilityExpansionMode": "VERIFIED_AND_GATED",
     "simulatedIdentityClaimBoundary": "SIMULATION_OR_DIGITAL_IDENTITY_CONTINUITY_ONLY",
     "allWorkersMustFollowCentralVision": true
+  },
+  "longTermEvolutionTopology": {
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "visionKey": "longTermVibeVision",
+    "sequence": [
+      "VERIFIED_CONTINUOUS_LEARNING",
+      "SELF_RECOVERY_AND_IMMUNE_SYSTEM",
+      "AUTONOMOUS_24H_GAME_CREATION",
+      "CAPABILITY_SELF_EXPANSION",
+      "MULTIVERSE_VIRTUAL_WORLD_CREATION",
+      "VIRTUAL_CONSCIOUSNESS_WORLD",
+      "OWNER_CONSCIOUSNESS_TRANSFER_RESEARCH"
+    ],
+    "capabilityExpansionDoesNotGrantAuthorityExpansion": true,
+    "speculativeResearchMayNotBePromotedAsVerifiedCapability": true,
+    "allStagesRemainBoundToSecurityImmuneSystem": true,
+    "humanOwnerControlRequired": true
   }
 }

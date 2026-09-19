@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "authority": "OWNER_DIRECTIVE_2026-09-19",
   "kind": "company-security-immune-system",
   "sourceOfTruth": "company-learning/platform-release-roadmap.json",
@@ -142,5 +142,15 @@
     "rawModelOutputStored": false,
     "rawSecurityPayloadStored": false,
     "recoveryOwner": "SYSTEM_AI"
+  },
+  "longTermVisionGuardrails": {
+    "source": "company-learning/platform-release-roadmap.json#longTermVibeVision",
+    "capabilityExpansionAllowedWithinOwnerAuthorizedBoundaries": true,
+    "autonomousAuthorityEscalationForbidden": true,
+    "persistentWorldIdentityDataIsProtectedSurface": true,
+    "consciousnessResearchDataRequiresExplicitHumanConsent": true,
+    "simulatedIdentityOrAgentMustNotBeRepresentedAsVerifiedHumanConsciousness": true,
+    "unverifiedMindUploadOrConsciousnessTransferClaimsForbidden": true,
+    "securityRecoveryAndAuditRemainMandatoryAcrossAllLongTermStages": true
   }
 }

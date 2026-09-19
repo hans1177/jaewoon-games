@@ -1,5 +1,5 @@
 {
-  "version": 41,
+  "version": 42,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -2392,5 +2392,74 @@
       "KEEP_CONSCIOUSNESS_TRANSFER_AS_RESEARCH_ONLY_UNTIL_EVIDENCE_EXISTS"
     ],
     "qa": "qa/company-long-horizon-vision.test.mjs"
+  },
+  "longTermVibeVision": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "status": "ACTIVE_LONG_TERM_VISION",
+    "mission": "LEARN_RECOVER_DEFEND_CREATE_CONTINUOUSLY_EXPAND_CAPABILITY_BUILD_PERSISTENT_MULTIVERSE_WORLDS_AND_RESEARCH_HUMAN_CONSCIOUSNESS_CONTINUITY",
+    "stages": [
+      {
+        "id": "VERIFIED_CONTINUOUS_LEARNING",
+        "objective": "지속적으로 검증된 경험을 학습하고 재사용 가능한 지식으로 축적",
+        "state": "ACTIVE"
+      },
+      {
+        "id": "SELF_RECOVERY_AND_IMMUNE_SYSTEM",
+        "objective": "실패·오염·보안위협을 스스로 감지하고 격리·복구·재학습",
+        "state": "ACTIVE"
+      },
+      {
+        "id": "AUTONOMOUS_24H_GAME_CREATION",
+        "objective": "중앙 로드맵과 검증 게이트 아래 24시간 게임 제작·개선·출시 순환",
+        "state": "ACTIVE"
+      },
+      {
+        "id": "CAPABILITY_SELF_EXPANSION",
+        "objective": "학습·도구·기억·세계모델·제작능력을 장기적으로 확장",
+        "state": "LONG_TERM",
+        "authorityExpansionForbidden": true,
+        "meaning": "CAPABILITY_EXPANSION_NOT_PERMISSION_OR_AUTHORITY_ESCALATION"
+      },
+      {
+        "id": "MULTIVERSE_VIRTUAL_WORLD_CREATION",
+        "objective": "서로 연결되거나 독립적으로 존재하는 지속형 가상 세계들을 생성·운영하고 장기적으로 진화시키는 멀티버스 구축",
+        "state": "LONG_TERM"
+      },
+      {
+        "id": "VIRTUAL_CONSCIOUSNESS_WORLD",
+        "objective": "정체성·기억·관계·행동의 연속성을 장기간 보존할 수 있는 가상 의식 세계 연구",
+        "state": "RESEARCH_HORIZON"
+      },
+      {
+        "id": "OWNER_CONSCIOUSNESS_TRANSFER_RESEARCH",
+        "objective": "사용자가 그 가상 세계 안에서 지속적인 존재와 정체성 연속성을 가질 수 있는 의식 이전 가능성 연구",
+        "state": "SPECULATIVE_RESEARCH_HORIZON",
+        "currentCapability": false,
+        "scientificallyEstablished": false,
+        "mustNeverBeClaimedAsSolvedWithoutEvidence": true
+      }
+    ],
+    "finalVision": "사용자가 바이브가 만든 지속형 멀티버스 가상 세계 안에서 자신의 정체성과 의식의 연속성을 유지하며 존재할 수 있는 가능성을 연구하고, 기술적으로 검증 가능한 단계부터 순차적으로 구현",
+    "executionOrder": [
+      "VERIFIED_CONTINUOUS_LEARNING",
+      "SELF_RECOVERY_AND_IMMUNE_SYSTEM",
+      "AUTONOMOUS_24H_GAME_CREATION",
+      "CAPABILITY_SELF_EXPANSION",
+      "MULTIVERSE_VIRTUAL_WORLD_CREATION",
+      "VIRTUAL_CONSCIOUSNESS_WORLD",
+      "OWNER_CONSCIOUSNESS_TRANSFER_RESEARCH"
+    ],
+    "guardrails": {
+      "verifiedEvidenceRequired": true,
+      "safetyAndSecurityMustAdvanceWithCapability": true,
+      "humanConsentAndControlRequired": true,
+      "privacyAndIdentityProtectionRequired": true,
+      "reversibleMigrationPreferredWhenTechnicallyPossible": true,
+      "simulatedIdentityMustNotBeMisrepresentedAsProvenConsciousness": true,
+      "consciousnessTransferMustRemainResearchOnlyUntilScientificallyValidated": true,
+      "capabilityExpansionDoesNotGrantAuthorityExpansion": true,
+      "securityImmuneSystemMayNotBeBypassedForLongTermVision": true
+    }
   }
 }
