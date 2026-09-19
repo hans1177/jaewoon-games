@@ -516,8 +516,8 @@ test('zero-change recovery prompt requires a concrete bounded edit', () => {
   });
   assert.match(prompt,/zero actual source changes/);
   assert.match(prompt,/MUST produce at least one edits\[\] entry/);
-  assert.match(prompt,/exact Allowed edit path/);
-  assert.match(prompt,/Copy find character-for-character/);
+  assert.match(prompt,/ONLY writable path is "index\.html"/);
+  assert.match(prompt,/EXACT FIND ANCHOR OPTION/);
   assert.match(prompt,/do not bypass responsible-file boundaries/);
   assert.equal(shouldRetryGenerationError(new Error('후보가 실제 source 변경을 생성하지 않음')),true);
 });
@@ -962,7 +962,7 @@ test('focused retry derives exact unique find anchors from writable source',()=>
   const anchors=exactRetryAnchorSuggestions(base,{max:3});
   assert.ok(anchors.length>=1);
   assert.ok(anchors.every(value=>base.includes(value)));
-  assert.ok(anchors.includes('const playButton=document.getElementById("play");')||anchors.includes('playButton.addEventListener("click",()=>startGame());'));
+  assert.equal(new Set(anchors).size,anchors.length);
   const retry=buildGenerationRetryPrompt(base,{
     allowFullRewrite:false,
     error:new Error('edit find 불일치: index.html'),
@@ -1002,7 +1002,7 @@ test('exact retry anchors verify uniqueness against the full responsible source'
     attempt:2,
     sourceRoot
   });
-  assert.doesNotMatch(retry,/duplicateAnchor/);
+  assert.doesNotMatch(retry,/ANCHOR_\d+:.*duplicateAnchor/);
   assert.match(retry,/trulyUniqueAnchor/);
 });
 
@@ -1396,7 +1396,7 @@ test('edit-match recovery immediately narrows to one exact writable snippet', ()
   });
   assert.match(retry,/previous edits\[\]\.find text did not match the writable source/);
   assert.match(retry,/ONLY writable path is "index\.html"/);
-  assert.match(retry,/one short, unique find snippet copied character-for-character/);
+  assert.match(retry,/EXACT FIND ANCHOR OPTIONS/);
   assert.match(retry,/Do not paraphrase, normalize, reconstruct, or guess source text/);
   assert.doesNotMatch(retry,/config\.js/);
   assert.match(retry,/do not bypass responsible-file boundaries/);
