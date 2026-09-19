@@ -428,7 +428,7 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedFinalRetry,true);
-  assert.equal(result.generation.timeoutMs,90000);
+  assert.equal(result.generation.timeoutMs,150000);
   assert.equal(result.generation.maxPredict,768);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
