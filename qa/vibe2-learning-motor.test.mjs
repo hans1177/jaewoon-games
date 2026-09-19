@@ -61,7 +61,7 @@ test('verified coding strategy outcomes accumulate, dedupe, and become preferred
   const mk=(id,gameId,first='YES')=>({
     id,gameId,target:'web',evidence:[
       'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
-      'coding-strategy:RESPONSIBILITY_FIRST','coding-generation-attempts:1',`coding-candidate-first-attempt:${first}`,
+      'coding-strategy:RESPONSIBILITY_FIRST','coding-generation-attempts:1','coding-context-mode:PRIMARY_SYMBOL_WINDOWS','coding-context-bytes:12000',`coding-candidate-first-attempt:${first}`,
       `vibe2/candidate/${id}-primary-run`
     ]
   });
@@ -73,6 +73,9 @@ test('verified coding strategy outcomes accumulate, dedupe, and become preferred
   assert.equal(row.verifiedApplications,5);
   assert.equal(row.firstCandidatePasses,4);
   assert.equal(row.state,'PREFERRED');
+  assert.equal(row.contextModes.PRIMARY_SYMBOL_WINDOWS.verifiedApplications,5);
+  assert.equal(row.contextModes.PRIMARY_SYMBOL_WINDOWS.firstCandidatePasses,4);
+  assert.equal(row.contextModes.PRIMARY_SYMBOL_WINDOWS.totalContextBytes,60000);
   assert.equal(learned.state.codingStrategyMemory.strategies.CAUSAL_TRACE_FIRST,undefined);
   const deduped=applyVerifiedCodingStrategyOutcomes(learned.state,queue);
   assert.equal(deduped.added,0);
