@@ -1,5 +1,5 @@
 {
-  "version": 24,
+  "version": 25,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -61,8 +61,8 @@
     "representativeSetSizePerPlatform": 6,
     "globalPortfolioCap": false,
     "forcedReleaseCount": false,
-    "implementationWipTarget": 20,
-    "implementationWipMax": 20,
+    "implementationWipTarget": 30,
+    "implementationWipMax": 30,
     "implementationWipScope": "GLOBAL_SELECTED_PLATFORM_DEVELOPMENT",
     "webValidationParallelismUnchanged": true,
     "unityHistoricalSixPreserved": true,
@@ -1149,7 +1149,7 @@
         "enabled": true,
         "scope": "ALL_AUTOMATED_DESIGN_DEVELOPMENT_QA_RUNTIME_REGRESSION_AND_RELEASE_GATES",
         "perGameIndependent": true,
-        "maxParallelGames": 20,
+        "maxParallelGames": 30,
         "portfolioWidePassBarrier": false,
         "loop": [
           "RUN_CURRENT_GATE",
