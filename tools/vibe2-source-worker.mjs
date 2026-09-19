@@ -45,8 +45,10 @@ function assertGameDevelopmentAuthority(){
 }
 const DEFAULT_TIMEOUT_MS=Math.max(10000,Math.min(300000,Number(process.env.VIBE2_MODEL_TIMEOUT_MS||240000)));
 const DEFAULT_MAX_PREDICT=Math.max(256,Math.min(2048,Number(process.env.VIBE2_MODEL_MAX_PREDICT||1536)));
-const FULL_WEB_TIMEOUT_MS=540000;
-const FULL_WEB_MAX_PREDICT=8192;
+const FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES=4200;
+const FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES=6500;
+const FULL_WEB_TIMEOUT_MS=360000;
+const FULL_WEB_MAX_PREDICT=4096;
 const FULL_WEB_RETRY_TIMEOUT_MS=360000;
 const FULL_WEB_RETRY_MAX_PREDICT=6144;
 const FULL_WEB_FINAL_RETRY_TIMEOUT_MS=360000;
@@ -379,7 +381,8 @@ explorationGuidance(exploration),
 context.exactSourceWindows?'CONTEXT MODE: exact responsibility windows. Each FILE window contains exact source text but separate windows are not contiguous. Any edits[].find MUST be copied wholly from one exact window; never span two windows or invent omitted text.':'',
 allowFullRewrite?(sourceRootBootstrap?'OWNER AUTHORIZATION: create the first complete playable Web baseline at the exact responsible index.html path. This is an approved missing-source bootstrap. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, save compatibility scaffolding where required, and no external network dependency.':'OWNER AUTHORIZATION: this existing Web prototype must be rebuilt into a real playable game. Replace the responsible existing file completely. Do not return a validation dashboard, fake state buttons, or a thin prototype. Build actual mobile gameplay with direct player input, real game-state progression, failure/success or escalating progression, restart, responsive layout, and no external network dependency.'):'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
 allowFullRewrite?'The PATH line MUST be one exact path from Allowed edit paths. Everything between the content and end markers is written verbatim as the replacement file. The end marker is mandatory; never omit it.':'Every edits[].path and replaceFiles[].path MUST be one exact path from Allowed edit paths.',
-allowFullRewrite?`Full Web generation target: ${fullWebTarget.minBytes}-${fullWebTarget.maxBytes} UTF-8 bytes. The parser hard safety gate remains ${MIN_FULL_REWRITE_BYTES}-${MAX_FILE_BYTES} bytes, but do not target that floor. Before finishing, implement all of these as real runtime behavior: direct pointer/touch input, mutable persistent-capable game state, a repeating update/render or equivalent state-transition loop, at least one progression or resource system, an explicit win/loss/result condition, restart/reset, and responsive mobile layout. Use substantial executable JavaScript and do not pad with filler text. Do not return a tiny shell, placeholder dashboard, validation buttons, or static mock UI. Reserve the final output for </html> followed by VIBE2_FILE_END.`:'Do not expand unrelated code.',
+allowFullRewrite?`INITIAL SEED STRATEGY: on this first response, prioritize a COMPLETE CLOSED playable seed of about ${FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES}-${FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES} UTF-8 bytes and finish </html> plus VIBE2_FILE_END early. Do not chase the final size in one pass; the worker will automatically expand a valid seed. The seed must already contain real input, mutable state, an update/state-transition loop, basic progression, reachable result state, restart/reset, responsive mobile controls, and persistent-capable state.`:'',
+allowFullRewrite?`Full Web generation target after automatic expansion: ${fullWebTarget.minBytes}-${fullWebTarget.maxBytes} UTF-8 bytes. The parser hard safety gate remains ${MIN_FULL_REWRITE_BYTES}-${MAX_FILE_BYTES} bytes, but final acceptance still requires at least ${fullWebTarget.minBytes} bytes. Use substantial executable JavaScript and do not pad with filler text. Do not return a tiny shell, placeholder dashboard, validation buttons, or static mock UI.`:'Do not expand unrelated code.',
 allowFullRewrite?'Required output format:\nVIBE2_FULL_FILE\nPATH:index.html\nSUMMARY:short summary\nEXPECTED_EFFECT:short expected effect\nTEST:mobile gameplay\nTEST:restart\nTEST:runtime\n---VIBE2_FILE_CONTENT---\n<!doctype html>\n...complete playable HTML...\n</html>\n---VIBE2_FILE_END---':'Every edits[].find MUST be copied character-for-character from the matching FILE block and occur exactly once.',
 'Do not output binary assets. Do not use wrapper/monkey patches. Do not change homepage/company files.',
 'For web target, stay inside the existing web-games/<game> root.',
@@ -856,7 +859,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair,minFullRewriteBytes:fullWebTarget?.minBytes||MIN_FULL_REWRITE_BYTES,candidateValidator,candidateVariant});
   const candidate=generated.candidate;
   const semanticDiffEnforcement=generated.candidateValidation||candidateValidator(candidate);
-  const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
+  const generation={...generated.generation,candidateVariant,attemptBudget:generationAttemptBudget({allowFullRewrite,variant:candidateVariant}),speculativeAttemptBudgetApplied:/^speculative-/i.test(candidateVariant),fullWebInitialSeedStrategy:allowFullRewrite,fullWebInitialSeedTargetBytes:allowFullRewrite?[FULL_WEB_INITIAL_SEED_TARGET_MIN_BYTES,FULL_WEB_INITIAL_SEED_TARGET_MAX_BYTES]:[],contextFiles:context.files.length,contextBytes:context.bytes,contextMode:context.mode||'STANDARD_CONTEXT',focusedSymbolCount:Number(context.focusedSymbolCount||0),exactSourceWindows:context.exactSourceWindows===true,fullFileContextFallback:context.fullFileFallback===true,contextPreferenceRequested:preferredContextMode||null,contextPreferenceApplied:Boolean(preferredContextMode&&preferredContextMode===(context.mode||'STANDARD_CONTEXT'))};
   if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
@@ -875,6 +878,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     candidateVariant,
     generationAttemptBudget:Number(generation.attemptBudget||0),
     speculativeAttemptBudgetApplied:generation.speculativeAttemptBudgetApplied===true,
+    fullWebInitialSeedStrategy:generation.fullWebInitialSeedStrategy===true,
+    fullWebInitialSeedTargetBytes:Array.isArray(generation.fullWebInitialSeedTargetBytes)?generation.fullWebInitialSeedTargetBytes.slice(0,2):[],
     responsibilityConfidence:clean(editContract.responsibilityConfidence)||'LOW',
     primaryTargets:Array.isArray(editContract.primaryTargets)?editContract.primaryTargets.slice(0,8):[],
     primarySystems:Array.isArray(editContract.primarySystems)?editContract.primarySystems.slice(0,12):[],
