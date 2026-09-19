@@ -552,7 +552,7 @@ function serviceComplete(g,b,waitSeconds){
   var mult=.75+(parkSat/100)*.75;
   var earned=Math.max(1,Math.round((d.income||0)*mult));
   state.money+=earned;
-  if(d.kind==="food"){
+state.money+=earned;\n\t\tif(d.kind==='food'){\n\t\t\tg.hunger=0.05;\n\t\t\tif(Math.random()<0.62)addTrash(g.currentPath);
     g.hunger=.05;
     if(Math.random()<.62)addTrash(g.currentPath);
   }else g.hunger=Math.min(1,g.hunger+.18);
