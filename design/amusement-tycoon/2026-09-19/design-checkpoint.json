@@ -9,7 +9,11 @@
   "status": "IN_PROGRESS",
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
   ],
   "phases": {
     "designer_draft": {
@@ -35,22 +39,22 @@
       ],
       "systemInterconnections": [
         {
-          "fromSystem": "동선 최적화 시스템",
-          "toSystem": "감정 기반 만족도 엔진",
-          "trigger": "손님이 특정 놀이기구까지 이동하는 시간이 임계치를 초과할 때",
-          "stateChange": "손님의 피로도와 불만족 수치가 상승하며, 이는 해당 놀이기구의 이용률 감소로 이어짐"
+          "fromSystem": "손님 동선 최적화 관리 시스템",
+          "toSystem": "감정 기반 만족도 분석 엔진",
+          "trigger": "손님이 특정 놀이기구까지 이동하는 대기 시간이 설정된 임계치를 초과하여 불만족 상태가 감지될 때",
+          "stateChange": "손님의 피로도 수치가 즉각적으로 상승하며 해당 놀이기구의 만족도 점수를 하락시켜 재방문 의사를 감소시킴"
         },
         {
-          "fromSystem": "감정 기반 만족도 엔진",
-          "toSystem": "경제 시스템",
-          "trigger": "손님의 만족도가 일정 수준 이상으로 유지될 때",
-          "stateChange": "공원의 평판 점수가 상승하고, 입장료 수익 및 상점 매출이 증가하는 보너스 효과 발생"
+          "fromSystem": "감정 기반 만족도 분석 엔진",
+          "toSystem": "공원 경제 수익 창출 시스템",
+          "trigger": "공원 내 손님들의 평균 만족도가 특정 임계값 이상으로 유지되어 공원 평판이 긍정적인 단계로 상승할 때",
+          "stateChange": "공원 입장료 수익 및 내부 상점 매출에 1.2배의 보너스 배율이 적용되어 경제적 선순환 구조가 강화됨"
         },
         {
-          "fromSystem": "경제 시스템",
-          "toSystem": "동선 최적화 시스템",
-          "trigger": "플레이어가 수익을 사용하여 새로운 구역을 확장할 때",
-          "stateChange": "건설 가능한 부지가 증가하고, 새로운 동선 설계 옵션이 활성화되어 전략적 선택지 확장"
+          "fromSystem": "공원 경제 수익 창출 시스템",
+          "toSystem": "놀이공원 구역 확장 건설 시스템",
+          "trigger": "플레이어가 누적된 수익을 사용하여 새로운 테마 구역을 구매하거나 도로를 건설하는 결정을 내릴 때",
+          "stateChange": "경로 탐색 알고리즘의 가용 노드가 확장되어 손님들이 더 효율적인 경로를 선택할 수 있는 전략적 선택지가 증가함"
         }
       ],
       "progressionDirection": "초반에는 소규모 놀이기구와 기본 시설을 통해 경영의 기초를 익히고, 중반에는 테마 구역 확장과 효율적인 동선 설계를 통해 수익을 극대화합니다. 후반부에는 대규모 랜드마크 건설과 고도화된 만족도 관리를 통해 세계 최고의 놀이공원으로 성장하는 것을 목표로 합니다.",
@@ -61,19 +65,19 @@
       },
       "contentExpansionPlan": [
         {
-          "milestone": "테마 구역 확장",
-          "newGameplay": "특정 테마(예: 우주, 중세)에 맞는 전용 놀이기구와 장식 아이템이 해금되어 공원의 분위기를 다채롭게 꾸밀 수 있습니다.",
-          "systemImpact": "기존 만족도 엔진에 테마 시너지 효과가 추가되어, 테마가 통일된 구역의 손님 만족도가 추가로 상승합니다."
+          "milestone": "테마 구역 확장 및 시너지 시스템 도입",
+          "newGameplay": "특정 테마(우주, 중세, 미래)에 맞는 전용 놀이기구와 장식 아이템을 배치하여 구역을 꾸미는 건설 모드가 추가됩니다.",
+          "systemImpact": "기존 만족도 엔진에 테마 시너지 효과가 추가되어, 테마가 통일된 구역에 방문한 손님들의 만족도가 15% 추가 상승하는 로직이 반영됩니다."
         },
         {
-          "milestone": "계절 이벤트 시스템",
-          "newGameplay": "할로윈, 크리스마스 등 시즌별 한정 놀이기구와 퀘스트가 등장하여 단기적인 목표를 제공합니다.",
-          "systemImpact": "경제 시스템에 일시적인 수익 부스트와 특별 아이템 판매가 추가되어 자금 흐름에 변동성을 부여합니다."
+          "milestone": "계절 이벤트 및 한정 퀘스트 시스템",
+          "newGameplay": "할로윈, 크리스마스 등 시즌별 한정 놀이기구와 특별 퀘스트가 등장하여 단기적인 목표를 제공하는 이벤트 모드가 활성화됩니다.",
+          "systemImpact": "경제 시스템에 일시적인 수익 부스트와 특별 아이템 판매가 추가되어, 시즌 기간 동안 자금 흐름에 높은 변동성과 전략적 재미를 부여합니다."
         },
         {
-          "milestone": "글로벌 랭킹 경쟁",
-          "newGameplay": "자신의 공원 가치를 전 세계 플레이어와 비교하고, 주간 최고 수익 공원을 선정하는 챌린지가 도입됩니다.",
-          "systemImpact": "기존 경영 시스템에 경쟁 요소가 결합되어, 효율적인 설계에 대한 동기부여가 강화됩니다."
+          "milestone": "글로벌 랭킹 및 경쟁 경영 챌린지",
+          "newGameplay": "자신의 공원 가치를 전 세계 플레이어와 비교하고, 주간 최고 수익 공원을 선정하는 챌린지 모드가 도입됩니다.",
+          "systemImpact": "기존 경영 시스템에 경쟁 요소가 결합되어, 효율적인 동선 설계와 수익 극대화에 대한 플레이어의 동기부여가 강화됩니다."
         }
       ],
       "failureRetryRisk": {
@@ -109,28 +113,28 @@
       "multiplayerMode": "SINGLE",
       "multiplayerExpansionDecision": "현재는 싱글 플레이 중심의 경영에 집중하며, 향후 친구의 공원을 방문하거나 선물을 주고받는 비동기식 소셜 기능을 고려합니다.",
       "technicalAssumptions": [
-        "모바일 기기의 메모리 제한을 고려하여 놀이기구와 손님의 렌더링 최적화가 필수적임",
-        "데이터 저장 시 클라우드 세이브를 지원하여 기기 변경 시에도 데이터가 유지되어야 함"
+        "모바일 기기의 메모리 제한을 고려하여 놀이기구와 손님의 렌더링 최적화를 위한 오브젝트 풀링 기법이 필수적으로 적용되어야 함",
+        "데이터 저장 시 클라우드 세이브를 지원하여 기기 변경 시에도 게임 진행 데이터가 손실 없이 유지되도록 서버 동기화 로직을 구현해야 함"
       ],
       "validationQuestions": [
-        "플레이어가 놀이기구 배치 후 손님의 반응을 즉각적으로 인지할 수 있는가?",
-        "경영 실패 시 재도전 과정에서 플레이어가 자신의 실수를 학습할 수 있는가?"
+        "플레이어가 놀이기구 배치 후 손님의 반응을 즉각적으로 인지할 수 있는 시각적 피드백이 충분히 제공되는가?",
+        "경영 실패 시 재도전 과정에서 플레이어가 자신의 실수를 학습하고 다음 플레이에 적용할 수 있는 가이드가 존재하는가?"
       ],
       "implementationTraceability": [
         {
-          "designElement": "동선 최적화 시스템",
-          "responsibleSystem": "경로 탐색 알고리즘",
-          "validationEvidence": "다양한 동선 배치 테스트를 통해 손님의 이동 시간이 단축되는지 시뮬레이션으로 검증"
+          "designElement": "동선 최적화 시스템 구현",
+          "responsibleSystem": "경로 탐색 알고리즘 모듈",
+          "validationEvidence": "다양한 동선 배치 테스트를 통해 손님의 이동 시간이 단축되는지 시뮬레이션으로 검증하고, 경로 이탈률이 5% 미만인지 확인하는 테스트를 수행함"
         },
         {
-          "designElement": "감정 기반 만족도 엔진",
-          "responsibleSystem": "상태 머신(State Machine)",
-          "validationEvidence": "만족도 수치 변화에 따른 손님의 행동 패턴(기쁨, 불만 등)이 의도대로 출력되는지 디버깅"
+          "designElement": "감정 기반 만족도 엔진 설계",
+          "responsibleSystem": "상태 머신(State Machine) 관리자",
+          "validationEvidence": "만족도 수치 변화에 따른 손님의 행동 패턴(기쁨, 불만, 분노 등)이 의도대로 출력되는지 디버깅 로그를 통해 검증하고 상태 전이 로직을 확인함"
         },
         {
-          "designElement": "경제 시스템",
-          "responsibleSystem": "책임 시스템: 재화 관리 매니저",
-          "validationEvidence": "수익과 지출의 밸런스 시트를 작성하여 게임 플레이 중 파산 확률이 적절한지 밸런싱 테스트 수행"
+          "designElement": "경제 시스템 밸런싱",
+          "responsibleSystem": "재화 관리 매니저 시스템",
+          "validationEvidence": "수익과 지출의 밸런스 시트를 작성하여 게임 플레이 중 파산 확률이 적절한지 밸런싱 테스트를 수행하고, 초기 자본 대비 성장 곡선을 검증함"
         }
       ],
       "openQuestions": [
@@ -246,6 +250,231 @@
       "revalidated": false,
       "thirtyMinuteHardGateApplied": false,
       "materialContractOk": true
+    },
+    "designer_pre_gate_repair_1": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "손님 동선 최적화 시스템",
+          "toSystem": "감정 기반 만족도 엔진",
+          "trigger": "손님이 특정 놀이기구까지 이동하는 시간이 임계치를 초과하여 대기 시간이 길어질 때",
+          "stateChange": "손님의 피로도 수치가 즉각적으로 상승하며, 이는 해당 놀이기구의 만족도 점수를 하락시키는 요인으로 작용함"
+        },
+        {
+          "fromSystem": "감정 기반 만족도 엔진",
+          "toSystem": "경제 시스템",
+          "trigger": "손님의 평균 만족도가 특정 임계값 이상으로 유지되어 공원 평판이 상승할 때",
+          "stateChange": "공원 입장료 수익 및 상점 매출에 1.2배의 보너스 배율이 적용되어 경제적 선순환 구조가 강화됨"
+        },
+        {
+          "fromSystem": "경제 시스템",
+          "toSystem": "동선 최적화 시스템",
+          "trigger": "플레이어가 수익을 사용하여 새로운 구역을 확장하거나 도로를 건설할 때",
+          "stateChange": "경로 탐색 알고리즘의 가용 노드가 확장되어 손님들이 더 효율적인 경로를 선택할 수 있는 전략적 선택지가 증가함"
+        }
+      ],
+      "contentExpansionPlan": [
+        {
+          "milestone": "테마 구역 확장 및 시너지 시스템 도입",
+          "newGameplay": "특정 테마(우주, 중세, 미래)에 맞는 전용 놀이기구와 장식 아이템을 배치하여 구역을 꾸미는 건설 모드가 추가됩니다.",
+          "systemImpact": "기존 만족도 엔진에 테마 시너지 효과가 추가되어, 테마가 통일된 구역에 방문한 손님들의 만족도가 15% 추가 상승하는 로직이 반영됩니다."
+        },
+        {
+          "milestone": "계절 이벤트 및 한정 퀘스트 시스템",
+          "newGameplay": "할로윈, 크리스마스 등 시즌별 한정 놀이기구와 특별 퀘스트가 등장하여 단기적인 목표를 제공하는 이벤트 모드가 활성화됩니다.",
+          "systemImpact": "경제 시스템에 일시적인 수익 부스트와 특별 아이템 판매가 추가되어, 시즌 기간 동안 자금 흐름에 높은 변동성과 전략적 재미를 부여합니다."
+        },
+        {
+          "milestone": "글로벌 랭킹 및 경쟁 경영 챌린지",
+          "newGameplay": "자신의 공원 가치를 전 세계 플레이어와 비교하고, 주간 최고 수익 공원을 선정하는 챌린지 모드가 도입됩니다.",
+          "systemImpact": "기존 경영 시스템에 경쟁 요소가 결합되어, 효율적인 동선 설계와 수익 극대화에 대한 플레이어의 동기부여가 강화됩니다."
+        }
+      ],
+      "technicalAssumptions": [
+        "모바일 기기의 메모리 제한을 고려하여 놀이기구와 손님의 렌더링 최적화를 위한 오브젝트 풀링 기법이 필수적으로 적용되어야 함",
+        "데이터 저장 시 클라우드 세이브를 지원하여 기기 변경 시에도 게임 진행 데이터가 손실 없이 유지되도록 서버 동기화 로직을 구현해야 함"
+      ],
+      "validationQuestions": [
+        "플레이어가 놀이기구 배치 후 손님의 반응을 즉각적으로 인지할 수 있는 시각적 피드백이 충분히 제공되는가?",
+        "경영 실패 시 재도전 과정에서 플레이어가 자신의 실수를 학습하고 다음 플레이에 적용할 수 있는 가이드가 존재하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "동선 최적화 시스템 구현",
+          "responsibleSystem": "경로 탐색 알고리즘 모듈",
+          "validationEvidence": "다양한 동선 배치 테스트를 통해 손님의 이동 시간이 단축되는지 시뮬레이션으로 검증하고, 경로 이탈률이 5% 미만인지 확인하는 테스트를 수행함"
+        },
+        {
+          "designElement": "감정 기반 만족도 엔진 설계",
+          "responsibleSystem": "상태 머신(State Machine) 관리자",
+          "validationEvidence": "만족도 수치 변화에 따른 손님의 행동 패턴(기쁨, 불만, 분노 등)이 의도대로 출력되는지 디버깅 로그를 통해 검증하고 상태 전이 로직을 확인함"
+        },
+        {
+          "designElement": "경제 시스템 밸런싱",
+          "responsibleSystem": "재화 관리 매니저 시스템",
+          "validationEvidence": "수익과 지출의 밸런스 시트를 작성하여 게임 플레이 중 파산 확률이 적절한지 밸런싱 테스트를 수행하고, 초기 자본 대비 성장 곡선을 검증함"
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_1": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 60,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 7.2,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 77.6,
+      "criticalAxisFailures": [
+        "SYSTEM_INTERCONNECTION_DESIGN"
+      ],
+      "hardFailures": [
+        "CRITICAL_AXIS_MINIMUM_FAIL"
+      ],
+      "rejectionReasons": [
+        {
+          "code": "CRITICAL_AXIS_MINIMUM_FAIL",
+          "kind": "HARD_GATE",
+          "axis": "SYSTEM_INTERCONNECTION_DESIGN",
+          "evidenceLevel": 60,
+          "minimumRequired": 75,
+          "evidence": {
+            "axisScore": 7.2,
+            "axisWeight": 12
+          },
+          "requiredAction": "최소 3개 시스템 연결에 fromSystem/toSystem/trigger/stateChange를 명시한다.",
+          "bypassAllowed": false,
+          "source": "STAGE_GATE_SCORING_V2"
+        }
+      ],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    },
+    "designer_pre_gate_repair_2": {
+      "systemInterconnections": [
+        {
+          "fromSystem": "손님 동선 최적화 관리 시스템",
+          "toSystem": "감정 기반 만족도 분석 엔진",
+          "trigger": "손님이 특정 놀이기구까지 이동하는 대기 시간이 설정된 임계치를 초과하여 불만족 상태가 감지될 때",
+          "stateChange": "손님의 피로도 수치가 즉각적으로 상승하며 해당 놀이기구의 만족도 점수를 하락시켜 재방문 의사를 감소시킴"
+        },
+        {
+          "fromSystem": "감정 기반 만족도 분석 엔진",
+          "toSystem": "공원 경제 수익 창출 시스템",
+          "trigger": "공원 내 손님들의 평균 만족도가 특정 임계값 이상으로 유지되어 공원 평판이 긍정적인 단계로 상승할 때",
+          "stateChange": "공원 입장료 수익 및 내부 상점 매출에 1.2배의 보너스 배율이 적용되어 경제적 선순환 구조가 강화됨"
+        },
+        {
+          "fromSystem": "공원 경제 수익 창출 시스템",
+          "toSystem": "놀이공원 구역 확장 건설 시스템",
+          "trigger": "플레이어가 누적된 수익을 사용하여 새로운 테마 구역을 구매하거나 도로를 건설하는 결정을 내릴 때",
+          "stateChange": "경로 탐색 알고리즘의 가용 노드가 확장되어 손님들이 더 효율적인 경로를 선택할 수 있는 전략적 선택지가 증가함"
+        }
+      ]
+    },
+    "deterministic_pre_gate_after_repair_2": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
     }
   },
   "tasks": {},
@@ -350,28 +579,28 @@
       "updatedAt": "2026-09-19T03:26:01.178Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 5,
-      "successes": 1,
+      "calls": 7,
+      "successes": 3,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 236323,
-      "lastMs": 70493,
+      "totalMs": 291926,
+      "lastMs": 2868,
       "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=2245",
-      "updatedAt": "2026-09-19T03:30:11.600Z"
+      "updatedAt": "2026-09-19T03:32:09.766Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "PRE_GATE_REPAIR",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-19T03:24:56.121Z",
-  "updatedAt": "2026-09-19T03:32:01.004Z",
-  "lastSuccessfulModelCallAt": "2026-09-19T03:26:15.791Z",
+  "updatedAt": "2026-09-19T03:32:09.786Z",
+  "lastSuccessfulModelCallAt": "2026-09-19T03:32:09.766Z",
   "geminiModelResolution": {
     "gemini-3.5-flash-lite": "gemini-3.1-flash-lite"
   },
   "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
   "effectiveDesignerProvider": "GEMINI",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }

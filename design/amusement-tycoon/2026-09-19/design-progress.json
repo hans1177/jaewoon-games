@@ -4,18 +4,22 @@
   "date": "2026-09-19",
   "engineDigest": "d4ea6842a265c1cd4390b9dad1f9f6fb258ac046acd4b333bff086a76fe41135",
   "status": "IN_PROGRESS",
-  "currentStage": "PRE_GATE_REPAIR",
-  "percent": 50,
+  "currentStage": "DEPARTMENT_REVIEWS",
+  "percent": 67,
   "completedPhases": [
     "designer_draft",
-    "deterministic_pre_gate"
+    "deterministic_pre_gate",
+    "designer_pre_gate_repair_1",
+    "deterministic_pre_gate_after_repair_1",
+    "designer_pre_gate_repair_2",
+    "deterministic_pre_gate_after_repair_2"
   ],
-  "completedPhaseCount": 2,
+  "completedPhaseCount": 6,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-19T03:26:15.791Z",
-  "failedPhase": null,
-  "failedTask": null,
-  "lastError": null,
+  "lastSuccessfulModelCallAt": "2026-09-19T03:32:09.766Z",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite",
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 3,
@@ -117,17 +121,17 @@
       "updatedAt": "2026-09-19T03:26:01.178Z"
     },
     "gemini:gemini-3.1-flash-lite": {
-      "calls": 5,
-      "successes": 1,
+      "calls": 7,
+      "successes": 3,
       "failures": 4,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 236323,
-      "lastMs": 70493,
+      "totalMs": 291926,
+      "lastMs": 2868,
       "lastError": "GEMINI_OUTPUT_TRUNCATED model=gemini-3.1-flash-lite chars=2245",
-      "updatedAt": "2026-09-19T03:30:11.600Z"
+      "updatedAt": "2026-09-19T03:32:09.766Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-19T03:32:01.005Z"
+  "updatedAt": "2026-09-19T03:32:09.787Z"
 }
