@@ -163,7 +163,45 @@ function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='runni
 function developmentPlanningPool(queue){return activeTasks(queue).filter(item=>isDevelopmentImplementation(item)&&!isReleaseWait(item));}
 function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoot),bRoot=posix(b.sourceRoot);if(!aRoot||!bRoot||aRoot!==bRoot)return false;const aFiles=new Set((a.responsibleFiles||[]).map(posix).filter(Boolean)),bFiles=new Set((b.responsibleFiles||[]).map(posix).filter(Boolean));if(!aFiles.size||!bFiles.size)return true;for(const file of aFiles)if(bFiles.has(file))return true;return false;}
 function plannerConflict(queue,task){return activeTasks(queue).some(item=>sameRootResponsibilityConflict(item,task));}
-function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];return{id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal,responsibleFiles,dependencies:[],priority,releaseState:project.releaseState,status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence]};}
+function supervisedWebBuildRequired(project={},goal=''){
+  if(clean(project.engine).toLowerCase()!=='web')return false;
+  return /\[(?:WEB_BASE_IMPLEMENTATION|EXISTING_WEB_ASSESS_AND_IMPLEMENT|EXISTING_WEB_DEVELOPMENT_CONTINUATION|WEB_STRICT_80_88_TO_89|PRESENTATION_PASS:[A-Z_]+)\]/.test(clean(goal));
+}
+function supervisedWebBuildContract(){
+  return{
+    version:1,
+    mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',
+    required:true,
+    status:'REVIEW_REQUIRED',
+    candidateGenerationAllowed:true,
+    automaticPromotionAllowed:false,
+    approvalField:'supervisionApproved',
+    stages:[
+      'SOURCE_AND_DESIGN_READ',
+      'GAMEPLAY_LOOP_DECOMPOSITION',
+      'SAVE_INPUT_CORE_LOOP_INVARIANT_LOCK',
+      'VIBE_IMPLEMENTATION_CANDIDATE',
+      'SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW',
+      'MOBILE_AND_RUNTIME_QA',
+      'SUPERVISED_PROMOTION'
+    ],
+    protectedSemantics:['GAME_IDENTITY','SAVE_KEY_AND_SAVE_MEANING','CORE_LOOP','PROGRESSION','MOBILE_INPUT','EXISTING_VALID_FEATURES'],
+    hardReject:['PLACEHOLDER_SOURCE','FAKE_GAMEPLAY','VALIDATION_ONLY_PATCH','UNRELATED_FULL_REWRITE','SAVE_RESET_WITHOUT_MIGRATION','BROKEN_MOBILE_INPUT']
+  };
+}
+function task(id,project,goal,responsibleFiles,priority='normal',estimatedRisk='low',extraEvidence=[]){
+  const baselineEvidence=project.releaseState==='release-confirmed'&&project.engine==='unity'&&project.developmentBaseline?.ready===true?[`development-baseline:${project.developmentBaseline.source}`]:[];
+  const supervised=supervisedWebBuildRequired(project,goal);
+  return{
+    id,gameId:project.gameId,target:project.engine,department:'development',type:'implementation',goal,responsibleFiles,dependencies:[],priority,
+    releaseState:project.releaseState,status:'queued',retries:0,maxRetries:2,ownerDirective:false,requiresOwnerDecision:false,protectedChange:false,
+    paidResourceRequired:false,sourceRoot:posix(project.projectPath),estimatedRisk,speculativeEligible:estimatedRisk==='high',
+    productionMode:supervised?'SUPERVISED_VIBE_COAUTHORING':'AUTONOMOUS_VIBE',
+    supervisionApproved:false,
+    supervisionContract:supervised?supervisedWebBuildContract():null,
+    evidence:[`central-policy:${CANONICAL_POLICY_PATH}`,`vibe2-auto-planner:${project.source}`,`release-state:${project.releaseState}`,`source-root:${posix(project.projectPath)}`,...baselineEvidence,...extraEvidence,...(supervised?['supervised-web-build:required','automatic-promotion:blocked-until-supervised-approval']:[])]
+  };
+}
 
 function transformativeTaskEligible(taskInput={}){
   const evidence=new Set((taskInput.evidence||[]).map(clean));
