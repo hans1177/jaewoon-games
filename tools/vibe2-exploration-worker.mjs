@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 import { assessExistingWebRepository } from './vibe2-existing-web-assessment.mjs';
 import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 import { buildCodingArchitecture } from './company-vibe2-coding-architecture.mjs';
-import { buildExpertDevelopmentAnalysis, traceFailureResponsibility } from './company-vibe2-expert-development.mjs';
+import { buildExpertDevelopmentAnalysis, traceFailureResponsibility, summarizeResponsibilityArchitecture } from './company-vibe2-expert-development.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -162,6 +162,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
   const failures=taskFailureEvidence(order);
   const expertDevelopment=buildExpertDevelopmentAnalysis({source:sourceText,sourceAnalysis,gameplaySketch,failures});
   const graph=expertDevelopment?.responsibilityGraph||{nodes:[],edges:[]};
+  const architectureSnapshot=summarizeResponsibilityArchitecture(graph);
   const requirementText=clean(order?.originalGoal||order?.selectedTask?.goal||order?.goal);
   const requirementTrace=requirementText?traceFailureResponsibility({failure:requirementText,responsibilityGraph:graph}):null;
   const traces=[...(expertDevelopment?.causalDebug?.traces||[]),...(requirementTrace?[requirementTrace]:[])];
@@ -256,6 +257,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
       invariantIds:(codingArchitecture?.invariants||[]).map(row=>row.id),
       impactRule:'PREDICT_AFFECTED_SYSTEMS_BEFORE_PATCH_AND_RUN_DEPENDENT_REGRESSION_IF_TOUCHED'
     },
+    architectureSnapshot,
     responsibilityGraph:{
       nodeCount:Number(graph.nodeCount||0),
       relevantNodes:(graph.nodes||[]).filter(node=>primarySet.has(node.name)||directDependentSymbols.includes(node.name)).slice(0,24).map(node=>({
@@ -287,6 +289,7 @@ function bootstrapEditContract(order={},responsibleFiles=[]){
     causalReplay:{version:1,required:false,prePatchReproduced:false,nodeTestTargets:[],executable:false,mode:'PLAN_ONLY',status:'NOT_REQUIRED',identicalOrEquivalentInputStateRequired:true,canonicalQaStillRequired:true,sourceWrite:false,authorityExpanded:false},
     patchRecipe:{version:1,mode:'REQUIREMENT_RECIPE',failureFingerprint:null,verifiedMemoryIds:[],verifiedMemoryCount:0,reusePatterns:[],avoidPatterns:[],steps:['CONFIRM_REQUIREMENT_AGAINST_CURRENT_SOURCE','IMPLEMENT_COMPLETE_PLAYABLE_BASELINE','RUN_TASK_LOCAL_INCREMENTAL_QA'],primaryTargets:[],dependentSymbolsOrSystems:[],ownedState:[],focusedChecks:['MOBILE_GAMEPLAY','REAL_INPUT','STATE_CHANGE','RESTART','RUNTIME'],protectedSemantics:['APPROVED_GAMEPLAY_VALUES','SAVE_MEANING'],verifiedMemoryOnly:true,scopeExpansionAllowed:false,qaBypassAllowed:false,authorityExpanded:false},
     codingArchitecture:{developmentMode:'GREENFIELD',stateOwnershipSystems:[],apiNames:[],invariantIds:[],impactRule:'ARCHITECTURE_FIRST_THEN_IMPLEMENT'},
+    architectureSnapshot:{version:1,nodeCount:0,edgeCount:0,maxFunctionBodyBytes:0,maxCallsPerFunction:0,maxCalledByPerFunction:0,maxStateWritesPerFunction:0,maxSystemsPerFunction:0,multiWriterStateCount:0,stateWriterLinkCount:0,multiOwnerStorageKeyCount:0,storageOwnerLinkCount:0,timerFunctionCount:0,eventBindingCount:0,largeFunctionCount:0,broadSystemFunctionCount:0},
     responsibilityGraph:{nodeCount:0,relevantNodes:[],relevantEdges:[]},behaviorChains:[],seniorReview:{score:null,hardBlockers:[],issues:[]},
     failureEvidence:taskFailureEvidence(order),writableScopeExpansionAllowed:false,learningAuthorityExpanded:false
   };
