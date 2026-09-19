@@ -129,7 +129,7 @@ test('Web development validation is parallel-first with twenty isolated workers 
   assert.match(policy,/sharedRuntimeStatePersistedBySingleAggregationStep: true/);
 });
 
-test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate six-game limit',()=>{
+test('DESIGN_ONLY runtime follows central unbounded WIP policy with external matrix wave bounds',()=>{
   assert.match(policy,/concurrentGameWipTarget: 20/);
   assert.match(policy,/concurrentGameWipMax: 20/);
   assert.match(policy,/adaptiveBackpressureSteps: \[20, 16, 12, 8, 4\]/);
@@ -142,7 +142,9 @@ test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate 
   assert.match(designRuntime,/GAME_DESIGN_EXECUTION_LANES=\$\{parallelMax\}/);
   assert.match(designRuntime,/GAME_DESIGN_GATE_BYPASS=NO/);
   assert.match(designRuntime,/GAME_DESIGN_ONLY_STRICT_PASS_REQUIRED=YES/);
-  assert.match(designRuntime,/GAME_DESIGN_WIP_SOURCE=CANONICAL_ROADMAP/);
+  assert.match(designRuntime,/GAME_DESIGN_WIP_MAX=\$\{unboundedByPolicy\?'UNBOUNDED_POLICY':designWipMax\}/);
+  assert.match(designRuntime,/GAME_DESIGN_EXTERNAL_MATRIX_BATCH_MAX=\$\{externalBatchMax\}/);
+  assert.match(designRuntime,/CANONICAL_ROADMAP_UNBOUNDED_EXTERNAL_BATCH/);
   assert.match(designRuntime,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
   assert.match(designRuntime,/concurrency:[\s\S]{0,300}group:\s*company-seed-design-runtime-\$\{\{ github\.event_name == 'push' && 'engine-push' \|\| 'continuation' \}\}[\s\S]{0,220}cancel-in-progress:\s*\$\{\{ github\.event_name == 'push' \}\}/);
   assert.match(designRuntime,/push:[\s\S]{0,500}tools\/company-design-cycle\.mjs/);

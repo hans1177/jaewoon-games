@@ -1,5 +1,5 @@
 {
-  "version": 52,
+  "version": 53,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -2553,12 +2553,11 @@
     }
   },
   "changeRecord": {
-    "id": "SEED_DESIGN_UNBOUNDED_WIP_SYNC_2026-09-19",
+    "id": "CENTRAL_POLICY_QA_UNBOUNDED_DESIGN_WIP_SYNC_2026-09-19",
     "documentIsCode": true,
-    "reason": "ALIGN_DESIGN_RUNTIME_WITH_CENTRAL_UNBOUNDED_INTERNAL_WIP_POLICY_WITHOUT_WEAKENING_CANARY_OR_DESIGN_GATES",
+    "reason": "SYNC_CENTRAL_POLICY_QA_WITH_CURRENT_UNBOUNDED_INTERNAL_WIP_AND_EXTERNAL_MATRIX_WAVE_CONTRACT",
     "files": [
-      ".github/workflows/company-seed-design-runtime.yml",
-      "qa/company-seed-design-runtime-stall.test.mjs",
+      "qa/company-speed-sequence-workflow.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ]
   }
