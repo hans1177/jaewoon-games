@@ -1,5 +1,5 @@
 {
-  "version": 122,
+  "version": 123,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1518,7 +1518,24 @@
             "fullWebCompletenessCoreQaRun": "35432298253",
             "fullWebCompletenessCoreQa": "PASS",
             "fullWebCompletenessIntegratedRegressionRun": "35432298285",
-            "fullWebCompletenessIntegratedRegression": "PASS"
+            "fullWebCompletenessIntegratedRegression": "PASS",
+            "latestMainRevalidationRun": "35444351457",
+            "latestMainRevalidationContractSha": "ccfb20d9f114c713af7a37aa0ca147c56f999fc9",
+            "latestMainRevalidationState": "RUNNING",
+            "latestMainRevalidationPurpose": "FULL_WEB_EXPANSION_TARGETING_FIX",
+            "timeoutRecoveryTelemetryCommits": [
+              "5129f254fa1efa4d90bf124f9c1cd361d12bb588",
+              "9da66b9d83ebb2235e4c8cf64893eaaf0127515e",
+              "d0d7122da1034e040195d3369e11c0f407a66c19"
+            ],
+            "timeoutRecoveryTelemetryEffectiveFromNextWave": true,
+            "previousFanInRegression": {
+              "runId": "35443243108",
+              "jobId": "105900475104",
+              "testsPassed": 235,
+              "testsFailed": 0,
+              "regressionRole": "PASS"
+            }
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3074,7 +3091,7 @@
     "documentationFirst": true,
     "previousChangeRecordId": "VIBE2_FULL_WEB_EXPANSION_TARGETING_FIX_2026-09-19",
     "reason": "EXPOSE_VERIFIED_TIMEOUT_PARTIAL_EDIT_RECOVERY_IN_IMMUTABLE_WORKER_EVIDENCE_SO_LIVE_WAVE_EFFECTIVENESS_CAN_BE_MEASURED_DIRECTLY",
-    "implementationState": "DOCUMENTED_CODE_PENDING",
+    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_QA_PENDING_LIVE_CONFIRMATION",
     "contract": {
       "manifestGenerationFlag": "partialTimeoutRecovery",
       "codingMethodFlag": "partialTimeoutRecovery",
@@ -3084,17 +3101,39 @@
       "qaGateUnchanged": true
     },
     "pending": [
-      "PATCH_CODING_METHOD_FIELD",
-      "PATCH_IMMUTABLE_EVIDENCE_MARKER",
-      "REGRESSION_TEST",
-      "CORE_QA",
-      "LIVE_TELEMETRY_CONFIRMATION"
+      "CORE_QA_WITH_TIMEOUT_TELEMETRY_TEST",
+      "CURRENT_CCFB20D_FULL_WEB_20_WAVE_COMPLETE_AND_FAN_IN",
+      "NEXT_WAVE_PIN_5129F254_AND_9DA66B9D_OR_LATER",
+      "LIVE_TIMEOUT_PARTIAL_RECOVERY_EVIDENCE_CONFIRMATION",
+      "COMPARE_FOCUSED_REPAIR_AND_FULL_WEB_FAILURE_RATES"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true
+    },
+    "implementationCommits": {
+      "source": "5129f254fa1efa4d90bf124f9c1cd361d12bb588",
+      "workflow": "9da66b9d83ebb2235e4c8cf64893eaaf0127515e",
+      "regressionTest": "d0d7122da1034e040195d3369e11c0f407a66c19"
+    },
+    "evidence": {
+      "currentRevalidationWave": {
+        "runId": 35444351457,
+        "pinnedContractSha": "ccfb20d9f114c713af7a37aa0ca147c56f999fc9",
+        "purpose": "FULL_WEB_EXPANSION_FIX_REVALIDATION",
+        "timeoutTelemetryIncluded": false,
+        "reason": "TELEMETRY_COMMITS_LANDED_AFTER_WAVE_PIN"
+      },
+      "previousFanInRegression": {
+        "runId": 35443243108,
+        "jobId": 105900475104,
+        "testsPassed": 235,
+        "testsFailed": 0,
+        "regressionRole": "PASS",
+        "fanInReview": "PASS"
+      }
     }
   },
   "vibeExecutionLaneContract": {
