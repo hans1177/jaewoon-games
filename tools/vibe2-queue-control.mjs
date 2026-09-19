@@ -235,13 +235,32 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
   const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation });
+  const tasks = started.tasks || [];
+  const workerBudget = Math.max(
+    tasks.length,
+    Math.floor(Number(started.selection?.effectiveMaxConcurrentTasks ?? maxConcurrentTasks ?? queue.maxConcurrentTasks) || tasks.length || 1)
+  );
+  const speculativeVariants = new Map(tasks.map((task) => [task.id, 1]));
+  const speculativeEligible = tasks.filter((task) =>
+    task.target !== 'unity' &&
+    task.estimatedRisk === 'high' &&
+    (task.speculativeEligible || task.priority === 'critical')
+  );
+  let spareWorkerSlots = Math.max(0, workerBudget - tasks.length);
+  for (let round = 0; round < 2 && spareWorkerSlots > 0; round += 1) {
+    for (const task of speculativeEligible) {
+      if (spareWorkerSlots <= 0) break;
+      speculativeVariants.set(task.id, (speculativeVariants.get(task.id) || 1) + 1);
+      spareWorkerSlots -= 1;
+    }
+  }
   return {
     reserved: started.started,
-    tasks: started.tasks || [],
+    tasks,
     queue: started.queue,
     selection: started.selection,
     recovered: recovered.recovered,
-    matrix: (started.tasks || []).map((task) => ({
+    matrix: tasks.map((task) => ({
       taskId: task.id,
       shard: task.shard,
       packageId: task.packageId || null,
@@ -251,7 +270,7 @@ export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, re
       reservationRunId: task.reservationRunId || null,
       reservationRunAttempt: task.reservationRunAttempt || 0,
       reservedAt: task.reservedAt || null,
-      speculativeVariants: task.target !== 'unity' && task.estimatedRisk === 'high' && (task.speculativeEligible || task.priority === 'critical') ? 3 : 1
+      speculativeVariants: speculativeVariants.get(task.id) || 1
     }))
   };
 }
