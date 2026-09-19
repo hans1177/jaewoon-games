@@ -24,6 +24,7 @@ env:
   VIBE2_CODEX_ROLE: SYSTEM_TOOLING_CI_TEST_INFRA_ONLY
   VIBE2_CODEX_GAME_SOURCE_WRITE: FORBIDDEN
   VIBE2_OPENAI_PAID_API_ALLOWED: 'false'
+  VIBE2_SHARED_CONTEXT_REQUIRED: 'true'
 
 jobs:
   reserve:
@@ -561,10 +562,13 @@ jobs:
           fi
 
           cd "$candidate_dir"
+          node --check tools/company-shared-context.mjs
+          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-before.log"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
           export VIBE2_SPECULATIVE_VARIANT="$VARIANT"
           export VIBE2_EXPLORATION_FILE=.vibe2/exploration.json
           node "$GITHUB_WORKSPACE/tools/vibe2-source-worker.mjs" --apply-source=true
+          node tools/company-shared-context.mjs --output="/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.json" | tee "/tmp/vibe2-shared-context-${SAFE_TASK}-${VARIANT}-after.log"
           git diff --check
 
           git add "$SOURCE_ROOT" .vibe2/candidates
@@ -688,6 +692,7 @@ jobs:
           MODEL_PREP_MS: ${{ steps.worker_ollama_runtime.outputs.duration_ms }}
           OLLAMA_CACHE_HIT: ${{ steps.worker_ollama_cache.outputs.cache-hit }}
           OLLAMA_RUNTIME_SOURCE: ${{ steps.worker_ollama_runtime.outputs.source }}
+          SHARED_CONTEXT_FILE: /tmp/vibe2-shared-context-${{ matrix.safeTask }}-${{ matrix.variant }}-after.json
           CANDIDATE_MS: ${{ steps.candidate.outputs.duration_ms }}
           QA_MS: ${{ steps.incremental_qa.outputs.duration_ms }}
         shell: bash
@@ -738,6 +743,15 @@ jobs:
             `actions-run:${process.env.GITHUB_RUN_ID}`,
             clean(process.env.RESERVATION_ID)&&`reservation-id:${clean(process.env.RESERVATION_ID)}`,
             `variant:${clean(process.env.VARIANT)||'primary'}`,
+            ...(fs.existsSync(clean(process.env.SHARED_CONTEXT_FILE))?(()=>{
+              const c=JSON.parse(fs.readFileSync(clean(process.env.SHARED_CONTEXT_FILE),'utf8'));
+              return[
+                `shared-context-policy:${clean(c?.hashes?.policySha256)}`,
+                `shared-context-log-map:${clean(c?.hashes?.logMapSha256)}`,
+                `shared-context-architecture:${clean(c?.hashes?.architectureSha256)}`,
+                'shared-context-sync:PASS'
+              ];
+            })():['shared-context-sync:MISSING']),
             ...(route==='analysis-only'?['learning-practice-only','production-pass:NO','source-write:NO']:[ ])
           ].filter(Boolean);
           const workerStartedAt=Number(fs.readFileSync(process.env.WORKER_STARTED_AT_FILE,'utf8'))||Date.now();
