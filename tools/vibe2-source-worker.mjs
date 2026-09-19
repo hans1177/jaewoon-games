@@ -120,12 +120,19 @@ export function shouldRetryGenerationError(error){
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|prediction aborted|token repeat limit/i.test(message);
 }
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[]}={}){
+  const rawPrompt=String(prompt??'');
+  const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
+  const allowedPaths=allowedLine
+    ? allowedLine.slice(allowedLine.indexOf(':')+1).split(',').map(clean).filter(Boolean)
+    : [];
+  const exactResponsible=unique(responsibleFiles.length?responsibleFiles:allowedPaths);
+  const exactPath=exactResponsible.length===1?exactResponsible[0]:'';
   const reason=clean(error?.message||error).slice(0,240)||'malformed candidate';
   const zeroChange=/실제 source 변경/i.test(reason);
   const noChangeEdit=/변경 없는 edit/i.test(reason);
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
-  const exactResponsible=unique(responsibleFiles);
-  let retryBase=String(prompt??'');
+  const safeReason=invalidPath?'candidate attempted a path outside Allowed edit paths':reason;
+  let retryBase=rawPrompt;
   if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath)){
     const marker='\n=== FILE ';
     const starts=[];
@@ -134,15 +141,20 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       const prefix=retryBase.slice(0,starts[0]).trimEnd();
       const editable=[];
       for(let i=0;i<starts.length;i++){
-        const start=starts[i]+1;
-        const end=i+1<starts.length?starts[i+1]:retryBase.length;
-        const section=retryBase.slice(start,end).trimEnd();
-        if(section.split('\n',1)[0].includes('[EDITABLE]'))editable.push(section);
+        const sectionStart=starts[i]+1;
+        const sectionEnd=i+1<starts.length?starts[i+1]:retryBase.length;
+        const section=retryBase.slice(sectionStart,sectionEnd).trimEnd();
+        const header=section.split('\n',1)[0];
+        const sectionPath=header
+          .replace(/^=== FILE\s+/,'')
+          .replace(/\s+\[[^\]]+\].*$/,'')
+          .replace(/\s+===$/,'')
+          .trim();
+        if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath))editable.push(section);
       }
       if(editable.length)retryBase=[prefix,...editable].join('\n\n');
     }
   }
-  const exactPath=exactResponsible.length===1?exactResponsible[0]:'';
   const correction=allowFullRewrite
     ? [
         'RECOVERY RETRY: the previous generation did not finish or violated the full-file envelope.',
@@ -153,10 +165,10 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       ].join('\n')
     : [
         zeroChange?'RECOVERY RETRY: the previous candidate contained zero actual source changes.':noChangeEdit?'RECOVERY RETRY: the previous edit copied the same text without changing source.':invalidPath?'RECOVERY RETRY: the previous candidate used an invalid edit path.':'RECOVERY RETRY: the previous candidate was not strict valid JSON.',
-        `Previous failure: ${reason}`,
+        `Previous failure: ${safeReason}`,
         'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
-        zeroChange?'You MUST produce at least one edits[] entry. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':invalidPath?'Use only the exact writable path above. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
+        zeroChange?'You MUST produce at least one edits[] entry. Use the exact Allowed edit path above. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use the exact Allowed edit path above, copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
         zeroChange||noChangeEdit||invalidPath?'Recovery context intentionally contains only writable FILE blocks. Do not widen scope, invent a new file, or bypass responsible-file boundaries.':''
       ].filter(Boolean).join('\n');
   return `${retryBase}\n\n${correction}`;
