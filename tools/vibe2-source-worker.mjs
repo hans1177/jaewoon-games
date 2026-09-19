@@ -295,19 +295,19 @@ function fullWebExpansionStageTarget(source='',stage=1){
   };
   return{capability,missing,present:FULL_WEB_STAGE_CAPABILITY_ORDER.filter(name=>capabilities[name]===true),directive:directives[capability]||'Add one new coherent gameplay dimension that changes decisions, state transitions, or outcomes. Do not duplicate an already-present capability.'};
 }
-function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,maxBytes=FULL_WEB_GENERATION_TARGET_MAX_BYTES,remainingStages=1,previousFailure='',stageTarget=null}={}){
-  const content=String(seed?.content??''),currentBytes=Buffer.byteLength(content,'utf8'),gap=Math.max(0,minBytes-currentBytes),stageTarget=Math.min(7000,Math.max(3200,Math.ceil(gap/Math.max(1,remainingStages))+800));
+function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,maxBytes=FULL_WEB_GENERATION_TARGET_MAX_BYTES,remainingStages=1,previousFailure='',capabilityTarget=null}={}){
+  const content=String(seed?.content??''),currentBytes=Buffer.byteLength(content,'utf8'),gap=Math.max(0,minBytes-currentBytes),stageByteTarget=Math.min(7000,Math.max(3200,Math.ceil(gap/Math.max(1,remainingStages))+800));
   const prefix=String(basePrompt??'').split('\n=== FILE ')[0].trimEnd();
   return[
     prefix,
     '',
     'FULL WEB ADDITIVE EXPANSION MODE.',
     `Expansion stage: ${stage}. Current playable HTML: ${currentBytes} bytes. Final acceptance minimum: ${minBytes} bytes; preferred maximum: ${maxBytes} bytes.`,
-    `Generate roughly ${stageTarget} bytes of NEW coherent gameplay source. This fragment will be inserted immediately before </body>.`,
-    stageTarget?.capability?`THIS STAGE TARGET=${stageTarget.capability}`:'',
-    stageTarget?.directive||'',
-    stageTarget?.present?.length?`Already present capabilities (do not re-implement as the main goal): ${stageTarget.present.join(', ')}`:'',
-    stageTarget?.missing?.length?`Still missing after this target: ${stageTarget.missing.filter(name=>name!==stageTarget.capability).join(', ')||'NONE'}`:''
+    `Generate roughly ${stageByteTarget} bytes of NEW coherent gameplay source. This fragment will be inserted immediately before </body>.`,
+    capabilityTarget?.capability?`THIS STAGE TARGET=${capabilityTarget.capability}`:'',
+    capabilityTarget?.directive||'',
+    capabilityTarget?.present?.length?`Already present capabilities (do not re-implement as the main goal): ${capabilityTarget.present.join(', ')}`:'',
+    capabilityTarget?.missing?.length?`Still missing after this target: ${capabilityTarget.missing.filter(name=>name!==capabilityTarget.capability).join(', ')||'NONE'}`:'',
     previousFailure?`Previous expansion failure: ${clean(previousFailure).replace(/\s+/g,' ').slice(0,240)}. Do not repeat the same output.`:'',
     'If the envelope format is difficult, a raw closed HTML fragment is acceptable, but it MUST NOT contain html/body/doctype and every script/style tag must be closed.',
     'Return only one VIBE2_WEB_EXPANSION envelope. Do not return a complete HTML document or JSON.',
@@ -557,7 +557,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const remainingStages=Math.max(1,maxAttempts-attempt+1);
     const attemptPrompt=expansionMode
-      ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',stageTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
+      ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
       :(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:lastRaw}):prompt);
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
