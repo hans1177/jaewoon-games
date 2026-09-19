@@ -1,5 +1,5 @@
 {
-  "version": 105,
+  "version": 106,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,25 +3069,26 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_PHASE5_STAGE_TARGETING_VERIFIED_LIVE_WAVE_NEXT_2026-09-19",
+    "id": "VIBE2_VERIFIED_CONTEXT_EFFICIENCY_LEARNING_NEXT_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_PHASE5_CORE_VERIFIED_STAGE_TARGETING_NEXT_2026-09-19",
-    "reason": "MISSING_CAPABILITY_FIRST_STAGE_TARGETING_PASSED_CORE_VIBE_AND_INTEGRATED_QA;MOVE_TO_LIVE_20_WAVE_FAILURE_CLASS_REVALIDATION",
-    "implementationState": "PHASE_5_STAGE_TARGETING_VERIFIED_LIVE_REVALIDATION_PENDING",
+    "previousChangeRecordId": "VIBE2_PHASE5_STAGE_TARGETING_VERIFIED_LIVE_WAVE_NEXT_2026-09-19",
+    "reason": "CONNECT_VERIFIED_CONTEXT_MODE_OUTCOMES_TO_FUTURE_CODING_METHOD_SELECTION_WITHOUT_WEAKENING_SCOPE_OR_QA",
+    "implementationState": "VERIFIED_CONTEXT_EFFICIENCY_LEARNING_DOCUMENTED_CODE_PENDING_LIVE_REVALIDATION_PENDING",
     "evidence": {
-      "verificationHead": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99",
+      "stageTargetVerificationHead": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99",
       "coreQaRunId": 35441514826,
       "vibeQaRunId": 35441514838,
       "integratedRegressionRunId": 35441514837,
-      "baselineRunId": 35438982255,
-      "baselineFailureClasses": "TIMEOUT:9,EDIT_MATCH:2,FULL_REWRITE_SIZE:7,NO_OP:1,MALFORMED_OUTPUT:1"
+      "baselineRunId": 35438982255
     },
     "pending": [
+      "CONTEXT_MODE_VERIFIED_FAILURE_ACCOUNTING_CODE",
+      "PREFERRED_CONTEXT_MODE_SELECTION_CODE",
+      "SOURCE_WORKER_CONTEXT_MODE_INJECTION",
+      "CORE_QA",
       "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
-      "FAILURE_CLASS_BEFORE_AFTER_COMPARISON",
-      "CONTEXT_MODE_SUCCESS_RATE_LEARNING_UPDATE",
-      "NEXT_CODING_METHOD_OPTIMIZATION_FROM_VERIFIED_RESULTS"
+      "FAILURE_CLASS_BEFORE_AFTER_COMPARISON"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
@@ -3095,6 +3096,9 @@
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
       "sameFileParallelWrite": false,
+      "verifiedOnlyLearning": true,
+      "minimumContextSamplesBeforePreference": 3,
+      "contextPreferenceAdvisoryWithinReservedScope": true,
       "finalWebMinimumNotLowered": true,
       "intermediatePromotionAllowed": false,
       "qualityGatesNotWeakened": true,
