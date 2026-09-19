@@ -5647,11 +5647,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-ISLAND-VILLAGE-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -5719,7 +5719,36 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T06:28:19.694Z"
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T06:28:19.694Z",
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/island-village/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "ROBLOX",
+        "targetSourcePath": "roblox-games/island-village",
+        "webSourcePath": "web-games/island-village",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/island-village/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/island-village/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/island-village/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 91.80000000000001,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T06:28:37.752Z"
+      }
     },
     {
       "version": 1,
@@ -7377,11 +7406,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "REINTERPRETATION",
       "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "DESIGN_ONLY",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "generation": "OWNER_REDESIGN_RESET",
       "ownerResetRevision": "OWNER-ENROLL-TERRITORY-WAR-20260913-2",
-      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7440,6 +7469,35 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
+      },
+      "productionTier": 2,
+      "selectedPlatform": "ROBLOX",
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/territory-war/2026-09-19/strict-design-review.json",
+        "passThreshold": 80,
+        "excellent": true
+      },
+      "promotion": {
+        "from": "DESIGN_ONLY",
+        "to": "DEVELOPMENT_CONFIRMED",
+        "reason": "DESIGN_BASELINE_READY_STRICT_PASS",
+        "selectedPlatform": "ROBLOX",
+        "targetSourcePath": "roblox-games/territory-war",
+        "webSourcePath": "web-games/territory-war",
+        "requiredFirstValidation": "WEB_GAMEPLAY_MUSIC_AND_STRICT_REVIEW",
+        "designBaselineSource": "design/territory-war/2026-09-19/design-revised.json",
+        "designDate": "2026-09-19",
+        "artbookSource": "artbook-submissions/territory-war/current.json",
+        "artbookTiming": "AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER",
+        "postPromotionArtbookRequired": false,
+        "postWebArtbookRequired": true,
+        "strictDesignReviewSource": "design/territory-war/2026-09-19/strict-design-review.json",
+        "strictDesignScore": 91.80000000000001,
+        "excellentDesign": true,
+        "promotedAt": "2026-09-19T06:28:37.752Z"
       }
     },
     {
@@ -18151,7 +18209,7 @@
   ],
   "lastRunAt": "2026-09-14T14:23:36.674Z",
   "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
-  "updatedAt": "2026-09-19T06:28:11.511Z",
+  "updatedAt": "2026-09-19T06:28:37.752Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
