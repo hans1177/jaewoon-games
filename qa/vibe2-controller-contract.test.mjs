@@ -153,10 +153,16 @@ test('candidate release gate isolates candidates and requires the affected Web d
   assert(!candidateReleaseWorkflow.includes('group: vibe2-release-serial'));
   assert(candidateReleaseWorkflow.includes('select(.name=="Cloudflare Pages")'));
   assert(candidateReleaseWorkflow.includes('VIBE2_RELEASE_PAGES_CHECK='));
+  assert(candidateReleaseWorkflow.includes('VIBE2_CANDIDATE_ALREADY_PROMOTED='));
+  assert(candidateReleaseWorkflow.includes('already_promoted: ${{ steps.gate.outputs.already_promoted }}'));
   const webReleaseStart=candidateReleaseWorkflow.indexOf('- name: Promote approved web source root through reviewed PR');
   const robloxReleaseStart=candidateReleaseWorkflow.indexOf('  roblox-release:');
   const webReleaseBlock=candidateReleaseWorkflow.slice(webReleaseStart,robloxReleaseStart);
   assert(!webReleaseBlock.includes('gh pr checks "$pr_url" --watch --fail-fast'));
+  assert(webReleaseBlock.includes("if [ \"$ALREADY_PROMOTED\" = 'true' ]; then"));
+  assert(webReleaseBlock.includes('VIBE2_WEB_ALREADY_PROMOTED=YES'));
+  assert(webReleaseBlock.includes('git reset --hard origin/vibe2-unreal-core'));
+  assert(!webReleaseBlock.includes('git pull --rebase origin vibe2-unreal-core'));
 });
 
 test('controller runs content-hash incremental QA per worker and one parallel full regression at fan-in',()=>{
