@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -70,9 +70,10 @@
   },
   "orchestrationLogContract": {
     "primaryAiMarkers": [
-      "PRIMARY_AI_ASSIGNMENT_ID",
-      "PRIMARY_AI_REVIEW=PASS|REWORK",
-      "PRIMARY_AI_ACCEPTANCE=YES|NO"
+      "PRIMARY_AI_PRIORITY_DIRECTIVE_ID",
+      "PRIMARY_AI_REVIEW=PASS|REWORK|REOPEN|REDIRECT",
+      "PRIMARY_AI_SUPERVISION_DOMAIN",
+      "PRIMARY_AI_PRIORITY_REASON"
     ],
     "externalWorkerMarkers": [
       "EXTERNAL_AI_WORKER_ID",
@@ -82,8 +83,22 @@
       "FAILURE_STAGE",
       "FAILURE_SIGNATURE"
     ],
-    "finalAcceptanceRequiresPrimaryAiReview": true,
+    "finalAcceptanceRequiresPrimaryAiReview": false,
     "workerSelfAcceptanceForbidden": true,
-    "reworkMustReferencePriorAssignment": true
+    "reworkMustReferencePriorAssignment": true,
+    "workerMarkers": [
+      "WORKER_ID",
+      "CANONICAL_TASK_ID",
+      "ASSIGNED_OR_AUTONOMOUS_SCOPE",
+      "CHANGED_SCOPE",
+      "VERIFICATION_EVIDENCE",
+      "FAILURE_STAGE",
+      "FAILURE_SIGNATURE"
+    ],
+    "deterministicMachineGateMayCompleteWithoutPrimaryAi": true,
+    "workerMustNotInventPolicy": true,
+    "workerMayCompleteCanonicalTaskWhenDeterministicGatePasses": true,
+    "reworkDirectiveMustReferenceTaskOrPriorEvidence": true,
+    "supervisorAbsenceIsNotAWorkerBlocker": true
   }
 }
