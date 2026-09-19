@@ -1,5 +1,5 @@
 {
-  "version": 107,
+  "version": 108,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,42 +3069,46 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_VERIFIED_CONTEXT_EFFICIENCY_LEARNING_IMPLEMENTED_2026-09-19",
+    "id": "VIBE2_CONTROL_DATA_MAIN_TOOLING_CONTRACT_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_VERIFIED_CONTEXT_EFFICIENCY_LEARNING_NEXT_2026-09-19",
-    "reason": "PROMOTE_VERIFIED_CONTEXT_MODE_EFFICIENCY_LEARNING_AFTER_CORE_VIBE_AND_INTEGRATED_QA_SUCCESS;NEXT_GATE_IS_LIVE_20_WAVE_FAILURE_CLASS_REVALIDATION",
-    "implementationState": "VERIFIED_CONTEXT_EFFICIENCY_LEARNING_VERIFIED_LIVE_REVALIDATION_PENDING",
+    "previousChangeRecordId": "VIBE2_VERIFIED_CONTEXT_EFFICIENCY_LEARNING_IMPLEMENTED_2026-09-19",
+    "reason": "PREVENT_CONTROL_BRANCH_OLD_TOOLING_FROM_DOWNGRADING_QUEUE_SCHEMA_AND_MAX_SEMANTICS_DURING_RELEASE_RECOVERY_AND_RESULT_SETTLEMENT",
+    "implementationState": "DOCUMENTED_CODE_PENDING",
     "evidence": {
-      "learningMotorCommit": "a618c79a2a561f39d1e85a93ad611760d503a6d9",
-      "sourceWorkerCommit": "25697a120e2bb67f5a5ee6724bc4d708b3831e0e",
-      "learningTestCommit": "ac32f87d8c96bc49dc3ccb77399e4490b248b80c",
-      "sourceWorkerTestCommit": "dfa87b82780f304fc15b0be6938ec7022dad1832",
-      "coreQaRunId": 35441804484,
-      "vibeQaRunId": 35441804337,
-      "integratedRegressionRunId": 35441804365,
-      "baselineRunId": 35438982255
+      "failingRunId": 35441991315,
+      "fanInJobId": 105894568613,
+      "failure": "MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED",
+      "queueMaxBeforeReleaseRecovery": 256,
+      "queueMaxAfterReleaseRecovery": 30,
+      "regressionTests": "222_PASS_0_FAIL"
+    },
+    "contract": {
+      "controlBranchRole": "STATE_DATA_ONLY_FOR_QUEUE_MUTATIONS",
+      "queueMutationToolSource": "LATEST_MAIN_PINNED_OR_FETCHED_CONTRACT",
+      "persistentQueueMaxMeaning": "EXTERNAL_MATRIX_PROVIDER_BOUND",
+      "persistentQueueMax": 256,
+      "adaptiveCurrentMaxMeaning": "CURRENT_GAME_PRIMARY_WAVE_BOUND",
+      "ownerMinimumWave": 20,
+      "schemaDowngradeForbidden": true,
+      "executionLanePreservationRequired": true,
+      "reservationFieldsPreservationRequired": true
     },
     "pending": [
-      "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
-      "FAILURE_CLASS_BEFORE_AFTER_COMPARISON",
-      "CONTEXT_MODE_LIVE_SAMPLE_ACCUMULATION",
-      "NEXT_CODING_METHOD_OPTIMIZATION_FROM_VERIFIED_LIVE_RESULTS"
+      "PATCH_24H_RELEASE_RECOVERY_MAIN_QUEUE_TOOL",
+      "PATCH_CANDIDATE_RELEASE_MAIN_QUEUE_TOOL",
+      "PATCH_ROBLOX_RESULT_MAIN_QUEUE_TOOL",
+      "PATCH_UNITY_RESULT_MAIN_QUEUE_TOOL",
+      "CORE_QA",
+      "LIVE_20_WAVE_REVALIDATION"
     ],
     "invariants": {
-      "ownerMinimumWave": 20,
       "gamePrimaryFirst": true,
+      "ownerMinimumWave": 20,
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "sameFileParallelWrite": false,
-      "verifiedOnlyLearning": true,
-      "minimumContextSamplesBeforePreference": 3,
-      "contextPreferenceAdvisoryWithinReservedScope": true,
-      "finalWebMinimumNotLowered": true,
-      "intermediatePromotionAllowed": false,
-      "qualityGatesNotWeakened": true,
-      "writableScopeExpansionAllowed": false,
-      "directMainGameSourceWriteForbidden": true
+      "directMainGameSourceWriteForbidden": true,
+      "qualityGatesNotWeakened": true
     }
   },
   "vibeExecutionLaneContract": {
