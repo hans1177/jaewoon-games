@@ -9,8 +9,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-const row=(i,{start=1000,end=5000,cache=true,outcome='PASS',runId=null,evidence=[],metrics={}}={})=>({
-  taskId:`t${i}`,outcome,
+const row=(i,{start=1000,end=5000,cache=true,outcome='PASS',runId=null,evidence=[],metrics={},blocker=null,candidateFailure=null}={})=>({
+  taskId:`t${i}`,outcome,blocker,candidateFailure,
   evidence:[...(runId?[`actions-run:${runId}`]:[]),...evidence],
   metrics:{
     requestedMax:20,effectiveMax:20,reservedAt:0,workerStartedAt:start,workerFinishedAt:end,
@@ -48,6 +48,34 @@ test('cache misses and failures are visible even when concurrency is healthy',()
   assert.equal(t.failureRatePct,20);
   assert.equal(t.pressureLevel,'HIGH');
   assert.equal(t.bottleneck,'OLLAMA_CACHE_MISS_RATE');
+});
+
+test('source candidate failures are reported as the real saturated-wave bottleneck',()=>{
+  const results=Array.from({length:20},(_,i)=>row(i,{
+    start:1000+i*5,end:5000+i*5,outcome:'FAIL',runId:'125',
+    blocker:'source-candidate-generation-failed'
+  }));
+  const t=computeParallelismTelemetry({results,requestedMax:20,effectiveMax:20,taskCount:20});
+  assert.equal(t.actualPeakConcurrency,20);
+  assert.equal(t.failureRatePct,100);
+  assert.equal(t.bottleneck,'SOURCE_CANDIDATE_GENERATION');
+  assert.equal(t.sourceGenerationFailures.count,20);
+  assert.equal(t.sourceGenerationFailures.ratePct,100);
+  assert.equal(t.sourceGenerationFailures.classes.UNCLASSIFIED,20);
+  assert.equal(t.pass,false);
+});
+
+test('causal source generation classes survive into parallel telemetry',()=>{
+  const results=[
+    row(1,{outcome:'FAIL',candidateFailure:{class:'NO_OP',message:'same edit'}}),
+    row(2,{outcome:'FAIL',candidateFailure:{class:'TIMEOUT',message:'slow'}}),
+    row(3,{outcome:'FAIL',evidence:['source-generation-failure:FULL_REWRITE_SIZE']}),
+    row(4,{outcome:'PASS'})
+  ];
+  const t=computeParallelismTelemetry({results,requestedMax:4,effectiveMax:4,taskCount:4});
+  assert.equal(t.bottleneck,'SOURCE_CANDIDATE_GENERATION');
+  assert.equal(t.sourceGenerationFailures.count,3);
+  assert.deepEqual(t.sourceGenerationFailures.classes,{NO_OP:1,TIMEOUT:1,FULL_REWRITE_SIZE:1});
 });
 
 test('mixed actions runs are not treated as one adaptive sample',()=>{
