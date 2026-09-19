@@ -347,10 +347,13 @@ test('Roblox deployment control allows guarded Open Cloud publishing only',()=>{
 });
 
 
-test('development WIP capacity is 30 while gates remain fail-closed',()=>{
-  assert.equal(roadmap.platformRepresentativeSets.implementationWipTarget,30);
-  assert.equal(roadmap.platformRepresentativeSets.implementationWipMax,30);
-  assert.equal(roadmap.developmentSpeedExecution.globalSelectedPlatformDevelopmentWipMax,30);
+test('development WIP is policy-unbounded while external capacity and gates remain fail-closed',()=>{
+  assert.equal(roadmap.platformRepresentativeSets.implementationWipTarget,null);
+  assert.equal(roadmap.platformRepresentativeSets.implementationWipMax,null);
+  assert.equal(roadmap.platformRepresentativeSets.implementationWipPolicy,'UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_PROVIDER_CAPACITY_ONLY');
+  assert.equal(roadmap.developmentSpeedExecution.globalSelectedPlatformDevelopmentWipMax,null);
+  assert.equal(roadmap.developmentSpeedExecution.internalArtificialConcurrencyCapsForbidden,true);
+  assert.equal(roadmap.developmentSpeedExecution.externalMatrixBatchMax,256);
   assert.equal(roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.invariants.noGateBypass,true);
   assert.equal(directive.executionPause.strictDesignGateMustRemainUnchanged,true);
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
@@ -362,7 +365,8 @@ test('all automated gates repair and retest the same failed gate until PASS',()=
   const loop=roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.automaticGateRepairLoop;
   assert.equal(loop.enabled,true);
   assert.equal(loop.perGameIndependent,true);
-  assert.equal(loop.maxParallelGames,30);
+  assert.equal(loop.maxParallelGames,null);
+  assert.equal(loop.parallelismPolicy,'UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_ONLY');
   assert.equal(loop.portfolioWidePassBarrier,false);
   assert.equal(loop.retryLimit,'UNLIMITED_UNTIL_PASS_OR_EXPLICIT_STOP_CONDITION');
   assert.equal(loop.advanceOnFailure,false);
