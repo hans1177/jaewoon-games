@@ -23,11 +23,14 @@ test('PARALLELISM_CONTRACT_GATE uses machine-readable authority only',()=>{
   assert.equal(runtime.coordination.sourceRootExclusive,true);
   assert.equal(runtime.safety.queueSourceRootLeaseRequired,true);
   assert.equal(runtime.workPackages.sameFileParallelWrite,false);
+  assert.equal(runtime.workPackages.maxPackagesPerCycle,30);
+  assert.equal(runtime.workPackages.capacityPolicy,'FILL_AVAILABLE_INDEPENDENT_PRODUCTION_SLOTS_UP_TO_GLOBAL_30');
   assert.equal(runtime.parallelismTelemetry.requestedMax,30);
   assert.deepEqual(runtime.parallelismTelemetry.backpressureSteps,[30,24,20,16,12,8,4]);
 
   assert.ok(runner.includes("VIBE2_MAX_CONCURRENT_GAME_TASKS: '30'"));
   assert.ok(runner.includes('Math.min(30, Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS) || 30)'));
+  assert.ok(runner.includes("needs.plan.outputs.continue_required != 'YES'"),'P5 game study must yield while production work remains');
 
   assert.deepEqual(runtime.documentation.humanDocuments,[]);
   assert.equal(runtime.documentation.humanDocumentLimit,0);
