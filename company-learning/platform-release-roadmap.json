@@ -1,5 +1,5 @@
 {
-  "version": 111,
+  "version": 112,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,35 +3069,42 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_GENERATION_STRUCTURAL_FAILURE_CLASSIFICATION_2026-09-19",
+    "id": "VIBE2_SOURCE_GENERATION_RECOVERY_VERIFIED_2026-09-19",
     "documentIsCode": true,
-    "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FULL_WEB_FINAL_SYNTHESIS_REACHABILITY_2026-09-19",
-    "reason": "CLASSIFY_DUPLICATE_EDIT_NEW_REPLACE_OUTPUT_AS_MALFORMED_OUTPUT_INSTEAD_OF_OTHER_AND_KEEP_RECOVERY_CAUSAL",
-    "implementationState": "DOCUMENTED_CODE_PENDING",
-    "evidence": {
-      "liveRunId": 35442308252,
-      "liveWorkerJobId": 105895325429,
-      "observedFailure": "같은 파일에 edit/new/replace 중복 작업 금지",
-      "previousClass": "OTHER",
-      "intendedClass": "MALFORMED_OUTPUT"
+    "documentationFirst": false,
+    "previousChangeRecordId": "VIBE2_GENERATION_STRUCTURAL_FAILURE_CLASSIFICATION_2026-09-19",
+    "reason": "SYNC_VERIFIED_MAIN_TOOLING_QUEUE_SCHEMA_FAILURE_ATTRIBUTION_FINAL_FULL_WEB_SYNTHESIS_AND_STRUCTURAL_FAILURE_CLASSIFICATION",
+    "implementationState": "VERIFIED_MAIN",
+    "verification": {
+      "coreQaRunId": 35442987045,
+      "coreQa": "PASS",
+      "vibeQaRunId": 35442987050,
+      "vibeQa": "PASS",
+      "integratedRegressionRunId": 35442987007,
+      "integratedRegression": "PASS",
+      "queuePersistentMax": 256,
+      "ownerAdaptiveWave": 20
     },
-    "contract": {
-      "duplicateOperationOnSameFile": "MALFORMED_OUTPUT",
-      "retryable": true,
-      "otherClassReservedForTrulyUnknownFailures": true,
-      "qualityGateLoweringForbidden": true
-    },
-    "pending": [
-      "PATCH_FAILURE_CLASSIFIER",
-      "PATCH_RETRY_MATCHER",
-      "ADD_REGRESSION_ASSERTION",
-      "CORE_QA"
+    "implemented": [
+      "CONTROL_BRANCH_STATE_MUTATIONS_USE_LATEST_MAIN_TOOLING",
+      "QUEUE_MAX_256_AND_ADAPTIVE_WAVE_20_MEANINGS_SEPARATED",
+      "BLOCKED_WORK_ORDER_NOT_REPORTED_AS_SOURCE_GENERATION_FAILURE",
+      "FINAL_FULL_WEB_ATTEMPT_USES_COMPLETE_SYNTHESIS_AFTER_ADDITIVE_EXPANSION",
+      "ACCUMULATED_PLAYABLE_SEED_CARRIED_INTO_FINAL_SYNTHESIS",
+      "DUPLICATE_EDIT_NEW_REPLACE_CLASSIFIED_AS_MALFORMED_OUTPUT"
+    ],
+    "next": [
+      "COMPLETE_ACTIVE_20_WAVE",
+      "COMPARE_SOURCE_FAILURE_DISTRIBUTION",
+      "RUN_NEW_WAVE_PINNED_TO_VERIFIED_MAIN",
+      "CONTINUE_SOURCE_GENERATION_BOTTLENECK_REDUCTION"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
+      "taskLocalExploration": true,
       "fanInOnlyRefill": true,
+      "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true
     }
   },
