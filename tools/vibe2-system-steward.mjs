@@ -40,10 +40,35 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
   let queue=createVibeContinuousQueue(queueInput);
   let control=createParallelismControl(controlInput);
   const nowMs=Date.parse(now)||Date.now(),actions=[],taskIds=[];
-  const normalizedMachineStateHealthy=rawMachineStateHealthy({queueInput,controlInput});
+  const rawControlVersionHealthy=Number(controlInput?.version||3)===3;
+  const rawControlStepHealthy=ADAPTIVE_STEPS.has(Number(controlInput?.currentMax));
+  const machineRepairActions=[];
+
+  if(rawControlVersionHealthy&&!rawControlStepHealthy){
+    control=createParallelismControl({
+      currentMax:EXTERNAL_MATRIX_BATCH_MAX,
+      healthyStreak:0,
+      pressureStreak:0,
+      lastDecision:'RESET',
+      lastReason:'SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET',
+      lastRunId:null,
+      lastUpdatedAt:now,
+      lastTelemetry:null
+    });
+    machineRepairActions.push('RESET_INVALID_PARALLELISM_STATE');
+  }
+  if(queue.maxConcurrentTasks!==EXTERNAL_MATRIX_BATCH_MAX){
+    queue=createVibeContinuousQueue({maxConcurrentTasks:EXTERNAL_MATRIX_BATCH_MAX,tasks:queue.tasks});
+    machineRepairActions.push('ALIGN_QUEUE_MAX_TO_EXTERNAL_WAVE_256');
+  }
+
+  const repairedMachineStateHealthy=
+    Number(queue.maxConcurrentTasks)===EXTERNAL_MATRIX_BATCH_MAX&&
+    rawControlVersionHealthy&&
+    ADAPTIVE_STEPS.has(Number(control.currentMax));
 
   const staleMachineIds=new Set(
-    normalizedMachineStateHealthy
+    repairedMachineStateHealthy
       ? queue.tasks.filter(task=>clean(task.status).toLowerCase()==='blocked'&&safeTask(task)&&staleMachineBlocker(task.blocker)).map(task=>task.id)
       : []
   );
@@ -83,16 +108,13 @@ export function runSystemStewardState({queueInput={},controlInput={},now=new Dat
     control=createParallelismControl({currentMax:EXTERNAL_MATRIX_BATCH_MAX,healthyStreak:0,pressureStreak:0,lastDecision:'RESET',lastReason:'SYSTEM_STEWARD_STALE_TELEMETRY_RESET',lastRunId:null,lastUpdatedAt:now,lastTelemetry:null});
     actions.push('RESET_STALE_PARALLELISM_PRESSURE');
   }
-  if(queue.maxConcurrentTasks!==EXTERNAL_MATRIX_BATCH_MAX){
-    queue=createVibeContinuousQueue({maxConcurrentTasks:EXTERNAL_MATRIX_BATCH_MAX,tasks:queue.tasks});
-    actions.push('ALIGN_QUEUE_MAX_TO_EXTERNAL_WAVE_256');
-  }
+  actions.push(...machineRepairActions);
 
   const active=queue.tasks.filter(t=>activeStatus(t.status)&&!waitBlocker(t.blocker));
   const action=actions[0]||(active.length?'HEALTHY_NO_SCOPED_REPAIR':'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL');
   return {action,actions:uniq(actions),
     changedQueue:actions.some(x=>['RECOVER_STALE_MACHINE_STATE_BLOCKER','RECOVER_STALE_RUNNING_RESERVATION','REGENERATE_RETRY_EXHAUSTED_TASK','ALIGN_QUEUE_MAX_TO_EXTERNAL_WAVE_256'].includes(x)),
-    changedControl:actions.includes('RESET_STALE_PARALLELISM_PRESSURE'),
+    changedControl:actions.some(x=>['RESET_INVALID_PARALLELISM_STATE','RESET_STALE_PARALLELISM_PRESSURE'].includes(x)),
     taskId:taskIds[0]||null,taskIds:uniq(taskIds),queue,control};
 }
 
