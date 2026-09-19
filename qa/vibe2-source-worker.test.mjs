@@ -504,7 +504,7 @@ test('generation recovery remains bounded and keeps strict output contracts', ()
   assert.match(full, /substantial executable JavaScript/);
   const raised = buildGenerationRetryPrompt('Full Web generation target: 18000-36000 UTF-8 bytes.', { allowFullRewrite:true, error:new Error('전체 교체 파일 크기 오류: index.html') });
   assert.match(raised, /MUST reach at least 18000 bytes/);
-  assert.match(raised, /no more than 36000 bytes/);
+  assert.match(raised, /at or below 36000 bytes/);
   const json = buildGenerationRetryPrompt('base', { allowFullRewrite:false, error:new Error('JSON') });
   assert.match(json, /strict JSON object only/);
   assert.match(json, /No markdown/);
