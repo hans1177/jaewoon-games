@@ -113,6 +113,8 @@ if(!gameId)throw new Error('ARTBOOK_GAME_ID or GAME_ID is required');
 const seedState=loadSeedState();
 const seed=activeSeedForGame(seedState,gameId);
 if(!seed)throw new Error(`GAME_SEED_REQUIRED: ${gameId}`);
+const ownerPreservationDesign=seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
+  &&clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
 const catalog=readJson('game-catalog.json',{games:[]});
 const catalogGame=(catalog.games||[]).find(x=>x.id===gameId)||null;
 if(catalogGame&&clean(catalogGame.productionClass)&&clean(catalogGame.productionClass)!=='DESIGN_ONLY')throw new Error(`DESIGN_ONLY_CLASS_REQUIRED: ${catalogGame.productionClass}`);
@@ -327,7 +329,84 @@ const PLATFORM_FIT_PLAN={type:'object',required:['targetPlatform','inputModel','
 const UX_ACCESSIBILITY_PLAN={type:'object',required:['hudPriorities','touchAndInput','readability','accessibility'],properties:{hudPriorities:{type:'string',maxLength:500},touchAndInput:{type:'string',maxLength:500},readability:{type:'string',maxLength:500},accessibility:{type:'string',maxLength:500}},additionalProperties:false};
 const ART_AUDIO_DIRECTION={type:'object',required:['visualIdentity','audioIdentity','gameplayFeedbackSync'],properties:{visualIdentity:{type:'string',maxLength:600},audioIdentity:{type:'string',maxLength:600},gameplayFeedbackSync:{type:'string',maxLength:600}},additionalProperties:false};
 const IMPLEMENTATION_TRACE={type:'object',required:['designElement','responsibleSystem','validationEvidence'],properties:{designElement:{type:'string',maxLength:240},responsibleSystem:{type:'string',maxLength:240},validationEvidence:{type:'string',maxLength:420}},additionalProperties:false};
-const DESIGN={type:'object',required:['identity','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','technicalAssumptions','validationQuestions','implementationTraceability','openQuestions'],properties:{identity:{type:'string',maxLength:1000},playerFantasy:{type:'string',maxLength:900},coreFun:{type:'string',maxLength:900},coreLoop:{type:'array',minItems:3,maxItems:8,items:{type:'string',maxLength:340}},signatureSystems:{type:'array',minItems:2,maxItems:6,items:{type:'object',required:['name','purpose','playerChoice'],properties:{name:{type:'string',maxLength:130},purpose:{type:'string',maxLength:440},playerChoice:{type:'string',maxLength:440}},additionalProperties:false}},systemInterconnections:{type:'array',minItems:3,maxItems:8,items:SYSTEM_INTERCONNECTION},progressionDirection:{type:'string',maxLength:900},progressionEconomyBalance:PROGRESSION_ECONOMY_BALANCE,contentExpansionPlan:{type:'array',minItems:3,maxItems:6,items:CONTENT_EXPANSION},failureRetryRisk:FAILURE_RETRY_RISK,platformFitPlan:PLATFORM_FIT_PLAN,visualDirection:{type:'string',maxLength:900},mobileUx:{type:'string',maxLength:900},uxAccessibilityPlan:UX_ACCESSIBILITY_PLAN,artAudioDirection:ART_AUDIO_DIRECTION,marketTargetDirection:{type:'string',maxLength:900},steamExpansionDecision:{type:'string',maxLength:500},multiplayerMode:{type:'string',enum:MULTIPLAYER_MODES},multiplayerExpansionDecision:{type:'string',maxLength:500},technicalAssumptions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},validationQuestions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},implementationTraceability:{type:'array',minItems:3,maxItems:8,items:IMPLEMENTATION_TRACE},openQuestions:{type:'array',maxItems:8,items:{type:'string',maxLength:340}}},additionalProperties:false};
+const PRESERVATION_CONTRACT={type:'object',required:['mode','sourceOfTruth','lockedSemantics','presentationPasses','gameplayRule','targetSessionMinutes'],properties:{mode:{type:'string',enum:['PRESERVATION_PRESENTATION_UPGRADE']},sourceOfTruth:{type:'string',enum:['EXISTING_IMPLEMENTATION_AND_OWNER_SEED']},lockedSemantics:{type:'array',minItems:8,maxItems:12,uniqueItems:true,items:{type:'string',enum:['WORLD_AND_REGIONS','STORY_AND_QUESTS','COMBAT_RULES','CRAFTING_RECIPES_AND_COSTS','SAVE_KEY_AND_SCHEMA_MEANING','PROGRESSION','BALANCE_VALUES','DROPS_AND_REWARDS','HIT_AND_COOLDOWN_SEMANTICS','MULTIPLAYER_MODE']}},presentationPasses:{type:'array',minItems:7,maxItems:7,uniqueItems:true,items:{type:'string',enum:['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']}},gameplayRule:{type:'string',enum:['NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE']},targetSessionMinutes:{type:'number'}},additionalProperties:false};
+const DESIGN={type:'object',required:['identity','playerFantasy','coreFun','coreLoop','signatureSystems','systemInterconnections','progressionDirection','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','visualDirection','mobileUx','uxAccessibilityPlan','artAudioDirection','marketTargetDirection','steamExpansionDecision','multiplayerMode','multiplayerExpansionDecision','technicalAssumptions','validationQuestions','implementationTraceability','openQuestions'],properties:{identity:{type:'string',maxLength:1000},playerFantasy:{type:'string',maxLength:900},coreFun:{type:'string',maxLength:900},coreLoop:{type:'array',minItems:3,maxItems:8,items:{type:'string',maxLength:340}},signatureSystems:{type:'array',minItems:2,maxItems:6,items:{type:'object',required:['name','purpose','playerChoice'],properties:{name:{type:'string',maxLength:130},purpose:{type:'string',maxLength:440},playerChoice:{type:'string',maxLength:440}},additionalProperties:false}},systemInterconnections:{type:'array',minItems:3,maxItems:8,items:SYSTEM_INTERCONNECTION},progressionDirection:{type:'string',maxLength:900},progressionEconomyBalance:PROGRESSION_ECONOMY_BALANCE,contentExpansionPlan:{type:'array',minItems:3,maxItems:6,items:CONTENT_EXPANSION},failureRetryRisk:FAILURE_RETRY_RISK,platformFitPlan:PLATFORM_FIT_PLAN,visualDirection:{type:'string',maxLength:900},mobileUx:{type:'string',maxLength:900},uxAccessibilityPlan:UX_ACCESSIBILITY_PLAN,artAudioDirection:ART_AUDIO_DIRECTION,marketTargetDirection:{type:'string',maxLength:900},steamExpansionDecision:{type:'string',maxLength:500},multiplayerMode:{type:'string',enum:MULTIPLAYER_MODES},multiplayerExpansionDecision:{type:'string',maxLength:500},technicalAssumptions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},validationQuestions:{type:'array',minItems:2,maxItems:8,items:{type:'string',maxLength:340}},implementationTraceability:{type:'array',minItems:3,maxItems:8,items:IMPLEMENTATION_TRACE},openQuestions:{type:'array',maxItems:8,items:{type:'string',maxLength:340}},preservationContract:PRESERVATION_CONTRACT},additionalProperties:false};
+function enforceOwnerPreservationDesign(value){
+  if(!ownerPreservationDesign)return value;
+  const existingMode=clean(seed.MULTIPLAYER_DESIGN_MODE).toUpperCase();
+  const lockedSemantics=['WORLD_AND_REGIONS','STORY_AND_QUESTS','COMBAT_RULES','CRAFTING_RECIPES_AND_COSTS','SAVE_KEY_AND_SCHEMA_MEANING','PROGRESSION','BALANCE_VALUES','DROPS_AND_REWARDS','HIT_AND_COOLDOWN_SEMANTICS','MULTIPLAYER_MODE'];
+  const presentationPasses=['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE'];
+  return {
+    ...value,
+    identity:'기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.',
+    coreFun:'기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.',
+    coreLoop:Array.isArray(seed.CORE_LOOP)&&seed.CORE_LOOP.length>=3?seed.CORE_LOOP.slice(0,8):value.coreLoop,
+    signatureSystems:[
+      {name:'기존 게임플레이 의미 보존',purpose:'현재 구현의 월드·퀘스트·전투·제작·진행·보상·세이브 규칙을 구현 기준으로 잠그고 표현 변경이 게임 결과를 바꾸지 않게 한다.',playerChoice:'플레이어의 선택·자원 소비·전투 판정·퀘스트 결과는 기존 구현과 동일하게 유지된다.'},
+      {name:'표현 품질 순차 개선',purpose:'기존 책임 렌더·모션·전투 이벤트·오디오·카메라 흐름 안에서 에셋 적응부터 모바일 폴리시까지 순차 적용한다.',playerChoice:'새 능력이나 수치 선택을 추가하지 않고 기존 행동의 시각·청각 피드백만 더 명확하고 자연스럽게 만든다.'}
+    ],
+    systemInterconnections:[
+      {fromSystem:'기존 월드/캐릭터 렌더',toSystem:'ASSET_ADAPTATION',trigger:'기존 오브젝트와 캐릭터를 그리는 동일 렌더 경로',stateChange:'게임 상태는 유지하고 색·재질·실루엣·레이어 표현만 마력숲 스타일 락에 맞춘다.'},
+      {fromSystem:'기존 이동/공격 상태',toSystem:'LIVING_MOTION_AND_ANIMATION_FEEL',trigger:'기존 이동 속도와 authoritative 공격 이벤트',stateChange:'판정·쿨다운·데미지는 유지하고 호흡·가감속·회전·공격 anticipation/impact/recovery 표현만 동기화한다.'},
+      {fromSystem:'기존 전투/퀘스트 이벤트',toSystem:'VFX_AUDIO_CAMERA_POLISH',trigger:'기존 적중·피격·보상·스토리 이벤트',stateChange:'같은 이벤트 순간에 VFX·사운드·카메라 피드백을 연결하되 저장·진행·보상 의미는 변경하지 않는다.'}
+    ],
+    progressionDirection:'기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다.',
+    progressionEconomyBalance:{
+      progressionLoop:'기존 구현의 탐험·채집·제작·전투·퀘스트 진행 루프를 그대로 사용하며 표현 패스는 진행 속도와 해금 조건에 관여하지 않는다.',
+      resourceFlow:'기존 재료 획득량·제작 비용·보상·드랍·소비 규칙을 그대로 유지하고 표현 개선은 자원 수치에 영향을 주지 않는다.',
+      balanceRules:'체력·공격력·쿨다운·드랍률·제작 비용·보상·적 수치 등 기존 밸런스 값을 변경하지 않는다.'
+    },
+    contentExpansionPlan:[
+      {milestone:'ASSET_ADAPTATION',newGameplay:'새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.',systemImpact:'원본 에셋과 게임 상태를 보존하고 렌더 표현만 바꾼다. 세이브·충돌·상호작용·수치 변경은 금지한다.'},
+      {milestone:'LIVING_MOTION_AND_ANIMATION_FEEL',newGameplay:'새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.',systemImpact:'기존 입력·이동 속도·데미지·쿨다운·적중 이벤트를 권위로 사용하고 애니메이션은 표현 계층으로만 동작한다.'},
+      {milestone:'VFX_AUDIO_CAMERA_POLISH_MOBILE',newGameplay:'새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다.',systemImpact:'모바일 가독성·터치·프레임 안정성을 우선하고 게임플레이·저장·진행 의미는 그대로 유지한다.'}
+    ],
+    failureRetryRisk:{
+      failureStates:['기존 구현에 이미 정의된 전투·생존 실패 상태만 유지한다.','기존 퀘스트 또는 진행에서 이미 정의된 실패·재시도 상태만 유지한다.'],
+      retryFlow:'기존 사망·회복·재시도·귀환 흐름과 저장 결과를 그대로 유지하며 새 자원 손실이나 패널티를 추가하지 않는다.',
+      riskPressure:'기존 지역·적·생존 규칙이 만드는 위험만 사용하고 표현 패스가 난이도나 위험 수치를 변경하지 않는다.',
+      recoveryRules:'기존 회복·부활·재개·세이브 로드 규칙을 그대로 사용하고 새 회복 규칙을 만들지 않는다.'
+    },
+    platformFitPlan:{
+      targetPlatform:clean(seed.INITIAL_TARGET_PLATFORM).toUpperCase(),
+      inputModel:'기존 키보드 및 모바일 터치/조이스틱 입력 체계를 유지하고 표현 효과가 입력 영역이나 반응성을 가리지 않게 한다.',
+      performanceBudget:'가능한 경우 60fps를 목표로 하되 파티클·트레일·보조 모션은 단계적으로 축소 가능하게 하고 게임플레이 판정은 품질 스케일과 무관하게 유지한다.',
+      sessionConstraints:`기존 세션과 진행 의미를 보존하며 설계 검증 기준 TARGET_SESSION_MINUTES=${Number(seed.TARGET_SESSION_MINUTES||30)}을 유지한다. 표현 개선 때문에 세션 길이·진행 속도를 바꾸지 않는다.`
+    },
+    visualDirection:'기존 마력숲의 숲·수정·화산·세계수·연구소 정체성을 유지하면서 팔레트·광원·윤곽·재질 반응·VFX 밀도를 하나의 스타일 락으로 통일한다.',
+    artAudioDirection:{
+      visualIdentity:'기존 월드와 오브젝트를 재사용·변형하여 마력숲 고유 지역 구분을 더 명확히 하며 새 게임 규칙을 시각 요소로 위장해 추가하지 않는다.',
+      audioIdentity:'기존 음악/사운드 책임 시스템을 재사용하고 탐험·전투·보스·스토리 상태 전환을 부드럽게 연결한다.',
+      gameplayFeedbackSync:'기존 authoritative 적중·피격·상호작용 이벤트 한 지점에 애니메이션·VFX·오디오·카메라를 동기화하고 데미지 판정 시점은 바꾸지 않는다.'
+    },
+    multiplayerMode:existingMode,
+    multiplayerExpansionDecision:'기존 seed에 확정된 멀티플레이 모드를 그대로 유지하며 이번 표현 파일럿에서 네트워크 규칙·플레이 모드를 추가·삭제·변경하지 않는다.',
+    technicalAssumptions:[
+      `기존 Web 구현 경로 ${clean(seed.EXISTING_WEB_SOURCE_PATH)||'web-games/fantasy-survival'}를 canonical 구현으로 사용하고 기존 책임 함수를 직접 수정한다.`,
+      `기존 SAVE_POLICY=${clean(seed.SAVE_POLICY)||'PRESERVE_EXISTING_SAVE'}를 지키며 저장 키·필드 의미·퀘스트 상태를 변경하지 않는다.`,
+      '그래픽·모션·VFX·오디오·카메라는 게임 로직과 분리된 표현 계층으로 연결하고 wrapper/shadow 파이프라인을 만들지 않는다.'
+    ],
+    validationQuestions:[
+      '표현 전후에 동일 입력으로 체력·데미지·쿨다운·드랍·제작 비용·퀘스트·지역 진행·세이브 결과가 동일한가?',
+      '모바일 터치 중 효과가 입력과 위험 신호를 가리지 않고 프레임 타이밍이 안정적인가?',
+      '기존 저장 데이터를 불러온 뒤 연구소·퀘스트·장비·지역 진행이 그대로 이어지는가?'
+    ],
+    implementationTraceability:[
+      {designElement:'ASSET_ADAPTATION',responsibleSystem:'기존 캐릭터·몬스터·월드 렌더 함수',validationEvidence:'동일 게임 상태에서 표현만 변경되고 충돌·상호작용·자원·세이브 값이 동일함을 비교한다.'},
+      {designElement:'LIVING_MOTION_AND_ANIMATION_FEEL',responsibleSystem:'기존 이동·공격·피격 상태와 렌더 업데이트',validationEvidence:'idle/walk/run/turn/attack 전환 연속성과 기존 적중 이벤트·데미지·쿨다운 불변을 함께 검증한다.'},
+      {designElement:'VFX_AUDIO_CAMERA_POLISH_MOBILE',responsibleSystem:'기존 전투·퀘스트 이벤트와 오디오/카메라 책임 경로',validationEvidence:'적중 순간 동기화, 모바일 가독성, 프레임 안정성, 중복 재생 없음과 게임 상태 불변을 검증한다.'}
+    ],
+    openQuestions:['표현 비용을 가장 많이 유발하는 기존 오브젝트 구간은 어디이며 품질 스케일에서 무엇을 먼저 줄일 것인가?'],
+    preservationContract:{
+      mode:'PRESERVATION_PRESENTATION_UPGRADE',
+      sourceOfTruth:'EXISTING_IMPLEMENTATION_AND_OWNER_SEED',
+      lockedSemantics,
+      presentationPasses,
+      gameplayRule:'NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE',
+      targetSessionMinutes:Number(seed.TARGET_SESSION_MINUTES||30)
+    }
+  };
+}
 const DESIGN_GATE_FIELDS=['systemInterconnections','progressionEconomyBalance','contentExpansionPlan','failureRetryRisk','platformFitPlan','uxAccessibilityPlan','artAudioDirection','implementationTraceability'];
 const DESIGN_BASE_FIELDS=DESIGN.required.filter(key=>!DESIGN_GATE_FIELDS.includes(key));
 const designSliceSchema=fields=>({type:'object',required:[...fields],properties:Object.fromEntries(fields.map(key=>[key,DESIGN.properties[key]])),additionalProperties:false});
@@ -335,7 +414,7 @@ const DESIGN_BASE=designSliceSchema(DESIGN_BASE_FIELDS);
 const DESIGN_GATE=designSliceSchema(DESIGN_GATE_FIELDS);
 function mergeDesignerDesign(basePart,gatePart,phase){
   const grounded=repairDesignRequiredFields({...basePart,...gatePart},{seed,factPack,phase});
-  const merged=grounded.value;
+  const merged=enforceOwnerPreservationDesign(grounded.value);
   assertSchemaValue(merged,DESIGN);
   if(grounded.repairs?.length)console.log(`DESIGN_MERGE_GROUNDED_REPAIRS=${phase}|${grounded.repairs.map(item=>item.field).join(',')}`);
   console.log(`DESIGN_SPLIT_SCHEMA_MERGED=${phase}|base=${DESIGN_BASE_FIELDS.length}|gate=${DESIGN_GATE_FIELDS.length}`);
@@ -898,17 +977,18 @@ async function callDesignerModel(system,user,schema,options={}){
 }
 
 async function generateDesignerDraft(){
-  const system='너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용한다. 유명 성공작의 구조는 오마주/재해석할 수 있지만 보호되는 표현과 소스코드는 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.';
+  const preservationDirective=ownerPreservationDesign?' 이 seed는 기존 게임 보존형 표현 업그레이드다. 기존 세계관·지역·스토리·퀘스트·전투·제작·진행·밸런스·드랍·세이브·hit/cooldown 의미를 절대 재설계하지 않는다. 새 스킬·게이지·패널티·보상·자원·해금 규칙을 추가하지 않고 ASSET_ADAPTATION→LIVING_MOTION→ANIMATION_FEEL→VFX→AUDIO_FEEL→CAMERA_LANGUAGE→POLISH_MOBILE 표현 패스만 설계한다.':'';
+  const system=`너는 단일 Game Designer AI다. GAME_SEED를 설계 원점으로 사용한다. 유명 성공작의 구조는 오마주/재해석할 수 있지만 보호되는 표현과 소스코드는 복제하지 않는다. 점수나 관문을 조작하지 말고 실제 설계를 완성한다.${preservationDirective}`;
   const user=`DESIGN_ONLY 상세 설계를 한 번에 완성하라. 정체성·핵심 재미·core loop·signature systems·시스템 연결·진행/경제·콘텐츠 확장·실패/재시도·플랫폼 적합성·UX/접근성·아트/오디오·구현 추적성을 서로 연결한다. SINGLE/COOP/COMPETITIVE/HYBRID 중 하나를 multiplayerMode에 반드시 명시한다. 이전 Strict 실패는 삭제하지 말고 실제 설계로 해결한다. scorer 최소치에 딱 맞추지 말고 구조·문자 길이에 충분한 안전여유를 둔다.\nPRE_GATE_STRUCTURE_CONTRACT=${JSON.stringify(repairStructureContract(DESIGN.required))}\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,10500)}`;
   try{
     const full=await callDesignerModel(system,user,DESIGN,{predict:4096,temperature:0.28,numCtx:8192,timeoutMs:90000,maxAttempts:2,repairRequired:value=>repairDesignRequiredFields(value,{seed,factPack,phase:'DRAFT'})});
     console.log('DESIGNER_DRAFT_GENERATION=ONE_CALL');
-    return full;
+    return enforceOwnerPreservationDesign(full);
   }catch(error){
     console.log(`DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT|reason=${clean(error?.message||error)}`);
     const basePart=await callDesignerModel(system,`기본 설계 필드만 작성하라.\nSTRICT_GATE_FEEDBACK=${clip(strictDesignerFeedback,4500)}\nEVIDENCE=${clip(evidence,8500)}`,DESIGN_BASE,{predict:1000,temperature:0.3,numCtx:8192,timeoutMs:90000,maxAttempts:2});
     const gatePart=await callDesignerModel('너는 같은 Game Designer AI다. 기본 설계를 하드관문이 검증 가능한 상세 설계로 확장한다.',`관문 상세 필드만 작성하라.\nGAME_SEED=${clip(seed,4500)}\nBASE_DESIGN=${clip(basePart,8000)}`,DESIGN_GATE,{predict:1000,temperature:0.2,numCtx:8192,timeoutMs:90000,maxAttempts:2});
-    return mergeDesignerDesign(basePart,gatePart,'DRAFT');
+    return enforceOwnerPreservationDesign(mergeDesignerDesign(basePart,gatePart,'DRAFT'));
   }
 }
 function scoreCurrentDesign(label,design){
@@ -925,7 +1005,7 @@ function scoreCurrentDesign(label,design){
   return scored;
 }
 
-let designDraft=await runPhase('designer_draft',generateDesignerDraft);
+let designDraft=enforceOwnerPreservationDesign(await runPhase('designer_draft',generateDesignerDraft));
 // Deterministic scoring is intentionally never served from checkpoint cache.
 // The current design object is cheap to rescore and may have changed after targeted repair.
 let preGate=scoreCurrentDesign('deterministic_pre_gate',designDraft);
@@ -941,7 +1021,7 @@ for(let repairAttempt=1;repairAttempt<=2&&!preGatePass(preGate);repairAttempt++)
     schema,
     {predict:Math.min(1500,550+fields.length*140),temperature:0.1,numCtx:6144,timeoutMs:120000,maxAttempts:2}
   ));
-  designDraft=mergeTargetedPatch(designDraft,patch,`PRE_GATE_REPAIR_${repairAttempt}`);
+  designDraft=enforceOwnerPreservationDesign(mergeTargetedPatch(designDraft,patch,`PRE_GATE_REPAIR_${repairAttempt}`));
   designCheckpoint.phases.designer_draft=designDraft;
   preGate=scoreCurrentDesign(`deterministic_pre_gate_after_repair_${repairAttempt}`,designDraft);
   preGateHistory.push(preGate);
