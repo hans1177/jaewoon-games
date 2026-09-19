@@ -2,38 +2,41 @@
   "version": 2,
   "gameId": "fantasy-survival",
   "date": "2026-09-20",
-  "engineDigest": "216fe199cb50b83e0fb93bf5fec846a7d56db7433adfa0455da195e1ac8717c0",
-  "status": "COMPLETE",
-  "currentStage": "COMPLETE",
-  "percent": 100,
-  "completedPhases": [
-    "designer_draft",
-    "deterministic_pre_gate",
-    "designer_pre_gate_repair_1",
-    "deterministic_pre_gate_after_repair_1",
-    "deterministic_department_evidence"
-  ],
-  "completedPhaseCount": 5,
+  "engineDigest": "68566c18459672b9181c09f439e6fd81090eebca2349ecbc69128885572f0195",
+  "status": "IN_PROGRESS",
+  "currentStage": "DESIGNER_DRAFT",
+  "percent": 17,
+  "completedPhases": [],
+  "completedPhaseCount": 0,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-19T16:26:23.277Z",
+  "lastSuccessfulModelCallAt": null,
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
       "calls": 2,
-      "successes": 2,
-      "failures": 0,
+      "successes": 0,
+      "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 42691,
-      "lastMs": 2138,
-      "lastError": null,
-      "updatedAt": "2026-09-19T16:26:23.277Z"
+      "totalMs": 2510,
+      "lastMs": 1855,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-09-19T16:37:33.326Z"
+    },
+    "gemini:gemini-3.8-flash": {
+      "calls": 1,
+      "successes": 0,
+      "failures": 1,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 6211,
+      "lastMs": 6211,
+      "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+      "updatedAt": "2026-09-19T16:37:37.681Z"
     }
   },
   "slowPhases": {},
-  "updatedAt": "2026-09-19T16:26:23.286Z",
-  "preGateScore": 80,
-  "postRevisionPreGateScore": 80
+  "updatedAt": "2026-09-19T16:37:37.681Z"
 }
