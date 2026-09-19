@@ -123,10 +123,14 @@
     "dynamicBackpressure": true,
     "speculativeParallelism": {
       "enabled": true,
-      "variants": 5,
+      "variants": 3,
       "highRiskOptInOnly": false,
       "unityBuildCandidatesExcluded": true,
-      "criticalHighRiskAutomatic": true
+      "criticalHighRiskAutomatic": true,
+      "primaryCoverageBeforeSpeculation": true,
+      "spareAdaptiveCapacityOnly": true,
+      "totalWorkerMatrixMustNotExceedAdaptiveWave": true,
+      "measuredRunnerPressureMaySuppressSpeculation": true
     },
     "entryWorkflow": ".github/workflows/vibe2-24h-runner.yml",
     "workerWorkflow": ".github/workflows/vibe2-continuous-core.yml",
