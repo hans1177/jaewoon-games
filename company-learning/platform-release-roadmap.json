@@ -1,5 +1,5 @@
 {
-  "version": 87,
+  "version": 88,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3077,7 +3077,8 @@
       ".github/workflows/vibe2-24h-runner.yml",
       ".github/workflows/vibe2-continuous-core.yml",
       "qa/vibe2-controller-contract.test.mjs",
-      "company-learning/platform-release-roadmap.json"
+      "company-learning/platform-release-roadmap.json",
+      ".github/workflows/vibe2-candidate-release.yml"
     ],
     "commits": [
       "c8d7dbce1b38d6c59d9fe76198ae9accc8f44414",
@@ -3088,7 +3089,10 @@
       "67004518af11edadfac63fc737dba81781e541c1",
       "1fc8a4c35ed6e0c06fc7e3354c93b8e4ad90f08e",
       "fa06240adc920a438ca12cbc7cc791133dadd449",
-      "118c796ef8d5aedc9c121bf12e0dc16656cfd577"
+      "118c796ef8d5aedc9c121bf12e0dc16656cfd577",
+      "fbe85ff34a7ff86d3487f48a25ef7bdb27251ca5",
+      "109abcdc5b5d4d82e5f31f0c7d525480f98cd776",
+      "6958f1215a8f6bbfe4ad121759d08e1473a320cd"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3104,7 +3108,9 @@
       "sourceWriteOnlyOnCandidateBranch": true,
       "candidateRegressionPinnedToReserveContract": true,
       "controllerOrchestrationQaLatestMain": true,
-      "candidateReleaseConcurrencyScopedPerCandidate": true
+      "candidateReleaseConcurrencyScopedPerCandidate": true,
+      "candidateReleaseWebCheckScopedToCloudflarePages": true,
+      "candidateReleaseRegressionContractQa": true
     },
     "sourceGenerationContract": {
       "provider": "LOCAL_OLLAMA",
@@ -3168,6 +3174,21 @@
         ]
       },
       "nextFreshContractMustIncludeAtLeast": "1fc8a4c35ed6e0c06fc7e3354c93b8e4ad90f08e"
+    },
+    "candidateReleaseGate": {
+      "priorGlobalConcurrencyGroup": "vibe2-release-serial",
+      "priorObservedCancelledRuns": [
+        35434895315,
+        35434896539,
+        35434926403,
+        35434927310
+      ],
+      "concurrencyScope": "CANDIDATE_BRANCH",
+      "cancelInProgress": false,
+      "webPromotionRequiredCheck": "Cloudflare Pages",
+      "unrelatedRepositoryWideExternalChecksDoNotBlockWebGamePromotion": true,
+      "qualityOrEvidenceGateWeakeningForbidden": true,
+      "regressionTest": "qa/vibe2-controller-contract.test.mjs"
     }
   }
 }
