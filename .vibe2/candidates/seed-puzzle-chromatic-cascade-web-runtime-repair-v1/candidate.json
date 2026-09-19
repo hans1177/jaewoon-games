@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const C=window.GAME_CONFIG||{};",
+      "replace": "const base={turn:0,score:0,hp:C.hp||100,res:C.res||0,stage:1,progress:0,day:1,level:1,xp:0,wood:0,food:0,stone:0,mana:20,pop:0,combo:0,wave:1,towers:0,power:1,chapter:1,gold:0,ended:false,won:false};let S={...base};"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
