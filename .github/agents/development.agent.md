@@ -102,3 +102,10 @@ Web strict 점수는 공통 구현 품질 60점 + 장르별 품질 40점 = 100�
 - 퀘스트 보상 중복 수령, 재접속 후 상태 역행, 선행 조건 우회, 진행 소프트락을 막는다.
 - 스토리 연출 때문에 전투·이동·저장·밸런스 의미를 임의 변경하지 않는다.
 - 표현이나 대사는 승인된 세계관과 캐릭터 정보를 보존하고, 외부 참고 문장을 그대로 복사하지 않는다.
+
+## Presentation Pipeline 구현 상태
+
+- Web 표현 품질은 `ASSET_ADAPTATION → LIVING_MOTION → ANIMATION_FEEL → VFX → AUDIO_FEEL → CAMERA_LANGUAGE → POLISH_MOBILE` 순서로 진행한다.
+- 마지막 POLISH가 실제 완료된 뒤에만 gameplay root 또는 body에 `data-presentation-quality-version="1"`을 선언한다.
+- 이 표시는 장식용 메타데이터가 아니라 canonical Playwright 런타임 품질 게이트 활성화 계약이다.
+- 표시만 추가하고 실제 모션·프레임·오디오·모바일 품질을 구현하지 않는 것은 금지한다.
