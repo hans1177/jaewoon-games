@@ -1,5 +1,5 @@
 {
-  "version": 129,
+  "version": 130,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -78,6 +78,7 @@
       "LIVING_MOTION",
       "ANIMATION_FEEL",
       "VFX",
+      "AUDIO_FEEL",
       "CAMERA_LANGUAGE",
       "POLISH",
       "MOBILE_PERFORMANCE_QA",
@@ -4933,5 +4934,140 @@
       "tools/vibe3-pump-index.mjs",
       "company-learning/vibe2-learning-motor.json"
     ]
+  },
+  "audioMusicQualityContract": {
+    "version": 1,
+    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+    "objective": "SEAMLESS_GAME_RESPONSIVE_MUSIC_AND_SOUND_WITH_IMPACT_SYNC_STYLE_FIT_AND_MOBILE_SAFE_RUNTIME",
+    "appliesToStages": [
+      "WEB_BASE_IMPLEMENTATION",
+      "WEB_RUNTIME_VALIDATION",
+      "TARGET_PLATFORM_SOURCE_BIND",
+      "TARGET_PLATFORM_RUNTIME",
+      "TARGET_PLATFORM_INDEPENDENT_QA",
+      "TARGET_PLATFORM_REGRESSION",
+      "POST_RELEASE_FOCUSED_DEVELOPMENT"
+    ],
+    "principles": {
+      "audioIsPresentationLayer": true,
+      "audioMustNotChangeGameplayBalanceSaveProgressionOrAuthority": true,
+      "gameStyleFitRequired": true,
+      "seamlessStateTransitionsPreferred": true,
+      "silenceAndDynamicRangeMayBeUsedDeliberately": true,
+      "repetitiveMechanicalLoopingShouldBeReduced": true,
+      "musicAndSfxMustSupportReadabilityNotMaskIt": true
+    },
+    "musicSystem": {
+      "stateDrivenMusicPreferred": true,
+      "commonStates": [
+        "MENU_OR_SAFE",
+        "EXPLORATION",
+        "TENSION",
+        "COMBAT",
+        "BOSS",
+        "VICTORY_OR_REWARD",
+        "DEFEAT_OR_RECOVERY"
+      ],
+      "onlyApplicableStatesRequired": true,
+      "crossfadeRequiredWhenPractical": true,
+      "abruptTrackCutForbiddenUnlessIntentionallyDesigned": true,
+      "beatOrBarAwareTransitionPreferredWhenEngineSupportMakesItPractical": true,
+      "layeredStemsPreferredForHighValueDynamicScenes": true,
+      "musicIntensityMayFollowGameStateWithoutChangingGameState": true,
+      "returnFromCombatMustResolveSmoothly": true,
+      "loopPointsMustAvoidAudibleClicksOrGaps": true,
+      "variationOrLayerChangePreferredForLongSessions": true
+    },
+    "soundEffects": {
+      "impactSyncRequired": true,
+      "syncTargets": [
+        "ANIMATION_IMPACT_EVENT",
+        "VFX_IMPACT",
+        "CAMERA_RESPONSE",
+        "DAMAGE_OR_CONFIRMED_INTERACTION_EVENT"
+      ],
+      "footstepsShouldMatchSurfaceWhenPractical": true,
+      "movementAudioShouldScaleNaturallyWithSpeedWhenPractical": true,
+      "repeatedSfxVariationPreferred": [
+        "PITCH_MICRO_VARIATION",
+        "MULTIPLE_SAMPLE_VARIANTS",
+        "VOLUME_MICRO_VARIATION"
+      ],
+      "criticalSignalsNeedDistinctSoundIdentity": [
+        "PLAYER_HIT",
+        "DANGER_TELEGRAPH",
+        "CRITICAL_HIT",
+        "RARE_REWARD",
+        "BOSS_ACTION",
+        "UI_CONFIRM",
+        "UI_ERROR"
+      ],
+      "excessiveSimultaneousSfxForbidden": true,
+      "voiceStealingOrPriorityRulesPreferredWhenSupported": true
+    },
+    "spatialAndAmbientAudio": {
+      "spatialAudioPreferredForWorldSourcesWhenPlatformSupportsIt": true,
+      "ambienceShouldReflectLocationAndGameStyle": true,
+      "ambientLayersMustNotOverpowerCriticalGameplaySignals": true,
+      "occlusionOrDistanceAttenuationPreferredWhenPractical": true
+    },
+    "mixAndFeel": {
+      "gameplayCriticalSfxPriorityOverBackgroundMusic": true,
+      "temporaryMusicDuckingAllowedForMajorImpactDialogueOrAlerts": true,
+      "bossAndHeroMomentsMayUseShortControlledMixEmphasis": true,
+      "masterMusicSfxSeparationPreferred": true,
+      "clippingForbidden": true,
+      "suddenExtremeVolumeJumpsForbidden": true,
+      "mobileSpeakerReadabilityRequired": true
+    },
+    "webRuntime": {
+      "firstUserGestureUnlockRequired": true,
+      "autoplayBeforeUserGestureForbidden": true,
+      "muteControlRequired": true,
+      "volumeControlRequired": true,
+      "backgroundTabResumeMustNotCreateDuplicatePlayback": true,
+      "runtimeNetworkAudioDependencyForbidden": true
+    },
+    "assetAndLicense": {
+      "existingRepositoryAudioPreferred": true,
+      "externalAudioPolicy": "CC0_OR_CLEAR_COMMERCIAL_USE_AND_MODIFICATION_ALLOWED",
+      "unclearLicenseForbidden": true,
+      "nonCommercialLicenseForbidden": true,
+      "licenseEvidenceRequired": true,
+      "originalSourcePreservedWhenPractical": true,
+      "gameSpecificEditedDerivativeAllowedWhenLicenseAllows": true
+    },
+    "implementation": {
+      "existingAudioManagerOrResponsibleSystemMustBeReusedBeforeAddingDuplicates": true,
+      "wrapperOrShadowAudioPipelineForbidden": true,
+      "oneAuthoritativeMusicStateControllerPreferred": true,
+      "oneAuthoritativeSfxRoutingLayerPreferred": true,
+      "audioEventsShouldBindToExistingGameplayAndAnimationEvents": true,
+      "pollingGameplayStateEveryFrameForAudioShouldBeAvoidedWhenEventsExist": true
+    },
+    "qa": {
+      "mustCheck": [
+        "FIRST_GESTURE_AUDIO_UNLOCK_WEB",
+        "MUTE_AND_VOLUME",
+        "NO_DUPLICATE_MUSIC_AFTER_RELOAD_OR_RESUME",
+        "SEAMLESS_EXPLORATION_COMBAT_BOSS_TRANSITIONS_WHEN_APPLICABLE",
+        "LOOP_GAP_OR_CLICK",
+        "IMPACT_SYNC_ANIMATION_VFX_AUDIO_CAMERA",
+        "CRITICAL_SIGNAL_AUDIBILITY",
+        "MOBILE_SPEAKER_READABILITY",
+        "NO_CLIPPING_OR_EXTREME_VOLUME_JUMP",
+        "LONG_SESSION_REPETITION",
+        "AUDIO_LICENSE_EVIDENCE",
+        "GAMEPLAY_SAVE_BALANCE_SEMANTICS_UNCHANGED"
+      ],
+      "audioPassCannotOverrideGameplayRuntimeOrPerformanceFailure": true
+    },
+    "implementationReadiness": {
+      "centralMachinePolicyMustBeReadBeforeWork": true,
+      "currentSourceAndExistingAudioSystemMustBeInspectedFirst": true,
+      "gameStyleAndDesignBaselineMustBeReadFirst": true,
+      "documentationMustStaySynchronizedWithCentralMachinePolicy": true
+    }
   }
 }
