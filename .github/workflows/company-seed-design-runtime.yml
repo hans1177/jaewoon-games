@@ -12,6 +12,10 @@ on:
       - 'tools/company-design-gate-scoring-v2.mjs'
       - 'tools/company-strict-production-review.mjs'
       - 'company-learning/platform-release-roadmap.json'
+      - 'qa/company-shared-context.test.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/company-log-map.json'
       - '.github/workflows/company-seed-design-runtime.yml'
   schedule:
     - cron: '0 16 * * *' # 01:00 KST fallback; event chain remains primary
@@ -69,6 +73,12 @@ jobs:
           echo 'COMPANY_RUNTIME_STATE_OVERLAY=YES'
           echo 'DESIGN_ONLY_ARTBOOK_OVERLAY=NO'
           echo 'COMPANY_ENGINE_SOURCE=main'
+      - name: Validate shared worker policy log and architecture context
+        run: |
+          node --check tools/company-shared-context.mjs
+          node --test qa/company-shared-context.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/company-shared-context-design-plan.json
+
       - name: Resolve centrally capped active incomplete GAME_SEED targets
         id: targets
         shell: bash
@@ -760,6 +770,9 @@ jobs:
           node --input-type=module <<'NODE'
           import fs from 'node:fs';import path from 'node:path';const gameId=process.env.ARTBOOK_GAME_ID,date=process.env.ARTBOOK_DATE,base=path.join('design',gameId,date);const status=JSON.parse(fs.readFileSync(path.join(base,'cycle-status.json'),'utf8'));if(status.productionClass!=='DESIGN_ONLY')throw new Error('DESIGN_ONLY required');const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));const deterministic=roadmap?.developmentLifecycleMachine?.deterministicGateAuthority?.enabled===true&&roadmap?.developmentLifecycleMachine?.deterministicGateAuthority?.aiMayDecidePassFail===false;if(!deterministic&&(status.departments?.count!==5||status.departments?.leadModelsDistinct!==true))throw new Error('legacy five department lead contract failed');if(deterministic&&status?.baselineGate?.evidence?.deterministicDesignGate?.pass!==true)throw new Error('deterministic design evidence missing');const strict=JSON.parse(fs.readFileSync(path.join(base,'strict-design-review.json'),'utf8'));if(!['PASS','REVISE','REBUILD'].includes(strict.verdict))throw new Error('strict verdict missing');if(fs.existsSync(path.join('artbook-submissions',gameId,'current.json')))console.log('LEGACY_PREPROMOTION_ARTBOOK_IGNORED=YES');console.log(`STRICT_DESIGN_SCORE=${strict.totalScore}`);console.log(`STRICT_DESIGN_VERDICT=${strict.verdict}`);console.log(`STRICT_DESIGN_READY_FOR_PROMOTION=${status?.baselineGate?.state==='DESIGN_BASELINE_READY'&&status?.baselineGate?.ready===true&&strict.verdict==='PASS'&&Number(strict.totalScore)>=80&&Array.isArray(strict.hardFailures)&&strict.hardFailures.length===0?'YES':'NO'}`);console.log(`STRICT_DESIGN_EXCELLENT=${strict.verdict==='PASS'&&Number(strict.totalScore)>=90?'YES':'NO'}`);console.log('STRICT_DESIGN_SCORE_SYNTHESIZED=NO');console.log('STRICT_DESIGN_VERDICT_SYNTHESIZED=NO');console.log('DESIGN_ONLY_ARTBOOK_BEFORE_PROMOTION=NO');
           NODE
+      - name: Revalidate shared worker context before design persistence
+        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-design-persist.json
+
       - name: Persist validated design evidence to company runtime branch
         if: steps.target.outputs.should_run == 'true' && steps.candidate_route.outputs.ready == 'true'
         shell: bash
