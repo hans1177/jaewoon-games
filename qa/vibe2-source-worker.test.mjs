@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, buildOllamaGeneratePayload } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -278,6 +278,16 @@ test('generation recovery remains bounded and keeps strict output contracts', ()
   const json = buildGenerationRetryPrompt('base', { allowFullRewrite:false, error:new Error('JSON') });
   assert.match(json, /strict JSON object only/);
   assert.match(json, /No markdown/);
+});
+
+test('JSON edit transport requests Ollama structured JSON mode while full-file mode stays raw', () => {
+  const jsonPayload=buildOllamaGeneratePayload('edit',{model:'qwen3:1.7b',maxPredict:1024,jsonMode:true});
+  assert.equal(jsonPayload.format,'json');
+  assert.equal(jsonPayload.stream,true);
+  assert.equal(jsonPayload.think,false);
+  const fullPayload=buildOllamaGeneratePayload('full',{model:'qwen3:1.7b',maxPredict:8192,contextWindow:32768,jsonMode:false});
+  assert.equal(Object.hasOwn(fullPayload,'format'),false);
+  assert.equal(fullPayload.options.num_ctx,32768);
 });
 
 test('Ollama transport uses streaming instead of one giant non-streaming response', () => {
