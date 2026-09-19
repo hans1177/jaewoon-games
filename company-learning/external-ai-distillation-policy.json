@@ -45,5 +45,15 @@
     "rawGameplayValuesAvailableToPlanner": false,
     "externalAiAdvisoryLast": true
   },
-  "gateWeakening": false
+  "gateWeakening": false,
+  "modelRoleBoundary": {
+    "vibeDevelopmentExecution": "LOCAL_VIBE_RUNTIME_ONLY",
+    "externalAdvisoryAi": "DISTILLATION_ONLY",
+    "externalAdvisoryAiMayBeDevelopmentWorker": false,
+    "externalNetworkModelCallAllowedInDevelopmentWorkers": false,
+    "externalProviderCredentialsAllowedInDevelopmentWorkers": false,
+    "externalAiKnowledgeMayEnterOnlyThroughDistiller": true,
+    "localVibeRuntimeEndpoint": "127.0.0.1:11434",
+    "authorityExpanded": false
+  }
 }

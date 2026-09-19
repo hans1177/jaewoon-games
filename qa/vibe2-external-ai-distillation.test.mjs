@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { distillExternalAiKnowledge, validateExternalAiCandidate } from '../tools/vibe2-external-ai-distillation.mjs';
 import { collectMultiSourceLearningMaterials } from '../tools/vibe2-multisource-learning-collector.mjs';
 
@@ -124,4 +125,22 @@ test('distilled external AI never outranks internal verified material when capac
   assert.equal(result.materials.length,1);
   assert.notEqual(result.materials[0].sourceType,'external-ai-distilled-verified');
   assert.equal(result.materials[0].externalAdvisoryLast,false);
+});
+
+
+test('development workers stay on local Vibe runtime and external advisory AI cannot become a worker',()=>{
+  const policy=JSON.parse(fs.readFileSync(new URL('../company-learning/external-ai-distillation-policy.json',import.meta.url),'utf8'));
+  assert.equal(policy.modelRoleBoundary?.vibeDevelopmentExecution,'LOCAL_VIBE_RUNTIME_ONLY');
+  assert.equal(policy.modelRoleBoundary?.externalAdvisoryAi,'DISTILLATION_ONLY');
+  assert.equal(policy.modelRoleBoundary?.externalAdvisoryAiMayBeDevelopmentWorker,false);
+  assert.equal(policy.modelRoleBoundary?.externalNetworkModelCallAllowedInDevelopmentWorkers,false);
+  assert.equal(policy.modelRoleBoundary?.externalProviderCredentialsAllowedInDevelopmentWorkers,false);
+  assert.equal(policy.modelRoleBoundary?.externalAiKnowledgeMayEnterOnlyThroughDistiller,true);
+  assert.equal(policy.modelRoleBoundary?.localVibeRuntimeEndpoint,'127.0.0.1:11434');
+  for(const relative of ['../tools/vibe2-source-worker.mjs','../tools/vibe2-learning-practice-worker.mjs']){
+    const source=fs.readFileSync(new URL(relative,import.meta.url),'utf8');
+    assert.match(source,/hostname:'127\.0\.0\.1'/);
+    assert.match(source,/port:11434/);
+    assert.doesNotMatch(source,/api\\.openai\\.com|api\\.anthropic\\.com|generativelanguage\\.googleapis\\.com|OPENAI_API_KEY|ANTHROPIC_API_KEY|GEMINI_API_KEY/i);
+  }
 });
