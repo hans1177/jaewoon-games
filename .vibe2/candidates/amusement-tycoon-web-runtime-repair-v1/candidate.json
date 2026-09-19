@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "  if(d.kind===\"food\"){",
+      "replace": "state.money+=earned;\\n\\t\\tif(d.kind==='food'){\\n\\t\\t\\tg.hunger=0.05;\\n\\t\\t\\tif(Math.random()<0.62)addTrash(g.currentPath);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
