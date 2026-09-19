@@ -1,0 +1,342 @@
+name: Company System AI Workers
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [company-system-ai-cycle]
+  schedule:
+    - cron: '7,27,47 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/company-system-ai-worker.mjs'
+      - 'tools/company-system-ai-queue.mjs'
+      - 'qa/company-system-ai-worker.test.mjs'
+      - '.github/workflows/company-system-ai-workers.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+env:
+  SYSTEM_AI_MODEL: qwen3:1.7b
+  VIBE2_LOCAL_MODEL: qwen3:1.7b
+  SYSTEM_AI_MAX_BATCH: '16'
+  OLLAMA_HOST: 127.0.0.1:11434
+
+jobs:
+  reserve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    concurrency:
+      group: company-system-ai-control
+      cancel-in-progress: false
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      count: ${{ steps.matrix.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify shared contracts and worker code
+        run: |
+          set -euo pipefail
+          node --check tools/company-system-ai-worker.mjs
+          node --check tools/company-system-ai-queue.mjs
+          node --test qa/company-system-ai-worker.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/system-ai-shared-context.json
+
+      - name: Reserve disjoint supervised assignments
+        id: matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin vibe2-unreal-core --quiet
+          rm -rf /tmp/system-ai-control
+          git worktree prune
+          git worktree add /tmp/system-ai-control origin/vibe2-unreal-core
+          test -f /tmp/system-ai-control/.vibe2/system-ai-queue.json
+
+          reservation="system-ai:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
+          node tools/company-system-ai-queue.mjs             --command=reserve             --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json             --max="$SYSTEM_AI_MAX_BATCH"             --reservation="$reservation"             --output=/tmp/system-ai-reserved.json
+
+          cd /tmp/system-ai-control
+          git config user.name 'jaewoon-system-ai-scheduler'
+          git config user.email 'system-ai-scheduler@users.noreply.github.com'
+          if ! git diff --quiet -- .vibe2/system-ai-queue.json; then
+            git add .vibe2/system-ai-queue.json
+            git commit -m "system-ai: reserve supervised assignments [skip ci]"
+            for attempt in 1 2 3; do
+              if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then break; fi
+              git rebase --abort 2>/dev/null || true
+              git fetch origin vibe2-unreal-core --quiet
+              sleep $((attempt * 2))
+              test "$attempt" != 3
+            done
+          fi
+
+          node - <<'NODE'
+          const fs=require('fs');
+          const x=JSON.parse(fs.readFileSync('/tmp/system-ai-reserved.json','utf8'));
+          const rows=(x.tasks||[]).map(t=>({taskId:t.id}));
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`matrix=${JSON.stringify({include:rows})}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`count=${rows.length}\n`);
+          console.log(`COMPANY_SYSTEM_AI_RESERVED=${rows.length}`);
+          NODE
+
+  worker:
+    needs: reserve
+    if: needs.reserve.outputs.count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.reserve.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Restore free local model cache
+        id: ollama_cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.ollama/models
+            ~/.cache/company-system-ai-ollama/bin/ollama
+            ~/.cache/company-system-ai-ollama/lib/ollama
+          key: company-system-ai-ollama-v1-Linux-qwen3-1.7b
+
+      - name: Prepare cached Ollama runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          cached="$HOME/.cache/company-system-ai-ollama/bin/ollama"
+          cached_lib="$HOME/.cache/company-system-ai-ollama/lib/ollama"
+          if [ -x "$cached" ] && [ -d "$cached_lib" ] && find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
+            sudo mkdir -p /usr/local/lib/ollama
+            sudo cp -a "$cached_lib/." /usr/local/lib/ollama/
+            echo "$HOME/.cache/company-system-ai-ollama/bin" >> "$GITHUB_PATH"
+            echo 'COMPANY_SYSTEM_AI_OLLAMA_RUNTIME=CACHE'
+          else
+            installed=0
+            for attempt in 1 2 3; do
+              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+              sleep $((attempt * 4))
+            done
+            test "$installed" = 1
+            mkdir -p "$HOME/.cache/company-system-ai-ollama/bin" "$cached_lib"
+            cp "$(command -v ollama)" "$cached"
+            chmod +x "$cached"
+            runtime_lib=""
+            for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
+              if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then runtime_lib="$candidate"; break; fi
+            done
+            test -n "$runtime_lib"
+            cp -a "$runtime_lib/." "$cached_lib/"
+            echo "$HOME/.cache/company-system-ai-ollama/bin" >> "$GITHUB_PATH"
+            echo 'COMPANY_SYSTEM_AI_OLLAMA_RUNTIME=FRESH_INSTALL'
+          fi
+          nohup ollama serve > /tmp/company-system-ai-ollama.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+            if [ "$i" = 30 ]; then cat /tmp/company-system-ai-ollama.log || true; exit 1; fi
+            sleep 2
+          done
+          if ! ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$SYSTEM_AI_MODEL"; then
+            ollama pull "$SYSTEM_AI_MODEL"
+          fi
+
+      - name: Load reserved assignment
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin vibe2-unreal-core --quiet
+          git show origin/vibe2-unreal-core:.vibe2/system-ai-queue.json > /tmp/system-ai-queue.json
+          node - "$TASK_ID" <<'NODE' > /tmp/system-ai-task.json
+          const fs=require('fs');
+          const id=process.argv[2];
+          const q=JSON.parse(fs.readFileSync('/tmp/system-ai-queue.json','utf8'));
+          const task=(q.tasks||[]).find(x=>x.id===id);
+          if(!task)throw new Error('assignment missing: '+id);
+          if(task.status!=='running')throw new Error('assignment not reserved: '+id+':'+task.status);
+          process.stdout.write(JSON.stringify(task,null,2));
+          NODE
+          safe="$(printf '%s' "$TASK_ID" | tr -cs 'A-Za-z0-9._-' '-')"
+          branch="system-ai/candidate/${safe}/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          echo "SYSTEM_AI_BRANCH=$branch" >> "$GITHUB_ENV"
+          git checkout -b "$branch"
+
+      - name: Execute external AI assignment
+        id: implement
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          node tools/company-shared-context.mjs --output=/tmp/system-ai-context-before.json
+          node tools/company-system-ai-worker.mjs             --task=/tmp/system-ai-task.json             --output=/tmp/system-ai-worker-result.json 2>&1 | tee /tmp/system-ai-worker.log
+
+      - name: Verify external AI candidate
+        id: verify
+        if: steps.implement.outcome == 'success'
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          node - <<'NODE'
+          const fs=require('fs'),cp=require('child_process');
+          const result=JSON.parse(fs.readFileSync('/tmp/system-ai-worker-result.json','utf8'));
+          for(const file of result.changedFiles||[]){
+            if(/\.(?:mjs|js|cjs)$/.test(file))cp.execFileSync(process.execPath,['--check',file],{stdio:'inherit'});
+            if(/\.json$/.test(file))JSON.parse(fs.readFileSync(file,'utf8'));
+          }
+          NODE
+          node - <<'NODE' > /tmp/system-ai-verification-commands.txt
+          const fs=require('fs');
+          const task=JSON.parse(fs.readFileSync('/tmp/system-ai-task.json','utf8'));
+          for(const cmd of task.verificationCommands||[])process.stdout.write(String(cmd).replace(/[\r\n]+/g,' ')+'\n');
+          NODE
+          while IFS= read -r cmd; do
+            [ -n "$cmd" ] || continue
+            echo "COMPANY_SYSTEM_AI_VERIFY=$cmd"
+            timeout 240s bash -lc "$cmd"
+          done < /tmp/system-ai-verification-commands.txt
+          node tools/company-shared-context.mjs --output=/tmp/system-ai-context-after.json
+          echo 'COMPANY_SYSTEM_AI_VERIFICATION=PASS'
+
+      - name: Publish verified candidate PR
+        id: publish
+        if: steps.implement.outcome == 'success' && steps.verify.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TASK_ID: ${{ matrix.taskId }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'jaewoon-system-ai-worker'
+          git config user.email 'system-ai-worker@users.noreply.github.com'
+          git add -- tools qa assets .github/workflows company-learning
+          test -n "$(git diff --cached --name-only)"
+          git commit -m "system-ai: candidate ${TASK_ID}"
+          git push origin "HEAD:${SYSTEM_AI_BRANCH}"
+          body="External free-AI system candidate.\n\nTask: ${TASK_ID}\n\nStatus: deterministic worker verification passed; primary AI review still required.\n\nDo not merge solely from worker self-assessment."
+          pr_url="$(gh pr create --base main --head "$SYSTEM_AI_BRANCH" --title "system-ai: ${TASK_ID}" --body "$body" 2>/dev/null || gh pr view "$SYSTEM_AI_BRANCH" --json url -q .url)"
+          echo "pr_url=$pr_url" >> "$GITHUB_OUTPUT"
+          echo "COMPANY_SYSTEM_AI_PR=$pr_url"
+
+      - name: Build immutable assignment result
+        if: always()
+        env:
+          TASK_ID: ${{ matrix.taskId }}
+          IMPLEMENT_OUTCOME: ${{ steps.implement.outcome }}
+          VERIFY_OUTCOME: ${{ steps.verify.outcome }}
+          PUBLISH_OUTCOME: ${{ steps.publish.outcome }}
+          PR_URL: ${{ steps.publish.outputs.pr_url }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/company-system-ai-results
+          node - <<'NODE'
+          const fs=require('fs');
+          const ok=process.env.IMPLEMENT_OUTCOME==='success'&&process.env.VERIFY_OUTCOME==='success'&&process.env.PUBLISH_OUTCOME==='success';
+          let worker={};
+          if(fs.existsSync('/tmp/system-ai-worker-result.json'))worker=JSON.parse(fs.readFileSync('/tmp/system-ai-worker-result.json','utf8'));
+          const blocker=ok?'':process.env.IMPLEMENT_OUTCOME!=='success'?'system-ai-implementation-failed':process.env.VERIFY_OUTCOME!=='success'?'system-ai-verification-failed':'system-ai-candidate-publish-failed';
+          const row={
+            version:1,taskId:process.env.TASK_ID,outcome:ok?'PASS':'FAIL',blocker,
+            candidateBranch:ok?process.env.SYSTEM_AI_BRANCH:null,pullRequestUrl:ok?(process.env.PR_URL||null):null,
+            evidence:[
+              `actions-run:${process.env.GITHUB_RUN_ID}`,
+              `implementation:${process.env.IMPLEMENT_OUTCOME||'unknown'}`,
+              `verification:${process.env.VERIFY_OUTCOME||'unknown'}`,
+              `publish:${process.env.PUBLISH_OUTCOME||'unknown'}`,
+              ...(worker.changedFiles||[]).map(x=>`changed-file:${x}`),
+              worker.rawModelOutputSha256?`model-output-sha256:${worker.rawModelOutputSha256}`:null,
+              'worker-self-acceptance:NO',
+              'primary-ai-review-required:YES'
+            ].filter(Boolean)
+          };
+          const safe=String(row.taskId||'task').replace(/[^A-Za-z0-9._-]+/g,'-');
+          fs.writeFileSync(`/tmp/company-system-ai-results/${safe}.json`,JSON.stringify(row,null,2)+'\n');
+          NODE
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: company-system-ai-result-${{ matrix.taskId }}
+          path: /tmp/company-system-ai-results/*.json
+          if-no-files-found: error
+          retention-days: 7
+
+  fan_in:
+    needs: [reserve, worker]
+    if: always() && needs.reserve.outputs.count != '0'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    concurrency:
+      group: company-system-ai-control
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: company-system-ai-result-*
+          path: /tmp/company-system-ai-results
+          merge-multiple: true
+
+      - name: Persist results for primary AI supervision
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin vibe2-unreal-core --quiet
+          rm -rf /tmp/system-ai-control
+          git worktree prune
+          git worktree add /tmp/system-ai-control origin/vibe2-unreal-core
+          node tools/company-system-ai-queue.mjs             --command=fan-in             --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json             --results=/tmp/company-system-ai-results
+
+          cd /tmp/system-ai-control
+          git config user.name 'jaewoon-system-ai-fanin'
+          git config user.email 'system-ai-fanin@users.noreply.github.com'
+          if ! git diff --quiet -- .vibe2/system-ai-queue.json; then
+            git add .vibe2/system-ai-queue.json
+            git commit -m "system-ai: persist supervised worker results [skip ci]"
+            for attempt in 1 2 3; do
+              if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then break; fi
+              git rebase --abort 2>/dev/null || true
+              git fetch origin vibe2-unreal-core --quiet
+              sleep $((attempt * 2))
+              test "$attempt" != 3
+            done
+          fi
+
+          node "$GITHUB_WORKSPACE/tools/company-system-ai-queue.mjs"             --command=summary             --queue=.vibe2/system-ai-queue.json | tee /tmp/company-system-ai-summary.log
+          queued="$(node -e "const q=require('./.vibe2/system-ai-queue.json');console.log((q.tasks||[]).filter(x=>x.status==='queued').length)")"
+          if [ "$queued" -gt 0 ]; then
+            curl --fail-with-body --silent --show-error               --request POST               --header 'Accept: application/vnd.github+json'               --header "Authorization: Bearer $GH_TOKEN"               --header 'X-GitHub-Api-Version: 2022-11-28'               "https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"               --data '{"event_type":"company-system-ai-cycle"}'
+            echo 'COMPANY_SYSTEM_AI_REFILL=DISPATCHED'
+          fi
