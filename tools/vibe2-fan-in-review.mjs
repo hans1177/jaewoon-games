@@ -12,7 +12,22 @@ const REQUIRED_ROLES=Object.freeze(['exploration','implementation','test','perfo
 function readJson(file,fallback={}){if(!file||!fs.existsSync(file))return fallback;return JSON.parse(fs.readFileSync(file,'utf8'));}
 function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,`${JSON.stringify(value,null,2)}\n`,'utf8');}
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
-function taskIdsFromPayload(payload={}){return[...new Set((Array.isArray(payload)?payload:payload.results||[]).map(row=>clean(row?.taskId)).filter(Boolean))];}
+function resultsFromPayload(payload={}){return(Array.isArray(payload)?payload:payload.results||[]).filter(row=>row&&typeof row==='object');}
+function taskIdsFromPayload(payload={}){return[...new Set(resultsFromPayload(payload).map(row=>clean(row?.taskId)).filter(Boolean))];}
+function posix(value){return clean(value).replaceAll('\\\\','/').replace(/^\.\//,'').replace(/\/+$/,'');}
+function resultCandidateBranch(row={}){const explicit=clean(row?.candidateBranch);if(explicit)return explicit;return(row?.evidence||[]).map(clean).filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||null;}
+function candidateIdentityFailures(task={},row={},candidateBranch=null){
+  const identity=row?.candidateIdentity&&typeof row.candidateIdentity==='object'?row.candidateIdentity:{};
+  const failures=[];
+  if(clean(row?.outcome).toUpperCase()!=='PASS')failures.push('candidate-result-pass');
+  if(candidateBranch&&resultCandidateBranch(row)!==candidateBranch)failures.push('candidate-branch-identity');
+  if(clean(identity.taskId)!==clean(task.id))failures.push('candidate-identity-task');
+  if(clean(task.gameId)&&clean(identity.gameId)!==clean(task.gameId))failures.push('candidate-identity-game');
+  if(clean(task.target)&&clean(identity.target).toLowerCase()!==clean(task.target).toLowerCase())failures.push('candidate-identity-target');
+  if(posix(task.sourceRoot)&&posix(identity.sourceRoot)!==posix(task.sourceRoot))failures.push('candidate-identity-source-root');
+  if(!clean(row?.baseMainSha)||clean(identity.baseMainSha)!==clean(row?.baseMainSha))failures.push('candidate-identity-base-main');
+  return failures;
+}
 function rolePass(evidence,role){return evidence.has(`role-result:${role}:PASS`);}
 function reviewReady(task={}){return clean(task.status)==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*fan-in|awaiting.*qa/i.test(clean(task.blocker));}
 function releaseCandidateFromEvidence(evidence=new Set()){
@@ -20,8 +35,9 @@ function releaseCandidateFromEvidence(evidence=new Set()){
   return branches.at(-1)||null;
 }
 
-export function finalizeVibe2FanInReview({queue={},taskIds=[]}={}){
-  const ids=new Set((taskIds||[]).map(clean).filter(Boolean));
+export function finalizeVibe2FanInReview({queue={},results=[],taskIds=[]}={}){
+  const resultRows=Array.isArray(results)?results.filter(row=>row&&typeof row==='object'):[];
+  const ids=new Set([...(taskIds||[]).map(clean),...resultRows.map(row=>clean(row?.taskId))].filter(Boolean));
   const reviewed=[];
   const skipped=[];
   const releaseCandidates=[];
@@ -33,13 +49,21 @@ export function finalizeVibe2FanInReview({queue={},taskIds=[]}={}){
     const missing=REQUIRED_ROLES.filter(role=>!rolePass(evidence,role));
     const candidateBranch=releaseCandidateFromEvidence(evidence);
     if(!candidateBranch)missing.push('candidate-branch');
-    if(missing.length){
+    else{
+      const rows=resultRows.filter(row=>clean(row?.taskId)===clean(task.id));
+      const selected=rows.find(row=>resultCandidateBranch(row)===candidateBranch)||rows.find(row=>clean(row?.outcome).toUpperCase()==='PASS')||null;
+      if(!selected)missing.push('candidate-identity-result');
+      else missing.push(...candidateIdentityFailures(task,selected,candidateBranch));
+    }
+    const uniqueMissing=[...new Set(missing)];
+    if(uniqueMissing.length){
       evidence.add('role-result:review:BLOCKED');
-      evidence.add(`package-review-missing:${missing.join('|')}`);
-      reviewed.push({taskId:task.id,pass:false,missing});
+      evidence.add(`package-review-missing:${uniqueMissing.join('|')}`);
+      reviewed.push({taskId:task.id,pass:false,missing:uniqueMissing});
     }else{
       evidence.add('role-result:review:PASS');
       evidence.add('package-review:all-required-roles-pass');
+      evidence.add('candidate-identity:PASS');
       reviewed.push({taskId:task.id,pass:true,missing:[]});
       releaseCandidates.push({taskId:clean(task.id),candidateBranch});
     }
@@ -52,7 +76,8 @@ export function runVibe2FanInReview({queueFile='.vibe2/queue.json',inputFile='',
   if(!clean(inputFile))throw new Error('fan-in input required');
   const queue=readJson(queueFile,{tasks:[]});
   const payload=readJson(inputFile,{results:[]});
-  const result=finalizeVibe2FanInReview({queue,taskIds:taskIdsFromPayload(payload)});
+  const results=resultsFromPayload(payload);
+  const result=finalizeVibe2FanInReview({queue,results,taskIds:taskIdsFromPayload(payload)});
   writeJson(queueFile,result.queue);
   if(clean(outputFile))writeJson(outputFile,{version:2,role:'review',sourceWrite:false,reviewed:result.reviewed,skipped:result.skipped,releaseCandidates:result.releaseCandidates,pass:result.pass});
   return result;
