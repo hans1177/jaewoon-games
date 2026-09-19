@@ -1,5 +1,5 @@
 {
-  "version": 81,
+  "version": 82,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3053,17 +3053,21 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FANIN_DRIFT_ISOLATION_AND_FULL_WEB_GATE_ALIGNMENT_2026-09-19",
+    "id": "VIBE2_EDIT_APPLICABILITY_RETRY_AND_FANIN_DRIFT_ISOLATION_2026-09-19",
     "documentIsCode": true,
-    "reason": "KEEP_GAME_PRIMARY_CANDIDATE_REGRESSION_PINNED_TO_RESERVE_TIME_CONTRACT_WHILE_MOVING_CONTROLLER_ORCHESTRATION_QA_TO_LATEST_MAIN_AND_ALIGN_FULL_WEB_GENERATION_WITH_DOWNSTREAM_PLAYABLE_GAME_GATES",
+    "reason": "MOVE_EXACT_EDIT_APPLICABILITY_VALIDATION_INSIDE_BOUNDED_GENERATION_RECOVERY_SO_EDIT_MATCH_FAILURES_CAN_RETRY_BEFORE_CANDIDATE_WRITE_WHILE_PRESERVING_FAN_IN_DRIFT_ISOLATION_AND_FULL_WEB_GATE_ALIGNMENT",
     "files": [
-      ".github/workflows/vibe2-continuous-core.yml",
+      "tools/autonomous-safe-edit.mjs",
       "tools/vibe2-source-worker.mjs",
-      "qa/vibe2-controller-contract.test.mjs",
       "qa/vibe2-source-worker.test.mjs",
+      ".github/workflows/vibe2-continuous-core.yml",
+      "qa/vibe2-controller-contract.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ],
     "commits": [
+      "ab3a6cd0274e89eabc2b0f57147fce950048f917",
+      "51aff34d15636a116f2256d8072682e8cfad7416",
+      "dad83ace3496d1eb62c94c13a133eb714422710d",
       "08280d7657070b77c9b704ca0c6bf6271879e1b5",
       "076659f63d7cd8570e18e38bd9379dc21009ef17",
       "45d631ea811cbe71c34c53058ae946b90ada8d7c",
@@ -3077,38 +3081,43 @@
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
       "systemAiNonblocking": true,
+      "sourceWriteOnlyOnCandidateBranch": true,
+      "dryRunValidationMutatesSource": false,
+      "exactEditMatcherSingleAuthority": "tools/autonomous-safe-edit.mjs",
       "candidateRegressionPinnedToReserveContract": true,
       "controllerOrchestrationQaLatestMain": true,
       "fullRegressionNotWeakened": true,
-      "parserFullWebMinimumBytes": 1800,
-      "parserFullWebMaximumBytes": 260000,
-      "downstreamQualityGatesNotWeakened": true,
-      "directMainGameSourceWriteForbidden": true
+      "downstreamQualityGatesNotWeakened": true
+    },
+    "recoveryContract": {
+      "editApplicabilityCheckedBeforeGenerationSuccess": true,
+      "editMatchFailureClass": "EDIT_MATCH",
+      "editMatchUsesBoundedGenerationRetry": true,
+      "candidateSnapshotUsesSameExactMatcher": true,
+      "maxGenerationAttempts": 3,
+      "noBoundaryWidening": true
     },
     "generationContract": {
-      "defaultTargetMinBytes": 12000,
-      "defaultTargetMaxBytes": 24000,
-      "downstreamFootprintRequirementMayRaiseTarget": true,
-      "finalRetryMaxPredict": 6144,
-      "finalRetryTimeoutMs": 360000,
-      "fillerPaddingForbidden": true
-    },
-    "fanInContract": {
-      "perCandidateTestPerformanceBeforeFanIn": true,
-      "candidateRegressionOnceAtFanIn": true,
-      "controllerContractExcludedFromPinnedCandidateRegression": true,
-      "controllerContractCoveredByLatestMainCoreQa": true,
-      "staleControllerDriftMustNotRequeueGameCandidates": true
+      "defaultFullWebTargetMinBytes": 12000,
+      "defaultFullWebTargetMaxBytes": 24000,
+      "parserFullWebMinimumBytes": 1800,
+      "parserFullWebMaximumBytes": 260000,
+      "fullWebFinalRetryMaxPredict": 6144,
+      "fullWebFinalRetryTimeoutMs": 360000
     },
     "liveEvidence": {
       "priorRun": "35431717289",
-      "priorFanInFailure": "qa/vibe2-controller-contract.test.mjs:reserve-time-fetch-syntax-drift",
-      "priorWorkerFailureRatePct": 75,
-      "currentRun": "35432498255",
-      "currentRunContractSha": "414aa2ef484ed51c86786127565e3c8b53014804",
-      "currentRunContainsGenerationAlignment": true,
-      "currentRunContainsFanInDriftIsolation": false,
-      "nextFreshContractMustIncludeAtLeast": "8371c550790f1d731783053c3057dff895412dcb"
+      "priorFailureClasses": {
+        "timeout": 5,
+        "fullRewriteSize": 4,
+        "noOp": 2,
+        "malformedOutput": 2,
+        "editMatch": 1
+      },
+      "currentWave": "35432498255",
+      "currentWaveContractSha": "414aa2ef484ed51c86786127565e3c8b53014804",
+      "currentWavePredatesEditApplicabilityRetry": true,
+      "nextFreshContractMustIncludeAtLeast": "dad83ace3496d1eb62c94c13a133eb714422710d"
     }
   }
 }
