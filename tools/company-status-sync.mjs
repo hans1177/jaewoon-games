@@ -101,6 +101,7 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
   catalog.runtimeAuthority='company-runtime';
   catalog.runtimeInfoAuthority='company-runtime';
   catalog.runtimeSupportedPlatforms=[...PLATFORM_PRIORITY];
+  const rowByGameId=new Map(rows.map(row=>[clean(row.game?.id),row]).filter(([id])=>id));
   for(const game of catalog.games){
     const id=clean(game?.id);if(!id)continue;
     const queue=queueById.get(id)||null,seed=seedById.get(id)||null;
@@ -276,11 +277,24 @@ function synchronizePlatformPolicy(portfolio){
   delete portfolio.developmentFocusPolicy.developmentConfirmedWebPrototypeAllowedAlongsideReleaseFocus;
 }
 
-export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}={}){
+export function syncProductionClasses({portfolio,catalog,artbooks,developmentQueue={},seedState={},filesystem=fs}={}){
   if(!portfolio||!Array.isArray(portfolio.projects))throw new Error('production class portfolio missing');
   if(!catalog||!Array.isArray(catalog.games))throw new Error('production class catalog missing');
   synchronizePlatformPolicy(portfolio);
   const bySlug=new Map(catalog.games.map(game=>[game.id,game]));
+  const runtimeQueueById=latestById(developmentQueue?.items,'gameId');
+  const runtimeSeedById=latestById((seedState?.seeds||[]).filter(seed=>clean(seed?.status).toUpperCase()==='ACTIVE'),'gameId');
+  const runtimeClassFor=(gameId)=>{
+    const queue=runtimeQueueById.get(gameId)||null;
+    const seed=runtimeSeedById.get(gameId)||null;
+    const seedClass=clean(seed?.productionClass).toUpperCase();
+    const queueClass=clean(queue?.productionClass).toUpperCase();
+    if(seedClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED)return {productionClass:PRODUCTION_CLASSES.RELEASE_CONFIRMED,source:'COMPANY_RUNTIME_RELEASE_SEED'};
+    if(seedClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&queueClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED){
+      return {productionClass:PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED,source:'COMPANY_RUNTIME_DEVELOPMENT_QUEUE'};
+    }
+    return null;
+  };
   const rows=portfolio.projects.map(project=>{
     const catalogPresent=bySlug.has(project.slug);
     const game=bySlug.get(project.slug)||{};
@@ -294,9 +308,11 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     const playable=game?.homepageWebPlayable===true;
     const score=focusScore(project);
     const family=gameplayFamily(game);
-    const productionClass=productionClassOf(project,game);
+    const runtimeClass=runtimeClassFor(project.slug);
+    const productionClass=runtimeClass?.productionClass||productionClassOf(project,game);
+    const productionClassSource=runtimeClass?.source||clean(game?.productionClassSource||project?.productionClassSource)||'CURRENT_EVIDENCE_STATE';
     const evidenceScore=hold?Number.NEGATIVE_INFINITY:(score*100)+(baseline*10)+(platformReady?6:0)+(playable?3:0)+(game?.hasWebArchive===true?1:0);
-    return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,hold,catalogPresent,lifecycleState,evidenceScore,gameplayFamily:family,productionClass};
+    return {project,game,score,baseline,targetPlatform,targetPlatformReady:platformReady,sourceReady,hold,catalogPresent,lifecycleState,evidenceScore,gameplayFamily:family,productionClass,productionClassSource};
   });
 
   // 플랫폼 우선순위는 준비된 후보의 기본 집중 순서에만 쓰며 제작 등급 멤버십이나 플랫폼 진입을 제한하지 않는다.
@@ -304,11 +320,11 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
   const rawRankById=new Map(ranked.map((row,index)=>[row.project.id,index+1]));
 
   for(const row of rows){
-    const {project,game,productionClass,targetPlatform,lifecycleState}=row;
+    const {project,game,productionClass,productionClassSource,targetPlatform,lifecycleState}=row;
     project.lifecycleState=lifecycleState;
     if(row.catalogPresent!==true||!lifecycleAllowsDevelopment(game)){project.profileStatus=lifecycleState;project.mode=lifecycleState;project.targetEngine='lifecycle-inactive';continue;}
     project.productionClass=productionClass;
-    project.productionClassSource=project.productionClassSource||'CURRENT_EVIDENCE_STATE';
+    project.productionClassSource=productionClassSource;
     delete project.productionTier;
     delete project.productionTierSource;
     if(targetPlatform)project.selectedPlatform=targetPlatform;
@@ -357,10 +373,12 @@ export function syncProductionClasses({portfolio,catalog,artbooks,filesystem=fs}
     const project=portfolio.projects.find(row=>row.slug===game.id);
     if(!project)continue;
     if(!lifecycleAllowsDevelopment(game)){game.productionTarget='lifecycle-inactive';game.homepageStage=game.lifecycleState;continue;}
-    const productionClass=productionClassOf(project,game);
+    const row=rowByGameId.get(clean(game.id));
+    const productionClass=row?.productionClass||productionClassOf(project,game);
+    const productionClassSource=row?.productionClassSource||project.productionClassSource||game.productionClassSource||'CURRENT_EVIDENCE_STATE';
     const targetPlatform=selectedPlatformOf(project,game);
     game.productionClass=productionClass;
-    game.productionClassSource=game.productionClassSource||project.productionClassSource||'CURRENT_EVIDENCE_STATE';
+    game.productionClassSource=productionClassSource;
     delete game.productionTier;
     delete game.productionTierSource;
     game.homepageCategory=homepageCategoryForProductionClass(productionClass)||game.homepageCategory;
@@ -415,7 +433,7 @@ export function runCompanyStatusSync({filesystem=fs}={}){
   const seedState=optionalJson(filesystem,seedStatePath,{seeds:[]});
 
   synchronizeCompanyStatusPolicy(company,{filesystem});
-  const classResult=syncProductionClasses({portfolio,catalog,artbooks,filesystem});
+  const classResult=syncProductionClasses({portfolio,catalog,artbooks,developmentQueue,seedState,filesystem});
   applyHomepageRuntimeInfo({catalog,developmentQueue,seedState});
   company.runtimeAuthority='company-runtime';
   company.updatedAt=supervision.dateKst||company.updatedAt;
