@@ -615,7 +615,7 @@
     },
     {
       "id": "sys-verify-system-ai-supervision-loop-v1",
-      "status": "queued",
+      "status": "running",
       "priority": "critical",
       "goal": "Verify the supervised free system AI workflow itself so implementation success can never skip deterministic verification and no candidate can self-merge. Add a workflow contract test for reserve -> worker -> verify -> PR -> fan-in -> primary-AI-review states, cached Ollama direct binary execution, malformed JSON retry, and worker-self-acceptance prohibition.",
       "responsibleFiles": [
@@ -640,12 +640,12 @@
       "dependencies": [],
       "retries": 2,
       "maxRetries": 2,
-      "reservationId": null,
-      "reservedAt": null,
+      "reservationId": "system-ai:35424894825:1",
+      "reservedAt": "2026-09-19T05:47:48.187Z",
       "candidateBranch": null,
       "pullRequestUrl": null,
       "lastOutcome": "FAIL",
-      "blocker": "system-ai-implementation-failed",
+      "blocker": null,
       "evidence": [
         "primary-ai-recruitment:focused-web-bottleneck",
         "worker-role:independent-verifier",
@@ -662,7 +662,7 @@
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:32:24.208Z",
-      "updatedAt": "2026-09-19T05:47:29.692Z"
+      "updatedAt": "2026-09-19T05:47:48.187Z"
     }
   ]
 }
