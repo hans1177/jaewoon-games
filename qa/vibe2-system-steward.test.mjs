@@ -58,6 +58,16 @@ test('steward immediately repairs invalid v3 parallelism and requeues stale mach
   assert.equal(result.changedQueue,true);
 });
 
+test('steward accepts owner-requested 20 as a valid v3 adaptive step',()=>{
+  const result=runSystemStewardState({
+    now:'2026-09-19T12:00:00Z',
+    queueInput:{maxConcurrentTasks:256,tasks:[{id:'dev',gameId:'g',target:'web',goal:'x',status:'queued'}]},
+    controlInput:{version:3,currentMax:20,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+  });
+  assert.equal(result.control.currentMax,20);
+  assert.equal(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'),false);
+});
+
 test('steward does not consume a repair on external wait work',()=>{
   const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[{id:'wait',gameId:'r',target:'roblox',goal:'runtime',status:'running',blocker:'roblox-dedicated-runner-offline-deferred',reservedAt:'2026-09-19T09:00:00Z'}]},controlInput:{currentMax:256,lastUpdatedAt:'2026-09-19T11:50:00Z'}});
   assert.equal(result.action,'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL');
