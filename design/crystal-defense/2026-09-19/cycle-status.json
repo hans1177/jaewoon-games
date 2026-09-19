@@ -61,8 +61,8 @@
     "deterministicGatePhase": "deterministic_pre_gate_after_repair_1"
   },
   "designLearning": {
-    "candidateCount": 0,
-    "usedAsDesignContext": false,
+    "candidateCount": 1,
+    "usedAsDesignContext": true,
     "positiveTrainingEligible": false,
     "validatedRuntimeRequiredForPositiveTraining": true,
     "strictGateBypassAllowed": false
@@ -72,7 +72,7 @@
     "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
   },
   "vibe2Used": false,
-  "vibe2LearningContextUsed": false,
+  "vibe2LearningContextUsed": true,
   "paidApi": false,
   "deterministicRecovery": {
     "enabled": true,
@@ -87,7 +87,7 @@
     "appliedRepairs": [
       "designer_pre_gate_repair_1"
     ],
-    "recoveredAt": "2026-09-19T04:10:23.705Z"
+    "recoveredAt": "2026-09-19T04:12:43.040Z"
   },
   "baselineGate": {
     "policyDocument": "COMPANY_FLOW.md",
@@ -190,7 +190,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T04:12:02.453Z"
+    "checkedAt": "2026-09-19T04:12:43.208Z"
   },
   "artbookUi": {
     "status": "WRITING",
