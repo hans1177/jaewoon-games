@@ -1,7 +1,7 @@
 {
   "version": 5,
   "mode": "hierarchical-dag-sharded-work-stealing-queue",
-  "maxConcurrentTasks": 256,
+  "maxConcurrentTasks": 30,
   "ownerDirectivePreemptsAutonomy": true,
   "releaseStatePriority": [
     "release-confirmed",
@@ -9520,7 +9520,10 @@
         "shared-context-policy:21c16e657008d93466504224cf675c383829d67f5cd1316d9394e51eab971d51",
         "workload:prep-ms:5892",
         "workload:cycle-ms:554247",
-        "exploration-reuse:176036281c6234f63f9b6186"
+        "exploration-reuse:176036281c6234f63f9b6186",
+        "release-dispatch-recovery-requested:vibe2/candidate/daechung-rpg-web-runtime-repair-v1-primary-35435747316-1",
+        "release-dispatch-recovery-at:1789812482391",
+        "release-dispatch-recovery-candidate-sha:d5c98bf5682fb402c5b5fd97a0c8d47728189e6f"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED",
       "reservationId": "35435747316:1",
