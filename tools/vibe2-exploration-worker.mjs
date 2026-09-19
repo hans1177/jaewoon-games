@@ -334,6 +334,13 @@ export function explorationGuidance(handoff={}){
       `관찰 결과=${handoff.editContract.requiredObservableResult||'NONE'}`,
       `Semantic diff 허용 시스템=${(handoff.editContract.semanticDiffBudget?.allowedSystems||[]).join(', ')||'NONE'}; unrelated mutation=${handoff.editContract.semanticDiffBudget?.unrelatedSystemMutationForbidden===true?'FORBIDDEN':'CONDITIONAL'}`,
       `필수 집중 검증=${(handoff.editContract.requiredFocusedChecks||[]).join(', ')||'NONE'}`,
+      ...(handoff.editContract.patchRecipe?[
+        `[PATCH RECIPE] mode=${handoff.editContract.patchRecipe.mode}; failure=${handoff.editContract.patchRecipe.failureFingerprint||'NONE'}; verifiedMemory=${handoff.editContract.patchRecipe.verifiedMemoryCount||0}`,
+        `recipe steps=${(handoff.editContract.patchRecipe.steps||[]).join(' -> ')||'NONE'}`,
+        `verified reuse=${(handoff.editContract.patchRecipe.reusePatterns||[]).join(' | ')||'NONE'}`,
+        `verified avoid=${(handoff.editContract.patchRecipe.avoidPatterns||[]).join(' | ')||'NONE'}`,
+        'Patch recipe는 검증된 기억을 우선 사용하지만 현재 소스와 맞지 않으면 적용하지 않는다. 범위 확대/QA 우회 권한은 없다.'
+      ]:[]),
       `불변조건=${(handoff.editContract.codingArchitecture?.invariantIds||[]).join(', ')||'NONE'}`,
       '주 책임 심볼부터 수정하고 의존 심볼은 요구사항 충족에 꼭 필요할 때만 수정한다. 책임 파일/예약 범위 확대는 금지한다.'
     ]:[]),
