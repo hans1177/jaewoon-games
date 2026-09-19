@@ -451,14 +451,16 @@ export function runQueueCommand(args = {}) {
   } else if (command === 'reserve') {
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
-    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
+    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
+    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks, reservation: reservationFromArgs(args) });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
-    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
-    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks);
+    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
+    const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
     const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks, reservation: reservationFromArgs(args) });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     if (clean(args.output)) {
@@ -488,7 +490,7 @@ export function runQueueCommand(args = {}) {
         }
       });
     }
-    result = { command, configuredMaxConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
@@ -513,6 +515,7 @@ export function runQueueCommand(args = {}) {
     const payload = readJson(input, []);
     const rows = Array.isArray(payload) ? payload : Array.isArray(payload.results) ? payload.results : [];
     const currentControl=readParallelismControl(args);
+    const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
     const firstMetrics=rows.find((row)=>row?.metrics)?.metrics || {};
     const taskCount=new Set(rows.map((row)=>clean(row?.taskId)).filter(Boolean)).size;
     const telemetry=computeParallelismTelemetry({
@@ -522,7 +525,7 @@ export function runQueueCommand(args = {}) {
       effectiveMax:firstMetrics.effectiveMax || currentControl.currentMax,
       taskCount
     });
-    const nextControl=decideAdaptiveBackpressure(currentControl, telemetry);
+    const nextControl=decideAdaptiveBackpressure(currentControl, telemetry, { minimumMax:adaptiveMinimumConcurrentTasks });
     const merged = applyVibeFanInResults(queue, rows);
     queue = merged.queue;
     writeJson(file, queue);
