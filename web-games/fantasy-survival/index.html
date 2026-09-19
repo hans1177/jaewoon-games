@@ -567,7 +567,7 @@ const LAB_RECORDER_LINES=[
  '3일차. 녹음 상태가 좋지 않다. 저것들은 불 속에서도 죽지 않는다. 문 앞에 피가...',
  '4일차. ...잡음... 녹음 파일 손상... 더 이상 기록을 확인할 수 없다.'
 ];
-let recorderUtterance=null,recorderStopTimer=0;
+let recorderUtterance=null,recorderStopTimer=0,recorderResumeTimer=0,recorderToken=0;
 function setRecorderOverlay(text,stateText='재생 중'){
  ui.recorderCaption.textContent=text;ui.recorderState.textContent=stateText;ui.recorderOverlay.classList.add('on')
 }
@@ -576,20 +576,72 @@ function closeRecorderOverlay(delay=0){
 }
 function duckBgmForRecorder(on){
  if(!music.master||!music.ctx)return;
- const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.035:(music.enabled?.12:.0001),now,.08)
+ const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.025:(music.enabled?.12:.0001),now,.08)
+}
+function stopRecorderVoice(){
+ recorderToken++;clearInterval(recorderResumeTimer);recorderResumeTimer=0;
+ if(window.speechSynthesis){try{window.speechSynthesis.cancel();window.speechSynthesis.resume()}catch{}}
+ recorderUtterance=null;duckBgmForRecorder(false)
+}
+function koreanRecorderVoice(){
+ if(!window.speechSynthesis)return null;
+ const voices=window.speechSynthesis.getVoices()||[];
+ return voices.find(v=>/^ko[-_]/i.test(v.lang))||voices.find(v=>/Korean|한국/i.test(v.name))||null
+}
+function recorderChunks(){
+ const out=[];
+ for(const line of LAB_RECORDER_LINES){
+  const parts=line.split(/(?<=[.!?])\s+/).map(x=>x.trim()).filter(Boolean);
+  out.push(...(parts.length?parts:[line]))
+ }
+ return out
+}
+function speakRecorderChunk(chunks,index,token,voice){
+ if(token!==recorderToken)return;
+ if(index>=chunks.length){
+  clearInterval(recorderResumeTimer);recorderResumeTimer=0;recorderUtterance=null;duckBgmForRecorder(false);
+  ui.recorderState.textContent='■ 녹음 종료';closeRecorderOverlay(3500);return
+ }
+ const u=new SpeechSynthesisUtterance(chunks[index]);recorderUtterance=u;
+ u.lang='ko-KR';u.rate=.84;u.pitch=.82;u.volume=1;if(voice)u.voice=voice;
+ ui.recorderState.textContent='▶ 음성 재생 중 · '+(index+1)+'/'+chunks.length+' · 다시 두 번 누르면 처음부터';
+ let advanced=false;
+ const next=()=>{if(advanced||token!==recorderToken)return;advanced=true;setTimeout(()=>speakRecorderChunk(chunks,index+1,token,voice),90)};
+ u.onend=next;
+ u.onerror=ev=>{
+  if(token!==recorderToken)return;
+  if(index===0){
+    ui.recorderState.textContent='음성 엔진 재시도 중...';
+    setTimeout(()=>{if(token!==recorderToken)return;try{window.speechSynthesis.cancel();window.speechSynthesis.resume();window.speechSynthesis.speak(u)}catch{}},180)
+  }else next()
+ };
+ try{window.speechSynthesis.speak(u)}catch{next()}
+}
+function beginRecorderSpeech(){
+ if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){
+  setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'이 브라우저는 음성 재생을 지원하지 않아 자막으로 표시 중');
+  closeRecorderOverlay(15000);return
+ }
+ stopRecorderVoice();const token=++recorderToken,chunks=recorderChunks();
+ setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'한국어 음성 준비 중...');
+ duckBgmForRecorder(true);
+ const start=()=>{
+  if(token!==recorderToken)return;
+  const voice=koreanRecorderVoice();
+  try{window.speechSynthesis.cancel();window.speechSynthesis.resume()}catch{}
+  clearInterval(recorderResumeTimer);
+  recorderResumeTimer=setInterval(()=>{if(token!==recorderToken){clearInterval(recorderResumeTimer);return}try{if(window.speechSynthesis.paused)window.speechSynthesis.resume()}catch{}},350);
+  speakRecorderChunk(chunks,0,token,voice)
+ };
+ const v=koreanRecorderVoice();
+ if(v){start();return}
+ let fired=false;
+ const onVoices=()=>{if(fired)return;fired=true;window.speechSynthesis.removeEventListener?.('voiceschanged',onVoices);start()};
+ window.speechSynthesis.addEventListener?.('voiceschanged',onVoices,{once:true});
+ setTimeout(onVoices,650)
 }
 function playLabRecorder(){
- unlockRecord('lab');
- if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'이 기기에서는 음성 재생을 지원하지 않아 자막으로 표시 중');closeRecorderOverlay(15000);return}
- window.speechSynthesis.cancel();clearTimeout(recorderStopTimer);
- const spoken=LAB_RECORDER_LINES.join(' ... ');
- const u=new SpeechSynthesisUtterance(spoken);recorderUtterance=u;u.lang='ko-KR';u.rate=.88;u.pitch=.86;u.volume=1;
- const voices=window.speechSynthesis.getVoices(),ko=voices.find(v=>/^ko[-_]/i.test(v.lang))||voices.find(v=>/Korean/i.test(v.name));if(ko)u.voice=ko;
- setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'▶ 음성 재생 중 · 다시 두 번 누르면 처음부터 재생');
- duckBgmForRecorder(true);
- u.onend=()=>{if(recorderUtterance!==u)return;recorderUtterance=null;duckBgmForRecorder(false);ui.recorderState.textContent='■ 녹음 종료';closeRecorderOverlay(3500)};
- u.onerror=()=>{if(recorderUtterance!==u)return;recorderUtterance=null;duckBgmForRecorder(false);ui.recorderState.textContent='음성 재생 실패 · 자막은 계속 표시됨';closeRecorderOverlay(7000)};
- window.speechSynthesis.speak(u);showNotice('연구소 녹음기 재생')
+ unlockRecord('lab');clearTimeout(recorderStopTimer);beginRecorderSpeech();showNotice('연구소 녹음기 음성 재생')
 }
 function unlockRecord(id){if(state.records[id])return false;state.records[id]=true;state.dirty=true;showNotice(id==='lab'?'연구소 녹음 기록 획득':'공사장 일기 획득');return true}
 function renderBestiary(){
@@ -1497,7 +1549,7 @@ function loadGame(){
  }catch(e){}
 }
 window.addEventListener('resize',resize);window.addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();state.keys.add(e.code);if(e.code==='Space')attack();if(e.code==='KeyE')gather();if(e.code==='KeyC')openCraft();if(e.code==='KeyI')openInventory();if(e.code==='KeyM')openMap()});window.addEventListener('keyup',e=>state.keys.delete(e.code));document.getElementById('attack').addEventListener('pointerdown',e=>{e.preventDefault();attack()});document.getElementById('gather').addEventListener('pointerdown',e=>{e.preventDefault();gather()});ui.dismount.addEventListener('pointerdown',e=>{e.preventDefault();dismountPet(true)});document.getElementById('craft').addEventListener('click',()=>openCraft());document.getElementById('inventory').addEventListener('click',()=>openInventory());ui.mapBtn.addEventListener('click',openMap);document.getElementById('close').addEventListener('click',closeSheet);document.getElementById('save').addEventListener('click',()=>saveGame(true));document.getElementById('resetSave').addEventListener('click',resetGameSave);document.getElementById('multi').addEventListener('click',()=>ui.multiPanel.classList.toggle('open'));document.getElementById('multiClose').addEventListener('click',()=>ui.multiPanel.classList.remove('open'));document.getElementById('multiCreate').addEventListener('click',createMultiplayerRoom);document.getElementById('multiJoin').addEventListener('click',()=>connectMultiplayer(ui.multiRoom.value));document.getElementById('multiCopy').addEventListener('click',copyMultiplayerLink);document.getElementById('multiLeave').addEventListener('click',()=>leaveMultiplayer(true));document.getElementById('bgmToggle').addEventListener('click',toggleBgm);ui.bestiaryBtn.addEventListener('click',openBestiary);ui.handTab.addEventListener('click',()=>openCraft('hand'));ui.benchTab.addEventListener('click',()=>openCraft('bench'));ui.ironBenchTab.addEventListener('click',()=>openCraft('ironbench'));ui.goldBenchTab.addEventListener('click',()=>openCraft('goldbench'));ui.inventoryTab.addEventListener('click',openInventory);ui.mapTab.addEventListener('click',openMap);ui.smeltBtn.addEventListener('click',()=>startSmelt('iron'));ui.goldSmeltBtn.addEventListener('click',()=>startSmelt('gold'));ui.deerSmeltBtn.addEventListener('click',()=>startSmelt('deer'));ui.bugSmeltBtn.addEventListener('click',()=>startSmelt('bug'));document.getElementById('smeltClose').addEventListener('click',()=>ui.smeltPanel.classList.remove('open'));canvas.addEventListener('pointerdown',handleWorldTap);
-const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{once:true,capture:true});window.addEventListener('keydown',ensureMusicStarted,{once:true,capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{saveGame(false);if(window.speechSynthesis)window.speechSynthesis.cancel();if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
+const stick=document.getElementById('stick'),knob=document.getElementById('knob');let sp=null;function moveStick(e){const r=stick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,max=r.width*.3,m=Math.hypot(dx,dy),k=m>max?max/m:1,x=dx*k,y=dy*k;state.stick.x=x/max;state.stick.y=y/max;knob.style.transform=`translate(${x}px,${y}px)`}function endStick(e){if(sp!==e.pointerId)return;sp=null;state.stick.x=state.stick.y=0;knob.style.transform='translate(0,0)'}stick.addEventListener('pointerdown',e=>{e.preventDefault();sp=e.pointerId;stick.setPointerCapture(e.pointerId);moveStick(e)});stick.addEventListener('pointermove',e=>{if(sp===e.pointerId){e.preventDefault();moveStick(e)}});stick.addEventListener('pointerup',endStick);stick.addEventListener('pointercancel',endStick);window.addEventListener('pointerdown',ensureMusicStarted,{once:true,capture:true});window.addEventListener('keydown',ensureMusicStarted,{once:true,capture:true});document.addEventListener('visibilitychange',()=>{if(!music.ctx)return;if(document.hidden)music.ctx.suspend().catch(()=>{});else if(music.enabled)music.ctx.resume().catch(()=>{})});window.addEventListener('pagehide',()=>{saveGame(false);stopRecorderVoice();if(multiplayer.channel)multiplayer.channel.unsubscribe();if(music.ctx)music.ctx.close().catch(()=>{})});
 if(new URL(location.href).searchParams.get('reset')==='1'){try{localStorage.removeItem(SAVE_KEY)}catch{}}initWorld();loadGame();markExplored();discoverRegion();resize();updateHud();requestAnimationFrame(loop);const roomFromUrl=new URL(location.href).searchParams.get('room');if(roomFromUrl){ui.multiRoom.value=roomFromUrl.toUpperCase();connectMultiplayer(roomFromUrl)}showNotice('가방이 생겼어 · 동쪽 철 협곡에서 철을 찾아봐');
 })();
 </script>
