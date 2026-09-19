@@ -445,6 +445,27 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
       const status=clean(item?.status).toLowerCase();
       const indexPath=`web-games/${gameId}/index.html`;
       const sourceMissing=!fs.existsSync(sourceFile(repoRoot,indexPath));
+      const runtimeItem=exactWebRepairByGameId.get(gameId)||{};
+      const ownerPreservationPresentation=runtimeItem?.ownerPreservationPresentationUpgrade===true
+        &&(item?.evidence||[]).some(value=>clean(value)==='presentation-quality-pipeline:v1');
+      if(ownerPreservationPresentation){
+        const blocker=clean(item?.blocker);
+        if(status==='cancelled'&&/^superseded-by:VIBE_WEB_(?:BASE_IMPLEMENTATION|REPAIR)$/.test(blocker)){
+          return{
+            ...item,
+            status:'queued',
+            retries:0,
+            blocker:null,
+            reservationId:null,
+            reservationRunId:null,
+            reservationRunAttempt:0,
+            reservedAt:null,
+            lastOutcome:'RESTORED_OWNER_PRESERVATION_PRESENTATION',
+            evidence:[...new Set([...(item.evidence||[]),'owner-preservation-presentation-preempts-generic-web-repair',`restored-from:${blocker}`])]
+          };
+        }
+        return item;
+      }
       const exactTaskId=sourceMissing?`${gameId}-web-base-implementation-v1`:`${gameId}-web-runtime-repair-v1`;
       if(clean(item?.id)===exactTaskId){
         const blocker=clean(item?.blocker);
@@ -453,7 +474,6 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
           return{...item,status:'queued',retries:0,blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION',evidence:[...new Set([...(item.evidence||[]),'restored-exact-stage:WEB_BASE_IMPLEMENTATION',`restored-from:${blocker}`,'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
         }
         if(!sourceMissing&&['queued','failed','blocked'].includes(status)){
-          const runtimeItem=exactWebRepairByGameId.get(gameId)||{};
           const game=catalogGames.get(gameId)||{};
           const runtimeFailureEvidence=compactRuntimeFailureEvidence({
             requestedStage:runtimeItem?.vibeWebRequestedStage,
