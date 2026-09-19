@@ -529,7 +529,19 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
           editable.push(section);
         }
       }
-      if(editable.length)retryBase=[prefix,...editable].join('\n\n');
+      if(editable.length){
+        const compactTimeoutPrefix=timeoutFailure?[
+          'You are the Vibe2 game source worker. Return JSON only.',
+          rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
+          rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+          allowedLine,
+          'Preserve gameplay values, save meaning and existing behavior unless the work order explicitly authorizes a protected change.',
+          'Every edits[].path MUST be one exact path from Allowed edit paths.',
+          'Every edits[].find MUST be copied character-for-character from the matching EDITABLE FILE block and occur exactly once.',
+          'Do not expand unrelated code.'
+        ].filter(Boolean).join('\n'):prefix;
+        retryBase=[compactTimeoutPrefix,...editable].join('\n\n');
+      }
     }
   }
   const correction=allowFullRewrite
