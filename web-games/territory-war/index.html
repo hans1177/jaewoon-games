@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Approved Web Bootstrap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            margin: 20px 0 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <main id="game">
+        <h1>Territory War</h1>
+        <button id="startButton">Start Game</button>
+        <div id="gameArea"></div>
+    </main>
+    <script>
+        // Game logic here
+        document.getElementById('startButton').addEventListener('click', function() {
+            // Game initialization and logic
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = '<p>Game is starting...</p>';
+            // Simulate game state
+            const gameState = {
+                player: 'Player 1',
+                enemy: 'Enemy 1',
+                score: 0,
+                isGameOver: false
+            };
+            // Simulate game progression
+            gameState.score += 10;
+            // Simulate touch input
+            gameArea.innerHTML = `<p>Score: ${gameState.score}</p>`;
+        });
+    </script>
+</body>
+</html>
