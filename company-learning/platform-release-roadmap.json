@@ -1,5 +1,5 @@
 {
-  "version": 139,
+  "version": 140,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1942,7 +1942,12 @@
               "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
               "70f6c5a9541c25e695c75f10c9ace5666d3c9e72"
             ],
-            "fullWebInternalTimeoutAlignmentEffectiveFromNextCleanWave": true
+            "fullWebInternalTimeoutAlignmentEffectiveFromNextCleanWave": true,
+            "fullWebExpansionContextCompactionCommits": [
+              "545e76b3d51f7828427cf092a43b8eb60b1304f0",
+              "88887af40c1ac18580409630e29db56609df7f81"
+            ],
+            "fullWebExpansionContextCompactionEffectiveFromNextCleanWave": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3493,58 +3498,61 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FULL_WEB_INTERNAL_TIMEOUT_BUDGET_ALIGNMENT_2026-09-19",
+    "id": "VIBE2_FULL_WEB_EXPANSION_CONTEXT_COMPACTION_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_SPECULATIVE_SLOT_LATENCY_PRIORITY_2026-09-19",
-    "reason": "WORKER_JOB_TIMEOUT_IS_22_MINUTES_WHILE_THE_PRIOR_FULL_WEB_INTERNAL_PRIMARY_PATH_COULD_CONSUME_APPROXIMATELY_22_MINUTES_BEFORE_CHECKOUT_AND_QA_OVERHEAD. ALIGN_INTERNAL_FULL_WEB_RETRY_BUDGET_BELOW_THE_OUTER_JOB_LIMIT_SO_THE_WORKER_CAN_FINISH_AND_EMIT_IMMUTABLE_RESULT_INSTEAD_OF_BEING_KILLED_BY_GITHUB.",
+    "previousChangeRecordId": "VIBE2_FULL_WEB_INTERNAL_TIMEOUT_BUDGET_ALIGNMENT_2026-09-19",
+    "reason": "STAGED_FULL_WEB_EXPANSION_ALREADY_CARRIES_THE_CURRENT_PLAYABLE_HTML_SEED,BUT_IT_WAS_ALSO_REPLAYING_THE_ENTIRE_PRE_FILE_EXPLORATION_AND_LEARNING_PREFIX. COMPACT_EXPANSION_CONTEXT_TO_EXECUTION_CRITICAL_FIELDS_TO_REDUCE_PREFILL_AND_LONG_TAIL_WITHOUT_REMOVING_THE_ACTUAL_SEED_OR_FINAL_VALIDATION_GATES.",
     "implementationState": "CODE_AND_REGRESSION_TEST_COMMITTED_NEXT_CLEAN_WAVE_EFFECT_PENDING",
     "evidence": {
-      "outerWorkerTimeoutMinutes": 22,
-      "priorInternalWorstCaseMinutesApprox": 22,
-      "newInternalWorstCaseMinutesApprox": 19,
-      "baselineRun": 35445626679,
+      "currentDiagnosticRun": 35446727233,
       "baselinePassRatePct": 25,
-      "currentDiagnosticRun": 35446727233
+      "sourceGenerationBottleneck": true,
+      "cacheHitRatePct": 100,
+      "preparationRatioPct": 0.86
     },
     "contract": {
-      "initialSeedTimeoutMs": 360000,
-      "expansionTimeoutMs": 240000,
-      "finalSynthesisTimeoutMs": 300000,
-      "primaryFullWebApproxWorstCaseMs": 1140000,
-      "outerWorkerTimeoutMs": 1320000,
-      "headroomMsApprox": 180000,
-      "initialSeedStrategyPreserved": true,
+      "expansionPrefixFields": [
+        "ENGINE",
+        "GOAL",
+        "ALLOWED_EDIT_PATHS",
+        "FULL_WEB_FINAL_TARGET",
+        "SCOPE_PRESERVATION"
+      ],
+      "currentPlayableHtmlStillIncluded": true,
+      "capabilityTargetStillIncluded": true,
+      "longExplorationGuidanceRemoved": true,
       "finalAcceptanceMinimumBytes": 12000,
       "qualityGatesNotWeakened": true,
       "authorityExpansion": false
     },
     "implementationCommits": {
-      "source": "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
-      "regressionTest": "70f6c5a9541c25e695c75f10c9ace5666d3c9e72"
+      "source": "545e76b3d51f7828427cf092a43b8eb60b1304f0",
+      "regressionTest": "88887af40c1ac18580409630e29db56609df7f81"
     },
     "relatedBottleneckFixes": {
-      "speculativeSlotPriority": [
+      "timeoutBudgetAlignment": [
+        "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
+        "70f6c5a9541c25e695c75f10c9ace5666d3c9e72"
+      ],
+      "speculativeSlotLatencyPriority": [
         "3208edd52549bcb45a9b2f8396a9dc47174a3b34",
         "cf1fd2ef0b5450344c1bad7fc1745581d8e2ec0a"
       ],
-      "fullWebSeedFirst": "9ef7994739ea552f4b4c90283a9a3b246e3af2f4",
-      "fullWebRetryPromptCompaction": "57e03fbadfa248ae5fcf74ee251f3a906d84762d",
-      "focusedPreInitFix": "c8f373efb34e6c9289a119fc0caa3d207bc1c09f"
+      "fullWebSeedFirst": "9ef7994739ea552f4b4c90283a9a3b246e3af2f4"
     },
     "pending": [
       "CURRENT_35446727233_COMPLETE_FOR_DIAGNOSTIC_ONLY",
-      "NEXT_CLEAN_WAVE_PIN_D2D34D2A_3208EDD5_9EF79947_C8F373EF_OR_LATER",
-      "VERIFY_NO_WORKER_OUTER_TIMEOUT_ON_FULL_WEB_PRIMARY",
+      "NEXT_CLEAN_WAVE_PIN_545E76B3_D2D34D2A_3208EDD5_C8F373EF_OR_LATER",
+      "COMPARE_EXPANSION_PROMPT_BYTES",
       "COMPARE_FULL_WEB_P95_DURATION",
-      "COMPARE_WAVE_LONG_TAIL",
       "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
       "VERIFY_FAN_IN_REGRESSION"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
       "hierarchicalParallelism": true,
-      "primaryCoverageBeforeSpeculation": true,
+      "currentSeedNeverDropped": true,
       "fullWebMinimumBytesUnchanged": 12000,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
