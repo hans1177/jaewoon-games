@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T09:49:39.387Z"
+      "updatedAt": "2026-09-19T10:07:57.368Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1368,7 +1368,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:19",
-      "checkpoint": "2026-09-19T09:31:00Z",
+      "checkpoint": "2026-09-19T10:07:29Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1509,7 +1509,15 @@
         "workload:cycle-ms:654280",
         "exploration-reuse:c510c418504e1e68b73a45cf",
         "workload:prep-ms:5766",
-        "workload:cycle-ms:991804"
+        "workload:cycle-ms:991804",
+        "base-main:f6274f7f54d24052a5e6a45b74a7dd357998c6aa",
+        "actions-run:35435747316",
+        "reservation-id:35435747316:1",
+        "workload:prep-ms:6111",
+        "workload:cycle-ms:515502",
+        "exploration-reuse:fbdd5eeeca94b9e7e41be0de",
+        "workload:prep-ms:6557",
+        "workload:cycle-ms:460038"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1525,7 +1533,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T08:20:33.605Z",
-      "updatedAt": "2026-09-19T09:49:39.386Z"
+      "updatedAt": "2026-09-19T10:07:57.368Z"
     },
     {
       "id": "recovery-c9cbc89486453076c641",
@@ -1537,7 +1545,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "web-qa-or-promotion-failed",
       "blastRadius": "single-task",
-      "checkpoint": null,
+      "checkpoint": "2026-09-19T09:50:06Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:company-development-queue",
@@ -1679,7 +1687,16 @@
         "workload:cycle-ms:30833",
         "recovery-escalated-from:vibe2",
         "recovery-route:VIBE2_VIBE3",
-        "recovery-queue:recovery-c9cbc89486453076c641"
+        "recovery-queue:recovery-c9cbc89486453076c641",
+        "vibe2/candidate/daechung-rpg-web-runtime-repair-v1-primary-35435747316-1",
+        "candidate-sha:d5c98bf5682fb402c5b5fd97a0c8d47728189e6f",
+        "base-main:f6274f7f54d24052a5e6a45b74a7dd357998c6aa",
+        "actions-run:35435747316",
+        "reservation-id:35435747316:1",
+        "shared-context-policy:21c16e657008d93466504224cf675c383829d67f5cd1316d9394e51eab971d51",
+        "workload:prep-ms:5892",
+        "workload:cycle-ms:554247",
+        "exploration-reuse:176036281c6234f63f9b6186"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1695,7 +1712,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T09:44:10.352Z",
-      "updatedAt": "2026-09-19T09:49:39.387Z"
+      "updatedAt": "2026-09-19T10:07:57.369Z"
     },
     {
       "id": "recovery-1280249776fe150c64d0",
