@@ -332,11 +332,19 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
   const gameId=clean(task.gameId);
   const engine=lower(task.target);
   const failureFingerprint=failureFingerprintForTask(task);
+  const taskFailureCodes=explicitFailureCodes([task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean));
   const ranked=(experienceInput?.records||[]).filter(r=>r?.verified===true&&r?.reusable===true).map(record=>{
     let score=0;const reasons=[];
     const recordFailureFingerprint=failureFingerprintForExperience(record);
+    const recordFailureCodes=explicitFailureCodes([
+      record.failureCause,record.problem,record.goal,record.change,
+      ...(record.evidence||[]),...(record.avoidPatterns||[]),...(record.reusablePatterns||[])
+    ].map(clean).filter(Boolean));
     const sameGame=Boolean(gameId&&clean(record.gameId)===gameId);
-    const sameFailure=Boolean(failureFingerprint&&recordFailureFingerprint===failureFingerprint);
+    const exactFailureFingerprint=Boolean(failureFingerprint&&recordFailureFingerprint===failureFingerprint);
+    const sharedFailureCode=taskFailureCodes.find(code=>recordFailureCodes.includes(code))||null;
+    const sameFailure=Boolean(exactFailureFingerprint||sharedFailureCode);
+    if(sharedFailureCode)reasons.push('same-explicit-failure-code:'+sharedFailureCode);
     if(sameGame&&sameFailure){score+=140;reasons.push('same-game-same-failure');}
     else if(sameFailure){score+=90;reasons.push('same-failure');}
     if(sameGame){score+=40;reasons.push('same-game');}
