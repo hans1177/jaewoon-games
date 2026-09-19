@@ -677,6 +677,59 @@
       "createdAt": "2026-09-18T00:16:50.454Z",
       "lastVerifiedAt": "2026-09-18T00:16:50.454Z",
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "exp_security_policy_review_authorized_v1",
+      "fingerprint": "security_policy_review_authorized_v1",
+      "gameId": null,
+      "engine": "system",
+      "departments": [
+        "security",
+        "infrastructure",
+        "qa",
+        "learning"
+      ],
+      "taskType": "security-recovery",
+      "problem": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+      "goal": "separate authorized policy review from actual threat quarantine without bypassing security",
+      "change": "TRI_STATE_REVIEW_QUARANTINE_CLASSIFIER_WITH_DIRECT_POLICY_REVIEW_GATE",
+      "outcome": "PASS",
+      "failureCause": "AUTHORIZED_CENTRAL_POLICY_CHANGE_CLASSIFIED_BY_LEGACY_BINARY_QUARANTINE",
+      "qa": [
+        "authorized-policy-review:PASS",
+        "shared-context:PASS",
+        "security-tristate-regression:PASS",
+        "primary-ai-security-review:PASS"
+      ],
+      "build": null,
+      "evidence": [
+        "source-commit:9a9896c182e36f3d77067129072a8a0fb7506d6e",
+        "source-commit:b207a204963f470cf85dbc53c50068c92b8fa1e4",
+        "security-incidents:2",
+        "raw-secret-stored:NO",
+        "raw-malware-stored:NO"
+      ],
+      "reusablePatterns": [
+        "SECURITY_REVIEW_REQUIRED:CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+        "SECURITY_PRESERVE_GATE:NO_BYPASS",
+        "SECURITY_AUTHORIZED_REVIEW:TRI_STATE_REVIEW_QUARANTINE_CLASSIFIER_WITH_DIRECT_POLICY_REVIEW_GATE"
+      ],
+      "avoidPatterns": [
+        "SECURITY_AVOID:POLICY_REVIEW_BYPASS"
+      ],
+      "verified": true,
+      "reusable": true,
+      "independentlyVerified": true,
+      "authority": "VERIFIED_SECURITY_IMMUNE_LEARNING",
+      "rawSecretStored": false,
+      "rawMalwareStored": false,
+      "sourceSecurityIncidentIds": [
+        "sec_b4978477dca03b6a00a99816",
+        "sec_3563eb3598d26e7626d705c0"
+      ],
+      "createdAt": "2026-09-19T06:14:04.436Z",
+      "lastVerifiedAt": "2026-09-19T06:14:04.436Z"
     }
   ]
 }

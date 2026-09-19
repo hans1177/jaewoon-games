@@ -122,7 +122,7 @@
     },
     {
       "id": "recovery-5196168e83782d5f2a9f",
-      "status": "queued",
+      "status": "cancelled-review-only",
       "priority": "critical",
       "sourceQueue": "security",
       "sourceTaskId": "security-run-35425571672",
@@ -133,7 +133,8 @@
       "checkpoint": null,
       "evidence": [
         "security-run:35425571672",
-        "security-report:artifact-35425571672"
+        "security-report:artifact-35425571672",
+        "reclassified:REVIEW_NOT_RECOVERY"
       ],
       "recoveryStrategy": "SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW",
       "verificationPlan": [
@@ -142,14 +143,18 @@
         "REGRESSION_RESCAN",
         "PRIMARY_AI_SECURITY_REVIEW"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "security-incident:sec_b4978477dca03b6a00a99816",
+        "legacy-binary-classifier:RECLASSIFIED",
+        "authorized-policy-review:PASS"
+      ],
       "recoveryOwner": "SYSTEM_AI",
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
+      "primaryAiReview": "PASS",
+      "learningPromotion": "NOT_APPLICABLE",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:03:37.868Z",
-      "updatedAt": "2026-09-19T06:03:37.868Z"
+      "updatedAt": "2026-09-19T06:14:04.436Z"
     },
     {
       "id": "recovery-b9a81ece6a251027e30e",
@@ -335,7 +340,7 @@
     },
     {
       "id": "recovery-6bed1c7e44ca75dceec2",
-      "status": "queued",
+      "status": "cancelled-review-only",
       "priority": "critical",
       "sourceQueue": "security",
       "sourceTaskId": "security-run-35425799273",
@@ -346,7 +351,8 @@
       "checkpoint": null,
       "evidence": [
         "security-run:35425799273",
-        "security-report:artifact-35425799273"
+        "security-report:artifact-35425799273",
+        "reclassified:REVIEW_NOT_RECOVERY"
       ],
       "recoveryStrategy": "SECURITY_CONTAIN_REMEDIATE_RESCAN_PRIMARY_AI_REVIEW",
       "verificationPlan": [
@@ -355,14 +361,18 @@
         "REGRESSION_RESCAN",
         "PRIMARY_AI_SECURITY_REVIEW"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "security-incident:sec_3563eb3598d26e7626d705c0",
+        "legacy-binary-classifier:RECLASSIFIED",
+        "authorized-policy-review:PASS"
+      ],
       "recoveryOwner": "SYSTEM_AI",
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
+      "primaryAiReview": "PASS",
+      "learningPromotion": "NOT_APPLICABLE",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:09:08.320Z",
-      "updatedAt": "2026-09-19T06:09:08.320Z"
+      "updatedAt": "2026-09-19T06:14:04.436Z"
     }
   ]
 }

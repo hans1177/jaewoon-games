@@ -281,7 +281,7 @@
     },
     {
       "id": "sec_3563eb3598d26e7626d705c0",
-      "status": "QUARANTINED",
+      "status": "RESOLVED_VERIFIED",
       "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
       "severity": "HIGH",
       "category": "policy-integrity",
@@ -294,16 +294,28 @@
       "detections": 1,
       "firstDetectedAt": "2026-09-19T06:09:08.093Z",
       "lastDetectedAt": "2026-09-19T06:09:08.094Z",
-      "containment": "AFFECTED_CHANGE_QUARANTINED",
-      "rootCause": null,
-      "remediation": null,
-      "verificationEvidence": [],
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING"
+      "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
+      "rootCause": "AUTHORIZED_CENTRAL_POLICY_CHANGE_CLASSIFIED_BY_LEGACY_BINARY_QUARANTINE",
+      "remediation": "TRI_STATE_REVIEW_QUARANTINE_CLASSIFIER_WITH_DIRECT_POLICY_REVIEW_GATE",
+      "verificationEvidence": [
+        "source-commit:b207a204963f470cf85dbc53c50068c92b8fa1e4",
+        "authorized-policy-review:PASS",
+        "shared-context:PASS",
+        "security-tristate-regression:PASS",
+        "regression:PASS",
+        "primary-ai-security-review:PASS"
+      ],
+      "primaryAiReview": "PASS",
+      "learningPromotion": "PROMOTED",
+      "disposition": "REVIEW",
+      "verificationMode": "AUTHORIZED_POLICY_REVIEW_PASS",
+      "resolvedAt": "2026-09-19T06:14:04.436Z",
+      "learningPromotedAt": "2026-09-19T06:14:04.436Z",
+      "learningFingerprint": "security_policy_review_authorized_v1"
     },
     {
       "id": "sec_b4978477dca03b6a00a99816",
-      "status": "QUARANTINED",
+      "status": "RESOLVED_VERIFIED",
       "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
       "severity": "HIGH",
       "category": "policy-integrity",
@@ -316,12 +328,24 @@
       "detections": 1,
       "firstDetectedAt": "2026-09-19T06:03:37.827Z",
       "lastDetectedAt": "2026-09-19T06:03:37.827Z",
-      "containment": "AFFECTED_CHANGE_QUARANTINED",
-      "rootCause": null,
-      "remediation": null,
-      "verificationEvidence": [],
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING"
+      "containment": "AFFECTED_CHANGE_HELD_FOR_REVIEW",
+      "rootCause": "AUTHORIZED_CENTRAL_POLICY_CHANGE_CLASSIFIED_BY_LEGACY_BINARY_QUARANTINE",
+      "remediation": "TRI_STATE_REVIEW_QUARANTINE_CLASSIFIER_WITH_DIRECT_POLICY_REVIEW_GATE",
+      "verificationEvidence": [
+        "source-commit:9a9896c182e36f3d77067129072a8a0fb7506d6e",
+        "authorized-policy-review:PASS",
+        "shared-context:PASS",
+        "security-tristate-regression:PASS",
+        "regression:PASS",
+        "primary-ai-security-review:PASS"
+      ],
+      "primaryAiReview": "PASS",
+      "learningPromotion": "PROMOTED",
+      "disposition": "REVIEW",
+      "verificationMode": "AUTHORIZED_POLICY_REVIEW_PASS",
+      "resolvedAt": "2026-09-19T06:14:04.436Z",
+      "learningPromotedAt": "2026-09-19T06:14:04.436Z",
+      "learningFingerprint": "security_policy_review_authorized_v1"
     }
   ]
 }

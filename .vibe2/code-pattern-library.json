@@ -1178,6 +1178,31 @@
       "retrievalEligible": true,
       "masteryEligible": false,
       "authority": "AUTHORIZED_EXTERNAL_GENERALIZED_PATTERN"
+    },
+    {
+      "id": "pat_security_policy_review_authorized_v1",
+      "gameId": null,
+      "engine": "system",
+      "taskType": "security",
+      "system": "WORKFLOW_INTEGRITY",
+      "problem": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+      "pattern": "VERIFIED_SECURITY_WORKFLOW_INTEGRITY_REVIEW_AUTHORIZATION_PRESERVE_GATE",
+      "tags": [
+        "security",
+        "immune-system",
+        "verified",
+        "WORKFLOW_INTEGRITY",
+        "policy-review"
+      ],
+      "verified": true,
+      "sourceRevision": "sha256:bc1efdea1e2c75fa176d54c0f378f7709d70bc4031207c9c2ab33d6513e4d382",
+      "evidencePath": "vibe2-unreal-core:.vibe2/security-incidents.json",
+      "rawCodeStored": false,
+      "independentQa": "PASS",
+      "browserQa": "NOT_APPLICABLE",
+      "retrievalEligible": true,
+      "masteryEligible": true,
+      "authority": "VERIFIED_SECURITY_IMMUNE_PATTERN"
     }
   ],
   "policy": {
