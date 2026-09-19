@@ -157,7 +157,7 @@ test('planner and worker work-order consume generated machine handoff instead of
   assert.equal(order.machineHandoff.currentPersistentMax, 8);
 });
 
-test('machine-state E2E reserves work, builds worker order, fans in pressure, and hands off next work', () => {
+test('machine-state E2E reserves only game-primary work, builds worker order, fans in pressure, and leaves auxiliary work separate', () => {
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-handoff-e2e-'));
   const queueFile = path.join(tempRoot, 'queue.json');
   const controlFile = path.join(tempRoot, 'parallelism.json');
@@ -181,10 +181,13 @@ test('machine-state E2E reserves work, builds worker order, fans in pressure, an
   assert.equal(before.workState.queuedCount, 31);
 
   const reserved = runQueueCommand({ command:'reserve-batch', queue:queueFile, control:controlFile, max:'32', output:batchFile });
-  assert.equal(reserved.tasks.length, 31);
-  const order = runVibeContinuousRunner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, outputFile:orderFile, taskId:'e2e-01' });
+  assert.equal(reserved.tasks.length, 30);
+  assert.equal(reserved.tasks.some(task=>task.id==='e2e-01'),false);
+  assert.equal(reserved.selection?.lane,'game-primary');
+  assert.ok(reserved.selection?.laneDeferred?.some(task=>task.id==='e2e-01'));
+  const order = runVibeContinuousRunner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, outputFile:orderFile, taskId:'e2e-02' });
   assert.equal(order.run, true);
-  assert.equal(order.executionRoute, 'analysis-only');
+  assert.equal(order.executionRoute, 'text-source-worker');
   assert.equal(order.machineHandoff.used, true);
   assert.equal(order.machineHandoff.consistency.ok, true);
   assert.equal(order.machineHandoff.currentPersistentMax, 32);
@@ -203,6 +206,7 @@ test('machine-state E2E reserves work, builds worker order, fans in pressure, an
   const after = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(after.consistency.ok, true);
   assert.equal(after.parallelism.currentPersistentMax, 20);
-  assert.equal(after.workState.queuedCount, 0);
-  assert.equal(after.workState.blockedCount, 31);
+  assert.equal(after.workState.queuedCount, 1);
+  assert.equal(after.workState.blockedCount, 30);
+  assert.equal(after.workState.nextTaskId,'e2e-01');
 });
