@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, validateNormalizedCatalog } from '../tools/game-catalog-normalization.mjs';
+import os from 'node:os';
+import path from 'node:path';
+import { applyHomepageAutoClassification, inferHomepageGenres, inferHomepagePlatform, ingestOwnerWebGameIds, validateNormalizedCatalog } from '../tools/game-catalog-normalization.mjs';
 
 const catalog=JSON.parse(fs.readFileSync('game-catalog.json','utf8'));
 const roadmap=JSON.parse(fs.readFileSync('company-learning/platform-release-roadmap.json','utf8'));
@@ -55,10 +57,10 @@ assert.equal(policy?.ordering?.outputField,'catalogOrder');
 assert.equal(policy?.homepageBinding?.canonicalOrderField,'catalogOrder');
 assert.equal(policy?.homepageBinding?.independentManualOrderingForbidden,true);
 assert.equal(policy?.homepageBinding?.shelves?.RELEASE_CONFIRMED,'CATALOG_ORDER_ASC');
-assert.equal(policy?.homepageBinding?.shelves?.WEB_PUBLISHED,'CATALOG_ORDER_ASC');
+assert.equal(policy?.homepageBinding?.shelves?.WEB_PUBLISHED,'CATALOG_ORDER_ASC_UNBOUNDED');
 assert.equal(policy?.homepageBinding?.shelves?.ROBLOX_HISTORICAL_DEPLOYMENT,'CATALOG_ORDER_ASC');
 assert.equal(policy?.homepageBinding?.shelves?.DEVELOPMENT_CONFIRMED,'CURRENT_SCORE_DESC_THEN_CATALOG_ORDER_ASC');
-assert.equal(policy?.homepageBinding?.shelves?.TOP30,'STRICT_IMPLEMENTATION_SCORE_DESC');
+assert.equal(Object.hasOwn(policy?.homepageBinding?.shelves||{},'TOP30'),false);
 assert.equal(policy?.execution?.newPipelineForbidden,true);
 assert.equal(policy?.execution?.shadowCatalogForbidden,true);
 
@@ -123,6 +125,41 @@ applyHomepageAutoClassification(explicit);
 assert.equal(explicit.selectedPlatform,'ROBLOX');
 assert.deepEqual(explicit.genre,['경영']);
 assert.deepEqual(explicit.homepageInfo.genre,['경영']);
+
+const ingestPolicy=policy?.ownerWebAutoIngest||{};
+assert.equal(ingestPolicy.enabled,true);
+assert.equal(ingestPolicy.root,'web-games');
+assert.equal(ingestPolicy.requiredEntryFile,'index.html');
+assert.equal(ingestPolicy.missingCatalogAction,'CREATE_DESIGN_ONLY_WEB_PUBLISHED_RECORD');
+
+{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'owner-web-ingest-'));
+  try{
+    const dir=path.join(root,'owner-upload');
+    fs.mkdirSync(dir,{recursive:true});
+    fs.writeFileSync(path.join(dir,'index.html'),'<!doctype html><title>Owner Upload Game</title><main>'+('x'.repeat(700))+'</main>');
+    fs.writeFileSync(path.join(dir,'game.js'),'window.ownerUpload=1;');
+    const temp={games:[],permanentRemovalPolicy:{ids:[]}};
+    const first=ingestOwnerWebGameIds(temp,['owner-upload'],{filesystem:fs,rootDir:root});
+    assert.deepEqual(first.added,['owner-upload']);
+    const game=temp.games[0];
+    assert.equal(game.id,'owner-upload');
+    assert.equal(game.name,'Owner Upload Game');
+    assert.equal(game.webPath,'/web-games/owner-upload/');
+    assert.equal(game.hasWebArchive,true);
+    assert.equal(game.homepageWebPlayable,true);
+    assert.equal(game.productionClass,'DESIGN_ONLY');
+    assert.equal(game.homepageDisplayMode,'WEB_PUBLISHED');
+    assert.match(game.ownerWebSourceRevision,/^[a-f0-9]{64}$/);
+    const firstRevision=game.ownerWebSourceRevision;
+    fs.writeFileSync(path.join(dir,'game.js'),'window.ownerUpload=2;');
+    const second=ingestOwnerWebGameIds(temp,['owner-upload'],{filesystem:fs,rootDir:root});
+    assert.deepEqual(second.updated,['owner-upload']);
+    assert.notEqual(game.ownerWebSourceRevision,firstRevision);
+    assert.equal(game.webDevelopmentResetRequired,true);
+    assert.equal(game.ownerWebEntryFile,'web-games/owner-upload/index.html');
+  }finally{fs.rmSync(root,{recursive:true,force:true});}
+}
 
 assert.match(sync,/normalizeCatalog\(catalog\)/);
 assert.match(sync,/validateNormalizedCatalog\(catalog\)/);
