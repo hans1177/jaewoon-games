@@ -36,6 +36,7 @@ on:
       - 'tools/vibe2-release-dispatch-recovery.mjs'
       - 'tools/vibe2-external-ai-distillation.mjs'
       - 'tools/vibe2-practice-distillation.mjs'
+      - 'tools/vibe2-learning-motor.mjs'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
       - 'company-learning/platform-release-roadmap.json'
@@ -67,6 +68,7 @@ on:
       - 'qa/company-machine-development-lifecycle.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-recovery-fast.yml'
       - '.github/workflows/vibe2-core-qa.yml'
   pull_request:
     branches:
@@ -95,6 +97,7 @@ on:
       - 'tools/vibe2-post-release-focus.mjs'
       - 'tools/vibe2-external-ai-distillation.mjs'
       - 'tools/vibe2-practice-distillation.mjs'
+      - 'tools/vibe2-learning-motor.mjs'
       - '.vibe2/practice-distilled-knowledge.json'
       - 'tools/vibe2-multisource-learning-collector.mjs'
       - 'company-learning/platform-release-roadmap.json'
@@ -103,6 +106,7 @@ on:
       - 'qa/vibe2-*.test.mjs'
       - '.github/workflows/vibe2-continuous-core.yml'
       - '.github/workflows/vibe2-24h-runner.yml'
+      - '.github/workflows/vibe2-recovery-fast.yml'
       - '.github/workflows/vibe2-core-qa.yml'
   workflow_dispatch:
 
