@@ -1,0 +1,23 @@
+{
+  "summary": "index.html 수정",
+  "expectedEffect": "WEB_REPAIR 게임: 세계의 직조자의 실패 원인 책임 영역을 수정",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'}",
+      "replace": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.',towerPositionInputRequired: true}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "변경 전 원본 일치",
+    "변경 diff 확인",
+    "보호 대상 값/키 변경 검사",
+    "문법/구조 QA",
+    "실행 회귀 QA",
+    "모바일 UI QA",
+    "Web source 구조 확인",
+    "브라우저 런타임"
+  ]
+}
