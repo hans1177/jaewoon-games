@@ -243,7 +243,7 @@
     },
     {
       "id": "recovery-e36314e23ac645b9df25",
-      "status": "dispatched",
+      "status": "cancelled-superseded-canonical-recovery",
       "priority": "critical",
       "sourceQueue": "system-ai",
       "sourceTaskId": "sys-web-bootstrap-signal-routing-v1",
@@ -290,7 +290,9 @@
         "actions-run:35425932081",
         "actions-run:35426306171",
         "recovery-queue:recovery-453ef0814800056c05b6",
-        "actions-run:35426574813"
+        "actions-run:35426574813",
+        "superseded-by:recovery-system-ai-core-implementation-v1",
+        "recovery-normalization-main:4209aad651627af71aebde4b84aacb3ee3b9454d"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -299,14 +301,17 @@
         "REGRESSION_WHEN_APPLICABLE",
         "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "duplicate-recovery-classification:PASS",
+        "canonical-recovery-preserved:YES"
+      ],
       "recoveryOwner": "SYSTEM_AI",
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
+      "primaryAiReview": "PASS",
+      "learningPromotion": "NOT_APPLICABLE",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T06:45:36.377Z"
+      "updatedAt": "2026-09-19T06:56:58.233Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -529,7 +534,7 @@
     },
     {
       "id": "recovery-7c15a8576c92459e4088",
-      "status": "dispatched",
+      "status": "cancelled-superseded-canonical-recovery",
       "priority": "critical",
       "sourceQueue": "vibe2",
       "sourceTaskId": "bug-defense-existing-web-assessment-v1",
@@ -671,7 +676,9 @@
         "workload:prep-ms:4760",
         "workload:cycle-ms:32548",
         "workload:prep-ms:10099",
-        "workload:cycle-ms:41850"
+        "workload:cycle-ms:41850",
+        "superseded-by:recovery-web-source-candidate-generation-portfolio-v1",
+        "recovery-normalization-main:4209aad651627af71aebde4b84aacb3ee3b9454d"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -680,18 +687,21 @@
         "REGRESSION_WHEN_APPLICABLE",
         "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "duplicate-recovery-classification:PASS",
+        "canonical-recovery-preserved:YES"
+      ],
       "recoveryOwner": "VIBE2_VIBE3",
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
+      "primaryAiReview": "PASS",
+      "learningPromotion": "NOT_APPLICABLE",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:27:15.601Z",
-      "updatedAt": "2026-09-19T06:45:36.377Z"
+      "updatedAt": "2026-09-19T06:56:58.233Z"
     },
     {
       "id": "recovery-453ef0814800056c05b6",
-      "status": "dispatched",
+      "status": "cancelled-superseded-canonical-recovery",
       "priority": "critical",
       "sourceQueue": "system-ai",
       "sourceTaskId": "sys-web-bootstrap-signal-routing-v1",
@@ -737,7 +747,9 @@
         "actions-run:35426306171",
         "recovery-escalated-from:system-ai",
         "recovery-route:SYSTEM_AI",
-        "recovery-queue:recovery-453ef0814800056c05b6"
+        "recovery-queue:recovery-453ef0814800056c05b6",
+        "superseded-by:recovery-system-ai-core-implementation-v1",
+        "recovery-normalization-main:4209aad651627af71aebde4b84aacb3ee3b9454d"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -746,14 +758,17 @@
         "REGRESSION_WHEN_APPLICABLE",
         "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "duplicate-recovery-classification:PASS",
+        "canonical-recovery-preserved:YES"
+      ],
       "recoveryOwner": "SYSTEM_AI",
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
+      "primaryAiReview": "PASS",
+      "learningPromotion": "NOT_APPLICABLE",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:27:15.601Z",
-      "updatedAt": "2026-09-19T06:35:17.166Z"
+      "updatedAt": "2026-09-19T06:56:58.233Z"
     }
   ]
 }
