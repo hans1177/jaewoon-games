@@ -47,6 +47,7 @@ jobs:
     outputs:
       defer: ${{ steps.gate.outputs.defer }}
       active_game_work: ${{ steps.gate.outputs.active_game_work }}
+      preservation_only: ${{ steps.gate.outputs.preservation_only }}
     steps:
       - name: Defer noncritical work while Vibe2 game primary is active
         id: gate
@@ -76,9 +77,31 @@ jobs:
             and (((.type // "") | ascii_downcase) == "implementation"))
           ] | length' <<<"$queue_json")"
           echo "active_game_work=$active_game_work" >> "$GITHUB_OUTPUT"
+          echo 'preservation_only=false' >> "$GITHUB_OUTPUT"
           if [ "$active_game_work" -gt 0 ]; then
-            echo 'defer=true' >> "$GITHUB_OUTPUT"
-            echo "GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK:$active_game_work"
+            runtime_api="repos/${GITHUB_REPOSITORY}/contents/game-seed-state.json?ref=${COMPANY_RUNTIME_BRANCH}"
+            runtime_json=''
+            if runtime_response="$(gh api "$runtime_api" 2>/dev/null)"; then
+              runtime_b64="$(jq -r '.content // empty' <<<"$runtime_response" | tr -d '\n')"
+              runtime_json="$(printf '%s' "$runtime_b64" | base64 -d 2>/dev/null || true)"
+            fi
+            preservation_pending=0
+            if [ -n "$runtime_json" ] && jq -e . >/dev/null 2>&1 <<<"$runtime_json"; then
+              preservation_pending="$(jq '[.seeds[]? | select(
+                (((.status // "") | ascii_upcase) == "ACTIVE")
+                and (((.productionClass // "DESIGN_ONLY") | ascii_upcase) == "DESIGN_ONLY")
+                and (.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION == true)
+                and (((.OWNER_REBUILD_MODE // "") | ascii_upcase) == "PRESERVATION_PRESENTATION_UPGRADE")
+              )] | length' <<<"$runtime_json")"
+            fi
+            if [ "$preservation_pending" -gt 0 ]; then
+              echo 'defer=false' >> "$GITHUB_OUTPUT"
+              echo 'preservation_only=true' >> "$GITHUB_OUTPUT"
+              echo "GAME_PRIMARY_GATE=RUN_OWNER_PRESERVATION_AUX|active_game_work=$active_game_work|pending=$preservation_pending"
+            else
+              echo 'defer=true' >> "$GITHUB_OUTPUT"
+              echo "GAME_PRIMARY_GATE=DEFER_ACTIVE_GAME_WORK:$active_game_work"
+            fi
           else
             echo 'defer=false' >> "$GITHUB_OUTPUT"
             echo 'GAME_PRIMARY_GATE=RUN'
@@ -126,6 +149,8 @@ jobs:
 
       - name: Resolve central-policy active incomplete GAME_SEED targets
         id: targets
+        env:
+          PRESERVATION_ONLY: ${{ needs.game-primary-gate.outputs.preservation_only }}
         shell: bash
         run: |
           set -euo pipefail
@@ -227,18 +252,21 @@ jobs:
             }catch{}
             return 1;
           };
-          const pending=active.filter(seed=>!strictPassFor(seed)).sort((a,b)=>
+          const preservationOnly=String(process.env.PRESERVATION_ONLY||'').trim().toLowerCase()==='true';
+          const preservationSeed=seed=>seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&String(seed?.OWNER_REBUILD_MODE||'').trim().toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE'&&String(seed?.productionClass||'DESIGN_ONLY').trim().toUpperCase()==='DESIGN_ONLY';
+          const eligible=preservationOnly?active.filter(preservationSeed):active;
+          const pending=eligible.filter(seed=>!strictPassFor(seed)).sort((a,b)=>
             platformPriority(a)-platformPriority(b)||
             deterministicCheckpointPriority(a)-deterministicCheckpointPriority(b)||
             checkpointResumePriority(a)-checkpointResumePriority(b)||
             String(a.createdAt||'').localeCompare(String(b.createdAt||''))||
             String(a.gameId||'').localeCompare(String(b.gameId||''))
-          ).slice(0,designWipMax);
-          const selected=canaryVerified?pending:pending.slice(0,2);
+          ).slice(0,preservationOnly?1:designWipMax);
+          const selected=canaryVerified?pending:pending.slice(0,preservationOnly?1:2);
           const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
           const get=t=>parts.find(x=>x.type===t)?.value||'';const date=`${get('year')}-${get('month')}-${get('day')}`;
           const targets=selected.map(seed=>({game_id:seed.gameId,game_name:seed.gameName||seed.gameId,seed_id:seed.seedId,category:seed.GAME_CATEGORY,target_platform:String(seed.INITIAL_TARGET_PLATFORM||'').toUpperCase(),date,multiplayer_mode:seed.MULTIPLAYER_DESIGN_MODE||'SINGLE',target_session_minutes:Number(seed.TARGET_SESSION_MINUTES||30)}));
-          const parallelMax=Math.max(1,Math.min(canaryVerified?designWipMax:1,targets.length||1));
+          const parallelMax=Math.max(1,Math.min(preservationOnly?1:(canaryVerified?designWipMax:1),targets.length||1));
           console.log(`run=${targets.length?'true':'false'}`);
           console.log(`targets=${JSON.stringify(targets)}`);
           console.log(`parallel_max=${parallelMax}`);
@@ -252,6 +280,7 @@ jobs:
           console.error(`GAME_DESIGN_WIP_MAX=${unboundedByPolicy?'UNBOUNDED_POLICY':designWipMax}`);
           console.error(`GAME_DESIGN_EXTERNAL_MATRIX_BATCH_MAX=${externalBatchMax}`);
           console.error(`GAME_DESIGN_EXECUTION_LANES=${parallelMax}`);
+          console.error(`OWNER_PRESERVATION_DESIGN_LANE=${preservationOnly?'ACTIVE_MAX1':'INACTIVE'}`);
           console.error('GAME_DESIGN_DETERMINISTIC_CHECKPOINT_PRIORITY=FIRST');
           console.error('GAME_DESIGN_GATE_BYPASS=NO');
           console.error('GAME_DESIGN_ONLY_STRICT_PASS_REQUIRED=YES');
