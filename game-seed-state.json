@@ -6566,11 +6566,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
       "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -6646,7 +6646,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/chess-battle/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "promotion": {
         "from": "DESIGN_ONLY",
@@ -7008,11 +7009,11 @@
       "CROSS_PLATFORM_EXPANSION_VALUE": "REVIEW_IN_DESIGN_CYCLE",
       "TRANSFORMATION_MODE": "DESIGN_REEVALUATION_FROM_BASELINE_ZERO",
       "SOURCE_CODE_RULE": "PRESERVE_EXISTING_BUILD_UNTIL_NEW_DESIGN_PASSES",
-      "productionClass": "DESIGN_ONLY",
-      "lifecycleState": "ACTIVE",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "lifecycleState": "DEVELOPMENT_CONFIRMED",
       "generation": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerResetRevision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
       "REFERENCE_INPUTS": [
         {
           "type": "ORIGINAL_MATERIAL",
@@ -7079,7 +7080,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/survival2/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "promotion": {
         "from": "DESIGN_ONLY",
@@ -18029,7 +18031,7 @@
   ],
   "lastRunAt": "2026-09-14T14:23:36.674Z",
   "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
-  "updatedAt": "2026-09-19T04:13:29.968Z",
+  "updatedAt": "2026-09-19T04:19:09.461Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
     "source": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
