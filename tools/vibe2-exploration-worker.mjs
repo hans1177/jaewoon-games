@@ -161,16 +161,28 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     ...(sourceAnalysis.storageKeys||[]).map(key=>'SAVE_KEY:'+key),
     ...(protectedScopeSignals||[]).map(value=>'PROTECTED_SIGNAL:'+value)
   ]);
+  const hotspotEntries=Array.isArray(order?.regressionHotspotRisk?.entries)?order.regressionHotspotRisk.entries:[];
+  const matchedHotspots=hotspotEntries.filter(row=>
+    (clean(row?.kind).toUpperCase()==='SYMBOL'&&primaryTargets.includes(clean(row?.name)))||
+    (clean(row?.kind).toUpperCase()==='SYSTEM'&&primarySystems.includes(clean(row?.name).toUpperCase()))
+  ).slice(0,8);
+  const hotspotChecks=matchedHotspots.flatMap(row=>[
+    'HOTSPOT_RECHECK:'+clean(row?.kind).toUpperCase()+':'+clean(row?.name),
+    clean(row?.kind).toUpperCase()==='SYSTEM'?'DEPENDENT_SYSTEM_REGRESSION_IF_TOUCHED':''
+  ]).filter(Boolean);
   const requiredFocusedChecks=unique([
     ...impactRows.flatMap(row=>row.requiredChecks||[]),
     ...(codingArchitecture?.microRuntimeTests||[]).filter(row=>allowedSystems.includes(row.system)).map(row=>'MICRO_'+row.system),
+    ...hotspotChecks,
     ...(testTargets||[]).map(value=>'TEST_TARGET:'+value)
   ]).slice(0,24);
   const strategyHint=failures.length&&primaryTargets.length?'CAUSAL_TRACE_FIRST'
     :primaryTargets.length?'RESPONSIBILITY_FIRST'
     :sourceAnalysis.present?'PRESERVE_PATCH_RESPONSIBLE_SCOPE'
     :'ARCHITECTURE_FIRST_GREENFIELD';
-  const confidence=primaryTargets.length&&graph.nodeCount>0?'HIGH':graph.nodeCount>0?'MEDIUM':'LOW';
+  const rawResponsibilityConfidence=primaryTargets.length&&graph.nodeCount>0?'HIGH':graph.nodeCount>0?'MEDIUM':'LOW';
+  const calibrationRecommendation=clean(order?.responsibilityCalibration?.recommendation).toUpperCase();
+  const confidence=rawResponsibilityConfidence==='HIGH'&&calibrationRecommendation==='DOWNGRADE_HIGH_TO_MEDIUM'?'MEDIUM':rawResponsibilityConfidence;
   const relevantEdges=(graph.edges||[]).filter(edge=>primarySet.has(edge.from)||primarySet.has(edge.to)||directDependentSymbols.includes(edge.from)||directDependentSymbols.includes(edge.to)).slice(0,40);
   const allowedDependentSymbolsOrSystems=unique([...directDependentSymbols,...dependentSystems]).slice(0,24);
   const patchRecipe=compilePatchRecipe({order,failures,primaryTargets,dependentSymbols:allowedDependentSymbolsOrSystems,ownedState,requiredFocusedChecks,preserveSemantics});
@@ -179,6 +191,21 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     mode:'COMPILED_EDIT_CONTRACT',
     strategyHint,
     responsibilityConfidence:confidence,
+    rawResponsibilityConfidence,
+    responsibilityCalibration:{
+      recommendation:calibrationRecommendation||'KEEP_RAW_CONFIDENCE',
+      applied:rawResponsibilityConfidence!==confidence,
+      extraReadOnlyExploration:order?.responsibilityCalibration?.extraReadOnlyExploration===true,
+      writableScopeExpansionAllowed:false,
+      authorityExpanded:false
+    },
+    regressionHotspotRisk:{
+      riskLevel:clean(order?.regressionHotspotRisk?.riskLevel).toUpperCase()||'LOW',
+      matched:matchedHotspots,
+      focusedChecksAdded:hotspotChecks,
+      writableScopeExpansionAllowed:false,
+      authorityExpanded:false
+    },
     primaryTargets,
     allowedResponsibleFiles:responsibleFiles,
     allowedDependentSymbolsOrSystems,
