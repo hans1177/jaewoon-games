@@ -112,6 +112,71 @@ export function buildResponsibilityGraph({source='',sourceAnalysis={}}={}){
   return{version:1,nodeCount:nodes.length,nodes,edges,stateWriters,storageOwners,entrypoints:uniq(entrypoints),rule:'TRACE_FAILURE_TO_STATE_WRITER_THEN_CALLERS_AND_DEPENDENTS_BEFORE_PATCH'};
 }
 
+
+export function summarizeResponsibilityArchitecture(graph={}){
+  const nodes=Array.isArray(graph?.nodes)?graph.nodes:[];
+  const stateWriters=Array.isArray(graph?.stateWriters)?graph.stateWriters:[];
+  const storageOwners=Array.isArray(graph?.storageOwners)?graph.storageOwners:[];
+  const max=(values=[])=>values.length?Math.max(...values.map(value=>Math.max(0,Number(value)||0))):0;
+  const timerFunctionCount=nodes.filter(node=>Boolean(node?.timers?.animationFrame||node?.timers?.interval||node?.timers?.timeout)).length;
+  const eventBindingCount=nodes.reduce((sum,node)=>sum+(Array.isArray(node?.events)?node.events.length:0),0);
+  const stateWriterLinkCount=stateWriters.reduce((sum,row)=>sum+(Array.isArray(row?.writers)?row.writers.length:0),0);
+  const storageOwnerLinkCount=storageOwners.reduce((sum,row)=>sum+(Array.isArray(row?.owners)?row.owners.length:0),0);
+  return{
+    version:1,
+    nodeCount:nodes.length,
+    edgeCount:Array.isArray(graph?.edges)?graph.edges.length:0,
+    maxFunctionBodyBytes:max(nodes.map(node=>node?.bodyBytes)),
+    maxCallsPerFunction:max(nodes.map(node=>node?.calls?.length)),
+    maxCalledByPerFunction:max(nodes.map(node=>node?.calledBy?.length)),
+    maxStateWritesPerFunction:max(nodes.map(node=>node?.stateWrites?.length)),
+    maxSystemsPerFunction:max(nodes.map(node=>node?.systems?.length)),
+    multiWriterStateCount:stateWriters.filter(row=>(row?.writers||[]).length>1).length,
+    stateWriterLinkCount,
+    multiOwnerStorageKeyCount:storageOwners.filter(row=>(row?.owners||[]).length>1).length,
+    storageOwnerLinkCount,
+    timerFunctionCount,
+    eventBindingCount,
+    largeFunctionCount:nodes.filter(node=>Number(node?.bodyBytes||0)>=6000).length,
+    broadSystemFunctionCount:nodes.filter(node=>(node?.systems||[]).length>=5).length
+  };
+}
+
+export function compareResponsibilityArchitecture(beforeInput={},afterInput={}){
+  const before=beforeInput&&typeof beforeInput==='object'?beforeInput:{};
+  const after=afterInput&&typeof afterInput==='object'?afterInput:{};
+  const delta={};
+  for(const key of ['nodeCount','edgeCount','maxFunctionBodyBytes','maxCallsPerFunction','maxCalledByPerFunction','maxStateWritesPerFunction','maxSystemsPerFunction','multiWriterStateCount','stateWriterLinkCount','multiOwnerStorageKeyCount','storageOwnerLinkCount','timerFunctionCount','eventBindingCount','largeFunctionCount','broadSystemFunctionCount']){
+    delta[key]=Number(after?.[key]||0)-Number(before?.[key]||0);
+  }
+  const signals=[];
+  let score=0;
+  const beforeBody=Math.max(1,Number(before.maxFunctionBodyBytes||0)),afterBody=Math.max(0,Number(after.maxFunctionBodyBytes||0));
+  if(afterBody>=8000&&delta.maxFunctionBodyBytes>=2500&&afterBody/beforeBody>=1.6){signals.push('GOD_FUNCTION_GROWTH');score+=3;}
+  if(delta.multiWriterStateCount>=2){signals.push('STATE_WRITER_FANOUT_GROWTH');score+=3;}
+  if(Number(after.maxStateWritesPerFunction||0)>=7&&delta.maxStateWritesPerFunction>=3){signals.push('STATE_MUTATION_CONCENTRATION_GROWTH');score+=2;}
+  if(delta.timerFunctionCount>=2){signals.push('TIMER_ACCUMULATION');score+=2;}
+  if(delta.eventBindingCount>=4){signals.push('EVENT_BINDING_ACCUMULATION');score+=2;}
+  if(Number(after.maxSystemsPerFunction||0)>=5&&delta.maxSystemsPerFunction>=2){signals.push('CROSS_SYSTEM_FUNCTION_GROWTH');score+=2;}
+  if(delta.multiOwnerStorageKeyCount>=2){signals.push('SAVE_OWNERSHIP_DRIFT');score+=3;}
+  if(delta.edgeCount>=12&&Number(after.edgeCount||0)>=Math.max(12,Number(before.edgeCount||0)*2)){signals.push('CALL_GRAPH_EXPANSION');score+=1;}
+  const riskLevel=score>=5?'HIGH':score>=2?'MEDIUM':'LOW';
+  return{
+    version:1,
+    mode:'OBSERVE_SCORE_LEARN',
+    score,
+    riskLevel,
+    signals,
+    before,
+    after,
+    delta,
+    hardReject:false,
+    focusedReviewRequired:riskLevel!=='LOW',
+    writableScopeExpansionAllowed:false,
+    authorityExpanded:false
+  };
+}
+
 function failureSystems(failure=''){
   const value=upper(failure),systems=[];
   const add=(system,re)=>{if(re.test(value))systems.push(system);};
