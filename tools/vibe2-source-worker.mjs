@@ -505,6 +505,43 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const previousFullWebBytes=previousFullWeb?Buffer.byteLength(previousFullWeb,'utf8'):0;
   const previousFullWebExcerpt=previousFullWeb?boundedLargeExcerpt(previousFullWeb,Math.min(12000,Math.max(4000,fullWebTargetMin))).content:'';
   let retryBase=rawPrompt;
+  if(allowFullRewrite&&attempt>=2){
+    const criticalPrefix=[
+      'You are the Vibe2 game source worker. Return exactly one raw VIBE2_FULL_FILE envelope. Do not return JSON.',
+      rawPrompt.split('\n').find(line=>line.startsWith('Engine:'))||'',
+      rawPrompt.split('\n').find(line=>line.startsWith('Goal:'))||'',
+      allowedLine,
+      fullWebTargetLine,
+      'Preserve the exact responsible path. Do not touch homepage/company files or widen writable scope.',
+      'Return one complete playable HTML file with real input, mutable state, progression, result state, restart, responsive mobile controls, and persistent-capable state.',
+      'The response MUST begin with VIBE2_FULL_FILE and MUST end with ---VIBE2_FILE_END---.'
+    ].filter(Boolean).join('\n');
+    if(previousFullWeb){
+      retryBase=criticalPrefix;
+    }else{
+      const marker='\n=== FILE ';
+      const starts=[];
+      for(let at=rawPrompt.indexOf(marker);at>=0;at=rawPrompt.indexOf(marker,at+marker.length))starts.push(at);
+      const editable=[];
+      for(let i=0;i<starts.length;i++){
+        const sectionStart=starts[i]+1;
+        const sectionEnd=i+1<starts.length?starts[i+1]:rawPrompt.length;
+        let section=rawPrompt.slice(sectionStart,sectionEnd).trimEnd();
+        const header=section.split('\n',1)[0];
+        const sectionPath=header
+          .replace(/^=== FILE\s+/,'')
+          .replace(/\s+\[[^\]]+\].*$/,'')
+          .replace(/\s+===$/,'')
+          .trim();
+        if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
+          const body=section.split('\n').slice(1).join('\n');
+          section=header+'\n'+boundedLargeExcerpt(body,4000).content;
+          editable.push(section);
+        }
+      }
+      retryBase=[criticalPrefix,...editable].join('\n\n');
+    }
+  }
   if(!allowFullRewrite&&(zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||(attempt>=2&&timeoutFailure))){
     const marker='\n=== FILE ';
     const starts=[];
@@ -641,6 +678,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       ?FULL_WEB_EXPANSION_CONTEXT_WINDOW
       :(allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW)));
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
+    const attemptPromptBytes=Buffer.byteLength(attemptPrompt,'utf8');
+    if(allowFullRewrite&&retry)console.log(`VIBE2_FULL_WEB_RETRY_PROMPT_BYTES=${attempt}:${attemptPromptBytes}`);
     const temperature=expansionMode?Math.min(0.26,0.18+expansionStages*0.04):(retry?(attempt>=3?0.22:0.16):0.08);
     const completionMode=expansionMode?'FULL_WEB_EXPANSION':(allowFullRewrite?'FULL_WEB':(timeoutFastEscalation?'JSON_EDIT_PARTIAL':'JSON_EDIT'));
     try{
@@ -679,7 +718,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -858,6 +897,8 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     exactSourceWindows:generation.exactSourceWindows===true,
     fullFileContextFallback:generation.fullFileContextFallback===true,
     fullWebExpansionStages:Number(generation.fullWebExpansionStages||0),
+    fullWebRetryPromptCompacted:generation.fullWebRetryPromptCompacted===true,
+    fullWebRetryPromptBytes:Number(generation.fullWebRetryPromptBytes||0),
     fullWebFallbackBestPartialBytes:Number(generation.fullWebFallbackBestPartialBytes||0),
     intermediateGrowthBytes:Array.isArray(generation.intermediateGrowthBytes)?generation.intermediateGrowthBytes.slice(0,8):[],
     intermediateGrowthTotalBytes:Array.isArray(generation.intermediateGrowthBytes)?generation.intermediateGrowthBytes.reduce((sum,value)=>sum+Math.max(0,Number(value)||0),0):0,
