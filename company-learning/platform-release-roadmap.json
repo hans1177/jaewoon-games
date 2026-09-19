@@ -1,5 +1,5 @@
 {
-  "version": 88,
+  "version": 89,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3066,9 +3066,9 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_BOUNDED_WEB_EXPANSION_AND_FANIN_ONLY_WAVE_GUARD_2026-09-19",
+    "id": "VIBE2_COMPLETE_BOUNDARY_RECOVERY_AND_FANIN_ONLY_WAVE_GUARD_2026-09-19",
     "documentIsCode": true,
-    "reason": "REMOVE_SOURCE_CANDIDATE_GENERATION_STALLS_BY_ACCUMULATING_MODEL_GENERATED_FULL_WEB_EXPANSIONS_DEDUPING_RUNTIME_FAILURE_CONTEXT_AND_PREVENTING_PUSH_TRIGGERED_WAVES_FROM_OVERLAPPING_AN_ACTIVE_FAN_IN_CYCLE",
+    "reason": "REDUCE_SOURCE_CANDIDATE_GENERATION_FAILURES_BY_STOPPING_LOCAL_MODEL_STREAMS_AT_COMPLETE_OUTPUT_BOUNDARIES_DIVERSIFYING_BOUNDED_RECOVERY_ALLOWING_FINAL_MALFORMED_RETRY_AND_ACCUMULATING_FULL_WEB_EXPANSIONS_WITHOUT_WEAKENING_GAME_QUALITY_OR_FAN_IN_ONLY_WAVE_CONTROL",
     "files": [
       "tools/vibe2-source-worker.mjs",
       "qa/vibe2-source-worker.test.mjs",
@@ -3092,7 +3092,12 @@
       "118c796ef8d5aedc9c121bf12e0dc16656cfd577",
       "fbe85ff34a7ff86d3487f48a25ef7bdb27251ca5",
       "109abcdc5b5d4d82e5f31f0c7d525480f98cd776",
-      "6958f1215a8f6bbfe4ad121759d08e1473a320cd"
+      "6958f1215a8f6bbfe4ad121759d08e1473a320cd",
+      "581cd7c695119b17246fd09cfc682227b2b8da27",
+      "07105e2c27943c0b4a3d73eed0eb47e2bd0963d7",
+      "06b35df5e4fb4d2c9a2c45e4d38d55a97a1c3d5b",
+      "7e1277a686c2716d5b0d72b9c1810d40d479fb8a",
+      "67f4362c278e77714858ce013328321a8752e24d"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3125,7 +3130,22 @@
       "expansionWholeHtmlBodyRedefinitionForbidden": true,
       "monkeyPatchAndFunctionOverrideForbidden": true,
       "fillerAndValidatorOnlyExpansionForbidden": true,
-      "finalAcceptanceMinBytes": 12000
+      "finalAcceptanceMinBytes": 12000,
+      "firstAttemptTemperature": 0.08,
+      "secondRecoveryTemperature": 0.16,
+      "finalFocusedRecoveryTemperature": 0.22,
+      "expansionTemperatureStart": 0.18,
+      "expansionTemperatureStep": 0.04,
+      "expansionTemperatureMax": 0.26,
+      "malformedOutputGetsFinalBoundedRetry": true,
+      "completeBoundaryEarlyStop": {
+        "json": "FIRST_COMPLETE_VALID_JSON_OBJECT",
+        "fullWebEnvelope": "VIBE2_FILE_END",
+        "directHtml": "CLOSING_HTML_TAG",
+        "expansion": "VIBE2_EXPANSION_END",
+        "waitsForOllamaDoneAfterBoundary": false
+      },
+      "fillerPaddingForbidden": true
     },
     "runtimeFailureEvidenceContract": {
       "duplicateRoutingBlockerRemovedWhenEquivalentToImplementationReason": true,
@@ -3140,7 +3160,8 @@
       "coreReserveSecondRaceGuard": true,
       "pushTriggeredOverlapForbidden": true,
       "refillRequiresSuccessfulContinuousFanIn": true,
-      "awaitingQaBlockedTasksDoNotConsumeActiveWorkerWaveGuard": true
+      "awaitingQaBlockedTasksDoNotConsumeActiveWorkerWaveGuard": true,
+      "fanInOnlyRefill": true
     },
     "liveEvidence": {
       "measuredRun": "35434036370",
@@ -3173,7 +3194,17 @@
           "67004518af11edadfac63fc737dba81781e541c1"
         ]
       },
-      "nextFreshContractMustIncludeAtLeast": "1fc8a4c35ed6e0c06fc7e3354c93b8e4ad90f08e"
+      "nextFreshContractMustIncludeAtLeast": "67f4362c278e77714858ce013328321a8752e24d",
+      "latestObservedQueue": {
+        "activePrimaryWorkerReservations": 17,
+        "activeWaveRunId": "35434899351",
+        "staleAwaitingQaRunId": "35434036370",
+        "newReservationAfterGuardDespiteMainPushes": false
+      },
+      "measuredSourceGenerationRun": "35434036370",
+      "currentOldContractRun": "35434899351",
+      "currentOldContractCompletedWorkers": 16,
+      "currentOldContractFanIn": "WAITING"
     },
     "candidateReleaseGate": {
       "priorGlobalConcurrencyGroup": "vibe2-release-serial",
