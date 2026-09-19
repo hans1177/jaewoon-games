@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T23:25:56.329Z"
+      "updatedAt": "2026-09-19T23:27:48.373Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1565,7 +1565,23 @@
         "reservation-id:35472995867:1",
         "workload:prep-ms:5975",
         "workload:cycle-ms:288179",
-        "exploration-reuse:0187f4f6c0463535f88969f0"
+        "exploration-reuse:0187f4f6c0463535f88969f0",
+        "vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-2-35475446210-1",
+        "candidate-sha:df6066b5804b074feae761dc01607ba903a6e5b6",
+        "base-main:3882a74d84645416e4ddb388d7ebdd69874712f2",
+        "incremental-qa-hash:34600cb1a877b268af36368007160ae48bc2331ed8f9b0019334802ffb88cd98",
+        "architecture-drift-risk:HIGH",
+        "architecture-drift-score:7",
+        "architecture-drift-signals:STATE_WRITER_FANOUT_GROWTH,STATE_MUTATION_CONCENTRATION_GROWTH,CROSS_SYSTEM_FUNCTION_GROWTH",
+        "architecture-drift-focused-review-required:YES",
+        "coding-strategy:CAUSAL_TRACE_CROSSCHECK",
+        "coding-context-bytes:27928",
+        "actions-run:35475446210",
+        "reservation-id:35475446210:1",
+        "workload:prep-ms:5177",
+        "workload:cycle-ms:288025",
+        "exploration-reuse:c4cbd260b486aebdcb134fc4",
+        "speculative-winner:speculative-2"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1581,7 +1597,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-19T23:25:56.328Z"
+      "updatedAt": "2026-09-19T23:27:48.373Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
