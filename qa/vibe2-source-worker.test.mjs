@@ -746,7 +746,7 @@ test('undersized full web seed accumulates additive model expansions until valid
   assert.deepEqual(result.generation.fullWebInitialSeedTargetBytes,[4200,6500]);
   assert.equal(result.codingMethod.fullWebInitialSeedStrategy,true);
   assert.deepEqual(result.codingMethod.fullWebInitialSeedTargetBytes,[4200,6500]);
-  assert.equal(result.generation.temperature,0.26);
+  assert.equal(result.generation.temperature,0.22);
   assert.equal(result.generation.repeatedIntermediateOutputs,0);
   assert.deepEqual(result.generation.expansionStageTargets,['REAL_INPUT','UPDATE_OR_STATE_TRANSITION_LOOP']);
   assert.deepEqual(result.codingMethod.expansionStageTargets,['REAL_INPUT','UPDATE_OR_STATE_TRANSITION_LOOP']);
