@@ -196,7 +196,7 @@ assert.equal(webFirst.companyBootstrapMayRepairGameSource,false);
 assert.equal(webFirst.companyRuntimeRole,'ROUTE_VALIDATE_FAN_IN_ONLY');
 const quota=lifecycle.modelQuotaContinuity;
 assert.equal(quota.enabled,true);
-assert.equal(quota.designProviderPolicy,'GEMINI_ONLY');
+assert.equal(quota.designProviderPolicy,'GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK');
 assert.equal(quota.quotaFailureIsDesignGateFailure,false);
 assert.equal(quota.quotaBlockedState,'WAITING_FOR_GEMINI_QUOTA');
 assert.equal(quota.runnerStopOnQuotaExhaustion,false);
@@ -211,6 +211,9 @@ for(const stage of ['WEB_BASE_IMPLEMENTATION','WEB_RUNTIME_VALIDATION','TARGET_P
 }
 assert(quota.vibeSubstitution.forbiddenResponsibilities.includes('DESIGN_INDEPENDENT_LEAD_REVIEW'));
 assert(quota.vibeSubstitution.forbiddenResponsibilities.includes('STAGE_GATE_SCORE_OR_VERDICT_SYNTHESIS'));
+assert(quota.vibeSubstitution.allowedStages.includes('DESIGN_AUTHORING'));
+assert(quota.vibeSubstitution.allowedStages.includes('DESIGN_REPAIR'));
+assert.equal(quota.providerFailureSubstitution.gateDecisionAuthority,'DETERMINISTIC_EVIDENCE_ONLY');
 assert.equal(quota.geminiFallback.paidApiAdditionForbidden,true);
 assert.equal(quota.geminiFallback.resumeFromExactBlockedTask,true);
 assert.match(seedDesignRuntime,/COMPANY_GEMINI_LEAD_MODELS: '[^']*gemini-3\.8-flash[^']*gemini-3\.7-flash[^']*'/);
@@ -264,7 +267,7 @@ assert.equal(recovery.bindings.releaseDispatchRecovery,'tools/vibe2-release-disp
 assert.equal(recovery.bindings.robloxRunnerSelfHeal,'.github/workflows/roblox-runner-self-heal.yml');
 assert.equal(recovery.automaticRecovery.externalModelQuota,'CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK');
 assert.equal(recovery.automaticRecovery.waitingForVerifiedSamples,'CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE');
-assert.deepEqual(recovery.bottleneckPolicy.adaptiveSteps,[20,16,12,8,4]);
+assert.deepEqual(recovery.bottleneckPolicy.adaptiveSteps,[30,24,20,16,12,8,4]);
 assert.equal(recovery.bottleneckPolicy.maxStepChangesPerRun,1);
 assert.equal(recovery.bottleneckPolicy.productionWorkPreemptsPractice,true);
 assert.equal(recovery.bottleneckPolicy.postReleaseProtectedRunnerSlots,1);
