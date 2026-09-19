@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "async function scopeHandler5(){await ensureAudio();const button=document.getElementById(\"scope-control-5\");button.dataset.scopeCovered='true';state.turn++;state.position=(state.position+1)%8;state.energy=Math.min(100,state.energy+1);state.score+=7;state.progress+=8;advance(\"scope-mobileux-bb5af6ed38\");}",
+      "replace": ""
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
