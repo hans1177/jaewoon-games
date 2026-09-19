@@ -1,7 +1,7 @@
 {
-  "version": 2,
-  "policyDocument": "COMPANY_FLOW.md",
-  "ownerDirective": "Owner full-rebuild directive for selected homepage games. Restart each selected game from DESIGN_ONLY and run the canonical pipeline from design and art direction through implementation, incremental QA, performance sanity, regression, review and release validation. Do not patch, extend, copy, or use the current gameplay implementation as the implementation base. The current public build may be inspected only for route compatibility, save migration and rollback reference. Keep the existing public URL stable, keep the current public build live until the replacement passes the full QA/release gates, migrate or preserve compatible saves before swap, and only then replace the public build. Mobile-first interaction, real gameplay rather than explanation-first UI, genre-appropriate world/board/map interaction, audiovisual feedback, progression, and zero blocking runtime/console errors are mandatory. Use the existing canonical Vibe2/company pipeline only; do not create a parallel runner or lower any gate. Monster Adventure remains excluded by owner deletion directive.",
+  "version": 3,
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "ownerDirective": "Owner-directed existing-game DESIGN_ONLY intake. Each request's seed defines whether the existing implementation is preserved or rebuilt. Always use the canonical design/promotion/Vibe pipeline; do not create parallel runners or weaken gates.",
   "requestedAt": "2026-09-16T00:00:00+09:00",
   "requests": [
     {
@@ -18,11 +18,29 @@
         "generation": "OWNER_REDESIGN_RESET",
         "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
         "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
-        "REFERENCE_GAMES": ["Grounded", "Smalland: Survive the Wilds", "Don't Starve"],
-        "CORE_FUN_TO_LEARN": ["small-world survival pressure", "resource-driven survival choices", "creature ecology as gameplay"],
-        "CORE_LOOP": ["Explore a dangerous small-scale habitat and identify food, material and insect threats.", "Take a risk to gather or fight, then convert the result into survival tools or a safer route.", "Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."],
+        "REFERENCE_GAMES": [
+          "Grounded",
+          "Smalland: Survive the Wilds",
+          "Don't Starve"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "small-world survival pressure",
+          "resource-driven survival choices",
+          "creature ecology as gameplay"
+        ],
+        "CORE_LOOP": [
+          "Explore a dangerous small-scale habitat and identify food, material and insect threats.",
+          "Take a risk to gather or fight, then convert the result into survival tools or a safer route.",
+          "Use what was learned about the ecosystem to survive stronger pressure and reach the next meaningful objective."
+        ],
         "DISTINCT_IDENTITY": "작아진 생존자의 시점에서 곤충 생태와 먹이사슬을 실제 선택과 위험으로 체감하는 독자적 생존 게임으로 완전히 처음부터 다시 설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false,"note":"Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false,
+          "note": "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        },
         "TARGET_AUDIENCE": "탐험·제작·생태 기반 생존 플레이를 선호하는 글로벌 플레이어",
         "TARGET_SESSION_DIRECTION": "탐험 한 구간마다 위험, 수집, 귀환 또는 전진 선택이 분명하게 남도록 검토한다.",
         "INITIAL_TARGET_PLATFORM": "UNITY",
@@ -39,7 +57,14 @@
         "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
         "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
         "MOBILE_FIRST": true,
-        "WEB_GAME_QUALITY_BAR": ["real direct gameplay interaction", "visible explorable game world", "complete survival gather-fight-craft-progression loop", "mobile touch controls without clipping", "genre-appropriate sound music and feedback", "zero blocking runtime or console errors"],
+        "WEB_GAME_QUALITY_BAR": [
+          "real direct gameplay interaction",
+          "visible explorable game world",
+          "complete survival gather-fight-craft-progression loop",
+          "mobile touch controls without clipping",
+          "genre-appropriate sound music and feedback",
+          "zero blocking runtime or console errors"
+        ],
         "productionClass": "DESIGN_ONLY",
         "productionClassSource": "OWNER_FULL_REBUILD_2026-09-16",
         "lifecycleState": "DESIGN_ONLY"
@@ -59,11 +84,29 @@
         "generation": "OWNER_REDESIGN_RESET",
         "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
         "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
-        "REFERENCE_GAMES": ["Kingdom Rush", "Bloons TD 6", "Plants vs. Zombies"],
-        "CORE_FUN_TO_LEARN": ["wave defense readability", "meaningful placement choices", "enemy-type counterplay"],
-        "CORE_LOOP": ["Read the incoming insect wave and its threat pattern.", "Place or adjust defenders and spend limited resources on the highest-value counter.", "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."],
+        "REFERENCE_GAMES": [
+          "Kingdom Rush",
+          "Bloons TD 6",
+          "Plants vs. Zombies"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "wave defense readability",
+          "meaningful placement choices",
+          "enemy-type counterplay"
+        ],
+        "CORE_LOOP": [
+          "Read the incoming insect wave and its threat pattern.",
+          "Place or adjust defenders and spend limited resources on the highest-value counter.",
+          "Survive the wave, learn from leaks or losses, and use the reward to prepare a materially different next defense decision."
+        ],
         "DISTINCT_IDENTITY": "곤충 병종과 서식 환경의 상성을 핵심 선택으로 삼는 독자적인 곤충 디펜스 게임으로 완전히 처음부터 다시 설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false,"note":"Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false,
+          "note": "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        },
         "TARGET_AUDIENCE": "전략 디펜스와 곤충 테마의 명확한 상성 플레이를 선호하는 글로벌 플레이어",
         "TARGET_SESSION_DIRECTION": "짧은 웨이브 단위 판단과 장기 빌드 선택을 함께 검토한다.",
         "INITIAL_TARGET_PLATFORM": "UNITY",
@@ -80,7 +123,14 @@
         "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
         "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
         "MOBILE_FIRST": true,
-        "WEB_GAME_QUALITY_BAR": ["real wave-defense interaction", "visible lanes or battlefield and enemy state", "placement counterplay upgrade and boss-pattern decisions", "mobile touch controls without clipping", "genre-appropriate sound music and combat feedback", "zero blocking runtime or console errors"],
+        "WEB_GAME_QUALITY_BAR": [
+          "real wave-defense interaction",
+          "visible lanes or battlefield and enemy state",
+          "placement counterplay upgrade and boss-pattern decisions",
+          "mobile touch controls without clipping",
+          "genre-appropriate sound music and combat feedback",
+          "zero blocking runtime or console errors"
+        ],
         "productionClass": "DESIGN_ONLY",
         "productionClassSource": "OWNER_FULL_REBUILD_2026-09-16",
         "lifecycleState": "DESIGN_ONLY"
@@ -100,11 +150,29 @@
         "generation": "OWNER_REDESIGN_RESET",
         "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
         "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
-        "REFERENCE_GAMES": ["Don't Starve", "Minecraft", "Terraria"],
-        "CORE_FUN_TO_LEARN": ["readable survival needs", "resource-to-crafting decisions", "exploration risk and recovery"],
-        "CORE_LOOP": ["Explore for resources while reading immediate survival risks.", "Choose what to gather, craft or conserve before conditions worsen.", "Use the crafted advantage to reach a new area or survive a stronger threat, then repeat with new constraints."],
+        "REFERENCE_GAMES": [
+          "Don't Starve",
+          "Minecraft",
+          "Terraria"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "readable survival needs",
+          "resource-to-crafting decisions",
+          "exploration risk and recovery"
+        ],
+        "CORE_LOOP": [
+          "Explore for resources while reading immediate survival risks.",
+          "Choose what to gather, craft or conserve before conditions worsen.",
+          "Use the crafted advantage to reach a new area or survive a stronger threat, then repeat with new constraints."
+        ],
         "DISTINCT_IDENTITY": "개인의 생존 기록과 채집·제작 선택이 다음 하루의 가능성을 바꾸는 나의 생존기로 완전히 처음부터 다시 설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false,"note":"Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false,
+          "note": "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        },
         "TARGET_AUDIENCE": "채집과 제작을 중심으로 혼자 생존 계획을 세우는 플레이를 선호하는 글로벌 플레이어",
         "TARGET_SESSION_DIRECTION": "한 세션마다 생존 목표와 제작 결과가 명확히 남는 구조를 검토한다.",
         "INITIAL_TARGET_PLATFORM": "UNITY",
@@ -121,7 +189,14 @@
         "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
         "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
         "MOBILE_FIRST": true,
-        "WEB_GAME_QUALITY_BAR": ["real exploration and player movement", "resource gathering crafting and survival threats", "visible world progression and risk-recovery choices", "mobile touch controls without clipping", "genre-appropriate sound music and feedback", "zero blocking runtime or console errors"],
+        "WEB_GAME_QUALITY_BAR": [
+          "real exploration and player movement",
+          "resource gathering crafting and survival threats",
+          "visible world progression and risk-recovery choices",
+          "mobile touch controls without clipping",
+          "genre-appropriate sound music and feedback",
+          "zero blocking runtime or console errors"
+        ],
         "productionClass": "DESIGN_ONLY",
         "productionClassSource": "OWNER_FULL_REBUILD_2026-09-16",
         "lifecycleState": "DESIGN_ONLY"
@@ -141,11 +216,29 @@
         "generation": "OWNER_REDESIGN_RESET",
         "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
         "GAME_CATEGORY": "CASUAL",
-        "REFERENCE_GAMES": ["Pokémon GO", "Pikmin Bloom", "Wobbly Life"],
-        "CORE_FUN_TO_LEARN": ["simple discovery goals", "collection motivation", "socially readable world interactions"],
-        "CORE_LOOP": ["Explore a compact activity space and discover a person, task or collectible opportunity.", "Complete a short interaction or challenge and add its result to progression.", "Use the new unlock to reach a different activity or social objective."],
+        "REFERENCE_GAMES": [
+          "Pokémon GO",
+          "Pikmin Bloom",
+          "Wobbly Life"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "simple discovery goals",
+          "collection motivation",
+          "socially readable world interactions"
+        ],
+        "CORE_LOOP": [
+          "Explore a compact activity space and discover a person, task or collectible opportunity.",
+          "Complete a short interaction or challenge and add its result to progression.",
+          "Use the new unlock to reach a different activity or social objective."
+        ],
         "DISTINCT_IDENTITY": "사람들의 행동과 관계를 수집·발견·성장 대상으로 삼는 가벼운 생활 탐험 게임으로 완전히 처음부터 다시 설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false,"note":"Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false,
+          "note": "Owner full rebuild; prior gameplay implementation is rollback/reference only and must not be used as the implementation base."
+        },
         "TARGET_AUDIENCE": "짧은 탐험과 수집, 가벼운 사회적 상호작용을 선호하는 글로벌 플레이어",
         "TARGET_SESSION_DIRECTION": "매 세션 하나 이상의 발견이나 관계 변화가 남도록 검토한다.",
         "INITIAL_TARGET_PLATFORM": "ROBLOX",
@@ -162,7 +255,14 @@
         "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
         "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
         "MOBILE_FIRST": true,
-        "WEB_GAME_QUALITY_BAR": ["real navigable activity space", "discovery collection and interaction gameplay", "visible relationship or progression changes", "mobile touch controls without clipping", "genre-appropriate sound music and feedback", "zero blocking runtime console or invalid-resource errors"],
+        "WEB_GAME_QUALITY_BAR": [
+          "real navigable activity space",
+          "discovery collection and interaction gameplay",
+          "visible relationship or progression changes",
+          "mobile touch controls without clipping",
+          "genre-appropriate sound music and feedback",
+          "zero blocking runtime console or invalid-resource errors"
+        ],
         "productionClass": "DESIGN_ONLY",
         "productionClassSource": "OWNER_FULL_REBUILD_2026-09-16",
         "lifecycleState": "DESIGN_ONLY"
@@ -182,11 +282,29 @@
         "generation": "OWNER_REDESIGN_RESET",
         "ownerResetRevision": "OWNER-FULL-REBUILD-20260916-1",
         "GAME_CATEGORY": "CASUAL",
-        "REFERENCE_GAMES": ["Animal Crossing: New Horizons", "Stardew Valley", "Dinkum"],
-        "CORE_FUN_TO_LEARN": ["relaxing daily activity loop", "collection and fishing progression", "small-island personalization"],
-        "CORE_LOOP": ["Choose a calm island activity such as gathering, fishing or tending the living space.", "Turn the result into a useful collection, upgrade or island improvement.", "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."],
+        "REFERENCE_GAMES": [
+          "Animal Crossing: New Horizons",
+          "Stardew Valley",
+          "Dinkum"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "relaxing daily activity loop",
+          "collection and fishing progression",
+          "small-island personalization"
+        ],
+        "CORE_LOOP": [
+          "Choose a calm island activity such as gathering, fishing or tending the living space.",
+          "Turn the result into a useful collection, upgrade or island improvement.",
+          "Use the improvement to unlock a new activity, location or collection goal while preserving a low-pressure session rhythm."
+        ],
         "DISTINCT_IDENTITY": "작은 포근한 섬에서 낚시·채집·생활 흔적이 섬의 모습과 다음 활동을 바꾸는 고유의 힐링 생활 게임으로 완전히 처음부터 다시 설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false,"note":"The current playable Web build stays only as rollback and compatibility reference while Vibe rebuilds a new implementation from scratch."},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false,
+          "note": "The current playable Web build stays only as rollback and compatibility reference while Vibe rebuilds a new implementation from scratch."
+        },
         "TARGET_AUDIENCE": "낚시·채집·꾸미기를 짧고 부담 없이 반복하는 힐링 생활 플레이를 선호하는 글로벌 플레이어",
         "TARGET_SESSION_DIRECTION": "짧게 접속해 한 가지 생활 목표를 완료하고 다음 섬 변화가 남는 구조를 검토한다.",
         "INITIAL_TARGET_PLATFORM": "ROBLOX",
@@ -203,7 +321,14 @@
         "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
         "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
         "MOBILE_FIRST": true,
-        "WEB_GAME_QUALITY_BAR": ["real island movement and activity interaction", "fishing gathering collection and island-improvement progression", "visible island changes and new activity unlocks", "mobile touch controls without clipping", "relaxing sound music and responsive feedback", "zero blocking runtime or console errors"],
+        "WEB_GAME_QUALITY_BAR": [
+          "real island movement and activity interaction",
+          "fishing gathering collection and island-improvement progression",
+          "visible island changes and new activity unlocks",
+          "mobile touch controls without clipping",
+          "relaxing sound music and responsive feedback",
+          "zero blocking runtime or console errors"
+        ],
         "productionClass": "DESIGN_ONLY",
         "productionClassSource": "OWNER_FULL_REBUILD_2026-09-16",
         "lifecycleState": "DESIGN_ONLY",
@@ -224,11 +349,28 @@
         "gameName": "수정 디펜스",
         "status": "ACTIVE",
         "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
-        "REFERENCE_GAMES": ["Kingdom Rush", "Bloons TD 6", "Arknights"],
-        "CORE_FUN_TO_LEARN": ["clear lane pressure", "placement tradeoffs", "upgrade path readability"],
-        "CORE_LOOP": ["Read the next attack pattern and choose where crystal defenses create the most value.", "Spend limited resources on placement, resonance or upgrades.", "Survive the wave and use the result to prepare a different counter for the next threat."],
+        "REFERENCE_GAMES": [
+          "Kingdom Rush",
+          "Bloons TD 6",
+          "Arknights"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "clear lane pressure",
+          "placement tradeoffs",
+          "upgrade path readability"
+        ],
+        "CORE_LOOP": [
+          "Read the next attack pattern and choose where crystal defenses create the most value.",
+          "Spend limited resources on placement, resonance or upgrades.",
+          "Survive the wave and use the result to prepare a different counter for the next threat."
+        ],
         "DISTINCT_IDENTITY": "수정의 공명 연결과 배치 조합이 방어 성능을 바꾸는 독자적인 전략 디펜스로 재설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false
+        },
         "TARGET_AUDIENCE": "짧은 웨이브와 조합 실험을 선호하는 전략 플레이어",
         "TARGET_SESSION_DIRECTION": "한 웨이브마다 배치·업그레이드 선택의 결과가 분명하게 남도록 검토한다.",
         "INITIAL_TARGET_PLATFORM": "ROBLOX",
@@ -252,11 +394,28 @@
         "gameName": "무인도 마을",
         "status": "ACTIVE",
         "GAME_CATEGORY": "CASUAL",
-        "REFERENCE_GAMES": ["Animal Crossing: New Horizons", "Dinkum", "Stardew Valley"],
-        "CORE_FUN_TO_LEARN": ["settlement growth visibility", "resource-to-village progression", "relaxed daily goals"],
-        "CORE_LOOP": ["Gather a focused set of island resources.", "Use them to build or improve one village function.", "Unlock a new resident, activity or area and choose the next village goal."],
+        "REFERENCE_GAMES": [
+          "Animal Crossing: New Horizons",
+          "Dinkum",
+          "Stardew Valley"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "settlement growth visibility",
+          "resource-to-village progression",
+          "relaxed daily goals"
+        ],
+        "CORE_LOOP": [
+          "Gather a focused set of island resources.",
+          "Use them to build or improve one village function.",
+          "Unlock a new resident, activity or area and choose the next village goal."
+        ],
         "DISTINCT_IDENTITY": "빈 섬에서 주민과 시설의 생활 연결망을 직접 만들어 가는 작은 공동체 성장 게임으로 재설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false
+        },
         "TARGET_AUDIENCE": "생활·건설·마을 성장의 잔잔한 누적을 선호하는 글로벌 플레이어",
         "TARGET_SESSION_DIRECTION": "짧은 세션마다 마을에 눈에 보이는 변화 하나가 남도록 검토한다.",
         "INITIAL_TARGET_PLATFORM": "ROBLOX",
@@ -280,11 +439,28 @@
         "gameName": "알 도둑 대작전",
         "status": "ACTIVE",
         "GAME_CATEGORY": "CASUAL",
-        "REFERENCE_GAMES": ["Untitled Goose Game", "Moving Out", "Sneaky Sasquatch"],
-        "CORE_FUN_TO_LEARN": ["readable stealth comedy", "short objective chains", "risk-reward escape"],
-        "CORE_LOOP": ["Scout a small area and identify the target egg and patrol risk.", "Create an opening, steal or move the egg and react to detection.", "Escape with the reward and unlock a trick, route or harder heist."],
+        "REFERENCE_GAMES": [
+          "Untitled Goose Game",
+          "Moving Out",
+          "Sneaky Sasquatch"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "readable stealth comedy",
+          "short objective chains",
+          "risk-reward escape"
+        ],
+        "CORE_LOOP": [
+          "Scout a small area and identify the target egg and patrol risk.",
+          "Create an opening, steal or move the egg and react to detection.",
+          "Escape with the reward and unlock a trick, route or harder heist."
+        ],
         "DISTINCT_IDENTITY": "알마다 다른 경비 생태와 운반 문제가 생기는 코믹 잠입·탈출 게임으로 재설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false
+        },
         "TARGET_AUDIENCE": "짧은 잠입 퍼즐과 코믹한 실패·재도전을 선호하는 플레이어",
         "TARGET_SESSION_DIRECTION": "한 판마다 목표 확인-탈취-탈출의 완결된 흐름이 남도록 검토한다.",
         "INITIAL_TARGET_PLATFORM": "ROBLOX",
@@ -308,11 +484,28 @@
         "gameName": "체스 배틀",
         "status": "ACTIVE",
         "GAME_CATEGORY": "PUZZLE",
-        "REFERENCE_GAMES": ["Chess", "Shotgun King", "Into the Breach"],
-        "CORE_FUN_TO_LEARN": ["predictable tactical information", "meaningful board positioning", "short tactical resolution"],
-        "CORE_LOOP": ["Read the board and enemy threat information.", "Commit a move or ability that changes control of key spaces.", "Resolve the tactical exchange and use the new board state to plan the next decisive turn."],
+        "REFERENCE_GAMES": [
+          "Chess",
+          "Shotgun King",
+          "Into the Breach"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "predictable tactical information",
+          "meaningful board positioning",
+          "short tactical resolution"
+        ],
+        "CORE_LOOP": [
+          "Read the board and enemy threat information.",
+          "Commit a move or ability that changes control of key spaces.",
+          "Resolve the tactical exchange and use the new board state to plan the next decisive turn."
+        ],
         "DISTINCT_IDENTITY": "체스의 공간 읽기를 유지하면서 말별 전투 능력과 전장 목표를 결합한 전술 배틀 게임으로 재설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false
+        },
         "TARGET_AUDIENCE": "짧고 명확한 전술 판단과 판 읽기를 선호하는 플레이어",
         "TARGET_SESSION_DIRECTION": "짧은 전투에서도 몇 수 앞 판단과 명확한 승패 원인이 보이도록 검토한다.",
         "INITIAL_TARGET_PLATFORM": "ROBLOX",
@@ -336,11 +529,28 @@
         "gameName": "숲의 생존자들",
         "status": "ACTIVE",
         "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
-        "REFERENCE_GAMES": ["Don't Starve Together", "Valheim", "Terraria"],
-        "CORE_FUN_TO_LEARN": ["cooperative survival roles", "resource risk decisions", "clear shelter progression"],
-        "CORE_LOOP": ["Explore the forest for a needed resource while reading environmental and creature danger.", "Return or push deeper based on current supplies and group readiness.", "Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat."],
+        "REFERENCE_GAMES": [
+          "Don't Starve Together",
+          "Valheim",
+          "Terraria"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "cooperative survival roles",
+          "resource risk decisions",
+          "clear shelter progression"
+        ],
+        "CORE_LOOP": [
+          "Explore the forest for a needed resource while reading environmental and creature danger.",
+          "Return or push deeper based on current supplies and group readiness.",
+          "Craft a survival advantage, improve shelter or equipment and prepare for the next stronger threat."
+        ],
         "DISTINCT_IDENTITY": "숲의 계절과 생태 변화에 맞춰 생존자 역할이 달라지는 협력 확장형 생존 게임으로 재설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false
+        },
         "TARGET_AUDIENCE": "탐험·제작·협력 생존을 선호하는 글로벌 플레이어",
         "TARGET_SESSION_DIRECTION": "한 세션마다 자원 목표 또는 거점 개선이 명확히 완료되도록 검토한다.",
         "INITIAL_TARGET_PLATFORM": "ROBLOX",
@@ -364,11 +574,28 @@
         "gameName": "영토전쟁",
         "status": "ACTIVE",
         "GAME_CATEGORY": "SINGLE_DEFENSE_STRATEGY",
-        "REFERENCE_GAMES": ["The Battle of Polytopia", "Risk", "Northgard"],
-        "CORE_FUN_TO_LEARN": ["readable territory pressure", "expansion tradeoffs", "front-line resource decisions"],
-        "CORE_LOOP": ["Read the current border pressure and choose one territory objective.", "Commit units or resources to attack, reinforce or expand economy.", "Resolve the territorial change and adapt the next plan to the new front line."],
+        "REFERENCE_GAMES": [
+          "The Battle of Polytopia",
+          "Risk",
+          "Northgard"
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "readable territory pressure",
+          "expansion tradeoffs",
+          "front-line resource decisions"
+        ],
+        "CORE_LOOP": [
+          "Read the current border pressure and choose one territory objective.",
+          "Commit units or resources to attack, reinforce or expand economy.",
+          "Resolve the territorial change and adapt the next plan to the new front line."
+        ],
         "DISTINCT_IDENTITY": "짧은 전선 변화와 지역 특성 조합을 중심으로 한 압축형 영토 전략 게임으로 재설계한다.",
-        "MARKET_EVIDENCE_SUMMARY": {"role":"TARGET_DESIGN_REFERENCE","targetMarketScope":"GLOBAL","hardPassFailGate":false,"available":false},
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "TARGET_DESIGN_REFERENCE",
+          "targetMarketScope": "GLOBAL",
+          "hardPassFailGate": false,
+          "available": false
+        },
         "TARGET_AUDIENCE": "짧은 전략 세션과 영토 확장 판단을 선호하는 플레이어",
         "TARGET_SESSION_DIRECTION": "한 세션마다 전선과 자원 우선순위의 변화가 분명하게 남도록 검토한다.",
         "INITIAL_TARGET_PLATFORM": "ROBLOX",
@@ -377,6 +604,130 @@
         "TRANSFORMATION_MODE": "REINTERPRETATION",
         "SOURCE_CODE_RULE": "OWN_IMPLEMENTATION_ONLY",
         "productionClass": "DESIGN_ONLY",
+        "lifecycleState": "DESIGN_ONLY"
+      }
+    },
+    {
+      "revision": "OWNER-PRESERVE-VIBE-PILOT-FANTASY-SURVIVAL-20260920-1",
+      "gameId": "fantasy-survival",
+      "gameName": "마력숲 생존기",
+      "status": "ACTIVE",
+      "seed": {
+        "version": 3,
+        "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
+        "gameId": "fantasy-survival",
+        "gameName": "마력숲 생존기",
+        "status": "ACTIVE",
+        "generation": "OWNER_REDESIGN_RESET",
+        "ownerResetRevision": "OWNER-PRESERVE-VIBE-PILOT-FANTASY-SURVIVAL-20260920-1",
+        "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
+        "REFERENCE_GAMES": [],
+        "REFERENCE_INPUTS": [
+          {
+            "type": "ORIGINAL_MATERIAL",
+            "value": "existing 마력숲 생존기 world, story, quests, survival systems, crafting, combat and save semantics"
+          },
+          {
+            "type": "ORIGINAL_MATERIAL",
+            "value": "owner-approved Living Motion, Animation Feel, VFX, Audio Feel, Camera and editable asset adaptation contracts"
+          }
+        ],
+        "CORE_FUN_TO_LEARN": [
+          "기존 마력숲의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다.",
+          "채집·제작·장비·전투·퀘스트·연구소 스토리의 인과와 저장 의미를 바꾸지 않고 피드백 품질을 높인다.",
+          "Idle 호흡, 이동 블렌딩, 타격 손맛, VFX, 카메라와 음악 상태 전환을 모바일에서도 끊김 없이 연결한다."
+        ],
+        "CORE_LOOP": [
+          "마력숲과 연결 지역을 탐험하며 현재 퀘스트와 생존 위험을 읽고 필요한 자원·단서·적을 선택한다.",
+          "채집·제작·장비·전투·NPC/연구소 상호작용으로 실제 자원, 생존 상태, 퀘스트 상태와 월드 진행을 변화시킨다.",
+          "획득한 장비와 스토리 단서로 새 지역·보스·연구소 진행을 열고 더 강한 생존 위협과 다음 퀘스트로 이어간다."
+        ],
+        "DISTINCT_IDENTITY": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
+        "GAMEPLAY_SKETCH": {
+          "version": 1,
+          "source": "OWNER_EXISTING_GAME_PRESERVATION",
+          "worldModel": "기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.",
+          "actors": [
+            "플레이어: 생존 수치와 장비를 관리하며 탐험·채집·제작·전투·퀘스트를 진행한다.",
+            "몬스터와 보스: 지역과 진행 상태에 따라 전투 위험과 전리품을 제공한다.",
+            "NPC와 연구소 오브젝트: 플레이어가 실제로 획득한 단서와 퀘스트 상태에 따라 대화와 진행을 연다."
+          ],
+          "interactionChains": [
+            "지역 탐색 -> 자원/적/NPC/스토리 오브젝트 선택 -> 채집/전투/대화 -> 실제 인벤토리·생존·퀘스트 상태 변화 -> 제작/지역/스토리 진행",
+            "공격 입력 -> 기존 authoritative hit event -> 데미지 판정 -> 같은 impact 순간에 애니메이션·VFX·사운드·카메라 피드백"
+          ],
+          "stateMachine": [
+            "WORLD_ENTRY",
+            "EXPLORE_AND_SURVIVE",
+            "GATHER_OR_INTERACT",
+            "COMBAT_OR_CRAFT",
+            "QUEST_STATE_CHANGE",
+            "REGION_OR_STORY_UNLOCK",
+            "BOSS_OR_MAJOR_STORY_PROGRESS",
+            "SAVE_AND_CONTINUE_OR_RETRY"
+          ],
+          "firstPlayableCycle": [
+            "기존 세이브를 불러오거나 마력숲에 진입한다.",
+            "모바일 조이스틱 또는 키보드로 실제 월드를 이동한다.",
+            "자원을 채집하거나 적과 싸우거나 NPC/스토리 오브젝트와 상호작용한다.",
+            "인벤토리·체력/허기·퀘스트 중 하나 이상의 실제 상태가 바뀐다.",
+            "제작 또는 장비 선택으로 다음 행동 능력을 바꾼다.",
+            "위험을 통과하거나 실패/회복/재도전 경로를 경험한다.",
+            "퀘스트 또는 지역 진행을 갱신하고 저장한 뒤 다음 탐험 사이클로 이어간다."
+          ],
+          "expansionPlan": [
+            "기존 콘텐츠를 삭제하지 않고 각 지역의 Style Lock과 에셋 표현을 통일한다.",
+            "Idle/이동/회전/공격/피격을 Living Motion과 Animation Feel 패스로 단계적으로 개선한다.",
+            "기존 전투·퀘스트 이벤트에 VFX·음악 상태·카메라 피드백을 연결하고 모바일 성능을 검증한다."
+          ],
+          "longGoalScenario": [
+            "현재 퀘스트 체인을 따라 연구소와 주요 지역의 단서를 진행한다.",
+            "자원과 장비를 성장시켜 강한 지역 위협과 보스를 상대한다.",
+            "세계수·화산·수정 지역·연구소의 기존 장기 진행과 스토리 상태를 보존한 채 다음 주요 목표에 도달한다."
+          ],
+          "validationRisks": [
+            "표현 개선 과정에서 SAVE_KEY, 저장 필드 의미, 퀘스트 조건, 데미지, 쿨다운, 드랍률, 장비 수치 또는 월드 진행을 바꾸면 안 된다.",
+            "새 wrapper/override/shadow 렌더·애니메이션·오디오 파이프라인을 만들지 않고 기존 책임 함수 안에서 수정해야 한다.",
+            "화려한 VFX·카메라·음악이 모바일 터치, 적 위험 신호, 텍스트 가독성 또는 프레임 안정성을 가리면 안 된다."
+          ]
+        },
+        "MARKET_EVIDENCE_SUMMARY": {
+          "role": "EXISTING_GAME_PRESERVATION_AND_QUALITY_UPGRADE",
+          "targetMarketScope": "CURRENT_GAME_IDENTITY",
+          "hardPassFailGate": false,
+          "available": false,
+          "note": "No market claim is used to redesign the game. Existing owner-approved gameplay and story remain the authority while presentation quality is upgraded."
+        },
+        "TARGET_AUDIENCE": "탐험·생존·제작·전투와 스토리 퀘스트를 함께 즐기는 모바일/웹 플레이어",
+        "TARGET_SESSION_DIRECTION": "기존 플레이 흐름을 유지하면서 이동·전투·스토리 상호작용의 모션과 소리가 끊기지 않고 살아 움직이는 느낌을 주도록 개선한다.",
+        "TARGET_SESSION_MINUTES": 30,
+        "INITIAL_TARGET_PLATFORM": "UNITY",
+        "INITIAL_PLAY_MODE": "SINGLE_PLAYER_WITH_OPTIONAL_MULTIPLAYER",
+        "MULTIPLAYER_DESIGN_MODE": "HYBRID",
+        "CROSS_PLATFORM_EXPANSION_VALUE": "PRESERVE_WEB_FIRST_VALIDATE_NATIVE_LATER",
+        "TRANSFORMATION_MODE": "REINTERPRETATION",
+        "SOURCE_CODE_RULE": "PRESERVE_EXISTING_IMPLEMENTATION_AND_MODIFY_RESPONSIBLE_SYSTEMS_DIRECTLY",
+        "OWNER_REBUILD_MODE": "PRESERVATION_PRESENTATION_UPGRADE",
+        "REUSE_PRIOR_DESIGN_BASELINE": false,
+        "REUSE_PRIOR_ARTBOOK": false,
+        "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": true,
+        "EXISTING_WEB_SOURCE_PATH": "web-games/fantasy-survival",
+        "EXISTING_WEB_SOURCE_ROLE": "CANONICAL_IMPLEMENTATION_AND_MIGRATION_BASE",
+        "LEGACY_BUILD_ROLE": "CURRENT_PUBLIC_BUILD_UNTIL_VALIDATED_UPGRADE",
+        "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
+        "PUBLIC_SWAP_POLICY": "IN_PLACE_ONLY_AFTER_FULL_QA_PASS",
+        "SAVE_POLICY": "PRESERVE_EXISTING_SAVE_KEY_jaewoon_fantasy_survival_v1_AND_MIGRATE_ONLY_IF_REQUIRED",
+        "MOBILE_FIRST": true,
+        "WEB_GAME_QUALITY_BAR": [
+          "existing world quest crafting combat and save semantics preserved",
+          "living idle and smooth locomotion without state popping",
+          "impact-synced animation VFX audio and camera feedback",
+          "adaptive music and sound controls without duplicate playback",
+          "mobile touch readability and stable frame timing",
+          "zero blocking runtime console or save regression errors"
+        ],
+        "productionClass": "DESIGN_ONLY",
+        "productionClassSource": "OWNER_PRESERVATION_VIBE_PILOT_2026-09-20",
         "lifecycleState": "DESIGN_ONLY"
       }
     }
