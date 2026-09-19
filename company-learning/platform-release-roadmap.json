@@ -1,5 +1,5 @@
 {
-  "version": 71,
+  "version": 72,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1393,13 +1393,15 @@
           "RELEASE_SAFETY_GATES"
         ],
         "currentIncident": {
-          "signature": "VIBE2_FANIN_REGRESSION_AND_PRE_FANIN_WORKER_FAILURES",
-          "status": "REPAIRS_APPLIED_PENDING_LATEST_CONTRACT_LIVE_VERIFICATION",
-          "symptom": "RUN_35429351974_FAN_IN_REGRESSION_FAILED_ON_4_STALE_CONTRACT_ASSERTIONS_WHILE_RECENT_WORKERS_ALSO_FAILED_BEFORE_FAN_IN_FROM_NO_OP_RETRY_TIMEOUT_AND_WRONG_MANIFEST_SELECTION",
+          "signature": "VIBE2_FANIN_AND_WEB_REPAIR_EVIDENCE_LOSS",
+          "status": "REPAIRS_APPLIED_PENDING_LIVE_VERIFICATION",
+          "symptom": "FAN_IN_REGRESSION_WAS_FIXED_BUT_REPEATED_WEB_RUNTIME_REPAIR_WORKERS_COULD_STILL_RETURN_NO_OP_BECAUSE_COMPANY_RUNTIME_COLLAPSED_THE_ORIGINAL_VIBE_WEB_IMPLEMENTATION_REQUIRED_REASON_TO_GENERIC_COMMAND_FAILED",
           "rootCause": {
             "fanInRegression": "PINNED_CONTRACT_REGRESSION_CAUGHT_4_STALE_TEST_EXPECTATIONS_AFTER_EXACT_WEB_REPAIR_AND_RECOVERY_PROMPT_CHANGES",
             "sourceGeneration": "NO_OP_EDIT_WAS_NOT_RETRYABLE_AND_JSON_RETRY_TIMEOUT_180S_WAS_BELOW_OBSERVED_LOCAL_MODEL_RETURN_LATENCY_AROUND_200S",
-            "incrementalQa": "WORKFLOW_SELECTED_THE_FIRST_EXISTING_CANDIDATE_MANIFEST_INSTEAD_OF_THE_CURRENT_TASK_MANIFEST_CAUSING_WEB_CANDIDATES_TO_VALIDATE_STALE_ROBLOX_PATH_client/Game.client.luau"
+            "incrementalQa": "WORKFLOW_SELECTED_THE_FIRST_EXISTING_CANDIDATE_MANIFEST_INSTEAD_OF_THE_CURRENT_TASK_MANIFEST_CAUSING_WEB_CANDIDATES_TO_VALIDATE_STALE_ROBLOX_PATH_client/Game.client.luau",
+            "companyRuntimeEvidenceLoss": "COMPANY_DEVELOPMENT_RUNTIME_USED_INHERITED_CHILD_STDIO_AND_STORED_ONLY_EXECFILESYNC_ERROR_MESSAGE_SO_THE_EXACT_BOOTSTRAP_OR_GAMEPLAY_FAILURE_WAS_LOST_BEFORE_VIBE_PLANNING",
+            "vibeRepairGoal": "AUTO_PLANNER_IMPORTED_CANONICAL_STATE_BUT_DID_NOT_CARRY_ROUTING_BLOCKERS_REQUESTED_STAGE_OR_IMPLEMENTATION_REASON_INTO_THE_EXACT_WEB_REPAIR_GOAL"
           },
           "liveEvidence": {
             "fanInFailureRun": "35429351974",
@@ -1423,9 +1425,17 @@
             "earlierFanInFailureRatePct": 100,
             "ownerMinimumWave": 20,
             "taskLocalExploration": "PASS_PER_WORKER",
-            "refill": "FAN_IN_ONLY"
+            "refill": "FAN_IN_ONLY",
+            "companyRuntimeRepairItems": 19,
+            "preRepairStructuredImplementationReasonCount": 0,
+            "latestCompanyRuntimeVerificationRuns": [
+              "35430427563",
+              "35430430584"
+            ],
+            "latestVibeVerificationRun": "35430430884",
+            "currentLive20Wave": "35429909037"
           },
-          "repair": "MAKE_NO_OP_EDIT_CAUSALLY_RETRYABLE_EXTEND_JSON_RETRY_TO_240S_BIND_QA_PERFORMANCE_AND_WORKER_RESULT_TO_THE_EXACT_CURRENT_CANDIDATE_MANIFEST_AND_SYNC_FAN_IN_REGRESSION_EXPECTATIONS_WITH_CURRENT_EXACT_WEB_REPAIR_CONTRACT",
+          "repair": "PERSIST_STRUCTURED_BOOTSTRAP_FAILURE_EVIDENCE_PREFER_GAMEPLAY_OR_BOOTSTRAP_STRUCTURED_FAILURE_IN_COMPANY_RUNTIME_AND_CARRY_REQUESTED_STAGE_IMPLEMENTATION_REASON_ROUTING_BLOCKERS_STRICT_FAILURES_AND_VALIDATION_TIMESTAMP_INTO_EXACT_VIBE_WEB_REPAIR_GOALS",
           "codeBindings": [
             "tools/vibe2-source-worker.mjs",
             ".github/workflows/vibe2-continuous-core.yml",
@@ -1433,7 +1443,11 @@
             "qa/vibe2-source-worker.test.mjs",
             "qa/vibe2-auto-planner.test.mjs",
             "qa/vibe2-controller-contract.test.mjs",
-            "company-learning/platform-release-roadmap.json"
+            "company-learning/platform-release-roadmap.json",
+            "tools/company-development-web-bootstrap.mjs",
+            ".github/workflows/company-development-confirmed-runtime.yml",
+            "qa/company-development-web-runtime.test.mjs",
+            "qa/company-web-vibe-handoff-e2e.test.mjs"
           ],
           "repairCommits": [
             "e38eef51491e70f47f2fdae4447fc520aad5d5d1",
@@ -1446,18 +1460,25 @@
             "a347b24a7d6ecb5a47cdba44bc87727ca3b3bdd8",
             "ecf5d4d8bc1724cf1efaccd58ab086a17a03afea",
             "ef6437c9f53a9476c06cb33d1e9c5cc7e988cb0a",
-            "e7f4fbba8a72688e4cd6adecd3b76ae88cefde3c"
+            "e7f4fbba8a72688e4cd6adecd3b76ae88cefde3c",
+            "2d7747c7402129d779cbd5a33d76913030c7b004",
+            "f9ca65fd82065102a372f6799f2e664dd819bcc7",
+            "a2065341631612bc6d77a51fd8537eeaf905ae15",
+            "1826d35698bd5027f91669168601fd23ac76cb0d",
+            "8042b2512a44e8eccf92f92db3ff031d62fb99ee",
+            "759ce56ab2973275a86ffbdb4394bc560f911ac8"
           ],
           "nextVerification": [
+            "COMPANY_RUNTIME_PERSISTS_VIBE_WEB_IMPLEMENTATION_REASON_INSTEAD_OF_GENERIC_COMMAND_FAILED",
+            "VIBE_EXACT_REPAIR_GOAL_CONTAINS_COMPANY_RUNTIME_FAILURE_EVIDENCE",
             "LATEST_RESERVED_MAIN_CONTRACT_FAN_IN_REGRESSION_PASS",
-            "WEB_INCREMENTAL_QA_USES_EXACT_CURRENT_TASK_MANIFEST_AND_DOES_NOT_READ_STALE_ROBLOX_PATHS",
+            "WEB_INCREMENTAL_QA_USES_EXACT_CURRENT_TASK_MANIFEST",
             "NO_OP_EDIT_GETS_ONE_FOCUSED_CAUSAL_RETRY",
-            "JSON_RETRY_TIMEOUT_IS_240S_AND_NO_180S_RETRY_ABORT_REMAINS",
+            "JSON_RETRY_TIMEOUT_IS_240S",
             "FULL_WEB_MINIMUM_SIZE_GATE_REMAINS_ENFORCED",
-            "NEXT_WAVE_ADAPTIVE_MAX_REMAINS_AT_LEAST_20",
+            "ADAPTIVE_MAX_REMAINS_AT_LEAST_20",
             "TASK_LOCAL_EXPLORATION_REMAINS_PER_WORKER",
-            "NO_PER_WORKER_REFILL_DISPATCH",
-            "FAN_IN_DISPATCHES_AT_MOST_ONE_REFILL",
+            "FAN_IN_ONLY_REFILL_REMAINS_ACTIVE",
             "GAME_PRIMARY_REMAINS_AHEAD_OF_NONBLOCKING_SUPERVISION"
           ],
           "ownerWaveOverride": 20
@@ -1470,7 +1491,7 @@
           "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS",
           "qaContract": "PASS",
           "centralPolicyContract": "PASS",
-          "currentLargestBottleneck": "PRE_FANIN_WORKER_RECOVERY_AND_STALE_MANIFEST_QA_PENDING_LIVE_VERIFICATION",
+          "currentLargestBottleneck": "STRUCTURED_WEB_REPAIR_FAILURE_EVIDENCE_PENDING_COMPANY_RUNTIME_REFRESH",
           "adaptiveWave": 20,
           "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
           "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST_SPARE_SPECULATION_ONLY",
@@ -1509,7 +1530,7 @@
           "exactManifestQaBinding": "FIXED_PENDING_LIVE_WAVE_VERIFICATION",
           "noOpRetry": "FIXED",
           "jsonRetryTimeoutMs": 240000,
-          "latestRepairHead": "e7f4fbba8a72688e4cd6adecd3b76ae88cefde3c",
+          "latestRepairHead": "759ce56ab2973275a86ffbdb4394bc560f911ac8",
           "nextVerificationRun": {
             "runId": "35430088606",
             "triggerHead": "bc102e770e77e9ea9fb530ec267a572b3d0bb8fd",
@@ -1520,6 +1541,19 @@
               "bc102e770e77e9ea9fb530ec267a572b3d0bb8fd"
             ],
             "status": "PENDING_BEHIND_CURRENT_20_WAVE"
+          },
+          "structuredWebFailureEvidence": "FIXED_PENDING_COMPANY_RUNTIME_LIVE_REFRESH",
+          "exactWebRepairFailureContext": "FIXED_PENDING_NEXT_VIBE_PLAN",
+          "nextCompanyRuntimeVerification": {
+            "runIds": [
+              "35430427563",
+              "35430430584"
+            ],
+            "expected": "STRUCTURED_VIBE_WEB_IMPLEMENTATION_REASON_AND_ROUTING_BLOCKER"
+          },
+          "nextVibeVerification": {
+            "runId": "35430430884",
+            "expected": "LATEST_MAIN_PINNED_20_WAVE_WITH_EXACT_MANIFEST_AND_STRUCTURED_REPAIR_CONTEXT"
           }
         },
         "incidentHistory": [
@@ -2887,47 +2921,40 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_LIVE_20_WAVE_SYNC_2026-09-19",
+    "id": "WEB_REPAIR_FAILURE_EVIDENCE_HANDOFF_2026-09-19",
     "documentIsCode": true,
-    "reason": "SYNC_CENTRAL_ROADMAP_TO_ACTUAL_20_TASK_LIVE_WAVE_AND_EXTERNAL_RUNNER_QUEUE_STATE",
+    "reason": "PRESERVE_EXACT_COMPANY_WEB_FAILURE_CAUSE_THROUGH_RUNTIME_STATE_INTO_VIBE_EXACT_REPAIR_SO_GAME_PRIMARY_WORKERS_DO_NOT_REPEAT_NO_OP_REPAIRS",
     "files": [
-      "tools/vibe2-source-worker.mjs",
-      ".github/workflows/vibe2-continuous-core.yml",
+      "tools/company-development-web-bootstrap.mjs",
+      ".github/workflows/company-development-confirmed-runtime.yml",
       "tools/vibe2-auto-planner.mjs",
-      "qa/vibe2-source-worker.test.mjs",
+      "qa/company-development-web-runtime.test.mjs",
+      "qa/company-web-vibe-handoff-e2e.test.mjs",
       "qa/vibe2-auto-planner.test.mjs",
-      "qa/vibe2-controller-contract.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ],
     "commits": [
-      "e38eef51491e70f47f2fdae4447fc520aad5d5d1",
-      "17d7cc2929804a2f391067ae87923eaccb9be087",
-      "9898553c0335658dd690c502e5e830fd691b7ad0",
-      "4010ee34a1a9f1aec104e7fe8abcea6f5773bb9c",
-      "5831934e3bd32ab7efe91c525cbca3ecb3bafb49",
-      "89abecf68db265af07e97c7cfc845b88816854f5",
-      "5f4140c23231380c2645a17c822e65953c19b677",
-      "a347b24a7d6ecb5a47cdba44bc87727ca3b3bdd8",
-      "ecf5d4d8bc1724cf1efaccd58ab086a17a03afea",
-      "ef6437c9f53a9476c06cb33d1e9c5cc7e988cb0a",
-      "e7f4fbba8a72688e4cd6adecd3b76ae88cefde3c"
+      "2d7747c7402129d779cbd5a33d76913030c7b004",
+      "f9ca65fd82065102a372f6799f2e664dd819bcc7",
+      "a2065341631612bc6d77a51fd8537eeaf905ae15",
+      "1826d35698bd5027f91669168601fd23ac76cb0d",
+      "8042b2512a44e8eccf92f92db3ff031d62fb99ee",
+      "759ce56ab2973275a86ffbdb4394bc560f911ac8"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "externalRunnerQueueDoesNotReduceOwnerWave": true
+      "qualityGatesUnchanged": true,
+      "saveMeaningPreserved": true,
+      "exactFailureEvidenceRequired": true
     },
     "liveEvidence": {
-      "runId": "35429909037",
-      "contractSha": "a347b24a7d6ecb5a47cdba44bc87727ca3b3bdd8",
-      "reservedTasks": 20,
-      "matrixFanOut": 20,
-      "activeWorkersObserved": 19,
-      "queuedWorkersObserved": 1,
-      "adaptiveMax": 20,
-      "machineState": "CONSISTENT"
+      "currentLiveWave": "35429909037",
+      "currentAdaptiveMax": 20,
+      "companyRuntimeRepairItems": 19,
+      "genericFailureEvidenceBeforeRepair": 19
     }
   }
 }
