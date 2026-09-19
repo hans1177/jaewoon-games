@@ -230,9 +230,9 @@ export function buildVibe2Handoff({
       reusableContexts: reusable.slice(-40).map(reusableContext)
     },
     parallelism: {
-      configuredMax: Number(runtime.continuous?.maxConcurrentGameTasks || 30),
-      currentPersistentMax: Number(parallelism.currentMax || runtime.continuous?.maxConcurrentGameTasks || 30),
-      steps: Array.isArray(adaptive.steps) ? adaptive.steps : [30, 24, 20, 16, 12, 8, 4],
+      configuredMax: Number(runtime.continuous?.maxConcurrentGameTasks || runtime.continuous?.externalMatrixBatchMax || 256),
+      currentPersistentMax: Number(parallelism.currentMax || runtime.continuous?.maxConcurrentGameTasks || runtime.continuous?.externalMatrixBatchMax || 256),
+      steps: Array.isArray(adaptive.steps) ? adaptive.steps : [256, 128, 64, 32, 16, 8, 4],
       healthyStreak: Number(parallelism.healthyStreak || 0),
       pressureStreak: Number(parallelism.pressureStreak || 0),
       lastDecision: clean(parallelism.lastDecision) || null,
