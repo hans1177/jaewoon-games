@@ -1188,10 +1188,18 @@ test('focused timeout streaming can stop after one complete edit object',()=>{
   assert.match(workflowSource,/coding-streamed-partial-edit-recovery:YES/);
 });
 
+test('closed full web envelope early stop is persisted to coding telemetry',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/fullWebClosedHtmlEarlyStop:generation\.fullWebClosedHtmlEarlyStop===true/);
+  assert.match(workflowSource,/coding-full-web-closed-html-early-stop:YES/);
+});
+
 test('model response completion stops only at a complete candidate boundary', () => {
   assert.equal(modelResponseComplete('{"edits":[{"path":"index.html","find":"a","replace":"b"}],"newFiles":[]}', 'JSON_EDIT'), true);
   assert.equal(modelResponseComplete('{"edits":[{"path":"index.html"', 'JSON_EDIT'), false);
-  assert.equal(modelResponseComplete('VIBE2_FULL_FILE\nPATH:index.html\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>x</body></html>', 'FULL_WEB'), false);
+  assert.equal(modelResponseComplete('VIBE2_FULL_FILE\nPATH:index.html\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>x</body></html>', 'FULL_WEB'), true);
+  assert.equal(modelResponseComplete('VIBE2_FULL_FILE\nPATH:index.html\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>x', 'FULL_WEB'), false);
   assert.equal(modelResponseComplete('VIBE2_FULL_FILE\nPATH:index.html\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>x</body></html>\n---VIBE2_FILE_END---', 'FULL_WEB'), true);
   assert.equal(modelResponseComplete('<!doctype html><html><body>x</body></html>', 'FULL_WEB'), true);
   assert.equal(modelResponseComplete('VIBE2_WEB_EXPANSION\n---VIBE2_EXPANSION_CONTENT---\n<script>(()=>{})();</script>', 'FULL_WEB_EXPANSION'), false);
