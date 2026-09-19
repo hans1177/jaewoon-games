@@ -87,20 +87,16 @@
     "appliedRepairs": [
       "designer_pre_gate_repair_1"
     ],
-    "recoveredAt": "2026-09-19T03:38:05.712Z"
+    "recoveredAt": "2026-09-19T03:39:06.335Z"
   },
   "baselineGate": {
     "policyDocument": "COMPANY_FLOW.md",
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "ready": false,
-    "blockers": [
-      "five-distinct-lead-models-required",
-      "per-department-multimodel-review-pass-required",
-      "post-revision-five-department-review-required"
-    ],
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
     "advisoryDisposition": "DETERMINISTIC_EVIDENCE",
     "unanimousFatalDiscard": false,
     "meeting": {
@@ -128,13 +124,13 @@
         ]
       },
       "deterministicDesignGate": {
-        "required": false,
-        "authority": null,
-        "pass": null,
-        "path": null,
-        "phase": null,
-        "totalScore": null,
-        "passMinimum": null,
+        "required": true,
+        "authority": "DETERMINISTIC_EVIDENCE",
+        "pass": true,
+        "path": "design/bug-defense/2026-09-19/design-checkpoint.json",
+        "phase": "deterministic_pre_gate_after_repair_1",
+        "totalScore": 80,
+        "passMinimum": 80,
         "hardFailures": [],
         "criticalAxisFailures": []
       },
@@ -189,8 +185,8 @@
       "meetingConflictBlocksDesignBaseline": true,
       "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
       "unanimousFatalDiscardRequiredToDiscard": true,
-      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": true,
-      "deterministicEvidenceGateRequired": false,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
+      "deterministicEvidenceGateRequired": true,
       "aiReviewIsGateAuthority": false,
       "designArtbookOnlyAfterBaselineReady": true,
       "designOnlyVibe2Forbidden": true,
@@ -204,17 +200,17 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T03:39:01.217Z"
+    "checkedAt": "2026-09-19T03:39:06.475Z"
   },
   "artbookUi": {
-    "status": "WAITING",
-    "label": "대기중",
+    "status": "WRITING",
+    "label": "작성중",
     "path": "artbook-submissions/bug-defense/status.json"
   },
   "artbookPublication": {
     "published": false,
     "path": null,
-    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "reason": "baseline-not-ready"
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
   }
 }
