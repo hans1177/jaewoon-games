@@ -157,7 +157,7 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert(workflow.includes('Merge outcomes run regression and package review'));
   assert(workflow.includes('Candidate regression runs once at fan-in against the exact reserved main contract.'));
   assert(workflow.includes('node --test --test-concurrency=4'));
-  assert.equal(workflow.includes('            qa/vibe2-controller-contract.test.mjs \\\n'),false);
+  assert.equal(workflow.includes('qa/vibe2-controller-contract.test.mjs'),false);
   assert(coreQaWorkflow.includes('qa/vibe2-controller-contract.test.mjs'));
   assert(workflow.includes('qa/vibe2-source-worker.test.mjs'));
   assert(workflow.includes('qa/vibe2-work-package.test.mjs'));
