@@ -245,7 +245,25 @@ export async function buildFirstPlayable({gameId,gameName,baseline,sourcePath,ca
 async function main(){
   const gameId=clean(arg('game-id')),gameName=clean(arg('game-name',gameId)),baselineFile=arg('baseline'),sourcePath=clean(arg('source-path')),candidateId=safeId(arg('candidate-id')),candidatePath=clean(arg('candidate-path')),sourceCommit=clean(arg('source-commit')),evidenceFile=clean(arg('evidence')),forceRepair=clean(arg('force-repair')).toLowerCase()==='true',repairReason=clean(arg('repair-reason'));
   if(!gameId||!baselineFile||!sourcePath||!candidateId||!candidatePath||!sourceCommit||!evidenceFile)throw new Error('required bootstrap argument missing');
-  const baseline=readJson(baselineFile),{result,review,generation,approvedScopeInventory}=await buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,forceRepair,repairReason});
+  const baseline=readJson(baselineFile);
+  let built;
+  try{
+    built=await buildFirstPlayable({gameId,gameName,baseline,sourcePath,candidatePath,candidateId,sourceCommit,forceRepair,repairReason});
+  }catch(error){
+    const failureSignature=clean(error?.message||error).replace(/\s+/g,' ').slice(0,1800);
+    const signal=/^VIBE_WEB_IMPLEMENTATION_REQUIRED:(WEB_BASE_IMPLEMENTATION|WEB_REPAIR):(.+)$/.exec(failureSignature);
+    writeJson(evidenceFile,{
+      version:14,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,
+      pass:false,realPlayableGame:false,sourcePreserved:false,sourceRepaired:false,
+      failureSignature,
+      vibeWebImplementationRequired:Boolean(signal),
+      vibeWebRequestedStage:signal?.[1]||null,
+      vibeWebImplementationReason:signal?.[2]||null,
+      createdAt:new Date().toISOString()
+    });
+    throw error;
+  }
+  const {result,review,generation,approvedScopeInventory}=built;
   const sourceRepaired=false;
   writeJson(evidenceFile,{version:14,candidateId,gameId,sourcePath,candidatePath,sourceCommit,candidateOnly:true,selfPromote:false,artifactType:REAL_ARTIFACT_TYPE,realPlayableGame:true,webRole:'PREPLATFORM_PLAYABLE_GAME',testHarness:false,sourcePreserved:generation.sourcePreserved,sourceRepaired,changedFiles:['index.html'],summary:result.validationQuestion,implementationNotes:result.implementationNotes,approvedScopeInventory,approvedScopeRequiredCount:approvedScopeInventory.length,initialPlayableMinimum:INITIAL_PLAYABLE_MINIMUM,initialThirtyMinuteHardRequirement:false,finalContentDepthValidation:{requiredMinutes:FINAL_CONTENT_DEPTH_MINUTES,status:'PENDING',stage:'FINAL_CONTENT_DEPTH_VALIDATION_ONLY'},preplatformImplementationPolicy:WEB_PREPLATFORM_IMPLEMENTATION_POLICY,vibeDevelopmentContext:generation.developmentContext,generation,bootstrapContract:review,createdAt:new Date().toISOString()});
   void LEGACY_WORKFLOW_PROBE;
