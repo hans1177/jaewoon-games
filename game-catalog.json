@@ -25,16 +25,16 @@
       "hasWebArchive": true,
       "featured": true,
       "homepageWebPlayable": true,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "roblox",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
+      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
@@ -57,7 +57,7 @@
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
         "updatedAt": "2026-09-19",
         "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "productionClass": "DESIGN_ONLY"
+        "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
         "schemaVersion": 1,
@@ -80,12 +80,12 @@
           "ownerExistingGame": true
         },
         "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "roblox",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox"
         },
         "sources": {
           "web": {
@@ -123,10 +123,10 @@
         },
         "homepage": {
           "featured": true,
-          "category": "design-only",
+          "category": "development-confirmed",
           "displayMode": "",
           "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox",
           "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
           "runtime": {
             "authority": "company-runtime",
@@ -148,12 +148,1176 @@
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
             "updatedAt": "2026-09-19",
             "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-            "productionClass": "DESIGN_ONLY"
+            "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
       },
       "catalogOrder": 1,
       "selectedPlatform": "ROBLOX"
+    },
+    {
+      "id": "bug-defense",
+      "name": "곤충 디펜스",
+      "description": "30웨이브 곤충 디펜스",
+      "genre": [
+        "웨이브",
+        "전략",
+        "곤충"
+      ],
+      "image": "assets/insect-war-v2.webp",
+      "webPath": "/web-games/bug-defense/",
+      "hasWebArchive": true,
+      "featured": true,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "unity-android",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Web 전체분량 검증 → Unity Android",
+      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "웨이브",
+          "전략",
+          "곤충"
+        ],
+        "genreLabel": "웨이브 · 전략 · 곤충",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+        "updatedAt": "2026-09-19T03:41:26.737Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 2,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "bug-defense",
+          "name": "곤충 디펜스",
+          "description": "30웨이브 곤충 디펜스",
+          "genres": [
+            "웨이브",
+            "전략",
+            "곤충"
+          ],
+          "image": "assets/insect-war-v2.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "unity-android",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/bug-defense/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
+          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "웨이브",
+              "전략",
+              "곤충"
+            ],
+            "genreLabel": "웨이브 · 전략 · 곤충",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+            "updatedAt": "2026-09-19T03:41:26.737Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 2,
+      "selectedPlatform": "UNITY"
+    },
+    {
+      "id": "daechung-rpg",
+      "name": "대충 RPG",
+      "description": "탐험과 전투가 이어지는 RPG",
+      "genre": [
+        "RPG",
+        "탐험",
+        "전투"
+      ],
+      "image": "assets/fantasy-rpg-v2.webp",
+      "webPath": "/web-games/daechung-rpg/",
+      "hasWebArchive": true,
+      "featured": true,
+      "unityProjectPath": "unity-games/daechung-rpg",
+      "preferredPlatform": "unity-android",
+      "selectedPlatform": "UNITY",
+      "homepagePublicationApproved": false,
+      "publishTestBuildWhenReady": true,
+      "homepageWebPlayable": true,
+      "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "unity-android",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Web 전체분량 검증 → Unity Android",
+      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "RPG",
+          "탐험",
+          "전투"
+        ],
+        "genreLabel": "RPG · 탐험 · 전투",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+        "updatedAt": "2026-09-19T03:39:07.819Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 3,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "daechung-rpg",
+          "name": "대충 RPG",
+          "description": "탐험과 전투가 이어지는 RPG",
+          "genres": [
+            "RPG",
+            "탐험",
+            "전투"
+          ],
+          "image": "assets/fantasy-rpg-v2.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "unity-android",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/daechung-rpg/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": "unity-games/daechung-rpg"
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": true,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "/artbook-viewer.html?game=daechung-rpg",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
+          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "RPG",
+              "탐험",
+              "전투"
+            ],
+            "genreLabel": "RPG · 탐험 · 전투",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+            "updatedAt": "2026-09-19T03:39:07.819Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 3
+    },
+    {
+      "id": "chess-battle",
+      "name": "체스 배틀",
+      "description": "체스 기반 전투 게임",
+      "genre": [
+        "전략",
+        "보드"
+      ],
+      "image": "assets/mock.webp",
+      "webPath": "/web-games/chess-battle/",
+      "hasWebArchive": true,
+      "featured": false,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "roblox",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "전략",
+          "보드"
+        ],
+        "genreLabel": "오비·플랫포머 · 클래식 오비",
+        "subgenre": "클래식 오비",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+        "updatedAt": "2026-09-19T03:39:16.056Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 4,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "chess-battle",
+          "name": "체스 배틀",
+          "description": "체스 기반 전투 게임",
+          "genres": [
+            "전략",
+            "보드"
+          ],
+          "image": "assets/mock.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "roblox",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/chess-battle/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox",
+          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "전략",
+              "보드"
+            ],
+            "genreLabel": "오비·플랫포머 · 클래식 오비",
+            "subgenre": "클래식 오비",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+            "updatedAt": "2026-09-19T03:39:16.056Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 4,
+      "selectedPlatform": "ROBLOX"
+    },
+    {
+      "id": "egg-heist",
+      "name": "알 도둑 대작전",
+      "description": "알을 훔치고 부화시키는 수집 게임",
+      "genre": [
+        "수집",
+        "모험"
+      ],
+      "image": "assets/portal.webp",
+      "webPath": "/web-games/egg-heist/",
+      "hasWebArchive": true,
+      "featured": false,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "roblox",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "수집",
+          "모험"
+        ],
+        "genreLabel": "수집 · 모험",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+        "updatedAt": "2026-09-19",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 5,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "egg-heist",
+          "name": "알 도둑 대작전",
+          "description": "알을 훔치고 부화시키는 수집 게임",
+          "genres": [
+            "수집",
+            "모험"
+          ],
+          "image": "assets/portal.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "roblox",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/egg-heist/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox",
+          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "수집",
+              "모험"
+            ],
+            "genreLabel": "수집 · 모험",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+            "updatedAt": "2026-09-19",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 5,
+      "selectedPlatform": "ROBLOX"
+    },
+    {
+      "id": "island-village",
+      "name": "무인도 마을",
+      "description": "무인도에서 마을을 키우는 생활·생존 게임",
+      "genre": [
+        "생활",
+        "생존",
+        "마을"
+      ],
+      "image": "assets/page-bg-v3.webp",
+      "webPath": "/web-games/island-village/",
+      "hasWebArchive": true,
+      "featured": false,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "roblox",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "생활",
+          "생존",
+          "마을"
+        ],
+        "genreLabel": "오비·플랫포머 · 클래식 오비",
+        "subgenre": "클래식 오비",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+        "updatedAt": "2026-09-19T03:36:07.311Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 6,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "island-village",
+          "name": "무인도 마을",
+          "description": "무인도에서 마을을 키우는 생활·생존 게임",
+          "genres": [
+            "생활",
+            "생존",
+            "마을"
+          ],
+          "image": "assets/page-bg-v3.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "roblox",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/island-village/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox",
+          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "생활",
+              "생존",
+              "마을"
+            ],
+            "genreLabel": "오비·플랫포머 · 클래식 오비",
+            "subgenre": "클래식 오비",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+            "updatedAt": "2026-09-19T03:36:07.311Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 6,
+      "selectedPlatform": "ROBLOX"
+    },
+    {
+      "id": "territory-war",
+      "name": "영토전쟁",
+      "description": "영지를 확장하는 전략 게임",
+      "genre": [
+        "전략",
+        "영토"
+      ],
+      "image": "assets/page-bg-v2.webp",
+      "webPath": "/web-games/territory-war/",
+      "hasWebArchive": true,
+      "featured": false,
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "roblox",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "ROBLOX",
+        "platformLabel": "Roblox",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "전략",
+          "영토"
+        ],
+        "genreLabel": "전략 · 영토",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+        "updatedAt": "2026-09-19",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 7,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "territory-war",
+          "name": "영토전쟁",
+          "description": "영지를 확장하는 전략 게임",
+          "genres": [
+            "전략",
+            "영토"
+          ],
+          "image": "assets/page-bg-v2.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "roblox",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "ROBLOX",
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/territory-war/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 전체분량 검증 → Roblox",
+          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "ROBLOX",
+            "platformLabel": "Roblox",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "전략",
+              "영토"
+            ],
+            "genreLabel": "전략 · 영토",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+            "updatedAt": "2026-09-19",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 7,
+      "selectedPlatform": "ROBLOX"
+    },
+    {
+      "id": "monster-adventure",
+      "name": "몬스터 어드벤처",
+      "description": "몬스터 포획과 성장 모험",
+      "genre": [
+        "몬스터",
+        "턴제",
+        "모험"
+      ],
+      "image": "assets/fantasy-rpg-v2.webp",
+      "webPath": "/web-games/monster-adventure/",
+      "hasWebArchive": false,
+      "featured": false,
+      "homepageWebPlayable": false,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "unity-android",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Web 전체분량 검증 → Unity Android",
+      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "몬스터",
+          "턴제",
+          "모험"
+        ],
+        "genreLabel": "몬스터 · 턴제 · 모험",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+        "updatedAt": "2026-09-19T03:39:28.052Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 8,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "monster-adventure",
+          "name": "몬스터 어드벤처",
+          "description": "몬스터 포획과 성장 모험",
+          "genres": [
+            "몬스터",
+            "턴제",
+            "모험"
+          ],
+          "image": "assets/fantasy-rpg-v2.webp",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "unity-android",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/monster-adventure/",
+            "archive": false,
+            "playable": false,
+            "purpose": ""
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
+          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "몬스터",
+              "턴제",
+              "모험"
+            ],
+            "genreLabel": "몬스터 · 턴제 · 모험",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+            "updatedAt": "2026-09-19T03:39:28.052Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 8,
+      "selectedPlatform": "UNITY"
+    },
+    {
+      "id": "survival",
+      "name": "나의 생존기",
+      "description": "채집과 제작 중심 생존 게임",
+      "genre": [
+        "생존",
+        "채집"
+      ],
+      "image": "assets/title-survival.svg",
+      "webPath": "/web-games/survival/",
+      "hasWebArchive": true,
+      "featured": false,
+      "selectedPlatform": "UNITY",
+      "homepageWebPlayable": true,
+      "homepageCategory": "development-confirmed",
+      "productionClass": "DEVELOPMENT_CONFIRMED",
+      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+      "productionTarget": "unity-android",
+      "lifecycleState": "ACTIVE",
+      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
+      "ownerExistingGame": true,
+      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
+      "homepageStage": "개발확정 · Web 전체분량 검증 → Unity Android",
+      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
+      "homepageInfo": {
+        "authority": "company-runtime",
+        "platform": "UNITY",
+        "platformLabel": "Unity Android",
+        "score": null,
+        "scoreLabel": "점수 미평가",
+        "scoreCurrent": false,
+        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+        "validationSchemaVersion": null,
+        "genre": [
+          "생존",
+          "채집"
+        ],
+        "genreLabel": "생존 · 채집",
+        "subgenre": "",
+        "playMode": "SINGLE",
+        "playModeLabel": "싱글",
+        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+        "updatedAt": "2026-09-19",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+        "productionClass": "DEVELOPMENT_CONFIRMED"
+      },
+      "canonical": {
+        "schemaVersion": 1,
+        "catalogOrder": 9,
+        "authority": "company-runtime",
+        "identity": {
+          "gameId": "survival",
+          "name": "나의 생존기",
+          "description": "채집과 제작 중심 생존 게임",
+          "genres": [
+            "생존",
+            "채집"
+          ],
+          "image": "assets/title-survival.svg",
+          "aliases": []
+        },
+        "lifecycle": {
+          "state": "ACTIVE",
+          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
+          "ownerExistingGame": true
+        },
+        "production": {
+          "class": "DEVELOPMENT_CONFIRMED",
+          "classSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
+          "target": "unity-android",
+          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
+          "selectedPlatform": "UNITY",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android"
+        },
+        "sources": {
+          "web": {
+            "path": "/web-games/survival/",
+            "archive": true,
+            "playable": true,
+            "purpose": "PUBLIC_PLAYABLE_COMPANION"
+          },
+          "unity": {
+            "projectPath": ""
+          },
+          "roblox": {
+            "projectPath": ""
+          }
+        },
+        "publication": {
+          "roblox": {
+            "universeId": "",
+            "placeId": "",
+            "verified": false,
+            "historical": false,
+            "currentReleaseClaim": false,
+            "displayName": "",
+            "observedFrom": "",
+            "observedAt": "",
+            "published": false,
+            "historicalPublicationTargetVerified": false,
+            "actualStudioRuntime": false,
+            "postRuntimeIndependentQa": false,
+            "regression": false,
+            "multiplayerQa": false,
+            "sourceRevision": "",
+            "artifactIdentity": ""
+          }
+        },
+        "homepage": {
+          "featured": false,
+          "category": "development-confirmed",
+          "displayMode": "",
+          "artbookPath": "",
+          "stage": "개발확정 · Web 전체분량 검증 → Unity Android",
+          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+          "runtime": {
+            "authority": "company-runtime",
+            "platform": "UNITY",
+            "platformLabel": "Unity Android",
+            "score": null,
+            "scoreLabel": "점수 미평가",
+            "scoreCurrent": false,
+            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
+            "validationSchemaVersion": null,
+            "genre": [
+              "생존",
+              "채집"
+            ],
+            "genreLabel": "생존 · 채집",
+            "subgenre": "",
+            "playMode": "SINGLE",
+            "playModeLabel": "싱글",
+            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
+            "updatedAt": "2026-09-19",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
+            "productionClass": "DEVELOPMENT_CONFIRMED"
+          }
+        }
+      },
+      "catalogOrder": 9
     },
     {
       "id": "amusement-tycoon",
@@ -207,7 +1371,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 2,
+        "catalogOrder": 10,
         "authority": "company-runtime",
         "identity": {
           "gameId": "amusement-tycoon",
@@ -302,307 +1466,8 @@
           }
         }
       },
-      "catalogOrder": 2,
+      "catalogOrder": 10,
       "selectedPlatform": "UNITY"
-    },
-    {
-      "id": "bug-defense",
-      "name": "곤충 디펜스",
-      "description": "30웨이브 곤충 디펜스",
-      "genre": [
-        "웨이브",
-        "전략",
-        "곤충"
-      ],
-      "image": "assets/insect-war-v2.webp",
-      "webPath": "/web-games/bug-defense/",
-      "hasWebArchive": true,
-      "featured": true,
-      "homepageWebPlayable": true,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "웨이브",
-          "전략",
-          "곤충"
-        ],
-        "genreLabel": "웨이브 · 전략 · 곤충",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T03:41:26.737Z",
-        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 3,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "bug-defense",
-          "name": "곤충 디펜스",
-          "description": "30웨이브 곤충 디펜스",
-          "genres": [
-            "웨이브",
-            "전략",
-            "곤충"
-          ],
-          "image": "assets/insect-war-v2.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/bug-defense/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "웨이브",
-              "전략",
-              "곤충"
-            ],
-            "genreLabel": "웨이브 · 전략 · 곤충",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T03:41:26.737Z",
-            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 3,
-      "selectedPlatform": "UNITY"
-    },
-    {
-      "id": "daechung-rpg",
-      "name": "대충 RPG",
-      "description": "탐험과 전투가 이어지는 RPG",
-      "genre": [
-        "RPG",
-        "탐험",
-        "전투"
-      ],
-      "image": "assets/fantasy-rpg-v2.webp",
-      "webPath": "/web-games/daechung-rpg/",
-      "hasWebArchive": true,
-      "featured": true,
-      "unityProjectPath": "unity-games/daechung-rpg",
-      "preferredPlatform": "unity-android",
-      "selectedPlatform": "UNITY",
-      "homepagePublicationApproved": false,
-      "publishTestBuildWhenReady": true,
-      "homepageWebPlayable": true,
-      "homepageArtbookPath": "/artbook-viewer.html?game=daechung-rpg",
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "RPG",
-          "탐험",
-          "전투"
-        ],
-        "genreLabel": "RPG · 탐험 · 전투",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T03:39:07.819Z",
-        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 4,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "daechung-rpg",
-          "name": "대충 RPG",
-          "description": "탐험과 전투가 이어지는 RPG",
-          "genres": [
-            "RPG",
-            "탐험",
-            "전투"
-          ],
-          "image": "assets/fantasy-rpg-v2.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/daechung-rpg/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": "unity-games/daechung-rpg"
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": true,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "/artbook-viewer.html?game=daechung-rpg",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "RPG",
-              "탐험",
-              "전투"
-            ],
-            "genreLabel": "RPG · 탐험 · 전투",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T03:39:07.819Z",
-            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 4
     },
     {
       "id": "insect-survival",
@@ -621,7 +1486,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -656,7 +1521,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 5,
+        "catalogOrder": 11,
         "authority": "company-runtime",
         "identity": {
           "gameId": "insect-survival",
@@ -677,7 +1542,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "UNITY",
@@ -749,7 +1614,7 @@
           }
         }
       },
-      "catalogOrder": 5
+      "catalogOrder": 11
     },
     {
       "id": "line-defense",
@@ -801,7 +1666,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 6,
+        "catalogOrder": 12,
         "authority": "company-runtime",
         "identity": {
           "gameId": "line-defense",
@@ -894,7 +1759,7 @@
           }
         }
       },
-      "catalogOrder": 6,
+      "catalogOrder": 12,
       "selectedPlatform": "UNITY"
     },
     {
@@ -949,7 +1814,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 7,
+        "catalogOrder": 13,
         "authority": "company-runtime",
         "identity": {
           "gameId": "village-dungeons",
@@ -1044,151 +1909,8 @@
           }
         }
       },
-      "catalogOrder": 7,
+      "catalogOrder": 13,
       "selectedPlatform": "UNITY"
-    },
-    {
-      "id": "chess-battle",
-      "name": "체스 배틀",
-      "description": "체스 기반 전투 게임",
-      "genre": [
-        "전략",
-        "보드"
-      ],
-      "image": "assets/mock.webp",
-      "webPath": "/web-games/chess-battle/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageWebPlayable": true,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "전략",
-          "보드"
-        ],
-        "genreLabel": "오비·플랫포머 · 클래식 오비",
-        "subgenre": "클래식 오비",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T03:39:16.056Z",
-        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 8,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "chess-battle",
-          "name": "체스 배틀",
-          "description": "체스 기반 전투 게임",
-          "genres": [
-            "전략",
-            "보드"
-          ],
-          "image": "assets/mock.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/chess-battle/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "전략",
-              "보드"
-            ],
-            "genreLabel": "오비·플랫포머 · 클래식 오비",
-            "subgenre": "클래식 오비",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T03:39:16.056Z",
-            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 8,
-      "selectedPlatform": "ROBLOX"
     },
     {
       "id": "cozy-island",
@@ -1241,7 +1963,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 9,
+        "catalogOrder": 14,
         "authority": "company-runtime",
         "identity": {
           "gameId": "cozy-island",
@@ -1334,150 +2056,7 @@
           }
         }
       },
-      "catalogOrder": 9,
-      "selectedPlatform": "ROBLOX"
-    },
-    {
-      "id": "egg-heist",
-      "name": "알 도둑 대작전",
-      "description": "알을 훔치고 부화시키는 수집 게임",
-      "genre": [
-        "수집",
-        "모험"
-      ],
-      "image": "assets/portal.webp",
-      "webPath": "/web-games/egg-heist/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageWebPlayable": true,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "설계 · 재평가 중",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "수집",
-          "모험"
-        ],
-        "genreLabel": "수집 · 모험",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19",
-        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 10,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "egg-heist",
-          "name": "알 도둑 대작전",
-          "description": "알을 훔치고 부화시키는 수집 게임",
-          "genres": [
-            "수집",
-            "모험"
-          ],
-          "image": "assets/portal.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "설계 · 재평가 중"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/egg-heist/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "설계 · 재평가 중",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "수집",
-              "모험"
-            ],
-            "genreLabel": "수집 · 모험",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19",
-            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 10,
+      "catalogOrder": 14,
       "selectedPlatform": "ROBLOX"
     },
     {
@@ -1496,7 +2075,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -1530,7 +2109,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 11,
+        "catalogOrder": 15,
         "authority": "company-runtime",
         "identity": {
           "gameId": "human-go",
@@ -1550,7 +2129,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -1621,154 +2200,7 @@
           }
         }
       },
-      "catalogOrder": 11
-    },
-    {
-      "id": "island-village",
-      "name": "무인도 마을",
-      "description": "무인도에서 마을을 키우는 생활·생존 게임",
-      "genre": [
-        "생활",
-        "생존",
-        "마을"
-      ],
-      "image": "assets/page-bg-v3.webp",
-      "webPath": "/web-games/island-village/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageWebPlayable": true,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "설계 · 재평가 중",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "생활",
-          "생존",
-          "마을"
-        ],
-        "genreLabel": "오비·플랫포머 · 클래식 오비",
-        "subgenre": "클래식 오비",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T03:36:07.311Z",
-        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 12,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "island-village",
-          "name": "무인도 마을",
-          "description": "무인도에서 마을을 키우는 생활·생존 게임",
-          "genres": [
-            "생활",
-            "생존",
-            "마을"
-          ],
-          "image": "assets/page-bg-v3.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "설계 · 재평가 중"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/island-village/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "설계 · 재평가 중",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "생활",
-              "생존",
-              "마을"
-            ],
-            "genreLabel": "오비·플랫포머 · 클래식 오비",
-            "subgenre": "클래식 오비",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T03:36:07.311Z",
-            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 12,
-      "selectedPlatform": "ROBLOX"
+      "catalogOrder": 15
     },
     {
       "id": "survival2",
@@ -1785,7 +2217,7 @@
       "homepageWebPlayable": true,
       "homepageCategory": "design-only",
       "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+      "productionClassSource": "OWNER_REDESIGN_RESET_2026-09-13",
       "productionTarget": "design-only",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
@@ -1819,7 +2251,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 13,
+        "catalogOrder": 16,
         "authority": "company-runtime",
         "identity": {
           "gameId": "survival2",
@@ -1839,7 +2271,7 @@
         },
         "production": {
           "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
+          "classSource": "OWNER_REDESIGN_RESET_2026-09-13",
           "target": "design-only",
           "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
           "selectedPlatform": "ROBLOX",
@@ -1910,297 +2342,8 @@
           }
         }
       },
-      "catalogOrder": 13,
+      "catalogOrder": 16,
       "selectedPlatform": "ROBLOX"
-    },
-    {
-      "id": "territory-war",
-      "name": "영토전쟁",
-      "description": "영지를 확장하는 전략 게임",
-      "genre": [
-        "전략",
-        "영토"
-      ],
-      "image": "assets/page-bg-v2.webp",
-      "webPath": "/web-games/territory-war/",
-      "hasWebArchive": true,
-      "featured": false,
-      "homepageWebPlayable": true,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "ROBLOX",
-        "platformLabel": "Roblox",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "전략",
-          "영토"
-        ],
-        "genreLabel": "전략 · 영토",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19",
-        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 14,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "territory-war",
-          "name": "영토전쟁",
-          "description": "영지를 확장하는 전략 게임",
-          "genres": [
-            "전략",
-            "영토"
-          ],
-          "image": "assets/page-bg-v2.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "ROBLOX",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/territory-war/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "ROBLOX",
-            "platformLabel": "Roblox",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "전략",
-              "영토"
-            ],
-            "genreLabel": "전략 · 영토",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19",
-            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 14,
-      "selectedPlatform": "ROBLOX"
-    },
-    {
-      "id": "monster-adventure",
-      "name": "몬스터 어드벤처",
-      "description": "몬스터 포획과 성장 모험",
-      "genre": [
-        "몬스터",
-        "턴제",
-        "모험"
-      ],
-      "image": "assets/fantasy-rpg-v2.webp",
-      "webPath": "/web-games/monster-adventure/",
-      "hasWebArchive": false,
-      "featured": false,
-      "homepageWebPlayable": false,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "몬스터",
-          "턴제",
-          "모험"
-        ],
-        "genreLabel": "몬스터 · 턴제 · 모험",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T03:39:28.052Z",
-        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 15,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "monster-adventure",
-          "name": "몬스터 어드벤처",
-          "description": "몬스터 포획과 성장 모험",
-          "genres": [
-            "몬스터",
-            "턴제",
-            "모험"
-          ],
-          "image": "assets/fantasy-rpg-v2.webp",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/monster-adventure/",
-            "archive": false,
-            "playable": false,
-            "purpose": ""
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "몬스터",
-              "턴제",
-              "모험"
-            ],
-            "genreLabel": "몬스터 · 턴제 · 모험",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T03:39:28.052Z",
-            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 15,
-      "selectedPlatform": "UNITY"
     },
     {
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -2248,12 +2391,12 @@
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
         "updatedAt": "2026-09-18T19:27:39.480Z",
-        "status": "ACTIVE",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 16,
+        "catalogOrder": 17,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
@@ -2339,12 +2482,12 @@
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
             "updatedAt": "2026-09-18T19:27:39.480Z",
-            "status": "ACTIVE",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 16
+      "catalogOrder": 17
     },
     {
       "id": "seed-casual-realm-weaver",
@@ -2392,12 +2535,12 @@
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
         "updatedAt": "2026-09-18T19:27:39.480Z",
-        "status": "ACTIVE",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 17,
+        "catalogOrder": 18,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-casual-realm-weaver",
@@ -2483,12 +2626,12 @@
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
             "updatedAt": "2026-09-18T19:27:39.480Z",
-            "status": "ACTIVE",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 17
+      "catalogOrder": 18
     },
     {
       "id": "seed-idle-growth-rpg-crystal-bloom",
@@ -2541,7 +2684,7 @@
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 18,
+        "catalogOrder": 19,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-idle-growth-rpg-crystal-bloom",
@@ -2632,7 +2775,7 @@
           }
         }
       },
-      "catalogOrder": 18
+      "catalogOrder": 19
     },
     {
       "id": "seed-puzzle-chromatic-cascade",
@@ -2680,12 +2823,12 @@
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
         "updatedAt": "2026-09-18T19:27:39.480Z",
-        "status": "ACTIVE",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 19,
+        "catalogOrder": 20,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-puzzle-chromatic-cascade",
@@ -2771,12 +2914,12 @@
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
             "updatedAt": "2026-09-18T19:27:39.480Z",
-            "status": "ACTIVE",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 19
+      "catalogOrder": 20
     },
     {
       "id": "seed-single-defense-strat-celestial-bastion",
@@ -2823,13 +2966,13 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-18T19:27:39.480Z",
+        "updatedAt": "2026-09-19T03:51:07.512Z",
         "status": "ACTIVE",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 20,
+        "catalogOrder": 21,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-single-defense-strat-celestial-bastion",
@@ -2914,13 +3057,13 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-18T19:27:39.480Z",
+            "updatedAt": "2026-09-19T03:51:07.512Z",
             "status": "ACTIVE",
             "productionClass": "DESIGN_ONLY"
           }
         }
       },
-      "catalogOrder": 20
+      "catalogOrder": 21
     },
     {
       "id": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -2968,12 +3111,12 @@
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
         "updatedAt": "2026-09-18T19:27:39.480Z",
-        "status": "ACTIVE",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DESIGN_ONLY"
       },
       "canonical": {
         "schemaVersion": 1,
-        "catalogOrder": 21,
+        "catalogOrder": 22,
         "authority": "company-runtime",
         "identity": {
           "gameId": "seed-story-complete-rpg-chronicles-of-eldoria",
@@ -3059,149 +3202,6 @@
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
             "updatedAt": "2026-09-18T19:27:39.480Z",
-            "status": "ACTIVE",
-            "productionClass": "DESIGN_ONLY"
-          }
-        }
-      },
-      "catalogOrder": 21
-    },
-    {
-      "id": "survival",
-      "name": "나의 생존기",
-      "description": "채집과 제작 중심 생존 게임",
-      "genre": [
-        "생존",
-        "채집"
-      ],
-      "image": "assets/title-survival.svg",
-      "webPath": "/web-games/survival/",
-      "hasWebArchive": true,
-      "featured": false,
-      "selectedPlatform": "UNITY",
-      "homepageWebPlayable": true,
-      "homepageCategory": "design-only",
-      "productionClass": "DESIGN_ONLY",
-      "productionClassSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-      "productionTarget": "design-only",
-      "lifecycleState": "ACTIVE",
-      "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
-      "ownerExistingGame": true,
-      "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-      "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "기획 · 아트북/컨셉/설계 최적화",
-      "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-      "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
-      "homepageInfo": {
-        "authority": "company-runtime",
-        "platform": "UNITY",
-        "platformLabel": "Unity Android",
-        "score": null,
-        "scoreLabel": "점수 미평가",
-        "scoreCurrent": false,
-        "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-        "validationSchemaVersion": null,
-        "genre": [
-          "생존",
-          "채집"
-        ],
-        "genreLabel": "생존 · 채집",
-        "subgenre": "",
-        "playMode": "SINGLE",
-        "playModeLabel": "싱글",
-        "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19",
-        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
-        "productionClass": "DESIGN_ONLY"
-      },
-      "canonical": {
-        "schemaVersion": 1,
-        "catalogOrder": 22,
-        "authority": "company-runtime",
-        "identity": {
-          "gameId": "survival",
-          "name": "나의 생존기",
-          "description": "채집과 제작 중심 생존 게임",
-          "genres": [
-            "생존",
-            "채집"
-          ],
-          "image": "assets/title-survival.svg",
-          "aliases": []
-        },
-        "lifecycle": {
-          "state": "ACTIVE",
-          "reason": "OWNER_ALL_GAMES_DESIGN_RESET",
-          "ownerExistingGame": true
-        },
-        "production": {
-          "class": "DESIGN_ONLY",
-          "classSource": "OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17",
-          "target": "design-only",
-          "handling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
-          "selectedPlatform": "UNITY",
-          "stage": "기획 · 아트북/컨셉/설계 최적화"
-        },
-        "sources": {
-          "web": {
-            "path": "/web-games/survival/",
-            "archive": true,
-            "playable": true,
-            "purpose": "PUBLIC_PLAYABLE_COMPANION"
-          },
-          "unity": {
-            "projectPath": ""
-          },
-          "roblox": {
-            "projectPath": ""
-          }
-        },
-        "publication": {
-          "roblox": {
-            "universeId": "",
-            "placeId": "",
-            "verified": false,
-            "historical": false,
-            "currentReleaseClaim": false,
-            "displayName": "",
-            "observedFrom": "",
-            "observedAt": "",
-            "published": false,
-            "historicalPublicationTargetVerified": false,
-            "actualStudioRuntime": false,
-            "postRuntimeIndependentQa": false,
-            "regression": false,
-            "multiplayerQa": false,
-            "sourceRevision": "",
-            "artifactIdentity": ""
-          }
-        },
-        "homepage": {
-          "featured": false,
-          "category": "design-only",
-          "displayMode": "",
-          "artbookPath": "",
-          "stage": "기획 · 아트북/컨셉/설계 최적화",
-          "recentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-          "runtime": {
-            "authority": "company-runtime",
-            "platform": "UNITY",
-            "platformLabel": "Unity Android",
-            "score": null,
-            "scoreLabel": "점수 미평가",
-            "scoreCurrent": false,
-            "scoreSource": "SERVER_DEVELOPMENT_QUEUE",
-            "validationSchemaVersion": null,
-            "genre": [
-              "생존",
-              "채집"
-            ],
-            "genreLabel": "생존 · 채집",
-            "subgenre": "",
-            "playMode": "SINGLE",
-            "playModeLabel": "싱글",
-            "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19",
             "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DESIGN_ONLY"
           }
