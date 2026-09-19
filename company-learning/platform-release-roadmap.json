@@ -1,5 +1,5 @@
 {
-  "version": 128,
+  "version": 129,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1836,7 +1836,31 @@
               "342f82f6703b851d88b28eb1fbc07d121f8b7177",
               "a9fc8b65aeadecbc72742e09081952fd994d0318"
             ],
-            "timeoutRetryPrefixCompactionEffectiveFromNextWave": true
+            "timeoutRetryPrefixCompactionEffectiveFromNextWave": true,
+            "previousCompletedWave": {
+              "runId": "35444351457",
+              "workerCount": 20,
+              "pass": 0,
+              "fail": 20,
+              "failureDistribution": {
+                "TIMEOUT": 13,
+                "OTHER": 6,
+                "MALFORMED_OUTPUT": 1
+              },
+              "bottleneck": "SOURCE_CANDIDATE_GENERATION"
+            },
+            "currentWave": {
+              "runId": "35445626679",
+              "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
+              "observedCompletedWorkers": 8,
+              "observedInProgressWorkers": 12
+            },
+            "speculativeRetryBudgetCommits": [
+              "41eea8d07362a51158cb4b75081f66420eaecd64",
+              "30c281817019ff8e9a342afb226fd37874891f8f",
+              "045a3e970db8dd8b69e4824a12814373f69b9096"
+            ],
+            "speculativeRetryBudgetEffectiveFromNextWave": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3387,60 +3411,69 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_TIMEOUT_RETRY_PREFIX_COMPACTION_2026-09-19",
+    "id": "VIBE2_SPECULATIVE_RETRY_BUDGET_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_STREAMED_TIMEOUT_EDIT_EARLY_STOP_2026-09-19",
-    "reason": "ZERO_BYTE_AND_LONG_FOCUSED_WEB_TIMEOUTS_SHOW_THAT_FILE_CONTEXT_WAS_BOUNDED_BUT_PRE_FILE_EXPLORATION_AND_LEARNING_GUIDANCE_COULD_REMAIN_LARGE;REBUILD_TIMEOUT_RETRY_PREFIX_FROM_ONLY_ENGINE_GOAL_ALLOWED_PATH_AND_PRESERVATION_RULES",
-    "implementationState": "CODE_AND_REGRESSION_TEST_COMMITTED_QA_AND_NEXT_WAVE_PENDING",
+    "previousChangeRecordId": "VIBE2_TIMEOUT_RETRY_PREFIX_COMPACTION_2026-09-19",
+    "reason": "PARALLELISM_ALREADY_REACHES_20_OF_20_BUT_WAVE_COMPLETION_IS_HELD_BY_LONG_RUNNING_SPECULATIVE_SOURCE_GENERATION;KEEP_PRIMARY_RETRY_DEPTH_UNCHANGED_AND_BOUND_ONLY_SPECULATIVE_RETRY_DEPTH_TO_REDUCE_LONG_TAIL_WITHOUT_LOWERING_ANY_QA_OR_SOURCE_GATE",
+    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_CURRENT_WAVE_RUNNING_NEXT_WAVE_EFFECT_PENDING",
     "evidence": {
-      "observedRunId": 35444351457,
-      "pinnedContractSha": "ccfb20d9f114c713af7a37aa0ca147c56f999fc9",
-      "observedCompletedAtDecision": 18,
-      "observedPasses": 0,
-      "observedFailures": 18,
-      "failureDistribution": {
-        "TIMEOUT": 11,
-        "OTHER": 6,
-        "MALFORMED_OUTPUT": 1
+      "completedWave": {
+        "runId": 35444351457,
+        "workerCount": 20,
+        "pass": 0,
+        "fail": 20,
+        "failureRatePct": 100,
+        "failureDistribution": {
+          "TIMEOUT": 13,
+          "OTHER": 6,
+          "MALFORMED_OUTPUT": 1
+        },
+        "actualPeakConcurrency": 20,
+        "bottleneck": "SOURCE_CANDIDATE_GENERATION"
       },
-      "zeroByteTimeoutObserved": true,
-      "representativeSourceContextFiles": 1,
-      "representativeSourceBytes": 12131,
-      "currentWaveIncludesFix": false
+      "currentWave": {
+        "runId": 35445626679,
+        "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
+        "completedWorkersObserved": 8,
+        "inProgressWorkersObserved": 12,
+        "includesSpeculativeRetryBudgetFix": false
+      }
     },
     "contract": {
-      "focusedTimeoutPrefixFields": [
-        "ENGINE",
-        "GOAL",
-        "ALLOWED_EDIT_PATHS",
-        "PRESERVATION_RULES",
-        "EXACT_FIND_RULES"
-      ],
-      "explorationGuidanceRemovedFromTimeoutRetryPrefix": true,
-      "editableFileExcerptStillBounded": true,
-      "readOnlyContextRemoved": true,
-      "timeoutBudgetNotIncreased": true,
+      "primaryJsonAttemptBudget": 3,
+      "primaryFullWebAttemptBudget": 4,
+      "speculativeJsonAttemptBudget": 2,
+      "speculativeFullWebAttemptBudget": 3,
+      "primaryRetryDepthUnchanged": true,
+      "speculativeOnlyOptimization": true,
+      "fullWebMinimumBytesUnchanged": 12000,
       "writableScopeUnchanged": true,
       "qaGateUnchanged": true,
-      "authorityExpansion": false
+      "authorityExpansion": false,
+      "immutableEvidence": [
+        "coding-generation-attempt-budget:<N>",
+        "coding-speculative-attempt-budget:YES"
+      ]
     },
     "implementationCommits": {
-      "source": "342f82f6703b851d88b28eb1fbc07d121f8b7177",
-      "regressionTest": "a9fc8b65aeadecbc72742e09081952fd994d0318"
+      "source": "41eea8d07362a51158cb4b75081f66420eaecd64",
+      "regressionTest": "30c281817019ff8e9a342afb226fd37874891f8f",
+      "workflowTelemetry": "045a3e970db8dd8b69e4824a12814373f69b9096"
     },
     "pending": [
-      "CORE_QA_WITH_TIMEOUT_PREFIX_COMPACTION_TEST",
-      "CURRENT_CCFB20D_20_WAVE_COMPLETE_AND_FAN_IN",
-      "NEXT_WAVE_PIN_342F82F6_OR_LATER",
-      "COMPARE_ZERO_BYTE_TIMEOUT_RATE",
-      "COMPARE_RECOVERABLE_PARTIAL_TIMEOUT_RATE"
+      "CURRENT_CBA1A0F_WAVE_COMPLETE_AND_FAN_IN",
+      "NEXT_WAVE_PIN_41EEA8D0_AND_045A3E97_OR_LATER",
+      "COMPARE_SPECULATIVE_WORKER_P95_DURATION",
+      "COMPARE_WAVE_LONG_TAIL_DURATION",
+      "CONFIRM_NO_PRIMARY_PASS_RATE_REGRESSION"
     ],
     "invariants": {
-      "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
+      "hierarchicalParallelism": true,
       "qualityGatesNotWeakened": true,
-      "directMainGameSourceWriteForbidden": true
+      "directMainGameSourceWriteForbidden": true,
+      "shadowPipelineForbidden": true
     }
   },
   "vibeExecutionLaneContract": {
