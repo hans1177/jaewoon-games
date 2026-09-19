@@ -101,7 +101,6 @@ export function applyHomepageRuntimeInfo({catalog,developmentQueue={},seedState=
   catalog.runtimeAuthority='company-runtime';
   catalog.runtimeInfoAuthority='company-runtime';
   catalog.runtimeSupportedPlatforms=[...PLATFORM_PRIORITY];
-  const rowByGameId=new Map(rows.map(row=>[clean(row.game?.id),row]).filter(([id])=>id));
   for(const game of catalog.games){
     const id=clean(game?.id);if(!id)continue;
     const queue=queueById.get(id)||null,seed=seedById.get(id)||null;
@@ -371,6 +370,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     }
   }
 
+  const rowByGameId=new Map(rows.map(row=>[clean(row.game?.id),row]).filter(([id])=>id));
   for(const game of catalog.games){
     game.lifecycleState=gameLifecycleState(game);
     const project=portfolio.projects.find(row=>row.slug===game.id);
