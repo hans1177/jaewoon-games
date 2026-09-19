@@ -115,6 +115,36 @@ function normalizeCodingStrategyMemory(input={}){
   }
   return{version:2,seenOutcomeIds:uniq(source.seenOutcomeIds||[]),seenNegativeOutcomeIds:uniq(source.seenNegativeOutcomeIds||[]),strategies};
 }
+function normalizeCodingCalibration(input={}){
+  const source=input&&typeof input==='object'?input:{};
+  const contexts={};
+  for(const [key,rowRaw] of Object.entries(source.contexts||{})){
+    const row=rowRaw&&typeof rowRaw==='object'?rowRaw:{};
+    contexts[clean(key)]={
+      verifiedSamples:Math.max(0,Number(row.verifiedSamples)||0),
+      highConfidenceSamples:Math.max(0,Number(row.highConfidenceSamples)||0),
+      highConfidenceFailures:Math.max(0,Number(row.highConfidenceFailures)||0),
+      firstCandidatePasses:Math.max(0,Number(row.firstCandidatePasses)||0),
+      semanticHardGatePasses:Math.max(0,Number(row.semanticHardGatePasses)||0),
+      lastEvidence:clean(row.lastEvidence)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null
+    };
+  }
+  return{version:1,seenOutcomeIds:uniq(source.seenOutcomeIds||[]),contexts};
+}
+function normalizeRegressionHotspots(input={}){
+  const source=input&&typeof input==='object'?input:{};
+  const entries={};
+  for(const [key,rowRaw] of Object.entries(source.entries||{})){
+    const row=rowRaw&&typeof rowRaw==='object'?rowRaw:{};
+    entries[clean(key)]={
+      gameId:clean(row.gameId)||null,target:lower(row.target)||null,kind:clean(row.kind)||null,name:clean(row.name)||null,
+      verifiedRegressionFailures:Math.max(0,Number(row.verifiedRegressionFailures)||0),
+      verifiedPasses:Math.max(0,Number(row.verifiedPasses)||0),
+      lastFailureEvidence:clean(row.lastFailureEvidence)||null,lastPassEvidence:clean(row.lastPassEvidence)||null,lastUpdatedAt:clean(row.lastUpdatedAt)||null
+    };
+  }
+  return{version:1,seenEventIds:uniq(source.seenEventIds||[]),entries};
+}
 export function createMasteryState(seed={}){
   const domains={};
   for(const d of MASTERY_DOMAINS){
@@ -132,6 +162,8 @@ export function createMasteryState(seed={}){
     seenCodePatternIds:uniq(seed.seenCodePatternIds||[]),
     failureSignatures:{...(seed.failureSignatures||{})},
     codingStrategyMemory:normalizeCodingStrategyMemory(seed.codingStrategyMemory),
+    codingCalibration:normalizeCodingCalibration(seed.codingCalibration),
+    regressionHotspots:normalizeRegressionHotspots(seed.regressionHotspots),
     updatedAt:clean(seed.updatedAt)||null
   };
 }
@@ -341,6 +373,96 @@ export function applyVerifiedCodingStrategyOutcomes(stateInput={},queueInput={})
   return{state,added,negativeAdded};
 }
 
+function decodeEvidenceArray(evidence=[],prefix=''){
+  const marker=(evidence||[]).map(clean).filter(value=>value.startsWith(prefix)).at(-1);
+  if(!marker)return[];
+  try{const parsed=JSON.parse(decodeURIComponent(marker.slice(prefix.length)));return Array.isArray(parsed)?uniq(parsed):[];}catch{return[];}
+}
+function codingVerificationOutcome(task={}){
+  const evidence=(task.evidence||[]).map(clean).filter(Boolean);
+  const pass=evidence.includes('role-result:regression:PASS')&&evidence.includes('role-result:review:PASS')&&evidence.includes('candidate-identity:PASS');
+  const regressionFail=evidence.some(value=>value==='failure-cause:fan-in-regression-failed'||value.startsWith('failure-cause:fan-in-regression-failed:'));
+  if(pass)return'PASS';
+  if(regressionFail)return'REGRESSION_FAIL';
+  return null;
+}
+function hotspotRisk(row={}){
+  const failures=Math.max(0,Number(row.verifiedRegressionFailures)||0),passes=Math.max(0,Number(row.verifiedPasses)||0);
+  const score=Math.max(0,failures*3-passes);
+  return{score,level:failures>=3&&score>=6?'HIGH':failures>=1&&score>=2?'MEDIUM':'LOW'};
+}
+export function applyVerifiedCodingCalibration(stateInput={},queueInput={}){
+  const state=createMasteryState(stateInput);
+  const calibration=normalizeCodingCalibration(state.codingCalibration);
+  const hotspots=normalizeRegressionHotspots(state.regressionHotspots);
+  const seen=new Set(calibration.seenOutcomeIds||[]),hotspotSeen=new Set(hotspots.seenEventIds||[]);
+  let added=0,hotspotEventsAdded=0;
+  for(const task of queueInput?.tasks||[]){
+    const evidence=(task?.evidence||[]).map(clean).filter(Boolean);
+    const outcome=codingVerificationOutcome(task);
+    if(!outcome)continue;
+    const confidence=upper(lastEvidenceMarker(evidence,'coding-responsibility-confidence:'))||'LOW';
+    const gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
+    const run=evidence.find(value=>value.startsWith('actions-run:'))||evidence.filter(value=>value.startsWith('vibe2/candidate/')).at(-1)||clean(task.id);
+    const eventId='coding_cal_'+hash([clean(task.id),run,outcome,confidence].join('|'));
+    if(!seen.has(eventId)){
+      const contextKeys=['target:'+target,'game:'+gameId];
+      for(const key of contextKeys){
+        const row=calibration.contexts[key]||{verifiedSamples:0,highConfidenceSamples:0,highConfidenceFailures:0,firstCandidatePasses:0,semanticHardGatePasses:0,lastEvidence:null,lastUpdatedAt:null};
+        row.verifiedSamples+=1;
+        if(confidence==='HIGH'){row.highConfidenceSamples+=1;if(outcome==='REGRESSION_FAIL')row.highConfidenceFailures+=1;}
+        if(outcome==='PASS'&&lastEvidenceMarker(evidence,'coding-candidate-first-attempt:')==='YES')row.firstCandidatePasses+=1;
+        if(outcome==='PASS'&&lastEvidenceMarker(evidence,'coding-semantic-diff-mode:')==='HARD_ENFORCE'&&lastEvidenceMarker(evidence,'coding-semantic-diff-pass:')==='YES')row.semanticHardGatePasses+=1;
+        row.lastEvidence=eventId;row.lastUpdatedAt=new Date().toISOString();calibration.contexts[key]=row;
+      }
+      seen.add(eventId);added+=1;
+    }
+    const primaryTargets=decodeEvidenceArray(evidence,'coding-primary-targets:');
+    const primarySystems=decodeEvidenceArray(evidence,'coding-primary-systems:');
+    const hotspotEventId='coding_hotspot_'+hash([clean(task.id),run,outcome,primaryTargets.join(','),primarySystems.join(',')].join('|'));
+    if(!hotspotSeen.has(hotspotEventId)){
+      const refs=[...primaryTargets.map(name=>({kind:'SYMBOL',name})),...primarySystems.map(name=>({kind:'SYSTEM',name}))];
+      for(const ref of refs){
+        const key=[gameId,ref.kind,clean(ref.name)].join('|');
+        const row=hotspots.entries[key]||{gameId,target,kind:ref.kind,name:clean(ref.name),verifiedRegressionFailures:0,verifiedPasses:0,lastFailureEvidence:null,lastPassEvidence:null,lastUpdatedAt:null};
+        if(outcome==='REGRESSION_FAIL'){row.verifiedRegressionFailures+=1;row.lastFailureEvidence=hotspotEventId;}else{row.verifiedPasses+=1;row.lastPassEvidence=hotspotEventId;}
+        row.lastUpdatedAt=new Date().toISOString();hotspots.entries[key]=row;
+      }
+      hotspotSeen.add(hotspotEventId);hotspotEventsAdded+=1;
+    }
+  }
+  calibration.seenOutcomeIds=[...seen].slice(-5000);
+  hotspots.seenEventIds=[...hotspotSeen].slice(-5000);
+  state.codingCalibration=calibration;state.regressionHotspots=hotspots;state.updatedAt=new Date().toISOString();
+  return{state,added,hotspotEventsAdded};
+}
+export function responsibilityCalibrationForTask({task={},stateInput={}}={}){
+  const state=createMasteryState(stateInput),gameId=clean(task.gameId)||'unknown',target=lower(task.target)||'unknown';
+  const gameRow=state.codingCalibration?.contexts?.['game:'+gameId]||null,targetRow=state.codingCalibration?.contexts?.['target:'+target]||null;
+  const chosen=gameRow?.highConfidenceSamples>=3?gameRow:targetRow?.highConfidenceSamples>=3?targetRow:gameRow||targetRow;
+  const samples=Number(chosen?.highConfidenceSamples||0),failures=Number(chosen?.highConfidenceFailures||0);
+  const failureRatePct=samples?Number(((failures/samples)*100).toFixed(1)):0;
+  const recommendation=samples>=3&&failureRatePct>=34?'DOWNGRADE_HIGH_TO_MEDIUM':'KEEP_RAW_CONFIDENCE';
+  return{recommendation,highConfidenceSamples:samples,highConfidenceFailures:failures,highConfidenceFailureRatePct:failureRatePct,extraReadOnlyExploration:recommendation==='DOWNGRADE_HIGH_TO_MEDIUM',writableScopeExpansionAllowed:false,authorityExpanded:false};
+}
+export function regressionHotspotRiskForTask({task={},stateInput={}}={}){
+  const state=createMasteryState(stateInput),gameId=clean(task.gameId)||'unknown';
+  const entries=Object.values(state.regressionHotspots?.entries||{}).filter(row=>clean(row.gameId)===gameId).map(row=>({...row,risk:hotspotRisk(row)}));
+  entries.sort((a,b)=>b.risk.score-a.risk.score||Number(b.verifiedRegressionFailures||0)-Number(a.verifiedRegressionFailures||0));
+  const top=entries.slice(0,8);
+  const riskLevel=top.some(row=>row.risk.level==='HIGH')?'HIGH':top.some(row=>row.risk.level==='MEDIUM')?'MEDIUM':'LOW';
+  return{riskLevel,entries:top,requiresFocusedDependentQa:riskLevel!=='LOW',preferVerifiedStrategy:riskLevel!=='LOW',increaseCandidateDiversity:riskLevel==='HIGH',writableScopeExpansionAllowed:false,authorityExpanded:false};
+}
+export function codingRiskGuidance({calibration={},hotspot={}}={}){
+  const rows=[];
+  if(clean(calibration?.recommendation)==='DOWNGRADE_HIGH_TO_MEDIUM')rows.push('[RESPONSIBILITY CONFIDENCE CALIBRATION] Prior verified HIGH-confidence work regressed often enough that raw HIGH must be treated as MEDIUM; perform extra read-only exploration before writing.');
+  if(clean(hotspot?.riskLevel)&&clean(hotspot.riskLevel)!=='LOW'){
+    rows.push('[REGRESSION HOTSPOT MEMORY] risk='+clean(hotspot.riskLevel));
+    for(const row of hotspot.entries||[])rows.push(row.kind+':'+row.name+' failures='+Number(row.verifiedRegressionFailures||0)+' passes='+Number(row.verifiedPasses||0));
+    rows.push('Hotspot memory requires focused dependent QA and a proven strategy when available. It MUST NOT expand writable scope or bypass QA.');
+  }
+  return rows.join('\n');
+}
 export function preferredCodingStrategyForTask({task={},stateInput={}}={}){
   const state=createMasteryState(stateInput);
   const rows=Object.entries(state.codingStrategyMemory?.strategies||{}).map(([strategy,row])=>({strategy,...row}));
@@ -948,16 +1070,19 @@ export function refreshLearningMotor({stateInput={},experienceInput={},codePatte
   const applied=applyVerifiedExperienceToMastery(stateInput,experienceInput);
   const patternApplied=applyVerifiedCodePatternsToMastery(applied.state,codePatternsInput);
   const strategyApplied=applyVerifiedCodingStrategyOutcomes(patternApplied.state,queueInput);
-  const benchmark=buildBenchmarkLadder(strategyApplied.state);
-  const idlePractice=buildIdlePracticeQueue(strategyApplied.state);
-  const tournament=enrichQueueForCandidateTournaments(queueInput,strategyApplied.state);
+  const calibrationApplied=applyVerifiedCodingCalibration(strategyApplied.state,queueInput);
+  const benchmark=buildBenchmarkLadder(calibrationApplied.state);
+  const idlePractice=buildIdlePracticeQueue(calibrationApplied.state);
+  const tournament=enrichQueueForCandidateTournaments(queueInput,calibrationApplied.state);
   const practice=injectIdlePracticeTask(tournament.queue,idlePractice);
   return {
-    state:strategyApplied.state,
+    state:calibrationApplied.state,
     addedExperience:applied.added,
     addedCodePatterns:patternApplied.added,
     addedCodingStrategyOutcomes:strategyApplied.added,
     addedCodingStrategyNegativeOutcomes:strategyApplied.negativeAdded||0,
+    addedCodingCalibrationOutcomes:calibrationApplied.added||0,
+    addedRegressionHotspotEvents:calibrationApplied.hotspotEventsAdded||0,
     benchmark,
     idlePractice,
     handoffs:buildWebRobloxHandoffs(companyQueueInput,experienceInput,practice.queue,roadmapInput),
@@ -991,6 +1116,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   console.log(`VIBE2_MASTERY_NEW_CODE_PATTERNS=${result.addedCodePatterns}`);
   console.log(`VIBE2_CODING_STRATEGY_OUTCOMES_ADDED=${result.addedCodingStrategyOutcomes||0}`);
   console.log(`VIBE2_CODING_STRATEGY_NEGATIVE_OUTCOMES_ADDED=${result.addedCodingStrategyNegativeOutcomes||0}`);
+  console.log(`VIBE2_CODING_CALIBRATION_OUTCOMES_ADDED=${result.addedCodingCalibrationOutcomes||0}`);
+  console.log(`VIBE2_REGRESSION_HOTSPOT_EVENTS_ADDED=${result.addedRegressionHotspotEvents||0}`);
   console.log(`VIBE2_BENCHMARK_CASES=${result.benchmark.cases.length}`);
   console.log(`VIBE2_IDLE_PRACTICE_DRILLS=${result.idlePractice.drills.length}`);
   console.log(`VIBE2_WEB_ROBLOX_HANDOFFS=${result.handoffs.handoffs.length}`);
