@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -67,5 +67,23 @@
     "structuredEvidenceBeforeCompletion": true,
     "rawLogAloneCannotProvePass": true,
     "centralPolicyAndArchitectureMustMatchExecution": true
+  },
+  "orchestrationLogContract": {
+    "primaryAiMarkers": [
+      "PRIMARY_AI_ASSIGNMENT_ID",
+      "PRIMARY_AI_REVIEW=PASS|REWORK",
+      "PRIMARY_AI_ACCEPTANCE=YES|NO"
+    ],
+    "externalWorkerMarkers": [
+      "EXTERNAL_AI_WORKER_ID",
+      "ASSIGNED_SCOPE",
+      "CHANGED_SCOPE",
+      "VERIFICATION_EVIDENCE",
+      "FAILURE_STAGE",
+      "FAILURE_SIGNATURE"
+    ],
+    "finalAcceptanceRequiresPrimaryAiReview": true,
+    "workerSelfAcceptanceForbidden": true,
+    "reworkMustReferencePriorAssignment": true
   }
 }
