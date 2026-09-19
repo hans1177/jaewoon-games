@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "<div id=\"enemies\"></div>",
+      "replace": "<div id=\"enemies\"></div><div id=\"player\">Player</div><div id=\"progress\"></div><div id=\"save-state\"></div>"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
