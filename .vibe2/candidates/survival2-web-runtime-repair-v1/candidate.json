@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "            } else if (e.key === \"ArrowUp\") {",
+      "replace": "gameState.player.position.x += 2;\\n\\n            } else if (e.key === \"ArrowUp\") {\\n                gameState.player.position.y -= 2;\\n            } else if (e.key === \"ArrowDown\") {"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
