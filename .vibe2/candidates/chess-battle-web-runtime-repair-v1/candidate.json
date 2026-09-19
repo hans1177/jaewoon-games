@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 recovered partial timeout edit",
+  "expectedEffect": "recovered complete edit from bounded timeout output",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "color: #333;",
+      "replace": "color: #333;\n    font-size: 16px;\n    font-family: Arial, sans-serif;\n    font-weight: bold;\n    text-align: center;\n    padding: 20px;\n    background-color: #f9f9f9;\n    border: 1px solid #ccc;\n    border-radius: 8px;\n    box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
