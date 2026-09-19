@@ -41,6 +41,27 @@ test('exploration worker collects reusable impact context without changing sourc
   assert.equal(fs.readFileSync(player,'utf8'),before);
 });
 
+test('missing source root stays blocked unless explicit Web bootstrap authority is present',()=>{
+  const cwd=tempRoot();
+  const blocked=workOrder();
+  blocked.target='web';
+  blocked.gameId='missing-web';
+  blocked.source={root:'web-games/missing-web',responsibleFiles:['web-games/missing-web/index.html'],ignoredPaths:[]};
+  assert.throws(()=>exploreVibe2WorkOrder({cwd,order:blocked}),/exploration source root 없음/);
+
+  const allowed=structuredClone(blocked);
+  allowed.taskId='missing-web-bootstrap';
+  allowed.goal='FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED';
+  allowed.selectedTask={evidence:['source-root-bootstrap-required']};
+  allowed.workerPolicy={sourceRootBootstrapAllowed:true};
+  const result=exploreVibe2WorkOrder({cwd,order:allowed});
+  assert.equal(result.bootstrap,true);
+  assert.equal(result.sourceWrite,false);
+  assert.equal(result.existingWebAssessment.strategy,'FULL_REBUILD');
+  assert.deepEqual(result.responsibleFiles,['index.html']);
+  assert.equal(fs.existsSync(path.join(cwd,'web-games/missing-web')),false);
+});
+
 test('precomputed exploration artifact is reused instead of rescanning',()=>{
   const cwd=tempRoot();
   write(path.join(cwd,'unity-games/demo/Assets/Player.cs'),'class Player {}\n');

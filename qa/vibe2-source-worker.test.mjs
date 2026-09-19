@@ -93,6 +93,35 @@ test('responsible file boundary rejects unrelated model path', async () => {
   await assert.rejects(runVibe2SourceWorker({ cwd, responseFile }), /책임 파일 범위 밖 수정 금지/);
 });
 
+test('approved missing Web root produces isolated index.html bootstrap candidate without touching source', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'bootstrap.html');
+  const workOrder=order({target:'web',root:'web-games/missing-web',responsibleFiles:['web-games/missing-web/index.html'],taskId:'missing-web-bootstrap'});
+  workOrder.gameId='missing-web';
+  workOrder.goal='FULL_WEB_GAME_REBUILD SOURCE_ROOT_BOOTSTRAP_ALLOWED';
+  workOrder.selectedTask={evidence:['source-root-bootstrap-required','existing-web-source:MISSING']};
+  workOrder.workerPolicy={directMainWrite:false,sourceRootBootstrapAllowed:true,fullFileRewriteAllowed:true};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const body='let frame=0;'+ 'frame+=1;'.repeat(220);
+  const replacement=`<!doctype html><html><body><canvas id="game"></canvas><script>${body}</script></body></html>`;
+  write(responseFile,replacement);
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.sourceRootBootstrap,true);
+  assert.equal(result.fullFileRewriteAllowed,true);
+  assert.deepEqual(result.changedFiles,['index.html']);
+  assert.equal(fs.existsSync(path.join(cwd,'web-games/missing-web')),false);
+  assert.equal(fs.readFileSync(path.join(cwd,'.vibe2/candidates/missing-web-bootstrap/files/index.html'),'utf8').trim(),replacement);
+});
+
+test('missing Web root without bootstrap authority remains rejected', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'unused.html');
+  const workOrder=order({target:'web',root:'web-games/missing-web',responsibleFiles:['web-games/missing-web/index.html'],taskId:'missing-web-denied'});
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,'<!doctype html><html><body>unused</body></html>');
+  await assert.rejects(runVibe2SourceWorker({cwd,responseFile}),/source root 없음/);
+});
+
 test('existing web game text maintenance is allowed', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');

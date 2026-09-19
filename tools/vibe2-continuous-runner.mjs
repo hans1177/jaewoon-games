@@ -221,6 +221,11 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   ].filter(Boolean).join('\n'):'';
   const executionGoal = [packageGuidance, reusedGuidance, task.goal, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
+  const sourceRootBootstrapAllowed=plan.target==='web'
+    &&(task.evidence||[]).includes('source-root-bootstrap-required')
+    &&/SOURCE_ROOT_BOOTSTRAP_ALLOWED/.test(clean(task.goal))
+    &&responsibleFiles.length===1
+    &&/\/index\.html$/i.test(clean(responsibleFiles[0]));
   const qa = freezeList([
     ...(plan.qa || []),
     'design-intelligence-contract',
@@ -265,6 +270,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
       authoringGeneratorRequestAllowed:true,
       authoringGeneratorRequestIsNotCompletion:true,
       explorationRequired:true, explorationWorker:'tools/vibe2-exploration-worker.mjs', explorationSourceWrite:false,
+      sourceRootBootstrapAllowed,
       roleSeparation:true, sameFileParallelWrite:false,
       speculativeParallelism:tournament.candidateCount>1, speculativeVariants:tournament.candidateCount
     })

@@ -31,6 +31,15 @@ function extensions(target){const set=TARGET_EXTENSIONS[clean(target).toLowerCas
 function sourcePrefix(target){if(target==='roblox')return'roblox-games/';if(target==='web')return'web-games/';if(target==='unity')return'unity-games/';if(target==='unreal')return'unreal-games/';if(target==='godot')return'godot-games/';return'';}
 function assertRoot(root,target){const normalized=posix(root),prefix=sourcePrefix(target);if(!prefix||!normalized.startsWith(prefix)||normalized.includes('..'))throw new Error(`허용되지 않은 exploration source root: ${root}`);return normalized;}
 function normalizeRelative(value,root){const normalized=posix(value);return normalized.startsWith(`${root}/`)?normalized.slice(root.length+1):normalized;}
+function sourceRootBootstrapAllowed(order,target,root){
+  const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
+  const responsible=unique(order?.source?.responsibleFiles||[]).map(v=>normalizeRelative(v,root));
+  return target==='web'
+    &&order?.workerPolicy?.sourceRootBootstrapAllowed===true
+    &&evidence.has('source-root-bootstrap-required')
+    &&responsible.length===1
+    &&responsible[0]==='index.html';
+}
 function sha(text){return crypto.createHash('sha256').update(String(text)).digest('hex');}
 function safeRead(file){try{const stat=fs.statSync(file);if(!stat.isFile()||stat.size>MAX_READ_BYTES)return'';return fs.readFileSync(file,'utf8');}catch{return'';}}
 function listFiles(root,target,ignored=[]){const allowed=extensions(target),ignore=ignored.map(posix).filter(Boolean),rows=[];const walk=current=>{if(rows.length>=MAX_SCAN_FILES)return;for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(rows.length>=MAX_SCAN_FILES)return;if(entry.isDirectory()&&IGNORED_DIRS.has(entry.name))continue;const full=path.join(current,entry.name),relative=posix(path.relative(root,full));if(ignore.some(v=>relative===v||relative.startsWith(`${v}/`)))continue;if(entry.isDirectory())walk(full);else{const ext=path.extname(entry.name).toLowerCase();if(allowed.has(ext)&&!BINARY_EXTENSIONS.has(ext))rows.push({full,relative,ext});}}};walk(root);return rows;}
@@ -58,8 +67,28 @@ export function exploreVibe2WorkOrder({cwd=process.cwd(),order={},outputFile=''}
   const target=clean(order.target).toLowerCase();
   const rootRelative=assertRoot(order?.source?.root,target);
   const root=path.resolve(cwd,rootRelative);
-  if(!fs.existsSync(root)||!fs.statSync(root).isDirectory())throw new Error(`exploration source root 없음: ${rootRelative}`);
   const responsible=unique(order?.source?.responsibleFiles||[]).map(v=>normalizeRelative(v,rootRelative));
+  const bootstrap=sourceRootBootstrapAllowed(order,target,rootRelative);
+  const rootExists=fs.existsSync(root)&&fs.statSync(root).isDirectory();
+  if(!rootExists&&!bootstrap)throw new Error(`exploration source root 없음: ${rootRelative}`);
+  if(!rootExists&&bootstrap){
+    const baseMainSha=clean(process.env.VIBE2_BASE_MAIN_SHA)||null;
+    const diagnosticEvidence=unique(order?.workPackage?.sharedContext?.diagnosticEvidence||[]);
+    const existingWebAssessment={
+      strategy:'FULL_REBUILD',
+      reasons:['source-root-bootstrap-required','approved-development-queue-bootstrap'],
+      evidence:{approvedScopeCoveragePct:100,gameplaySignalCount:0}
+    };
+    const reuseKey=sha(JSON.stringify({taskId:order.taskId,baseMainSha,rootRelative,bootstrap:true})).slice(0,24);
+    const handoff={
+      version:1,role:'exploration',sourceWrite:false,reused:false,bootstrap:true,
+      taskId:clean(order.taskId)||null,packageId:clean(order?.workPackage?.id)||null,target,sourceRoot:rootRelative,baseMainSha,
+      responsibleFiles:responsible,impactFiles:responsible,contextFiles:[],relatedFiles:[],testTargets:[],
+      protectedScopeSignals:[],diagnosticEvidence,existingWebAssessment,fileDigests:[],reuseKey,generatedAt:new Date().toISOString()
+    };
+    if(outputFile)writeJson(path.resolve(cwd,outputFile),handoff);
+    return handoff;
+  }
   const responsibleSet=new Set(responsible);
   const responsibleNames=new Set(responsible.map(v=>path.basename(v)).filter(Boolean));
   const responsibleDirs=new Set(responsible.map(v=>posix(path.dirname(v))).filter(Boolean));

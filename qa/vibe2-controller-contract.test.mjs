@@ -13,6 +13,7 @@ import { buildVibeDesignIntelligence, DESIGN_INTELLIGENCE_STAGES } from '../tool
 const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
+const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
 
 test('Unreal C++ routes to text worker but Blueprint/uasset route to editor',()=>{
   const adapter=createVibeEngineAdapter({target:'unreal',gameSlug:'demo'});
@@ -70,6 +71,13 @@ test('runtime enables DAG sharding work stealing and bounded parallelism',()=>{
   assert.equal(runtime.continuous.entryWorkflow,'.github/workflows/vibe2-24h-runner.yml');
 });
 
+test('work order exposes Web source bootstrap authority only from explicit task evidence',()=>{
+  assert.match(continuousRunnerSource,/sourceRootBootstrapAllowed=plan\.target==='web'/);
+  assert.match(continuousRunnerSource,/task\.evidence\|\|\[\]\)\.includes\('source-root-bootstrap-required'\)/);
+  assert.match(continuousRunnerSource,/SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.match(continuousRunnerSource,/sourceRootBootstrapAllowed,/);
+});
+
 test('controller reserves a batch and fans workers out with a bounded matrix',()=>{
   assert(workflow.includes('reserve-batch'));
   assert(workflow.includes('strategy:'));
@@ -87,6 +95,7 @@ test('24h planner uses latest main contract and tools while control branch store
   assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
   assert(safetyNetWorkflow.includes('--runtime=/tmp/vibe2-main/vibe2-runtime.json'));
   assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+  assert(safetyNetWorkflow.includes('--development-queue=/tmp/vibe2-company-runtime-queue.json'));
   assert(safetyNetWorkflow.includes("from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js'"));
   assert.equal(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'),false);
   assert.equal(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs \\'),false);

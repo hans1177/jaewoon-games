@@ -106,6 +106,48 @@ test('development-confirmed Web enters Vibe planning before homepage publication
   assert.doesNotMatch(result.task.goal,/FULL_WEB_GAME_REBUILD/);
 });
 
+test('canonical development queue bootstraps missing Web source roots instead of dropping active games',()=>{
+  const root=tempRepo();
+  const gameId='missing-web-base';
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{
+      id:gameId,
+      name:'Missing Web Base',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      lifecycleState:'ACTIVE',
+      homepageWebPlayable:false,
+      hasWebArchive:false
+    }]},
+    developmentQueue:{items:[{
+      gameId,
+      gameName:'Missing Web Base',
+      status:'ACTIVE',
+      productionClass:'DEVELOPMENT_CONFIRMED',
+      currentStep:'VIBE_WEB_BASE_IMPLEMENTATION',
+      canonicalState:'WEB_VIBE_REPAIR_REQUIRED',
+      webSourcePath:'web-games/missing-web-base',
+      sourcePath:'web-games/missing-web-base',
+      saveNormalizationRequired:true
+    }]},
+    queue:{maxConcurrentTasks:4,tasks:[]},
+    repoRoot:root,
+    maxConcurrentTasks:4
+  });
+  assert.equal(result.planned,true);
+  const task=result.tasks.find(row=>row.gameId===gameId);
+  assert.ok(task);
+  assert.equal(task.id,'missing-web-base-web-base-implementation-v1');
+  assert.equal(task.target,'web');
+  assert.equal(task.sourceRoot,'web-games/missing-web-base');
+  assert.equal(task.ownerDirective,true);
+  assert.ok(task.evidence.includes('vibe2-auto-planner:company-development-queue'));
+  assert.ok(task.evidence.includes('source-root-bootstrap-required'));
+  assert.ok(task.evidence.includes('existing-web-source:MISSING'));
+  assert.match(task.goal,/SOURCE_ROOT_BOOTSTRAP_ALLOWED/);
+  assert.equal(fs.existsSync(path.join(root,'web-games',gameId,'index.html')),false);
+});
+
 test('central DESIGN_ONLY authority cancels stale production implementation without touching study work',()=>{
   const root=tempRepo();
   const stale={id:'stale-dev',gameId:'crystal-defense',target:'web',department:'development',type:'implementation',sourceRoot:'web-games/crystal-defense',goal:'old development work',releaseState:'development-confirmed',status:'running',reservationId:'run-1',reservationRunId:'run-1',reservationRunAttempt:1,reservedAt:'2026-09-18T10:00:00Z'};
