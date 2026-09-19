@@ -87,14 +87,19 @@ test('runtime promotion survives stale main DESIGN_ONLY mirrors only with matchi
   const catalog={games:[{id:'promoted',name:'promoted',genre:['RPG'],productionClass:'DESIGN_ONLY',productionClassSource:'OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17',homepageCategory:'design-only',selectedPlatform:'UNITY',homepageWebPlayable:true,hasWebArchive:true}]};
   const developmentQueue={items:[{gameId:'promoted',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY',status:'ACTIVE'}]};
   const seedState={seeds:[{gameId:'promoted',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY'}]};
-  const result=syncProductionClasses({portfolio,catalog,artbooks:{artbooks:[]},developmentQueue,seedState,filesystem:fsStub});
+  const result=syncProductionClasses({portfolio,catalog,artbooks:{artbooks:[]},developmentQueue:{items:[]},seedState,filesystem:fsStub});
   assert.deepEqual(result.state.developmentConfirmedGameIds,['P']);
   assert.equal(portfolio.projects[0].productionClass,'DEVELOPMENT_CONFIRMED');
-  assert.equal(portfolio.projects[0].productionClassSource,'COMPANY_RUNTIME_DEVELOPMENT_QUEUE');
+  assert.equal(portfolio.projects[0].productionClassSource,'COMPANY_RUNTIME_PROMOTED_SEED');
   assert.equal(portfolio.projects[0].targetEngine,'unity-android');
   assert.equal(catalog.games[0].productionClass,'DEVELOPMENT_CONFIRMED');
-  assert.equal(catalog.games[0].productionClassSource,'COMPANY_RUNTIME_DEVELOPMENT_QUEUE');
+  assert.equal(catalog.games[0].productionClassSource,'COMPANY_RUNTIME_PROMOTED_SEED');
   assert.equal(catalog.games[0].homepageCategory,'development-confirmed');
+
+  const withQueue=syncProductionClasses({portfolio,catalog,artbooks:{artbooks:[]},developmentQueue,seedState,filesystem:fsStub});
+  assert.deepEqual(withQueue.state.developmentConfirmedGameIds,['P']);
+  assert.equal(portfolio.projects[0].productionClassSource,'COMPANY_RUNTIME_DEVELOPMENT_QUEUE');
+  assert.equal(catalog.games[0].productionClassSource,'COMPANY_RUNTIME_DEVELOPMENT_QUEUE');
 
   const resetAgain=syncProductionClasses({
     portfolio,
