@@ -108,7 +108,14 @@ for(const item of Array.isArray(developmentQueue?.items)?developmentQueue.items:
   const id=clean(item?.gameId),game=byId.get(id);
   if(!id||removed.has(id)||!game||!lifecycleAllowsDevelopment(game))continue;
   if(clean(item?.status).toUpperCase()!=='ACTIVE'||stateFromCatalog(game)!=='development-confirmed')continue;
-  if(rows.some(r=>r.gameId===id&&r.engine==='web'))continue;
+  const existingWeb=rows.find(r=>r.gameId===id&&r.engine==='web');
+  if(existingWeb){
+    existingWeb.queueCurrentStep=clean(item?.currentStep);
+    existingWeb.queueCanonicalState=clean(item?.canonicalState);
+    existingWeb.saveNormalizationRequired=item?.saveNormalizationRequired===true;
+    existingWeb.companyDevelopmentQueueSource=true;
+    continue;
+  }
   const root=posix(item?.webSourcePath||item?.sourcePath||`web-games/${id}`);
   if(!/^web-games\/[a-zA-Z0-9._-]+$/.test(root))continue;
   rows.push({
