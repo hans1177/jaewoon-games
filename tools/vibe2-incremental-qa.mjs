@@ -218,6 +218,7 @@ function runPresentationStaticQa({root,data={},changed=[]}={}){
     require('MOBILE_INPUT',/(?:pointer|touch|virtual.?stick|joystick)/i.test(text));
     require('FRAME_LOOP_OR_STABLE_RENDER',/(?:requestAnimationFrame|RenderStepped|Update\s*\(|_process\s*\()/i.test(text));
     require('PRESENTATION_BUDGET_OR_LIFECYCLE',/(?:pool|maxParticles|maxEffects|devicePixelRatio|visibilitychange|pagehide|cleanup|dispose|remove|ttl|duration)/i.test(text));
+    require('PRESENTATION_CONTRACT_MARKER',/data-presentation-quality-version=["']1["']/i.test(text));
   }
   if(issues.length)throw new Error(`PRESENTATION_STATIC_QA_FAILED:${pass}:${issues.join('|')}`);
   return{
