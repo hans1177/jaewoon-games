@@ -305,7 +305,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     const runtimeClass=runtimeClassFor(project.slug);
     const productionClass=runtimeClass?.productionClass||productionClassOf(project,game);
     const runtimeDevelopment=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&Boolean(runtimeClass);
-    const recoverableMissingSourceHold=runtimeDevelopment&&clean(project?.mode).toUpperCase()==='HOLD'&&clean(project?.profileStatus).toUpperCase()==='HOLD_MISSING_SOURCE';
+    const recoverableMissingSourceHold=runtimeDevelopment&&clean(project?.mode).toUpperCase()==='HOLD'&&/^HOLD_(?:MISSING_SOURCE|REDIRECT_ONLY)$/.test(clean(project?.profileStatus).toUpperCase());
     const sourceReady=Boolean(clean(project.sourcePath)&&filesystem?.existsSync?.(project.sourcePath));
     const hold=(isHold(project)&&!recoverableMissingSourceHold)||(!sourceReady&&!runtimeDevelopment)||!catalogPresent||!lifecycleAllowsDevelopment(game);
     const book=latestBook(artbooks,project.slug);
@@ -334,7 +334,7 @@ export function syncProductionClasses({portfolio,catalog,artbooks,developmentQue
     delete project.productionTierSource;
     if(targetPlatform)project.selectedPlatform=targetPlatform;
     project.targetPlatformReady=row.targetPlatformReady;
-    const recoverableMissingSourceHold=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&clean(project?.mode).toUpperCase()==='HOLD'&&clean(project?.profileStatus).toUpperCase()==='HOLD_MISSING_SOURCE';
+    const recoverableMissingSourceHold=productionClass===PRODUCTION_CLASSES.DEVELOPMENT_CONFIRMED&&clean(project?.mode).toUpperCase()==='HOLD'&&/^HOLD_(?:MISSING_SOURCE|REDIRECT_ONLY)$/.test(clean(project?.profileStatus).toUpperCase());
     if(isHold(project)&&!recoverableMissingSourceHold)continue;
     if(productionClass===PRODUCTION_CLASSES.RELEASE_CONFIRMED){
       project.profileStatus='RELEASE_CONFIRMED';
