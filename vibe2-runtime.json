@@ -1,5 +1,5 @@
 {
-  "version": 13,
+  "version": 14,
   "mode": "continuous-core",
   "documentation": {
     "humanDocuments": [],
@@ -211,7 +211,13 @@
     "staleTelemetryResetsToMax": true,
     "laneSpecificPressurePreferred": true,
     "policyConcurrencyLimit": null,
-    "externalBatchMax": 256
+    "externalBatchMax": 256,
+    "ownerMinimumWave": 20,
+    "ownerMinimumWaveAuthority": "OWNER_DIRECTIVE_2026-09-19",
+    "ownerMinimumWaveAppliedTo": [
+      "reserve",
+      "fan-in-adaptive-update"
+    ]
   },
   "sources": {
     "queue": ".vibe2/queue.json",
