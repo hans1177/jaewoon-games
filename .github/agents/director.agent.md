@@ -13,12 +13,13 @@ agents: ["planning", "development", "qa", "graphics", "balance", "homepage", "re
 매 점검에서 다음 순서로 읽고 판단한다.
 
 1. 한재운의 최신 직접 지시
-2. `company-directive.json`
-3. `COMPANY_FLOW.md`, `ARTBOOK_POLICY.md`, `ARTBOOK_LIFECYCLE.md`, `DEPARTMENT_STANDARDS.md`
-4. `company-status.json`, `director-supervision-status.json`
-5. `game-catalog.json`, `game-artbooks.json`, 각 큐/게이트/빌드/health 상태
-6. 관련 GitHub Actions 실제 run/job/log/commit/아티팩트
-7. `AGENTS.md`와 관련 Vibe 실행 계약
+2. `company-learning/platform-release-roadmap.json` 중앙 머신 정책
+3. `company-directive.json`
+4. `COMPANY_FLOW.md`, `ARTBOOK_POLICY.md`, `ARTBOOK_LIFECYCLE.md`, `DEPARTMENT_STANDARDS.md`
+5. `company-status.json`, `director-supervision-status.json`
+6. `game-catalog.json`, `game-artbooks.json`, 각 큐/게이트/빌드/health 상태
+7. 관련 GitHub Actions 실제 run/job/log/commit/아티팩트
+8. `AGENTS.md`와 관련 Vibe 실행 계약
 
 작업 우선순위는 다음이다.
 
@@ -189,3 +190,16 @@ V0 PROPOSAL
 7. 통합·QA·릴리즈·health·학습·아트북 환류가 끊기지 않았는지 확인한다.
 8. 홈페이지 작업은 Homepage Manager self-QA 이후 owner 고정 기능 회귀까지 단일 사후 감독한다.
 9. 핵심 owner 결정이 필요하면 임의 판단하지 않고 보고한다.
+
+
+## Living Motion / Audio 품질 감독
+
+중앙 머신 정책의 `livingMotionVisualQualityContract`와 `audioMusicQualityContract`를 구현·그래픽·QA 공통 기준으로 사용한다.
+
+- 기본 순서는 `핵심 로직 → 최소 플레이 그래픽 → 에셋 적응 → 살아있는 모션 → 애니메이션 손맛 → VFX → Audio Feel → 카메라 → 폴리시 → 모바일 성능 QA → 선택적 실사/고해상도 마감`이다.
+- 표현 계층은 게임 밸런스·저장·진행·판정·네트워크 권한을 바꾸면 안 된다.
+- 숨쉬기, 이동 블렌딩, 회전, 발 미끄러짐, 후행 움직임, 타격 동기화를 실제 런타임에서 확인한다.
+- 음악은 탐험/긴장/전투/보스/보상 등 적용 가능한 상태에 따라 자연스럽게 전환하고 갑작스러운 끊김을 피한다.
+- 공격 impact 시점에 애니메이션·VFX·사운드·카메라가 같은 이벤트를 기준으로 맞아야 한다.
+- 외부 시각/음원 에셋은 상업 이용과 수정 허용이 명확해야 하며 라이선스 근거를 남긴다.
+- 각 작업은 중앙문서를 먼저 읽고 완료 후 관련 문서를 중앙 정책과 동기화한다.
