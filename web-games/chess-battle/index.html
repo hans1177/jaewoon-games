@@ -350,7 +350,7 @@ let progression = 0;
             resource += 5;
         }
 
-        if (progression >= 10) {
+if (progression >= 10) {\n    gameState.gameOver = true;\n    gameState.result = 'Progression complete! You have gained 50 resources.';\n    gameState.resources += 50;\n}
             gameState.gameOver = true;
             gameState.result = 'Progression complete! You have gained 50 resources.';
         }
