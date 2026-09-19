@@ -975,6 +975,27 @@ test('focused retry derives exact unique find anchors from writable source',()=>
   assert.match(retry,/Use exactly one EXACT FIND ANCHOR OPTION/i);
 });
 
+test('first edit-match failure fast-escalates attempt two to exact replace-only recovery',async()=>{
+  const cwd=tempRoot();
+  const bad=path.join(cwd,'edit-match-bad.json');
+  const good=path.join(cwd,'edit-match-focused.json');
+  write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({
+    target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'edit-match-fast-escalation'
+  }),null,2));
+  write(bad,JSON.stringify({edits:[{path:'index.html',find:'<button id="missing">Play</button>',replace:'<button id="missing">Continue</button>'}],newFiles:[],replaceFiles:[]}));
+  write(good,JSON.stringify({replace:'<button id="play">Continue</button>'}));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[bad,good]});
+  assert.equal(result.generation.attempts,2);
+  assert.equal(result.generation.recoveryUsed,true);
+  assert.equal(result.generation.focusedFinalRetry,true);
+  assert.equal(result.generation.focusedReplaceOnly,true);
+  assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
+  assert.equal(result.generation.maxPredict,384);
+  assert.equal(result.generation.timeoutMs,150000);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
 test('full web progressive credit requires sustained real growth and keeps 12KB gate',()=>{
   assert.equal(fullWebProgressCreditEligible({accumulatedBytes:5915,minBytes:12000,growthBytes:[1736,1736,1736],repeatedOutputs:0,currentMax:4,attempt:4,fakeResponseCount:0}),true);
   assert.equal(fullWebProgressCreditEligible({accumulatedBytes:12000,minBytes:12000,growthBytes:[1736,1736],repeatedOutputs:0,currentMax:4,attempt:4,fakeResponseCount:0}),false);
