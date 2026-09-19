@@ -1,5 +1,5 @@
 {
-  "version": 151,
+  "version": 152,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -2034,7 +2034,20 @@
               "e4db3b01c3f1106f851ed8cb8103071312e5c71a",
               "1e77f2c6afdb5ecf5054785da9786596c31848ac"
             ],
-            "focusedExactFindFullSourceEffectiveFromNextRefill": true
+            "focusedExactFindFullSourceEffectiveFromNextRefill": true,
+            "centralSyncAtHead": {
+              "mainHead": "5f166cb22fbc5045d8be8ed119d481a2af3ced14",
+              "completedWaveRunId": "35452958416",
+              "pass": 2,
+              "fail": 18,
+              "passRatePct": 10,
+              "bottleneck": "SOURCE_CANDIDATE_GENERATION",
+              "dominantFailures": {
+                "TIMEOUT": 6,
+                "EDIT_MATCH": 6
+              },
+              "currentLargestBottleneck": "FULL_WEB_BASE_REBUILD_SUCCESS_RATE_AND_FINAL_ACTIVE_WORKER_TAIL"
+            }
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3333,7 +3346,7 @@
       "selectedPlatformMayBeInferredByExistingClassificationPolicy": true
     }
   },
-  "updatedAt": "2026-09-19",
+  "updatedAt": "2026-09-20",
   "priorityTiers": [
     {
       "tier": 1,
@@ -3585,15 +3598,34 @@
     }
   },
   "changeRecord": {
-    "id": "OWNER_PRESERVATION_DESIGN_CONTRACT_2026-09-20",
+    "id": "CENTRAL_SYNC_CURRENT_HEAD_AND_PRIMARY_BOTTLENECK_2026-09-20",
     "documentIsCode": true,
-    "reason": "ENSURE_EXISTING_GAME_VIBE_PILOTS_CANNOT_PASS_DESIGN_OR_PROMOTION_BY_INVENTING_NEW_GAMEPLAY_RULES_WHILE_PRESENTATION_QUALITY_IS_UPGRADED",
-    "files": [
-      "tools/company-design-cycle.mjs",
-      "tools/company-design-gate-scoring-v2.mjs",
-      "tools/company-baseline-gate.mjs",
-      "qa/company-game-seed-flow.test.mjs",
-      "company-learning/platform-release-roadmap.json"
+    "documentationFirst": true,
+    "previousChangeRecordId": "OWNER_PRESERVATION_DESIGN_CONTRACT_2026-09-20",
+    "reason": "SYNC_CURRENT_MAIN_HEAD, OWNER_PRESERVATION_PRESENTATION_ROUTING, AND THE LATEST VERIFIED SOURCE_CANDIDATE_GENERATION BOTTLENECK BEFORE THE NEXT BOTTLENECK REPAIR.",
+    "evidence": {
+      "mainHead": "5f166cb22fbc5045d8be8ed119d481a2af3ced14",
+      "ownerPreservationPlannerRepair": "2b029df8054900f321c8a6edea91f0124c208500",
+      "ownerPreservationRegression": "5f166cb22fbc5045d8be8ed119d481a2af3ced14",
+      "completedWave": {
+        "runId": 35452958416,
+        "pass": 2,
+        "fail": 18,
+        "passRatePct": 10,
+        "bottleneck": "SOURCE_CANDIDATE_GENERATION",
+        "failureDistribution": {
+          "TIMEOUT": 6,
+          "EDIT_MATCH": 6,
+          "FULL_REWRITE_SIZE": 3,
+          "NO_OP": 2,
+          "MALFORMED_OUTPUT": 1
+        }
+      }
+    },
+    "next": [
+      "VERIFY_NEXT_POST_ANCHOR_REFILL",
+      "REDUCE_EDIT_MATCH_AND_TIMEOUT_WITHOUT_WEAKENING_EXACT_EDIT_OR_QA_GATES",
+      "CONFIRM_FANTASY_SURVIVAL_RUNTIME_SEED_MATERIALIZATION"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -5433,7 +5465,17 @@
         "AUDIO_FEEL",
         "CAMERA_LANGUAGE"
       ],
-      "verifiedSuccessXpExpectedBeforeRealGamePass": 0
+      "verifiedSuccessXpExpectedBeforeRealGamePass": 0,
+      "ownerPreservationRouting": {
+        "pilotGameId": "fantasy-survival",
+        "intakeSeedPath": "owner-design-reset-queue.json",
+        "intakeSeedState": "ACTIVE_DESIGN_ONLY",
+        "plannerRepairCommit": "2b029df8054900f321c8a6edea91f0124c208500",
+        "regressionCommit": "5f166cb22fbc5045d8be8ed119d481a2af3ced14",
+        "behavior": "PRESERVATION_PRESENTATION_TASK_PREEMPTS_GENERIC_WEB_REPAIR",
+        "verificationState": "CODE_AND_REGRESSION_COMMITTED_CI_STATUS_NOT_YET_REPORTED",
+        "nextRuntimeStep": "CONFIRM_OR_MATERIALIZE_COMPANY_RUNTIME_GAME_SEED_THEN_RUN_STRICT_DESIGN"
+      }
     },
     "staticQa": "tools/vibe2-incremental-qa.mjs"
   }
