@@ -98,13 +98,15 @@ test('runtime state is overlaid onto the main engine without merging unrelated b
   assert.doesNotMatch(bootstrap,/git merge --no-edit origin\/main/);
 });
 
-test('parallel seed jobs persist only generated target paths on the latest company-runtime head',()=>{
+test('parallel seed jobs persist generated target paths through an isolated runtime worktree',()=>{
   assert.match(workflow,/for attempt in 1 2 3 4/);
   assert.match(workflow,/generated_commit=\"\$\(git rev-parse HEAD\)\"/);
-  assert.match(workflow,/if \[ \"\$seed_changed\" = 0 \]; then\s+rm -f game-seed-state\.json\s+fi/);
-  assert.match(workflow,/git checkout -B seed-design-persist \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
-  assert.match(workflow,/git checkout \"\$generated_commit\" -- \"\$game_path\" \"\$artbook_path\"/);
-  assert.match(workflow,/git push origin \"HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH\"/);
+  assert.match(workflow,/runtime_worktree=\"\/tmp\/seed-design-persist-/);
+  assert.match(workflow,/git worktree add --detach \"\$runtime_worktree\" \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
+  assert.match(workflow,/git -C \"\$runtime_worktree\" checkout \"\$generated_commit\" -- \"\$game_path\"/);
+  assert.match(workflow,/git -C \"\$runtime_worktree\" push origin \"HEAD:refs\/heads\/\$COMPANY_RUNTIME_BRANCH\"/);
+  assert.match(workflow,/SEED_DESIGN_RUNTIME_PERSIST_WORKTREE=ISOLATED/);
+  assert.doesNotMatch(workflow,/git checkout -B seed-design-persist/);
   assert.doesNotMatch(workflow,/git rebase \"origin\/\$COMPANY_RUNTIME_BRANCH\"/);
   assert.match(workflow,/test \"\$pushed\" = 1/);
 });
