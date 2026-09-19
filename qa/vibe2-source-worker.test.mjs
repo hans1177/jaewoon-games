@@ -538,7 +538,7 @@ test('second no-op receives one short focused third retry', async () => {
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedFinalRetry,true);
   assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.timeoutMs,150000);
+  assert.equal(result.generation.timeoutMs,90000);
   assert.equal(result.generation.maxPredict,384);
   assert.equal(result.generation.temperature,0.26);
   assert.deepEqual(result.changedFiles,['index.html']);
@@ -992,7 +992,7 @@ test('first edit-match failure fast-escalates attempt two to exact replace-only 
   assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
   assert.equal(result.generation.maxPredict,384);
-  assert.equal(result.generation.timeoutMs,150000);
+  assert.equal(result.generation.timeoutMs,90000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
@@ -1044,7 +1044,7 @@ test('minified focused repair can pin a worker-owned GAME_CONFIG anchor',()=>{
   assert.ok(anchors.every(value=>source.includes(value)));
 });
 
-test('focused Web repair uses replace-only fast path on the first attempt',async()=>{
+test('focused Web repair keeps target selection on the first attempt before causal replace-only recovery',async()=>{
   const cwd=tempRoot();
   const responseFile=path.join(cwd,'focused-first.json');
   const workOrder=order({
@@ -1056,15 +1056,15 @@ test('focused Web repair uses replace-only fast path on the first attempt',async
   workOrder.goal='[WEB_REPAIR] repair the existing play control without changing gameplay balance';
   write(path.join(cwd,'web-games/demo/index.html'),'<button id="play">Play</button>\n');
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
-  write(responseFile,JSON.stringify({replace:'<button id="play" data-ready="true">Play</button>'}));
+  write(responseFile,JSON.stringify({edits:[{path:'index.html',find:'>Play<',replace:'>Continue<'}],newFiles:[],replaceFiles:[]}));
   const result=await runVibe2SourceWorker({cwd,responseFile});
   assert.equal(result.generation.attempts,1);
-  assert.equal(result.generation.focusedReplaceOnly,true);
-  assert.equal(result.generation.focusedFirstAttemptFastPath,true);
-  assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
-  assert.equal(result.generation.timeoutMs,90000);
-  assert.equal(result.codingMethod.focusedFirstAttemptFastPath,true);
-  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-first-attempt/files/index.html'),'utf8'),/data-ready="true"/);
+  assert.equal(result.generation.focusedReplaceOnly,false);
+  assert.equal(result.generation.focusedFirstAttemptFastPath,false);
+  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  assert.equal(result.generation.maxPredict,1024);
+  assert.equal(result.codingMethod.focusedFirstAttemptFastPath,false);
+  assert.match(fs.readFileSync(path.join(cwd,'.vibe2/candidates/focused-first-attempt/files/index.html'),'utf8'),/Continue/);
 });
 
 test('focused first-attempt fast path is exported to immutable worker telemetry',()=>{
