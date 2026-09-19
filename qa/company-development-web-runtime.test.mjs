@@ -31,6 +31,9 @@ test('company Web bootstrap cannot generate or repair game source with Gemini',(
   assert.match(source,/GAME_DEVELOPMENT_OWNER=VIBE2_VIBE3/);
   assert.match(source,/NON_VIBE_GAME_SOURCE_WRITE=NO/);
   assert.match(source,/BOOTSTRAP_SOURCE_WRITE_MODE=PRESERVE_ONLY/);
+  assert.match(source,/failureSignature/);
+  assert.match(source,/vibeWebRequestedStage/);
+  assert.match(source,/vibeWebImplementationReason/);
 });
 
 test('Web runtime spatial detector does not treat absent coordinates as 3D and recognizes Korean exploration input',()=>{
