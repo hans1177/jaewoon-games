@@ -628,7 +628,7 @@ function recorderCoda(ctx,jong,at){
 function recorderVowel(ctx,jung,at,dur,pitch){
  const ff=REC_VOWELS[jung]||REC_VOWELS[0],src=ctx.createOscillator(),env=ctx.createGain();src.type='sawtooth';
  src.frequency.setValueAtTime(pitch,at);src.frequency.linearRampToValueAtTime(pitch*.97,at+dur);
- env.gain.setValueAtTime(.0001,at);env.gain.linearRampToValueAtTime(.075,at+.018);env.gain.setValueAtTime(.067,Math.max(at+.02,at+dur-.035));env.gain.exponentialRampToValueAtTime(.0001,at+dur);
+ env.gain.setValueAtTime(.0001,at);env.gain.linearRampToValueAtTime(.18,at+.018);env.gain.setValueAtTime(.15,Math.max(at+.02,at+dur-.035));env.gain.exponentialRampToValueAtTime(.0001,at+dur);
  for(const [freq,q,vol] of [[ff[0],7,.8],[ff[1],9,.55],[2600,11,.22]]){
   const bp=ctx.createBiquadFilter(),g=ctx.createGain();bp.type='bandpass';bp.frequency.value=freq;bp.Q.value=q;g.gain.value=vol;src.connect(bp);bp.connect(g);g.connect(env)
  }
