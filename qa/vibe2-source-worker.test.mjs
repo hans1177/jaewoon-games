@@ -1085,6 +1085,7 @@ test('focused no-op retry keeps speculative base budget but grants only targeted
 test('focused replace-only rejects unchanged replacement and supports early completion',()=>{
   const spec={path:'index.html',find:'const state={running:false};'};
   assert.throws(()=>normalizeFocusedReplaceOnly(JSON.stringify({replace:spec.find}),spec),/변경 없는 edit/);
+  assert.throws(()=>normalizeFocusedReplaceOnly(JSON.stringify({replace:'COMPLETE_REPLACEMENT_SOURCE_SNIPPET'}),spec),/placeholder 금지/);
   assert.equal(modelResponseComplete(JSON.stringify({replace:'const state={running:true};'}),'JSON_REPLACE_ONLY'),true);
   assert.equal(modelResponseComplete('{"replace":','JSON_REPLACE_ONLY'),false);
 });
