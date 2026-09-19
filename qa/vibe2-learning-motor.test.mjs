@@ -6,6 +6,10 @@ import {
   applyVerifiedExperienceToMastery,
   applyVerifiedCodePatternsToMastery,
   applyVerifiedCodingStrategyOutcomes,
+  applyVerifiedCodingCalibration,
+  responsibilityCalibrationForTask,
+  regressionHotspotRiskForTask,
+  codingRiskGuidance,
   preferredCodingStrategyForTask,
   codingStrategyGuidance,
   failureFingerprintForTask,
@@ -139,6 +143,32 @@ test('contextual negative evidence lowers selection score without globally depre
   assert.equal(deduped.negativeAdded,0);
 });
 
+test('verified regression outcomes calibrate overconfident responsibility and build same-game hotspot memory',()=>{
+  const enc=value=>encodeURIComponent(JSON.stringify(value));
+  const mk=(id,outcome)=>({
+    id,gameId:'hot-game',target:'web',evidence:[
+      'coding-responsibility-confidence:HIGH',
+      'coding-primary-targets:'+enc(['handlePointer']),
+      'coding-primary-systems:'+enc(['INPUT','PLACEMENT']),
+      'coding-candidate-first-attempt:YES',
+      'actions-run:'+id,
+      ...(outcome==='PASS'?['role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS','coding-semantic-diff-mode:HARD_ENFORCE','coding-semantic-diff-pass:YES']:['failure-cause:fan-in-regression-failed'])
+    ]
+  });
+  const learned=applyVerifiedCodingCalibration({}, {tasks:[mk('r1','FAIL'),mk('r2','FAIL'),mk('r3','PASS')]});
+  assert.equal(learned.added,3);
+  assert.equal(learned.hotspotEventsAdded,3);
+  const calibration=responsibilityCalibrationForTask({task:{gameId:'hot-game',target:'web'},stateInput:learned.state});
+  assert.equal(calibration.recommendation,'DOWNGRADE_HIGH_TO_MEDIUM');
+  assert.equal(calibration.extraReadOnlyExploration,true);
+  const hotspot=regressionHotspotRiskForTask({task:{gameId:'hot-game',target:'web'},stateInput:learned.state});
+  assert.equal(hotspot.riskLevel,'MEDIUM');
+  assert.ok(hotspot.entries.some(row=>row.kind==='SYMBOL'&&row.name==='handlePointer'&&row.verifiedRegressionFailures===2));
+  assert.match(codingRiskGuidance({calibration,hotspot}),/raw HIGH must be treated as MEDIUM/);
+  const deduped=applyVerifiedCodingCalibration(learned.state,{tasks:[mk('r1','FAIL'),mk('r2','FAIL'),mk('r3','PASS')]});
+  assert.equal(deduped.added,0);
+  assert.equal(deduped.hotspotEventsAdded,0);
+});
 test('failure-local retrieval prioritizes verified same-game same-failure memory and ignores unverified records',()=>{
   const task={gameId:'tower-demo',target:'web',goal:'모바일 pointer placement failure를 수정',evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
   const fp=failureFingerprintForTask(task);
