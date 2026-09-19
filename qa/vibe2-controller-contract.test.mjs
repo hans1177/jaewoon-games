@@ -391,6 +391,56 @@ test('fan-in release requires exact candidate manifest identity',()=>{
   assert.ok(blocked.queue.tasks[0].evidence.includes('role-result:review:BLOCKED'));
 });
 
+test('supervised Web candidates learn review decisions and stay unreleased until verified PASS approval',()=>{
+  const branch='vibe2/candidate/supervised-demo/primary';
+  const baseTask={
+    id:'supervised-demo-task',gameId:'supervised-demo',target:'web',sourceRoot:'web-games/supervised-demo',
+    status:'running',blocker:'candidate-awaiting-qa-and-deployment',supervisionApproved:false,
+    supervisionContract:{required:true,mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING'},
+    evidence:[branch,'role-result:exploration:PASS','role-result:implementation:PASS','role-result:test:PASS','role-result:performance:PASS']
+  };
+  const valid={
+    version:9,taskId:baseTask.id,outcome:'PASS',candidateBranch:branch,baseMainSha:'abc123',
+    candidateIdentity:{taskId:baseTask.id,gameId:baseTask.gameId,target:'web',sourceRoot:baseTask.sourceRoot,baseMainSha:'abc123',manifestPath:'.vibe2/candidates/supervised-demo-task/manifest.json'},
+    evidence:[branch]
+  };
+  const waiting=finalizeVibe2FanInReview({queue:{tasks:[baseTask]},results:[valid]});
+  assert.equal(waiting.pass,true);
+  assert.equal(waiting.releaseCandidates.length,0);
+  assert.equal(waiting.experienceReviews.length,0);
+  assert.equal(waiting.queue.tasks[0].blocker,'candidate-awaiting-supervised-review');
+
+  const reviseTask=structuredClone(baseTask);
+  reviseTask.supervisionReview={
+    verified:true,decision:'REVISE',rationale:'핵심 루프는 동작하지만 모바일 입력 피드백이 약함',
+    avoidPatterns:['검수용 버튼만 추가하고 실제 입력 연결을 끝내지 않는 패턴'],
+    evidence:['supervisor-diff-review:1','mobile-playability-review:1']
+  };
+  const revise=finalizeVibe2FanInReview({queue:{tasks:[reviseTask]},results:[valid]});
+  assert.equal(revise.releaseCandidates.length,0);
+  assert.equal(revise.experienceReviews.length,1);
+  assert.equal(revise.experienceReviews[0].outcome,'FAIL');
+  assert.match(revise.experienceReviews[0].failureCause,/모바일 입력 피드백/);
+
+  const approvedTask=structuredClone(baseTask);
+  approvedTask.supervisionApproved=true;
+  approvedTask.supervisionReview={
+    verified:true,decision:'PASS',rationale:'핵심 루프·저장·모바일 입력이 보존되고 실제 플레이 후보가 완성됨',
+    reusablePatterns:['기존 세이브와 핵심 루프를 고정한 뒤 책임 함수만 구현'],
+    evidence:['supervisor-diff-review:2','mobile-playability-review:2']
+  };
+  const approved=finalizeVibe2FanInReview({queue:{tasks:[approvedTask]},results:[valid]});
+  assert.equal(approved.releaseCandidates.length,1);
+  assert.equal(approved.experienceReviews.length,1);
+  assert.equal(approved.experienceReviews[0].outcome,'PASS');
+  assert.ok(approved.experienceReviews[0].reusablePatterns.includes('기존 세이브와 핵심 루프를 고정한 뒤 책임 함수만 구현'));
+});
+
+test('fan-in workflow persists verified supervised review learning before release dispatch',()=>{
+  assert.match(workflow,/vibe2-experience-control\.mjs/);
+  assert.match(workflow,/--batch-review=\/tmp\/vibe2-package-review\.json/);
+  assert.match(workflow,/\.vibe2\/experience\.json/);
+});
 test('worker result exposes exact candidate identity for fan-in review',()=>{
   const start=workflow.indexOf('- name: Build immutable worker result');
   const end=workflow.indexOf('- name: Upload worker result for fan-in');
