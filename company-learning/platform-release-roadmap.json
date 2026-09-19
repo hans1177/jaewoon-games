@@ -1,5 +1,5 @@
 {
-  "version": 135,
+  "version": 136,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1920,7 +1920,13 @@
             "focusedRetryPreInitFixCommits": [
               "c8f373efb34e6c9289a119fc0caa3d207bc1c09f",
               "6b0f0a8aab1ba9e37a11588cda0d10ea86e83e6c"
-            ]
+            ],
+            "fullWebSeedFirstStrategyCommits": [
+              "9ef7994739ea552f4b4c90283a9a3b246e3af2f4",
+              "779b47c444c9bddfe470a518015a6fbf9ec3c144",
+              "5b7f73cc37c303368691d0c26c012477e9b4a042"
+            ],
+            "nextCleanWaveRequired": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3471,81 +3477,83 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FULL_WEB_RETRY_PROMPT_COMPACTION_AND_FOCUSED_REGRESSION_2026-09-19",
+    "id": "VIBE2_FULL_WEB_SEED_FIRST_STRATEGY_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FULL_WEB_LARGEST_PARTIAL_BOUNDED_RETRY_2026-09-19",
-    "reason": "FULL_WEB_RETRIES_REUSED_8_TO_10KB_PARTIALS_BUT_STILL_REPLAYED_OVERSIZED_EXPLORATION_AND_LEARNING_GUIDANCE;COMPACT_RETRY_TO_EXECUTION_CRITICAL_FIELDS_AND_PRIOR_PARTIAL_ONLY. CURRENT_944F15DA_WAVE_ALSO_EXPOSED_A_FOCUSED_RETRY_PRE_INITIALIZATION_REFERENCE_ERROR,SO_FOCUSED_RESULTS_FROM_THAT_WAVE_ARE_NOT_VALID_EFFECTIVENESS_EVIDENCE.",
-    "implementationState": "FIXES_COMMITTED_CURRENT_WAVE_PARTIALLY_INVALID_NEXT_WAVE_REQUIRED",
+    "previousChangeRecordId": "VIBE2_FULL_WEB_RETRY_PROMPT_COMPACTION_AND_FOCUSED_REGRESSION_2026-09-19",
+    "reason": "SOURCE_GENERATION_REMAINS_THE_DOMINANT_BOTTLENECK_WITH_CACHE_HIT_100_PERCENT_AND_PREPARATION_RATIO_0P86_PERCENT. FULL_WEB_ATTEMPT_ONE_FREQUENTLY_REACHED_8_TO_10KB_BUT_TIMED_OUT_BEFORE_CLOSING_HTML. GENERATE_A_SMALLER_COMPLETE_PLAYABLE_SEED_FIRST_THEN_USE_EXISTING_STAGED_EXPANSION_TO_REACH_THE_UNCHANGED_12KB_FINAL_GATE.",
+    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_NEXT_CLEAN_WAVE_REQUIRED",
     "evidence": {
-      "baselineWave": {
+      "telemetryBaseline": {
         "runId": 35445626679,
-        "pass": 5,
-        "fail": 15,
-        "passRatePct": 25,
-        "failureDistribution": {
-          "TIMEOUT": 12,
-          "FULL_REWRITE_SIZE": 2,
-          "EDIT_MATCH": 1
-        }
+        "cacheHitRatePct": 100,
+        "preparationRatioPct": 0.86,
+        "actualPeakConcurrency": 20,
+        "failureRatePct": 75,
+        "bottleneck": "SOURCE_CANDIDATE_GENERATION",
+        "packageCycleAvgMs": 786578.43
       },
+      "observedFullWebTimeoutPartialsBytes": [
+        9001,
+        10475,
+        8247,
+        5735,
+        5612
+      ],
       "currentWave": {
         "runId": 35446727233,
         "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
-        "completedWorkersObserved": 2,
-        "inProgressWorkersObserved": 18,
-        "focusedRepairEffectivenessValid": false,
-        "invalidationReason": "focused retry used focusedFinal before initialization",
-        "firstObservedRegression": {
-          "jobId": 105907101100,
-          "failureClass": "OTHER",
-          "message": "Cannot access 'focusedFinal' before initialization"
-        },
-        "fullWebEvidenceMayStillBeObserved": true
+        "effectivenessUse": "FULL_WEB_DIAGNOSTIC_ONLY",
+        "focusedRepairEffectivenessValid": false
       }
     },
     "contract": {
-      "fullWebRetryPromptFields": [
-        "ENGINE",
-        "GOAL",
-        "ALLOWED_EDIT_PATHS",
-        "FULL_WEB_TARGET",
-        "PRIOR_PARTIAL_OR_BOUNDED_EDITABLE_SOURCE"
+      "initialSeedTargetBytes": [
+        4200,
+        6500
       ],
-      "oversizedExplorationGuidanceRemovedOnRetry": true,
-      "previousLargestPartialRetained": true,
-      "previousLargestPartialDirectPromotionForbidden": true,
-      "fullWebMinimumBytesUnchanged": 12000,
-      "focusedRetryPreInitReferenceForbidden": true,
-      "focusedRetryMinimalJsonContractPreserved": true,
+      "initialTimeoutMs": 360000,
+      "initialMaxPredict": 4096,
+      "completeClosedSeedRequired": true,
+      "automaticExpansionRequiredForFinalAcceptance": true,
+      "finalAcceptanceMinimumBytes": 12000,
+      "finalAcceptanceGateLowered": false,
+      "previousLargestPartialRetryContextPreserved": true,
+      "fullWebRetryPromptCompacted": true,
       "qaGateUnchanged": true,
       "writableScopeUnchanged": true,
       "authorityExpansion": false,
       "immutableEvidence": [
+        "coding-full-web-initial-seed:YES",
+        "coding-full-web-initial-seed-target:4200-6500",
         "coding-full-web-retry-prompt-compacted:YES",
         "coding-full-web-retry-prompt-bytes:<N>"
       ]
     },
     "implementationCommits": {
-      "fullWebRetryPromptSource": "57e03fbadfa248ae5fcf74ee251f3a906d84762d",
-      "fullWebRetryPromptTest": "ec735a04e9839b3a3d2ac6b88563ffa582bb282d",
-      "fullWebRetryPromptTelemetry": "1026b115592bd3b74f72dfc38f82b71e8832ea6a",
+      "seedStrategySource": "9ef7994739ea552f4b4c90283a9a3b246e3af2f4",
+      "seedStrategyTest": "779b47c444c9bddfe470a518015a6fbf9ec3c144",
+      "seedStrategyTelemetry": "5b7f73cc37c303368691d0c26c012477e9b4a042",
+      "retryPromptCompactionSource": "57e03fbadfa248ae5fcf74ee251f3a906d84762d",
+      "retryPromptCompactionTest": "ec735a04e9839b3a3d2ac6b88563ffa582bb282d",
+      "retryPromptCompactionTelemetry": "1026b115592bd3b74f72dfc38f82b71e8832ea6a",
       "focusedPreInitFix": "c8f373efb34e6c9289a119fc0caa3d207bc1c09f",
       "focusedPreInitRegressionTest": "6b0f0a8aab1ba9e37a11588cda0d10ea86e83e6c"
     },
     "pending": [
-      "CURRENT_35446727233_COMPLETE_FOR_FULL_WEB_OBSERVATION_ONLY",
-      "NEXT_REFILL_PIN_C8F373EF_AND_57E03FBA_OR_LATER",
-      "REVALIDATE_FOCUSED_REPAIR_FROM_CLEAN_WAVE",
-      "COMPARE_FULL_WEB_RETRY_PROMPT_BYTES_AND_TIMEOUT_RATE",
-      "VERIFY_FAN_IN_REGRESSION",
-      "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE"
+      "CURRENT_35446727233_COMPLETE_FOR_FULL_WEB_DIAGNOSTIC_ONLY",
+      "NEXT_CLEAN_REFILL_PIN_9EF79947_5B7F73CC_C8F373EF_OR_LATER",
+      "MEASURE_INITIAL_SEED_COMPLETION_RATE",
+      "MEASURE_FULL_WEB_ATTEMPT_ONE_DURATION",
+      "MEASURE_FULL_WEB_RETRY_PROMPT_BYTES",
+      "COMPARE_CLEAN_WAVE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
+      "VERIFY_FAN_IN_REGRESSION"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
       "hierarchicalParallelism": true,
-      "primaryRetryDepthUnchanged": true,
       "qualityGatesNotWeakened": true,
+      "fullWebMinimumBytesUnchanged": 12000,
       "directMainGameSourceWriteForbidden": true,
       "shadowPipelineForbidden": true
     }
