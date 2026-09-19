@@ -72,8 +72,7 @@
       ],
       "contextFiles": [
         "company-learning/platform-release-roadmap.json",
-        "tools/company-development-web-bootstrap.mjs",
-        "development-queue.json"
+        "tools/company-development-web-bootstrap.mjs"
       ],
       "focusPatterns": {
         "tools/vibe2-auto-planner.mjs": [
@@ -112,11 +111,12 @@
       "blocker": null,
       "evidence": [
         "primary-ai-priority:planner-handoff",
-        "company-runtime:19-web-repair-required"
+        "company-runtime:19-web-repair-required",
+        "primary-ai-instruction-fix:removed-unmounted-company-runtime-context"
       ],
       "supervisorReviewRequired": true,
       "createdAt": "2026-09-19T05:20:00Z",
-      "updatedAt": "2026-09-19T05:15:08.705Z"
+      "updatedAt": "2026-09-19T05:15:47.327Z"
     },
     {
       "id": "sys-vibe-web-source-bootstrap-boundary-v1",
