@@ -204,6 +204,22 @@ function applyTransformativeRecombination(taskInput={},memory={}){
   };
 }
 
+function compactRuntimeFailureEvidence({requestedStage='',implementationReason='',routingBlockers=[],strictHardFailures=[],developmentBlockers=[],lastValidationAt=''}={}){
+  const reason=clean(implementationReason);
+  const sameReasonBlocker=value=>{
+    const raw=clean(value),payload=raw.replace(/^vibe-web-implementation-required:[^:]+:/i,'');
+    if(!raw||!reason)return false;
+    return payload===reason||reason.startsWith(payload)||payload.startsWith(reason);
+  };
+  return[
+    clean(requestedStage)?`requested-stage=${clean(requestedStage)}`:'',
+    reason?`implementation-reason=${reason}`:'',
+    ...(Array.isArray(routingBlockers)?routingBlockers:[]).map(clean).filter(Boolean).filter(value=>!sameReasonBlocker(value)).slice(0,4).map(value=>`routing-blocker=${value.slice(0,900)}`),
+    ...(Array.isArray(strictHardFailures)?strictHardFailures:[]).map(clean).filter(Boolean).slice(0,4).map(value=>`strict-hard-failure=${value.slice(0,500)}`),
+    ...(Array.isArray(developmentBlockers)?developmentBlockers:[]).map(clean).filter(Boolean).slice(0,4).map(value=>`development-validation-blocker=${value.slice(0,500)}`),
+    clean(lastValidationAt)?`last-validation-at=${clean(lastValidationAt)}`:''
+  ].filter(Boolean);
+}
 function webRepairImplementationHints(evidence=[]){
   const text=(evidence||[]).map(clean).filter(Boolean).join('|').toUpperCase();
   const hints=[];
@@ -237,14 +253,14 @@ function findWebAssessmentTask(project,repoRoot,queue){
   const queueState=clean(project.queueCanonicalState).toUpperCase(),queueStep=clean(project.queueCurrentStep).toUpperCase();
   if(queueState==='WEB_VIBE_REPAIR_REQUIRED'||queueStep==='VIBE_WEB_REPAIR'){
     const id=`${project.gameId}-web-runtime-repair-v1`;if(hasTask(queue,id))return null;
-    const runtimeFailureEvidence=[
-      project.queueVibeWebRequestedStage?`requested-stage=${project.queueVibeWebRequestedStage}`:'',
-      project.queueVibeWebImplementationReason?`implementation-reason=${project.queueVibeWebImplementationReason}`:'',
-      ...(project.queueRoutingBlockers||[]).map(value=>`routing-blocker=${clean(value).slice(0,900)}`),
-      ...(project.queueStrictImplementationHardFailures||[]).map(value=>`strict-hard-failure=${clean(value).slice(0,500)}`),
-      ...(project.developmentValidation?.blockers||[]).slice(0,4).map(value=>`development-validation-blocker=${clean(value).slice(0,500)}`),
-      project.queueWebValidationLastAttemptAt?`last-validation-at=${project.queueWebValidationLastAttemptAt}`:''
-    ].filter(Boolean);
+    const runtimeFailureEvidence=compactRuntimeFailureEvidence({
+      requestedStage:project.queueVibeWebRequestedStage,
+      implementationReason:project.queueVibeWebImplementationReason,
+      routingBlockers:project.queueRoutingBlockers,
+      strictHardFailures:project.queueStrictImplementationHardFailures,
+      developmentBlockers:project.developmentValidation?.blockers,
+      lastValidationAt:project.queueWebValidationLastAttemptAt
+    });
     const runtimeRepairHints=webRepairImplementationHints(runtimeFailureEvidence);
     const runtimeHintContext=runtimeRepairHints.length?`\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- ${runtimeRepairHints.join('\n- ')}`:'';
     const runtimeFailureContext=runtimeFailureEvidence.length
@@ -390,13 +406,13 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
         if(!sourceMissing&&['queued','failed','blocked'].includes(status)){
           const runtimeItem=exactWebRepairByGameId.get(gameId)||{};
           const game=catalogGames.get(gameId)||{};
-          const runtimeFailureEvidence=[
-            clean(runtimeItem?.vibeWebRequestedStage)?`requested-stage=${clean(runtimeItem.vibeWebRequestedStage)}`:'',
-            clean(runtimeItem?.vibeWebImplementationReason)?`implementation-reason=${clean(runtimeItem.vibeWebImplementationReason)}`:'',
-            ...(Array.isArray(runtimeItem?.routingBlockers)?runtimeItem.routingBlockers:[]).map(value=>`routing-blocker=${clean(value).slice(0,900)}`).slice(0,4),
-            ...(Array.isArray(runtimeItem?.strictImplementationHardFailures)?runtimeItem.strictImplementationHardFailures:[]).map(value=>`strict-hard-failure=${clean(value).slice(0,500)}`).slice(0,4),
-            clean(runtimeItem?.webValidationLastAttemptAt||runtimeItem?.webFinalContentDepthLastAttemptAt)?`last-validation-at=${clean(runtimeItem.webValidationLastAttemptAt||runtimeItem.webFinalContentDepthLastAttemptAt)}`:''
-          ].filter(Boolean);
+          const runtimeFailureEvidence=compactRuntimeFailureEvidence({
+            requestedStage:runtimeItem?.vibeWebRequestedStage,
+            implementationReason:runtimeItem?.vibeWebImplementationReason,
+            routingBlockers:runtimeItem?.routingBlockers,
+            strictHardFailures:runtimeItem?.strictImplementationHardFailures,
+            lastValidationAt:runtimeItem?.webValidationLastAttemptAt||runtimeItem?.webFinalContentDepthLastAttemptAt
+          });
           const runtimeRepairHints=webRepairImplementationHints(runtimeFailureEvidence);
           const runtimeHintContext=runtimeRepairHints.length?`\n[WEB_REPAIR_IMPLEMENTATION_HINTS]\n- ${runtimeRepairHints.join('\n- ')}`:'';
           const runtimeFailureContext=runtimeFailureEvidence.length
