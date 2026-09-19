@@ -1,5 +1,5 @@
 {
-  "version": 132,
+  "version": 133,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1881,7 +1881,25 @@
               "80091b7fc44b9fec07db94b9a2a3b81c45d095d6",
               "d8d9ae3f98356cbbb01b2567c2d756dcdfe276e5"
             ],
-            "focusedMinimalJsonRetryEffectiveFromNextWave": true
+            "focusedMinimalJsonRetryEffectiveFromNextWave": true,
+            "completedWave35445626679": {
+              "pass": 5,
+              "fail": 15,
+              "passRatePct": 25,
+              "failureDistribution": {
+                "TIMEOUT": 12,
+                "FULL_REWRITE_SIZE": 2,
+                "EDIT_MATCH": 1
+              },
+              "fanIn": "FAIL_REQUEUED_STALE_TEST_ASSERTION"
+            },
+            "fullWebLargestPartialRetryCommits": [
+              "314e74c5c5331f3e687cf17dc72d54ffb4309ec5",
+              "db42d71bad17ad602ad566b41872edd4aca982b8",
+              "c3a8a8cfa96127d6b9f9f9694cf29e5d6ca5252e",
+              "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f"
+            ],
+            "nextReservationRunId": "35446727233"
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3432,84 +3450,107 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FOCUSED_MINIMAL_JSON_RETRY_2026-09-19",
+    "id": "VIBE2_FULL_WEB_LARGEST_PARTIAL_BOUNDED_RETRY_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_SPECULATIVE_RETRY_BUDGET_2026-09-19",
-    "reason": "CURRENT_CBA1A0F_WAVE_EARLY_SAMPLE_IMPROVED_TO_5_PASS_OF_8_BUT_REMAINING_FAILURES_SHOW_REPEAT_TIMEOUT_PARTIALS_AND_ONE_EDIT_MATCH;MAKE_FOCUSED_RETRY_EMIT_ONLY_ONE_MINIMAL_EDITS_JSON_OBJECT_SO_THE_EDIT_CLOSES_EARLIER_AND_FIND_TEXT_STAYS_SHORT_AND_EXACT",
-    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_CURRENT_WAVE_RUNNING_NEXT_WAVE_EFFECT_PENDING",
+    "previousChangeRecordId": "VIBE2_FOCUSED_MINIMAL_JSON_RETRY_2026-09-19",
+    "reason": "COMPLETED_CBA1A0F_WAVE_IMPROVED_FROM_ZERO_TO_FIVE_PASSES_BUT_FULL_WEB_FAILURES_SHOWED_8_TO_10KB_TIMEOUT_PARTIALS_BEING_DISCARDED_WHEN_NO_RECOVERED_SEED_EXISTED;ALLOW_ONE_BOUNDED_EXTRA_RETRY_AFTER_SECOND_TIMEOUT_OR_MALFORMED_AND_REUSE_THE_LARGEST_PARTIAL_ONLY_AS_RETRY_CONTEXT",
+    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_NEXT_WAVE_RUNNING_EFFECT_PENDING",
     "evidence": {
-      "currentWave": {
+      "completedWave": {
         "runId": 35445626679,
         "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
-        "completedWorkersObserved": 8,
-        "inProgressWorkersObserved": 12,
+        "workerCount": 20,
         "pass": 5,
-        "fail": 3,
-        "passRatePct": 62.5,
+        "fail": 15,
+        "passRatePct": 25,
+        "failureRatePct": 75,
         "failureDistribution": {
-          "TIMEOUT": 2,
+          "TIMEOUT": 12,
+          "FULL_REWRITE_SIZE": 2,
           "EDIT_MATCH": 1
         },
-        "includesFocusedMinimalJsonFix": false
+        "actualPeakConcurrency": 20,
+        "bottleneck": "SOURCE_CANDIDATE_GENERATION",
+        "regressionFanIn": {
+          "status": "FAIL_REQUEUED",
+          "jobId": 105906789219,
+          "failingTest": "timeout partial recovery stays behind existing exact-match and semantic validation",
+          "cause": "STALE_TEST_ASSERTION_EXPECTED_OLD_RECOVER_PARTIAL_CALL_SHAPE",
+          "sourceWrite": "NO"
+        }
       },
-      "previousWave": {
+      "priorWave": {
         "runId": 35444351457,
         "pass": 0,
         "fail": 20,
+        "passRatePct": 0,
         "failureDistribution": {
           "TIMEOUT": 13,
           "OTHER": 6,
           "MALFORMED_OUTPUT": 1
         }
-      }
+      },
+      "representativeDiscardedFullWebPartialsBytes": [
+        9001,
+        10475,
+        8247,
+        5735,
+        5612,
+        4168
+      ],
+      "nextReservationRunId": 35446727233
     },
     "contract": {
-      "focusedRetryOutputShape": "ONE_EDITS_ONLY_JSON_OBJECT",
-      "summaryOmitted": true,
-      "expectedEffectOmitted": true,
-      "testsOmitted": true,
-      "newFilesOmitted": true,
-      "replaceFilesOmitted": true,
-      "shortestUniqueExactFindRequired": true,
-      "minimalCoherentReplaceRequired": true,
-      "exactEditDryRunRequired": true,
-      "candidateValidatorRequired": true,
-      "writableScopeUnchanged": true,
+      "noRecoveredSeedFallbackRetryLimit": "ONE_EXTRA_RETRY_AFTER_ATTEMPT_TWO_ONLY",
+      "fallbackRetryClasses": [
+        "FULL_REWRITE_SIZE",
+        "TIMEOUT",
+        "MALFORMED_OUTPUT"
+      ],
+      "largestPartialUsedAsRetryContextOnly": true,
+      "largestPartialNeverPromotedDirectly": true,
+      "finalCandidateStillRequiresCompleteEnvelopeOrCompleteHtml": true,
+      "fullWebMinimumBytesUnchanged": 12000,
+      "exactValidationRequired": true,
       "qaGateUnchanged": true,
+      "writableScopeUnchanged": true,
       "authorityExpansion": false,
-      "immutableEvidence": [
-        "coding-focused-final-retry:YES",
-        "coding-focused-minimal-json:YES"
-      ]
+      "immutableEvidence": "coding-full-web-fallback-best-partial-bytes:<N>"
     },
     "implementationCommits": {
-      "sourceContract": "ca8ea51acab5ef39d20798bc2b03b88cc233258a",
-      "sourceTelemetry": "197a1884e296d28f5210d513281e2a8cfef64977",
-      "workflowTelemetry": "070d47598063a4aacc2e7226b1c156dc25471cee",
-      "regressionContract": "80091b7fc44b9fec07db94b9a2a3b81c45d095d6",
-      "regressionTelemetry": "d8d9ae3f98356cbbb01b2567c2d756dcdfe276e5"
+      "source": "314e74c5c5331f3e687cf17dc72d54ffb4309ec5",
+      "regressionTest": "db42d71bad17ad602ad566b41872edd4aca982b8",
+      "workflowTelemetry": "c3a8a8cfa96127d6b9f9f9694cf29e5d6ca5252e",
+      "staleFanInTestFix": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f"
     },
-    "relatedBottleneckOptimization": {
-      "speculativeRetryBudgetCommits": [
+    "relatedBottleneckFixes": {
+      "speculativeRetryBudget": [
         "41eea8d07362a51158cb4b75081f66420eaecd64",
         "30c281817019ff8e9a342afb226fd37874891f8f",
         "045a3e970db8dd8b69e4824a12814373f69b9096"
       ],
-      "effectiveFromNextWave": true
+      "focusedMinimalJson": [
+        "ca8ea51acab5ef39d20798bc2b03b88cc233258a",
+        "197a1884e296d28f5210d513281e2a8cfef64977",
+        "070d47598063a4aacc2e7226b1c156dc25471cee",
+        "80091b7fc44b9fec07db94b9a2a3b81c45d095d6",
+        "d8d9ae3f98356cbbb01b2567c2d756dcdfe276e5"
+      ]
     },
     "pending": [
-      "CURRENT_CBA1A0F_WAVE_COMPLETE_AND_FAN_IN",
-      "NEXT_WAVE_PIN_CA8EA51A_197A1884_070D4759_OR_LATER",
-      "COMPARE_FOCUSED_TIMEOUT_RATE",
-      "COMPARE_EDIT_MATCH_RATE",
-      "COMPARE_SPECULATIVE_P95_DURATION",
-      "CONFIRM_PRIMARY_PASS_RATE_NOT_REGRESSED"
+      "CONFIRM_RUN_35446727233_PINNED_SHA_INCLUDES_ALL_LATEST_FIXES",
+      "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
+      "COMPARE_TIMEOUT_FULL_REWRITE_SIZE_AND_EDIT_MATCH_RATES",
+      "VERIFY_FAN_IN_REGRESSION_AFTER_944F15DA",
+      "MEASURE_FULL_WEB_FALLBACK_PARTIAL_REUSE_EVIDENCE",
+      "MEASURE_SPECULATIVE_LONG_TAIL_REDUCTION"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
       "hierarchicalParallelism": true,
       "primaryRetryDepthUnchanged": true,
+      "speculativeOnlyRetryBudgetOptimization": true,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
       "shadowPipelineForbidden": true
