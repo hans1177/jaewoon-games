@@ -1,5 +1,5 @@
 {
-  "version": 23,
+  "version": 24,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -109,7 +109,7 @@
   "developmentSpeedExecution": {
     "scope": "EXECUTION_SPEED_ONLY",
     "qualityOrEvidenceGateWeakeningForbidden": true,
-    "globalSelectedPlatformDevelopmentWipMax": 20,
+    "globalSelectedPlatformDevelopmentWipMax": 30,
     "webValidationParallelismControlledSeparately": true,
     "runtimeRunnerCapacityMaySerializeRuntimeQa": true,
     "canonicalSequence": [
@@ -139,7 +139,9 @@
     "nextCanonicalStageDispatchImmediatelyAfterSuccess": true,
     "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
     "cronMustNotBePrimaryProgressionEngine": true,
-    "existingEventChainPreferred": true
+    "existingEventChainPreferred": true,
+    "globalAdaptiveParallelMax": 30,
+    "parallelismMode": "ADAPTIVE_30_SOFT_RESERVATION_WORK_STEALING"
   },
   "phases": [
     {
@@ -449,6 +451,18 @@
           "HISTORICAL_PUBLICATION_TARGET_VERIFIED": "MAINTENANCE_ELIGIBLE",
           "HISTORICAL_RUNTIME_VALIDATED_PUBLICATION_TARGET_UNCONFIRMED": "PRESERVE_ONLY"
         }
+      },
+      "caretakerMode": "PER_GAME_PERSISTENT",
+      "oneLogicalCaretakerPerEligibleReleasedGame": true,
+      "sharedSingleCaretakerLimit": false,
+      "caretakerStickyOwnership": true,
+      "caretakerWorkerFailureHandoff": "REPLACE_WORKER_AND_RESUME_EXACT_CHECKPOINT",
+      "caretakerIdleBehavior": "RETURN_PHYSICAL_SLOT_KEEP_LOGICAL_OWNERSHIP",
+      "burstWorkers": {
+        "enabled": true,
+        "min": 2,
+        "max": 4,
+        "onlyWhenIndependentHighValueWorkExists": true
       }
     },
     "executionBindings": {
@@ -465,7 +479,7 @@
     },
     "modelQuotaContinuity": {
       "enabled": true,
-      "designProviderPolicy": "GEMINI_ONLY",
+      "designProviderPolicy": "GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK",
       "quotaFailureClassification": "EXTERNAL_MODEL_CAPACITY",
       "quotaFailureIsDesignGateFailure": false,
       "quotaBlockedState": "WAITING_FOR_GEMINI_QUOTA",
@@ -484,7 +498,9 @@
           "TARGET_PLATFORM_RUNTIME",
           "TARGET_PLATFORM_INDEPENDENT_QA",
           "TARGET_PLATFORM_REGRESSION",
-          "POST_RELEASE_FOCUSED_DEVELOPMENT"
+          "POST_RELEASE_FOCUSED_DEVELOPMENT",
+          "DESIGN_AUTHORING",
+          "DESIGN_REPAIR"
         ],
         "forbiddenResponsibilities": [
           "DESIGN_INDEPENDENT_LEAD_REVIEW",
@@ -516,7 +532,8 @@
         ],
         "providerOutageMayStopLearning": false,
         "verifiedEvidenceRequiredForCanonicalLearning": true,
-        "unverifiedModelOutputMayPromoteDirectly": false
+        "unverifiedModelOutputMayPromoteDirectly": false,
+        "robloxStudioAllowedFor24hLearning": false
       },
       "providerFailureSubstitution": {
         "version": 1,
@@ -1083,6 +1100,8 @@
       },
       "bottleneckPolicy": {
         "adaptiveSteps": [
+          30,
+          24,
           20,
           16,
           12,
@@ -1095,7 +1114,17 @@
         "longWorkProtectedSlots": 1,
         "disjointWorkMayContinueWhileOneRouteBlocked": true,
         "ownerDirectiveAlwaysHighestPriority": true,
-        "doNotConsumeDevelopmentSlotForExternalQuotaWait": true
+        "doNotConsumeDevelopmentSlotForExternalQuotaWait": true,
+        "staleTelemetryTtlMinutes": 90,
+        "staleTelemetryMayNotPinConcurrency": true,
+        "fastHealthyRamp": true,
+        "laneSpecificBackpressurePreferred": true,
+        "globalCollapseForSingleLaneFailureForbidden": true,
+        "workStealing": true,
+        "softReservations": true,
+        "waitingWorkConsumesSlot": false,
+        "systemStewardProtectedSlots": 1,
+        "systemStewardSlotBorrowableWhenIdle": true
       },
       "invariants": {
         "noGateBypass": true,
@@ -1151,6 +1180,55 @@
           "REQUIRED_SECRET_OR_HUMAN_AUTHENTICATION_MISSING",
           "PLATFORM_POLICY_BLOCK_THAT_CANNOT_BE_ROUTED_AROUND"
         ]
+      },
+      "systemSteward": {
+        "version": 1,
+        "authority": "OWNER_DIRECTIVE_2026-09-19",
+        "enabled": true,
+        "mode": "RESIDENT_DETERMINISTIC_WATCHDOG_PLUS_ONE_BORROWABLE_REPAIR_SLOT",
+        "priority": "P0.5_SYSTEM_RELIABILITY",
+        "protectedSlots": 1,
+        "slotBorrowableWhenNoActionableMaintenance": true,
+        "watches": [
+          "STALE_QUEUE_RESERVATIONS",
+          "RETRY_EXHAUSTED_FAILED_TASKS",
+          "QUEUE_STARVATION",
+          "STALE_BACKPRESSURE_TELEMETRY",
+          "RUNNER_QUEUE_WAIT",
+          "CACHE_FAILURE",
+          "DUPLICATED_QA_OR_WORK",
+          "FLAKY_TESTS",
+          "STUCK_WORKFLOWS",
+          "FAILED_REFILL_CHAIN",
+          "CHECKPOINT_DRIFT",
+          "REPEATED_FAILURE_SIGNATURES",
+          "UNNECESSARY_FULL_REVALIDATION",
+          "PROVIDER_OUTAGE_OR_QUOTA",
+          "RELEASE_DISPATCH_STRANDING",
+          "OWNER_EDIT_OVERWRITE_RISK"
+        ],
+        "loop": [
+          "DETECT_ONE_ACTIONABLE_ISSUE",
+          "CLASSIFY_CAUSE_AND_BLAST_RADIUS",
+          "CAPTURE_EVIDENCE",
+          "APPLY_LOWEST_RISK_SCOPED_REPAIR",
+          "RERUN_EXACT_HEALTH_OR_FAILED_CHECK",
+          "PERSIST_FAILURE_SIGNATURE_AND_FIX_PATTERN",
+          "CONTINUE_TO_NEXT_ISSUE"
+        ],
+        "permissions": {
+          "orchestrationRepair": true,
+          "queueRepair": true,
+          "staleTelemetryReset": true,
+          "deadTaskRegeneration": true,
+          "laneParallelismTuning": true,
+          "safeCiRepair": true,
+          "regressionTestCreation": true,
+          "gameRuleChangeWithoutOwnerOrApprovedDesign": false,
+          "gateLowering": false,
+          "runtimeEvidenceFabrication": false,
+          "verifiedLearningDeletion": false
+        }
       }
     },
     "webIterationPolicy": {
@@ -1183,6 +1261,124 @@
       "postReleaseRecoveryAllowed": false,
       "historicalMaintenanceRecoveryAllowed": false,
       "sourceDeletionRequired": true
+    },
+    "priorityScheduler": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "order": [
+        "P0_CRITICAL_PRODUCTION_AND_PLATFORM_INCIDENT",
+        "P0_5_SYSTEM_RELIABILITY",
+        "P1_RELEASED_GAME_CARETAKER",
+        "P2_OWNER_FOCUSED_GAME_CARETAKER",
+        "P3_RELEASE_CANDIDATE",
+        "P4_GENERAL_DEVELOPMENT",
+        "P5_LEARNING_RESEARCH_PRACTICE"
+      ],
+      "productionPreemptsPractice": true,
+      "ownerDirectiveHighestPriority": true,
+      "samePriorityTieBreak": [
+        "OWNER_RECENT_DIRECTIVE",
+        "NEAREST_SAFE_COMPLETION",
+        "HIGHEST_BLOCKER_RELIEF_VALUE",
+        "OLDEST_WAITING_RUNNABLE_WORK"
+      ],
+      "softReservation": true,
+      "workStealing": true
+    },
+    "ownerFocusedDevelopment": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "enabled": true,
+      "oneLogicalCaretakerPerFocusedGame": true,
+      "stickyOwnership": true,
+      "burstWorkers": {
+        "enabled": true,
+        "min": 2,
+        "max": 4
+      },
+      "focusSource": "OWNER_DIRECTIVE_OR_OWNER_EDIT",
+      "ownerFocusPreemptsGeneralDevelopment": true
+    },
+    "ownerWebEditPropagation": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "enabled": true,
+      "ownerEditPrecedence": "HIGHEST_GAME_INTENT_AFTER_EXPLICIT_OWNER_DIRECTIVE",
+      "literalWebCodeCrossPlatformCopyForbidden": true,
+      "propagateSemanticIntent": true,
+      "preserveOwnerChangeAgainstStaleAutomation": true,
+      "affectedEvidenceInvalidationOnly": true,
+      "workflow": [
+        "DETECT_DIRECT_WEB_SOURCE_CHANGE",
+        "CAPTURE_BASE_AND_HEAD_FINGERPRINT",
+        "PROTECT_NEW_SOURCE_AS_CURRENT_BASELINE",
+        "CLASSIFY_AFFECTED_SYSTEMS",
+        "RUN_AFFECTED_WEB_QA",
+        "PROPAGATE_SEMANTIC_INTENT_TO_SELECTED_PLATFORM",
+        "REVALIDATE_AFFECTED_PLATFORM_GATES",
+        "CARETAKER_CONTINUES_FROM_NEW_BASELINE"
+      ],
+      "ambiguousExpansion": "PRESERVE_EDIT_AND_DO_NOT_INVENT_NEW_GAME_RULES"
+    },
+    "robloxStudioUsage": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "learningUseForbidden": true,
+      "generalPracticeUseForbidden": true,
+      "role": "RUNTIME_EVIDENCE_ONLY",
+      "allowed": [
+        "REPLICATION_RUNTIME",
+        "DATASTORE_RUNTIME",
+        "REMOTE_RUNTIME",
+        "MULTIPLAYER_RUNTIME",
+        "PHYSICS_OR_ENGINE_RUNTIME",
+        "OTHER_STUDIO_ONLY_EVIDENCE"
+      ],
+      "offlineBehavior": "WAIT_ONLY_REQUIRED_RUNTIME_GATE_RELEASE_CAPACITY",
+      "publicationSeparatedFromStudioRunner": true,
+      "publicationRoute": "OPEN_CLOUD"
+    },
+    "deterministicGateAuthority": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "enabled": true,
+      "aiMayDecidePassFail": false,
+      "passFailAuthority": "DETERMINISTIC_RULES_PLUS_VERIFIED_RUNTIME_QA_REGRESSION_EVIDENCE",
+      "mutationTestingRequiredWhenApplicable": true,
+      "failureToRegressionMemory": true,
+      "unchangedFingerprintEvidenceReusable": true,
+      "relevantChangeInvalidatesAffectedEvidenceOnly": true
+    },
+    "speedOptimization": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "enabled": true,
+      "buildOncePerRelevantFingerprint": true,
+      "selectiveRevalidation": true,
+      "duplicateVerifiedWorkForbidden": true,
+      "fingerprints": [
+        "SOURCE_SHA",
+        "APPROVED_DESIGN_SHA",
+        "DEPENDENCY_SHA",
+        "TEST_CONTRACT_SHA",
+        "BUILD_ARTIFACT_SHA",
+        "RUNTIME_EVIDENCE_SHA"
+      ],
+      "order": [
+        "CHEAP_STATIC_PRECHECK",
+        "IMPACT_ANALYSIS",
+        "AFFECTED_INCREMENTAL_TESTS",
+        "BUILD_ONCE",
+        "RUNTIME_WHEN_REQUIRED",
+        "AFFECTED_REGRESSION",
+        "NEXT_STAGE"
+      ],
+      "repairEscalation": [
+        "TARGETED_REPAIR",
+        "ALTERNATE_REPAIR_STRATEGY",
+        "DEEP_CAUSAL_DIAGNOSIS",
+        "MODULE_REWORK_WHEN_EVIDENCE_SUPPORTS"
+      ]
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
