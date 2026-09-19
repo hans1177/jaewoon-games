@@ -5,6 +5,9 @@ import {
   createMasteryState,
   applyVerifiedExperienceToMastery,
   applyVerifiedCodePatternsToMastery,
+  applyVerifiedCodingStrategyOutcomes,
+  preferredCodingStrategyForTask,
+  codingStrategyGuidance,
   retrieveUnifiedLearning,
   candidateTournamentPolicy,
   buildBenchmarkLadder,
@@ -41,6 +44,31 @@ test('verified success and verified failure lesson raise only inferred mastery d
   assert.ok(result.state.domains.SAVE.xp>0);
   assert.ok(result.state.domains.WEB_RUNTIME.xp>0);
   assert.equal(Object.keys(result.state.failureSignatures).length,1);
+});
+
+test('verified coding strategy outcomes accumulate, dedupe, and become preferred only after repeated independent evidence',()=>{
+  const mk=(id,gameId,first='YES')=>({
+    id,gameId,target:'web',evidence:[
+      'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+      'coding-strategy:RESPONSIBILITY_FIRST','coding-generation-attempts:1',`coding-candidate-first-attempt:${first}`,
+      `vibe2/candidate/${id}-primary-run`
+    ]
+  });
+  const queue={tasks:[mk('s1','g1'),mk('s2','g1'),mk('s3','g2'),mk('s4','g2'),mk('s5','g2','NO'),
+    {id:'unverified',gameId:'g1',target:'web',evidence:['coding-strategy:CAUSAL_TRACE_FIRST','coding-candidate-first-attempt:YES']}]};
+  const learned=applyVerifiedCodingStrategyOutcomes({},queue);
+  assert.equal(learned.added,5);
+  const row=learned.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST;
+  assert.equal(row.verifiedApplications,5);
+  assert.equal(row.firstCandidatePasses,4);
+  assert.equal(row.state,'PREFERRED');
+  assert.equal(learned.state.codingStrategyMemory.strategies.CAUSAL_TRACE_FIRST,undefined);
+  const deduped=applyVerifiedCodingStrategyOutcomes(learned.state,queue);
+  assert.equal(deduped.added,0);
+  const preferred=preferredCodingStrategyForTask({task:{gameId:'g1',target:'web'},stateInput:learned.state});
+  assert.equal(preferred.strategy,'RESPONSIBILITY_FIRST');
+  assert.equal(preferred.authorityExpanded,false);
+  assert.match(codingStrategyGuidance(preferred),/MUST NOT expand writable scope/);
 });
 
 test('repeated verified failure escalates tournament and idle drill without bypassing gates',()=>{
