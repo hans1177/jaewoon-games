@@ -1,0 +1,19 @@
+{
+  "summary": "Implement direct authorable types for game assets",
+  "expectedEffect": "Preserve gameplay values and save meaning while making material changes to directly authorable types",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'}",
+      "replace": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'};\n\n// Direct authorable types for game assets\nconst DIRECT_AUTHORABLE_TYPES = ['svg-final-art', 'canvas-art-and-effects', 'motion-engine-animation'];\n\n// Game asset production plan\nconst ASSET_PRODUCTION_PLAN = {\n  types: DIRECT_AUTHORABLE_TYPES,\n  reuse: {\n    character: 'oga-adventurer-slime|github-pixel-snapped-pirate-skeleton',\n    enemy: 'oga-animated-monsters|oga-adventurer-slime|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton',\n    boss: 'oga-animated-monsters|oga-unity-slime-12|github-pixel-snapped-pirate-skeleton',\n    background: 'survival2-atlas',\n    item: 'survival2-atlas|survival2-mushroom',\n    prop: 'survival2-atlas|survival2-tree|survival2-rock|survival2-plant',\n    effect: 'survival2-atlas|oga-basic-pixel-spells',\n    ui: 'survival2-atlas',\n    animation: 'oga-animated-monsters|oga-adventurer-slime|oga-basic-pixel-spells|oga-unity-slime-12'\n  },\n  direct: DIRECT_AUTHORABLE_TYPES,\n  fallback: 'AUTHORING_GENERATOR_REQUEST'\n};"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "GAME_CONFIG.id === 'seed-casual-realm-weaver'",
+    "GAME_CONFIG.name === '세계의 직조자'",
+    "GAME_CONFIG.mode === 'realm'",
+    "GAME_CONFIG.desc === '마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'"
+  ]
+}
