@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const clamp=(v,a,b)=>Math.max(a,Math.min(b,v))",
+      "replace": "audioCtx=new AC();master=audioCtx.createGain();master.gain.value=.03*Number($('#volume').value||.24);master.connect(audioCtx.destination);osc=audioCtx.createOscillator();osc.type='triangle';osc.frequency.value=146.8;osc.connect(master);osc.start()"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
