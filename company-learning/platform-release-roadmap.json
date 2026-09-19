@@ -1,5 +1,5 @@
 {
-  "version": 57,
+  "version": 58,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1108,7 +1108,8 @@
         "robloxRunnerFailure": "USE_EXISTING_AUTHENTICATED_RUNNER_SELF_HEAL",
         "externalModelQuota": "CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK",
         "waitingForVerifiedSamples": "CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE",
-        "staleMachineStateBlockerAfterStateNormalization": "REPAIR_QUEUE_TO_EXTERNAL_WAVE_256_AND_INVALID_V3_PARALLELISM_STEP_BEFORE_STRICT_HANDOFF_CHECK_THEN_REVALIDATE_AND_CLEAR_ONLY_KNOWN_STALE_MACHINE_BLOCKERS"
+        "staleMachineStateBlockerAfterStateNormalization": "REPAIR_QUEUE_TO_EXTERNAL_WAVE_256_AND_INVALID_V3_PARALLELISM_STEP_BEFORE_STRICT_HANDOFF_CHECK_THEN_REVALIDATE_AND_CLEAR_ONLY_KNOWN_STALE_MACHINE_BLOCKERS",
+        "runContractShaDrift": "PIN_RESERVE_TIME_MAIN_SHA_ACROSS_EXPLORATION_WORKER_FAN_IN_AND_REQUEUE_ONLY_REAL_REGRESSION_FAILURES"
       },
       "bottleneckPolicy": {
         "adaptiveSteps": [
@@ -1154,7 +1155,10 @@
         "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-19",
         "gameImplementationPreemptsNonblockingSupervision": true,
         "nonblockingSupervisionUsesSpareCapacityOnly": true,
-        "ownerAndSystemStewardProtectionPreserved": true
+        "ownerAndSystemStewardProtectionPreserved": true,
+        "waveContractShaPinnedAtReserve": true,
+        "controlBranchCodeExecutionForbiddenForWaveRegression": true,
+        "mainChangesDuringActiveWaveApplyNextWaveOnly": true
       },
       "invariants": {
         "noGateBypass": true,
@@ -1373,34 +1377,33 @@
           "RELEASE_SAFETY_GATES"
         ],
         "currentIncident": {
-          "signature": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION_OVER_SPECULATION",
-          "symptom": "19_RESERVED_DEVELOPMENT_TASKS_EXPANDED_TO_41_WORKERS_WHILE_MEASURED_RUNNER_PEAK_WAS_12",
-          "status": "MITIGATION_APPLIED_NEXT_WAVE_PENDING_VERIFICATION",
-          "rootCause": "SPECULATIVE_VARIANTS_CONSUMED_RUNNER_QUEUE_BEFORE_ALL_PRIMARY_GAME_WORK_COULD_COMPLETE",
-          "repair": "PRIMARY_COVERAGE_FIRST_SPECULATION_ONLY_FROM_SPARE_ADAPTIVE_CAPACITY_AND_OWNER_WAVE_20",
+          "signature": "RUN_CONTRACT_SHA_DRIFT_FANIN_STALE_CONTROL_CODE",
+          "symptom": "RESERVE_AND_WORKERS_USE_MAIN_CONTRACT_WHILE_FAN_IN_REGRESSION_USED_STALE_CONTROL_BRANCH_CODE_CAUSING_SUCCESSFUL_WORK_TO_REQUEUE",
+          "status": "REPAIR_APPLIED_PENDING_LIVE_WAVE_VERIFICATION",
+          "rootCause": "ACTIVE_WAVE_DID_NOT_SHARE_ONE_IMMUTABLE_MAIN_CONTRACT_SHA",
+          "repair": "RESERVE_EXPORTS_CONTRACT_SHA_EXPLORATION_WORKER_AND_FAN_IN_CHECKOUT_EXACT_SHA_CONTROL_BRANCH_STATE_ONLY",
           "verifiedEvidence": [
-            "RUN_35425782021_ACTUAL_PEAK_CONCURRENCY=12",
-            "RUN_35425782021_RESERVED_TASKS=19",
-            "RUN_35425782021_WORKER_FAN_OUT=41",
-            "VIBE2_CORE_QA_PREVIOUS=PASS",
-            "CENTRAL_POLICY_CONTRACT_QA_PREVIOUS=PASS",
-            "OWNER_WAVE_20_CONTROL_PERSISTED",
-            "VIBE2_CORE_QA_RUN_35426882175=PASS"
+            "PREVIOUS_FAN_IN_REGRESSION_FAILURE_AFTER_SUCCESSFUL_WORKERS",
+            "CONTROL_BRANCH_STORES_RUNTIME_STATE",
+            "MAIN_IS_CODE_AND_MACHINE_CONTRACT_AUTHORITY",
+            "VIBE2_CORE_QA_BEFORE_SHA_PIN=PASS",
+            "CENTRAL_POLICY_CONTRACT_QA_BEFORE_SHA_PIN=PASS"
           ],
           "codeBindings": [
-            "tools/vibe2-queue-control.mjs",
-            "qa/vibe2-queue-control.test.mjs",
-            "vibe2-runtime.json",
-            ".vibe2/parallelism-control.json",
-            "assets/vibe-continuous-queue.js"
+            ".github/workflows/vibe2-continuous-core.yml",
+            "tools/vibe2-continuous-runner.mjs",
+            "qa/vibe2-controller-contract.test.mjs",
+            "vibe2-runtime.json"
           ],
           "nextVerification": [
-            "NEXT_WAVE_WORKER_COUNT_MUST_NOT_EXCEED_ADAPTIVE_WAVE",
-            "PRIMARY_GAME_TASK_COVERAGE_MUST_PRECEDE_SPECULATIVE_VARIANTS",
-            "RUNNER_QUEUE_WAIT_AND_ACTUAL_PEAK_CONCURRENCY_MUST_IMPROVE_OR_TRIGGER_NEXT_ADAPTIVE_STEP"
+            "RESERVE_OUTPUT_CONTRACT_SHA_PRESENT",
+            "EXPLORATION_BASE_SHA_EQUALS_CONTRACT_SHA",
+            "WORKER_BASE_SHA_EQUALS_CONTRACT_SHA",
+            "FAN_IN_REGRESSION_EXECUTES_FROM_CONTRACT_SHA",
+            "FAN_IN_REGRESSION_PASS_OR_REQUEUE_ONLY_ON_REAL_CURRENT_CONTRACT_FAILURE",
+            "20_WAVE_REMAINS_PRIMARY_GAME_DEVELOPMENT_FIRST"
           ],
-          "ownerWaveOverride": 20,
-          "secondaryRepair": "DEVELOPMENT_IMPLEMENTATION_SCORE_BOOST_AND_NONBLOCKING_SUPERVISION_DEPRIORITIZATION"
+          "ownerWaveOverride": 20
         },
         "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
@@ -1410,13 +1413,15 @@
           "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS",
           "qaContract": "PASS",
           "centralPolicyContract": "PASS",
-          "currentLargestBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
+          "currentLargestBottleneck": "RUN_CONTRACT_SHA_DRIFT_FANIN_STALE_CONTROL_CODE",
           "adaptiveWave": 20,
           "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
           "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST_SPARE_SPECULATION_ONLY",
           "vibe2CoreQa": "PASS_RUN_35426882175",
           "schedulerPriority": "OWNER_OR_STEWARD_CRITICAL_THEN_RELEASE_THEN_GAME_DEVELOPMENT_THEN_NONBLOCKING_SUPERVISION",
-          "supervisorCapacityPolicy": "SPARE_CAPACITY_ONLY_WHILE_ACTIONABLE_GAME_DEVELOPMENT_EXISTS"
+          "supervisorCapacityPolicy": "SPARE_CAPACITY_ONLY_WHILE_ACTIONABLE_GAME_DEVELOPMENT_EXISTS",
+          "waveContractPolicy": "ONE_RESERVE_TIME_MAIN_SHA_PER_WAVE",
+          "controlBranchRole": "STATE_ONLY"
         },
         "incidentHistory": [
           {
