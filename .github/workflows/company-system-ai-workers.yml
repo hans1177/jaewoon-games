@@ -129,6 +129,7 @@ jobs:
             sudo mkdir -p /usr/local/lib/ollama
             sudo cp -a "$cached_lib/." /usr/local/lib/ollama/
             echo "$HOME/.cache/company-system-ai-ollama/bin" >> "$GITHUB_PATH"
+            ollama_bin="$cached"
             echo 'COMPANY_SYSTEM_AI_OLLAMA_RUNTIME=CACHE'
           else
             installed=0
@@ -147,16 +148,18 @@ jobs:
             test -n "$runtime_lib"
             cp -a "$runtime_lib/." "$cached_lib/"
             echo "$HOME/.cache/company-system-ai-ollama/bin" >> "$GITHUB_PATH"
+            ollama_bin="$cached"
             echo 'COMPANY_SYSTEM_AI_OLLAMA_RUNTIME=FRESH_INSTALL'
           fi
-          nohup ollama serve > /tmp/company-system-ai-ollama.log 2>&1 &
+          test -x "$ollama_bin"
+          nohup "$ollama_bin" serve > /tmp/company-system-ai-ollama.log 2>&1 &
           for i in $(seq 1 30); do
             curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
             if [ "$i" = 30 ]; then cat /tmp/company-system-ai-ollama.log || true; exit 1; fi
             sleep 2
           done
-          if ! ollama list | awk 'NR>1 {print $1}' | grep -Fqx "$SYSTEM_AI_MODEL"; then
-            ollama pull "$SYSTEM_AI_MODEL"
+          if ! "$ollama_bin" list | awk 'NR>1 {print $1}' | grep -Fqx "$SYSTEM_AI_MODEL"; then
+            "$ollama_bin" pull "$SYSTEM_AI_MODEL"
           fi
 
       - name: Load reserved assignment
