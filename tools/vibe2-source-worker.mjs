@@ -48,9 +48,12 @@ const FULL_WEB_RETRY_TIMEOUT_MS=360000;
 const FULL_WEB_RETRY_MAX_PREDICT=6144;
 const JSON_RETRY_TIMEOUT_MS=240000;
 const JSON_RETRY_MAX_PREDICT=1536;
+const JSON_FINAL_RETRY_TIMEOUT_MS=90000;
+const JSON_FINAL_RETRY_MAX_PREDICT=768;
 const JSON_CONTEXT_WINDOW=32768;
+const JSON_FINAL_CONTEXT_WINDOW=16384;
 const FULL_WEB_CONTEXT_WINDOW=32768;
-const MAX_GENERATION_ATTEMPTS=2;
+const MAX_GENERATION_ATTEMPTS=3;
 const FULL_FILE_PREFIX='VIBE2_FULL_FILE';
 const FULL_FILE_CONTENT_MARKER='---VIBE2_FILE_CONTENT---';
 const FULL_FILE_END_MARKER='---VIBE2_FILE_END---';
@@ -115,11 +118,22 @@ allowFullRewrite?'The replacement must be self-contained enough to run from the 
 `Required QA: ${(order.qa||[]).join(', ')}`,
 sourceText
 ].filter(Boolean).join('\n');}
+export function generationFailureClass(error){
+  const message=clean(error?.message||error);
+  if(/실제 source 변경|변경 없는 edit/i.test(message))return'NO_OP';
+  if(/시간 초과|timeout|prediction aborted|token repeat limit/i.test(message))return'TIMEOUT';
+  if(/책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path/i.test(message))return'INVALID_PATH';
+  if(/전체 교체 파일 크기 오류/i.test(message))return'FULL_REWRITE_SIZE';
+  if(/JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답/i.test(message))return'MALFORMED_OUTPUT';
+  if(/edit find/i.test(message))return'EDIT_MATCH';
+  return'OTHER';
+}
+function focusedFinalRetryAllowed(error){return['NO_OP','INVALID_PATH','EDIT_MATCH'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|prediction aborted|token repeat limit/i.test(message);
 }
-export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[]}={}){
+export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2}={}){
   const rawPrompt=String(prompt??'');
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
   const allowedPaths=allowedLine
@@ -143,14 +157,21 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
       for(let i=0;i<starts.length;i++){
         const sectionStart=starts[i]+1;
         const sectionEnd=i+1<starts.length?starts[i+1]:retryBase.length;
-        const section=retryBase.slice(sectionStart,sectionEnd).trimEnd();
+        let section=retryBase.slice(sectionStart,sectionEnd).trimEnd();
         const header=section.split('\n',1)[0];
         const sectionPath=header
           .replace(/^=== FILE\s+/,'')
           .replace(/\s+\[[^\]]+\].*$/,'')
           .replace(/\s+===$/,'')
           .trim();
-        if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath))editable.push(section);
+        if(header.includes('[EDITABLE]')||exactResponsible.includes(sectionPath)){
+          if(attempt>=3){
+            const body=section.split('\n').slice(1).join('\n');
+            const excerpt=boundedLargeExcerpt(body,5000);
+            section=header+'\n'+excerpt.content;
+          }
+          editable.push(section);
+        }
       }
       if(editable.length)retryBase=[prefix,...editable].join('\n\n');
     }
@@ -171,7 +192,11 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         zeroChange?'You MUST produce at least one edits[] entry. Use the exact Allowed edit path above. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use the exact Allowed edit path above, copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
         zeroChange||noChangeEdit||invalidPath?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':''
       ].filter(Boolean).join('\n');
-  return `${retryBase}\n\n${correction}`;
+  const focusedFinal=attempt>=3&&!allowFullRewrite;
+  const finalInstruction=focusedFinal
+    ?'FINAL FOCUSED RETRY: return exactly one edits[] entry on the exact writable path. Use the shortest unique find text visible in the compact EDITABLE excerpt, and make replace materially different. Do not return empty arrays or repeat the original text.'
+    :'';
+  return retryBase+'\n\n'+correction+(finalInstruction?'\n'+finalInstruction:'');
 }
 function responseFileForAttempt(responseFile,responseFiles=[],attempt=1){
   const rows=Array.isArray(responseFiles)?responseFiles.map(clean).filter(Boolean):[];
@@ -181,23 +206,31 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let lastError=null;
   for(let attempt=1;attempt<=MAX_GENERATION_ATTEMPTS;attempt++){
     const retry=attempt>1;
-    const attemptPrompt=retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles}):prompt;
+    const focusedFinal=attempt>=3;
+    const attemptPrompt=retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt}):prompt;
     const maxPredict=allowFullRewrite
       ? (retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT)
-      : (retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT);
+      : (focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT));
     const timeoutMs=allowFullRewrite
       ? (retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS)
-      : (retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS);
+      : (focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS));
+    const contextWindow=allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW);
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     try{
-      const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow:allowFullRewrite?FULL_WEB_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW});
+      const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow});
       const candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite});
-      return {candidate,generation:{attempts:attempt,recoveryUsed:retry,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs}};
+      return {candidate,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs}};
     }catch(error){
       lastError=error;
-      const hasAnother=attempt<MAX_GENERATION_ATTEMPTS;
+      const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
+      const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
+      const hasAnother=ordinaryRetry||focusedRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
-      if(!hasAnother||!shouldRetryGenerationError(error)||(responseFile&&!fakeSequence))throw error;
+      if(!hasAnother||(responseFile&&!fakeSequence)){
+        error.vibe2GenerationAttempts=attempt;
+        error.vibe2GenerationFailureClass=generationFailureClass(error);
+        throw error;
+      }
     }
   }
   throw lastError||new Error('candidate generation failed');
@@ -283,4 +316,25 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   return manifest;
 }
 
-if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){const args=parseArgs();const result=await runVibe2SourceWorker({workOrderFile:clean(args.order)||'.vibe2/work-order.json',outputRoot:clean(args.output)||'.vibe2/candidates',model:clean(args.model)||DEFAULT_MODEL,responseFile:clean(args.response),applySource:String(args['apply-source']||'').toLowerCase()==='true'});console.log('VIBE2_SOURCE_WORKER=PASS');console.log(`VIBE2_TASK_ID=${result.taskId}`);console.log(`VIBE2_TARGET=${result.target}`);console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);console.log(`VIBE2_CANDIDATE_MANIFEST=${result.candidateManifestPath}`);console.log(`VIBE2_GENERATION_ATTEMPTS=${result.generation?.attempts||1}`);console.log(`VIBE2_GENERATION_RECOVERY=${result.generation?.recoveryUsed?'YES':'NO'}`);console.log(`VIBE2_EXPLORATION_REUSE_KEY=${result.exploration?.reuseKey||'NONE'}`);}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
+  const args=parseArgs();
+  try{
+    const result=await runVibe2SourceWorker({workOrderFile:clean(args.order)||'.vibe2/work-order.json',outputRoot:clean(args.output)||'.vibe2/candidates',model:clean(args.model)||DEFAULT_MODEL,responseFile:clean(args.response),applySource:String(args['apply-source']||'').toLowerCase()==='true'});
+    console.log('VIBE2_SOURCE_WORKER=PASS');
+    console.log(`VIBE2_TASK_ID=${result.taskId}`);
+    console.log(`VIBE2_TARGET=${result.target}`);
+    console.log(`VIBE2_CHANGED_FILES=${result.changedFiles.join(',')}`);
+    console.log(`VIBE2_CANDIDATE_MANIFEST=${result.candidateManifestPath}`);
+    console.log(`VIBE2_GENERATION_ATTEMPTS=${result.generation?.attempts||1}`);
+    console.log(`VIBE2_GENERATION_RECOVERY=${result.generation?.recoveryUsed?'YES':'NO'}`);
+    console.log(`VIBE2_GENERATION_FOCUSED_FINAL=${result.generation?.focusedFinalRetry?'YES':'NO'}`);
+    console.log(`VIBE2_EXPLORATION_REUSE_KEY=${result.exploration?.reuseKey||'NONE'}`);
+  }catch(error){
+    const failureClass=clean(error?.vibe2GenerationFailureClass)||generationFailureClass(error);
+    const attempts=Number(error?.vibe2GenerationAttempts||0);
+    console.error(`VIBE2_SOURCE_WORKER_FAILURE_CLASS=${failureClass}`);
+    if(attempts>0)console.error(`VIBE2_GENERATION_ATTEMPTS=${attempts}`);
+    console.error(`VIBE2_SOURCE_WORKER_FAILURE_MESSAGE=${clean(error?.message||error).replaceAll('\n',' ').slice(0,500)}`);
+    throw error;
+  }
+}
