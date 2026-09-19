@@ -1,5 +1,5 @@
 {
-  "version": 90,
+  "version": 91,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3066,9 +3066,9 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_COMPLETE_BOUNDARY_EXACT_EDIT_RECOVERY_AND_SINGLE_WAVE_2026-09-19",
+    "id": "VIBE2_RELEASE_IDEMPOTENCY_AND_QUEUE_MAX_SEMANTICS_2026-09-19",
     "documentIsCode": true,
-    "reason": "REDUCE_SOURCE_GENERATION_FAILURES_WITH_COMPLETE_OUTPUT_BOUNDARIES_ADAPTIVE_RECOVERY_FULL_WEB_ACCUMULATION_AND_EARLY_EXACT_EDIT_MATCH_RETRY_WHILE_ENFORCING_ONE_FAN_IN_CONTROLLED_WORKER_WAVE",
+    "reason": "PRESERVE_EXTERNAL_QUEUE_MAX_256_WHILE_CURRENT_WAVE_CAP_REMAINS_ADAPTIVE_20_AND_MAKE_WEB_CANDIDATE_RELEASE_IDEMPOTENT_ACROSS_MAIN_MERGE_AND_CONTROL_BRANCH_SETTLEMENT_CONFLICTS",
     "files": [
       "tools/vibe2-source-worker.mjs",
       "qa/vibe2-source-worker.test.mjs",
@@ -3099,7 +3099,11 @@
       "7e1277a686c2716d5b0d72b9c1810d40d479fb8a",
       "67f4362c278e77714858ce013328321a8752e24d",
       "13eec09a49f50f5f5b42d6dad54d0777f3143937",
-      "3c027e08e6a41e96a2df2e65f9db8897b81ede5e"
+      "3c027e08e6a41e96a2df2e65f9db8897b81ede5e",
+      "ce6547bb852e625aa091b1b8a35c48a7794e808d",
+      "1fb41b65418070dccb60c866ed22af00eea1d9b1",
+      "40fa1045233d7469075f40bb38ff0dd2e103290b",
+      "6b8fc58a2a738274e987050761a71c0a18de3157"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3117,7 +3121,13 @@
       "controllerOrchestrationQaLatestMain": true,
       "candidateReleaseConcurrencyScopedPerCandidate": true,
       "candidateReleaseWebCheckScopedToCloudflarePages": true,
-      "candidateReleaseRegressionContractQa": true
+      "candidateReleaseRegressionContractQa": true,
+      "persistentQueueMaxIsExternalWaveBound": true,
+      "adaptiveCurrentMaxIsCurrentWaveCap": true,
+      "plannerMustNotOverwritePersistentQueueMaxWithAdaptiveWaveCap": true,
+      "candidateReleaseAlreadyPromotedIsIdempotentPassPath": true,
+      "candidateReleaseControlSettlementReplaysOnLatestControlState": true,
+      "candidateReleaseControlJsonRebaseForbidden": true
     },
     "sourceGenerationContract": {
       "provider": "LOCAL_OLLAMA",
@@ -3227,7 +3237,12 @@
         "queued": 18,
         "blockerlessRunning": 0,
         "candidateAwaitingQa": 2
-      }
+      },
+      "activeWaveRun": "35435747316",
+      "activeWaveWorkerCount": 20,
+      "activeWaveStatus": "RUNNING",
+      "activeWaveReservationTasks": 18,
+      "speculativeWorkersFillTo20": true
     },
     "candidateReleaseGate": {
       "priorGlobalConcurrencyGroup": "vibe2-release-serial",
@@ -3243,6 +3258,37 @@
       "unrelatedRepositoryWideExternalChecksDoNotBlockWebGamePromotion": true,
       "qualityOrEvidenceGateWeakeningForbidden": true,
       "regressionTest": "qa/vibe2-controller-contract.test.mjs"
+    },
+    "queueMaxContract": {
+      "persistentQueueMax": 256,
+      "adaptiveCurrentWaveFloor": 20,
+      "failedRun": 35435718521,
+      "failure": "QUEUE_MAX_DIVERGED",
+      "rootCause": "AUTO_PLANNER_REBUILT_QUEUE_WITH_EFFECTIVE_PLANNER_MAX_20_AFTER_SYSTEM_STEWARD_NORMALIZED_PERSISTENT_QUEUE_MAX_TO_256",
+      "fixedBy": [
+        "ce6547bb852e625aa091b1b8a35c48a7794e808d",
+        "1fb41b65418070dccb60c866ed22af00eea1d9b1"
+      ],
+      "regressionQa": "qa/vibe2-auto-planner.test.mjs"
+    },
+    "candidateReleaseSettlement": {
+      "sourceTask": "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+      "firstReleaseRun": 35435715592,
+      "firstReleaseMainPromotionSucceeded": true,
+      "firstReleaseCloudflarePages": "PASS",
+      "firstReleaseControlSettlement": "FAILED_BY_CONTROL_BRANCH_REBASE_CONFLICT",
+      "duplicateReleaseRun": 35435762587,
+      "duplicateMisclassification": "source-root-changed-on-main",
+      "verifiedMainMatchesCandidateBlob": true,
+      "candidateSha": "1d3a7134a5ffd8860606817321d71478bd483dd3",
+      "mainBlobSha": "624bf88179bf451de589e527203408b828d80241",
+      "alreadyPromotedDetection": true,
+      "settlementRetryMode": "FETCH_RESET_LATEST_CONTROL_THEN_REAPPLY_QUEUE_CONTROL",
+      "fixedBy": [
+        "40fa1045233d7469075f40bb38ff0dd2e103290b",
+        "6b8fc58a2a738274e987050761a71c0a18de3157"
+      ],
+      "verificationState": "QA_PENDING"
     }
   }
 }
