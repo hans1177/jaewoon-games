@@ -95,6 +95,49 @@ test('declared executable causal replay fails closed when the replay target is m
   },null,2));
   assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:demo'}),/CAUSAL_REPLAY_TARGET_MISSING/);
 });
+test('architecture drift observes large responsibility growth without hard rejecting the candidate',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/drift-demo');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  const huge='score+=1;'.repeat(1100);
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><script>let score=0; function updateWorld(){ '+huge+' } requestAnimationFrame(updateWorld);</script></body></html>\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/drift-demo',changedFiles:['index.html'],
+    exploration:{responsibleFiles:['index.html'],editContract:{architectureSnapshot:{
+      version:1,nodeCount:1,edgeCount:0,maxFunctionBodyBytes:100,maxCallsPerFunction:0,maxCalledByPerFunction:0,maxStateWritesPerFunction:1,maxSystemsPerFunction:1,multiWriterStateCount:0,stateWriterLinkCount:1,multiOwnerStorageKeyCount:0,storageOwnerLinkCount:0,timerFunctionCount:0,eventBindingCount:0,largeFunctionCount:0,broadSystemFunctionCount:0
+    },causalReplay:{required:false,executable:false,mode:'PLAN_ONLY'}}}
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'web:drift-demo'});
+  assert.equal(result.outcome,'PASS');
+  assert.equal(result.architectureDrift.status,'ANALYZED');
+  assert.ok(result.architectureDrift.signals.includes('GOD_FUNCTION_GROWTH'));
+  assert.equal(result.architectureDrift.riskLevel,'MEDIUM');
+  assert.equal(result.architectureDrift.focusedReviewRequired,true);
+  assert.equal(result.architectureDrift.hardReject,false);
+  assert.equal(result.fullRegressionStillRequired,true);
+});
+
+test('architecture drift remains low for a bounded responsibility-preserving patch and is cached with QA evidence',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/stable-demo');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><script>let score=0; function updateScore(){ score+=1; }</script></body></html>\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  const cache=path.join(root,'.cache','stable.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/stable-demo',changedFiles:['index.html'],
+    exploration:{responsibleFiles:['index.html'],editContract:{architectureSnapshot:{
+      version:1,nodeCount:1,edgeCount:0,maxFunctionBodyBytes:80,maxCallsPerFunction:0,maxCalledByPerFunction:0,maxStateWritesPerFunction:1,maxSystemsPerFunction:1,multiWriterStateCount:0,stateWriterLinkCount:1,multiOwnerStorageKeyCount:0,storageOwnerLinkCount:0,timerFunctionCount:0,eventBindingCount:0,largeFunctionCount:0,broadSystemFunctionCount:0
+    },causalReplay:{required:false,executable:false,mode:'PLAN_ONLY'}}}
+  },null,2));
+  const first=runIncrementalQa({root,manifest,namespace:'web:stable-demo',cacheFile:cache});
+  const second=runIncrementalQa({root,manifest,namespace:'web:stable-demo',cacheFile:cache});
+  assert.equal(first.architectureDrift.riskLevel,'LOW');
+  assert.equal(first.architectureDrift.hardReject,false);
+  assert.equal(second.cached,true);
+  assert.equal(second.architectureDrift.riskLevel,'LOW');
+});
 test('invalid JS fails fast before full regression',()=>{
   const root=repo();
   fs.writeFileSync(path.join(root,'a.js'),'export const = ;\n','utf8');
