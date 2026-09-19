@@ -38,6 +38,10 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.equal(result.exploration.sourceWrite,false);
   assert.ok(result.exploration.reuseKey.length>=16);
   assert.equal(result.roleResults.exploration,'PASS');
+  assert.equal(result.developmentAuthority.owner,'VIBE2_VIBE3');
+  assert.equal(result.developmentAuthority.provider,'LOCAL_OLLAMA');
+  assert.equal(result.developmentAuthority.codexGameSourceWrite,'FORBIDDEN');
+  assert.equal(result.developmentAuthority.paidOpenAiApiAllowed,false);
   assert.match(fs.readFileSync(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'utf8'), /1 \+ 1/);
   assert.match(fs.readFileSync(path.join(cwd, '.vibe2/candidates/task-1/files/Assets/Player.cs'), 'utf8'), /return 2/);
 });
@@ -70,6 +74,22 @@ test('candidate manifest persists design intelligence requirements and starts ev
     assert.equal(result.designEvidence[key].verified, false);
     assert.equal(result.designEvidence[key].status, 'WAITING_EVIDENCE');
     assert.equal(persisted.designEvidence[key].verified, false);
+  }
+});
+
+test('Codex game source write override is rejected before generation', async () => {
+  const cwd = tempRoot();
+  const responseFile = path.join(cwd, 'model.json');
+  const previous = process.env.VIBE2_CODEX_GAME_SOURCE_WRITE;
+  write(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'class Player { int Speed() { return 1; } }\n');
+  write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'], taskId: 'codex-authority-reject' }), null, 2));
+  write(responseFile, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 1;', replace: 'return 2;' }], newFiles: [] }));
+  process.env.VIBE2_CODEX_GAME_SOURCE_WRITE = 'ALLOWED';
+  try {
+    await assert.rejects(runVibe2SourceWorker({ cwd, responseFile }), /CODEX_GAME_SOURCE_WRITE_FORBIDDEN/);
+  } finally {
+    if (previous === undefined) delete process.env.VIBE2_CODEX_GAME_SOURCE_WRITE;
+    else process.env.VIBE2_CODEX_GAME_SOURCE_WRITE = previous;
   }
 });
 
