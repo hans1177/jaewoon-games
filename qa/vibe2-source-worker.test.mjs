@@ -359,9 +359,9 @@ test('single-file Web diagnostic uses the same compact generation profile', asyn
   const result=await runVibe2SourceWorker({cwd,responseFile});
   assert.equal(result.generation.focusedWebRepair,true);
   assert.equal(result.generation.maxPredict,1024);
-  assert.equal(result.generation.contextWindow,16384);
-  assert.ok(result.generation.contextFiles<=3);
-  assert.ok(result.generation.contextBytes<=48000);
+  assert.equal(result.generation.contextWindow,12288);
+  assert.ok(result.generation.contextFiles<=2);
+  assert.ok(result.generation.contextBytes<=28000);
   assert.deepEqual(result.changedFiles,['rpg.html']);
 });
 
@@ -384,9 +384,9 @@ test('exact Web repair uses compact generation budget without weakening edit bou
   const result=await runVibe2SourceWorker({cwd,responseFile});
   assert.equal(result.generation.focusedWebRepair,true);
   assert.equal(result.generation.maxPredict,1024);
-  assert.equal(result.generation.contextWindow,16384);
-  assert.ok(result.generation.contextFiles<=3);
-  assert.ok(result.generation.contextBytes<=48000);
+  assert.equal(result.generation.contextWindow,12288);
+  assert.ok(result.generation.contextFiles<=2);
+  assert.ok(result.generation.contextBytes<=28000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 test('focused Web repair composes exact primary-symbol windows instead of broad file excerpts',async()=>{
@@ -412,7 +412,7 @@ test('focused Web repair composes exact primary-symbol windows instead of broad 
   assert.equal(result.generation.exactSourceWindows,true);
   assert.equal(result.generation.fullFileContextFallback,false);
   assert.ok(result.generation.focusedSymbolCount>=1);
-  assert.ok(result.generation.contextBytes<48000);
+  assert.ok(result.generation.contextBytes<=28000);
   assert.equal(result.codingMethod.contextMode,'PRIMARY_SYMBOL_WINDOWS');
   assert.deepEqual(result.changedFiles,['index.html']);
 });
@@ -468,7 +468,7 @@ test('focused symbol context matches JavaScript identifiers containing regex met
   assert.equal(result.generation.contextMode,'PRIMARY_SYMBOL_WINDOWS');
   assert.equal(result.generation.exactSourceWindows,true);
   assert.ok(result.generation.focusedSymbolCount>=1);
-  assert.ok(result.generation.contextBytes<48000);
+  assert.ok(result.generation.contextBytes<=28000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
