@@ -226,7 +226,7 @@ function createBuildingVisual(b){
   var def=BUILD_DEFS[b.type],g=new THREE.Group(),p=worldPos(b.gx,b.gz);
   g.position.set(p.x,0,p.z);
   g.userData.buildingId=b.id;
-  if(b.type==="path"){
+  if(b.type==="path"){var q=seeds.slice();
     var pm=box(1.88,.08,1.88,0xd8c29d);pm.position.y=.04;g.add(pm);
   }else if(b.type==="counter"){
     g.add(box(1.5,.75,1.1,0xf2d36b));
