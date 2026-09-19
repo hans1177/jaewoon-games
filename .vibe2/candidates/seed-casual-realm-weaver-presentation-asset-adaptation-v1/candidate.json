@@ -1,0 +1,20 @@
+{
+  "summary": "index.html",
+  "expectedEffect": "ASSET_ADAPTATION",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.'",
+      "replace": "window.GAME_CONFIG={id:'seed-casual-realm-weaver',name:'세계의 직조자',mode:'realm',desc:'마나로 숲·물길·마을을 창조하고 세계 안정도와 인구 목표를 달성하는 캐주얼 세계 창조 게임.',towerPositionInputRequired: true}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "GAME_CONFIG_ID_MATCH",
+    "GAME_CONFIG_NAME_MATCH",
+    "GAME_CONFIG_MODE_MATCH",
+    "GAME_CONFIG_DESC_MATCH",
+    "GAME_CONFIG_TOWER_POSITION_INPUT_REQUIRED"
+  ]
+}
