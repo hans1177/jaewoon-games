@@ -285,6 +285,13 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(design,/DESIGNER_DRAFT_GENERATION=ONE_CALL/);
   assert.match(design,/DESIGNER_DRAFT_ONE_CALL_FALLBACK=SPLIT/);
   assert.match(design,/DESIGN_ONLY_REVIEW_MODE=DETERMINISTIC_DEPARTMENT_EVIDENCE/);
+  assert.match(design,/PRESERVATION_PRESENTATION_UPGRADE/);
+  assert.match(design,/NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE/);
+  assert.match(design,/function enforceOwnerPreservationDesign/);
+  assert.match(gate,/owner-preservation-design-contract-required/);
+  const designScoring=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
+  assert.match(designScoring,/OWNER_PRESERVATION_CONTRACT_MISSING/);
+  assert.match(designScoring,/REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true/);
   assert.match(design,/DESIGN_ONLY_MEETING=DISABLED/);
   assert.match(design,/DESIGN_ONLY_REBUTTAL=DISABLED/);
   assert.match(design,/deterministicDepartmentReview/);
