@@ -87,3 +87,9 @@ Web PASS는 Roblox/Unity/UEFN native build/runtime/independent QA/regression PAS
 - 큰 표현 변경은 동일 장면 before/after로 가독성·모션 연속성·타격감·음향 동기화·혼잡도·프레임 안정성을 비교한다.
 - 목표는 가능한 기기에서 60FPS이며 저사양에서는 표현 비용을 줄여도 게임 의미는 유지한다.
 - 실사·고해상도 마감은 Living Motion과 Audio Feel 기준을 통과한 뒤 선택적으로 진행한다.
+
+## Presentation Runtime 선언
+
+- 에셋 적응부터 카메라/폴리시까지 순차 패스를 완료한 뒤에만 `data-presentation-quality-version="1"`을 선언한다.
+- 선언 후에는 canonical Playwright가 실제 프레임 연속성과 살아있는 시각 변화를 관측하므로 정적인 장식이나 메타데이터만으로 통과시키지 않는다.
+- 목표 60FPS는 품질 목표이며, 저사양에서는 효과 비용을 줄이되 입력·게임 의미·위험 가독성을 보존한다.
