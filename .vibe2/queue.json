@@ -6189,7 +6189,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -6210,7 +6210,8 @@
         "package-work-units:6",
         "package-related-improvements:0",
         "package-role-separation:exploration|implementation|test|performance|regression|review",
-        "package-quantity-goal:FEATURE_COMPLETION"
+        "package-quantity-goal:FEATURE_COMPLETION",
+        "slot-dispatch:35420675777:1"
       ],
       "lastOutcome": null,
       "reservationId": "35420418523:1",
