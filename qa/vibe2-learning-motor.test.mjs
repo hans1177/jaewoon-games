@@ -72,6 +72,40 @@ test('verified coding strategy outcomes accumulate, dedupe, and become preferred
   assert.match(codingStrategyGuidance(preferred),/MUST NOT expand writable scope/);
 });
 
+test('same verified failure fingerprint outranks same-game history when selecting among globally preferred strategies',()=>{
+  const mk=(id,gameId,strategy,fingerprint)=>({
+    id,gameId,target:'web',evidence:[
+      'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS',
+      `coding-strategy:${strategy}`,'coding-generation-attempts:1','coding-candidate-first-attempt:YES',
+      `coding-failure-fingerprint:${fingerprint}`,`vibe2/candidate/${id}-primary-run`
+    ]
+  });
+  const saveFp='web|SAVE_RESTORE_BROKEN';
+  const mobileFp='web|MOBILE_PLACEMENT_INPUT_MISSING';
+  const queue={tasks:[
+    mk('a1','g3','RESPONSIBILITY_FIRST',saveFp),mk('a2','g3','RESPONSIBILITY_FIRST',saveFp),mk('a3','g3','RESPONSIBILITY_FIRST',saveFp),
+    mk('a4','g4','RESPONSIBILITY_FIRST',saveFp),mk('a5','g4','RESPONSIBILITY_FIRST',saveFp),
+    mk('b1','b1','CAUSAL_TRACE_FIRST',mobileFp),mk('b2','b1','CAUSAL_TRACE_FIRST',mobileFp),mk('b3','b1','CAUSAL_TRACE_FIRST',mobileFp),
+    mk('b4','b2','CAUSAL_TRACE_FIRST',mobileFp),mk('b5','b2','CAUSAL_TRACE_FIRST',mobileFp)
+  ]};
+  const learned=applyVerifiedCodingStrategyOutcomes({},queue);
+  assert.equal(learned.state.codingStrategyMemory.strategies.RESPONSIBILITY_FIRST.state,'PREFERRED');
+  assert.equal(learned.state.codingStrategyMemory.strategies.CAUSAL_TRACE_FIRST.state,'PREFERRED');
+  assert.equal(learned.state.codingStrategyMemory.strategies.CAUSAL_TRACE_FIRST.failureFingerprints[mobileFp].verifiedApplications,5);
+  const task={gameId:'g3',target:'web',goal:'모바일 배치 입력 오류 수정',evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
+  const preferred=preferredCodingStrategyForTask({task,stateInput:learned.state});
+  assert.equal(preferred.failureFingerprint,mobileFp);
+  assert.equal(preferred.strategy,'CAUSAL_TRACE_FIRST');
+  assert.equal(preferred.sameFailureApplications,5);
+  assert.equal(preferred.sameGameSameFailureApplications,0);
+  assert.equal(preferred.selectionReason,'SAME_FAILURE_VERIFIED');
+  assert.equal(preferred.advisoryOnly,true);
+  assert.equal(preferred.authorityExpanded,false);
+  const guidance=codingStrategyGuidance(preferred);
+  assert.match(guidance,/selectionReason=SAME_FAILURE_VERIFIED/);
+  assert.match(guidance,/MUST NOT expand writable scope/);
+});
+
 test('failure-local retrieval prioritizes verified same-game same-failure memory and ignores unverified records',()=>{
   const task={gameId:'tower-demo',target:'web',goal:'모바일 pointer placement failure를 수정',evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
   const fp=failureFingerprintForTask(task);
