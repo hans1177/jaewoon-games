@@ -1,5 +1,5 @@
 {
-  "version": 50,
+  "version": 51,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1101,7 +1101,7 @@
         "staleRunningReservation": "RELEASE_AND_REQUEUE_WITH_RECOVERY_EVIDENCE",
         "retryableWorkerFailure": "EXISTING_QUEUE_RETRY_WITH_MAX_RETRIES",
         "fanInRegressionFailure": "REQUEUE_AFFECTED_TASKS_THROUGH_EXISTING_GATE",
-        "runnerCapacityOrStartupSerialization": "ADAPTIVE_CONCURRENCY_STEP_DOWN_AND_EVENT_DRIVEN_REFILL",
+        "runnerCapacityOrStartupSerialization": "ADAPTIVE_CONCURRENCY_STEP_DOWN_PRIMARY_GAME_WORKERS_FIRST_SPECULATION_ONLY_FROM_SPARE_ADAPTIVE_CAPACITY_THEN_EVENT_DRIVEN_REFILL",
         "incrementalQaBottleneck": "REDUCE_PRESSURE_KEEP_INCREMENTAL_FIRST_AND_SINGLE_FAN_IN_REGRESSION",
         "checkoutOrNetworkPressure": "REDUCE_PRESSURE_PRESERVE_QUEUE_AND_RETRY_EXISTING_FETCH_PATH",
         "healthySaturatedRuns": "RECOVER_CONCURRENCY_ONE_STEP_AFTER_HEALTHY_STREAK",
@@ -1138,7 +1138,17 @@
         "systemStewardProtectedSlots": 1,
         "systemStewardSlotBorrowableWhenIdle": true,
         "policyConcurrencyLimit": null,
-        "externalExecutionWaveMax": 256
+        "externalExecutionWaveMax": 256,
+        "primaryCoverageBeforeSpeculation": true,
+        "speculativeWorkerBudgetMustFitAdaptiveWave": true,
+        "speculativeMayNotReduceIndependentPrimaryTaskCoverage": true,
+        "measuredRunnerPeakEvidence": {
+          "runId": "35425782021",
+          "actualPeakConcurrency": 12,
+          "priorWorkerFanOut": 41,
+          "priorReservedTasks": 19,
+          "recoveryAdaptiveStep": 16
+        }
       },
       "invariants": {
         "noGateBypass": true,
@@ -1357,66 +1367,96 @@
           "RELEASE_SAFETY_GATES"
         ],
         "currentIncident": {
-          "signature": "VIBE2_MACHINE_STATE_QUEUE_MAX_DIVERGED_INVALID_V3_PARALLELISM_STEP",
-          "symptom": "GAME_DEVELOPMENT_WORKERS_NOT_RESERVED",
-          "repair": "SYSTEM_STEWARD_BEFORE_HANDOFF_PLUS_SAME_PASS_REQUEUE",
-          "codeBindings": [
-            "tools/vibe2-system-steward.mjs",
-            "qa/vibe2-system-steward.test.mjs",
-            ".github/workflows/vibe2-24h-runner.yml"
-          ],
-          "status": "PRIMARY_MACHINE_STATE_BOTTLENECK_UNBLOCKED_DEVELOPMENT_RUNNING",
+          "signature": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION_OVER_SPECULATION",
+          "symptom": "19_RESERVED_DEVELOPMENT_TASKS_EXPANDED_TO_41_WORKERS_WHILE_MEASURED_RUNNER_PEAK_WAS_12",
+          "status": "MITIGATION_APPLIED_NEXT_WAVE_PENDING_VERIFICATION",
+          "rootCause": "SPECULATIVE_VARIANTS_CONSUMED_RUNNER_QUEUE_BEFORE_ALL_PRIMARY_GAME_WORK_COULD_COMPLETE",
+          "repair": "PRIMARY_COVERAGE_FIRST_SPECULATION_ONLY_FROM_SPARE_ADAPTIVE_CAPACITY_AND_LIVE_CONTROL_STEP_16",
           "verifiedEvidence": [
-            "VIBE2_MACHINE_STATE=CONSISTENT",
-            "VIBE2_ACTIVE_WORKERS=19",
-            "VIBE2_RESERVED_TASK_COUNT=19",
-            "VIBE2_HIERARCHICAL_FAN_OUT=41",
-            "VIBE2_CORE_QA=PASS",
-            "CENTRAL_POLICY_CONTRACT_QA=PASS",
-            "VIBE2_RETRY_RESERVATION_RUN=35426081736",
-            "SYSTEM_AI_ROOT_TASKS_RUNNING=5"
+            "RUN_35425782021_ACTUAL_PEAK_CONCURRENCY=12",
+            "RUN_35425782021_RESERVED_TASKS=19",
+            "RUN_35425782021_WORKER_FAN_OUT=41",
+            "VIBE2_CORE_QA_PREVIOUS=PASS",
+            "CENTRAL_POLICY_CONTRACT_QA_PREVIOUS=PASS"
           ],
-          "secondaryRepairs": [
-            {
-              "signature": "LEGACY_TELEMETRY_MAX_30",
-              "repair": "PARALLELISM_TELEMETRY_EXTERNAL_WAVE_MAX_256",
-              "binding": "tools/vibe2-parallelism-telemetry.mjs"
-            },
-            {
-              "signature": "SYSTEM_AI_NOT_WAKING_ON_CENTRAL_POLICY_CHANGE",
-              "repair": "CENTRAL_ROADMAP_PUSH_TRIGGER_ADDED",
-              "binding": ".github/workflows/company-system-ai-workers.yml"
-            },
-            {
-              "signature": "SYSTEM_AI_EMPTY_EDIT_TERMINAL_FAILURE",
-              "repair": "ONE_SCOPED_STRICT_EMPTY_CHANGE_RETRY_BEFORE_FAILURE",
-              "binding": "tools/company-system-ai-worker.mjs"
-            },
-            {
-              "signature": "MAIN_MACHINE_STATE_CONTRACT_STALE_30_20",
-              "repair": "SYNC_QUEUE_256_AND_CANONICAL_PARALLELISM_STEP",
-              "bindings": [
-                ".vibe2/queue.json",
-                ".vibe2/parallelism-control.json"
-              ]
-            },
-            {
-              "signature": "SYSTEM_AI_TRANSIENT_MODEL_ABORT",
-              "symptom": "LOCAL_MODEL_REQUEST_ABORTS_ON_TOKEN_REPEAT_BEFORE_SCOPED_EDIT_RESULT",
-              "repair": "ONE_COMPACT_SCOPED_REQUEST_RETRY_BEFORE_IMPLEMENTATION_FAILURE",
-              "binding": "tools/company-system-ai-worker.mjs"
-            }
+          "codeBindings": [
+            "tools/vibe2-queue-control.mjs",
+            "qa/vibe2-queue-control.test.mjs",
+            "vibe2-runtime.json",
+            ".vibe2/parallelism-control.json"
+          ],
+          "nextVerification": [
+            "NEXT_WAVE_WORKER_COUNT_MUST_NOT_EXCEED_ADAPTIVE_WAVE",
+            "PRIMARY_GAME_TASK_COVERAGE_MUST_PRECEDE_SPECULATIVE_VARIANTS",
+            "RUNNER_QUEUE_WAIT_AND_ACTUAL_PEAK_CONCURRENCY_MUST_IMPROVE_OR_TRIGGER_NEXT_ADAPTIVE_STEP"
           ]
         },
         "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
-          "gameDevelopment": "VIBE2_VIBE3_RUNNING_RETRY_WAVE",
+          "gameDevelopment": "VIBE2_VIBE3_RUNNING_PRIMARY_FIRST_CAPACITY_RECOVERY",
           "systemBottleneckWorkers": "SYSTEM_AI_ROOT_TASKS_RUNNING_WITH_NEXT_WAVE_RETRY_FIX_READY",
           "nonCriticalIdleWork": "PREEMPTED_WHILE_ACTIONABLE_DEVELOPMENT_WORK_EXISTS",
           "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS",
           "qaContract": "PASS",
-          "centralPolicyContract": "PASS"
-        }
+          "centralPolicyContract": "PASS",
+          "currentLargestBottleneck": "RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
+          "adaptiveWave": 16,
+          "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE"
+        },
+        "incidentHistory": [
+          {
+            "signature": "VIBE2_MACHINE_STATE_QUEUE_MAX_DIVERGED_INVALID_V3_PARALLELISM_STEP",
+            "symptom": "GAME_DEVELOPMENT_WORKERS_NOT_RESERVED",
+            "repair": "SYSTEM_STEWARD_BEFORE_HANDOFF_PLUS_SAME_PASS_REQUEUE",
+            "codeBindings": [
+              "tools/vibe2-system-steward.mjs",
+              "qa/vibe2-system-steward.test.mjs",
+              ".github/workflows/vibe2-24h-runner.yml"
+            ],
+            "status": "PRIMARY_MACHINE_STATE_BOTTLENECK_UNBLOCKED_DEVELOPMENT_RUNNING",
+            "verifiedEvidence": [
+              "VIBE2_MACHINE_STATE=CONSISTENT",
+              "VIBE2_ACTIVE_WORKERS=19",
+              "VIBE2_RESERVED_TASK_COUNT=19",
+              "VIBE2_HIERARCHICAL_FAN_OUT=41",
+              "VIBE2_CORE_QA=PASS",
+              "CENTRAL_POLICY_CONTRACT_QA=PASS",
+              "VIBE2_RETRY_RESERVATION_RUN=35426081736",
+              "SYSTEM_AI_ROOT_TASKS_RUNNING=5"
+            ],
+            "secondaryRepairs": [
+              {
+                "signature": "LEGACY_TELEMETRY_MAX_30",
+                "repair": "PARALLELISM_TELEMETRY_EXTERNAL_WAVE_MAX_256",
+                "binding": "tools/vibe2-parallelism-telemetry.mjs"
+              },
+              {
+                "signature": "SYSTEM_AI_NOT_WAKING_ON_CENTRAL_POLICY_CHANGE",
+                "repair": "CENTRAL_ROADMAP_PUSH_TRIGGER_ADDED",
+                "binding": ".github/workflows/company-system-ai-workers.yml"
+              },
+              {
+                "signature": "SYSTEM_AI_EMPTY_EDIT_TERMINAL_FAILURE",
+                "repair": "ONE_SCOPED_STRICT_EMPTY_CHANGE_RETRY_BEFORE_FAILURE",
+                "binding": "tools/company-system-ai-worker.mjs"
+              },
+              {
+                "signature": "MAIN_MACHINE_STATE_CONTRACT_STALE_30_20",
+                "repair": "SYNC_QUEUE_256_AND_CANONICAL_PARALLELISM_STEP",
+                "bindings": [
+                  ".vibe2/queue.json",
+                  ".vibe2/parallelism-control.json"
+                ]
+              },
+              {
+                "signature": "SYSTEM_AI_TRANSIENT_MODEL_ABORT",
+                "symptom": "LOCAL_MODEL_REQUEST_ABORTS_ON_TOKEN_REPEAT_BEFORE_SCOPED_EDIT_RESULT",
+                "repair": "ONE_COMPACT_SCOPED_REQUEST_RETRY_BEFORE_IMPLEMENTATION_FAILURE",
+                "binding": "tools/company-system-ai-worker.mjs"
+              }
+            ]
+          }
+        ]
       }
     },
     "webIterationPolicy": {
