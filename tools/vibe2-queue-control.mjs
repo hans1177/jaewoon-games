@@ -487,19 +487,23 @@ export function runQueueCommand(args = {}) {
     writeJson(file, queue);
     result = { command, updated: true, taskId: clean(args.id), summary: summarizeVibeContinuousQueue(queue) };
   } else if (command === 'reserve') {
+    const executionLane=clean(args.lane)||'game-primary';
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks, reservation: reservationFromArgs(args) });
+    const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
+    const reserved = reserveNextVibeTask(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
-    result = { command, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'reserve-batch') {
+    const executionLane=clean(args.lane)||'game-primary';
     const configuredMaxConcurrentTasks=optionalMaxConcurrent(args.max) ?? queue.maxConcurrentTasks;
     const adaptiveControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
     const adaptiveMaxConcurrentTasks=adaptiveRequestedMax(adaptiveControl, configuredMaxConcurrentTasks, { minimumMax:adaptiveMinimumConcurrentTasks });
-    const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: adaptiveMaxConcurrentTasks, reservation: reservationFromArgs(args) });
+    const reservationMaxConcurrentTasks=executionLane==='game-primary'?adaptiveMaxConcurrentTasks:configuredMaxConcurrentTasks;
+    const reserved = reserveVibeTaskBatch(queue, { maxConcurrentTasks: reservationMaxConcurrentTasks, reservation: reservationFromArgs(args), lane:executionLane });
     if (reserved.reserved || reserved.recovered) writeJson(file, reserved.queue);
     if (clean(args.output)) {
       const createdAt=new Date().toISOString();
@@ -508,9 +512,11 @@ export function runQueueCommand(args = {}) {
       writeJson(clean(args.output), {
         version:4, createdAt, matrix:reserved.matrix,
         scheduler:{
+          lane:reserved.selection?.lane || executionLane,
           persistentMaxConcurrentTasks,
           configuredMaxConcurrentTasks,
           adaptiveMaxConcurrentTasks,
+          reservationMaxConcurrentTasks,
           requestedMaxConcurrentTasks,
           effectiveMaxConcurrentTasks:reserved.selection?.effectiveMaxConcurrentTasks ?? Math.min(persistentMaxConcurrentTasks, requestedMaxConcurrentTasks),
           freeSlotsBeforeReservation:reserved.selection?.freeSlots ?? 0,
@@ -528,7 +534,7 @@ export function runQueueCommand(args = {}) {
         }
       });
     }
-    result = { command, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
+    result = { command, executionLane, configuredMaxConcurrentTasks, adaptiveMinimumConcurrentTasks, adaptiveMaxConcurrentTasks, reservationMaxConcurrentTasks, adaptiveControl, ...reserved, summary: summarizeVibeContinuousQueue(reserved.queue) };
   } else if (command === 'release-slot') {
     const released = releaseVibeTaskExecutionSlot(queue, { taskId: clean(args.id), evidence: list(args.evidence), blocker: clean(args.blocker) });
     queue = released.queue;
@@ -552,6 +558,8 @@ export function runQueueCommand(args = {}) {
     if (!input) throw new Error('--input result json required');
     const payload = readJson(input, []);
     const rows = Array.isArray(payload) ? payload : Array.isArray(payload.results) ? payload.results : [];
+    const executionLane=clean(args.lane)||'game-primary';
+    const adaptiveEligible=executionLane==='game-primary';
     const currentControl=readParallelismControl(args);
     const adaptiveMinimumConcurrentTasks=optionalMaxConcurrent(args.min) ?? 4;
     const firstMetrics=rows.find((row)=>row?.metrics)?.metrics || {};
@@ -563,12 +571,14 @@ export function runQueueCommand(args = {}) {
       effectiveMax:firstMetrics.effectiveMax || currentControl.currentMax,
       taskCount
     });
-    const nextControl=decideAdaptiveBackpressure(currentControl, telemetry, { minimumMax:adaptiveMinimumConcurrentTasks });
+    const nextControl=adaptiveEligible
+      ? decideAdaptiveBackpressure(currentControl, telemetry, { minimumMax:adaptiveMinimumConcurrentTasks })
+      : currentControl;
     const merged = applyVibeFanInResults(queue, rows);
     queue = merged.queue;
     writeJson(file, queue);
-    writeJson(controlFileFrom(args), nextControl);
-    result = { command, updated: merged.applied.length > 0, telemetry, adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged };
+    if(adaptiveEligible)writeJson(controlFileFrom(args), nextControl);
+    result = { command, executionLane, adaptiveEligible, updated: merged.applied.length > 0, telemetry, adaptiveControl:nextControl, previousAdaptiveControl:currentControl, ...merged };
   } else if (['pass','fail','block','cancel'].includes(command)) {
     const outcome = command === 'pass' ? 'PASS' : command === 'fail' ? 'FAIL' : command === 'block' ? 'BLOCKED' : 'CANCELLED';
     const settled = settleVibeTask(queue, {
@@ -586,6 +596,9 @@ export function runQueueCommand(args = {}) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const result = runQueueCommand(parseArgs());
   console.log(`VIBE2_QUEUE_COMMAND=${result.command}`);
+  if(result.executionLane)console.log(`VIBE2_EXECUTION_LANE=${result.executionLane}`);
+  if(result.reservationMaxConcurrentTasks)console.log(`VIBE2_LANE_RESERVATION_MAX=${result.reservationMaxConcurrentTasks}`);
+  if(result.command==='fan-in')console.log(`VIBE2_FANIN_ADAPTIVE_ELIGIBLE=${result.adaptiveEligible===true?'YES':'NO'}`);
   console.log(`VIBE2_QUEUE_RECOVERED=${result.recovered ?? 0}`);
   console.log(`VIBE2_QUEUE_NEXT=${result.summary?.nextTaskId || 'NONE'}`);
   console.log(`VIBE2_QUEUE_NEXT_BATCH=${(result.summary?.nextTaskIds || []).join(',') || 'NONE'}`);
