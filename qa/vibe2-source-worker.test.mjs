@@ -409,6 +409,23 @@ test('truncated FULL_REBUILD gets one compact raw-envelope recovery retry', asyn
   assert.deepEqual(result.changedFiles, ['index.html']);
 });
 
+test('undersized full web error reports actual bytes without lowering the minimum gate', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'undersized-single.txt');
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-size-telemetry'});
+  workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed=true;
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd,'design/demo/2026-09-18/design-revised.json'),JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,'VIBE2_FULL_FILE\nPATH:index.html\nSUMMARY:small\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>tiny</body></html>\n---VIBE2_FILE_END---');
+  await assert.rejects(
+    runVibe2SourceWorker({cwd,responseFile}),
+    /전체 교체 파일 크기 오류: index\.html:bytes=\d+:min=1800:max=260000/
+  );
+});
+
 test('undersized full web output gets one final bounded third retry without lowering size gate', async () => {
   const cwd=tempRoot();
   const small1=path.join(cwd,'small1.txt');
