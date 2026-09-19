@@ -69,7 +69,7 @@ test('unappliable edit is retried inside generation before candidate write', asy
   write(path.join(cwd, 'unity-games/demo/Assets/Player.cs'), 'class Player { int Speed() { return 1; } }\n');
   write(path.join(cwd, '.vibe2/work-order.json'), JSON.stringify(order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'], taskId: 'edit-preflight-retry' }), null, 2));
   write(bad, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 9;', replace: 'return 2;' }], newFiles: [] }));
-  write(good, JSON.stringify({ edits: [{ path: 'Assets/Player.cs', find: 'return 1;', replace: 'return 2;' }], newFiles: [] }));
+  write(good, JSON.stringify({ replace: 'class Player { int Speed() { return 2; } }' }));
   const result = await runVibe2SourceWorker({ cwd, responseFiles: [bad, good] });
   assert.equal(result.generation.attempts, 2);
   assert.equal(result.generation.recoveryUsed, true);
