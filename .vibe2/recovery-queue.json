@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T20:57:42.209Z"
+      "updatedAt": "2026-09-19T21:37:47.345Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1022,12 +1022,13 @@
         "survival2-web-base-implementation-v1",
         "village-dungeons-web-runtime-repair-v1",
         "chess-battle-web-runtime-repair-v1",
-        "crystal-defense-web-runtime-repair-v1"
+        "crystal-defense-web-runtime-repair-v1",
+        "monster-adventure-web-runtime-repair-v1"
       ],
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
-      "blastRadius": "portfolio:10",
-      "checkpoint": "2026-09-19T20:42:35Z",
+      "blastRadius": "portfolio:11",
+      "checkpoint": "2026-09-19T21:32:03Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1539,7 +1540,10 @@
         "workload:changed-lines:4",
         "workload:prep-ms:6371",
         "workload:cycle-ms:293198",
-        "exploration-reuse:3eaafae2ed5a10712dedceb6"
+        "exploration-reuse:3eaafae2ed5a10712dedceb6",
+        "release-dispatch-recovery-requested:vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-1-35468182508-1",
+        "release-dispatch-recovery-at:1789851472025",
+        "release-dispatch-recovery-candidate-sha:5bd7908eb85d7c026b6bdcead0ba708d3efc7759"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1555,7 +1559,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-19T20:57:42.209Z"
+      "updatedAt": "2026-09-19T21:37:47.344Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
