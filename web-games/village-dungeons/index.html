@@ -170,7 +170,7 @@ var defaultState={
   quests:{},zone:0
 };
 
-function loadState(){
+scene.background=new THREE.Color(0x000000);
   var data=null;
   try{data=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");}catch(e){}
   var s=Object.assign({},defaultState,data||{});
