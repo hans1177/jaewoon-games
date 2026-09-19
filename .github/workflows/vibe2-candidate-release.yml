@@ -17,7 +17,9 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: vibe2-release-serial
+  # Serialize only duplicate runs for the same candidate. Different candidates must not
+  # share one pending slot, otherwise GitHub concurrency cancels older pending runs.
+  group: vibe2-release-${{ github.event.inputs.candidate_branch || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
