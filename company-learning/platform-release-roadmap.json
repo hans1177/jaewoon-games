@@ -1,5 +1,5 @@
 {
-  "version": 146,
+  "version": 147,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -330,14 +330,16 @@
       "implementationOrderMustFollowPriorityOrderUnlessEvidenceRequiresException": true,
       "documentationMustStaySynchronizedWithCentralMachinePolicy": true,
       "enginePipelineWired": true,
-      "implementationStatus": "CENTRAL_CI_PENDING",
+      "implementationStatus": "CI_VERIFIED_RUNTIME_ACTIVE",
       "plannerStageGeneration": "tools/vibe2-auto-planner.mjs",
       "workOrderContract": "tools/vibe2-continuous-runner.mjs",
       "staticQa": "tools/vibe2-incremental-qa.mjs",
       "verifiedLearningFeedback": "tools/vibe2-learning-motor.mjs",
       "canonicalWebRuntimeQaConnected": true,
       "runtimeContractMarker": "data-presentation-quality-version=\"1\"",
-      "runtimeValidation": "tools/company-development-web-gameplay-validation.mjs"
+      "runtimeValidation": "tools/company-development-web-gameplay-validation.mjs",
+      "ciVerified": true,
+      "verifiedWorkflowRunId": 35450038247
     }
   },
   "platformRepresentativeSets": {
@@ -5226,13 +5228,15 @@
       "gameStyleAndDesignBaselineMustBeReadFirst": true,
       "documentationMustStaySynchronizedWithCentralMachinePolicy": true,
       "enginePipelineWired": true,
-      "implementationStatus": "CENTRAL_CI_PENDING",
+      "implementationStatus": "CI_VERIFIED_RUNTIME_ACTIVE",
       "stagedPass": "AUDIO_FEEL",
       "staticQa": "tools/vibe2-incremental-qa.mjs",
       "verifiedLearningFeedback": "tools/vibe2-learning-motor.mjs",
       "canonicalWebRuntimeQaConnected": true,
       "canonicalMusicRuntimeValidationReused": true,
-      "runtimeValidation": "tools/company-development-web-gameplay-validation.mjs"
+      "runtimeValidation": "tools/company-development-web-gameplay-validation.mjs",
+      "ciVerified": true,
+      "verifiedWorkflowRunId": 35450038247
     }
   },
   "narrativeStorytellingContract": {
@@ -5344,9 +5348,9 @@
     }
   },
   "presentationPipelineImplementation": {
-    "version": 2,
+    "version": 3,
     "authority": "OWNER_DIRECTIVE_2026-09-19",
-    "status": "CODE_WIRED_CANONICAL_RUNTIME_QA_CONNECTED_CENTRAL_CI_PENDING",
+    "status": "CODE_WIRED_CI_VERIFIED_CANONICAL_RUNTIME_QA_ACTIVE",
     "canonicalPassOrder": [
       "ASSET_ADAPTATION",
       "LIVING_MOTION",
@@ -5396,6 +5400,32 @@
     },
     "runtimeHardGate": "PRESENTATION_RUNTIME_QUALITY_REQUIRED",
     "centralCi": ".github/workflows/company-evolution-qa.yml",
-    "centralCiRunForIntegration": 35448282718
+    "centralCiRunForIntegration": 35448282718,
+    "verifiedAt": "2026-09-19T14:53:07Z",
+    "verification": {
+      "workflow": "Vibe2 24H Runner",
+      "runId": 35450038247,
+      "runNumber": 1317,
+      "conclusion": "success",
+      "checks": [
+        "vibe2-auto-planner syntax+tests",
+        "vibe2-source-worker tests",
+        "vibe2-incremental-qa tests",
+        "company-development-web-runtime presentation tests",
+        "vibe2-learning-motor presentation mastery tests",
+        "vibe2-practice-distillation presentation tests"
+      ],
+      "observedPresentationTaskGeneration": "seed-casual-realm-weaver-presentation-asset-adaptation-v1",
+      "controlBranchPresentationDomainsInitialized": [
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE"
+      ],
+      "verifiedSuccessXpExpectedBeforeRealGamePass": 0
+    },
+    "staticQa": "tools/vibe2-incremental-qa.mjs"
   }
 }
