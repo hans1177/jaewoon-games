@@ -7416,7 +7416,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "primary-ai-supervision:assignment",
@@ -7453,7 +7453,8 @@
         "actions-run:35426375642",
         "reservation-id:35426375642:1",
         "workload:prep-ms:3943",
-        "workload:cycle-ms:26133"
+        "workload:cycle-ms:26133",
+        "slot-dispatch:35426841847:1"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED",
       "reservationId": "35426621757:1",
