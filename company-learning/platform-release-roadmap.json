@@ -1,5 +1,5 @@
 {
-  "version": 157,
+  "version": 158,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3758,18 +3758,26 @@
     }
   },
   "changeRecord": {
-    "id": "SUPERVISED_WEB_GAME_COAUTHORING_2026-09-20",
+    "id": "SUPERVISED_WEB_COAUTHORING_LEARNING_LOOP_2026-09-20",
     "documentIsCode": true,
-    "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_SOURCE_GENERATION_CORRUPTION_GUARD_AND_RESTORE_2026-09-20",
-    "reason": "OWNER_REQUESTED ASSISTANT+VIBE COAUTHORING BECAUSE CURRENT WEB GAME CREATION QUALITY IS BELOW EXPECTATION. DOCUMENT THE SUPERVISED BUILD CONTRACT BEFORE ENFORCING IT IN PLANNER/RUNNER.",
+    "documentationFirst": false,
+    "previousChangeRecordId": "SUPERVISED_WEB_GAME_COAUTHORING_2026-09-20",
+    "reason": "OWNER REQUESTED THAT ASSISTANT SUPERVISION ITSELF BECOME VIBE LEARNING. VERIFIED SUPERVISOR PASS/REVISE/DROP DECISIONS NOW FLOW INTO EXISTING EXPERIENCE MEMORY AS POSITIVE OR NEGATIVE PATTERNS WITHOUT EXPANDING AUTHORITY.",
+    "invariants": {
+      "unverifiedSupervisionCannotTeach": true,
+      "candidateGenerationCannotTeachByItself": true,
+      "verifiedFailureMayTeach": true,
+      "verifiedPassMayTeach": true,
+      "learningCannotBypassQa": true,
+      "learningCannotAutoChangeGameplayValues": true,
+      "majorWebAutoPromotionBlockedUntilVerifiedPassApproval": true
+    },
     "next": [
-      "MARK_MAJOR_WEB_BUILD_TASKS_SUPERVISED",
-      "PROPAGATE_SUPERVISION_CONTRACT_TO_WORK_ORDER",
-      "DISABLE_AUTO_PROMOTION_UNTIL_SUPERVISED_APPROVAL",
-      "ADD_REGRESSION_TESTS",
-      "RUN_CENTRAL_AND_VIBE_QA",
-      "USE_FIRST_SUPERVISED_BUILD_AS_LEARNING_EXAMPLE"
+      "CURRENT_CI_REVALIDATION_PASS",
+      "RUN_FIRST_REAL_SUPERVISED_WEB_BUILD",
+      "RECORD_ASSISTANT_DECOMPOSITION_AND_REVIEW_RATIONALE",
+      "VERIFY_EXPERIENCE_MEMORY_RETRIEVAL_ON_NEXT_SIMILAR_WEB_TASK",
+      "MEASURE_FIRST_CANDIDATE_PASS_AND_REWORK_RATE"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -5625,7 +5633,7 @@
   },
   "supervisedWebGameProduction": {
     "version": 1,
-    "status": "ACTIVE",
+    "status": "ACTIVE_CODE_WIRED_CI_REVALIDATING",
     "mode": "ASSISTANT_SUPERVISED_VIBE_COAUTHORING",
     "reason": "WEB_GAME_BUILD_QUALITY_IS_BELOW_OWNER_EXPECTATION; VIBE_REMAINS_IMPLEMENTATION_ENGINE_WHILE ASSISTANT_SUPERVISION OWNS DECOMPOSITION, INVARIANT_LOCK, CANDIDATE_REVIEW, AND RELEASE_DECISION.",
     "appliesTo": [
@@ -5686,6 +5694,52 @@
       "BUTTON_OR_LABEL_ONLY_PASS_CHEAT",
       "BROKEN_MOBILE_INPUT"
     ],
-    "learningGoal": "AFTER_MULTIPLE_VERIFIED_SUPERVISED_BUILDS, DISTILL_SUCCESSFUL_PATTERNS_AND_RAISE_AUTONOMY_ONLY_WHEN FIRST_CANDIDATE_PASS_AND_PLAYABILITY_STAY_HIGH."
+    "learningGoal": "AFTER_MULTIPLE_VERIFIED_SUPERVISED_BUILDS, DISTILL_SUCCESSFUL_PATTERNS_AND_RAISE_AUTONOMY_ONLY_WHEN FIRST_CANDIDATE_PASS_AND_PLAYABILITY_STAY_HIGH.",
+    "learningLoop": {
+      "enabled": true,
+      "source": "ASSISTANT_SUPERVISION_REVIEW",
+      "reviewObject": "task.supervisionReview",
+      "requiredReviewFields": [
+        "verified",
+        "decision",
+        "rationale",
+        "evidence"
+      ],
+      "optionalLearningFields": [
+        "problem",
+        "reusablePatterns",
+        "avoidPatterns",
+        "qa",
+        "build"
+      ],
+      "positiveLearning": "VERIFIED_PASS -> reusablePatterns + rationale + candidate identity -> Vibe Experience Memory",
+      "negativeLearning": "VERIFIED_REVISE_OR_DROP -> failureCause + avoidPatterns + rationale + candidate identity -> Vibe Experience Memory",
+      "unverifiedReviewReusable": false,
+      "candidateGenerationAloneReusable": false,
+      "authorityExpandedByLearning": false,
+      "autoGameplayMutationFromLearning": false,
+      "experienceMemory": ".vibe2/experience.json",
+      "runtimeFlow": [
+        "planner marks major Web build supervised",
+        "Vibe creates isolated candidate",
+        "fan-in QA verifies candidate identity and roles",
+        "assistant supervision records verified PASS/REVISE/DROP with rationale",
+        "fan-in converts supervisionReview into experienceReviews",
+        "vibe2-experience-control batch promotes verified positive or negative learning",
+        "future planning/worker retrieval may reuse patterns but cannot bypass gates"
+      ],
+      "implementationCommits": {
+        "planner": "b0e6cd0275c18f5266cfae09c080fc41f7b526e2",
+        "runnerPromotionGate": "6bf05336bef6caf6fc2758985c6a6996eb7dcdf7",
+        "fanInReleaseHold": "ffb528ac9c12d8c331a75d3e64b11456bb0f8e27",
+        "supervisionToExperience": "6e7309d4ef30cbc67315d1dd57c1dc17a347ad6c",
+        "fanInLearningEmission": "48d5c3a7104b4559d71d25613af1260e25f6e174",
+        "batchExperiencePromotion": "120c452a9b7cacd445de5b69b2f07ebf71092c92",
+        "workflowPersistence": "1b814f60116d7b7286621d0cef11614f5f29aa6b",
+        "plannerTest": "c652030a115bf00799d393d4a2bd4deba671ea22",
+        "releaseLearningTest": "5795faf3ecfdfa67e2a4ad5edc9b27d956c7cb77",
+        "experienceLearningTest": "ac5dd717a9bae39184e7fd6be90257c5ef89c885"
+      }
+    }
   }
 }
