@@ -655,3 +655,41 @@ test('stale runtime repair state cannot reopen source work when catalog authorit
   assert.equal(preserved.status,'cancelled');
   assert.equal(preserved.blocker,'production-authority-inactive:DESIGN_ONLY');
 });
+
+
+test('presentation quality passes are queued in canonical order after functional continuation',()=>{
+  const root=tempRepo();
+  const gameId='presentation-web';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),[
+    '<!doctype html><html><body><canvas id="game"></canvas><script>',
+    'let x=0; function update(){x+=1;requestAnimationFrame(update)} requestAnimationFrame(update);',
+    '</script></body></html>'
+  ].join('\n'),'utf8');
+  const localCatalog={games:[{
+    id:gameId,name:'Presentation Web',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',
+    homepageWebPlayable:true,hasWebArchive:true,webPath:`/web-games/${gameId}/`
+  }]};
+  const done=(id,evidence=[])=>({
+    id,gameId,target:'web',department:'development',type:'implementation',sourceRoot:`web-games/${gameId}`,
+    responsibleFiles:[`web-games/${gameId}/index.html`],goal:'done prerequisite',releaseState:'development-confirmed',
+    status:'done',retries:0,maxRetries:2,evidence
+  });
+  let queue={maxConcurrentTasks:4,tasks:[
+    done(`${gameId}-existing-web-assessment-v1`,['existing-web-assessment-required']),
+    done(`${gameId}-existing-web-development-continuation-v1`,['existing-web-continuation'])
+  ]};
+  let first=planVibe2AutonomousTask({status:{projects:[]},catalog:localCatalog,queue,repoRoot:root,maxConcurrentTasks:4});
+  assert.equal(first.planned,true);
+  assert.equal(first.task.id,`${gameId}-presentation-asset-adaptation-v1`);
+  assert.ok(first.task.evidence.includes('presentation-pass:ASSET_ADAPTATION'));
+  queue={...queue,tasks:[...queue.tasks,{...first.task,status:'done'}]};
+  let second=planVibe2AutonomousTask({status:{projects:[]},catalog:localCatalog,queue,repoRoot:root,maxConcurrentTasks:4});
+  assert.equal(second.task.id,`${gameId}-presentation-living-motion-v1`);
+  assert.ok(second.task.evidence.includes('presentation-pass:LIVING_MOTION'));
+  queue={...queue,tasks:[...queue.tasks,{...second.task,status:'done'}]};
+  let third=planVibe2AutonomousTask({status:{projects:[]},catalog:localCatalog,queue,repoRoot:root,maxConcurrentTasks:4});
+  assert.equal(third.task.id,`${gameId}-presentation-animation-feel-v1`);
+  assert.ok(third.task.evidence.includes('presentation-preserve-gameplay-semantics'));
+});
