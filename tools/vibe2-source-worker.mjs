@@ -231,7 +231,7 @@ export function generationFailureClass(error){
   if(/edit find/i.test(message))return'EDIT_MATCH';
   return'OTHER';
 }
-function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH'].includes(generationFailureClass(error));}
+function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 function fullWebFinalRetryAllowed(error){return generationFailureClass(error)==='FULL_REWRITE_SIZE';}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
