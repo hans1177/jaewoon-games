@@ -281,13 +281,63 @@ export function codingStrategyGuidance(preference={}){
 function words(value=''){return new Set(lower(value).match(/[a-z0-9가-힣_]{2,}/g)||[]);}
 function overlapScore(a,b){let n=0;for(const x of a)if(b.has(x))n++;return n;}
 
+
+const FAILURE_FINGERPRINT_CLASSES=Object.freeze([
+  ['NO_OP',/no.?op|no[-_ ]?changes|empty.?patch|unchanged/i],
+  ['EDIT_MATCH',/edit.?match|match.?not.?found|replace.?target|anchor.?not.?found/i],
+  ['TIMEOUT',/timeout|timed.?out|time.?limit/i],
+  ['MALFORMED_OUTPUT',/malformed|invalid.?json|parse.?fail|schema.?invalid/i],
+  ['MOBILE_INPUT',/mobile|touch|pointer|swipe|drag|virtual.?stick|input/i],
+  ['SAVE_RESTORE',/save|load|restore|persist|storage|checkpoint|datastore/i],
+  ['COMBAT',/combat|attack|damage|weapon|skill|enemy|boss/i],
+  ['PLACEMENT',/placement|place.?tower|deploy|grid|slot/i],
+  ['STATE_FLOW',/state.?machine|state|phase|softlock|terminal|win|lose|objective/i],
+  ['RUNTIME',/runtime|exception|crash|undefined|null.?reference|hard.?failure/i],
+  ['RELEASE',/release|deploy|promotion|candidate|qa.?deployment/i]
+]);
+function explicitFailureCodes(values=[]){
+  const out=[];
+  for(const value of values){
+    const text=clean(value);
+    for(const match of text.matchAll(/(?:runtime-failure|source-generation-failure|failure-code|blocker)[:=]([A-Za-z0-9_-]+)/gi)) out.push(upper(match[1]));
+  }
+  return uniq(out).sort();
+}
+export function failureFingerprintForTask(task={}){
+  const evidence=[task.blocker,task.lastOutcome,...(task.evidence||[]),task.goal].map(clean).filter(Boolean);
+  const text=evidence.join(' ');
+  const explicit=explicitFailureCodes(evidence);
+  const classes=FAILURE_FINGERPRINT_CLASSES.filter(([,re])=>re.test(text)).map(([name])=>name);
+  const domains=inferDomains(text,task.target).filter(domain=>!['DEBUGGING','RECOVERY'].includes(domain)).sort();
+  if(!explicit.length&&!classes.length&&!/fail|failure|block|repair|error|bug|오류|실패|누락/i.test(text))return null;
+  return [lower(task.target)||'any',...explicit,...classes,...domains].filter(Boolean).join('|');
+}
+function failureFingerprintForExperience(record={}){
+  const values=[
+    record.failureCause,record.problem,record.goal,record.change,
+    ...(record.evidence||[]),...(record.avoidPatterns||[]),...(record.reusablePatterns||[])
+  ].map(clean).filter(Boolean);
+  const text=values.join(' ');
+  const explicit=explicitFailureCodes(values);
+  const classes=FAILURE_FINGERPRINT_CLASSES.filter(([,re])=>re.test(text)).map(([name])=>name);
+  const domains=inferDomains(text,record.engine).filter(domain=>!['DEBUGGING','RECOVERY'].includes(domain)).sort();
+  if(!explicit.length&&!classes.length&&!clean(record.failureCause))return null;
+  return [lower(record.engine)||'any',...explicit,...classes,...domains].filter(Boolean).join('|');
+}
+
 export function retrieveUnifiedLearning({task={},experienceInput={},codePatternsInput={},playbooksInput={},practiceDistilledInput={},masteryInput={}}={}){
-  const qWords=words([task.goal,task.gameId,task.target,task.genre].filter(Boolean).join(' '));
+  const qWords=words([task.goal,task.gameId,task.target,task.genre,task.blocker,task.lastOutcome,...(task.evidence||[])].filter(Boolean).join(' '));
   const gameId=clean(task.gameId);
   const engine=lower(task.target);
+  const failureFingerprint=failureFingerprintForTask(task);
   const ranked=(experienceInput?.records||[]).filter(r=>r?.verified===true&&r?.reusable===true).map(record=>{
     let score=0;const reasons=[];
-    if(gameId&&clean(record.gameId)===gameId){score+=40;reasons.push('same-game');}
+    const recordFailureFingerprint=failureFingerprintForExperience(record);
+    const sameGame=Boolean(gameId&&clean(record.gameId)===gameId);
+    const sameFailure=Boolean(failureFingerprint&&recordFailureFingerprint===failureFingerprint);
+    if(sameGame&&sameFailure){score+=140;reasons.push('same-game-same-failure');}
+    else if(sameFailure){score+=90;reasons.push('same-failure');}
+    if(sameGame){score+=40;reasons.push('same-game');}
     if(engine&&lower(record.engine)===engine){score+=20;reasons.push('same-engine');}
     const rWords=words([record.problem,record.goal,record.change,record.failureCause,...(record.reusablePatterns||[]),...(record.avoidPatterns||[])].filter(Boolean).join(' '));
     const overlap=overlapScore(qWords,rWords);
@@ -314,7 +364,9 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
     .sort((a,b)=>b.relevance-a.relevance||a.domain.localeCompare(b.domain)).slice(0,6);
   return {
     version:1,kind:'vibe2-unified-learning-context',gameId:gameId||null,target:engine||null,
-    priority:['SAME_GAME_VERIFIED','SAME_ENGINE_VERIFIED','SYSTEM_MATCH_VERIFIED','VERIFIED_PRACTICE_DISTILLED_ADVISORY','GENERAL_PLAYBOOK'],
+    priority:['SAME_GAME_SAME_FAILURE_VERIFIED','SAME_FAILURE_VERIFIED','SAME_GAME_VERIFIED','SAME_ENGINE_VERIFIED','SYSTEM_MATCH_VERIFIED','VERIFIED_PRACTICE_DISTILLED_ADVISORY','GENERAL_PLAYBOOK'],
+    failureFingerprint,
+    failureLocalMemory:ranked.filter(x=>x.reasons.includes('same-game-same-failure')||x.reasons.includes('same-failure')).slice(0,5).map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,failureCause:x.record.failureCause,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,relevance:x.score,reasons:x.reasons,verified:true,reusable:true})),
     experience:ranked.map(x=>({id:x.record.id,gameId:x.record.gameId,engine:x.record.engine,outcome:x.record.outcome,reusablePatterns:x.record.reusablePatterns,avoidPatterns:x.record.avoidPatterns,failureCause:x.record.failureCause,relevance:x.score,reasons:x.reasons})),
     codePatterns:patterns,
     practiceDistilled,
@@ -326,7 +378,9 @@ export function retrieveUnifiedLearning({task={},experienceInput={},codePatterns
 
 export function learningGuidance(context={}){
   if(context?.kind!=='vibe2-unified-learning-context') return '';
-  const lines=['[VIBE VERIFIED LEARNING MOTOR]','우선순위=same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
+  const lines=['[VIBE VERIFIED LEARNING MOTOR]','우선순위=same-game+same-failure > same-failure > same-game > same-engine > system-match > general. 검증되지 않은 성공은 재사용하지 않는다. 실패는 검증된 원인만 회피 패턴으로 사용한다.'];
+  if(context.failureFingerprint)lines.push(`- current-failure-fingerprint=${context.failureFingerprint}`);
+  for(const row of context.failureLocalMemory||[]) lines.push(`- verified-failure-local=${row.id}; relevance=${row.relevance}; cause=${clean(row.failureCause)||'none'}; reuse=${(row.reusablePatterns||[]).slice(0,4).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,4).join('|')||'none'}`);
   for(const row of context.experience||[]) lines.push(`- experience=${row.id}; game=${row.gameId||'n/a'}; engine=${row.engine||'n/a'}; relevance=${row.relevance}; reuse=${(row.reusablePatterns||[]).slice(0,5).join('|')||'none'}; avoid=${(row.avoidPatterns||[]).slice(0,5).join('|')||row.failureCause||'none'}`);
   for(const row of context.codePatterns||[]) lines.push(`- verified-code-pattern=${row.id}; system=${row.system||'general'}; relevance=${row.relevance}; pattern=${clean(row.pattern).slice(0,280)}`);
   for(const row of context.practiceDistilled||[]) lines.push(`- verified-practice-distilled=${row.domain}; confirmations=${row.confirmations}; evidence=${(row.verificationEvidence||[]).slice(0,3).join('|')}`);
