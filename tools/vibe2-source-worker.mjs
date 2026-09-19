@@ -50,6 +50,10 @@ const FULL_WEB_FINAL_RETRY_TIMEOUT_MS=240000;
 const FULL_WEB_FINAL_RETRY_MAX_PREDICT=4096;
 const JSON_RETRY_TIMEOUT_MS=240000;
 const JSON_RETRY_MAX_PREDICT=1536;
+const FOCUSED_WEB_REPAIR_MAX_PREDICT=1024;
+const FOCUSED_WEB_REPAIR_CONTEXT_FILES=3;
+const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=48000;
+const FOCUSED_WEB_REPAIR_CONTEXT_WINDOW=16384;
 const JSON_FINAL_RETRY_TIMEOUT_MS=90000;
 const JSON_FINAL_RETRY_MAX_PREDICT=768;
 const JSON_CONTEXT_WINDOW=32768;
@@ -89,7 +93,36 @@ function sourceRootBootstrapAllowed(order,target,root,responsibleFiles){
 }
 function normalizeModelPath(value,{target,responsibleFiles=[],sourceRootRelative=''}={}){let normalized=posix(value);if(normalized.startsWith(`${sourceRootRelative}/`))normalized=normalized.slice(sourceRootRelative.length+1);if(PLACEHOLDER_PATHS.has(normalized.toLowerCase())){if(responsibleFiles.length!==1)throw new Error(`모델 예시 경로를 실제 파일로 결정할 수 없음: ${value}`);normalized=responsibleFiles[0];}normalized=assertRelativeSourcePath(normalized,target);if(responsibleFiles.length&&!responsibleFiles.includes(normalized))throw new Error(`책임 파일 범위 밖 수정 금지: ${normalized}`);return normalized;}
 function listContextFiles(root,target,ignored=[]){const ignore=ignored.map(posix).filter(Boolean),rows=[];const walk=current=>{if(rows.length>=MAX_CONTEXT_FILES)return;for(const entry of fs.readdirSync(current,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){if(rows.length>=MAX_CONTEXT_FILES)return;if(['.git','node_modules','Library','Temp','Logs','Binaries','Intermediate','Saved','DerivedDataCache'].includes(entry.name))continue;const full=path.join(current,entry.name),relative=posix(path.relative(root,full));if(ignore.some(v=>relative===v||relative.startsWith(`${v}/`)))continue;if(entry.isDirectory())walk(full);else{const ext=path.extname(entry.name).toLowerCase();if(targetExtensions(target).has(ext)&&!BINARY_EXTENSIONS.has(ext))rows.push({full,relative});}}};walk(root);return rows;}
-function readContext(root,target,responsibleFiles=[],ignored=[],explorationFiles=[]){const preferred=unique([...responsibleFiles,...explorationFiles]).slice(0,MAX_CONTEXT_FILES);const rows=(preferred.length?preferred.map(relative=>({full:path.join(root,relative),relative})):listContextFiles(root,target,ignored)).slice(0,MAX_CONTEXT_FILES);const files=[];let total=0;const perFileBudget=Math.max(9000,Math.floor(MAX_CONTEXT_BYTES/Math.max(1,rows.length)));const excerptChunk=Math.max(3000,Math.floor(perFileBudget/3));for(const row of rows){const relative=assertRelativeSourcePath(row.relative,target);if(!fs.existsSync(row.full)||!fs.statSync(row.full).isFile())continue;const excerpt=boundedLargeExcerpt(fs.readFileSync(row.full,'utf8'),excerptChunk);let content=excerpt.content,remaining=MAX_CONTEXT_BYTES-total;if(remaining<=0)break;while(Buffer.byteLength(content,'utf8')>remaining&&content.length>100)content=content.slice(0,Math.floor(content.length*.8));if(!content)continue;files.push({path:relative,content,truncated:excerpt.truncated||content.length<excerpt.content.length,editable:responsibleFiles.includes(relative)});total+=Buffer.byteLength(content,'utf8');}return{files,bytes:total};}
+function readContext(root,target,responsibleFiles=[],ignored=[],explorationFiles=[],{maxFiles=MAX_CONTEXT_FILES,maxBytes=MAX_CONTEXT_BYTES}={}){
+  const fileLimit=Math.max(1,Math.min(MAX_CONTEXT_FILES,Number(maxFiles)||MAX_CONTEXT_FILES));
+  const byteLimit=Math.max(12000,Math.min(MAX_CONTEXT_BYTES,Number(maxBytes)||MAX_CONTEXT_BYTES));
+  const preferred=unique([...responsibleFiles,...explorationFiles]).slice(0,fileLimit);
+  const rows=(preferred.length?preferred.map(relative=>({full:path.join(root,relative),relative})):listContextFiles(root,target,ignored)).slice(0,fileLimit);
+  const files=[];
+  let total=0;
+  const perFileBudget=Math.max(9000,Math.floor(byteLimit/Math.max(1,rows.length)));
+  const excerptChunk=Math.max(3000,Math.floor(perFileBudget/3));
+  for(const row of rows){
+    const relative=assertRelativeSourcePath(row.relative,target);
+    if(!fs.existsSync(row.full)||!fs.statSync(row.full).isFile())continue;
+    const excerpt=boundedLargeExcerpt(fs.readFileSync(row.full,'utf8'),excerptChunk);
+    let content=excerpt.content,remaining=byteLimit-total;
+    if(remaining<=0)break;
+    while(Buffer.byteLength(content,'utf8')>remaining&&content.length>100)content=content.slice(0,Math.floor(content.length*.8));
+    if(!content)continue;
+    files.push({path:relative,content,truncated:excerpt.truncated||content.length<excerpt.content.length,editable:responsibleFiles.includes(relative)});
+    total+=Buffer.byteLength(content,'utf8');
+  }
+  return{files,bytes:total};
+}
+function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
+  if(target!=='web'||allowFullRewrite||responsibleFiles.length!==1||responsibleFiles[0]!=='index.html')return false;
+  const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
+  return /\[WEB_REPAIR\]|VIBE_WEB_REPAIR|WEB_VIBE_REPAIR_REQUIRED/i.test(clean(order?.goal))
+    || evidence.has('web-stage:WEB_REPAIR')
+    || evidence.has('recovery-exact-stage:WEB_REPAIR')
+    || evidence.has('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED');
+}
 function extractJson(raw){const text=clean(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();try{return JSON.parse(text);}catch{}const starts=['{','['].map(c=>text.indexOf(c)).filter(i=>i>=0);if(!starts.length)throw new Error('모델 JSON 시작을 찾지 못함');const start=Math.min(...starts),opening=text[start],closing=opening==='{'?'}':']';let depth=0,quoted=false,escape=false;for(let i=start;i<text.length;i++){const ch=text[i];if(quoted){if(escape)escape=false;else if(ch==='\\')escape=true;else if(ch==='"')quoted=false;continue;}if(ch==='"'){quoted=true;continue;}if(ch===opening)depth++;else if(ch===closing&&--depth===0)return JSON.parse(text.slice(start,i+1));}throw new Error('모델 JSON 파싱 실패');}
 function fullWebRewriteAllowed(order,target,exploration={}){
   if(target!=='web')return false;
@@ -209,7 +242,7 @@ function responseFileForAttempt(responseFile,responseFiles=[],attempt=1){
   const rows=Array.isArray(responseFiles)?responseFiles.map(clean).filter(Boolean):[];
   return rows[attempt-1]||clean(responseFile);
 }
-async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative}={}){
+async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,focusedWebRepair=false}={}){
   let lastError=null;
   for(let attempt=1;attempt<=MAX_GENERATION_ATTEMPTS;attempt++){
     const retry=attempt>1;
@@ -217,16 +250,18 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const attemptPrompt=retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt}):prompt;
     const maxPredict=allowFullRewrite
       ? (focusedFinal?FULL_WEB_FINAL_RETRY_MAX_PREDICT:(retry?FULL_WEB_RETRY_MAX_PREDICT:FULL_WEB_MAX_PREDICT))
-      : (focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT));
+      : (focusedFinal?JSON_FINAL_RETRY_MAX_PREDICT:(focusedWebRepair?FOCUSED_WEB_REPAIR_MAX_PREDICT:(retry?JSON_RETRY_MAX_PREDICT:DEFAULT_MAX_PREDICT)));
     const timeoutMs=allowFullRewrite
       ? (focusedFinal?FULL_WEB_FINAL_RETRY_TIMEOUT_MS:(retry?FULL_WEB_RETRY_TIMEOUT_MS:FULL_WEB_TIMEOUT_MS))
       : (focusedFinal?JSON_FINAL_RETRY_TIMEOUT_MS:(retry?JSON_RETRY_TIMEOUT_MS:DEFAULT_TIMEOUT_MS));
-    const contextWindow=allowFullRewrite?(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:FULL_WEB_CONTEXT_WINDOW):(focusedFinal?JSON_FINAL_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW);
+    const contextWindow=allowFullRewrite
+      ? (focusedFinal?JSON_FINAL_CONTEXT_WINDOW:FULL_WEB_CONTEXT_WINDOW)
+      : (focusedFinal?JSON_FINAL_CONTEXT_WINDOW:(focusedWebRepair?FOCUSED_WEB_REPAIR_CONTEXT_WINDOW:JSON_CONTEXT_WINDOW));
     const fake=responseFileForAttempt(responseFile,responseFiles,attempt);
     try{
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow});
       const candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite});
-      return {candidate,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs}};
+      return {candidate,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,focusedWebRepair,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow}};
     }catch(error){
       lastError=error;
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
@@ -243,7 +278,6 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   }
   throw lastError||new Error('candidate generation failed');
 }
-
 async function requestLocalModel(prompt,{model=DEFAULT_MODEL,responseFile='',maxPredict=DEFAULT_MAX_PREDICT,timeoutMs=DEFAULT_TIMEOUT_MS,contextWindow=0}={}){const fake=clean(responseFile||process.env.VIBE2_MODEL_RESPONSE_FILE);if(fake)return fs.readFileSync(path.resolve(fake),'utf8');const options={num_predict:maxPredict,temperature:.08};if(contextWindow>0)options.num_ctx=contextWindow;const body=JSON.stringify({model,prompt,stream:true,think:false,options});return await new Promise((resolve,reject)=>{let settled=false,request=null;const finish=(error,value='')=>{if(settled)return;settled=true;clearTimeout(timer);if(request&&!request.destroyed)request.destroy();if(error)reject(error);else resolve(value);};const timer=setTimeout(()=>finish(new Error(`Ollama 응답 시간 초과: ${timeoutMs}ms`)),timeoutMs);request=http.request({hostname:'127.0.0.1',port:11434,path:'/api/generate',method:'POST',headers:{'content-type':'application/json','content-length':Buffer.byteLength(body)}},response=>{if((response.statusCode||0)<200||(response.statusCode||0)>=300){response.resume();finish(new Error(`Ollama HTTP ${response.statusCode}`));return;}response.setEncoding('utf8');let pending='',output='';const consume=line=>{const text=line.trim();if(!text)return;let payload;try{payload=JSON.parse(text);}catch(error){throw new Error(`Ollama 스트림 JSON 파싱 실패: ${error.message}`);}if(payload?.error)throw new Error(`Ollama 오류: ${payload.error}`);if(typeof payload?.response==='string')output+=payload.response;};response.on('data',chunk=>{if(settled)return;try{pending+=chunk;let at;while((at=pending.indexOf('\n'))>=0){const line=pending.slice(0,at);pending=pending.slice(at+1);consume(line);}}catch(error){finish(error);}});response.on('end',()=>{if(settled)return;try{if(pending.trim())consume(pending);if(!output.trim())throw new Error('Ollama 응답 비어 있음');finish(null,output);}catch(error){finish(error);}});response.on('error',finish);});request.on('error',finish);request.end(body);});}
 function currentBranch(cwd){try{return clean(execFileSync('git',['rev-parse','--abbrev-ref','HEAD'],{cwd,encoding:'utf8'}));}catch{return'';}}
 function assertCandidateBranch(cwd){const branch=currentBranch(cwd);if(!branch||branch==='main'||branch==='master'||!branch.startsWith('vibe2/candidate/'))throw new Error(`source 적용은 vibe2/candidate/* 브랜치에서만 허용: ${branch||'unknown'}`);return branch;}
@@ -266,16 +300,24 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const sourceRootExists=fs.existsSync(sourceRoot)&&fs.statSync(sourceRoot).isDirectory();
   if(!sourceRootExists&&!bootstrap)throw new Error(`source root 없음: ${sourceRootRelative}`);
   const exploration=exploreVibe2WorkOrder({cwd,order});
+  const allowFullRewrite=fullWebRewriteAllowed(order,target,exploration);
+  const focusedWebRepair=isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite);
   const bootstrapHtml='<!doctype html><html><head><meta charset="utf-8"><title>Approved Web Bootstrap</title></head><body><main id="game"></main><script></script></body></html>';
   const context=!sourceRootExists&&bootstrap
     ?{files:[{path:'index.html',content:bootstrapHtml,truncated:false,editable:true}],bytes:Buffer.byteLength(bootstrapHtml,'utf8')}
-    :readContext(sourceRoot,target,responsibleFiles,order?.source?.ignoredPaths||[],exploration.contextFiles||[]);
+    :readContext(
+        sourceRoot,
+        target,
+        responsibleFiles,
+        order?.source?.ignoredPaths||[],
+        focusedWebRepair?(exploration.contextFiles||[]).slice(0,FOCUSED_WEB_REPAIR_CONTEXT_FILES):(exploration.contextFiles||[]),
+        focusedWebRepair?{maxFiles:FOCUSED_WEB_REPAIR_CONTEXT_FILES,maxBytes:FOCUSED_WEB_REPAIR_CONTEXT_BYTES}:{}
+      );
   if(!context.files.length)throw new Error('worker context 파일 없음');
-  const allowFullRewrite=fullWebRewriteAllowed(order,target,exploration);
   const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap});
-  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative});
+  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,focusedWebRepair});
   const candidate=generated.candidate;
-  const generation=generated.generation;
+  const generation={...generated.generation,contextFiles:context.files.length,contextBytes:context.bytes};
   if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
     throw new Error('Web source bootstrap는 index.html 전체 파일 생성 1건만 허용');
   }
