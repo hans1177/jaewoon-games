@@ -289,7 +289,7 @@ const state = {
 };
 
 function updateState() {
-    if (state.defense) {
+state.score++; state.lastAction = 'defend';
         state.score++;
         state.lastAction = 'defend';
     } else if (state.move) {
