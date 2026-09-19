@@ -1,5 +1,5 @@
 {
-  "version": 77,
+  "version": 78,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1368,7 +1368,7 @@
         "gameRuntimeEvidenceStillRequiredForGameLearning": true
       },
       "developmentBottleneckFocus": {
-        "version": 77,
+        "version": 78,
         "authority": "OWNER_DIRECTIVE_2026-09-19",
         "enabled": true,
         "priority": "DEVELOPMENT_AND_RELEASE_BOTTLENECK_FIRST",
@@ -1393,8 +1393,8 @@
           "RELEASE_SAFETY_GATES"
         ],
         "currentIncident": {
-          "signature": "VIBE2_POST_REPAIR_20_WAVE_AND_REFILL_SNAPSHOT_STABILITY",
-          "status": "POST_REPAIR_20_WAVE_LIVE_ARCHIVE_REFILL_REPAIR_QA_PASS",
+          "signature": "VIBE2_POST_REPAIR_SOURCE_SUCCESS_AND_GAME_PRIMARY_SLOT_PROTECTION",
+          "status": "LIVE_20_WAVE_RUNNING_LATEST_REPAIRS_QA_PASS",
           "symptom": "LIVE_20_WAVE_IS_HEALTHY_BUT_PINNED_OLDER_CONTRACT_LEAVES_A_LONG_SOURCE_GENERATION_TAIL_AND_COARSE_SOURCE_CANDIDATE_FAILURES_CAN_REPEAT_WITHOUT_CAUSAL_RETRY_CONTEXT",
           "rootCause": {
             "hiddenWorkerFailure": "CANDIDATE_STEP_USED_CONTINUE_ON_ERROR_SO_GITHUB_JOB_SUCCESS_MASKED_INTERNAL_SOURCE_CANDIDATE_FAILURE_UNTIL_FAN_IN_ARTIFACT_INSPECTION",
@@ -1406,7 +1406,10 @@
             "causalFailureTelemetry": "WORKER_JOB_SUCCESS_CAN_ENCAPSULATE_AN_INTERNAL_FAIL_AND_WITHOUT_FAILURE_CLASS_MESSAGE_THE_QUEUE_ONLY_SEES_SOURCE_CANDIDATE_GENERATION_FAILED",
             "fanInRefillPlannerSync": "FAN_IN_REFILL_MUST_SYNC_LATEST_PLANNER_STATE_BEFORE_RESERVE_SO_EXISTING_EXACT_WEB_REPAIR_GOALS_AND_RECOVERY_STATE_ARE_NOT_STALE",
             "exactWebRepairLongTail": "EXACT_WEB_REPAIR_USED_GENERAL_1536_TOKEN_32K_CONTEXT_GENERATION_PROFILE_DESPITE_SINGLE_INDEX_HTML_RESPONSIBILITY_CAUSING_LONG_NO_OP_AND_TIMEOUT_TAILS",
-            "refillMainSnapshot": "FANIN_REFILL_RESERVE_CREATED_A_GIT_WORKTREE_ONLY_TO_READ_THE_LATEST_MAIN_MACHINE_CONTRACT_AND_COULD_FAIL_BEFORE_RESERVATION_WITHOUT_DIAGNOSTIC_OUTPUT"
+            "refillMainSnapshot": "FANIN_REFILL_RESERVE_CREATED_A_GIT_WORKTREE_ONLY_TO_READ_THE_LATEST_MAIN_MACHINE_CONTRACT_AND_COULD_FAIL_BEFORE_RESERVATION_WITHOUT_DIAGNOSTIC_OUTPUT",
+            "externalPlaytestSlotPressure": "EXTERNAL_MOBILE_REFERENCE_PLAYTEST_COULD_OCCUPY_A_HOSTED_RUNNER_WHILE_20_GAME_PRIMARY_TASKS_WERE_ACTIVE",
+            "rawValidationBlockerSemantics": "COMPANY_RUNTIME_VALIDATION_CODES_WERE_CORRECT_BUT_TOO_ABSTRACT_FOR_THE_LOCAL_SOURCE_MODEL_CAUSING_REPEAT_NO_OP_REPAIRS",
+            "fullWebBaseRebuildSize": "FULL_WEB_BASE_REBUILD_ALLOWED_UNDERSIZED_PLAYABLE_SHELL_ATTEMPTS_BEFORE_THE_EXISTING_MINIMUM_SIZE_GATE_REJECTED_THEM"
           },
           "liveEvidence": {
             "failedWaveRun": "35430477537",
@@ -1479,7 +1482,27 @@
             "recoveryCallbackRuns": [
               "35431828859",
               "35431830284"
-            ]
+            ],
+            "observedCompletedWorkerSample": 12,
+            "observedImmutablePass": 5,
+            "observedImmutableFail": 7,
+            "observedFailureDistribution": {
+              "FULL_REWRITE_SIZE": 4,
+              "NO_OP": 1,
+              "MALFORMED_OUTPUT": 1,
+              "EDIT_MATCH": 1
+            },
+            "externalPlaytestGateRun": "35432080063",
+            "externalPlaytestActiveGameWork": 20,
+            "externalPlaytestResult": "PLAYTEST_SKIPPED_DEFER_TO_GAME_PRIMARY",
+            "actionableWebRepairHintsHead": "6c115212bb788c9c27f69037e6d0d7a489da155b",
+            "actionableWebRepairHintsCoreQa": "PASS",
+            "actionableWebRepairHintsIntegratedRegression": "PASS",
+            "fullWebCompletenessHead": "91bc4d6872761830b1f0528cb423eeba712bb7ec",
+            "fullWebCompletenessCoreQaRun": "35432298253",
+            "fullWebCompletenessCoreQa": "PASS",
+            "fullWebCompletenessIntegratedRegressionRun": "35432298285",
+            "fullWebCompletenessIntegratedRegression": "PASS"
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -1495,7 +1518,11 @@
             "PIN_LATEST_MAIN_WITH_FETCH_HEAD_IN_REFILL_RESERVE",
             "REPLACE_READ_ONLY_REFILL_MAIN_CONTRACT_WORKTREE_WITH_GIT_ARCHIVE_SNAPSHOT",
             "KEEP_CANDIDATE_BRANCH_WORKTREES_UNCHANGED",
-            "KEEP_20_WAVE_GAME_PRIMARY_TASK_LOCAL_EXPLORATION_FAN_IN_ONLY_REFILL_AND_ALL_QA_GATES_UNCHANGED"
+            "KEEP_20_WAVE_GAME_PRIMARY_TASK_LOCAL_EXPLORATION_FAN_IN_ONLY_REFILL_AND_ALL_QA_GATES_UNCHANGED",
+            "DEFER_EXTERNAL_MOBILE_REFERENCE_PLAYTEST_WHILE_ACTIONABLE_GAME_IMPLEMENTATION_TASKS_ARE_QUEUED_OR_RUNNING",
+            "TRANSLATE_COMPANY_RUNTIME_WEB_VALIDATION_CODES_INTO_ACTIONABLE_IMPLEMENTATION_HINTS_WHILE_PRESERVING_RAW_BLOCKER_EVIDENCE_AND_ALL_GATES",
+            "REQUIRE_FULL_WEB_REBUILD_OUTPUT_TO_IMPLEMENT_DIRECT_INPUT_MUTABLE_STATE_UPDATE_LOOP_PROGRESSION_WIN_OR_LOSS_RESTART_AND_RESPONSIVE_MOBILE_LAYOUT_BEFORE_FINISHING",
+            "KEEP_MIN_FULL_REWRITE_BYTES_AT_1800_AND_REPORT_ACTUAL_BYTES_MIN_AND_MAX_ON_REJECTION"
           ],
           "codeBindings": [
             "tools/vibe2-source-worker.mjs",
@@ -1505,7 +1532,8 @@
             "qa/vibe2-source-worker.test.mjs",
             "qa/vibe2-controller-contract.test.mjs",
             "qa/vibe2-auto-planner.test.mjs",
-            "company-learning/platform-release-roadmap.json"
+            "company-learning/platform-release-roadmap.json",
+            ".github/workflows/external-mobile-free-game-playtest.yml"
           ],
           "repairCommits": [
             "4e14cde97f53af4c03fe96bb655300b98b538418",
@@ -1521,7 +1549,12 @@
             "74ddf86784b4215913da180883a81fb1954d3a57",
             "849d5def95e8747055fced38ced9e020875a6213",
             "118ae3700159fa51d8962b757aa099bfdeec4e24",
-            "e448dbb96ca2e40545e1decb45b8fcfcaf1826ed"
+            "e448dbb96ca2e40545e1decb45b8fcfcaf1826ed",
+            "17d5568072941b7b5c60216b8fe6e3dce6e92da9",
+            "9793d5c5b4f0860644d0f7abb2f77a206a3e00fb",
+            "6c115212bb788c9c27f69037e6d0d7a489da155b",
+            "9a27754de06d814f3b7db2971887657866d87c7a",
+            "91bc4d6872761830b1f0528cb423eeba712bb7ec"
           ],
           "verification": {
             "vibe2CoreQaRun": "35431344381",
@@ -1532,23 +1565,33 @@
             "compactWebRepairCoreQa": "PASS",
             "compactWebRepairIntegratedRegression": "PASS",
             "archiveRefillCoreQa": "PASS",
-            "archiveRefillIntegratedRegression": "PASS"
+            "archiveRefillIntegratedRegression": "PASS",
+            "actionableWebRepairHints": "PASS",
+            "fullWebCompleteness": "PASS",
+            "externalPlaytestGamePrimaryGate": "PASS",
+            "minimumFullRewriteBytes": 1800
           },
           "nextVerification": [
+            "CURRENT_20_WAVE_COMPLETES_AND_FAN_IN_RUNS",
+            "POST_91BC4D_FULL_WEB_BASE_REBUILD_SUCCESS_RATE_IMPROVES",
+            "NEXT_FULL_REWRITE_SIZE_FAILURE_REPORTS_ACTUAL_BYTES",
+            "NEXT_WEB_REPAIR_GOAL_CONTAINS_ACTIONABLE_HINTS_AND_RAW_COMPANY_RUNTIME_EVIDENCE",
+            "EXTERNAL_PLAYTEST_REMAINS_SKIPPED_WHILE_GAME_PRIMARY_ACTIVE",
+            "NEXT_FANIN_REFILL_USES_ARCHIVE_MAIN_SNAPSHOT",
+            "OWNER_MINIMUM_WAVE_REMAINS_20",
+            "TASK_LOCAL_EXPLORATION_REMAINS_PER_WORKER",
+            "FAN_IN_ONLY_REFILL_REMAINS_ACTIVE",
             "POST_REPAIR_WAVE_INTERNAL_RESULT_SUCCESS_RATE_IMPROVES_VS_PREVIOUS_2_OF_19_OBSERVED_SAMPLE",
             "EXACT_WEB_REPAIR_GENERATION_TELEMETRY_REPORTS_FOCUSED_WEB_REPAIR_PROFILE",
             "NEXT_FANIN_REFILL_PREPARES_MAIN_WITH_ARCHIVE_SNAPSHOT_AND_NO_WORKTREE_STATE",
             "NEXT_FANIN_REFILL_RESERVES_OWNER_MINIMUM_20_WHEN_20_ACTIONABLE_GAME_TASKS_EXIST",
             "CANDIDATE_BRANCH_WORKTREE_IS_UNCHANGED",
-            "TASK_LOCAL_EXPLORATION_REMAINS_PER_WORKER",
-            "FAN_IN_ONLY_REFILL_REMAINS_ACTIVE",
             "GAME_PRIMARY_REMAINS_AHEAD_OF_NONBLOCKING_SYSTEM_AI",
             "CURRENT_PINNED_02D426_WAVE_COMPLETES_WITHOUT_MANUAL_CANCELLATION",
             "FAN_IN_SETTLES_ALL_20_RESERVATIONS",
             "REFILL_RESERVES_POST_7952985_MAIN_CONTRACT",
             "POST_REPAIR_WORKER_RESULT_EXPOSES_CAUSAL_GENERATION_FAILURE_CLASS_AND_MESSAGE",
             "NO_OP_TIMEOUT_OR_UNDERSIZED_FULL_WEB_FAILURE_USES_BOUNDED_RECOVERY_INSTEAD_OF_GENERIC_REPEAT",
-            "OWNER_MINIMUM_WAVE_REMAINS_20",
             "CURRENT_OLD_PINNED_WAVE_COMPLETES_WITHOUT_INTERRUPTION",
             "NEXT_FANIN_REFILL_LOG_CONTAINS_VIBE2_FANIN_REFILL_PLANNER_SYNC_PASS",
             "NEXT_RUNTIME_REPAIR_GOALS_CONTAIN_COMPANY_RUNTIME_FAILURE_EVIDENCE_BEFORE_RESERVE",
@@ -1573,7 +1616,7 @@
           "releaseProgression": "ADVANCE_ONLY_AFTER_EXISTING_GATES_PASS",
           "qaContract": "PASS",
           "centralPolicyContract": "PASS",
-          "currentLargestBottleneck": "VERIFY_POST_REPAIR_SOURCE_GENERATION_SUCCESS_RATE_AND_ARCHIVE_REFILL_LIVE_PASS",
+          "currentLargestBottleneck": "FULL_WEB_BASE_REBUILD_SUCCESS_RATE_AND_FINAL_ACTIVE_WORKER_TAIL",
           "adaptiveWave": 20,
           "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
           "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST",
@@ -1597,18 +1640,14 @@
             "runId": "35431717289",
             "contractSha": "1fb8276f767ec79003d3794413e2fe60e4fd2395",
             "reservedTasks": 20,
-            "workerState": {
-              "in_progress": 19,
-              "queued": 1
-            },
             "status": "RUNNING",
-            "note": "POST_COMPACT_WEB_REPAIR_AND_CAUSAL_RECOVERY_CONTRACT"
+            "note": "POST_COMPACT_WEB_REPAIR_WAVE; LATEST_HINT_AND_FULL_WEB_COMPLETENESS_FIXES_APPLY_NEXT_REFILL"
           },
           "fanInDiagnosis": "RUN_35429351974_FAILED_ON_4_STALE_REGRESSION_EXPECTATIONS",
           "exactManifestQaBinding": "FIXED_PENDING_LIVE_WAVE_VERIFICATION",
           "noOpRetry": "FIXED",
           "jsonRetryTimeoutMs": 240000,
-          "latestRepairHead": "e448dbb96ca2e40545e1decb45b8fcfcaf1826ed",
+          "latestRepairHead": "91bc4d6872761830b1f0528cb423eeba712bb7ec",
           "nextVerificationRun": {
             "runId": "35430088606",
             "triggerHead": "bc102e770e77e9ea9fb530ec267a572b3d0bb8fd",
@@ -1635,16 +1674,19 @@
           },
           "fanInCandidateIdentityGate": "FIXED_PENDING_NEXT_LIVE_CONTRACT_VERIFICATION",
           "existingExactWebRepairGoalRefresh": "FIXED",
-          "latestVerifiedRepairHead": "e448dbb96ca2e40545e1decb45b8fcfcaf1826ed",
-          "latestVerifiedCoreQaRun": "35431787744",
-          "latestVerifiedIntegratedRegressionRun": "35431787677",
+          "latestVerifiedRepairHead": "91bc4d6872761830b1f0528cb423eeba712bb7ec",
+          "latestVerifiedCoreQaRun": "35432298253",
+          "latestVerifiedIntegratedRegressionRun": "35432298285",
           "sourceGenerationFailureTelemetry": "FIXED",
           "focusedThirdRetry": "FIXED_QA_PASS_PENDING_LIVE",
           "fanInRefillPlannerSync": "FIXED_QA_PASS_PENDING_LIVE",
           "sourceGenerationCausalTelemetry": "FIXED_QA_PASS_PENDING_LIVE",
           "fanInRefillCanonicalWorkflow": ".github/workflows/vibe2-continuous-core.yml",
           "compactExactWebRepairGeneration": "FIXED_QA_PASS_LIVE_WAVE_RUNNING",
-          "fanInRefillMainContractSnapshot": "ARCHIVE_FIXED_QA_PASS_PENDING_NEXT_REFILL_LIVE"
+          "fanInRefillMainContractSnapshot": "ARCHIVE_FIXED_QA_PASS_PENDING_NEXT_REFILL_LIVE",
+          "externalPlaytestGamePrimaryGate": "LIVE_CONFIRMED",
+          "actionableWebRepairHints": "QA_PASS_PENDING_NEXT_REFILL",
+          "fullWebCompletenessContract": "QA_PASS_PENDING_NEXT_REFILL"
         },
         "incidentHistory": [
           {
@@ -3011,23 +3053,23 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_COMPACT_WEB_REPAIR_AND_ARCHIVE_REFILL_2026-09-19",
+    "id": "VIBE2_GAME_PRIMARY_SLOT_AND_SOURCE_COMPLETENESS_2026-09-19",
     "documentIsCode": true,
-    "reason": "REDUCE_EXACT_WEB_REPAIR_GENERATION_TAIL_AND_REMOVE_READ_ONLY_REFILL_WORKTREE_FAILURE_WITHOUT_WEAKENING_GAME_PRIMARY_20_WAVE_OR_QA",
+    "reason": "PROTECT_GAME_PRIMARY_RUNNER_CAPACITY_AND_IMPROVE_LOCAL_MODEL_REPAIR_AND_FULL_WEB_BASE_REBUILD_SUCCESS_WITHOUT_WEAKENING_GATES",
     "files": [
+      ".github/workflows/external-mobile-free-game-playtest.yml",
+      "tools/vibe2-auto-planner.mjs",
       "tools/vibe2-source-worker.mjs",
-      ".github/workflows/vibe2-continuous-core.yml",
+      "qa/vibe2-auto-planner.test.mjs",
       "qa/vibe2-source-worker.test.mjs",
-      "qa/vibe2-controller-contract.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ],
     "commits": [
-      "3b280d595ecea08f10c3afbb34a111405b360f75",
-      "83ed9ee098a631b132d82198e2b5ad008a479624",
-      "74ddf86784b4215913da180883a81fb1954d3a57",
-      "849d5def95e8747055fced38ced9e020875a6213",
-      "118ae3700159fa51d8962b757aa099bfdeec4e24",
-      "e448dbb96ca2e40545e1decb45b8fcfcaf1826ed"
+      "17d5568072941b7b5c60216b8fe6e3dce6e92da9",
+      "9793d5c5b4f0860644d0f7abb2f77a206a3e00fb",
+      "6c115212bb788c9c27f69037e6d0d7a489da155b",
+      "9a27754de06d814f3b7db2971887657866d87c7a",
+      "91bc4d6872761830b1f0528cb423eeba712bb7ec"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3035,20 +3077,19 @@
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
       "systemAiNonblocking": true,
+      "externalReferencePlaytestSpareCapacityOnly": true,
+      "rawValidationEvidencePreserved": true,
       "fullRegressionNotWeakened": true,
-      "fullWebMinimumSizeGateNotWeakened": true,
-      "candidateBranchWorktreePreserved": true,
-      "refillReadOnlyMainSnapshot": "GIT_ARCHIVE"
+      "minimumFullRewriteBytes": 1800
     },
     "liveEvidence": {
-      "runId": "35431717289",
-      "contractSha": "1fb8276f767ec79003d3794413e2fe60e4fd2395",
+      "waveRun": "35431717289",
       "reservedTasks": 20,
-      "workerState": {
-        "in_progress": 19,
-        "queued": 1
-      },
-      "archiveFixQa": "PASS"
+      "observedCompletedSample": 12,
+      "observedPass": 5,
+      "observedFail": 7,
+      "externalPlaytestGate": "DEFER_TO_GAME_PRIMARY",
+      "latestRepairQa": "PASS"
     }
   }
 }
