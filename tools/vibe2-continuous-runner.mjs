@@ -19,6 +19,7 @@ const freeze = (value) => Object.freeze(value);
 const freezeList = (values = []) => freeze([...new Set((values || []).map(clean).filter(Boolean))]);
 const EDITOR_BINARY_EXTENSIONS = new Set(['.rbxl', '.rbxlx', '.uasset', '.umap', '.controller', '.anim', '.avatar']);
 const AUTO_DEPLOY_STATES = new Set(['release-confirmed', 'development-confirmed']);
+const PRESENTATION_PASSES = new Set(['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE']);
 
 function readJson(file, fallback = {}) { if (!file || !fs.existsSync(file)) return fallback; return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`); }
@@ -113,6 +114,72 @@ function resolveTask(queue, taskId = '') {
   const selection = selectVibeQueueBatch(queue);
   return { task:selection.selected[0] || null, reason:selection.stopReason || 'NO_ELIGIBLE_WORK' };
 }
+function presentationPassFromTask(task = {}) {
+  const evidence=(task?.evidence||[]).map(clean);
+  const marker=evidence.find(value=>value.startsWith('presentation-pass:'));
+  const fromEvidence=marker?marker.slice('presentation-pass:'.length).toUpperCase():'';
+  if(PRESENTATION_PASSES.has(fromEvidence))return fromEvidence;
+  const match=/\[PRESENTATION_PASS:([A-Z_]+)\]/i.exec(clean(task?.goal));
+  const fromGoal=clean(match?.[1]).toUpperCase();
+  return PRESENTATION_PASSES.has(fromGoal)?fromGoal:null;
+}
+function presentationTaskType(task = {}) {
+  const pass=presentationPassFromTask(task);
+  if(pass==='ASSET_ADAPTATION')return'graphics';
+  if(pass==='VFX')return'vfx';
+  if(pass==='AUDIO_FEEL')return'audio';
+  if(pass)return'presentation';
+  return clean(task?.type)||'coding';
+}
+function buildPresentationQualityContract(task = {}, target = '') {
+  const pass=presentationPassFromTask(task);
+  if(!pass)return freeze({required:false,pass:null,authorityExpanded:false});
+  const checks={
+    ASSET_ADAPTATION:['style-lock-consistency','reuse-existing-assets-first','no-duplicate-render-pipeline','gameplay-semantics-unchanged'],
+    LIVING_MOTION:['idle-alive-motion','locomotion-blend-or-equivalent','acceleration-deceleration','turn-smoothing','secondary-motion','gameplay-speed-unchanged'],
+    ANIMATION_FEEL:['anticipation','impact-sync','hit-stop-presentation-only','recoil-recovery','authoritative-hit-event-preserved'],
+    VFX:['impact-feedback','effect-budget','mobile-readability','bounded-particles-or-transients','gameplay-readability-preserved'],
+    AUDIO_FEEL:['first-gesture-audio-web','mute-volume','no-duplicate-resume-playback','state-transition-audio','impact-audio-sync'],
+    CAMERA_LANGUAGE:['subtle-normal-response','strong-action-response','hero-moment-control','mobile-readability','no-critical-input-obscure'],
+    POLISH_MOBILE:['animation-pop-removal','vfx-clutter-check','audio-transition-check','touch-during-effects','frame-stability','save-gameplay-semantics-unchanged']
+  };
+  const runtimeChecks={
+    ASSET_ADAPTATION:['same-scene-before-after-readability'],
+    LIVING_MOTION:['idle-walk-run-or-equivalent-runtime-continuity','turn-runtime-continuity'],
+    ANIMATION_FEEL:['impact-event-runtime-sync','input-not-blocked-by-hit-stop'],
+    VFX:['combat-clutter-runtime-check','mobile-touch-under-effects'],
+    AUDIO_FEEL:['audio-unlock-runtime','music-transition-runtime','background-resume-runtime'],
+    CAMERA_LANGUAGE:['camera-motion-runtime-readability','touch-aim-or-control-runtime'],
+    POLISH_MOBILE:['mobile-frame-stability','long-session-presentation-stability']
+  };
+  return freeze({
+    required:true,
+    version:1,
+    pass,
+    policyRefs:freezeList(['company-learning/platform-release-roadmap.json#livingMotionVisualQualityContract','company-learning/platform-release-roadmap.json#audioMusicQualityContract']),
+    preserve:freezeList(['GAMEPLAY_BALANCE','SAVE_MEANING','PROGRESSION','HIT_SEMANTICS','NETWORK_AUTHORITY']),
+    staticChecks:freezeList(checks[pass]||[]),
+    runtimeChecks:freezeList(runtimeChecks[pass]||[]),
+    target:clean(target).toLowerCase()||null,
+    wrapperOrShadowPipelineForbidden:true,
+    directResponsibleSystemModificationPreferred:true,
+    authorityExpanded:false
+  });
+}
+function presentationQualityGuidance(contract = {}) {
+  if(contract?.required!==true)return'';
+  return [
+    '[VIBE PRESENTATION QUALITY CONTRACT]',
+    `pass=${contract.pass}`,
+    `preserve=${(contract.preserve||[]).join(',')}`,
+    `static-checks=${(contract.staticChecks||[]).join(',')}`,
+    `runtime-checks=${(contract.runtimeChecks||[]).join(',')}`,
+    '기존 책임 시스템을 직접 수정하고 wrapper/shadow 표현 파이프라인을 만들지 않는다.',
+    '표현 품질 수정은 게임 밸런스·저장·진행·판정·네트워크 권한을 바꾸지 않는다.',
+    '정적 QA 통과만으로 완료가 아니며 실제 runtime/mobile 검증이 최종 근거다.'
+  ].join('\n');
+}
+
 function incrementalQaPlan(task, target, responsibleFiles, speculativeVariants = 1) {
   const files = freezeList(responsibleFiles || []);
   return freeze({
@@ -186,7 +253,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const automaticDeploymentEligible = AUTO_DEPLOY_STATES.has(releaseState) && ['roblox','web','unity'].includes(plan.target) && task.requiresOwnerDecision !== true && task.protectedChange !== true;
   const learningGuidance = buildLearningGuidance(plan.learning);
   const unifiedLearning = retrieveUnifiedLearning({
-    task:{ ...task, target:plan.target, taskType:task.type },
+    task:{ ...task, target:plan.target, taskType:presentationTaskType(task) },
     experienceInput:experience,
     codePatternsInput:codePatterns,
     playbooksInput:playbooks,
@@ -196,6 +263,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const unifiedLearningGuidance = buildMotorGuidance(unifiedLearning);
   const assetProduction = buildVibeAssetProductionPlan({ task, target:plan.target, repoRoot:process.cwd() });
   const assetGuidance = assetProductionGuidance(assetProduction);
+  const presentationQuality = buildPresentationQualityContract(task,plan.target);
+  const presentationGuidance = presentationQualityGuidance(presentationQuality);
   const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
   const codingStrategyPreference=preferredCodingStrategyForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
   const verifiedCodingStrategyGuidance=codingStrategyGuidance(codingStrategyPreference);
@@ -244,7 +313,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     `역할 분리=${Object.entries(workPackage.rolePlan).map(([k,v])=>`${k}:${v}`).join(' | ')}`,
     workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
   ].filter(Boolean).join('\n'):'';
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, presentationGuidance, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, verifiedArchitectureDriftGuidance, verifiedCodingConstitutionGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
@@ -257,6 +326,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     'verified-learning-motor-contract',
     'asset-production-plan-contract',
     'asset-runtime-visual-qa-required',
+    ...(presentationQuality.required?['presentation-quality-static-check','presentation-quality-runtime-check','presentation-gameplay-semantics-preservation']:[]),
     'exploration-handoff-required-before-implementation',
     'auto-player-evidence-after-implementation',
     'telemetry-evidence-after-implementation',
@@ -281,6 +351,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     designIntelligence,
     unifiedLearning,
     assetProduction,
+    presentationQuality,
     candidateTournament:tournament,
     candidateStrategyRole:candidateStrategy,
     codingStrategyPreference,
