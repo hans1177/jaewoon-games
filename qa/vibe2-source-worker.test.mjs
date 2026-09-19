@@ -478,7 +478,7 @@ test('undersized full web error reports validator-scale generation minimum witho
   );
 });
 
-test('undersized full web output gets one final bounded third retry without lowering size gate', async () => {
+test('undersized full web output keeps a bounded full-file fallback while expansion mode is active', async () => {
   const cwd=tempRoot();
   const small1=path.join(cwd,'small1.txt');
   const small2=path.join(cwd,'small2.txt');
@@ -497,9 +497,41 @@ test('undersized full web output gets one final bounded third retry without lowe
   write(good,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:final','EXPECTED_EFFECT:playable','TEST:mobile','---VIBE2_FILE_CONTENT---',replacement,'---VIBE2_FILE_END---'].join('\n'));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[small1,small2,good]});
   assert.equal(result.generation.attempts,3);
-  assert.equal(result.generation.focusedFinalRetry,true);
-  assert.equal(result.generation.timeoutMs,360000);
-  assert.equal(result.generation.maxPredict,6144);
+  assert.equal(result.generation.focusedFinalRetry,false);
+  assert.equal(result.generation.fullWebExpansionStages,0);
+  assert.equal(result.generation.timeoutMs,300000);
+  assert.equal(result.generation.maxPredict,4096);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
+test('undersized full web seed accumulates additive model expansions until validator scale', async () => {
+  const cwd=tempRoot();
+  const seedFile=path.join(cwd,'seed.txt');
+  const expansion1=path.join(cwd,'expansion1.txt');
+  const expansion2=path.join(cwd,'expansion2.txt');
+  const seedBody=Array.from({length:70},(_,i)=>`function seedMechanic${i}(s){s.score=(s.score||0)+${i%7};return s}`).join('');
+  const seed=`<!doctype html><html><body><main id="game"><button id="start">Start</button><canvas></canvas></main><script>let state={score:0,hp:10,wave:1};${seedBody}</script></body></html>`;
+  const fragment1=`<section class="combat-system" data-gameplay-system="combat"></section><script>(()=>{const api={};${Array.from({length:90},(_,i)=>`api.m${i}=s=>{s.hp=Math.max(0,(s.hp||10)-1);s.score=(s.score||0)+1;return s};`).join('')}window.addEventListener('pointerdown',e=>{state.x=e.clientX;state.y=e.clientY;state.score+=1});})();</script>`;
+  const fragment2=`<section class="progress-system" data-gameplay-system="progression"></section><script>(()=>{${Array.from({length:90},(_,i)=>`function progress${i}(s){s.wave=(s.wave||1)+1;s.gold=(s.gold||0)+${i%5};return s}`).join('')}function finish(){if(state.score>50)document.body.dataset.runResult='victory';if(state.hp<=0)document.body.dataset.runResult='defeat';localStorage.setItem('vibe2-expansion-test',JSON.stringify(state))}window.addEventListener('touchstart',finish,{passive:true});})();</script>`;
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-web-expansion-accumulate'});
+  workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed=true;
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd,'design/demo/2026-09-18/design-revised.json'),JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(seedFile,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:seed','---VIBE2_FILE_CONTENT---',seed,'---VIBE2_FILE_END---'].join('\n'));
+  write(expansion1,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment1,'---VIBE2_EXPANSION_END---'].join('\n'));
+  write(expansion2,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment2,'---VIBE2_EXPANSION_END---'].join('\n'));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[seedFile,expansion1,expansion2]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.fullWebExpansionStages,2);
+  assert.equal(result.generation.mode,'FULL_WEB');
+  const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-expansion-accumulate/files/index.html'),'utf8');
+  assert.ok(Buffer.byteLength(output,'utf8')>=12000);
+  assert.match(output,/data-gameplay-system="combat"/);
+  assert.match(output,/data-gameplay-system="progression"/);
+  assert.doesNotMatch(output,/VIBE2_WEB_EXPANSION/);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
