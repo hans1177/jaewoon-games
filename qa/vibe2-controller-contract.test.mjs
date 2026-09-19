@@ -304,6 +304,188 @@ test('recovery-fast lane is event-driven and never directly consumes a game work
   assert(recoveryFastWorkflow.includes('--route=all'));
   assert(recoveryFastWorkflow.includes('VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFER_TO_GAME_PRIMARY_FANIN'));
   assert(recoveryFastWorkflow.includes('company-system-ai-cycle'));
+  assert(recoveryFastWorkflow.includes("system_ai_recovery_dispatched=\"$(grep -Ec '^RECOVERY_DISPATCH=.*:SYSTEM_AI:[1-9][0-9]*  assert.equal(recoveryFastWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'),false);
+  assert.equal(recoveryFastWorkflow.includes('vibe2-fanin-refill'),false);
+  assert.equal(recoveryFastWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
+});
+
+test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
+  assert(workflow.includes('Event-driven fan-in refill fallback'));
+  assert(workflow.includes("event_type:'vibe2-fanin-refill'"));
+  assert(workflow.includes('VIBE2_EVENT_DRIVEN_REFILL=FANIN_REPOSITORY_DISPATCH'));
+  assert(!workflow.includes('gh workflow run vibe2-continuous-core.yml'));
+  assert(!workflow.includes('gh workflow run vibe2-24h-runner.yml --repo "$GITHUB_REPOSITORY" --ref main'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
+  assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+  assert(safetyNetWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'));
+  assert.equal(runtime.continuous.wakeMode,'event-driven-plus-hourly-safety-net');
+});
+
+test('worker never mutates shared queue state or dispatches refill runs',()=>{
+  const start=workflow.indexOf('  worker:');
+  const end=workflow.indexOf('  fan_in:');
+  assert(start>=0 && end>start);
+  const workerPart=workflow.slice(start,end);
+  assert(!workerPart.includes('vibe2-queue-control.mjs release-slot'));
+  assert(!workerPart.includes('git push origin HEAD:vibe2-unreal-core'));
+  assert(!workerPart.includes('HEAD:refs/heads/vibe2/refill/'));
+  assert(!workerPart.includes('"https://api.github.com/repos/${GITHUB_REPOSITORY}/dispatches"'));
+  assert(!workerPart.includes("event_type:'vibe2-slot-refill'"));
+});
+
+test('worker Ollama cache includes the runtime sidecar and rejects binary-only cache hits',()=>{
+  assert(workflow.includes('~/.cache/vibe2-ollama/lib/ollama'));
+  assert(workflow.includes('vibe2-ollama-v3-Linux-qwen3-1.7b'));
+  assert(workflow.includes("find \"$cached_lib\" -type f -name 'llama-server'"));
+  assert(workflow.includes('sudo cp -a "$cached_lib/." /usr/local/lib/ollama/'));
+  assert(!workflow.includes('key: vibe2-ollama-v2-Linux-qwen3-1.7b'));
+});
+
+test('fan-in release requires exact candidate manifest identity',()=>{
+  const branch='vibe2/candidate/demo/primary';
+  const baseTask={
+    id:'demo-task',
+    gameId:'demo',
+    target:'web',
+    sourceRoot:'web-games/demo',
+    status:'running',
+    blocker:'candidate-awaiting-qa-and-deployment',
+    evidence:[
+      branch,
+      'role-result:exploration:PASS',
+      'role-result:implementation:PASS',
+      'role-result:test:PASS',
+      'role-result:performance:PASS'
+    ]
+  };
+  const valid={
+    version:7,
+    taskId:'demo-task',
+    outcome:'PASS',
+    candidateBranch:branch,
+    baseMainSha:'abc123',
+    candidateIdentity:{
+      taskId:'demo-task',
+      gameId:'demo',
+      target:'web',
+      sourceRoot:'web-games/demo',
+      baseMainSha:'abc123',
+      manifestPath:'.vibe2/candidates/demo-task/manifest.json'
+    },
+    evidence:[branch]
+  };
+  const pass=finalizeVibe2FanInReview({queue:{tasks:[baseTask]},results:[valid]});
+  assert.equal(pass.pass,true);
+  assert.equal(pass.releaseCandidates.length,1);
+  assert.ok(pass.queue.tasks[0].evidence.includes('candidate-identity:PASS'));
+
+  const stale=structuredClone(valid);
+  stale.candidateIdentity.sourceRoot='web-games/other-game';
+  const blocked=finalizeVibe2FanInReview({queue:{tasks:[baseTask]},results:[stale]});
+  assert.equal(blocked.pass,false);
+  assert.equal(blocked.releaseCandidates.length,0);
+  assert.ok(blocked.reviewed[0].missing.includes('candidate-identity-source-root'));
+  assert.ok(blocked.queue.tasks[0].evidence.includes('role-result:review:BLOCKED'));
+});
+
+test('worker result exposes exact candidate identity for fan-in review',()=>{
+  const start=workflow.indexOf('- name: Build immutable worker result');
+  const end=workflow.indexOf('- name: Upload worker result for fan-in');
+  const resultStep=workflow.slice(start,end);
+  assert(resultStep.includes('candidateIdentity=candidateOk?'));
+  assert(resultStep.includes('taskId:clean(manifest.taskId)'));
+  assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
+  assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
+  assert(resultStep.includes('version:8'));
+});
+
+test('worker result keeps throughput and actual workload telemetry inputs in the immutable result step',()=>{
+  const start=workflow.indexOf('- name: Build immutable worker result');
+  const end=workflow.indexOf('- name: Upload worker result for fan-in');
+  assert(start>=0 && end>start);
+  const resultStep=workflow.slice(start,end);
+  assert(resultStep.includes('CANDIDATE_MANIFEST:'));
+  for(const key of ['RESERVED_AT:','REQUESTED_MAX:','EFFECTIVE_MAX:','WORKER_STARTED_AT_FILE:','CHECKOUT_MS:','MODEL_PREP_MS:','CANDIDATE_MS:','QA_MS:','CHANGED_FILE_COUNT:','ADDED_LINE_COUNT:','DELETED_LINE_COUNT:','CANDIDATE_FAILURE_CLASS:','CANDIDATE_FAILURE_MESSAGE:','EXPLORATION_FILE:']) {
+    assert(resultStep.includes(key),`missing result telemetry env ${key}`);
+  }
+  assert(workflow.includes('git diff --cached --numstat -- "$SOURCE_ROOT"'));
+  assert(workflow.includes('JSON.stringify({version:3,results,tasks:queue.tasks||[]}'));
+});
+
+test('candidate failure telemetry survives a failed source worker step',()=>{
+  const start=workflow.indexOf('- name: Generate isolated candidate from pinned main contract');
+  const end=workflow.indexOf('- name: Restore incremental QA content-hash cache');
+  assert(start>=0 && end>start);
+  const candidateStep=workflow.slice(start,end);
+  assert(candidateStep.includes('worker_rc=${PIPESTATUS[0]}'));
+  assert(candidateStep.includes('VIBE2_SOURCE_WORKER_FAILURE_CLASS'));
+  assert(candidateStep.includes('failure_class=$failure_class'));
+  assert(candidateStep.includes('duration_ms=$((candidate_finished-candidate_started))'));
+  const resultStart=workflow.indexOf('- name: Build immutable worker result');
+  const resultEnd=workflow.indexOf('- name: Upload worker result for fan-in');
+  const resultStep=workflow.slice(resultStart,resultEnd);
+  assert(resultStep.includes('source-generation-failure:${candidateFailureClass}'));
+  assert(resultStep.includes('coding-failure-fingerprint:${clean(manifest.codingMethod.failureFingerprint)}'));
+  assert(resultStep.includes('coding-patch-recipe:${clean(manifest.codingMethod.patchRecipeMode)}'));
+  assert(resultStep.includes('coding-verified-failure-memory-count:${Number(manifest.codingMethod.verifiedFailureLocalMemoryCount)}'));
+  assert(resultStep.includes("candidateFailure=candidateOk?null"));
+  assert(resultStep.includes("manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)"));
+});
+test('explicit work-order output path overrides runtime default path',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-output-path-'));
+  const queueFile=path.join(root,'queue.json');
+  const controlFile=path.join(root,'parallelism.json');
+  const experienceFile=path.join(root,'experience.json');
+  const runtimeDefault=path.join(root,'runtime-default.json');
+  const explicitOutput=path.join(root,'explicit-output.json');
+  const runtimeFile=path.join(root,'runtime.json');
+  const fixtureRuntime=structuredClone(runtime);
+
+  fixtureRuntime.continuous={...fixtureRuntime.continuous,enabled:false,entryWorkflow:'.github/workflows/vibe2-24h-runner.yml',workerWorkflow:'.github/workflows/vibe2-continuous-core.yml'};
+  fixtureRuntime.documentation={
+    ...fixtureRuntime.documentation,
+    runtimeState:{queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json'},
+    generatedHandoffTool:'tools/vibe2-handoff.mjs'
+  };
+  fixtureRuntime.sources={queue:'queue.json',parallelism:'parallelism.json',experience:'experience.json',workOrder:runtimeDefault};
+  fixtureRuntime.adaptiveBackpressure={...fixtureRuntime.adaptiveBackpressure,stateFile:'parallelism.json'};
+
+  fs.mkdirSync(path.join(root,'tools'),{recursive:true});
+  fs.mkdirSync(path.join(root,'.github','workflows'),{recursive:true});
+  fs.writeFileSync(path.join(root,'tools','vibe2-handoff.mjs'),'// fixture\n','utf8');
+  fs.writeFileSync(path.join(root,'.github','workflows','vibe2-24h-runner.yml'),'name: fixture\n','utf8');
+  fs.writeFileSync(path.join(root,'.github','workflows','vibe2-continuous-core.yml'),'name: fixture\n','utf8');
+  fs.writeFileSync(queueFile,JSON.stringify({version:5,maxConcurrentTasks:256,tasks:[]}), 'utf8');
+  fs.writeFileSync(controlFile,JSON.stringify({version:3,currentMax:256}), 'utf8');
+  fs.writeFileSync(experienceFile,JSON.stringify({version:3,records:[]}), 'utf8');
+  fs.writeFileSync(runtimeFile,JSON.stringify(fixtureRuntime), 'utf8');
+
+  const order=runVibeContinuousRunner({runtimeFile,outputFile:explicitOutput});
+  assert.equal(order.reason,'CONTINUOUS_DISABLED');
+  assert.equal(order.machineHandoff.consistency.ok,true);
+  assert.equal(fs.existsSync(explicitOutput),true);
+  assert.equal(fs.existsSync(runtimeDefault),false);
+});
+
+test('central runtime enables functional work packages and adaptive workload telemetry',()=>{
+  assert.equal(runtime.workPackages.enabled,true);
+  assert.equal(runtime.workPackages.smallTaskAction,'auto-expand-or-defer');
+  assert.equal(runtime.workPackages.automaticExpansionMode,'real-disjoint-candidates-first-explicit-related-scopes-fallback');
+  assert.equal(runtime.workPackages.minRelatedImprovementsPerPackage,3);
+  assert.equal(runtime.workPackages.targetFeaturePackagesPerCycle,1);
+  assert.equal(runtime.workPackages.sameFileParallelWrite,false);
+  assert.equal(runtime.workPackages.sharedPreparation,false);
+  assert.equal(runtime.workPackages.longWorkSlotProtection,true);
+  assert.equal(runtime.workPackages.workloadTelemetry.enabled,true);
+  for(const metric of ['completedFeaturePackageCount','actualChangedFileCount','actualChangedLineCount','historicalReworkRatePct','historicalQaDuplicateRatePct','averagePackageCycleTimeMs']) {
+    assert(runtime.workPackages.workloadTelemetry.metrics.includes(metric),`missing work package metric ${metric}`);
+  }
+  assert.equal(runtime.workPackages.efficiencyAdaptation.lowEfficiencyStreakThreshold,2);
+  assert.equal(runtime.workPackages.efficiencyAdaptation.neverReduceSafetyOrQa,true);
+});
+"));
+  assert(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_recovery_dispatched != '0'"));
+  assert.equal(recoveryFastWorkflow.includes("if: steps.recovery.outputs.system_ai_queued != '0'"),false);
   assert.equal(recoveryFastWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'),false);
   assert.equal(recoveryFastWorkflow.includes('vibe2-fanin-refill'),false);
   assert.equal(recoveryFastWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
