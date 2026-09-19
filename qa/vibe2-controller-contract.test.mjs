@@ -82,6 +82,16 @@ test('controller reserves a batch and fans workers out with a bounded matrix',()
   assert(workflow.includes("variant:\`speculative-\${i}\`"));
 });
 
+test('24h planner uses latest main contract and tools while control branch stores state only',()=>{
+  assert(workflow.includes('VIBE2_CONTROL_STATE_JSON=VALID'));
+  assert(workflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
+  assert(workflow.includes('--runtime=/tmp/vibe2-main/vibe2-runtime.json'));
+  assert(workflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+  assert(workflow.includes("from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js'"));
+  assert.equal(workflow.includes('node tools/vibe2-handoff.mjs --check'),false);
+  assert.equal(workflow.includes('node tools/vibe2-auto-planner.mjs \\'),false);
+});
+
 test('controller starts isolated candidates from fresh main and never writes main directly',()=>{
   assert(workflow.includes('git fetch --depth=1 origin main:refs/remotes/origin/main --quiet'));
   assert(workflow.includes('git worktree add -b "$candidate_branch" "$candidate_dir" origin/main'));
