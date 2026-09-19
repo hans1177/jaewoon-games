@@ -42,6 +42,59 @@ test('content change invalidates cache key',()=>{
   assert.equal(two.cached,false);
 });
 
+test('manifest changed files resolve inside sourceRoot and causal replay stays plan-only without verified prepatch reproduction',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/demo');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.js'),'export const placed = 1;\n','utf8');
+  fs.mkdirSync(path.join(sourceRoot,'qa'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'qa/placement.test.mjs'),'throw new Error("must not run without verified prepatch reproduction");\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/demo',changedFiles:['index.js'],
+    exploration:{editContract:{causalReplay:{version:1,required:true,prePatchReproduced:false,nodeTestTargets:['qa/placement.test.mjs'],executable:false,mode:'PLAN_ONLY',status:'NO_VERIFIED_PREPATCH_REPRODUCTION'}}}
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'web:demo'});
+  assert.deepEqual(result.changedFiles,['web-games/demo/index.js']);
+  assert.equal(result.causalReplay.status,'PLAN_ONLY');
+  assert.equal(result.causalReplay.executed,false);
+  assert.equal(result.fullRegressionStillRequired,true);
+});
+
+test('causal replay executes supported node tests only after verified prepatch reproduction',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/demo');
+  fs.mkdirSync(path.join(sourceRoot,'qa'),{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.js'),'export const placed = 2;\n','utf8');
+  fs.writeFileSync(path.join(sourceRoot,'qa/placement.test.mjs'),[
+    "import test from 'node:test';",
+    "import assert from 'node:assert/strict';",
+    "test('same placement scenario clears after patch',()=>assert.equal(2,2));"
+  ].join('\n')+'\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/demo',changedFiles:['index.js'],
+    exploration:{editContract:{causalReplay:{version:1,required:true,prePatchReproduced:true,nodeTestTargets:['qa/placement.test.mjs'],executable:true,mode:'NODE_TEST_TARGETS',status:'READY_FOR_POSTPATCH_REPLAY',identicalOrEquivalentInputStateRequired:true}}}
+  },null,2));
+  const result=runIncrementalQa({root,manifest,namespace:'web:demo'});
+  assert.equal(result.causalReplay.status,'EXECUTED_PASS');
+  assert.equal(result.causalReplay.executed,true);
+  assert.equal(result.causalReplay.targets[0].target,'web-games/demo/qa/placement.test.mjs');
+  assert.equal(result.causalReplay.canonicalQaStillRequired,true);
+});
+
+test('declared executable causal replay fails closed when the replay target is missing',()=>{
+  const root=repo();
+  const sourceRoot=path.join(root,'web-games/demo');
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.js'),'export const placed = 2;\n','utf8');
+  const manifest=path.join(root,'manifest.json');
+  fs.writeFileSync(manifest,JSON.stringify({
+    sourceRoot:'web-games/demo',changedFiles:['index.js'],
+    exploration:{editContract:{causalReplay:{version:1,required:true,prePatchReproduced:true,nodeTestTargets:['qa/missing.test.mjs'],executable:true,mode:'NODE_TEST_TARGETS'}}}
+  },null,2));
+  assert.throws(()=>runIncrementalQa({root,manifest,namespace:'web:demo'}),/CAUSAL_REPLAY_TARGET_MISSING/);
+});
 test('invalid JS fails fast before full regression',()=>{
   const root=repo();
   fs.writeFileSync(path.join(root,'a.js'),'export const = ;\n','utf8');
