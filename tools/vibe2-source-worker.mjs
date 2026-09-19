@@ -20,6 +20,25 @@ const MAX_CHANGED_FILES=4;
 const MAX_NEW_FILES=2;
 const MAX_FILE_BYTES=260000;
 const DEFAULT_MODEL=process.env.VIBE2_LOCAL_MODEL||'qwen3:1.7b';
+function assertGameDevelopmentAuthority(){
+  const owner=clean(process.env.VIBE2_GAME_DEVELOPMENT_OWNER||'VIBE2_VIBE3').toUpperCase();
+  const provider=clean(process.env.VIBE2_GAME_SOURCE_PROVIDER||'LOCAL_OLLAMA').toUpperCase();
+  const codexGameSourceWrite=clean(process.env.VIBE2_CODEX_GAME_SOURCE_WRITE||'FORBIDDEN').toUpperCase();
+  const paidOpenAiAllowed=clean(process.env.VIBE2_OPENAI_PAID_API_ALLOWED||'false').toLowerCase();
+  if(owner!=='VIBE2_VIBE3')throw new Error(`GAME_DEVELOPMENT_OWNER_INVALID:${owner||'EMPTY'}`);
+  if(provider!=='LOCAL_OLLAMA')throw new Error(`GAME_SOURCE_PROVIDER_INVALID:${provider||'EMPTY'}`);
+  if(codexGameSourceWrite!=='FORBIDDEN')throw new Error(`CODEX_GAME_SOURCE_WRITE_FORBIDDEN:${codexGameSourceWrite||'EMPTY'}`);
+  if(paidOpenAiAllowed!=='false')throw new Error(`OPENAI_PAID_API_GAME_SOURCE_FORBIDDEN:${paidOpenAiAllowed||'EMPTY'}`);
+  return{
+    owner,
+    provider,
+    model:DEFAULT_MODEL,
+    codexRole:'SYSTEM_TOOLING_CI_TEST_INFRA_ONLY',
+    codexGameSourceWrite:'FORBIDDEN',
+    paidOpenAiApiAllowed:false,
+    directMainWrite:false
+  };
+}
 const DEFAULT_TIMEOUT_MS=Math.max(10000,Math.min(300000,Number(process.env.VIBE2_MODEL_TIMEOUT_MS||240000)));
 const DEFAULT_MAX_PREDICT=Math.max(256,Math.min(2048,Number(process.env.VIBE2_MODEL_MAX_PREDICT||1536)));
 const FULL_WEB_TIMEOUT_MS=540000;
@@ -157,6 +176,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const order=readJson(path.resolve(cwd,workOrderFile));
   if(!order?.run||order?.workMode!=='source-change-candidate')throw new Error('실행 가능한 source-change work order 필요');
   if(order?.workerPolicy?.directMainWrite!==false)throw new Error('directMainWrite 정책 위반');
+  const developmentAuthority=assertGameDevelopmentAuthority();
   const target=clean(order.target).toLowerCase();
   const sourceRootRelative=assertSourceRoot(order?.source?.root,target);
   const sourceRoot=path.resolve(cwd,sourceRootRelative);
@@ -195,6 +215,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     releaseState:clean(order.releaseState)||'other',
     priority:clean(order.priority)||'normal',
     generation,
+    developmentAuthority,
     baseMainSha:clean(process.env.VIBE2_BASE_MAIN_SHA)||null,
     goal:order.goal,
     generatedAt:new Date().toISOString(),
