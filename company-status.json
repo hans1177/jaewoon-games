@@ -182,8 +182,8 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 8,
-        "designOnly": 4
+        "developmentConfirmed": 10,
+        "designOnly": 2
       },
       "releaseConfirmedGameIds": [],
       "developmentConfirmedGameIds": [
@@ -191,16 +191,16 @@
         "P0003",
         "P0004",
         "P0006",
+        "P0007",
         "P0008",
         "P0009",
         "P0101",
-        "P0102"
+        "P0102",
+        "P0103"
       ],
       "designOnlyGameIds": [
         "P0002",
-        "P0005",
-        "P0007",
-        "P0103"
+        "P0005"
       ],
       "lifecycle": {
         "active": [
@@ -307,6 +307,21 @@
         {
           "rank": 6,
           "rawEvidenceRank": 6,
+          "gameId": "P0007",
+          "slug": "island-village",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "SURVIVAL",
+          "evidenceScore": 0,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": false,
+          "sourceReady": false
+        },
+        {
+          "rank": 7,
+          "rawEvidenceRank": 7,
           "gameId": "P0008",
           "slug": "egg-heist",
           "lifecycleState": "ACTIVE",
@@ -320,8 +335,8 @@
           "sourceReady": false
         },
         {
-          "rank": 7,
-          "rawEvidenceRank": 7,
+          "rank": 8,
+          "rawEvidenceRank": 8,
           "gameId": "P0101",
           "slug": "chess-battle",
           "lifecycleState": "ACTIVE",
@@ -335,13 +350,28 @@
           "sourceReady": false
         },
         {
-          "rank": 8,
-          "rawEvidenceRank": 8,
+          "rank": 9,
+          "rawEvidenceRank": 9,
           "gameId": "P0102",
           "slug": "survival2",
           "lifecycleState": "ACTIVE",
           "productionClass": "DEVELOPMENT_CONFIRMED",
           "gameplayFamily": "SURVIVAL",
+          "evidenceScore": 0,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": false,
+          "sourceReady": false
+        },
+        {
+          "rank": 10,
+          "rawEvidenceRank": 10,
+          "gameId": "P0103",
+          "slug": "territory-war",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "STRATEGY",
           "evidenceScore": 0,
           "developmentFocus": 0,
           "artbookBaselineRank": 0,
