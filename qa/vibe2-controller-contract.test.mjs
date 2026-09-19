@@ -118,14 +118,18 @@ test('controller runs content-hash incremental QA per worker and one parallel fu
   assert.equal(runtime.qaOptimization.fanInTestConcurrency,4);
 });
 
-test('reserve preflight stays syntax-and-machine-state only instead of rerunning full QA',()=>{
-  const start=workflow.indexOf('- name: Fast scheduler preflight');
+test('reserve preflight stays syntax-and-machine-state only and uses main contract with control state',()=>{
+  const start=workflow.indexOf('- name: Prepare latest main machine contract');
   const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');
   assert(start>=0 && end>start);
   const preflight=workflow.slice(start,end);
-  assert(preflight.includes('node --check assets/vibe-continuous-queue.js'));
-  assert(preflight.includes('node --check tools/vibe2-work-package.mjs'));
-  assert(preflight.includes('node tools/vibe2-handoff.mjs --check'));
+  assert(preflight.includes('git worktree add --detach /tmp/vibe2-main origin/main'));
+  assert(preflight.includes('node --check "/tmp/vibe2-main/$file"'));
+  assert(preflight.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
+  assert(preflight.includes('--runtime=/tmp/vibe2-main/vibe2-runtime.json'));
+  assert(preflight.includes('--queue="$control_root/.vibe2/queue.json"'));
+  assert(preflight.includes('--control="$control_root/.vibe2/parallelism-control.json"'));
+  assert(!preflight.includes('node tools/vibe2-handoff.mjs --check'));
   assert(!preflight.includes('node --test '));
   assert.equal(runtime.qaOptimization.reservePreflight,'syntax-and-machine-state-only');
   assert.equal(runtime.qaOptimization.duplicateFullRegressionBeforeReserve,false);
