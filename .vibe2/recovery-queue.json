@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T16:52:53.800Z"
+      "updatedAt": "2026-09-19T16:53:46.463Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1020,11 +1020,13 @@
         "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
         "monster-adventure-web-base-implementation-v1",
         "survival2-web-base-implementation-v1",
-        "village-dungeons-web-runtime-repair-v1"
+        "village-dungeons-web-runtime-repair-v1",
+        "chess-battle-web-runtime-repair-v1",
+        "crystal-defense-web-runtime-repair-v1"
       ],
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
-      "blastRadius": "portfolio:10",
+      "blastRadius": "portfolio:12",
       "checkpoint": "2026-09-19T16:37:42Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
@@ -1479,7 +1481,15 @@
         "workload:cycle-ms:572582",
         "exploration-reuse:0ac167b9bf64b878e86c89ff",
         "workload:prep-ms:6385",
-        "workload:cycle-ms:433665"
+        "workload:cycle-ms:433665",
+        "base-main:a54eacf7bf57ae0a9fc3bb6853067b7a752235d9",
+        "actions-run:35455550581",
+        "reservation-id:35455550581:1",
+        "workload:prep-ms:5810",
+        "workload:cycle-ms:580525",
+        "exploration-reuse:98774439f3c82c908b5b72c7",
+        "workload:prep-ms:6320",
+        "workload:cycle-ms:424550"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1495,7 +1505,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-19T16:52:53.799Z"
+      "updatedAt": "2026-09-19T16:53:46.463Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
