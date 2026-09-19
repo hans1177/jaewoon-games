@@ -531,6 +531,41 @@ export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|SEMANTIC_DIFF_BUDGET_VIOLATION|prediction aborted|token repeat limit/i.test(message);
 }
+export function exactRetryAnchorSuggestions(prompt,{max=3}={}){
+  const raw=String(prompt??'');
+  const marker='\n=== FILE ';
+  const starts=[];
+  for(let at=raw.indexOf(marker);at>=0;at=raw.indexOf(marker,at+marker.length))starts.push(at);
+  const rows=[];
+  for(let i=0;i<starts.length;i++){
+    const sectionStart=starts[i]+1;
+    const sectionEnd=i+1<starts.length?starts[i+1]:raw.length;
+    const section=raw.slice(sectionStart,sectionEnd).trimEnd();
+    const parts=section.split('\n');
+    const header=parts.shift()||'';
+    if(!header.includes('[EDITABLE]'))continue;
+    const body=parts.join('\n');
+    for(const original of parts){
+      const trimmed=original.trim();
+      if(trimmed.length<10||trimmed.length>180)continue;
+      if(/^(?:[{}()[\];,]|<!--|\/\*|\*|\/\/|#)+$/.test(trimmed))continue;
+      if(/^(?:<!doctype|<\/?(?:html|head|body)\b)/i.test(trimmed))continue;
+      const occurrences=body.split(original).length-1;
+      if(occurrences!==1)continue;
+      let score=0;
+      if(/\b(?:function|const|let|var|if|for|while|return|addEventListener|querySelector|getElementById|classList|dataset|localStorage)\b|<(?:button|canvas|div|section|main)\b|\bid=|\bdata-/i.test(trimmed))score+=4;
+      if(trimmed.length>=20&&trimmed.length<=120)score+=2;
+      if(/[=(){}<>]/.test(trimmed))score+=1;
+      rows.push({value:original,score,length:trimmed.length});
+    }
+  }
+  return rows
+    .sort((a,b)=>b.score-a.score||a.length-b.length)
+    .map(row=>row.value)
+    .filter((value,index,array)=>array.indexOf(value)===index)
+    .slice(0,Math.max(1,Math.min(5,Number(max)||3)));
+}
+
 export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput=''}={}){
   const rawPrompt=String(prompt??'');
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
@@ -546,6 +581,10 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const editMatchFailure=/edit find/i.test(reason);
   const semanticDiffViolation=/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(reason);
+  const retryAnchorSuggestions=!allowFullRewrite?exactRetryAnchorSuggestions(rawPrompt,{max:3}):[];
+  const retryAnchorInstruction=retryAnchorSuggestions.length
+    ?['EXACT FIND ANCHOR OPTIONS (copy one entire line verbatim as edits[0].find; do not alter whitespace or punctuation):',...retryAnchorSuggestions.map((value,index)=>`ANCHOR_${index+1}: ${JSON.stringify(value)}`)].join('\n')
+    :'';
   const safeReason=invalidPath?'candidate attempted a path outside Allowed edit paths':semanticDiffViolation?'candidate crossed the compiled semantic edit budget; keep only primary responsibility and required direct dependencies':reason;
   const fullWebTargetLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Full Web generation target:'))||`Full Web generation target: ${FULL_WEB_GENERATION_TARGET_MIN_BYTES}-${FULL_WEB_GENERATION_TARGET_MAX_BYTES} UTF-8 bytes.`;
   const fullWebTargetMatch=fullWebTargetLine.match(/(\d+)-(\d+)\s+UTF-8 bytes/i);
@@ -652,14 +691,15 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
         `Previous failure: ${safeReason}`,
         (attempt>=3||(attempt>=2&&timeoutFailure))?'Return exactly one minimal JSON object with only an edits array: {"edits":[{"path":"EXACT_ALLOWED_PATH","find":"EXACT_UNIQUE_SOURCE_TEXT","replace":"MINIMAL_REAL_REPLACEMENT"}]}. Do not include summary, expectedEffect, tests, newFiles, replaceFiles, markdown, comments, or extra keys.':'Return one strict JSON object only. Use double quotes for every key and string. Escape newlines and quotes inside replacement text. No markdown, comments, trailing commas, or JavaScript object syntax.',
         exactPath?`The ONLY writable path is "${exactPath}". Every edits[].path MUST equal exactly "${exactPath}".`:'',
-        zeroChange?'You MUST produce at least one edits[] entry. Use the exact Allowed edit path above. Copy find character-for-character from the EDITABLE FILE block, make replace materially different, and do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use the exact Allowed edit path above, copy find exactly from the EDITABLE FILE block, then make the smallest real implementation change required by the work order.':editMatchFailure?'Use exactly one short, unique find snippet copied character-for-character from the EDITABLE FILE block. Prefer one distinctive line or the smallest adjacent line group that occurs once. Do not paraphrase, normalize, reconstruct, or guess source text.':semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
+        retryAnchorInstruction,
+        zeroChange?'You MUST produce at least one edits[] entry. Use one EXACT FIND ANCHOR OPTION above when available, then make replace materially different. Do not return empty edits/newFiles/replaceFiles.':noChangeEdit?'Return at least one edits[] entry whose replace is materially different from find. Use one EXACT FIND ANCHOR OPTION above when available, then make the smallest real implementation change required by the work order.':editMatchFailure?'Use exactly one EXACT FIND ANCHOR OPTION above when available. Copy the entire anchor value character-for-character, including whitespace and punctuation. Do not paraphrase, normalize, reconstruct, or guess source text.':semanticDiffViolation?'Keep the patch inside the COMPILED EDIT CONTRACT. Touch the primary responsibility and only directly required dependencies. Remove any unrelated economy, combat, progression, save, input, placement, AI, world, interaction, or goal-state mutation not listed in the semantic budget.':invalidPath?'Use only the exact writable path copied exactly from Allowed edit paths. Never output placeholders, labels, globs, guessed filenames, or any READ-ONLY path.':'Prefer the smallest responsible edit that satisfies the work order.',
         zeroChange||noChangeEdit||invalidPath||editMatchFailure||semanticDiffViolation||timeoutFailure?'Recovery context intentionally contains only writable FILE blocks; do not bypass responsible-file boundaries, widen scope, invent a new file, or expose READ-ONLY paths.':'',
         timeoutFailure?'Start immediately with {"edits":[ and close the single edit object and array before generating anything else. Keep find to the shortest unique exact source text and keep replace to the smallest coherent implementation that fixes the requested behavior.':''
       ].filter(Boolean).join('\n');
   const focusedFinal=!allowFullRewrite&&(attempt>=3||(attempt>=2&&timeoutFailure));
   const fullWebFinal=attempt>=3&&allowFullRewrite;
   const finalInstruction=focusedFinal
-    ?'FINAL FOCUSED RETRY: output only {"edits":[{"path":"EXACT_ALLOWED_PATH","find":"EXACT_UNIQUE_SOURCE_TEXT","replace":"MINIMAL_REAL_REPLACEMENT"}]}. Copy find character-for-character from one visible compact EDITABLE line or smallest adjacent unique line group. Keep replace minimal but behaviorally complete. No other keys or prose.'
+    ?'FINAL FOCUSED RETRY: output only {"edits":[{"path":"EXACT_ALLOWED_PATH","find":"EXACT_UNIQUE_SOURCE_TEXT","replace":"MINIMAL_REAL_REPLACEMENT"}]}. When EXACT FIND ANCHOR OPTIONS are present, use one entire anchor value verbatim as find. Keep replace minimal but behaviorally complete. No other keys or prose.'
     :fullWebFinal
       ?`FINAL FULL-WEB RETRY: produce one complete playable index.html replacement of at least ${fullWebTargetMin} UTF-8 bytes and no more than ${fullWebTargetMax} bytes. Include direct mobile input, substantial executable game logic, a real update/render or equivalent state-transition loop, progression, explicit win/loss/result state, restart, responsive layout, and persistent-capable state. Do not stop early. Finish with </html> and the required end marker.`
       :'';
