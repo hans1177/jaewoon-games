@@ -1,0 +1,135 @@
+{
+  "version": 1,
+  "kind": "NEXT_SESSION_MACHINE_HANDOFF",
+  "updatedAt": "2026-09-19",
+  "authority": "OWNER_DIRECTIVE_2026-09-19",
+  "repository": "hans1177/jaewoon-games",
+  "branch": "main",
+  "observedMainHead": "a3969aafa495a8762de32c463f991887c798a99a",
+  "objective": "NORMALIZE_THE_LARGEST_DEVELOPMENT_BOTTLENECK_FIRST_THEN_CONTINUE_THE_AUTONOMOUS_OPERATING_PLAN",
+  "sourceOfTruth": [
+    "company-learning/platform-release-roadmap.json",
+    "company-learning/autonomous-development-operating-plan.json",
+    "vibe2-runtime.json",
+    ".vibe2/queue.json",
+    ".vibe2/parallelism-control.json"
+  ],
+  "firstActionOnNextSession": [
+    "FETCH_FRESH_MAIN_HEAD_AND_LATEST_WORKFLOW_STATUS",
+    "DO_NOT_ASSUME_THIS_HANDOFF_SNAPSHOT_IS_STILL_CURRENT",
+    "IDENTIFY_THE_SINGLE_LARGEST_ACTIVE_DEVELOPMENT_BOTTLENECK_FROM_LIVE_EVIDENCE",
+    "FIX_THAT_BOTTLENECK_BEFORE_LOWER_PRIORITY_FEATURE_WORK",
+    "RUN_RELEVANT_QA_AND_RECHECK_RUNTIME_STATE"
+  ],
+  "priorityOrder": [
+    "P0_CRITICAL_PRODUCTION_AND_PLATFORM_INCIDENT",
+    "P0_5_SYSTEM_RELIABILITY",
+    "P1_RELEASED_GAME_CARETAKER",
+    "P2_OWNER_FOCUSED_GAME_CARETAKER",
+    "P3_RELEASE_CANDIDATE",
+    "P4_GENERAL_DEVELOPMENT",
+    "P5_LEARNING_RESEARCH_PRACTICE"
+  ],
+  "hardRules": [
+    "NO_GATE_WEAKENING",
+    "NO_THRESHOLD_LOWERING",
+    "NO_FABRICATED_PASS",
+    "PRESERVE_OWNER_DIRECT_EDITS",
+    "PRESERVE_VERIFIED_CHECKPOINTS_AND_EVIDENCE",
+    "WAITING_EXTERNAL_PROVIDER_OR_RUNNER_WORK_MUST_RELEASE_SHARED_CAPACITY",
+    "SINGLE_PROVIDER_OR_SINGLE_RUNNER_FAILURE_MUST_NOT_STOP_THE_PORTFOLIO",
+    "ROBLOX_STUDIO_MUST_NOT_BE_USED_FOR_LEARNING",
+    "ROBLOX_STUDIO_IS_RUNTIME_EVIDENCE_ONLY",
+    "GEMINI_MUST_NOT_BE_USED_BY_24H_LEARNING",
+    "AI_MUST_NOT_HAVE_STAGE_PASS_FAIL_AUTHORITY"
+  ],
+  "activeArchitecture": {
+    "adaptiveGlobalCeiling": 30,
+    "adaptiveSteps": [
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      30
+    ],
+    "scheduling": "SOFT_RESERVATION_PLUS_WORK_STEALING",
+    "systemSteward": "RESIDENT_DETERMINISTIC_WATCHDOG_PLUS_BORROWABLE_REPAIR_SLOT",
+    "releasedGames": "ONE_LOGICAL_PERSISTENT_CARETAKER_PER_ELIGIBLE_GAME",
+    "ownerFocusedGames": "ONE_LOGICAL_PERSISTENT_CARETAKER_PER_FOCUSED_GAME",
+    "ownerWebEdits": "PROTECT_AND_PROPAGATE_SEMANTIC_INTENT_NOT_LITERAL_WEB_CODE",
+    "designProviderContinuity": "GEMINI_PRIMARY_VIBE_LOCAL_FALLBACK",
+    "learningProvider": "VIBE_LOCAL_OLLAMA_WITH_NON_MODEL_VERIFIED_FALLBACK",
+    "gateAuthority": "DETERMINISTIC_EVIDENCE_ONLY"
+  },
+  "currentObservedWorkflowSnapshot": {
+    "capturedAt": "2026-09-19T13:36:00+09:00",
+    "note": "Fresh-check on next session before acting.",
+    "companyDevelopmentConfirmedRuntime": [
+      {
+        "runId": 35421739087,
+        "status": "queued",
+        "headSha": "a3969aafa495a8762de32c463f991887c798a99a"
+      },
+      {
+        "runId": 35421673333,
+        "status": "in_progress",
+        "headSha": "7e4854209ea074ca1ff69da20cef8ad8a8380c01"
+      }
+    ],
+    "companySeedDesignOnlyRuntime": [
+      {
+        "runId": 35421726225,
+        "status": "queued",
+        "headSha": "a3969aafa495a8762de32c463f991887c798a99a"
+      }
+    ],
+    "developmentQueueReconcile": [
+      {
+        "runId": 35421729632,
+        "status": "in_progress",
+        "headSha": "a3969aafa495a8762de32c463f991887c798a99a"
+      }
+    ],
+    "vibe224hRunner": [
+      {
+        "runId": 35421725285,
+        "status": "pending",
+        "headSha": "a3969aafa495a8762de32c463f991887c798a99a"
+      }
+    ],
+    "latestKnownQaSignals": [
+      {
+        "workflow": "Vibe2 Parallelism Contract QA",
+        "runId": 35421628614,
+        "status": "success",
+        "headSha": "7e4854209ea074ca1ff69da20cef8ad8a8380c01"
+      },
+      {
+        "workflow": "Vibe QA",
+        "runId": 35421696511,
+        "status": "failure",
+        "headSha": "d0adce279174e64dcd739062f8522fe00d201ce8"
+      }
+    ]
+  },
+  "knownRecentDevelopmentBottleneckContext": [
+    "CONTROL_BRANCH_PREVIOUSLY_LAGGED_MAIN_30_LANE_POLICY_AND_SYSTEM_STEWARD_CHANGES",
+    "VIBE2_QUEUE_PREVIOUSLY_CONTAINED_RETRY_EXHAUSTED_FAILED_TASKS_AND_STALE_BACKPRESSURE",
+    "DESIGN_AND_DEVELOPMENT_RUNTIME_MUST_BE_CHECKED_LIVE_BECAUSE_MULTIPLE_WORKFLOWS_ARE_NOW_ACTIVE",
+    "OLDER_TESTS_AND_RUNTIME_STATE_PREVIOUSLY_EXPECTED_20_LANES_OR_GEMINI_ONLY_AND_HAVE_BEEN_MIGRATING",
+    "DO_NOT_TREAT_A_WAITING_MODEL_OR_STUDIO_RUNNER_AS_A_PORTFOLIO_WIDE_DEVELOPMENT_FAILURE"
+  ],
+  "nextImplementationTargetsAfterDevelopmentNormalization": [
+    "COMPLETE_CONTROL_BRANCH_30_LANE_STATE_MIGRATION",
+    "COMPLETE_DEAD_TASK_REGENERATION_AND_QUEUE_SELF_REFILL",
+    "REMOVE_ROBLOX_STUDIO_GAME_STUDY_EXECUTION_PATH",
+    "CONNECT_REAL_DESIGN_AUTHORING_FAILOVER_TO_VIBE_LOCAL",
+    "COMPLETE_PER_GAME_PERSISTENT_CARETAKER_SCHEDULER",
+    "COMPLETE_OWNER_WEB_EDIT_DETECTION_AND_SEMANTIC_PROPAGATION",
+    "COMPLETE_MUTATION_AND_FAILURE_TO_REGRESSION_BINDINGS",
+    "GREEN_ALL_RELEVANT_CENTRAL_AND_VIBE_QA"
+  ],
+  "executionInstruction": "ACT_ON_THE_REPOSITORY_DIRECTLY_WHEN_THE_OWNER_SAYS_CONTINUE_OR_PROCEED. DO_NOT_ONLY_DESCRIBE A PLAN. MAKE_SCOPED_CHANGES, RUN_QA, AND REPORT_VERIFIED_STATE."
+}
