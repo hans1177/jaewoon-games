@@ -655,7 +655,7 @@ function nearestInteractable(){
 }
 function updatePrompt(){
   currentInteract=nearestInteractable();
-  if(currentInteract){
+<div id="prompt">상점 · 지역 선택 · 대화</div>
     var label=currentInteract.type==="weapon"||currentInteract.type==="armor"?"상점":currentInteract.type==="travel"?"지역 선택":currentInteract.type==="wounded"?"치료":"대화";
     prompt.textContent=currentInteract.name+" · "+label;
     prompt.classList.add("on");
