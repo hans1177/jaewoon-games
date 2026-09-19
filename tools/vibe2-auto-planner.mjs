@@ -341,13 +341,14 @@ function releaseUnityFocusBusy(queue){return activeTasks(queue).some(item=>item.
 export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue={},queue:queueInput={},repoRoot=process.cwd(),maxConcurrentTasks=DEFAULT_MAX_CONCURRENT_TASKS,workPackagePolicy={},recombinationMemory={},historicalRegistry={}}={}){
   let queue=createVibeContinuousQueue({...synchronizeQueueLifecycle(queueInput||{},catalog,historicalRegistry),maxConcurrentTasks:parallelLimit(maxConcurrentTasks)});
   const catalogGames=catalogById(catalog);
-  const exactWebRepairGameIds=new Set((Array.isArray(developmentQueue?.items)?developmentQueue.items:[])
+  const exactWebRepairItems=(Array.isArray(developmentQueue?.items)?developmentQueue.items:[])
     .filter(item=>{
       const gameId=clean(item?.gameId),game=catalogGames.get(gameId);
       const exactState=clean(item?.canonicalState).toUpperCase()==='WEB_VIBE_REPAIR_REQUIRED'||clean(item?.currentStep).toUpperCase()==='VIBE_WEB_REPAIR';
       return Boolean(gameId&&game&&exactState&&clean(item?.status).toUpperCase()==='ACTIVE'&&stateFromCatalog(game)==='development-confirmed'&&lifecycleAllowsDevelopment(game));
-    })
-    .map(item=>clean(item?.gameId)));
+    });
+  const exactWebRepairByGameId=new Map(exactWebRepairItems.map(item=>[clean(item?.gameId),item]));
+  const exactWebRepairGameIds=new Set(exactWebRepairByGameId.keys());
   if(exactWebRepairGameIds.size){
     const tasks=queue.tasks.map(item=>{
       const gameId=clean(item?.gameId);
@@ -361,6 +362,24 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
         const staleExactBaseCancellation=blocker==='superseded-by:VIBE_WEB_REPAIR'||/^production-authority-inactive:/.test(blocker);
         if(sourceMissing&&status==='cancelled'&&staleExactBaseCancellation){
           return{...item,status:'queued',retries:0,blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION',evidence:[...new Set([...(item.evidence||[]),'restored-exact-stage:WEB_BASE_IMPLEMENTATION',`restored-from:${blocker}`,'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+        }
+        if(!sourceMissing&&['queued','failed','blocked'].includes(status)){
+          const runtimeItem=exactWebRepairByGameId.get(gameId)||{};
+          const game=catalogGames.get(gameId)||{};
+          const runtimeFailureEvidence=[
+            clean(runtimeItem?.vibeWebRequestedStage)?`requested-stage=${clean(runtimeItem.vibeWebRequestedStage)}`:'',
+            clean(runtimeItem?.vibeWebImplementationReason)?`implementation-reason=${clean(runtimeItem.vibeWebImplementationReason)}`:'',
+            ...(Array.isArray(runtimeItem?.routingBlockers)?runtimeItem.routingBlockers:[]).map(value=>`routing-blocker=${clean(value).slice(0,900)}`).slice(0,4),
+            ...(Array.isArray(runtimeItem?.strictImplementationHardFailures)?runtimeItem.strictImplementationHardFailures:[]).map(value=>`strict-hard-failure=${clean(value).slice(0,500)}`).slice(0,4),
+            clean(runtimeItem?.webValidationLastAttemptAt||runtimeItem?.webFinalContentDepthLastAttemptAt)?`last-validation-at=${clean(runtimeItem.webValidationLastAttemptAt||runtimeItem.webFinalContentDepthLastAttemptAt)}`:''
+          ].filter(Boolean);
+          const runtimeFailureContext=runtimeFailureEvidence.length
+            ?`\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n${runtimeFailureEvidence.join('\n')}\n위 실패 증거와 현재 index.html을 직접 대조해서 실제 누락/오동작 책임 영역을 최소 범위로 수정한다. no-op 수정은 금지한다.`
+            :'\n[COMPANY_RUNTIME_FAILURE_EVIDENCE]\n구체 실패 증거가 아직 비어 있으면 현재 Web validation 계약과 index.html을 대조해 실제 검증 실패를 만드는 가장 작은 누락 기능을 찾아 최소 1개 이상 실질 수정한다. no-op 수정은 금지한다.';
+          const refreshedGoal=`[WEB_REPAIR] 게임: ${clean(runtimeItem?.gameName||game?.name||gameId)}\ncompany-runtime이 WEB_VIBE_REPAIR_REQUIRED로 반환한 기존 Web 소스를 현재 승인 설계와 검증 근거에 맞춰 직접 수리한다. 기존 게임 정체성·세이브·핵심 루프를 보존하고 실패 원인 책임 영역만 수정한다. Web gameplay/runtime/strict/promotion 게이트는 약화하지 않으며 회사/홈페이지 정책 파일은 수정하지 않는다.${runtimeFailureContext}`;
+          if(clean(item.goal)!==clean(refreshedGoal)){
+            return{...item,goal:refreshedGoal,evidence:[...new Set([...(item.evidence||[]),'company-runtime-failure-evidence:refreshed','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+          }
         }
         return item;
       }
