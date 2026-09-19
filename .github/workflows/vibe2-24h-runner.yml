@@ -14,12 +14,14 @@ on:
       - 'tools/vibe2-web-experience-ingest.mjs'
       - 'tools/vibe2-auto-planner.mjs'
       - 'tools/vibe2-release-dispatch-recovery.mjs'
-      - 'qa/company-recovery-learning.test.mjs'
-      - 'tools/company-recovery-code-distillation.mjs'
-      - 'tools/company-recovery-learning.mjs'
+      - 'tools/company-recovery-queue.mjs'
       - 'tools/company-recovery-escalation.mjs'
       - 'tools/company-recovery-dispatch.mjs'
-      - 'tools/company-recovery-queue.mjs'
+      - 'tools/company-recovery-learning.mjs'
+      - 'tools/company-recovery-code-distillation.mjs'
+      - 'tools/company-security-learning.mjs'
+      - 'qa/company-recovery-learning.test.mjs'
+      - 'qa/company-security-steward.test.mjs'
       - 'tools/vibe2-post-release-focus.mjs'
       - 'assets/vibe-continuous-queue.js'
       - 'company-learning/platform-release-roadmap.json'
@@ -187,16 +189,22 @@ jobs:
 
             node --check /tmp/vibe2-main/tools/company-recovery-queue.mjs
             node --check /tmp/vibe2-main/tools/company-recovery-escalation.mjs
+            node --check /tmp/vibe2-main/tools/company-recovery-dispatch.mjs
             node --check /tmp/vibe2-main/tools/company-recovery-learning.mjs
             node --check /tmp/vibe2-main/tools/company-recovery-code-distillation.mjs
+            node --check /tmp/vibe2-main/tools/company-security-learning.mjs
             node --test /tmp/vibe2-main/qa/company-recovery-learning.test.mjs
+            node --test /tmp/vibe2-main/qa/company-security-steward.test.mjs
+
+            test -f .vibe2/recovery-queue.json || printf '%s\n' '{"version":1,"kind":"company-recovery-queue","policy":"REPEATED_FAILURE_AND_BOTTLENECK_RECOVERY_WITH_VERIFIED_LEARNING","tasks":[]}' > .vibe2/recovery-queue.json
+            test -f .vibe2/system-ai-queue.json || printf '%s\n' '{"version":1,"kind":"company-system-ai-queue","policy":"PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK","tasks":[]}' > .vibe2/system-ai-queue.json
+            test -f .vibe2/security-incidents.json || printf '%s\n' '{"version":1,"kind":"company-security-incidents","policy":"QUARANTINE_PRESERVE_REDACTED_EVIDENCE_VERIFY_RECOVERY_THEN_DISTILL","incidents":[]}' > .vibe2/security-incidents.json
 
             node /tmp/vibe2-main/tools/company-recovery-escalation.mjs \
               --queue=.vibe2/queue.json \
               --system-ai=.vibe2/system-ai-queue.json \
               --recovery=.vibe2/recovery-queue.json | tee /tmp/vibe2-recovery-escalation.log
 
-            node --check /tmp/vibe2-main/tools/company-recovery-dispatch.mjs
             node /tmp/vibe2-main/tools/company-recovery-dispatch.mjs \
               --route=vibe \
               --queue=.vibe2/queue.json \
@@ -213,7 +221,12 @@ jobs:
               --authorized=/tmp/vibe2-main/company-learning/authorized-source/block-blast/authorized-learning-summary.json \
               --external=/tmp/vibe2-main/company-learning/vibe3-memory-index.json | tee /tmp/vibe2-recovery-code-distillation.log
 
-            if grep -Eq '^(RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED)=[1-9][0-9]*
+            node /tmp/vibe2-main/tools/company-security-learning.mjs \
+              --incidents=.vibe2/security-incidents.json \
+              --experience=.vibe2/experience.json \
+              --patterns=.vibe2/code-pattern-library.json | tee /tmp/vibe2-security-learning.log
+
+            if grep -Eq '^(RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*
             node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
               --runtime=/tmp/vibe2-main/vibe2-runtime.json \
               --queue="$control_root/.vibe2/queue.json" \
@@ -272,13 +285,13 @@ jobs:
               node tools/company-shared-context.mjs --output=/tmp/vibe2-shared-context-after-plan.json | tee /tmp/vibe2-shared-context-after-plan.log
             )
 
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/experience.json .vibe2/code-pattern-library.json .vibe2/learning-motor-state.json .vibe2/benchmark-ladder.json .vibe2/idle-practice-queue.json .vibe2/web-roblox-handoffs.json .vibe2/recovery-queue.json .vibe2/security-incidents.json
             if git diff --cached --quiet; then
               echo 'VIBE2_AUTOPLAN_WRITE=NO'
               exit 0
             fi
 
-            if grep -Eq '^RECOVERY_(ESCALATION_ADDED|LEARNING_ADDED|CODE_INTERNAL_ADDED)=[1-9][0-9]*
+            if grep -Eq '^(RECOVERY_ESCALATION_ADDED|RECOVERY_LEARNING_ADDED|RECOVERY_CODE_INTERNAL_ADDED|SECURITY_LEARNING_EXPERIENCE_ADDED|SECURITY_LEARNING_PATTERNS_ADDED)=[1-9][0-9]*
             elif grep -q '^VIBE2_POST_RELEASE_FOCUS_ADDED=YES$' /tmp/vibe2-post-release-focus.log; then
               commit_message='vibe2: queue post-release focused development [skip ci]'
             elif grep -q '^VIBE2_AUTHORIZED_SOURCE_MEMORY_ADDED=YES$' /tmp/vibe2-authorized-source-memory.log; then
@@ -397,6 +410,12 @@ jobs:
             /tmp/vibe2-code-pattern-ingest.log
             /tmp/vibe2-learning-motor.log
             /tmp/vibe2-system-steward.log
+            /tmp/vibe2-recovery-escalation.log
+            /tmp/vibe2-recovery-dispatch.log
+            /tmp/vibe2-recovery-learning.log
+            /tmp/vibe2-recovery-code-distillation.log
+            /tmp/vibe2-security-learning.log
+            /tmp/vibe2-recovery-learning-motor.log
             /tmp/vibe2-post-release-focus.log
             /tmp/vibe2-plan-summary.log
           if-no-files-found: warn
@@ -447,7 +466,8 @@ jobs:
           done
           echo 'VIBE2_24H_REFILL=FAILED' >&2
           exit 1
- /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log; then
+ \
+              /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log; then
               node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
                 --experience=.vibe2/experience.json \
                 --code-patterns=.vibe2/code-pattern-library.json \
@@ -459,7 +479,7 @@ jobs:
                 --practice=.vibe2/idle-practice-queue.json \
                 --handoff=.vibe2/web-roblox-handoffs.json | tee /tmp/vibe2-recovery-learning-motor.log
             else
-              echo 'VIBE2_RECOVERY_LEARNING_MOTOR=NO_NEW_VERIFIED_RECOVERY'
+              echo 'VIBE2_RECOVERY_SECURITY_LEARNING_MOTOR=NO_NEW_VERIFIED_LESSONS'
             fi
 
             node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
@@ -696,8 +716,9 @@ jobs:
           done
           echo 'VIBE2_24H_REFILL=FAILED' >&2
           exit 1
- /tmp/vibe2-recovery-escalation.log /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log 2>/dev/null; then
-              commit_message='vibe2: persist verified recovery learning and patterns [skip ci]'
+ \
+              /tmp/vibe2-recovery-escalation.log /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log 2>/dev/null; then
+              commit_message='vibe2: persist verified recovery and security learning [skip ci]'
             elif test -f /tmp/vibe2-system-steward.log && ! grep -Eq '^VIBE2_SYSTEM_STEWARD_ACTION=(HEALTHY_NO_SCOPED_REPAIR|NO_RUNNABLE_WORK_FOR_PLANNER_REFILL)
             elif grep -q '^VIBE2_POST_RELEASE_FOCUS_ADDED=YES$' /tmp/vibe2-post-release-focus.log; then
               commit_message='vibe2: queue post-release focused development [skip ci]'
@@ -867,7 +888,8 @@ jobs:
           done
           echo 'VIBE2_24H_REFILL=FAILED' >&2
           exit 1
- /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log; then
+ \
+              /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log; then
               node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
                 --experience=.vibe2/experience.json \
                 --code-patterns=.vibe2/code-pattern-library.json \
@@ -879,7 +901,7 @@ jobs:
                 --practice=.vibe2/idle-practice-queue.json \
                 --handoff=.vibe2/web-roblox-handoffs.json | tee /tmp/vibe2-recovery-learning-motor.log
             else
-              echo 'VIBE2_RECOVERY_LEARNING_MOTOR=NO_NEW_VERIFIED_RECOVERY'
+              echo 'VIBE2_RECOVERY_SECURITY_LEARNING_MOTOR=NO_NEW_VERIFIED_LESSONS'
             fi
 
             node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
@@ -1286,7 +1308,8 @@ jobs:
           done
           echo 'VIBE2_24H_REFILL=FAILED' >&2
           exit 1
- /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log; then
+ \
+              /tmp/vibe2-recovery-learning.log /tmp/vibe2-recovery-code-distillation.log /tmp/vibe2-security-learning.log; then
               node /tmp/vibe2-main/tools/vibe2-learning-motor.mjs \
                 --experience=.vibe2/experience.json \
                 --code-patterns=.vibe2/code-pattern-library.json \
@@ -1298,7 +1321,7 @@ jobs:
                 --practice=.vibe2/idle-practice-queue.json \
                 --handoff=.vibe2/web-roblox-handoffs.json | tee /tmp/vibe2-recovery-learning-motor.log
             else
-              echo 'VIBE2_RECOVERY_LEARNING_MOTOR=NO_NEW_VERIFIED_RECOVERY'
+              echo 'VIBE2_RECOVERY_SECURITY_LEARNING_MOTOR=NO_NEW_VERIFIED_LESSONS'
             fi
 
             node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check \
