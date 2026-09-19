@@ -158,7 +158,7 @@
     },
     {
       "id": "recovery-b9a81ece6a251027e30e",
-      "status": "dispatched",
+      "status": "cancelled-superseded-canonical-recovery",
       "priority": "critical",
       "sourceQueue": "vibe2",
       "sourceTaskId": "daechung-rpg-save-null-guards",
@@ -218,7 +218,9 @@
         "learning-motor-candidate-tournament:high-risk",
         "production-authority-sync:DESIGN_ONLY",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "superseded-by:recovery-web-source-candidate-generation-portfolio-v1",
+        "recovery-signature-stage-normalization:11137ffa98acd430ecf92fcd68bf88e57d0240f2"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -227,14 +229,17 @@
         "REGRESSION_WHEN_APPLICABLE",
         "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "duplicate-recovery-classification:PASS",
+        "canonical-recovery-preserved:YES"
+      ],
       "recoveryOwner": "VIBE2_VIBE3",
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
+      "primaryAiReview": "PASS",
+      "learningPromotion": "NOT_APPLICABLE",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.260Z",
-      "updatedAt": "2026-09-19T06:15:00.578Z"
+      "updatedAt": "2026-09-19T06:24:51.323Z"
     },
     {
       "id": "recovery-e36314e23ac645b9df25",
@@ -376,7 +381,7 @@
     },
     {
       "id": "recovery-a1ab88d36bc93f78e658",
-      "status": "dispatched",
+      "status": "cancelled-superseded-canonical-recovery",
       "priority": "critical",
       "sourceQueue": "vibe2",
       "sourceTaskId": "bug-defense-existing-web-assessment-v1",
@@ -491,7 +496,9 @@
         "workload:prep-ms:5687",
         "workload:cycle-ms:33197",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "superseded-by:recovery-web-source-candidate-generation-portfolio-v1",
+        "recovery-signature-stage-normalization:11137ffa98acd430ecf92fcd68bf88e57d0240f2"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -500,14 +507,17 @@
         "REGRESSION_WHEN_APPLICABLE",
         "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "duplicate-recovery-classification:PASS",
+        "canonical-recovery-preserved:YES"
+      ],
       "recoveryOwner": "VIBE2_VIBE3",
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
+      "primaryAiReview": "PASS",
+      "learningPromotion": "NOT_APPLICABLE",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:21:37.260Z",
-      "updatedAt": "2026-09-19T06:21:37.290Z",
+      "updatedAt": "2026-09-19T06:24:51.323Z",
       "dispatchEvidence": [
         "recovery-dispatched:vibe2_vibe3",
         "recovery-dispatched-at:2026-09-19T06:21:37.290Z"
