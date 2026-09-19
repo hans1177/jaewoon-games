@@ -721,6 +721,38 @@ test('undersized full web seed accumulates additive model expansions until valid
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
+test('final full web attempt synthesizes the accumulated seed instead of staying in expansion mode', async () => {
+  const cwd=tempRoot();
+  const seedFile=path.join(cwd,'seed-final.txt');
+  const expansion1=path.join(cwd,'expansion-final-1.txt');
+  const expansion2=path.join(cwd,'expansion-final-2.txt');
+  const finalFile=path.join(cwd,'final-full.txt');
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-web-final-synthesis'});
+  workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed=true;
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd,'design/demo/2026-09-18/design-revised.json'),JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const seed='<!doctype html><html><body><main id="game"><button id="start">Start</button><canvas></canvas></main><script>let state={score:0,hp:10,wave:1};function tick(){state.score+=1}</script></body></html>';
+  const fragment1='<section data-gameplay-system="combat"></section><script>(()=>{window.addEventListener("pointerdown",()=>{state.score+=2;state.hp=Math.max(0,state.hp-1)});})();</script>';
+  const fragment2='<section data-gameplay-system="progression"></section><script>(()=>{window.addEventListener("touchstart",()=>{state.wave+=1;localStorage.setItem("vibe2-final-test",JSON.stringify(state))},{passive:true});})();</script>';
+  const finalBody=`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0}canvas{touch-action:none;width:100%}</style></head><body><button id="start">Start</button><canvas id="game"></canvas><script>let state={score:0,hp:100,wave:1,gold:0,result:"playing"};${'function gameplayStep(){state.score+=1;state.gold+=1;if(state.score>500)state.result="win";if(state.hp<=0)state.result="loss";}'.repeat(220)}function reset(){state={score:0,hp:100,wave:1,gold:0,result:"playing"}}window.addEventListener("pointerdown",()=>gameplayStep());window.addEventListener("touchstart",()=>gameplayStep(),{passive:true});localStorage.setItem("vibe2-final-test",JSON.stringify(state));</script></body></html>`;
+  write(seedFile,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:seed','---VIBE2_FILE_CONTENT---',seed,'---VIBE2_FILE_END---'].join('\n'));
+  write(expansion1,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment1,'---VIBE2_EXPANSION_END---'].join('\n'));
+  write(expansion2,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment2,'---VIBE2_EXPANSION_END---'].join('\n'));
+  write(finalFile,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:final synthesis','EXPECTED_EFFECT:playable','TEST:mobile','---VIBE2_FILE_CONTENT---',finalBody,'---VIBE2_FILE_END---'].join('\n'));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[seedFile,expansion1,expansion2,finalFile]});
+  assert.equal(result.generation.attempts,4);
+  assert.equal(result.generation.fullWebExpansionStages,2);
+  assert.equal(result.generation.completionMode,'FULL_WEB');
+  assert.equal(result.generation.maxPredict,6144);
+  assert.equal(result.generation.timeoutMs,360000);
+  assert.deepEqual(result.changedFiles,['index.html']);
+  const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-final-synthesis/files/index.html'),'utf8');
+  assert.ok(Buffer.byteLength(output,'utf8')>=12000);
+});
+
 test('timeout final retry prompt strips read-only context and asks for one compact real edit',()=>{
   const base=[
     'Allowed edit paths: index.html',
