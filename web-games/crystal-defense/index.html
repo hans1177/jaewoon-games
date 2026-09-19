@@ -332,7 +332,13 @@ document.addEventListener('click', (e) => {
 
 // Add real state transitions and outcomes
 document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', (e) => {
+
     if (e.key === 'd') {
+        state.defense = !state.defense;
+        updateState();
+    }
+});
         state.defense = !state.defense;
         updateState();
     } else if (e.key === 'm') {
