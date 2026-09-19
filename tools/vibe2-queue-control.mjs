@@ -374,7 +374,7 @@ function workloadEvidence(row = {}) {
   if(cycleMs>0)evidence.push(`workload:cycle-ms:${cycleMs}`);
   return evidence;
 }
-const CODING_METHOD_FAILURE_CLASSES=new Set(['NO_OP','EDIT_MATCH','MALFORMED_OUTPUT','INVALID_PATH','FULL_REWRITE_SIZE']);
+const CODING_METHOD_FAILURE_CLASSES=new Set(['NO_OP','EDIT_MATCH','MALFORMED_OUTPUT','INVALID_PATH','FULL_REWRITE_SIZE','SEMANTIC_DIFF_BUDGET']);
 function codingStrategyFailureEvidence(row = {}) {
   if(clean(row?.outcome).toUpperCase()!=='FAIL')return[];
   const coding=row?.codingMethod&&typeof row.codingMethod==='object'?row.codingMethod:{};
