@@ -34,6 +34,7 @@ env:
   COMPANY_GEMINI_LEAD_MODELS: 'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite'
   COMPANY_GEMINI_FALLBACK_MODELS: 'gemini-3.8-flash,gemini-3.7-flash,gemini-3.6-flash,gemini-3.5-flash,gemini-3.5-flash-lite,gemini-3.1-pro-preview,gemini-2.5-pro,gemini-2.5-flash,gemini-2.5-flash-lite,gemini-3.1-flash-lite'
   COMPANY_GEMINI_LEAD_FALLBACK_LANES: ''
+  COMPANY_VIBE_LOCAL_MODEL: 'qwen3:1.7b'
 
 jobs:
   resolve-seed-targets:
@@ -403,19 +404,85 @@ jobs:
           const blockedRoles=leadPhaseActive?missingRoles.filter(role=>lanes[role].every(model=>exhausted.has(model))):[];
           const designerModel=clean(process.env.COMPANY_GEMINI_DESIGNER_MODEL);
           const designerCheckpointPresent=Object.prototype.hasOwnProperty.call(completedPhases,'designer_draft');
-          const designerCapacityReady=designerCheckpointPresent||!exhausted.has(designerModel);
-          const runModelCycle=leadPhaseActive?blockedRoles.length===0:designerCapacityReady;
-          console.log(`GEMINI_QUOTA_GOVERNOR=${runModelCycle?'READY':'WAITING_FOR_GEMINI_QUOTA'}`);
+          const generativeAuthoringNeeded=!designerCheckpointPresent||['PRE_GATE_REPAIR','DESIGNER_DRAFT','DESIGNER_REVISION','BOOTSTRAP'].includes(currentPhase);
+          const localFallbackNeeded=generativeAuthoringNeeded;
+          const runModelCycle=true;
+          const geminiDesignerAvailable=!exhausted.has(designerModel);
+          console.log('DESIGN_PROVIDER_GOVERNOR=READY_WITH_LOCAL_FAILOVER');
+          console.log(`GEMINI_QUOTA_GOVERNOR=${geminiDesignerAvailable?'READY':'DEGRADED_LOCAL_FALLBACK'}`);
           console.log(`GEMINI_QUOTA_CURRENT_PHASE=${currentPhase}`);
-          console.log(`GEMINI_QUOTA_LEAD_PHASE_ACTIVE=${leadPhaseActive?'YES':'NO'}`);
+          console.log('GEMINI_QUOTA_LEAD_PHASE_BLOCKING=NO');
+          console.log('DESIGN_AI_REVIEW_REQUIRED=NO');
           console.log(`GEMINI_UNAVAILABLE_MODELS=${[...exhausted].join(',')||'NONE'}`);
           console.log(`GEMINI_INCOMPLETE_LEAD_ROLES=${missingRoles.join(',')||'NONE'}`);
           console.log(`GEMINI_BLOCKED_LEAD_ROLES=${blockedRoles.join(',')||'NONE'}`);
           console.log(`GEMINI_ADAPTIVE_FALLBACK_LANES=${adaptiveLaneSpec||'NONE'}`);
+          console.log(`DESIGN_LOCAL_AUTHORING_FALLBACK_NEEDED=${localFallbackNeeded?'YES':'NO'}`);
           console.log(`GEMINI_QUOTA_CHECKPOINT_PRESERVED=${fs.existsSync(checkpointPath)?'YES':'NO'}`);
-          console.log(`GEMINI_QUOTA_FULL_CYCLE_RESTART=NO`);
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=${runModelCycle?'true':'false'}\nquota_state=${runModelCycle?'READY':'WAITING_FOR_GEMINI_QUOTA'}\nfallback_lanes=${adaptiveLaneSpec}\n`);
+          console.log('GEMINI_QUOTA_FULL_CYCLE_RESTART=NO');
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`run_model_cycle=true\nquota_state=${geminiDesignerAvailable?'READY':'DEGRADED_LOCAL_FALLBACK'}\nfallback_lanes=${adaptiveLaneSpec}\nlocal_fallback_needed=${localFallbackNeeded?'true':'false'}\n`);
           NODE
+      - name: Restore Vibe local design fallback cache
+        id: design_local_cache
+        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.gemini_quota.outputs.local_fallback_needed == 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.ollama/models
+            ~/.cache/vibe2-ollama/bin/ollama
+            ~/.cache/vibe2-ollama/lib/ollama
+          key: vibe2-ollama-v3-Linux-qwen3-1.7b
+
+      - name: Prepare Vibe local design fallback
+        id: design_local
+        if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.gemini_quota.outputs.local_fallback_needed == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cached="$HOME/.cache/vibe2-ollama/bin/ollama"
+          cached_lib="$HOME/.cache/vibe2-ollama/lib/ollama"
+          if [ -x "$cached" ] && [ -d "$cached_lib" ] && find "$cached_lib" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
+            sudo mkdir -p /usr/local/lib/ollama
+            sudo cp -a "$cached_lib/." /usr/local/lib/ollama/
+            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
+            echo 'DESIGN_LOCAL_RUNTIME_SOURCE=CACHE'
+          else
+            installed=0
+            for attempt in 1 2 3; do
+              if curl -fsSL --retry 3 --retry-all-errors --connect-timeout 15 https://ollama.com/install.sh | sh; then installed=1; break; fi
+              sleep $((attempt * 4))
+            done
+            test "$installed" = 1
+            mkdir -p "$HOME/.cache/vibe2-ollama/bin" "$cached_lib"
+            cp "$(command -v ollama)" "$cached"
+            chmod +x "$cached"
+            runtime_lib=""
+            for candidate in /usr/local/lib/ollama /usr/lib/ollama; do
+              if [ -d "$candidate" ] && find "$candidate" -type f -name 'llama-server' -perm -u+x -print -quit | grep -q .; then
+                runtime_lib="$candidate"
+                break
+              fi
+            done
+            test -n "$runtime_lib"
+            cp -a "$runtime_lib/." "$cached_lib/"
+            echo "$HOME/.cache/vibe2-ollama/bin" >> "$GITHUB_PATH"
+            echo 'DESIGN_LOCAL_RUNTIME_SOURCE=FALLBACK_INSTALL'
+          fi
+          nohup "$cached" serve > /tmp/design-ollama.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:11434/api/tags >/dev/null 2>&1 && break
+            if [ "$i" = 30 ]; then cat /tmp/design-ollama.log || true; exit 1; fi
+            sleep 2
+          done
+          if "$cached" list | awk 'NR>1 {print $1}' | grep -Fqx "$COMPANY_VIBE_LOCAL_MODEL"; then
+            echo 'DESIGN_LOCAL_MODEL_SOURCE=CACHE'
+          else
+            "$cached" pull "$COMPANY_VIBE_LOCAL_MODEL"
+            echo 'DESIGN_LOCAL_MODEL_SOURCE=FALLBACK_PULL'
+          fi
+          echo 'ready=true' >> "$GITHUB_OUTPUT"
+          echo 'DESIGN_LOCAL_AUTHORING_FALLBACK=READY'
+
       - name: Run seed-backed DESIGN_ONLY pipeline without artbook
         id: design_pipeline
         if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true' && steps.gemini_quota.outputs.run_model_cycle == 'true'
@@ -424,6 +491,7 @@ jobs:
           ARTBOOK_DATE: ${{ matrix.target.date }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           COMPANY_GEMINI_LEAD_FALLBACK_LANES: ${{ steps.gemini_quota.outputs.fallback_lanes }}
+          COMPANY_LOCAL_DESIGN_FALLBACK_READY: ${{ steps.design_local.outputs.ready || 'false' }}
         shell: bash
         run: |
           set -euo pipefail
