@@ -94,13 +94,13 @@ test('repository uses no Vibe2 human documents and legacy Vibe2 docs are removed
 test('repository handoff is generated entirely from machine state', () => {
   const snapshot = generateVibe2Handoff();
   assert.equal(snapshot.kind, 'vibe2-machine-handoff');
-  assert.equal(snapshot.generatedFrom.runtimeVersion, 8);
+  assert.equal(snapshot.generatedFrom.runtimeVersion, 13);
   assert.equal(snapshot.generatedFrom.queueVersion, 5);
   assert.equal(snapshot.generatedFrom.parallelismVersion, 3);
   assert.equal(snapshot.generatedFrom.experienceVersion, 3);
   assert.equal(snapshot.workPolicy.humanMaintainedHandoff, false);
-  assert.equal(snapshot.parallelism.configuredMax, 30);
-  assert.deepEqual(snapshot.parallelism.steps, [30, 24, 20, 16, 12, 8, 4]);
+  assert.equal(snapshot.parallelism.configuredMax, 256);
+  assert.deepEqual(snapshot.parallelism.steps, [256, 128, 64, 32, 16, 8, 4]);
   assert.ok(snapshot.workState.taskCount > 0);
 });
 
@@ -140,12 +140,12 @@ test('planner and worker work-order consume generated machine handoff instead of
   const experienceFile = path.join(tempRoot, 'experience.json');
   const statusFile = path.join(tempRoot, 'status.json');
   const catalogFile = path.join(tempRoot, 'catalog.json');
-  fs.writeFileSync(queueFile, JSON.stringify({ version:5, maxConcurrentTasks:30, tasks:[] }));
+  fs.writeFileSync(queueFile, JSON.stringify({ version:5, maxConcurrentTasks:256, tasks:[] }));
   fs.writeFileSync(controlFile, JSON.stringify({ version:3, currentMax:8, healthyStreak:0, pressureStreak:0 }));
   fs.writeFileSync(experienceFile, JSON.stringify({ version:3, records:[] }));
   fs.writeFileSync(statusFile, JSON.stringify({ projects:[] }));
   fs.writeFileSync(catalogFile, JSON.stringify({ games:[] }));
-  const planned = runVibe2AutoPlanner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, statusFile, catalogFile, repoRoot:tempRoot, maxConcurrentTasks:30 });
+  const planned = runVibe2AutoPlanner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, statusFile, catalogFile, repoRoot:tempRoot, maxConcurrentTasks:256 });
   assert.equal(planned.machineHandoff.used, true);
   assert.equal(planned.machineHandoff.consistency.ok, true);
   assert.equal(planned.effectivePlannerMax, 8);
@@ -172,37 +172,37 @@ test('machine-state E2E reserves work, builds worker order, fans in pressure, an
     const analysisOnly = index === 0;
     return { id:`e2e-${n}`, gameId, target:'web', department:analysisOnly?'qa':'development', type:analysisOnly?'qa':'implementation', goal:analysisOnly?'inspect existing web source':'existing web text maintenance', responsibleFiles:analysisOnly?[]:[`${sourceRoot}/index.html`], dependencies:[], priority:'normal', releaseState:'development-confirmed', status:'queued', retries:0, maxRetries:2, ownerDirective:false, requiresOwnerDecision:false, protectedChange:false, paidResourceRequired:false, sourceRoot, estimatedRisk:'low', speculativeEligible:false, evidence:[] };
   });
-  fs.writeFileSync(queueFile, JSON.stringify({ version:5, mode:'hierarchical-dag-sharded-work-stealing-queue', maxConcurrentTasks:30, tasks }, null, 2));
-  fs.writeFileSync(controlFile, JSON.stringify({ version:3, currentMax:30, healthyStreak:0, pressureStreak:0, lastDecision:'INIT', lastReason:'DEFAULT_30', lastRunId:null, lastUpdatedAt:null, lastTelemetry:null }, null, 2));
+  fs.writeFileSync(queueFile, JSON.stringify({ version:5, mode:'hierarchical-dag-sharded-work-stealing-queue', maxConcurrentTasks:256, tasks }, null, 2));
+  fs.writeFileSync(controlFile, JSON.stringify({ version:3, currentMax:32, healthyStreak:0, pressureStreak:0, lastDecision:'INIT', lastReason:'CANONICAL_STEP_32', lastRunId:null, lastUpdatedAt:null, lastTelemetry:null }, null, 2));
   fs.writeFileSync(experienceFile, JSON.stringify({ version:3, records:[] }, null, 2));
 
   const before = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(before.consistency.ok, true);
   assert.equal(before.workState.queuedCount, 31);
 
-  const reserved = runQueueCommand({ command:'reserve-batch', queue:queueFile, control:controlFile, max:'30', output:batchFile });
-  assert.equal(reserved.tasks.length, 30);
+  const reserved = runQueueCommand({ command:'reserve-batch', queue:queueFile, control:controlFile, max:'32', output:batchFile });
+  assert.equal(reserved.tasks.length, 31);
   const order = runVibeContinuousRunner({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile, outputFile:orderFile, taskId:'e2e-01' });
   assert.equal(order.run, true);
   assert.equal(order.executionRoute, 'analysis-only');
   assert.equal(order.machineHandoff.used, true);
   assert.equal(order.machineHandoff.consistency.ok, true);
-  assert.equal(order.machineHandoff.currentPersistentMax, 30);
+  assert.equal(order.machineHandoff.currentPersistentMax, 32);
   assert.notEqual(order.reason?.startsWith('MACHINE_STATE_INCONSISTENT'), true);
 
   const now = Date.now();
   const rows = reserved.tasks.map((task, index) => ({
     version:2, taskId:task.id, variant:'primary', outcome:'BLOCKED', blocker:'e2e-pressure', evidence:['actions-run:e2e-machine-handoff'], durationMs:30000,
-    metrics:{ requestedMax:30, effectiveMax:30, reservedAt:new Date(now-50000).toISOString(), workerStartedAt:now-30000, workerFinishedAt:now-1000-index, checkoutMs:20000, candidateMs:0, qaMs:0, workerTotalMs:29000, ollamaCacheHit:true, ollamaRuntimeSource:'CACHE' }
+    metrics:{ requestedMax:32, effectiveMax:32, reservedAt:new Date(now-50000).toISOString(), workerStartedAt:now-30000, workerFinishedAt:now-1000-index, checkoutMs:20000, candidateMs:0, qaMs:0, workerTotalMs:29000, ollamaCacheHit:true, ollamaRuntimeSource:'CACHE' }
   }));
   fs.writeFileSync(resultFile, JSON.stringify({ version:1, results:rows }, null, 2));
   const fanIn = runQueueCommand({ command:'fan-in', queue:queueFile, control:controlFile, input:resultFile });
-  assert.equal(fanIn.adaptiveControl.currentMax, 24);
+  assert.equal(fanIn.adaptiveControl.currentMax, 16);
   assert.equal(fanIn.adaptiveControl.lastDecision, 'DOWN');
 
   const after = generateVibe2Handoff({ runtimeFile:'vibe2-runtime.json', queueFile, controlFile, experienceFile });
   assert.equal(after.consistency.ok, true);
-  assert.equal(after.parallelism.currentPersistentMax, 24);
-  assert.equal(after.workState.queuedCount, 1);
-  assert.equal(after.workState.queuedPreview[0].id, 'e2e-31');
+  assert.equal(after.parallelism.currentPersistentMax, 16);
+  assert.equal(after.workState.queuedCount, 0);
+  assert.equal(after.workState.blockedCount, 31);
 });
