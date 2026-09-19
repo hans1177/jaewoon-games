@@ -97,12 +97,10 @@
     "longWorkProtectedSlots": 1,
     "priorityOrder": [
       "owner-directive",
-      "critical-production-incident",
-      "system-reliability",
-      "released-game-caretaker",
-      "owner-focused-game-caretaker",
+      "security-and-system-steward-critical",
       "release-candidate",
-      "general-development",
+      "game-development-critical-path",
+      "nonblocking-system-supervision",
       "learning-practice"
     ],
     "sameTierEngineOrder": [
@@ -148,7 +146,14 @@
     "externalMatrixBatchMax": 256,
     "maxFreeAiWorkers": null,
     "freeAiWorkerScale": "ONE_FREE_MODEL_WORKER_PER_INDEPENDENT_TASK_WITH_IMMEDIATE_WAVE_REFILL",
-    "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_WAVE_BOUND_NOT_INTERNAL_POLICY_CAP"
+    "maxConcurrentGameTasksMeaning": "EXTERNAL_PROVIDER_WAVE_BOUND_NOT_INTERNAL_POLICY_CAP",
+    "developmentFirstScheduling": {
+      "enabled": true,
+      "gameImplementationBeforeNonblockingSupervision": true,
+      "systemStewardProtectionPreserved": true,
+      "ownerDirectiveStillHighest": true,
+      "supervisorUsesSpareCapacityWhileActionableDevelopmentExists": true
+    }
   },
   "adaptiveBackpressure": {
     "enabled": true,
