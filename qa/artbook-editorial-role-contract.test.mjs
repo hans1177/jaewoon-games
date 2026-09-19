@@ -34,9 +34,10 @@ test('GAME_SEED mirrors the current selected-platform policy while preserving le
   assert.equal(directive.gameSeed.projectMaySelectAnyAllowedPlatform,true);
   assert.equal(directive.gameSeed.primaryPlatformIsDefaultNotLock,true);
   assert.equal(directive.gameSeed.initialPlayMode,'PROJECT_DEFINED');
-  const legacyRequired=directive.gameSeed.requiredFields||[];
-  assert.ok(legacyRequired.includes('REFERENCE_GAMES'));
-  for(const field of legacyRequired.filter(field=>field!=='REFERENCE_GAMES'))assert.ok(GAME_SEED_REQUIRED_FIELDS.includes(field),`current GAME_SEED contract missing compatible field: ${field}`);
+  const currentRequired=directive.gameSeed.requiredFields||[];
+  assert.deepEqual(currentRequired,[...GAME_SEED_REQUIRED_FIELDS]);
+  assert.ok(currentRequired.includes('REFERENCE_INPUTS'));
+  assert.ok(!currentRequired.includes('REFERENCE_GAMES'));
   for(const field of ['REFERENCE_INPUTS','TARGET_SESSION_MINUTES','MULTIPLAYER_DESIGN_MODE'])assert.ok(GAME_SEED_REQUIRED_FIELDS.includes(field),`current GAME_SEED contract missing owner-current field: ${field}`);
   assert.equal(GAME_SEED_POLICY.seedMaterialPoolTarget,100);
   assert.equal(GAME_SEED_POLICY.seedMaterialCombineMin,2);
