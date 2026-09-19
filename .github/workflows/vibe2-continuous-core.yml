@@ -293,6 +293,13 @@ jobs:
           ref: vibe2-unreal-core
           fetch-depth: 1
 
+      - name: Checkout pinned main contract
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.reserve.outputs.contract_sha }}
+          path: vibe2-contract
+          fetch-depth: 1
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -305,32 +312,43 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/vibe2-continuous-runner.mjs --task-id="$TASK_ID" --output=/tmp/vibe2-work-order.json
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          node "$contract_root/tools/vibe2-continuous-runner.mjs" \
+            --runtime="$contract_root/vibe2-runtime.json" \
+            --queue="$GITHUB_WORKSPACE/.vibe2/queue.json" \
+            --control="$GITHUB_WORKSPACE/.vibe2/parallelism-control.json" \
+            --experience="$GITHUB_WORKSPACE/.vibe2/experience.json" \
+            --project-lifecycle="$GITHUB_WORKSPACE/.vibe2/web-roblox-handoffs.json" \
+            --task-id="$TASK_ID" \
+            --output=/tmp/vibe2-work-order.json
           node <<'NODE'
           const fs=require('fs');
           const x=JSON.parse(fs.readFileSync('/tmp/vibe2-work-order.json','utf8'));
           fs.appendFileSync(process.env.GITHUB_OUTPUT,`run=${x.run?'true':'false'}\nroute=${x.executionRoute||''}\n`);
           NODE
 
-      - name: Explore current main read-only
+      - name: Explore pinned main contract read-only
         id: explore
         continue-on-error: true
         if: steps.order.outcome == 'success' && steps.order.outputs.run == 'true' && steps.order.outputs.route == 'text-source-worker'
         env:
           TASK_ID: ${{ matrix.taskId }}
           SAFE_TASK: ${{ matrix.safeTask }}
+          CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --depth=1 origin main:refs/remotes/origin/main --quiet
-          base_sha="$(git rev-parse origin/main)"
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          base_sha="$CONTRACT_SHA"
+          test -n "$base_sha"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$base_sha"
           explore_dir="/tmp/vibe2-explore-${SAFE_TASK}-${GITHUB_RUN_ID}"
-          git worktree add --detach "$explore_dir" origin/main
+          git -C "$contract_root" worktree add --detach "$explore_dir" "$base_sha"
           mkdir -p "$explore_dir/.vibe2"
           cp /tmp/vibe2-work-order.json "$explore_dir/.vibe2/work-order.json"
           cd "$explore_dir"
           export VIBE2_BASE_MAIN_SHA="$base_sha"
-          node "$GITHUB_WORKSPACE/tools/vibe2-exploration-worker.mjs" \
+          node "$contract_root/tools/vibe2-exploration-worker.mjs" \
             --order=.vibe2/work-order.json \
             --output=/tmp/vibe2-exploration.json | tee /tmp/vibe2-exploration.log
           test -s /tmp/vibe2-exploration.json
