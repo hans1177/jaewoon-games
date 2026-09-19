@@ -6226,7 +6226,16 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-19T04:06:54.313Z"
+      "updatedAt": "2026-09-19T04:06:54.313Z",
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T04:07:23.252Z"
     },
     {
       "version": 2,
@@ -17738,6 +17747,45 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-19T03:53:21.392Z"
+      },
+      {
+        "gameId": "egg-heist",
+        "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [],
+        "rejectionReasons": [],
+        "improvementTargets": [
+          {
+            "dimension": "CORE_LOOP_DESIGN",
+            "current": 11.2,
+            "maxScore": 14,
+            "gap": 2.8000000000000007
+          },
+          {
+            "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          },
+          {
+            "dimension": "CONTENT_EXPANSION_PLAN",
+            "current": 8,
+            "maxScore": 10,
+            "gap": 2
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-19T04:07:23.252Z"
       }
     ],
     "causeCounts": {
@@ -17763,7 +17811,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T03:53:21.393Z"
+    "updatedAt": "2026-09-19T04:07:23.253Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
