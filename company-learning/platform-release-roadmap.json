@@ -1,5 +1,5 @@
 {
-  "version": 66,
+  "version": 67,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1396,7 +1396,7 @@
           "signature": "VIBE2_SOURCE_CANDIDATE_INVALID_OUTPUT_BEFORE_FAN_IN",
           "symptom": "RUN_35428014822_WORKER_RESULTS_FAILED_BEFORE_FAN_IN_SO_FAN_IN_REVIEW_SKIPPED_ALL_ACTIONABLE_GAME_CANDIDATES",
           "status": "REPAIR_APPLIED_PENDING_NEXT_WAVE_VERIFICATION",
-          "rootCause": "LOCAL_MODEL_RETURNED_ZERO_OR_INVALID_CHANGE_SETS_JSON_PARSE_FAILURES_AND_INVALID_EDIT_PATH_PLACEHOLDERS_BEFORE_INCREMENTAL_QA",
+          "rootCause": "LOCAL_MODEL_CONTEXT_WAS_OVERSIZED_FOR_QWEN3_1_7B_AND_INVALID_OUTPUT_RECOVERY_REUSED_TOO_WIDE_CONTEXT_CAUSING_ZERO_CHANGE_JSON_PATH_AND_TOKEN_REPEAT_FAILURES",
           "failureDistribution": {
             "runId": "35428014822",
             "workerCount": 16,
@@ -1406,7 +1406,7 @@
             "fanInRegression": "PASS",
             "fanInReleaseCandidates": 0
           },
-          "repair": "BOUNDED_CAUSAL_REGENERATION_FOR_ZERO_CHANGE_JSON_AND_INVALID_PATH_OUTPUTS_PLUS_OWNER_WAVE_FLOOR_20",
+          "repair": "LIMIT_EDIT_CONTEXT_TO_96KB_USE_32K_MODEL_CONTEXT_PRESERVE_BEGIN_MIDDLE_END_EXCERPTS_RETRY_ZERO_CHANGE_JSON_INVALID_PATH_AND_TOKEN_REPEAT_ONCE_AND_REQUEUE_INFRA_EXHAUSTED_SOURCE_TASKS_ONCE",
           "codeBindings": [
             "tools/vibe2-source-worker.mjs",
             "tools/vibe2-adaptive-backpressure.mjs",
@@ -1415,25 +1415,35 @@
             "vibe2-runtime.json",
             "qa/vibe2-source-worker.test.mjs",
             "qa/vibe2-adaptive-backpressure.test.mjs",
+            "qa/vibe2-queue-control.test.mjs",
             "qa/vibe2-controller-contract.test.mjs"
           ],
           "repairCommits": [
             "bf0cd9eb6d05019f456e6435e54e98cb2bb32985",
             "4bcee5e739e8214437162abf048d470ffd433cbf",
+            "b81a2539c4d3a753070fd76b1de66bad86673866",
+            "82397c9506d9b7a9c46ffca140e94b1e205ad006",
             "abe45c2e4e5c838cb534a08ce42e41aec27f824c",
             "eb2358e8dbe69a4dec07d6bd4d6179fc221431e7",
             "012196171d9037a6b9b8167f82a16814303bfeb7"
           ],
           "nextVerification": [
-            "NEXT_WAVE_EFFECTIVE_MAX_AT_LEAST_20",
+            "EXHAUSTED_SOURCE_GENERATION_FAILURES_REQUEUE_ONCE_AFTER_INFRA_REPAIR",
+            "NEXT_WAVE_ADAPTIVE_RESERVATION_FLOOR_IS_20_WHEN_ELIGIBLE_WORK_EXISTS",
+            "ZERO_CHANGE_INVALID_PATH_JSON_AND_TOKEN_REPEAT_GET_AT_MOST_ONE_CAUSAL_RETRY",
             "TASK_LOCAL_EXPLORATION_REMAINS_PER_WORKER",
             "NO_PER_WORKER_REFILL_DISPATCH",
             "FAN_IN_REFILLS_AT_MOST_ONCE",
-            "INVALID_PATH_OUTPUT_GETS_ONE_BOUNDED_CAUSAL_RETRY",
-            "ZERO_CHANGE_OUTPUT_GETS_ONE_BOUNDED_CAUSAL_RETRY",
             "GAME_IMPLEMENTATION_REMAINS_PRIMARY_AHEAD_OF_NONBLOCKING_SUPERVISION"
           ],
-          "ownerWaveOverride": 20
+          "ownerWaveOverride": 20,
+          "sourceContextContract": {
+            "previousMaxBytes": 360000,
+            "currentMaxBytes": 96000,
+            "modelContextWindow": 32768,
+            "excerptPolicy": "PER_FILE_BEGIN_MIDDLE_END_WITH_TASK_LOCAL_IMPACT_FILES",
+            "maxGenerationAttempts": 2
+          }
         },
         "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
@@ -1456,7 +1466,8 @@
           "refillPolicy": "FAN_IN_ONLY",
           "ownerWaveFloor": 20,
           "ownerWaveFloorPolicy": "ADAPTIVE_MAY_NOT_DROP_BELOW_OWNER_DIRECTIVE",
-          "webVibeRepairPlannerInput": "FIXED_PENDING_LIVE_QUEUE_VERIFICATION"
+          "webVibeRepairPlannerInput": "FIXED_PENDING_LIVE_QUEUE_VERIFICATION",
+          "sourceGenerationRepair": "FOCUSED_CONTEXT_AND_ONE_TIME_INFRA_REQUEUE"
         },
         "incidentHistory": [
           {
