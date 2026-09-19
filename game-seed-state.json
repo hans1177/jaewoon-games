@@ -13305,6 +13305,126 @@
       },
       "pausedReason": "NOT_IN_CANONICAL_GAME_CATALOG",
       "pausedAt": "2026-09-18T19:18:40.191Z"
+    },
+    {
+      "version": 3,
+      "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
+      "gameId": "fantasy-survival",
+      "gameName": "마력숲 생존기",
+      "status": "ACTIVE",
+      "generation": "OWNER_REDESIGN_RESET",
+      "ownerResetRevision": "OWNER-PRESERVE-VIBE-PILOT-FANTASY-SURVIVAL-20260920-1",
+      "GAME_CATEGORY": "ACTION_SURVIVAL_ROGUELITE",
+      "REFERENCE_GAMES": [],
+      "REFERENCE_INPUTS": [
+        {
+          "type": "ORIGINAL_MATERIAL",
+          "value": "existing 마력숲 생존기 world, story, quests, survival systems, crafting, combat and save semantics"
+        },
+        {
+          "type": "ORIGINAL_MATERIAL",
+          "value": "owner-approved Living Motion, Animation Feel, VFX, Audio Feel, Camera and editable asset adaptation contracts"
+        }
+      ],
+      "CORE_FUN_TO_LEARN": [
+        "기존 마력숲의 넓은 지역 탐험과 생존 압박을 그대로 유지하면서 이동과 캐릭터를 살아 움직이게 표현한다.",
+        "채집·제작·장비·전투·퀘스트·연구소 스토리의 인과와 저장 의미를 바꾸지 않고 피드백 품질을 높인다.",
+        "Idle 호흡, 이동 블렌딩, 타격 손맛, VFX, 카메라와 음악 상태 전환을 모바일에서도 끊김 없이 연결한다."
+      ],
+      "CORE_LOOP": [
+        "마력숲과 연결 지역을 탐험하며 현재 퀘스트와 생존 위험을 읽고 필요한 자원·단서·적을 선택한다.",
+        "채집·제작·장비·전투·NPC/연구소 상호작용으로 실제 자원, 생존 상태, 퀘스트 상태와 월드 진행을 변화시킨다.",
+        "획득한 장비와 스토리 단서로 새 지역·보스·연구소 진행을 열고 더 강한 생존 위협과 다음 퀘스트로 이어간다."
+      ],
+      "DISTINCT_IDENTITY": "마력숲, 수정 지역, 화산, 세계수, 연구소와 생존·제작·전투·스토리 진행이 이미 연결된 기존 마력숲 생존기의 세계관과 게임 규칙을 보존한다. 이번 Vibe 파일럿은 게임을 새로 만드는 작업이 아니라 기존 구현을 기준으로 에셋 적응, 살아있는 모션, 애니메이션 손맛, VFX, Audio Feel, 카메라와 모바일 폴리시를 단계적으로 올리는 작업이다.",
+      "GAMEPLAY_SKETCH": {
+        "version": 1,
+        "source": "OWNER_EXISTING_GAME_PRESERVATION",
+        "worldModel": "기존 18000×12000 마력숲 월드와 수정 지역·화산·세계수·동굴·연구소/퀘스트 공간을 그대로 보존하고, 플레이어 이동·채집·전투·제작·퀘스트 상태가 같은 월드 상태에 연결된다.",
+        "actors": [
+          "플레이어: 생존 수치와 장비를 관리하며 탐험·채집·제작·전투·퀘스트를 진행한다.",
+          "몬스터와 보스: 지역과 진행 상태에 따라 전투 위험과 전리품을 제공한다.",
+          "NPC와 연구소 오브젝트: 플레이어가 실제로 획득한 단서와 퀘스트 상태에 따라 대화와 진행을 연다."
+        ],
+        "interactionChains": [
+          "지역 탐색 -> 자원/적/NPC/스토리 오브젝트 선택 -> 채집/전투/대화 -> 실제 인벤토리·생존·퀘스트 상태 변화 -> 제작/지역/스토리 진행",
+          "공격 입력 -> 기존 authoritative hit event -> 데미지 판정 -> 같은 impact 순간에 애니메이션·VFX·사운드·카메라 피드백"
+        ],
+        "stateMachine": [
+          "WORLD_ENTRY",
+          "EXPLORE_AND_SURVIVE",
+          "GATHER_OR_INTERACT",
+          "COMBAT_OR_CRAFT",
+          "QUEST_STATE_CHANGE",
+          "REGION_OR_STORY_UNLOCK",
+          "BOSS_OR_MAJOR_STORY_PROGRESS",
+          "SAVE_AND_CONTINUE_OR_RETRY"
+        ],
+        "firstPlayableCycle": [
+          "기존 세이브를 불러오거나 마력숲에 진입한다.",
+          "모바일 조이스틱 또는 키보드로 실제 월드를 이동한다.",
+          "자원을 채집하거나 적과 싸우거나 NPC/스토리 오브젝트와 상호작용한다.",
+          "인벤토리·체력/허기·퀘스트 중 하나 이상의 실제 상태가 바뀐다.",
+          "제작 또는 장비 선택으로 다음 행동 능력을 바꾼다.",
+          "위험을 통과하거나 실패/회복/재도전 경로를 경험한다.",
+          "퀘스트 또는 지역 진행을 갱신하고 저장한 뒤 다음 탐험 사이클로 이어간다."
+        ],
+        "expansionPlan": [
+          "기존 콘텐츠를 삭제하지 않고 각 지역의 Style Lock과 에셋 표현을 통일한다.",
+          "Idle/이동/회전/공격/피격을 Living Motion과 Animation Feel 패스로 단계적으로 개선한다.",
+          "기존 전투·퀘스트 이벤트에 VFX·음악 상태·카메라 피드백을 연결하고 모바일 성능을 검증한다."
+        ],
+        "longGoalScenario": [
+          "현재 퀘스트 체인을 따라 연구소와 주요 지역의 단서를 진행한다.",
+          "자원과 장비를 성장시켜 강한 지역 위협과 보스를 상대한다.",
+          "세계수·화산·수정 지역·연구소의 기존 장기 진행과 스토리 상태를 보존한 채 다음 주요 목표에 도달한다."
+        ],
+        "validationRisks": [
+          "표현 개선 과정에서 SAVE_KEY, 저장 필드 의미, 퀘스트 조건, 데미지, 쿨다운, 드랍률, 장비 수치 또는 월드 진행을 바꾸면 안 된다.",
+          "새 wrapper/override/shadow 렌더·애니메이션·오디오 파이프라인을 만들지 않고 기존 책임 함수 안에서 수정해야 한다.",
+          "화려한 VFX·카메라·음악이 모바일 터치, 적 위험 신호, 텍스트 가독성 또는 프레임 안정성을 가리면 안 된다."
+        ]
+      },
+      "MARKET_EVIDENCE_SUMMARY": {
+        "role": "EXISTING_GAME_PRESERVATION_AND_QUALITY_UPGRADE",
+        "targetMarketScope": "CURRENT_GAME_IDENTITY",
+        "hardPassFailGate": false,
+        "available": false,
+        "note": "No market claim is used to redesign the game. Existing owner-approved gameplay and story remain the authority while presentation quality is upgraded."
+      },
+      "TARGET_AUDIENCE": "탐험·생존·제작·전투와 스토리 퀘스트를 함께 즐기는 모바일/웹 플레이어",
+      "TARGET_SESSION_DIRECTION": "기존 플레이 흐름을 유지하면서 이동·전투·스토리 상호작용의 모션과 소리가 끊기지 않고 살아 움직이는 느낌을 주도록 개선한다.",
+      "TARGET_SESSION_MINUTES": 30,
+      "INITIAL_TARGET_PLATFORM": "UNITY",
+      "INITIAL_PLAY_MODE": "SINGLE_PLAYER_WITH_OPTIONAL_MULTIPLAYER",
+      "MULTIPLAYER_DESIGN_MODE": "HYBRID",
+      "CROSS_PLATFORM_EXPANSION_VALUE": "PRESERVE_WEB_FIRST_VALIDATE_NATIVE_LATER",
+      "TRANSFORMATION_MODE": "REINTERPRETATION",
+      "SOURCE_CODE_RULE": "PRESERVE_EXISTING_IMPLEMENTATION_AND_MODIFY_RESPONSIBLE_SYSTEMS_DIRECTLY",
+      "OWNER_REBUILD_MODE": "PRESERVATION_PRESENTATION_UPGRADE",
+      "REUSE_PRIOR_DESIGN_BASELINE": false,
+      "REUSE_PRIOR_ARTBOOK": false,
+      "REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION": true,
+      "EXISTING_WEB_SOURCE_PATH": "web-games/fantasy-survival",
+      "EXISTING_WEB_SOURCE_ROLE": "CANONICAL_IMPLEMENTATION_AND_MIGRATION_BASE",
+      "LEGACY_BUILD_ROLE": "CURRENT_PUBLIC_BUILD_UNTIL_VALIDATED_UPGRADE",
+      "PUBLIC_ROUTE_POLICY": "KEEP_EXISTING_WEB_PATH",
+      "PUBLIC_SWAP_POLICY": "IN_PLACE_ONLY_AFTER_FULL_QA_PASS",
+      "SAVE_POLICY": "PRESERVE_EXISTING_SAVE_KEY_jaewoon_fantasy_survival_v1_AND_MIGRATE_ONLY_IF_REQUIRED",
+      "MOBILE_FIRST": true,
+      "WEB_GAME_QUALITY_BAR": [
+        "existing world quest crafting combat and save semantics preserved",
+        "living idle and smooth locomotion without state popping",
+        "impact-synced animation VFX audio and camera feedback",
+        "adaptive music and sound controls without duplicate playback",
+        "mobile touch readability and stable frame timing",
+        "zero blocking runtime console or save regression errors"
+      ],
+      "productionClass": "DESIGN_ONLY",
+      "productionClassSource": "OWNER_PRESERVATION_VIBE_PILOT_2026-09-20",
+      "lifecycleState": "DESIGN_ONLY",
+      "createdAt": "2026-09-19T16:17:06.466Z",
+      "updatedAt": "2026-09-19T16:17:06.466Z"
     }
   ],
   "seedMaterials": [
@@ -18213,8 +18333,8 @@
     "IDLE_GROWTH_RPG",
     "STORY_COMPLETE_RPG"
   ],
-  "lastRunAt": "2026-09-14T14:23:36.674Z",
-  "lastAction": "HISTORICAL_INITIAL_BOOTSTRAP",
+  "lastRunAt": "2026-09-19T16:17:06.466Z",
+  "lastAction": "OWNER_PRESERVATION_SEED_MATERIALIZATION",
   "updatedAt": "2026-09-19T16:11:44.841Z",
   "ownerAllGamesDesignReset": {
     "revision": "OWNER-ALL-GAMES-DESIGN-RESET-20260917-1",
@@ -18232,5 +18352,13 @@
       "territory-war"
     ],
     "updatedAt": "2026-09-19T05:13:56.723Z"
+  },
+  "ownerPreservationIntake": {
+    "source": "owner-design-reset-queue.json",
+    "queueVersion": 3,
+    "updatedAt": "2026-09-19T16:17:06.466Z",
+    "gameIds": [
+      "fantasy-survival"
+    ]
   }
 }
