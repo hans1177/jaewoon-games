@@ -902,6 +902,8 @@ test('final full web attempt keeps additive expansion until the accumulated cand
   const result=await runVibe2SourceWorker({cwd,responseFiles:[seedFile,expansion1,expansion2,finalFile]});
   assert.equal(result.generation.attempts,4);
   assert.equal(result.generation.fullWebExpansionStages,3);
+  assert.equal(result.generation.fullWebFinalAdditiveExpansion,true);
+  assert.equal(result.codingMethod.fullWebFinalAdditiveExpansion,true);
   assert.equal(result.generation.completionMode,'FULL_WEB_EXPANSION');
   assert.equal(result.generation.maxPredict,4096);
   assert.equal(result.generation.timeoutMs,240000);
@@ -1186,6 +1188,13 @@ test('focused timeout streaming can stop after one complete edit object',()=>{
   assert.match(workerSource,/timeoutFastEscalation\?'JSON_EDIT_PARTIAL':'JSON_EDIT'/);
   assert.match(workerSource,/streamedPartialEditRecovery:Boolean\(streamedPartialEdit\)/);
   assert.match(workflowSource,/coding-streamed-partial-edit-recovery:YES/);
+});
+
+test('final additive full web expansion is persisted to immutable worker evidence',()=>{
+  const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
+  const workflowSource=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-core.yml',import.meta.url),'utf8');
+  assert.match(workerSource,/fullWebFinalAdditiveExpansion:generation\.fullWebFinalAdditiveExpansion===true/);
+  assert.match(workflowSource,/coding-full-web-final-additive-expansion:YES/);
 });
 
 test('closed full web envelope early stop is persisted to coding telemetry',()=>{
