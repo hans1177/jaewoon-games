@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T14:25:15.192Z"
+      "updatedAt": "2026-09-19T14:30:12.241Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1368,7 +1368,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:15",
-      "checkpoint": "2026-09-19T14:13:46Z",
+      "checkpoint": "2026-09-19T14:29:53Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1629,7 +1629,15 @@
         "workload:prep-ms:6655",
         "workload:cycle-ms:948051",
         "system-steward:retry-exhausted-regenerated:generation-6",
-        "repair-mode:CAUSAL_REGENERATION_GENERATION_6"
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_6",
+        "base-main:af623808436c3f0b470bfac5fac9a06d1337d82f",
+        "source-generation-failure:MALFORMED_OUTPUT",
+        "actions-run:35447976923",
+        "reservation-id:35447976923:1",
+        "workload:prep-ms:5909",
+        "workload:cycle-ms:671578",
+        "exploration-reuse:677f83ce318218a5fa140be2",
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CTIMEOUT%22%2C%22failureClass%22%3A%22MALFORMED_OUTPUT%22%2C%22runEvidence%22%3A%22actions-run%3A35447976923%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1645,7 +1653,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T08:20:33.605Z",
-      "updatedAt": "2026-09-19T14:25:15.192Z"
+      "updatedAt": "2026-09-19T14:30:12.240Z"
     },
     {
       "id": "recovery-c9cbc89486453076c641",
