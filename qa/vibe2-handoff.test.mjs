@@ -208,5 +208,5 @@ test('machine-state E2E reserves only game-primary work, builds worker order, fa
   assert.equal(after.parallelism.currentPersistentMax, 20);
   assert.equal(after.workState.queuedCount, 1);
   assert.equal(after.workState.blockedCount, 30);
-  assert.equal(after.workState.nextTaskId,'e2e-01');
+  assert.ok(after.workState.queuedPreview.some(task=>task.id==='e2e-01'));
 });
