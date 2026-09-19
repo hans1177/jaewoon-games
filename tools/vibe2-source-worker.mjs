@@ -124,7 +124,7 @@ function readContext(root,target,responsibleFiles=[],ignored=[],explorationFiles
   }
   return{files,bytes:total};
 }
-function regexEscape(value){const specials='\\^$.*+?()[]{}|';return [...String(value??'')].map(ch=>specials.includes(ch)?'\\\\'+ch:ch).join('');}
+function regexEscape(value){const specials='\\^$.*+?()[]{}|';return [...String(value??'')].map(ch=>specials.includes(ch)?'\\'+ch:ch).join('');}
 function sourceWindowRange(text,index,{before=900,after=4200}={}){
   const raw=String(text??'');
   let start=Math.max(0,index-before),end=Math.min(raw.length,index+after);
