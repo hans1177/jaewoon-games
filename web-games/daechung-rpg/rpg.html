@@ -184,7 +184,11 @@ function startBgm(){ if(AUDIO.timer)return; const normal=[220,277,330,440,330,27
  },285);
 }
 function setAggro(v,boss=false){
+function setAggro(v,boss=false){
  if(!AUDIO.ctx)return;
+
+ const now=AUDIO.ctx.currentTime;
+ AUDIO.musicBus.gain.setTargetAtTime(v?.035:.18,now,.18);
  const now=AUDIO.ctx.currentTime;
  AUDIO.musicBus.gain.setTargetAtTime(v?.035:.18,now,.18);
  AUDIO.aggroBus.gain.setTargetAtTime(v?.24:0,now,.12);
