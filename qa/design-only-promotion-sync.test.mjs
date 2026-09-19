@@ -46,6 +46,21 @@ test('80+ strict design PASS promotes directly to Web without any pre-Web artboo
   assert.equal(queue.artbookTiming,'AFTER_WEB_STRICT_REVIEW_AT_80_OR_HIGHER');
 });
 
+test('preservation pilot queue starts with ASSET_ADAPTATION metadata',()=>{
+  const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-preservation-'));
+  write(root,'game-seed-state.json',{version:1,seeds:[{
+    seedId:'SP',gameId:'preserve-game',gameName:'Preserve Game',status:'ACTIVE',
+    GAME_CATEGORY:'ACTION_SURVIVAL_ROGUELITE',INITIAL_TARGET_PLATFORM:'UNITY',
+    REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION:true,OWNER_REBUILD_MODE:'PRESERVATION_PRESENTATION_UPGRADE'
+  }]});
+  baseFiles(root);writeReadyDesign(root,'preserve-game');
+  const result=promoteReadyDesignSeeds({root});
+  assert.deepEqual(result.promoted,['preserve-game']);
+  const queue=read(root,'development-queue.json').items[0];
+  assert.equal(queue.ownerPreservationPresentationUpgrade,true);
+  assert.equal(queue.presentationFirstPass,'ASSET_ADAPTATION');
+});
+
 test('90+ design is excellent but uses the same 80-point promotion gate',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'design-promotion-excellent-'));
   write(root,'game-seed-state.json',{version:1,seeds:[{seedId:'SE',gameId:'ge',gameName:'Excellent',status:'ACTIVE',GAME_CATEGORY:'PUZZLE',INITIAL_TARGET_PLATFORM:'UNITY'}]});baseFiles(root);writeReadyDesign(root,'ge','2026-09-11',{verdict:'PASS',totalScore:93,hardFailures:[]});
