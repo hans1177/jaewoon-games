@@ -303,7 +303,7 @@ function findWebDiagnosticTask(project,repoRoot,queue){
   out.workUnits=Math.max(3,Math.min(6,rows.length+1));
   return out;
 }
-function findWebPresentationQualityTask(project,repoRoot,queue){
+export function findWebPresentationQualityTask(project,repoRoot,queue){
   if(project.engine!=='web'||project.releaseState!=='development-confirmed')return null;
   const relative=`${posix(project.projectPath)}/index.html`,file=sourceFile(repoRoot,relative);
   if(!fs.existsSync(file))return null;
