@@ -11,6 +11,7 @@ on:
     paths:
       - 'tools/company-system-ai-worker.mjs'
       - 'tools/company-system-ai-queue.mjs'
+      - 'tools/company-recovery-dispatch.mjs'
       - 'qa/company-system-ai-worker.test.mjs'
       - '.github/workflows/company-system-ai-workers.yml'
 
@@ -50,6 +51,7 @@ jobs:
           set -euo pipefail
           node --check tools/company-system-ai-worker.mjs
           node --check tools/company-system-ai-queue.mjs
+          node --check tools/company-recovery-dispatch.mjs
           node --test qa/company-system-ai-worker.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/system-ai-shared-context.json
 
@@ -64,6 +66,12 @@ jobs:
           git worktree add /tmp/system-ai-control origin/vibe2-unreal-core
           test -f /tmp/system-ai-control/.vibe2/system-ai-queue.json
 
+          node tools/company-recovery-dispatch.mjs \
+            --route=system-ai \
+            --queue=/tmp/system-ai-control/.vibe2/queue.json \
+            --system-ai=/tmp/system-ai-control/.vibe2/system-ai-queue.json \
+            --recovery=/tmp/system-ai-control/.vibe2/recovery-queue.json | tee /tmp/system-ai-recovery-dispatch.log
+
           reservation="system-ai:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}"
           node tools/company-system-ai-queue.mjs             --command=reserve             --queue=/tmp/system-ai-control/.vibe2/system-ai-queue.json             --max="$SYSTEM_AI_MAX_BATCH"             --reservation="$reservation"             --output=/tmp/system-ai-reserved.json
 
@@ -71,7 +79,7 @@ jobs:
           git config user.name 'jaewoon-system-ai-scheduler'
           git config user.email 'system-ai-scheduler@users.noreply.github.com'
           if ! git diff --quiet -- .vibe2/system-ai-queue.json; then
-            git add .vibe2/system-ai-queue.json
+            git add .vibe2/system-ai-queue.json .vibe2/recovery-queue.json
             git commit -m "system-ai: reserve supervised assignments [skip ci]"
             for attempt in 1 2 3; do
               if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then break; fi
