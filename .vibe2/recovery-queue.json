@@ -670,7 +670,7 @@
     },
     {
       "id": "recovery-453ef0814800056c05b6",
-      "status": "queued",
+      "status": "dispatched",
       "priority": "critical",
       "sourceQueue": "system-ai",
       "sourceTaskId": "sys-web-bootstrap-signal-routing-v1",
@@ -731,7 +731,11 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:27:15.601Z",
-      "updatedAt": "2026-09-19T06:27:15.601Z"
+      "updatedAt": "2026-09-19T06:27:38.076Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-09-19T06:27:38.076Z"
+      ]
     }
   ]
 }
