@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "authority": "MACHINE_EXECUTION_ARCHITECTURE_MAP",
   "sourceOfTruth": "company-learning/company-architecture-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -66,8 +66,8 @@
     "DETERMINISTIC_QA": "PASS_FAIL_EVIDENCE_AUTHORITY",
     "OLLAMA": "LOCAL_GAME_SOURCE_GENERATION_PROVIDER",
     "COMPANY_RUNTIME": "STATE_PERSISTENCE_ONLY",
-    "PRIMARY_AI_ORCHESTRATOR": "SYSTEM_ROADMAP_BOTTLENECK_ASSIGNMENT_REVIEW_AND_ACCEPTANCE_AUTHORITY",
-    "EXTERNAL_AI_WORKERS": "ASSIGNED_TASK_EXECUTORS_NO_POLICY_NO_FINAL_ACCEPTANCE"
+    "PRIMARY_AI_ORCHESTRATOR": "NON_BLOCKING_ROADMAP_PRIORITY_BOTTLENECK_SUPERVISOR",
+    "EXTERNAL_AI_WORKERS": "AUTONOMOUS_CENTRAL_CONTRACT_WORKERS_AND_ASSIGNED_TASK_EXECUTORS"
   },
   "sharedContextLoadOrder": [
     "company-learning/platform-release-roadmap.json",
@@ -89,15 +89,23 @@
     "CENTRAL_POLICY_BYPASS"
   ],
   "orchestrationTopology": {
-    "systemWork": [
-      "PRIMARY_AI_READ_POLICY_LOG_ARCHITECTURE",
-      "PRIMARY_AI_SELECT_HIGHEST_IMPACT_BOTTLENECK",
-      "PRIMARY_AI_DECOMPOSE_AND_ASSIGN",
-      "EXTERNAL_AI_EXECUTE_ASSIGNED_SCOPE",
+    "autonomousBase": [
+      "LOAD_CENTRAL_POLICY_LOG_ARCHITECTURE",
+      "SELECT_ELIGIBLE_WORK_FROM_CANONICAL_QUEUE",
+      "EXECUTE_WITHIN_ASSIGNED_AUTHORITY",
       "DETERMINISTIC_QA_AND_EVIDENCE",
-      "PRIMARY_AI_REVIEW",
-      "PRIMARY_AI_REWORK_OR_ACCEPT",
-      "SYNC_POLICY_LOG_ARCHITECTURE"
+      "COMPLETE_OR_REQUEUE_WITHOUT_WAITING_FOR_PRIMARY_AI",
+      "CONTINUE_24H_EVENT_DRIVEN_WORK"
+    ],
+    "supervisoryOverlay": [
+      "PRIMARY_AI_OBSERVE_PORTFOLIO_AND_RUNTIME",
+      "PRIMARY_AI_IDENTIFY_HIGHEST_IMPACT_BOTTLENECK",
+      "PRIMARY_AI_REPRIORITIZE_OR_ASSIGN_HIGH_IMPACT_WORK",
+      "EXTERNAL_AI_EXECUTE_IN_PARALLEL",
+      "DETERMINISTIC_QA_AND_EVIDENCE",
+      "PRIMARY_AI_ASYNC_REVIEW",
+      "PRIMARY_AI_REWORK_REOPEN_OR_REDIRECT",
+      "LONG_TERM_ROADMAP_PROGRESS_REVIEW"
     ],
     "gameWork": [
       "VIBE2_VIBE3_IMPLEMENT",
@@ -107,21 +115,32 @@
       "PROMOTION"
     ]
   },
-  "primaryAiReviewRequiredFor": [
-    "CENTRAL_POLICY_CHANGE",
-    "ARCHITECTURE_CHANGE",
-    "LOG_MAP_CHANGE",
-    "ROADMAP_IMPLEMENTATION",
-    "SYSTEM_BOTTLENECK_REPAIR",
-    "WORKFLOW_OR_PLANNER_AUTHORITY_CHANGE"
-  ],
   "externalAiRules": {
-    "executeAssignedScopeOnly": true,
+    "executeAssignedScopeOnly": false,
     "selfOrchestrationForbidden": true,
     "policyCreationForbidden": true,
     "finalSystemAcceptanceForbidden": true,
     "parallelExecutionAllowed": true,
     "workerCountLimit": null,
-    "externalProviderCapacityOnly": true
-  }
+    "externalProviderCapacityOnly": true,
+    "mayExecuteCanonicalQueuedWorkWithoutSupervisor": true,
+    "centralContractDefaultAuthority": true,
+    "deterministicGateMayCompleteWorkWithoutPrimaryAi": true
+  },
+  "primaryAiSupervisionDomains": [
+    "ROADMAP_IMPLEMENTATION",
+    "PORTFOLIO_WIDE_BOTTLENECKS",
+    "DEVELOPMENT_PIPELINE",
+    "RELEASE_PIPELINE",
+    "HOMEPAGE_AND_PUBLIC_SURFACE",
+    "PLATFORM_RUNTIME_AND_BUILD",
+    "QA_AND_REGRESSION",
+    "QUEUE_PLANNER_WORKFLOW",
+    "LEARNING_FREE_AI",
+    "LOADING_AND_PERFORMANCE"
+  ],
+  "primaryAiPresenceRequired": false,
+  "autonomous24hWorkersContinueWithoutPrimaryAi": true,
+  "completionAuthority": "DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES",
+  "primaryAiMayReopenOrReprioritizeVerifiedWork": true
 }
