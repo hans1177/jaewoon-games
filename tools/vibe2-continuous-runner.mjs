@@ -10,7 +10,7 @@ import { createVibeContinuousQueue, selectVibeQueueBatch } from '../assets/vibe-
 import { createVibeExperienceMemory } from '../assets/vibe-experience-memory.js';
 import { generateVibe2Handoff } from './vibe2-handoff.mjs';
 import { buildVibeDesignIntelligence } from './vibe2-design-intelligence.mjs';
-import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance } from './vibe2-learning-motor.mjs';
+import { retrieveUnifiedLearning, learningGuidance as buildMotorGuidance, candidateTournamentPolicy, preferredCodingStrategyForTask, codingStrategyGuidance, responsibilityCalibrationForTask, regressionHotspotRiskForTask, codingRiskGuidance } from './vibe2-learning-motor.mjs';
 import { buildVibeAssetProductionPlan, assetProductionGuidance } from './vibe2-asset-production-plan.mjs';
 
 const clean = (value) => String(value ?? '').trim();
@@ -199,6 +199,9 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
   const tournament = candidateTournamentPolicy({ task:{...task,target:plan.target}, masteryInput:learningMotorState });
   const codingStrategyPreference=preferredCodingStrategyForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
   const verifiedCodingStrategyGuidance=codingStrategyGuidance(codingStrategyPreference);
+  const responsibilityCalibration=responsibilityCalibrationForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
+  const regressionHotspotRisk=regressionHotspotRiskForTask({task:{...task,target:plan.target},stateInput:learningMotorState});
+  const verifiedCodingRiskGuidance=codingRiskGuidance({calibration:responsibilityCalibration,hotspot:regressionHotspotRisk});
   const candidateStrategy=candidateStrategyRole(variant,codingStrategyPreference);
   const candidateStrategyGuidance=[
     '[CANDIDATE STRATEGY ROLE]',
@@ -237,7 +240,7 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     `역할 분리=${Object.entries(workPackage.rolePlan).map(([k,v])=>`${k}:${v}`).join(' | ')}`,
     workPackage.completionCriteria.length?`완료 기준=${workPackage.completionCriteria.join(' | ')}`:''
   ].filter(Boolean).join('\n'):'';
-  const executionGoal = [packageGuidance, reusedGuidance, task.goal, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, assetGuidance].filter(Boolean).join('\n\n');
+  const executionGoal = [packageGuidance, reusedGuidance, task.goal, candidateStrategyGuidance, designIntelligence.guidance, learningGuidance, unifiedLearningGuidance, verifiedCodingStrategyGuidance, verifiedCodingRiskGuidance, assetGuidance].filter(Boolean).join('\n\n');
   const responsibleFiles = freezeList(task.responsibleFiles || []);
   const sourceRootBootstrapAllowed=plan.target==='web'
     &&(task.evidence||[]).includes('source-root-bootstrap-required')
@@ -277,6 +280,8 @@ export function buildVibeContinuousWorkOrder({ runtime = {}, queue = {}, experie
     candidateTournament:tournament,
     candidateStrategyRole:candidateStrategy,
     codingStrategyPreference,
+    responsibilityCalibration,
+    regressionHotspotRisk,
     learning:plan.learning, learningAppliedToWorkerGoal:Boolean(learningGuidance||unifiedLearningGuidance), motion:plan.motion, executionGate:plan.executionGate,
     deployment:freeze({ automaticEligible:automaticDeploymentEligible, requiresVerifiedQA:true, requiresBuild:['roblox','unity'].includes(plan.target), promoteSourceRootOnly:true, mainDirectWriteByWorker:false, publicStoreReleaseAutomatic:false }),
     editor:freeze({ required:route.requiresEditor, runtime:route.editorRuntime || adapter?.execution?.editorRuntime || null, dispatchConfigured:route.route!=='engine-editor' || Boolean(clean(editorConfig.workflow)||clean(editorConfig.runnerLabel)), workflow:clean(editorConfig.workflow)||null, runnerLabel:clean(editorConfig.runnerLabel)||null }),
@@ -345,6 +350,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     console.log(`VIBE2_VERIFIED_CODE_PATTERN_COUNT=${order.unifiedLearning?.codePatterns?.length||0}`);
     console.log(`VIBE2_VERIFIED_PRACTICE_DISTILLED_COUNT=${order.unifiedLearning?.practiceDistilled?.length||0}`);
     console.log(`VIBE2_CANDIDATE_STRATEGY_ROLE=${order.candidateStrategyRole?.strategy||'NONE'}`);
+    console.log(`VIBE2_RESPONSIBILITY_CALIBRATION=${order.responsibilityCalibration?.recommendation||'NONE'}`);
+    console.log(`VIBE2_REGRESSION_HOTSPOT_RISK=${order.regressionHotspotRisk?.riskLevel||'LOW'}`);
     console.log(`VIBE2_CODING_STRATEGY_PREFERENCE=${order.codingStrategyPreference?.strategy||'NONE'}`);
     console.log(`VIBE2_CODING_STRATEGY_PREFERENCE_STATE=${order.codingStrategyPreference?.state||'NONE'}`);
     console.log(`VIBE2_ASSET_DECISION_COUNT=${order.assetProduction?.decisions?.length||0}`);
