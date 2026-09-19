@@ -646,7 +646,12 @@
         "workload:prep-ms:8546",
         "workload:cycle-ms:39078",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "recovery-queue:recovery-7c15a8576c92459e4088",
+        "actions-run:35426621757",
+        "reservation-id:35426621757:1",
+        "workload:prep-ms:4223",
+        "workload:cycle-ms:25761"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -662,11 +667,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:27:15.601Z",
-      "updatedAt": "2026-09-19T06:27:15.629Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-19T06:27:15.629Z"
-      ]
+      "updatedAt": "2026-09-19T06:35:17.166Z"
     },
     {
       "id": "recovery-453ef0814800056c05b6",
@@ -715,7 +716,8 @@
         "actions-run:35425932081",
         "actions-run:35426306171",
         "recovery-escalated-from:system-ai",
-        "recovery-route:SYSTEM_AI"
+        "recovery-route:SYSTEM_AI",
+        "recovery-queue:recovery-453ef0814800056c05b6"
       ],
       "recoveryStrategy": "ASSIGN_SCOPED_SYSTEM_REPAIR_TO_SUPERVISED_SYSTEM_AI_AND_RERUN_EXACT_FAILED_CHECK",
       "verificationPlan": [
@@ -731,11 +733,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:27:15.601Z",
-      "updatedAt": "2026-09-19T06:27:38.076Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:system_ai",
-        "recovery-dispatched-at:2026-09-19T06:27:38.076Z"
-      ]
+      "updatedAt": "2026-09-19T06:35:17.166Z"
     }
   ]
 }
