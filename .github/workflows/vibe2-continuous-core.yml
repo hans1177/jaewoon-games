@@ -42,6 +42,7 @@ jobs:
       task_count: ${{ steps.batch.outputs.task_count }}
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
       effective_max: ${{ steps.batch.outputs.effective_max }}
+      contract_sha: ${{ steps.contract.outputs.sha }}
     steps:
       - name: Checkout Vibe2 control line
         uses: actions/checkout@v4
@@ -54,14 +55,17 @@ jobs:
           node-version: '22'
 
       - name: Prepare latest main machine contract
+        id: contract
         shell: bash
         run: |
           set -euo pipefail
           git fetch --depth=1 origin main:refs/remotes/origin/main --quiet
+          contract_sha="$(git rev-parse origin/main)"
           rm -rf /tmp/vibe2-main
           git worktree prune
-          git worktree add --detach /tmp/vibe2-main origin/main >/dev/null
-          echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$(git rev-parse origin/main)"
+          git worktree add --detach /tmp/vibe2-main "$contract_sha" >/dev/null
+          echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"
+          echo "VIBE2_CONTINUOUS_CONTRACT_SHA=$contract_sha"
 
       - name: Fast scheduler preflight
         shell: bash
