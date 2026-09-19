@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Approved Web Bootstrap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            margin-bottom: 10px;
+        }
+        #game {
+            width: 100%;
+            max-width: 800px;
+            background: #111;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        #game canvas {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <main id="game">
+        <h1>Monster Adventure</h1>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </main>
+    <script>
+        // Direct player input handling
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space') {
+                console.log('Spacebar pressed');
+                // Game logic here
+            }
+        });
+
+        // Game state progression
+        let gameProgress = 0;
+        const progressElement = document.createElement('div');
+        progressElement.textContent = 'Progress: ' + gameProgress + '/100';
+        document.getElementById('game').appendChild(progressElement);
+
+        // Save compatibility
+        const saveState = {
+            progress: 0,
+            score: 0
+        };
+        console.log('Save state:', saveState);
+
+        // Game loop
+        function gameLoop() {
+            gameProgress += 1;
+            progressElement.textContent = 'Progress: ' + gameProgress + '/100';
+            if (gameProgress === 100) {
+                console.log('Game completed!');
+            }
+        }
+
+        // Start game
+        gameLoop();
+    </script>
+</body>
+</html>
