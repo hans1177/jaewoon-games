@@ -1173,7 +1173,18 @@
         "symbolContext": true,
         "intermediateGrowth": true,
         "repeatedOutput": true,
-        "failureClass": true
+        "failureClass": true,
+        "stageTargets": true,
+        "contextModeSuccessRate": true,
+        "failureClassBeforeAfter": true
+      },
+      "verification": {
+        "state": "STAGE_TARGETING_VERIFIED_LIVE_REVALIDATION_PENDING",
+        "head": "aa38e79e7a74dea46cbc1b911d2a87a54e2eaa99",
+        "coreQaRunId": 35441514826,
+        "vibeQaRunId": 35441514838,
+        "integratedRegressionRunId": 35441514837,
+        "baselineRunId": 35438982255
       }
     },
     "phase4": {
