@@ -1,5 +1,5 @@
 // 파일명: qa/company-shared-context.test.mjs
-// 역할: 중앙정책·로그맵·아키텍처맵과 주 AI 총괄 권한의 동기화 계약을 검증한다.
+// 역할: 중앙정책·로그맵·아키텍처맵과 비차단 주 AI 감독 계약을 검증한다.
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -17,7 +17,7 @@ function fixtures(){
   return{
     policy,log,arch,
     policyJson:{
-      version:31,
+      version:32,
       developmentLifecycleMachine:{
         sharedWorkerContext:{
           requiredForAllWorkers:true,
@@ -28,7 +28,12 @@ function fixtures(){
         },
         primaryAiOrchestration:{
           orchestrator:'CHATGPT_PRIMARY_AI',
-          role:'PRIMARY_AI_SYSTEM_ORCHESTRATOR_AND_REVIEWER',
+          role:'PRIMARY_AI_NON_BLOCKING_SUPERVISOR',
+          presenceRequiredForAutonomousWork:false,
+          absenceBlocksWorkerProgress:false,
+          workersContinue24hFromCentralContract:true,
+          reviewRequiredForWorkerCompletion:false,
+          deterministicEvidenceOwnsTaskCompletion:true,
           gameSourceAuthoring:false,
           gameImplementationOwner:['VIBE2','VIBE3'],
           externalAiWorkerPolicy:{
@@ -43,8 +48,10 @@ function fixtures(){
       centralPolicy:policy,
       architectureMap:arch,
       orchestrationLogContract:{
-        finalAcceptanceRequiresPrimaryAiReview:true,
-        workerSelfAcceptanceForbidden:true
+        finalAcceptanceRequiresPrimaryAiReview:false,
+        deterministicMachineGateMayCompleteWithoutPrimaryAi:true,
+        workerMustNotInventPolicy:true,
+        supervisorAbsenceIsNotAWorkerBlocker:true
       }
     },
     archJson:{
@@ -53,16 +60,18 @@ function fixtures(){
       logMap:log,
       sharedContextLoadOrder:[policy,log,arch],
       workerRoles:{
-        PRIMARY_AI_ORCHESTRATOR:'SYSTEM_ROADMAP_BOTTLENECK_ASSIGNMENT_REVIEW_AND_ACCEPTANCE_AUTHORITY'
+        PRIMARY_AI_ORCHESTRATOR:'NON_BLOCKING_ROADMAP_PRIORITY_BOTTLENECK_SUPERVISOR'
       },
       externalAiRules:{
         finalSystemAcceptanceForbidden:true
-      }
+      },
+      primaryAiPresenceRequired:false,
+      autonomous24hWorkersContinueWithoutPrimaryAi:true
     }
   };
 }
 
-test('shared worker context validates policy log architecture and primary AI orchestration together',()=>{
+test('shared worker context allows autonomous 24h work without primary AI presence',()=>{
   const cwd=root();
   const f=fixtures();
   write(path.join(cwd,f.policy),f.policyJson);
@@ -74,10 +83,9 @@ test('shared worker context validates policy log architecture and primary AI orc
     const result=validateSharedWorkerContext();
     assert.equal(result.pass,true);
     assert.equal(result.primaryAiOrchestrator,'CHATGPT_PRIMARY_AI');
-    assert.equal(result.primaryAiReviewRequired,true);
-    assert.equal(result.hashes.policySha256.length,64);
-    assert.equal(result.hashes.logMapSha256.length,64);
-    assert.equal(result.hashes.architectureSha256.length,64);
+    assert.equal(result.primaryAiReviewRequired,false);
+    assert.equal(result.autonomous24hWorkersContinue,true);
+    assert.equal(result.completionAuthority,'DETERMINISTIC_EVIDENCE_AND_CANONICAL_MACHINE_GATES');
   }finally{process.chdir(previous);}
 });
 
@@ -94,15 +102,28 @@ test('shared worker context blocks completion when architecture binding drifts',
   finally{process.chdir(previous);}
 });
 
-test('external AI cannot claim final system acceptance',()=>{
+test('primary AI presence must never become a runtime gate',()=>{
   const cwd=root();
   const f=fixtures();
-  f.logJson.orchestrationLogContract.workerSelfAcceptanceForbidden=false;
+  f.policyJson.developmentLifecycleMachine.primaryAiOrchestration.presenceRequiredForAutonomousWork=true;
   write(path.join(cwd,f.policy),f.policyJson);
   write(path.join(cwd,f.log),f.logJson);
   write(path.join(cwd,f.arch),f.archJson);
   const previous=process.cwd();
   process.chdir(cwd);
-  try{assert.throws(()=>validateSharedWorkerContext(),/LOG_WORKER_SELF_ACCEPTANCE/);}
+  try{assert.throws(()=>validateSharedWorkerContext(),/PRIMARY_AI_MUST_NOT_BLOCK_AUTONOMY/);}
+  finally{process.chdir(previous);}
+});
+
+test('worker may complete canonical work through deterministic gates but may not invent policy',()=>{
+  const cwd=root();
+  const f=fixtures();
+  f.logJson.orchestrationLogContract.workerMustNotInventPolicy=false;
+  write(path.join(cwd,f.policy),f.policyJson);
+  write(path.join(cwd,f.log),f.logJson);
+  write(path.join(cwd,f.arch),f.archJson);
+  const previous=process.cwd();
+  process.chdir(cwd);
+  try{assert.throws(()=>validateSharedWorkerContext(),/LOG_WORKER_POLICY_BOUNDARY/);}
   finally{process.chdir(previous);}
 });
