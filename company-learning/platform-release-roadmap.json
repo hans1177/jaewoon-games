@@ -1,5 +1,5 @@
 {
-  "version": 65,
+  "version": 66,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1455,7 +1455,8 @@
           "explorationPolicy": "TASK_LOCAL_NONBLOCKING",
           "refillPolicy": "FAN_IN_ONLY",
           "ownerWaveFloor": 20,
-          "ownerWaveFloorPolicy": "ADAPTIVE_MAY_NOT_DROP_BELOW_OWNER_DIRECTIVE"
+          "ownerWaveFloorPolicy": "ADAPTIVE_MAY_NOT_DROP_BELOW_OWNER_DIRECTIVE",
+          "webVibeRepairPlannerInput": "FIXED_PENDING_LIVE_QUEUE_VERIFICATION"
         },
         "incidentHistory": [
           {
@@ -1593,6 +1594,30 @@
               "NEXT_WAVE_WORKERS_START_WITH_TASK_LOCAL_EXPLORATION",
               "20_WAVE_LIMIT_REMAINS_ACTIVE",
               "GAME_IMPLEMENTATION_PRIORITY_REMAINS_AHEAD_OF_NONBLOCKING_SUPERVISION"
+            ],
+            "ownerWaveOverride": 20
+          },
+          {
+            "signature": "WEB_VIBE_REPAIR_QUEUE_NOT_PASSED_TO_AUTOPLANNER",
+            "symptom": "COMPANY_RUNTIME_HAD_19_WEB_VIBE_REPAIR_REQUIRED_ITEMS_BUT_VIBE_CONTROL_QUEUE_HAD_ZERO_WEB_RUNTIME_REPAIR_TASKS",
+            "status": "REPAIR_APPLIED_PENDING_LIVE_QUEUE_VERIFICATION",
+            "rootCause": "VIBE2_24H_RUNNER_FETCHED_COMPANY_RUNTIME_DEVELOPMENT_QUEUE_BUT_DID_NOT_PASS_IT_TO_VIBE2_AUTO_PLANNER",
+            "repair": "PASS_EXACT_COMPANY_RUNTIME_DEVELOPMENT_QUEUE_TO_AUTO_PLANNER_AND_LOCK_WITH_E2E_CONTRACT",
+            "codeBindings": [
+              ".github/workflows/vibe2-24h-runner.yml",
+              "tools/vibe2-auto-planner.mjs",
+              "qa/company-web-vibe-handoff-e2e.test.mjs"
+            ],
+            "verifiedEvidence": [
+              "COMPANY_RUNTIME_DEVELOPMENT_QUEUE_WEB_VIBE_REPAIR_REQUIRED_COUNT=19",
+              "PRE_REPAIR_VIBE_CONTROL_QUEUE_WEB_RUNTIME_REPAIR_TASK_COUNT=0",
+              "PLANNER_EXACT_STAGE_WEB_REPAIR_CONSUMER_PRESENT"
+            ],
+            "nextVerification": [
+              "VIBE_CONTROL_QUEUE_CREATES_WEB_RUNTIME_REPAIR_V1_TASKS",
+              "REPAIR_TASKS_KEEP_RESPONSIBLE_FILE_BOUNDARY",
+              "PRIMARY_GAME_WORK_REMAINS_AHEAD_OF_NONBLOCKING_SYSTEM_AI",
+              "20_WAVE_TASK_LOCAL_FAN_IN_ONLY_CONTRACT_REMAINS_ACTIVE"
             ],
             "ownerWaveOverride": 20
           }
@@ -2693,12 +2718,20 @@
     }
   },
   "changeRecord": {
-    "id": "EVOLUTION_QA_QUALITY_BAR_CANONICAL_SYNC_2026-09-19",
+    "id": "WEB_VIBE_REPAIR_PLANNER_INPUT_BINDING_2026-09-19",
     "documentIsCode": true,
-    "reason": "REMOVE_LAST_DELETED_EVOLUTION_QA_PATH_AND_BIND_TO_CURRENT_VERIFIED_QUALITY_LEARNING_CONTRACTS",
+    "reason": "PASS_CANONICAL_COMPANY_RUNTIME_REPAIR_STATE_INTO_VIBE_AUTOPLANNER_SO_WEB_VIBE_REPAIR_REQUIRED_CREATES_REAL_VIBE_WEB_REPAIR_WORK",
     "files": [
-      ".github/workflows/company-evolution-qa.yml",
+      ".github/workflows/vibe2-24h-runner.yml",
+      "qa/company-web-vibe-handoff-e2e.test.mjs",
       "company-learning/platform-release-roadmap.json"
-    ]
+    ],
+    "liveEvidence": {
+      "companyRuntimeRepairItems": 19,
+      "preRepairVibeRepairTasks": 0,
+      "ownerMinimumWave": 20,
+      "exploration": "TASK_LOCAL",
+      "refill": "FAN_IN_ONLY"
+    }
   }
 }
