@@ -476,7 +476,7 @@ export function generationFailureClass(error){
   return'OTHER';
 }
 function focusedFinalRetryAllowed(error){return['NO_OP','TIMEOUT','INVALID_PATH','EDIT_MATCH','MALFORMED_OUTPUT','SEMANTIC_DIFF_BUDGET'].includes(generationFailureClass(error));}
-function fullWebFinalRetryAllowed(error){return generationFailureClass(error)==='FULL_REWRITE_SIZE';}
+function fullWebFinalRetryAllowed(error){return['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(generationFailureClass(error));}
 export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|SEMANTIC_DIFF_BUDGET_VIOLATION|prediction aborted|token repeat limit/i.test(message);
@@ -607,6 +607,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let lastError=null;
   let lastRaw='';
   let accumulatedFullWeb=null;
+  let bestFullWebFallbackRaw='';
   let expansionStages=0;
   let repeatedIntermediateOutputs=0;
   const intermediateGrowthBytes=[];
@@ -620,7 +621,9 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation);
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1&&attempt<maxAttempts;
     const remainingStages=Math.max(1,maxAttempts-attempt);
-    const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode?accumulatedFullWeb.content:lastRaw;
+    const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
+      ?accumulatedFullWeb.content
+      :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
     const attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
       :(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput}):prompt);
@@ -676,12 +679,15 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
       const failureClass=generationFailureClass(error);
+      if(allowFullRewrite&&lastRaw.trim()&&Buffer.byteLength(lastRaw,'utf8')>Buffer.byteLength(bestFullWebFallbackRaw,'utf8')){
+        bestFullWebFallbackRaw=lastRaw;
+      }
       const partialRecoveryClass=!allowFullRewrite&&['TIMEOUT','MALFORMED_OUTPUT'].includes(failureClass)?failureClass:'';
       const partialRecoveryOutput=partialRecoveryClass==='TIMEOUT'?partialOutput:(partialRecoveryClass==='MALFORMED_OUTPUT'?lastRaw:'');
       if(partialRecoveryClass&&partialRecoveryOutput.trim()){
@@ -852,6 +858,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     exactSourceWindows:generation.exactSourceWindows===true,
     fullFileContextFallback:generation.fullFileContextFallback===true,
     fullWebExpansionStages:Number(generation.fullWebExpansionStages||0),
+    fullWebFallbackBestPartialBytes:Number(generation.fullWebFallbackBestPartialBytes||0),
     intermediateGrowthBytes:Array.isArray(generation.intermediateGrowthBytes)?generation.intermediateGrowthBytes.slice(0,8):[],
     intermediateGrowthTotalBytes:Array.isArray(generation.intermediateGrowthBytes)?generation.intermediateGrowthBytes.reduce((sum,value)=>sum+Math.max(0,Number(value)||0),0):0,
     repeatedIntermediateOutputs:Number(generation.repeatedIntermediateOutputs||0),
