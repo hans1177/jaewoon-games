@@ -297,7 +297,7 @@
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
-      "status": "queued",
+      "status": "cancelled-stale-terminal-source",
       "priority": "high",
       "sourceQueue": "vibe2",
       "sourceTaskId": "daechung-rpg-region-controls-4-7",
@@ -316,7 +316,9 @@
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "production-authority-sync:DESIGN_ONLY",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "stale-source-terminal:daechung-rpg-region-controls-4-7:cancelled",
+        "recovery-escalation-fix:1d23409ee213290a72c04ddc4094c6f58c592c1d"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -325,14 +327,16 @@
         "REGRESSION_WHEN_APPLICABLE",
         "CONFIRM_FAILURE_SIGNATURE_NOT_RECURRING"
       ],
-      "deterministicEvidence": [],
+      "deterministicEvidence": [
+        "terminal-source-recovery-suppression:PASS"
+      ],
       "recoveryOwner": "VIBE2_VIBE3",
-      "primaryAiReview": "PENDING",
-      "learningPromotion": "PENDING",
+      "primaryAiReview": "PASS",
+      "learningPromotion": "NOT_APPLICABLE",
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T06:15:00.578Z"
+      "updatedAt": "2026-09-19T06:20:35.277Z"
     },
     {
       "id": "recovery-6bed1c7e44ca75dceec2",
