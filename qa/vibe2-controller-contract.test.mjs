@@ -108,7 +108,8 @@ test('24h planner uses latest main contract and tools while control branch store
 });
 
 test('controller pins each isolated candidate to the reserve-time main contract and never writes main directly',()=>{
-  assert(workflow.includes('git fetch --depth=1 origin main:refs/remotes/origin/main --quiet'));
+  assert(workflow.includes('git fetch --depth=1 --no-tags origin main --quiet'));
+  assert(workflow.includes('contract_sha="$(git rev-parse FETCH_HEAD)"'));
   assert(workflow.includes('contract_sha: ${{ steps.contract.outputs.sha }}'));
   assert(workflow.includes('ref: ${{ needs.reserve.outputs.contract_sha }}'));
   assert(workflow.includes('CONTRACT_SHA: ${{ needs.reserve.outputs.contract_sha }}'));
