@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "document.addEventListener('touchmove', (e) => {",
+      "replace": "document.addEventListener('touchmove', (e) => { const rect = e.target.getBoundingClientRect(); const x = rect.x + e.touches[0].clientX - window.innerWidth / 2; })"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
