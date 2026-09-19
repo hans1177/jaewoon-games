@@ -974,6 +974,38 @@ test('focused retry derives exact unique find anchors from writable source',()=>
   assert.match(retry,/use one EXACT FIND ANCHOR OPTION/i);
 });
 
+test('exact retry anchors verify uniqueness against the full responsible source',()=>{
+  const cwd=tempRoot();
+  const sourceRoot=path.join(cwd,'web-games/demo');
+  write(path.join(sourceRoot,'index.html'),[
+    '<main>',
+    'const duplicateAnchor=()=>state.ready;',
+    '<section>middle</section>',
+    'const duplicateAnchor=()=>state.ready;',
+    'const trulyUniqueAnchor=()=>state.running;',
+    '</main>'
+  ].join('\n'));
+  const prompt=[
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    'const duplicateAnchor=()=>state.ready;',
+    'const trulyUniqueAnchor=()=>state.running;'
+  ].join('\n');
+  const anchors=exactRetryAnchorSuggestions(prompt,{max:3,sourceRoot,responsibleFiles:['index.html']});
+  assert.equal(anchors.includes('const duplicateAnchor=()=>state.ready;'),false);
+  assert.equal(anchors.includes('const trulyUniqueAnchor=()=>state.running;'),true);
+  const retry=buildGenerationRetryPrompt(prompt,{
+    allowFullRewrite:false,
+    error:new Error('edit find 불일치: index.html'),
+    responsibleFiles:['index.html'],
+    attempt:2,
+    sourceRoot
+  });
+  assert.doesNotMatch(retry,/duplicateAnchor/);
+  assert.match(retry,/trulyUniqueAnchor/);
+});
+
 test('exact retry anchors exclude repeated and structural-only lines',()=>{
   const base=[
     'Allowed edit paths: index.html',
