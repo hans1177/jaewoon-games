@@ -52,7 +52,13 @@
         playerAttack: 10,
         enemyAttack: 10,
         gameWon: false,
-        gameLost: false
+        gameLost: false,
+        currentLevel: 1,
+        levelProgression: [
+            { level: 1, requiredHealth: 50 },
+            { level: 2, requiredHealth: 75 },
+            { level: 3, requiredHealth: 100 }
+        ]
     };
 
     // Game progression system
