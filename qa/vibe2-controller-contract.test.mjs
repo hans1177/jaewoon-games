@@ -169,7 +169,8 @@ test('reserve preflight stays syntax-and-machine-state only and uses main contra
   const end=workflow.indexOf('- name: Reserve conflict-free DAG batch');
   assert(start>=0 && end>start);
   const preflight=workflow.slice(start,end);
-  assert(preflight.includes('contract_sha="$(git rev-parse origin/main)"'));
+  assert(preflight.includes('git fetch --depth=1 --no-tags origin main --quiet'));
+  assert(preflight.includes('contract_sha="$(git rev-parse FETCH_HEAD)"'));
   assert(preflight.includes('git worktree add --detach /tmp/vibe2-main "$contract_sha"'));
   assert(preflight.includes('echo "sha=$contract_sha" >> "$GITHUB_OUTPUT"'));
   assert(preflight.includes('node --check "/tmp/vibe2-main/$file"'));
