@@ -875,7 +875,7 @@ test('first timeout escalates attempt two directly to compact focused retry',()=
   assert.match(retry,/FINAL FOCUSED RETRY/);
   assert.doesNotMatch(retry,/config\.js/);
   assert.match(retry,/Recovery context intentionally contains only writable FILE blocks/);
-  assert.match(retry,/Start the JSON with the edits array/);
+  assert.match(retry,/Start immediately with \{\"edits\":\[/);
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
   assert.match(workerSource,/timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT'/);
   assert.match(workerSource,/focusedFinal\?JSON_FINAL_RETRY_MAX_PREDICT/);
@@ -920,7 +920,7 @@ test('timeout final retry prompt strips read-only context and asks for one compa
   assert.match(retry,/exceeded the time budget/);
   assert.match(retry,/FINAL FOCUSED RETRY/);
   assert.doesNotMatch(retry,/config\.js/);
-  assert.match(retry,/exact writable path/);
+  assert.match(retry,/output only \{\"edits\":\[/);
 });
 
 test('generation recovery remains bounded and keeps strict output contracts', () => {
