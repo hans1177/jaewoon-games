@@ -271,7 +271,18 @@ jobs:
           node tools/company-design-checkpoint-recovery.mjs --game-id="$GAME_ID" --date="$ARTBOOK_DATE" | tee /tmp/deterministic-design-recovery.txt
           rc=${PIPESTATUS[0]}
           set -e
-          if [ "$rc" -eq 0 ] && grep -q '^DESIGN_DETERMINISTIC_RECOVERY=PASS        id: gemini_quota
+          if [ "$rc" -eq 0 ] && grep -q '^DESIGN_DETERMINISTIC_RECOVERY=PASS$' /tmp/deterministic-design-recovery.txt; then
+            echo 'materialized=true' >> "$GITHUB_OUTPUT"
+            echo 'DESIGN_EXTERNAL_MODEL_WAIT_BYPASSED=YES'
+            echo 'DESIGN_CHECKPOINT_PRESERVED=YES'
+          else
+            echo 'materialized=false' >> "$GITHUB_OUTPUT"
+            echo 'DESIGN_DETERMINISTIC_RECOVERY=NOT_AVAILABLE'
+          fi
+          exit 0
+
+      - name: Resolve checkpoint-aware Gemini quota lanes
+        id: gemini_quota
         if: steps.target.outputs.should_run == 'true' && steps.deterministic_recovery.outputs.materialized != 'true'
         env:
           ARTBOOK_GAME_ID: ${{ matrix.target.game_id }}
