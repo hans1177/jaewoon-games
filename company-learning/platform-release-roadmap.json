@@ -1,5 +1,5 @@
 {
-  "version": 49,
+  "version": 50,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -2513,11 +2513,12 @@
     }
   },
   "changeRecord": {
-    "id": "EVOLUTION_QA_HOMEPAGE_CANONICAL_TEST_SYNC_2026-09-19",
+    "id": "RECOVERY_SIGNATURE_STAGE_DEDUP_2026-09-19",
     "documentIsCode": true,
-    "reason": "REMOVE_STALE_DELETED_TEST_PATHS_AND_REUSE_CURRENT_HOMEPAGE_MANAGER_QA_CONTRACT",
+    "reason": "PREVENT_DUPLICATE_OR_CONTAMINATED_RECOVERY_GROUPS_FROM_PREFIX_PARSE_AND_UNKNOWN_STAGE",
     "files": [
-      ".github/workflows/company-evolution-qa.yml",
+      "tools/company-recovery-escalation.mjs",
+      "qa/company-recovery-learning.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ]
   }

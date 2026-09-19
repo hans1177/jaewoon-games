@@ -13,13 +13,19 @@ function writeJson(file,value){fs.mkdirSync(path.dirname(file),{recursive:true})
 function parseArgs(argv=process.argv.slice(2)){const out={};for(const raw of argv){if(!raw.startsWith('--'))continue;const body=raw.slice(2),at=body.indexOf('=');if(at<0)out[body]=true;else out[body.slice(0,at)]=body.slice(at+1);}return out;}
 function evidenceSignature(task={}){
   const ev=uniq(task.evidence);
-  const explicit=ev.find(x=>x.startsWith('system-steward:failure-signature:'))||ev.find(x=>x.startsWith('failure-cause:'));
-  return clean(explicit?explicit.slice(explicit.indexOf(':')+1):task.blocker||task.lastOutcome);
+  const steward=[...ev].reverse().find(x=>x.startsWith('system-steward:failure-signature:'));
+  if(steward)return clean(steward.slice('system-steward:failure-signature:'.length));
+  const cause=[...ev].reverse().find(x=>x.startsWith('failure-cause:'));
+  if(cause)return clean(cause.slice('failure-cause:'.length));
+  return clean(task.blocker||task.lastOutcome);
 }
 function failureStage(task={}){
   const ev=uniq(task.evidence);
-  const explicit=ev.find(x=>x.startsWith('failure-stage:'));
-  return clean(explicit?explicit.slice('failure-stage:'.length):task.currentStep||task.phase||task.blocker||'UNKNOWN_STAGE');
+  const recoveryExact=[...ev].reverse().find(x=>x.startsWith('recovery-exact-stage:'));
+  if(recoveryExact)return clean(recoveryExact.slice('recovery-exact-stage:'.length));
+  const explicit=[...ev].reverse().find(x=>x.startsWith('failure-stage:'));
+  if(explicit)return clean(explicit.slice('failure-stage:'.length));
+  return clean(task.currentStep||task.phase||task.blocker||'UNKNOWN_STAGE');
 }
 function gameRepairRoute(task={}){
   const target=clean(task.target).toLowerCase();

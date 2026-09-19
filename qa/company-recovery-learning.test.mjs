@@ -35,6 +35,28 @@ test('cancelled or completed tasks never re-enter recovery escalation from stale
   assert.equal(result.queue.tasks.length,0);
 });
 
+test('recovery escalation normalizes steward signatures and reuses canonical exact stage',()=>{
+  const existing=enqueueRecovery({tasks:[]},{
+    sourceQueue:'vibe2',sourceTaskId:'g1',failureStage:'SOURCE_CANDIDATE_GENERATION',
+    failureSignature:'source-candidate-generation-failed',blastRadius:'portfolio:3',
+    relatedTaskIds:['g1','g2','g3'],
+    recoveryStrategy:'RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT',
+    verificationPlan:['RERUN_EXACT_FAILED_STAGE']
+  }).queue;
+  const result=escalateRecoveryCandidates({
+    gameQueueInput:{tasks:[
+      {id:'g1',status:'running',target:'web',sourceRoot:'web-games/g1',recoveryGeneration:1,evidence:['system-steward:failure-signature:source-candidate-generation-failed','recovery-exact-stage:SOURCE_CANDIDATE_GENERATION']},
+      {id:'g2',status:'running',target:'web',sourceRoot:'web-games/g2',recoveryGeneration:1,evidence:['system-steward:failure-signature:source-candidate-generation-failed','recovery-exact-stage:SOURCE_CANDIDATE_GENERATION']},
+      {id:'g3',status:'queued',target:'web',sourceRoot:'web-games/g3',recoveryGeneration:1,evidence:['system-steward:failure-signature:source-candidate-generation-failed','recovery-exact-stage:SOURCE_CANDIDATE_GENERATION']}
+    ]},
+    recoveryInput:existing
+  });
+  assert.equal(result.added.length,0);
+  assert.equal(result.queue.tasks.length,1);
+  assert.equal(result.queue.tasks[0].failureSignature,'source-candidate-generation-failed');
+  assert.equal(result.queue.tasks[0].failureStage,'SOURCE_CANDIDATE_GENERATION');
+});
+
 test('recovery learning requires deterministic pass and primary AI review',()=>{
   let q=enqueueRecovery({tasks:[]},{
     sourceQueue:'system-ai',sourceTaskId:'s1',failureStage:'MODEL_OUTPUT',
