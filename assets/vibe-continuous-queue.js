@@ -33,6 +33,21 @@ function normalizeConcurrencyLimit(value, fallback = DEFAULT_MAX_CONCURRENT_TASK
   return Math.max(1, Math.floor(raw));
 }
 
+const VIBE_EXECUTION_LANES = Object.freeze(['GAME_PRIMARY','RECOVERY_FAST','CONTROL_FAST','LEARNING_IDLE','RELEASE_WAIT']);
+function inferExecutionLane(input = {}) {
+  const status=clean(input.status).toLowerCase();
+  const blocker=clean(input.blocker);
+  const department=clean(input.department).toLowerCase();
+  const type=clean(input.type||'implementation').toLowerCase();
+  const evidence=(input.evidence||[]).map(clean);
+  if(status==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(blocker))return 'RELEASE_WAIT';
+  if(evidence.includes('learning-practice-only')||department==='learning'||(department==='development'&&type==='research'))return 'LEARNING_IDLE';
+  if(input.systemSteward===true||clean(input.executionLane).toUpperCase()==='RECOVERY_FAST'||evidence.some(value=>/^recovery-fast:|^recovery:|^repair-retry:/.test(value)))return 'RECOVERY_FAST';
+  if(department==='development'&&type==='implementation')return 'GAME_PRIMARY';
+  if(department==='system-supervision'||department==='system-ai'||['inspect','research','qa'].includes(type))return 'CONTROL_FAST';
+  const explicit=clean(input.executionLane).toUpperCase();
+  return VIBE_EXECUTION_LANES.includes(explicit)?explicit:'CONTROL_FAST';
+}
 function normalizeReleaseState(value) {
   const state = clean(value).toLowerCase();
   return VIBE_RELEASE_STATES.includes(state) ? state : 'other';
@@ -102,6 +117,7 @@ function normalizeTask(input = {}, index = 0) {
     target: clean(input.target) || 'auto',
     department: clean(input.department) || null,
     type: clean(input.type) || 'implementation',
+    executionLane: inferExecutionLane(input),
     goal: clean(input.goal),
     responsibleFiles: freezeList(input.responsibleFiles || []),
     dependencies: freezeList(input.dependencies || []),
@@ -199,7 +215,7 @@ function taskBlockedReasons(task, completed) {
   return freezeList(reasons);
 }
 function isGamePrimaryTask(task={}) {
-  return clean(task.department).toLowerCase()==='development' && clean(task.type).toLowerCase()==='implementation';
+  return clean(task.executionLane).toUpperCase()==='GAME_PRIMARY'||(clean(task.department).toLowerCase()==='development'&&clean(task.type).toLowerCase()==='implementation'&&clean(task.executionLane)==='');
 }
 function scoreTask(task, index) {
   const department=clean(task.department).toLowerCase();
@@ -516,6 +532,7 @@ export function summarizeVibeContinuousQueue(queueInput) {
     nextReleaseState: next.selected[0]?.releaseState || null,
     continueRequired: next.continueRequired,
     stopReason: next.stopReason,
+    executionLaneCounts: freeze(Object.fromEntries(VIBE_EXECUTION_LANES.map((lane)=>[lane,queue.tasks.filter((task)=>task.executionLane===lane&&['queued','running','blocked'].includes(task.status)).length]))),
     ownerDirectiveWaiting: queue.tasks.some((task) => task.ownerDirective && ['queued', 'running', 'blocked'].includes(task.status)),
     maxConcurrentTasks: queue.maxConcurrentTasks,
     persistentMaxConcurrentTasks: next.persistentMaxConcurrentTasks,
