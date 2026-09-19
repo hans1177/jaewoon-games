@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, generationAttemptBudget } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -26,6 +26,14 @@ function order({ target = 'unity', root = 'unity-games/demo', responsibleFiles =
   };
 }
 
+test('speculative candidates use a shorter retry budget without lowering primary gates',()=>{
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'primary'}),3);
+  assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'primary'}),4);
+  assert.equal(generationAttemptBudget({allowFullRewrite:false,variant:'speculative-1'}),2);
+  assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'speculative-1'}),3);
+  assert.equal(generationAttemptBudget({allowFullRewrite:true,variant:'speculative-4'}),3);
+});
+
 test('Unity text source produces isolated candidate without touching source', async () => {
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
@@ -41,6 +49,8 @@ test('Unity text source produces isolated candidate without touching source', as
   assert.equal(result.roleResults.exploration,'PASS');
   assert.equal(result.codingMethod.version,2);
   assert.equal(result.codingMethod.generationAttempts,1);
+  assert.equal(result.codingMethod.generationAttemptBudget,3);
+  assert.equal(result.codingMethod.speculativeAttemptBudgetApplied,false);
   assert.equal(result.codingMethod.candidateProducedFirstAttempt,true);
   assert.equal(result.codingMethod.writableScopeExpansionAllowed,false);
   assert.equal(result.codingMethod.learningAuthorityExpanded,false);
