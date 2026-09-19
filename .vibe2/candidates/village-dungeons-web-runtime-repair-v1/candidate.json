@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "var rad=20+(n%3)*12;",
+      "replace": "var rad=20+(n%3)*12; createEnemy(d.type,d.name,Math.cos(an)*rad,Math.sin(an)*rad,d.hp,d.atk,d.speed,d.color,false);"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
