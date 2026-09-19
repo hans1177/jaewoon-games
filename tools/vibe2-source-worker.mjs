@@ -255,7 +255,7 @@ function responseFileForAttempt(responseFile,responseFiles=[],attempt=1){
   const rows=Array.isArray(responseFiles)?responseFiles.map(clean).filter(Boolean):[];
   return rows[attempt-1]||clean(responseFile);
 }
-async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,focusedWebRepair=false}={}){
+async function generateCandidateWithRecovery({prompt,model,responseFile='',responseFiles=[],allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot='',focusedWebRepair=false}={}){
   let lastError=null;
   for(let attempt=1;attempt<=MAX_GENERATION_ATTEMPTS;attempt++){
     const retry=attempt>1;
@@ -274,6 +274,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     try{
       const raw=await requestLocalModel(attemptPrompt,{model,responseFile:fake,maxPredict,timeoutMs,contextWindow});
       const candidate=normalizeCandidate(raw,{target,responsibleFiles,sourceRootRelative,allowFullRewrite});
+      if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       return {candidate,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,focusedWebRepair,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow}};
     }catch(error){
       lastError=error;
@@ -296,7 +297,7 @@ function currentBranch(cwd){try{return clean(execFileSync('git',['rev-parse','--
 function assertCandidateBranch(cwd){const branch=currentBranch(cwd);if(!branch||branch==='main'||branch==='master'||!branch.startsWith('vibe2/candidate/'))throw new Error(`source 적용은 vibe2/candidate/* 브랜치에서만 허용: ${branch||'unknown'}`);return branch;}
 function applyNewFiles(root,newFiles){const changed=[];for(const file of newFiles){const target=path.join(root,file.path);if(fs.existsSync(target))throw new Error(`newFiles 대상이 이미 존재함: ${file.path}`);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content,'utf8');changed.push(file.path);}return changed;}
 function applyReplaceFiles(root,replaceFiles,{allowCreate=false}={}){const changed=[];for(const file of replaceFiles){const target=path.join(root,file.path);const exists=fs.existsSync(target)&&fs.statSync(target).isFile();if(!exists&&!allowCreate)throw new Error(`replaceFiles 대상 없음: ${file.path}`);if(!exists)fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content.endsWith('\n')?file.content:`${file.content}\n`,'utf8');changed.push(file.path);}return changed;}
-function createCandidateSnapshot(sourceRoot,candidateRoot,candidate){const changed=[];for(const edit of candidate.edits){const source=path.join(sourceRoot,edit.path),target=path.join(candidateRoot,'files',edit.path),before=fs.readFileSync(source,'utf8'),first=before.indexOf(edit.find);if(first<0||before.indexOf(edit.find,first+edit.find.length)>=0)throw new Error(`edit find 고유 일치 실패: ${edit.path}`);const after=before.slice(0,first)+edit.replace+before.slice(first+edit.find.length);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,after,'utf8');changed.push(edit.path);}for(const file of candidate.newFiles){const target=path.join(candidateRoot,'files',file.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content,'utf8');changed.push(file.path);}for(const file of candidate.replaceFiles){const target=path.join(candidateRoot,'files',file.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content.endsWith('\n')?file.content:`${file.content}\n`,'utf8');changed.push(file.path);}return[...new Set(changed)];}
+function createCandidateSnapshot(sourceRoot,candidateRoot,candidate){const changed=[];const filesRoot=path.join(candidateRoot,'files');for(const relative of unique(candidate.edits.map(edit=>edit.path))){const source=path.join(sourceRoot,relative),target=path.join(filesRoot,relative);fs.mkdirSync(path.dirname(target),{recursive:true});fs.copyFileSync(source,target);}if(candidate.edits.length)changed.push(...applyExactEdits(filesRoot,candidate.edits));for(const file of candidate.newFiles){const target=path.join(filesRoot,file.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content,'utf8');changed.push(file.path);}for(const file of candidate.replaceFiles){const target=path.join(filesRoot,file.path);fs.mkdirSync(path.dirname(target),{recursive:true});fs.writeFileSync(target,file.content.endsWith('\n')?file.content:`${file.content}\n`,'utf8');changed.push(file.path);}return[...new Set(changed)];}
 function designManifestContract(order={}){const design=order?.designIntelligence||{};return{required:design.required===true,version:Number(design.version||0)||null,pipeline:Array.isArray(design.pipeline)?design.pipeline.map(clean).filter(Boolean):[],implementationGate:{allowed:design?.implementationGate?.allowed===true,blockers:Array.isArray(design?.implementationGate?.blockers)?design.implementationGate.blockers.map(clean).filter(Boolean):[]},evidenceRequirements:{autoPlayer:'verified-runtime-play-evidence-required',telemetry:'verified-observed-metrics-required',designReview:'verified-pass-required-before-experience-memory',qa:'verified-qa-evidence-required'},authorityExpanded:false};}
 function waitingDesignEvidence(){return{autoPlayer:{status:'WAITING_EVIDENCE',verified:false},telemetry:{status:'WAITING_EVIDENCE',verified:false},designReview:{status:'WAITING_EVIDENCE',verified:false,decision:null},qa:{status:'WAITING_EVIDENCE',verified:false}};}
 
@@ -328,7 +329,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
       );
   if(!context.files.length)throw new Error('worker context 파일 없음');
   const prompt=buildPrompt(order,context,responsibleFiles,{allowFullRewrite,exploration,sourceRootBootstrap:bootstrap});
-  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,focusedWebRepair});
+  const generated=await generateCandidateWithRecovery({prompt,model,responseFile,responseFiles,allowFullRewrite,target,responsibleFiles,sourceRootRelative,sourceRoot,focusedWebRepair});
   const candidate=generated.candidate;
   const generation={...generated.generation,contextFiles:context.files.length,contextBytes:context.bytes};
   if(bootstrap&&(candidate.edits.length||candidate.newFiles.length||candidate.replaceFiles.length!==1||candidate.replaceFiles[0]?.path!=='index.html')){
