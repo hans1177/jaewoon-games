@@ -852,6 +852,7 @@ jobs:
             Number(baseCodingMethod?.fullWebExpansionStages)>0&&`coding-full-web-expansion-stages:${Number(baseCodingMethod.fullWebExpansionStages)}`,
             Number(baseCodingMethod?.intermediateGrowthTotalBytes)>0&&`coding-intermediate-growth-total:${Number(baseCodingMethod.intermediateGrowthTotalBytes)}`,
             Number(baseCodingMethod?.repeatedIntermediateOutputs)>0&&`coding-repeated-intermediate:${Number(baseCodingMethod.repeatedIntermediateOutputs)}`,
+            Array.isArray(baseCodingMethod?.expansionStageTargets)&&baseCodingMethod.expansionStageTargets.length&&`coding-expansion-stage-targets:${encodeURIComponent(JSON.stringify(baseCodingMethod.expansionStageTargets.slice(0,8)))}`,
             baseCodingMethod?.candidateProducedFirstAttempt===true?'coding-candidate-first-attempt:YES':baseCodingMethod?'coding-candidate-first-attempt:NO':'',
             Number(baseCodingMethod?.primaryTargets?.length||0)>0&&`coding-primary-target-count:${Number(baseCodingMethod.primaryTargets.length)}`,
             Number(baseCodingMethod?.primaryTargets?.length||0)>0&&`coding-primary-targets:${encodeURIComponent(JSON.stringify(baseCodingMethod.primaryTargets.slice(0,8)))}`,
