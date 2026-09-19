@@ -3971,7 +3971,16 @@
         "evidencePath": "design/survival/2026-09-19/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T03:30:29.591Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T03:30:29.591Z",
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:33:21.798Z"
     },
     {
       "version": 2,
@@ -7292,7 +7301,16 @@
         "evidencePath": "design/territory-war/2026-09-19/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T03:30:29.592Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T03:30:29.592Z",
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Tower Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "타워 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:33:17.136Z"
     },
     {
       "version": 2,
@@ -10630,7 +10648,7 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:33:17.881Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:29:04.417Z",
       "strictDesignReview": {
         "verdict": "PASS",
         "totalScore": 91.80000000000001,
@@ -16508,14 +16526,14 @@
         "recordedAt": "2026-09-19T03:31:07.850Z"
       },
       {
-        "gameId": "monster-adventure",
-        "seedId": "OWNER-ALL-DESIGN-RESET-MONSTER-ADVENTURE-20260917",
+        "gameId": "territory-war",
+        "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
         "reviewStage": "DESIGN_STRICT_REVIEW",
         "runtimeTarget": null,
         "verdict": "PASS",
         "totalScore": 91.80000000000001,
-        "previousScore": 91.80000000000001,
-        "scoreDelta": 0,
+        "previousScore": null,
+        "scoreDelta": null,
         "hardFailures": [],
         "resolvedHardFailures": [],
         "addedHardFailures": [],
@@ -16544,7 +16562,49 @@
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
-        "recordedAt": "2026-09-19T03:33:17.881Z"
+        "recordedAt": "2026-09-19T03:33:17.136Z"
+      },
+      {
+        "gameId": "survival",
+        "seedId": "OWNER-FULL-REBUILD-SURVIVAL-20260916",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "PASS",
+        "totalScore": 94.6,
+        "previousScore": 18.4,
+        "scoreDelta": 76.19999999999999,
+        "hardFailures": [],
+        "resolvedHardFailures": [
+          "CORE_FUN_WEAK",
+          "CRITICAL_AXIS_MINIMUM_FAIL"
+        ],
+        "addedHardFailures": [],
+        "rejectionReasons": [],
+        "improvementTargets": [
+          {
+            "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          },
+          {
+            "dimension": "CONTENT_EXPANSION_PLAN",
+            "current": 8,
+            "maxScore": 10,
+            "gap": 2
+          },
+          {
+            "dimension": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+            "current": 4,
+            "maxScore": 5,
+            "gap": 1
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-19T03:33:21.798Z"
       }
     ],
     "causeCounts": {
@@ -16570,7 +16630,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T03:33:17.882Z"
+    "updatedAt": "2026-09-19T03:33:21.799Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
