@@ -229,6 +229,18 @@ test('workers complete the current wave before one fan-in refill dispatch',()=>{
   assert(reserveBlock.indexOf('VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS') < reserveBlock.indexOf('vibe2-queue-control.mjs reserve-batch'));
 });
 
+test('24H push and safety-net cannot overlap an active worker wave',()=>{
+  assert(safetyNetWorkflow.includes('wave_ready: ${{ steps.queue_state.outputs.wave_ready }}'));
+  assert(safetyNetWorkflow.includes('active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}'));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_ACTIVE_WORKER_RESERVATIONS='));
+  assert(safetyNetWorkflow.includes('VIBE2_24H_WAVE_READY='));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.continue_required == 'YES' && needs.plan.outputs.wave_ready == 'YES'"));
+  assert(safetyNetWorkflow.includes("needs.continuous.result == 'success'"));
+  assert(workflow.includes('VIBE2_ACTIVE_WORKER_RESERVATIONS_BEFORE_RESERVE='));
+  assert(workflow.includes('VIBE2_RESERVE_GUARD=ACTIVE_WAVE_PRESENT'));
+  assert(workflow.includes("guard:'ACTIVE_WORKER_RESERVATION_PRESENT'"));
+});
+
 test('24H cycle serialization does not reuse the control-state lock',()=>{
   assert(safetyNetWorkflow.includes('concurrency:\n  group: vibe2-24h-cycle-main\n  cancel-in-progress: false'));
   assert(!safetyNetWorkflow.includes('concurrency:\n  group: vibe2-control-state-vibe2-unreal-core\n  cancel-in-progress: false\n\njobs:'));
