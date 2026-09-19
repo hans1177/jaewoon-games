@@ -788,6 +788,54 @@
       "createdAt": "2026-09-19T06:21:37.388Z",
       "lastVerifiedAt": "2026-09-19T06:21:37.388Z",
       "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
+    },
+    {
+      "version": 3,
+      "id": "supervised_bug-defense_35476177742_revise",
+      "gameId": "bug-defense",
+      "engine": "web",
+      "departments": [
+        "planning",
+        "development",
+        "qa"
+      ],
+      "taskType": "supervised-web-coauthoring",
+      "problem": "Vibe candidate was byte-identical to the failing main Web source and preserved a validation harness instead of implementing the approved bug-defense game.",
+      "goal": "Build a real playable bug-defense Web implementation from the 2026-09-19 approved design while preserving identity, progression meaning, mobile usability, and QA gates.",
+      "change": "Supervisor REVISE on candidate vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35476177742-1; decompose the next attempt into real wave analysis, spatial placement, counterplay, live combat, rewards, terminal states, retry, and mobile input.",
+      "outcome": "FAIL",
+      "failureCause": "NO_REAL_IMPLEMENTATION: candidate source blob equals current main; scope/session test controls remain; no pointer/touch placement, real spatial enemy loop, reachable win/loss, or persistent save/progression.",
+      "qa": [
+        "supervised-diff-review",
+        "candidate-source-identity-check",
+        "company-runtime-failure-evidence-review",
+        "mobile-playability-review"
+      ],
+      "build": null,
+      "evidence": [
+        "supervised-review:bug-defense:REVISE",
+        "candidate-branch:vibe2/candidate/bug-defense-web-runtime-repair-v1-primary-35476177742-1",
+        "candidate-sha:b90fe9c4045635244c320698b90ba869af72b947",
+        "candidate-source-blob:9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "main-source-blob:9716ae95462eb60c1706bfce059a70f0d08531f0",
+        "company-runtime-design:design/bug-defense/2026-09-19/design-revised.json",
+        "strict-design-score:94.6"
+      ],
+      "reusablePatterns": [],
+      "avoidPatterns": [
+        "Do not substitute scope-control or session-phase validation buttons for real gameplay mechanics.",
+        "Do not approve a gameplay repair candidate whose responsible source blob is unchanged while runtime failures remain.",
+        "Do not duplicate handler functions to inflate apparent mechanic coverage.",
+        "Do not fake spatial placement with counters or fixed positions; use real pointer/touch coordinates and entity positions.",
+        "Do not claim a complete run without reachable playing/win/loss states and retry flow."
+      ],
+      "verified": true,
+      "reusable": true,
+      "confirmations": 1,
+      "confidence": 0.5,
+      "createdAt": "2026-09-20",
+      "lastVerifiedAt": "2026-09-20",
+      "authority": "retrieval-context-only-no-automatic-gameplay-mutation"
     }
   ]
 }
