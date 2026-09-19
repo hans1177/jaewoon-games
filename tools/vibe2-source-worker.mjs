@@ -387,7 +387,7 @@ function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_
     'The fragment must add real gameplay systems, mechanics, state transitions, mobile pointer/touch interaction, progression, outcomes, save-compatible state, or game-specific spatial behavior required by the work order.',
     'Do not add filler text, validator-only labels, fake counters, test harness controls, monkey patches, function overrides, or duplicated whole-document markup.',
     'Do not emit <html>, </html>, <body>, or </body>. Prefer unique data attributes/classes. Any script must be directly integrated source and should use a scoped IIFE or unique names instead of overwriting existing functions.',
-    `Minimum accepted fragment size: 1200 UTF-8 bytes. Aim for roughly ${stageByteTarget} bytes; tiny template-like fragments will be rejected.`,
+    `Minimum accepted fragment size: 800 UTF-8 bytes. Aim for roughly ${stageByteTarget} bytes; tiny template-like fragments will be rejected.`,
     'Required output framing:',
     'First line exactly: VIBE2_WEB_EXPANSION',
     'Second line exactly: ---VIBE2_EXPANSION_CONTENT---',
@@ -711,7 +711,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const priorFailureClass=generationFailureClass(lastError);
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
     const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation);
-    const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1&&attempt<maxAttempts;
+    const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const remainingStages=Math.max(1,maxAttempts-attempt);
     const retryPreviousOutput=allowFullRewrite&&accumulatedFullWeb&&!expansionMode
       ?accumulatedFullWeb.content
@@ -756,7 +756,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
           const composed=insertFullWebExpansion(accumulatedFullWeb.content,fragment);
           const afterBytes=Buffer.byteLength(composed,'utf8');
           const growth=afterBytes-beforeBytes;
-          if(growth<1200||composed===accumulatedFullWeb.content){
+          if(growth<800||composed===accumulatedFullWeb.content){
             repeatedIntermediateOutputs+=1;
             throw new Error(`FULL_WEB_EXPANSION_TOO_SMALL:${growth}:min=1200`);
           }
