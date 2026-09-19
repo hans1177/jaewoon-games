@@ -1,5 +1,5 @@
 {
-  "version": 101,
+  "version": 102,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,30 +3069,35 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_ARCHITECTURE_DRIFT_AND_CODING_CONSTITUTION_PHASE4_2026-09-19",
+    "id": "VIBE2_STAGED_SOURCE_SYNTHESIS_AND_SYMBOL_CONTEXT_PHASE5_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_SEMANTIC_CALIBRATION_HOTSPOT_CORE_IMPLEMENTED_V100_2026-09-19",
-    "reason": "DOCUMENT_OBSERVE_FIRST_ARCHITECTURE_DRIFT_AND_VERIFIED_CONTEXTUAL_CODING_CONSTITUTION_BEFORE_CODE",
-    "implementationState": "PHASE_4_DOCUMENTED_PENDING_CODE",
+    "previousChangeRecordId": "VIBE2_ARCHITECTURE_DRIFT_AND_CODING_CONSTITUTION_PHASE4_2026-09-19",
+    "reason": "LIVE_20_WAVE_SHOWED_100_PERCENT_SOURCE_CANDIDATE_FAILURE_DOMINATED_BY_TIMEOUT_AND_FULL_REWRITE_SIZE;DOCUMENT_RESPONSIBILITY_FOCUSED_CONTEXT_AND_VALIDATED_INTERMEDIATE_SYNTHESIS_BEFORE_CODE",
+    "implementationState": "PHASE_5_DOCUMENTED_PENDING_CODE",
+    "evidence": {
+      "runId": 35438982255,
+      "sourceFailureClasses": "TIMEOUT:9,EDIT_MATCH:2,FULL_REWRITE_SIZE:7,NO_OP:1,MALFORMED_OUTPUT:1"
+    },
     "pending": [
-      "PREPATCH_ARCHITECTURE_SNAPSHOT",
-      "POSTPATCH_ARCHITECTURE_DRIFT_ANALYSIS",
-      "DRIFT_EVIDENCE_IN_IMMUTABLE_WORKER_RESULT",
-      "VERIFIED_DRIFT_CORRELATION_MEMORY",
-      "CONTEXTUAL_CODING_CONSTITUTION_PROMOTION_AND_REINJECTION"
+      "PRIMARY_SYMBOL_CONTEXT_COMPOSER",
+      "DIRECT_DEPENDENCY_CONTEXT_COMPOSER",
+      "EXACT_SNIPPET_EDIT_MATCH_CONTEXT",
+      "SAFE_LOOSE_WEB_EXPANSION_RECOVERY",
+      "INTERMEDIATE_WEB_GROWTH_DEDUP",
+      "STAGED_SYNTHESIS_TELEMETRY",
+      "CORE_QA_AND_LIVE_WAVE_REVALIDATION"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "verifiedLearningOnly": true,
-      "architectureDriftHardReject": false,
-      "codingConstitutionAdvisoryOnly": true,
+      "sameFileParallelWrite": false,
+      "finalWebMinimumNotLowered": true,
       "qualityGatesNotWeakened": true,
+      "impactPredictionCannotGrantWriteAuthority": true,
       "writableScopeExpansionAllowed": false,
-      "authorityExpanded": false,
       "directMainGameSourceWriteForbidden": true,
       "sourceWriteOnlyOnCandidateBranch": true
     }
@@ -3890,90 +3895,74 @@
       ]
     },
     "phase4": {
-      "status": "DOCUMENTED_IMPLEMENTATION_PENDING",
-      "authority": "OWNER_DIRECTIVE_2026-09-19",
-      "objective": "LEARN_ARCHITECTURE_DRIFT_RISK_AND_PROMOTE_ONLY_REPEATED_VERIFIED_CODING_METHOD_RULES",
-      "architectureDrift": {
-        "mode": "OBSERVE_SCORE_LEARN_BEFORE_ANY_HARD_GATE",
-        "baselineProducer": "TASK_LOCAL_EXPLORATION_RESPONSIBILITY_GRAPH",
-        "postPatchVerifier": "INCREMENTAL_QA_READ_ONLY_ANALYSIS",
-        "signals": [
-          "FUNCTION_NODE_COUNT",
-          "CALL_EDGE_COUNT",
-          "MAX_FUNCTION_BODY_BYTES",
-          "MAX_CALLS_PER_FUNCTION",
-          "MAX_STATE_WRITES_PER_FUNCTION",
-          "MULTI_WRITER_STATE_COUNT",
-          "TIMER_FUNCTION_COUNT",
-          "EVENT_BINDING_COUNT",
-          "MAX_SYSTEMS_PER_FUNCTION"
-        ],
-        "initialPolicy": {
-          "hardReject": false,
-          "emitRiskEvidence": true,
-          "addFocusedReviewWhenHigh": true,
-          "correlateOnlyWithVerifiedRegressionAndReviewOutcomes": true
-        },
-        "severeGrowthExamples": [
-          "GOD_FUNCTION_GROWTH",
-          "STATE_WRITER_FANOUT_GROWTH",
-          "TIMER_OR_EVENT_ACCUMULATION",
-          "CROSS_SYSTEM_MUTATION_GROWTH"
-        ],
-        "promotionToHardPolicyRequires": "MULTIPLE_VERIFIED_CORRELATED_REGRESSIONS_AND_SEPARATE_DOCUMENTED_POLICY_CHANGE",
-        "scopeExpansionAllowed": false,
-        "qaBypassAllowed": false
+      "state": "IMPLEMENTED_QA_RECHECK_PENDING",
+      "implementationEvidence": {
+        "responsibilityArchitectureCompare": "c217e12a7b62c5e60c553c249d435ff96aa43924",
+        "prepatchSnapshot": "3dc615ed3829bdaad8ccb3a7a4bd2b6ff49b2e48",
+        "postpatchDrift": "0171a93a894be4b7987fa394ba3d8566c6bd2a34",
+        "driftQa": "bb600c48df1ad1f4350377c187bfe590cb791c4c",
+        "immutableDriftEvidence": "5b0bf9832133df515788359678e565b42770c5c3",
+        "driftLearningAndConstitution": "5de8d3b1e0d84501390f7980103136f2465568a3",
+        "workOrderReinjection": "9bd601c2413db94621eb2fd93b63de0db12cc27b",
+        "impactPredictionReadOnlyFix": "b91d89c533e82af258ff3e0672a332183cfbe593",
+        "semanticBoundaryQaPassHead": "f61f594a104b8c20d2915db22924a6072b472352"
       },
-      "codingConstitution": {
-        "mode": "VERIFIED_CONTEXTUAL_ADVISORY_RULES",
-        "source": "CODING_STRATEGY_MEMORY",
-        "candidateRuleKey": [
-          "FAILURE_FINGERPRINT",
-          "STRATEGY"
-        ],
-        "promotionRequires": [
-          "STRATEGY_STATE_PREFERRED",
-          "AT_LEAST_5_GLOBAL_VERIFIED_APPLICATIONS",
-          "AT_LEAST_2_INDEPENDENT_GAMES_GLOBALLY",
-          "AT_LEAST_3_VERIFIED_APPLICATIONS_FOR_FAILURE_FINGERPRINT",
-          "AT_LEAST_2_INDEPENDENT_GAMES_FOR_FAILURE_FINGERPRINT",
-          "FIRST_CANDIDATE_PASS_RATE_AT_LEAST_60_PERCENT",
-          "NO_QUALITY_GATE_BYPASS",
-          "NO_AUTHORITY_EXPANSION"
-        ],
-        "ruleEffect": "ADVISE_CODING_ORDER_AND_STRATEGY_ONLY",
-        "mayNot": [
-          "EXPAND_WRITABLE_SCOPE",
-          "REMOVE_REQUIRED_QA",
-          "CHANGE_PROTECTED_GAMEPLAY_VALUES",
-          "CHANGE_SAVE_MEANING",
-          "OVERRIDE_OWNER_OR_CENTRAL_POLICY"
-        ],
-        "decay": "VERIFIED_CONTEXT_FAILURES_CAN_LOWER_OR_DEPRECATE_RULE_PRIORITY_WITHOUT_DELETING_HISTORY"
-      },
-      "evidenceChain": [
-        "PREPATCH_ARCHITECTURE_SNAPSHOT",
-        "COMPILED_EDIT_CONTRACT",
-        "POSTPATCH_ARCHITECTURE_SNAPSHOT",
-        "ARCHITECTURE_DRIFT_SCORE",
-        "INCREMENTAL_QA",
-        "CAUSAL_REPLAY_WHEN_EXECUTABLE",
-        "FAN_IN_REGRESSION",
-        "REVIEW",
-        "STRATEGY_AND_CONSTITUTION_LEARNING"
-      ],
       "invariants": {
-        "gamePrimaryWave20": true,
-        "planningBacklogMinimum40Target60": true,
-        "taskLocalExploration": true,
-        "fanInOnlyRefill": true,
-        "architectureDriftInitialHardGate": false,
-        "codingConstitutionAdvisoryOnly": true,
-        "verifiedLearningOnly": true,
-        "qualityGatesNotWeakened": true,
-        "writableScopeExpansionAllowed": false,
-        "directMainGameSourceWriteForbidden": true,
-        "sourceWriteOnlyOnCandidateBranch": true
+        "driftObserveFirst": true,
+        "driftCannotExpandAuthority": true,
+        "constitutionAdvisoryOnly": true,
+        "impactPredictionCannotGrantWriteAuthority": true
+      }
+    },
+    "stagedSourceSynthesis": {
+      "version": 1,
+      "status": "DOCUMENTED_IMPLEMENTATION_PENDING",
+      "objective": "REPLACE_GIANT_ONE_SHOT_SOURCE_GENERATION_WITH_RESPONSIBILITY_FOCUSED_CONTEXT_AND_VALIDATED_INTERMEDIATE_BUILD_STAGES",
+      "triggerEvidence": {
+        "sourceRunId": 35438982255,
+        "failureRatePct": 100,
+        "bottleneck": "SOURCE_CANDIDATE_GENERATION",
+        "failureClasses": {
+          "TIMEOUT": 9,
+          "EDIT_MATCH": 2,
+          "FULL_REWRITE_SIZE": 7,
+          "NO_OP": 1,
+          "MALFORMED_OUTPUT": 1
+        }
+      },
+      "preserveFinalQualityGate": true,
+      "intermediateArtifactsAreNotCandidatesForPromotion": true,
+      "focusedRepair": {
+        "contextMode": "PRIMARY_RESPONSIBILITY_SYMBOLS_PLUS_DIRECT_DEPENDENCIES_PLUS_REQUIRED_PRESERVE_CONTEXT",
+        "fullFileContextFallbackOnlyWhenResponsibilityCannotBeResolved": true,
+        "exactSourceSnippetsRequiredForEditMatch": true,
+        "impactPredictionReadOnly": true,
+        "writableScopeExpansionAllowed": false
+      },
+      "fullWebBootstrap": {
+        "mode": "FOUNDATION_THEN_ADDITIVE_FEATURE_UNITS",
+        "foundationMayBeBelowFinalFootprint": true,
+        "foundationMustBeSyntacticallyCompletePlayableShell": true,
+        "additiveStagesMustIncreaseRealGameplayFunctionality": true,
+        "repeatedIdenticalIntermediateOutputRejected": true,
+        "looseSafeFragmentRecoveryAllowed": true,
+        "finalMinimumFootprintUnchanged": true,
+        "finalCanonicalQaUnchanged": true
+      },
+      "telemetry": [
+        "FOCUSED_SYMBOL_CONTEXT_BYTES",
+        "FOCUSED_SYMBOL_COUNT",
+        "INTERMEDIATE_WEB_BYTES_PER_STAGE",
+        "INTERMEDIATE_WEB_GROWTH_BYTES",
+        "REPEATED_INTERMEDIATE_OUTPUT",
+        "FINAL_GENERATION_FAILURE_CLASS"
+      ],
+      "learning": {
+        "compareFirstCandidatePassByContextMode": true,
+        "compareTimeoutRateByContextMode": true,
+        "compareEditMatchRateByContextMode": true,
+        "compareFullRewriteGrowthEfficiency": true,
+        "verifiedOnly": true
       }
     }
   },
