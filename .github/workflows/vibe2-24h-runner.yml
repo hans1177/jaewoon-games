@@ -349,7 +349,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-plan-summary.log
+          node /tmp/vibe2-main/tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-plan-summary.log
           continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-plan-summary.log | tail -n1)"
           case "${continue_required:-NO}" in
             YES|NO) ;;
