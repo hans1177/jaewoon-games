@@ -1,5 +1,5 @@
 {
-  "version": 75,
+  "version": 76,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1368,7 +1368,7 @@
         "gameRuntimeEvidenceStillRequiredForGameLearning": true
       },
       "developmentBottleneckFocus": {
-        "version": 75,
+        "version": 76,
         "authority": "OWNER_DIRECTIVE_2026-09-19",
         "enabled": true,
         "priority": "DEVELOPMENT_AND_RELEASE_BOTTLENECK_FIRST",
@@ -1440,7 +1440,9 @@
             "latestCoreQaRun": "35431344381",
             "latestCoreQa": "PASS",
             "latestIntegratedRegressionRun": "35431344404",
-            "latestIntegratedRegression": "PASS"
+            "latestIntegratedRegression": "PASS",
+            "fanInRefillCanonicalWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+            "nonexistentFanInRefillWorkflowReferenceRemoved": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -1450,7 +1452,8 @@
             "ALLOW_ONE_BOUNDED_240_SECOND_THIRD_FULL_WEB_RETRY_ONLY_AFTER_UNDERSIZED_FULL_WEB_OUTPUT_WITH_THE_EXISTING_MINIMUM_SIZE_GATE_UNCHANGED",
             "RUN_DETERMINISTIC_AUTO_PLANNER_INSIDE_FANIN_REFILL_RESERVE_BEFORE_RESERVE_BATCH",
             "REFRESH_EXISTING_QUEUED_FAILED_OR_BLOCKED_EXACT_WEB_REPAIR_GOALS_FROM_LATEST_COMPANY_RUNTIME_ROUTING_BLOCKERS_BEFORE_THE_NEXT_FANIN_ONLY_WAVE",
-            "KEEP_CANDIDATE_IDENTITY_GATE_AND_FULL_REGRESSION_UNCHANGED"
+            "KEEP_CANDIDATE_IDENTITY_GATE_AND_FULL_REGRESSION_UNCHANGED",
+            "REMOVE_NONEXISTENT_VIBE2_FANIN_REFILL_WORKFLOW_REFERENCE_AND_KEEP_CONTINUOUS_CORE_AS_THE_SINGLE_CANONICAL_FANIN_REFILL_OWNER"
           ],
           "codeBindings": [
             "tools/vibe2-source-worker.mjs",
@@ -1460,8 +1463,7 @@
             "qa/vibe2-source-worker.test.mjs",
             "qa/vibe2-controller-contract.test.mjs",
             "qa/vibe2-auto-planner.test.mjs",
-            "company-learning/platform-release-roadmap.json",
-            ".github/workflows/vibe2-fanin-refill.yml"
+            "company-learning/platform-release-roadmap.json"
           ],
           "repairCommits": [
             "4e14cde97f53af4c03fe96bb655300b98b538418",
@@ -1580,7 +1582,8 @@
           "sourceGenerationFailureTelemetry": "FIXED",
           "focusedThirdRetry": "FIXED_QA_PASS_PENDING_LIVE",
           "fanInRefillPlannerSync": "FIXED_QA_PASS_PENDING_LIVE",
-          "sourceGenerationCausalTelemetry": "FIXED_QA_PASS_PENDING_LIVE"
+          "sourceGenerationCausalTelemetry": "FIXED_QA_PASS_PENDING_LIVE",
+          "fanInRefillCanonicalWorkflow": ".github/workflows/vibe2-continuous-core.yml"
         },
         "incidentHistory": [
           {
@@ -2947,46 +2950,25 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_SOURCE_GENERATION_TAIL_AND_REFILL_RECOVERY_2026-09-19",
+    "id": "VIBE2_DOCUMENT_CODE_FANIN_BINDING_CORRECTION_2026-09-19",
     "documentIsCode": true,
-    "reason": "KEEP_GAME_PRIMARY_20_WAVE_RUNNING_WHILE_REMOVING_SOURCE_GENERATION_TAIL_AND_CAUSAL_RETRY_BLINDNESS",
+    "reason": "REMOVE_NONEXISTENT_WORKFLOW_REFERENCE_AND_BIND_FANIN_ONLY_REFILL_TO_THE_ACTUAL_CONTINUOUS_CORE_IMPLEMENTATION",
     "files": [
-      "tools/vibe2-source-worker.mjs",
       ".github/workflows/vibe2-continuous-core.yml",
-      ".github/workflows/vibe2-fanin-refill.yml",
-      "qa/vibe2-source-worker.test.mjs",
-      "qa/vibe2-controller-contract.test.mjs",
       "company-learning/platform-release-roadmap.json"
-    ],
-    "commits": [
-      "4e14cde97f53af4c03fe96bb655300b98b538418",
-      "389736d2a9248aa010bcc9b3c25f11b1731dcf77",
-      "7f38daa65e7b4b911d6b22a6aa14d80565e5c1d6",
-      "93cf859d5c343c61cfca64372debb62a99ffcf10",
-      "9ba763b7006f7907e4b02437396dfb3839f04818",
-      "17fe95b129da50db00b6e62cf76a0322a961f27e",
-      "c12d391535d3c4cf60f3872279b4a942bb5b842d",
-      "7952985b201eacaa9425fcfabc0128fdabb5ebee"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
-      "systemAiNonblocking": true,
-      "fullRegressionNotWeakened": true,
-      "fullWebMinimumSizeGateNotWeakened": true,
-      "causalGenerationFailureTelemetryRequired": true,
-      "boundedRecoveryOnly": true
+      "fanInRefillCanonicalWorkflow": ".github/workflows/vibe2-continuous-core.yml",
+      "nonexistentWorkflowReferenceAllowed": false
     },
-    "liveEvidence": {
-      "activeRun": "35430996704",
-      "pinnedContractSha": "02d42674c3505420d2e974e055a76d6695850f84",
-      "completedWorkers": 13,
-      "inProgressWorkers": 7,
-      "latestRepairHead": "7952985b201eacaa9425fcfabc0128fdabb5ebee",
-      "coreQa": "PASS",
-      "integratedRegression": "PASS"
-    }
+    "verifiedEvidence": [
+      "MAIN_WORKFLOW_DIRECTORY_HAS_NO_vibe2-fanin-refill.yml",
+      "vibe2-continuous-core.yml_ACCEPTS_repository_dispatch_TYPE_vibe2-fanin-refill",
+      "vibe2-continuous-core.yml_CONTAINS_FANIN_REFILL_PLANNER_SYNC_BEFORE_RESERVE"
+    ]
   }
 }
