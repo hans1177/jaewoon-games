@@ -1,5 +1,5 @@
 {
-  "version": 142,
+  "version": 143,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1964,7 +1964,18 @@
               "sourceWorkerAssertions": 34,
               "workflowAssertions": 6,
               "failing": 0
-            }
+            },
+            "cleanWave35447976923": {
+              "pinnedContractSha": "af623808436c3f0b470bfac5fac9a06d1337d82f",
+              "latestFixesPresent": true,
+              "observedWorkerState": {
+                "completed": 0,
+                "inProgress": 8,
+                "queued": 12
+              },
+              "runnerCapacityObservation": "GITHUB_HOSTED_RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION"
+            },
+            "fastPreflightExecutionMarkerPendingNextRun": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3520,7 +3531,7 @@
     "documentationFirst": true,
     "previousChangeRecordId": "VIBE2_FULL_WEB_EXPANSION_DOCUMENT_SEED_RECOVERY_2026-09-19",
     "reason": "RECENT_20_WAVES_SPENT_FULL_WORKER_TIME_BEFORE_FAN_IN_DISCOVERED_STALE_OR_BROKEN_CONTRACT_TESTS. RUN_FAST_SOURCE_QUEUE_PARALLELISM_REGRESSION_ON_THE_PINNED_MAIN_SNAPSHOT_BEFORE_ANY_EXPENSIVE_WORKER_RESERVATION_SO_A_BROKEN_CONTRACT_CANNOT_LAUNCH_A_20_WORKER_WAVE.",
-    "implementationState": "WORKFLOW_AND_REGRESSION_TEST_COMMITTED_NEXT_RESERVE_EFFECT_PENDING",
+    "implementationState": "NEXT_CLEAN_WAVE_RUNNING_CONTRACT_INCLUDES_GATE_WORKFLOW_EXECUTION_MARKER_PENDING_NEXT_RUN",
     "evidence": {
       "observedWasteCases": [
         {
@@ -3546,6 +3557,22 @@
       "workflowStaticAssertions": {
         "count": 6,
         "failing": 0
+      },
+      "cleanWave": {
+        "runId": 35447976923,
+        "pinnedContractSha": "af623808436c3f0b470bfac5fac9a06d1337d82f",
+        "pinnedSourceIncludesLatestFixes": true,
+        "pinnedWorkflowIncludesFastPreflight": true,
+        "reserveLogFastPreflightMarkerObserved": false,
+        "interpretation": "RUN_WORKFLOW_SNAPSHOT_PREDATES_FAST_PREFLIGHT_STEP_BUT_PINNED_MAIN_CONTRACT_CONTAINS_IT"
+      },
+      "runnerCapacityObservation": {
+        "workersTotal": 20,
+        "workersInProgress": 8,
+        "workersQueued": 12,
+        "workflowMaxParallelConfigured": null,
+        "constraint": "GITHUB_HOSTED_RUNNER_CAPACITY_OR_STARTUP_SERIALIZATION",
+        "paidRunnerEnabled": false
       }
     },
     "contract": {
@@ -3568,10 +3595,11 @@
       "regressionContract": "cb11104e4c7c51ba7a478a7629923c382767bfbc"
     },
     "pending": [
-      "NEXT_CLEAN_RESERVE_SHOWS_VIBE2_RESERVE_FAST_REGRESSION_PASS_BEFORE_WORKER_MATRIX",
-      "CONFIRM_BROKEN_PRELIGHT_BLOCKS_RESERVATION_WITH_ZERO_WORKERS",
-      "VERIFY_FAN_IN_FULL_REGRESSION_STILL_PASSES",
-      "MEASURE_AVOIDED_REWORK_AFTER_CONTRACT_FAILURE"
+      "CLEAN_WAVE_35447976923_COMPLETE_AND_FAN_IN",
+      "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
+      "NEXT_RUN_EXECUTES_VIBE2_RESERVE_FAST_REGRESSION_MARKER",
+      "MEASURE_ACTUAL_PEAK_CONCURRENCY_AND_QUEUE_WAIT",
+      "KEEP_FREE_RUNNER_POLICY"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
