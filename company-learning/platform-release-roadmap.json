@@ -1,5 +1,5 @@
 {
-  "version": 30,
+  "version": 31,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -61,8 +61,8 @@
     "representativeSetSizePerPlatform": 6,
     "globalPortfolioCap": false,
     "forcedReleaseCount": false,
-    "implementationWipTarget": 30,
-    "implementationWipMax": 30,
+    "implementationWipTarget": null,
+    "implementationWipMax": null,
     "implementationWipScope": "GLOBAL_SELECTED_PLATFORM_DEVELOPMENT",
     "webValidationParallelismUnchanged": true,
     "unityHistoricalSixPreserved": true,
@@ -75,7 +75,8 @@
       "STORY_RPG_ADVENTURE_RPG"
     ],
     "robloxMandatoryContinuityCategory": "STORY_RPG_ADVENTURE_RPG",
-    "fortniteUefnIndependentSixRequired": true
+    "fortniteUefnIndependentSixRequired": true,
+    "implementationWipPolicy": "UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_PROVIDER_CAPACITY_ONLY"
   },
   "commonExecutionContract": {
     "router": "tools/company-selected-platform-router.mjs",
@@ -109,7 +110,7 @@
   "developmentSpeedExecution": {
     "scope": "EXECUTION_SPEED_ONLY",
     "qualityOrEvidenceGateWeakeningForbidden": true,
-    "globalSelectedPlatformDevelopmentWipMax": 30,
+    "globalSelectedPlatformDevelopmentWipMax": null,
     "webValidationParallelismControlledSeparately": true,
     "runtimeRunnerCapacityMaySerializeRuntimeQa": true,
     "canonicalSequence": [
@@ -140,8 +141,12 @@
     "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
     "cronMustNotBePrimaryProgressionEngine": true,
     "existingEventChainPreferred": true,
-    "globalAdaptiveParallelMax": 30,
-    "parallelismMode": "ADAPTIVE_30_SOFT_RESERVATION_WORK_STEALING"
+    "globalAdaptiveParallelMax": null,
+    "parallelismMode": "UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_WAVES",
+    "externalMatrixBatchMax": 256,
+    "immediateWaveRefill": true,
+    "freeAiCapacityMustBeMaximized": true,
+    "internalArtificialConcurrencyCapsForbidden": true
   },
   "phases": [
     {
@@ -1545,6 +1550,85 @@
         "WORKER_CONTEXT_ARCHITECTURE_SHA256",
         "WORKER_CONTEXT_SYNC=PASS"
       ]
+    },
+    "primaryAiOrchestration": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "orchestrator": "CHATGPT_PRIMARY_AI",
+      "role": "PRIMARY_AI_SYSTEM_ORCHESTRATOR_AND_REVIEWER",
+      "scope": [
+        "ROADMAP_IMPLEMENTATION",
+        "SYSTEM_BOTTLENECK_RESOLUTION",
+        "WORKFLOW_AND_CI_CHANGES",
+        "QUEUE_AND_PLANNER_CHANGES",
+        "ARCHITECTURE_CHANGES",
+        "COMMON_TOOLING",
+        "SYSTEM_PERFORMANCE_AND_LOADING_OPTIMIZATION"
+      ],
+      "responsibilities": [
+        "READ_CENTRAL_POLICY_LOG_MAP_ARCHITECTURE_FIRST",
+        "SELECT_HIGHEST_IMPACT_BOTTLENECK",
+        "DECOMPOSE_WORK_INTO_INDEPENDENT_TASKS",
+        "ISSUE_EXPLICIT_TASK_CONTRACTS_TO_EXTERNAL_AI_WORKERS",
+        "REVIEW_WORKER_OUTPUT_AND_VERIFIED_EVIDENCE",
+        "ISSUE_REWORK_INSTRUCTIONS_WHEN_REVIEW_FAILS",
+        "AUTHORIZE_SYSTEM_TASK_COMPLETION_ONLY_AFTER_REVIEW_PASS",
+        "SYNC_CENTRAL_POLICY_LOG_MAP_ARCHITECTURE_AFTER_ACCEPTED_CHANGE"
+      ],
+      "gameSourceAuthoring": false,
+      "gameImplementationOwner": [
+        "VIBE2",
+        "VIBE3"
+      ],
+      "externalAiWorkerPolicy": {
+        "role": "ASSIGNED_TASK_EXECUTOR_ONLY",
+        "maySelfPromoteToOrchestrator": false,
+        "mayCreatePolicy": false,
+        "mayExpandOwnScope": false,
+        "mayIssueFinalSystemCompletionVerdict": false,
+        "mustLoadSharedContext": true,
+        "mustReturnChangedScope": true,
+        "mustReturnVerificationEvidence": true,
+        "mustReturnFailureStageAndSignatureOnFailure": true
+      },
+      "reviewLoop": [
+        "PRIMARY_AI_PLAN_AND_ASSIGN",
+        "EXTERNAL_AI_EXECUTE",
+        "DETERMINISTIC_QA_AND_EVIDENCE",
+        "PRIMARY_AI_REVIEW",
+        "PRIMARY_AI_REWORK_OR_ACCEPT",
+        "REPEAT_UNTIL_ACCEPTED_OR_OWNER_STOP"
+      ],
+      "reworkLimit": "NO_INTERNAL_FIXED_LIMIT",
+      "stopConditions": [
+        "OWNER_STOP",
+        "SAFETY_OR_AUTHORITY_BLOCK",
+        "EXTERNAL_PROVIDER_UNAVAILABLE_WITH_NO_SAFE_FALLBACK",
+        "NO_VERIFIABLE_PROGRESS"
+      ],
+      "finalSystemAcceptanceAuthority": "PRIMARY_AI_AFTER_VERIFIED_EVIDENCE",
+      "ordinaryGameDevelopmentContinuesUnderVibeAndDeterministicQa": true
+    },
+    "freeAiExecution": {
+      "version": 1,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "policy": "MAXIMIZE_ALL_AUTHORIZED_FREE_AI_CAPACITY",
+      "paidApiAllowed": false,
+      "internalWorkerCountLimit": null,
+      "externalProviderCapacityIsOnlyConcurrencyBoundary": true,
+      "externalMatrixBatchMax": 256,
+      "immediateNextWaveRequired": true,
+      "oneWorkerPerIndependentTaskPreferred": true,
+      "idleFreeCapacityMayRunVerifiedLearningAndDiagnostics": true,
+      "loadingOptimization": {
+        "sharedModelCacheRequired": true,
+        "runtimeBinaryCacheRequired": true,
+        "modelPrewarmOncePerWorkflow": true,
+        "duplicateModelPullForbidden": true,
+        "workerPullOnlyOnCacheMiss": true,
+        "contentHashQaCacheRequired": true,
+        "sharedPreparationSinglePass": true
+      }
     }
   },
   "authority": "MACHINE_EXECUTION_CONTRACT",
