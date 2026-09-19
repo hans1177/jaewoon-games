@@ -119,13 +119,13 @@ jobs:
             echo "HOMEPAGE_CATALOG_PATH=/tmp/homepage-runtime/game-catalog.json" >> "$GITHUB_ENV"
             echo "HOMEPAGE_STATUS_PATH=/tmp/homepage-runtime/company-status.json" >> "$GITHUB_ENV"
             echo 'HOMEPAGE_RUNTIME_SOURCE=COMPANY_RUNTIME'
-            if [[ "${{ github.event_name }}" == 'workflow_run' && "${{ github.event.workflow_run.name }}" == 'Company Status Sync' ]]; then
+            if [[ "${{ github.event_name }}" == 'workflow_run' ]]; then
               echo 'HOMEPAGE_PUBLIC_STATUS_SYNC=YES' >> "$GITHUB_ENV"
-              echo 'HOMEPAGE_STATUS_SYNC_TRIGGER=COMPANY_STATUS_SYNC_SUCCESS'
+              echo "HOMEPAGE_STATUS_SYNC_TRIGGER=${{ github.event.workflow_run.name }}_SUCCESS"
             fi
           else
-            if [[ "${{ github.event_name }}" == 'workflow_run' && "${{ github.event.workflow_run.name }}" == 'Company Status Sync' ]]; then
-              echo 'Company Status Sync completed successfully but company-runtime could not be fetched.' >&2
+            if [[ "${{ github.event_name }}" == 'workflow_run' ]]; then
+              echo "Successful runtime workflow could not bind company-runtime: ${{ github.event.workflow_run.name }}" >&2
               exit 1
             fi
             echo "HOMEPAGE_CATALOG_PATH=game-catalog.json" >> "$GITHUB_ENV"
@@ -145,7 +145,7 @@ jobs:
           echo "HOMEPAGE_STATUS_PATH=company-status.json" >> "$GITHUB_ENV"
           echo 'HOMEPAGE_VERIFIED_PUBLIC_STATUS_CANDIDATE=READY'
 
-      - name: Sync top rated validated test candidates
+      - name: Sync validation evidence candidates
         if: github.event_name != 'pull_request'
         shell: bash
         run: |
