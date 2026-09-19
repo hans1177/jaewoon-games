@@ -1,5 +1,5 @@
 {
-  "version": 83,
+  "version": 84,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3053,15 +3053,17 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FULL_WEB_EXPANSION_RECOVERY_2026-09-19",
+    "id": "VIBE2_FOCUSED_FINAL_TIMEOUT_AND_FULL_WEB_RECOVERY_2026-09-19",
     "documentIsCode": true,
-    "reason": "MAKE_VALIDATOR_SCALE_FULL_WEB_OUTPUT_A_GENERATION_SUCCESS_CONDITION_AND_FEED_THE_ACTUAL_UNDERSIZED_CANDIDATE_INTO_BOUNDED_RETRY_SO_THE_MODEL_EXPANDS_WORKING_GAMEPLAY_INSTEAD_OF_RESTARTING_AS_A_TINY_SHELL",
+    "reason": "REMOVE_MEASURED_FINAL_FOCUSED_WEB_REPAIR_TIMEOUT_BOTTLENECK_WHILE_PRESERVING_VALIDATOR_SCALE_FULL_WEB_ACCEPTANCE_EDIT_APPLICABILITY_RETRY_AND_FAN_IN_DRIFT_ISOLATION",
     "files": [
       "tools/vibe2-source-worker.mjs",
       "qa/vibe2-source-worker.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ],
     "commits": [
+      "3f87d282cbcee15851d38e32bd166f550804457f",
+      "dde979b3e4a633ddb4bf04fabee28cbebcecda26",
       "42366528543fece2da21f40b2803fc840f6f79a5",
       "6ae476a24b3b88130b457912b0221b16fec0772a",
       "ab3a6cd0274e89eabc2b0f57147fce950048f917",
@@ -3077,60 +3079,50 @@
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
       "systemAiNonblocking": true,
+      "qualityGatesNotWeakened": true,
       "parserFullWebMinimumBytes": 1800,
-      "parserFullWebMaximumBytes": 260000,
-      "downstreamQualityGatesNotWeakened": true,
+      "fullWebGenerationAcceptanceMinBytes": 12000,
       "directMainGameSourceWriteForbidden": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "candidateRegressionPinnedToReserveContract": true,
       "controllerOrchestrationQaLatestMain": true
     },
-    "fullWebRecoveryContract": {
-      "defaultGenerationAcceptanceMinBytes": 12000,
-      "defaultGenerationTargetMaxBytes": 24000,
-      "validatorFootprintRequirementMayRaiseMinimum": true,
-      "parserSafetyFloorStill1800": true,
-      "previousUndersizedCandidateCarriedIntoRetry": true,
-      "previousCandidateExcerptBounded": true,
-      "retryExpandsExistingImplementation": true,
-      "fillerPaddingForbidden": true,
-      "attemptFailureClassTelemetry": true,
-      "attemptOutputByteTelemetry": true,
-      "maxGenerationAttempts": 3,
-      "finalRetryMaxPredict": 6144,
-      "finalRetryTimeoutMs": 360000
+    "timeoutContract": {
+      "focusedRepairAttempt1Ms": 240000,
+      "focusedRepairAttempt2Ms": 240000,
+      "compactFinalRetryMs": 150000,
+      "compactFinalRetryContextWindow": 16384,
+      "compactFinalRetryMaxPredict": 768,
+      "reason": "FOUR_FRESH_WORKERS_EXHAUSTED_240S_240S_90S_AND_FAILED_AT_THE_COMPACT_FINAL_TIMEOUT_BOUNDARY"
     },
-    "editRecoveryContract": {
-      "applicabilityDryRunBeforeGenerationSuccess": true,
-      "exactEditMatcherSingleAuthority": "tools/autonomous-safe-edit.mjs",
-      "editMatchUsesBoundedGenerationRetry": true
+    "fullWebRecoveryContract": {
+      "validatorScaleGenerationAcceptance": true,
+      "defaultGenerationMinBytes": 12000,
+      "defaultGenerationMaxBytes": 24000,
+      "previousUndersizedCandidateCarriedIntoRetry": true,
+      "attemptOutputByteTelemetry": true
     },
     "liveEvidence": {
       "runId": "35432498255",
       "pinnedContractSha": "414aa2ef484ed51c86786127565e3c8b53014804",
-      "observedPasses": [
-        {
-          "gameId": "egg-heist",
-          "attempts": 1,
-          "candidateMs": 99871
-        },
-        {
-          "gameId": "seed-idle-growth-rpg-crystal-bloom",
-          "attempts": 2,
-          "candidateMs": 225238
-        }
-      ],
-      "observedFailure": {
-        "gameId": "survival2",
-        "failureClass": "FULL_REWRITE_SIZE",
-        "attempts": 3,
-        "finalOutputBytes": 1262,
-        "priorGenerationTargetMinBytes": 12000,
-        "parserMinimumBytes": 1800
+      "completedSample": 16,
+      "resultCounts": {
+        "pass": 5,
+        "timeout": 4,
+        "fullRewriteSize": 4,
+        "noOp": 2,
+        "editMatch": 1
       },
-      "conclusion": "PROMPT_TARGET_ALONE_WAS_INSUFFICIENT;GENERATION_ACCEPTANCE_AND_CANDIDATE_EXPANSION_RECOVERY_NOW_REQUIRED",
-      "currentWavePredatesThisRecovery": true,
-      "nextFreshContractMustIncludeAtLeast": "6ae476a24b3b88130b457912b0221b16fec0772a"
+      "timedOutWorkers": [
+        "line-defense-web-runtime-repair-v1",
+        "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+        "amusement-tycoon-web-runtime-repair-v1",
+        "village-dungeons-web-runtime-repair-v1"
+      ],
+      "timedOutCandidateMsRange": "548827-570721",
+      "finalObservedTimeoutMs": 90000,
+      "currentWavePredatesTimeoutFix": true,
+      "nextFreshContractMustIncludeAtLeast": "dde979b3e4a633ddb4bf04fabee28cbebcecda26"
     }
   }
 }
