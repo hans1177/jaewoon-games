@@ -78,10 +78,12 @@ test('current Gemini quota failure remains WAITING even when provider retry wind
   const workflow=fs.readFileSync('.github/workflows/company-seed-design-runtime.yml','utf8');
   assert.match(workflow,/const currentFailureQuota=retryableQuota\.test\(clean\(cp\.lastError\)\)/);
   assert.match(workflow,/DESIGN_CURRENT_FAILURE_CLASS=EXTERNAL_MODEL_CAPACITY/);
-  assert.match(workflow,/currentFailureQuota\|\|roleBlocked\|\|\(!leadPhaseActive&&designerBlocked\)/);
+  assert.match(workflow,/currentFailureQuota\|\|currentFailureAggregateCapacity\|\|roleBlocked\|\|\(!leadPhaseActive&&designerBlocked\)/);
   assert.match(workflow,/DESIGN_MODEL_CYCLE_RESULT=WAITING_FOR_GEMINI_QUOTA/);
   assert.match(workflow,/DESIGN_QUOTA_FAILURE_IS_DESIGN_GATE_FAILURE=NO/);
   assert.match(workflow,/DESIGN_CHECKPOINT_RESUME_REQUIRED=YES/);
+  assert.match(workflow,/DAILY_QUOTA_PROBE_MS=60\*60\*1000/);
+  assert.match(workflow,/DESIGN_DAILY_QUOTA_IMMEDIATE_REDISPATCH=NO/);
 });
 
 
