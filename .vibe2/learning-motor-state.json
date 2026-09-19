@@ -5,25 +5,25 @@
   "authorityExpanded": false,
   "domains": {
     "CORE_LOOP": {
-      "xp": 108,
+      "xp": 113,
       "level": 3,
       "verifiedSuccesses": 12,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "pat_bl3edd"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "STATE_MACHINE": {
-      "xp": 108,
+      "xp": 113,
       "level": 3,
       "verifiedSuccesses": 12,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_security_policy_review_authorized_v1"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "COMBAT": {
-      "xp": 60,
+      "xp": 65,
       "level": 2,
       "verifiedSuccesses": 5,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_security_b72c29be3a79e4c5a56017dd"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "AI": {
       "xp": 120,
@@ -33,32 +33,32 @@
       "lastEvidence": "pat_ypohyy"
     },
     "PROGRESSION": {
-      "xp": 60,
+      "xp": 65,
       "level": 2,
       "verifiedSuccesses": 5,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_rg6lvy"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "ECONOMY": {
-      "xp": 24,
+      "xp": 29,
       "level": 1,
       "verifiedSuccesses": 2,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_rg6lvy"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "SAVE": {
-      "xp": 108,
+      "xp": 113,
       "level": 3,
       "verifiedSuccesses": 12,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_security_b72c29be3a79e4c5a56017dd"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "MOBILE_INPUT": {
-      "xp": 132,
+      "xp": 137,
       "level": 4,
       "verifiedSuccesses": 14,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "pat_zf15dc"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "UI_STATE": {
       "xp": 120,
@@ -68,18 +68,18 @@
       "lastEvidence": "pat_zf15dc"
     },
     "DEBUGGING": {
-      "xp": 88,
+      "xp": 93,
       "level": 3,
       "verifiedSuccesses": 11,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "pat_security_b72c29be3a79e4c5a56017dd"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "RECOVERY": {
-      "xp": 12,
+      "xp": 17,
       "level": 1,
       "verifiedSuccesses": 1,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_security_b72c29be3a79e4c5a56017dd"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "SECURITY": {
       "xp": 40,
@@ -180,11 +180,11 @@
       "lastEvidence": null
     },
     "WEB_RUNTIME": {
-      "xp": 48,
+      "xp": 53,
       "level": 2,
       "verifiedSuccesses": 4,
-      "verifiedFailureLessons": 0,
-      "lastEvidence": "exp_rg6lvy"
+      "verifiedFailureLessons": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise"
     },
     "ROBLOX_STUDIO": {
       "xp": 12,
@@ -229,7 +229,8 @@
     "exp_i00mwv",
     "exp_rg6lvy",
     "exp_security_policy_review_authorized_v1",
-    "exp_security_b72c29be3a79e4c5a56017dd"
+    "exp_security_b72c29be3a79e4c5a56017dd",
+    "supervised_bug-defense_35476177742_revise"
   ],
   "seenCodePatternIds": [
     "pat_130jf9c",
@@ -314,6 +315,23 @@
         "SAVE",
         "RECOVERY",
         "SECURITY"
+      ]
+    },
+    "fail_er5tf8": {
+      "count": 1,
+      "lastEvidence": "supervised_bug-defense_35476177742_revise",
+      "example": "NO_REAL_IMPLEMENTATION: candidate source blob equals current main; scope/session test controls remain; no pointer/touch placement, real spatial enemy loop, reachable win/loss, or persistent save/progression.",
+      "domains": [
+        "CORE_LOOP",
+        "STATE_MACHINE",
+        "COMBAT",
+        "PROGRESSION",
+        "ECONOMY",
+        "SAVE",
+        "MOBILE_INPUT",
+        "DEBUGGING",
+        "RECOVERY",
+        "WEB_RUNTIME"
       ]
     }
   },
@@ -4367,9 +4385,9 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-19T23:55:08.928Z",
+    "lastBuiltAt": "2026-09-19T23:56:29.790Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
-  "updatedAt": "2026-09-19T23:55:08.928Z"
+  "updatedAt": "2026-09-19T23:56:29.790Z"
 }
