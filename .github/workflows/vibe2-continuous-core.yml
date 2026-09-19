@@ -873,6 +873,7 @@ jobs:
             baseCodingMethod?.partialTimeoutRecovery===true?'coding-timeout-partial-recovery:YES':'',
             baseCodingMethod?.partialMalformedRecovery===true?'coding-malformed-partial-recovery:YES':'',
             baseCodingMethod?.streamedPartialEditRecovery===true?'coding-streamed-partial-edit-recovery:YES':'',
+            baseCodingMethod?.focusedFirstEditEarlyStop===true?'coding-focused-first-edit-early-stop:YES':'',
             baseCodingMethod?.focusedFinalRetry===true?'coding-focused-final-retry:YES':'',
             baseCodingMethod?.focusedReplaceOnly===true?'coding-focused-replace-only:YES':'',
             baseCodingMethod?.focusedFirstAttemptFastPath===true?'coding-focused-first-attempt-fast-path:YES':'',
