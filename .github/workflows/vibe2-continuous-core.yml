@@ -1131,16 +1131,19 @@ jobs:
               --queue="$control_root/.vibe2/queue.json" \
               --input=/tmp/vibe2-fan-in.json \
               --output=/tmp/vibe2-package-review.json | tee /tmp/vibe2-package-review.log
+            node "$contract_root/tools/vibe2-experience-control.mjs" \
+              --memory="$control_root/.vibe2/experience.json" \
+              --batch-review=/tmp/vibe2-package-review.json | tee /tmp/vibe2-supervised-experience.log
           else
-            printf '%s\n' '{"version":1,"releaseCandidates":[],"decision":"AUXILIARY_LANE_NO_RELEASE"}' > /tmp/vibe2-package-review.json
+            printf '%s\n' '{"version":1,"releaseCandidates":[],"experienceReviews":[],"decision":"AUXILIARY_LANE_NO_RELEASE"}' > /tmp/vibe2-package-review.json
             echo "VIBE2_REVIEW_ROLE=AUXILIARY_NO_RELEASE:$VIBE2_EXECUTION_LANE" | tee /tmp/vibe2-package-review.log
           fi
           echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
 
-          if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json; then
+          if git diff --quiet -- .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json; then
             echo 'VIBE2_FAN_IN_QUEUE_WRITE=NO'
           else
-            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json
+            git add .vibe2/queue.json .vibe2/parallelism-control.json .vibe2/practice-distilled-knowledge.json .vibe2/experience.json
             git commit -m "vibe2: fan in parallel worker results [skip ci]"
             pushed=0
             for attempt in 1 2 3; do
