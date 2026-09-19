@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "kind": "company-system-ai-queue",
+  "policy": "PRIMARY_AI_SUPERVISED_FREE_EXTERNAL_AI_SYSTEM_WORK",
+  "worker": "tools/company-system-ai-worker.mjs",
+  "tasks": [
+    {
+      "id": "sys-web-bootstrap-signal-routing-v1",
+      "status": "queued",
+      "priority": "critical",
+      "goal": "Fix the common Web development bottleneck at the workflow responsibility boundary. company-development-web-bootstrap.mjs intentionally emits VIBE_WEB_IMPLEMENTATION_REQUIRED:* when source is missing or needs Vibe repair. Update company-development-confirmed-runtime.yml so those expected signals become structured Vibe implementation/repair handoff states instead of a generic web-gameplay-music failure. Preserve every Web gameplay/runtime/strict/promotion gate; do not catch-and-ignore failures. Add a focused contract test that proves SOURCE_MISSING and WEB_REPAIR signals are routed to Vibe work and ordinary unexpected bootstrap failures still fail normally.",
+      "responsibleFiles": [
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        "qa/company-development-confirmed-runtime-contract.test.mjs"
+      ],
+      "contextFiles": [
+        "tools/company-development-web-bootstrap.mjs",
+        "tools/vibe2-auto-planner.mjs",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "focusPatterns": {
+        ".github/workflows/company-development-confirmed-runtime.yml": [
+          "company-development-web-bootstrap.mjs",
+          "web-gameplay-music",
+          "routingBlockers",
+          "WEB_VIBE_REPAIR_REQUIRED",
+          "VIBE_WEB_IMPLEMENTATION_REQUIRED",
+          "WEB_BASE_IMPLEMENTATION"
+        ],
+        "tools/company-development-web-bootstrap.mjs": [
+          "VIBE_WEB_IMPLEMENTATION_REQUIRED",
+          "SOURCE_MISSING",
+          "WEB_REPAIR",
+          "buildFirstPlayable"
+        ]
+      },
+      "acceptanceCriteria": [
+        "expected VIBE_WEB_IMPLEMENTATION_REQUIRED signals are not persisted as generic web-gameplay-music dead-end failures",
+        "missing source maps to an actionable Vibe Web base implementation state",
+        "repair-required maps to an actionable Vibe Web repair state",
+        "unexpected bootstrap errors still fail and remain traceable",
+        "all Web gameplay/runtime/strict/promotion gates remain unchanged"
+      ],
+      "verificationCommands": [
+        "node --test qa/company-development-confirmed-runtime-contract.test.mjs"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 2,
+      "evidence": [
+        "primary-ai-priority:portfolio-wide-common-web-blocker",
+        "company-runtime:19-of-19-web-gameplay-music"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:20:00Z",
+      "updatedAt": "2026-09-19T05:20:00Z"
+    },
+    {
+      "id": "sys-vibe-planner-web-repair-routing-v1",
+      "status": "queued",
+      "priority": "critical",
+      "goal": "Make the Vibe autonomous planner consume company-runtime Web repair/bootstrap states explicitly. When a DEVELOPMENT_CONFIRMED game is WEB_VIBE_REPAIR_REQUIRED or has a missing Web source root that central policy allows to bootstrap, enqueue one deduplicated actionable Vibe task with the correct responsible index.html, source-root-bootstrap-required evidence when applicable, and exact-stage resume semantics. Do not weaken source-root candidate-branch restrictions, QA gates, or direct-main-write prohibitions. Extend existing planner tests for both missing-source and repair-required inputs plus duplicate suppression.",
+      "responsibleFiles": [
+        "tools/vibe2-auto-planner.mjs",
+        "qa/vibe2-auto-planner.test.mjs"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "tools/company-development-web-bootstrap.mjs",
+        "development-queue.json"
+      ],
+      "focusPatterns": {
+        "tools/vibe2-auto-planner.mjs": [
+          "developmentQueue",
+          "WEB_VIBE_REPAIR_REQUIRED",
+          "source-root-bootstrap-required",
+          "WEB_BASE_IMPLEMENTATION",
+          "collectProjects",
+          "findSafeTasks"
+        ],
+        "qa/vibe2-auto-planner.test.mjs": [
+          "developmentQueue",
+          "source-root-bootstrap-required",
+          "existing web",
+          "missing"
+        ]
+      },
+      "acceptanceCriteria": [
+        "WEB_VIBE_REPAIR_REQUIRED creates one actionable repair task",
+        "missing Web source creates one candidate-branch bootstrap task only when central policy authorizes it",
+        "same game/stage task is deduplicated",
+        "exact failure stage evidence is preserved",
+        "no QA or source authority gate is weakened"
+      ],
+      "verificationCommands": [
+        "node --test qa/vibe2-auto-planner.test.mjs"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 2,
+      "evidence": [
+        "primary-ai-priority:planner-handoff",
+        "company-runtime:19-web-repair-required"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:20:00Z",
+      "updatedAt": "2026-09-19T05:20:00Z"
+    },
+    {
+      "id": "sys-vibe-web-source-bootstrap-boundary-v1",
+      "status": "queued",
+      "priority": "high",
+      "goal": "Audit and harden the Vibe source worker Web source-root bootstrap path so an explicitly authorized WEB_BASE_IMPLEMENTATION task can create only the assigned web-games/<gameId>/index.html on an isolated candidate branch, while ordinary missing roots remain forbidden. Preserve Vibe2/Vibe3 game implementation ownership, direct-main-write=false, Codex game-source-write forbidden, and all existing file/path safety checks. Add or refine tests for authorized bootstrap, unauthorized bootstrap rejection, and repair of an existing Web index.",
+      "responsibleFiles": [
+        "tools/vibe2-source-worker.mjs",
+        "qa/vibe2-source-worker.test.mjs"
+      ],
+      "contextFiles": [
+        "tools/vibe2-continuous-runner.mjs",
+        "company-learning/platform-release-roadmap.json"
+      ],
+      "focusPatterns": {
+        "tools/vibe2-source-worker.mjs": [
+          "sourceRootBootstrapAllowed",
+          "SOURCE_ROOT_BOOTSTRAP_ALLOWED",
+          "responsibleFiles",
+          "missing",
+          "index.html",
+          "directMainWrite"
+        ],
+        "tools/vibe2-continuous-runner.mjs": [
+          "sourceRootBootstrapAllowed",
+          "source-root-bootstrap-required",
+          "SOURCE_ROOT_BOOTSTRAP_ALLOWED"
+        ]
+      },
+      "acceptanceCriteria": [
+        "authorized missing Web root may create only the assigned index.html in candidate scope",
+        "unauthorized missing root remains rejected",
+        "existing Web repair remains bounded to responsible files",
+        "game implementation owner remains Vibe2/Vibe3",
+        "direct main writes and Codex game source writes remain forbidden"
+      ],
+      "verificationCommands": [
+        "node --test qa/vibe2-source-worker.test.mjs"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 2,
+      "evidence": [
+        "primary-ai-priority:web-source-worker-boundary"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:20:00Z",
+      "updatedAt": "2026-09-19T05:20:00Z"
+    },
+    {
+      "id": "sys-web-vibe-handoff-e2e-contract-v1",
+      "status": "queued",
+      "priority": "high",
+      "goal": "Create an independent end-to-end machine contract test for the portfolio Web repair handoff. The test must inspect the current central policy, bootstrap implementation, confirmed-development workflow, Vibe planner, continuous runner, and source worker as text/code contracts and assert: preserve-only bootstrap emits actionable Vibe signals; workflow does not turn those expected signals into a generic terminal web-gameplay-music dead end; planner consumes WEB_VIBE_REPAIR_REQUIRED/missing-source state; authorized bootstrap remains candidate-only; strict runtime/QA/regression gates stay present. This is an independent verifier: do not modify production implementation files.",
+      "responsibleFiles": [
+        "qa/company-web-vibe-handoff-e2e.test.mjs"
+      ],
+      "contextFiles": [
+        "company-learning/platform-release-roadmap.json",
+        "tools/company-development-web-bootstrap.mjs",
+        ".github/workflows/company-development-confirmed-runtime.yml",
+        "tools/vibe2-auto-planner.mjs",
+        "tools/vibe2-continuous-runner.mjs",
+        "tools/vibe2-source-worker.mjs"
+      ],
+      "focusPatterns": {
+        "tools/company-development-web-bootstrap.mjs": [
+          "VIBE_WEB_IMPLEMENTATION_REQUIRED",
+          "SOURCE_MISSING",
+          "WEB_REPAIR"
+        ],
+        ".github/workflows/company-development-confirmed-runtime.yml": [
+          "web-gameplay-music",
+          "VIBE_WEB_IMPLEMENTATION_REQUIRED",
+          "WEB_VIBE_REPAIR_REQUIRED"
+        ],
+        "tools/vibe2-auto-planner.mjs": [
+          "WEB_VIBE_REPAIR_REQUIRED",
+          "source-root-bootstrap-required"
+        ],
+        "tools/vibe2-continuous-runner.mjs": [
+          "sourceRootBootstrapAllowed"
+        ],
+        "tools/vibe2-source-worker.mjs": [
+          "sourceRootBootstrapAllowed",
+          "directMainWrite"
+        ]
+      },
+      "acceptanceCriteria": [
+        "independent contract test covers the full bootstrap-to-Vibe handoff chain",
+        "test fails if generic dead-end routing returns",
+        "test fails if candidate-only bootstrap safety is removed",
+        "test fails if required QA/runtime/regression gates are weakened"
+      ],
+      "verificationCommands": [
+        "node --test qa/company-web-vibe-handoff-e2e.test.mjs"
+      ],
+      "dependencies": [],
+      "retries": 0,
+      "maxRetries": 2,
+      "evidence": [
+        "primary-ai-independent-verifier:common-web-handoff"
+      ],
+      "supervisorReviewRequired": true,
+      "createdAt": "2026-09-19T05:20:00Z",
+      "updatedAt": "2026-09-19T05:20:00Z"
+    }
+  ]
+}
