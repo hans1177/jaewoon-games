@@ -1,0 +1,24 @@
+{
+  "kind": "focused-replace-clean-wave",
+  "source": "main",
+  "mainSha": "efcff018c545a7a13305d8d3cbbd16998653cf6b",
+  "baseline": {
+    "pass": 5,
+    "fail": 15,
+    "successRatePct": 25
+  },
+  "priorClean": {
+    "runId": 35454893941,
+    "pass": 3,
+    "fail": 17,
+    "successRatePct": 15,
+    "failures": {
+      "TIMEOUT": 8,
+      "NO_OP": 6,
+      "OTHER": 1,
+      "MALFORMED_OUTPUT": 2
+    }
+  },
+  "focusedReplaceFix": "replace-only exact anchor retry",
+  "objective": "single-push clean 20-wave after focused replace retry"
+}
