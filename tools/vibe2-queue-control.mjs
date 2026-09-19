@@ -112,10 +112,13 @@ export function recoverFixedSourceCandidateGenerationFailures(queueInput) {
     const evidence = Array.isArray(task.evidence) ? task.evidence : [];
     const blocker = clean(task.blocker);
     const retryExhausted = Number(task.retries || 0) > Number(task.maxRetries ?? 2);
+    const exactWebRepair = /-web-runtime-repair-v1$/.test(clean(task.id))
+      || /\[VIBE_WEB_REPAIR\]/i.test(clean(task.goal));
     const eligible = task.status === 'failed'
       && clean(task.department).toLowerCase() === 'development'
       && clean(task.type).toLowerCase() === 'implementation'
       && clean(task.target).toLowerCase() === 'web'
+      && exactWebRepair
       && retryExhausted
       && ['source-candidate-generation-failed','parallel-candidate-generation-failed'].includes(blocker)
       && !evidence.includes(SOURCE_GENERATION_CONTEXT_REPAIR_EVIDENCE);
