@@ -141,7 +141,7 @@ export function validateRobloxBuildProfile(profile,mode){
 
 export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNKNOWN',designDate='',allowLegacyMultiplayerInference=false}={}){
   const out=cloneObject(value);const repairs=[];
-  const loop=seedLoop(seed);let mode=seedMode(seed);
+  const loop=seedLoop(seed);const explicitDesignMode=clean(out.multiplayerMode).toUpperCase();let mode=MODES.has(explicitDesignMode)?explicitDesignMode:seedMode(seed);
   const identity=firstText(seed?.DISTINCT_IDENTITY,factText(factPack,'distinctIdentity','description'));
   const coreFun=firstText(seed?.CORE_FUN_TO_LEARN,loop.join(' → '),identity);
   const targetAudience=firstText(seed?.TARGET_AUDIENCE,factText(factPack,'targetAudience'));
@@ -165,7 +165,7 @@ export function repairDesignRequiredFields(value,{seed={},factPack={},phase='UNK
     const inferred=inferLegacyMultiplayerMode(out,{date:designDate});
     if(inferred.mode){mode=inferred.mode;out.multiplayerMode=mode;repairs.push({field:'multiplayerMode',source:inferred.source,signals:inferred.signals});}
   }
-  if(!mode&&MODES.has(clean(out.multiplayerMode).toUpperCase()))mode=clean(out.multiplayerMode).toUpperCase();
+  if(MODES.has(clean(out.multiplayerMode).toUpperCase()))mode=clean(out.multiplayerMode).toUpperCase();
   setMissing(out,'multiplayerExpansionDecision',mode&&firstText(expansion,`${mode} 코어루프를 보존하며 확장은 별도 검증 후 결정한다`),500,repairs,'GAME_SEED_OR_LEGACY_MULTIPLAYER_MODE_AND_CROSS_PLATFORM_VALUE');
   const requireRobloxBuildProfile=clean(targetPlatform).toUpperCase()==='ROBLOX'&&['PRE_REVIEW','REVIEW_FEEDBACK'].includes(clean(phase).toUpperCase());
   if(requireRobloxBuildProfile&&MODES.has(mode)){
