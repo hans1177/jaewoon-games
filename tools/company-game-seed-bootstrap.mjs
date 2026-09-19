@@ -35,6 +35,42 @@ const allowedTargetPlatforms=uniq(config.allowedTargetPlatforms||['ROBLOX','UNIT
 const defaultTargetPlatform=allowedTargetPlatforms.includes(normalizeSeedPlatform(config.initialTargetPlatform))?normalizeSeedPlatform(config.initialTargetPlatform):'ROBLOX';
 const defaultPlayMode=clean(config.initialPlayMode)||'PROJECT_DEFINED';
 const state=loadSeedState();
+const ownerQueueFile=clean(process.env.OWNER_DESIGN_RESET_QUEUE_FILE)||'owner-design-reset-queue.json';
+const ownerQueue=readJson(ownerQueueFile,{requests:[]})||{requests:[]};
+function isOwnerPreservationSeedRequest(request){
+  const seed=request?.seed;
+  return clean(request?.status||'ACTIVE').toUpperCase()==='ACTIVE'
+    && seed&&typeof seed==='object'&&!Array.isArray(seed)
+    && seed.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true
+    && clean(seed.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
+}
+function materializeOwnerPreservationSeeds({timestamp=new Date().toISOString()}={}){
+  const requests=Array.isArray(ownerQueue?.requests)?ownerQueue.requests.filter(isOwnerPreservationSeedRequest):[];
+  const materialized=[];
+  for(const request of requests){
+    const seed=structuredClone(request.seed);
+    assertGameSeed(seed);
+    const gameId=clean(seed.gameId);
+    if(!gameId)throw new Error('OWNER_PRESERVATION_GAME_ID_REQUIRED');
+    const index=(state.seeds||[]).findIndex(row=>clean(row?.gameId)===gameId&&!['DISCARDED','REMOVED'].includes(clean(row?.status).toUpperCase()));
+    if(index>=0){
+      const current=state.seeds[index];
+      if(clean(current?.seedId)!==clean(seed.seedId))throw new Error(`OWNER_PRESERVATION_ACTIVE_SEED_CONFLICT ${gameId}`);
+      state.seeds[index]={...current,...seed,updatedAt:timestamp};
+    }else{
+      state.seeds.push({...seed,createdAt:seed.createdAt||timestamp,updatedAt:timestamp});
+    }
+    state.categories=uniq([...(state.categories||[]),seed.GAME_CATEGORY]);
+    materialized.push(gameId);
+  }
+  state.ownerPreservationIntake={
+    source:ownerQueueFile,
+    queueVersion:Number(ownerQueue?.version)||null,
+    updatedAt:timestamp,
+    gameIds:uniq(materialized),
+  };
+  return uniq(materialized);
+}
 state.categories=uniq([...(state.categories||[]),...historicalCategories]);
 ensureSeedMaterialPool(state);
 state.seedMaterialPolicy.bootstrapCategories=[...historicalCategories];
@@ -384,6 +420,7 @@ function buildSeed(target,p,{serial,gameId,timestamp}){
 }
 export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),proposalProvider=null}={}){
   if(config.enabled===false)return{action:'DISABLED',created:[],modelCalls:0};
+  const ownerPreservationGameIds=materializeOwnerPreservationSeeds({timestamp});
   ensureSeedMaterialPool(state,{timestamp});
   const targets=[];
   const initial=!state.bootstrapCompletedAt;
@@ -401,7 +438,7 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
       state.lastRunAt=timestamp;
       state.lastAction='NO_CREATION_REQUIRED';
       saveSeedState(state);
-      return{action:'NO_CREATION_REQUIRED',created:[],modelCalls:0,seedMaterialPoolTarget:100,seedMaterialAvailable:state.seedMaterials.filter(x=>x.status==='AVAILABLE').length};
+      return{action:'NO_CREATION_REQUIRED',created:[],modelCalls:0,ownerPreservationGameIds,seedMaterialPoolTarget:100,seedMaterialAvailable:state.seedMaterials.filter(x=>x.status==='AVAILABLE').length};
     }
     const proposals=proposalProvider
       ?await Promise.all(targets.map(t=>proposalProvider({requestId:t.requestId,category:t.category,platform:t.platform,seedMaterials:t.materials,materialSelection:t.materialSelection})))
@@ -447,6 +484,7 @@ export async function runGameSeedBootstrap({timestamp=new Date().toISOString(),p
         seedMaterialSelectionMode:s.SEED_MATERIAL_SELECTION_MODE,
       })),
       modelCalls:proposalProvider?0:1,
+      ownerPreservationGameIds,
       seedMaterialPoolTarget:100,
       seedMaterialAvailable:state.seedMaterials.filter(x=>x.status==='AVAILABLE').length,
       top30DifferentiationReferenceCount:top30GameIds.length,
@@ -465,6 +503,8 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
     console.log(JSON.stringify(result,null,2));
     console.log(`GAME_SEED_CREATED_COUNT=${result.created.length}`);
     console.log(`GAME_SEED_MODEL_CALLS=${result.modelCalls}`);
+    console.log(`OWNER_PRESERVATION_SEED_MATERIALIZED_COUNT=${(result.ownerPreservationGameIds||[]).length}`);
+    console.log(`OWNER_PRESERVATION_SEED_GAME_IDS=${(result.ownerPreservationGameIds||[]).join(',')||'NONE'}`);
     console.log(`SEED_MATERIAL_POOL_TARGET=${result.seedMaterialPoolTarget||100}`);
     console.log(`SEED_MATERIAL_POOL_AVAILABLE=${result.seedMaterialAvailable??0}`);
     console.log('SEED_MATERIAL_COMPOSITION_MODE=DYNAMIC_CONTEXTUAL_2_TO_4');
