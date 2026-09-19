@@ -3,27 +3,31 @@
   "gameId": "fantasy-survival",
   "date": "2026-09-20",
   "engineDigest": "2c6561c3a7dfd954e825e031a60fe5c9f652ea78869d3f5b6360eb79a076c7a1",
-  "status": "IN_PROGRESS",
-  "currentStage": "DESIGNER_DRAFT",
-  "percent": 17,
-  "completedPhases": [],
-  "completedPhaseCount": 0,
+  "status": "COMPLETE",
+  "currentStage": "COMPLETE",
+  "percent": 100,
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate",
+    "deterministic_department_evidence"
+  ],
+  "completedPhaseCount": 3,
   "cachedTaskCount": 0,
-  "lastSuccessfulModelCallAt": "2026-09-19T16:50:37.618Z",
+  "lastSuccessfulModelCallAt": "2026-09-19T16:50:42.819Z",
   "failedPhase": null,
   "failedTask": null,
   "lastError": null,
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
-      "calls": 3,
-      "successes": 1,
+      "calls": 4,
+      "successes": 2,
       "failures": 2,
       "timeouts": 0,
       "jsonFailures": 0,
-      "totalMs": 7225,
-      "lastMs": 4629,
+      "totalMs": 12425,
+      "lastMs": 5200,
       "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
-      "updatedAt": "2026-09-19T16:50:37.618Z"
+      "updatedAt": "2026-09-19T16:50:42.819Z"
     },
     "gemini:gemini-3.8-flash": {
       "calls": 2,
@@ -136,6 +140,14 @@
       "updatedAt": "2026-09-19T16:50:32.988Z"
     }
   },
-  "slowPhases": {},
-  "updatedAt": "2026-09-19T16:50:37.619Z"
+  "slowPhases": {
+    "designer_draft": {
+      "elapsedMs": 214796,
+      "budgetMs": 180000,
+      "recordedAt": "2026-09-19T16:50:42.821Z"
+    }
+  },
+  "updatedAt": "2026-09-19T16:50:42.829Z",
+  "preGateScore": 80,
+  "postRevisionPreGateScore": 80
 }
