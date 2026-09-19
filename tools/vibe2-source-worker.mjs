@@ -58,9 +58,9 @@ const FULL_WEB_MAX_GENERATION_ATTEMPTS=4;
 const JSON_RETRY_TIMEOUT_MS=240000;
 const JSON_RETRY_MAX_PREDICT=1536;
 const FOCUSED_WEB_REPAIR_MAX_PREDICT=1024;
-const FOCUSED_WEB_REPAIR_CONTEXT_FILES=3;
-const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=48000;
-const FOCUSED_WEB_REPAIR_CONTEXT_WINDOW=16384;
+const FOCUSED_WEB_REPAIR_CONTEXT_FILES=2;
+const FOCUSED_WEB_REPAIR_CONTEXT_BYTES=28000;
+const FOCUSED_WEB_REPAIR_CONTEXT_WINDOW=12288;
 const JSON_FINAL_RETRY_TIMEOUT_MS=150000;
 const JSON_FINAL_RETRY_MAX_PREDICT=768;
 const JSON_CONTEXT_WINDOW=32768;
@@ -183,10 +183,15 @@ function focusedSymbolContext(root,target,responsibleFiles=[],exploration={}){
     matchedSymbolCount+=matched.size;
     const merged=mergeSourceWindowRanges(ranges).slice(0,8);
     for(const row of merged){
-      const content=text.slice(row.start,row.end);
+      let content=text.slice(row.start,row.end);
+      if(!content.trim())continue;
+      const remaining=FOCUSED_WEB_REPAIR_CONTEXT_BYTES-total;
+      if(remaining<=0)break;
+      while(Buffer.byteLength(content,'utf8')>remaining&&content.length>240)content=content.slice(0,Math.floor(content.length*.82));
       if(!content.trim())continue;
       files.push({path:relative,content,truncated:true,editable:true,exactSourceWindow:true,windowLabel:(row.labels||[]).join('+')||'responsibility'});
       total+=Buffer.byteLength(content,'utf8');
+      if(total>=FOCUSED_WEB_REPAIR_CONTEXT_BYTES)break;
     }
   }
   if(!files.length)return null;
