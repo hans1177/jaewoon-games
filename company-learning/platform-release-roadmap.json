@@ -1,5 +1,5 @@
 {
-  "version": 126,
+  "version": 127,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1558,7 +1558,12 @@
               "2e6d310e887723236b98b336b05c28782babfb8e",
               "0a7a0c45cb83096a6795ce2edc8ab8a2c788f045"
             ],
-            "streamedTimeoutEarlyStopEffectiveFromNextWave": true
+            "streamedTimeoutEarlyStopEffectiveFromNextWave": true,
+            "timeoutRetryPrefixCompactionCommits": [
+              "342f82f6703b851d88b28eb1fbc07d121f8b7177",
+              "a9fc8b65aeadecbc72742e09081952fd994d0318"
+            ],
+            "timeoutRetryPrefixCompactionEffectiveFromNextWave": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3109,52 +3114,54 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_STREAMED_TIMEOUT_EDIT_EARLY_STOP_2026-09-19",
+    "id": "VIBE2_TIMEOUT_RETRY_PREFIX_COMPACTION_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FULL_WEB_EXPANSION_SHAPE_RECOVERY_2026-09-19",
-    "reason": "LATEST_CCFB20D_WAVE_SHOWS_FOCUSED_WEB_TIMEOUTS_WITH_1P8_TO_2P8KB_PARTIAL_OUTPUT_REPEATED_ACROSS_RETRIES;STOP_STREAMING_ONCE_ONE_COMPLETE_EDIT_OBJECT_EXISTS_AND_VALIDATE_THAT_EDIT_WITH_THE_EXISTING_EXACT_EDIT_AND_CANDIDATE_GATES",
-    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_QA_AND_NEXT_WAVE_PENDING",
+    "previousChangeRecordId": "VIBE2_STREAMED_TIMEOUT_EDIT_EARLY_STOP_2026-09-19",
+    "reason": "ZERO_BYTE_AND_LONG_FOCUSED_WEB_TIMEOUTS_SHOW_THAT_FILE_CONTEXT_WAS_BOUNDED_BUT_PRE_FILE_EXPLORATION_AND_LEARNING_GUIDANCE_COULD_REMAIN_LARGE;REBUILD_TIMEOUT_RETRY_PREFIX_FROM_ONLY_ENGINE_GOAL_ALLOWED_PATH_AND_PRESERVATION_RULES",
+    "implementationState": "CODE_AND_REGRESSION_TEST_COMMITTED_QA_AND_NEXT_WAVE_PENDING",
     "evidence": {
       "observedRunId": 35444351457,
       "pinnedContractSha": "ccfb20d9f114c713af7a37aa0ca147c56f999fc9",
-      "completedSampleAtDecision": 12,
-      "observedTimeoutFailures": 8,
-      "representativePartialBytes": [
-        2805,
-        2139,
-        1865,
-        2394,
-        2547,
-        2707
-      ],
+      "observedCompletedAtDecision": 18,
+      "observedPasses": 0,
+      "observedFailures": 18,
+      "failureDistribution": {
+        "TIMEOUT": 11,
+        "OTHER": 6,
+        "MALFORMED_OUTPUT": 1
+      },
       "zeroByteTimeoutObserved": true,
+      "representativeSourceContextFiles": 1,
+      "representativeSourceBytes": 12131,
       "currentWaveIncludesFix": false
     },
     "contract": {
-      "timeoutRetryStartsWithEditsArray": true,
-      "oneCompleteEditMayEndFocusedStream": true,
-      "completeEditObjectRequired": true,
-      "exactEditDryRunRequired": true,
-      "candidateValidatorRequired": true,
-      "writableScopeUnchanged": true,
+      "focusedTimeoutPrefixFields": [
+        "ENGINE",
+        "GOAL",
+        "ALLOWED_EDIT_PATHS",
+        "PRESERVATION_RULES",
+        "EXACT_FIND_RULES"
+      ],
+      "explorationGuidanceRemovedFromTimeoutRetryPrefix": true,
+      "editableFileExcerptStillBounded": true,
+      "readOnlyContextRemoved": true,
       "timeoutBudgetNotIncreased": true,
+      "writableScopeUnchanged": true,
       "qaGateUnchanged": true,
-      "authorityExpansion": false,
-      "codingMethodFlag": "streamedPartialEditRecovery",
-      "immutableEvidenceMarker": "coding-streamed-partial-edit-recovery:YES"
+      "authorityExpansion": false
     },
     "implementationCommits": {
-      "source": "4db870b5fd90b4bee7407a39dbeeecc9d4916b04",
-      "workflow": "2e6d310e887723236b98b336b05c28782babfb8e",
-      "regressionTest": "0a7a0c45cb83096a6795ce2edc8ab8a2c788f045"
+      "source": "342f82f6703b851d88b28eb1fbc07d121f8b7177",
+      "regressionTest": "a9fc8b65aeadecbc72742e09081952fd994d0318"
     },
     "pending": [
-      "CORE_QA_WITH_STREAMED_TIMEOUT_EDIT_TEST",
+      "CORE_QA_WITH_TIMEOUT_PREFIX_COMPACTION_TEST",
       "CURRENT_CCFB20D_20_WAVE_COMPLETE_AND_FAN_IN",
-      "NEXT_WAVE_PIN_4DB870B5_AND_2E6D310E_OR_LATER",
-      "MEASURE_STREAMED_PARTIAL_EDIT_RECOVERY_RATE",
-      "SEPARATE_ZERO_BYTE_TIMEOUTS_FROM_RECOVERABLE_PARTIAL_TIMEOUTS"
+      "NEXT_WAVE_PIN_342F82F6_OR_LATER",
+      "COMPARE_ZERO_BYTE_TIMEOUT_RATE",
+      "COMPARE_RECOVERABLE_PARTIAL_TIMEOUT_RATE"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
