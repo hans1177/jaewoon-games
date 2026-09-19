@@ -1,5 +1,5 @@
 {
-  "version": 130,
+  "version": 131,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1861,7 +1861,27 @@
               "30c281817019ff8e9a342afb226fd37874891f8f",
               "045a3e970db8dd8b69e4824a12814373f69b9096"
             ],
-            "speculativeRetryBudgetEffectiveFromNextWave": true
+            "speculativeRetryBudgetEffectiveFromNextWave": true,
+            "currentWaveEarlyEffect": {
+              "runId": "35445626679",
+              "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
+              "completed": 8,
+              "pass": 5,
+              "fail": 3,
+              "passRatePct": 62.5,
+              "failureDistribution": {
+                "TIMEOUT": 2,
+                "EDIT_MATCH": 1
+              }
+            },
+            "focusedMinimalJsonRetryCommits": [
+              "ca8ea51acab5ef39d20798bc2b03b88cc233258a",
+              "197a1884e296d28f5210d513281e2a8cfef64977",
+              "070d47598063a4aacc2e7226b1c156dc25471cee",
+              "80091b7fc44b9fec07db94b9a2a3b81c45d095d6",
+              "d8d9ae3f98356cbbb01b2567c2d756dcdfe276e5"
+            ],
+            "focusedMinimalJsonRetryEffectiveFromNextWave": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3412,66 +3432,84 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_SPECULATIVE_RETRY_BUDGET_2026-09-19",
+    "id": "VIBE2_FOCUSED_MINIMAL_JSON_RETRY_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_TIMEOUT_RETRY_PREFIX_COMPACTION_2026-09-19",
-    "reason": "PARALLELISM_ALREADY_REACHES_20_OF_20_BUT_WAVE_COMPLETION_IS_HELD_BY_LONG_RUNNING_SPECULATIVE_SOURCE_GENERATION;KEEP_PRIMARY_RETRY_DEPTH_UNCHANGED_AND_BOUND_ONLY_SPECULATIVE_RETRY_DEPTH_TO_REDUCE_LONG_TAIL_WITHOUT_LOWERING_ANY_QA_OR_SOURCE_GATE",
+    "previousChangeRecordId": "VIBE2_SPECULATIVE_RETRY_BUDGET_2026-09-19",
+    "reason": "CURRENT_CBA1A0F_WAVE_EARLY_SAMPLE_IMPROVED_TO_5_PASS_OF_8_BUT_REMAINING_FAILURES_SHOW_REPEAT_TIMEOUT_PARTIALS_AND_ONE_EDIT_MATCH;MAKE_FOCUSED_RETRY_EMIT_ONLY_ONE_MINIMAL_EDITS_JSON_OBJECT_SO_THE_EDIT_CLOSES_EARLIER_AND_FIND_TEXT_STAYS_SHORT_AND_EXACT",
     "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_CURRENT_WAVE_RUNNING_NEXT_WAVE_EFFECT_PENDING",
     "evidence": {
-      "completedWave": {
-        "runId": 35444351457,
-        "workerCount": 20,
-        "pass": 0,
-        "fail": 20,
-        "failureRatePct": 100,
-        "failureDistribution": {
-          "TIMEOUT": 13,
-          "OTHER": 6,
-          "MALFORMED_OUTPUT": 1
-        },
-        "actualPeakConcurrency": 20,
-        "bottleneck": "SOURCE_CANDIDATE_GENERATION"
-      },
       "currentWave": {
         "runId": 35445626679,
         "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
         "completedWorkersObserved": 8,
         "inProgressWorkersObserved": 12,
-        "includesSpeculativeRetryBudgetFix": false
+        "pass": 5,
+        "fail": 3,
+        "passRatePct": 62.5,
+        "failureDistribution": {
+          "TIMEOUT": 2,
+          "EDIT_MATCH": 1
+        },
+        "includesFocusedMinimalJsonFix": false
+      },
+      "previousWave": {
+        "runId": 35444351457,
+        "pass": 0,
+        "fail": 20,
+        "failureDistribution": {
+          "TIMEOUT": 13,
+          "OTHER": 6,
+          "MALFORMED_OUTPUT": 1
+        }
       }
     },
     "contract": {
-      "primaryJsonAttemptBudget": 3,
-      "primaryFullWebAttemptBudget": 4,
-      "speculativeJsonAttemptBudget": 2,
-      "speculativeFullWebAttemptBudget": 3,
-      "primaryRetryDepthUnchanged": true,
-      "speculativeOnlyOptimization": true,
-      "fullWebMinimumBytesUnchanged": 12000,
+      "focusedRetryOutputShape": "ONE_EDITS_ONLY_JSON_OBJECT",
+      "summaryOmitted": true,
+      "expectedEffectOmitted": true,
+      "testsOmitted": true,
+      "newFilesOmitted": true,
+      "replaceFilesOmitted": true,
+      "shortestUniqueExactFindRequired": true,
+      "minimalCoherentReplaceRequired": true,
+      "exactEditDryRunRequired": true,
+      "candidateValidatorRequired": true,
       "writableScopeUnchanged": true,
       "qaGateUnchanged": true,
       "authorityExpansion": false,
       "immutableEvidence": [
-        "coding-generation-attempt-budget:<N>",
-        "coding-speculative-attempt-budget:YES"
+        "coding-focused-final-retry:YES",
+        "coding-focused-minimal-json:YES"
       ]
     },
     "implementationCommits": {
-      "source": "41eea8d07362a51158cb4b75081f66420eaecd64",
-      "regressionTest": "30c281817019ff8e9a342afb226fd37874891f8f",
-      "workflowTelemetry": "045a3e970db8dd8b69e4824a12814373f69b9096"
+      "sourceContract": "ca8ea51acab5ef39d20798bc2b03b88cc233258a",
+      "sourceTelemetry": "197a1884e296d28f5210d513281e2a8cfef64977",
+      "workflowTelemetry": "070d47598063a4aacc2e7226b1c156dc25471cee",
+      "regressionContract": "80091b7fc44b9fec07db94b9a2a3b81c45d095d6",
+      "regressionTelemetry": "d8d9ae3f98356cbbb01b2567c2d756dcdfe276e5"
+    },
+    "relatedBottleneckOptimization": {
+      "speculativeRetryBudgetCommits": [
+        "41eea8d07362a51158cb4b75081f66420eaecd64",
+        "30c281817019ff8e9a342afb226fd37874891f8f",
+        "045a3e970db8dd8b69e4824a12814373f69b9096"
+      ],
+      "effectiveFromNextWave": true
     },
     "pending": [
       "CURRENT_CBA1A0F_WAVE_COMPLETE_AND_FAN_IN",
-      "NEXT_WAVE_PIN_41EEA8D0_AND_045A3E97_OR_LATER",
-      "COMPARE_SPECULATIVE_WORKER_P95_DURATION",
-      "COMPARE_WAVE_LONG_TAIL_DURATION",
-      "CONFIRM_NO_PRIMARY_PASS_RATE_REGRESSION"
+      "NEXT_WAVE_PIN_CA8EA51A_197A1884_070D4759_OR_LATER",
+      "COMPARE_FOCUSED_TIMEOUT_RATE",
+      "COMPARE_EDIT_MATCH_RATE",
+      "COMPARE_SPECULATIVE_P95_DURATION",
+      "CONFIRM_PRIMARY_PASS_RATE_NOT_REGRESSED"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
       "hierarchicalParallelism": true,
+      "primaryRetryDepthUnchanged": true,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
       "shadowPipelineForbidden": true
