@@ -127,40 +127,29 @@ test('low-load runs never reduce persistent concurrency or count as recovery', (
   assert.equal(healthyLowLoad.lastReason, 'LOW_LOAD');
 });
 
-test('two consecutive healthy saturated runs recover one step', () => {
-  const first = decideAdaptiveBackpressure(
+test('one healthy saturated run fast-ramps exactly one step', () => {
+  const next = decideAdaptiveBackpressure(
     createParallelismControl({ currentMax: 16 }),
     healthyTelemetry({ runId: 'healthy-1' })
   );
-  assert.equal(first.currentMax, 16);
-  assert.equal(first.healthyStreak, 1);
-  assert.equal(first.lastDecision, 'HOLD');
-
-  const second = decideAdaptiveBackpressure(
-    first,
-    healthyTelemetry({ runId: 'healthy-2' })
-  );
-  assert.equal(second.currentMax, 20);
-  assert.equal(second.healthyStreak, 0);
-  assert.equal(second.lastDecision, 'UP');
+  assert.equal(next.currentMax, 20);
+  assert.equal(next.healthyStreak, 0);
+  assert.equal(next.lastDecision, 'UP');
+  assert.equal(next.lastReason, 'HEALTHY_FAST_RAMP');
 });
 
-test('adaptive cap never moves below 4 or above 20', () => {
+test('adaptive cap never moves below 4 or above 30', () => {
   const atMin = decideAdaptiveBackpressure(
     createParallelismControl({ currentMax: 4 }),
     pressuredTelemetry({ runId: 'min-pressure', workerCount: 4, effectiveMax: 4 })
   );
   assert.equal(atMin.currentMax, 4);
 
-  const firstHealthy = decideAdaptiveBackpressure(
-    createParallelismControl({ currentMax: 20 }),
-    healthyTelemetry({ runId: 'max-healthy-1', workerCount: 20, effectiveMax: 20 })
+  const atMax = decideAdaptiveBackpressure(
+    createParallelismControl({ currentMax: 30 }),
+    healthyTelemetry({ runId: 'max-healthy', workerCount: 30, effectiveMax: 30, actualPeakConcurrency: 30 })
   );
-  const secondHealthy = decideAdaptiveBackpressure(
-    firstHealthy,
-    healthyTelemetry({ runId: 'max-healthy-2', workerCount: 20, effectiveMax: 20 })
-  );
-  assert.equal(secondHealthy.currentMax, 20);
+  assert.equal(atMax.currentMax, 30);
 });
 
 test('duplicate fan-in run id cannot apply pressure twice', () => {
@@ -183,21 +172,21 @@ test('adaptive requested max never exceeds persistent control or explicit reques
   const control = createParallelismControl({ currentMax: 12 });
   assert.equal(adaptiveRequestedMax(control, 20), 12);
   assert.equal(adaptiveRequestedMax(control, 8), 8);
-  assert.equal(adaptiveRequestedMax(createParallelismControl({ currentMax: 99 }), 99), 20);
+  assert.equal(adaptiveRequestedMax(createParallelismControl({ currentMax: 99 }), 99), 30);
 });
 
-test('missing or corrupt persistent state safely falls back to 20', () => {
+test('missing or corrupt persistent state safely falls back to 30', () => {
   const files = tempFiles();
   try {
-    fs.writeFileSync(files.queue, JSON.stringify({ maxConcurrentTasks: 20, tasks: [] }), 'utf8');
-    const missing = runQueueCommand({ command: 'reserve-batch', queue: files.queue, control: files.control, max: '20', output: files.output });
-    assert.equal(missing.adaptiveControl.currentMax, 20);
-    assert.equal(missing.adaptiveControl.lastReason, 'DEFAULT_20');
+    fs.writeFileSync(files.queue, JSON.stringify({ maxConcurrentTasks: 30, tasks: [] }), 'utf8');
+    const missing = runQueueCommand({ command: 'reserve-batch', queue: files.queue, control: files.control, max: '30', output: files.output });
+    assert.equal(missing.adaptiveControl.currentMax, 30);
+    assert.equal(missing.adaptiveControl.lastReason, 'DEFAULT_30');
 
     fs.writeFileSync(files.control, '{broken-json', 'utf8');
     const corrupt = runQueueCommand({ command: 'reserve-batch', queue: files.queue, control: files.control, max: '20', output: files.output });
-    assert.equal(corrupt.adaptiveControl.currentMax, 20);
-    assert.equal(corrupt.adaptiveControl.lastReason, 'INVALID_STATE_DEFAULT_20');
+    assert.equal(corrupt.adaptiveControl.currentMax, 30);
+    assert.equal(corrupt.adaptiveControl.lastReason, 'INVALID_STATE_DEFAULT_30');
   } finally {
     fs.rmSync(files.dir, { recursive: true, force: true });
   }
@@ -242,4 +231,15 @@ test('one fan-in with many pressured results updates persistent cap only once', 
   } finally {
     fs.rmSync(files.dir, { recursive: true, force: true });
   }
+});
+
+
+test('stale persistent pressure expires back to 30 before new telemetry is applied', () => {
+  const next = decideAdaptiveBackpressure(
+    createParallelismControl({ currentMax: 4, lastUpdatedAt:'2026-09-19T08:00:00Z' }),
+    healthyTelemetry({ runId:'stale-recovery', workerCount:30, effectiveMax:30, actualPeakConcurrency:30 }),
+    { now:'2026-09-19T12:00:00Z' }
+  );
+  assert.equal(next.currentMax,30);
+  assert.equal(next.lastReason,'AT_MAX_HEALTHY');
 });
