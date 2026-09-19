@@ -317,12 +317,20 @@ function dynamicConcurrency(queue, requested = null) {
   });
 }
 
+function normalizedExecutionLane(value='all'){
+  const lane=clean(value).toLowerCase().replaceAll('_','-');
+  return ['game-primary','recovery-fast','control-fast','learning-idle','release-wait'].includes(lane)?lane:'all';
+}
+function taskMatchesExecutionLane(task={},lane='all'){
+  const requested=normalizedExecutionLane(lane);
+  if(requested==='all')return true;
+  return clean(task.executionLane).toLowerCase().replaceAll('_','-')===requested;
+}
 export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, lane = 'all' } = {}) {
   const queue = createVibeContinuousQueue(queueInput);
-  const laneMode=clean(lane).toLowerCase();
-  const gamePrimaryOnly=laneMode==='game-primary';
+  const laneMode=normalizedExecutionLane(lane);
   const running = queue.tasks.filter((task) => task.status === 'running');
-  const capacityRunning = running.filter((task) => !releasesWorkerCapacity(task) && (!gamePrimaryOnly || isGamePrimaryTask(task)));
+  const capacityRunning = running.filter((task) => !releasesWorkerCapacity(task) && taskMatchesExecutionLane(task,laneMode));
   const concurrency = dynamicConcurrency(queue, maxConcurrentTasks);
   const effectiveMax = concurrency.effectiveMaxConcurrentTasks;
   const freeSlots = Math.max(0, effectiveMax - capacityRunning.length);
@@ -332,7 +340,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const candidates = [];
   queue.tasks.forEach((task, index) => {
     if (task.status !== 'queued') return;
-    if(gamePrimaryOnly&&!isGamePrimaryTask(task)){laneDeferred.push(task);return;}
+    if(!taskMatchesExecutionLane(task,laneMode)){laneDeferred.push(task);return;}
     const reasons = taskBlockedReasons(task, completed);
     if (reasons.length) blocked.push(freeze({ task, reasons }));
     else candidates.push(freeze({ task, score: scoreTask(task, index) }));
@@ -406,7 +414,7 @@ export function selectVibeQueueBatch(queueInput, { maxConcurrentTasks = null, la
   const queuedEligible = candidates.length;
   return freeze({
     selected: freeze(selected),
-    lane: gamePrimaryOnly?'game-primary':'all',
+    lane: laneMode,
     laneDeferred: freeze(laneDeferred),
     running: freeze(running),
     capacityRunning: freeze(capacityRunning),
