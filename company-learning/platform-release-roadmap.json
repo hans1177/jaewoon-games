@@ -1,5 +1,5 @@
 {
-  "version": 51,
+  "version": 52,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -2553,12 +2553,12 @@
     }
   },
   "changeRecord": {
-    "id": "RECOVERY_SIGNATURE_STAGE_DEDUP_2026-09-19",
+    "id": "SEED_DESIGN_UNBOUNDED_WIP_SYNC_2026-09-19",
     "documentIsCode": true,
-    "reason": "PREVENT_DUPLICATE_OR_CONTAMINATED_RECOVERY_GROUPS_FROM_PREFIX_PARSE_AND_UNKNOWN_STAGE",
+    "reason": "ALIGN_DESIGN_RUNTIME_WITH_CENTRAL_UNBOUNDED_INTERNAL_WIP_POLICY_WITHOUT_WEAKENING_CANARY_OR_DESIGN_GATES",
     "files": [
-      "tools/company-recovery-escalation.mjs",
-      "qa/company-recovery-learning.test.mjs",
+      ".github/workflows/company-seed-design-runtime.yml",
+      "qa/company-seed-design-runtime-stall.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ]
   }

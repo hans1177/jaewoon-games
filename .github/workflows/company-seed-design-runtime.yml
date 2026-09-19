@@ -79,7 +79,7 @@ jobs:
           node --test qa/company-shared-context.test.mjs
           node tools/company-shared-context.mjs --output=/tmp/company-shared-context-design-plan.json
 
-      - name: Resolve centrally capped active incomplete GAME_SEED targets
+      - name: Resolve central-policy active incomplete GAME_SEED targets
         id: targets
         shell: bash
         run: |
@@ -95,8 +95,13 @@ jobs:
           const engineDigest=createHash('sha256').update(engineFiles.map(file=>`${file}\n${fs.readFileSync(file,'utf8')}`).join('\n---\n')).digest('hex');
           const canaryMarker=(()=>{try{return JSON.parse(fs.readFileSync('design-engine-canary.json','utf8'));}catch{return null;}})();
           const canaryVerified=canaryMarker?.engineDigest===engineDigest;
-          const designWipMax=Number(roadmap?.developmentSpeedExecution?.globalSelectedPlatformDevelopmentWipMax||0);
-          if(!Number.isInteger(designWipMax)||designWipMax<1)throw new Error('CENTRAL_GAME_WIP_MAX_REQUIRED');
+          const configuredWip=roadmap?.developmentSpeedExecution?.globalSelectedPlatformDevelopmentWipMax;
+          const unboundedByPolicy=configuredWip===null||typeof configuredWip==='undefined';
+          const externalBatchMax=Number(roadmap?.developmentSpeedExecution?.externalMatrixBatchMax||256);
+          if(!Number.isInteger(externalBatchMax)||externalBatchMax<1)throw new Error('CENTRAL_EXTERNAL_MATRIX_BATCH_MAX_REQUIRED');
+          if(unboundedByPolicy&&roadmap?.developmentSpeedExecution?.internalArtificialConcurrencyCapsForbidden!==true)throw new Error('CENTRAL_UNBOUNDED_WIP_CONTRACT_INCOMPLETE');
+          if(!unboundedByPolicy&&(!Number.isInteger(Number(configuredWip))||Number(configuredWip)<1))throw new Error('CENTRAL_GAME_WIP_MAX_INVALID');
+          const designWipMax=unboundedByPolicy?externalBatchMax:Math.min(Number(configuredWip),externalBatchMax);
           const state=(()=>{try{return JSON.parse(fs.readFileSync('game-seed-state.json','utf8'));}catch{return{seeds:[]};}})();
           const active=(state.seeds||[]).filter(seed=>String(seed.status||'').toUpperCase()==='ACTIVE');
           const resetAt=Date.parse(state?.ownerAllGamesDesignReset?.updatedAt||'')||0;
@@ -199,12 +204,13 @@ jobs:
           console.error(`GAME_SEED_DESIGN_PENDING_TOTAL=${pending.length}`);
           console.error(`GAME_DESIGN_ENGINE_CANARY=${canaryVerified?'VERIFIED':'REQUIRED'}`);
           console.error(`GAME_DESIGN_ENGINE_DIGEST=${engineDigest}`);
-          console.error(`GAME_DESIGN_WIP_MAX=${designWipMax}`);
+          console.error(`GAME_DESIGN_WIP_MAX=${unboundedByPolicy?'UNBOUNDED_POLICY':designWipMax}`);
+          console.error(`GAME_DESIGN_EXTERNAL_MATRIX_BATCH_MAX=${externalBatchMax}`);
           console.error(`GAME_DESIGN_EXECUTION_LANES=${parallelMax}`);
           console.error('GAME_DESIGN_DETERMINISTIC_CHECKPOINT_PRIORITY=FIRST');
           console.error('GAME_DESIGN_GATE_BYPASS=NO');
           console.error('GAME_DESIGN_ONLY_STRICT_PASS_REQUIRED=YES');
-          console.error('GAME_DESIGN_WIP_SOURCE=CANONICAL_ROADMAP');
+          console.error(`GAME_DESIGN_WIP_SOURCE=${unboundedByPolicy?'CANONICAL_ROADMAP_UNBOUNDED_EXTERNAL_BATCH':'CANONICAL_ROADMAP_NUMERIC_CAP'}`);
           console.error(`GAME_DESIGN_SCHEDULING_MODE=${designScheduling.mode||'DEFAULT'}`);
           console.error(`GAME_DESIGN_ROBLOX_FIRST=${designScheduling.mode==='ROBLOX_FIRST_THEN_OTHER_PLATFORMS'?'YES':'NO'}`);
           console.error('GAME_DESIGN_FORCE_PROMOTION=NO');

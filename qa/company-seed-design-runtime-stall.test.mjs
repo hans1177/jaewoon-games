@@ -24,10 +24,17 @@ test('seed design runtime preserves the active fanout and revalidates matrix tar
   assert.match(workflow,/if: steps\.target\.outputs\.should_run == 'true'/);
 });
 
-test('seed design runtime uses the central WIP cap and avoids repeated Ollama setup without paid runners',()=>{
-  assert.match(workflow,/const parallelMax=Math\.max\(1,designWipMax-1\)/);
+test('seed design runtime follows central unbounded WIP policy while bounding each external matrix wave',()=>{
+  assert.match(workflow,/const configuredWip=roadmap\?\.developmentSpeedExecution\?\.globalSelectedPlatformDevelopmentWipMax/);
+  assert.match(workflow,/const unboundedByPolicy=configuredWip===null\|\|typeof configuredWip==='undefined'/);
+  assert.match(workflow,/const externalBatchMax=Number\(roadmap\?\.developmentSpeedExecution\?\.externalMatrixBatchMax\|\|256\)/);
+  assert.match(workflow,/internalArtificialConcurrencyCapsForbidden!==true/);
+  assert.match(workflow,/const designWipMax=unboundedByPolicy\?externalBatchMax:Math\.min\(Number\(configuredWip\),externalBatchMax\)/);
+  assert.match(workflow,/const parallelMax=Math\.max\(1,Math\.min\(canaryVerified\?designWipMax:1,targets\.length\|\|1\)\)/);
+  assert.match(workflow,/GAME_DESIGN_WIP_MAX=\$\{unboundedByPolicy\?'UNBOUNDED_POLICY':designWipMax\}/);
+  assert.match(workflow,/GAME_DESIGN_EXTERNAL_MATRIX_BATCH_MAX=\$\{externalBatchMax\}/);
+  assert.match(workflow,/CANONICAL_ROADMAP_UNBOUNDED_EXTERNAL_BATCH/);
   assert.match(workflow,/parallel_max=\$\{parallelMax\}/);
-  assert.match(workflow,/GAME_DESIGN_CONTROL_RUNNER_RESERVE=\$\{designWipMax-parallelMax\}/);
   assert.match(workflow,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
   assert.match(workflow,/runs-on: ubuntu-latest/);
   assert.match(workflow,/uses: actions\/cache@v4/);
