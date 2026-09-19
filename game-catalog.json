@@ -27,14 +27,14 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "roblox",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageStage": "개발확정 · Web 제작/강심사 준비",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
@@ -55,8 +55,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:37.440Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "updatedAt": "2026-09-19T12:35:25.347Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -146,8 +146,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:37.440Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "updatedAt": "2026-09-19T12:35:25.347Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -162,7 +162,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "productionTier": 2,
+      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS"
     },
     {
       "id": "amusement-tycoon",
@@ -210,7 +212,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
-        "updatedAt": "2026-09-19T12:34:24.796Z",
+        "updatedAt": "2026-09-19T12:35:56.028Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -305,7 +307,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "3D 자유 배치, 길 연결, 손님 성격·만족도, 대기줄, 쓰레기·청소부, 음식점·놀이기구 업그레이드 구현",
-            "updatedAt": "2026-09-19T12:34:24.796Z",
+            "updatedAt": "2026-09-19T12:35:56.028Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -359,7 +361,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:42.065Z",
+        "updatedAt": "2026-09-19T12:35:39.705Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -452,7 +454,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:42.065Z",
+            "updatedAt": "2026-09-19T12:35:39.705Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -512,7 +514,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:34:11.381Z",
+        "updatedAt": "2026-09-19T12:35:32.057Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -605,7 +607,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:34:11.381Z",
+            "updatedAt": "2026-09-19T12:35:32.057Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -657,7 +659,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "모바일 라인 전투, 유닛 5종, 적 4종+보스, 자동 재화, 응원포, 기지 승패, 영구 강화 구현",
-        "updatedAt": "2026-09-19T12:33:48.516Z",
+        "updatedAt": "2026-09-19T12:35:33.777Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -750,7 +752,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "모바일 라인 전투, 유닛 5종, 적 4종+보스, 자동 재화, 응원포, 기지 승패, 영구 강화 구현",
-            "updatedAt": "2026-09-19T12:33:48.516Z",
+            "updatedAt": "2026-09-19T12:35:33.777Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -805,7 +807,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "3D 마을, 5개 던전, 퀘스트, 상점, 레벨업, 보스, 상황별 BGM 구현",
-        "updatedAt": "2026-09-19T12:33:44.341Z",
+        "updatedAt": "2026-09-19T12:35:35.436Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -900,7 +902,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "3D 마을, 5개 던전, 퀘스트, 상점, 레벨업, 보스, 상황별 BGM 구현",
-            "updatedAt": "2026-09-19T12:33:44.341Z",
+            "updatedAt": "2026-09-19T12:35:35.436Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -924,14 +926,14 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "roblox",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageStage": "개발확정 · Web 제작/강심사 준비",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
@@ -952,8 +954,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:38.442Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "updatedAt": "2026-09-19T12:35:30.504Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1043,8 +1045,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:38.442Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "updatedAt": "2026-09-19T12:35:30.504Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1059,7 +1061,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "productionTier": 2,
+      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS"
     },
     {
       "id": "egg-heist",
@@ -1076,14 +1080,14 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "roblox",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageStage": "개발확정 · Web 제작/강심사 준비",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
@@ -1104,8 +1108,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:35.219Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "updatedAt": "2026-09-19T12:36:28.206Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1195,8 +1199,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:35.219Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "updatedAt": "2026-09-19T12:36:28.206Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1211,7 +1215,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "productionTier": 2,
+      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS"
     },
     {
       "id": "island-village",
@@ -1229,14 +1235,14 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "roblox",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageStage": "개발확정 · Web 제작/강심사 준비",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
@@ -1258,8 +1264,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:32.406Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "updatedAt": "2026-09-19T12:35:29.029Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1351,8 +1357,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:32.406Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "updatedAt": "2026-09-19T12:35:29.029Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1367,7 +1373,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "productionTier": 2,
+      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS"
     },
     {
       "id": "survival2",
@@ -1384,14 +1392,14 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "roblox",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageStage": "개발확정 · Web 제작/강심사 준비",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
@@ -1412,8 +1420,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:31.073Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "updatedAt": "2026-09-19T12:35:31.255Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1503,8 +1511,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:31.073Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "updatedAt": "2026-09-19T12:35:31.255Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1519,7 +1527,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "productionTier": 2,
+      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS"
     },
     {
       "id": "territory-war",
@@ -1536,14 +1546,14 @@
       "homepageWebPlayable": false,
       "homepageCategory": "development-confirmed",
       "productionClass": "DEVELOPMENT_CONFIRMED",
-      "productionClassSource": "COMPANY_RUNTIME_DEVELOPMENT_QUEUE",
-      "productionTarget": "roblox",
+      "productionClassSource": "DESIGN_BASELINE_READY_STRICT_PASS",
+      "productionTarget": "ROBLOX",
       "lifecycleState": "ACTIVE",
       "lifecycleReason": "OWNER_ALL_GAMES_DESIGN_RESET",
       "ownerExistingGame": true,
       "developmentHandling": "OWNER_REDESIGN_THROUGH_CANONICAL_PIPELINE",
       "designBaselineMigration": "OWNER_RESET_TO_DESIGN_ONLY",
-      "homepageStage": "개발확정 · Web 전체분량 검증 → Roblox",
+      "homepageStage": "개발확정 · Web 제작/강심사 준비",
       "homepageRecentWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
       "webPurpose": "PUBLIC_PLAYABLE_COMPANION",
       "homepageInfo": {
@@ -1564,8 +1574,8 @@
         "playMode": "SINGLE",
         "playModeLabel": "싱글",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:31.419Z",
-        "status": "WEB_VIBE_REPAIR_REQUIRED",
+        "updatedAt": "2026-09-19T12:35:28.777Z",
+        "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
       "canonical": {
@@ -1655,8 +1665,8 @@
             "playMode": "SINGLE",
             "playModeLabel": "싱글",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:31.419Z",
-            "status": "WEB_VIBE_REPAIR_REQUIRED",
+            "updatedAt": "2026-09-19T12:35:28.777Z",
+            "status": "WAITING_WEB_GAMEPLAY_VALIDATION",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
         }
@@ -1671,7 +1681,9 @@
       "homepageOfficialCard": false,
       "homepageTestCandidate": false,
       "homepageTestScore": null,
-      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW"
+      "homepageReviewState": "WAITING_WEB_STRICT_REVIEW",
+      "productionTier": 2,
+      "productionTierSource": "DISPLAY_ALIAS_FROM_PRODUCTION_CLASS"
     },
     {
       "id": "monster-adventure",
@@ -1717,7 +1729,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:34:02.917Z",
+        "updatedAt": "2026-09-19T12:35:26.703Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -1810,7 +1822,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:34:02.917Z",
+            "updatedAt": "2026-09-19T12:35:26.703Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -1864,7 +1876,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:27.876Z",
+        "updatedAt": "2026-09-19T12:36:06.129Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -1955,7 +1967,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:27.876Z",
+            "updatedAt": "2026-09-19T12:36:06.129Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -2008,7 +2020,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:42.139Z",
+        "updatedAt": "2026-09-19T12:35:33.509Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -2099,7 +2111,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:42.139Z",
+            "updatedAt": "2026-09-19T12:35:33.509Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -2152,7 +2164,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:43.322Z",
+        "updatedAt": "2026-09-19T12:36:09.150Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -2243,7 +2255,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:43.322Z",
+            "updatedAt": "2026-09-19T12:36:09.150Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -2296,7 +2308,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:31.667Z",
+        "updatedAt": "2026-09-19T12:36:08.284Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -2387,7 +2399,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:31.667Z",
+            "updatedAt": "2026-09-19T12:36:08.284Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -2440,7 +2452,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:31.979Z",
+        "updatedAt": "2026-09-19T12:35:40.028Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -2531,7 +2543,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:31.979Z",
+            "updatedAt": "2026-09-19T12:35:40.028Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -2584,7 +2596,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:33:37.420Z",
+        "updatedAt": "2026-09-19T12:35:33.371Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -2675,7 +2687,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:33:37.420Z",
+            "updatedAt": "2026-09-19T12:35:33.371Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
@@ -2727,7 +2739,7 @@
         "playMode": "",
         "playModeLabel": "플레이 방식 미평가",
         "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-        "updatedAt": "2026-09-19T12:34:01.548Z",
+        "updatedAt": "2026-09-19T12:35:47.707Z",
         "status": "WEB_VIBE_REPAIR_REQUIRED",
         "productionClass": "DEVELOPMENT_CONFIRMED"
       },
@@ -2818,7 +2830,7 @@
             "playMode": "",
             "playModeLabel": "플레이 방식 미평가",
             "latestWork": "Owner 최신 지시에 따라 기존 구현은 보존하고 설계 단계부터 다시 평가합니다.",
-            "updatedAt": "2026-09-19T12:34:01.548Z",
+            "updatedAt": "2026-09-19T12:35:47.707Z",
             "status": "WEB_VIBE_REPAIR_REQUIRED",
             "productionClass": "DEVELOPMENT_CONFIRMED"
           }
