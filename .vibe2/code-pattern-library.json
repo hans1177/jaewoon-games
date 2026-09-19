@@ -219,6 +219,30 @@
       "authority": "verified-internal-code-pattern"
     },
     {
+      "id": "pat_external_authorized_74ebe8b657b003d75b41e2fa",
+      "gameId": "block-blast",
+      "engine": "external-authorized",
+      "taskType": "authorized-static-distillation",
+      "system": "INPUT_EVENT_BINDING",
+      "problem": "Authorized external generalized implementation structure: input-drag-touch",
+      "pattern": "AUTHORIZED_EXTERNAL_GENERALIZED_INPUT_EVENT_BINDING_ADVISORY_ONLY",
+      "tags": [
+        "authorized-external",
+        "static-summary",
+        "retrieval-only",
+        "INPUT_EVENT_BINDING"
+      ],
+      "verified": true,
+      "sourceRevision": "sha256:fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c",
+      "evidencePath": "company-learning/authorized-source/block-blast/authorized-learning-summary.json",
+      "rawCodeStored": false,
+      "independentQa": "STATIC_ONLY",
+      "browserQa": "NOT_APPLICABLE",
+      "retrievalEligible": true,
+      "masteryEligible": false,
+      "authority": "AUTHORIZED_EXTERNAL_GENERALIZED_PATTERN"
+    },
+    {
       "id": "pat_14v79w7",
       "gameId": "P0009",
       "engine": "web",
@@ -651,6 +675,31 @@
       "authority": "verified-internal-code-pattern"
     },
     {
+      "id": "pat_external_blackbox_4180cb1d3e96c05680871a91",
+      "gameId": "block-blast",
+      "engine": "external-black-box",
+      "taskType": "qa-observation",
+      "system": "RUNTIME_OBSERVATION_RECOVERY",
+      "problem": "외부 상용 Android 게임을 black-box로 검증할 때 실행, 실제 게임 진입, 입력 반응, 프로세스 생존, 크래시 부재를 단계별 증거로 결속해 판정하고 코드·에셋·내부 알고리즘은 추출하거나 추론하지 않는다.",
+      "pattern": "VERIFIED_EXTERNAL_RUNTIME_OBSERVATION_SEPARATE_LAUNCH_ENTRY_INPUT_RESPONSE_PROCESS_SURVIVAL_AND_CRASH_SCOPE",
+      "tags": [
+        "external-black-box",
+        "runtime",
+        "qa",
+        "retrieval-only",
+        "recovery-evidence"
+      ],
+      "verified": true,
+      "sourceRevision": "sha256:8c165e437321a156c8c37ad75180874b13b561dc82167b4af08e22c60cddd4b1",
+      "evidencePath": "company-learning/vibe3-memory-index.json",
+      "rawCodeStored": false,
+      "independentQa": "RUNTIME_OBSERVATION_ONLY",
+      "browserQa": "NOT_APPLICABLE",
+      "retrievalEligible": true,
+      "masteryEligible": false,
+      "authority": "VERIFIED_EXTERNAL_OBSERVATION_PATTERN"
+    },
+    {
       "id": "pat_1dj8rdx",
       "gameId": "P0009",
       "engine": "web",
@@ -769,6 +818,30 @@
       "independentQa": "PASS",
       "browserQa": "PASS",
       "authority": "verified-internal-code-pattern"
+    },
+    {
+      "id": "pat_external_authorized_ed029ace908f2d11e81feb4d",
+      "gameId": "block-blast",
+      "engine": "external-authorized",
+      "taskType": "authorized-static-distillation",
+      "system": "SAVE_PERSISTENCE",
+      "problem": "Authorized external generalized implementation structure: save-state-persistence",
+      "pattern": "AUTHORIZED_EXTERNAL_GENERALIZED_SAVE_PERSISTENCE_ADVISORY_ONLY",
+      "tags": [
+        "authorized-external",
+        "static-summary",
+        "retrieval-only",
+        "SAVE_PERSISTENCE"
+      ],
+      "verified": true,
+      "sourceRevision": "sha256:fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c",
+      "evidencePath": "company-learning/authorized-source/block-blast/authorized-learning-summary.json",
+      "rawCodeStored": false,
+      "independentQa": "STATIC_ONLY",
+      "browserQa": "NOT_APPLICABLE",
+      "retrievalEligible": true,
+      "masteryEligible": false,
+      "authority": "AUTHORIZED_EXTERNAL_GENERALIZED_PATTERN"
     },
     {
       "id": "pat_k7yb38",
@@ -1081,18 +1154,41 @@
       "independentQa": "PASS",
       "browserQa": "PASS",
       "authority": "verified-internal-code-pattern"
+    },
+    {
+      "id": "pat_external_authorized_e2dd51dac9b5f5062a85243b",
+      "gameId": "block-blast",
+      "engine": "external-authorized",
+      "taskType": "authorized-static-distillation",
+      "system": "STATE_MACHINE",
+      "problem": "Authorized external generalized implementation structure: session-retry-gameover",
+      "pattern": "AUTHORIZED_EXTERNAL_GENERALIZED_STATE_MACHINE_ADVISORY_ONLY",
+      "tags": [
+        "authorized-external",
+        "static-summary",
+        "retrieval-only",
+        "STATE_MACHINE"
+      ],
+      "verified": true,
+      "sourceRevision": "sha256:fca5cac46174f39df57bcca154c82b69c1bb69fc7044ff3cfbdebaccbe4cfc5c",
+      "evidencePath": "company-learning/authorized-source/block-blast/authorized-learning-summary.json",
+      "rawCodeStored": false,
+      "independentQa": "STATIC_ONLY",
+      "browserQa": "NOT_APPLICABLE",
+      "retrievalEligible": true,
+      "masteryEligible": false,
+      "authority": "AUTHORIZED_EXTERNAL_GENERALIZED_PATTERN"
     }
   ],
   "policy": {
     "verifiedEvidenceRequired": true,
     "rawCodeStored": false,
     "wholeGameCopyForbidden": true,
-    "unauthorizedExternalCodeForbidden": true
-  },
-  "stats": {
-    "examined": 10,
-    "added": 0,
-    "total": 45
-  },
-  "updatedAt": "2026-09-19T05:40:27.117Z"
+    "unauthorizedExternalCodeForbidden": true,
+    "externalGeneralizedPatternRetrievalOnlyWithoutIndependentQa": true,
+    "recoveryMasteryRequiresPrimaryAiReviewAndIndependentQa": true,
+    "rawUnauthorizedExternalCodeForbidden": true,
+    "rawSecurityPayloadForbidden": true,
+    "verifiedSecurityPatternsAllowed": true
+  }
 }
