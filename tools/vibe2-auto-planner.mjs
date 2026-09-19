@@ -159,7 +159,7 @@ function hasTask(queue,id){return queue.tasks.some(item=>item.id===id);}
 function taskDone(queue,id){return queue.tasks.some(item=>item.id===id&&clean(item.status).toLowerCase()==='done');}
 function activeTasks(queue){return queue.tasks.filter(item=>['queued','running'].includes(clean(item.status).toLowerCase()));}
 function isDevelopmentImplementation(item={}){return clean(item.department).toLowerCase()==='development'&&clean(item.type).toLowerCase()==='implementation';}
-function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='running'&&/candidate-awaiting-qa-and-deployment|awaiting.*qa|qa.*awaiting|slot-released.*fan-in/i.test(clean(item.blocker));}
+function isReleaseWait(item={}){return clean(item.status).toLowerCase()==='running'&&/candidate-awaiting-qa-and-deployment|candidate-awaiting-supervised-review|awaiting.*qa|qa.*awaiting|awaiting.*supervised-review|slot-released.*fan-in/i.test(clean(item.blocker));}
 function developmentPlanningPool(queue){return activeTasks(queue).filter(item=>isDevelopmentImplementation(item)&&!isReleaseWait(item));}
 function sameRootResponsibilityConflict(a={},b={}){const aRoot=posix(a.sourceRoot),bRoot=posix(b.sourceRoot);if(!aRoot||!bRoot||aRoot!==bRoot)return false;const aFiles=new Set((a.responsibleFiles||[]).map(posix).filter(Boolean)),bFiles=new Set((b.responsibleFiles||[]).map(posix).filter(Boolean));if(!aFiles.size||!bFiles.size)return true;for(const file of aFiles)if(bFiles.has(file))return true;return false;}
 function plannerConflict(queue,task){return activeTasks(queue).some(item=>sameRootResponsibilityConflict(item,task));}
