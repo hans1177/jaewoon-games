@@ -687,4 +687,15 @@ test('presentation quality passes are queued in canonical order',()=>{
   const third=findWebPresentationQualityTask(project,root,queue);
   assert.equal(third.id,`${gameId}-presentation-animation-feel-v1`);
   assert.ok(third.evidence.includes('presentation-preserve-gameplay-semantics'));
+  const stages=[first,second,third];
+  for(const suffix of ['vfx','audio-feel','camera-language']){
+    queue={tasks:stages.map(row=>done(row.id))};
+    const next=findWebPresentationQualityTask(project,root,queue);
+    assert.equal(next.id,`${gameId}-presentation-${suffix}-v1`);
+    stages.push(next);
+  }
+  queue={tasks:stages.map(row=>done(row.id))};
+  const finalPass=findWebPresentationQualityTask(project,root,queue);
+  assert.equal(finalPass.id,`${gameId}-presentation-polish-mobile-v1`);
+  assert.match(finalPass.goal,/data-presentation-quality-version="1"/);
 });
