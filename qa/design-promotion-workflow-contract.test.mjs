@@ -65,3 +65,17 @@ test('promotion re-evaluates completed DESIGN_ONLY baseline gates with the canon
   assert.match(source,/DESIGN_BASELINE_GATES_REFRESHED=/);
   assert.doesNotMatch(source,/game-seed-field-required:REFERENCE_GAMES/);
 });
+
+test('canonical deterministic gate policy is overlaid when promotion recalculates on company-runtime',()=>{
+  assert.match(
+    promotion,
+    /git checkout origin\/main -- company-directive\.json company-learning\/platform-release-roadmap\.json tools\/design-only-promotion-sync\.mjs/
+  );
+  assert.match(
+    promotion,
+    /git reset -- company-directive\.json company-learning\/platform-release-roadmap\.json tools\/design-only-promotion-sync\.mjs/
+  );
+  assert.match(promotion,/runtime branch can revive legacy AI-review blockers/);
+  assert.match(promotion,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
+  assert.doesNotMatch(promotion,/git add --[^\n]*company-learning\/platform-release-roadmap\.json/);
+});
