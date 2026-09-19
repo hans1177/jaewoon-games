@@ -1126,6 +1126,40 @@
       "executionRequiresDeterministicReplayEvidence": true,
       "noReplayEvidenceBehavior": "PLAN_ONLY_DO_NOT_CLAIM_EXECUTION",
       "canonicalQaStillRequired": true
+    },
+    "stagedSourceSynthesis": {
+      "enabled": true,
+      "authority": "OWNER_DIRECTIVE_2026-09-19",
+      "focusedRepair": {
+        "enabled": true,
+        "contextMode": "PRIMARY_RESPONSIBILITY_SYMBOLS_PLUS_DIRECT_DEPENDENCIES_PLUS_REQUIRED_PRESERVE_CONTEXT",
+        "fullFileFallbackOnUnresolvedResponsibility": true,
+        "impactPredictionReadOnly": true,
+        "writableScopeExpansionAllowed": false
+      },
+      "fullWebBootstrap": {
+        "enabled": true,
+        "mode": "FOUNDATION_THEN_ADDITIVE_FEATURE_UNITS",
+        "intermediateBelowFinalFootprintAllowed": true,
+        "intermediatePromotionAllowed": false,
+        "repeatedIntermediateOutputRejected": true,
+        "looseSafeFragmentRecoveryAllowed": true,
+        "finalMinimumFootprintUnchanged": true,
+        "canonicalQaUnchanged": true
+      },
+      "telemetry": {
+        "symbolContext": true,
+        "intermediateGrowth": true,
+        "repeatedOutput": true,
+        "failureClass": true
+      }
+    },
+    "phase4": {
+      "architectureDrift": true,
+      "codingConstitution": true,
+      "impactPredictionWriteAuthority": false,
+      "advisoryOnly": true,
+      "qaBypassAllowed": false
     }
   }
 }
