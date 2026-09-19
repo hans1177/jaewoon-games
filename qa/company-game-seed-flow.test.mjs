@@ -288,6 +288,9 @@ test('autonomous runtime pins verified design engines, canaries two games, then 
   assert.match(design,/PRESERVATION_PRESENTATION_UPGRADE/);
   assert.match(design,/NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE/);
   assert.match(design,/function enforceOwnerPreservationDesign/);
+  const preservationSchema=design.match(/const PRESERVATION_CONTRACT=\{[\s\S]*?additionalProperties:false\};/)?.[0]||'';
+  assert.ok(preservationSchema,'preservation schema missing');
+  assert.doesNotMatch(preservationSchema,/uniqueItems/,'Gemini-compatible preservation schema must not use unsupported uniqueItems');
   assert.match(gate,/owner-preservation-design-contract-required/);
   const designScoring=fs.readFileSync('tools/company-design-gate-scoring-v2.mjs','utf8');
   assert.match(designScoring,/OWNER_PRESERVATION_CONTRACT_MISSING/);
