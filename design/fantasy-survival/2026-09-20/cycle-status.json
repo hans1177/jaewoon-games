@@ -7,8 +7,8 @@
   "tierAlias": 3,
   "tier": 3,
   "status": "COMPLETE",
-  "policyDocument": "COMPANY_FLOW.md",
-  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "flow": "GAME_SEED_TO_DETERMINISTIC_DESIGN_BASELINE_CANDIDATE",
   "gameSeed": {
     "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
     "category": "ACTION_SURVIVAL_ROGUELITE",
@@ -16,192 +16,55 @@
     "complete": true
   },
   "designer": {
-    "role": "GAME_DESIGNER_AI",
+    "role": "DESIGN_AUTHOR_CHECKPOINT",
     "model": "gemini:gemini-3.5-flash-lite",
     "singleAuthor": true,
-    "sameModelRevised": false
+    "sameModelRevised": true
   },
   "departments": {
-    "count": 5,
-    "roles": [
-      "planning",
-      "graphics",
-      "development",
-      "qa",
-      "balance"
-    ],
-    "leadModels": {
-      "planning": "gemini-3.8-flash",
-      "graphics": "gemini-3.7-flash",
-      "development": "gemini-3.6-flash",
-      "qa": "gemini-3.5-flash",
-      "balance": "gemini-3.5-flash-lite"
-    },
-    "resolvedLeadModels": {
-      "planning": "DETERMINISTIC_EVIDENCE_ENGINE",
-      "graphics": "DETERMINISTIC_EVIDENCE_ENGINE",
-      "development": "DETERMINISTIC_EVIDENCE_ENGINE",
-      "qa": "DETERMINISTIC_EVIDENCE_ENGINE",
-      "balance": "DETERMINISTIC_EVIDENCE_ENGINE"
-    },
-    "distinctLeadModels": [
-      "DETERMINISTIC_EVIDENCE_ENGINE"
-    ],
-    "distinctLeadModelCount": 1,
+    "count": 0,
+    "roles": [],
+    "leadModels": {},
+    "distinctLeadModels": [],
+    "distinctLeadModelCount": 0,
     "leadModelsDistinct": false,
-    "reviewModelCount": 0,
-    "modelAudit": {
-      "planning": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      },
-      "graphics": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      },
-      "development": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      },
-      "qa": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      },
-      "balance": {
-        "leadModel": null,
-        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
-        "assistantModels": [],
-        "models": [],
-        "count": 0,
-        "required": 0,
-        "pass": true,
-        "reviewMode": "DETERMINISTIC_EVIDENCE"
-      }
-    },
-    "rebuttalRounds": 0,
-    "repeatedFatalReview": false,
+    "modelAudit": {},
+    "reviewMode": "DETERMINISTIC_EVIDENCE",
     "aiReviewRequired": false,
-    "aiReviewUsed": false,
-    "reviewMode": "DETERMINISTIC_DEPARTMENT_EVIDENCE"
+    "repeatedFatalReview": false
   },
   "meeting": {
     "required": false,
-    "crossDepartmentMeeting": false,
-    "rebuttalRounds": 0
+    "mode": "DETERMINISTIC_EVIDENCE",
+    "conflictCount": 0,
+    "holdCount": 0,
+    "allResolved": true,
+    "deterministicEvidenceOnly": true
   },
   "disposition": {
     "version": 2,
-    "gameId": "fantasy-survival",
-    "date": "2026-09-20",
-    "state": "ACTIVE",
-    "sameDesignerRevisionAttempted": false,
-    "fiveDepartmentLeadReviewCompleted": false,
-    "deterministicDepartmentEvidenceCompleted": true,
+    "state": "DETERMINISTIC_EVIDENCE",
+    "sameDesignerRevisionAttempted": true,
     "repeatedFiveDepartmentReview": false,
-    "meetingRequired": false,
-    "rebuttalRounds": 0,
-    "automaticDiscardAllowed": false,
+    "fiveDepartmentLeadReviewCompleted": false,
+    "deterministicGateReviewCompleted": true,
+    "unanimousFatalDiscard": false,
     "discardVotes": 0,
     "commonFatalCriteria": [],
-    "unanimousFatalDiscard": false,
-    "strictGateStillAuthoritative": true,
-    "marketMetricAloneUsedForDiscard": false
+    "source": "deterministic_pre_gate_after_repair_1"
   },
   "runtimeMetrics": {
-    "phaseMs": {
-      "designer_draft": 40591,
-      "deterministic_pre_gate": 1,
-      "designer_pre_gate_repair_1": 2140,
-      "deterministic_pre_gate_after_repair_1": 0,
-      "deterministic_department_evidence": 1
-    },
-    "phaseBudgetMs": {
-      "designer_draft": 180000,
-      "designer_draft_base": 180000,
-      "designer_draft_gate": 180000,
-      "deterministic_pre_gate": 30000,
-      "designer_pre_gate_repair_1": 180000,
-      "designer_pre_gate_repair_2": 180000,
-      "independent_department_reviews": 240000,
-      "designer_revision": 180000,
-      "designer_revision_base": 180000,
-      "designer_revision_gate": 180000,
-      "five_lead_reviews": 180000
-    },
-    "totalModelCalls": 2,
-    "totalModelCallMs": 42691,
-    "modelPhaseConcurrency": 2,
-    "phaseConcurrency": {
-      "five_lead_reviews": 2
-    },
-    "maxLoadedModelLanes": 5,
-    "modelKeepAlive": "GEMINI_API",
-    "modelHealth": {
-      "gemini:gemini-3.5-flash-lite": {
-        "calls": 2,
-        "successes": 2,
-        "failures": 0,
-        "timeouts": 0,
-        "jsonFailures": 0,
-        "totalMs": 42691,
-        "lastMs": 2138,
-        "lastError": null,
-        "updatedAt": "2026-09-19T16:26:23.277Z"
-      }
-    },
-    "preGate": {
-      "attempts": 1,
-      "totalScore": 80,
-      "hardFailures": [],
-      "postRevisionScore": 80,
-      "postRevisionHardFailures": []
-    },
-    "checkpoint": {
-      "contractVersion": 3,
-      "engineDigest": "216fe199cb50b83e0fb93bf5fec846a7d56db7433adfa0455da195e1ac8717c0",
-      "reused": false,
-      "completedPhases": 5,
-      "cachedTasks": 0
-    },
-    "simplifiedLeadOnlyReview": false,
-    "deterministicDepartmentEvidence": true,
-    "aiMeetingCalls": 0,
-    "rebuttalCalls": 0,
-    "representativeSynthesisCalls": 0,
-    "leadReviewCalls": 0,
-    "departmentScopedContext": true
+    "source": "design-checkpoint.json",
+    "checkpointReused": true,
+    "completedPhases": 5,
+    "deterministicGateScore": 80,
+    "deterministicGatePhase": "deterministic_pre_gate_after_repair_1"
   },
   "designLearning": {
-    "candidateCount": 0,
-    "usedAsDesignContext": false,
+    "candidateCount": 1,
+    "usedAsDesignContext": true,
     "positiveTrainingEligible": false,
     "validatedRuntimeRequiredForPositiveTraining": true,
-    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
-    "strictGateHardFailures": [],
     "strictGateBypassAllowed": false
   },
   "artbook": {
@@ -209,8 +72,23 @@
     "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
   },
   "vibe2Used": false,
-  "vibe2LearningContextUsed": false,
+  "vibe2LearningContextUsed": true,
   "paidApi": false,
+  "deterministicRecovery": {
+    "enabled": true,
+    "source": "design-checkpoint.json",
+    "phase": "deterministic_pre_gate_after_repair_1",
+    "totalScore": 80,
+    "passMinimum": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": [],
+    "aiReviewUsed": false,
+    "aiVerdictUsed": false,
+    "appliedRepairs": [
+      "designer_pre_gate_repair_1"
+    ],
+    "recoveredAt": "2026-09-19T16:34:15.563Z"
+  },
   "baselineGate": {
     "policyDocument": "COMPANY_FLOW.md",
     "productionClass": "DESIGN_ONLY",
@@ -221,7 +99,7 @@
     "blockers": [
       "owner-preservation-design-contract-required"
     ],
-    "advisoryDisposition": "ACTIVE",
+    "advisoryDisposition": "DETERMINISTIC_EVIDENCE",
     "unanimousFatalDiscard": false,
     "meeting": {
       "conflictCount": 0,
@@ -324,7 +202,7 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T16:33:20.206Z"
+    "checkedAt": "2026-09-19T16:34:15.710Z"
   },
   "artbookUi": {
     "status": "WAITING",
