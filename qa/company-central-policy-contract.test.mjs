@@ -50,8 +50,13 @@ test('platform-release-roadmap is the single machine execution policy source',()
 test('GAME_SEED mirrors the current historical-bootstrap dynamic-portfolio and selected-platform policy',()=>{
   assert.equal(directive.gameSeed.enabled,true);
   assert.equal(directive.gameSeed.requiredBeforeDesignerDraft,true);
-  assert.equal(directive.gameSeed.selectionMode,'FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK');
-  assert.deepEqual(directive.gameSeed.transformationModes,['HOMAGE','REINTERPRETATION']);
+  assert.equal(directive.gameSeed.selectionMode,'MIXED_SEED_MATERIAL_COMPOSITION');
+  assert.deepEqual(directive.gameSeed.transformationModes,['HOMAGE','REINTERPRETATION','ORIGINAL_COMPOSITION']);
+  assert.equal(directive.gameSeed.materialMustBeExistingGame,false);
+  assert.equal(directive.gameSeed.seedMaterialPoolTarget,100);
+  assert.equal(directive.gameSeed.requiredFieldsSource,'tools/company-game-seed-contract.mjs#GAME_SEED_REQUIRED_FIELDS');
+  assert.ok(directive.gameSeed.requiredFields.includes('REFERENCE_INPUTS'));
+  assert.ok(!directive.gameSeed.requiredFields.includes('REFERENCE_GAMES'));
   assert.equal(directive.gameSeed.sourceCodeRule,'IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE');
   assert.equal(directive.gameSeed.bootstrap.count,6);
   assert.equal(directive.gameSeed.bootstrap.historicalInitialSeedBatchOnly,true);
