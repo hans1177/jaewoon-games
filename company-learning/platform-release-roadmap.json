@@ -1,5 +1,5 @@
 {
-  "version": 91,
+  "version": 92,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -159,7 +159,47 @@
       "qualityOrEvidenceGateWeakeningForbidden": true
     },
     "freeAiCapacityMustBeMaximized": true,
-    "internalArtificialConcurrencyCapsForbidden": true
+    "internalArtificialConcurrencyCapsForbidden": true,
+    "sourceGenerationTimeoutRecovery": {
+      "version": 1,
+      "authority": "MEASURED_GAME_PRIMARY_BOTTLENECK_RUN_35435747316",
+      "measuredAt": "2026-09-19",
+      "sampledCompletedWorkers": 18,
+      "sampledFailureCounts": {
+        "PASS": 1,
+        "TIMEOUT": 9,
+        "FULL_REWRITE_SIZE": 6,
+        "NO_OP": 1,
+        "MALFORMED_OUTPUT": 1,
+        "EDIT_MATCH": 0
+      },
+      "dominantFailureClass": "TIMEOUT",
+      "contractShaObserved": "3c027e08e6a41e96a2df2e65f9db8897b81ede5e",
+      "observedContractIncluded": {
+        "additiveFullWebExpansion": true,
+        "timeoutPartialOutputPreservation": false,
+        "editApplicabilityDryRun": true,
+        "focusedFinalRetry150Seconds": true
+      },
+      "correction": {
+        "focusedWebRepairSecondRetryCompactionAfterTimeout": true,
+        "secondRetryTimeoutMs": 150000,
+        "secondRetryMaxPredict": 768,
+        "secondRetryContextWindow": 16384,
+        "readOnlyImpactContextDroppedOnTimeoutRecovery": true,
+        "exactResponsibleFileBoundaryPreserved": true,
+        "preservePartialOutputAcrossTimerTimeout": true,
+        "preservePartialOutputAcrossPredictionAbortAndStreamErrors": true
+      },
+      "invariants": {
+        "gamePrimaryPriorityPreserved": true,
+        "ownerMinimumWave": 20,
+        "taskLocalExplorationPreserved": true,
+        "fanInOnlyRefillPreserved": true,
+        "qualityGateWeakening": false,
+        "directMainGameSourceWrite": false
+      }
+    }
   },
   "phases": [
     {
