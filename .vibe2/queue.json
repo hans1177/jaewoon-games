@@ -6668,7 +6668,8 @@
         "speculative-variants:2",
         "release-dispatch-recovery-requested:vibe2/candidate/territory-war-web-base-implementation-v1-primary-35452958416-1",
         "release-dispatch-recovery-at:1789835126660",
-        "release-dispatch-recovery-candidate-sha:7c18ce62fce51cfe63221ad1d4f51e5d12a9db4a"
+        "release-dispatch-recovery-candidate-sha:7c18ce62fce51cfe63221ad1d4f51e5d12a9db4a",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35452958416:1",
@@ -6723,7 +6724,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "amusement-tycoon-existing-web-assessment-v1",
@@ -7107,7 +7109,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 2,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": false,
       "requiresOwnerDecision": false,
@@ -7556,7 +7558,8 @@
         "exploration-reuse:0f2347d77b5df438b602f5e7",
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "workload:prep-ms:5531",
-        "workload:cycle-ms:422176"
+        "workload:cycle-ms:422176",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -7614,7 +7617,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "line-defense-existing-web-assessment-v1",
@@ -10158,7 +10162,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 2,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -10446,7 +10450,8 @@
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "workload:prep-ms:10463",
         "workload:cycle-ms:410030",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -10501,7 +10506,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "bug-defense-web-runtime-repair-v1",
@@ -10518,7 +10524,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 2,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -10838,7 +10844,8 @@
         "exploration-reuse:b15b6163442a05f6e5784e04",
         "workload:prep-ms:10318",
         "workload:cycle-ms:313443",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -10893,7 +10900,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "daechung-rpg-web-runtime-repair-v1",
@@ -11415,7 +11423,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 2,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -11699,7 +11707,8 @@
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CMALFORMED_OUTPUT%7CTIMEOUT%22%2C%22failureClass%22%3A%22FULL_REWRITE_SIZE%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "workload:prep-ms:10425",
         "workload:cycle-ms:355659",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CMALFORMED_OUTPUT%7CTIMEOUT%22%2C%22failureClass%22%3A%22FULL_REWRITE_SIZE%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CMALFORMED_OUTPUT%7CTIMEOUT%22%2C%22failureClass%22%3A%22FULL_REWRITE_SIZE%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -11754,7 +11763,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
@@ -11771,7 +11781,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 1,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -12094,7 +12104,8 @@
         "exploration-reuse:6375b0c5276c15fb25cb6cdc",
         "workload:prep-ms:10090",
         "workload:cycle-ms:449777",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22NO_OP%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22NO_OP%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -12149,7 +12160,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "seed-casual-realm-weaver-web-runtime-repair-v1",
@@ -12424,7 +12436,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 3,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -12567,7 +12579,8 @@
         "release-settlement-recovery-source-run:35435715592",
         "release-settlement-recovery-fix:40fa1045233d7469075f40bb38ff0dd2e103290b",
         "release-settlement-recovery-candidate-sha:1d3a7134a5ffd8860606817321d71478bd483dd3",
-        "system-steward:stale-running-reservation-recovered"
+        "system-steward:stale-running-reservation-recovered",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_LEASE_RECOVERED",
       "reservationId": null,
@@ -12622,7 +12635,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
@@ -12639,7 +12653,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 1,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -12946,7 +12960,8 @@
         "exploration-reuse:e8148cecf3bb210b1d111ba4",
         "workload:prep-ms:10818",
         "workload:cycle-ms:392004",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -13001,7 +13016,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1",
@@ -13018,7 +13034,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 2,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -13329,7 +13345,8 @@
         "source-generation-failure:NO_OP",
         "workload:prep-ms:9763",
         "workload:cycle-ms:277875",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22NO_OP%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22NO_OP%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -13384,7 +13401,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "seed-story-complete-rpg-chronicles-of-eldoria-web-runtime-repair-v1",
@@ -14204,7 +14222,8 @@
         "workload:cycle-ms:471609",
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CMALFORMED_OUTPUT%7CTIMEOUT%22%2C%22failureClass%22%3A%22FULL_REWRITE_SIZE%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "system-steward:retry-exhausted-regenerated:generation-8",
-        "repair-mode:CAUSAL_REGENERATION_GENERATION_8"
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_8",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
@@ -14259,7 +14278,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "village-dungeons-web-runtime-repair-v1",
@@ -14276,7 +14296,7 @@
       "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "queued",
-      "retries": 1,
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
@@ -14556,7 +14576,8 @@
         "exploration-reuse:78d1eebf3146b8afc0abee1e",
         "workload:prep-ms:6313",
         "workload:cycle-ms:383259",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CEDIT_MATCH%7CMALFORMED_OUTPUT%7CNO_OP%7COTHER%7CTIMEOUT%22%2C%22failureClass%22%3A%22EDIT_MATCH%22%2C%22runEvidence%22%3A%22actions-run%3A35453739103%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "recovery-queue:recovery-dfc4a640416f2e1ccfe3"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -14611,7 +14632,8 @@
         "fan-in-package-review-pass",
         "machine-contract-and-central-doc-synced-when-architecture-changes"
       ],
-      "shard": "web"
+      "shard": "web",
+      "updatedAt": "2026-09-19T16:25:29.976Z"
     },
     {
       "id": "daechung-rpg-presentation-asset-adaptation-v1",
