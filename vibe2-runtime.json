@@ -164,6 +164,14 @@
       "controlBranchRole": "STATE_ONLY",
       "mainChangesAfterReservationApplyToNextWaveOnly": true,
       "fanInRegressionAgainstReservedContract": true
+    },
+    "taskLocalExploration": {
+      "enabled": true,
+      "globalExplorationMatrixBarrier": false,
+      "workerMayStartWithoutOtherTaskExploration": true,
+      "explorationUsesReservedContractSha": true,
+      "supervisorExplorationMayNotBlockGameWorkerStart": true,
+      "outputPath": "/tmp/vibe2-exploration/vibe2-exploration.json"
     }
   },
   "adaptiveBackpressure": {
