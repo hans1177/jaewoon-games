@@ -8,6 +8,7 @@ import {
   applyVerifiedCodingStrategyOutcomes,
   preferredCodingStrategyForTask,
   codingStrategyGuidance,
+  failureFingerprintForTask,
   retrieveUnifiedLearning,
   candidateTournamentPolicy,
   buildBenchmarkLadder,
@@ -69,6 +70,23 @@ test('verified coding strategy outcomes accumulate, dedupe, and become preferred
   assert.equal(preferred.strategy,'RESPONSIBILITY_FIRST');
   assert.equal(preferred.authorityExpanded,false);
   assert.match(codingStrategyGuidance(preferred),/MUST NOT expand writable scope/);
+});
+
+test('failure-local retrieval prioritizes verified same-game same-failure memory and ignores unverified records',()=>{
+  const task={gameId:'tower-demo',target:'web',goal:'모바일 pointer placement failure를 수정',evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
+  const fp=failureFingerprintForTask(task);
+  assert.ok(fp.includes('MOBILE_PLACEMENT_INPUT_MISSING'));
+  const experienceInput={records:[
+    {id:'same',gameId:'tower-demo',engine:'web',verified:true,reusable:true,outcome:'PASS',problem:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING pointer placement',change:'bind pointer state to placeTower',failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',reusablePatterns:['trace input to placement state'],avoidPatterns:['do not patch unrelated economy'],confirmations:3},
+    {id:'other-game',gameId:'other',engine:'web',verified:true,reusable:true,outcome:'PASS',problem:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING pointer placement',change:'fix input',failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',reusablePatterns:['trace input'],avoidPatterns:[],confirmations:3},
+    {id:'unverified',gameId:'tower-demo',engine:'web',verified:false,reusable:true,outcome:'PASS',problem:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',change:'guess',failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',reusablePatterns:['unsafe guess'],avoidPatterns:[]}
+  ]};
+  const result=retrieveUnifiedLearning({task,experienceInput,codePatternsInput:{patterns:[]},playbooksInput:{taskTypes:{}},practiceDistilledInput:{entries:[]},masteryInput:{}});
+  assert.equal(result.failureFingerprint,fp);
+  assert.equal(result.failureLocalMemory[0].id,'same');
+  assert.ok(result.failureLocalMemory[0].reasons.includes('same-game-same-failure'));
+  assert.equal(result.failureLocalMemory.some(row=>row.id==='unverified'),false);
+  assert.ok(result.experience.find(row=>row.id==='same').relevance>result.experience.find(row=>row.id==='other-game').relevance);
 });
 
 test('repeated verified failure escalates tournament and idle drill without bypassing gates',()=>{
