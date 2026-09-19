@@ -1,5 +1,5 @@
 {
-  "version": 82,
+  "version": 83,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3053,24 +3053,20 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_EDIT_APPLICABILITY_RETRY_AND_FANIN_DRIFT_ISOLATION_2026-09-19",
+    "id": "VIBE2_FULL_WEB_EXPANSION_RECOVERY_2026-09-19",
     "documentIsCode": true,
-    "reason": "MOVE_EXACT_EDIT_APPLICABILITY_VALIDATION_INSIDE_BOUNDED_GENERATION_RECOVERY_SO_EDIT_MATCH_FAILURES_CAN_RETRY_BEFORE_CANDIDATE_WRITE_WHILE_PRESERVING_FAN_IN_DRIFT_ISOLATION_AND_FULL_WEB_GATE_ALIGNMENT",
+    "reason": "MAKE_VALIDATOR_SCALE_FULL_WEB_OUTPUT_A_GENERATION_SUCCESS_CONDITION_AND_FEED_THE_ACTUAL_UNDERSIZED_CANDIDATE_INTO_BOUNDED_RETRY_SO_THE_MODEL_EXPANDS_WORKING_GAMEPLAY_INSTEAD_OF_RESTARTING_AS_A_TINY_SHELL",
     "files": [
-      "tools/autonomous-safe-edit.mjs",
       "tools/vibe2-source-worker.mjs",
       "qa/vibe2-source-worker.test.mjs",
-      ".github/workflows/vibe2-continuous-core.yml",
-      "qa/vibe2-controller-contract.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ],
     "commits": [
+      "42366528543fece2da21f40b2803fc840f6f79a5",
+      "6ae476a24b3b88130b457912b0221b16fec0772a",
       "ab3a6cd0274e89eabc2b0f57147fce950048f917",
       "51aff34d15636a116f2256d8072682e8cfad7416",
       "dad83ace3496d1eb62c94c13a133eb714422710d",
-      "08280d7657070b77c9b704ca0c6bf6271879e1b5",
-      "076659f63d7cd8570e18e38bd9379dc21009ef17",
-      "45d631ea811cbe71c34c53058ae946b90ada8d7c",
       "de7d9cbf25704658e9ae9c9012d6476666358c0a",
       "602638718118c2a800df5f4acf41282cfb02c5da",
       "8371c550790f1d731783053c3057dff895412dcb"
@@ -3081,43 +3077,60 @@
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
       "systemAiNonblocking": true,
-      "sourceWriteOnlyOnCandidateBranch": true,
-      "dryRunValidationMutatesSource": false,
-      "exactEditMatcherSingleAuthority": "tools/autonomous-safe-edit.mjs",
-      "candidateRegressionPinnedToReserveContract": true,
-      "controllerOrchestrationQaLatestMain": true,
-      "fullRegressionNotWeakened": true,
-      "downstreamQualityGatesNotWeakened": true
-    },
-    "recoveryContract": {
-      "editApplicabilityCheckedBeforeGenerationSuccess": true,
-      "editMatchFailureClass": "EDIT_MATCH",
-      "editMatchUsesBoundedGenerationRetry": true,
-      "candidateSnapshotUsesSameExactMatcher": true,
-      "maxGenerationAttempts": 3,
-      "noBoundaryWidening": true
-    },
-    "generationContract": {
-      "defaultFullWebTargetMinBytes": 12000,
-      "defaultFullWebTargetMaxBytes": 24000,
       "parserFullWebMinimumBytes": 1800,
       "parserFullWebMaximumBytes": 260000,
-      "fullWebFinalRetryMaxPredict": 6144,
-      "fullWebFinalRetryTimeoutMs": 360000
+      "downstreamQualityGatesNotWeakened": true,
+      "directMainGameSourceWriteForbidden": true,
+      "sourceWriteOnlyOnCandidateBranch": true,
+      "candidateRegressionPinnedToReserveContract": true,
+      "controllerOrchestrationQaLatestMain": true
+    },
+    "fullWebRecoveryContract": {
+      "defaultGenerationAcceptanceMinBytes": 12000,
+      "defaultGenerationTargetMaxBytes": 24000,
+      "validatorFootprintRequirementMayRaiseMinimum": true,
+      "parserSafetyFloorStill1800": true,
+      "previousUndersizedCandidateCarriedIntoRetry": true,
+      "previousCandidateExcerptBounded": true,
+      "retryExpandsExistingImplementation": true,
+      "fillerPaddingForbidden": true,
+      "attemptFailureClassTelemetry": true,
+      "attemptOutputByteTelemetry": true,
+      "maxGenerationAttempts": 3,
+      "finalRetryMaxPredict": 6144,
+      "finalRetryTimeoutMs": 360000
+    },
+    "editRecoveryContract": {
+      "applicabilityDryRunBeforeGenerationSuccess": true,
+      "exactEditMatcherSingleAuthority": "tools/autonomous-safe-edit.mjs",
+      "editMatchUsesBoundedGenerationRetry": true
     },
     "liveEvidence": {
-      "priorRun": "35431717289",
-      "priorFailureClasses": {
-        "timeout": 5,
-        "fullRewriteSize": 4,
-        "noOp": 2,
-        "malformedOutput": 2,
-        "editMatch": 1
+      "runId": "35432498255",
+      "pinnedContractSha": "414aa2ef484ed51c86786127565e3c8b53014804",
+      "observedPasses": [
+        {
+          "gameId": "egg-heist",
+          "attempts": 1,
+          "candidateMs": 99871
+        },
+        {
+          "gameId": "seed-idle-growth-rpg-crystal-bloom",
+          "attempts": 2,
+          "candidateMs": 225238
+        }
+      ],
+      "observedFailure": {
+        "gameId": "survival2",
+        "failureClass": "FULL_REWRITE_SIZE",
+        "attempts": 3,
+        "finalOutputBytes": 1262,
+        "priorGenerationTargetMinBytes": 12000,
+        "parserMinimumBytes": 1800
       },
-      "currentWave": "35432498255",
-      "currentWaveContractSha": "414aa2ef484ed51c86786127565e3c8b53014804",
-      "currentWavePredatesEditApplicabilityRetry": true,
-      "nextFreshContractMustIncludeAtLeast": "dad83ace3496d1eb62c94c13a133eb714422710d"
+      "conclusion": "PROMPT_TARGET_ALONE_WAS_INSUFFICIENT;GENERATION_ACCEPTANCE_AND_CANDIDATE_EXPANSION_RECOVERY_NOW_REQUIRED",
+      "currentWavePredatesThisRecovery": true,
+      "nextFreshContractMustIncludeAtLeast": "6ae476a24b3b88130b457912b0221b16fec0772a"
     }
   }
 }
