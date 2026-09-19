@@ -5627,7 +5627,16 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:29:02.526Z"
     },
     {
       "version": 1,
@@ -6037,7 +6046,16 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      }
+      },
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:28:58.540Z"
     },
     {
       "version": 1,
@@ -7260,16 +7278,7 @@
           "버튼·라벨·파일 크기만으로 구현 완료를 가장하지 않는다",
           "반복·재시작·대기로 콘텐츠 분량을 채우지 않는다"
         ]
-      },
-      "ROBLOX_GENRE": "Obby & platformer",
-      "ROBLOX_SUBGENRE": "Tower Obby",
-      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
-      "ROBLOX_SUBGENRE_LABEL_KO": "타워 오비",
-      "ROBLOX_PLAY_MODE": "SINGLE",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 타워 오비 · 싱글",
-      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:29:00.249Z"
+      }
     },
     {
       "version": 2,
@@ -14488,7 +14497,7 @@
     ],
     "actualGameCountUnlimited": true,
     "availableCount": 100,
-    "lastReplenishedAt": "2026-09-19T03:27:13.758Z",
+    "lastReplenishedAt": "2026-09-19T03:29:08.371Z",
     "bootstrapCategories": [
       "ACTION_SURVIVAL_ROGUELITE",
       "SINGLE_DEFENSE_STRATEGY",
@@ -16231,8 +16240,8 @@
         "recordedAt": "2026-09-19T03:27:46.662Z"
       },
       {
-        "gameId": "territory-war",
-        "seedId": "OWNER-ENROLL-TERRITORY-WAR-20260913",
+        "gameId": "egg-heist",
+        "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
         "reviewStage": "DESIGN_STRICT_REVIEW",
         "runtimeTarget": null,
         "verdict": "PASS",
@@ -16267,7 +16276,46 @@
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
-        "recordedAt": "2026-09-19T03:29:00.249Z"
+        "recordedAt": "2026-09-19T03:28:58.540Z"
+      },
+      {
+        "gameId": "island-village",
+        "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "previousScore": null,
+        "scoreDelta": null,
+        "hardFailures": [],
+        "resolvedHardFailures": [],
+        "addedHardFailures": [],
+        "rejectionReasons": [],
+        "improvementTargets": [
+          {
+            "dimension": "CORE_LOOP_DESIGN",
+            "current": 11.2,
+            "maxScore": 14,
+            "gap": 2.8000000000000007
+          },
+          {
+            "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          },
+          {
+            "dimension": "CONTENT_EXPANSION_PLAN",
+            "current": 8,
+            "maxScore": 10,
+            "gap": 2
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-19T03:29:02.526Z"
       }
     ],
     "causeCounts": {
@@ -16293,7 +16341,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T03:29:00.250Z"
+    "updatedAt": "2026-09-19T03:29:02.526Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
