@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "rpg.html",
+      "find": " if(!AUDIO.ctx)return;",
+      "replace": "function setAggro(v,boss=false){\n\n if(!AUDIO.ctx)return;\n\n const now=AUDIO.ctx.currentTime; /no_think"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
