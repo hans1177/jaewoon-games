@@ -283,7 +283,8 @@
       "coding_negative_16ikocw",
       "coding_negative_1xtr5vz",
       "coding_negative_4go3mi",
-      "coding_negative_bsx6r7"
+      "coding_negative_bsx6r7",
+      "coding_negative_xihlun"
     ],
     "strategies": {
       "DEPENDENCY_SAFE_COHERENT_PATCH": {
@@ -386,7 +387,7 @@
         "verifiedApplications": 8,
         "firstCandidatePasses": 0,
         "totalGenerationAttempts": 18,
-        "verifiedFailures": 21,
+        "verifiedFailures": 22,
         "games": {
           "territory-war": 1,
           "bug-defense": 1,
@@ -531,7 +532,7 @@
             "verifiedApplications": 1,
             "firstCandidatePasses": 0,
             "totalGenerationAttempts": 2,
-            "verifiedFailures": 1,
+            "verifiedFailures": 2,
             "games": {
               "line-defense": 1
             },
@@ -539,17 +540,19 @@
               "web": 1
             },
             "failureGames": {
-              "seed-action-survival-rogu-echoes-of-the-lost-star": 1
+              "seed-action-survival-rogu-echoes-of-the-lost-star": 1,
+              "daechung-rpg": 1
             },
             "failureTargets": {
-              "web": 1
+              "web": 2
             },
             "failureClasses": {
-              "NO_OP": 1
+              "NO_OP": 1,
+              "MALFORMED_OUTPUT": 1
             },
             "lastEvidence": "coding_dsgojm",
-            "lastFailureEvidence": "coding_negative_h4wuz2",
-            "lastUpdatedAt": "2026-09-19T12:08:34.204Z"
+            "lastFailureEvidence": "coding_negative_xihlun",
+            "lastUpdatedAt": "2026-09-19T13:35:45.550Z"
           },
           "web|NO_OP": {
             "verifiedApplications": 2,
@@ -592,8 +595,8 @@
         },
         "state": "VERIFIED",
         "lastEvidence": "coding_9r8f1j",
-        "lastFailureEvidence": "coding_negative_bsx6r7",
-        "lastUpdatedAt": "2026-09-19T13:08:25.131Z"
+        "lastFailureEvidence": "coding_negative_xihlun",
+        "lastUpdatedAt": "2026-09-19T13:35:45.550Z"
       }
     }
   },
@@ -1413,9 +1416,9 @@
   "codingConstitution": {
     "version": 1,
     "rules": [],
-    "lastBuiltAt": "2026-09-19T13:18:56.793Z",
+    "lastBuiltAt": "2026-09-19T13:35:45.559Z",
     "advisoryOnly": true,
     "authorityExpanded": false
   },
-  "updatedAt": "2026-09-19T13:18:56.793Z"
+  "updatedAt": "2026-09-19T13:35:45.559Z"
 }

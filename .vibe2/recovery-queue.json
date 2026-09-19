@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T13:18:57.216Z"
+      "updatedAt": "2026-09-19T13:35:46.008Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1368,7 +1368,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:15",
-      "checkpoint": "2026-09-19T12:57:48Z",
+      "checkpoint": "2026-09-19T13:23:50Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1602,7 +1602,15 @@
         "workload:prep-ms:6425",
         "workload:cycle-ms:871384",
         "system-steward:retry-exhausted-regenerated:generation-5",
-        "repair-mode:CAUSAL_REGENERATION_GENERATION_5"
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_5",
+        "base-main:ccfb20d9f114c713af7a37aa0ca147c56f999fc9",
+        "actions-run:35444351457",
+        "reservation-id:35444351457:1",
+        "workload:prep-ms:6045",
+        "workload:cycle-ms:933587",
+        "exploration-reuse:37299bb896a8e314beb2c06d",
+        "workload:prep-ms:6058",
+        "workload:cycle-ms:1069772"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1618,7 +1626,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T08:20:33.605Z",
-      "updatedAt": "2026-09-19T13:18:57.216Z"
+      "updatedAt": "2026-09-19T13:35:46.008Z"
     },
     {
       "id": "recovery-c9cbc89486453076c641",
