@@ -428,11 +428,15 @@ test('candidate failure telemetry survives a failed source worker step',()=>{
   const resultEnd=workflow.indexOf('- name: Upload worker result for fan-in');
   const resultStep=workflow.slice(resultStart,resultEnd);
   assert(resultStep.includes('source-generation-failure:${candidateFailureClass}'));
-  assert(resultStep.includes('coding-failure-fingerprint:${clean(manifest.codingMethod.failureFingerprint)}'));
-  assert(resultStep.includes('coding-patch-recipe:${clean(manifest.codingMethod.patchRecipeMode)}'));
-  assert(resultStep.includes('coding-verified-failure-memory-count:${Number(manifest.codingMethod.verifiedFailureLocalMemoryCount)}'));
+  assert(resultStep.includes('coding-failure-fingerprint:${clean(baseCodingMethod.failureFingerprint)}'));
+  assert(resultStep.includes('coding-patch-recipe:${clean(baseCodingMethod.patchRecipeMode)}'));
+  assert(resultStep.includes('coding-verified-failure-memory-count:${Number(baseCodingMethod.verifiedFailureLocalMemoryCount)}'));
   assert(resultStep.includes("candidateFailure=candidateOk?null"));
   assert(resultStep.includes("manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)"));
+  assert(resultStep.includes("const baseCodingMethod=manifest?.codingMethod||fallbackCodingMethod"));
+  assert(resultStep.includes("strategy:clean(workOrder.candidateStrategyRole.strategy)"));
+  assert(resultStep.includes("failureFingerprint:clean(workOrder?.unifiedLearning?.failureFingerprint)||null"));
+  assert(resultStep.includes("telemetrySource:manifest?.codingMethod?'CANDIDATE_MANIFEST':'WORK_ORDER_FALLBACK'"));
 });
 test('explicit work-order output path overrides runtime default path',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-output-path-'));
