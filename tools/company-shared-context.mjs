@@ -34,6 +34,17 @@ export function validateSharedWorkerContext({
   if(JSON.stringify(architecture?.sharedContextLoadOrder)!==JSON.stringify(requiredOrder))fail('ARCHITECTURE_LOAD_ORDER');
   if(contract?.completionRequiresSharedContextSync!==true)fail('COMPLETION_SYNC_REQUIRED');
   if(contract?.mismatchAction!=='BLOCK_COMPLETION_AND_REQUEUE_EXACT_FAILURE_STAGE')fail('MISMATCH_ACTION');
+  const orchestration=policy?.developmentLifecycleMachine?.primaryAiOrchestration;
+  if(orchestration?.orchestrator!=='CHATGPT_PRIMARY_AI')fail('PRIMARY_AI_ORCHESTRATOR');
+  if(orchestration?.role!=='PRIMARY_AI_SYSTEM_ORCHESTRATOR_AND_REVIEWER')fail('PRIMARY_AI_ROLE');
+  if(orchestration?.gameSourceAuthoring!==false)fail('PRIMARY_AI_GAME_SOURCE_BOUNDARY');
+  if(JSON.stringify(orchestration?.gameImplementationOwner)!==JSON.stringify(['VIBE2','VIBE3']))fail('GAME_IMPLEMENTATION_OWNER');
+  if(orchestration?.externalAiWorkerPolicy?.maySelfPromoteToOrchestrator!==false)fail('EXTERNAL_AI_SELF_ORCHESTRATION');
+  if(orchestration?.externalAiWorkerPolicy?.mayIssueFinalSystemCompletionVerdict!==false)fail('EXTERNAL_AI_FINAL_VERDICT');
+  if(architecture?.workerRoles?.PRIMARY_AI_ORCHESTRATOR!=='SYSTEM_ROADMAP_BOTTLENECK_ASSIGNMENT_REVIEW_AND_ACCEPTANCE_AUTHORITY')fail('ARCHITECTURE_PRIMARY_AI_ROLE');
+  if(architecture?.externalAiRules?.finalSystemAcceptanceForbidden!==true)fail('ARCHITECTURE_EXTERNAL_AI_ACCEPTANCE');
+  if(logMap?.orchestrationLogContract?.finalAcceptanceRequiresPrimaryAiReview!==true)fail('LOG_PRIMARY_AI_REVIEW_REQUIRED');
+  if(logMap?.orchestrationLogContract?.workerSelfAcceptanceForbidden!==true)fail('LOG_WORKER_SELF_ACCEPTANCE');
   const hashes={
     policySha256:sha256(policyFile),
     logMapSha256:sha256(logMapFile),
@@ -45,6 +56,8 @@ export function validateSharedWorkerContext({
     files:{policy:policyFile,logMap:logMapFile,architecture:architectureFile},
     hashes,
     policyVersion:Number(policy.version||0),
+    primaryAiOrchestrator:orchestration.orchestrator,
+    primaryAiReviewRequired:true,
     checkedAt:new Date().toISOString()
   };
 }
