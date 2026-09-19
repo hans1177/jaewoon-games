@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T08:04:32.669Z"
+      "updatedAt": "2026-09-19T08:09:59.076Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1316,7 +1316,10 @@
         "system-steward:failure-signature:source-candidate-generation-failed",
         "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
         "recovery-escalated-from:vibe2",
-        "recovery-route:VIBE2_VIBE3"
+        "recovery-route:VIBE2_VIBE3",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1332,11 +1335,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T08:04:32.668Z",
-      "updatedAt": "2026-09-19T08:04:32.704Z",
-      "dispatchEvidence": [
-        "recovery-dispatched:vibe2_vibe3",
-        "recovery-dispatched-at:2026-09-19T08:04:32.704Z"
-      ]
+      "updatedAt": "2026-09-19T08:09:59.076Z"
     }
   ]
 }
