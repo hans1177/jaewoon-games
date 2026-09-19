@@ -1,5 +1,5 @@
 {
-  "version": 153,
+  "version": 154,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -447,11 +447,11 @@
     "internalArtificialConcurrencyCapsForbidden": true,
     "codingEfficiencyObjective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_INVOCATION_AND_FIRST_CANDIDATE_PASS_RATE",
     "sourceCandidateGenerationBottleneckMitigation": {
-      "version": 1,
+      "version": 2,
       "priority": "SOURCE_CANDIDATE_GENERATION_FIRST",
-      "status": "MAIN_WIRED_AWAITING_CLEAN_20_WAVE",
-      "focusedWebRepairFirstAttemptMode": "WORKER_PINNED_REPLACE_ONLY",
-      "modelGeneratedPathOrFindOnFocusedFirstAttempt": false,
+      "status": "MAIN_WIRED_CI_REVALIDATION_RUNNING",
+      "focusedWebRepairFirstAttemptMode": "RESPONSIBILITY_SELECTED_JSON_EDIT",
+      "modelGeneratedPathOrFindOnFocusedFirstAttempt": true,
       "focusedReplaceTimeoutMs": 90000,
       "focusedReplaceMaxPredict": 384,
       "focusedReplaceContextWindow": 8192,
@@ -472,7 +472,26 @@
         "7aec400eb5e46e01978c683585e35f8f383c145e",
         "a8260bdb4c716934ca491c7c08dea478b75637de"
       ],
-      "workflowTelemetryCommit": "d897e86d13cf228bb1bdcfff9592c36cc6e60497"
+      "workflowTelemetryCommit": "d897e86d13cf228bb1bdcfff9592c36cc6e60497",
+      "causalFastPathTriggers": [
+        "EDIT_MATCH",
+        "TIMEOUT"
+      ],
+      "causalFastPathStartAttempt": 2,
+      "causalFastPathMode": "WORKER_PINNED_REPLACE_ONLY",
+      "firstAttemptPinnedAnchorDisabledReason": "GOAL_RELEVANCE_NOT_PROVEN_FOR_GENERIC_ANCHOR_SELECTION",
+      "qualityProtection": "DO_NOT_FORCE_UNRELATED_ANCHOR_BEFORE_CAUSAL_FAILURE",
+      "editMatchFastEscalationSourceCommit": "03d8c27e8bbf3ec9759f9d8bd4758b22d7a78c03",
+      "editMatchFastEscalationTestCommit": "a8b318df4433036bb0607b79d1802de992338e16",
+      "firstAttemptSafetyCommit": "8903d637486725e6501e1d0231e49fa2ddd87447",
+      "contractRegressionCommit": "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a",
+      "schedulerRegressionCommit": "52b4329d444b42a267954233168d562d636e10c4",
+      "ciRevalidationRuns": {
+        "companyEvolutionQa": 35476177596,
+        "vibe2CoreQa": 35476177645,
+        "integratedRegression": 35476177597,
+        "state": "QUEUED_OR_RUNNING"
+      }
     },
     "codingEfficiencyMustNotDependOnShorterWorkerTimeBudget": true,
     "strategyQualityMayNotTradeAwayQaOrEvidence": true
@@ -2075,6 +2094,21 @@
                 "EDIT_MATCH": 6
               },
               "currentLargestBottleneck": "FULL_WEB_BASE_REBUILD_SUCCESS_RATE_AND_FINAL_ACTIVE_WORKER_TAIL"
+            },
+            "editMatchCausalFastPath": {
+              "baselineWave": 35452958416,
+              "baselineEditMatchFailures": 6,
+              "baselineTimeoutFailures": 6,
+              "firstEditMatchFailureFastEscalatesToReplaceOnlyOnAttempt2": true,
+              "timeoutFailureFastEscalatesToReplaceOnlyOnAttempt2": true,
+              "focusedReplaceTimeoutMs": 90000,
+              "firstAttemptTargetSelectionPreserved": true,
+              "qaGatesWeakened": false,
+              "commits": [
+                "03d8c27e8bbf3ec9759f9d8bd4758b22d7a78c03",
+                "8903d637486725e6501e1d0231e49fa2ddd87447",
+                "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a"
+              ]
             }
           },
           "repairs": [
@@ -3626,34 +3660,52 @@
     }
   },
   "changeRecord": {
-    "id": "CENTRAL_SYNC_CURRENT_HEAD_AND_PRIMARY_BOTTLENECK_2026-09-20",
+    "id": "VIBE2_CAUSAL_FOCUSED_RETRY_SAFETY_2026-09-20",
     "documentIsCode": true,
-    "documentationFirst": true,
-    "previousChangeRecordId": "OWNER_PRESERVATION_DESIGN_CONTRACT_2026-09-20",
-    "reason": "SYNC_CURRENT_MAIN_HEAD, OWNER_PRESERVATION_PRESENTATION_ROUTING, AND THE LATEST VERIFIED SOURCE_CANDIDATE_GENERATION BOTTLENECK BEFORE THE NEXT BOTTLENECK REPAIR.",
+    "documentationFirst": false,
+    "previousChangeRecordId": "CENTRAL_SYNC_CURRENT_HEAD_AND_PRIMARY_BOTTLENECK_2026-09-20",
+    "reason": "KEEP_FIRST_ATTEMPT_RESPONSIBILITY_SELECTION_INTACT; AFTER A REAL EDIT_MATCH_OR_TIMEOUT, FAST_ESCALATE ATTEMPT_2_TO_WORKER_PINNED_REPLACE_ONLY WITH_90S_384_TOKEN_8K_CONTEXT. THIS REDUCES THE SOURCE_CANDIDATE_GENERATION_TAIL WITHOUT FORCING A POSSIBLY_UNRELATED_GENERIC_ANCHOR BEFORE CAUSAL_FAILURE.",
     "evidence": {
-      "mainHead": "5f166cb22fbc5045d8be8ed119d481a2af3ced14",
-      "ownerPreservationPlannerRepair": "2b029df8054900f321c8a6edea91f0124c208500",
-      "ownerPreservationRegression": "5f166cb22fbc5045d8be8ed119d481a2af3ced14",
-      "completedWave": {
+      "baseline": {
         "runId": 35452958416,
         "pass": 2,
         "fail": 18,
-        "passRatePct": 10,
-        "bottleneck": "SOURCE_CANDIDATE_GENERATION",
-        "failureDistribution": {
-          "TIMEOUT": 6,
-          "EDIT_MATCH": 6,
-          "FULL_REWRITE_SIZE": 3,
-          "NO_OP": 2,
-          "MALFORMED_OUTPUT": 1
-        }
+        "editMatch": 6,
+        "timeout": 6
+      },
+      "sourceCommits": [
+        "03d8c27e8bbf3ec9759f9d8bd4758b22d7a78c03",
+        "8903d637486725e6501e1d0231e49fa2ddd87447"
+      ],
+      "testCommits": [
+        "a8b318df4433036bb0607b79d1802de992338e16",
+        "f628ed3806a958539088f055881390518e376829",
+        "b6ef7e4fbcfd010d7f373ef66e81a437dbf4943a",
+        "52b4329d444b42a267954233168d562d636e10c4"
+      ],
+      "integratedRegressionPriorHead": {
+        "runId": 35476104737,
+        "conclusion": "success"
+      },
+      "currentCi": {
+        "companyEvolutionQa": 35476177596,
+        "vibe2CoreQa": 35476177645,
+        "integratedRegression": 35476177597,
+        "state": "PENDING"
       }
     },
-    "next": [
-      "VERIFY_NEXT_POST_ANCHOR_REFILL",
-      "REDUCE_EDIT_MATCH_AND_TIMEOUT_WITHOUT_WEAKENING_EXACT_EDIT_OR_QA_GATES",
-      "CONFIRM_FANTASY_SURVIVAL_RUNTIME_SEED_MATERIALIZATION"
+    "invariants": {
+      "exactEditRequired": true,
+      "semanticDiffBudgetRequired": true,
+      "qualityGatesNotWeakened": true,
+      "firstAttemptGoalTargetSelectionPreserved": true,
+      "directMainGameSourceWriteForbidden": true
+    },
+    "pending": [
+      "CURRENT_CI_REVALIDATION_PASS",
+      "NEXT_CLEAN_20_WAVE_MEASURE_EDIT_MATCH_VS_6_BASELINE",
+      "NEXT_CLEAN_20_WAVE_MEASURE_TIMEOUT_VS_6_BASELINE",
+      "MEASURE_PACKAGE_CYCLE_LATENCY"
     ]
   },
   "vibeExecutionLaneContract": {
