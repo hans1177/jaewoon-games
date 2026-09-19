@@ -15,6 +15,7 @@ const workflow=fs.readFileSync(new URL('../.github/workflows/vibe2-continuous-co
 const safetyNetWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-24h-runner.yml',import.meta.url),'utf8');
 const coreQaWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-core-qa.yml',import.meta.url),'utf8');
 const candidateReleaseWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-candidate-release.yml',import.meta.url),'utf8');
+const recoveryFastWorkflow=fs.readFileSync(new URL('../.github/workflows/vibe2-recovery-fast.yml',import.meta.url),'utf8');
 const runtime=JSON.parse(fs.readFileSync(new URL('../vibe2-runtime.json',import.meta.url),'utf8'));
 const continuousRunnerSource=fs.readFileSync(new URL('../tools/vibe2-continuous-runner.mjs',import.meta.url),'utf8');
 
@@ -146,7 +147,7 @@ test('one Vibe2 wave uses the same reserved main contract without a global explo
   assert(reserveBlock.indexOf('tools/vibe2-system-steward.mjs') < reserveBlock.indexOf('tools/vibe2-handoff.mjs --check'));
   assert(reserveBlock.includes('git add .vibe2/queue.json .vibe2/parallelism-control.json'));
   assert(workflow.includes('(cd "$contract_root" && node --test --test-concurrency=4'));
-  assert(workflow.includes('Candidate regression runs once at fan-in against the exact reserved main contract.'));
+  assert(workflow.includes('Game-primary candidates require full regression. Auxiliary analysis/practice lanes are source-write:NO and do not mutate production.'));
   assert.match(continuousRunnerSource,/projectLifecycleFile=''/);
   assert.match(continuousRunnerSource,/projectLifecycleFile:clean\(args\['project-lifecycle'\]\)/);
 });
@@ -273,6 +274,37 @@ test('24H cycle serialization does not reuse the control-state lock',()=>{
   const refillStart=safetyNetWorkflow.indexOf('  refill:');
   assert(gameStudyStart>=0 && refillStart>gameStudyStart);
   assert(safetyNetWorkflow.slice(gameStudyStart,refillStart).includes('needs: [plan, continuous]'));
+});
+
+test('continuous core and 24H runner isolate game-primary and learning-idle execution lanes',()=>{
+  assert(workflow.includes('execution_lane:'));
+  assert(workflow.includes("VIBE2_EXECUTION_LANE: ${{ inputs.execution_lane || 'game-primary' }}"));
+  assert(workflow.includes('--lane="$VIBE2_EXECUTION_LANE"'));
+  assert(workflow.includes('VIBE2_FANIN_ADAPTIVE_ELIGIBLE='));
+  assert(workflow.includes('VIBE2_REGRESSION_ROLE=SKIPPED_AUXILIARY_LANE:'));
+  assert(workflow.includes('AUXILIARY_LANE_NO_RELEASE'));
+  assert(workflow.includes("if: env.VIBE2_EXECUTION_LANE == 'game-primary'"));
+  assert(safetyNetWorkflow.includes('game_primary_queued: ${{ steps.queue_state.outputs.game_primary_queued }}'));
+  assert(safetyNetWorkflow.includes('learning_idle_queued: ${{ steps.queue_state.outputs.learning_idle_queued }}'));
+  assert(safetyNetWorkflow.includes('  learning_idle:'));
+  assert(safetyNetWorkflow.includes('execution_lane: learning-idle'));
+  assert(safetyNetWorkflow.includes("lane_max: '4'"));
+  assert(safetyNetWorkflow.includes("needs.plan.outputs.game_primary_queued == '0'"));
+});
+
+test('recovery-fast lane is event-driven and never directly consumes a game worker slot',()=>{
+  assert(recoveryFastWorkflow.includes('name: Vibe2 Recovery Fast'));
+  assert(recoveryFastWorkflow.includes('Vibe2 Continuous Core'));
+  assert(recoveryFastWorkflow.includes('Company System AI Workers'));
+  assert(recoveryFastWorkflow.includes("cron: '*/5 * * * *'"));
+  assert(recoveryFastWorkflow.includes('tools/company-recovery-escalation.mjs'));
+  assert(recoveryFastWorkflow.includes('tools/company-recovery-dispatch.mjs'));
+  assert(recoveryFastWorkflow.includes('--route=all'));
+  assert(recoveryFastWorkflow.includes('VIBE2_RECOVERY_FAST_GAME_WORKER_DISPATCH=DEFER_TO_GAME_PRIMARY_FANIN'));
+  assert(recoveryFastWorkflow.includes('company-system-ai-cycle'));
+  assert.equal(recoveryFastWorkflow.includes('uses: ./.github/workflows/vibe2-continuous-core.yml'),false);
+  assert.equal(recoveryFastWorkflow.includes('vibe2-fanin-refill'),false);
+  assert.equal(recoveryFastWorkflow.includes('git pull --rebase origin vibe2-unreal-core'),false);
 });
 
 test('fan-in keeps a repository-dispatch fallback and hourly safety net',()=>{
