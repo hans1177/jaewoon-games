@@ -8,7 +8,7 @@ test('homepage uses touch/click direct launch without keyboard launch wiring',()
 test('all Web HTML routes receive touch controls',()=>{assert.match(worker,/url\.pathname\.startsWith\('\/web-games\/'\)/);assert.match(worker,/\/web-games\/_shared\/touch-controls\.js/);assert.match(worker,/injectUniversalTouchControls/);});
 test('homepage mobile layout keeps readable single-column cards and large touch targets',()=>{
   assert.match(homepage,/@media\(max-width:700px\)/);
-  assert.match(homepage,/\.top30Grid\{grid-template-columns:1fr/);
+  assert.match(homepage,/\.gameShelfGrid\{grid-template-columns:1fr/);
   assert.match(homepage,/\.foldGameBtn\{min-height:46px/);
   assert.match(homepage,/\.homeFocusBtn\{width:100%;min-height:48px/);
   assert.match(homepage,/@media\(max-width:420px\)/);
