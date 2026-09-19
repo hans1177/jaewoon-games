@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T07:40:05.209Z"
+      "updatedAt": "2026-09-19T07:52:22.120Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1004,13 +1004,24 @@
     {
       "id": "recovery-f365558541bff422dbcb",
       "status": "dispatched",
-      "priority": "high",
+      "priority": "critical",
       "sourceQueue": "vibe2",
       "sourceTaskId": "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
-      "relatedTaskIds": [],
+      "relatedTaskIds": [
+        "daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-html",
+        "amusement-tycoon-web-runtime-repair-v1",
+        "bug-defense-web-runtime-repair-v1",
+        "daechung-rpg-web-runtime-repair-v1",
+        "line-defense-web-runtime-repair-v1",
+        "seed-action-survival-rogu-echoes-of-the-lost-star-web-runtime-repair-v1",
+        "seed-casual-realm-weaver-web-runtime-repair-v1",
+        "seed-idle-growth-rpg-crystal-bloom-web-runtime-repair-v1",
+        "seed-puzzle-chromatic-cascade-web-runtime-repair-v1",
+        "seed-single-defense-strat-celestial-bastion-web-runtime-repair-v1"
+      ],
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
-      "blastRadius": "single-task",
+      "blastRadius": "portfolio:10",
       "checkpoint": "2026-09-19T07:27:51Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
@@ -1175,7 +1186,11 @@
         "workload:prep-ms:8364",
         "workload:cycle-ms:466346",
         "workload:prep-ms:5396",
-        "workload:cycle-ms:450115"
+        "workload:cycle-ms:450115",
+        "actions-run:35429909037",
+        "reservation-id:35429909037:1",
+        "workload:prep-ms:9368",
+        "workload:cycle-ms:520998"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1191,7 +1206,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-19T07:40:05.210Z"
+      "updatedAt": "2026-09-19T07:52:22.120Z"
     }
   ]
 }
