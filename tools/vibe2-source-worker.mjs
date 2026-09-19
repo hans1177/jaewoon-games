@@ -9,6 +9,7 @@ import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { applyExactEdits, boundedLargeExcerpt } from './autonomous-safe-edit.mjs';
 import { exploreVibe2WorkOrder, explorationGuidance } from './vibe2-exploration-worker.mjs';
+import { analyzeExistingGameSource } from './company-vibe2-gameplay-intelligence.mjs';
 
 const clean=value=>String(value??'').trim();
 const posix=value=>clean(value).replaceAll('\\','/').replace(/^\.\//,'').replace(/\/+$/,'');
@@ -257,7 +258,44 @@ function insertFullWebExpansion(baseHtml,fragment){
   if(at<0)throw new Error('Web expansion 기준 종료 태그 없음');
   return base.slice(0,at)+'\n'+addition+'\n'+base.slice(at);
 }
-function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,maxBytes=FULL_WEB_GENERATION_TARGET_MAX_BYTES,remainingStages=1,previousFailure=''}={}){
+const FULL_WEB_STAGE_CAPABILITY_ORDER=Object.freeze([
+  'REAL_INPUT','MUTABLE_GAME_STATE','UPDATE_OR_STATE_TRANSITION_LOOP','PROGRESSION_OR_RESOURCE_SYSTEM',
+  'WIN_LOSS_OR_RESULT','RESTART_RESET','SAVE_COMPATIBILITY','MOBILE_RESPONSIVE_CONTROLS'
+]);
+function fullWebCapabilitySnapshot(source=''){
+  const text=String(source??''),analysis=analyzeExistingGameSource(text),c=analysis.capabilities||{};
+  const mutableGameState=/\b(?:let|var)\s+(?:state|gameState|player|enemy|score|hp|health|wave|stage|level|gold|coins|resources?)\b|\b(?:state|gameState|score|hp|health|wave|stage|level|gold|coins|resources?)\s*[+\-*/]?=/i.test(text);
+  const restartReset=/\b(?:function\s+)?(?:restart|reset|retry|newGame|startOver)\b|data-action=["'](?:restart|reset|retry)["']/i.test(text);
+  const progression=/\b(?:progress|upgrade|level|wave|stage|reward|unlock|quest|objective|xp|experience|gold|coin|resource)\b/i.test(text);
+  const responsive=/@media\s*\([^)]*(?:max-width|pointer|hover)|touch-action\s*:|viewport-fit|100dvh|100svh/i.test(text);
+  return{
+    REAL_INPUT:c.realInput===true,
+    MUTABLE_GAME_STATE:mutableGameState,
+    UPDATE_OR_STATE_TRANSITION_LOOP:c.frameLoop===true||/\b(?:update|tick|step|loop|render)\s*\(/i.test(text),
+    PROGRESSION_OR_RESOURCE_SYSTEM:c.economy===true||c.difficulty===true||progression,
+    WIN_LOSS_OR_RESULT:c.winPath===true&&c.failPath===true,
+    RESTART_RESET:restartReset,
+    SAVE_COMPATIBILITY:c.saveState===true,
+    MOBILE_RESPONSIVE_CONTROLS:c.touchInput===true&&responsive
+  };
+}
+function fullWebExpansionStageTarget(source='',stage=1){
+  const capabilities=fullWebCapabilitySnapshot(source);
+  const missing=FULL_WEB_STAGE_CAPABILITY_ORDER.filter(name=>capabilities[name]!==true);
+  const capability=missing[0]||`MEANINGFUL_GAMEPLAY_DEPTH_STAGE_${Math.max(1,Number(stage)||1)}`;
+  const directives={
+    REAL_INPUT:'Add real click/pointer/keyboard/touch input that reaches a core gameplay action and changes game state.',
+    MUTABLE_GAME_STATE:'Add explicit mutable gameplay state owned by real systems; input and rules must materially change it.',
+    UPDATE_OR_STATE_TRANSITION_LOOP:'Add a bounded update/render or equivalent state-transition loop that advances gameplay from current state.',
+    PROGRESSION_OR_RESOURCE_SYSTEM:'Add real progression or resource gain/spend rules tied to gameplay outcomes, not decorative counters.',
+    WIN_LOSS_OR_RESULT:'Add both reachable success and failure/result paths driven by game state, with observable outcomes.',
+    RESTART_RESET:'Add a real restart/reset/retry path that restores a valid playable state without reloading validation scaffolding.',
+    SAVE_COMPATIBILITY:'Add persistent-capable save/restore for meaningful progress using stable keys and safe defaults.',
+    MOBILE_RESPONSIVE_CONTROLS:'Add touch/pointer gameplay controls plus responsive mobile layout/input semantics for narrow screens.'
+  };
+  return{capability,missing,present:FULL_WEB_STAGE_CAPABILITY_ORDER.filter(name=>capabilities[name]===true),directive:directives[capability]||'Add one new coherent gameplay dimension that changes decisions, state transitions, or outcomes. Do not duplicate an already-present capability.'};
+}
+function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,maxBytes=FULL_WEB_GENERATION_TARGET_MAX_BYTES,remainingStages=1,previousFailure='',stageTarget=null}={}){
   const content=String(seed?.content??''),currentBytes=Buffer.byteLength(content,'utf8'),gap=Math.max(0,minBytes-currentBytes),stageTarget=Math.min(7000,Math.max(3200,Math.ceil(gap/Math.max(1,remainingStages))+800));
   const prefix=String(basePrompt??'').split('\n=== FILE ')[0].trimEnd();
   return[
@@ -266,6 +304,10 @@ function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_
     'FULL WEB ADDITIVE EXPANSION MODE.',
     `Expansion stage: ${stage}. Current playable HTML: ${currentBytes} bytes. Final acceptance minimum: ${minBytes} bytes; preferred maximum: ${maxBytes} bytes.`,
     `Generate roughly ${stageTarget} bytes of NEW coherent gameplay source. This fragment will be inserted immediately before </body>.`,
+    stageTarget?.capability?`THIS STAGE TARGET=${stageTarget.capability}`:'',
+    stageTarget?.directive||'',
+    stageTarget?.present?.length?`Already present capabilities (do not re-implement as the main goal): ${stageTarget.present.join(', ')}`:'',
+    stageTarget?.missing?.length?`Still missing after this target: ${stageTarget.missing.filter(name=>name!==stageTarget.capability).join(', ')||'NONE'}`:''
     previousFailure?`Previous expansion failure: ${clean(previousFailure).replace(/\s+/g,' ').slice(0,240)}. Do not repeat the same output.`:'',
     'If the envelope format is difficult, a raw closed HTML fragment is acceptable, but it MUST NOT contain html/body/doctype and every script/style tag must be closed.',
     'Return only one VIBE2_WEB_EXPANSION envelope. Do not return a complete HTML document or JSON.',
@@ -506,6 +548,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let expansionStages=0;
   let repeatedIntermediateOutputs=0;
   const intermediateGrowthBytes=[];
+  const expansionStageTargets=[];
   let lastCandidateValidation=null;
   const maxAttempts=allowFullRewrite?FULL_WEB_MAX_GENERATION_ATTEMPTS:MAX_GENERATION_ATTEMPTS;
   for(let attempt=1;attempt<=maxAttempts;attempt++){
@@ -514,7 +557,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const remainingStages=Math.max(1,maxAttempts-attempt+1);
     const attemptPrompt=expansionMode
-      ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||''})
+      ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',stageTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
       :(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:lastRaw}):prompt);
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
@@ -537,6 +580,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       lastRaw=raw;
       let candidate;
       if(expansionMode){
+        const stageTarget=fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1);
+        expansionStageTargets.push(stageTarget.capability);
         const fragment=parseFullWebExpansion(raw)||parseLooseFullWebExpansion(raw);
         if(fragment){
           const beforeBytes=Buffer.byteLength(accumulatedFullWeb.content,'utf8');
@@ -565,7 +610,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -698,6 +743,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     intermediateGrowthBytes:Array.isArray(generation.intermediateGrowthBytes)?generation.intermediateGrowthBytes.slice(0,8):[],
     intermediateGrowthTotalBytes:Array.isArray(generation.intermediateGrowthBytes)?generation.intermediateGrowthBytes.reduce((sum,value)=>sum+Math.max(0,Number(value)||0),0):0,
     repeatedIntermediateOutputs:Number(generation.repeatedIntermediateOutputs||0),
+    expansionStageTargets:Array.isArray(generation.expansionStageTargets)?generation.expansionStageTargets.slice(0,8):[],
     generationAttempts:Number(generation.attempts||0),
     generationRecoveryUsed:generation.recoveryUsed===true,
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
