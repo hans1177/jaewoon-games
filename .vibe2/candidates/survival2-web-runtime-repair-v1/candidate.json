@@ -1,0 +1,14 @@
+{
+  "summary": "Vibe2 focused replace-only recovery",
+  "expectedEffect": "bounded exact-anchor source repair",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "            if (e.key === \"ArrowLeft\") {",
+      "replace": "document.addEventListener('keydown', function(e) { if (e.key === 'ArrowLeft') { gameState.player.position.x -= 1; } else if (e.key === 'ArrowRight') { gameState.player.position.x += 1; } });"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
