@@ -105,3 +105,37 @@ test('existing experience promotion gate enforces design evidence only for desig
   const legacy=validateVibeExperiencePromotion(base);
   assert.equal(legacy.valid,true);
 });
+
+
+test('narrative contract tracks world character quest and payoff without changing authority',()=>{
+  const result=buildVibeDesignIntelligence({task:{
+    goal:'스토리 퀘스트와 대화를 설계한다',
+    narrative:{
+      worldRules:['마력숲의 연구소는 암호 없이는 열리지 않는다'],
+      characterGoals:['연구원은 부품센서를 찾아 통신을 복구하려 한다'],
+      plotBeats:['무전기 부품 전달 뒤 연구소 진입 정보 공개'],
+      questStates:['parts_delivered -> sensor_search_unlocked'],
+      foreshadowing:['거대한 나무 서쪽 끝 단서'],
+      payoffs:['서쪽 끝에서 비밀번호 단서 회수'],
+      dialogueRules:['NPC는 플레이어가 전달한 정보만 안다']
+    }
+  }});
+  assert.equal(result.narrative.required,true);
+  assert.equal(result.narrative.status,'READY');
+  assert.deepEqual(result.narrative.issues,[]);
+  assert.equal(result.narrative.authorityExpanded,false);
+});
+
+test('narrative contract warns when foreshadowing has no tracked payoff',()=>{
+  const result=buildVibeDesignIntelligence({task:{
+    goal:'복선이 있는 스토리 추가',
+    narrative:{
+      worldRules:['숲의 규칙'],
+      characterGoals:['주인공은 실종자를 찾는다'],
+      plotBeats:['이상한 표식을 발견한다'],
+      foreshadowing:['표식의 의미를 암시한다']
+    }
+  }});
+  assert.equal(result.narrative.required,true);
+  assert.ok(result.narrative.issues.includes('FORESHADOWING_WITHOUT_TRACKED_PAYOFF'));
+});
