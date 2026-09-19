@@ -130,14 +130,37 @@ export function scanSecurityPatch({patch='',changedFiles=[]}={}){
     checkedAt:new Date().toISOString()
   };
 }
+function gitUntrackedFiles(){
+  try{
+    return execFileSync('git',['ls-files','--others','--exclude-standard','-z'],{encoding:'utf8',maxBuffer:20*1024*1024})
+      .split('\0').map(clean).filter(Boolean);
+  }catch{return[];}
+}
+function untrackedTextPatch(files=[]){
+  let patch='';
+  for(const file of files){
+    if(!fs.existsSync(file)||!fs.statSync(file).isFile())continue;
+    const body=fs.readFileSync(file);
+    if(body.includes(0))continue;
+    const lines=body.toString('utf8').split('\n');
+    patch+=`diff --git a/${file} b/${file}\nnew file mode 100644\n--- /dev/null\n+++ b/${file}\n@@ -0,0 +1,${lines.length} @@\n${lines.map(line=>`+${line}`).join('\n')}\n`;
+  }
+  return patch;
+}
 function gitPatch(base='',head=''){
   if(base&&head)return execFileSync('git',['diff','--unified=0','--no-color',base+'...'+head],{encoding:'utf8',maxBuffer:20*1024*1024});
-  return execFileSync('git',['diff','--unified=0','--no-color'],{encoding:'utf8',maxBuffer:20*1024*1024});
+  const tracked=execFileSync('git',['diff','--unified=0','--no-color'],{encoding:'utf8',maxBuffer:20*1024*1024});
+  const untracked=gitUntrackedFiles();
+  return tracked+untrackedTextPatch(untracked);
 }
 function gitChangedFiles(base='',head=''){
   const args=['diff','--name-only'];
   if(base&&head)args.push(base+'...'+head);
-  return execFileSync('git',args,{encoding:'utf8'}).split('\n').map(clean).filter(Boolean);
+  const tracked=execFileSync('git',args,{encoding:'utf8'}).split('\n').map(clean).filter(Boolean);
+  return base&&head?tracked:[...new Set([...tracked,...gitUntrackedFiles()])];
+}
+export function scanWorkingTreeSecurity(){
+  return scanSecurityPatch({patch:gitPatch(),changedFiles:gitChangedFiles()});
 }
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
   const args=parseArgs();
