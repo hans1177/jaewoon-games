@@ -531,11 +531,20 @@ export function shouldRetryGenerationError(error){
   const message=clean(error?.message||error);
   return /시간 초과|timeout|JSON|파싱|시작을 찾지 못함|잘렸거나 종료 마커|응답 비어 있음|전체 파일 응답|Web expansion(?:은| 종료 마커| 내용)|FULL_WEB_EXPANSION_(?:NO_GROWTH|TOO_SMALL)|전체 교체 파일 크기 오류|실제 source 변경|변경 없는 edit|변경 파일 수|edit find|책임 파일 범위 밖 수정 금지|허용 확장자 아님|허용 경로|exact allowed path|같은 파일에 edit\/new\/replace 중복 작업 금지|SEMANTIC_DIFF_BUDGET_VIOLATION|prediction aborted|token repeat limit/i.test(message);
 }
-export function exactRetryAnchorSuggestions(prompt,{max=3}={}){
+export function exactRetryAnchorSuggestions(prompt,{max=3,sourceRoot='',responsibleFiles=[]}={}){
   const raw=String(prompt??'');
   const marker='\n=== FILE ';
   const starts=[];
   for(let at=raw.indexOf(marker);at>=0;at=raw.indexOf(marker,at+marker.length))starts.push(at);
+  let fullSource='';
+  if(clean(sourceRoot)&&Array.isArray(responsibleFiles)&&responsibleFiles.length===1){
+    try{
+      const root=path.resolve(sourceRoot);
+      const relative=posix(responsibleFiles[0]);
+      const file=path.resolve(root,relative);
+      if(file.startsWith(root+path.sep)&&fs.existsSync(file)&&fs.statSync(file).isFile())fullSource=fs.readFileSync(file,'utf8');
+    }catch{}
+  }
   const rows=[];
   for(let i=0;i<starts.length;i++){
     const sectionStart=starts[i]+1;
@@ -550,7 +559,8 @@ export function exactRetryAnchorSuggestions(prompt,{max=3}={}){
       if(trimmed.length<10||trimmed.length>180)continue;
       if(/^(?:[{}()[\];,]|<!--|\/\*|\*|\/\/|#)+$/.test(trimmed))continue;
       if(/^(?:<!doctype|<\/?(?:html|head|body)\b)/i.test(trimmed))continue;
-      const occurrences=body.split(original).length-1;
+      const occurrenceCorpus=fullSource||body;
+      const occurrences=occurrenceCorpus.split(original).length-1;
       if(occurrences!==1)continue;
       let score=0;
       if(/\b(?:function|const|let|var|if|for|while|return|addEventListener|querySelector|getElementById|classList|dataset|localStorage)\b|<(?:button|canvas|div|section|main)\b|\bid=|\bdata-/i.test(trimmed))score+=4;
@@ -566,7 +576,7 @@ export function exactRetryAnchorSuggestions(prompt,{max=3}={}){
     .slice(0,Math.max(1,Math.min(5,Number(max)||3)));
 }
 
-export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput=''}={}){
+export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=null,responsibleFiles=[],attempt=2,previousOutput='',sourceRoot=''}={}){
   const rawPrompt=String(prompt??'');
   const allowedLine=rawPrompt.split('\n').find(line=>line.trimStart().startsWith('Allowed edit paths:'))||'';
   const allowedPaths=allowedLine
@@ -581,7 +591,7 @@ export function buildGenerationRetryPrompt(prompt,{allowFullRewrite=false,error=
   const invalidPath=/허용 확장자 아님|책임 파일 범위 밖 수정 금지|허용 경로|exact allowed path/i.test(reason);
   const editMatchFailure=/edit find/i.test(reason);
   const semanticDiffViolation=/SEMANTIC_DIFF_BUDGET_VIOLATION/i.test(reason);
-  const retryAnchorSuggestions=!allowFullRewrite?exactRetryAnchorSuggestions(rawPrompt,{max:3}):[];
+  const retryAnchorSuggestions=!allowFullRewrite?exactRetryAnchorSuggestions(rawPrompt,{max:3,sourceRoot,responsibleFiles:exactResponsible}):[];
   const retryAnchorInstruction=retryAnchorSuggestions.length
     ?['EXACT FIND ANCHOR OPTIONS (copy one entire line verbatim as edits[0].find; do not alter whitespace or punctuation):',...retryAnchorSuggestions.map((value,index)=>`ANCHOR_${index+1}: ${JSON.stringify(value)}`)].join('\n')
     :'';
@@ -758,7 +768,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       :(allowFullRewrite&&bestFullWebFallbackRaw?bestFullWebFallbackRaw:lastRaw);
     const attemptPrompt=expansionMode
       ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||'',capabilityTarget:fullWebExpansionStageTarget(accumulatedFullWeb.content,expansionStages+1)})
-      :(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput}):prompt);
+      :(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:retryPreviousOutput,sourceRoot}):prompt);
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
       :(allowFullRewrite
