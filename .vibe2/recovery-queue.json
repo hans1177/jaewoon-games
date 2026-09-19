@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T17:05:12.270Z"
+      "updatedAt": "2026-09-19T17:06:20.509Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1489,7 +1489,27 @@
         "workload:cycle-ms:580525",
         "exploration-reuse:98774439f3c82c908b5b72c7",
         "workload:prep-ms:6320",
-        "workload:cycle-ms:424550"
+        "workload:cycle-ms:424550",
+        "vibe2/candidate/daechung-rpg-diagnostic-bundle-INTERVAL-CLEANUP-RISK-rpg-htm-speculative-1-35456400889-1",
+        "candidate-sha:ca57c24a76903d797a1dc7494d9b91d125e4042b",
+        "base-main:221ff283469b5b6a97791f6b5593ee658eb8c10a",
+        "incremental-qa-hash:7d70d27fb3704859fa1b8295d6a31762313561f631b8723341686bc927ee569d",
+        "presentation-static-qa-status:NOT_REQUIRED",
+        "coding-generation-attempts:2",
+        "coding-generation-attempt-budget:2",
+        "coding-speculative-attempt-budget:YES",
+        "coding-focused-final-retry:YES",
+        "coding-focused-minimal-json:YES",
+        "actions-run:35456400889",
+        "reservation-id:35456400889:1",
+        "shared-context-policy:f9d45a92fbbdf6f9649feec92e35932edecf2f9a239a7538b890386226cd47e8",
+        "workload:prep-ms:7138",
+        "workload:cycle-ms:285298",
+        "exploration-reuse:d467f3908aeb4d43db13878a",
+        "role-result:regression:PASS",
+        "role-result:review:PASS",
+        "package-review:all-required-roles-pass",
+        "candidate-identity:PASS"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1505,7 +1525,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T07:28:12.407Z",
-      "updatedAt": "2026-09-19T17:05:12.269Z"
+      "updatedAt": "2026-09-19T17:06:20.509Z"
     },
     {
       "id": "recovery-b604759a4b7b6772ff03",
