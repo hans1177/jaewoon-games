@@ -105,6 +105,13 @@ jobs:
           ref: vibe2-unreal-core
           fetch-depth: 0
 
+      - name: Checkout latest main machine contract
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: vibe2-main-contract
+          fetch-depth: 1
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -126,7 +133,7 @@ jobs:
           for attempt in 1 2 3; do
             git fetch origin "$CONTROL_BRANCH"
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
-            node tools/vibe2-candidate-reconcile.mjs \
+            node vibe2-main-contract/tools/vibe2-candidate-reconcile.mjs \
               --branch="$CANDIDATE_BRANCH" \
               --target=roblox \
               --conclusion="$VERIFIED_CONCLUSION" \
@@ -297,7 +304,7 @@ jobs:
           for attempt in 1 2 3; do
             git fetch origin "$CONTROL_BRANCH"
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
-            node tools/vibe2-queue-control.mjs pass \
+            node vibe2-main-contract/tools/vibe2-queue-control.mjs pass \
               --id="$TASK_ID" \
               --evidence="roblox-studio-run:$QA_RUN_ID,candidate-head-sha:$CANDIDATE_SHA,main-pr-merged:$PR_URL,main-promotion-sha:$MAIN_SHA,r5-target-stage-improvement-pass" | tee /tmp/vibe2-r5-settle.log
             cat > /tmp/vibe2-r5-experience-review.json <<JSON
