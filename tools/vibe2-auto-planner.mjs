@@ -325,13 +325,22 @@ export function planVibe2AutonomousTasks({status={},catalog={},developmentQueue=
   if(exactWebRepairGameIds.size){
     const tasks=queue.tasks.map(item=>{
       const gameId=clean(item?.gameId);
-      if(!exactWebRepairGameIds.has(gameId)||clean(item?.id)===`${gameId}-web-runtime-repair-v1`)return item;
+      if(!exactWebRepairGameIds.has(gameId))return item;
       const status=clean(item?.status).toLowerCase();
-      const implementation=clean(item?.target).toLowerCase()==='web'&&clean(item?.department).toLowerCase()==='development'&&clean(item?.type).toLowerCase()==='implementation';
       const indexPath=`web-games/${gameId}/index.html`;
+      const sourceMissing=!fs.existsSync(sourceFile(repoRoot,indexPath));
+      const exactTaskId=sourceMissing?`${gameId}-web-base-implementation-v1`:`${gameId}-web-runtime-repair-v1`;
+      if(clean(item?.id)===exactTaskId){
+        if(sourceMissing&&status==='cancelled'&&clean(item?.blocker)==='superseded-by:VIBE_WEB_REPAIR'){
+          return{...item,status:'queued',retries:0,blocker:null,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'RESTORED_BY_EXACT_WEB_BASE_IMPLEMENTATION',evidence:[...new Set([...(item.evidence||[]),'restored-exact-stage:WEB_BASE_IMPLEMENTATION','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+        }
+        return item;
+      }
+      const implementation=clean(item?.target).toLowerCase()==='web'&&clean(item?.department).toLowerCase()==='development'&&clean(item?.type).toLowerCase()==='implementation';
       const overlapsIndex=posix(item?.sourceRoot)===`web-games/${gameId}`&&(item?.responsibleFiles||[]).map(posix).includes(indexPath);
       if(!implementation||!overlapsIndex||!['queued','failed','blocked'].includes(status))return item;
-      return{...item,status:'cancelled',blocker:'superseded-by:VIBE_WEB_REPAIR',reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:'SUPERSEDED_BY_EXACT_WEB_REPAIR',evidence:[...new Set([...(item.evidence||[]),'superseded-by:VIBE_WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
+      const exactStage=sourceMissing?'VIBE_WEB_BASE_IMPLEMENTATION':'VIBE_WEB_REPAIR';
+      return{...item,status:'cancelled',blocker:`superseded-by:${exactStage}`,reservationId:null,reservationRunId:null,reservationRunAttempt:0,reservedAt:null,lastOutcome:`SUPERSEDED_BY_EXACT_${exactStage}`,evidence:[...new Set([...(item.evidence||[]),`superseded-by:${exactStage}`,'company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'])]};
     });
     queue=createVibeContinuousQueue({tasks,maxConcurrentTasks:queue.maxConcurrentTasks});
   }
