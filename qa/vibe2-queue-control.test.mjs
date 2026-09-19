@@ -370,6 +370,29 @@ test('fan-in accepts first passing speculative variant and keeps task awaiting f
   assert.ok(task.evidence.includes('speculative-winner:speculative'));
 });
 
+test('fan-in preserves verified per-variant coding failure provenance without blaming unclassified infrastructure failure', () => {
+  let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
+  queue=add(queue,'strategy-risk','strategy-risk','web',{estimatedRisk:'high',speculativeEligible:true});
+  queue=reserveVibeTaskBatch(queue,{maxConcurrentTasks:4}).queue;
+  const fp='web|MOBILE_PLACEMENT_INPUT_MISSING';
+  const merged=applyVibeFanInResults(queue,[
+    {taskId:'strategy-risk',variant:'primary',outcome:'FAIL',durationMs:900,evidence:['actions-run:negative-run'],candidateFailure:{class:'EDIT_MATCH'},codingMethod:{strategy:'RESPONSIBILITY_FIRST',failureFingerprint:fp,implementationPass:false,incrementalQaPass:false,performanceSanityPass:false}},
+    {taskId:'strategy-risk',variant:'speculative-1',outcome:'FAIL',durationMs:850,evidence:['actions-run:negative-run'],candidateFailure:{class:'OTHER'},codingMethod:{strategy:'DEPENDENCY_SAFE_COHERENT_PATCH',failureFingerprint:fp,implementationPass:false,incrementalQaPass:false,performanceSanityPass:false}},
+    {taskId:'strategy-risk',variant:'speculative-2',outcome:'PASS',durationMs:700,evidence:['spec-pass'],blocker:'candidate-awaiting-qa-and-deployment',codingMethod:{strategy:'CAUSAL_TRACE_FIRST',failureFingerprint:fp,implementationPass:true,incrementalQaPass:true,performanceSanityPass:true}}
+  ]);
+  const task=merged.queue.tasks.find(t=>t.id==='strategy-risk');
+  const markers=task.evidence.filter(value=>value.startsWith('coding-strategy-negative:'));
+  assert.equal(markers.length,1);
+  const payload=JSON.parse(decodeURIComponent(markers[0].slice('coding-strategy-negative:'.length)));
+  assert.equal(payload.variant,'primary');
+  assert.equal(payload.strategy,'RESPONSIBILITY_FIRST');
+  assert.equal(payload.failureFingerprint,fp);
+  assert.equal(payload.failureClass,'EDIT_MATCH');
+  assert.equal(payload.verifiedBy,'IMMUTABLE_WORKER_RESULT');
+  assert.equal(payload.infrastructureFailure,false);
+  assert.equal(task.evidence.some(value=>value.includes('DEPENDENCY_SAFE_COHERENT_PATCH')),false);
+});
+
 test('fan-in safely reconciles queued task only when reservation identity matches', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'race','race','web',{priority:'critical',estimatedRisk:'high'});
