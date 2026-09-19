@@ -7,8 +7,197 @@
   "policyDigest": "578b1145dc48c08844dfee559f55b234483ff3cfba20603c818e91ada58135c0",
   "engineDigest": "ddb934adf49a773be8a3b41f69c081dd23b83def8e2878d6825c6e241093dcf5",
   "status": "IN_PROGRESS",
-  "completedPhases": [],
-  "phases": {},
+  "completedPhases": [
+    "designer_draft",
+    "deterministic_pre_gate"
+  ],
+  "phases": {
+    "designer_draft": {
+      "identity": "색채의 연쇄는 단순한 매칭을 넘어, 보드 위의 색상 주파수를 동기화하고 연쇄 반응을 설계하여 연쇄 폭발을 일으키는 전술적 색채 동기화 퍼즐 게임입니다. 플레이어는 고유한 시그니처 시스템인 '색채 주파수 튜너'와 '연쇄 기폭 장치'를 활용하여 보드의 상태를 능동적으로 변화시키고, 매칭의 연쇄적 파급 효과를 극대화하는 독창적인 선택을 경험하게 됩니다.",
+      "playerFantasy": "플레이어는 보드 위의 무질서한 색채 에너지를 조율하고, 단 한 번의 정밀한 트리거로 화면 전체를 정화하는 위대한 '색채 조율사'가 되어 연쇄 반응의 쾌감을 만끽합니다.",
+      "coreFun": "플레이어는 매 턴마다 어떤 색채 노드를 튜닝하여 주파수를 일치시킬지 선택하고, 동기화된 노드들이 연쇄적으로 폭발하며 보드 전체의 장애물을 제거하는 즉각적인 시각적 피드백과 전술적 성취감을 느낍니다.",
+      "coreLoop": [
+        "보드의 제한된 이동 횟수와 색채 장애물 배치를 분석하여 목표를 확인합니다.",
+        "색채 주파수 튜너를 사용해 인접 노드의 색상을 변경하고 동기화 체인을 형성합니다.",
+        "연쇄 기폭 장치로 체인을 활성화하여 대규모 연쇄 폭발을 일으키고 보상을 획득합니다."
+      ],
+      "signatureSystems": [
+        {
+          "name": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+          "purpose": "보드 위에 배치된 특정 노드의 색상 주파수를 강제로 변경하여 인접한 다른 색상들과의 동기화 체인을 능동적으로 형성하는 핵심 조작 시스템입니다.",
+          "playerChoice": "플레이어는 제한된 튜닝 횟수 내에서 어떤 노드를 어떤 색상으로 전환해야 가장 길고 강력한 연쇄 동기화 경로를 확보할 수 있을지 전술적으로 결정해야 합니다."
+        },
+        {
+          "name": "연쇄 기폭 장치 (Cascade Detonator)",
+          "purpose": "동기화된 색채 체인을 일시에 폭발시켜 강력한 에너지 파동을 일으키고, 주변의 단단한 장애물을 파괴하며 추가 연쇄 반응을 유도하는 시스템입니다.",
+          "playerChoice": "플레이어는 체인이 형성되었을 때 즉시 기폭할지, 아니면 추가 튜닝을 통해 체인을 더 길게 늘려 한 번에 더 큰 폭발 보너스를 노릴지 선택합니다."
+        }
+      ],
+      "systemInterconnections": [
+        {
+          "fromSystem": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+          "toSystem": "연쇄 기폭 장치 (Cascade Detonator)",
+          "trigger": "플레이어가 노드의 색상을 변경하여 5개 이상의 동일 색상 노드가 인접하게 연결되는 순간",
+          "stateChange": "연쇄 기폭 장치의 충전 게이지가 즉시 최대치로 상승하며, 기폭 시 폭발 반경이 1셀에서 3셀로 확장되는 강화 상태로 전이됩니다."
+        },
+        {
+          "fromSystem": "연쇄 기폭 장치 (Cascade Detonator)",
+          "toSystem": "색채 주파수 튜너 (Chromatic Frequency Tuner)",
+          "trigger": "기폭 장치가 활성화되어 보드 상의 대규모 연쇄 폭발이 완전히 종료되고 보드가 안정화되었을 때",
+          "stateChange": "폭발한 노드의 수에 비례하여 색채 주파수 튜너의 잔여 튜닝 횟수가 일정 확률로 회복되거나 특수 주파수 탄환이 장전됩니다."
+        },
+        {
+          "fromSystem": "연쇄 기폭 장치 (Cascade Detonator)",
+          "toSystem": "보드 장애물 시스템 (Board Obstacle System)",
+          "trigger": "기폭 장치 폭발로 발생한 에너지 파동이 인접한 봉인된 색채 블록에 도달할 때",
+          "stateChange": "봉인된 블록의 내구도가 1 감소하며, 내구도가 0이 되면 해당 블록이 일반 색채 노드로 변환되어 새로운 동기화 체인에 참여할 수 있게 됩니다."
+        }
+      ],
+      "progressionDirection": "플레이어는 스테이지를 클리어하며 튜너의 성능(색상 변환 범위, 충전 속도)을 업그레이드하고, 더 복잡하고 단단한 장애물이 등장하는 상위 구역으로 진입합니다. 단순한 수치 증가가 아닌, 새로운 색상 주파수와 복합 장애물 패턴이 등장하여 퍼즐의 깊이를 더합니다.",
+      "progressionEconomyBalance": {
+        "progressionLoop": "스테이지 클리어 -> 색채 정수(재화) 획득 -> 튜너 및 기폭 장치 특성 업그레이드 -> 고난도 스테이지 도전 및 특수 기믹 해제",
+        "resourceFlow": "클리어 보상으로 지급되는 색채 정수는 업그레이드에 소모되며, 완벽한 연쇄(Perfect Cascade) 달성 시 보너스 정수가 지급되어 효율적인 플레이를 유도합니다.",
+        "balanceRules": "무과금 플레이어도 모든 스테이지를 클리어할 수 있도록 기본 튜닝 횟수와 기믹 파괴 규칙을 정교하게 설계하며, 업그레이드는 편의성과 전술적 선택지를 넓히는 방향으로 제한합니다."
+      },
+      "contentExpansionPlan": [
+        {
+          "milestone": "제2구역: 프리즘의 심연 (Prism Abyss)",
+          "newGameplay": "빛을 굴절시켜 주변 노드의 색상을 매 턴마다 무작위로 변화시키는 '프리즘 블록' 기믹이 추가됩니다.",
+          "systemImpact": "플레이어는 색채 주파수 튜너를 사용할 때 프리즘의 굴절 방향을 예측하여 튜닝 경로를 설계해야 하므로 전술적 복잡도가 상승합니다."
+        },
+        {
+          "milestone": "제3구역: 불안정한 초신성 (Unstable Supernova)",
+          "newGameplay": "일정 횟수 이상 연쇄가 닿지 않으면 폭발하여 주변 노드를 무채색으로 오염시키는 '불안정 핵' 기믹이 도입됩니다.",
+          "systemImpact": "연쇄 기폭 장치를 최우선적으로 불안정 핵 주변에서 작동시켜야 하므로, 기폭 타이밍을 강제하는 위험 요소로 작용합니다."
+        },
+        {
+          "milestone": "제4구역: 공명하는 차원문 (Resonant Portal)",
+          "newGameplay": "보드의 양 끝을 연결하여 한쪽 끝에서 일어난 연쇄 폭발이 반대편으로 전이되는 '차원 포탈' 노드가 등장합니다.",
+          "systemImpact": "공간적 제약을 극복하는 초장거리 연쇄 체인 형성이 가능해져, 기폭 장치의 파괴력과 시각적 피드백이 극대화됩니다."
+        }
+      ],
+      "failureRetryRisk": {
+        "failureStates": [
+          "제한된 이동 횟수(Moves)를 모두 소모했음에도 스테이지 목표(특정 장애물 제거 등)를 달성하지 못한 상태",
+          "불안정 핵의 폭발로 인해 보드의 80% 이상이 무채색 노드로 오염되어 더 이상 매칭이 불가능해진 상태"
+        ],
+        "retryFlow": "실패 시 즉시 결과 화면이 표시되며, 획득한 부분 보상과 함께 동일한 보드 레이아웃으로 즉시 재도전할 수 있는 버튼을 제공합니다.",
+        "riskPressure": "재도전 자체에 패널티는 없으나, 연속 실패 시 스테이지에 누적된 보너스 보상 배율이 초기화되어 플레이어에게 적절한 긴장감을 부여합니다.",
+        "recoveryRules": "실패 후 재도전 시, 이전 판에서 가장 많이 사용한 색상의 노드가 보드에 약간 더 많이 배치되는 '색채 동조 도우미' 시스템이 활성화되어 난이도를 완화합니다."
+      },
+      "platformFitPlan": {
+        "targetPlatform": "UNITY",
+        "inputModel": "모바일 터치 스크린에 최적화된 드래그 앤 드롭 및 탭 입력을 지원합니다. 노드를 탭하여 튜너 메뉴를 열고, 원하는 색상으로 드래그하여 직관적으로 변경합니다.",
+        "performanceBudget": "모바일 기기에서의 발열과 배터리 소모를 최소화하기 위해 60FPS를 유지하며, 드로우 콜을 80 이하로 제한하고 2D 스프라이트 아틀라스를 최적화합니다.",
+        "sessionConstraints": "평균 세션 시간 5.7분을 고려하여, 각 스테이지는 2분 내외로 완결되도록 설계하고 중단 시 자동 저장 및 이어하기 기능을 완벽히 지원합니다."
+      },
+      "visualDirection": "네온 톤의 감각적인 색채와 미니멀한 플랫 디자인이 조화를 이루는 비주얼을 지향합니다. 연쇄 폭발 시 화면 전체로 퍼져나가는 유려한 파티클 효과와 색상별 고유의 빛 파동을 통해 극상의 시각적 만족감을 선사합니다.",
+      "mobileUx": "한 손 조작이 가능하도록 주요 조작 버튼과 보드를 화면 하단 및 중앙에 집중 배치합니다. 햅틱 피드백을 적극 활용하여 노드를 튜닝하거나 폭발시킬 때 손끝으로 전해지는 타격감을 극대화합니다.",
+      "uxAccessibilityPlan": {
+        "hudPriorities": "화면 상단에는 잔여 이동 횟수와 클리어 목표를 크게 표시하고, 하단에는 현재 선택된 튜너 도구와 기폭 장치의 충전 상태를 명확히 노출합니다.",
+        "touchAndInput": "오작동을 방지하기 위해 노드의 터치 영역을 실제 이미지보다 15% 넓게 설정하고, 드래그 중 경로를 시각적인 점선 가이드로 미리 보여줍니다.",
+        "readability": "고대비 폰트를 사용하여 수치 가독성을 높이고, 색상 간의 경계선에 미세한 음영을 주어 밝은 야외 환경에서도 노드들이 명확히 구분되도록 합니다.",
+        "accessibility": "적록색약 등 색약 플레이어를 위해 각 색상 노드마다 고유한 기하학적 문양(원, 삼각형, 별 등)을 내포하는 '색약 지원 모드'를 기본 탑재합니다."
+      },
+      "artAudioDirection": {
+        "visualIdentity": "어두운 배경 위에 대비되는 선명하고 투명한 유리 질감의 색채 노드들을 배치하여, 빛과 색의 대비가 주는 세련되고 몽환적인 분위기를 연출합니다.",
+        "audioIdentity": "차분한 로파이(Lo-Fi) 신스 패드 배경음악을 기반으로 하되, 연쇄 폭발 시에는 청량한 크리스탈 종소리와 웅장한 저음의 베이스 드롭이 조화를 이루는 사운드를 제공합니다.",
+        "gameplayFeedbackSync": "연쇄 콤보 수가 증가할 수록 효과음의 음계가 한 단계씩 상승(도-레-미-파...)하여 플레이어가 청각적으로도 연쇄의 확장을 즉각 인지할 수 있도록 동기화합니다."
+      },
+      "marketTargetDirection": "퍼즐 장르의 주 소비층인 글로벌 캐주얼 게이머를 타겟으로 하며, Royal Match나 Candy Crush Saga보다 더 감각적이고 현대적인 비주얼과 깊이 있는 전술성을 어필하여 차별화된 포지셔닝을 확보합니다.",
+      "steamExpansionDecision": "모바일 시장 안착 후, 마우스 드래그 조작 최적화 및 고해상도 이펙트 업그레이드를 거쳐 스팀(Steam) 플랫폼으로의 이식을 긍정적으로 검토합니다. PC 버전은 더 넓은 보드 크기와 무제한 모드를 제공할 예정입니다.",
+      "multiplayerMode": "SINGLE",
+      "multiplayerExpansionDecision": "현재는 싱글 플레이어의 깊이 있는 퍼즐 경험에 집중하며, 향후 비동기식 점수 경쟁 및 실시간 1v1 색채 상쇄 대전 모드를 도입하여 멀티플레이어 확장을 도모할 계획입니다.",
+      "technicalAssumptions": [
+        "Unity의 Job System을 활용하여 수백 개의 노드가 동시에 연쇄 반응을 일으킬 때의 물리 및 상태 연산을 메인 쓰레드 병목 없이 처리합니다.",
+        "ScriptableObject를 기반으로 스테이지 데이터와 노드 기믹을 모듈화하여 기획자가 코드 수정 없이 신규 기믹을 신속하게 테스트할 수 있도록 합니다."
+      ],
+      "validationQuestions": [
+        "색채 주파수 튜너의 사용이 플레이어에게 단순한 운이 아닌, 스스로 판을 설계했다는 전술적 통제감을 충분히 제공하는가?",
+        "연쇄 기폭 장치의 폭발 연출과 사운드 피드백이 모바일 환경에서 프레임 드랍 없이 극상의 타격감과 카타르시스를 전달하는가?"
+      ],
+      "implementationTraceability": [
+        {
+          "designElement": "색채 주파수 튜너의 동기화 체인 형성 규칙",
+          "responsibleSystem": "노드 그리드 매니저 (Node Grid Manager)",
+          "validationEvidence": "인접한 노드들의 색상 ID를 실시간 검사하여 5개 이상 연결 시 체인 활성화 이벤트를 정상 발행하는지 단위 테스트 코드로 검증합니다."
+        },
+        {
+          "designElement": "연쇄 기폭 장치의 에너지 파동 및 장애물 파괴",
+          "responsibleSystem": "기폭 이펙트 및 충돌 처리기 (Detonation & Collision Processor)",
+          "validationEvidence": "폭발 중심점으로부터의 거리에 따른 데미지 감쇄 공식이 장애물 내구도 감소 시스템에 정확히 반영되는지 샌드박스 씬에서 시각적으로 검증합니다."
+        },
+        {
+          "designElement": "색약 지원 모드의 기하학적 문양 표시",
+          "responsibleSystem": "UI/UX 렌더링 파이프라인 (UI/UX Rendering Pipeline)",
+          "validationEvidence": "옵션에서 색약 모드 활성화 시, 모든 색채 노드 프리팹의 자식 오브젝트인 문양 스프라이트가 즉시 활성화되는지 런타임 상태를 확인합니다."
+        }
+      ],
+      "openQuestions": [
+        "후반부 스테이지에서 복합 장애물이 다수 등장할 때, 초보 플레이어가 느낄 수 있는 인지적 과부하를 방지하기 위한 단계적 튜토리얼 설계는 어떻게 고도화할 것인가?"
+      ]
+    },
+    "deterministic_pre_gate": {
+      "scoreSystem": "STAGE_GATE_SCORING_V2",
+      "version": 2,
+      "passMinimum": 80,
+      "criticalAxisMinimumPercent": 75,
+      "directScoreLevels": [
+        0,
+        20,
+        40,
+        60,
+        80,
+        100
+      ],
+      "weights": {
+        "IDEA_AND_DISTINCTNESS": 12,
+        "CATEGORY_IDENTITY": 10,
+        "CORE_LOOP_DESIGN": 14,
+        "SYSTEM_INTERCONNECTION_DESIGN": 12,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+        "CONTENT_EXPANSION_PLAN": 10,
+        "FAILURE_RETRY_RISK_DESIGN": 8,
+        "PLATFORM_FIT_DESIGN": 8,
+        "UX_AND_ACCESSIBILITY_PLAN": 6,
+        "ART_AUDIO_DIRECTION": 5,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 5
+      },
+      "evidenceLevels": {
+        "IDEA_AND_DISTINCTNESS": 80,
+        "CATEGORY_IDENTITY": 80,
+        "CORE_LOOP_DESIGN": 80,
+        "SYSTEM_INTERCONNECTION_DESIGN": 80,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
+        "CONTENT_EXPANSION_PLAN": 80,
+        "FAILURE_RETRY_RISK_DESIGN": 80,
+        "PLATFORM_FIT_DESIGN": 80,
+        "UX_AND_ACCESSIBILITY_PLAN": 80,
+        "ART_AUDIO_DIRECTION": 80,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
+      },
+      "scores": {
+        "IDEA_AND_DISTINCTNESS": 9.6,
+        "CATEGORY_IDENTITY": 8,
+        "CORE_LOOP_DESIGN": 11.2,
+        "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
+        "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
+        "CONTENT_EXPANSION_PLAN": 8,
+        "FAILURE_RETRY_RISK_DESIGN": 6.4,
+        "PLATFORM_FIT_DESIGN": 6.4,
+        "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+        "ART_AUDIO_DIRECTION": 4,
+        "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
+      },
+      "totalScore": 80,
+      "criticalAxisFailures": [],
+      "hardFailures": [],
+      "rejectionReasons": [],
+      "revalidated": false,
+      "thirtyMinuteHardGateApplied": false,
+      "materialContractOk": true
+    }
+  },
   "tasks": {},
   "modelHealth": {
     "gemini:gemini-3.5-flash-lite": {
@@ -54,10 +243,30 @@
       "lastMs": 10770,
       "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 20, model: gemini-3.6-flash\\nPlease retry in 30.280369155s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_requests\", \"quotaId\": \"GenerateRequestsPerDayPerProjectPerModel-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.6-flash\" }, \"quotaValue\": \"20\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.RetryInfo\", \"retryDelay\": \"30s\" } ] } }",
       "updatedAt": "2026-09-19T02:33:29.729Z"
+    },
+    "gemini:gemini-3.5-flash": {
+      "calls": 1,
+      "successes": 1,
+      "failures": 0,
+      "timeouts": 0,
+      "jsonFailures": 0,
+      "totalMs": 34137,
+      "lastMs": 34137,
+      "lastError": null,
+      "updatedAt": "2026-09-19T02:33:53.096Z"
     }
   },
   "slowPhases": {},
-  "currentPhase": "DESIGNER_DRAFT",
+  "currentPhase": "DEPARTMENT_REVIEWS",
   "createdAt": "2026-09-19T02:33:18.957Z",
-  "updatedAt": "2026-09-19T02:33:29.729Z"
+  "updatedAt": "2026-09-19T02:33:53.144Z",
+  "lastSuccessfulModelCallAt": "2026-09-19T02:33:53.096Z",
+  "geminiModelResolution": {
+    "gemini-3.5-flash-lite": "gemini-3.5-flash"
+  },
+  "effectiveDesignerModel": "gemini:gemini-3.5-flash-lite",
+  "effectiveDesignerProvider": "GEMINI",
+  "failedPhase": "five_lead_reviews",
+  "failedTask": "development",
+  "lastError": "GEMINI_NO_AVAILABLE_CANDIDATES gemini-3.5-flash-lite"
 }
