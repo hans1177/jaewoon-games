@@ -49,7 +49,8 @@ permissions:
 env:
   VIBE2_PRIORITY_POLICY: owner-release-development
   VIBE2_AUTO_DEPLOY_VERIFIED_ONLY: 'true'
-  VIBE2_MAX_CONCURRENT_GAME_TASKS: '30'
+  VIBE2_MAX_CONCURRENT_GAME_TASKS: '0'
+  VIBE2_EXTERNAL_MATRIX_BATCH_MAX: '256'
   VIBE2_WORK_ORDER_OUTPUT_CONTRACT: explicit-cli-first
   VIBE2_24H_LEARNING_PROVIDER: 'LOCAL_OLLAMA'
   VIBE2_24H_GEMINI_ALLOWED: 'false'
@@ -87,6 +88,8 @@ jobs:
           echo "VIBE2_PRIORITY_POLICY=$VIBE2_PRIORITY_POLICY"
           echo "VIBE2_AUTO_DEPLOY_VERIFIED_ONLY=$VIBE2_AUTO_DEPLOY_VERIFIED_ONLY"
           echo "VIBE2_MAX_CONCURRENT_GAME_TASKS=$VIBE2_MAX_CONCURRENT_GAME_TASKS"
+          echo 'VIBE2_PARALLELISM_POLICY=UNBOUNDED_BY_POLICY'
+          echo "VIBE2_EXTERNAL_MATRIX_BATCH_MAX=$VIBE2_EXTERNAL_MATRIX_BATCH_MAX"
           echo "VIBE2_WORK_ORDER_OUTPUT_CONTRACT=$VIBE2_WORK_ORDER_OUTPUT_CONTRACT"
           test "$VIBE2_24H_LEARNING_PROVIDER" = "LOCAL_OLLAMA"
           test "$VIBE2_24H_GEMINI_ALLOWED" = "false"
@@ -208,7 +211,8 @@ jobs:
           const file = '.vibe2/queue.json';
           const beforeText = fs.readFileSync(file, 'utf8');
           const before = JSON.parse(beforeText);
-          const maxConcurrentTasks = Math.max(1, Math.min(30, Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS) || 30));
+          const configured = Number(process.env.VIBE2_MAX_CONCURRENT_GAME_TASKS);
+          const maxConcurrentTasks = Number.isFinite(configured) && configured > 0 ? Math.floor(configured) : Number.MAX_SAFE_INTEGER;
           const normalized = createVibeContinuousQueue({ ...before, maxConcurrentTasks });
           const afterText = `${JSON.stringify(normalized, null, 2)}\n`;
           if (beforeText !== afterText) {
@@ -251,7 +255,7 @@ jobs:
             elif grep -q '^VIBE2_AUTO_PLAN=YES$' /tmp/vibe2-autoplan.log; then
               commit_message='vibe2: plan next machine-state work [skip ci]'
             else
-              commit_message='vibe2: persist thirty-slot adaptive parallel queue state [skip ci]'
+              commit_message='vibe2: persist policy-unbounded adaptive parallel queue state [skip ci]'
             fi
             git commit -m "$commit_message"
             if git pull --rebase origin vibe2-unreal-core && git push origin HEAD:vibe2-unreal-core; then
