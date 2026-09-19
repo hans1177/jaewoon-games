@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "authority": "OWNER_DIRECTIVE_2026-09-19",
+  "kind": "company-security-immune-system",
+  "sourceOfTruth": "company-learning/platform-release-roadmap.json",
+  "policyFile": "company-learning/security-immune-system.json",
+  "mission": "KEEP_THE_COMPANY_UNIVERSE_CLOSED_TO_UNAUTHORIZED_EXTERNAL_CONTROL_AND_DETECT_CONTAIN_RECOVER_LEARN_FROM_SECURITY_THREATS",
+  "primaryRole": "VIBE_SECURITY_STEWARD",
+  "defaultTrust": "DENY_OR_QUARANTINE_UNTIL_VERIFIED",
+  "protectedSurfaces": [
+    "GITHUB_REPOSITORY",
+    "GITHUB_ACTIONS",
+    "EXTERNAL_AI_INPUT_AND_OUTPUT",
+    "CANDIDATE_BRANCHES_AND_PULL_REQUESTS",
+    "MAIN_AND_RUNTIME_BRANCH_WRITE_PATHS",
+    "DEPENDENCY_AND_INSTALL_PATHS",
+    "SECRETS_AND_CREDENTIAL_REFERENCES",
+    "RECOVERY_AND_LEARNING_STORES"
+  ],
+  "mainThreatClasses": [
+    "UNAUTHORIZED_REPOSITORY_WRITE",
+    "MALWARE_OR_VIRUS_LIKE_PAYLOAD",
+    "SECRET_OR_TOKEN_EXFILTRATION",
+    "WORKFLOW_PRIVILEGE_ESCALATION",
+    "SUPPLY_CHAIN_OR_UNTRUSTED_INSTALL",
+    "PROMPT_INJECTION_OR_EXTERNAL_INSTRUCTION_OVERRIDE",
+    "COMMAND_INJECTION_OR_SHELL_EXECUTION_CHAIN",
+    "UNAPPROVED_NETWORK_EXFILTRATION",
+    "POLICY_LOG_ARCHITECTURE_TAMPERING",
+    "SECURITY_GATE_BYPASS",
+    "PERSISTENCE_OR_BACKDOOR_BEHAVIOR"
+  ],
+  "responseLifecycle": [
+    "DETECT",
+    "CLASSIFY",
+    "QUARANTINE_AFFECTED_CHANGE_ONLY",
+    "PRESERVE_EVIDENCE",
+    "ROUTE_TO_SECURITY_RECOVERY",
+    "VERIFY_REMEDIATION",
+    "PRIMARY_AI_DIRECT_REVIEW_FOR_SECURITY_INCIDENT",
+    "PROMOTE_ONLY_VERIFIED_SIGNATURE_AND_RECOVERY_PATTERN_TO_LEARNING"
+  ],
+  "containment": {
+    "wholeCompanyStopByDefault": false,
+    "isolateOnlyAffectedCandidateOrWorkflow": true,
+    "criticalCredentialExposureRequiresAffectedSecretRotationByOwnerOrAuthorizedAdmin": true,
+    "unverifiedExternalPayloadMayNotEnterCanonicalLearning": true,
+    "rawMalwareBytesMayNotEnterLearningOrRetrieval": true,
+    "rawSecretsMayNeverBePersistedInSecurityEvidence": true
+  },
+  "enforcement": {
+    "scanner": "tools/company-security-steward.mjs",
+    "incidentTool": "tools/company-security-incident.mjs",
+    "learningDistiller": "tools/company-security-learning.mjs",
+    "workflow": ".github/workflows/company-security-immune.yml",
+    "contractTest": "qa/company-security-steward.test.mjs",
+    "incidentStore": "vibe2-unreal-core:.vibe2/security-incidents.json",
+    "recoveryQueue": "vibe2-unreal-core:.vibe2/recovery-queue.json"
+  },
+  "securityLearning": {
+    "verifiedIncidentsAreLearningSources": true,
+    "positiveSecurityLessonRequires": [
+      "THREAT_SIGNATURE_VERIFIED",
+      "AFFECTED_SCOPE_CONTAINED",
+      "ROOT_CAUSE_IDENTIFIED",
+      "REMEDIATION_APPLIED",
+      "EXACT_SECURITY_CHECK_PASS",
+      "REGRESSION_OR_RESCAN_PASS",
+      "PRIMARY_AI_SECURITY_REVIEW_PASS"
+    ],
+    "storedKnowledge": [
+      "GENERALIZED_THREAT_SIGNATURE",
+      "DETECTION_RULE",
+      "SAFE_CONTAINMENT_PATTERN",
+      "VERIFIED_RECOVERY_PATTERN",
+      "AVOID_PATTERN"
+    ],
+    "forbiddenKnowledge": [
+      "RAW_SECRET_VALUE",
+      "RAW_MALWARE_BYTES",
+      "EXECUTABLE_EXPLOIT_PAYLOAD",
+      "UNVERIFIED_ATTACK_INSTRUCTION"
+    ],
+    "existingLearningMotorReused": true,
+    "shadowTrainerForbidden": true,
+    "externalSecurityMaterialUse": "AUTHORIZED_OR_PUBLIC_GENERALIZED_DEFENSIVE_REFERENCE_ONLY_AFTER_VERIFICATION"
+  },
+  "limits": {
+    "repositoryAndCiSecurityOnlyUnlessAdditionalInfrastructureTelemetryIsConnected": true,
+    "doesNotClaimHostNetworkFirewallVisibilityWithoutTelemetry": true
+  }
+}
