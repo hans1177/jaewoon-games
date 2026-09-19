@@ -869,7 +869,7 @@ test('timeout partial JSON recovers only a complete edit object',()=>{
 
 test('timeout partial recovery stays behind existing exact-match and semantic validation',()=>{
   const workerSource=fs.readFileSync(new URL('../tools/vibe2-source-worker.mjs',import.meta.url),'utf8');
-  assert.match(workerSource,/recoverPartialJsonEdit\(partialOutput\)/);
+  assert.match(workerSource,/recoverPartialJsonEdit\(partialRecoveryOutput,\{reason:partialRecoveryClass==='MALFORMED_OUTPUT'\?'malformed':'timeout'\}\)/);
   assert.match(workerSource,/applyExactEdits\(sourceRoot,candidate\.edits,\{dryRun:true\}\)/);
   assert.match(workerSource,/candidateValidator==='function'\?candidateValidator\(candidate\):null/);
   assert.match(workerSource,/VIBE2_TIMEOUT_PARTIAL_EDIT_REJECTED/);
