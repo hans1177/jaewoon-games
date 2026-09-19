@@ -743,11 +743,26 @@ test('exact Web base source generation failure can recover once', () => {
 });
 
 
-test('continuous reserve runs fast regression before reserving expensive workers', () => {
+test('continuous reserve runs full regression before reserving expensive workers', () => {
   const workflow=fs.readFileSync('.github/workflows/vibe2-continuous-core.yml','utf8');
-  const preflightAt=workflow.indexOf('VIBE2_RESERVE_FAST_REGRESSION=PASS');
+  const preflightAt=workflow.indexOf('VIBE2_RESERVE_FULL_REGRESSION_PREFLIGHT=PASS');
   const reserveAt=workflow.indexOf('- name: Reserve conflict-free DAG batch');
   assert.ok(preflightAt>0);
   assert.ok(reserveAt>preflightAt);
-  assert.match(workflow,/node --test --test-concurrency=4 \\\n\s+qa\/vibe2-source-worker\.test\.mjs \\\n\s+qa\/vibe2-queue-control\.test\.mjs \\\n\s+qa\/vibe2-parallelism-telemetry\.test\.mjs/);
+  const preflightBlock=workflow.slice(workflow.indexOf('(\n            cd /tmp/vibe2-main'),preflightAt);
+  for(const file of [
+    'qa/vibe2-auto-planner.test.mjs',
+    'qa/vibe2-core-engine-motion.test.mjs',
+    'qa/vibe2-source-worker.test.mjs',
+    'qa/vibe2-exploration-worker.test.mjs',
+    'qa/vibe2-queue-control.test.mjs',
+    'qa/vibe2-work-package.test.mjs',
+    'qa/vibe2-incremental-qa.test.mjs',
+    'qa/vibe2-parallelism-telemetry.test.mjs',
+    'qa/vibe2-adaptive-backpressure.test.mjs',
+    'qa/vibe2-candidate-reconcile.test.mjs',
+    'qa/vibe2-experience-control.test.mjs',
+    'qa/vibe2-handoff.test.mjs',
+    'qa/vibe2-practice-distillation.test.mjs'
+  ]) assert.match(preflightBlock,new RegExp(file.replaceAll('.','\\.')));
 });
