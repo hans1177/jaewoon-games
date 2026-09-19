@@ -100,7 +100,7 @@ test('repository handoff is generated entirely from machine state', () => {
   assert.equal(snapshot.generatedFrom.experienceVersion, 3);
   assert.equal(snapshot.workPolicy.humanMaintainedHandoff, false);
   assert.equal(snapshot.parallelism.configuredMax, 256);
-  assert.deepEqual(snapshot.parallelism.steps, [256, 128, 64, 32, 16, 8, 4]);
+  assert.deepEqual(snapshot.parallelism.steps, [256, 128, 64, 32, 20, 16, 8, 4]);
   assert.ok(snapshot.workState.taskCount > 0);
 });
 
