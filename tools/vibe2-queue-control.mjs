@@ -259,20 +259,20 @@ export function enqueueVibeTask(queueInput, taskInput = {}) {
   });
 }
 
-export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {} } = {}) {
+export function reserveNextVibeTask(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary' } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
-  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks });
+  const selection = selectVibeQueueBatch(queue, { maxConcurrentTasks, lane });
   const selected = selection.selected[0];
   if (!selected) return { reserved: false, queue, selection, recovered: recovered.recovered };
-  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservation });
+  const started = beginVibeQueueTask(queue, selected.id, { maxConcurrentTasks, reservation, lane });
   return { reserved: started.started, task: started.task || null, queue: started.queue, selection, recovered: recovered.recovered };
 }
 
-export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {} } = {}) {
+export function reserveVibeTaskBatch(queueInput, { maxConcurrentTasks = null, reservation = {}, lane = 'game-primary' } = {}) {
   const recovered = recoverRunnableInfrastructureState(queueInput);
   const queue = recovered.queue;
-  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation });
+  const started = beginVibeQueueBatch(queue, { maxConcurrentTasks, reservation, lane });
   const tasks = started.tasks || [];
   const workerBudget = Math.max(
     tasks.length,
