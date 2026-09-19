@@ -12,6 +12,7 @@ import {
   settleVibeTask,
   applyVibeFanInResults,
   recoverFixedFullWebTransportFailures,
+  recoverFixedSourceCandidateGenerationFailures,
   recoverStaleRunningReservations,
   recoverFanInRegressionFailure
 } from '../tools/vibe2-queue-control.mjs';
@@ -536,4 +537,38 @@ test('practice-only PASS settles done without candidate QA promotion', () => {
   assert.equal(task.lastOutcome,'PASS');
   assert.ok(task.evidence.includes('production-pass:NO'));
   assert.equal(merged.applied[0].outcome,'DONE_PRACTICE');
+});
+
+
+test('source generation infrastructure repair requeues exhausted web development task once', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'source-infra-failed',gameId:'game',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/game',goal:'implementation',status:'failed',retries:3,maxRetries:2,
+    blocker:'source-candidate-generation-failed',reservationId:null
+  }]});
+  const first=recoverFixedSourceCandidateGenerationFailures(queue);
+  assert.equal(first.recovered,1);
+  assert.equal(first.queue.tasks[0].status,'queued');
+  assert.equal(first.queue.tasks[0].retries,0);
+  assert.equal(first.queue.tasks[0].blocker,null);
+  assert.equal(first.queue.tasks[0].lastOutcome,'RETRY_AFTER_SOURCE_GENERATION_INFRA_REPAIR');
+  assert.ok(first.queue.tasks[0].evidence.includes('repair-retry:vibe2-source-generation-context-v3'));
+
+  const exhaustedAgain=createVibeContinuousQueue({tasks:[{
+    ...first.queue.tasks[0],status:'failed',retries:3,blocker:'source-candidate-generation-failed'
+  }]});
+  const second=recoverFixedSourceCandidateGenerationFailures(exhaustedAgain);
+  assert.equal(second.recovered,0);
+  assert.equal(second.queue.tasks[0].status,'failed');
+});
+
+test('source generation infrastructure repair does not reopen QA failures', () => {
+  const queue=createVibeContinuousQueue({tasks:[{
+    id:'qa-failed',gameId:'game',target:'web',department:'development',type:'implementation',
+    sourceRoot:'web-games/game',goal:'implementation',status:'failed',retries:3,maxRetries:2,
+    blocker:'web-qa-or-promotion-failed'
+  }]});
+  const recovered=recoverFixedSourceCandidateGenerationFailures(queue);
+  assert.equal(recovered.recovered,0);
+  assert.equal(recovered.queue.tasks[0].status,'failed');
 });
