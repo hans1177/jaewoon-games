@@ -892,7 +892,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const editMatchFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='EDIT_MATCH';
     const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation||editMatchFastEscalation||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
-    const focusedReplaceOnly=(!allowFullRewrite&&(focusedWebRepair||focusedFinal))
+    const focusedReplaceOnly=focusedFinal
       ?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot,anchorIndex:focusedReplaceAnchorCursor})
       :null;
     const remainingStages=Math.max(1,maxAttempts-attempt);
