@@ -5735,7 +5735,13 @@
       },
       "productionTier": 2,
       "selectedPlatform": "ROBLOX",
-      "strictDesignReview": null,
+      "strictDesignReview": {
+        "verdict": "PASS",
+        "totalScore": 91.80000000000001,
+        "hardFailures": [],
+        "evidencePath": "design/island-village/2026-09-19/strict-design-review.json",
+        "passThreshold": 80
+      },
       "promotion": {
         "from": "DESIGN_ONLY",
         "to": "DEVELOPMENT_CONFIRMED",
@@ -5755,7 +5761,7 @@
         "excellentDesign": true,
         "promotedAt": "2026-09-19T04:13:06.331Z"
       },
-      "strictDesignReviewUpdatedAt": null,
+      "strictDesignReviewUpdatedAt": "2026-09-19T04:15:47.022Z",
       "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
@@ -5765,7 +5771,16 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-19T04:18:28.067Z"
+      "updatedAt": "2026-09-19T04:18:28.067Z",
+      "ROBLOX_GENRE": "Obby & platformer",
+      "ROBLOX_SUBGENRE": "Classic Obby",
+      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
+      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
+      "ROBLOX_PLAY_MODE": "SINGLE",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T04:19:35.882Z"
     },
     {
       "version": 2,
@@ -6214,16 +6229,7 @@
       "PUBLIC_SWAP_POLICY": "REPLACE_ONLY_AFTER_FULL_QA_PASS",
       "SAVE_POLICY": "PRESERVE_OR_MIGRATE_BEFORE_SWAP",
       "MOBILE_FIRST": true,
-      "updatedAt": "2026-09-19T04:18:28.067Z",
-      "ROBLOX_GENRE": "Obby & platformer",
-      "ROBLOX_SUBGENRE": "Classic Obby",
-      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
-      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
-      "ROBLOX_PLAY_MODE": "SINGLE",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
-      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T04:19:37.694Z"
+      "updatedAt": "2026-09-19T04:18:28.067Z"
     },
     {
       "version": 2,
@@ -6658,7 +6664,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/chess-battle/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "promotion": {
         "from": "DESIGN_ONLY",
@@ -6679,7 +6686,7 @@
         "excellentDesign": true,
         "promotedAt": "2026-09-19T04:13:06.331Z"
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T04:19:44.323Z",
+      "strictDesignReviewUpdatedAt": "2026-09-19T04:15:47.022Z",
       "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
@@ -7091,7 +7098,8 @@
         "totalScore": 91.80000000000001,
         "hardFailures": [],
         "evidencePath": "design/survival2/2026-09-19/strict-design-review.json",
-        "passThreshold": 80
+        "passThreshold": 80,
+        "excellent": true
       },
       "promotion": {
         "from": "DESIGN_ONLY",
@@ -7112,7 +7120,7 @@
         "excellentDesign": true,
         "promotedAt": "2026-09-19T04:13:06.331Z"
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T04:19:44.323Z",
+      "strictDesignReviewUpdatedAt": "2026-09-19T04:15:47.022Z",
       "OWNER_REBUILD_MODE": "DESIGN_FROM_START",
       "REUSE_PRIOR_DESIGN_BASELINE": false,
       "REUSE_PRIOR_ARTBOOK": false,
@@ -18091,14 +18099,14 @@
         "recordedAt": "2026-09-19T04:19:29.552Z"
       },
       {
-        "gameId": "egg-heist",
-        "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
+        "gameId": "island-village",
+        "seedId": "OWNER-ENROLL-ISLAND-VILLAGE-20260913",
         "reviewStage": "DESIGN_STRICT_REVIEW",
         "runtimeTarget": null,
         "verdict": "PASS",
         "totalScore": 91.80000000000001,
-        "previousScore": null,
-        "scoreDelta": null,
+        "previousScore": 91.80000000000001,
+        "scoreDelta": 0,
         "hardFailures": [],
         "resolvedHardFailures": [],
         "addedHardFailures": [],
@@ -18127,7 +18135,7 @@
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
-        "recordedAt": "2026-09-19T04:19:37.694Z"
+        "recordedAt": "2026-09-19T04:19:35.882Z"
       }
     ],
     "causeCounts": {
@@ -18153,7 +18161,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T04:19:37.695Z"
+    "updatedAt": "2026-09-19T04:19:35.883Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
