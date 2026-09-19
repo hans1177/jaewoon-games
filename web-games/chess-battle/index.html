@@ -341,7 +341,7 @@ let progression = 0;
     });
 
     // Progression system
-    function progress() {
+    function progress() {\n        if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {\n            progression += 1;\n            if (progression >= 3) {\n                alert('You won!');\n            }\n        }\n    }
         if (gameState.currentPlayer === 0 && gameState.player1 === 'White') {
             progression += 1;
             resource += 5;
