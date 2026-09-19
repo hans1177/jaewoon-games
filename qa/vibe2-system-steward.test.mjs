@@ -37,6 +37,27 @@ test('steward expires stale backpressure and restores the 256 external execution
   assert.equal(result.action,'RESET_STALE_PARALLELISM_PRESSURE'); assert.equal(result.control.currentMax,256); assert.equal(result.control.lastDecision,'RESET');
 });
 
+test('steward immediately repairs invalid v3 parallelism and requeues stale machine blockers in the same pass',()=>{
+  const result=runSystemStewardState({
+    now:'2026-09-19T12:00:00Z',
+    queueInput:{maxConcurrentTasks:30,tasks:[
+      {id:'blocked-dev',gameId:'bug-defense',target:'web',goal:'continue game development',status:'blocked',blocker:'MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED|PERSISTENT_MAX_OUTSIDE_STEPS'}
+    ]},
+    controlInput:{version:3,currentMax:12,lastUpdatedAt:'2026-09-19T11:59:00Z'}
+  });
+  const task=result.queue.tasks[0];
+  assert.equal(result.queue.maxConcurrentTasks,256);
+  assert.equal(result.control.currentMax,256);
+  assert.equal(result.control.lastReason,'SYSTEM_STEWARD_INVALID_V3_PARALLELISM_STEP_RESET');
+  assert.equal(task.status,'queued');
+  assert.equal(task.blocker,null);
+  assert(result.actions.includes('RESET_INVALID_PARALLELISM_STATE'));
+  assert(result.actions.includes('ALIGN_QUEUE_MAX_TO_EXTERNAL_WAVE_256'));
+  assert(result.actions.includes('RECOVER_STALE_MACHINE_STATE_BLOCKER'));
+  assert.equal(result.changedControl,true);
+  assert.equal(result.changedQueue,true);
+});
+
 test('steward does not consume a repair on external wait work',()=>{
   const result=runSystemStewardState({now:'2026-09-19T12:00:00Z',queueInput:{maxConcurrentTasks:256,tasks:[{id:'wait',gameId:'r',target:'roblox',goal:'runtime',status:'running',blocker:'roblox-dedicated-runner-offline-deferred',reservedAt:'2026-09-19T09:00:00Z'}]},controlInput:{currentMax:256,lastUpdatedAt:'2026-09-19T11:50:00Z'}});
   assert.equal(result.action,'NO_RUNNABLE_WORK_FOR_PLANNER_REFILL');
