@@ -62,6 +62,13 @@ test('24H recovery verifies exact candidate SHA before marking and dispatching',
   assert.match(section,/node \/tmp\/vibe2-main\/tools\/vibe2-queue-control\\.mjs await/);
 });
 
+test('24H runner reads and mutates control queue only through latest main tooling',()=>{
+  const workflow=fs.readFileSync('.github/workflows/vibe2-24h-runner.yml','utf8');
+  assert.doesNotMatch(workflow,/node tools\\/vibe2-queue-control\\.mjs/);
+  assert.match(workflow,/node \/tmp\/vibe2-main\/tools\/vibe2-queue-control\\.mjs summary/);
+  assert.match(workflow,/node \/tmp\/vibe2-main\/tools\/vibe2-queue-control\\.mjs await/);
+});
+
 test('release result workflows mutate control state only through latest main queue tooling',()=>{
   const files=[
     '.github/workflows/vibe2-candidate-release.yml',
