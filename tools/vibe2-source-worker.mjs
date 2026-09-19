@@ -226,6 +226,20 @@ function parseFullWebExpansion(raw){
   if(/<\/?(?:html|body)\b/i.test(content))throw new Error('Web expansion은 html/body 전체 구조를 재정의할 수 없음');
   return content.trim();
 }
+function parseLooseFullWebExpansion(raw){
+  let text=String(raw??'').replaceAll('\r\n','\n').trim();
+  if(/^```(?:html|javascript|js)?\s*/i.test(text))text=text.replace(/^```(?:html|javascript|js)?\s*/i,'').replace(/\s*```$/,'').trim();
+  const bytes=Buffer.byteLength(text,'utf8');
+  if(bytes<240||bytes>16000)return null;
+  if(!text.startsWith('<'))return null;
+  if(/<!doctype\b|<\/?(?:html|body)\b/i.test(text))return null;
+  if(!/<(?:script|style|section|div|canvas|button|aside|nav|main)\b/i.test(text))return null;
+  const openScript=(text.match(/<script\b/gi)||[]).length,closeScript=(text.match(/<\/script>/gi)||[]).length;
+  const openStyle=(text.match(/<style\b/gi)||[]).length,closeStyle=(text.match(/<\/style>/gi)||[]).length;
+  if(openScript!==closeScript||openStyle!==closeStyle)return null;
+  if(/VIBE2_FULL_FILE|---VIBE2_FILE_CONTENT---/i.test(text))return null;
+  return text;
+}
 function recoverFullWebSeed(raw,{target,responsibleFiles=[],sourceRootRelative=''}={}){
   try{
     const envelope=parseFullFileEnvelope(raw),direct=!envelope?parseDirectFullHtml(raw,{responsibleFiles}):null,parsed=envelope||direct;
@@ -243,7 +257,7 @@ function insertFullWebExpansion(baseHtml,fragment){
   if(at<0)throw new Error('Web expansion 기준 종료 태그 없음');
   return base.slice(0,at)+'\n'+addition+'\n'+base.slice(at);
 }
-function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,maxBytes=FULL_WEB_GENERATION_TARGET_MAX_BYTES,remainingStages=1}={}){
+function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,maxBytes=FULL_WEB_GENERATION_TARGET_MAX_BYTES,remainingStages=1,previousFailure=''}={}){
   const content=String(seed?.content??''),currentBytes=Buffer.byteLength(content,'utf8'),gap=Math.max(0,minBytes-currentBytes),stageTarget=Math.min(7000,Math.max(3200,Math.ceil(gap/Math.max(1,remainingStages))+800));
   const prefix=String(basePrompt??'').split('\n=== FILE ')[0].trimEnd();
   return[
@@ -252,6 +266,8 @@ function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_
     'FULL WEB ADDITIVE EXPANSION MODE.',
     `Expansion stage: ${stage}. Current playable HTML: ${currentBytes} bytes. Final acceptance minimum: ${minBytes} bytes; preferred maximum: ${maxBytes} bytes.`,
     `Generate roughly ${stageTarget} bytes of NEW coherent gameplay source. This fragment will be inserted immediately before </body>.`,
+    previousFailure?`Previous expansion failure: ${clean(previousFailure).replace(/\s+/g,' ').slice(0,240)}. Do not repeat the same output.`:'',
+    'If the envelope format is difficult, a raw closed HTML fragment is acceptable, but it MUST NOT contain html/body/doctype and every script/style tag must be closed.',
     'Return only one VIBE2_WEB_EXPANSION envelope. Do not return a complete HTML document or JSON.',
     'The fragment must add real gameplay systems, mechanics, state transitions, mobile pointer/touch interaction, progression, outcomes, save-compatible state, or game-specific spatial behavior required by the work order.',
     'Do not add filler text, validator-only labels, fake counters, test harness controls, monkey patches, function overrides, or duplicated whole-document markup.',
@@ -488,6 +504,8 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let lastRaw='';
   let accumulatedFullWeb=null;
   let expansionStages=0;
+  let repeatedIntermediateOutputs=0;
+  const intermediateGrowthBytes=[];
   let lastCandidateValidation=null;
   const maxAttempts=allowFullRewrite?FULL_WEB_MAX_GENERATION_ATTEMPTS:MAX_GENERATION_ATTEMPTS;
   for(let attempt=1;attempt<=maxAttempts;attempt++){
@@ -496,7 +514,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const remainingStages=Math.max(1,maxAttempts-attempt+1);
     const attemptPrompt=expansionMode
-      ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages})
+      ?buildFullWebExpansionPrompt(prompt,accumulatedFullWeb,{stage:expansionStages+1,minBytes:minFullRewriteBytes,maxBytes:Math.max(FULL_WEB_GENERATION_TARGET_MAX_BYTES,minFullRewriteBytes*2),remainingStages,previousFailure:lastError?.message||''})
       :(retry?buildGenerationRetryPrompt(prompt,{allowFullRewrite,error:lastError,responsibleFiles,attempt,previousOutput:lastRaw}):prompt);
     const maxPredict=expansionMode
       ?FULL_WEB_EXPANSION_MAX_PREDICT
@@ -519,9 +537,17 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       lastRaw=raw;
       let candidate;
       if(expansionMode){
-        const fragment=parseFullWebExpansion(raw);
+        const fragment=parseFullWebExpansion(raw)||parseLooseFullWebExpansion(raw);
         if(fragment){
+          const beforeBytes=Buffer.byteLength(accumulatedFullWeb.content,'utf8');
           const composed=insertFullWebExpansion(accumulatedFullWeb.content,fragment);
+          const afterBytes=Buffer.byteLength(composed,'utf8');
+          const growth=afterBytes-beforeBytes;
+          if(growth<120||composed===accumulatedFullWeb.content){
+            repeatedIntermediateOutputs+=1;
+            throw new Error('FULL_WEB_EXPANSION_NO_GROWTH');
+          }
+          intermediateGrowthBytes.push(growth);
           accumulatedFullWeb={...accumulatedFullWeb,content:composed};
           expansionStages+=1;
           candidate=normalizeCandidate({
@@ -539,7 +565,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebExpansionStages:expansionStages,intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -549,16 +575,23 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         const recovered=recoverFullWebSeed(lastRaw,{target,responsibleFiles,sourceRootRelative});
         if(recovered){
           const recoveredBytes=Buffer.byteLength(recovered.content,'utf8'),currentBytes=accumulatedFullWeb?Buffer.byteLength(accumulatedFullWeb.content,'utf8'):0;
-          if(recoveredBytes>currentBytes)accumulatedFullWeb=recovered;
+          if(recoveredBytes>currentBytes){
+            if(currentBytes>0)intermediateGrowthBytes.push(recoveredBytes-currentBytes);
+            accumulatedFullWeb=recovered;
+          }else if(accumulatedFullWeb&&recovered.content===accumulatedFullWeb.content){
+            repeatedIntermediateOutputs+=1;
+          }
         }
       }
       const attemptOutputBytes=lastRaw?Buffer.byteLength(String(lastRaw),'utf8'):0;
       console.log(`VIBE2_GENERATION_ATTEMPT_FAILURE=${attempt}:${failureClass}:${clean(error?.message||error).replace(/\s+/g,' ').slice(0,360)}`);
       console.log(`VIBE2_GENERATION_ATTEMPT_OUTPUT_BYTES=${attempt}:${attemptOutputBytes}`);
       if(accumulatedFullWeb)console.log(`VIBE2_FULL_WEB_ACCUMULATED_BYTES=${attempt}:${Buffer.byteLength(accumulatedFullWeb.content,'utf8')}`);
+      if(intermediateGrowthBytes.length)console.log(`VIBE2_FULL_WEB_INTERMEDIATE_GROWTH=${attempt}:${intermediateGrowthBytes.join(',')}`);
+      if(repeatedIntermediateOutputs)console.log(`VIBE2_FULL_WEB_REPEATED_INTERMEDIATE=${attempt}:${repeatedIntermediateOutputs}`);
       const ordinaryRetry=attempt===1&&shouldRetryGenerationError(error);
       const focusedRetry=attempt===2&&!allowFullRewrite&&focusedFinalRetryAllowed(error);
-      const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass);
+      const fullWebAccumulationRetry=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt<maxAttempts&&(['FULL_REWRITE_SIZE','MALFORMED_OUTPUT','TIMEOUT'].includes(failureClass)||/FULL_WEB_EXPANSION_NO_GROWTH/.test(clean(error?.message)));
       const fullWebFallbackRetry=allowFullRewrite&&!accumulatedFullWeb&&attempt===2&&fullWebFinalRetryAllowed(error)&&attempt<maxAttempts;
       const hasAnother=ordinaryRetry||focusedRetry||fullWebAccumulationRetry||fullWebFallbackRetry;
       const fakeSequence=Array.isArray(responseFiles)&&responseFiles.filter(Boolean).length>attempt;
