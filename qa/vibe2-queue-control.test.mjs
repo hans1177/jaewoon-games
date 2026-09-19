@@ -100,6 +100,36 @@ test('release-confirmed preempts development-confirmed', () => {
   assert.equal(reserveNextVibeTask(queue).task.id,'release');
 });
 
+test('development implementation preempts nonblocking system supervision research', () => {
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {
+      id:'supervisor-research',gameId:'system-supervision',target:'web',department:'system-supervision',type:'research',
+      goal:'inspect bottleneck',priority:'critical',releaseState:'release-confirmed',status:'queued'
+    },
+    {
+      id:'game-implementation',gameId:'game-live',target:'web',department:'development',type:'implementation',
+      goal:'implement game source',priority:'normal',releaseState:'development-confirmed',status:'queued',
+      responsibleFiles:['web-games/game-live/index.html']
+    }
+  ]});
+  assert.equal(selectVibeQueueBatch(queue,{maxConcurrentTasks:1}).selected[0].id,'game-implementation');
+});
+
+test('system steward protection still preempts ordinary development implementation', () => {
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:1,tasks:[
+    {
+      id:'steward-repair',gameId:'system-steward',target:'web',department:'system-supervision',type:'research',
+      goal:'repair machine state',priority:'critical',releaseState:'other',status:'queued',systemSteward:true
+    },
+    {
+      id:'game-implementation',gameId:'game-live',target:'web',department:'development',type:'implementation',
+      goal:'implement game source',priority:'critical',releaseState:'development-confirmed',status:'queued',
+      responsibleFiles:['web-games/game-live/index.html']
+    }
+  ]});
+  assert.equal(selectVibeQueueBatch(queue,{maxConcurrentTasks:1}).selected[0].id,'steward-repair');
+});
+
 test('independent source roots fan out in one reservation batch', () => {
   let queue=createVibeContinuousQueue({maxConcurrentTasks:4,tasks:[]});
   queue=add(queue,'u1','u1','unity',{releaseState:'release-confirmed'});
