@@ -625,7 +625,7 @@
     "targetWorkUnitsPerCycle": 12,
     "targetPackagesPerCycle": 4,
     "targetFeaturePackagesPerCycle": 1,
-    "maxPackagesPerCycle": 10,
+    "maxPackagesPerCycle": 30,
     "maxTasksPerPackage": 5,
     "smallTaskAction": "auto-expand-or-defer",
     "automaticExpansionMode": "real-disjoint-candidates-first-explicit-related-scopes-fallback",
@@ -690,7 +690,8 @@
       "maxAdaptiveBoost": 3,
       "maxMinWorkUnitsPerPackage": 6,
       "neverReduceSafetyOrQa": true
-    }
+    },
+    "capacityPolicy": "FILL_AVAILABLE_INDEPENDENT_PRODUCTION_SLOTS_UP_TO_GLOBAL_30"
   },
   "learningMotor": {
     "enabled": true,
