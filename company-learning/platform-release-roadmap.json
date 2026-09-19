@@ -1,5 +1,5 @@
 {
-  "version": 56,
+  "version": 57,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1151,7 +1151,10 @@
           "recoveryAdaptiveStep": 16
         },
         "ownerPreferredCurrentWave": 20,
-        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-19"
+        "ownerPreferredWaveAuthority": "OWNER_DIRECTIVE_2026-09-19",
+        "gameImplementationPreemptsNonblockingSupervision": true,
+        "nonblockingSupervisionUsesSpareCapacityOnly": true,
+        "ownerAndSystemStewardProtectionPreserved": true
       },
       "invariants": {
         "noGateBypass": true,
@@ -1388,14 +1391,16 @@
             "tools/vibe2-queue-control.mjs",
             "qa/vibe2-queue-control.test.mjs",
             "vibe2-runtime.json",
-            ".vibe2/parallelism-control.json"
+            ".vibe2/parallelism-control.json",
+            "assets/vibe-continuous-queue.js"
           ],
           "nextVerification": [
             "NEXT_WAVE_WORKER_COUNT_MUST_NOT_EXCEED_ADAPTIVE_WAVE",
             "PRIMARY_GAME_TASK_COVERAGE_MUST_PRECEDE_SPECULATIVE_VARIANTS",
             "RUNNER_QUEUE_WAIT_AND_ACTUAL_PEAK_CONCURRENCY_MUST_IMPROVE_OR_TRIGGER_NEXT_ADAPTIVE_STEP"
           ],
-          "ownerWaveOverride": 20
+          "ownerWaveOverride": 20,
+          "secondaryRepair": "DEVELOPMENT_IMPLEMENTATION_SCORE_BOOST_AND_NONBLOCKING_SUPERVISION_DEPRIORITIZATION"
         },
         "exitCondition": "NO_CRITICAL_COMMON_DEVELOPMENT_OR_RELEASE_BOTTLENECK_REMAINS",
         "currentExecution": {
@@ -1409,7 +1414,9 @@
           "adaptiveWave": 20,
           "speculativePolicy": "SPARE_CAPACITY_ONLY_AFTER_PRIMARY_COVERAGE",
           "wavePolicy": "OWNER_REQUESTED_20_PRIMARY_FIRST_SPARE_SPECULATION_ONLY",
-          "vibe2CoreQa": "PASS_RUN_35426882175"
+          "vibe2CoreQa": "PASS_RUN_35426882175",
+          "schedulerPriority": "OWNER_OR_STEWARD_CRITICAL_THEN_RELEASE_THEN_GAME_DEVELOPMENT_THEN_NONBLOCKING_SUPERVISION",
+          "supervisorCapacityPolicy": "SPARE_CAPACITY_ONLY_WHILE_ACTIONABLE_GAME_DEVELOPMENT_EXISTS"
         },
         "incidentHistory": [
           {
