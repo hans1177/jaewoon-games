@@ -1096,7 +1096,8 @@
         "healthySaturatedRuns": "RECOVER_CONCURRENCY_ONE_STEP_AFTER_HEALTHY_STREAK",
         "robloxRunnerFailure": "USE_EXISTING_AUTHENTICATED_RUNNER_SELF_HEAL",
         "externalModelQuota": "CHECKPOINT_AND_CONTINUE_NON_BLOCKED_VIBE_WORK",
-        "waitingForVerifiedSamples": "CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE"
+        "waitingForVerifiedSamples": "CONTINUE_SAMPLE_COLLECTION_NOT_FAILURE",
+        "staleMachineStateBlockerAfterStateNormalization": "REVALIDATE_RAW_CONTROL_V3_QUEUE30_THEN_CLEAR_STALE_BLOCKER_AND_REQUEUE"
       },
       "bottleneckPolicy": {
         "adaptiveSteps": [
@@ -1205,7 +1206,8 @@
           "UNNECESSARY_FULL_REVALIDATION",
           "PROVIDER_OUTAGE_OR_QUOTA",
           "RELEASE_DISPATCH_STRANDING",
-          "OWNER_EDIT_OVERWRITE_RISK"
+          "OWNER_EDIT_OVERWRITE_RISK",
+          "STALE_MACHINE_STATE_BLOCKERS"
         ],
         "loop": [
           "DETECT_ONE_ACTIONABLE_ISSUE",
@@ -1228,6 +1230,21 @@
           "gateLowering": false,
           "runtimeEvidenceFabrication": false,
           "verifiedLearningDeletion": false
+        },
+        "staleMachineStateRecoveryGuard": {
+          "requiredQueueMax": 30,
+          "requiredParallelismControlVersion": 3,
+          "allowedCurrentMaxSteps": [
+            4,
+            8,
+            12,
+            16,
+            20,
+            24,
+            30
+          ],
+          "clearOnlyKnownMachineStateInconsistentBlockers": true,
+          "actualMachineMismatchMustRemainBlocked": true
         }
       }
     },
