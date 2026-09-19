@@ -297,6 +297,30 @@ test('malformed JSON candidate gets one bounded strict-JSON recovery retry', asy
   assert.deepEqual(result.changedFiles, ['Assets/Player.cs']);
 });
 
+test('exact Web repair uses compact generation budget without weakening edit boundaries', async () => {
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'model-focused-repair.json');
+  const index=['<!doctype html><html><body>','<button id="play">Play</button>',`<script>${'const tick=1;'.repeat(1800)}</script>`,'</body></html>'].join('\n');
+  write(path.join(cwd,'web-games/demo/index.html'),index);
+  write(path.join(cwd,'web-games/demo/runtime-helper.js'),'export const runtimeHint=true;\n'+('const helper=1;\n'.repeat(700)));
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'focused-web-repair'});
+  workOrder.goal='[WEB_REPAIR] company-runtime failure evidence requires one exact index.html repair';
+  workOrder.selectedTask={evidence:['web-stage:WEB_REPAIR','company-runtime-state:WEB_VIBE_REPAIR_REQUIRED']};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  write(responseFile,JSON.stringify({
+    summary:'repair existing mobile action',
+    expectedEffect:'visible implementation change',
+    edits:[{path:'index.html',find:'>Play<',replace:'>Continue<'}],
+    newFiles:[],replaceFiles:[],tests:['button label']
+  }));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.focusedWebRepair,true);
+  assert.equal(result.generation.maxPredict,1024);
+  assert.equal(result.generation.contextWindow,16384);
+  assert.ok(result.generation.contextFiles<=3);
+  assert.ok(result.generation.contextBytes<=48000);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
 test('zero-change candidate gets one bounded recovery retry that produces a real responsible-file edit', async () => {
   const cwd = tempRoot();
   const empty = path.join(cwd, 'empty.json');
