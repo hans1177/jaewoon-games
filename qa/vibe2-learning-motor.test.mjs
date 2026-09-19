@@ -7,6 +7,12 @@ import {
   applyVerifiedCodePatternsToMastery,
   applyVerifiedCodingStrategyOutcomes,
   applyVerifiedCodingCalibration,
+  applyVerifiedArchitectureDriftOutcomes,
+  architectureDriftRiskForTask,
+  architectureDriftGuidance,
+  buildCodingConstitution,
+  codingConstitutionRuleForTask,
+  codingConstitutionGuidance,
   responsibilityCalibrationForTask,
   regressionHotspotRiskForTask,
   codingRiskGuidance,
@@ -169,6 +175,46 @@ test('verified regression outcomes calibrate overconfident responsibility and bu
   assert.equal(deduped.added,0);
   assert.equal(deduped.hotspotEventsAdded,0);
 });
+test('verified architecture drift outcomes become reusable risk only after cross-game regression evidence',()=>{
+  const fail=(id,gameId)=>({id,gameId,target:'web',evidence:[
+    'architecture-drift-status:ANALYZED','architecture-drift-risk:HIGH','architecture-drift-score:6','architecture-drift-signals:GOD_FUNCTION_GROWTH,STATE_WRITER_FANOUT_GROWTH',
+    'failure-cause:fan-in-regression-failed',`actions-run:${id}`
+  ]});
+  const pass={id:'p1',gameId:'g1',target:'web',evidence:[
+    'architecture-drift-status:ANALYZED','architecture-drift-risk:LOW','architecture-drift-score:0','architecture-drift-signals:GOD_FUNCTION_GROWTH',
+    'role-result:regression:PASS','role-result:review:PASS','candidate-identity:PASS','actions-run:p1'
+  ]};
+  const learned=applyVerifiedArchitectureDriftOutcomes({}, {tasks:[fail('f1','g1'),fail('f2','g2'),pass]});
+  assert.equal(learned.added,3);
+  const row=learned.state.architectureDriftMemory.signals.GOD_FUNCTION_GROWTH;
+  assert.equal(row.verifiedRegressionFailures,2);
+  assert.equal(row.verifiedPasses,1);
+  assert.equal(row.state,'VERIFIED_RISK');
+  const sameGame=architectureDriftRiskForTask({task:{gameId:'g1',target:'web'},stateInput:learned.state});
+  assert.equal(sameGame.riskLevel,'HIGH');
+  assert.equal(sameGame.hardReject,false);
+  assert.match(architectureDriftGuidance(sameGame),/observe-first/);
+  const deduped=applyVerifiedArchitectureDriftOutcomes(learned.state,{tasks:[fail('f1','g1'),fail('f2','g2'),pass]});
+  assert.equal(deduped.added,0);
+});
+
+test('coding constitution promotes only repeated contextual preferred strategy evidence and remains advisory',()=>{
+  const fingerprint='web|MOBILE_PLACEMENT_INPUT_MISSING|MOBILE_INPUT|PLACEMENT';
+  const state=createMasteryState({codingStrategyMemory:{strategies:{RESPONSIBILITY_FIRST:{
+    verifiedApplications:7,firstCandidatePasses:6,verifiedFailures:0,games:{g1:4,g2:3},targets:{web:7},state:'PREFERRED',
+    failureFingerprints:{[fingerprint]:{verifiedApplications:4,verifiedFailures:0,games:{g1:2,g2:2},failureGames:{},targets:{web:4}}}
+  }}}});
+  const constitution=buildCodingConstitution(state);
+  assert.equal(constitution.rules.length,1);
+  assert.equal(constitution.rules[0].strategy,'RESPONSIBILITY_FIRST');
+  assert.equal(constitution.rules[0].advisoryOnly,true);
+  const rule=codingConstitutionRuleForTask({task:{gameId:'g1',target:'web',goal:'pointer placement failure',evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING']},stateInput:{...state,codingConstitution:constitution}});
+  assert.equal(rule.matched,true);
+  assert.equal(rule.authorityExpanded,false);
+  assert.equal(rule.qaBypassAllowed,false);
+  assert.match(codingConstitutionGuidance(rule),/MUST NOT expand writable scope/);
+});
+
 test('failure-local retrieval prioritizes verified same-game same-failure memory and ignores unverified records',()=>{
   const task={gameId:'tower-demo',target:'web',goal:'모바일 pointer placement failure를 수정',evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
   const fp=failureFingerprintForTask(task);
