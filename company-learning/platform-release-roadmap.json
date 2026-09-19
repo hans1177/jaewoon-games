@@ -1,5 +1,5 @@
 {
-  "version": 134,
+  "version": 135,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1905,7 +1905,22 @@
               "hierarchicalFanOut": 20,
               "reservedTaskCount": 14,
               "state": "RUNNING"
-            }
+            },
+            "currentWave35446727233": {
+              "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
+              "focusedRepairEffectivenessValid": false,
+              "invalidationReason": "FOCUSED_FINAL_PRE_INIT_REFERENCE",
+              "fullWebObservationAllowed": true
+            },
+            "fullWebRetryPromptCompactionCommits": [
+              "57e03fbadfa248ae5fcf74ee251f3a906d84762d",
+              "ec735a04e9839b3a3d2ac6b88563ffa582bb282d",
+              "1026b115592bd3b74f72dfc38f82b71e8832ea6a"
+            ],
+            "focusedRetryPreInitFixCommits": [
+              "c8f373efb34e6c9289a119fc0caa3d207bc1c09f",
+              "6b0f0a8aab1ba9e37a11588cda0d10ea86e83e6c"
+            ]
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3456,115 +3471,80 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_FULL_WEB_LARGEST_PARTIAL_BOUNDED_RETRY_2026-09-19",
+    "id": "VIBE2_FULL_WEB_RETRY_PROMPT_COMPACTION_AND_FOCUSED_REGRESSION_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FOCUSED_MINIMAL_JSON_RETRY_2026-09-19",
-    "reason": "COMPLETED_CBA1A0F_WAVE_IMPROVED_FROM_ZERO_TO_FIVE_PASSES_BUT_FULL_WEB_FAILURES_SHOWED_8_TO_10KB_TIMEOUT_PARTIALS_BEING_DISCARDED_WHEN_NO_RECOVERED_SEED_EXISTED;ALLOW_ONE_BOUNDED_EXTRA_RETRY_AFTER_SECOND_TIMEOUT_OR_MALFORMED_AND_REUSE_THE_LARGEST_PARTIAL_ONLY_AS_RETRY_CONTEXT",
-    "implementationState": "LATEST_FIXES_PINNED_IN_NEW_20_WAVE_RUNNING",
+    "previousChangeRecordId": "VIBE2_FULL_WEB_LARGEST_PARTIAL_BOUNDED_RETRY_2026-09-19",
+    "reason": "FULL_WEB_RETRIES_REUSED_8_TO_10KB_PARTIALS_BUT_STILL_REPLAYED_OVERSIZED_EXPLORATION_AND_LEARNING_GUIDANCE;COMPACT_RETRY_TO_EXECUTION_CRITICAL_FIELDS_AND_PRIOR_PARTIAL_ONLY. CURRENT_944F15DA_WAVE_ALSO_EXPOSED_A_FOCUSED_RETRY_PRE_INITIALIZATION_REFERENCE_ERROR,SO_FOCUSED_RESULTS_FROM_THAT_WAVE_ARE_NOT_VALID_EFFECTIVENESS_EVIDENCE.",
+    "implementationState": "FIXES_COMMITTED_CURRENT_WAVE_PARTIALLY_INVALID_NEXT_WAVE_REQUIRED",
     "evidence": {
-      "completedWave": {
+      "baselineWave": {
         "runId": 35445626679,
-        "pinnedContractSha": "cba1a0f400a8fa312bc754fad93d40c98cb23ff7",
-        "workerCount": 20,
         "pass": 5,
         "fail": 15,
         "passRatePct": 25,
-        "failureRatePct": 75,
         "failureDistribution": {
           "TIMEOUT": 12,
           "FULL_REWRITE_SIZE": 2,
           "EDIT_MATCH": 1
-        },
-        "actualPeakConcurrency": 20,
-        "bottleneck": "SOURCE_CANDIDATE_GENERATION",
-        "regressionFanIn": {
-          "status": "FAIL_REQUEUED",
-          "jobId": 105906789219,
-          "failingTest": "timeout partial recovery stays behind existing exact-match and semantic validation",
-          "cause": "STALE_TEST_ASSERTION_EXPECTED_OLD_RECOVER_PARTIAL_CALL_SHAPE",
-          "sourceWrite": "NO"
         }
       },
-      "priorWave": {
-        "runId": 35444351457,
-        "pass": 0,
-        "fail": 20,
-        "passRatePct": 0,
-        "failureDistribution": {
-          "TIMEOUT": 13,
-          "OTHER": 6,
-          "MALFORMED_OUTPUT": 1
-        }
-      },
-      "representativeDiscardedFullWebPartialsBytes": [
-        9001,
-        10475,
-        8247,
-        5735,
-        5612,
-        4168
-      ],
-      "nextReservationRunId": 35446727233,
-      "nextWave": {
+      "currentWave": {
         "runId": 35446727233,
         "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
-        "hierarchicalFanOut": 20,
-        "reservedTaskCount": 14,
-        "state": "MODEL_CACHE_OR_WORKER_START_PENDING_AT_OBSERVATION",
-        "includesLatestFixes": true
+        "completedWorkersObserved": 2,
+        "inProgressWorkersObserved": 18,
+        "focusedRepairEffectivenessValid": false,
+        "invalidationReason": "focused retry used focusedFinal before initialization",
+        "firstObservedRegression": {
+          "jobId": 105907101100,
+          "failureClass": "OTHER",
+          "message": "Cannot access 'focusedFinal' before initialization"
+        },
+        "fullWebEvidenceMayStillBeObserved": true
       }
     },
     "contract": {
-      "noRecoveredSeedFallbackRetryLimit": "ONE_EXTRA_RETRY_AFTER_ATTEMPT_TWO_ONLY",
-      "fallbackRetryClasses": [
-        "FULL_REWRITE_SIZE",
-        "TIMEOUT",
-        "MALFORMED_OUTPUT"
+      "fullWebRetryPromptFields": [
+        "ENGINE",
+        "GOAL",
+        "ALLOWED_EDIT_PATHS",
+        "FULL_WEB_TARGET",
+        "PRIOR_PARTIAL_OR_BOUNDED_EDITABLE_SOURCE"
       ],
-      "largestPartialUsedAsRetryContextOnly": true,
-      "largestPartialNeverPromotedDirectly": true,
-      "finalCandidateStillRequiresCompleteEnvelopeOrCompleteHtml": true,
+      "oversizedExplorationGuidanceRemovedOnRetry": true,
+      "previousLargestPartialRetained": true,
+      "previousLargestPartialDirectPromotionForbidden": true,
       "fullWebMinimumBytesUnchanged": 12000,
-      "exactValidationRequired": true,
+      "focusedRetryPreInitReferenceForbidden": true,
+      "focusedRetryMinimalJsonContractPreserved": true,
       "qaGateUnchanged": true,
       "writableScopeUnchanged": true,
       "authorityExpansion": false,
-      "immutableEvidence": "coding-full-web-fallback-best-partial-bytes:<N>"
-    },
-    "implementationCommits": {
-      "source": "314e74c5c5331f3e687cf17dc72d54ffb4309ec5",
-      "regressionTest": "db42d71bad17ad602ad566b41872edd4aca982b8",
-      "workflowTelemetry": "c3a8a8cfa96127d6b9f9f9694cf29e5d6ca5252e",
-      "staleFanInTestFix": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f"
-    },
-    "relatedBottleneckFixes": {
-      "speculativeRetryBudget": [
-        "41eea8d07362a51158cb4b75081f66420eaecd64",
-        "30c281817019ff8e9a342afb226fd37874891f8f",
-        "045a3e970db8dd8b69e4824a12814373f69b9096"
-      ],
-      "focusedMinimalJson": [
-        "ca8ea51acab5ef39d20798bc2b03b88cc233258a",
-        "197a1884e296d28f5210d513281e2a8cfef64977",
-        "070d47598063a4aacc2e7226b1c156dc25471cee",
-        "80091b7fc44b9fec07db94b9a2a3b81c45d095d6",
-        "d8d9ae3f98356cbbb01b2567c2d756dcdfe276e5"
+      "immutableEvidence": [
+        "coding-full-web-retry-prompt-compacted:YES",
+        "coding-full-web-retry-prompt-bytes:<N>"
       ]
     },
+    "implementationCommits": {
+      "fullWebRetryPromptSource": "57e03fbadfa248ae5fcf74ee251f3a906d84762d",
+      "fullWebRetryPromptTest": "ec735a04e9839b3a3d2ac6b88563ffa582bb282d",
+      "fullWebRetryPromptTelemetry": "1026b115592bd3b74f72dfc38f82b71e8832ea6a",
+      "focusedPreInitFix": "c8f373efb34e6c9289a119fc0caa3d207bc1c09f",
+      "focusedPreInitRegressionTest": "6b0f0a8aab1ba9e37a11588cda0d10ea86e83e6c"
+    },
     "pending": [
-      "RUN_35446727233_COMPLETE_AND_FAN_IN",
-      "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
-      "COMPARE_TIMEOUT_FULL_REWRITE_SIZE_AND_EDIT_MATCH_RATES",
-      "VERIFY_FAN_IN_REGRESSION_AFTER_944F15DA",
-      "MEASURE_FULL_WEB_FALLBACK_PARTIAL_REUSE_EVIDENCE",
-      "MEASURE_SPECULATIVE_LONG_TAIL_REDUCTION"
+      "CURRENT_35446727233_COMPLETE_FOR_FULL_WEB_OBSERVATION_ONLY",
+      "NEXT_REFILL_PIN_C8F373EF_AND_57E03FBA_OR_LATER",
+      "REVALIDATE_FOCUSED_REPAIR_FROM_CLEAN_WAVE",
+      "COMPARE_FULL_WEB_RETRY_PROMPT_BYTES_AND_TIMEOUT_RATE",
+      "VERIFY_FAN_IN_REGRESSION",
+      "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE"
     ],
     "invariants": {
       "ownerMinimumWave": 20,
       "hierarchicalParallelism": true,
       "primaryRetryDepthUnchanged": true,
-      "speculativeOnlyRetryBudgetOptimization": true,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
       "shadowPipelineForbidden": true
