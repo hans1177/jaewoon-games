@@ -5615,7 +5615,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -5662,7 +5662,8 @@
         "speculative-variants:1",
         "speculative-winner:primary",
         "failure-cause:fan-in-regression-failed",
-        "recovery:fan-in-regression-requeue-v1"
+        "recovery:fan-in-regression-requeue-v1",
+        "slot-dispatch:35420700367:1"
       ],
       "lastOutcome": "RETRY_AFTER_FAN_IN_REGRESSION_FAILURE",
       "reservationId": "35420418523:1",
