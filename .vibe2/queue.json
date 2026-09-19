@@ -5126,7 +5126,8 @@
         "workload:cycle-ms:222498",
         "variant:speculative-2",
         "workload:prep-ms:4366",
-        "workload:cycle-ms:196943"
+        "workload:cycle-ms:196943",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -5246,7 +5247,8 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:source-candidate-generation-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
@@ -5380,7 +5382,8 @@
         "workload:cycle-ms:188796",
         "variant:speculative-2",
         "workload:prep-ms:8855",
-        "workload:cycle-ms:111734"
+        "workload:cycle-ms:111734",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -5519,7 +5522,8 @@
         "workload:cycle-ms:202392",
         "variant:speculative-2",
         "workload:prep-ms:4393",
-        "workload:cycle-ms:209693"
+        "workload:cycle-ms:209693",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -5654,7 +5658,8 @@
         "workload:cycle-ms:184917",
         "variant:speculative-2",
         "workload:prep-ms:8099",
-        "workload:cycle-ms:121220"
+        "workload:cycle-ms:121220",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -5940,7 +5945,8 @@
         "workload:cycle-ms:229273",
         "variant:speculative-2",
         "workload:prep-ms:7974",
-        "workload:cycle-ms:256433"
+        "workload:cycle-ms:256433",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -6075,7 +6081,8 @@
         "workload:cycle-ms:243945",
         "variant:speculative-2",
         "workload:prep-ms:5141",
-        "workload:cycle-ms:176727"
+        "workload:cycle-ms:176727",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -6211,7 +6218,8 @@
         "workload:cycle-ms:169084",
         "variant:speculative-2",
         "workload:prep-ms:9507",
-        "workload:cycle-ms:187654"
+        "workload:cycle-ms:187654",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "FAIL",
       "reservationId": null,
@@ -6362,7 +6370,8 @@
         "speculative-variants:3",
         "speculative-winner:speculative-1",
         "failure-cause:fan-in-regression-failed",
-        "recovery:fan-in-regression-requeue-v1"
+        "recovery:fan-in-regression-requeue-v1",
+        "learning-motor-candidate-tournament:high-risk"
       ],
       "lastOutcome": "RETRY_AFTER_FAN_IN_REGRESSION_FAILURE",
       "reservationId": null,
@@ -6432,14 +6441,14 @@
       "dependencies": [],
       "priority": "owner-immediate",
       "releaseState": "development-confirmed",
-      "status": "failed",
-      "retries": 3,
+      "status": "queued",
+      "retries": 0,
       "maxRetries": 2,
       "ownerDirective": true,
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": "source-candidate-generation-failed",
+      "blocker": null,
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -6484,17 +6493,21 @@
         "actions-run:35421171113",
         "reservation-id:35421171113:1",
         "workload:prep-ms:8550",
-        "workload:cycle-ms:185094"
+        "workload:cycle-ms:185094",
+        "system-steward:retry-exhausted-regenerated:generation-1",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
+        "system-steward:failure-signature:source-candidate-generation-failed",
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
       ],
-      "lastOutcome": "FAIL",
+      "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": null,
       "reservationRunId": null,
       "reservationRunAttempt": 0,
       "reservedAt": null,
       "companyContext": null,
       "sourceRoot": "web-games/village-dungeons",
-      "speculativeEligible": false,
-      "estimatedRisk": "medium",
+      "speculativeEligible": true,
+      "estimatedRisk": "high",
       "taskWorkUnits": 6,
       "packageId": "village-dungeons-wp-1mb2tsz",
       "packageGoal": "마을 던전 RPG: 관련 구현·품질 개선을 기능 단위로 묶어 끝까지 완료한다.",
@@ -6508,7 +6521,7 @@
       "historicalDeploymentRecovery": false,
       "focusCycle": 0,
       "focusPolicyRef": null,
-      "recoveryGeneration": 0,
+      "recoveryGeneration": 1,
       "systemSteward": false,
       "ownerFocusedCaretaker": false,
       "packageContext": {
