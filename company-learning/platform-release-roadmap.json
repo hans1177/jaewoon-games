@@ -1,5 +1,5 @@
 {
-  "version": 103,
+  "version": 104,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,33 +3069,24 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_STAGED_SOURCE_SYNTHESIS_PHASE5_CORE_AND_MISSING_CAPABILITY_TARGETING_2026-09-19",
+    "id": "VIBE2_PHASE5_CORE_VERIFIED_STAGE_TARGETING_NEXT_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_STAGED_SOURCE_SYNTHESIS_AND_SYMBOL_CONTEXT_PHASE5_2026-09-19",
-    "reason": "SYNC_PHASE5_CORE_IMPLEMENTATION_AND_DOCUMENT_MISSING_CAPABILITY_FIRST_EXPANSION_TARGETING_BEFORE_CODE_TO_REDUCE_REPEAT_OUTPUT_AND_INCREASE_FUNCTIONAL_GROWTH_PER_GENERATION",
-    "implementationState": "PHASE_5_CORE_IMPLEMENTED_QA_PENDING_STAGE_TARGETING_DOCUMENTED",
+    "previousChangeRecordId": "VIBE2_STAGED_SOURCE_SYNTHESIS_PHASE5_CORE_AND_MISSING_CAPABILITY_TARGETING_2026-09-19",
+    "reason": "PROMOTE_PHASE5_CORE_AFTER_FIXED_HEAD_CORE_VIBE_INTEGRATED_QA_SUCCESS_AND_CONTINUE_DOCUMENTED_MISSING_CAPABILITY_STAGE_TARGETING",
+    "implementationState": "PHASE_5_CORE_VERIFIED_STAGE_TARGETING_PENDING_CODE",
     "evidence": {
-      "sourceRunId": 35438982255,
-      "originalFailureClasses": "TIMEOUT:9,EDIT_MATCH:2,FULL_REWRITE_SIZE:7,NO_OP:1,MALFORMED_OUTPUT:1",
-      "phase5ImplementationCommits": [
-        "58caba8b59411260786c5c1286516fe8116fb307",
-        "af147e08cc9190b966623cbc74974a2e12976d76",
-        "27d79f01d07c4486fd83dcf31e1d0e03bb57dd42",
-        "98badfee2c1a9185c868443380425e0a4c401ee8",
-        "f5d5669a5527c19296ee808a7dd08c76ee92ef85",
-        "1a7c286f98627ccd88fc52f54e5659c82e9052e0",
-        "e617f4e872661a46827f3502488a0d00184337ae",
-        "5e9554b4ecb3ca86233a4c2ad0812299d94c8841",
-        "c945cd94408a91cd050c53dd7107ccce11d3abf2"
-      ]
+      "verificationHead": "c945cd94408a91cd050c53dd7107ccce11d3abf2",
+      "coreQaRunId": 35441313591,
+      "vibeQaRunId": 35441313567,
+      "integratedRegressionRunId": 35441313546,
+      "baselineSourceRunId": 35438982255
     },
     "pending": [
-      "LATEST_CORE_QA",
-      "LATEST_VIBE_QA",
-      "LATEST_INTEGRATED_REGRESSION",
-      "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
-      "COMPARE_TIMEOUT_EDIT_MATCH_FULL_REWRITE_SIZE_BEFORE_AFTER"
+      "MISSING_CAPABILITY_STAGE_TARGET_PLANNER_CODE",
+      "DISTINCT_STAGE_TARGET_TELEMETRY",
+      "CORE_QA_STAGE_TARGETING",
+      "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3104,6 +3095,7 @@
       "fanInOnlyRefill": true,
       "sameFileParallelWrite": false,
       "finalWebMinimumNotLowered": true,
+      "intermediatePromotionAllowed": false,
       "qualityGatesNotWeakened": true,
       "impactPredictionCannotGrantWriteAuthority": true,
       "writableScopeExpansionAllowed": false,
@@ -3904,7 +3896,7 @@
       ]
     },
     "phase4": {
-      "state": "IMPLEMENTED_QA_RECHECK_PENDING",
+      "state": "VERIFIED",
       "implementationEvidence": {
         "responsibilityArchitectureCompare": "c217e12a7b62c5e60c553c249d435ff96aa43924",
         "prepatchSnapshot": "3dc615ed3829bdaad8ccb3a7a4bd2b6ff49b2e48",
@@ -3921,11 +3913,18 @@
         "driftCannotExpandAuthority": true,
         "constitutionAdvisoryOnly": true,
         "impactPredictionCannotGrantWriteAuthority": true
+      },
+      "verification": {
+        "semanticBoundaryQaPassHead": "f61f594a104b8c20d2915db22924a6072b472352",
+        "phase5SupersetQaHead": "c945cd94408a91cd050c53dd7107ccce11d3abf2",
+        "coreQaRunId": 35441313591,
+        "vibeQaRunId": 35441313567,
+        "integratedRegressionRunId": 35441313546
       }
     },
     "stagedSourceSynthesis": {
       "version": 1,
-      "status": "PHASE_5_CORE_IMPLEMENTED_QA_PENDING",
+      "status": "PHASE_5_CORE_VERIFIED_STAGE_TARGETING_PENDING_CODE",
       "objective": "REPLACE_GIANT_ONE_SHOT_SOURCE_GENERATION_WITH_RESPONSIBILITY_FOCUSED_CONTEXT_AND_VALIDATED_INTERMEDIATE_BUILD_STAGES",
       "triggerEvidence": {
         "sourceRunId": 35438982255,
@@ -4006,12 +4005,36 @@
         "symbolRegexRegressionTest": "c945cd94408a91cd050c53dd7107ccce11d3abf2"
       },
       "pendingVerification": [
-        "LATEST_CORE_QA",
-        "LATEST_VIBE_QA",
-        "LATEST_INTEGRATED_REGRESSION",
         "LIVE_20_WAVE_SOURCE_FAILURE_REVALIDATION",
         "COMPARE_TIMEOUT_EDIT_MATCH_FULL_REWRITE_SIZE_BEFORE_AFTER"
-      ]
+      ],
+      "verification": {
+        "head": "c945cd94408a91cd050c53dd7107ccce11d3abf2",
+        "coreQa": {
+          "runId": 35441313591,
+          "jobId": 105892463601,
+          "result": "SUCCESS"
+        },
+        "vibeQa": {
+          "runId": 35441313567,
+          "jobId": 105892463257,
+          "result": "SUCCESS"
+        },
+        "integratedRegression": {
+          "runId": 35441313546,
+          "jobId": 105892463312,
+          "result": "SUCCESS"
+        },
+        "liveRevalidationPending": true,
+        "baselineComparisonRunId": 35438982255,
+        "baselineFailureClasses": {
+          "TIMEOUT": 9,
+          "EDIT_MATCH": 2,
+          "FULL_REWRITE_SIZE": 7,
+          "NO_OP": 1,
+          "MALFORMED_OUTPUT": 1
+        }
+      }
     }
   },
   "vibeRecoveryLearningLoop": {
