@@ -1,0 +1,63 @@
+name: Generate Korean Lab Recorder Audio
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/generate-lab-recorder.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install TTS tools
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install edge-tts
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+      - name: Generate natural Korean recorder voice
+        run: |
+          mkdir -p web-games/fantasy-survival/audio
+          cat > /tmp/lab_recorder.txt <<'EOF'
+          1일차. 협곡의 생물에게 습격당했다. 장비 대부분을 버리고 북쪽의 뜨거운 땅으로 도망쳤다.
+
+          2일차. 부서진 콜로세움 남쪽 연구소를 임시 거점으로 삼았다. 밤마다 불빛 같은 눈이 벽 밖을 돈다.
+
+          3일차. 녹음 상태가 좋지 않다. 저것들은 불 속에서도 죽지 않는다. 문 앞에 피가...
+
+          4일차. 잡음. 녹음 파일 손상. 더 이상 기록을 확인할 수 없다.
+          EOF
+          TEXT="$(cat /tmp/lab_recorder.txt)"
+          edge-tts \
+            --voice ko-KR-SunHiNeural \
+            --rate=-7% \
+            --pitch=-2Hz \
+            --text "$TEXT" \
+            --write-media /tmp/lab-recorder-raw.mp3
+          ffmpeg -y -i /tmp/lab-recorder-raw.mp3 \
+            -af "highpass=f=90,lowpass=f=9500,acompressor=threshold=-18dB:ratio=2.2:attack=12:release=150,volume=1.15" \
+            -codec:a libmp3lame -b:a 96k \
+            web-games/fantasy-survival/audio/lab-recorder.mp3
+          test -s web-games/fantasy-survival/audio/lab-recorder.mp3
+          ls -lh web-games/fantasy-survival/audio/lab-recorder.mp3
+      - name: Commit generated audio
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web-games/fantasy-survival/audio/lab-recorder.mp3
+          if git diff --cached --quiet; then
+            echo "No audio change"
+            exit 0
+          fi
+          git commit -m "fix: replace lab recorder with natural Korean voice"
+          git push origin HEAD:main
