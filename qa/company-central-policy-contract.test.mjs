@@ -347,10 +347,15 @@ test('Roblox deployment control allows guarded Open Cloud publishing only',()=>{
 });
 
 
-test('development WIP capacity is 30 while gates remain fail-closed',()=>{
-  assert.equal(roadmap.platformRepresentativeSets.implementationWipTarget,30);
-  assert.equal(roadmap.platformRepresentativeSets.implementationWipMax,30);
-  assert.equal(roadmap.developmentSpeedExecution.globalSelectedPlatformDevelopmentWipMax,30);
+test('development WIP is policy-unbounded while gates remain fail-closed',()=>{
+  assert.equal(roadmap.platformRepresentativeSets.implementationWipTarget,null);
+  assert.equal(roadmap.platformRepresentativeSets.implementationWipMax,null);
+  assert.equal(roadmap.platformRepresentativeSets.implementationWipPolicy,'UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_PROVIDER_CAPACITY_ONLY');
+  assert.equal(roadmap.developmentSpeedExecution.globalSelectedPlatformDevelopmentWipMax,null);
+  assert.equal(roadmap.developmentSpeedExecution.globalAdaptiveParallelMax,null);
+  assert.equal(roadmap.developmentSpeedExecution.parallelismMode,'UNBOUNDED_BY_INTERNAL_POLICY_EXTERNAL_CAPACITY_WAVES');
+  assert.equal(roadmap.developmentSpeedExecution.externalMatrixBatchMax,256);
+  assert.equal(roadmap.developmentSpeedExecution.qualityOrEvidenceGateWeakeningForbidden,true);
   assert.equal(roadmap.developmentLifecycleMachine.selfRecoveryAndBottleneckRelief.invariants.noGateBypass,true);
   assert.equal(directive.executionPause.strictDesignGateMustRemainUnchanged,true);
   assert.equal(directive.stageGateScoringV2.currentThresholds.design,80);
