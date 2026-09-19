@@ -4838,7 +4838,7 @@
         "web-games/egg-heist/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -4924,7 +4924,10 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:source-candidate-generation-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35430996704:1",
@@ -4992,7 +4995,7 @@
         "web-games/island-village/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -5059,7 +5062,10 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:source-candidate-generation-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35430996704:1",
@@ -5296,7 +5302,7 @@
         "web-games/territory-war/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -5377,7 +5383,10 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:source-candidate-generation-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35430996704:1",
@@ -5991,7 +6000,8 @@
         "workload:prep-ms:5945",
         "workload:cycle-ms:514254",
         "system-steward:retry-exhausted-regenerated:generation-4",
-        "repair-mode:CAUSAL_REGENERATION_GENERATION_4"
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_4",
+        "recovery-queue:recovery-b604759a4b7b6772ff03"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35430996704:1",
@@ -8575,7 +8585,7 @@
         "web-games/amusement-tycoon/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -8632,7 +8642,10 @@
         "actions-run:35430477537",
         "reservation-id:35430477537:1",
         "workload:prep-ms:13700",
-        "workload:cycle-ms:537382"
+        "workload:cycle-ms:537382",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35430996704:1",
@@ -8700,7 +8713,7 @@
         "web-games/bug-defense/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -8757,7 +8770,10 @@
         "actions-run:35430477537",
         "reservation-id:35430477537:1",
         "workload:prep-ms:11884",
-        "workload:cycle-ms:368104"
+        "workload:cycle-ms:368104",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35430996704:1",
@@ -8825,7 +8841,7 @@
         "web-games/daechung-rpg/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -8882,7 +8898,10 @@
         "actions-run:35430477537",
         "reservation-id:35430477537:1",
         "workload:prep-ms:4796",
-        "workload:cycle-ms:510443"
+        "workload:cycle-ms:510443",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35430996704:1",
@@ -8950,7 +8969,7 @@
         "web-games/line-defense/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -9007,7 +9026,10 @@
         "actions-run:35430477537",
         "reservation-id:35430477537:1",
         "workload:prep-ms:9544",
-        "workload:cycle-ms:524084"
+        "workload:cycle-ms:524084",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35430996704:1",
@@ -9075,7 +9097,7 @@
         "web-games/monster-adventure/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -9159,7 +9181,10 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:source-candidate-generation-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35430996704:1",
@@ -9227,7 +9252,7 @@
         "web-games/seed-action-survival-rogu-echoes-of-the-lost-star/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -9284,7 +9309,10 @@
         "actions-run:35430477537",
         "reservation-id:35430477537:1",
         "workload:prep-ms:5412",
-        "workload:cycle-ms:509413"
+        "workload:cycle-ms:509413",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35430996704:1",
@@ -9352,7 +9380,7 @@
         "web-games/seed-casual-realm-weaver/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -9409,7 +9437,10 @@
         "actions-run:35430477537",
         "reservation-id:35430477537:1",
         "workload:prep-ms:11392",
-        "workload:cycle-ms:236543"
+        "workload:cycle-ms:236543",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35430996704:1",
@@ -9477,7 +9508,7 @@
         "web-games/seed-idle-growth-rpg-crystal-bloom/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -9534,7 +9565,10 @@
         "actions-run:35430477537",
         "reservation-id:35430477537:1",
         "workload:prep-ms:6343",
-        "workload:cycle-ms:244849"
+        "workload:cycle-ms:244849",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35430996704:1",
@@ -9602,7 +9636,7 @@
         "web-games/seed-puzzle-chromatic-cascade/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -9659,7 +9693,10 @@
         "actions-run:35430477537",
         "reservation-id:35430477537:1",
         "workload:prep-ms:4702",
-        "workload:cycle-ms:509275"
+        "workload:cycle-ms:509275",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35430996704:1",
@@ -9727,7 +9764,7 @@
         "web-games/seed-single-defense-strat-celestial-bastion/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 1,
@@ -9784,7 +9821,10 @@
         "actions-run:35430477537",
         "reservation-id:35430477537:1",
         "workload:prep-ms:5619",
-        "workload:cycle-ms:439326"
+        "workload:cycle-ms:439326",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "FAIL",
       "reservationId": "35430996704:1",
@@ -9852,7 +9892,7 @@
         "web-games/seed-story-complete-rpg-chronicles-of-eldoria/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -9904,7 +9944,10 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:source-candidate-generation-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35430996704:1",
@@ -9972,7 +10015,7 @@
         "web-games/survival/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -10024,7 +10067,10 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:source-candidate-generation-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35430996704:1",
@@ -10092,7 +10138,7 @@
         "web-games/survival2/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -10168,7 +10214,10 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:source-candidate-generation-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35430996704:1",
@@ -10236,7 +10285,7 @@
         "web-games/village-dungeons/index.html"
       ],
       "dependencies": [],
-      "priority": "owner-immediate",
+      "priority": "critical",
       "releaseState": "development-confirmed",
       "status": "running",
       "retries": 0,
@@ -10288,7 +10337,10 @@
         "system-steward:retry-exhausted-regenerated:generation-1",
         "repair-mode:CAUSAL_REGENERATION_GENERATION_1",
         "system-steward:failure-signature:source-candidate-generation-failed",
-        "system-steward:fix-pattern:retry-exhausted-causal-regeneration"
+        "system-steward:fix-pattern:retry-exhausted-causal-regeneration",
+        "recovery-queue:recovery-b604759a4b7b6772ff03",
+        "recovery-strategy:RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
+        "recovery-exact-stage:UNKNOWN_STAGE"
       ],
       "lastOutcome": "SYSTEM_STEWARD_REGENERATED_AFTER_RETRY_EXHAUSTION",
       "reservationId": "35430996704:1",
