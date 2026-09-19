@@ -213,6 +213,14 @@ test('workers complete the current wave before one fan-in refill dispatch',()=>{
   assert.equal(runtime.continuous.fanInRefillTrigger,'repository-dispatch');
   assert.equal(runtime.continuous.slotRefillWorkerDirectControlWrite,false);
   assert.equal(runtime.continuous.slotRefillSourceLocksHeldUntilFanIn,true);
+  const reserveStart=workflow.indexOf('- name: Reserve conflict-free DAG batch');
+  const reserveEnd=workflow.indexOf('  model_cache:');
+  const reserveBlock=workflow.slice(reserveStart,reserveEnd);
+  assert(reserveBlock.includes("if [ \"$callback_kind\" = 'fanin' ]; then"));
+  assert(reserveBlock.includes('git show origin/company-runtime:development-queue.json > /tmp/vibe2-company-runtime-queue.json'));
+  assert(reserveBlock.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+  assert(reserveBlock.includes('VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS'));
+  assert(reserveBlock.indexOf('VIBE2_FANIN_REFILL_PLANNER_SYNC=PASS') < reserveBlock.indexOf('vibe2-queue-control.mjs reserve-batch'));
 });
 
 test('24H cycle serialization does not reuse the control-state lock',()=>{
@@ -274,7 +282,7 @@ test('fan-in release requires exact candidate manifest identity',()=>{
     ]
   };
   const valid={
-    version:6,
+    version:7,
     taskId:'demo-task',
     outcome:'PASS',
     candidateBranch:branch,
