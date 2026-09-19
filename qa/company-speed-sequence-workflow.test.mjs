@@ -133,7 +133,8 @@ test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate 
   assert.match(policy,/concurrentGameWipTarget: 20/);
   assert.match(policy,/concurrentGameWipMax: 20/);
   assert.match(policy,/adaptiveBackpressureSteps: \[20, 16, 12, 8, 4\]/);
-  assert.ok(designRuntime.includes("const maxMatch=policy.match(/concurrentGameWipMax:\\s*(\\d+)/);"));
+  assert.match(designRuntime,/const roadmap=JSON\.parse\(fs\.readFileSync\('company-learning\/platform-release-roadmap\.json','utf8'\)\)/);
+  assert.match(designRuntime,/globalSelectedPlatformDevelopmentWipMax/);
   assert.match(designRuntime,/slice\(0,designWipMax\)/);
   assert.match(designRuntime,/const selected=canaryVerified\?pending:pending\.slice\(0,2\)/);
   assert.match(designRuntime,/const parallelMax=Math\.max\(1,Math\.min\(canaryVerified\?designWipMax:1,targets\.length\|\|1\)\)/);
@@ -141,7 +142,7 @@ test('DESIGN_ONLY runtime shares the central game WIP cap instead of a separate 
   assert.match(designRuntime,/GAME_DESIGN_EXECUTION_LANES=\$\{parallelMax\}/);
   assert.match(designRuntime,/GAME_DESIGN_GATE_BYPASS=NO/);
   assert.match(designRuntime,/GAME_DESIGN_ONLY_STRICT_PASS_REQUIRED=YES/);
-  assert.match(designRuntime,/GAME_DESIGN_WIP_SOURCE=COMPANY_FLOW/);
+  assert.match(designRuntime,/GAME_DESIGN_WIP_SOURCE=CANONICAL_ROADMAP/);
   assert.match(designRuntime,/max-parallel:\s*\$\{\{ fromJSON\(needs\.resolve-seed-targets\.outputs\.parallel_max\) \}\}/);
   assert.match(designRuntime,/concurrency:[\s\S]{0,300}group:\s*company-seed-design-runtime-\$\{\{ github\.event_name == 'push' && 'engine-push' \|\| 'continuation' \}\}[\s\S]{0,220}cancel-in-progress:\s*\$\{\{ github\.event_name == 'push' \}\}/);
   assert.match(designRuntime,/push:[\s\S]{0,500}tools\/company-design-cycle\.mjs/);
