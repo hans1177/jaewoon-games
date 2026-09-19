@@ -32,6 +32,7 @@ on:
       - 'autonomous-portfolio.json'
       - 'game-artbooks.json'
       - 'game-catalog.json'
+      - 'web-games/**'
 
 permissions:
   contents: write
@@ -84,6 +85,23 @@ jobs:
             rm -f /tmp/company-runtime-game-seed-state.json
             echo 'COMPANY_RUNTIME_SEED_STATE_OVERLAY=NO'
           fi
+
+      - name: Detect direct owner Web game changes
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          out=/tmp/company-owner-web-game-ids.txt
+          : > "$out"
+          before='${{ github.event.before }}'
+          after='${{ github.sha }}'
+          if [[ -n "$before" && ! "$before" =~ ^0+$ ]] && git cat-file -e "$before^{commit}" 2>/dev/null; then
+            git diff --name-only "$before" "$after" -- web-games/ || true
+          else
+            git show --pretty='' --name-only "$after" -- web-games/ || true
+          fi | awk -F/ '/^web-games\/[^/]+\// {print $2}' | sort -u > "$out"
+          echo "COMPANY_OWNER_WEB_GAME_IDS_PATH=$out" >> "$GITHUB_ENV"
+          echo "COMPANY_OWNER_WEB_CHANGED_IDS=$(paste -sd, "$out" || true)"
 
       - name: Sync company status and semantic production classes
         run: |
