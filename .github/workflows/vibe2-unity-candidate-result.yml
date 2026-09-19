@@ -27,6 +27,13 @@ jobs:
           ref: vibe2-unreal-core
           fetch-depth: 0
 
+      - name: Checkout latest main machine contract
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          path: vibe2-main-contract
+          fetch-depth: 1
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -52,7 +59,7 @@ jobs:
             git fetch origin "$CONTROL_BRANCH"
             git checkout -B "$CONTROL_BRANCH" "origin/$CONTROL_BRANCH"
 
-            node tools/vibe2-candidate-reconcile.mjs \
+            node vibe2-main-contract/tools/vibe2-candidate-reconcile.mjs \
               --branch="$CANDIDATE_BRANCH" \
               --target=unity \
               --conclusion="$BUILD_CONCLUSION" \
