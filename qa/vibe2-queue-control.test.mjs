@@ -81,6 +81,28 @@ test('queue normalization exposes explicit execution lanes and release wait is d
   assert.equal(queue.tasks.find(t=>t.id==='game').executionLane,'RELEASE_WAIT');
 });
 
+test('supervised review wait preserves supervision state and releases worker capacity',()=>{
+  const queue=createVibeContinuousQueue({maxConcurrentTasks:2,tasks:[
+    {
+      id:'supervised-wait',gameId:'game-a',target:'web',department:'development',type:'implementation',goal:'major web build',
+      status:'running',sourceRoot:'web-games/game-a',responsibleFiles:['web-games/game-a/index.html'],
+      blocker:'candidate-awaiting-supervised-review',productionMode:'SUPERVISED_VIBE_COAUTHORING',supervisionApproved:false,
+      supervisionContract:{required:true,mode:'ASSISTANT_SUPERVISED_VIBE_COAUTHORING',automaticPromotionAllowed:false,protectedSemantics:['SAVE_KEY_AND_SAVE_MEANING']},
+      supervisionReview:{verified:true,decision:'REVISE',rationale:'모바일 입력 실제 연결 필요',evidence:['review:1'],avoidPatterns:['검증 버튼 대체 금지']}
+    },
+    {id:'independent',gameId:'game-b',target:'web',department:'development',type:'implementation',goal:'other game',status:'queued',sourceRoot:'web-games/game-b',responsibleFiles:['web-games/game-b/index.html']}
+  ]});
+  const waiting=queue.tasks.find(task=>task.id==='supervised-wait');
+  assert.equal(waiting.executionLane,'RELEASE_WAIT');
+  assert.equal(waiting.productionMode,'SUPERVISED_VIBE_COAUTHORING');
+  assert.equal(waiting.supervisionContract.required,true);
+  assert.deepEqual([...waiting.supervisionContract.protectedSemantics],['SAVE_KEY_AND_SAVE_MEANING']);
+  assert.equal(waiting.supervisionReview.decision,'REVISE');
+  assert.deepEqual([...waiting.supervisionReview.avoidPatterns],['검증 버튼 대체 금지']);
+  const selected=selectVibeQueueBatch(queue,{maxConcurrentTasks:2});
+  assert.equal(selected.capacityRunning.length,0);
+  assert.equal(selected.selected.some(task=>task.id==='independent'),true);
+});
 test('legacy central policy evidence is migrated to the roadmap authority during queue normalization', () => {
   const queue=createVibeContinuousQueue({tasks:[{
     id:'legacy-policy',gameId:'legacy',target:'web',sourceRoot:'web-games/legacy',goal:'legacy',
