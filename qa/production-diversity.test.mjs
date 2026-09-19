@@ -115,6 +115,26 @@ test('runtime promotion survives stale main DESIGN_ONLY mirrors only with matchi
   assert.equal(portfolio.projects[0].productionClass,'DESIGN_ONLY');
 });
 
+test('runtime seed synthesizes a missing portfolio project instead of dropping promoted development',()=>{
+  const portfolio={
+    productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
+    developmentFocusPolicy:{maxFocusedGames:1},
+    projects:[]
+  };
+  const catalog={games:[{id:'runtime-only',name:'Runtime Only',genre:['전략'],productionClass:'DESIGN_ONLY',productionClassSource:'OWNER_ALL_GAMES_DESIGN_RESET_2026-09-17',homepageCategory:'design-only',selectedPlatform:'UNITY',webPath:'/web-games/runtime-only/',homepageWebPlayable:true,hasWebArchive:true}]};
+  const seedState={seeds:[{gameId:'runtime-only',gameName:'Runtime Only',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',productionClassSource:'DESIGN_BASELINE_READY_STRICT_PASS',selectedPlatform:'UNITY'}]};
+  const developmentQueue={items:[{gameId:'runtime-only',productionClass:'DEVELOPMENT_CONFIRMED',selectedPlatform:'UNITY',status:'ACTIVE'}]};
+  const result=syncProductionClasses({portfolio,catalog,artbooks:{artbooks:[]},developmentQueue,seedState,filesystem:fsStub});
+  assert.equal(portfolio.projects.length,1);
+  assert.equal(portfolio.projects[0].slug,'runtime-only');
+  assert.equal(portfolio.projects[0].runtimeSynthesized,true);
+  assert.equal(portfolio.projects[0].productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(portfolio.projects[0].webPurpose,'FULL_APPROVED_SCOPE_PLAYABLE_AND_LEARNING_EVIDENCE');
+  assert.equal(catalog.games[0].productionClass,'DEVELOPMENT_CONFIRMED');
+  assert.equal(catalog.games[0].homepageCategory,'development-confirmed');
+  assert.deepEqual(result.state.developmentConfirmedGameIds,['RUNTIME-runtime-only']);
+});
+
 test('selected platform remains final runtime target after mandatory full approved-scope Web companion validation',()=>{
   const portfolio={
     productionClassPolicy:{fixedCounts:false,countsDerivedFromMembership:true,portfolioDiversity:{enabled:true,maxFocusScoreGap:1}},
