@@ -903,7 +903,12 @@
       "strictImplementationScore": null,
       "webStrictScore": null,
       "formalImplementationPassed": false,
-      "formalImplementationVerdict": "REVISE"
+      "formalImplementationVerdict": "REVISE",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "egg-heist",
@@ -938,7 +943,12 @@
       "strictImplementationScore": null,
       "webStrictScore": null,
       "formalImplementationPassed": false,
-      "formalImplementationVerdict": "REVISE"
+      "formalImplementationVerdict": "REVISE",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "chess-battle",
@@ -973,7 +983,12 @@
       "strictImplementationScore": null,
       "webStrictScore": null,
       "formalImplementationPassed": false,
-      "formalImplementationVerdict": "REVISE"
+      "formalImplementationVerdict": "REVISE",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "survival2",
@@ -1008,7 +1023,12 @@
       "strictImplementationScore": null,
       "webStrictScore": null,
       "formalImplementationPassed": false,
-      "formalImplementationVerdict": "REVISE"
+      "formalImplementationVerdict": "REVISE",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "island-village",
@@ -1036,7 +1056,12 @@
       "sourcePath": "web-games/island-village",
       "currentStep": "WEB_PLAYABLE_BOOTSTRAP",
       "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
-      "webValidationQueuedAt": "2026-09-19T06:28:37.752Z"
+      "webValidationQueuedAt": "2026-09-19T06:28:37.752Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     },
     {
       "gameId": "territory-war",
@@ -1064,10 +1089,15 @@
       "sourcePath": "web-games/territory-war",
       "currentStep": "WEB_PLAYABLE_BOOTSTRAP",
       "canonicalState": "WAITING_WEB_GAMEPLAY_VALIDATION",
-      "webValidationQueuedAt": "2026-09-19T06:28:37.752Z"
+      "webValidationQueuedAt": "2026-09-19T06:28:37.752Z",
+      "lifecycleState": "ACTIVE",
+      "saveNormalizationRequired": true,
+      "saveMeaningPreservationRequired": true,
+      "saveVersioningContract": "assets/save-versioning.js",
+      "saveRestoreEvidenceContract": "tools/company-web-save-restore-evidence.mjs"
     }
   ],
-  "updatedAt": "2026-09-19T06:28:37.752Z",
+  "updatedAt": "2026-09-19T06:28:47.179Z",
   "routerContractVersion": 4,
   "routerPolicy": "company-learning/platform-release-roadmap.json",
   "cronRole": "WATCHDOG_AND_RECOVERY_ONLY",
