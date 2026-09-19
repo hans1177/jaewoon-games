@@ -37,8 +37,6 @@ jobs:
     outputs:
       worker_matrix: ${{ steps.batch.outputs.worker_matrix }}
       worker_count: ${{ steps.batch.outputs.worker_count }}
-      exploration_matrix: ${{ steps.batch.outputs.exploration_matrix }}
-      exploration_count: ${{ steps.batch.outputs.exploration_count }}
       task_count: ${{ steps.batch.outputs.task_count }}
       reserved_at: ${{ steps.batch.outputs.reserved_at }}
       effective_max: ${{ steps.batch.outputs.effective_max }}
@@ -176,11 +174,9 @@ jobs:
           const out=process.env.GITHUB_OUTPUT;
           const batch=JSON.parse(fs.readFileSync('/tmp/vibe2-batch.json','utf8'));
           const workers=[];
-          const exploration=[];
           const safe=value=>String(value||'task').replace(/[^A-Za-z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'task';
           for(const row of batch.matrix||[]){
             const safeTask=safe(row.taskId);
-            exploration.push({taskId:row.taskId,safeTask});
             const variantCount=Math.max(1,Math.min(5,Number(row.speculativeVariants||1)));
             const shared={taskId:row.taskId,safeTask,shard:row.shard,packageId:row.packageId||'',packageRole:row.packageRole||'',longWorkProtected:row.longWorkProtected===true,reservationId:row.reservationId||'',reservationRunId:row.reservationRunId||'',reservationRunAttempt:Number(row.reservationRunAttempt||0),reservedAt:row.reservedAt||batch.createdAt,requestedMax:Number(batch.scheduler?.requestedMaxConcurrentTasks||256),effectiveMax:Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)};
             workers.push({...shared,variant:'primary'});
@@ -188,13 +184,10 @@ jobs:
           }
           fs.appendFileSync(out,`worker_matrix=${JSON.stringify({include:workers})}\n`);
           fs.appendFileSync(out,`worker_count=${workers.length}\n`);
-          fs.appendFileSync(out,`exploration_matrix=${JSON.stringify({include:exploration})}\n`);
-          fs.appendFileSync(out,`exploration_count=${exploration.length}\n`);
           fs.appendFileSync(out,`task_count=${(batch.matrix||[]).length}\n`);
           fs.appendFileSync(out,`reserved_at=${batch.createdAt||''}\n`);
           fs.appendFileSync(out,`effective_max=${Number(batch.scheduler?.effectiveMaxConcurrentTasks||256)}\n`);
           console.log(`VIBE2_HIERARCHICAL_FAN_OUT=${workers.length}`);
-          console.log(`VIBE2_EXPLORATION_FAN_OUT=${exploration.length}`);
           console.log(`VIBE2_RESERVED_TASK_COUNT=${(batch.matrix||[]).length}`);
           console.log(`VIBE2_LONG_WORK_PROTECTED_SLOT=${batch.scheduler?.longWorkProtectedSlotUsed?'USED':'NOT_USED'}`);
           NODE
