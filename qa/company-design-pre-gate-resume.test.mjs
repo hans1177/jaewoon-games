@@ -95,6 +95,6 @@ test('seed scheduler prioritizes valid resumable checkpoints within the existing
   assert.match(workflow,/if\(checkpointAt&&checkpointAt<resetAt\)continue/);
   assert.match(workflow,/if\(!checkpointAt&&date<=resetDate\)continue/);
   assert.match(workflow,/\['COMPLETE','PASS','DONE','DESIGN_BASELINE_READY'\]\.includes\(status\)/);
-  const sort=workflow.match(/const pending=active\.filter\(seed=>!strictPassFor\(seed\)\)\.sort\(\(a,b\)=>[\s\S]*?\)\.slice\(0,designWipMax\);/)?.[0]||'';
+  const sort=workflow.match(/const pending=eligible\.filter\(seed=>!strictPassFor\(seed\)\)\.sort\(\(a,b\)=>[\s\S]*?\)\.slice\(0,preservationOnly\?1:designWipMax\);/)?.[0]||'';
   assert.match(sort,/platformPriority\(a\)-platformPriority\(b\)[\s\S]*checkpointResumePriority\(a\)-checkpointResumePriority\(b\)/);
 });
