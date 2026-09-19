@@ -50,7 +50,7 @@
     },
     {
       "id": "recovery-system-ai-core-implementation-v1",
-      "status": "queued",
+      "status": "dispatched",
       "priority": "critical",
       "sourceQueue": "system-ai",
       "sourceTaskId": "sys-web-bootstrap-signal-routing-v1",
@@ -84,11 +84,15 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T05:41:00.000Z",
-      "updatedAt": "2026-09-19T05:41:00.000Z"
+      "updatedAt": "2026-09-19T05:42:47.548Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-09-19T05:42:47.548Z"
+      ]
     },
     {
       "id": "recovery-system-ai-supervision-loop-v1",
-      "status": "queued",
+      "status": "dispatched",
       "priority": "high",
       "sourceQueue": "system-ai",
       "sourceTaskId": "sys-verify-system-ai-supervision-loop-v1",
@@ -118,7 +122,11 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T05:41:00.000Z",
-      "updatedAt": "2026-09-19T05:41:00.000Z"
+      "updatedAt": "2026-09-19T05:42:47.548Z",
+      "dispatchEvidence": [
+        "recovery-dispatched:system_ai",
+        "recovery-dispatched-at:2026-09-19T05:42:47.548Z"
+      ]
     }
   ]
 }
