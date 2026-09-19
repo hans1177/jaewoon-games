@@ -1,5 +1,5 @@
 {
-  "version": 33,
+  "version": 34,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1703,7 +1703,7 @@
         "deterministicVerificationBeforeReview": true,
         "failedCandidateRequeueAllowed": true,
         "reworkDirectiveRepeatAllowed": true,
-        "maxBatchPerExternalExecutionWave": 16,
+        "maxBatchPerExternalExecutionWave": 32,
         "parallelismPolicy": "DISJOINT_RESPONSIBLE_FILES_PARALLEL",
         "runtimeSchedule": "EVENT_PLUS_20_MINUTE_WATCHDOG",
         "taskSources": [
@@ -1713,7 +1713,8 @@
           "RELEASE_PIPELINE_BLOCKER",
           "HOMEPAGE_PUBLIC_SURFACE_BLOCKER",
           "CI_QUEUE_QA_INFRASTRUCTURE_BLOCKER"
-        ]
+        ],
+        "focusedRecruitmentPolicy": "EXPAND_DISJOINT_FREE_WORKERS_AROUND_HIGHEST_IMPACT_BOTTLENECK"
       }
     },
     "freeAiExecution": {
