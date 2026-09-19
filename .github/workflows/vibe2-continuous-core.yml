@@ -880,6 +880,13 @@ jobs:
           ref: vibe2-unreal-core
           fetch-depth: 0
 
+      - name: Checkout pinned main contract
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.reserve.outputs.contract_sha }}
+          path: vibe2-contract
+          fetch-depth: 1
+
       - name: Measure fan-in checkout
         id: fan_checkout_metrics
         shell: bash
@@ -922,12 +929,20 @@ jobs:
           git config user.email 'vibe2-fan-in@users.noreply.github.com'
           git fetch origin vibe2-unreal-core --quiet
           git reset --hard origin/vibe2-unreal-core
+          control_root="$GITHUB_WORKSPACE"
+          contract_root="$GITHUB_WORKSPACE/vibe2-contract"
+          contract_sha="${{ needs.reserve.outputs.contract_sha }}"
+          test -n "$contract_sha"
+          test "$(git -C "$contract_root" rev-parse HEAD)" = "$contract_sha"
 
-          node tools/vibe2-queue-control.mjs fan-in --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
+          node "$contract_root/tools/vibe2-queue-control.mjs" fan-in \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
-          # Per-candidate test/performance roles already ran. Regression runs once at fan-in.
+          # Per-candidate test/performance roles already ran. Regression runs once at fan-in against the exact reserved main contract.
           set +e
-          node --test --test-concurrency=4 \
+          (cd "$contract_root" && node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
             qa/vibe2-core-engine-motion.test.mjs \
             qa/vibe2-source-worker.test.mjs \
@@ -941,11 +956,13 @@ jobs:
             qa/vibe2-candidate-reconcile.test.mjs \
             qa/vibe2-experience-control.test.mjs \
             qa/vibe2-handoff.test.mjs \
-            qa/vibe2-practice-distillation.test.mjs
+            qa/vibe2-practice-distillation.test.mjs)
           regression_rc=$?
           set -e
           if [ "$regression_rc" -ne 0 ]; then
-            node tools/vibe2-queue-control.mjs fan-in-regression-fail \
+            node "$contract_root/tools/vibe2-queue-control.mjs" fan-in-regression-fail \
+              --queue="$control_root/.vibe2/queue.json" \
+              --control="$control_root/.vibe2/parallelism-control.json" \
               --input=/tmp/vibe2-fan-in.json \
               --blocker=fan-in-regression-failed
             git add .vibe2/queue.json .vibe2/parallelism-control.json
@@ -967,12 +984,12 @@ jobs:
           echo 'VIBE2_REGRESSION_ROLE=PASS'
           echo 'VIBE2_REGRESSION_ROLE_SOURCE_WRITE=NO'
 
-          node tools/vibe2-practice-distillation.mjs \
+          node "$contract_root/tools/vibe2-practice-distillation.mjs" \
             --fanin=/tmp/vibe2-fan-in.json \
-            --store=.vibe2/practice-distilled-knowledge.json | tee /tmp/vibe2-practice-distillation-fanin.log
+            --store="$control_root/.vibe2/practice-distilled-knowledge.json" | tee /tmp/vibe2-practice-distillation-fanin.log
 
-          node tools/vibe2-fan-in-review.mjs \
-            --queue=.vibe2/queue.json \
+          node "$contract_root/tools/vibe2-fan-in-review.mjs" \
+            --queue="$control_root/.vibe2/queue.json" \
             --input=/tmp/vibe2-fan-in.json \
             --output=/tmp/vibe2-package-review.json | tee /tmp/vibe2-package-review.log
           echo 'VIBE2_REVIEW_ROLE_SOURCE_WRITE=NO'
@@ -993,8 +1010,16 @@ jobs:
             echo 'VIBE2_FAN_IN_QUEUE_WRITE=YES'
           fi
 
-          node tools/vibe2-handoff.mjs --check --output=/tmp/vibe2-handoff-after-fanin.json >/tmp/vibe2-handoff-after-fanin.log
-          node tools/vibe2-queue-control.mjs summary | tee /tmp/vibe2-summary.log
+          node "$contract_root/tools/vibe2-handoff.mjs" --check \
+            --runtime="$contract_root/vibe2-runtime.json" \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" \
+            --experience="$control_root/.vibe2/experience.json" \
+            --project-lifecycle="$control_root/.vibe2/web-roblox-handoffs.json" \
+            --output=/tmp/vibe2-handoff-after-fanin.json >/tmp/vibe2-handoff-after-fanin.log
+          node "$contract_root/tools/vibe2-queue-control.mjs" summary \
+            --queue="$control_root/.vibe2/queue.json" \
+            --control="$control_root/.vibe2/parallelism-control.json" | tee /tmp/vibe2-summary.log
           continue_required="$(sed -n 's/^VIBE2_QUEUE_CONTINUE=//p' /tmp/vibe2-summary.log | tail -n1)"
           if [ "${continue_required:-NO}" = 'YES' ]; then echo 'refill=1' >> "$GITHUB_OUTPUT"; else echo 'refill=0' >> "$GITHUB_OUTPUT"; fi
           echo 'VIBE2_HIERARCHICAL_FAN_IN=PASS'
@@ -1059,7 +1084,7 @@ jobs:
           test -f /tmp/vibe2-fan-in.json || exit 0
           fan_end="$(date +%s%3N)"
           fan_start="$(cat /tmp/vibe2-fan-in-start-ms)"
-          node tools/vibe2-parallelism-telemetry.mjs --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-256}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
+          node "$GITHUB_WORKSPACE/vibe2-contract/tools/vibe2-parallelism-telemetry.mjs" --input=/tmp/vibe2-fan-in.json --requested="$REQUESTED_MAX" --effective="${EFFECTIVE_MAX:-256}" --task-count="${TASK_COUNT:-0}" --output=/tmp/vibe2-parallelism-telemetry.json | tee /tmp/vibe2-parallelism-telemetry.log
           node - "$FAN_CHECKOUT_MS" "$((fan_end-fan_start))" <<'NODE2'
           const fs=require('fs');const [checkout,total]=process.argv.slice(2).map(Number);const file='/tmp/vibe2-parallelism-telemetry.json';const x=JSON.parse(fs.readFileSync(file,'utf8'));x.fanIn={checkoutMs:checkout||0,totalMs:total||0};fs.writeFileSync(file,JSON.stringify(x,null,2)+'\n');
           NODE2
