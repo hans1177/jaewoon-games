@@ -34,7 +34,7 @@ const MULTI_SUPABASE_KEY='sb_publishable_ybAF71npJQz6PJVpnwsQ4g_rsyzlkFQ';
 const multiplayer={client:null,channel:null,room:'',connected:false,playerId:sessionStorage.getItem('fs-multi-id')||('p'+Math.random().toString(36).slice(2,10)),joinedAt:Date.now(),hostId:null,remote:new Map(),presenceIds:new Set(),sendAt:0,worldAt:0};
 sessionStorage.setItem('fs-multi-id',multiplayer.playerId);
 let enemySeq=0;
-const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=23,RESOURCE_RESPAWN_MS=300000;
+const WORLD={w:18000,h:12000},START={x:9000,y:6000},SAVE_KEY='jaewoon_fantasy_survival_v1',SAVE_VERSION=24,RESOURCE_RESPAWN_MS=300000;
 const NEW_REGION_TARGET_AREA=WORLD.w*WORLD.h/5;
 const CRYSTAL_REGION={x:14400,y:0,w:3600,h:12000}; // 43,200,000 = 전체 맵의 정확히 1/5
 const CRYSTAL_HEART={x:16200,y:6000,r:150};
@@ -567,7 +567,7 @@ const LAB_RECORDER_LINES=[
  '3일차. 녹음 상태가 좋지 않다. 저것들은 불 속에서도 죽지 않는다. 문 앞에 피가...',
  '4일차. ...잡음... 녹음 파일 손상... 더 이상 기록을 확인할 수 없다.'
 ];
-let recorderUtterance=null,recorderAudio=null,recorderStopTimer=0,recorderResumeTimer=0,recorderToken=0;
+let recorderCtx=null,recorderMaster=null,recorderNoise=null,recorderNodes=[],recorderStopTimer=0,recorderEndTimer=0,recorderToken=0;
 function setRecorderOverlay(text,stateText='재생 중'){
  ui.recorderCaption.textContent=text;ui.recorderState.textContent=stateText;ui.recorderOverlay.classList.add('on')
 }
@@ -576,92 +576,90 @@ function closeRecorderOverlay(delay=0){
 }
 function duckBgmForRecorder(on){
  if(!music.master||!music.ctx)return;
- const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.025:(music.enabled?.12:.0001),now,.08)
+ const now=music.ctx.currentTime;music.master.gain.cancelScheduledValues(now);music.master.gain.setTargetAtTime(on?.02:(music.enabled?.12:.0001),now,.08)
+}
+function ensureRecorderAudio(){
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+ if(!recorderCtx||recorderCtx.state==='closed'){
+  recorderCtx=new AC();recorderMaster=recorderCtx.createGain();recorderMaster.gain.value=.38;recorderMaster.connect(recorderCtx.destination);
+  const n=Math.floor(recorderCtx.sampleRate*.5),b=recorderCtx.createBuffer(1,n,recorderCtx.sampleRate),d=b.getChannelData(0);
+  for(let i=0;i<n;i++)d[i]=Math.random()*2-1;recorderNoise=b
+ }
+ try{if(recorderCtx.state==='suspended')recorderCtx.resume()}catch{}
+ return recorderCtx
 }
 function stopRecorderVoice(){
- recorderToken++;clearInterval(recorderResumeTimer);recorderResumeTimer=0;
- if(recorderAudio){try{recorderAudio.pause();recorderAudio.src=''}catch{}recorderAudio=null}
- if(window.speechSynthesis){try{window.speechSynthesis.cancel();window.speechSynthesis.resume()}catch{}}
- recorderUtterance=null;duckBgmForRecorder(false)
+ recorderToken++;clearTimeout(recorderEndTimer);
+ for(const n of recorderNodes){try{n.stop?.()}catch{}try{n.disconnect?.()}catch{}}recorderNodes=[];
+ if(recorderMaster&&recorderCtx&&recorderCtx.state!=='closed'){const t=recorderCtx.currentTime;recorderMaster.gain.cancelScheduledValues(t);recorderMaster.gain.setValueAtTime(.38,t)}
+ duckBgmForRecorder(false)
 }
-function recorderAudioUrls(text){
- const q=encodeURIComponent(text);
- return[
-  'https://translate.googleapis.com/translate_tts?client=gtx&ie=UTF-8&tl=ko&q='+q,
-  'https://translate.google.com/translate_tts?client=tw-ob&ie=UTF-8&tl=ko&q='+q
- ]
+const REC_VOWELS=[
+ [800,1200],[660,1700],[700,1900],[650,2000],[500,1000],[500,1800],[500,1700],[450,2000],
+ [400,800],[650,1100],[600,1600],[450,1700],[420,1100],[350,700],[500,950],[450,1600],
+ [350,1900],[350,1100],[400,1100],[400,1700],[300,2200]
+];
+function recorderNoiseBurst(ctx,at,dur,kind='mid',gain=.05){
+ if(!recorderNoise)return;
+ const s=ctx.createBufferSource(),f=ctx.createBiquadFilter(),g=ctx.createGain();s.buffer=recorderNoise;
+ f.type=kind==='high'?'highpass':'bandpass';f.frequency.value=kind==='high'?3200:kind==='low'?500:1500;f.Q.value=kind==='mid'?1.4:.7;
+ g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(gain,at+.008);g.gain.exponentialRampToValueAtTime(.0001,at+dur);
+ s.connect(f);f.connect(g);g.connect(recorderMaster);s.start(at);s.stop(at+dur+.02);recorderNodes.push(s)
 }
-function playRecorderAudioChunks(chunks,index,token,urlIndex=0){
- if(token!==recorderToken)return;
- if(index>=chunks.length){
-  recorderAudio=null;duckBgmForRecorder(false);ui.recorderState.textContent='■ 녹음 종료';closeRecorderOverlay(3500);return
+function recorderHum(ctx,at,dur,freq=115,gain=.045){
+ const o=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();o.type='sawtooth';o.frequency.setValueAtTime(freq,at);
+ f.type='lowpass';f.frequency.value=650;g.gain.setValueAtTime(.0001,at);g.gain.linearRampToValueAtTime(gain,at+.012);g.gain.exponentialRampToValueAtTime(.0001,at+dur);
+ o.connect(f);f.connect(g);g.connect(recorderMaster);o.start(at);o.stop(at+dur+.02);recorderNodes.push(o)
+}
+function recorderOnset(ctx,cho,at){
+ if([9,10,18].includes(cho))recorderNoiseBurst(ctx,at,.055,'high',.055);
+ else if([0,1,3,4,7,8,12,13,14,15,16,17].includes(cho))recorderNoiseBurst(ctx,at,.025,cho>=14?'high':'mid',.045);
+ else if([2,6].includes(cho))recorderHum(ctx,at,.05,cho===6?105:125,.035);
+ else if(cho===5)recorderHum(ctx,at,.035,145,.032)
+}
+function recorderCoda(ctx,jong,at){
+ if(!jong)return;
+ if([4,16,21].includes(jong))recorderHum(ctx,at,.055,jong===16?95:jong===21?110:125,.03);
+ else if(jong===8)recorderHum(ctx,at,.035,140,.025);
+ else recorderNoiseBurst(ctx,at,.022,[19,20,23,27].includes(jong)?'high':'low',.028)
+}
+function recorderVowel(ctx,jung,at,dur,pitch){
+ const ff=REC_VOWELS[jung]||REC_VOWELS[0],src=ctx.createOscillator(),env=ctx.createGain();src.type='sawtooth';
+ src.frequency.setValueAtTime(pitch,at);src.frequency.linearRampToValueAtTime(pitch*.97,at+dur);
+ env.gain.setValueAtTime(.0001,at);env.gain.linearRampToValueAtTime(.075,at+.018);env.gain.setValueAtTime(.067,Math.max(at+.02,at+dur-.035));env.gain.exponentialRampToValueAtTime(.0001,at+dur);
+ for(const [freq,q,vol] of [[ff[0],7,.8],[ff[1],9,.55],[2600,11,.22]]){
+  const bp=ctx.createBiquadFilter(),g=ctx.createGain();bp.type='bandpass';bp.frequency.value=freq;bp.Q.value=q;g.gain.value=vol;src.connect(bp);bp.connect(g);g.connect(env)
  }
- const urls=recorderAudioUrls(chunks[index]);
- if(urlIndex>=urls.length){fallbackRecorderSpeech(chunks,index,token);return}
- const a=new Audio();recorderAudio=a;a.preload='auto';a.volume=1;a.src=urls[urlIndex];
- ui.recorderState.textContent='▶ 녹음 음성 재생 중 · '+(index+1)+'/'+chunks.length+' · 다시 두 번 누르면 처음부터';
- let finished=false;
- const next=()=>{if(finished||token!==recorderToken)return;finished=true;recorderAudio=null;setTimeout(()=>playRecorderAudioChunks(chunks,index+1,token,0),100)};
- a.onended=next;
- a.onerror=()=>{if(finished||token!==recorderToken)return;finished=true;recorderAudio=null;setTimeout(()=>playRecorderAudioChunks(chunks,index,token,urlIndex+1),80)};
- const p=a.play();
- if(p&&typeof p.catch==='function')p.catch(()=>{if(finished||token!==recorderToken)return;finished=true;recorderAudio=null;setTimeout(()=>playRecorderAudioChunks(chunks,index,token,urlIndex+1),80)})
+ env.connect(recorderMaster);src.start(at);src.stop(at+dur+.02);recorderNodes.push(src)
 }
-function fallbackRecorderSpeech(chunks,index,token){
- if(token!==recorderToken)return;
- if(!('speechSynthesis'in window)||!('SpeechSynthesisUtterance'in window)){
-  ui.recorderState.textContent='음성 서버 재생 실패 · 자막 표시 중';closeRecorderOverlay(10000);duckBgmForRecorder(false);return
+function synthRecorderText(text,token){
+ const ctx=ensureRecorderAudio();if(!ctx)return 0;
+ const start=ctx.currentTime+.055;let t=start,syllable=0;
+ for(const ch of text){
+  if(token!==recorderToken)break;
+  const code=ch.charCodeAt(0);
+  if(code>=0xAC00&&code<=0xD7A3){
+   const s=code-0xAC00,cho=Math.floor(s/588),jung=Math.floor((s%588)/28),jong=s%28,dur=.145+(jung===8||jung===13?.015:0);
+   recorderOnset(ctx,cho,t);const pitch=108+(syllable%7)*1.6+(syllable%13===0?5:0);recorderVowel(ctx,jung,t+.018,dur,pitch);recorderCoda(ctx,jong,t+dur-.005);
+   t+=dur+.025;syllable++
+  }else if(/[0-9]/.test(ch)){
+   const n=Number(ch),o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=180+n*18;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.035,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+.11);o.connect(g);g.connect(recorderMaster);o.start(t);o.stop(t+.12);recorderNodes.push(o);t+=.14
+  }else if(ch==='.'||ch==='?'||ch==='!'){t+=.18}
+  else if(ch===','||ch==='…'){t+=.1}
+  else if(/\s/.test(ch)){t+=.035}
  }
- const voice=koreanRecorderVoice(),u=new SpeechSynthesisUtterance(chunks[index]);recorderUtterance=u;u.lang='ko-KR';u.rate=.84;u.pitch=.82;u.volume=1;if(voice)u.voice=voice;
- ui.recorderState.textContent='▶ 보조 음성 재생 중 · '+(index+1)+'/'+chunks.length;
- let moved=false;
- const next=()=>{if(moved||token!==recorderToken)return;moved=true;setTimeout(()=>playRecorderAudioChunks(chunks,index+1,token,0),100)};
- u.onend=next;u.onerror=next;
- try{window.speechSynthesis.cancel();window.speechSynthesis.resume();window.speechSynthesis.speak(u)}catch{next()}
-}
-function koreanRecorderVoice(){
- if(!window.speechSynthesis)return null;
- const voices=window.speechSynthesis.getVoices()||[];
- return voices.find(v=>/^ko[-_]/i.test(v.lang))||voices.find(v=>/Korean|한국/i.test(v.name))||null
-}
-function recorderChunks(){
- const out=[];
- for(const line of LAB_RECORDER_LINES){
-  const parts=line.split(/(?<=[.!?])\s+/).map(x=>x.trim()).filter(Boolean);
-  out.push(...(parts.length?parts:[line]))
- }
- return out
-}
-function speakRecorderChunk(chunks,index,token,voice){
- if(token!==recorderToken)return;
- if(index>=chunks.length){
-  clearInterval(recorderResumeTimer);recorderResumeTimer=0;recorderUtterance=null;duckBgmForRecorder(false);
-  ui.recorderState.textContent='■ 녹음 종료';closeRecorderOverlay(3500);return
- }
- const u=new SpeechSynthesisUtterance(chunks[index]);recorderUtterance=u;
- u.lang='ko-KR';u.rate=.84;u.pitch=.82;u.volume=1;if(voice)u.voice=voice;
- ui.recorderState.textContent='▶ 음성 재생 중 · '+(index+1)+'/'+chunks.length+' · 다시 두 번 누르면 처음부터';
- let advanced=false;
- const next=()=>{if(advanced||token!==recorderToken)return;advanced=true;setTimeout(()=>speakRecorderChunk(chunks,index+1,token,voice),90)};
- u.onend=next;
- u.onerror=ev=>{
-  if(token!==recorderToken)return;
-  if(index===0){
-    ui.recorderState.textContent='음성 엔진 재시도 중...';
-    setTimeout(()=>{if(token!==recorderToken)return;try{window.speechSynthesis.cancel();window.speechSynthesis.resume();window.speechSynthesis.speak(u)}catch{}},180)
-  }else next()
- };
- try{window.speechSynthesis.speak(u)}catch{next()}
+ return Math.max(.2,t-start)
 }
 function beginRecorderSpeech(){
- stopRecorderVoice();const token=++recorderToken,chunks=recorderChunks();
- setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'실제 녹음 음성 불러오는 중...');
+ stopRecorderVoice();const token=++recorderToken,ctx=ensureRecorderAudio();
+ setRecorderOverlay(LAB_RECORDER_LINES.join('\n\n'),'▶ 내장 한국어 음성 재생 중 · 다시 두 번 누르면 처음부터');
+ if(!ctx){ui.recorderState.textContent='이 기기에서는 게임 오디오 자체를 재생할 수 없어';closeRecorderOverlay(8000);return}
  duckBgmForRecorder(true);
- // HTMLAudioElement 기반 MP3 스트림이라 기기 TTS 지원 여부와 무관하게 재생한다.
- playRecorderAudioChunks(chunks,0,token,0)
+ const duration=synthRecorderText(LAB_RECORDER_LINES.join(' ... '),token);
+ recorderEndTimer=setTimeout(()=>{if(token!==recorderToken)return;recorderNodes=[];duckBgmForRecorder(false);ui.recorderState.textContent='■ 녹음 종료';closeRecorderOverlay(3500)},duration*1000+250)
 }
 function playLabRecorder(){
- unlockRecord('lab');clearTimeout(recorderStopTimer);beginRecorderSpeech();showNotice('연구소 녹음기 음성 재생')
+ unlockRecord('lab');clearTimeout(recorderStopTimer);beginRecorderSpeech();showNotice('연구소 녹음기 · 내장 음성 재생')
 }
 function unlockRecord(id){if(state.records[id])return false;state.records[id]=true;state.dirty=true;showNotice(id==='lab'?'연구소 녹음 기록 획득':'공사장 일기 획득');return true}
 function renderBestiary(){
