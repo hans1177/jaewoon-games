@@ -2,5 +2,28 @@
   "version": 1,
   "kind": "company-security-incidents",
   "policy": "QUARANTINE_PRESERVE_REDACTED_EVIDENCE_VERIFY_RECOVERY_THEN_DISTILL",
-  "incidents": []
+  "incidents": [
+    {
+      "id": "sec_b4978477dca03b6a00a99816",
+      "status": "QUARANTINED",
+      "rule": "CENTRAL_AUTHORITY_MUTATION_REQUIRES_REVIEW",
+      "severity": "HIGH",
+      "category": "policy-integrity",
+      "file": "company-learning/company-architecture-map.json",
+      "line": 184,
+      "evidenceSha256": "bc1efdea1e2c75fa176d54c0f378f7709d70bc4031207c9c2ab33d6513e4d382",
+      "snippet": "\"staleRoadmapExecutionForbidden\": true",
+      "rawSecretStored": false,
+      "rawMalwareStored": false,
+      "detections": 1,
+      "firstDetectedAt": "2026-09-19T06:03:37.827Z",
+      "lastDetectedAt": "2026-09-19T06:03:37.827Z",
+      "containment": "AFFECTED_CHANGE_QUARANTINED",
+      "rootCause": null,
+      "remediation": null,
+      "verificationEvidence": [],
+      "primaryAiReview": "PENDING",
+      "learningPromotion": "PENDING"
+    }
+  ]
 }
