@@ -204,28 +204,56 @@
       "GAME_PRIMARY": {
         "activeWaveTarget": 20,
         "consumesGamePrimarySlot": true,
-        "taskClass": "development-implementation"
+        "taskClass": "development-implementation",
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "maxActiveWorkers": 20,
+        "fanInOnlyRefill": true,
+        "adaptiveGameControlEligible": true
       },
       "RECOVERY_FAST": {
         "consumesGamePrimarySlot": false,
         "eventDriven": true,
-        "priorityOverLearning": true
+        "priorityOverLearning": true,
+        "workflow": ".github/workflows/vibe2-recovery-fast.yml",
+        "safetyNetCron": "*/5 * * * *",
+        "systemAiDispatchImmediate": true,
+        "gameWorkerDispatch": "DEFER_TO_GAME_PRIMARY_FANIN",
+        "directGameWorkerDispatch": false
       },
       "CONTROL_FAST": {
         "consumesGamePrimarySlot": false,
         "readOnlyMayRunDuringGamePrimary": true,
-        "mutatingReconcileOnlyOnStateDivergence": true
+        "mutatingReconcileOnlyOnStateDivergence": true,
+        "workflow": ".github/workflows/company-system-ai-workers.yml",
+        "queue": ".vibe2/system-ai-queue.json",
+        "independentDispatchEvent": "company-system-ai-cycle"
       },
       "LEARNING_IDLE": {
         "consumesGamePrimarySlot": false,
         "productionPreempts": true,
-        "deferFirstUnderRunnerPressure": true
+        "deferFirstUnderRunnerPressure": true,
+        "workflow": ".github/workflows/vibe2-continuous-core.yml",
+        "executionLaneInput": "learning-idle",
+        "maxActiveWorkers": 4,
+        "gameAdaptiveControlEligible": false,
+        "mutatesGameParallelismControl": false,
+        "sourceWriteAllowed": false,
+        "productionReleaseAllowed": false,
+        "fullGameRegressionAtFanIn": false,
+        "practiceDistillationAllowed": true
       },
       "RELEASE_WAIT": {
         "consumesGamePrimarySlot": false,
         "countsAgainstRunnablePlanningBacklog": false,
-        "eventDrivenSettlement": true
+        "eventDrivenSettlement": true,
+        "candidateScopedEventDrivenSettlement": true
       }
+    },
+    "auxiliaryLaneFanIn": {
+      "gameAdaptiveControlMutationAllowed": false,
+      "productionReleaseAllowed": false,
+      "gameRefillDispatchAllowed": false,
+      "practiceDistillationAllowed": true
     }
   },
   "adaptiveBackpressure": {
@@ -1028,6 +1056,33 @@
       "regression-hotspot-map",
       "causal-replay-sandbox",
       "coding-constitution"
-    ]
+    ],
+    "failureLocalMemory": {
+      "enabled": true,
+      "explicitFailureCodeDominatesFingerprint": true,
+      "lessonAndRepairTextExcludedFromExplicitFailureIdentity": true,
+      "sameGameSameFailureHighestPriority": true,
+      "sameFailureCrossGameFallback": true,
+      "unverifiedMemoryReusable": false,
+      "authorityExpanded": false
+    },
+    "patchRecipe": {
+      "enabled": true,
+      "compiledIntoEditContract": true,
+      "verifiedMemoryOnly": true,
+      "writableScopeExpansionAllowed": false,
+      "qaBypassAllowed": false
+    },
+    "qaTriggerCoverage": {
+      "learningMotorTriggersCoreQa": true,
+      "recoveryFastWorkflowTriggersCoreQa": true
+    },
+    "phase2Verification": {
+      "head": "b57f4afaadd36ff1cc3b7954e269ea28087282d7",
+      "vibeQaRunId": 35438742454,
+      "coreQaRunId": 35438742444,
+      "integratedRegressionRunId": 35438742434,
+      "state": "VERIFIED"
+    }
   }
 }
