@@ -487,7 +487,19 @@ jobs:
               console.log(`FORMAL_IMPLEMENTATION_PASS=${formalPass?'YES':'NO'}`);
             }
           }catch(error){
-            const signature=String(error?.message||error).replace(/\s+/g,' ').slice(0,240);
+            let structuredFailure='';
+            try{
+              if(fs.existsSync(gameplayEvidence)){
+                const report=JSON.parse(fs.readFileSync(gameplayEvidence,'utf8'));
+                const blockers=Array.isArray(report?.blockers)?report.blockers.map(x=>String(x||'').trim()).filter(Boolean):[];
+                if(report?.pass!==true&&blockers.length)structuredFailure=`WEB_GAMEPLAY_VALIDATION_FAILED:${blockers.join(' | ')}`;
+              }
+              if(!structuredFailure&&fs.existsSync(bootstrapEvidence)){
+                const bootstrapFailure=JSON.parse(fs.readFileSync(bootstrapEvidence,'utf8'));
+                structuredFailure=String(bootstrapFailure?.failureSignature||'').trim();
+              }
+            }catch{}
+            const signature=String(structuredFailure||error?.message||error).replace(/\s+/g,' ').slice(0,1800);
             const vibeImplementationSignal=/^VIBE_WEB_IMPLEMENTATION_REQUIRED:(WEB_BASE_IMPLEMENTATION|WEB_REPAIR):(.+)$/.exec(signature);
             const vibeRequestedStage=vibeImplementationSignal?.[1]||null;
             const vibeRequestedReason=vibeImplementationSignal?.[2]||null;
