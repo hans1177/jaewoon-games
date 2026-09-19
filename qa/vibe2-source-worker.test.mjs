@@ -385,6 +385,48 @@ test('truncated FULL_REBUILD gets one compact raw-envelope recovery retry', asyn
   assert.deepEqual(result.changedFiles, ['index.html']);
 });
 
+test('undersized full web output gets one final bounded third retry without lowering size gate', async () => {
+  const cwd=tempRoot();
+  const small1=path.join(cwd,'small1.txt');
+  const small2=path.join(cwd,'small2.txt');
+  const good=path.join(cwd,'good3.txt');
+  const replacement=`<!doctype html><html><body><button id="start">Start</button><canvas id="game"></canvas><script>${'let frame=0;frame+=1;'.repeat(140)}</script></body></html>`;
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'full-size-third-retry'});
+  workOrder.goal='FULL_WEB_GAME_REBUILD 실제 웹게임으로 재구축';
+  workOrder.workerPolicy.fullFileRewriteAllowed=true;
+  write(path.join(cwd,'web-games/demo/index.html'),'<!doctype html><html><body>prototype</body></html>\n');
+  write(path.join(cwd,'design/demo/2026-09-18/design-revised.json'),JSON.stringify({content:{coreFun:'직접 조작 전투',coreLoop:['이동','전투','보상']}},null,2));
+  write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const small='VIBE2_FULL_FILE\nPATH:index.html\nSUMMARY:small\n---VIBE2_FILE_CONTENT---\n<!doctype html><html><body>tiny</body></html>\n---VIBE2_FILE_END---';
+  write(small1,small);
+  write(small2,small);
+  write(good,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:final','EXPECTED_EFFECT:playable','TEST:mobile','---VIBE2_FILE_CONTENT---',replacement,'---VIBE2_FILE_END---'].join('\n'));
+  const result=await runVibe2SourceWorker({cwd,responseFiles:[small1,small2,good]});
+  assert.equal(result.generation.attempts,3);
+  assert.equal(result.generation.focusedFinalRetry,true);
+  assert.equal(result.generation.timeoutMs,240000);
+  assert.equal(result.generation.maxPredict,4096);
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
+test('timeout final retry prompt strips read-only context and asks for one compact real edit',()=>{
+  const base=[
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<button id="play">Play</button>',
+    '',
+    '=== FILE config.js [READ-ONLY IMPACT CONTEXT] ===',
+    'window.CONFIG={x:1};'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(base,{allowFullRewrite:false,error:new Error('Ollama 응답 시간 초과: 240000ms'),responsibleFiles:['index.html'],attempt:3});
+  assert.match(retry,/exceeded the time budget/);
+  assert.match(retry,/FINAL FOCUSED RETRY/);
+  assert.doesNotMatch(retry,/config\.js/);
+  assert.match(retry,/exact writable path/);
+});
+
 test('generation recovery remains bounded and keeps strict output contracts', () => {
   assert.equal(shouldRetryGenerationError(new Error('Ollama 응답 시간 초과: 540000ms')), true);
   assert.equal(shouldRetryGenerationError(new Error('모델 JSON 파싱 실패')), true);
