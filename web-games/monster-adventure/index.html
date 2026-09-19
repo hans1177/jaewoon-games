@@ -48,7 +48,7 @@
         }
 
         // Game loop
-        function gameLoop() {
+function gameLoop() { updateGameState(); setTimeout(gameLoop, 16); }
             updateGameState();
             requestAnimationFrame(gameLoop);
         }
