@@ -175,7 +175,58 @@
     },
     "perWorkerSlotRefillEnabled": false,
     "fanInRefillTrigger": "repository-dispatch",
-    "refillBatchPolicy": "COMPLETE_CURRENT_20_WAVE_THEN_FAN_IN_THEN_REFILL"
+    "refillBatchPolicy": "COMPLETE_CURRENT_20_WAVE_THEN_FAN_IN_THEN_REFILL",
+    "gamePrimaryExecutionWave": {
+      "enabled": true,
+      "lane": "GAME_PRIMARY",
+      "ownerTarget": 20,
+      "maxActiveWorkers": 20,
+      "reserveOnlyAfterFanIn": true,
+      "singleActiveWorkerWave": true,
+      "taskLocalExploration": true,
+      "sourceWriteOnlyOnCandidateBranch": true,
+      "directMainGameSourceWriteForbidden": true,
+      "note": "20 is the active game-development execution wave, not the persistent planning-pool limit"
+    },
+    "planningBacklog": {
+      "enabled": true,
+      "lane": "GAME_PRIMARY_PLANNING",
+      "minimum": 40,
+      "target": 60,
+      "persistentPoolHardMax": 256,
+      "expandWhileExecutionWaveActive": true,
+      "reservationDeferredUntilFanIn": true,
+      "releaseWaitExcluded": true,
+      "sameSourceResponsibilityConflictPreserved": true,
+      "activeWaveBlocksReserveNotPlanning": true
+    },
+    "executionLanes": {
+      "GAME_PRIMARY": {
+        "activeWaveTarget": 20,
+        "consumesGamePrimarySlot": true,
+        "taskClass": "development-implementation"
+      },
+      "RECOVERY_FAST": {
+        "consumesGamePrimarySlot": false,
+        "eventDriven": true,
+        "priorityOverLearning": true
+      },
+      "CONTROL_FAST": {
+        "consumesGamePrimarySlot": false,
+        "readOnlyMayRunDuringGamePrimary": true,
+        "mutatingReconcileOnlyOnStateDivergence": true
+      },
+      "LEARNING_IDLE": {
+        "consumesGamePrimarySlot": false,
+        "productionPreempts": true,
+        "deferFirstUnderRunnerPressure": true
+      },
+      "RELEASE_WAIT": {
+        "consumesGamePrimarySlot": false,
+        "countsAgainstRunnablePlanningBacklog": false,
+        "eventDrivenSettlement": true
+      }
+    }
   },
   "adaptiveBackpressure": {
     "enabled": true,
@@ -936,5 +987,47 @@
     "deterministicGatesOwnCompletion": true,
     "supervisorMayReopenVerifiedGap": true,
     "reworkDirectiveRepeatUntilResolvedOrOwnerStop": true
+  },
+  "codingMethodSelfImprovement": {
+    "enabled": true,
+    "authority": "OWNER_DIRECTIVE_2026-09-19",
+    "objective": "MAXIMIZE_VERIFIED_FUNCTIONAL_SOURCE_CHANGE_PER_MODEL_ATTEMPT_AND_FIRST_CANDIDATE_PASS_RATE",
+    "durationIsNotSoleOptimizationTarget": true,
+    "compiledEditContract": {
+      "enabled": true,
+      "producer": "tools/vibe2-exploration-worker.mjs",
+      "consumer": "tools/vibe2-source-worker.mjs",
+      "reuses": [
+        "tools/company-vibe2-coding-architecture.mjs",
+        "tools/company-vibe2-expert-development.mjs"
+      ],
+      "writableScopeExpansionAllowed": false
+    },
+    "strategyLearning": {
+      "enabled": true,
+      "stateFile": ".vibe2/learning-motor-state.json",
+      "positiveLearningRequiresFanInRegressionPass": true,
+      "positiveLearningRequiresReviewPass": true,
+      "positiveLearningRequiresCandidateIdentityPass": true,
+      "preferredStrategyMinimumVerifiedApplications": 5,
+      "preferredStrategyMinimumIndependentGames": 2,
+      "preferredStrategyMinimumFirstCandidatePassRatePct": 60,
+      "advisoryOnly": true,
+      "authorityExpanded": false,
+      "qualityGateBypass": false
+    },
+    "semanticDiffBudget": {
+      "enabled": true,
+      "unrelatedSystemMutationForbiddenByContract": true,
+      "preserveSaveAndGameplaySemantics": true
+    },
+    "futureVerifiedExtensions": [
+      "failure-local-memory",
+      "patch-recipe-compiler",
+      "confidence-calibration",
+      "regression-hotspot-map",
+      "causal-replay-sandbox",
+      "coding-constitution"
+    ]
   }
 }
