@@ -1,0 +1,216 @@
+{
+  "version": 6,
+  "date": "2026-09-19",
+  "gameId": "seed-action-survival-rogu-echoes-of-the-lost-star",
+  "gameName": "잃어버린 별의 메아리",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "company-learning/platform-release-roadmap.json",
+  "flow": "GAME_SEED_TO_DETERMINISTIC_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR-20260917",
+    "category": "ACTION_SURVIVAL_ROGUELITE",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "DESIGN_AUTHOR_CHECKPOINT",
+    "model": "gemini:gemini-3.5-flash-lite",
+    "singleAuthor": true,
+    "sameModelRevised": true
+  },
+  "departments": {
+    "count": 0,
+    "roles": [],
+    "leadModels": {},
+    "distinctLeadModels": [],
+    "distinctLeadModelCount": 0,
+    "leadModelsDistinct": false,
+    "modelAudit": {},
+    "reviewMode": "DETERMINISTIC_EVIDENCE",
+    "aiReviewRequired": false,
+    "repeatedFatalReview": false
+  },
+  "meeting": {
+    "required": false,
+    "mode": "DETERMINISTIC_EVIDENCE",
+    "conflictCount": 0,
+    "holdCount": 0,
+    "allResolved": true,
+    "deterministicEvidenceOnly": true
+  },
+  "disposition": {
+    "version": 2,
+    "state": "DETERMINISTIC_EVIDENCE",
+    "sameDesignerRevisionAttempted": true,
+    "repeatedFiveDepartmentReview": false,
+    "fiveDepartmentLeadReviewCompleted": false,
+    "deterministicGateReviewCompleted": true,
+    "unanimousFatalDiscard": false,
+    "discardVotes": 0,
+    "commonFatalCriteria": [],
+    "source": "deterministic_pre_gate_after_repair_1"
+  },
+  "runtimeMetrics": {
+    "source": "design-checkpoint.json",
+    "checkpointReused": true,
+    "completedPhases": 4,
+    "deterministicGateScore": 80,
+    "deterministicGatePhase": "deterministic_pre_gate_after_repair_1"
+  },
+  "designLearning": {
+    "candidateCount": 0,
+    "usedAsDesignContext": false,
+    "positiveTrainingEligible": false,
+    "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateBypassAllowed": false
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": false,
+  "vibe2LearningContextUsed": false,
+  "paidApi": false,
+  "deterministicRecovery": {
+    "enabled": true,
+    "source": "design-checkpoint.json",
+    "phase": "deterministic_pre_gate_after_repair_1",
+    "totalScore": 80,
+    "passMinimum": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": [],
+    "aiReviewUsed": false,
+    "aiVerdictUsed": false,
+    "appliedRepairs": [
+      "designer_pre_gate_repair_1"
+    ],
+    "recoveredAt": "2026-09-19T03:51:06.591Z"
+  },
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
+    "advisoryDisposition": "DETERMINISTIC_EVIDENCE",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "OWNER-ALL-DESIGN-RESET-SEED-ACTION-SURVIVAL-ROGU-ECHOES-OF-THE-LOST-STAR-20260917",
+        "source": "game-seed-state.json"
+      },
+      "designMultiplayer": {
+        "required": true,
+        "mode": "SINGLE",
+        "valid": true,
+        "decisionStage": "GAME_DESIGN",
+        "allowedModes": [
+          "SINGLE",
+          "COOP",
+          "COMPETITIVE",
+          "HYBRID"
+        ]
+      },
+      "deterministicDesignGate": {
+        "required": true,
+        "authority": "DETERMINISTIC_EVIDENCE",
+        "pass": true,
+        "path": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-19/design-checkpoint.json",
+        "phase": "deterministic_pre_gate_after_repair_1",
+        "totalScore": 80,
+        "passMinimum": 80,
+        "hardFailures": [],
+        "criticalAxisFailures": []
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": true,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": "design/seed-action-survival-rogu-echoes-of-the-lost-star/2026-09-11/web-gameplay-validation.json"
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "UNITY",
+        "present": false,
+        "path": null,
+        "projectField": "unityProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "UNITY",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "unity-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      },
+      "unityProject": {
+        "required": false,
+        "present": false,
+        "path": null
+      },
+      "unityTechnical": {
+        "required": false,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "multiplayerModeRequiredAtGameDesign": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
+      "deterministicEvidenceGateRequired": true,
+      "aiReviewIsGateAuthority": false,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresFullApprovedWebScope": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-19T03:51:06.828Z"
+  },
+  "artbookUi": {
+    "status": "WRITING",
+    "label": "작성중",
+    "path": "artbook-submissions/seed-action-survival-rogu-echoes-of-the-lost-star/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
+  }
+}
