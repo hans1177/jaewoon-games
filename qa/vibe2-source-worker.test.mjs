@@ -680,6 +680,8 @@ test('undersized full web seed accumulates additive model expansions until valid
   assert.equal(result.generation.mode,'FULL_WEB');
   assert.equal(result.generation.temperature,0.22);
   assert.equal(result.generation.repeatedIntermediateOutputs,0);
+  assert.deepEqual(result.generation.expansionStageTargets,['REAL_INPUT','UPDATE_OR_STATE_TRANSITION_LOOP']);
+  assert.deepEqual(result.codingMethod.expansionStageTargets,['REAL_INPUT','UPDATE_OR_STATE_TRANSITION_LOOP']);
   assert.equal(result.generation.intermediateGrowthBytes.length,2);
   assert.ok(result.generation.intermediateGrowthBytes.every(value=>value>120));
   const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-expansion-accumulate/files/index.html'),'utf8');
