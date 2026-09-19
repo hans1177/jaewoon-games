@@ -4,6 +4,26 @@
   "productionWorkAlwaysPreemptsPractice": true,
   "drills": [
     {
+      "id": "gap-animation_feel-l1",
+      "kind": "ANIMATION_FEEL_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ANIMATION_FEEL"
+      ]
+    },
+    {
+      "id": "gap-asset_adaptation-l1",
+      "kind": "ASSET_ADAPTATION_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "ASSET_ADAPTATION"
+      ]
+    },
+    {
       "id": "gap-asset_production-l1",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -11,6 +31,46 @@
       "countsAsProductionPass": false,
       "domains": [
         "ASSET_PRODUCTION"
+      ]
+    },
+    {
+      "id": "gap-audio_feel-l1",
+      "kind": "AUDIO_FEEL_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "AUDIO_FEEL"
+      ]
+    },
+    {
+      "id": "gap-camera_language-l1",
+      "kind": "CAMERA_LANGUAGE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CAMERA_LANGUAGE"
+      ]
+    },
+    {
+      "id": "gap-character_arc-l1",
+      "kind": "CHARACTER_ARC_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "CHARACTER_ARC"
+      ]
+    },
+    {
+      "id": "gap-dialogue-l1",
+      "kind": "DIALOGUE_SCENE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "DIALOGUE"
       ]
     },
     {
@@ -24,6 +84,26 @@
       ]
     },
     {
+      "id": "gap-living_motion-l1",
+      "kind": "MOTION_CONTINUITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "LIVING_MOTION"
+      ]
+    },
+    {
+      "id": "gap-narrative_structure-l1",
+      "kind": "NARRATIVE_STRUCTURE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "NARRATIVE_STRUCTURE"
+      ]
+    },
+    {
       "id": "gap-performance-l1",
       "kind": "MINI_GAME_SYSTEM_DRILL",
       "priority": "low",
@@ -31,6 +111,16 @@
       "countsAsProductionPass": false,
       "domains": [
         "PERFORMANCE"
+      ]
+    },
+    {
+      "id": "gap-quest_design-l1",
+      "kind": "QUEST_CAUSALITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "QUEST_DESIGN"
       ]
     },
     {
@@ -91,6 +181,26 @@
       "countsAsProductionPass": false,
       "domains": [
         "ROBLOX_STUDIO"
+      ]
+    },
+    {
+      "id": "gap-storytelling-l1",
+      "kind": "NARRATIVE_STRUCTURE_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "STORYTELLING"
+      ]
+    },
+    {
+      "id": "gap-vfx-l1",
+      "kind": "VFX_READABILITY_DRILL",
+      "priority": "low",
+      "productionPreemptible": true,
+      "countsAsProductionPass": false,
+      "domains": [
+        "VFX"
       ]
     },
     {
