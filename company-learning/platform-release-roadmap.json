@@ -1,5 +1,5 @@
 {
-  "version": 112,
+  "version": 113,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,35 +3069,40 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_SOURCE_GENERATION_RECOVERY_VERIFIED_2026-09-19",
+    "id": "VIBE2_FOCUSED_WEB_REPAIR_CONTEXT_BUDGET_2026-09-19",
     "documentIsCode": true,
-    "documentationFirst": false,
-    "previousChangeRecordId": "VIBE2_GENERATION_STRUCTURAL_FAILURE_CLASSIFICATION_2026-09-19",
-    "reason": "SYNC_VERIFIED_MAIN_TOOLING_QUEUE_SCHEMA_FAILURE_ATTRIBUTION_FINAL_FULL_WEB_SYNTHESIS_AND_STRUCTURAL_FAILURE_CLASSIFICATION",
-    "implementationState": "VERIFIED_MAIN",
-    "verification": {
-      "coreQaRunId": 35442987045,
-      "coreQa": "PASS",
-      "vibeQaRunId": 35442987050,
-      "vibeQa": "PASS",
-      "integratedRegressionRunId": 35442987007,
-      "integratedRegression": "PASS",
-      "queuePersistentMax": 256,
-      "ownerAdaptiveWave": 20
+    "documentationFirst": true,
+    "previousChangeRecordId": "VIBE2_SOURCE_GENERATION_RECOVERY_VERIFIED_2026-09-19",
+    "reason": "REDUCE_REPEATED_LOCAL_MODEL_PROMPT_EVAL_TIMEOUTS_FOR_EXISTING_WEB_REPAIRS_WITHOUT_WIDENING_WRITE_SCOPE_OR_LOWERING_QA",
+    "implementationState": "DOCUMENTED_CODE_PENDING",
+    "evidence": {
+      "liveRunId": 35442308252,
+      "repeatedTimeoutPattern": [
+        "240000ms",
+        "240000ms",
+        "150000ms"
+      ],
+      "firstAttemptOutputBytesObserved": 0,
+      "currentFocusedSourceBudgetBytes": 48000,
+      "currentFocusedContextWindow": 16384
     },
-    "implemented": [
-      "CONTROL_BRANCH_STATE_MUTATIONS_USE_LATEST_MAIN_TOOLING",
-      "QUEUE_MAX_256_AND_ADAPTIVE_WAVE_20_MEANINGS_SEPARATED",
-      "BLOCKED_WORK_ORDER_NOT_REPORTED_AS_SOURCE_GENERATION_FAILURE",
-      "FINAL_FULL_WEB_ATTEMPT_USES_COMPLETE_SYNTHESIS_AFTER_ADDITIVE_EXPANSION",
-      "ACCUMULATED_PLAYABLE_SEED_CARRIED_INTO_FINAL_SYNTHESIS",
-      "DUPLICATE_EDIT_NEW_REPLACE_CLASSIFIED_AS_MALFORMED_OUTPUT"
-    ],
-    "next": [
-      "COMPLETE_ACTIVE_20_WAVE",
-      "COMPARE_SOURCE_FAILURE_DISTRIBUTION",
-      "RUN_NEW_WAVE_PINNED_TO_VERIFIED_MAIN",
-      "CONTINUE_SOURCE_GENERATION_BOTTLENECK_REDUCTION"
+    "contract": {
+      "focusedWebRepairContextFiles": 2,
+      "focusedWebRepairSourceBudgetBytes": 28000,
+      "focusedWebRepairContextWindow": 12288,
+      "focusedWebRepairMaxPredict": 1024,
+      "exactPrimarySymbolWindowsPreferred": true,
+      "boundedFallbackStillAllowed": true,
+      "writeScopeUnchanged": true,
+      "semanticDiffGateUnchanged": true,
+      "qaGateUnchanged": true
+    },
+    "pending": [
+      "PATCH_FOCUSED_CONTEXT_BUDGET",
+      "CAP_PRIMARY_SYMBOL_WINDOWS",
+      "UPDATE_TESTS",
+      "CORE_QA",
+      "LIVE_WAVE_REVALIDATION"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
