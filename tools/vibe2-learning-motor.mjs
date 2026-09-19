@@ -18,7 +18,7 @@ const hash=s=>{let h=2166136261;for(const ch of String(s)){h^=ch.charCodeAt(0);h
 
 export const MASTERY_DOMAINS=freeze([
   'CORE_LOOP','STATE_MACHINE','COMBAT','AI','PROGRESSION','ECONOMY','SAVE','MOBILE_INPUT','UI_STATE',
-  'DEBUGGING','RECOVERY','PERFORMANCE','ASSET_PRODUCTION','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
+  'DEBUGGING','RECOVERY','SECURITY','PERFORMANCE','ASSET_PRODUCTION','WEB_RUNTIME','ROBLOX_STUDIO','ROBLOX_DATASTORE',
   'ROBLOX_REMOTE_SECURITY','ROBLOX_REPLICATION','ROBLOX_MULTIPLAYER'
 ]);
 
@@ -34,6 +34,7 @@ const DOMAIN_PATTERNS=freeze({
   UI_STATE:/\bui\b|hud|menu|panel|feedback|responsive/i,
   DEBUGGING:/debug|failure|bug|repair|causal|responsibility|regression/i,
   RECOVERY:/recovery|recover|retry|requeue|bottleneck|stale|checkpoint|fallback|repair.?loop|resume.?exact/i,
+  SECURITY:/security|malware|virus|attack|secret|token|credential|supply.?chain|prompt.?injection|exfiltrat|backdoor|privilege|tamper/i,
   PERFORMANCE:/performance|fps|frame|memory|cpu|jank|pool|latency/i,
   ASSET_PRODUCTION:/asset|sprite|svg|canvas|texture|animation|vfx|audio|model/i,
   WEB_RUNTIME:/\bweb\b|browser|html|canvas|dom|css|javascript/i,
@@ -102,7 +103,14 @@ const CODE_PATTERN_MASTERY=Object.freeze({
   PROVIDER_FALLBACK:['RECOVERY','DEBUGGING'],
   ORCHESTRATION_RECOVERY:['RECOVERY','DEBUGGING'],
   MACHINE_STATE_RECOVERY:['RECOVERY','DEBUGGING','STATE_MACHINE'],
-  RUNTIME_OBSERVATION_RECOVERY:['RECOVERY','DEBUGGING']
+  RUNTIME_OBSERVATION_RECOVERY:['RECOVERY','DEBUGGING'],
+  SECURITY_PERIMETER:['SECURITY','DEBUGGING'],
+  SECRET_PROTECTION:['SECURITY'],
+  SUPPLY_CHAIN_SECURITY:['SECURITY','DEBUGGING'],
+  WORKFLOW_INTEGRITY:['SECURITY','DEBUGGING'],
+  PROMPT_INJECTION_DEFENSE:['SECURITY'],
+  MALWARE_DETECTION:['SECURITY','DEBUGGING'],
+  EXFILTRATION_DEFENSE:['SECURITY']
 });
 
 export function applyVerifiedCodePatternsToMastery(stateInput={},libraryInput={}){
