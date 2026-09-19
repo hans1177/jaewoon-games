@@ -849,7 +849,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
     const retry=attempt>1;
     const priorFailureClass=generationFailureClass(lastError);
     const timeoutFastEscalation=!allowFullRewrite&&attempt>=2&&priorFailureClass==='TIMEOUT';
-    const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation);
+    const focusedFinal=!allowFullRewrite&&(attempt>=3||timeoutFastEscalation||(speculativeVariant&&attempt>=2));
     const expansionMode=allowFullRewrite&&Boolean(accumulatedFullWeb)&&attempt>1;
     const focusedReplaceOnly=focusedFinal?buildFocusedReplaceOnlyPrompt(prompt,{error:lastError,responsibleFiles,sourceRoot}):null;
     const remainingStages=Math.max(1,maxAttempts-attempt);
