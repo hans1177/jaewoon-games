@@ -936,6 +936,14 @@ jobs:
             const cpPath=`design/${seed.gameId}/${date}/design-checkpoint.json`;
             if(!exists(cpPath))continue;
             let cp={};try{cp=JSON.parse(show(cpPath));}catch{continue;}
+            const deterministicRows=Object.entries(cp.phases||{}).filter(([name,value])=>/^deterministic_pre_gate(?:_after_repair_\d+)?$/.test(name)&&value&&typeof value==='object');
+            const deterministicRecoverable=deterministicRows.some(([,value])=>{
+              const threshold=Math.max(80,Number(value.passMinimum||80));
+              const hard=Array.isArray(value.hardFailures)?value.hardFailures:[];
+              const critical=Array.isArray(value.criticalAxisFailures)?value.criticalAxisFailures:[];
+              return cp.phases?.designer_draft&&Number(value.totalScore)>=threshold&&hard.length===0&&critical.length===0;
+            });
+            if(deterministicRecoverable)continue;
             const exhausted=new Set(Object.entries(cp.modelHealth||{}).filter(([,row])=>modelUnavailable(row)).map(([model])=>clean(model).replace(/^gemini:/,'')));
             if(!exhausted.size)continue;
             const tasks=cp.tasks&&typeof cp.tasks==='object'?cp.tasks:{};
@@ -952,6 +960,7 @@ jobs:
           NODE
           )"
           echo "DESIGN_GATE_QUOTA_BLOCKED=$quota_blocked"
+          echo 'DESIGN_DETERMINISTIC_RECOVERABLE_EXCLUDED_FROM_QUOTA_WAIT=YES'
           echo 'DESIGN_DAILY_QUOTA_IMMEDIATE_REDISPATCH=NO'
           all_quota_blocked=0
           if [[ "$pending" =~ ^[1-9][0-9]*$ && "$quota_blocked" == "$pending" ]]; then all_quota_blocked=1; fi
