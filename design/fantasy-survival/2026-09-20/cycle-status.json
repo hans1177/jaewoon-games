@@ -1,0 +1,338 @@
+{
+  "version": 6,
+  "date": "2026-09-20",
+  "gameId": "fantasy-survival",
+  "gameName": "마력숲 생존기",
+  "productionClass": "DESIGN_ONLY",
+  "tierAlias": 3,
+  "tier": 3,
+  "status": "COMPLETE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
+  "gameSeed": {
+    "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
+    "category": "ACTION_SURVIVAL_ROGUELITE",
+    "source": "game-seed-state.json",
+    "complete": true
+  },
+  "designer": {
+    "role": "GAME_DESIGNER_AI",
+    "model": "gemini:gemini-3.5-flash-lite",
+    "singleAuthor": true,
+    "sameModelRevised": false
+  },
+  "departments": {
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "gemini-3.8-flash",
+      "graphics": "gemini-3.7-flash",
+      "development": "gemini-3.6-flash",
+      "qa": "gemini-3.5-flash",
+      "balance": "gemini-3.5-flash-lite"
+    },
+    "resolvedLeadModels": {
+      "planning": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "graphics": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "development": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "qa": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "balance": "DETERMINISTIC_EVIDENCE_ENGINE"
+    },
+    "distinctLeadModels": [
+      "DETERMINISTIC_EVIDENCE_ENGINE"
+    ],
+    "distinctLeadModelCount": 1,
+    "leadModelsDistinct": false,
+    "reviewModelCount": 0,
+    "modelAudit": {
+      "planning": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "graphics": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "development": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "qa": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "balance": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      }
+    },
+    "rebuttalRounds": 0,
+    "repeatedFatalReview": false,
+    "aiReviewRequired": false,
+    "aiReviewUsed": false,
+    "reviewMode": "DETERMINISTIC_DEPARTMENT_EVIDENCE"
+  },
+  "meeting": {
+    "required": false,
+    "crossDepartmentMeeting": false,
+    "rebuttalRounds": 0
+  },
+  "disposition": {
+    "version": 2,
+    "gameId": "fantasy-survival",
+    "date": "2026-09-20",
+    "state": "ACTIVE",
+    "sameDesignerRevisionAttempted": false,
+    "fiveDepartmentLeadReviewCompleted": false,
+    "deterministicDepartmentEvidenceCompleted": true,
+    "repeatedFiveDepartmentReview": false,
+    "meetingRequired": false,
+    "rebuttalRounds": 0,
+    "automaticDiscardAllowed": false,
+    "discardVotes": 0,
+    "commonFatalCriteria": [],
+    "unanimousFatalDiscard": false,
+    "strictGateStillAuthoritative": true,
+    "marketMetricAloneUsedForDiscard": false
+  },
+  "runtimeMetrics": {
+    "phaseMs": {
+      "designer_draft": 12540,
+      "deterministic_pre_gate": 2,
+      "deterministic_department_evidence": 1
+    },
+    "phaseBudgetMs": {
+      "designer_draft": 180000,
+      "designer_draft_base": 180000,
+      "designer_draft_gate": 180000,
+      "deterministic_pre_gate": 30000,
+      "designer_pre_gate_repair_1": 180000,
+      "designer_pre_gate_repair_2": 180000,
+      "independent_department_reviews": 240000,
+      "designer_revision": 180000,
+      "designer_revision_base": 180000,
+      "designer_revision_gate": 180000,
+      "five_lead_reviews": 180000
+    },
+    "totalModelCalls": 1,
+    "totalModelCallMs": 12538,
+    "modelPhaseConcurrency": 2,
+    "phaseConcurrency": {
+      "five_lead_reviews": 2
+    },
+    "maxLoadedModelLanes": 5,
+    "modelKeepAlive": "GEMINI_API",
+    "modelHealth": {
+      "gemini:gemini-3.5-flash-lite": {
+        "calls": 1,
+        "successes": 1,
+        "failures": 0,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 12538,
+        "lastMs": 12538,
+        "lastError": null,
+        "updatedAt": "2026-09-19T16:25:50.720Z"
+      }
+    },
+    "preGate": {
+      "attempts": 0,
+      "totalScore": 80,
+      "hardFailures": [],
+      "postRevisionScore": 80,
+      "postRevisionHardFailures": []
+    },
+    "checkpoint": {
+      "contractVersion": 3,
+      "engineDigest": "216fe199cb50b83e0fb93bf5fec846a7d56db7433adfa0455da195e1ac8717c0",
+      "reused": false,
+      "completedPhases": 3,
+      "cachedTasks": 0
+    },
+    "simplifiedLeadOnlyReview": false,
+    "deterministicDepartmentEvidence": true,
+    "aiMeetingCalls": 0,
+    "rebuttalCalls": 0,
+    "representativeSynthesisCalls": 0,
+    "leadReviewCalls": 0,
+    "departmentScopedContext": true
+  },
+  "designLearning": {
+    "candidateCount": 0,
+    "usedAsDesignContext": false,
+    "positiveTrainingEligible": false,
+    "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
+    "strictGateHardFailures": [],
+    "strictGateBypassAllowed": false
+  },
+  "artbook": {
+    "created": false,
+    "reason": "DESIGN_BASELINE_GATE_MUST_RUN_FIRST"
+  },
+  "vibe2Used": false,
+  "vibe2LearningContextUsed": false,
+  "paidApi": false,
+  "baselineGate": {
+    "policyDocument": "COMPANY_FLOW.md",
+    "productionClass": "DESIGN_ONLY",
+    "tierAlias": 3,
+    "tier": 3,
+    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "ready": false,
+    "blockers": [
+      "deterministic-design-recovery-provenance-required"
+    ],
+    "advisoryDisposition": "ACTIVE",
+    "unanimousFatalDiscard": false,
+    "meeting": {
+      "conflictCount": 0,
+      "holdCount": 0,
+      "allResolved": true
+    },
+    "evidence": {
+      "gameSeed": {
+        "required": true,
+        "present": true,
+        "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
+        "source": "game-seed-state.json"
+      },
+      "designMultiplayer": {
+        "required": true,
+        "mode": "SINGLE",
+        "valid": true,
+        "decisionStage": "GAME_DESIGN",
+        "allowedModes": [
+          "SINGLE",
+          "COOP",
+          "COMPETITIVE",
+          "HYBRID"
+        ]
+      },
+      "deterministicDesignGate": {
+        "required": true,
+        "authority": "DETERMINISTIC_EVIDENCE",
+        "pass": true,
+        "path": "design/fantasy-survival/2026-09-20/design-checkpoint.json",
+        "phase": "deterministic_pre_gate",
+        "totalScore": 80,
+        "passMinimum": 80,
+        "hardFailures": [],
+        "criticalAxisFailures": []
+      },
+      "webSmoke": {
+        "supportingOnly": true,
+        "pass": false,
+        "source": null
+      },
+      "webGameplay": {
+        "required": false,
+        "pass": false,
+        "approvedScopeFullyImplemented": false,
+        "approvedScopeCount": 0,
+        "source": null
+      },
+      "targetPlatformProject": {
+        "required": false,
+        "platform": "UNITY",
+        "present": false,
+        "path": null,
+        "projectField": "unityProjectPath"
+      },
+      "targetPlatformTechnical": {
+        "required": false,
+        "platform": "UNITY",
+        "pass": false,
+        "source": null,
+        "evidenceFile": "unity-technical-validation.json"
+      },
+      "revalidation": {
+        "conditional": true,
+        "pass": false,
+        "source": null
+      },
+      "unityProject": {
+        "required": false,
+        "present": false,
+        "path": null
+      },
+      "unityTechnical": {
+        "required": false,
+        "pass": false,
+        "source": null
+      }
+    },
+    "contracts": {
+      "aiMeetingCompletionDoesNotEqualBaselineApproval": true,
+      "gameSeedRequiredBeforeDesignBaseline": true,
+      "multiplayerModeRequiredAtGameDesign": true,
+      "marketEvidenceIsTargetReferenceNotHardGate": true,
+      "meetingHoldBlocksDesignBaseline": true,
+      "meetingConflictBlocksDesignBaseline": true,
+      "minorityLeadRedesignOrDiscardIsAdvisoryOnly": true,
+      "unanimousFatalDiscardRequiredToDiscard": true,
+      "postRevisionFiveDepartmentReviewRequiredBeforeDiscard": false,
+      "deterministicEvidenceGateRequired": true,
+      "aiReviewIsGateAuthority": false,
+      "designArtbookOnlyAfterBaselineReady": true,
+      "designOnlyVibe2Forbidden": true,
+      "webSmokeDoesNotEqualGameplayValidation": true,
+      "developmentConfirmedIsGatedDirect": true,
+      "developmentConfirmedResumesFromLatestEvidence": true,
+      "developmentConfirmedRequiresExplicitWebGameplayValidation": true,
+      "developmentConfirmedRequiresFullApprovedWebScope": true,
+      "developmentConfirmedRequiresSelectedPlatformTechnicalValidation": true,
+      "developmentArtbookOnlyAfterBaselineReady": true,
+      "releaseConfirmedBaselineOwnedByReleasePipeline": true,
+      "numericTierIsCompatibilityAliasOnly": true
+    },
+    "checkedAt": "2026-09-19T16:25:54.563Z"
+  },
+  "artbookUi": {
+    "status": "WAITING",
+    "label": "대기중",
+    "path": "artbook-submissions/fantasy-survival/status.json"
+  },
+  "artbookPublication": {
+    "published": false,
+    "path": null,
+    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
+    "reason": "baseline-not-ready"
+  }
+}

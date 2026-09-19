@@ -1,0 +1,23 @@
+{
+  "version": 6,
+  "gameId": "fantasy-survival",
+  "date": "2026-09-20",
+  "productionClass": "DESIGN_ONLY",
+  "department": "balance",
+  "leadModel": null,
+  "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+  "reviewMode": "DETERMINISTIC_EVIDENCE",
+  "aiReviewUsed": false,
+  "review": {
+    "keep": [
+      "CORE_LOOP_DESIGN evidence=80 deterministic"
+    ],
+    "fix": [],
+    "add": [],
+    "risks": [],
+    "evidence": [
+      "CORE_LOOP_DESIGN=80,PROGRESSION_ECONOMY_BALANCE_DESIGN=80,CONTENT_EXPANSION_PLAN=80,FAILURE_RETRY_RISK_DESIGN=80"
+    ],
+    "questions": []
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "version": 6,
+  "gameId": "fantasy-survival",
+  "date": "2026-09-20",
+  "productionClass": "DESIGN_ONLY",
+  "reviewMode": "DETERMINISTIC_DEPARTMENT_EVIDENCE",
+  "aiReviewRequired": false,
+  "aiReviewUsed": false,
+  "meetingRequired": false,
+  "rebuttalRounds": 0,
+  "reviews": {
+    "planning": {
+      "keep": [
+        "IDEA_AND_DISTINCTNESS evidence=80 deterministic"
+      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [
+        "IDEA_AND_DISTINCTNESS=80,CATEGORY_IDENTITY=80,CORE_LOOP_DESIGN=80,PROGRESSION_ECONOMY_BALANCE_DESIGN=80,CONTENT_EXPANSION_PLA"
+      ],
+      "questions": []
+    },
+    "graphics": {
+      "keep": [
+        "UX_AND_ACCESSIBILITY_PLAN evidence=80 deterministic"
+      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [
+        "UX_AND_ACCESSIBILITY_PLAN=80,ART_AUDIO_DIRECTION=80"
+      ],
+      "questions": []
+    },
+    "development": {
+      "keep": [
+        "SYSTEM_INTERCONNECTION_DESIGN evidence=80 deterministic"
+      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [
+        "SYSTEM_INTERCONNECTION_DESIGN=80,PLATFORM_FIT_DESIGN=80,IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY=80"
+      ],
+      "questions": []
+    },
+    "qa": {
+      "keep": [
+        "CATEGORY_IDENTITY evidence=80 deterministic"
+      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [
+        "CATEGORY_IDENTITY=80,SYSTEM_INTERCONNECTION_DESIGN=80,FAILURE_RETRY_RISK_DESIGN=80,PLATFORM_FIT_DESIGN=80,UX_AND_ACCESSIBILIT"
+      ],
+      "questions": []
+    },
+    "balance": {
+      "keep": [
+        "CORE_LOOP_DESIGN evidence=80 deterministic"
+      ],
+      "fix": [],
+      "add": [],
+      "risks": [],
+      "evidence": [
+        "CORE_LOOP_DESIGN=80,PROGRESSION_ECONOMY_BALANCE_DESIGN=80,CONTENT_EXPANSION_PLAN=80,FAILURE_RETRY_RISK_DESIGN=80"
+      ],
+      "questions": []
+    }
+  }
+}
