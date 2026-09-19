@@ -826,6 +826,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     expansionStageTargets:Array.isArray(generation.expansionStageTargets)?generation.expansionStageTargets.slice(0,8):[],
     generationAttempts:Number(generation.attempts||0),
     generationRecoveryUsed:generation.recoveryUsed===true,
+    partialTimeoutRecovery:generation.partialTimeoutRecovery===true,
     candidateProducedFirstAttempt:Number(generation.attempts||0)===1&&generation.recoveryUsed!==true,
     writableScopeExpansionAllowed:false,
     learningAuthorityExpanded:false
