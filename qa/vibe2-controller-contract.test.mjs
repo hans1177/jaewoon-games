@@ -311,7 +311,7 @@ test('worker result exposes exact candidate identity for fan-in review',()=>{
   assert(resultStep.includes('taskId:clean(manifest.taskId)'));
   assert(resultStep.includes('sourceRoot:clean(manifest.sourceRoot)'));
   assert(resultStep.includes('baseMainSha:clean(manifest.baseMainSha)'));
-  assert(resultStep.includes('version:6'));
+  assert(resultStep.includes('version:7'));
 });
 
 test('worker result keeps throughput and actual workload telemetry inputs in the immutable result step',()=>{
@@ -320,13 +320,29 @@ test('worker result keeps throughput and actual workload telemetry inputs in the
   assert(start>=0 && end>start);
   const resultStep=workflow.slice(start,end);
   assert(resultStep.includes('CANDIDATE_MANIFEST:'));
-  for(const key of ['RESERVED_AT:','REQUESTED_MAX:','EFFECTIVE_MAX:','WORKER_STARTED_AT_FILE:','CHECKOUT_MS:','MODEL_PREP_MS:','CANDIDATE_MS:','QA_MS:','CHANGED_FILE_COUNT:','ADDED_LINE_COUNT:','DELETED_LINE_COUNT:']) {
+  for(const key of ['RESERVED_AT:','REQUESTED_MAX:','EFFECTIVE_MAX:','WORKER_STARTED_AT_FILE:','CHECKOUT_MS:','MODEL_PREP_MS:','CANDIDATE_MS:','QA_MS:','CHANGED_FILE_COUNT:','ADDED_LINE_COUNT:','DELETED_LINE_COUNT:','CANDIDATE_FAILURE_CLASS:','CANDIDATE_FAILURE_MESSAGE:','EXPLORATION_FILE:']) {
     assert(resultStep.includes(key),`missing result telemetry env ${key}`);
   }
   assert(workflow.includes('git diff --cached --numstat -- "$SOURCE_ROOT"'));
   assert(workflow.includes('JSON.stringify({version:3,results,tasks:queue.tasks||[]}'));
 });
 
+test('candidate failure telemetry survives a failed source worker step',()=>{
+  const start=workflow.indexOf('- name: Generate isolated candidate from pinned main contract');
+  const end=workflow.indexOf('- name: Restore incremental QA content-hash cache');
+  assert(start>=0 && end>start);
+  const candidateStep=workflow.slice(start,end);
+  assert(candidateStep.includes('worker_rc=${PIPESTATUS[0]}'));
+  assert(candidateStep.includes('VIBE2_SOURCE_WORKER_FAILURE_CLASS'));
+  assert(candidateStep.includes('failure_class=$failure_class'));
+  assert(candidateStep.includes('duration_ms=$((candidate_finished-candidate_started))'));
+  const resultStart=workflow.indexOf('- name: Build immutable worker result');
+  const resultEnd=workflow.indexOf('- name: Upload worker result for fan-in');
+  const resultStep=workflow.slice(resultStart,resultEnd);
+  assert(resultStep.includes('source-generation-failure:${candidateFailureClass}'));
+  assert(resultStep.includes("candidateFailure=candidateOk?null"));
+  assert(resultStep.includes("manifest.exploration||(explorationFile&&fs.existsSync(explorationFile)"));
+});
 test('explicit work-order output path overrides runtime default path',()=>{
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'vibe2-output-path-'));
   const queueFile=path.join(root,'queue.json');
