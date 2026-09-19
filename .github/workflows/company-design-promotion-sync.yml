@@ -11,6 +11,8 @@ on:
     paths:
       - '.github/workflows/company-design-promotion-sync.yml'
       - 'tools/design-only-promotion-sync.mjs'
+      - 'tools/company-baseline-gate.mjs'
+      - 'tools/company-game-seed-contract.mjs'
       - 'qa/design-only-promotion-sync.test.mjs'
       - 'qa/design-promotion-workflow-contract.test.mjs'
       - 'COMPANY_FLOW.md'
@@ -142,11 +144,11 @@ jobs:
 
             # Re-run the canonical promotion calculation against the newest runtime state.
             # Only runtime JSON files are staged; engine files remain main-owned and are never persisted here.
-            git checkout origin/main -- tools/design-only-promotion-sync.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs
-            git reset -- tools/design-only-promotion-sync.mjs tools/company-selected-platform-router.mjs tools/owner-design-reset.mjs >/dev/null 2>&1 || true
+            git checkout origin/main -- company-directive.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs
+            git reset -- company-directive.json tools/design-only-promotion-sync.mjs tools/company-baseline-gate.mjs tools/company-game-seed-contract.mjs tools/game-seed-state.mjs tools/game-seed-platform-profile.mjs tools/production-classification.mjs tools/company-selected-platform-router.mjs tools/company-web-validation-evidence-contract.mjs tools/owner-design-reset.mjs >/dev/null 2>&1 || true
             node tools/design-only-promotion-sync.mjs
 
-            git add -- game-seed-state.json autonomous-portfolio.json game-catalog.json development-queue.json
+            git add -- game-seed-state.json design autonomous-portfolio.json game-catalog.json development-queue.json
             git diff --cached --check
             if git diff --cached --quiet; then
               echo 'DESIGN_PROMOTION_RUNTIME_CHANGE=NO'

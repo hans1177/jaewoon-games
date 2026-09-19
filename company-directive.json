@@ -175,10 +175,11 @@
     "enabled": true,
     "stage": "BEFORE_GAME_DESIGNER_DRAFT",
     "requiredBeforeDesignerDraft": true,
-    "selectionMode": "FAMOUS_SUCCESSFUL_GAME_COPY_BENCHMARK",
+    "selectionMode": "MIXED_SEED_MATERIAL_COMPOSITION",
     "transformationModes": [
       "HOMAGE",
-      "REINTERPRETATION"
+      "REINTERPRETATION",
+      "ORIGINAL_COMPOSITION"
     ],
     "sourceCodeRule": "IMPLEMENT_EQUIVALENT_OR_INSPIRED_FUNCTIONALITY_WITH_OWN_CODE",
     "bootstrap": {
@@ -232,21 +233,37 @@
     "directCopyForbidden": true,
     "requiredFields": [
       "GAME_CATEGORY",
-      "REFERENCE_GAMES",
+      "REFERENCE_INPUTS",
       "CORE_FUN_TO_LEARN",
       "CORE_LOOP",
       "DISTINCT_IDENTITY",
+      "GAMEPLAY_SKETCH",
       "MARKET_EVIDENCE_SUMMARY",
       "TARGET_AUDIENCE",
       "TARGET_SESSION_DIRECTION",
+      "TARGET_SESSION_MINUTES",
       "INITIAL_TARGET_PLATFORM",
       "INITIAL_PLAY_MODE",
+      "MULTIPLAYER_DESIGN_MODE",
       "CROSS_PLATFORM_EXPANSION_VALUE"
     ],
     "derivedProductionRequirements": [
       "MANDATORY_WEB_GAME_COMPANION",
       "FULL_APPROVED_SCOPE_IMPLEMENTATION"
-    ]
+    ],
+    "seedMaterialPoolTarget": 100,
+    "seedMaterialCombineMin": 2,
+    "seedMaterialCombineMax": 4,
+    "materialMustBeExistingGame": false,
+    "targetSessionMinutes": 30,
+    "gameplaySketchRequired": true,
+    "multiplayerModes": [
+      "SINGLE",
+      "COOP",
+      "COMPETITIVE",
+      "HYBRID"
+    ],
+    "requiredFieldsSource": "tools/company-game-seed-contract.mjs#GAME_SEED_REQUIRED_FIELDS"
   },
   "discardPolicy": {
     "general": {

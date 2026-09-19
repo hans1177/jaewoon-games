@@ -41,7 +41,8 @@ test('promotion persistence retries only against the newest runtime state and ne
   assert.match(promotion,/DESIGN_PROMOTION_RUNTIME_PERSIST_CONFLICT=RETRY_LATEST_RUNTIME/);
   assert.match(promotion,/DESIGN_PROMOTION_RUNTIME_PERSIST=FAILED_AFTER_3_ATTEMPTS/);
   assert.doesNotMatch(promotion,/cp \/tmp\/design-promotion-runtime\/game-seed-state\.json/);
-  assert.match(promotion,/git add -- game-seed-state\.json autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
+  assert.match(promotion,/git checkout origin\/main -- company-directive\.json tools\/design-only-promotion-sync\.mjs tools\/company-baseline-gate\.mjs tools\/company-game-seed-contract\.mjs/);
+  assert.match(promotion,/git add -- game-seed-state\.json design autonomous-portfolio\.json game-catalog\.json development-queue\.json/);
 });
 
 test('promotion persistence clears ephemeral overlay before switching to the runtime branch',()=>{
@@ -51,4 +52,16 @@ test('promotion persistence clears ephemeral overlay before switching to the run
   assert.ok(resetIndex>=0,'ephemeral overlay hard reset must exist');
   assert.ok(cleanIndex>resetIndex,'untracked overlay cleanup must follow the hard reset');
   assert.ok(checkoutIndex>cleanIndex,'runtime branch checkout must happen only after the dirty worktree is cleared');
+});
+
+
+test('promotion re-evaluates completed DESIGN_ONLY baseline gates with the canonical seed contract before deciding promotion',()=>{
+  const source=fs.readFileSync('tools/design-only-promotion-sync.mjs','utf8');
+  assert.ok(promotion.includes("'tools/company-baseline-gate.mjs'"));
+  assert.ok(promotion.includes("'tools/company-game-seed-contract.mjs'"));
+  assert.match(source,/function refreshCompletedDesignBaselineGates/);
+  assert.match(source,/spawnSync\(process\.execPath/);
+  assert.match(source,/DESIGN_BASELINE_GATE_REFRESH_FAILED/);
+  assert.match(source,/DESIGN_BASELINE_GATES_REFRESHED=/);
+  assert.doesNotMatch(source,/game-seed-field-required:REFERENCE_GAMES/);
 });

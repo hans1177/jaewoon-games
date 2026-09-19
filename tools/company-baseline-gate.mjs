@@ -3,6 +3,7 @@ import path from 'node:path';
 import {PRODUCTION_CLASSES,productionClassOf,tierAliasForProductionClass} from './production-classification.mjs';
 import {loadSeedState,saveSeedState,seedForGame,activeSeedForGame,markSeedDiscarded} from './game-seed-state.mjs';
 import {resolveSelectedPlatform,adapterForPlatform} from './company-selected-platform-router.mjs';
+import {GAME_SEED_REQUIRED_FIELDS} from './company-game-seed-contract.mjs';
 
 const readJson=(file,fallback=null)=>{try{return JSON.parse(fs.readFileSync(file,'utf8'));}catch{return fallback;}};
 const writeJson=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,JSON.stringify(value,null,2)+'\n');};
@@ -47,7 +48,7 @@ if(productionClass===PRODUCTION_CLASSES.DESIGN_ONLY){
     if(seedAny){markSeedDiscarded(seedState,gameId,{reason:'DESIGN_ONLY_FATAL_REVIEW',timestamp:new Date().toISOString()});saveSeedState(seedState);}
     state='DISCARDED';blockers.push('design-discarded-after-revision-and-five-department-rereview');
   }
-  const requiredSeedFields=directive.gameSeed?.requiredFields||[];
+  const requiredSeedFields=GAME_SEED_REQUIRED_FIELDS;
   if(!seedActive)blockers.push('active-game-seed-required');
   for(const field of requiredSeedFields)if(!hasValue(seedActive?.[field]))blockers.push(`game-seed-field-required:${field}`);
   const revised=readJson(path.join('design',gameId,date,'design-revised.json'),null)?.content||null;
