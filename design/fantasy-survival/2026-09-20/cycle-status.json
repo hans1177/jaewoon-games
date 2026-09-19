@@ -7,8 +7,8 @@
   "tierAlias": 3,
   "tier": 3,
   "status": "COMPLETE",
-  "policyDocument": "company-learning/platform-release-roadmap.json",
-  "flow": "GAME_SEED_TO_DETERMINISTIC_DESIGN_BASELINE_CANDIDATE",
+  "policyDocument": "COMPANY_FLOW.md",
+  "flow": "GAME_SEED_TO_DESIGN_BASELINE_CANDIDATE",
   "gameSeed": {
     "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
     "category": "ACTION_SURVIVAL_ROGUELITE",
@@ -16,55 +16,302 @@
     "complete": true
   },
   "designer": {
-    "role": "DESIGN_AUTHOR_CHECKPOINT",
+    "role": "GAME_DESIGNER_AI",
     "model": "gemini:gemini-3.5-flash-lite",
     "singleAuthor": true,
-    "sameModelRevised": true
+    "sameModelRevised": false
   },
   "departments": {
-    "count": 0,
-    "roles": [],
-    "leadModels": {},
-    "distinctLeadModels": [],
-    "distinctLeadModelCount": 0,
+    "count": 5,
+    "roles": [
+      "planning",
+      "graphics",
+      "development",
+      "qa",
+      "balance"
+    ],
+    "leadModels": {
+      "planning": "gemini-3.8-flash",
+      "graphics": "gemini-3.7-flash",
+      "development": "gemini-3.6-flash",
+      "qa": "gemini-3.5-flash",
+      "balance": "gemini-3.5-flash-lite"
+    },
+    "resolvedLeadModels": {
+      "planning": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "graphics": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "development": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "qa": "DETERMINISTIC_EVIDENCE_ENGINE",
+      "balance": "DETERMINISTIC_EVIDENCE_ENGINE"
+    },
+    "distinctLeadModels": [
+      "DETERMINISTIC_EVIDENCE_ENGINE"
+    ],
+    "distinctLeadModelCount": 1,
     "leadModelsDistinct": false,
-    "modelAudit": {},
-    "reviewMode": "DETERMINISTIC_EVIDENCE",
+    "reviewModelCount": 0,
+    "modelAudit": {
+      "planning": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "graphics": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "development": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "qa": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      },
+      "balance": {
+        "leadModel": null,
+        "actualLeadModel": "DETERMINISTIC_EVIDENCE_ENGINE",
+        "assistantModels": [],
+        "models": [],
+        "count": 0,
+        "required": 0,
+        "pass": true,
+        "reviewMode": "DETERMINISTIC_EVIDENCE"
+      }
+    },
+    "rebuttalRounds": 0,
+    "repeatedFatalReview": false,
     "aiReviewRequired": false,
-    "repeatedFatalReview": false
+    "aiReviewUsed": false,
+    "reviewMode": "DETERMINISTIC_DEPARTMENT_EVIDENCE"
   },
   "meeting": {
     "required": false,
-    "mode": "DETERMINISTIC_EVIDENCE",
-    "conflictCount": 0,
-    "holdCount": 0,
-    "allResolved": true,
-    "deterministicEvidenceOnly": true
+    "crossDepartmentMeeting": false,
+    "rebuttalRounds": 0
   },
   "disposition": {
     "version": 2,
-    "state": "DETERMINISTIC_EVIDENCE",
-    "sameDesignerRevisionAttempted": true,
-    "repeatedFiveDepartmentReview": false,
+    "gameId": "fantasy-survival",
+    "date": "2026-09-20",
+    "state": "ACTIVE",
+    "sameDesignerRevisionAttempted": false,
     "fiveDepartmentLeadReviewCompleted": false,
-    "deterministicGateReviewCompleted": true,
-    "unanimousFatalDiscard": false,
+    "deterministicDepartmentEvidenceCompleted": true,
+    "repeatedFiveDepartmentReview": false,
+    "meetingRequired": false,
+    "rebuttalRounds": 0,
+    "automaticDiscardAllowed": false,
     "discardVotes": 0,
     "commonFatalCriteria": [],
-    "source": "deterministic_pre_gate_after_repair_1"
+    "unanimousFatalDiscard": false,
+    "strictGateStillAuthoritative": true,
+    "marketMetricAloneUsedForDiscard": false
   },
   "runtimeMetrics": {
-    "source": "design-checkpoint.json",
-    "checkpointReused": true,
-    "completedPhases": 5,
-    "deterministicGateScore": 80,
-    "deterministicGatePhase": "deterministic_pre_gate_after_repair_1"
+    "phaseMs": {
+      "designer_draft": 214796,
+      "deterministic_pre_gate": 1,
+      "deterministic_department_evidence": 0
+    },
+    "phaseBudgetMs": {
+      "designer_draft": 180000,
+      "designer_draft_base": 180000,
+      "designer_draft_gate": 180000,
+      "deterministic_pre_gate": 30000,
+      "designer_pre_gate_repair_1": 180000,
+      "designer_pre_gate_repair_2": 180000,
+      "independent_department_reviews": 240000,
+      "designer_revision": 180000,
+      "designer_revision_base": 180000,
+      "designer_revision_gate": 180000,
+      "five_lead_reviews": 180000
+    },
+    "totalModelCalls": 2,
+    "totalModelCallMs": 9829,
+    "modelPhaseConcurrency": 2,
+    "phaseConcurrency": {
+      "five_lead_reviews": 2
+    },
+    "maxLoadedModelLanes": 5,
+    "modelKeepAlive": "GEMINI_API",
+    "modelHealth": {
+      "gemini:gemini-3.5-flash-lite": {
+        "calls": 4,
+        "successes": 2,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 12425,
+        "lastMs": 5200,
+        "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+        "updatedAt": "2026-09-19T16:50:42.819Z"
+      },
+      "gemini:gemini-3.8-flash": {
+        "calls": 2,
+        "successes": 0,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 12366,
+        "lastMs": 6795,
+        "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+        "updatedAt": "2026-09-19T16:47:14.821Z"
+      },
+      "gemini:gemini-3.7-flash": {
+        "calls": 2,
+        "successes": 0,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 22645,
+        "lastMs": 13323,
+        "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+        "updatedAt": "2026-09-19T16:47:21.349Z"
+      },
+      "gemini:gemini-3.6-flash": {
+        "calls": 2,
+        "successes": 0,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 43910,
+        "lastMs": 28463,
+        "lastError": "gemini 503: { \"error\": { \"code\": 503, \"message\": \"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\", \"status\": \"UNAVAILABLE\" } }",
+        "updatedAt": "2026-09-19T16:47:36.489Z"
+      },
+      "gemini:gemini-3.5-flash": {
+        "calls": 2,
+        "successes": 0,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 72244,
+        "lastMs": 39846,
+        "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+        "updatedAt": "2026-09-19T16:47:47.872Z"
+      },
+      "gemini:gemini-3.1-pro-preview": {
+        "calls": 3,
+        "successes": 0,
+        "failures": 3,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 205209,
+        "lastMs": 112241,
+        "lastError": "gemini 429: { \"error\": { \"code\": 429, \"message\": \"You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 0, model: gemini-3.1-pro\\n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_input_token_count, limit: 0, model: gemini-3.1-pro\\nPlease retry in 59.748041259s.\", \"status\": \"RESOURCE_EXHAUSTED\", \"details\": [ { \"@type\": \"type.googleapis.com/google.rpc.Help\", \"links\": [ { \"description\": \"Learn more about Gemini API quotas\", \"url\": \"https://ai.google.dev/gemini-api/docs/rate-limits\" } ] }, { \"@type\": \"type.googleapis.com/google.rpc.QuotaFailure\", \"violations\": [ { \"quotaMetric\": \"generativelanguage.googleapis.com/generate_content_free_tier_input_token_count\", \"quotaId\": \"GenerateContentInputTokensPerModelPerDay-FreeTier\", \"quotaDimensions\": { \"location\": \"global\", \"model\": \"gemini-3.1-pro\"",
+        "updatedAt": "2026-09-19T16:49:00.267Z"
+      },
+      "gemini:gemini-2.5-pro": {
+        "calls": 1,
+        "successes": 0,
+        "failures": 1,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 112357,
+        "lastMs": 112357,
+        "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-pro is no longer available to new users. Please update your code to use models/gemini-3.1-pro-preview for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+        "updatedAt": "2026-09-19T16:49:00.384Z"
+      },
+      "gemini:gemini-2.5-flash": {
+        "calls": 1,
+        "successes": 0,
+        "failures": 1,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 112458,
+        "lastMs": 112458,
+        "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. Please update your code to use models/gemini-3.6-flash for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+        "updatedAt": "2026-09-19T16:49:00.484Z"
+      },
+      "gemini:gemini-2.5-flash-lite": {
+        "calls": 1,
+        "successes": 0,
+        "failures": 1,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 112554,
+        "lastMs": 112554,
+        "lastError": "gemini 404: { \"error\": { \"code\": 404, \"message\": \"This model models/gemini-2.5-flash-lite is no longer available to new users. Please update your code to use models/gemini-3.5-flash-lite for the latest features and improvements. We recommend you to use the Interactions API.\", \"status\": \"NOT_FOUND\" } }",
+        "updatedAt": "2026-09-19T16:49:00.580Z"
+      },
+      "gemini:gemini-3.1-flash-lite": {
+        "calls": 2,
+        "successes": 0,
+        "failures": 2,
+        "timeouts": 0,
+        "jsonFailures": 0,
+        "totalMs": 228416,
+        "lastMs": 114959,
+        "lastError": "gemini 400: { \"error\": { \"code\": 400, \"message\": \"Request contains an invalid argument.\", \"status\": \"INVALID_ARGUMENT\" } }",
+        "updatedAt": "2026-09-19T16:49:02.985Z"
+      },
+      "ollama:qwen3:1.7b": {
+        "calls": 1,
+        "successes": 0,
+        "failures": 1,
+        "timeouts": 1,
+        "jsonFailures": 0,
+        "totalMs": 90003,
+        "lastMs": 90003,
+        "lastError": "OLLAMA_DESIGN_TIMEOUT 90000ms",
+        "updatedAt": "2026-09-19T16:50:32.988Z"
+      }
+    },
+    "preGate": {
+      "attempts": 0,
+      "totalScore": 80,
+      "hardFailures": [],
+      "postRevisionScore": 80,
+      "postRevisionHardFailures": []
+    },
+    "checkpoint": {
+      "contractVersion": 3,
+      "engineDigest": "2c6561c3a7dfd954e825e031a60fe5c9f652ea78869d3f5b6360eb79a076c7a1",
+      "reused": false,
+      "completedPhases": 3,
+      "cachedTasks": 0
+    },
+    "simplifiedLeadOnlyReview": false,
+    "deterministicDepartmentEvidence": true,
+    "aiMeetingCalls": 0,
+    "rebuttalCalls": 0,
+    "representativeSynthesisCalls": 0,
+    "leadReviewCalls": 0,
+    "departmentScopedContext": true
   },
   "designLearning": {
-    "candidateCount": 2,
+    "candidateCount": 3,
     "usedAsDesignContext": true,
     "positiveTrainingEligible": false,
     "validatedRuntimeRequiredForPositiveTraining": true,
+    "strictGateFeedbackSource": "PRIOR_STRICT_DESIGN_REVIEW",
+    "strictGateHardFailures": [
+      "OWNER_PRESERVATION_CONTRACT_MISSING"
+    ],
     "strictGateBypassAllowed": false
   },
   "artbook": {
@@ -74,32 +321,15 @@
   "vibe2Used": false,
   "vibe2LearningContextUsed": true,
   "paidApi": false,
-  "deterministicRecovery": {
-    "enabled": true,
-    "source": "design-checkpoint.json",
-    "phase": "deterministic_pre_gate_after_repair_1",
-    "totalScore": 80,
-    "passMinimum": 80,
-    "hardFailures": [],
-    "criticalAxisFailures": [],
-    "aiReviewUsed": false,
-    "aiVerdictUsed": false,
-    "appliedRepairs": [
-      "designer_pre_gate_repair_1"
-    ],
-    "recoveredAt": "2026-09-19T16:36:30.505Z"
-  },
   "baselineGate": {
     "policyDocument": "COMPANY_FLOW.md",
     "productionClass": "DESIGN_ONLY",
     "tierAlias": 3,
     "tier": 3,
-    "state": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "ready": false,
-    "blockers": [
-      "owner-preservation-design-contract-required"
-    ],
-    "advisoryDisposition": "DETERMINISTIC_EVIDENCE",
+    "state": "DESIGN_BASELINE_READY",
+    "ready": true,
+    "blockers": [],
+    "advisoryDisposition": "ACTIVE",
     "unanimousFatalDiscard": false,
     "meeting": {
       "conflictCount": 0,
@@ -115,7 +345,7 @@
       },
       "designMultiplayer": {
         "required": true,
-        "mode": "SINGLE",
+        "mode": "HYBRID",
         "valid": true,
         "decisionStage": "GAME_DESIGN",
         "allowedModes": [
@@ -130,7 +360,7 @@
         "authority": "DETERMINISTIC_EVIDENCE",
         "pass": true,
         "path": "design/fantasy-survival/2026-09-20/design-checkpoint.json",
-        "phase": "deterministic_pre_gate_after_repair_1",
+        "phase": "deterministic_pre_gate",
         "totalScore": 80,
         "passMinimum": 80,
         "hardFailures": [],
@@ -202,17 +432,17 @@
       "releaseConfirmedBaselineOwnedByReleasePipeline": true,
       "numericTierIsCompatibilityAliasOnly": true
     },
-    "checkedAt": "2026-09-19T16:36:30.696Z"
+    "checkedAt": "2026-09-19T16:50:51.469Z"
   },
   "artbookUi": {
-    "status": "WAITING",
-    "label": "대기중",
+    "status": "WRITING",
+    "label": "작성중",
     "path": "artbook-submissions/fantasy-survival/status.json"
   },
   "artbookPublication": {
     "published": false,
     "path": null,
-    "baselineGateState": "DESIGN_BASELINE_REDESIGN_REQUIRED",
-    "reason": "baseline-not-ready"
+    "baselineGateState": "DESIGN_BASELINE_READY",
+    "reason": "awaiting-post-baseline-artbook-editor"
   }
 }

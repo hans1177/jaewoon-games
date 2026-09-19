@@ -13724,11 +13724,11 @@
       "ROBLOX_SUBGENRE": "Classic Obby",
       "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
       "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
-      "ROBLOX_PLAY_MODE": "SINGLE",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
+      "ROBLOX_PLAY_MODE": "HYBRID",
+      "ROBLOX_PLAY_MODE_LABEL_KO": "멀티·혼합",
+      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 멀티·혼합",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T16:36:30.786Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T16:50:51.557Z",
       "strictDesignReview": {
         "verdict": "REVISE",
         "totalScore": 91.80000000000001,
@@ -18763,6 +18763,47 @@
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
         "recordedAt": "2026-09-19T16:36:30.786Z"
+      },
+      {
+        "gameId": "fantasy-survival",
+        "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
+        "reviewStage": "DESIGN_STRICT_REVIEW",
+        "runtimeTarget": null,
+        "verdict": "PASS",
+        "totalScore": 80,
+        "previousScore": 91.80000000000001,
+        "scoreDelta": -11.800000000000011,
+        "hardFailures": [],
+        "resolvedHardFailures": [
+          "OWNER_PRESERVATION_CONTRACT_MISSING"
+        ],
+        "addedHardFailures": [],
+        "rejectionReasons": [],
+        "improvementTargets": [
+          {
+            "dimension": "CORE_LOOP_DESIGN",
+            "current": 11.2,
+            "maxScore": 14,
+            "gap": 2.8000000000000007
+          },
+          {
+            "dimension": "IDEA_AND_DISTINCTNESS",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          },
+          {
+            "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+            "current": 9.6,
+            "maxScore": 12,
+            "gap": 2.4000000000000004
+          }
+        ],
+        "learningSignal": "UNVALIDATED",
+        "materialFamilies": [],
+        "validatedRealEvidence": false,
+        "reviewContextSource": "ACTIVE_SEED",
+        "recordedAt": "2026-09-19T16:50:51.557Z"
       }
     ],
     "causeCounts": {
@@ -18789,7 +18830,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T16:36:30.788Z"
+    "updatedAt": "2026-09-19T16:50:51.559Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,

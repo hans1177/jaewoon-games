@@ -1,158 +1,178 @@
 {
-  "version": 5,
+  "version": 6,
   "gameId": "fantasy-survival",
   "date": "2026-09-20",
   "productionClass": "DESIGN_ONLY",
   "tierAlias": 3,
   "tier": 3,
   "gameSeedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
-  "authorRole": "DESIGN_AUTHOR_CHECKPOINT",
+  "authorRole": "GAME_DESIGNER_AI",
   "authorModel": "gemini:gemini-3.5-flash-lite",
-  "sameModelAsDraft": true,
-  "appliedConsensusCount": 0,
-  "unresolvedConflictCount": 0,
-  "heldCount": 0,
+  "sameModelAsDraft": false,
+  "revisionApplied": false,
+  "reviewMode": "DETERMINISTIC_EVIDENCE_NO_AI_REVIEW",
+  "deterministicRevalidation": {
+    "passed": true,
+    "authority": "STAGE_GATE_SCORING_V2"
+  },
   "status": "DESIGN_BASELINE_CANDIDATE",
+  "postRevisionPreGate": {
+    "totalScore": 80,
+    "hardFailures": [],
+    "criticalAxisFailures": []
+  },
   "content": {
-    "identity": "마력숲의 넓은 지역 탐험과 생존 압박을 유지하면서 이동과 캐릭터를 살아 움직이게 표현하는 마력숲 생존기입니다. coreLoop와 signatureSystems는 자원 채집, 제작, 장비 선택, 전투 및 퀘스트 상태변화가 유기적으로 연결되도록 설계되어 이 게임만의 고유한 선택과 상태 변화를 만들어냅니다.",
-    "playerFantasy": "플레이어는 미지의 마력숲과 수정 지역, 화산, 세계수를 탐험하며 생존 압박을 이겨내고 강력한 장비와 마력을 구축하는 생존자로서의 판타지를 경험합니다.",
-    "coreFun": "반복되는 자원 채집과 적과의 전투 속에서 플레이어는 실시간으로 장비와 스킬을 선택하고, 체력 및 퀘스트 진행도라는 관찰 가능한 상태변화를 거쳐 즉각적인 성취와 보상을 얻는 재미를 느낍니다.",
+    "identity": "기존 마력숲 생존기의 세계관·지역·스토리·퀘스트·전투·제작·진행·세이브 의미를 그대로 보존하고 표현 품질만 단계적으로 높이는 보존형 Vibe 파일럿이다.",
+    "playerFantasy": "광활한 마력숲과 수정 지역, 화산 지대를 탐험하며 몰려오는 몬스터 무리를 헤쳐나가고, 비밀 연구소의 단서를 파헤치는 생존 마법사의 판타지.",
+    "coreFun": "기존 탐험·채집·제작·전투·퀘스트 선택과 결과는 바꾸지 않고, 같은 입력과 같은 판정에 살아있는 모션·명확한 타격 피드백·일관된 에셋 표현을 결합해 체감 품질을 높인다.",
     "coreLoop": [
-      "모바일 조이스틱과 키보드로 마력숲 월드를 이동하며 자원을 채집하고 몬스터와 조우한다.",
-      "채집한 재료와 전투 보상으로 장비를 제작하거나 스킬을 선택하여 캐릭터 빌드를 강화한다.",
-      "강화된 빌드를 바탕으로 더 위험한 지역이나 보스를 돌파하고 퀘스트 상태를 갱신하여 다음 탐험으로 이어진다."
+      "Fight through an escalating horde in a short real-time survival run while positioning around enemy pressure.",
+      "Collect run rewards or experience and choose upgrades, perks, weapons, or skills that change the current build.",
+      "Combine upgrades into a stronger build, survive harder waves or a boss, then convert the run result into the next progression choice."
     ],
     "signatureSystems": [
       {
-        "name": "채집 및 제작 시스템",
-        "purpose": "필드에서 얻은 자원을 가공하여 생존에 필요한 도구와 장비를 만들고 캐릭터의 능력치를 영구적으로 확장합니다.",
-        "playerChoice": "플레이어는 어떤 자원을 우선적으로 채집하고 어떤 장비 제작에 투자할지 선택하여 생존 전략을 다변화할 수 있습니다."
+        "name": "기존 게임플레이 의미 보존",
+        "purpose": "현재 구현의 월드·퀘스트·전투·제작·진행·보상·세이브 규칙을 구현 기준으로 잠그고 표현 변경이 게임 결과를 바꾸지 않게 한다.",
+        "playerChoice": "플레이어의 선택·자원 소비·전투 판정·퀘스트 결과는 기존 구현과 동일하게 유지된다."
       },
       {
-        "name": "실시간 전투 및 빌드 선택",
-        "purpose": "몰려드는 몬스터와 보스로부터 살아남기 위해 실시간으로 적의 공격을 회피하고 전투 보상을 통해 스킬 빌드를 조합합니다.",
-        "playerChoice": "플레이어는 전투 중에 획득하는 다양한 강화 옵션 중 자신의 생존 성향에 맞는 스킬을 골라 위협을 돌파합니다."
+        "name": "표현 품질 순차 개선",
+        "purpose": "기존 책임 렌더·모션·전투 이벤트·오디오·카메라 흐름 안에서 에셋 적응부터 모바일 폴리시까지 순차 적용한다.",
+        "playerChoice": "새 능력이나 수치 선택을 추가하지 않고 기존 행동의 시각·청각 피드백만 더 명확하고 자연스럽게 만든다."
       }
+    ],
+    "progressionDirection": "기존 마력숲의 퀘스트 체인, 연구소, 수정 지역, 화산, 세계수, 보스와 장기 진행 순서를 그대로 유지한다. 이번 파일럿에서 새 성장 규칙·새 경제·새 해금 조건을 만들지 않는다.",
+    "visualDirection": "기존 마력숲의 숲·수정·화산·세계수·연구소 정체성을 유지하면서 팔레트·광원·윤곽·재질 반응·VFX 밀도를 하나의 스타일 락으로 통일한다.",
+    "mobileUx": "가상 조이스틱과 직관적인 터치 인터페이스를 통해 복잡한 조작 없이도 이동, 채집, 전투가 원활하게 이루어지도록 최적화된 레이아웃.",
+    "marketTargetDirection": "기존 웹게임 및 모바일 액션 생존 장르 플레이어를 대상으로, 가볍고 빠른 세션과 높은 타격감을 제공하는 글로벌 타겟 전략.",
+    "steamExpansionDecision": "모바일 폴리시 완료 후 PC 환경에서의 키보드/마우스 조작 및 고해상도 연출 지원을 위한 확장성 고려.",
+    "multiplayerMode": "HYBRID",
+    "multiplayerExpansionDecision": "기존 seed에 확정된 멀티플레이 모드를 그대로 유지하며 이번 표현 파일럿에서 네트워크 규칙·플레이 모드를 추가·삭제·변경하지 않는다.",
+    "technicalAssumptions": [
+      "기존 Web 구현 경로 web-games/fantasy-survival를 canonical 구현으로 사용하고 기존 책임 함수를 직접 수정한다.",
+      "기존 SAVE_POLICY=PRESERVE_EXISTING_SAVE_KEY_jaewoon_fantasy_survival_v1_AND_MIGRATE_ONLY_IF_REQUIRED를 지키며 저장 키·필드 의미·퀘스트 상태를 변경하지 않는다.",
+      "그래픽·모션·VFX·오디오·카메라는 게임 로직과 분리된 표현 계층으로 연결하고 wrapper/shadow 파이프라인을 만들지 않는다."
+    ],
+    "validationQuestions": [
+      "표현 전후에 동일 입력으로 체력·데미지·쿨다운·드랍·제작 비용·퀘스트·지역 진행·세이브 결과가 동일한가?",
+      "모바일 터치 중 효과가 입력과 위험 신호를 가리지 않고 프레임 타이밍이 안정적인가?",
+      "기존 저장 데이터를 불러온 뒤 연구소·퀘스트·장비·지역 진행이 그대로 이어지는가?"
+    ],
+    "openQuestions": [
+      "표현 비용을 가장 많이 유발하는 기존 오브젝트 구간은 어디이며 품질 스케일에서 무엇을 먼저 줄일 것인가?"
     ],
     "systemInterconnections": [
       {
-        "fromSystem": "채집 및 제작 시스템",
-        "toSystem": "실시간 전투 및 빌드 선택",
-        "trigger": "플레이어가 제작한 상위 장비를 착용하고 필드 전투에 진입할 때",
-        "stateChange": "플레이어의 공격력과 방어력이 상승하여 몬스터 웨이브를 더 쉽게 돌파할 수 있게 됩니다."
+        "fromSystem": "기존 월드/캐릭터 렌더",
+        "toSystem": "ASSET_ADAPTATION",
+        "trigger": "기존 오브젝트와 캐릭터를 그리는 동일 렌더 경로",
+        "stateChange": "게임 상태는 유지하고 색·재질·실루엣·레이어 표현만 마력숲 스타일 락에 맞춘다."
       },
       {
-        "fromSystem": "실시간 전투 및 빌드 선택",
-        "toSystem": "퀘스트 및 탐험 진행",
-        "trigger": "보스 몬스터를 격파하고 특정 지역의 위협을 해제했을 때",
-        "stateChange": "새로운 지역과 스토리 오브젝트가 해금되며 다음 단계의 퀘스트로 진입합니다."
+        "fromSystem": "기존 이동/공격 상태",
+        "toSystem": "LIVING_MOTION_AND_ANIMATION_FEEL",
+        "trigger": "기존 이동 속도와 authoritative 공격 이벤트",
+        "stateChange": "판정·쿨다운·데미지는 유지하고 호흡·가감속·회전·공격 anticipation/impact/recovery 표현만 동기화한다."
       },
       {
-        "fromSystem": "퀘스트 및 탐험 진행",
-        "toSystem": "채집 및 제작 시스템",
-        "trigger": "새로운 지역에 도달하여 특수 자원과 단서를 발견했을 때",
-        "stateChange": "더 상위 등급의 장비를 제작할 수 있는 레시피와 자원이 인벤토리에 추가됩니다."
+        "fromSystem": "기존 전투/퀘스트 이벤트",
+        "toSystem": "VFX_AUDIO_CAMERA_POLISH",
+        "trigger": "기존 적중·피격·보상·스토리 이벤트",
+        "stateChange": "같은 이벤트 순간에 VFX·사운드·카메라 피드백을 연결하되 저장·진행·보상 의미는 변경하지 않는다."
       }
     ],
-    "progressionDirection": "플레이어는 마력숲의 기초 지역에서 시작하여 수정 지역, 화산, 세계수로 점진적으로 이동하며, 퀘스트 체인과 장비 제작을 통해 더 깊은 스토리와 강력한 도전 과제로 나아갑니다.",
     "progressionEconomyBalance": {
-      "progressionLoop": "탐험과 전투를 통해 자원을 획득하고 장비를 제작하여 더 어려운 지역으로 진출하는 선순환 루프를 형성합니다.",
-      "resourceFlow": "일반 필드 자원은 소모품과 기초 제작에 쓰이고, 보스 전리품과 특수 자원은 핵심 장비 업그레이드에 소모됩니다.",
-      "balanceRules": "전투 난이도와 자원 드랍률은 플레이어의 평균 장비 강화 단계에 비례하여 조정되며 과도한 파밍을 방지합니다."
+      "progressionLoop": "기존 구현의 탐험·채집·제작·전투·퀘스트 진행 루프를 그대로 사용하며 표현 패스는 진행 속도와 해금 조건에 관여하지 않는다.",
+      "resourceFlow": "기존 재료 획득량·제작 비용·보상·드랍·소비 규칙을 그대로 유지하고 표현 개선은 자원 수치에 영향을 주지 않는다.",
+      "balanceRules": "체력·공격력·쿨다운·드랍률·제작 비용·보상·적 수치 등 기존 밸런스 값을 변경하지 않는다."
     },
     "contentExpansionPlan": [
       {
-        "milestone": "수정 동굴 지역 확장 및 고유 생태계 도입",
-        "newGameplay": "수정 속성을 지닌 새로운 원거리 몬스터들과의 정밀한 회피 전투 및 빛의 반사를 이용한 수정 채집 미니게임을 추가하여 탐험의 다양성을 높입니다.",
-        "systemImpact": "기존 채집 및 제작 시스템에 신규 수정 레시피가 추가되며 방어구 속성 및 마력 저항 수치 관리 로직이 인벤토리와 긴밀하게 연동됩니다."
+        "milestone": "ASSET_ADAPTATION",
+        "newGameplay": "새 게임플레이를 추가하지 않는다. 기존 캐릭터·몬스터·자원·구조물·지역 표현을 기존 렌더 책임 함수 안에서 마력숲 스타일에 맞게 적응한다.",
+        "systemImpact": "원본 에셋과 게임 상태를 보존하고 렌더 표현만 바꾼다. 세이브·충돌·상호작용·수치 변경은 금지한다."
       },
       {
-        "milestone": "화산 지대 극한 환경 및 보스 레이드 오픈",
-        "newGameplay": "고열 환경 속에서 주기적인 체력 감소 압박을 견디며 지형지물을 활용해 거대한 화산 보스의 강력한 광역 패턴을 회피하고 반격하는 하드코어 전투를 도입합니다.",
-        "systemImpact": "실시간 전투 시스템의 충돌 판정 및 장비 내열 수치 관리, 그리고 화상 상태이상 처리 코드가 기존 데미지 계산 파이프라인에 안전하게 통합됩니다."
+        "milestone": "LIVING_MOTION_AND_ANIMATION_FEEL",
+        "newGameplay": "새 행동을 추가하지 않는다. 기존 idle·이동·회전·공격·피격 상태에 호흡·블렌딩·anticipation·impact·recovery를 연결한다.",
+        "systemImpact": "기존 입력·이동 속도·데미지·쿨다운·적중 이벤트를 권위로 사용하고 애니메이션은 표현 계층으로만 동작한다."
       },
       {
-        "milestone": "세계수 연구소 심층 스토리 및 단서 추적",
-        "newGameplay": "숨겨진 일지와 단서를 추적하고 특정 NPC와의 심도 있는 상호작용 선택지를 통해 마력숲의 기원과 세계수의 진실을 밝히는 시나리오 퀘스트 체인을 제공합니다.",
-        "systemImpact": "퀘스트 진행 상태에 따른 월드 오브젝트의 동적 활성화 제어와 기존 저장 데이터 구조를 훼손하지 않는 안전한 확장 세이브 필드가 추가됩니다."
+        "milestone": "VFX_AUDIO_CAMERA_POLISH_MOBILE",
+        "newGameplay": "새 규칙을 추가하지 않는다. 기존 적중·위험·보상·스토리 이벤트에 VFX·오디오·카메라·UI 폴리시를 동기화한다.",
+        "systemImpact": "모바일 가독성·터치·프레임 안정성을 우선하고 게임플레이·저장·진행 의미는 그대로 유지한다."
       }
     ],
     "failureRetryRisk": {
       "failureStates": [
-        "전투 중 체력이 0이 되어 사망하는 경우",
-        "허기나 환경 압박 수치를 관리하지 못해 행동 불능이 되는 경우"
+        "기존 구현에 이미 정의된 전투·생존 실패 상태만 유지한다.",
+        "기존 퀘스트 또는 진행에서 이미 정의된 실패·재시도 상태만 유지한다."
       ],
-      "retryFlow": "사망 또는 실패 시 마지막으로 저장된 안전지대나 세이브포인트에서 부활하며 일부 소모품 자원이 차감됩니다.",
-      "riskPressure": "원거리 탐험 중 사망 시 현재 소지한 일부 비장착 자원을 잃을 수 있는 위험이 존재합니다.",
-      "recoveryRules": "안전지대에서 제작한 장비와 영구 진행 퀘스트 상태는 유지되므로 재도전 시 빠르게 복구할 수 있습니다."
+      "retryFlow": "기존 사망·회복·재시도·귀환 흐름과 저장 결과를 그대로 유지하며 새 자원 손실이나 패널티를 추가하지 않는다.",
+      "riskPressure": "기존 지역·적·생존 규칙이 만드는 위험만 사용하고 표현 패스가 난이도나 위험 수치를 변경하지 않는다.",
+      "recoveryRules": "기존 회복·부활·재개·세이브 로드 규칙을 그대로 사용하고 새 회복 규칙을 만들지 않는다."
     },
     "platformFitPlan": {
       "targetPlatform": "UNITY",
-      "inputModel": "모바일 터치 조이스틱과 화면 우측 액션 버튼을 사용하며, PC 환경에서는 키보드와 마우스 조작을 지원합니다.",
-      "performanceBudget": "모바일 기기에서 60프레임을 유지하기 위해 파티클 이펙트와 드로우 콜을 최적화하고 메모리 사용량을 관리합니다.",
-      "sessionConstraints": "한 번의 탐험 및 전투 세션은 평균 5분 내외로 구성하여 모바일 환경에 적합한 플레이 호흡을 제공합니다."
+      "inputModel": "기존 키보드 및 모바일 터치/조이스틱 입력 체계를 유지하고 표현 효과가 입력 영역이나 반응성을 가리지 않게 한다.",
+      "performanceBudget": "가능한 경우 60fps를 목표로 하되 파티클·트레일·보조 모션은 단계적으로 축소 가능하게 하고 게임플레이 판정은 품질 스케일과 무관하게 유지한다.",
+      "sessionConstraints": "기존 세션과 진행 의미를 보존하며 설계 검증 기준 TARGET_SESSION_MINUTES=30을 유지한다. 표현 개선 때문에 세션 길이·진행 속도를 바꾸지 않는다."
     },
-    "visualDirection": "판타지 동화풍의 따뜻하면서도 신비로운 마력숲 분위기를 바탕으로, 살아있는 모션과 타격감 있는 VFX를 결합하여 시각적 몰입감을 극대화합니다.",
-    "mobileUx": "엄지손가락 조작 반경 내에 주요 조이스틱과 상호작용 버튼을 배치하고, 작은 화면에서도 체력과 퀘스트 목표가 직관적으로 보이도록 UI를 구성합니다.",
     "uxAccessibilityPlan": {
-      "hudPriorities": "플레이어의 체력, 허기, 현재 퀘스트 목표를 화면 상단과 가장자리에 명확하게 고정 배치합니다.",
-      "touchAndInput": "가상 조이스틱의 감도를 조절할 수 있게 하고 터치 영역을 넓혀 오작동을 방지합니다.",
-      "readability": "배경과 구분되는 폰트 색상과 테두리를 사용하여 모바일 화면에서도 텍스트 가독성을 보장합니다.",
-      "accessibility": "색약 모드와 UI 크기 조절 옵션을 제공하여 다양한 플레이어 환경을 지원합니다."
+      "hudPriorities": "Display essential survival stats, health, hunger, active quest objectives, and wave pressure indicators clearly at the top of the mobile screen.",
+      "touchAndInput": "Provide responsive virtual joystick and clearly delineated touch buttons for gathering, attacking, and inventory management.",
+      "readability": "Ensure text fonts, UI layouts, and VFX particle densities do not obstruct enemy threat signals or core gameplay visibility.",
+      "accessibility": "Incorporate high-contrast visual cues and distinct audio feedback to assist players in identifying danger states and combat hits."
     },
     "artAudioDirection": {
-      "visualIdentity": "생동감 있는 캐릭터 애니메이션과 부드러운 초목 흔들림, 화려한 마법 이펙트가 조화로운 스타일을 지향합니다.",
-      "audioIdentity": "평화로운 숲의 앰비언트 사운드와 긴장감 넘치는 전투 음악이 상황에 따라 유기적으로 전환됩니다.",
-      "gameplayFeedbackSync": "타격 순간의 사운드와 화면 흔들림, 적의 피격 이펙트가 정확히 동기화되어 손맛을 제공합니다."
+      "visualIdentity": "기존 월드와 오브젝트를 재사용·변형하여 마력숲 고유 지역 구분을 더 명확히 하며 새 게임 규칙을 시각 요소로 위장해 추가하지 않는다.",
+      "audioIdentity": "기존 음악/사운드 책임 시스템을 재사용하고 탐험·전투·보스·스토리 상태 전환을 부드럽게 연결한다.",
+      "gameplayFeedbackSync": "기존 authoritative 적중·피격·상호작용 이벤트 한 지점에 애니메이션·VFX·오디오·카메라를 동기화하고 데미지 판정 시점은 바꾸지 않는다."
     },
-    "marketTargetDirection": "글로벌 모바일 및 캐주얼 액션 생존 로겔라이트 유저를 타겟으로 하며, 빠른 세션 호흡과 직관적인 조작을 강조합니다.",
-    "steamExpansionDecision": "모바일 버전의 안정화 이후, PC 플랫폼에서의 정밀한 조작감과 고해상도 그래픽을 지원하는 스팀 확장 버전을 고려합니다.",
-    "multiplayerMode": "SINGLE",
-    "multiplayerExpansionDecision": "추후 협동 플레이나 길드 기반 레이드 콘텐츠의 필요성이 검증될 경우 멀티플레이어 확장 가능성을 열어둡니다.",
-    "technicalAssumptions": [
-      "기존 세이브 데이터의 구조와 SAVE_KEY는 변경하지 않고 UI와 연출 레이어만 개선한다.",
-      "모바일 터치 입력과 키보드 입력을 동시에 처리할 수 있는 통합 입력 관리 시스템을 사용한다.",
-      "오디오와 VFX 상태 전환은 기존 게임 루프의 이벤트 트리거 함수 안에서 동기화한다."
-    ],
-    "validationQuestions": [
-      "모바일 환경에서 다수의 적이 등장할 때 프레임 드랍 없이 60프레임이 유지되는가?",
-      "기존 세이브 데이터를 불러왔을 때 퀘스트와 장비 상태가 누락 없이 정확하게 복원되는가?"
-    ],
     "implementationTraceability": [
       {
-        "designElement": "채집 및 제작 시스템 구현",
-        "responsibleSystem": "InventoryAndCraftingSystem",
-        "validationEvidence": "자원 획득 시 인벤토리 수량이 정확히 갱신되며 제작 버튼 클릭 시 레시피에 맞춰 아이템이 생성되는지 유닛 테스트로 검증한다."
+        "designElement": "ASSET_ADAPTATION",
+        "responsibleSystem": "기존 캐릭터·몬스터·월드 렌더 함수",
+        "validationEvidence": "동일 게임 상태에서 표현만 변경되고 충돌·상호작용·자원·세이브 값이 동일함을 비교한다."
       },
       {
-        "designElement": "실시간 전투 빌드 선택",
-        "responsibleSystem": "CombatAndUpgradeSystem",
-        "validationEvidence": "전투 중 레벨업 시 팝업되는 업그레이드 선택지가 플레이어 스탯에 즉시 반영되는지 로그를 통해 확인한다."
+        "designElement": "LIVING_MOTION_AND_ANIMATION_FEEL",
+        "responsibleSystem": "기존 이동·공격·피격 상태와 렌더 업데이트",
+        "validationEvidence": "idle/walk/run/turn/attack 전환 연속성과 기존 적중 이벤트·데미지·쿨다운 불변을 함께 검증한다."
       },
       {
-        "designElement": "시스템 간 연결 및 이벤트 트리거",
-        "responsibleSystem": "WorldStateCoordinator",
-        "validationEvidence": "보스 처치 이벤트 발생 시 퀘스트 상태가 갱신되고 다음 지역 진입 로직이 정상 호출되는지 통합 테스트로 확인한다."
+        "designElement": "VFX_AUDIO_CAMERA_POLISH_MOBILE",
+        "responsibleSystem": "기존 전투·퀘스트 이벤트와 오디오/카메라 책임 경로",
+        "validationEvidence": "적중 순간 동기화, 모바일 가독성, 프레임 안정성, 중복 재생 없음과 게임 상태 불변을 검증한다."
       }
     ],
-    "openQuestions": [
-      "모바일 화면 크기에 따라 UI 레이아웃이 깨지지 않고 유연하게 대응하는 최적의 해상도 기준은 무엇인가?",
-      "보스전 난이도 조절 시 플레이어의 숙련도 차이를 보정하기 위한 추가적인 안전 장치가 필요한가?"
-    ]
-  },
-  "recovery": {
-    "source": "design-checkpoint.json",
-    "checkpointFingerprint": "b06130c0af134791c34563a8e284b63bf510efe4a61e9efc65316cccd32b2886",
-    "deterministicPhase": "deterministic_pre_gate_after_repair_1",
-    "deterministicScore": 80,
-    "deterministicPassMinimum": 80,
-    "hardFailures": [],
-    "criticalAxisFailures": [],
-    "appliedRepairs": [
-      "designer_pre_gate_repair_1"
-    ],
-    "aiReviewUsed": false,
-    "aiVerdictUsed": false,
-    "materializedAt": "2026-09-19T16:36:30.505Z"
+    "preservationContract": {
+      "mode": "PRESERVATION_PRESENTATION_UPGRADE",
+      "sourceOfTruth": "EXISTING_IMPLEMENTATION_AND_OWNER_SEED",
+      "lockedSemantics": [
+        "WORLD_AND_REGIONS",
+        "STORY_AND_QUESTS",
+        "COMBAT_RULES",
+        "CRAFTING_RECIPES_AND_COSTS",
+        "SAVE_KEY_AND_SCHEMA_MEANING",
+        "PROGRESSION",
+        "BALANCE_VALUES",
+        "DROPS_AND_REWARDS",
+        "HIT_AND_COOLDOWN_SEMANTICS",
+        "MULTIPLAYER_MODE"
+      ],
+      "presentationPasses": [
+        "ASSET_ADAPTATION",
+        "LIVING_MOTION",
+        "ANIMATION_FEEL",
+        "VFX",
+        "AUDIO_FEEL",
+        "CAMERA_LANGUAGE",
+        "POLISH_MOBILE"
+      ],
+      "gameplayRule": "NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE",
+      "targetSessionMinutes": 30
+    }
   }
 }

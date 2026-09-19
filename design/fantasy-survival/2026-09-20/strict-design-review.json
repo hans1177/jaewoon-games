@@ -6,18 +6,18 @@
   "passThreshold": 80,
   "excellentThreshold": 90,
   "excellent": false,
-  "totalScore": 91.80000000000001,
+  "totalScore": 80,
   "scores": {
-    "IDEA_AND_DISTINCTNESS": 12,
-    "CATEGORY_IDENTITY": 10,
+    "IDEA_AND_DISTINCTNESS": 9.6,
+    "CATEGORY_IDENTITY": 8,
     "CORE_LOOP_DESIGN": 11.2,
     "SYSTEM_INTERCONNECTION_DESIGN": 9.6,
-    "PROGRESSION_ECONOMY_BALANCE_DESIGN": 10,
+    "PROGRESSION_ECONOMY_BALANCE_DESIGN": 8,
     "CONTENT_EXPANSION_PLAN": 8,
-    "FAILURE_RETRY_RISK_DESIGN": 8,
-    "PLATFORM_FIT_DESIGN": 8,
-    "UX_AND_ACCESSIBILITY_PLAN": 6,
-    "ART_AUDIO_DIRECTION": 5,
+    "FAILURE_RETRY_RISK_DESIGN": 6.4,
+    "PLATFORM_FIT_DESIGN": 6.4,
+    "UX_AND_ACCESSIBILITY_PLAN": 4.8,
+    "ART_AUDIO_DIRECTION": 4,
     "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 4
   },
   "weights": {
@@ -41,22 +41,20 @@
       "gap": 2.8000000000000007
     },
     {
-      "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+      "dimension": "IDEA_AND_DISTINCTNESS",
       "current": 9.6,
       "maxScore": 12,
       "gap": 2.4000000000000004
     },
     {
-      "dimension": "CONTENT_EXPANSION_PLAN",
-      "current": 8,
-      "maxScore": 10,
-      "gap": 2
+      "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
+      "current": 9.6,
+      "maxScore": 12,
+      "gap": 2.4000000000000004
     }
   ],
-  "hardFailures": [
-    "OWNER_PRESERVATION_CONTRACT_MISSING"
-  ],
-  "verdict": "REVISE",
+  "hardFailures": [],
+  "verdict": "PASS",
   "evidence": {
     "seedId": "OWNER-PRESERVE-FANTASY-SURVIVAL-20260920",
     "seedGeneration": "OWNER_REDESIGN_RESET",
@@ -64,7 +62,7 @@
     "materialIds": [],
     "designPath": "design/fantasy-survival/2026-09-20/design-revised.json",
     "cyclePath": "design/fantasy-survival/2026-09-20/cycle-status.json",
-    "multiplayerDesignMode": "SINGLE",
+    "multiplayerDesignMode": "HYBRID",
     "targetSessionMinutes": 30,
     "robloxGenreProfile": {
       "taxonomy": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
@@ -72,23 +70,23 @@
       "genreLabelKo": "오비·플랫포머",
       "subgenre": "Classic Obby",
       "subgenreLabelKo": "클래식 오비",
-      "playMode": "SINGLE",
-      "playModeLabelKo": "싱글",
-      "displayLabelKo": "오비·플랫포머 · 클래식 오비 · 싱글"
+      "playMode": "HYBRID",
+      "playModeLabelKo": "멀티·혼합",
+      "displayLabelKo": "오비·플랫포머 · 클래식 오비 · 멀티·혼합"
     },
     "reviewContextSource": "ACTIVE_SEED",
     "scoreSystem": "STAGE_GATE_SCORING_V2",
     "evidenceLevels": {
-      "IDEA_AND_DISTINCTNESS": 100,
-      "CATEGORY_IDENTITY": 100,
+      "IDEA_AND_DISTINCTNESS": 80,
+      "CATEGORY_IDENTITY": 80,
       "CORE_LOOP_DESIGN": 80,
       "SYSTEM_INTERCONNECTION_DESIGN": 80,
-      "PROGRESSION_ECONOMY_BALANCE_DESIGN": 100,
+      "PROGRESSION_ECONOMY_BALANCE_DESIGN": 80,
       "CONTENT_EXPANSION_PLAN": 80,
-      "FAILURE_RETRY_RISK_DESIGN": 100,
-      "PLATFORM_FIT_DESIGN": 100,
-      "UX_AND_ACCESSIBILITY_PLAN": 100,
-      "ART_AUDIO_DIRECTION": 100,
+      "FAILURE_RETRY_RISK_DESIGN": 80,
+      "PLATFORM_FIT_DESIGN": 80,
+      "UX_AND_ACCESSIBILITY_PLAN": 80,
+      "ART_AUDIO_DIRECTION": 80,
       "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY": 80
     },
     "criticalAxisFailures": [],
@@ -108,7 +106,7 @@
     "initialWebStrictRequires30Minutes": false,
     "final30MinuteContentDepthValidationOnly": true
   },
-  "reviewedAt": "2026-09-19T16:36:30.786Z",
+  "reviewedAt": "2026-09-19T16:50:51.557Z",
   "scoreSystem": "STAGE_GATE_SCORING_V2",
   "scoreSystemVersion": 2,
   "directScoreLevels": [
@@ -122,20 +120,5 @@
   "criticalAxisMinimumPercent": 75,
   "criticalAxisFailures": [],
   "thirtyMinuteHardGateApplied": false,
-  "rejectionReasons": [
-    {
-      "code": "OWNER_PRESERVATION_CONTRACT_MISSING",
-      "kind": "HARD_GATE",
-      "axis": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
-      "evidenceLevel": 0,
-      "minimumRequired": 100,
-      "evidence": {
-        "ownerRebuildMode": "PRESERVATION_PRESENTATION_UPGRADE",
-        "reuseExistingGameplay": true
-      },
-      "requiredAction": "기존 게임의 월드·스토리·퀘스트·전투·제작·진행·밸런스·세이브 의미를 잠그고 표현 패스만 허용하는 preservationContract를 설계에 명시한다.",
-      "bypassAllowed": false,
-      "source": "STAGE_GATE_SCORING_V2"
-    }
-  ]
+  "rejectionReasons": []
 }
