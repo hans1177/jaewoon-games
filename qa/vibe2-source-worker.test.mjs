@@ -532,13 +532,14 @@ test('second no-op receives one short focused third retry', async () => {
   const noop=JSON.stringify({edits:[{path:'index.html',find:'>Play<',replace:'>Play<'}],newFiles:[],replaceFiles:[]});
   write(noop1,noop);
   write(noop2,noop);
-  write(good,JSON.stringify({edits:[{path:'index.html',find:'>Play<',replace:'>Continue<'}],newFiles:[],replaceFiles:[]}));
+  write(good,JSON.stringify({replace:'<button id="play">Continue</button>'}));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[noop1,noop2,good]});
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.recoveryUsed,true);
   assert.equal(result.generation.focusedFinalRetry,true);
+  assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.timeoutMs,150000);
-  assert.equal(result.generation.maxPredict,768);
+  assert.equal(result.generation.maxPredict,384);
   assert.equal(result.generation.temperature,0.22);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
@@ -1336,12 +1337,13 @@ test('second malformed JSON receives the bounded focused third retry', async () 
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'malformed-third-retry'}),null,2));
   write(bad1,'{"edits":[');
   write(bad2,'{"edits":[{"path":"index.html"');
-  write(good,JSON.stringify({edits:[{path:'index.html',find:'>Play<',replace:'>Continue<'}],newFiles:[],replaceFiles:[]}));
+  write(good,JSON.stringify({replace:'<button id="play">Continue</button>'}));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[bad1,bad2,good]});
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.focusedFinalRetry,true);
+  assert.equal(result.generation.focusedReplaceOnly,true);
   assert.equal(result.generation.temperature,0.22);
-  assert.equal(result.generation.completionMode,'JSON_EDIT');
+  assert.equal(result.generation.completionMode,'JSON_REPLACE_ONLY');
   assert.deepEqual(result.changedFiles,['index.html']);
 });
 
