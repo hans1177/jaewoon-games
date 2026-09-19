@@ -1,5 +1,5 @@
 {
-  "version": 94,
+  "version": 95,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -3069,40 +3069,23 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_CODING_SELF_IMPROVEMENT_CORE_SYNC_V94_2026-09-19",
+    "id": "VIBE2_CODING_SELF_IMPROVEMENT_PHASE1_VERIFIED_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_CODING_SELF_IMPROVEMENT_CORE_IMPLEMENTATION_2026-09-19",
-    "reason": "SYNC_EXPLICIT_EXECUTION_LANES_AND_DIVERSE_CANDIDATE_CODING_STRATEGIES_BEFORE_FINAL_QA",
-    "implementationState": "CORE_PHASE_1_IMPLEMENTED_QA_PENDING",
-    "implementedNow": [
-      "EXISTING_RESPONSIBILITY_GRAPH_AND_CODING_ARCHITECTURE_COMPILED_INTO_TASK_LOCAL_EDIT_CONTRACT",
-      "EDIT_CONTRACT_INJECTED_INTO_EXISTING_SOURCE_WORKER_PROMPT_PATH",
-      "CODING_METHOD_AND_FIRST_ATTEMPT_TELEMETRY_PERSISTED_IN_CANDIDATE_AND_IMMUTABLE_WORKER_RESULT",
-      "VERIFIED_FAN_IN_REGRESSION_REVIEW_IDENTITY_REQUIRED_BEFORE_CODING_STRATEGY_POSITIVE_LEARNING",
-      "REPEATED_MULTI_GAME_VERIFIED_STRATEGY_CAN_BECOME_PREFERRED_AND_IS_REINJECTED_ADVISORY_ONLY",
-      "PLANNING_BACKLOG_CAPACITY_SEPARATED_FROM_ACTIVE_EXECUTION_WAVE",
-      "PLANNING_BACKLOG_MINIMUM_40_TARGET_60_PERSISTENT_POOL_256_RUNTIME_CONTRACT",
-      "GAME_PRIMARY_RESERVE_LANE_EXCLUDES_NONDEVELOPMENT_TASKS_FROM_GAME_WORKER_BUDGET",
-      "RELEASE_WAIT_EXCLUDED_FROM_RUNNABLE_DEVELOPMENT_BACKLOG_CAPACITY",
-      "ALL_CANDIDATE_RELEASE_CONTROL_SETTLEMENT_PATHS_REPLAY_ON_LATEST_CONTROL_STATE_WITHOUT_JSON_REBASE",
-      "EXPLICIT_QUEUE_EXECUTION_LANE_CLASSIFICATION_GAME_PRIMARY_RECOVERY_FAST_CONTROL_FAST_LEARNING_IDLE_RELEASE_WAIT",
-      "GAME_SOURCE_REPAIR_RETRY_REMAINS_GAME_PRIMARY_INSTEAD_OF_SYSTEM_RECOVERY_LANE",
-      "SPECULATIVE_CANDIDATES_RECEIVE_DISTINCT_CODING_STRATEGY_ROLES",
-      "ACTUAL_CANDIDATE_STRATEGY_ROLE_IS_RECORDED_FOR_VERIFIED_STRATEGY_LEARNING"
-    ],
-    "pending": [
-      "ENFORCE_SYMBOL_LEVEL_SEMANTIC_DIFF_BUDGET_AFTER_GENERATION_NOT_ONLY_PROMPT_CONTRACT",
-      "FAILURE_LOCAL_MEMORY_INDEX",
-      "PATCH_RECIPE_COMPILER",
-      "CONFIDENCE_CALIBRATION_WITH_OBSERVED_ERROR",
-      "REGRESSION_HOTSPOT_MAP",
-      "CAUSAL_REPLAY_SANDBOX",
-      "PATCH_PROVENANCE_GRAPH",
-      "REGRESSION_PREDICTION",
-      "LEARNING_DECAY",
-      "ARCHITECTURE_DRIFT_DETECTOR",
-      "CANONICAL_CODING_CONSTITUTION_PROMOTION"
+    "previousChangeRecordId": "VIBE2_CODING_SELF_IMPROVEMENT_CORE_SYNC_V94_2026-09-19",
+    "reason": "PROMOTE_DOCUMENTED_CODING_METHOD_AND_GAME_PRIMARY_BACKLOG_CORE_AFTER_LATEST_MAIN_QA_PASSED",
+    "implementationState": "CORE_PHASE_1_VERIFIED",
+    "qa": {
+      "head": "e1b9c4061ff472fc3dcac032ca1fb6d35b9877fa",
+      "vibeQa": "PASS",
+      "integratedRegression": "PASS",
+      "coreQa": "PASS"
+    },
+    "nextImplementation": [
+      "PHYSICALLY_SEPARATE_RECOVERY_FAST_CONTROL_FAST_AND_LEARNING_IDLE_DISPATCH_FROM_GAME_PRIMARY_RESERVE",
+      "ADD_AUXILIARY_LANE_LATENCY_AND_PREEMPTION_TELEMETRY",
+      "VERIFY_LIVE_ACTIVE_WAVE_CAN_PLAN_BACKLOG_WITHOUT_RESERVING_NEXT_WAVE",
+      "VERIFY_NONDEVELOPMENT_LANES_NEVER_REDUCE_GAME_PRIMARY_ACTIVE_WAVE"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
@@ -3110,24 +3093,22 @@
       "taskLocalExploration": true,
       "fanInOnlyRefill": true,
       "singleActiveWorkerWave": true,
-      "systemAiNonblocking": true,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
       "sourceWriteOnlyOnCandidateBranch": true,
       "planningBacklogContinuesDuringActiveWave": true,
-      "planningBacklogTarget": 60,
       "planningBacklogMinimum": 40,
+      "planningBacklogTarget": 60,
       "persistentQueueMax": 256,
       "nonDevelopmentLanesDoNotConsumeGamePrimarySlots": true,
       "sourceWorkerReceivesCompiledEditContract": true,
-      "codingMethodLearningVerifiedOnly": true,
-      "strategyLearningCannotExpandAuthority": true,
-      "candidateReleaseControlJsonRebaseForbidden": true
+      "verifiedStrategyLearningOnly": true,
+      "strategyLearningCannotExpandAuthority": true
     }
   },
   "vibeExecutionLaneContract": {
     "version": 1,
-    "status": "GAME_PRIMARY_AND_PLANNING_LANE_CORE_IMPLEMENTED_QA_PENDING",
+    "status": "GAME_PRIMARY_AND_PLANNING_LANE_VERIFIED_AUXILIARY_DISPATCH_PENDING",
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "documentFirst": true,
     "principle": "GAME_PRIMARY_WAVE_IS_EXECUTION_CAP_NOT_TOTAL_COMPANY_CONCURRENCY",
@@ -3197,11 +3178,17 @@
       "DEDICATED_AUXILIARY_DISPATCH_FOR_LEARNING_IDLE_WHEN_PRODUCTION_CAPACITY_ALLOWS",
       "MEASURED_RECOVERY_FAST_AND_CONTROL_FAST_LATENCY_TELEMETRY",
       "VERIFY_LIVE_WAVE_BACKLOG_FILL_AND_NO_AUXILIARY_GAME_SLOT_CONSUMPTION"
-    ]
+    ],
+    "qaEvidence": {
+      "latestVerifiedHead": "e1b9c4061ff472fc3dcac032ca1fb6d35b9877fa",
+      "vibeQaRunId": 35438149030,
+      "integratedRegressionRunId": 35438149014,
+      "coreQaRunId": 35438149010
+    }
   },
   "vibeCodingMethodSelfImprovement": {
     "version": 1,
-    "status": "CORE_PHASE_1_IMPLEMENTED_QA_PENDING",
+    "status": "CORE_PHASE_1_VERIFIED",
     "authority": "OWNER_DIRECTIVE_2026-09-19",
     "documentFirst": true,
     "objective": "VIBE_LEARNS_WHICH_CODING_METHOD_PRODUCES_MORE_CORRECT_GAME_FUNCTIONALITY_WITH_FEWER_BAD_EDITS_RETRIES_AND_REGRESSIONS",
@@ -3596,7 +3583,27 @@
       "LEARNING_DECAY",
       "ARCHITECTURE_DRIFT_DETECTOR",
       "CANONICAL_CODING_CONSTITUTION_PROMOTION"
-    ]
+    ],
+    "qaEvidence": {
+      "latestVerifiedHead": "e1b9c4061ff472fc3dcac032ca1fb6d35b9877fa",
+      "vibeQa": {
+        "runId": 35438149030,
+        "conclusion": "success"
+      },
+      "integratedRegression": {
+        "runId": 35438149014,
+        "conclusion": "success"
+      },
+      "coreQa": {
+        "runId": 35438149010,
+        "conclusion": "success"
+      },
+      "staleContractRepairs": [
+        "planner backlog fixtures use catalog-authorized game identity",
+        "machine handoff auxiliary-lane assertion uses existing queuedPreview schema",
+        "adaptive queue fixture explicitly declares development implementation lane"
+      ]
+    }
   },
   "vibeRecoveryLearningLoop": {
     "version": 1,
