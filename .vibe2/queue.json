@@ -4530,7 +4530,7 @@
       "requiresOwnerDecision": false,
       "protectedChange": false,
       "paidResourceRequired": false,
-      "blocker": null,
+      "blocker": "slot-released-awaiting-fan-in",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -4576,7 +4576,8 @@
         "workload:prep-ms:9884",
         "workload:cycle-ms:43975",
         "failure-cause:MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED",
-        "system-steward:machine-state-revalidated:v3-external-wave-256"
+        "system-steward:machine-state-revalidated:v3-external-wave-256",
+        "slot-dispatch:35425880856:1"
       ],
       "lastOutcome": "SYSTEM_STEWARD_STALE_MACHINE_BLOCKER_RECOVERED",
       "reservationId": "35425782021:1",
