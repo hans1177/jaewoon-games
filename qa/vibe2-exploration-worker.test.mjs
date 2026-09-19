@@ -124,7 +124,11 @@ test('exploration compiles responsibility graph coding architecture and semantic
     goal:'모바일 pointer placement input failure를 수정한다',
     source:{root:'web-games/contract-demo',responsibleFiles:['web-games/contract-demo/index.html'],ignoredPaths:[]},
     selectedTask:{evidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'},
-    workPackage:{id:'contract-wp',sharedContext:{diagnosticEvidence:['MOBILE_PLACEMENT_INPUT_MISSING']}}
+    workPackage:{id:'contract-wp',sharedContext:{diagnosticEvidence:['MOBILE_PLACEMENT_INPUT_MISSING']}},
+    unifiedLearning:{failureFingerprint:'web|MOBILE_PLACEMENT_INPUT_MISSING|MOBILE_INPUT|PLACEMENT',failureLocalMemory:[
+      {id:'verified-local',verified:true,reusable:true,failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',reusablePatterns:['trace pointer input to placement state'],avoidPatterns:['do not rewrite economy']},
+      {id:'unverified-local',verified:false,reusable:true,failureCause:'runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING',reusablePatterns:['unsafe guess'],avoidPatterns:[]}
+    ]}
   };
   const result=exploreVibe2WorkOrder({cwd,order});
   assert.equal(result.editContract.mode,'COMPILED_EDIT_CONTRACT');
@@ -134,12 +138,21 @@ test('exploration compiles responsibility graph coding architecture and semantic
   assert.deepEqual(result.editContract.allowedResponsibleFiles,['index.html']);
   assert.ok(result.editContract.preserveSemantics.includes('SAVE_KEY:contract-demo-save'));
   assert.equal(result.editContract.semanticDiffBudget.unrelatedSystemMutationForbidden,true);
+  assert.equal(result.editContract.patchRecipe.mode,'VERIFIED_FAILURE_LOCAL_RECIPE');
+  assert.equal(result.editContract.patchRecipe.verifiedMemoryCount,1);
+  assert.deepEqual(result.editContract.patchRecipe.verifiedMemoryIds,['verified-local']);
+  assert.ok(result.editContract.patchRecipe.reusePatterns.includes('trace pointer input to placement state'));
+  assert.equal(result.editContract.patchRecipe.reusePatterns.includes('unsafe guess'),false);
+  assert.equal(result.editContract.patchRecipe.scopeExpansionAllowed,false);
+  assert.equal(result.editContract.patchRecipe.qaBypassAllowed,false);
   assert.ok(result.editContract.codingArchitecture.invariantIds.includes('INPUT_TO_STATE_CAUSALITY'));
   assert.equal(result.editContract.writableScopeExpansionAllowed,false);
   const guidance=explorationGuidance(result);
   assert.ok(guidance.includes('[COMPILED EDIT CONTRACT]'));
   assert.ok(guidance.includes('주 책임 심볼='));
   assert.ok(guidance.includes('Semantic diff 허용 시스템='));
+  assert.ok(guidance.includes('[PATCH RECIPE] mode=VERIFIED_FAILURE_LOCAL_RECIPE'));
+  assert.ok(guidance.includes('verified reuse=trace pointer input to placement state'));
 });
 
 test('performance sanity is read only and requires exploration evidence',()=>{
