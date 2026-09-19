@@ -1,5 +1,5 @@
 {
-  "version": 156,
+  "version": 157,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-20",
@@ -3758,47 +3758,18 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_SOURCE_GENERATION_CORRUPTION_GUARD_AND_RESTORE_2026-09-20",
+    "id": "SUPERVISED_WEB_GAME_COAUTHORING_2026-09-20",
     "documentIsCode": true,
-    "documentationFirst": false,
-    "previousChangeRecordId": "VIBE2_CAUSAL_FOCUSED_RETRY_SAFETY_2026-09-20",
-    "reason": "SOURCE_CANDIDATE_GENERATION BOTTLENECK REPAIR MUST NOT TRADE CORRECTNESS FOR SPEED. RESTORE THE PRE-CORRUPTION CELESTIAL BASTION SOURCE, KEEP FIRST-ATTEMPT TARGET SELECTION, FAST-ESCALATE ONLY AFTER CAUSAL EDIT_MATCH/TIMEOUT, AND REJECT PLACEHOLDER REPLACEMENT SOURCE.",
-    "evidence": {
-      "baselineBottleneck": {
-        "runId": 35452958416,
-        "pass": 2,
-        "fail": 18,
-        "editMatch": 6,
-        "timeout": 6
-      },
-      "causalFastPathSource": [
-        "03d8c27e8bbf3ec9759f9d8bd4758b22d7a78c03",
-        "8903d637486725e6501e1d0231e49fa2ddd87447"
-      ],
-      "corruptedGameRestore": "dd08e22db81e6d88a3a0abec302ef8e9169ba479",
-      "replacementPlaceholderGuard": [
-        "e2f44a6d9340e9626f35e4a1de55b9cce180f8e1",
-        "0b72565fe475bac1fac7c445a6ed3f0cf86d7ca1"
-      ],
-      "companyEvolutionQa": {
-        "runId": 35476198189,
-        "conclusion": "success"
-      }
-    },
-    "invariants": {
-      "saveKeyMeaningPreserved": true,
-      "gameplayActionBindingPreserved": true,
-      "exactEditRequired": true,
-      "semanticDiffBudgetRequired": true,
-      "firstAttemptGoalTargetSelectionPreserved": true,
-      "placeholderSourceForbidden": true,
-      "qualityGatesNotWeakened": true
-    },
-    "pending": [
-      "CENTRAL_POLICY_CONTRACT_QA_REVALIDATION_AFTER_RESTORE",
-      "LATEST_VIBE2_CORE_QA_REVALIDATION",
-      "NEXT_CLEAN_20_WAVE_MEASURE_EDIT_MATCH_AND_TIMEOUT",
-      "CONFIRM_FANTASY_SURVIVAL_RUNTIME_SEED_MATERIALIZATION"
+    "documentationFirst": true,
+    "previousChangeRecordId": "VIBE2_SOURCE_GENERATION_CORRUPTION_GUARD_AND_RESTORE_2026-09-20",
+    "reason": "OWNER_REQUESTED ASSISTANT+VIBE COAUTHORING BECAUSE CURRENT WEB GAME CREATION QUALITY IS BELOW EXPECTATION. DOCUMENT THE SUPERVISED BUILD CONTRACT BEFORE ENFORCING IT IN PLANNER/RUNNER.",
+    "next": [
+      "MARK_MAJOR_WEB_BUILD_TASKS_SUPERVISED",
+      "PROPAGATE_SUPERVISION_CONTRACT_TO_WORK_ORDER",
+      "DISABLE_AUTO_PROMOTION_UNTIL_SUPERVISED_APPROVAL",
+      "ADD_REGRESSION_TESTS",
+      "RUN_CENTRAL_AND_VIBE_QA",
+      "USE_FIRST_SUPERVISED_BUILD_AS_LEARNING_EXAMPLE"
     ]
   },
   "vibeExecutionLaneContract": {
@@ -5651,5 +5622,70 @@
       }
     },
     "staticQa": "tools/vibe2-incremental-qa.mjs"
+  },
+  "supervisedWebGameProduction": {
+    "version": 1,
+    "status": "ACTIVE",
+    "mode": "ASSISTANT_SUPERVISED_VIBE_COAUTHORING",
+    "reason": "WEB_GAME_BUILD_QUALITY_IS_BELOW_OWNER_EXPECTATION; VIBE_REMAINS_IMPLEMENTATION_ENGINE_WHILE ASSISTANT_SUPERVISION OWNS DECOMPOSITION, INVARIANT_LOCK, CANDIDATE_REVIEW, AND RELEASE_DECISION.",
+    "appliesTo": [
+      "WEB_BASE_IMPLEMENTATION",
+      "EXISTING_WEB_ASSESS_AND_IMPLEMENT",
+      "EXISTING_WEB_DEVELOPMENT_CONTINUATION",
+      "WEB_STRICT_80_88_TO_89",
+      "PRESENTATION_PASS"
+    ],
+    "autonomousMicroRepairAllowed": true,
+    "supervisedStages": [
+      "SOURCE_AND_DESIGN_READ",
+      "GAMEPLAY_LOOP_DECOMPOSITION",
+      "SAVE_INPUT_CORE_LOOP_INVARIANT_LOCK",
+      "VIBE_IMPLEMENTATION_CANDIDATE",
+      "SUPERVISOR_DIFF_AND_PLAYABILITY_REVIEW",
+      "MOBILE_AND_RUNTIME_QA",
+      "SUPERVISED_PROMOTION"
+    ],
+    "roleSplit": {
+      "assistantSupervisor": [
+        "DECOMPOSE_FEATURE_AND_CORE_LOOP",
+        "LOCK_EXISTING_GAME_IDENTITY_SAVE_AND_PROGRESS",
+        "REVIEW_DIFF_FOR_FAKE_OR_UNRELATED_IMPLEMENTATION",
+        "REJECT_PLACEHOLDER_VALIDATION_ONLY_OR_NO_OP_CHANGES",
+        "DECIDE_WHETHER_CANDIDATE_IS_READY_FOR_PROMOTION"
+      ],
+      "vibe": [
+        "READ_TASK_LOCAL_SOURCE",
+        "GENERATE_REAL_GAME_SOURCE",
+        "IMPLEMENT_WITHIN_RESPONSIBLE_FILES",
+        "RUN_INCREMENTAL_QA_AND_PRODUCE_EVIDENCE"
+      ]
+    },
+    "promotionContract": {
+      "candidateGenerationAllowedAutomatically": true,
+      "automaticPromotionForSupervisedBuilds": false,
+      "supervisedApprovalRequired": true,
+      "directMainGameSourceWrite": false,
+      "verifiedQaStillRequired": true,
+      "qaMayNotBeWaivedBySupervisor": true
+    },
+    "protectedSemantics": [
+      "GAME_IDENTITY",
+      "SAVE_KEY_AND_SAVE_MEANING",
+      "CORE_LOOP",
+      "PROGRESSION",
+      "BALANCE_UNLESS_OWNER_EXPLICITLY_CHANGES_IT",
+      "MOBILE_INPUT",
+      "EXISTING_VALID_FEATURES"
+    ],
+    "hardReject": [
+      "PLACEHOLDER_SOURCE",
+      "FAKE_GAMEPLAY",
+      "VALIDATION_ONLY_PATCH",
+      "UNRELATED_FULL_REWRITE",
+      "SAVE_RESET_WITHOUT_MIGRATION",
+      "BUTTON_OR_LABEL_ONLY_PASS_CHEAT",
+      "BROKEN_MOBILE_INPUT"
+    ],
+    "learningGoal": "AFTER_MULTIPLE_VERIFIED_SUPERVISED_BUILDS, DISTILL_SUCCESSFUL_PATTERNS_AND_RAISE_AUTONOMY_ONLY_WHEN FIRST_CANDIDATE_PASS_AND_PLAYABILITY_STAY_HIGH."
   }
 }
