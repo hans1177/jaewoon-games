@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T12:57:15.831Z"
+      "updatedAt": "2026-09-19T13:05:26.278Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1368,7 +1368,7 @@
       "failureStage": "UNKNOWN_STAGE",
       "failureSignature": "source-candidate-generation-failed",
       "blastRadius": "portfolio:15",
-      "checkpoint": "2026-09-19T12:34:48Z",
+      "checkpoint": "2026-09-19T12:57:48Z",
       "evidence": [
         "central-policy:company-learning/platform-release-roadmap.json",
         "vibe2-auto-planner:game-catalog",
@@ -1592,7 +1592,17 @@
         "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22primary%22%2C%22strategy%22%3A%22PRIMARY_RESPONSIBILITY_MINIMAL%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CTIMEOUT%22%2C%22failureClass%22%3A%22FULL_REWRITE_SIZE%22%2C%22runEvidence%22%3A%22actions-run%3A35442308252%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
         "workload:prep-ms:7343",
         "workload:cycle-ms:724700",
-        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CTIMEOUT%22%2C%22failureClass%22%3A%22FULL_REWRITE_SIZE%22%2C%22runEvidence%22%3A%22actions-run%3A35442308252%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D"
+        "coding-strategy-negative:%7B%22version%22%3A1%2C%22variant%22%3A%22speculative-1%22%2C%22strategy%22%3A%22DEPENDENCY_SAFE_COHERENT_PATCH%22%2C%22failureFingerprint%22%3A%22web%7CFULL_REWRITE_SIZE%7CTIMEOUT%22%2C%22failureClass%22%3A%22FULL_REWRITE_SIZE%22%2C%22runEvidence%22%3A%22actions-run%3A35442308252%22%2C%22verifiedBy%22%3A%22IMMUTABLE_WORKER_RESULT%22%2C%22infrastructureFailure%22%3Afalse%7D",
+        "base-main:f496a0e182fb6a65f3e1e1069be2cf01ac5237cf",
+        "actions-run:35443243108",
+        "reservation-id:35443243108:1",
+        "workload:prep-ms:6347",
+        "workload:cycle-ms:867263",
+        "exploration-reuse:6e9a2863606376eeab1bfce2",
+        "workload:prep-ms:6425",
+        "workload:cycle-ms:871384",
+        "system-steward:retry-exhausted-regenerated:generation-5",
+        "repair-mode:CAUSAL_REGENERATION_GENERATION_5"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1608,7 +1618,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T08:20:33.605Z",
-      "updatedAt": "2026-09-19T12:57:15.831Z"
+      "updatedAt": "2026-09-19T13:05:26.277Z"
     },
     {
       "id": "recovery-c9cbc89486453076c641",
