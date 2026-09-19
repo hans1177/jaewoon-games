@@ -36,7 +36,9 @@
         gameElement.innerHTML = `
             <div id="player">Player</div>
 Player</div><div id="enemies">Enemies</div><div id="progress"></div><div id="save-state"></div
-            <div id="progress"></div>
+        game.player.health -= 10;
+        updateGameState();
+    });
             <div id="save-state"></div>
         `;
 
