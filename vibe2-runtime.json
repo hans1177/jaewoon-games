@@ -153,6 +153,17 @@
       "systemStewardProtectionPreserved": true,
       "ownerDirectiveStillHighest": true,
       "supervisorUsesSpareCapacityWhileActionableDevelopmentExists": true
+    },
+    "waveContractPinning": {
+      "enabled": true,
+      "source": "RESERVE_TIME_MAIN_SHA",
+      "reserveExportsContractSha": true,
+      "explorationUsesPinnedContract": true,
+      "workerUsesPinnedContract": true,
+      "fanInUsesPinnedContract": true,
+      "controlBranchRole": "STATE_ONLY",
+      "mainChangesAfterReservationApplyToNextWaveOnly": true,
+      "fanInRegressionAgainstReservedContract": true
     }
   },
   "adaptiveBackpressure": {
