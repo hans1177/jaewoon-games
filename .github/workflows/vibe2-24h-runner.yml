@@ -76,6 +76,8 @@ jobs:
     timeout-minutes: 8
     outputs:
       continue_required: ${{ steps.queue_state.outputs.continue_required }}
+      wave_ready: ${{ steps.queue_state.outputs.wave_ready }}
+      active_worker_reservations: ${{ steps.queue_state.outputs.active_worker_reservations }}
     concurrency:
       group: vibe2-control-state-vibe2-unreal-core
       cancel-in-progress: false
@@ -351,8 +353,18 @@ jobs:
             YES|NO) ;;
             *) echo "invalid VIBE2_QUEUE_CONTINUE=${continue_required:-}" >&2; exit 1 ;;
           esac
+          active_worker_reservations="$(node -e "const fs=require('fs');const q=JSON.parse(fs.readFileSync('.vibe2/queue.json','utf8'));const rows=(q.tasks||[]).filter(t=>String(t.status||'').toLowerCase()==='running'&&String(t.reservationRunId||'').trim()&&!String(t.blocker||'').trim());process.stdout.write(String(rows.length))")"
+          if [ "${active_worker_reservations:-0}" -eq 0 ]; then
+            wave_ready='YES'
+          else
+            wave_ready='NO'
+          fi
           echo "continue_required=${continue_required:-NO}" >> "$GITHUB_OUTPUT"
+          echo "wave_ready=$wave_ready" >> "$GITHUB_OUTPUT"
+          echo "active_worker_reservations=${active_worker_reservations:-0}" >> "$GITHUB_OUTPUT"
           echo "VIBE2_24H_CONTINUE=${continue_required:-NO}"
+          echo "VIBE2_24H_ACTIVE_WORKER_RESERVATIONS=${active_worker_reservations:-0}"
+          echo "VIBE2_24H_WAVE_READY=$wave_ready"
 
       - name: Recover reviewed winners stranded before release dispatch
         env:
@@ -446,6 +458,7 @@ jobs:
 
   continuous:
     needs: plan
+    if: ${{ needs.plan.outputs.continue_required == 'YES' && needs.plan.outputs.wave_ready == 'YES' }}
     uses: ./.github/workflows/vibe2-continuous-core.yml
     permissions:
       contents: write
@@ -453,7 +466,7 @@ jobs:
 
   game_study:
     needs: [plan, continuous]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.continue_required != 'YES' }}
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.continue_required != 'YES' }}
     uses: hans1177/jaewoon-games/.github/workflows/vibe2-game-study-continuous.yml@vibe2-unreal-core
     permissions:
       contents: write
@@ -461,7 +474,7 @@ jobs:
 
   refill:
     needs: [plan, continuous, game_study]
-    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.continue_required == 'YES' }}
+    if: ${{ always() && needs.plan.result == 'success' && needs.plan.outputs.wave_ready == 'YES' && needs.plan.outputs.continue_required == 'YES' && needs.continuous.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
