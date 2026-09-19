@@ -311,7 +311,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T06:08:11.261Z",
-      "updatedAt": "2026-09-19T09:09:06.844Z"
+      "updatedAt": "2026-09-19T09:12:13.468Z"
     },
     {
       "id": "recovery-93206d94b0c142b4b6b0",
@@ -1483,7 +1483,17 @@
         "reservation-id:35433173859:1",
         "workload:prep-ms:4911",
         "workload:cycle-ms:745982",
-        "exploration-reuse:4f5209e7867451bbb8268450"
+        "exploration-reuse:4f5209e7867451bbb8268450",
+        "actions-run:35433855094",
+        "reservation-id:35433855094:1",
+        "workload:prep-ms:10070",
+        "workload:cycle-ms:39851",
+        "failure-cause:MACHINE_STATE_INCONSISTENT:QUEUE_MAX_DIVERGED",
+        "variant:speculative-1",
+        "workload:prep-ms:5045",
+        "workload:cycle-ms:38847",
+        "system-steward:stale-machine-state-blocker-recovered",
+        "system-steward:machine-state-revalidated:v3-external-wave-256"
       ],
       "recoveryStrategy": "RESUME_EXACT_FAILED_GAME_STAGE_WITH_VIBE2_VIBE3_AND_PRESERVE_VERIFIED_CHECKPOINT",
       "verificationPlan": [
@@ -1499,7 +1509,7 @@
       "retries": 0,
       "maxRetries": 5,
       "createdAt": "2026-09-19T08:20:33.605Z",
-      "updatedAt": "2026-09-19T09:09:06.843Z"
+      "updatedAt": "2026-09-19T09:12:13.467Z"
     }
   ]
 }
