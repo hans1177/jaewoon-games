@@ -86,16 +86,16 @@ test('DESIGN_ONLY flow and baseline mirror current central requirements',()=>{
     'CORE_LOOP_ACTION_FEEDBACK_CHOICE_REWARD','MARKET_TARGET_DIRECTION_RECORDED',
     'TARGET_PLATFORM_UX_DIRECTION_DEFINED','PLATFORM_SELECTION_RECORDED',
     'MANDATORY_WEB_COMPANION_REQUIREMENT_RECORDED','APPROVED_SCOPE_INVENTORY_RECORDED',
-    'FIVE_DISTINCT_LEAD_MODELS','FIVE_DEPARTMENT_LEAD_REVIEWS_RECORDED',
+    'DETERMINISTIC_DESIGN_PRE_GATE_PASS','DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED',
     'STRICT_DESIGN_SCORE_AT_LEAST_80','STRICT_DESIGN_HARD_FAILURES_EMPTY'
   ])assert.ok(design.baselineReadyRequires.includes(token),`missing DESIGN_ONLY requirement: ${token}`);
   assert.equal(design.readyState,'DESIGN_BASELINE_READY');
   assert.match(flow,/TARGET_PLATFORM_UX_DIRECTION_DEFINED/);
-  assert.match(flow,/FIVE_DEPARTMENT_LEAD_REVIEWS_RECORDED/);
+  assert.match(flow,/DETERMINISTIC_DEPARTMENT_EVIDENCE_RECORDED/);
   assert.match(flow,/STRICT_DESIGN_SCORE_AT_LEAST_80/);
 });
 
-test('five departments keep distinct direct lead reviews',()=>{
+test('development and release keep distinct leads while DESIGN_ONLY review is deterministic',()=>{
   assert.equal(directive.ai.departmentLeadModelsMustBeDistinct,true);
   assert.equal(directive.ai.departmentLeadAssignmentRemappable,true);
   const leadModels=roles.map(role=>directive.ai.departmentLeadModels?.[role]);
@@ -104,23 +104,23 @@ test('five departments keep distinct direct lead reviews',()=>{
   assert.equal(directive.ai.minDistinctModelsPerDepartment,1);
   assert.equal(directive.ai.departmentReviewModelCount,1);
   assert.match(flow,/fiveDistinctLeadModelIdsRequiredPerCycle: true/);
-  assert.match(flow,/designOnlyReviewMode: FIVE_DISTINCT_LEAD_PARALLEL_REVIEW/);
+  assert.match(flow,/designOnlyReviewMode: DETERMINISTIC_EVIDENCE_NO_AI_VERDICT/);
   assert.match(flow,/allModelsWithinDepartmentMustBeDistinct: false/);
-  assert.match(cycle,/five_lead_reviews/);
-  assert.match(cycle,/GEMINI_RESOLVED_DISTINCT_LEAD_GATE/);
+  assert.match(cycle,/deterministic_department_evidence/);
+  assert.doesNotMatch(cycle,/GEMINI_RESOLVED_DISTINCT_LEAD_GATE/);
   assert.match(devCycle,/DEPARTMENT_LEAD_GATE/);
   assert.match(releaseCycle,/DEPARTMENT_LEAD_GATE/);
 });
 
-test('DESIGN_ONLY uses direct lead feedback without meeting or rebuttal layer',()=>{
+test('DESIGN_ONLY uses deterministic evidence without AI meeting or rebuttal layer',()=>{
   assert.equal(directive.ai.departmentRepresentativeAuthoredByLead,false);
   assert.equal(directive.ai.departmentRebuttalAuthoredByLead,false);
   assert.equal(directive.ai.meeting.designOnlyMeetingRequired,false);
   assert.equal(directive.ai.meeting.crossDepartmentRebuttalRounds,0);
   assert.equal(directive.ai.meeting.rebuttalOwner,null);
-  assert.equal(directive.ai.meeting.designOnlyRevisionInput,'FIVE_LEAD_REVIEWS_DIRECT');
-  assert.match(flow,/designOnlyReviewMode: FIVE_DISTINCT_LEAD_PARALLEL_REVIEW/);
-  assert.match(cycle,/five_lead_reviews/);
+  assert.equal(directive.ai.meeting.designOnlyRevisionInput,'DETERMINISTIC_FAILED_AXIS_EVIDENCE');
+  assert.match(flow,/designOnlyReviewMode: DETERMINISTIC_EVIDENCE_NO_AI_VERDICT/);
+  assert.match(cycle,/deterministic_department_evidence/);
   assert.doesNotMatch(cycle,/rebuttalAuthoredByDepartmentLeads:true/);
 });
 
