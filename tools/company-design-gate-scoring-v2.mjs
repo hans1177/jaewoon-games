@@ -119,6 +119,25 @@ export function scoreDesignGateV2({seed={},designRecord={},cycleStatus={},roblox
   const criticalAxisFailures=Object.keys(DESIGN_GATE_WEIGHTS).filter(axis=>Number(evidenceLevels[axis]||0)<DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT);
   const hardFailures=[];
   const rejectionReasons=[];
+  const ownerPreservationSeed=seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true&&clean(seed?.OWNER_REBUILD_MODE).toUpperCase()==='PRESERVATION_PRESENTATION_UPGRADE';
+  if(ownerPreservationSeed){
+    const preservation=design?.preservationContract;
+    const requiredLocked=['WORLD_AND_REGIONS','STORY_AND_QUESTS','COMBAT_RULES','CRAFTING_RECIPES_AND_COSTS','SAVE_KEY_AND_SCHEMA_MEANING','PROGRESSION','BALANCE_VALUES','DROPS_AND_REWARDS','HIT_AND_COOLDOWN_SEMANTICS','MULTIPLAYER_MODE'];
+    const requiredPasses=['ASSET_ADAPTATION','LIVING_MOTION','ANIMATION_FEEL','VFX','AUDIO_FEEL','CAMERA_LANGUAGE','POLISH_MOBILE'];
+    const locked=new Set(list(preservation?.lockedSemantics));
+    const passes=new Set(list(preservation?.presentationPasses));
+    const preservationReady=preservation?.mode==='PRESERVATION_PRESENTATION_UPGRADE'
+      &&preservation?.sourceOfTruth==='EXISTING_IMPLEMENTATION_AND_OWNER_SEED'
+      &&preservation?.gameplayRule==='NO_GAMEPLAY_MECHANIC_ADDITION_REMOVAL_OR_REBALANCE'
+      &&Number(preservation?.targetSessionMinutes)===Number(seed?.TARGET_SESSION_MINUTES||30)
+      &&requiredLocked.every(value=>locked.has(value))
+      &&requiredPasses.length===passes.size&&requiredPasses.every(value=>passes.has(value))
+      &&playMode===clean(seed?.MULTIPLAYER_DESIGN_MODE).toUpperCase();
+    if(!preservationReady){
+      hardFailures.push('OWNER_PRESERVATION_CONTRACT_MISSING');
+      rejectionReasons.push(rejectionReason({code:'OWNER_PRESERVATION_CONTRACT_MISSING',axis:'IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY',evidenceLevel:0,minimumRequired:100,evidence:{ownerRebuildMode:clean(seed?.OWNER_REBUILD_MODE),reuseExistingGameplay:seed?.REUSE_EXISTING_GAMEPLAY_IMPLEMENTATION===true},requiredAction:'기존 게임의 월드·스토리·퀘스트·전투·제작·진행·밸런스·세이브 의미를 잠그고 표현 패스만 허용하는 preservationContract를 설계에 명시한다.'}));
+    }
+  }
   if(!playModeKnown){
     hardFailures.push('MULTIPLAYER_MISSING');
     rejectionReasons.push(rejectionReason({code:'MULTIPLAYER_MISSING',axis:'CATEGORY_IDENTITY',evidenceLevel:evidenceLevels.CATEGORY_IDENTITY,minimumRequired:DESIGN_CRITICAL_AXIS_MINIMUM_PERCENT,evidence:{multiplayerMode:playMode||'MISSING'},requiredAction:'multiplayerMode을 SINGLE/COOP/COMPETITIVE/HYBRID 중 하나로 명시하고 실제 core loop와 일치시킨다.'}));
