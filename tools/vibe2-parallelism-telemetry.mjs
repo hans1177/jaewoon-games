@@ -114,7 +114,7 @@ export function computeParallelismTelemetry(input={}){
   const tasks=Array.isArray(input.tasks)?input.tasks:[];
   const taskById=new Map(tasks.map(task=>[clean(task?.id),task]));
   const adaptiveRows=rows.filter(row=>!isPracticeOnlyResult(row,taskById));
-  const requestedMax=clamp(Math.floor(num(input.requestedMax||rows[0]?.metrics?.requestedMax||20)||20),1,20);
+  const requestedMax=clamp(Math.floor(num(input.requestedMax||rows[0]?.metrics?.requestedMax||30)||30),1,30);
   const effectiveMax=clamp(Math.floor(num(input.effectiveMax||rows[0]?.metrics?.effectiveMax||requestedMax)||requestedMax),1,requestedMax);
   const taskCount=Math.max(0,Math.floor(num(input.taskCount||0)));
   const workerCount=rows.length;
