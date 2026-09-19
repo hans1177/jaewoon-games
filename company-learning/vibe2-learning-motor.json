@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "authority": "MACHINE_EXECUTION_CONTRACT",
   "purpose": "Turn verified Web and Roblox development outcomes into immediate Vibe implementation skill gains without weakening any release, QA, runtime, score, or training gate.",
   "principles": {
@@ -41,7 +41,12 @@
       "ROBLOX_DATASTORE",
       "ROBLOX_REMOTE_SECURITY",
       "ROBLOX_REPLICATION",
-      "ROBLOX_MULTIPLAYER"
+      "ROBLOX_MULTIPLAYER",
+      "STORYTELLING",
+      "NARRATIVE_STRUCTURE",
+      "QUEST_DESIGN",
+      "CHARACTER_ARC",
+      "DIALOGUE"
     ],
     "verifiedSuccessXp": 12,
     "verifiedFailureLessonXp": 5,
@@ -58,7 +63,12 @@
         "MOBILE_INPUT",
         "UI_STATE",
         "DEBUGGING",
-        "PERFORMANCE"
+        "PERFORMANCE",
+        "STORYTELLING",
+        "NARRATIVE_STRUCTURE",
+        "QUEST_DESIGN",
+        "CHARACTER_ARC",
+        "DIALOGUE"
       ],
       "ROBLOX_NATIVE_ONLY": [
         "ROBLOX_STUDIO",
@@ -151,7 +161,12 @@
       "AI",
       "SAVE",
       "PERFORMANCE",
-      "ASSET_PRODUCTION"
+      "ASSET_PRODUCTION",
+      "STORYTELLING",
+      "NARRATIVE_STRUCTURE",
+      "QUEST_DESIGN",
+      "CHARACTER_ARC",
+      "DIALOGUE"
     ],
     "levels": 10,
     "runOn": [
@@ -179,7 +194,11 @@
       "BENCHMARK_LADDER",
       "MINI_GAME_SYSTEM_DRILL",
       "ROBLOX_PATTERN_REVIEW",
-      "SAVE_AND_RETRY_DRILL"
+      "SAVE_AND_RETRY_DRILL",
+      "NARRATIVE_STRUCTURE_DRILL",
+      "QUEST_CAUSALITY_DRILL",
+      "CHARACTER_ARC_DRILL",
+      "DIALOGUE_SCENE_DRILL"
     ],
     "practiceNeverClaimsProductionPass": true,
     "knowledgeBoundary": {
@@ -290,5 +309,52 @@
     "verifiedSecurityOutcomeRequired": true,
     "existingLearningMotorReused": true,
     "shadowTrainerForbidden": true
+  },
+  "narrativeLearning": {
+    "enabled": true,
+    "policyRef": "company-learning/platform-release-roadmap.json#narrativeStorytellingContract",
+    "domains": [
+      "STORYTELLING",
+      "NARRATIVE_STRUCTURE",
+      "QUEST_DESIGN",
+      "CHARACTER_ARC",
+      "DIALOGUE"
+    ],
+    "existingLearningMotorOnly": true,
+    "separateTrainerForbidden": true,
+    "positiveMasteryRequiresVerifiedProjectOutcome": true,
+    "verifiedFailureMayTeachAvoidPattern": true,
+    "practiceDistillation": {
+      "enabled": true,
+      "tool": "tools/vibe2-practice-distillation.mjs",
+      "rawCandidateTextStored": false,
+      "minimumIndependentCorroboration": 2,
+      "distilledTechniqueOnly": true,
+      "directMasteryCredit": false,
+      "directCanonicalTrainingSample": false
+    },
+    "sourcePolicy": {
+      "allowed": [
+        "VERIFIED_INTERNAL_GAME_STORY_OUTCOMES",
+        "USER_PROVIDED_OR_USER_OWNED_TEXT",
+        "PUBLIC_DOMAIN_TEXT",
+        "CLEARLY_LICENSED_TEXT_ALLOWING_REQUIRED_USE",
+        "VERIFIED_ABSTRACTED_NARRATIVE_ANALYSIS"
+      ],
+      "unlicensedCopyrightedFullTextPersistentIngestionForbidden": true,
+      "rawPassageReuseForbidden": true,
+      "verbatimStyleImitationTargetForbidden": true,
+      "rightsOrPublicDomainTraceRequired": true
+    },
+    "retrieval": {
+      "sameGameFirst": true,
+      "order": [
+        "SAME_GAME_VERIFIED_NARRATIVE",
+        "SAME_GENRE_VERIFIED_NARRATIVE",
+        "CROSS_GAME_VERIFIED_NARRATIVE",
+        "VERIFIED_DISTILLED_PRACTICE_KNOWLEDGE",
+        "GENERAL_PLAYBOOK"
+      ]
+    }
   }
 }
