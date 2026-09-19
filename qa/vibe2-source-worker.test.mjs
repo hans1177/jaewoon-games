@@ -85,6 +85,10 @@ test('candidate manifest persists design intelligence requirements and starts ev
   const cwd = tempRoot();
   const responseFile = path.join(cwd, 'model.json');
   const workOrder = order({ responsibleFiles: ['unity-games/demo/Assets/Player.cs'], taskId: 'design-contract' });
+  workOrder.unifiedLearning = {
+    failureFingerprint:'unity|EDIT_MATCH|DEBUGGING',
+    failureLocalMemory:[{id:'verified-edit-match',verified:true,reusable:true,failureCause:'edit match not found',reusablePatterns:['trace exact responsible symbol before edit'],avoidPatterns:['do not widen writable scope']}]
+  };
   workOrder.designIntelligence = {
     version: 1,
     required: true,
@@ -107,6 +111,10 @@ test('candidate manifest persists design intelligence requirements and starts ev
   assert.equal(persisted.codingMethod.version,1);
   assert.equal(persisted.codingMethod.strategy,result.exploration.editContract.strategyHint);
   assert.equal(persisted.codingMethod.semanticDiffBudget.unrelatedSystemMutationForbidden,true);
+  assert.equal(persisted.codingMethod.failureFingerprint,'unity|EDIT_MATCH|DEBUGGING');
+  assert.equal(persisted.codingMethod.patchRecipeMode,'VERIFIED_FAILURE_LOCAL_RECIPE');
+  assert.equal(persisted.codingMethod.verifiedFailureLocalMemoryCount,1);
+  assert.deepEqual(persisted.codingMethod.verifiedFailureLocalMemoryIds,['verified-edit-match']);
   assert.equal(persisted.roleResults.implementation,'PASS');
   for (const key of ['autoPlayer', 'telemetry', 'designReview', 'qa']) {
     assert.equal(result.designEvidence[key].verified, false);
