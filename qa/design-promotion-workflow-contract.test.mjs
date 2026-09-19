@@ -57,8 +57,8 @@ test('promotion persistence clears ephemeral overlay before switching to the run
 
 test('promotion re-evaluates completed DESIGN_ONLY baseline gates with the canonical seed contract before deciding promotion',()=>{
   const source=fs.readFileSync('tools/design-only-promotion-sync.mjs','utf8');
-  assert.match(promotion,/'tools\\/company-baseline-gate\\.mjs'/);
-  assert.match(promotion,/'tools\\/company-game-seed-contract\\.mjs'/);
+  assert.ok(promotion.includes("'tools/company-baseline-gate.mjs'"));
+  assert.ok(promotion.includes("'tools/company-game-seed-contract.mjs'"));
   assert.match(source,/function refreshCompletedDesignBaselineGates/);
   assert.match(source,/spawnSync\(process\.execPath/);
   assert.match(source,/DESIGN_BASELINE_GATE_REFRESH_FAILED/);
