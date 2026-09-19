@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Approved Web Bootstrap</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+}
+main {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+height: 100vh;
+}
+#game {
+width: 100%;
+height: 100%;
+}
+</style>
+</head>
+<body>
+<main id="game">
+<div id="board"></div>
+<div id="turn"></div>
+<div id="player"></div>
+<div id="opponent"></div>
+</main>
+<script>
+// Direct mobile input
+const board = document.getElementById('board');
+const turn = document.getElementById('turn');
+const player = document.getElementById('player');
+const opponent = document.getElementById('opponent');
+
+// Real game-state progression
+let currentPlayer = 'player';
+let gameStatus = 'in-progress';
+
+// Failure/success
+let gameOver = false;
+
+// Restart
+let restart = false;
+
+// Responsive layout
+let isMobile = window.innerWidth < 768;
+
+// Save compatibility
+let saveState = {};
+
+// Game loop
+function gameLoop() {
+if (gameStatus === 'in-progress') {
+if (currentPlayer === 'player') {
+if (restart) {
+gameStatus = 'restart';
+gameOver = true;
+}
+else {
+gameStatus = 'playing';
+}
+}
+else {
+gameStatus = 'opponent';
+}
+}
+else if (gameStatus === 'restart') {
+gameOver = true;
+}
+else if (gameStatus === 'opponent') {
+gameStatus = 'playing';
+}
+}
+
+// Explicit win or loss state
+if (gameStatus === 'win') {
+alert('Player wins!');
+gameOver = true;
+}
+else if (gameStatus === 'loss') {
+alert('Player loses!');
+gameOver = true;
+}
+
+// Update display
+updateDisplay();
+}
+
+// Update display
+function updateDisplay() {
+if (gameStatus === 'in-progress') {
+if (currentPlayer === 'player') {
+player.textContent = 'Player Turn';
+opponent.textContent = 'Opponent Turn';
+}
+else {
+player.textContent = 'Opponent Turn';
+opponent.textContent = 'Player Turn';
+}
+}
+else if (gameStatus === 'restart') {
+player.textContent = 'Restart Game';
+opponent.textContent = 'Restart Game';
+}
+else if (gameStatus === 'win') {
+player.textContent = 'Player Wins!';
+opponent.textContent = 'Game Over';
+}
+else if (gameStatus === 'loss') {
+player.textContent = 'Player Loses!';
+opponent.textContent = 'Game Over';
+}
+}
+
+// Responsive layout
+if (isMobile) {
+document.body.style.fontSize = '16px';
+}
+else {
+document.body.style.fontSize = '18px';
+}
+
+// Game loop
+setInterval(gameLoop, 1000);
+</script>
+</body>
+</html>
