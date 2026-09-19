@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "authority": "MACHINE_EXECUTION_LOG_MAP",
   "sourceOfTruth": "company-learning/company-log-map.json",
   "centralPolicy": "company-learning/platform-release-roadmap.json",
@@ -100,5 +100,21 @@
     "workerMayCompleteCanonicalTaskWhenDeterministicGatePasses": true,
     "reworkDirectiveMustReferenceTaskOrPriorEvidence": true,
     "supervisorAbsenceIsNotAWorkerBlocker": true
+  },
+  "systemAiWorkerLogContract": {
+    "queue": "vibe2-unreal-core:.vibe2/system-ai-queue.json",
+    "requiredMarkers": [
+      "SYSTEM_AI_TASK_ID",
+      "SYSTEM_AI_RESERVATION_ID",
+      "SYSTEM_AI_CANDIDATE_BRANCH",
+      "SYSTEM_AI_PR_URL",
+      "SYSTEM_AI_VERIFICATION",
+      "PRIMARY_AI_REVIEW"
+    ],
+    "rawModelOutputStored": false,
+    "rawModelOutputSha256Required": true,
+    "workerSelfAcceptanceForbidden": true,
+    "failedVerificationMustRequeueOrFail": true,
+    "primaryAiReviewMayAcceptReworkReopenOrRedirect": true
   }
 }
