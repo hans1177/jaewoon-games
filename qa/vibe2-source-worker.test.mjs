@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, generationAttemptBudget, exactRetryAnchorSuggestions } from '../tools/vibe2-source-worker.mjs';
+import { runVibe2SourceWorker, buildGenerationRetryPrompt, shouldRetryGenerationError, generationFailureClass, modelResponseComplete, evaluateSemanticDiffBudget, recoverPartialJsonEdit, generationAttemptBudget, exactRetryAnchorSuggestions, focusedReplaceOnlySpec, buildFocusedReplaceOnlyPrompt, normalizeFocusedReplaceOnly } from '../tools/vibe2-source-worker.mjs';
 import { applyExactEdits } from '../tools/autonomous-safe-edit.mjs';
 
 function tempRoot() { return fs.mkdtempSync(path.join(os.tmpdir(), 'vibe2-source-worker-')); }
@@ -974,6 +974,37 @@ test('focused retry derives exact unique find anchors from writable source',()=>
   assert.match(retry,/Use exactly one EXACT FIND ANCHOR OPTION/i);
 });
 
+test('focused replace-only pins exact path and anchor while model emits only replacement',()=>{
+  const base=[
+    'Goal: repair play interaction',
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    'const playButton=document.getElementById("play");',
+    'playButton.addEventListener("click",()=>startGame());',
+    'function startGame(){ state.running=true; }'
+  ].join('\n');
+  const spec=focusedReplaceOnlySpec(base,{responsibleFiles:['index.html']});
+  assert.ok(spec);
+  assert.equal(spec.path,'index.html');
+  assert.ok(base.includes(spec.find));
+  const focused=buildFocusedReplaceOnlyPrompt(base,{error:new Error('timeout'),responsibleFiles:['index.html']});
+  assert.ok(focused);
+  assert.match(focused.prompt,/Do NOT return path or find/);
+  assert.match(focused.prompt,/Return exactly one JSON object with one key/);
+  const normalized=normalizeFocusedReplaceOnly(JSON.stringify({replace:'const playButton=document.getElementById("play") ?? document.body;'}),focused.spec);
+  assert.equal(normalized.edits.length,1);
+  assert.equal(normalized.edits[0].path,'index.html');
+  assert.equal(normalized.edits[0].find,focused.spec.find);
+  assert.notEqual(normalized.edits[0].replace,focused.spec.find);
+});
+
+test('focused replace-only rejects unchanged replacement and supports early completion',()=>{
+  const spec={path:'index.html',find:'const state={running:false};'};
+  assert.throws(()=>normalizeFocusedReplaceOnly(JSON.stringify({replace:spec.find}),spec),/변경 없는 edit/);
+  assert.equal(modelResponseComplete(JSON.stringify({replace:'const state={running:true};'}),'JSON_REPLACE_ONLY'),true);
+  assert.equal(modelResponseComplete('{"replace":','JSON_REPLACE_ONLY'),false);
+});
 test('exact retry anchors verify uniqueness against the full responsible source',()=>{
   const cwd=tempRoot();
   const sourceRoot=path.join(cwd,'web-games/demo');
