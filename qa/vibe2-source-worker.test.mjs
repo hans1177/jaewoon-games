@@ -478,3 +478,24 @@ test('single responsible file remaps literal allowed-path placeholder without wi
   const result=await runVibe2SourceWorker({cwd,responseFile});
   assert.deepEqual(result.changedFiles,['index.html']);
 });
+
+
+test('no-op edit gets one focused causal retry', () => {
+  const error=new Error('변경 없는 edit: index.html');
+  assert.equal(shouldRetryGenerationError(error),true);
+  const base=[
+    'Allowed edit paths: index.html',
+    '',
+    '=== FILE index.html [EDITABLE] ===',
+    '<button id="play">Play</button>',
+    '',
+    '=== FILE scripts/config.js [READ-ONLY IMPACT CONTEXT] ===',
+    'window.GAME_CONFIG={speed:1};'
+  ].join('\n');
+  const retry=buildGenerationRetryPrompt(base,{error,responsibleFiles:['index.html']});
+  assert.match(retry,/previous edit copied the same text/);
+  assert.match(retry,/The ONLY writable path is "index\.html"/);
+  assert.match(retry,/replace is materially different from find/);
+  assert.match(retry,/=== FILE index\.html \[EDITABLE\] ===/);
+  assert.doesNotMatch(retry,/scripts\/config\.js/);
+});
