@@ -208,6 +208,40 @@ function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
     || evidence.has('recovery-exact-stage:SOURCE_CANDIDATE_GENERATION');
 }
 function extractJson(raw){const text=clean(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();try{return JSON.parse(text);}catch{}const starts=['{','['].map(c=>text.indexOf(c)).filter(i=>i>=0);if(!starts.length)throw new Error('모델 JSON 시작을 찾지 못함');const start=Math.min(...starts),opening=text[start],closing=opening==='{'?'}':']';let depth=0,quoted=false,escape=false;for(let i=start;i<text.length;i++){const ch=text[i];if(quoted){if(escape)escape=false;else if(ch==='\\')escape=true;else if(ch==='"')quoted=false;continue;}if(ch==='"'){quoted=true;continue;}if(ch===opening)depth++;else if(ch===closing&&--depth===0)return JSON.parse(text.slice(start,i+1));}throw new Error('모델 JSON 파싱 실패');}
+export function recoverPartialJsonEdit(raw){
+  const text=String(raw??'');
+  const match=/"edits"\s*:\s*\[/.exec(text);
+  if(!match)return null;
+  const start=text.indexOf('{',match.index+match[0].length);
+  if(start<0)return null;
+  let depth=0,quoted=false,escape=false;
+  for(let i=start;i<text.length;i++){
+    const ch=text[i];
+    if(quoted){
+      if(escape)escape=false;
+      else if(ch==='\\')escape=true;
+      else if(ch==='"')quoted=false;
+      continue;
+    }
+    if(ch==='"'){quoted=true;continue;}
+    if(ch==='{')depth++;
+    else if(ch==='}'&&--depth===0){
+      try{
+        const edit=JSON.parse(text.slice(start,i+1));
+        if(!edit||typeof edit!=='object'||Array.isArray(edit))return null;
+        return{
+          summary:'Vibe2 recovered partial timeout edit',
+          expectedEffect:'recovered complete edit from bounded timeout output',
+          edits:[edit],
+          newFiles:[],
+          replaceFiles:[],
+          tests:[]
+        };
+      }catch{return null;}
+    }
+  }
+  return null;
+}
 function fullWebRewriteAllowed(order,target,exploration={}){
   if(target!=='web')return false;
   const goal=clean(order?.goal);
@@ -624,6 +658,40 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       const partialOutput=String(error?.vibe2PartialOutput??'');
       if(partialOutput.trim())lastRaw=partialOutput;
       const failureClass=generationFailureClass(error);
+      if(!allowFullRewrite&&failureClass==='TIMEOUT'&&partialOutput.trim()){
+        const recoveredPartial=recoverPartialJsonEdit(partialOutput);
+        if(recoveredPartial){
+          try{
+            const candidate=normalizeCandidate(recoveredPartial,{target,responsibleFiles,sourceRootRelative,allowFullRewrite:false,minFullRewriteBytes});
+            if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
+            lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
+            console.log(`VIBE2_TIMEOUT_PARTIAL_EDIT_RECOVERED=${attempt}:${candidate.edits[0]?.path||''}`);
+            return{
+              candidate,
+              candidateValidation:lastCandidateValidation,
+              generation:{
+                attempts:attempt,
+                recoveryUsed:true,
+                partialTimeoutRecovery:true,
+                focusedFinalRetry:focusedFinal,
+                focusedWebRepair,
+                fullWebExpansionStages:expansionStages,
+                intermediateGrowthBytes:[...intermediateGrowthBytes],
+                repeatedIntermediateOutputs,
+                expansionStageTargets:[...expansionStageTargets],
+                mode:'JSON_EDIT',
+                maxPredict,
+                timeoutMs,
+                contextWindow,
+                temperature,
+                completionMode
+              }
+            };
+          }catch(recoveryError){
+            console.log(`VIBE2_TIMEOUT_PARTIAL_EDIT_REJECTED=${attempt}:${generationFailureClass(recoveryError)}:${clean(recoveryError?.message||recoveryError).replace(/\s+/g,' ').slice(0,240)}`);
+          }
+        }
+      }
       if(allowFullRewrite&&['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(failureClass)){
         const recovered=recoverFullWebSeed(lastRaw,{target,responsibleFiles,sourceRootRelative});
         if(recovered){
