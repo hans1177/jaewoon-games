@@ -116,12 +116,14 @@ function readContext(root,target,responsibleFiles=[],ignored=[],explorationFiles
   return{files,bytes:total};
 }
 function isFocusedWebRepair(order,target,responsibleFiles,allowFullRewrite){
-  if(target!=='web'||allowFullRewrite||responsibleFiles.length!==1||responsibleFiles[0]!=='index.html')return false;
+  if(target!=='web'||allowFullRewrite||responsibleFiles.length!==1||!responsibleFiles[0].toLowerCase().endsWith('.html'))return false;
   const evidence=new Set((order?.selectedTask?.evidence||[]).map(clean));
-  return /\[WEB_REPAIR\]|VIBE_WEB_REPAIR|WEB_VIBE_REPAIR_REQUIRED/i.test(clean(order?.goal))
+  const goal=clean(order?.goal);
+  return /\[WEB_REPAIR\]|VIBE_WEB_REPAIR|WEB_VIBE_REPAIR_REQUIRED|\[DIAGNOSTIC_BUNDLE\]/i.test(goal)
     || evidence.has('web-stage:WEB_REPAIR')
     || evidence.has('recovery-exact-stage:WEB_REPAIR')
-    || evidence.has('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED');
+    || evidence.has('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED')
+    || evidence.has('recovery-exact-stage:SOURCE_CANDIDATE_GENERATION');
 }
 function extractJson(raw){const text=clean(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/i,'').trim();try{return JSON.parse(text);}catch{}const starts=['{','['].map(c=>text.indexOf(c)).filter(i=>i>=0);if(!starts.length)throw new Error('모델 JSON 시작을 찾지 못함');const start=Math.min(...starts),opening=text[start],closing=opening==='{'?'}':']';let depth=0,quoted=false,escape=false;for(let i=start;i<text.length;i++){const ch=text[i];if(quoted){if(escape)escape=false;else if(ch==='\\')escape=true;else if(ch==='"')quoted=false;continue;}if(ch==='"'){quoted=true;continue;}if(ch===opening)depth++;else if(ch===closing&&--depth===0)return JSON.parse(text.slice(start,i+1));}throw new Error('모델 JSON 파싱 실패');}
 function fullWebRewriteAllowed(order,target,exploration={}){
