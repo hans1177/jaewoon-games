@@ -182,8 +182,8 @@
       },
       "counts": {
         "releaseConfirmed": 0,
-        "developmentConfirmed": 9,
-        "designOnly": 3
+        "developmentConfirmed": 19,
+        "designOnly": 2
       },
       "releaseConfirmedGameIds": [],
       "developmentConfirmedGameIds": [
@@ -195,12 +195,21 @@
         "P0008",
         "P0009",
         "P0101",
-        "P0103"
+        "P0102",
+        "P0103",
+        "RUNTIME-amusement-tycoon",
+        "RUNTIME-line-defense",
+        "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
+        "RUNTIME-seed-casual-realm-weaver",
+        "RUNTIME-seed-idle-growth-rpg-crystal-bloom",
+        "RUNTIME-seed-puzzle-chromatic-cascade",
+        "RUNTIME-seed-single-defense-strat-celestial-bastion",
+        "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
+        "RUNTIME-village-dungeons"
       ],
       "designOnlyGameIds": [
         "P0002",
-        "P0005",
-        "P0102"
+        "P0005"
       ],
       "lifecycle": {
         "active": [
@@ -215,7 +224,16 @@
           "P0009",
           "P0101",
           "P0102",
-          "P0103"
+          "P0103",
+          "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
+          "RUNTIME-seed-single-defense-strat-celestial-bastion",
+          "RUNTIME-seed-puzzle-chromatic-cascade",
+          "RUNTIME-seed-casual-realm-weaver",
+          "RUNTIME-seed-idle-growth-rpg-crystal-bloom",
+          "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
+          "RUNTIME-village-dungeons",
+          "RUNTIME-amusement-tycoon",
+          "RUNTIME-line-defense"
         ],
         "paused": [],
         "rebuild": [],
@@ -224,9 +242,9 @@
       },
       "pipeline": {
         "target": 60,
-        "count": 12,
+        "count": 21,
         "activeDevelopmentWipMax": 20,
-        "deficit": 48
+        "deficit": 39
       },
       "ranking": [
         {
@@ -322,6 +340,96 @@
         {
           "rank": 7,
           "rawEvidenceRank": 7,
+          "gameId": "RUNTIME-seed-action-survival-rogu-echoes-of-the-lost-star",
+          "slug": "seed-action-survival-rogu-echoes-of-the-lost-star",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "UNCLASSIFIED",
+          "evidenceScore": 9,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0.5,
+          "targetPlatform": "UNITY",
+          "targetPlatformReady": false,
+          "sourceReady": true
+        },
+        {
+          "rank": 8,
+          "rawEvidenceRank": 8,
+          "gameId": "RUNTIME-seed-casual-realm-weaver",
+          "slug": "seed-casual-realm-weaver",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "UNCLASSIFIED",
+          "evidenceScore": 9,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0.5,
+          "targetPlatform": "UNITY",
+          "targetPlatformReady": false,
+          "sourceReady": true
+        },
+        {
+          "rank": 9,
+          "rawEvidenceRank": 9,
+          "gameId": "RUNTIME-seed-idle-growth-rpg-crystal-bloom",
+          "slug": "seed-idle-growth-rpg-crystal-bloom",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "RPG",
+          "evidenceScore": 9,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0.5,
+          "targetPlatform": "UNITY",
+          "targetPlatformReady": false,
+          "sourceReady": true
+        },
+        {
+          "rank": 10,
+          "rawEvidenceRank": 10,
+          "gameId": "RUNTIME-seed-puzzle-chromatic-cascade",
+          "slug": "seed-puzzle-chromatic-cascade",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "UNCLASSIFIED",
+          "evidenceScore": 9,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0.5,
+          "targetPlatform": "UNITY",
+          "targetPlatformReady": false,
+          "sourceReady": true
+        },
+        {
+          "rank": 11,
+          "rawEvidenceRank": 11,
+          "gameId": "RUNTIME-seed-single-defense-strat-celestial-bastion",
+          "slug": "seed-single-defense-strat-celestial-bastion",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "DEFENSE",
+          "evidenceScore": 9,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0.5,
+          "targetPlatform": "UNITY",
+          "targetPlatformReady": false,
+          "sourceReady": true
+        },
+        {
+          "rank": 12,
+          "rawEvidenceRank": 12,
+          "gameId": "RUNTIME-seed-story-complete-rpg-chronicles-of-eldoria",
+          "slug": "seed-story-complete-rpg-chronicles-of-eldoria",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "RPG",
+          "evidenceScore": 9,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0.5,
+          "targetPlatform": "UNITY",
+          "targetPlatformReady": false,
+          "sourceReady": true
+        },
+        {
+          "rank": 13,
+          "rawEvidenceRank": 13,
           "gameId": "P0007",
           "slug": "island-village",
           "lifecycleState": "ACTIVE",
@@ -335,8 +443,8 @@
           "sourceReady": false
         },
         {
-          "rank": 8,
-          "rawEvidenceRank": 8,
+          "rank": 14,
+          "rawEvidenceRank": 14,
           "gameId": "P0008",
           "slug": "egg-heist",
           "lifecycleState": "ACTIVE",
@@ -350,8 +458,8 @@
           "sourceReady": false
         },
         {
-          "rank": 9,
-          "rawEvidenceRank": 9,
+          "rank": 15,
+          "rawEvidenceRank": 15,
           "gameId": "P0101",
           "slug": "chess-battle",
           "lifecycleState": "ACTIVE",
@@ -365,8 +473,23 @@
           "sourceReady": false
         },
         {
-          "rank": 10,
-          "rawEvidenceRank": 10,
+          "rank": 16,
+          "rawEvidenceRank": 16,
+          "gameId": "P0102",
+          "slug": "survival2",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "SURVIVAL",
+          "evidenceScore": 4,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "ROBLOX",
+          "targetPlatformReady": false,
+          "sourceReady": false
+        },
+        {
+          "rank": 17,
+          "rawEvidenceRank": 17,
           "gameId": "P0103",
           "slug": "territory-war",
           "lifecycleState": "ACTIVE",
@@ -378,6 +501,51 @@
           "targetPlatform": "ROBLOX",
           "targetPlatformReady": false,
           "sourceReady": false
+        },
+        {
+          "rank": 18,
+          "rawEvidenceRank": 18,
+          "gameId": "RUNTIME-amusement-tycoon",
+          "slug": "amusement-tycoon",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "UNCLASSIFIED",
+          "evidenceScore": 4,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "UNITY",
+          "targetPlatformReady": false,
+          "sourceReady": true
+        },
+        {
+          "rank": 19,
+          "rawEvidenceRank": 19,
+          "gameId": "RUNTIME-line-defense",
+          "slug": "line-defense",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "STRATEGY",
+          "evidenceScore": 4,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "UNITY",
+          "targetPlatformReady": false,
+          "sourceReady": true
+        },
+        {
+          "rank": 20,
+          "rawEvidenceRank": 20,
+          "gameId": "RUNTIME-village-dungeons",
+          "slug": "village-dungeons",
+          "lifecycleState": "ACTIVE",
+          "productionClass": "DEVELOPMENT_CONFIRMED",
+          "gameplayFamily": "RPG",
+          "evidenceScore": 4,
+          "developmentFocus": 0,
+          "artbookBaselineRank": 0,
+          "targetPlatform": "UNITY",
+          "targetPlatformReady": false,
+          "sourceReady": true
         }
       ],
       "source": [
