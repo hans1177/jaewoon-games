@@ -31,13 +31,61 @@ function assertInside(root, file) {
   if (!(resolved + path.sep).startsWith(base) && resolved !== path.resolve(root)) throw new Error(`QA path escaped root: ${file}`);
   return resolved;
 }
+function manifestData(manifest=''){return manifest?readJson(manifest,{}):{};}
+function resolveManifestRelative(root,data={},relative=''){
+  const rel=posix(relative);
+  if(!rel)return'';
+  const direct=assertInside(root,rel);
+  if(fs.existsSync(direct))return rel;
+  const sourceRoot=posix(data.sourceRoot);
+  if(sourceRoot){
+    const scoped=posix(path.posix.join(sourceRoot,rel));
+    const file=assertInside(root,scoped);
+    if(fs.existsSync(file))return scoped;
+  }
+  return rel;
+}
 function collectFiles({root, files, manifest}) {
   if (files.length) return files;
   if (manifest) {
-    const data = readJson(manifest, {});
-    if (Array.isArray(data.changedFiles)) return data.changedFiles.map(posix).filter(Boolean);
+    const data = manifestData(manifest);
+    if (Array.isArray(data.changedFiles)) return data.changedFiles.map(relative=>resolveManifestRelative(root,data,relative)).filter(Boolean);
   }
   throw new Error('incremental QA changed files required');
+}
+function causalReplayPlan(data={}){
+  const plan=data?.exploration?.editContract?.causalReplay;
+  return plan&&typeof plan==='object'?plan:null;
+}
+function resolveReplayTargets(root,data={},plan={}){
+  const sourceRoot=posix(data.sourceRoot);
+  const rootResolved=path.resolve(root);
+  const sourceResolved=sourceRoot?assertInside(root,sourceRoot):rootResolved;
+  const base=sourceResolved+path.sep;
+  const targets=[];
+  for(const raw of plan.nodeTestTargets||[]){
+    const rel=posix(raw);
+    if(!rel||!/(?:test|spec|qa)/i.test(rel)||!/\.(?:js|mjs|cjs)$/i.test(rel))continue;
+    const candidate=path.resolve(sourceResolved,rel);
+    if(!((candidate+path.sep).startsWith(base)&&candidate!==sourceResolved))throw new Error(`CAUSAL_REPLAY_TARGET_ESCAPED_SOURCE_ROOT:${rel}`);
+    if(!fs.existsSync(candidate)||!fs.statSync(candidate).isFile())throw new Error(`CAUSAL_REPLAY_TARGET_MISSING:${rel}`);
+    targets.push({relative:posix(path.relative(rootResolved,candidate)),absolute:candidate});
+  }
+  return targets;
+}
+function runCausalReplay({root,data={}}={}){
+  const plan=causalReplayPlan(data);
+  if(!plan||plan.required!==true)return{status:'NOT_REQUIRED',executed:false,targets:[],canonicalQaStillRequired:true};
+  if(plan.executable!==true||clean(plan.mode)!=='NODE_TEST_TARGETS')return{status:'PLAN_ONLY',executed:false,reason:clean(plan.status)||'NO_EXECUTABLE_REPLAY',targets:[],canonicalQaStillRequired:true};
+  if(plan.prePatchReproduced!==true)throw new Error('CAUSAL_REPLAY_PREPATCH_REPRODUCTION_REQUIRED');
+  const targets=resolveReplayTargets(root,data,plan);
+  if(!targets.length)throw new Error('CAUSAL_REPLAY_EXECUTABLE_WITHOUT_TARGET');
+  const results=[];
+  for(const target of targets){
+    execFileSync(process.execPath,['--test',target.absolute],{cwd:root,stdio:'pipe',encoding:'utf8'});
+    results.push({target:target.relative,outcome:'PASS'});
+  }
+  return{status:'EXECUTED_PASS',executed:true,prePatchReproduced:true,targets:results,identicalOrEquivalentInputStateRequired:plan.identicalOrEquivalentInputStateRequired!==false,canonicalQaStillRequired:true};
 }
 function checkConflictMarkers(text, file) {
   if (/^(<<<<<<<|=======|>>>>>>>)/m.test(text)) throw new Error(`merge conflict marker: ${file}`);
@@ -116,27 +164,32 @@ function deterministicCheck(root, relative) {
 
 export function runIncrementalQa({ root=process.cwd(), files=[], manifest='', cacheFile='', namespace='default', force=false }={}) {
   const started = Date.now();
+  const data=manifestData(manifest);
   const changed = collectFiles({root, files, manifest});
-  const payload = ['vibe2-incremental-qa-v3', namespace];
+  const replayPlan=causalReplayPlan(data);
+  const replayTargets=replayPlan?.executable===true?resolveReplayTargets(root,data,replayPlan):[];
+  const payload = ['vibe2-incremental-qa-v4', namespace, JSON.stringify(replayPlan||null)];
   for (const relative of [...changed].sort()) {
     const file = assertInside(root, relative);
     if (!fs.existsSync(file)) throw new Error(`changed file missing: ${relative}`);
     payload.push(relative, fs.readFileSync(file));
   }
+  for(const target of replayTargets)payload.push('CAUSAL_REPLAY:'+target.relative,fs.readFileSync(target.absolute));
   const contentHash = sha256(payload);
   const cachePath = clean(cacheFile);
   const cache = cachePath ? readJson(cachePath,{version:3,entries:{}}) : {version:3,entries:{}};
   const cached = cache.entries?.[contentHash];
   if (!force && cached?.outcome === 'PASS') {
-    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], durationMs:Date.now()-started, fullRegressionStillRequired:true };
+    return { outcome:'PASS', cached:true, contentHash, changedFiles:changed, checks:cached.checks || [], causalReplay:cached.causalReplay||{status:'PLAN_ONLY',executed:false,canonicalQaStillRequired:true}, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   }
 
   const checks = changed.map((relative)=>deterministicCheck(root,relative));
   execFileSync('git',['diff','--check'],{cwd:root,stdio:'pipe'});
-  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, durationMs:Date.now()-started, fullRegressionStillRequired:true };
+  const causalReplay=runCausalReplay({root,data});
+  const result = { outcome:'PASS', cached:false, contentHash, changedFiles:changed, checks, causalReplay, durationMs:Date.now()-started, fullRegressionStillRequired:true };
   if (cachePath) {
     cache.version=3; cache.entries=cache.entries||{};
-    cache.entries[contentHash]={ outcome:'PASS', namespace, checks, savedAt:new Date().toISOString() };
+    cache.version=4; cache.entries[contentHash]={ outcome:'PASS', namespace, checks, causalReplay, savedAt:new Date().toISOString() };
     const entries=Object.entries(cache.entries).slice(-200);
     cache.entries=Object.fromEntries(entries);
     writeJson(cachePath,cache);
@@ -154,5 +207,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   console.log(`VIBE2_INCREMENTAL_QA_CACHE=${result.cached?'HIT':'MISS'}`);
   console.log(`VIBE2_INCREMENTAL_QA_HASH=${result.contentHash}`);
   console.log(`VIBE2_INCREMENTAL_QA_FILES=${result.changedFiles.join(',')}`);
+  console.log(`VIBE2_CAUSAL_REPLAY_STATUS=${result.causalReplay?.status||'NOT_REQUIRED'}`);
+  console.log(`VIBE2_CAUSAL_REPLAY_EXECUTED=${result.causalReplay?.executed===true?'YES':'NO'}`);
   console.log('VIBE2_FULL_REGRESSION_REQUIRED=YES');
 }
