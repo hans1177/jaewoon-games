@@ -27,7 +27,8 @@ test('System AI cannot self-accept and malformed JSON uses strict retry',()=>{
   assert.match(workflow,/worker-self-acceptance:NO/);
   assert.match(workflow,/primary-ai-review-required:YES/);
   assert.match(queue,/awaiting-supervisor/);
-  assert.match(queue,/primaryAiReview/);
+  assert.match(queue,/primary-ai-review-pending/);
+  assert.match(queue,/primary-ai-review:PASS/);
 });
 
 test('cached local model and security scan remain mandatory before PR publication',()=>{

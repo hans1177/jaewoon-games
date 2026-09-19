@@ -148,6 +148,28 @@ test('canonical development queue bootstraps missing Web source roots instead of
   assert.equal(fs.existsSync(path.join(root,'web-games',gameId,'index.html')),false);
 });
 
+test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source into one exact-stage repair task',()=>{
+  const root=tempRepo();
+  const gameId='repair-web-runtime';
+  const sourceRoot=path.join(root,'web-games',gameId);
+  fs.mkdirSync(sourceRoot,{recursive:true});
+  fs.writeFileSync(path.join(sourceRoot,'index.html'),'<!doctype html><html><body><main>existing game</main></body></html>','utf8');
+  const result=planVibe2AutonomousTasks({
+    status:{projects:[]},
+    catalog:{games:[{id:gameId,name:'Repair Web Runtime',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
+    developmentQueue:{items:[{gameId,gameName:'Repair Web Runtime',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`}]},
+    queue:{maxConcurrentTasks:4,tasks:[]},repoRoot:root,maxConcurrentTasks:4
+  });
+  assert.equal(result.planned,true);
+  const task=result.tasks.find(row=>row.gameId===gameId);
+  assert.ok(task);
+  assert.equal(task.id,`${gameId}-web-runtime-repair-v1`);
+  assert.deepEqual(task.responsibleFiles,[`web-games/${gameId}/index.html`]);
+  assert.ok(task.evidence.includes('company-runtime-state:WEB_VIBE_REPAIR_REQUIRED'));
+  assert.ok(task.evidence.includes('recovery-exact-stage:WEB_REPAIR'));
+  assert.match(task.goal,/\[WEB_REPAIR\]/);
+});
+
 test('central DESIGN_ONLY authority cancels stale production implementation without touching study work',()=>{
   const root=tempRepo();
   const stale={id:'stale-dev',gameId:'crystal-defense',target:'web',department:'development',type:'implementation',sourceRoot:'web-games/crystal-defense',goal:'old development work',releaseState:'development-confirmed',status:'running',reservationId:'run-1',reservationRunId:'run-1',reservationRunAttempt:1,reservedAt:'2026-09-18T10:00:00Z'};

@@ -1,5 +1,5 @@
 {
-  "version": 61,
+  "version": 62,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -2636,13 +2636,13 @@
     }
   },
   "changeRecord": {
-    "id": "WEB_HANDOFF_AND_SYSTEM_AI_SUPERVISION_E2E_2026-09-19",
+    "id": "WEB_REPAIR_PLANNER_AND_QA_CONTRACT_SYNC_2026-09-19",
     "documentIsCode": true,
-    "reason": "BIND_INDEPENDENT_MACHINE_CONTRACTS_TO_EXISTING_PREFLIGHTS_AFTER_REPEATED_NO_CHANGE_EXTERNAL_AI_ATTEMPTS",
+    "reason": "CLOSE_EXPLICIT_RUNTIME_TO_VIBE_REPAIR_HANDOFF_AND_REMOVE_STALE_QA_EXPECTATIONS_WITHOUT_WEAKENING_GATES",
     "files": [
-      ".github/workflows/company-development-confirmed-runtime.yml",
-      ".github/workflows/company-system-ai-workers.yml",
-      "qa/company-web-vibe-handoff-e2e.test.mjs",
+      "tools/vibe2-auto-planner.mjs",
+      "qa/vibe2-auto-planner.test.mjs",
+      ".github/workflows/company-evolution-qa.yml",
       "qa/company-system-ai-supervision-loop.test.mjs",
       "company-learning/platform-release-roadmap.json"
     ]
