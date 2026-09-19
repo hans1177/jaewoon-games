@@ -1,5 +1,5 @@
 {
-  "version": 123,
+  "version": 124,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1535,6 +1535,18 @@
               "testsPassed": 235,
               "testsFailed": 0,
               "regressionRole": "PASS"
+            },
+            "malformedPartialRecoveryCommits": [
+              "ee60e101336b9027ceea02e0eb8a4ab428ea2cb6",
+              "648dbf73ee0efa29a492e3e68e26d930003859ae",
+              "3e154f52c834405ff9befbc2aee2a903f74e53bd"
+            ],
+            "malformedPartialRecoveryEffectiveFromNextWave": true,
+            "currentWaveFirstCompletedFailure": {
+              "runId": "35444351457",
+              "jobId": "105900741285",
+              "class": "MALFORMED_OUTPUT",
+              "attempts": 3
             }
           },
           "repairs": [
@@ -3086,54 +3098,53 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_TIMEOUT_PARTIAL_RECOVERY_TELEMETRY_2026-09-19",
+    "id": "VIBE2_MALFORMED_PARTIAL_EDIT_RECOVERY_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FULL_WEB_EXPANSION_TARGETING_FIX_2026-09-19",
-    "reason": "EXPOSE_VERIFIED_TIMEOUT_PARTIAL_EDIT_RECOVERY_IN_IMMUTABLE_WORKER_EVIDENCE_SO_LIVE_WAVE_EFFECTIVENESS_CAN_BE_MEASURED_DIRECTLY",
-    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_QA_PENDING_LIVE_CONFIRMATION",
+    "previousChangeRecordId": "VIBE2_TIMEOUT_PARTIAL_RECOVERY_TELEMETRY_2026-09-19",
+    "reason": "LATEST_CCFB20D_WAVE_FIRST_COMPLETED_FOCUSED_WEB_SAMPLE_FAILED_WITH_THREE_MALFORMED_JSON_OUTPUTS;REUSE_EXISTING_STRICT_PARTIAL_EDIT_RECOVERY_ONLY_WHEN_A_COMPLETE_EDIT_OBJECT_SURVIVES_NORMALIZATION_EXACT_DRY_RUN_AND_CANDIDATE_VALIDATION",
+    "implementationState": "CODE_WORKFLOW_TEST_COMMITTED_QA_AND_LIVE_REVALIDATION_PENDING",
+    "evidence": {
+      "observedRunId": 35444351457,
+      "observedPinnedContractSha": "ccfb20d9f114c713af7a37aa0ca147c56f999fc9",
+      "observedJobId": 105900741285,
+      "observedFailureSequence": [
+        "MALFORMED_OUTPUT:3647_BYTES",
+        "MALFORMED_OUTPUT:1443_BYTES",
+        "MALFORMED_OUTPUT:303_BYTES"
+      ],
+      "finalFailureClass": "MALFORMED_OUTPUT",
+      "currentWaveIncludesFix": false,
+      "currentWavePurpose": "FULL_WEB_EXPANSION_FIX_REVALIDATION_ONLY"
+    },
     "contract": {
-      "manifestGenerationFlag": "partialTimeoutRecovery",
-      "codingMethodFlag": "partialTimeoutRecovery",
-      "immutableEvidenceMarker": "coding-timeout-partial-recovery:YES",
-      "authorityExpansion": false,
+      "reuseExistingRecoverPartialJsonEdit": true,
+      "malformedRecoveryRequiresCompleteEditObject": true,
+      "exactEditDryRunRequired": true,
+      "candidateValidatorRequired": true,
       "writableScopeUnchanged": true,
-      "qaGateUnchanged": true
+      "authorityExpansion": false,
+      "qaGateUnchanged": true,
+      "codingMethodFlag": "partialMalformedRecovery",
+      "immutableEvidenceMarker": "coding-malformed-partial-recovery:YES"
+    },
+    "implementationCommits": {
+      "source": "ee60e101336b9027ceea02e0eb8a4ab428ea2cb6",
+      "workflow": "648dbf73ee0efa29a492e3e68e26d930003859ae",
+      "regressionTest": "3e154f52c834405ff9befbc2aee2a903f74e53bd"
     },
     "pending": [
-      "CORE_QA_WITH_TIMEOUT_TELEMETRY_TEST",
+      "CORE_QA_WITH_MALFORMED_PARTIAL_RECOVERY_TEST",
       "CURRENT_CCFB20D_FULL_WEB_20_WAVE_COMPLETE_AND_FAN_IN",
-      "NEXT_WAVE_PIN_5129F254_AND_9DA66B9D_OR_LATER",
-      "LIVE_TIMEOUT_PARTIAL_RECOVERY_EVIDENCE_CONFIRMATION",
-      "COMPARE_FOCUSED_REPAIR_AND_FULL_WEB_FAILURE_RATES"
+      "NEXT_WAVE_PIN_EE60E101_AND_648DBF73_OR_LATER",
+      "LIVE_MALFORMED_PARTIAL_RECOVERY_EVIDENCE_CONFIRMATION",
+      "COMPARE_MALFORMED_TIMEOUT_AND_FULL_WEB_FAILURE_RATES"
     ],
     "invariants": {
       "gamePrimaryFirst": true,
       "ownerMinimumWave": 20,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true
-    },
-    "implementationCommits": {
-      "source": "5129f254fa1efa4d90bf124f9c1cd361d12bb588",
-      "workflow": "9da66b9d83ebb2235e4c8cf64893eaaf0127515e",
-      "regressionTest": "d0d7122da1034e040195d3369e11c0f407a66c19"
-    },
-    "evidence": {
-      "currentRevalidationWave": {
-        "runId": 35444351457,
-        "pinnedContractSha": "ccfb20d9f114c713af7a37aa0ca147c56f999fc9",
-        "purpose": "FULL_WEB_EXPANSION_FIX_REVALIDATION",
-        "timeoutTelemetryIncluded": false,
-        "reason": "TELEMETRY_COMMITS_LANDED_AFTER_WAVE_PIN"
-      },
-      "previousFanInRegression": {
-        "runId": 35443243108,
-        "jobId": 105900475104,
-        "testsPassed": 235,
-        "testsFailed": 0,
-        "regressionRole": "PASS",
-        "fanInReview": "PASS"
-      }
     }
   },
   "vibeExecutionLaneContract": {
