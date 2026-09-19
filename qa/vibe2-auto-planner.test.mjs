@@ -210,7 +210,7 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   const result=planVibe2AutonomousTasks({
     status:{projects:[]},
     catalog:{games:[{id:gameId,name:'Repair Web Runtime',productionClass:'DEVELOPMENT_CONFIRMED',lifecycleState:'ACTIVE',homepageWebPlayable:false,hasWebArchive:true,webPath:`/web-games/${gameId}/`}]},
-    developmentQueue:{items:[{gameId,gameName:'Repair Web Runtime',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'MOBILE_TOUCH_ACTION_NOT_CONNECTED',routingBlockers:['vibe-web-implementation-required:WEB_REPAIR:MOBILE_TOUCH_ACTION_NOT_CONNECTED'],webValidationLastAttemptAt:'2026-09-19T07:40:00.000Z'}]},
+    developmentQueue:{items:[{gameId,gameName:'Repair Web Runtime',status:'ACTIVE',productionClass:'DEVELOPMENT_CONFIRMED',currentStep:'VIBE_WEB_REPAIR',canonicalState:'WEB_VIBE_REPAIR_REQUIRED',webSourcePath:`web-games/${gameId}`,sourcePath:`web-games/${gameId}`,vibeWebRequestedStage:'WEB_REPAIR',vibeWebImplementationReason:'MOBILE_TOUCH_ACTION_NOT_CONNECTED',routingBlockers:['vibe-web-implementation-required:WEB_REPAIR:MOBILE_TOUCH_ACTION_NOT_CONNECTED','web-gameplay-music:DISTINCT_RUNTIME_BLOCKER'],webValidationLastAttemptAt:'2026-09-19T07:40:00.000Z'}]},
     queue:{maxConcurrentTasks:4,tasks:[staleAssessment,staleDiagnostic]},repoRoot:root,maxConcurrentTasks:4
   });
   assert.equal(result.planned,true);
@@ -224,7 +224,8 @@ test('canonical development queue turns WEB_VIBE_REPAIR_REQUIRED existing source
   assert.match(task.goal,/\[COMPANY_RUNTIME_FAILURE_EVIDENCE\]/);
   assert.match(task.goal,/requested-stage=WEB_REPAIR/);
   assert.match(task.goal,/implementation-reason=MOBILE_TOUCH_ACTION_NOT_CONNECTED/);
-  assert.match(task.goal,/routing-blocker=vibe-web-implementation-required:WEB_REPAIR:MOBILE_TOUCH_ACTION_NOT_CONNECTED/);
+  assert.doesNotMatch(task.goal,/routing-blocker=vibe-web-implementation-required:WEB_REPAIR:MOBILE_TOUCH_ACTION_NOT_CONNECTED/);
+  assert.match(task.goal,/routing-blocker=web-gameplay-music:DISTINCT_RUNTIME_BLOCKER/);
   assert.match(task.goal,/\[WEB_REPAIR_IMPLEMENTATION_HINTS\]/);
   assert.match(task.goal,/모바일 touch\/pointer 입력을 실제 게임 액션 함수와 상태 변화에 직접 연결/);
   assert.match(task.goal,/no-op 수정은 금지/);
@@ -268,7 +269,7 @@ test('existing queued exact Web repair refreshes its goal from latest company ru
   assert.equal(refreshed.status,'queued');
   assert.match(refreshed.goal,/\[COMPANY_RUNTIME_FAILURE_EVIDENCE\]/);
   assert.match(refreshed.goal,/implementation-reason=REAL_GAME_MECHANIC_COUNT_TOO_LOW/);
-  assert.match(refreshed.goal,/routing-blocker=vibe-web-implementation-required:WEB_REPAIR:REAL_GAME_MECHANIC_COUNT_TOO_LOW:2:5/);
+  assert.doesNotMatch(refreshed.goal,/routing-blocker=vibe-web-implementation-required:WEB_REPAIR:REAL_GAME_MECHANIC_COUNT_TOO_LOW:2:5/);
   assert.match(refreshed.goal,/\[WEB_REPAIR_IMPLEMENTATION_HINTS\]/);
   assert.match(refreshed.goal,/누락된 승인 gameplay mechanic을 실제 입력과 상태 변화가 있는 기능으로 구현/);
   assert.match(refreshed.goal,/last-validation-at=2026-09-19T07:50:00.000Z/);
