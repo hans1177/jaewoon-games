@@ -6078,16 +6078,7 @@
         "evidencePath": "design/egg-heist/2026-09-19/strict-design-review.json",
         "passThreshold": 80
       },
-      "strictDesignReviewUpdatedAt": "2026-09-19T03:30:29.592Z",
-      "ROBLOX_GENRE": "Obby & platformer",
-      "ROBLOX_SUBGENRE": "Classic Obby",
-      "ROBLOX_GENRE_LABEL_KO": "오비·플랫포머",
-      "ROBLOX_SUBGENRE_LABEL_KO": "클래식 오비",
-      "ROBLOX_PLAY_MODE": "SINGLE",
-      "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
-      "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
-      "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:41:24.069Z"
+      "strictDesignReviewUpdatedAt": "2026-09-19T03:30:29.592Z"
     },
     {
       "version": 1,
@@ -11094,7 +11085,7 @@
       "ROBLOX_PLAY_MODE_LABEL_KO": "싱글",
       "ROBLOX_GENRE_DISPLAY_KO": "오비·플랫포머 · 클래식 오비 · 싱글",
       "ROBLOX_GENRE_SOURCE": "ROBLOX_CREATOR_HUB_EXPERIENCE_GENRES",
-      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:39:39.799Z",
+      "ROBLOX_GENRE_REVIEWED_AT": "2026-09-19T03:41:27.175Z",
       "strictDesignReview": {
         "verdict": "PASS",
         "totalScore": 94.6,
@@ -17008,25 +16999,19 @@
         "recordedAt": "2026-09-19T03:39:39.799Z"
       },
       {
-        "gameId": "egg-heist",
-        "seedId": "OWNER-ENROLL-EGG-HEIST-20260913",
+        "gameId": "village-dungeons",
+        "seedId": "OWNER-ALL-DESIGN-RESET-VILLAGE-DUNGEONS-20260917",
         "reviewStage": "DESIGN_STRICT_REVIEW",
         "runtimeTarget": null,
         "verdict": "PASS",
-        "totalScore": 91.80000000000001,
-        "previousScore": null,
-        "scoreDelta": null,
+        "totalScore": 94.6,
+        "previousScore": 94.6,
+        "scoreDelta": 0,
         "hardFailures": [],
         "resolvedHardFailures": [],
         "addedHardFailures": [],
         "rejectionReasons": [],
         "improvementTargets": [
-          {
-            "dimension": "CORE_LOOP_DESIGN",
-            "current": 11.2,
-            "maxScore": 14,
-            "gap": 2.8000000000000007
-          },
           {
             "dimension": "SYSTEM_INTERCONNECTION_DESIGN",
             "current": 9.6,
@@ -17038,13 +17023,19 @@
             "current": 8,
             "maxScore": 10,
             "gap": 2
+          },
+          {
+            "dimension": "IMPLEMENTATION_FEASIBILITY_AND_TRACEABILITY",
+            "current": 4,
+            "maxScore": 5,
+            "gap": 1
           }
         ],
         "learningSignal": "UNVALIDATED",
         "materialFamilies": [],
         "validatedRealEvidence": false,
         "reviewContextSource": "ACTIVE_SEED",
-        "recordedAt": "2026-09-19T03:41:24.069Z"
+        "recordedAt": "2026-09-19T03:41:27.175Z"
       }
     ],
     "causeCounts": {
@@ -17070,7 +17061,7 @@
       "copyOriginalExpressionForbidden": true,
       "signalsGuideSelectionButDoNotForceCopy": true
     },
-    "updatedAt": "2026-09-19T03:41:24.070Z"
+    "updatedAt": "2026-09-19T03:41:27.176Z"
   },
   "bootstrapCompletedAt": "2026-09-14T14:23:36.674Z",
   "initialBatchCount": 6,
