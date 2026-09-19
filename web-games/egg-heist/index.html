@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Approved Web Bootstrap</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 10px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <main id="game">
+        <h1>Approved Web Bootstrap</h1>
+        <button onclick="startGame()">Start Game</button>
+    </main>
+    <script>
+        function startGame() {
+            const gameContainer = document.getElementById('game');
+            gameContainer.innerHTML = `
+                <div class="game-container">
+                    <div class="game-board">
+                        <div class="cell" data-value="1"></div>
+                        <div class="cell" data-value="2"></div>
+                        <div class="cell" data-value="3"></div>
+                        <div class="cell" data-value="4"></div>
+                        <div class="cell" data-value="5"></div>
+                        <div class="cell" data-value="6"></div>
+                        <div class="cell" data-value="7"></div>
+                        <div class="cell" data-value="8"></div>
+                        <div class="cell" data-value="9"></div>
+                    </div>
+                    <div class="game-buttons">
+                        <button class="start-button">Start</button>
+                        <button class="restart-button">Restart</button>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
