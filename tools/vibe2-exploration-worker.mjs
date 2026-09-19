@@ -171,9 +171,12 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
   const primaryNodes=(graph.nodes||[]).filter(node=>primarySet.has(node.name));
   const primarySystems=unique(primaryNodes.flatMap(node=>node.systems||[]));
   const directDependentSymbols=unique(primaryNodes.flatMap(node=>[...(node.calls||[]),...(node.calledBy||[])])).slice(0,16);
+  const directDependentSet=new Set(directDependentSymbols);
+  const directDependentNodes=(graph.nodes||[]).filter(node=>directDependentSet.has(node.name));
+  const directDependentSystems=unique(directDependentNodes.flatMap(node=>node.systems||[])).slice(0,12);
   const impactRows=(codingArchitecture?.impactPrediction||[]).filter(row=>primarySystems.includes(row.system));
   const dependentSystems=unique(impactRows.flatMap(row=>row.likelyAffected||[])).slice(0,12);
-  const allowedSystems=unique([...primarySystems,...dependentSystems]).slice(0,16);
+  const allowedSystems=unique([...primarySystems,...directDependentSystems]).slice(0,16);
   const ownedState=unique(primaryNodes.flatMap(node=>node.stateWrites||[])).slice(0,24);
   const readState=unique(primaryNodes.flatMap(node=>node.stateReads||[])).slice(0,24);
   const preserveSemantics=unique([
@@ -208,7 +211,7 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
   const calibrationRecommendation=clean(order?.responsibilityCalibration?.recommendation).toUpperCase();
   const confidence=rawResponsibilityConfidence==='HIGH'&&calibrationRecommendation==='DOWNGRADE_HIGH_TO_MEDIUM'?'MEDIUM':rawResponsibilityConfidence;
   const relevantEdges=(graph.edges||[]).filter(edge=>primarySet.has(edge.from)||primarySet.has(edge.to)||directDependentSymbols.includes(edge.from)||directDependentSymbols.includes(edge.to)).slice(0,40);
-  const allowedDependentSymbolsOrSystems=unique([...directDependentSymbols,...dependentSystems]).slice(0,24);
+  const allowedDependentSymbolsOrSystems=unique([...directDependentSymbols,...directDependentSystems]).slice(0,24);
   const patchRecipe=compilePatchRecipe({order,failures,primaryTargets,dependentSymbols:allowedDependentSymbolsOrSystems,ownedState,requiredFocusedChecks,preserveSemantics});
   return{
     version:1,
@@ -235,6 +238,8 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
     allowedDependentSymbolsOrSystems,
     primarySystems,
     dependentSystems,
+    directDependentSystems,
+    readOnlyImpactSystems:dependentSystems,
     ownedState,
     readState,
     preserveSemantics,
@@ -244,6 +249,8 @@ function compileEditContract({order={},sourceText='',responsibleFiles=[],protect
       allowedSystems,
       preferredPrimarySymbols:primaryTargets,
       maxSystemCount:Math.max(1,allowedSystems.length||primarySystems.length||1),
+      readOnlyImpactSystems:dependentSystems,
+      impactPredictionDoesNotGrantWriteAuthority:true,
       unrelatedSystemMutationForbidden:true,
       saveKeysMustRemainCompatible:sourceAnalysis.storageKeys||[]
     },
