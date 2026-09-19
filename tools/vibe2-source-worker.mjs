@@ -479,7 +479,9 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
   const editContract=exploration?.editContract||{};
   const codingMethod={
     version:1,
-    strategy:clean(editContract.strategyHint)||'UNCLASSIFIED',
+    strategy:clean(order?.candidateStrategyRole?.strategy)||clean(editContract.strategyHint)||'UNCLASSIFIED',
+    compiledStrategyHint:clean(editContract.strategyHint)||null,
+    candidateVariant:clean(order?.candidateStrategyRole?.variant)||'primary',
     responsibilityConfidence:clean(editContract.responsibilityConfidence)||'LOW',
     primaryTargets:Array.isArray(editContract.primaryTargets)?editContract.primaryTargets.slice(0,8):[],
     primarySystems:Array.isArray(editContract.primarySystems)?editContract.primarySystems.slice(0,12):[],
