@@ -1047,7 +1047,20 @@
     "semanticDiffBudget": {
       "enabled": true,
       "unrelatedSystemMutationForbiddenByContract": true,
-      "preserveSaveAndGameplaySemantics": true
+      "preserveSaveAndGameplaySemantics": true,
+      "enforcementMode": "CONFIDENCE_GATED_HARD_ENFORCEMENT",
+      "hardGateRequires": [
+        "PRESERVE_PATCH",
+        "HIGH_RESPONSIBILITY_CONFIDENCE",
+        "PRIMARY_TARGET",
+        "NON_FULL_REWRITE"
+      ],
+      "ambiguousClassification": "OBSERVE_ONLY",
+      "nearbySourceResponsibilityContextAllowed": true,
+      "unrelatedExplicitSystemMutationRejected": true,
+      "preserveSaveKeys": true,
+      "writableScopeExpansionAllowed": false,
+      "authorityExpanded": false
     },
     "futureVerifiedExtensions": [
       "failure-local-memory",
@@ -1083,6 +1096,36 @@
       "coreQaRunId": 35438742444,
       "integratedRegressionRunId": 35438742434,
       "state": "VERIFIED"
+    },
+    "confidenceCalibration": {
+      "enabled": true,
+      "stateFile": ".vibe2/learning-motor-state.json",
+      "highConfidenceMinimumSamples": 3,
+      "downgradeFailureRatePct": 34,
+      "downgrade": "HIGH_TO_MEDIUM",
+      "extraReadOnlyExplorationOnDowngrade": true,
+      "writableScopeExpansionAllowed": false,
+      "authorityExpanded": false
+    },
+    "regressionHotspots": {
+      "enabled": true,
+      "stateFile": ".vibe2/learning-motor-state.json",
+      "keys": [
+        "GAME_ID",
+        "PRIMARY_SYMBOL",
+        "PRIMARY_SYSTEM"
+      ],
+      "verifiedRegressionFailureWeight": 3,
+      "verifiedPassDecayWeight": 1,
+      "highRiskFailureMinimum": 3,
+      "focusedDependentQaRequired": true,
+      "authorityExpanded": false
+    },
+    "causalReplay": {
+      "enabled": true,
+      "executionRequiresDeterministicReplayEvidence": true,
+      "noReplayEvidenceBehavior": "PLAN_ONLY_DO_NOT_CLAIM_EXECUTION",
+      "canonicalQaStillRequired": true
     }
   }
 }
