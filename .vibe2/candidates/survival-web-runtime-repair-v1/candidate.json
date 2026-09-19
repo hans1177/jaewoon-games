@@ -1,0 +1,14 @@
+{
+  "summary": "수리: 생존기 게임의 런타임 루프와 승인 메커니즘을 최소 범위로 수정",
+  "expectedEffect": "생존기 게임의 런타임 루프와 승인 메커니즘을 최소 범위로 수정",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "const state={...cfg.initial,turn:0,level:1,enemyHp:100,position:0,cooldown:0,combo:0,energy:100,objective:0};",
+      "replace": "const state={...cfg.initial,turn:0,level:1,enemyHp:100,position:0,cooldown:0,combo:0,energy:100,objective:0,progress:0};"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": []
+}
