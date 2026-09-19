@@ -885,7 +885,7 @@ jobs:
             --min="$VIBE2_OWNER_MINIMUM_WAVE" \
             --input=/tmp/vibe2-fan-in.json | tee /tmp/vibe2-fan-in.log
 
-          # Per-candidate test/performance roles already ran. Regression runs once at fan-in against the exact reserved main contract.
+          # Per-candidate test/performance roles already ran. Candidate regression runs once at fan-in against the exact reserved main contract. Controller/orchestration contract stays on latest-main Vibe2 Core QA so infrastructure drift cannot requeue game candidates.
           set +e
           (cd "$contract_root" && node --test --test-concurrency=4 \
             qa/vibe2-auto-planner.test.mjs \
@@ -897,7 +897,6 @@ jobs:
             qa/vibe2-incremental-qa.test.mjs \
             qa/vibe2-parallelism-telemetry.test.mjs \
             qa/vibe2-adaptive-backpressure.test.mjs \
-            qa/vibe2-controller-contract.test.mjs \
             qa/vibe2-candidate-reconcile.test.mjs \
             qa/vibe2-experience-control.test.mjs \
             qa/vibe2-handoff.test.mjs \
