@@ -1,5 +1,5 @@
 {
-  "version": 85,
+  "version": 86,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -151,6 +151,12 @@
       "sameCandidateDuplicateDispatchSharesGroup": true,
       "cancelInProgress": false,
       "reason": "RELEASE_GATE_PENDING_RUNS_MUST_NOT_CANCEL_OTHER_CANDIDATES_OR_REDUCE_PRIMARY_WAVE_REFILL"
+    },
+    "candidateReleasePromotionChecks": {
+      "webRequiredDeploymentCheck": "Cloudflare Pages",
+      "sourceBoundaryProofRequired": true,
+      "unrelatedRepositoryWideExternalCheckCannotBlockGameRelease": true,
+      "qualityOrEvidenceGateWeakeningForbidden": true
     },
     "freeAiCapacityMustBeMaximized": true,
     "internalArtificialConcurrencyCapsForbidden": true
