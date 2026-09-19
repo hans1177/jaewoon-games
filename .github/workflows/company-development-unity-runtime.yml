@@ -11,6 +11,11 @@ on:
       - 'tools/company-development-unity-bootstrap.mjs'
       - 'tools/company-development-unity-evidence.mjs'
       - 'tools/company-development-validation-cycle.mjs'
+      - 'qa/company-shared-context.test.mjs'
+      - 'tools/company-shared-context.mjs'
+      - 'company-learning/company-architecture-map.json'
+      - 'company-learning/company-log-map.json'
+      - 'company-learning/platform-release-roadmap.json'
       - 'qa/company-development-unity-runtime.test.mjs'
       - 'qa/company-selected-platform-router.test.mjs'
   workflow_dispatch:
@@ -46,6 +51,9 @@ jobs:
 
       - name: Verify Unity selected-platform execution contracts
         run: |
+          node --check tools/company-shared-context.mjs
+          node --test qa/company-shared-context.test.mjs
+          node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-plan.json
           node --check tools/company-selected-platform-router.mjs
           node --check tools/company-development-unity-platform.mjs
           node --check tools/company-development-unity-bootstrap.mjs
@@ -527,6 +535,9 @@ jobs:
           state="$(node -e "const s=require('./${{ steps.context.outputs.base }}/cycle-status.json');process.stdout.write(String(s.state||''))")"
           echo "state=$state" >> "$GITHUB_OUTPUT"
           case "$state" in WAITING_REVALIDATION|WAITING_TARGET_PLATFORM_REVALIDATION|DEVELOPMENT_BASELINE_READY) ;; *) echo "unexpected canonical state: $state" >&2; exit 14;; esac
+
+      - name: Revalidate shared worker context before Unity checkpoint
+        run: node tools/company-shared-context.mjs --output=/tmp/company-shared-context-unity-before-checkpoint.json
 
       - name: Persist exact checkpoint package even when a later stage fails
         id: checkpoint
