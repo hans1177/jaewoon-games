@@ -1,5 +1,5 @@
 {
-  "version": 137,
+  "version": 138,
   "status": "OWNER_DIRECT_LOCKED",
   "policySource": "company-learning/platform-release-roadmap.json",
   "recordedAt": "2026-09-19",
@@ -1931,7 +1931,12 @@
               "3208edd52549bcb45a9b2f8396a9dc47174a3b34",
               "cf1fd2ef0b5450344c1bad7fc1745581d8e2ec0a"
             ],
-            "speculativeSlotLatencyPriorityEffectiveFromNextCleanWave": true
+            "speculativeSlotLatencyPriorityEffectiveFromNextCleanWave": true,
+            "fullWebInternalTimeoutAlignmentCommits": [
+              "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
+              "70f6c5a9541c25e695c75f10c9ace5666d3c9e72"
+            ],
+            "fullWebInternalTimeoutAlignmentEffectiveFromNextCleanWave": true
           },
           "repairs": [
             "CLASSIFY_SOURCE_GENERATION_FAILURES_AS_NO_OP_TIMEOUT_INVALID_PATH_FULL_REWRITE_SIZE_MALFORMED_OUTPUT_EDIT_MATCH_OR_OTHER",
@@ -3482,70 +3487,59 @@
     }
   },
   "changeRecord": {
-    "id": "VIBE2_SPECULATIVE_SLOT_LATENCY_PRIORITY_2026-09-19",
+    "id": "VIBE2_FULL_WEB_INTERNAL_TIMEOUT_BUDGET_ALIGNMENT_2026-09-19",
     "documentIsCode": true,
     "documentationFirst": true,
-    "previousChangeRecordId": "VIBE2_FULL_WEB_SEED_FIRST_STRATEGY_2026-09-19",
-    "reason": "GAME_PRIMARY_ALREADY_REACHES_20_WORKERS_BUT_SPARE_SPECULATIVE_SLOTS_WERE_ASSIGNED_IN_QUEUE_ORDER,CAUSING_LONG_FULL_WEB_REBUILDS_AT_THE_FRONT_OF_THE_BATCH_TO_CONSUME_MOST_EXTRA_SLOTS. PRESERVE_EVERY_RESERVED_TASK_PRIMARY_AND_ROUTE_ONLY_SPARE_SPECULATIVE_CAPACITY_TO_SHORTER_RUNTIME_REPAIR_OR_DIAGNOSTIC_WORK_FIRST.",
+    "previousChangeRecordId": "VIBE2_SPECULATIVE_SLOT_LATENCY_PRIORITY_2026-09-19",
+    "reason": "WORKER_JOB_TIMEOUT_IS_22_MINUTES_WHILE_THE_PRIOR_FULL_WEB_INTERNAL_PRIMARY_PATH_COULD_CONSUME_APPROXIMATELY_22_MINUTES_BEFORE_CHECKOUT_AND_QA_OVERHEAD. ALIGN_INTERNAL_FULL_WEB_RETRY_BUDGET_BELOW_THE_OUTER_JOB_LIMIT_SO_THE_WORKER_CAN_FINISH_AND_EMIT_IMMUTABLE_RESULT_INSTEAD_OF_BEING_KILLED_BY_GITHUB.",
     "implementationState": "CODE_AND_REGRESSION_TEST_COMMITTED_NEXT_CLEAN_WAVE_EFFECT_PENDING",
     "evidence": {
-      "baseline": {
-        "runId": 35445626679,
-        "actualPeakConcurrency": 20,
-        "cacheHitRatePct": 100,
-        "preparationRatioPct": 0.86,
-        "passRatePct": 25,
-        "bottleneck": "SOURCE_CANDIDATE_GENERATION"
-      },
-      "contaminatedDiagnosticWave": {
-        "runId": 35446727233,
-        "pinnedContractSha": "944f15da5a5066b2eb59d8dd0c5afd4768e4e21f",
-        "focusedEffectivenessValid": false,
-        "reason": "FOCUSED_FINAL_PRE_INIT_REFERENCE"
-      },
-      "observedReservationShape": {
-        "reservedTaskCount": 14,
-        "hierarchicalFanOut": 20,
-        "spareSpeculativeSlots": 6,
-        "priorBehavior": "QUEUE_ORDER_FIRST"
-      }
+      "outerWorkerTimeoutMinutes": 22,
+      "priorInternalWorstCaseMinutesApprox": 22,
+      "newInternalWorstCaseMinutesApprox": 19,
+      "baselineRun": 35445626679,
+      "baselinePassRatePct": 25,
+      "currentDiagnosticRun": 35446727233
     },
     "contract": {
-      "everyReservedPrimaryPreserved": true,
-      "ownerMinimumWaveUnchanged": 20,
-      "maxConcurrencyUnchanged": 256,
-      "speculativePriority": {
-        "runtimeRepairDiagnostic": 0,
-        "neutral": 1,
-        "fullWebOrLongWork": 2
-      },
-      "onlySpareSpeculativeCapacityReordered": true,
-      "primaryTaskOrderUnchanged": true,
+      "initialSeedTimeoutMs": 360000,
+      "expansionTimeoutMs": 240000,
+      "finalSynthesisTimeoutMs": 300000,
+      "primaryFullWebApproxWorstCaseMs": 1140000,
+      "outerWorkerTimeoutMs": 1320000,
+      "headroomMsApprox": 180000,
+      "initialSeedStrategyPreserved": true,
+      "finalAcceptanceMinimumBytes": 12000,
       "qualityGatesNotWeakened": true,
       "authorityExpansion": false
     },
     "implementationCommits": {
-      "queueScheduler": "3208edd52549bcb45a9b2f8396a9dc47174a3b34",
-      "regressionTest": "cf1fd2ef0b5450344c1bad7fc1745581d8e2ec0a"
+      "source": "d2d34d2a4d56c123bfe7f1ac73eec7202bca175e",
+      "regressionTest": "70f6c5a9541c25e695c75f10c9ace5666d3c9e72"
     },
     "relatedBottleneckFixes": {
-      "focusedPreInitFix": "c8f373efb34e6c9289a119fc0caa3d207bc1c09f",
+      "speculativeSlotPriority": [
+        "3208edd52549bcb45a9b2f8396a9dc47174a3b34",
+        "cf1fd2ef0b5450344c1bad7fc1745581d8e2ec0a"
+      ],
       "fullWebSeedFirst": "9ef7994739ea552f4b4c90283a9a3b246e3af2f4",
-      "fullWebRetryPromptCompaction": "57e03fbadfa248ae5fcf74ee251f3a906d84762d"
+      "fullWebRetryPromptCompaction": "57e03fbadfa248ae5fcf74ee251f3a906d84762d",
+      "focusedPreInitFix": "c8f373efb34e6c9289a119fc0caa3d207bc1c09f"
     },
     "pending": [
       "CURRENT_35446727233_COMPLETE_FOR_DIAGNOSTIC_ONLY",
-      "NEXT_CLEAN_WAVE_PIN_3208EDD5_CF1FD2EF_C8F373EF_9EF79947_OR_LATER",
-      "VERIFY_ALL_RESERVED_PRIMARIES_PRESENT",
-      "VERIFY_SPARE_SPECULATIVE_SLOTS_PREFER_REPAIR_DIAGNOSTIC",
-      "COMPARE_WORKER_P95_AND_WAVE_LONG_TAIL",
+      "NEXT_CLEAN_WAVE_PIN_D2D34D2A_3208EDD5_9EF79947_C8F373EF_OR_LATER",
+      "VERIFY_NO_WORKER_OUTER_TIMEOUT_ON_FULL_WEB_PRIMARY",
+      "COMPARE_FULL_WEB_P95_DURATION",
+      "COMPARE_WAVE_LONG_TAIL",
       "COMPARE_PASS_RATE_AGAINST_25_PERCENT_BASELINE",
       "VERIFY_FAN_IN_REGRESSION"
     ],
     "invariants": {
-      "hierarchicalParallelism": true,
       "ownerMinimumWave": 20,
+      "hierarchicalParallelism": true,
       "primaryCoverageBeforeSpeculation": true,
+      "fullWebMinimumBytesUnchanged": 12000,
       "qualityGatesNotWeakened": true,
       "directMainGameSourceWriteForbidden": true,
       "shadowPipelineForbidden": true
