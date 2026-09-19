@@ -87,6 +87,7 @@ test('24h planner uses latest main contract and tools while control branch store
   assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-handoff.mjs --check'));
   assert(safetyNetWorkflow.includes('--runtime=/tmp/vibe2-main/vibe2-runtime.json'));
   assert(safetyNetWorkflow.includes('node /tmp/vibe2-main/tools/vibe2-auto-planner.mjs'));
+  assert(safetyNetWorkflow.includes('--development-queue=/tmp/vibe2-company-runtime-queue.json'));
   assert(safetyNetWorkflow.includes("from 'file:///tmp/vibe2-main/assets/vibe-continuous-queue.js'"));
   assert.equal(safetyNetWorkflow.includes('node tools/vibe2-handoff.mjs --check'),false);
   assert.equal(safetyNetWorkflow.includes('node tools/vibe2-auto-planner.mjs \\'),false);
