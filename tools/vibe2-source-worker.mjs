@@ -294,6 +294,26 @@ function recoverFullWebSeed(raw,{target,responsibleFiles=[],sourceRootRelative='
     return{path:relative,content,summary:clean(parsed.summary)||'Vibe2 full Web seed',expectedEffect:clean(parsed.expectedEffect),tests:(parsed.tests||[]).map(clean).filter(Boolean).slice(0,8)};
   }catch{return null;}
 }
+function recoverFullWebExpansionDocumentSeed(raw,{target,responsibleFiles=[],sourceRootRelative=''}={}){
+  try{
+    const text=String(raw??'').replaceAll('\r\n','\n'),prefixAt=text.indexOf(FULL_WEB_EXPANSION_PREFIX);
+    if(prefixAt<0)return null;
+    const contentAt=text.indexOf(FULL_WEB_EXPANSION_CONTENT_MARKER,prefixAt+FULL_WEB_EXPANSION_PREFIX.length);
+    if(contentAt<0)return null;
+    let endAt=text.indexOf(FULL_WEB_EXPANSION_END_MARKER,contentAt+FULL_WEB_EXPANSION_CONTENT_MARKER.length);
+    if(endAt<0){
+      const htmlEnd=text.toLowerCase().lastIndexOf('</html>');
+      if(htmlEnd<contentAt)return null;
+      endAt=htmlEnd+7;
+    }
+    let content=text.slice(contentAt+FULL_WEB_EXPANSION_CONTENT_MARKER.length,endAt).trim();
+    if(/^\`\`\`(?:html)?\s*/i.test(content))content=content.replace(/^\`\`\`(?:html)?\s*/i,'').replace(/\s*\`\`\`$/,'').trim();
+    const direct=parseDirectFullHtml(content,{responsibleFiles});
+    if(!direct||direct.replaceFiles.length!==1)return null;
+    const file=direct.replaceFiles[0],relative=normalizeModelPath(file?.path||responsibleFiles[0],{target,responsibleFiles,sourceRootRelative});
+    return{path:relative,content:String(file.content||'').trim(),summary:'Vibe2 recovered full document from expansion response',expectedEffect:'larger playable full-Web seed for staged expansion',tests:[]};
+  }catch{return null;}
+}
 function insertFullWebExpansion(baseHtml,fragment){
   const base=String(baseHtml??''),addition=String(fragment??'').trim();
   if(!base||!addition)throw new Error('Web expansion 합성 입력이 비어 있음');
@@ -675,6 +695,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
   let lastRaw='';
   let accumulatedFullWeb=null;
   let bestFullWebFallbackRaw='';
+  let expansionDocumentSeedRecoveries=0;
   let expansionStages=0;
   let repeatedIntermediateOutputs=0;
   const intermediateGrowthBytes=[];
@@ -748,7 +769,7 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
       }
       if(candidate.edits.length&&sourceRoot&&fs.existsSync(sourceRoot))applyExactEdits(sourceRoot,candidate.edits,{dryRun:true});
       lastCandidateValidation=typeof candidateValidator==='function'?candidateValidator(candidate):null;
-      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
+      return {candidate,candidateValidation:lastCandidateValidation,generation:{attempts:attempt,recoveryUsed:retry,partialTimeoutRecovery:Boolean(streamedPartialEdit),streamedPartialEditRecovery:Boolean(streamedPartialEdit),focusedFinalRetry:focusedFinal,focusedWebRepair,fullWebRetryPromptCompacted:allowFullRewrite&&retry,fullWebRetryPromptBytes:allowFullRewrite&&retry?attemptPromptBytes:0,fullWebExpansionStages:expansionStages,fullWebExpansionDocumentSeedRecoveries:expansionDocumentSeedRecoveries,fullWebFallbackBestPartialBytes:Buffer.byteLength(bestFullWebFallbackRaw,'utf8'),intermediateGrowthBytes:[...intermediateGrowthBytes],repeatedIntermediateOutputs,expansionStageTargets:[...expansionStageTargets],mode:allowFullRewrite?'FULL_WEB':'JSON_EDIT',maxPredict,timeoutMs,contextWindow,temperature,completionMode}};
     }catch(error){
       lastError=error;
       const partialOutput=String(error?.vibe2PartialOutput??'');
@@ -797,7 +818,14 @@ async function generateCandidateWithRecovery({prompt,model,responseFile='',respo
         }
       }
       if(allowFullRewrite&&['FULL_REWRITE_SIZE','TIMEOUT','MALFORMED_OUTPUT'].includes(failureClass)){
-        const recovered=recoverFullWebSeed(lastRaw,{target,responsibleFiles,sourceRootRelative});
+        let recovered=recoverFullWebSeed(lastRaw,{target,responsibleFiles,sourceRootRelative});
+        if(!recovered&&expansionMode){
+          recovered=recoverFullWebExpansionDocumentSeed(lastRaw,{target,responsibleFiles,sourceRootRelative});
+          if(recovered){
+            expansionDocumentSeedRecoveries+=1;
+            console.log(`VIBE2_FULL_WEB_EXPANSION_DOCUMENT_SEED_RECOVERED=${attempt}:${Buffer.byteLength(recovered.content,'utf8')}`);
+          }
+        }
         if(recovered){
           const recoveredBytes=Buffer.byteLength(recovered.content,'utf8'),currentBytes=accumulatedFullWeb?Buffer.byteLength(accumulatedFullWeb.content,'utf8'):0;
           if(recoveredBytes>currentBytes){
@@ -929,6 +957,7 @@ export async function runVibe2SourceWorker({cwd=process.cwd(),workOrderFile='.vi
     exactSourceWindows:generation.exactSourceWindows===true,
     fullFileContextFallback:generation.fullFileContextFallback===true,
     fullWebExpansionStages:Number(generation.fullWebExpansionStages||0),
+    fullWebExpansionDocumentSeedRecoveries:Number(generation.fullWebExpansionDocumentSeedRecoveries||0),
     fullWebRetryPromptCompacted:generation.fullWebRetryPromptCompacted===true,
     fullWebRetryPromptBytes:Number(generation.fullWebRetryPromptBytes||0),
     fullWebFallbackBestPartialBytes:Number(generation.fullWebFallbackBestPartialBytes||0),
