@@ -4,7 +4,7 @@ import { pathToFileURL } from 'node:url';
 
 const clean=v=>String(v??'').trim();
 const list=v=>Array.isArray(v)?v.map(clean).filter(Boolean):[];
-const DEFAULT_COOLDOWN_MS=20*60*1000;
+const DEFAULT_COOLDOWN_MS=2*60*1000;
 
 export function selectReviewedWinnerRecoveries(queueInput={}, {nowMs=Date.now(),cooldownMs=DEFAULT_COOLDOWN_MS}={}) {
   const selected=[];
