@@ -1,0 +1,20 @@
+{
+  "summary": "수정의 개화 게임의 웹 소스를 수정하여 기존 설계 기반에 맞춰 재구성",
+  "expectedEffect": "기존 게임 구조 및 기능을 보존하면서, 실질적인 기능 개선 및 품질 향상",
+  "edits": [
+    {
+      "path": "index.html",
+      "find": "window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.'}",
+      "replace": "window.GAME_CONFIG={id:'seed-idle-growth-rpg-crystal-bloom',name:'수정의 개화',mode:'crystal-idle',hp:100,desc:'전투로 골드를 얻고 장비를 강화하며 수정 군주 10단계를 돌파하는 방치 성장 RPG.',isIdleMode: true,isActive: false}"
+    }
+  ],
+  "newFiles": [],
+  "replaceFiles": [],
+  "tests": [
+    "GAME_CONFIG_id_should_be_qualified",
+    "GAME_CONFIG_name_should_be_qualified",
+    "GAME_CONFIG_mode_should_be_qualified",
+    "GAME_CONFIG_hp_should_be_number",
+    "GAME_CONFIG_desc_should_be_string"
+  ]
+}
