@@ -207,7 +207,7 @@ function cyl(r1,r2,h,c,seg){
   m.position.y=h/2;
   return m;
 }
-function sphere(r,c){
+function sphere(r,c){ return new THREE.Mesh(new THREE.SphereGeometry(r,10,8),mat(c));}
   return new THREE.Mesh(new THREE.SphereGeometry(r,10,8),mat(c));
 }
 function worldPos(gx,gz){return new THREE.Vector3((gx-HALF+.5)*TILE,0,(gz-HALF+.5)*TILE);}
