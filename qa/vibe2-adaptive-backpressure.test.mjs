@@ -76,7 +76,7 @@ test('persistent pressure moves down exactly one external-capacity step per run'
     createParallelismControl({ currentMax: 32 }),
     pressuredTelemetry({ runId: 'pressure-32', workerCount: 32, effectiveMax: 32 })
   );
-  assert.equal(from32.currentMax, 16);
+  assert.equal(from32.currentMax, 20);
   assert.equal(from32.lastDecision, 'DOWN');
 });
 
@@ -135,6 +135,16 @@ test('one healthy saturated run fast-ramps exactly one external-capacity step', 
   assert.equal(next.healthyStreak, 0);
   assert.equal(next.lastDecision, 'UP');
   assert.equal(next.lastReason, 'HEALTHY_FAST_RAMP');
+});
+
+
+test('owner-requested 20 wave is a canonical adaptive step', () => {
+  const control = createParallelismControl({ currentMax: 20 });
+  assert.equal(control.currentMax, 20);
+  const down = decideAdaptiveBackpressure(control, pressuredTelemetry({ runId:'pressure-20', workerCount:20, effectiveMax:20 }));
+  assert.equal(down.currentMax, 16);
+  const up = decideAdaptiveBackpressure(createParallelismControl({ currentMax:16 }), healthyTelemetry({ runId:'healthy-16-to-20', workerCount:16, effectiveMax:16, actualPeakConcurrency:16 }));
+  assert.equal(up.currentMax, 20);
 });
 
 test('adaptive operational wave never moves below 4 or above external boundary 256', () => {
@@ -224,8 +234,8 @@ test('one fan-in with many pressured results updates persistent wave only once',
     const persisted = JSON.parse(fs.readFileSync(files.control, 'utf8'));
     assert.equal(result.telemetry.workerCount, 32);
     assert.equal(result.telemetry.pressureLevel, 'SEVERE');
-    assert.equal(result.adaptiveControl.currentMax, 16);
-    assert.equal(persisted.currentMax, 16);
+    assert.equal(result.adaptiveControl.currentMax, 20);
+    assert.equal(persisted.currentMax, 20);
     assert.equal(persisted.lastRunId, 'fan-in-multi');
   } finally {
     fs.rmSync(files.dir, { recursive: true, force: true });
