@@ -341,7 +341,16 @@ function fullWebExpansionStageTarget(source='',stage=1){
 }
 function buildFullWebExpansionPrompt(basePrompt,seed,{stage=1,minBytes=FULL_WEB_GENERATION_TARGET_MIN_BYTES,maxBytes=FULL_WEB_GENERATION_TARGET_MAX_BYTES,remainingStages=1,previousFailure='',capabilityTarget=null}={}){
   const content=String(seed?.content??''),currentBytes=Buffer.byteLength(content,'utf8'),gap=Math.max(0,minBytes-currentBytes),stageByteTarget=Math.min(7000,Math.max(3200,Math.ceil(gap/Math.max(1,remainingStages))+800));
-  const prefix=String(basePrompt??'').split('\n=== FILE ')[0].trimEnd();
+  const promptText=String(basePrompt??'');
+  const line=(label)=>promptText.split('\n').find(row=>row.startsWith(label))||'';
+  const prefix=[
+    'You are the Vibe2 game source worker. Return one additive Web expansion only.',
+    line('Engine:'),
+    line('Goal:'),
+    line('Allowed edit paths:'),
+    line('Full Web generation target after automatic expansion:')||line('Full Web generation target:'),
+    'Preserve the exact responsible path and existing playable systems. Do not widen scope.'
+  ].filter(Boolean).join('\n');
   return[
     prefix,
     '',
