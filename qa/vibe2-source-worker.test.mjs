@@ -389,6 +389,34 @@ test('exact Web repair uses compact generation budget without weakening edit bou
   assert.ok(result.generation.contextBytes<=48000);
   assert.deepEqual(result.changedFiles,['index.html']);
 });
+test('focused Web repair composes exact primary-symbol windows instead of broad file excerpts',async()=>{
+  const cwd=tempRoot();
+  const responseFile=path.join(cwd,'focused-symbol.json');
+  const filler='const backgroundDecoration=1;\n'.repeat(3500);
+  const source='<!doctype html><html><body><script>\n'+filler+
+    'let pointerState=null,placedEntities=[];\n'+
+    'function placeTower(slot){placedEntities.push(slot);return true;}\n'+
+    'function handlePointer(event){pointerState={x:event.clientX,y:event.clientY};return placeTower(pointerState);}\n'+
+    'addEventListener("pointerdown",handlePointer);\n'+filler+'</script></body></html>\n';
+  write(path.join(cwd,'web-games/demo/index.html'),source);
+  const workOrder=order({target:'web',root:'web-games/demo',responsibleFiles:['web-games/demo/index.html'],taskId:'focused-symbol-context'});
+  workOrder.originalGoal='모바일 pointer 입력을 placement state에 연결한다';
+  workOrder.goal='[WEB_REPAIR] runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING 수정';
+  workOrder.selectedTask={evidence:['web-stage:WEB_REPAIR','runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING'],lastOutcome:'FAIL'};
+  workOrder.workPackage={id:'focused-symbol-wp',sharedContext:{diagnosticEvidence:['runtime-failure:MOBILE_PLACEMENT_INPUT_MISSING']}};
+  write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
+  const find='function handlePointer(event){pointerState={x:event.clientX,y:event.clientY};return placeTower(pointerState);}';
+  write(responseFile,JSON.stringify({edits:[{path:'index.html',find,replace:'function handlePointer(event){pointerState={x:Math.round(event.clientX),y:Math.round(event.clientY)};return placeTower(pointerState);}'}],newFiles:[],replaceFiles:[]}));
+  const result=await runVibe2SourceWorker({cwd,responseFile});
+  assert.equal(result.generation.contextMode,'PRIMARY_SYMBOL_WINDOWS');
+  assert.equal(result.generation.exactSourceWindows,true);
+  assert.equal(result.generation.fullFileContextFallback,false);
+  assert.ok(result.generation.focusedSymbolCount>=1);
+  assert.ok(result.generation.contextBytes<48000);
+  assert.equal(result.codingMethod.contextMode,'PRIMARY_SYMBOL_WINDOWS');
+  assert.deepEqual(result.changedFiles,['index.html']);
+});
+
 test('zero-change candidate gets one bounded recovery retry that produces a real responsible-file edit', async () => {
   const cwd = tempRoot();
   const empty = path.join(cwd, 'empty.json');
@@ -618,13 +646,16 @@ test('undersized full web seed accumulates additive model expansions until valid
   write(path.join(cwd,'design/demo/2026-09-18/cycle-status.json'),JSON.stringify({baselineGate:{ready:true,state:'DESIGN_BASELINE_READY'}},null,2));
   write(path.join(cwd,'.vibe2/work-order.json'),JSON.stringify(workOrder,null,2));
   write(seedFile,['VIBE2_FULL_FILE','PATH:index.html','SUMMARY:seed','---VIBE2_FILE_CONTENT---',seed,'---VIBE2_FILE_END---'].join('\n'));
-  write(expansion1,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment1,'---VIBE2_EXPANSION_END---'].join('\n'));
+  write(expansion1,fragment1);
   write(expansion2,['VIBE2_WEB_EXPANSION','---VIBE2_EXPANSION_CONTENT---',fragment2,'---VIBE2_EXPANSION_END---'].join('\n'));
   const result=await runVibe2SourceWorker({cwd,responseFiles:[seedFile,expansion1,expansion2]});
   assert.equal(result.generation.attempts,3);
   assert.equal(result.generation.fullWebExpansionStages,2);
   assert.equal(result.generation.mode,'FULL_WEB');
   assert.equal(result.generation.temperature,0.22);
+  assert.equal(result.generation.repeatedIntermediateOutputs,0);
+  assert.equal(result.generation.intermediateGrowthBytes.length,2);
+  assert.ok(result.generation.intermediateGrowthBytes.every(value=>value>120));
   const output=fs.readFileSync(path.join(cwd,'.vibe2/candidates/full-web-expansion-accumulate/files/index.html'),'utf8');
   assert.ok(Buffer.byteLength(output,'utf8')>=12000);
   assert.match(output,/data-gameplay-system="combat"/);
